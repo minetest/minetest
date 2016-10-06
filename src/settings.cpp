@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "debug.h"
 #include "log.h"
-#include "util/serialize.h"
+#include "util/hex.h"
 #include "filesys.h"
 #include "noise.h"
 #include <cctype>
@@ -769,8 +769,10 @@ bool Settings::set(const std::string &name, const std::string &value)
 }
 
 
-bool Settings::setDefault(const std::string &name, const std::string &value)
+bool Settings::setDefault(const std::string &name, const std::string &value, Flags flags)
 {
+	if (flags)
+		m_flags[name] = flags;
 	return setEntry(name, &value, false, true);
 }
 
@@ -781,8 +783,10 @@ bool Settings::setGroup(const std::string &name, Settings *group)
 }
 
 
-bool Settings::setGroupDefault(const std::string &name, Settings *group)
+bool Settings::setGroupDefault(const std::string &name, Settings *group, Flags flags)
 {
+	if (flags)
+		m_flags[name] = flags;
 	return setEntry(name, &group, true, true);
 }
 
@@ -969,6 +973,7 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 
 void Settings::updateNoLock(const Settings &other)
 {
+	m_flags.insert(other.m_flags.begin(), other.m_flags.end());
 	m_server_enforced.insert(other.m_server_enforced.begin(), other.m_server_enforced.end());
 	m_settings.insert(other.m_settings.begin(), other.m_settings.end());
 	m_server_suggested.insert(other.m_server_suggested.begin(), other.m_server_suggested.end());
@@ -990,6 +995,7 @@ void Settings::clearNoLock()
 	clearNoLock(&m_settings);
 	clearNoLock(&m_server_suggested);
 	clearNoLock(&m_defaults);
+	m_flags.clear();
 }
 
 
@@ -1027,4 +1033,260 @@ void Settings::doCallbacks(const std::string &name) const
 		for (it = it_cbks->second.begin(); it != it_cbks->second.end(); ++it)
 			(it->first)(name, it->second);
 	}
+}
+
+
+// Returns true if anything was serialized
+// If flags is set to SUGGEST_CLIENT or ENFORCE_CLIENT, serialize only the settings
+// with those flags set. Else serialize all settings.
+// If a group has a flag set, that flag applies to all its members. ATM, it is assumed
+// that members don't have different flags than the group they are in.
+// Must be entered with lock (m_mutex) held
+bool Settings::serializeSettings(const SettingEntries &settings, std::ostream &os, Flags flags) const
+{
+	bool empty = true;
+	SettingEntries::const_iterator i;
+	for (i = settings.begin(); i != settings.end(); i++) {
+		const std::string &name = i->first;
+		const SettingsEntry &entry = i->second;
+		if (flags == FLAGS_NONE || (getEntryFlags(name) & flags)) {
+			os << serializeString(name);
+			if (entry.is_group) {
+				writeU8(os, SERIALIZATION_VALUETYPE_GROUP);
+				entry.group->serializeGroup(os, FLAGS_NONE);
+			} else {
+				writeU8(os, SERIALIZATION_VALUETYPE_STRING);
+				os << serializeString(entry.value);
+			}
+			empty = false;
+		}
+	}
+
+	return !empty;
+}
+
+
+// Serialize a sentinel.
+// The tag can be used for error checking. Currently, only the tag in
+// the group-sentinel is checked by the deserialisation code.
+void Settings::serializeSentinel(std::ostream &os, const std::string &tag) const
+{
+	os << serializeString("");
+	writeU8(os, SERIALIZATION_VALUETYPE_SENTINEL);
+	if (tag.empty())
+		os << serializeString("--END--");
+	else
+		os << serializeString("--END-" + tag + "--");
+}
+
+
+// Returns true if anything was serialized
+// Must be entered with lock (m_mutex) held
+bool Settings::serializeCategory(std::ostream &os, SettingsCategoryType category, Flags flags) const
+{
+	bool empty = true;
+
+	if ((category & SETTINGS_DEFAULT))
+		empty = !serializeSettings(m_defaults, os, flags) && empty;
+
+	if ((category & SETTINGS_SUGGESTED))
+		empty = !serializeSettings(m_server_suggested, os, flags) && empty;
+
+	if ((category & SETTINGS_CUSTOMIZED))
+		empty = !serializeSettings(m_settings, os, flags) && empty;
+
+	if ((category & SETTINGS_ENFORCED))
+		empty = !serializeSettings(m_server_enforced, os, flags) && empty;
+
+	return !empty;
+}
+
+
+// Serialization of a group's contents: aggregate all settings into category 'customized'
+// Returns true if anything was serialized
+bool Settings::serializeGroup(std::ostream &os, Flags flags) const
+{
+	MutexAutoLock lock(m_mutex);
+	bool empty = true;
+
+	writeU8(os,SETTINGS_CUSTOMIZED);
+	empty = !serializeCategory(os, SETTINGS_CATEGORY_ALL, flags) && empty;
+	serializeSentinel(os, "CUSTOMIZED");
+
+	writeU8(os,SETTINGS_CATEGORY_NONE);
+	serializeSentinel(os, "GROUP");
+
+	return !empty;
+}
+
+
+// Regular serialization: serialize exactly what we've got.
+// Returns true if anything was serialized
+//
+// Serialization format (same as the format of a group):
+//	u8			category
+//	<string,u8,string>*	list of name, value-type, value
+//	<string,u8,string>	sentinel
+//	(repeat the 3 above as often as necessary)
+//	u8			category (SETTINGS_CATEGORY_NONE)
+//	<string,u8,string>	group sentinel
+// A value can itself be a group
+// ATM groups are assumed to consist of a single category only.
+bool Settings::serialize(std::ostream &os) const
+{
+	MutexAutoLock lock(m_mutex);
+	bool empty = true;
+
+	// Categories are terminated by a sentinel. Identified by name == "" and U8 == SERIALIZATION_VALUETYPE_SENTINEL
+	// Groups are also terminated by a group sentinel
+
+	writeU8(os,SETTINGS_DEFAULT);
+	empty = !serializeCategory(os, SETTINGS_DEFAULT, FLAGS_NONE) && empty;
+	serializeSentinel(os, "DEFAULT");
+
+	writeU8(os,SETTINGS_SUGGESTED);
+	empty = !serializeCategory(os, SETTINGS_SUGGESTED, FLAGS_NONE) && empty;
+	serializeSentinel(os, "SUGGESTED");
+
+	writeU8(os,SETTINGS_CUSTOMIZED);
+	empty = !serializeCategory(os, SETTINGS_CUSTOMIZED, FLAGS_NONE) && empty;
+	serializeSentinel(os, "CUSTOMIZED");
+
+	writeU8(os,SETTINGS_ENFORCED);
+	empty = !serializeCategory(os, SETTINGS_ENFORCED, FLAGS_NONE) && empty;
+	serializeSentinel(os, "ENFORCED");
+
+	writeU8(os,SETTINGS_CATEGORY_NONE);
+	serializeSentinel(os, "GROUP");
+
+	return !empty;
+}
+
+
+// For client; category depends on flags instead of on server category
+// Returns true if anything was serialized
+bool Settings::serializeForClient(std::ostream &os) const
+{
+	MutexAutoLock lock(m_mutex);
+	bool empty = true;
+
+	// Categories are terminated by a sentinel. Identified by name == "" and U8 == SERIALIZATION_VALUETYPE_SENTINEL
+
+	writeU8(os,SETTINGS_SUGGESTED);
+	empty = !serializeCategory(os, SETTINGS_CATEGORY_ALL, SUGGEST_TO_CLIENT) && empty;
+	serializeSentinel(os, "SUGGESTED");
+
+	writeU8(os,SETTINGS_ENFORCED);
+	empty = !serializeCategory(os, SETTINGS_CATEGORY_ALL, ENFORCE_ON_CLIENT) && empty;
+	serializeSentinel(os, "ENFORCED");
+
+	writeU8(os,SETTINGS_CATEGORY_NONE);
+	serializeSentinel(os, "GROUP");
+
+	return !empty;
+}
+
+
+// Must be entered with lock (m_mutex) held
+void Settings::deSerializeSettings(std::istream &is, SettingEntries *settings)
+{
+	for (;;) {
+		std::string name = deSerializeString(is);
+		SerializationValueType type = static_cast<SerializationValueType>(readU8(is));
+		switch (type) {
+			case SERIALIZATION_VALUETYPE_SENTINEL :
+				// deserialized string should be '--END--' or
+				// '--END-<tag>--' (see serialization code)
+				(void) deSerializeString(is);
+				return;
+			case SERIALIZATION_VALUETYPE_STRING : {
+				SettingsEntry &entry = (*settings)[name];
+				entry.value    = deSerializeString(is);
+				entry.group    = NULL;
+				entry.is_group = false;
+				break;
+			}
+			case SERIALIZATION_VALUETYPE_GROUP : {
+				SettingsEntry &entry = (*settings)[name];
+				entry.value    = "";
+				entry.is_group = true;
+				if (!entry.group)
+					entry.group = new Settings();
+				entry.group->deSerialize(is, false);
+				break;
+			}
+			default: {
+				std::ostringstream msg;
+				msg << "Settings deserialisation error: unrecognised SerializationValueType: " << type;
+				throw SerializationError(msg.str());
+				break;
+			}
+		}
+	}
+}
+
+
+void Settings::deSerializeGroupSentinel(std::istream &is) const
+{
+	std::string sentinel_name = deSerializeString(is);
+	SerializationValueType sentinel_type = static_cast<SerializationValueType>(readU8(is));
+	std::string sentinel_value = deSerializeString(is);
+	if (sentinel_name != "" || sentinel_type != SERIALIZATION_VALUETYPE_SENTINEL || sentinel_value != "--END-GROUP--") {
+#define DUMP_LENGTH 16
+		if (sentinel_value.size() > DUMP_LENGTH + 5) {
+			sentinel_value.resize(DUMP_LENGTH);
+			sentinel_value.append("[...]");
+		}
+		for (unsigned i = 0; i < sentinel_value.size(); i++) {
+			if (!isprint(sentinel_value[i])) {
+				std::string hex = hex_encode(sentinel_value.substr(i,1));
+				hex.insert(0, "\\x");
+				sentinel_value.replace(i, 1, hex);
+				i += hex.length() - 1;
+			}
+		}
+		std::ostringstream msg;
+		msg << "Settings deserialisation error: group is not terminated by sentinel."
+			<< " Got: '" << sentinel_name << "' =  '" << sentinel_value << "';"
+			<< " SerializationValueType is: " << sentinel_type << std::endl;
+		throw SerializationError(msg.str());
+#undef DUMP_LENGTH
+	}
+}
+
+
+void Settings::deSerialize(std::istream &is, bool replace)
+{
+	MutexAutoLock lock(m_mutex);
+	SettingEntries *entries;
+	for (;;) {
+		SettingsCategoryType category = static_cast<SettingsCategoryType>(readU8(is));
+		switch (category) {
+			case SETTINGS_CATEGORY_NONE:
+				deSerializeGroupSentinel(is);
+				return;
+			case SETTINGS_DEFAULT:
+				entries = &m_defaults;
+				break;
+			case SETTINGS_SUGGESTED:
+				entries = &m_server_suggested;
+				break;
+			case SETTINGS_CUSTOMIZED:
+				entries = &m_settings;
+				break;
+			case SETTINGS_ENFORCED:
+				entries = &m_server_enforced;
+				break;
+			default: {
+				std::ostringstream msg;
+				msg << "Settings deserialisation error: unrecognised SettingsCategoryType: " << category;
+				throw SerializationError(msg.str());
+				break;
+			}
+		}
+		if (replace)
+			clearNoLock(entries);
+		deSerializeSettings(is, entries);
+	}
+	// NOTREACHED
 }

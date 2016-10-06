@@ -61,6 +61,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LONG_STRING_MAX_LEN (64 * 1024 * 1024)
 
 
+// Value types for serializing a key-value store
+// (used for settings)
+enum SerializationValueType
+{
+	SERIALIZATION_VALUETYPE_SENTINEL = 0,
+	SERIALIZATION_VALUETYPE_STRING   = 1,
+	SERIALIZATION_VALUETYPE_GROUP    = 2,
+};
+
+// Categories for serialisation of settings
+// (SERIALIZATION_CATEGORY_ALL should not be used on the wire)
+enum SettingsCategoryType {
+	SETTINGS_CATEGORY_NONE        = 0x00,
+	SETTINGS_DEFAULT    = 0x01,
+	SETTINGS_SUGGESTED  = 0x02,
+	SETTINGS_CUSTOMIZED = 0x04,
+	SETTINGS_ENFORCED   = 0x08,
+	SETTINGS_CATEGORY_ALL         = 0x0f,
+};
+
 #if HAVE_ENDIAN_H
 // use machine native byte swapping routines
 // Note: memcpy below is optimized out by modern compilers
