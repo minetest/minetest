@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-04-20 13:21+0000\n"
-"Last-Translator: Joan Ciprià Moreno Teodoro <joancipria@gmail.com>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
-"minetest/ca/>\n"
+"PO-Revision-Date: 2016-10-06 17:55+0000\n"
+"Last-Translator: Roc Humet <roc.humet@gmail.com>\n"
+"Language-Team: Catalan "
+"<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
 "Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.6-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -412,9 +412,8 @@ msgid "Uninstall selected modpack"
 msgstr "Desinstal·lar el paquet de mods seleccionat"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adreça / Port:"
+msgstr "Adreça / Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -434,16 +433,15 @@ msgstr "Dany activat"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
+msgstr "Esborra preferit"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr ""
+msgstr "Preferit"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Nom / Contrasenya:"
+msgstr "Nom / Contrasenya"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -520,9 +518,8 @@ msgid "8x"
 msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "Configuració"
+msgstr "Configuració avançada"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -604,14 +601,13 @@ msgid "Parallax Occlusion"
 msgstr "Oclusió de paral·laxi"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Activar tot"
+msgstr "Partícules"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Esteu segur que voleu reiniciar el seu món d'un sol jugador?"
+msgstr "Reiniciar el mon individual"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
