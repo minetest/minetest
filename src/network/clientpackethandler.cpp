@@ -812,9 +812,7 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	std::map<s32, int>::iterator i =
-		m_sounds_server_to_client.find(server_id);
-
+	UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.find(server_id);
 	if (i != m_sounds_server_to_client.end()) {
 		int client_id = i->second;
 		m_sound->stopSound(client_id);

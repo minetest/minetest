@@ -794,7 +794,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Key = object id
 		// Value = data sent by object
-		std::map<u16, std::vector<ActiveObjectMessage>* > buffered_messages;
+		UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* > buffered_messages;
 
 		// Get active object messages from environment
 		for(;;) {
@@ -803,7 +803,7 @@ void Server::AsyncRunStep(bool initial_step)
 				break;
 
 			std::vector<ActiveObjectMessage>* message_list = NULL;
-			std::map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
+			UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
 			if (n == buffered_messages.end()) {
 				message_list = new std::vector<ActiveObjectMessage>;
@@ -824,7 +824,7 @@ void Server::AsyncRunStep(bool initial_step)
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for (std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
+			for (UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
 					j != buffered_messages.end(); ++j) {
 				// If object is not known by client, skip it
@@ -868,7 +868,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.unlock();
 
 		// Clear buffered_messages
-		for(std::map<u16, std::vector<ActiveObjectMessage>* >::iterator
+		for(UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
 				i != buffered_messages.end(); ++i) {
 			delete i->second;
