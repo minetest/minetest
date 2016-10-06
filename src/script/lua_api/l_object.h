@@ -235,6 +235,12 @@ private:
 	// get_player_control_bits(self)
 	static int l_get_player_control_bits(lua_State *L);
 
+	// set_minimap_mode(self, id)
+	static int l_set_minimap_mode(lua_State *L);
+
+	// set_minimap_modes(self, modes)
+	static int l_set_minimap_modes(lua_State *L);
+
 	// hud_add(self, id, form)
 	static int l_hud_add(lua_State *L);
 

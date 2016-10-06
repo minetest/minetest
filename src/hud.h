@@ -45,12 +45,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
 #define HUD_PARAM_HOTBAR_SELECTED_IMAGE 3
+#define HUD_PARAM_SET_MINIMAP_MODE 4
+#define HUD_PARAM_SET_MINIMAP_MODE_MACHINE 5
 
 #define HUD_HOTBAR_ITEMCOUNT_DEFAULT 8
 #define HUD_HOTBAR_ITEMCOUNT_MAX     23
 
 
 #define HOTBAR_IMAGE_SIZE 48
+
+#define MINIMAP_MAX_SX 512
+#define MINIMAP_MAX_SY 512
 
 enum HudElementType {
 	HUD_ELEM_IMAGE     = 0,
@@ -87,6 +92,42 @@ struct HudElement {
 	v2f offset;
 	v3f world_pos;
 	v2s32 size;
+};
+
+struct MinimapModeDef {
+	bool is_minimap_shown;
+	std::string status_text;
+	std::string overlay_texture_name;
+	std::string mask_texture_name;
+	std::string player_marker_name;
+	std::string other_players_marker_name;
+	bool is_radar;
+	bool show_player_marker;
+	bool show_other_player_markers;
+	bool rotate_with_yaw;
+	u16 scan_height;
+	u16 map_size;
+	u16 next_mode;
+	u16 next_mode_shift;
+};
+
+class MinimapModeMachine {
+public:
+	MinimapModeMachine(u16 mode_count);
+	virtual ~MinimapModeMachine();
+
+	void serialize(std::ostream &os);
+	void deserialize(std::istream &is);
+
+	void setModeAt(u16 idx, const MinimapModeDef &m)
+	{ m_defs[idx] = m; }
+
+	u16 getModeCount()
+	{ return m_mode_count; }
+
+protected:
+	u16 m_mode_count;
+	MinimapModeDef *m_defs;
 };
 
 #ifndef SERVER
@@ -187,6 +228,32 @@ void drawItemStack(video::IVideoDriver *driver,
 		const core::rect<s32> *clip,
 		IGameDef *gamedef,
 		ItemRotationKind rotation_kind);
+
+class ClientMinimapModeMachine : MinimapModeMachine {
+public:
+	ClientMinimapModeMachine(u16 mode_count) :
+			MinimapModeMachine(mode_count),
+			m_current_mode(0),
+			m_overlays(NULL)
+		{}
+	~ClientMinimapModeMachine();
+
+	MinimapModeDef *getCurrentMode()
+	{ return m_defs + m_current_mode; }
+
+	// returns true iff the mode is now a different one
+	bool modeChange(bool shift);
+
+	void initMasks(video::IVideoDriver *driver, ITextureSource *tsrc,
+		const core::dimension2d<u32> &siz);
+
+	// Only call this after initMasks ran
+	video::IImage *getCurrentModeMask()
+	{ return m_overlays[m_current_mode]; }
+private:
+	u16 m_current_mode;
+	video::IImage **m_overlays;
+};
 
 #endif
 

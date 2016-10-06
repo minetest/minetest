@@ -2225,7 +2225,6 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	mapper = client->getMapper();
-	mapper->setMinimapMode(MINIMAP_MODE_OFF);
 
 	return true;
 }
@@ -3052,48 +3051,17 @@ void Game::toggleMinimap(float *statustext_time, bool *flag,
 	if (!show_hud || !g_settings->getBool("enable_minimap"))
 		return;
 
-	if (shift_pressed) {
-		mapper->toggleMinimapShape();
-		return;
-	}
-
 	u32 hud_flags = client->getEnv().getLocalPlayer()->hud_flags;
 
-	MinimapMode mode = MINIMAP_MODE_OFF;
 	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
-		mode = mapper->getMinimapMode();
-		mode = (MinimapMode)((int)mode + 1);
+		std::string txt;
+		mapper->changeMode(shift_pressed, flag, &txt);
+		statustext = utf8_to_wide(txt);
+	} else {
+		statustext = L"Minimap disabled by server";
 	}
-
-	*flag = true;
-	switch (mode) {
-		case MINIMAP_MODE_SURFACEx1:
-			statustext = L"Minimap in surface mode, Zoom x1";
-			break;
-		case MINIMAP_MODE_SURFACEx2:
-			statustext = L"Minimap in surface mode, Zoom x2";
-			break;
-		case MINIMAP_MODE_SURFACEx4:
-			statustext = L"Minimap in surface mode, Zoom x4";
-			break;
-		case MINIMAP_MODE_RADARx1:
-			statustext = L"Minimap in radar mode, Zoom x1";
-			break;
-		case MINIMAP_MODE_RADARx2:
-			statustext = L"Minimap in radar mode, Zoom x2";
-			break;
-		case MINIMAP_MODE_RADARx4:
-			statustext = L"Minimap in radar mode, Zoom x4";
-			break;
-		default:
-			mode = MINIMAP_MODE_OFF;
-			*flag = false;
-			statustext = (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ?
-				L"Minimap hidden" : L"Minimap disabled by server";
-	}
-
 	*statustext_time = 0;
-	mapper->setMinimapMode(mode);
+
 }
 
 void Game::toggleFog(float *statustext_time, bool *flag)
