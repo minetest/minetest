@@ -36,6 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static Settings main_settings;
 Settings *g_settings = &main_settings;
 std::string g_settings_path;
+bool g_settings_managed_by_server = false;
+
 
 Settings::~Settings()
 {
@@ -732,6 +734,36 @@ bool Settings::getFlagStrNoEx(const std::string &name, u32 &val,
  * Setters *
  ***********/
 
+bool Settings::setEntry(const std::string &name, const SettingsEntry &new_entry, bool set_default)
+{
+	Settings *old_group = NULL;
+
+	if (!checkNameValid(name))
+		return false;
+
+	{
+		MutexAutoLock lock(m_mutex);
+
+		SettingsEntry &entry = set_default ? m_defaults[name] : m_settings[name];
+
+		entry.is_group = new_entry.is_group;
+		if (new_entry.is_group) {
+			entry.value  = "";
+			old_group    = entry.group;
+			entry.group  = new Settings;
+			entry.group->update(*new_entry.group);
+		} else {
+			entry.value  = new_entry.value;
+			entry.group  = NULL;
+		}
+	}
+
+	delete old_group;
+
+	return true;
+}
+
+
 bool Settings::setEntry(const std::string &name, const void *data,
 	bool set_group, bool set_default)
 {
@@ -999,6 +1031,29 @@ void Settings::clearNoLock()
 }
 
 
+void Settings::registerSendToClientCallbacks(
+	SettingsChangedCallback cbf, void *userdata)
+{
+	MutexAutoLock lock(m_mutex);
+	for (SettingEntries::const_iterator it = m_defaults.begin();
+			it != m_defaults.end(); ++it) {
+		if ((getEntryFlags(it->first) & (SUGGEST_TO_CLIENT | ENFORCE_ON_CLIENT)))
+			registerChangedCallback(it->first, cbf, userdata);
+	}
+}
+
+
+void Settings::deregisterSendToClientCallbacks(
+	SettingsChangedCallback cbf, void *userdata)
+{
+	MutexAutoLock lock(m_mutex);
+	for (SettingEntries::const_iterator it = m_defaults.begin();
+			it != m_defaults.end(); ++it) {
+		deregisterChangedCallback(it->first, cbf, userdata);
+	}
+}
+
+
 void Settings::registerChangedCallback(const std::string &name,
 	SettingsChangedCallback cbf, void *userdata)
 {
@@ -1037,7 +1092,7 @@ void Settings::doCallbacks(const std::string &name) const
 
 
 // Returns true if anything was serialized
-// If flags is set to SUGGEST_CLIENT or ENFORCE_CLIENT, serialize only the settings
+// If flags is set to SUGGEST_TO_CLIENT or ENFORCE_ON_CLIENT, serialize only the settings
 // with those flags set. Else serialize all settings.
 // If a group has a flag set, that flag applies to all its members. ATM, it is assumed
 // that members don't have different flags than the group they are in.

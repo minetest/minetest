@@ -193,6 +193,9 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 			L" [" + text + L"]").c_str());
 		delete[] text;
 
+		g_settings_managed_by_server = false;
+		g_settings->clearServerProvided();
+
 		try {	// This is used for catching disconnects
 
 			guienv->clear();

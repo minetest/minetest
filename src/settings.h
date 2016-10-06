@@ -36,6 +36,10 @@ struct NoiseParams;
 extern Settings *g_settings;
 extern std::string g_settings_path;
 
+// This is used to avoid the client setting override-type settings
+// when the server is using the same settings object.
+extern bool g_settings_managed_by_server;
+
 // Type for a settings changed callback function
 typedef void (*SettingsChangedCallback)(const std::string &name, void *data);
 
@@ -203,6 +207,7 @@ public:
 
 	// N.B. Groups not allocated with new must be set to NULL in the settings
 	// tree before object destruction.
+	bool setEntry(const std::string &name, const SettingsEntry &entry, bool set_default);
 	bool setEntry(const std::string &name, const void *entry,
 		bool set_group, bool set_default);
 	Flags setEntryFlags(const std::string &name, Flags flags, Flags mask = static_cast<Flags>(~0x00))
@@ -235,6 +240,10 @@ public:
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
 
+	void registerSendToClientCallbacks(
+		SettingsChangedCallback cbf, void *userdata = NULL);
+	void deregisterSendToClientCallbacks(
+		SettingsChangedCallback cbf, void *userdata = NULL);
 	void registerChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
 	void deregisterChangedCallback(const std::string &name,

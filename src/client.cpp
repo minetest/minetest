@@ -245,6 +245,7 @@ Client::Client(
 	m_auth_data(NULL),
 	m_access_denied(false),
 	m_access_denied_reconnect(false),
+	m_settings_received(false),
 	m_itemdef_received(false),
 	m_nodedef_received(false),
 	m_media_downloader(new ClientMediaDownloader()),

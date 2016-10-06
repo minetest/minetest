@@ -86,6 +86,7 @@ class EmergeManager;
 +-----------------------------+   ---------------------                                |
 |OUT:                         |                                                        |
 | TOCLIENT_MOVEMENT           |                                                        |
+| TOCLIENT_SETTINGS           |                                                        |
 | TOCLIENT_ITEMDEF            |                                                        |
 | TOCLIENT_NODEDEF            |                                                        |
 | TOCLIENT_ANNOUNCE_MEDIA     |                                                        |

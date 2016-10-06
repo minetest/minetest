@@ -261,6 +261,9 @@ Server::Server(
 		errorstream << std::endl;
 	}
 
+	g_settings_managed_by_server = true;
+	g_settings->registerSendToClientCallbacks(ClientSettingChangedCallback, (void *) this);
+
 	//lock environment
 	MutexAutoLock envlock(m_env_mutex);
 
@@ -362,6 +365,8 @@ Server::Server(
 Server::~Server()
 {
 	infostream<<"Server destructing"<<std::endl;
+
+	g_settings->deregisterSendToClientCallbacks(ClientSettingChangedCallback, (void *) this);
 
 	// Send shutdown message
 	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
@@ -1556,6 +1561,68 @@ void Server::SendDeathscreen(u16 peer_id,bool set_camera_point_target,
 	pkt << set_camera_point_target << camera_point_target;
 	Send(&pkt);
 }
+
+
+void Server::SendClientSettings(u16 peer_id, u16 protocol_version)
+{
+	DSTACK(FUNCTION_NAME);
+
+	if (protocol_version >= 29) {
+		NetworkPacket pkt(TOCLIENT_SETTINGS, 0, peer_id);
+		/*
+			u16 command
+			u8  type (currently always 0)
+			u8  flags (0x01 = complete-set)
+			u32 length of the next item
+			serialized settings
+		*/
+		pkt << (u8) 0;
+		pkt << (u8) 1;
+		std::ostringstream os(std::ios::binary);
+		g_settings->serializeForClient(os);
+		pkt.putLongString(os.str());
+
+		verbosestream << "Server: Sending client settings to id(" << peer_id
+				<< "): size=" << pkt.getSize() << std::endl;
+
+		Send(&pkt);
+	}
+}
+
+
+void Server::ClientSettingChangedCallback(const std::string &name, void *data)
+{
+	Server *server = static_cast<Server *>(data);
+	const SettingsEntry &entry = g_settings->getEntry(name);
+	server->BroadcastSingleClientSetting(name, entry);
+}
+
+
+// This is only called for settings that should be sent to the client.
+void Server::BroadcastSingleClientSetting(const std::string &name, const SettingsEntry &entry)
+{
+	DSTACK(FUNCTION_NAME);
+
+	Settings tmp_settings;
+	tmp_settings.setEntry(name, entry, false);
+	tmp_settings.setEntryFlags(name, g_settings->getEntryFlags(name));
+	NetworkPacket pkt(TOCLIENT_SETTINGS, 0);
+	/*
+		u16 command
+		u8  type (currently always 0)
+		u8  flags (0x01 = complete-set)
+		u32 length of the next item
+		serialized settings
+	*/
+	pkt << (u8) 0;
+	pkt << (u8) 0;
+	std::ostringstream os(std::ios::binary);
+	tmp_settings.serializeForClient(os);
+	pkt.putLongString(os.str());
+
+	Broadcast(&pkt);
+}
+
 
 void Server::SendItemDef(u16 peer_id,
 		IItemDefManager *itemdef, u16 protocol_version)

@@ -86,7 +86,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CRAFTITEMDEF",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CraftItemDef }, // 0x3b
 	{ "TOCLIENT_ANNOUNCE_MEDIA",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_AnnounceMedia }, // 0x3c
 	{ "TOCLIENT_ITEMDEF",                  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ItemDef }, // 0x3d
-	null_command_handler,
+	{ "TOCLIENT_SETTINGS",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Settings }, // 0x3e
 	{ "TOCLIENT_PLAY_SOUND",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_PlaySound }, // 0x3f
 	{ "TOCLIENT_STOP_SOUND",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_StopSound }, // 0x40
 	{ "TOCLIENT_PRIVILEGES",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Privileges }, // 0x41

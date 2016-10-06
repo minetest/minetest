@@ -764,6 +764,32 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	m_itemdef_received = true;
 }
 
+
+void Client::handleCommand_Settings(NetworkPacket* pkt)
+{
+	infostream << "Client: Received settings: packet size: "
+			<< pkt->getSize() << std::endl;
+
+	u8 type;
+	u8 flags;
+	(*pkt) >> type;
+	assert(type == 0);
+	(*pkt) >> flags;
+	bool complete_set = (flags & 0x01) != 0;
+	if (complete_set)
+		m_settings_received = true;
+
+	// If managed by server, the settings have already been applied.
+	// No need to override (or actually: overriding is harmful)
+	if (g_settings_managed_by_server)
+		return;
+
+	// Deserialize settings
+	std::istringstream is(pkt->readLongString(), std::ios_base::binary);
+	g_settings->deSerialize(is, complete_set);
+}
+
+
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
 	s32 server_id;
