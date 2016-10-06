@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 20:49+0200\n"
-"PO-Revision-Date: 2016-08-30 08:57+0200\n"
-"Last-Translator: Thomas Wagner Nielsen <thomas@viawords.com>\n"
+"PO-Revision-Date: 2016-10-20 13:59+0000\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish "
 "<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
 "Language: da\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.7-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -132,7 +132,7 @@ msgstr "aktiveret"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "En verden med navnet \"$1\" eksisterer allerede"
+msgstr "En verden med navnet »$1« findes allerede"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -140,7 +140,7 @@ msgstr "Skab"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Hent et subgame, så som minetest_game fra minetest.net"
+msgstr "Hent et underspil, såsom minetest_game fra minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -155,7 +155,6 @@ msgid "Mapgen"
 msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "No worldname given or no game selected"
 msgstr "Intet navn på verden angivet eller intet spil valgt"
 
@@ -178,7 +177,7 @@ msgstr "Du har ikke installeret nogle subgames."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Er du sikker på du vil slette \"$1\"?"
+msgstr "Er du sikker på, at du vil slette »$1«?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
@@ -215,12 +214,10 @@ msgid "(No description of setting given)"
 msgstr "(Der er ikke nogen beskrivelse af denne indstilling)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "< Back to Settings page"
 msgstr "< Tilbage til siden Indstillinger"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Browse"
 msgstr "Gennemse"
 
@@ -259,7 +256,7 @@ msgstr "Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Valgfrit kan »lacunarity'en« tilføjes med et foranstillet komma."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -436,14 +433,12 @@ msgid "Del. Favorite"
 msgstr "Vis favoritter"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Vis favoritter"
+msgstr "Favorit"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Navn/kodeord:"
+msgstr "Navn/adgangskode"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -451,7 +446,7 @@ msgstr "Spiller mod spiller aktiveret"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
-msgstr ""
+msgstr "Bind adresse"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
@@ -476,9 +471,8 @@ msgid "New"
 msgstr "Ny"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-#, fuzzy
 msgid "No world created or selected!"
-msgstr "Ingen verden skabt eller valgt!"
+msgstr "Ingen verden oprettet eller valgt!"
 
 #: builtin/mainmenu/tab_server.lua
 #, fuzzy
@@ -506,7 +500,6 @@ msgid "Start Game"
 msgstr "Start spil / Forbind"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "2x"
 msgstr "2x"
 
@@ -515,12 +508,10 @@ msgid "3D Clouds"
 msgstr "3D-skyer"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "4x"
 msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "8x"
 msgstr "8x"
 
@@ -554,18 +545,17 @@ msgid "Connected Glass"
 msgstr "Forbundet glas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Fancy Leaves"
-msgstr "Opakt (uigennemsigtigt) vand"
+msgstr "Smukke blade"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Mipmap"
-msgstr "Mip-mapping"
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr ""
+msgstr "Mipmap + Aniso-filter"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -576,52 +566,44 @@ msgid "No Filter"
 msgstr "Intet filter"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "No Mipmap"
-msgstr "Mip-mapping"
+msgstr "Ingen Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Glat belysning"
+msgstr "Knudepunktsfremhævelse"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Glat belysning"
+msgstr "Knudepunktsomrids"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
 msgstr "Ingen"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "Mip-mapping"
+msgstr "Normal oversættelse"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Leaves"
-msgstr "Opakt (uigennemsigtigt) vand"
+msgstr "Uuigennemsigtige blade"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Opaque Water"
-msgstr "Opakt (uigennemsigtigt) vand"
+msgstr "Uigennemsigtigt vand"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr ""
+msgstr "Parallax-okklusion"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Aktivér partikler"
+msgstr "Partikler"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Er du sikker på, at du vil nulstille din enkelt spiller-verden?"
+msgstr "Nulstil spillerverden"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -629,7 +611,7 @@ msgstr "Indstillinger"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr "Shadere"
+msgstr "Dybdeskabere"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
@@ -645,35 +627,31 @@ msgstr "Teksturering:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "For at aktivere dybdeskabere skal OpenGL-driveren bruges."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Mip-mapping"
+msgstr "Toneoversættelse"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "Føletærskel (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
 msgstr "Tri-lineær filtréring"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
-msgstr "\"Smarte\" træer"
+msgstr "Bølgende blade"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
-msgstr "\"Smarte\" træer"
+msgstr "Bølgende planter"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
-msgstr "\"Smarte\" træer"
+msgstr "Bølgende vand"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
@@ -733,7 +711,7 @@ msgstr "Indlæser teksturer..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Genbygger dybdeskabere ..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -761,13 +739,12 @@ msgid "Player name too long."
 msgstr "Spillerens navn er for langt."
 
 #: src/client/clientlauncher.cpp
-#, fuzzy
 msgid "Provided world path doesn't exist: "
-msgstr "Den angivne sti til verdenen findes ikke: "
+msgstr "Angivne sti til verdenen findes ikke: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "kræver_reserve_skrifttype"
 
 #: src/game.cpp
 msgid ""
@@ -794,17 +771,14 @@ msgid "Continue"
 msgstr "Fortsæt"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating client..."
-msgstr "Opretter klient..."
+msgstr "Opretter klient ..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "Creating server..."
-msgstr "Opretter server..."
+msgstr "Opretter server ..."
 
 #: src/game.cpp
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "- WASD: move\n"
@@ -818,7 +792,7 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
-"Standard-styring:\n"
+"Standardstyring:\n"
 "- WASD: Bevæge sig rundt\n"
 "- Mellemrumstast: Hoppe/klatre\n"
 "- Skift: Snige/gå nedad\n"
@@ -828,10 +802,9 @@ msgstr ""
 "- Mus venstre: Grave/slå\n"
 "- Mus højre: Placere/bruge\n"
 "- Musehjul: Vælge genstand\n"
-"- T: Chat\n"
+"- T: Snakke (chat)\n"
 
 #: src/game.cpp
-#, fuzzy
 msgid ""
 "Default Controls:\n"
 "No menu visible:\n"
@@ -846,7 +819,7 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
-"Standard-styring:\n"
+"Standardstyring:\n"
 "Ingen menu synlig:\n"
 "- Enkelt tryk: Aktivér knap\n"
 "- Dobbelt tryk: Placér/brug\n"
@@ -869,10 +842,9 @@ msgstr "Afslut til operativsystemet"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Elementdefinitioner ..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "KiB/s"
 msgstr "KiB/s"
 
@@ -881,18 +853,16 @@ msgid "Media..."
 msgstr "Medier..."
 
 #: src/game.cpp
-#, fuzzy
 msgid "MiB/s"
 msgstr "MiB/s"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Node definitions..."
-msgstr "Blokdefinitioner..."
+msgstr "Knudepunktsdefinitioner ..."
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Slår adresse op ..."
 
 #: src/game.cpp
 msgid "Respawn"
@@ -995,9 +965,8 @@ msgid "Sneak"
 msgstr "Snige"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle Cinematic"
-msgstr "Omstil hurtig"
+msgstr "Aktiver filmisk"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1044,18 +1013,16 @@ msgid "Passwords do not match!"
 msgstr "Kodeordene er ikke ens!"
 
 #: src/guiVolumeChange.cpp
-#, fuzzy
 msgid "Exit"
 msgstr "Afslut"
 
 #: src/guiVolumeChange.cpp
-#, fuzzy
 msgid "Sound Volume: "
 msgstr "Lydstyrke: "
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr "Apps"
+msgstr "Prg."
 
 #: src/keycode.cpp
 msgid "Attn"
@@ -1066,7 +1033,6 @@ msgid "Back"
 msgstr "Tilbage"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Capital"
 msgstr "Store bogstaver"
 
@@ -1315,9 +1281,8 @@ msgid "Sleep"
 msgstr "Sov"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Snapshot"
-msgstr "Tilstandsbillede"
+msgstr "Øjebliksbillede"
 
 #: src/keycode.cpp
 msgid "Space"
@@ -1346,21 +1311,25 @@ msgid ""
 "The default is suitable for mandelbrot sets, it needs to be edited for julia "
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
-msgstr " "
+msgstr ""
+"(X,Y,Z)-forskydning for fraktal fra verdencentrum i enheder af »skala«.\n"
+"Brugt til at flytte en egnet udlægning af lavt land tæt på (0, 0).\n"
+"Standarden er egnet til mandelbrot-sæt, skal redigeres for julia-sæt.\n"
+"Interval cirka -2 til 2. Gang med »skala« i knudepunkter."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = parallax-okklusion med kurveinformation (hurtigere).\n"
+"1 = relief-oversættelse (langsommere, mere præcis)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D clouds"
-msgstr "3D skyer"
+msgstr "3D-skyer"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "3D mode"
 msgstr "3D-tilstand"
 
@@ -1377,51 +1346,57 @@ msgid ""
 msgstr ""
 "Understøttelse af 3D.\n"
 "Understøttet på nuværende tidspunkt:\n"
+"-    none: ingen 3d-udgang.\n"
+"-    anaglyph: cyan/magenta farve 3d.\n"
+"-    interlaced: ulige/lige linjebaseret polarisering for "
+"skærmunderstøttelsen\n"
+"-    topbottom: opdel skærm top/bund.\n"
+"-    sidebyside: opdel skærm side om side.\n"
+"-    pageflip: quadbuffer baseret 3d."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"En valgt kortfødning for et nyt kort, efterlad tom for vilkårlig.\n"
+"Vil blive overskrevet når en ny verden oprettes i hovedmenuen."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr "Besked, som skal vises til alle klienter, når serveren går ned."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "A message to be displayed to all clients when the server shuts down."
 msgstr "Besked, som skal vises til alle klienter, når serveren lukker ned."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Absolut begrænsning af fremkomstkøer"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Acceleration in air"
 msgstr "Acceleration i luft"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
-msgstr ""
+msgstr "Aktiv blokhåndteringsinterval"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
-msgstr ""
+msgstr "Aktivt blokændringsinterval"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr ""
+msgstr "Aktive blokændringer"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Aktiv blokinterval"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Aktivt objektafsendelsesinterval"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1434,12 +1409,11 @@ msgstr ""
 "Bemærk, at adressefeltet i hovedmenuen tilsidesætter denne indstilling."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Justér DPI-konfigurationen til din skærm (ikke-X11 / kun Andorid) f.eks. til "
+"Justér DPI-konfigurationen til din skærm (ikke-X11 / kun Android) f.eks. til "
 "4k-skærme."
 
 #: src/settings_translation_file.cpp
@@ -1447,7 +1421,7 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-" Et mindre tal betyder lysere.\n"
+"Juster gammakodningen for lystabellerne. Et mindre tal betyder lysere.\n"
 "Denne indstilling gælder kun for klienten og ignoreres af serveren."
 
 #: src/settings_translation_file.cpp
@@ -1456,30 +1430,27 @@ msgstr "Avanceret"
 
 #: src/settings_translation_file.cpp
 msgid "Altitude Chill"
-msgstr ""
+msgstr "Højdekulde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Always fly and fast"
 msgstr "Flyv altid og hurtigt"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Ambient okklusiongamma"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Amplifies the valleys"
 msgstr "Forstærker dalene"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Anisotropic filtering"
-msgstr "Anisotropisk filtréring"
+msgstr "Anisotropisk filtrering"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Meddelelsesserver"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1487,33 +1458,33 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Meddel på denne serverliste\n"
+"Hvis du ønsker at annoncere din ipv6-adresse, så brug serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr ""
+msgstr "Omtrentlig (X, Y, Z) fraktalskala i knudepunkter."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ask to reconnect after crash"
-msgstr "Spørg om at forbinde igen, efter den er gået ned."
+msgstr "Spørg om at forbinde igen efter nedbrud"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Automaticaly report to the serverlist."
-msgstr "Rapportér automatisk til serverlisten."
+msgstr "Rapporter automatisk til serverlisten."
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "Tast til automatisk løb"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Backward key"
-msgstr "Baglæns"
+msgstr "Tilbage-tast"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height"
-msgstr ""
+msgstr "Baseterrænhøjde"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
@@ -1524,26 +1495,24 @@ msgid "Basic Privileges"
 msgstr "Grundlæggende privilegier"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bilinear filtering"
-msgstr "Bi-lineær filtréring"
+msgstr "Bilineær filtrering"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr ""
+msgstr "Bind adresse"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bit per billedpunkt (a.k.a. farvedybde) i fuldskærmtilstand."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Build inside player"
-msgstr "Flerspiller"
+msgstr "Byg intern spiller"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "Indbygget"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1556,19 +1525,19 @@ msgstr "Kameraudjævning"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Kameraudjævning i biograftilstand"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Tast til ændring af kameraopdatering"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "Hulestøj #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "Hulestøj #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
@@ -1576,22 +1545,19 @@ msgstr "Grottebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr ""
+msgstr "Huler og tunneler dannes ved skæringspunktet for de to støjkilder"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat key"
-msgstr "Skift bindinger"
+msgstr "Snakketast"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chat toggle key"
-msgstr "Skift bindinger"
+msgstr "Tast for snak (chat)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Kommando"
+msgstr "Snakkekommandoer"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1615,24 +1581,41 @@ msgid ""
 "17 = 4D \"Mandelbulb\" mandelbrot set.\n"
 "18 = 4D \"Mandelbulb\" julia set."
 msgstr ""
+"Valg af 18 fraktaler fra 9 formler.\n"
+"1 = 4D »Roundy« mandelbrot-sæt.\n"
+"2 = 4D »Roundy« julia-sæt.\n"
+"3 = 4D »Squarry« mandelbrot-sæt.\n"
+"4 = 4D »Squarry\" julia-sæt.\n"
+"5 = 4D »Mandy Cousin« mandelbrot-sæt.\n"
+"6 = 4D »Mandy Cousin« julia-sæt.\n"
+"7 = 4D »Variation« mandelbrot-sæt.\n"
+"8 = 4D »Variation« julia-sæt.\n"
+"9 = 3D »Mandelbrot/Mandelbar« mandelbrot-sæt.\n"
+"10 = 3D »Mandelbrot/Mandelbar« julia-sæt.\n"
+"11 = 3D »Christmas Tree« mandelbrot-sæt.\n"
+"12 = 3D »Christmas Tree« julia-sæt.\n"
+"13 = 3D »Mandelbulb« mandelbrot-sæt.\n"
+"14 = 3D »Mandelbulb« julia-sæt.\n"
+"15 = 3D »Cosine Mandelbulb« mandelbrot-sæt.\n"
+"16 = 3D »Cosine Mandelbulb« julia-sæt.\n"
+"17 = 4D »Mandelbulb« mandelbrot-sæt.\n"
+"18 = 4D »Mandelbulb« julia-sæt."
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr ""
+msgstr "Klumpstørrelse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode"
-msgstr "Kreativ tilstand"
+msgstr "Filmisk tilstand"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cinematic mode key"
-msgstr "Kreativ tilstand"
+msgstr "Tast for filmisk tilstand"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Rene gennemsigtige teksturer"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
@@ -1656,12 +1639,11 @@ msgstr "Skyer"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Skyer er en klientsideeffekt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Clouds in menu"
-msgstr "Hovedmenu"
+msgstr "Skyer i menu"
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
@@ -1672,22 +1654,27 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Kommaadskilt liste af mod'er som har tilladelse til at tilgå HTTP API'er, "
+"som\n"
+"tillader dem at hente og overføre data fra internettet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Kommaadskil liste over troværdige mod'er som har tilladelse til at tilgå "
+"usikre\n"
+"funktioner selv når mod-sikkerhed er aktiveret (via "
+"request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Command key"
-msgstr "Kommando"
+msgstr "Kommandotast"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Connect glass"
-msgstr "Forbind"
+msgstr "Forbind glas"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
@@ -1695,22 +1682,19 @@ msgstr "Opret forbindelse til ekstern medieserver"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Forbinder glass hvis understøttet af knudepunkt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console alpha"
-msgstr "Konsol"
+msgstr "Konsolalfa"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console color"
-msgstr "Konsol"
+msgstr "Konsolfarve"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console key"
-msgstr "Konsol"
+msgstr "Konsoltast"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
@@ -1721,9 +1705,8 @@ msgid "Continuous forward movement (only used for testing)."
 msgstr "Kontinuerlig bevægelse fremad (bruges kun til test)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "Control"
+msgstr "Styring"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1740,10 +1723,12 @@ msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Kontroller størrelse for ørkener og strande i Mapgen v6.\n"
+"Når snebiomer er aktiveret ignoreres »mgv6_freq_desert«."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "Kontrollerer hældning/dybe for sødybder."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
@@ -1768,22 +1753,24 @@ msgid ""
 "Creates unpredictable water features in caves.\n"
 "These can make mining difficult. Zero disables them. (0-10)"
 msgstr ""
+"Opretter uforudsigelige vandfunktioner i huler.\n"
+"Disse kan gøre vanskeliggøre minedrift. Nul deaktiverer dem (0-10)"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Crosshair alpha"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Crosshair alpha (uigennemsigtighed, mellem 0 og 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Crosshair-farve"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Crosshair-farve (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
@@ -1794,21 +1781,20 @@ msgid "DPI"
 msgstr "DPI"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Damage"
-msgstr "Aktivér skade"
+msgstr "Skade"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Tast til aktivering af fejlsøgningsinfo"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr ""
+msgstr "Logniveau for fejlsøgning"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Dedikeret server-trin"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -1825,9 +1811,8 @@ msgid ""
 msgstr "Standard spil, når du skaber en ny verden."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Default password"
-msgstr "Nyt kodeord"
+msgstr "Standardadgangskode"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
@@ -1835,57 +1820,64 @@ msgstr "Standardprivilegier"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "Standardformat for rapport"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Standardtidsudløb for cURL, angivet i millisekunder.\n"
+"Har kun effekt hvis kompileret med cURL."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"Definerer sampling-trin for tekstur.\n"
+"En højere værdi resulterer i en mere rullende normale kort."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Definerer den maksimale spillerflytningsafstand i blokke (0 = ubegrænset)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Forsinkelse i afsendelse af blokke efter bygning"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "Forsinkelse ved visning af værktøjsfif, angivet i millisekunder."
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr ""
+msgstr "Forældet Lua API-håndtering"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Dybde hvorunder du kan finde store huler."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Dybde hvorunder du finder kæmpestore huler."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
-msgstr ""
+msgstr "Faldende hastighed"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
+"Beskrivelse af server, som vises når spillere tilslutter sig og i "
+"serverlisten."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
+msgstr "Afsynkroniser blokanimation"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1893,15 +1885,17 @@ msgid ""
 "The 3 numbers in brackets control the scale of the\n"
 "terrain, the 3 numbers should be identical."
 msgstr ""
+"Bestemmer terrænform.\n"
+"De tre tal i parenteser kontrollerer skalaen for\n"
+"terrænet, de tre tal skal være identiske."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Disable anticheat"
-msgstr "Aktivér partikler"
+msgstr "Deaktiver antisnyd"
 
 #: src/settings_translation_file.cpp
 msgid "Disable escape sequences"
-msgstr ""
+msgstr "Deaktiver undvigesekvenser"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1910,6 +1904,10 @@ msgid ""
 "disable\n"
 "the escape sequences generated by mods."
 msgstr ""
+"Deaktiver undvigesekvenser, f.eks. snak-farvelægning.\n"
+"Brug denne hvis du ønsker at afvikle en server med pre-0.4.14-klienter og du "
+"ønsker\n"
+"at deaktivere undvigesekvenserne oprettet af mod'er."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -1917,56 +1915,51 @@ msgstr "Tillad ikke tomme adgangskoder"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Domænenavn for server, til visning i serverlisten."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double tap jump for fly"
-msgstr ""
-"Tryk på \"hop\" hurtigt to gange for at skifte frem og tilbage mellem flyve-"
-"tilstand"
+msgstr "Tryk to gange på »hop« for at flyve"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr ""
-"Tryk på \"hop\" hurtigt to gange for at skifte frem og tilbage mellem flyve-"
-"tilstand"
+msgstr "Tryk på »hop« to gange for at skifte frem og tilbage fra flyvetilstand."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "Drop element-tast"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
-msgstr ""
+msgstr "Dump mapgen-fejlsøgningsinfo."
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
 msgstr "Aktivér joysticks"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "Aktivér MP"
+msgstr "Aktiver VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr ""
+msgstr "Aktiver mod-sikkerhed"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "Aktiver at spillere kan skades og dø."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Aktiver vilkårlig brugerinddata (kun til test)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Aktiver blød lyssætning med simpel ambient okklusion.\n"
+"Deaktiver for hastighed eller for anderledes udseender."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1976,6 +1969,10 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Aktiver for at nægte gamle klienter i at forbinde.\n"
+"Ældre klienter er kompatible på den måde, at de ikke vil stoppe ved "
+"tilkobling\n"
+"til nye servere, men de understøtter ikke alle nye funktioner."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1984,6 +1981,10 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Aktiver brug af ekstern medieserver (hvis tilbudt af server).\n"
+"Eksterne servere tilbyder en signifikant hurtigere måde at hente medier ("
+"f.eks. teksturer\n"
+"ved forbindelse til serveren."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1991,10 +1992,14 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"Aktivere/deaktivere afvikling af en IPv6-server. En IPv6-server kan være "
+"begrænset\n"
+"til IPv6-klienter, afhængig af systemkonfiguration.\n"
+"Ignoreret hvis bind_address er angivet."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Aktiverer animation af lagerelementer."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2003,50 +2008,58 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Aktiverer bumpmapping for teksturer. Normalmaps skal være angivet af "
+"teksturpakken\n"
+"eller skal være automatisk oprettet.\n"
+"Kræver at dybdeskabere er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Aktiverer mellemlagring af facedir-roterede mesher."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Aktivér skade"
+msgstr "Aktiverer filmisk toneoversættelse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables minimap."
-msgstr "Aktivér skade"
+msgstr "Aktiverer minikort."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"Aktiverer løbende normalmap-oprettelse (Emboss-effekt).\n"
+"Kræver bumpmapping for at være aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Aktiverer parallax-okklusionoversættelse.\n"
+"Kræver at dybdeskabere er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr ""
+msgstr "Udskrivningsinterval for motorprofileringsdata"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "Entitetmetoder"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
+"Eksperimentelt tilvalg, kan medføre synlige mellemrum mellem blokke\n"
+"når angivet til et højere nummer end 0."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
-msgstr ""
+msgstr "FPS i pausemenu"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
@@ -2054,23 +2067,23 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr ""
+msgstr "Faldrystelse"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
-msgstr ""
+msgstr "Reserveskrifttype"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr ""
+msgstr "Skygge for reserveskrifttypen"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr ""
+msgstr "Skyggealfa for reserveskrifttypen"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr ""
+msgstr "Størrelse for reserveskrifttypen"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
@@ -2078,53 +2091,59 @@ msgstr "Hurtigtast"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Hurtig tilstandsacceleration"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Hurtig tilstandshastighed"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Hurtig bevægelse"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Hurtig bevægelse (via tast).\n"
+"Dette kræver privilegiet »fast« på serveren."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "Visningsområde"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view for zoom"
-msgstr ""
+msgstr "Zoom for visningsområde"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "Visningsområde i grader."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
+"Visningsområde under zoom i grader.\n"
+"Dette kræver privilegiet »zoom« på serveren."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
 msgstr ""
+"Fil i client/serverlist/ som indeholder dine favoritservere vist i "
+"fanebladet for flere spillere."
 
 #: src/settings_translation_file.cpp
 msgid "Filler Depth"
-msgstr ""
+msgstr "Fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr ""
+msgstr "Filmisk toneoversættelse"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2133,15 +2152,20 @@ msgid ""
 "light edge to transparent textures.  Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
+"Filtrerede teksturer kan blande RGB-værdier med fuldt gennemsigtige naboer,\n"
+"som PNG-optimeringsprogrammer normalt fjerner, undertiden resulterende i en "
+"\n"
+"mørk eller lys kant  for gennemsigtige teksturer. Anvend dette filter for at "
+"rydde\n"
+"op i dette på indlæsningstidspunktet for tekstur."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Filtering"
-msgstr "Anisotropisk filtréring"
+msgstr "Filtrering"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr ""
+msgstr "Fast kortfødning"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -2157,7 +2181,7 @@ msgstr "Tåge"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "Tast for tåge"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
@@ -2169,15 +2193,16 @@ msgstr "Fontskygge"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "Alfa for skrifttypeskygge"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Alfa for skrifttypeskygge (uigennemsigtighed, mellem 0 og 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
 msgstr ""
+"Forskydning for skrifttypeskygge, hvis 0 så vil skygge ikke blive tegnet."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
@@ -2185,32 +2210,37 @@ msgstr "Skriftstørrelse"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Format for skærmbilleder."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Forward key"
-msgstr "Fremad"
+msgstr "Fremadtast"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "Freetype-skrifttyper"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Fra hvor langt væk blokke oprettes for klienten, angivet i kortblokke (16 "
+"knudepunkter)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"Fra hvor langt væk blokke sendes til klienter, angivet i kortblokke (16 "
+"knudepunker)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"Fra hvor langt væk klinter ved om objekter, angivet i kortblokke (16 "
+"knudepunkter)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2218,7 +2248,7 @@ msgstr "Fuld skærm"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr ""
+msgstr "Fuldskærm BPP"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
@@ -2230,11 +2260,11 @@ msgstr "Skalering af grafisk brugerflade"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr ""
+msgstr "GUI-skaleringsfilter"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "GUI-skaleringsfilter txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
@@ -2246,11 +2276,11 @@ msgstr "Generelt"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
-msgstr ""
+msgstr "Opret normalkort"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "Globale tilbagekald"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2261,6 +2291,13 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Globale kortoprettelsesattributter.\n"
+"I Mapgen v6 kontrollerer flaget »decorations« alle dekorationer undtagen "
+"træer\n"
+"og junglegræs, i alle andre mapgen'er kontrollerer dette flag alle "
+"dekorationer.\n"
+"Flag som ikke er angivet i flagstrengen ændres ikke fra standarden.\n"
+"Flag startende med »no« (nej) bruges til eksplicit at deaktivere dem."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2271,13 +2308,12 @@ msgid "Gravity"
 msgstr "Tyngdekraft"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP Mods"
-msgstr "Mods"
+msgstr "HTTP-Mod'er"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "Tast for HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2286,6 +2322,11 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Håndtering for forældede lua api-kald:\n"
+"-    legacy: (prøv at) efterligne gammel opførsel (standard for udgivelse).\n"
+"-    log: efterlign og log tilbagesporing for forældede kald (standard for "
+"fejlsøgning).\n"
+"-    error: afbryd ved brug af forældede kald (foreslået af mod-udviklere)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2295,26 +2336,31 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"Få profilprogrammet til at instruere sig selv:\n"
+"* Instruer en tom funktion.\n"
+"Dette estimerer belastningen, som instrumenteringen tilføjer (+1 "
+"funktionkald).\n"
+"* Instruer sampleren i brug til at opdatere statistikken."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Højdekomponent for den oprindelige vinduestørrelse."
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Højde hvor skyer fremkommer."
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
-msgstr ""
+msgstr "Højpræcisions FPU"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Hjemmeside for serveren, som vist i serverlisten."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Dybde for floder"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2322,16 +2368,21 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Hvordan store områder af blokke påvirkes af det aktive blokindhold, angivet "
+"i mapblocks (16 knudepunkter).\n"
+"I aktive blokke bliver objekter indlæst og ABM'er afviklet."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Hvor lang tid serveren vil vente før ubrugt kortblokke fjernes.\n"
+"Højere værdier er længere tid, men vil bruge mere RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Hvor brede floder skal være"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2350,12 +2401,16 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
+"Hvis FPS skal være højere end dette, så begræns ved at sove\n"
+"for ikke at spilde CPU-kraft uden nogen fordel."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Hvis deaktiveret bruges »brug«-tasten til at flyve hurtig hvis både flyvning "
+"og hurtig tilstand er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2363,32 +2418,43 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Hvis aktiveret sammen med fly-tilstand, kan spilleren flyve igennem faste "
+"knudepunkter.\n"
+"Dette kræver privilegiet »noclip« på serveren."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"Hvis aktiveret bruges »brug«-tasten i stedet for »snig«-tasten til at klatre "
+"ned og aftagende."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Hvis aktiveret, optages handlinger for tilbagerulning.\n"
+"Dette tilvalg læses kun når serveren starter."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
+"Hvis aktiveret så deaktiver forhindring af snyd i spil med flere deltagere."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"Hvis aktiveret, så vil ugyldige data ikke medføre at serveren lukke ned.\n"
+"Aktiver kun hvis du ved hvad du gør."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
+"Hvis aktiveret kan nye spillere ikke slutte sig til uden en tom adgangskode."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2396,78 +2462,87 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Hvis aktiveret så kan du placere blokke ved positionen (fod + øje niveau) "
+"hvor du står.\n"
+"Dette er nyttigt under arbejde med knudepunktbokse i små områder."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
+"Hvis aktiveret, så vil spillere altid (gen)starte ved den angivne position."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Ignorer verdensfejl"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "In-Game"
-msgstr "Spil"
+msgstr "I-spil"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
 msgstr ""
+"Baggrundsalfa for snakkekonsollen i spillet (uigennemsigtighed, mellem 0 og "
+"255)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr ""
+msgstr "Baggrundsfarve for snakkekonsollen i spillet (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"Instrumenteringsindbygning.\n"
+"Er normalt kun krævet af kerne/indbygningsbidragydere"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr ""
+msgstr "Udstyr chatkommandoer ved registrering."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"Udstyr globale tilbagekaldsfunktioner ved registrering.\n"
+"(alt du sender til en minetest.register_*()-funktion)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
+msgstr "Udstyr handlingsfunktionen for Aktiv blokændringer ved registrering."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
+"Udstyr handlingsfunktionen for Indlæsning af blokændringer ved registrering."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "Udstyr metoderne for enheder ved registrering."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr ""
+msgstr "Instrumentering"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr ""
+msgstr "Interval for lagring af vigtige ændringer i verden, angivet i sekunder."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr ""
+msgstr "Interval for afsendelse af tidspunkt på dagen til klienter."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
+msgstr "Animationer for lagerelementer"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inventory key"
-msgstr "Beholdning"
+msgstr "Lagertast"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -2475,25 +2550,27 @@ msgstr "Invertér mus"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Vend lodret musebevægelse om."
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr ""
+msgstr "Elemententitet TTL"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
 msgstr ""
+"Gennemløb for den rekursive funktion.\n"
+"Kontrollerer mængden af små detaljer."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr ""
+msgstr "Joystick-knaps gentagelsesinterval"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr ""
+msgstr "Joystick frustum-sensitivitet"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2502,6 +2579,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Kun Juliasæt: W-komponent for hyperkompleks konstant der bestemmer Juliaform."
+"\n"
+"Har ingen effekt på 3D-fraktaler.\n"
+"Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2509,6 +2590,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Kun Juliasæt: X-komponent for hyperkompleks konstant der bestemmer Juliaform."
+"\n"
+"Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2516,6 +2600,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Kun Juliasæt: Y-komponent for hyperkompleks konstant der bestemmer Juliaform."
+"\n"
+"Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2523,11 +2610,13 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Kun Juliasæt: Z-komponent for hyperkompleks konstant der bestemmer Juliaform."
+"\n"
+"Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Jump key"
-msgstr "Hop"
+msgstr "Hop-tast"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
@@ -2539,6 +2628,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast for mindskning af den sete afstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2546,6 +2638,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast som smider det nuværende valgte element.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2553,6 +2648,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast for øgning af den sete afstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2560,6 +2658,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast for hop.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2567,6 +2668,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at bevæge sig hurtigt i tilstanden hurtig.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2574,6 +2678,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at bevæge spilleren baglæns.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2581,6 +2688,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at bevæge spilleren fremad.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2588,6 +2698,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at bevæge spilleren mod venstre.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2595,6 +2708,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at bevæge spilleren mod højre.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2602,6 +2718,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at åbne snakkekonsollen (chat).\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2609,6 +2728,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at åbne snakkevinduet for at indtaste kommandoer.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2616,6 +2738,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at åbne snakkevinduet (chat).\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2623,6 +2748,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at åbne lageret.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2630,6 +2758,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at udskrive fejlsøgningsstakke. Brugt til udvikling.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2639,6 +2770,11 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til snigning.\n"
+"Bruges også til at klatre ned og synke ned i vand hvis aux1_descends er "
+"deaktiveret.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2646,6 +2782,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte mellem første- og tredjepersons kamera.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2653,6 +2792,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at lave skærmbilleder.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2660,6 +2802,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til automatisk løb.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2667,6 +2812,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til biograftilstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2674,6 +2822,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til visning af minikort.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2681,6 +2832,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til hurtig tilstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2688,6 +2842,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til flyvning.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2695,6 +2852,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til noclip-tilstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2702,6 +2862,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast for at skifte kameraopdateringen. Bruges kun til udvikling\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2709,6 +2872,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til visning af fejlsøgningsinformation.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2716,6 +2882,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til skift af visningen for HUD'en.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2723,6 +2892,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte visningen af snakken (chat).\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2730,6 +2902,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte visningen af tåge.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2737,6 +2912,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte visningen af profileringsprogrammet. Brugt til udvikling."
+"\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2744,10 +2923,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tast til at skifte til ubegrænset se-afstand.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "Tast brugt til at klatre op/ned"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2755,11 +2937,11 @@ msgstr "Sprog"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Dybde for stor hule"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Lavafunktioner"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2772,25 +2954,30 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"Bladstil:\n"
+"-   Fancy:  alle sider synlige\n"
+"-   Simple: kun ydre sider, hvis defineret special_tiles anvendes\n"
+"-   Opaque: deaktiver gennemsigtighed"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Left key"
-msgstr "Venstre Menu"
+msgstr "Venstretast"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr ""
+"Længde på serveraktivering og intervallet som objekter opdateres efter over "
+"netværket."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Tidslængde mellem ABM-kørselscyklusser"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Tidslængde mellem NodeTimer-kørselscyklusser"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2803,14 +2990,22 @@ msgid ""
 "-    info\n"
 "-    verbose"
 msgstr ""
+"Niveau for logning der skrives til debug.txt:\n"
+"-    <nothing> (ingen logning)\n"
+"-    none (beskeder uden niveau)\n"
+"-    error\n"
+"-    warning\n"
+"-    action\n"
+"-    info\n"
+"-    verbose"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
-msgstr ""
+msgstr "Begrænsning af fremkomsten af forespørgsler på disk"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues to generate"
-msgstr ""
+msgstr "Begrænsning af fremkomsten af køer at oprette"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2820,38 +3015,43 @@ msgid ""
 "-    Downloads performed by main menu (e.g. mod manager).\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Begrænser antallet af parallelle HTTP-forespørgsler. Påvirker:\n"
+"-    Medioverførsel hvis serveren bruger indstillingen remote_media.\n"
+"-    Serverlist-overførsel og serverbesked.\n"
+"-    Overførsler udført af hovedmenuen (f.eks. mod-håndtering).\n"
+"Har kun en effekt hvis kompileret med cURL."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
-msgstr ""
+msgstr "Væskes evne til at flyde"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity smoothing"
-msgstr ""
+msgstr "Blødgøring af væskes evne til at flyde"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr ""
+msgstr "Væske loop maks."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Køfjernelsestid for væske"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
-msgstr ""
+msgstr "Synkehastighed for væske"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr ""
+msgstr "Væskeopdateringsinterval i sekunder."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr ""
+msgstr "Væskeopdateringsudløsning"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
-msgstr ""
+msgstr "Indlæs spilprofileringsprogrammet"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2859,37 +3059,41 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Indlæs spilprofileringsprogrammet for at indsamle profileringsdata.\n"
+"Tilbyder en kommando /profiler til at tilgå den indsamlede profil.\n"
+"Nyttig for mod-udviklere og serveroperatører."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr ""
+msgstr "Indlæser blokændringer"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
-msgstr ""
+msgstr "Hovedmenus spilhåndtering"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu mod manager"
-msgstr "Hovedmenu"
+msgstr "Hovedmenus mod-håndtering"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Main menu script"
-msgstr "Hovedmenu"
+msgstr "Hovedmenuskript"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Tåge- og himmelfarver afhænger af tid på dagen (solopgang/solnedgang) og den "
+"sete retning."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
+"Får DirectX til at fungere med LuaJIT. Deaktiver hvis det giver problemer."
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Kortmappe"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2903,6 +3107,14 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Kortoprettelsesattributer specifik for Mapgen Valleys.\n"
+"»altitude_chill« gør højere områder koldere, hvilket kan medføre "
+"habitatproblemstillinger.\n"
+"»humid_rivers« ændrer fugtighed omkring floder og i områder hvor vand har "
+"tendens til at samle sig,\n"
+"det kan influere med ømtålelige habitatter.\n"
+"Flag som ikke er specificeret i flag-strengen ændres ikke fra standarden.\n"
+"Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2912,6 +3124,10 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Kortoprettelsesattributter specifikke for Mapgen flat.\n"
+"Undtagelsesvis kan søer og bakker tilføjes til den flade verden.\n"
+"Flag som ikke er specificeret i flag-strengen ændres ikke fra standarden.\n"
+"Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2922,6 +3138,11 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Kortoprettelsesattributter specifikke for Mapgen v6.\n"
+"Når snehabitatter er aktiveret bliver jungler automatisk aktiveret, flaget "
+"»jungles« ignoreres.\n"
+"Flag som ikke er specificeret i flag-strengen ændres ikke fra standarden.\n"
+"Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2931,110 +3152,110 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Kortoprettelsesattributter specifikek til Mapgen v7.\n"
+"Flaget »ridges« kontroller floderne.\n"
+"Flag som ikke er specificeret i flag-strengen ændres ikke fra standarden.\n"
+"Flag der starter med »no« bruges til eksplicit at deaktivere dem."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "Kortoprettelsesbegrænsning"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Interval for kortlagring"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr ""
+msgstr "Kortblokbegrænsning"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr ""
+msgstr "Tidsudløb for kortblokfjernelse"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys"
-msgstr "Mapgen"
+msgstr "Mapgen-daler"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
-msgstr ""
+msgstr "Støjparametre til biotopvarme for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
-msgstr ""
+msgstr "Støjparametre til biotopfugtighedsblanding for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
-msgstr ""
+msgstr "Støjparametre for biotopfugtighed for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr ""
+msgstr "Fejlsøgning for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
-msgstr ""
+msgstr "Flag for Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat"
-msgstr "Mapgen"
+msgstr "Mapgen-flad"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Mapgen"
+msgstr "Mapgen - flad hulebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
-msgstr ""
+msgstr "Støjparametre til flade cave1 for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave2 noise parameters"
-msgstr ""
+msgstr "Støjparametre til flade cave2 for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen - støjparametre for flad fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat flags"
-msgstr ""
+msgstr "Flade flag for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat ground level"
-msgstr ""
+msgstr "Flade grundniveauer for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill steepness"
-msgstr ""
+msgstr "Flad bakkestejlhed for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill threshold"
-msgstr ""
+msgstr "Flad bakketærskel for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat lake steepness"
-msgstr ""
+msgstr "Flad søstejlhed for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat lake threshold"
-msgstr ""
+msgstr "Flad søtærskel for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat large cave depth"
-msgstr ""
+msgstr "Flad stor hule-dybde for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat terrain noise parameters"
-msgstr ""
+msgstr "Støjparametre til flad terræn for Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
-msgstr ""
+msgstr "Fraktral for Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave width"
-msgstr "Mapgen"
+msgstr "Mapgen - fraktal hulebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3046,7 +3267,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen - støjparametre for fraktal fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal fractal"
@@ -3118,7 +3339,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen v5 - støjparametre for fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
@@ -3202,7 +3423,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
-msgstr ""
+msgstr "Mapgen v7 - støjparametre for fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
@@ -3364,9 +3585,8 @@ msgid "Maximum users"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Menus"
-msgstr "Menu"
+msgstr "Menuer"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
@@ -3403,7 +3623,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Mipmapping"
-msgstr "Mip-mapping"
+msgstr "Mipmapping"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3664,14 +3884,12 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Vælg sti"
+msgstr "Rapportsti"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Right key"
-msgstr "Højre Menu"
+msgstr "Højretast"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
@@ -3727,23 +3945,20 @@ msgid "Screen width"
 msgstr "Skærmbredde"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot"
-msgstr "Tilstandsbillede"
+msgstr "Skærmbillede"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Tilstandsbillede"
+msgstr "Skærmbilledformat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Tilstandsbillede"
+msgstr "Skærmbilledkvalitet"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3773,9 +3988,8 @@ msgid "Selection box width"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server / Singleplayer"
-msgstr "Enligspiller"
+msgstr "Server/alene"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
@@ -3816,18 +4030,24 @@ msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Sat til true (sand) aktiverer bølgende blade.\n"
+"Kræver at dybdeskabere er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Angivet til true (sand) aktiverer bølgende planter.\n"
+"Kræver at dybdeskabere er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Angivet til true (sand) aktiverer bølgende vand.\n"
+"Kræver at dybdeskabere er aktiveret."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3835,6 +4055,9 @@ msgid ""
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"Dybdeskabere tillader avancerede visuelle effekter og kan forøge ydelsen på "
+"nogle videokort.\n"
+"De fungerer kun med OpenGL-videomotoren."
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -3863,9 +4086,8 @@ msgid "Slope and fill work together to modify the heights"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
-msgstr "Glat belysning"
+msgstr "Blød belysning"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3882,9 +4104,8 @@ msgid "Smooths rotation of camera. 0 to disable."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
-msgstr "Snige"
+msgstr "Snigetast"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
@@ -3956,7 +4177,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
-msgstr ""
+msgstr "Dybde for smuds eller andet fyldstof"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4054,9 +4275,8 @@ msgid "Tooltip delay"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
-msgstr "Tri-lineær filtréring"
+msgstr "Trilineær filtrering"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4098,9 +4318,8 @@ msgid "Use bilinear filtering when scaling textures."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "Tryk på en tast"
+msgstr "Brug-tast"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
@@ -4201,9 +4420,8 @@ msgid "Waving Nodes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
-msgstr "\"Smarte\" træer"
+msgstr "Bølgende blade"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
