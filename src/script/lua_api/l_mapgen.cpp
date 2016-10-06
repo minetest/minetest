@@ -244,7 +244,7 @@ bool read_schematic_def(lua_State *L, int index,
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
-	std::map<std::string, content_t> name_id_map;
+	UNORDERED_MAP<std::string, content_t> name_id_map;
 
 	u32 i = 0;
 	for (lua_pushnil(L); lua_next(L, -2); i++, lua_pop(L, 1)) {
@@ -266,7 +266,7 @@ bool read_schematic_def(lua_State *L, int index,
 		u8 param2 = getintfield_default(L, -1, "param2", 0);
 
 		//// Find or add new nodename-to-ID mapping
-		std::map<std::string, content_t>::iterator it = name_id_map.find(name);
+		UNORDERED_MAP<std::string, content_t>::iterator it = name_id_map.find(name);
 		content_t name_index;
 		if (it != name_id_map.end()) {
 			name_index = it->second;

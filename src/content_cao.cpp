@@ -51,7 +51,7 @@ struct ToolCapabilities;
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-std::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+UNORDERED_MAP<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 SmoothTranslator::SmoothTranslator():
 	vect_old(0,0,0),
