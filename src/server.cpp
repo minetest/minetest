@@ -2751,19 +2751,21 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	if (ate)
 		return L"";
 
-	switch (player->canSendChatMessage()) {
-		case RPLAYER_CHATRESULT_FLOODING: {
-			std::wstringstream ws;
-			ws << L"You cannot send more messages. You are limited to "
-			   << g_settings->getFloat("chat_message_limit_per_10sec")
-			   << " messages per 10 seconds.";
-			return ws.str();
+	if (player) {
+		switch (player->canSendChatMessage()) {
+			case RPLAYER_CHATRESULT_FLOODING: {
+				std::wstringstream ws;
+				ws << L"You cannot send more messages. You are limited to "
+				<< g_settings->getFloat("chat_message_limit_per_10sec")
+				<< " messages per 10 seconds.";
+				return ws.str();
+			}
+			case RPLAYER_CHATRESULT_KICK:
+				DenyAccess_Legacy(player->peer_id, L"You have been kicked due to message flooding.");
+				return L"";
+			case RPLAYER_CHATRESULT_OK: break;
+			default: FATAL_ERROR("Unhandled chat filtering result found.");
 		}
-		case RPLAYER_CHATRESULT_KICK:
-			DenyAccess_Legacy(player->peer_id, L"You have been kicked due to message flooding.");
-			return L"";
-		case RPLAYER_CHATRESULT_OK: break;
-		default: FATAL_ERROR("Unhandled chat filtering result found.");
 	}
 
 	if (m_max_chatmessage_length > 0 && wmessage.length() > m_max_chatmessage_length) {
