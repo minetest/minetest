@@ -2757,7 +2757,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 				std::wstringstream ws;
 				ws << L"You cannot send more messages. You are limited to "
 				<< g_settings->getFloat("chat_message_limit_per_10sec")
-				<< " messages per 10 seconds.";
+				<< L" messages per 10 seconds.";
 				return ws.str();
 			}
 			case RPLAYER_CHATRESULT_KICK:
@@ -2770,7 +2770,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 
 	if (m_max_chatmessage_length > 0 && wmessage.length() > m_max_chatmessage_length) {
 		return L"Your message exceed the maximum chat message limit set on the server. "
-			"It was refused. Send a shorter message";
+			L"It was refused. Send a shorter message";
 	}
 
 	// Commands are implemented in Lua, so only catch invalid
