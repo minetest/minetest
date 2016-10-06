@@ -27,8 +27,8 @@ DEALINGS IN THE SOFTWARE.
 
 Event::Event()
 {
-#if __cplusplus < 201103L
-#	ifdef _WIN32
+#ifndef USE_CPP11_MUTEX
+#	if USE_WIN_MUTEX
 	event = CreateEvent(NULL, false, false, NULL);
 #	else
 	pthread_cond_init(&cv, NULL);
@@ -38,10 +38,10 @@ Event::Event()
 #endif
 }
 
-#if __cplusplus < 201103L
+#ifndef USE_CPP11_MUTEX
 Event::~Event()
 {
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	CloseHandle(event);
 #else
 	pthread_cond_destroy(&cv);
@@ -53,13 +53,13 @@ Event::~Event()
 
 void Event::wait()
 {
-#if __cplusplus >= 201103L
+#if USE_CPP11_MUTEX
 	MutexAutoLock lock(mutex);
 	while (!notified) {
 		cv.wait(lock);
 	}
 	notified = false;
-#elif defined(_WIN32)
+#elif USE_WIN_MUTEX
 	WaitForSingleObject(event, INFINITE);
 #else
 	pthread_mutex_lock(&mutex);
@@ -74,11 +74,11 @@ void Event::wait()
 
 void Event::signal()
 {
-#if __cplusplus >= 201103L
+#if USE_CPP11_MUTEX
 	MutexAutoLock lock(mutex);
 	notified = true;
 	cv.notify_one();
-#elif defined(_WIN32)
+#elif USE_WIN_MUTEX
 	SetEvent(event);
 #else
 	pthread_mutex_lock(&mutex);
