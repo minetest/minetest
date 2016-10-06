@@ -218,6 +218,7 @@ public:
 	bool remove(const std::string &name);
 	void clear();
 	void clearDefaults();
+	void clearServerProvided();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
 
@@ -228,12 +229,16 @@ public:
 
 private:
 	void updateNoLock(const Settings &other);
+	void clearNoLock(SettingEntries *settings);
 	void clearNoLock();
-	void clearDefaultsNoLock();
+	void clearDefaultsNoLock() { clearNoLock(&m_defaults); }
+	void clearServerProvidedNoLock() { clearNoLock(&m_server_suggested); clearNoLock(&m_server_enforced); }
 
 	void doCallbacks(const std::string &name) const;
 
+	SettingEntries m_server_enforced;
 	SettingEntries m_settings;
+	SettingEntries m_server_suggested;
 	SettingEntries m_defaults;
 
 	SettingsCallbackMap m_callbacks;

@@ -381,10 +381,11 @@ const SettingsEntry &Settings::getEntry(const std::string &name) const
 	MutexAutoLock lock(m_mutex);
 
 	SettingEntries::const_iterator n;
-	if ((n = m_settings.find(name)) == m_settings.end()) {
-		if ((n = m_defaults.find(name)) == m_defaults.end())
-			throw SettingNotFoundException("Setting [" + name + "] not found.");
-	}
+	if ((n = m_server_enforced.find(name)) == m_server_enforced.end()
+			&& (n = m_settings.find(name)) == m_settings.end()
+			&& (n = m_server_suggested.find(name)) == m_server_suggested.end()
+			&& (n = m_defaults.find(name)) == m_defaults.end())
+		throw SettingNotFoundException("Setting [" + name + "] not found.");
 	return n->second;
 }
 
@@ -563,7 +564,9 @@ bool Settings::exists(const std::string &name) const
 {
 	MutexAutoLock lock(m_mutex);
 
-	return (m_settings.find(name) != m_settings.end() ||
+	return (m_server_enforced.find(name) != m_server_enforced.end() ||
+		m_settings.find(name) != m_settings.end() ||
+		m_server_suggested.find(name) != m_server_suggested.end() ||
 		m_defaults.find(name) != m_defaults.end());
 }
 
@@ -901,6 +904,14 @@ void Settings::clearDefaults()
 	clearDefaultsNoLock();
 }
 
+
+void Settings::clearServerProvided()
+{
+	MutexAutoLock lock(m_mutex);
+	clearServerProvidedNoLock();
+}
+
+
 void Settings::updateValue(const Settings &other, const std::string &name)
 {
 	if (&other == this)
@@ -958,28 +969,27 @@ SettingsParseEvent Settings::parseConfigObject(const std::string &line,
 
 void Settings::updateNoLock(const Settings &other)
 {
+	m_server_enforced.insert(other.m_server_enforced.begin(), other.m_server_enforced.end());
 	m_settings.insert(other.m_settings.begin(), other.m_settings.end());
+	m_server_suggested.insert(other.m_server_suggested.begin(), other.m_server_suggested.end());
 	m_defaults.insert(other.m_defaults.begin(), other.m_defaults.end());
 }
 
 
-void Settings::clearNoLock()
+void Settings::clearNoLock(SettingEntries *settings)
 {
-
-	for (SettingEntries::const_iterator it = m_settings.begin();
-			it != m_settings.end(); ++it)
+	for (SettingEntries::const_iterator it = settings->begin();
+			it != settings->end(); ++it)
 		delete it->second.group;
-	m_settings.clear();
-
-	clearDefaultsNoLock();
+	settings->clear();
 }
 
-void Settings::clearDefaultsNoLock()
+void Settings::clearNoLock()
 {
-	for (SettingEntries::const_iterator it = m_defaults.begin();
-			it != m_defaults.end(); ++it)
-		delete it->second.group;
-	m_defaults.clear();
+	clearNoLock(&m_server_enforced);
+	clearNoLock(&m_settings);
+	clearNoLock(&m_server_suggested);
+	clearNoLock(&m_defaults);
 }
 
 
