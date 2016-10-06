@@ -132,7 +132,7 @@ private:
 	bool initDone;
 
 	// Internal store for registred functions
-	std::map<std::string, lua_CFunction> functionList;
+	UNORDERED_MAP<std::string, lua_CFunction> functionList;
 
 	// Internal counter to create job IDs
 	unsigned int jobIdCounter;

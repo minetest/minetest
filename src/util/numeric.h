@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
 #include "../threading/mutex.h"
+#include "cpp11_container.h"
 #include <list>
-#include <map>
 #include <vector>
 
 
@@ -41,24 +41,8 @@ public:
 	static std::vector<v3s16> getFacePositions(u16 d);
 private:
 	static void generateFacePosition(u16 d);
-	static std::map<u16, std::vector<v3s16> > m_cache;
+	static UNORDERED_MAP<u16, std::vector<v3s16> > m_cache;
 	static Mutex m_cache_mutex;
-};
-
-class IndentationRaiser
-{
-public:
-	IndentationRaiser(u16 *indentation)
-	{
-		m_indentation = indentation;
-		(*m_indentation)++;
-	}
-	~IndentationRaiser()
-	{
-		(*m_indentation)--;
-	}
-private:
-	u16 *m_indentation;
 };
 
 inline s16 getContainerPos(s16 p, s16 d)
@@ -148,23 +132,6 @@ inline bool isInArea(v3s16 p, v3s16 d)
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
 #define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
-
-inline v3s16 arealim(v3s16 p, s16 d)
-{
-	if(p.X < 0)
-		p.X = 0;
-	if(p.Y < 0)
-		p.Y = 0;
-	if(p.Z < 0)
-		p.Z = 0;
-	if(p.X > d-1)
-		p.X = d-1;
-	if(p.Y > d-1)
-		p.Y = d-1;
-	if(p.Z > d-1)
-		p.Z = d-1;
-	return p;
-}
 
 // The naive swap performs better than the xor version
 #define SWAP(t, x, y) do { \

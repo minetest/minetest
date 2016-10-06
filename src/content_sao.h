@@ -112,7 +112,7 @@ private:
 	bool m_animation_loop;
 	bool m_animation_sent;
 
-	std::map<std::string, core::vector2d<v3f> > m_bone_position;
+	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
@@ -321,7 +321,8 @@ private:
 	bool m_animation_loop;
 	bool m_animation_sent;
 
-	std::map<std::string, core::vector2d<v3f> > m_bone_position; // Stores position and rotation for each bone name
+	// Stores position and rotation for each bone name
+	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
