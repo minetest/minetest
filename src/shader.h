@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SHADER_HEADER
 
 #include "irrlichttypes_extrabloated.h"
-#include "threads.h"
+#include "threading/thread.h"
 #include <string>
 
 class IGameDef;

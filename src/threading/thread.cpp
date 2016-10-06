@@ -129,8 +129,7 @@ bool Thread::start()
 
 #elif USE_POSIX_THREADS
 
-	int status = pthread_create(&m_thread_handle, NULL, threadProc, this);
-	if (status)
+	if (pthread_create(&m_thread_handle, NULL, threadProc, this))
 		return false;
 
 #endif
@@ -199,8 +198,8 @@ bool Thread::kill()
 	m_running = false;
 
 #ifdef _WIN32
-	TerminateThread(m_thread_handle, 0);
-	CloseHandle(m_thread_handle);
+	TerminateThread(getThreadHandle(), 0);
+	CloseHandle(getThreadHandle());
 #else
 	// We need to pthread_kill instead on Android since NDKv5's pthread
 	// implementation is incomplete.

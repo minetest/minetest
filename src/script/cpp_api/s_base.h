@@ -28,7 +28,7 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "threads.h"
+#include "threading/thread.h"
 #include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
@@ -114,7 +114,7 @@ protected:
 	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	int             m_lock_recursion_count;
-	threadid_t      m_owning_thread;
+	thread_id_t      m_owning_thread;
 #endif
 
 private:

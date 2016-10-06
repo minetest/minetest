@@ -29,12 +29,18 @@ DEALINGS IN THE SOFTWARE.
 #include "util/basic_macros.h"
 #include "threading/atomic.h"
 #include "threading/mutex.h"
-#include "threads.h"
-
 #include <string>
-#if USE_CPP11_THREADS
-	#include <thread> // for std::thread
+
+// Determine threading API to use
+#if __cplusplus >= 201103L
+	#define USE_CPP11_THREADS 1
+	#include <thread>
+#elif defined(_WIN32)
+	#define USE_WIN_THREADS 1
+#else
+	#define USE_POSIX_THREADS 1
 #endif
+
 #ifdef _AIX
 	#include <sys/thread.h> // for tid_t
 #endif
@@ -51,9 +57,28 @@ DEALINGS IN THE SOFTWARE.
 	#define THREAD_PRIORITY_HIGHEST      4
 #endif
 
+#if USE_CPP11_THREADS
+typedef std::thread::id thread_id_t;
+typedef std::thread::native_handle_type thread_handle_t;
+#elif USE_WIN_THREADS
+typedef DWORD thread_id_t;
+typedef HANDLE thread_handle_t;
+#elif USE_POSIX_THREADS
+typedef pthread_t thread_id_t;
+typedef pthread_t thread_handle_t;
+#endif
+
 
 class Thread {
 public:
+#if USE_CPP11_THREADS || USE_POSIX_THREADS
+	typedef void *ThreadStartFunc(void *param);
+#elif defined(_WIN32_WCE)
+	typedef DWORD ThreadStartFunc(LPVOID param);
+#elif defined(_WIN32)
+	typedef DWORD WINAPI ThreadStartFunc(LPVOID param);
+#endif
+
 	Thread(const std::string &name="");
 	virtual ~Thread();
 
@@ -87,24 +112,45 @@ public:
 	 */
 	bool wait();
 
-	/*
-	 * Returns true if the calling thread is this Thread object.
-	 */
-	bool isCurrentThread() { return thr_is_current_thread(getThreadId()); }
+	static thread_id_t getCurrentThreadId()
+	{
+#if USE_CPP11_THREADS
+		return std::this_thread::get_id();
+#elif USE_WIN_THREADS
+		return GetCurrentThreadId();
+#elif USE_POSIX_THREADS
+		return pthread_self();
+#endif
+	}
+
+	static bool threadsEqual(thread_id_t id1, thread_id_t id2)
+	{
+	#if USE_POSIX_THREADS
+		return pthread_equal(id1, id2);
+	#else
+		return id1 == id2;
+	#endif
+	}
+
+	static bool isCurrentThread(thread_id_t id)
+		{ return threadsEqual(getCurrentThreadId(), id); }
+
+	/// Returns true if the calling thread is this Thread object.
+	bool isCurrentThread() { return isCurrentThread(getThreadId()); }
 
 	inline bool isRunning() { return m_running; }
 	inline bool stopRequested() { return m_request_stop; }
 
 #if USE_CPP11_THREADS
-	inline threadid_t getThreadId() { return m_thread_obj->get_id(); }
-	inline threadhandle_t getThreadHandle() { return m_thread_obj->native_handle(); }
+	inline thread_id_t getThreadId() { return m_thread_obj->get_id(); }
+	inline thread_handle_t getThreadHandle() { return m_thread_obj->native_handle(); }
 #else
 #  if USE_WIN_THREADS
-	inline threadid_t getThreadId() { return m_thread_id; }
+	inline thread_id_t getThreadId() { return m_thread_id; }
 #  else
-	inline threadid_t getThreadId() { return m_thread_handle; }
+	inline thread_id_t getThreadId() { return m_thread_handle; }
 #  endif
-	inline threadhandle_t getThreadHandle() { return m_thread_handle; }
+	inline thread_handle_t getThreadHandle() { return m_thread_handle; }
 #endif
 
 	/*
@@ -158,10 +204,10 @@ private:
 	Mutex m_mutex;
 
 #ifndef USE_CPP11_THREADS
-	threadhandle_t m_thread_handle;
-#   if _WIN32
-        threadid_t m_thread_id;
-#   endif
+	thread_handle_t m_thread_handle;
+#  if _WIN32
+	thread_id_t m_thread_id;
+#  endif
 #endif
 
 	static ThreadStartFunc threadProc;
