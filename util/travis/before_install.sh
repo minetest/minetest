@@ -17,7 +17,7 @@ if [[ $PLATFORM == "Unix" ]]; then
 	else
 		brew update
 		brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
-		brew upgrade postgresql
+		#brew upgrade postgresql
 	fi
 elif [[ $PLATFORM == "Win32" ]]; then
 	wget http://minetest.kitsunemimi.pw/mingw_w64_i686_ubuntu12.04_4.9.1.7z -O mingw.7z
