@@ -552,7 +552,7 @@ void Camera::drawNametags()
 			// shadow can remain.
 			continue;
 		}
-		v3f pos = nametag->parent_node->getPosition() + v3f(0.0, 1.1 * BS, 0.0);
+		v3f pos = nametag->parent_node->getAbsolutePosition() + v3f(0.0, 1.1 * BS, 0.0);
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
