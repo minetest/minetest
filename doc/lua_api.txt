@@ -1813,6 +1813,16 @@ Spatial Vectors
 * `vector.round(v)`: returns a vector, each dimension rounded to floor
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
+* `vector.random2d()` : returns a new normalized 2d vector with random values
+* `vector.random3d()` : returns a new normalized 3d vector with random values
+* `vector.set_length(v, l)` : returns a vector with a specific length (magnitude)
+* `vector.limit(v, l)` : limits the length of a vector
+* `vector.dot(v1, v2)` : returns the dot product of two vectors
+* `vector.cross(v1, v2)` : returns the cross product of two vectors
+* `vector.scalar_triple(v1, v2, v3)` : returns the scalar triple product of three vectors
+* `vector.vector_triple(v1, v2, v3)` : returns the vector triple product of three vectors
+* `vector.angle_between(v1, v2)` : returns the angle between two 2d vectors (x,z) in radians
+* `vector.yaw(v)` : returns yaw from a 2d vector (x, z) in radians
 
 For the following functions `x` can be either a vector or a number:
 
