@@ -8,10 +8,10 @@ IF(NOT SKIP_CCACHE)
 			set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_FOUND})
 			set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ${CCACHE_FOUND})
 			MESSAGE(STATUS
-				"Found ccache: ${CCACHE_FOUND} - enabling ccache as compiler wrapper")
+        "Ccache enabled. (${CCACHE_FOUND} - enabling as compiler wrapper)")
 		ELSE()
 			MESSAGE(STATUS
-				"Found ccache - ccache already in use as C and/or CXX compiler wrapper")
+        "Ccache enabled. (already in use as C and/or CXX compiler wrapper)")
 		ENDIF()
 	ENDIF(CCACHE_FOUND)
 ENDIF(NOT SKIP_CCACHE)
