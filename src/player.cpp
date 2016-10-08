@@ -32,31 +32,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 
 
-Player::Player(IGameDef *gamedef, const char *name):
-	got_teleported(false),
-	touching_ground(false),
-	in_liquid(false),
-	in_liquid_stable(false),
-	liquid_viscosity(0),
-	is_climbing(false),
-	swimming_vertical(false),
+Player::Player(const char *name, IItemDefManager *idef):
 	camera_barely_in_ceiling(false),
-	inventory(gamedef->idef()),
+	inventory(idef),
 	hp(PLAYER_MAX_HP),
-	hurt_tilt_timer(0),
-	hurt_tilt_strength(0),
-	protocol_version(0),
 	peer_id(PEER_ID_INEXISTENT),
 	keyPressed(0),
 // protected
-	m_gamedef(gamedef),
 	m_breath(PLAYER_MAX_BREATH),
 	m_pitch(0),
 	m_yaw(0),
 	m_speed(0,0,0),
 	m_position(0,0,0),
-	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.75,BS*0.30),
-	m_dirty(false)
+	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.75,BS*0.30)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
 
@@ -92,13 +80,6 @@ Player::Player(IGameDef *gamedef, const char *name):
 	movement_gravity                = 9.81 * BS;
 	local_animation_speed           = 0.0;
 
-	// Movement overrides are multipliers and must be 1 by default
-	physics_override_speed        = 1;
-	physics_override_jump         = 1;
-	physics_override_gravity      = 1;
-	physics_override_sneak        = true;
-	physics_override_sneak_glitch = true;
-
 	hud_flags =
 		HUD_FLAG_HOTBAR_VISIBLE    | HUD_FLAG_HEALTHBAR_VISIBLE |
 		HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
@@ -115,70 +96,6 @@ Player::~Player()
 v3s16 Player::getLightPosition() const
 {
 	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
-}
-
-void Player::serialize(std::ostream &os)
-{
-	// Utilize a Settings object for storing values
-	Settings args;
-	args.setS32("version", 1);
-	args.set("name", m_name);
-	//args.set("password", m_password);
-	args.setFloat("pitch", m_pitch);
-	args.setFloat("yaw", m_yaw);
-	args.setV3F("position", m_position);
-	args.setS32("hp", hp);
-	args.setS32("breath", m_breath);
-
-	args.writeLines(os);
-
-	os<<"PlayerArgsEnd\n";
-
-	inventory.serialize(os);
-}
-
-void Player::deSerialize(std::istream &is, std::string playername)
-{
-	Settings args;
-
-	if (!args.parseConfigLines(is, "PlayerArgsEnd")) {
-		throw SerializationError("PlayerArgsEnd of player " +
-				playername + " not found!");
-	}
-
-	m_dirty = true;
-	//args.getS32("version"); // Version field value not used
-	std::string name = args.get("name");
-	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
-	setPitch(args.getFloat("pitch"));
-	setYaw(args.getFloat("yaw"));
-	setPosition(args.getV3F("position"));
-	try{
-		hp = args.getS32("hp");
-	}catch(SettingNotFoundException &e) {
-		hp = PLAYER_MAX_HP;
-	}
-	try{
-		m_breath = args.getS32("breath");
-	}catch(SettingNotFoundException &e) {
-		m_breath = PLAYER_MAX_BREATH;
-	}
-
-	inventory.deSerialize(is);
-
-	if(inventory.getList("craftpreview") == NULL) {
-		// Convert players without craftpreview
-		inventory.addList("craftpreview", 1);
-
-		bool craftresult_is_preview = true;
-		if(args.exists("craftresult_is_preview"))
-			craftresult_is_preview = args.getBool("craftresult_is_preview");
-		if(craftresult_is_preview)
-		{
-			// Clear craftresult
-			inventory.getList("craftresult")->changeItem(0, ItemStack());
-		}
-	}
 }
 
 u32 Player::addHud(HudElement *toadd)
@@ -227,17 +144,24 @@ void Player::clearHud()
 	}
 }
 
+/*
+	RemotePlayer
+*/
 // static config cache for remoteplayer
 bool RemotePlayer::m_setting_cache_loaded = false;
 float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
-RemotePlayer::RemotePlayer(IGameDef *gamedef, const char *name):
-	Player(gamedef, name),
+RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
+	Player(name, idef),
+	protocol_version(0),
 	m_sao(NULL),
+	m_dirty(false),
 	m_last_chat_message_sent(time(NULL)),
 	m_chat_message_allowance(5.0f),
-	m_message_rate_overhead(0)
+	m_message_rate_overhead(0),
+	hud_hotbar_image(""),
+	hud_hotbar_selected_image("")
 {
 	if (!RemotePlayer::m_setting_cache_loaded) {
 		RemotePlayer::m_setting_chat_message_limit_per_10sec =
@@ -260,7 +184,7 @@ RemotePlayer::RemotePlayer(IGameDef *gamedef, const char *name):
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
 }
 
-void RemotePlayer::save(std::string savedir)
+void RemotePlayer::save(std::string savedir, IGameDef *gamedef)
 {
 	/*
 	 * We have to open all possible player files in the players directory
@@ -269,7 +193,7 @@ void RemotePlayer::save(std::string savedir)
 	 */
 
 	// A player to deserialize files into to check their names
-	RemotePlayer testplayer(m_gamedef, "");
+	RemotePlayer testplayer("", gamedef->idef());
 
 	savedir += DIR_DELIM;
 	std::string path = savedir + m_name;
@@ -309,11 +233,75 @@ void RemotePlayer::save(std::string savedir)
 	return;
 }
 
-/*
-	RemotePlayer
-*/
+void RemotePlayer::deSerialize(std::istream &is, const std::string &playername)
+{
+	Settings args;
+
+	if (!args.parseConfigLines(is, "PlayerArgsEnd")) {
+		throw SerializationError("PlayerArgsEnd of player " +
+								 playername + " not found!");
+	}
+
+	m_dirty = true;
+	//args.getS32("version"); // Version field value not used
+	std::string name = args.get("name");
+	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
+	setPitch(args.getFloat("pitch"));
+	setYaw(args.getFloat("yaw"));
+	setPosition(args.getV3F("position"));
+	try{
+		hp = args.getS32("hp");
+	}catch(SettingNotFoundException &e) {
+		hp = PLAYER_MAX_HP;
+	}
+	try{
+		m_breath = args.getS32("breath");
+	}catch(SettingNotFoundException &e) {
+		m_breath = PLAYER_MAX_BREATH;
+	}
+
+	inventory.deSerialize(is);
+
+	if(inventory.getList("craftpreview") == NULL) {
+		// Convert players without craftpreview
+		inventory.addList("craftpreview", 1);
+
+		bool craftresult_is_preview = true;
+		if(args.exists("craftresult_is_preview"))
+			craftresult_is_preview = args.getBool("craftresult_is_preview");
+		if(craftresult_is_preview)
+		{
+			// Clear craftresult
+			inventory.getList("craftresult")->changeItem(0, ItemStack());
+		}
+	}
+}
+
+void RemotePlayer::serialize(std::ostream &os)
+{
+	// Utilize a Settings object for storing values
+	Settings args;
+	args.setS32("version", 1);
+	args.set("name", m_name);
+	//args.set("password", m_password);
+	args.setFloat("pitch", m_pitch);
+	args.setFloat("yaw", m_yaw);
+	args.setV3F("position", m_position);
+	args.setS32("hp", hp);
+	args.setS32("breath", m_breath);
+
+	args.writeLines(os);
+
+	os<<"PlayerArgsEnd\n";
+
+	inventory.serialize(os);
+}
+
 void RemotePlayer::setPosition(const v3f &position)
 {
+	if (position != m_position)
+		m_dirty = true;
+
 	Player::setPosition(position);
 	if(m_sao)
 		m_sao->setBasePosition(position);
