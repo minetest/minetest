@@ -317,7 +317,10 @@ public:
 	void hudSetHotbarImage(RemotePlayer *player, std::string name);
 	std::string hudGetHotbarImage(RemotePlayer *player);
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
-	std::string hudGetHotbarSelectedImage(RemotePlayer *player);
+	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const
+	{
+		return player->getHotbarSelectedImage();
+	}
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }

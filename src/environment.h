@@ -579,7 +579,7 @@ public:
 
 	void step(f32 dtime);
 
-	virtual void addPlayer(Player *player);
+	virtual void addPlayer(LocalPlayer *player);
 	LocalPlayer * getLocalPlayer();
 
 	/*
