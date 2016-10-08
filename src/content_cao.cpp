@@ -1567,8 +1567,7 @@ void GenericCAO::processMessage(const std::string &data)
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
-	if(cmd == GENERIC_CMD_SET_PROPERTIES)
-	{
+	if (cmd == GENERIC_CMD_SET_PROPERTIES) {
 		m_prop = gob_read_set_properties(is);
 
 		m_selection_box = m_prop.collisionbox;
@@ -1587,9 +1586,7 @@ void GenericCAO::processMessage(const std::string &data)
 			m_prop.nametag = m_name;
 
 		expireVisuals();
-	}
-	else if(cmd == GENERIC_CMD_UPDATE_POSITION)
-	{
+	} else if (cmd == GENERIC_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
 		m_position = readV3F1000(is);
@@ -1619,12 +1616,10 @@ void GenericCAO::processMessage(const std::string &data)
 			pos_translator.init(m_position);
 		}
 		updateNodePos();
-	}
-	else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
+	} else if (cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 		updateTextures(mod);
-	}
-	else if(cmd == GENERIC_CMD_SET_SPRITE) {
+	} else if (cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
 		int num_frames = readU16(is);
 		float framelength = readF1000(is);
@@ -1636,8 +1631,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
 		updateTexturePos();
-	}
-	else if(cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
+	} else if (cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
 		float override_speed = readF1000(is);
 		float override_jump = readF1000(is);
 		float override_gravity = readF1000(is);
@@ -1655,8 +1649,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_sneak = sneak;
 			player->physics_override_sneak_glitch = sneak_glitch;
 		}
-	}
-	else if(cmd == GENERIC_CMD_SET_ANIMATION) {
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
 		v2f range = readV2F1000(is);
 		if (!m_is_local_player) {
@@ -1690,8 +1683,7 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
-	}
-	else if(cmd == GENERIC_CMD_SET_BONE_POSITION) {
+	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
 		v3f rotation = readV3F1000(is);
@@ -1724,8 +1716,7 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		updateAttachments();
-	}
-	else if(cmd == GENERIC_CMD_PUNCHED) {
+	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		/*s16 damage =*/ readS16(is);
 		s16 result_hp = readS16(is);
 
@@ -1753,8 +1744,7 @@ void GenericCAO::processMessage(const std::string &data)
 				updateTextures("^[brighten");
 			}
 		}
-	}
-	else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
+	} else if (cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
 		m_armor_groups.clear();
 		int armor_groups_size = readU16(is);
 		for(int i=0; i<armor_groups_size; i++)
@@ -1770,6 +1760,19 @@ void GenericCAO::processMessage(const std::string &data)
 		if (m_nametag != NULL) {
 			m_nametag->nametag_color = m_prop.nametag_color;
 		}
+	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
+		u16 child_id = readU16(is);
+		u8 type = readU8(is);
+
+		if (GenericCAO *childobj = m_env->getGenericCAO(child_id)) {
+			childobj->initialize(deSerializeLongString(is));
+		} else {
+			m_env->addActiveObject(child_id, type, deSerializeLongString(is));
+		}
+	} else {
+		warningstream << FUNCTION_NAME
+			<< ": unknown command or outdated client \""
+			<< cmd << std::endl;
 	}
 }
 
