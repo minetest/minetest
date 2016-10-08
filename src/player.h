@@ -183,22 +183,6 @@ public:
 		return size;
 	}
 
-	void setLocalAnimations(v2s32 frames[4], float frame_speed)
-	{
-		for (int i = 0; i < 4; i++)
-			local_animations[i] = frames[i];
-		local_animation_speed = frame_speed;
-	}
-
-	void getLocalAnimations(v2s32 *frames, float *frame_speed)
-	{
-		for (int i = 0; i < 4; i++)
-			frames[i] = local_animations[i];
-		*frame_speed = local_animation_speed;
-	}
-
-	virtual bool isLocal() const { return false; }
-
 	bool camera_barely_in_ceiling;
 	v3f eye_offset_first;
 	v3f eye_offset_third;

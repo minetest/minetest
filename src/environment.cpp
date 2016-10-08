@@ -69,62 +69,6 @@ Environment::Environment():
 
 Environment::~Environment()
 {
-	// Deallocate players
-	for(std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-		delete (*i);
-	}
-}
-
-void Environment::addPlayer(Player *player)
-{
-	DSTACK(FUNCTION_NAME);
-	/*
-		Check that peer_ids are unique.
-		Also check that names are unique.
-		Exception: there can be multiple players with peer_id=0
-	*/
-	// If peer id is non-zero, it has to be unique.
-	if(player->peer_id != 0)
-		FATAL_ERROR_IF(getPlayer(player->peer_id) != NULL, "Peer id not unique");
-	// Name has to be unique.
-	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");
-	// Add.
-	m_players.push_back(player);
-}
-
-void Environment::removePlayer(Player* player)
-{
-	for (std::vector<Player*>::iterator it = m_players.begin();
-			it != m_players.end(); ++it) {
-		if ((*it) == player) {
-			delete *it;
-			m_players.erase(it);
-			return;
-		}
-	}
-}
-
-Player *Environment::getPlayer(u16 peer_id)
-{
-	for (std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-		Player *player = *i;
-		if (player->peer_id == peer_id)
-			return player;
-	}
-	return NULL;
-}
-
-Player *Environment::getPlayer(const char *name)
-{
-	for (std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-		Player *player = *i;
-		if(strcmp(player->getName(), name) == 0)
-			return player;
-	}
-	return NULL;
 }
 
 u32 Environment::getDayNightRatio()
@@ -545,9 +489,15 @@ ServerEnvironment::~ServerEnvironment()
 	m_map->drop();
 
 	// Delete ActiveBlockModifiers
-	for(std::vector<ABMWithState>::iterator
+	for (std::vector<ABMWithState>::iterator
 			i = m_abms.begin(); i != m_abms.end(); ++i){
 		delete i->abm;
+	}
+
+	// Deallocate players
+	for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
+			i != m_players.end(); ++i) {
+		delete (*i);
 	}
 }
 
@@ -563,12 +513,53 @@ ServerMap & ServerEnvironment::getServerMap()
 
 RemotePlayer *ServerEnvironment::getPlayer(const u16 peer_id)
 {
-	return dynamic_cast<RemotePlayer *>(Environment::getPlayer(peer_id));
+	for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
+			i != m_players.end(); ++i) {
+		RemotePlayer *player = *i;
+		if (player->peer_id == peer_id)
+			return player;
+	}
+	return NULL;
 }
 
 RemotePlayer *ServerEnvironment::getPlayer(const char* name)
 {
-	return dynamic_cast<RemotePlayer *>(Environment::getPlayer(name));
+	for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
+			i != m_players.end(); ++i) {
+		RemotePlayer *player = *i;
+		if (strcmp(player->getName(), name) == 0)
+			return player;
+	}
+	return NULL;
+}
+
+void ServerEnvironment::addPlayer(RemotePlayer *player)
+{
+	DSTACK(FUNCTION_NAME);
+	/*
+		Check that peer_ids are unique.
+		Also check that names are unique.
+		Exception: there can be multiple players with peer_id=0
+	*/
+	// If peer id is non-zero, it has to be unique.
+	if (player->peer_id != 0)
+		FATAL_ERROR_IF(getPlayer(player->peer_id) != NULL, "Peer id not unique");
+	// Name has to be unique.
+	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");
+	// Add.
+	m_players.push_back(player);
+}
+
+void ServerEnvironment::removePlayer(RemotePlayer *player)
+{
+	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
+			it != m_players.end(); ++it) {
+		if ((*it) == player) {
+			delete *it;
+			m_players.erase(it);
+			return;
+		}
+	}
 }
 
 bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
@@ -601,7 +592,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect)
 {
-	for (std::vector<Player*>::iterator it = m_players.begin();
+	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
 			it != m_players.end(); ++it) {
 		RemotePlayer *player = dynamic_cast<RemotePlayer *>(*it);
 		((Server*)m_gamedef)->DenyAccessVerCompliant(player->peer_id,
@@ -614,7 +605,7 @@ void ServerEnvironment::saveLoadedPlayers()
 	std::string players_path = m_path_world + DIR_DELIM "players";
 	fs::CreateDir(players_path);
 
-	for (std::vector<Player*>::iterator it = m_players.begin();
+	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
 			it != m_players.end();
 			++it) {
 		RemotePlayer *player = static_cast<RemotePlayer*>(*it);
@@ -1253,7 +1244,7 @@ void ServerEnvironment::step(float dtime)
 	*/
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
-		for (std::vector<Player*>::iterator i = m_players.begin();
+		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
 			assert(player);
@@ -1276,7 +1267,7 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<v3s16> players_blockpos;
-		for (std::vector<Player*>::iterator i = m_players.begin();
+		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
 			assert(player);
@@ -2255,6 +2246,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 		ITextureSource *texturesource, IGameDef *gamedef,
 		IrrlichtDevice *irr):
 	m_map(map),
+	m_local_player(NULL),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_gamedef(gamedef),
@@ -2291,37 +2283,16 @@ ClientMap & ClientEnvironment::getClientMap()
 	return *m_map;
 }
 
-LocalPlayer *ClientEnvironment::getPlayer(const u16 peer_id)
-{
-	return dynamic_cast<LocalPlayer *>(Environment::getPlayer(peer_id));
-}
-
-LocalPlayer *ClientEnvironment::getPlayer(const char* name)
-{
-	return dynamic_cast<LocalPlayer *>(Environment::getPlayer(name));
-}
-
-void ClientEnvironment::addPlayer(LocalPlayer *player)
+void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 {
 	DSTACK(FUNCTION_NAME);
 	/*
 		It is a failure if already is a local player
 	*/
-	FATAL_ERROR_IF(getLocalPlayer() != NULL,
-			"Player is local but there is already a local player");
+	FATAL_ERROR_IF(m_local_player != NULL,
+			"Local player already allocated");
 
-	Environment::addPlayer(player);
-}
-
-LocalPlayer *ClientEnvironment::getLocalPlayer()
-{
-	for(std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-		Player *player = *i;
-		if (player->isLocal())
-			return (LocalPlayer*)player;
-	}
-	return NULL;
+	m_local_player = player;
 }
 
 void ClientEnvironment::step(float dtime)
@@ -2555,24 +2526,6 @@ void ClientEnvironment::step(float dtime)
 				lplayer->setBreath(breath);
 				updateLocalPlayerBreath(breath);
 			}
-		}
-	}
-
-	/*
-		Stuff that can be done in an arbitarily large dtime
-	*/
-	for (std::vector<Player*>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-		Player *player = *i;
-		assert(player);
-
-		/*
-			Handle non-local players
-		*/
-		if (!player->isLocal()) {
-			// Move
-			player->move(dtime, this, 100*BS);
-
 		}
 	}
 

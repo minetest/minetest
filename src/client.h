@@ -452,7 +452,10 @@ public:
 			core::line3d<f32> shootline_on_map
 	);
 
-	std::list<std::string> getConnectedPlayerNames();
+	const std::list<std::string> &getConnectedPlayerNames()
+	{
+		return m_env.getPlayerNames();
+	}
 
 	float getAnimationTime();
 

@@ -38,11 +38,6 @@ public:
 	LocalPlayer(Client *gamedef, const char *name);
 	virtual ~LocalPlayer();
 
-	bool isLocal() const
-	{
-		return true;
-	}
-
 	ClientActiveObject *parent;
 
 	bool got_teleported;

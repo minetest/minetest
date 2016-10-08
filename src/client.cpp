@@ -257,7 +257,7 @@ Client::Client(
 	m_localdb(NULL)
 {
 	// Add local player
-	m_env.addPlayer(new LocalPlayer(this, playername));
+	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
 	m_mapper = new Mapper(device, this);
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
@@ -1418,8 +1418,9 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::PLAYER:
 	{
-		LocalPlayer *player = m_env.getPlayer(loc.name.c_str());
-		if(!player)
+		// Check if we are working with local player inventory
+		LocalPlayer *player = m_env.getLocalPlayer();
+		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
 			return NULL;
 		return &player->inventory;
 	}
@@ -1498,11 +1499,6 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	}
 
 	return NULL;
-}
-
-std::list<std::string> Client::getConnectedPlayerNames()
-{
-	return m_env.getPlayerNames();
 }
 
 float Client::getAnimationTime()
@@ -1664,7 +1660,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 ClientEvent Client::getClientEvent()
 {
 	ClientEvent event;
-	if(m_client_event_queue.size() == 0) {
+	if (m_client_event_queue.empty()) {
 		event.type = CE_NONE;
 	}
 	else {
