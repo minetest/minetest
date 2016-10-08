@@ -72,9 +72,6 @@ public:
 
 	virtual Map & getMap() = 0;
 
-	virtual void addPlayer(Player *player);
-	void removePlayer(Player *player);
-
 	u32 getDayNightRatio();
 
 	// 0-23999
@@ -94,12 +91,6 @@ public:
 	u32 m_added_objects;
 
 protected:
-	Player *getPlayer(u16 peer_id);
-	Player *getPlayer(const char *name);
-
-	// peer_ids in here should be unique, except that there may be many 0s
-	std::vector<Player*> m_players;
-
 	GenericAtomic<float> m_time_of_day_speed;
 
 	/*
@@ -325,6 +316,8 @@ public:
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
 	RemotePlayer *loadPlayer(const std::string &playername);
+	void addPlayer(RemotePlayer *player);
+	void removePlayer(RemotePlayer *player);
 
 	/*
 		Save and load time of day and game timer
@@ -520,6 +513,9 @@ private:
 	// Can raise to high values like 15s with eg. map generation mods.
 	float m_max_lag_estimate;
 
+	// peer_ids in here should be unique, except that there may be many 0s
+	std::vector<RemotePlayer*> m_players;
+
 	// Particles
 	IntervalLimiter m_particle_management_interval;
 	UNORDERED_MAP<u32, float> m_particle_spawners;
@@ -579,8 +575,8 @@ public:
 
 	void step(f32 dtime);
 
-	virtual void addPlayer(LocalPlayer *player);
-	LocalPlayer * getLocalPlayer();
+	virtual void setLocalPlayer(LocalPlayer *player);
+	LocalPlayer *getLocalPlayer() { return m_local_player; }
 
 	/*
 		ClientSimpleObjects
@@ -630,21 +626,15 @@ public:
 
 	u16 attachement_parent_ids[USHRT_MAX + 1];
 
-	std::list<std::string> getPlayerNames()
-	{ return m_player_names; }
-	void addPlayerName(std::string name)
-	{ m_player_names.push_back(name); }
-	void removePlayerName(std::string name)
-	{ m_player_names.remove(name); }
+	const std::list<std::string> &getPlayerNames() { return m_player_names; }
+	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
+	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
 	void updateCameraOffset(v3s16 camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
-
-	LocalPlayer *getPlayer(const u16 peer_id);
-	LocalPlayer *getPlayer(const char* name);
-
 private:
 	ClientMap *m_map;
+	LocalPlayer *m_local_player;
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	IGameDef *m_gamedef;

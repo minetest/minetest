@@ -142,6 +142,20 @@ public:
 		Player::setYaw(yaw);
 	}
 
+	void setLocalAnimations(v2s32 frames[4], float frame_speed)
+	{
+		for (int i = 0; i < 4; i++)
+			local_animations[i] = frames[i];
+		local_animation_speed = frame_speed;
+	}
+
+	void getLocalAnimations(v2s32 *frames, float *frame_speed)
+	{
+		for (int i = 0; i < 4; i++)
+			frames[i] = local_animations[i];
+		*frame_speed = local_animation_speed;
+	}
+
 	u16 protocol_version;
 private:
 	/*
