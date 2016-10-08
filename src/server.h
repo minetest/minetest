@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "chat_interface.h"
 #include "clientiface.h"
+#include "player.h"
 #include "network/networkpacket.h"
 #include <string>
 #include <list>
@@ -48,7 +49,6 @@ class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
 class Inventory;
-class Player;
 class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
@@ -336,9 +336,10 @@ public:
 	u32 hudAdd(Player *player, HudElement *element);
 	bool hudRemove(Player *player, u32 id);
 	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
-	bool hudSetFlags(Player *player, u32 flags, u32 mask);
-	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
-	s32 hudGetHotbarItemcount(Player *player);
+	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
+	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
+	s32 hudGetHotbarItemcount(RemotePlayer *player) const
+			{ return player->getHotbarItemcount(); }
 	void hudSetHotbarImage(Player *player, std::string name);
 	std::string hudGetHotbarImage(Player *player);
 	void hudSetHotbarSelectedImage(Player *player, std::string name);
@@ -353,7 +354,7 @@ public:
 	bool setSky(Player *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
 
-	bool overrideDayNightRatio(Player *player, bool do_override, float brightness);
+	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
@@ -475,7 +476,7 @@ private:
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
 	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
-	void UpdateCrafting(Player *player);
+	void UpdateCrafting(RemotePlayer *player);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
