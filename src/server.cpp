@@ -1123,11 +1123,11 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		Print out action
 	*/
 	{
-		std::vector<std::string> names = m_clients.getPlayerNames();
+		const std::vector<std::string> &names = m_clients.getPlayerNames();
 
-		actionstream<<player->getName() <<" joins game. List of players: ";
+		actionstream << player->getName() << " joins game. List of players: ";
 
-		for (std::vector<std::string>::iterator i = names.begin();
+		for (std::vector<std::string>::const_iterator i = names.begin();
 				i != names.end(); ++i) {
 			actionstream << *i << " ";
 		}

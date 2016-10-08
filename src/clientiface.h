@@ -453,7 +453,7 @@ public:
 	std::vector<u16> getClientIDs(ClientState min_state=CS_Active);
 
 	/* get list of client player names */
-	std::vector<std::string> getPlayerNames();
+	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
 	/* send message to client */
 	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
