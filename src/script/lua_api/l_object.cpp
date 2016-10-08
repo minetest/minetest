@@ -107,7 +107,7 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 	return (PlayerSAO*)obj;
 }
 
-Player* ObjectRef::getplayer(ObjectRef *ref)
+RemotePlayer* ObjectRef::getplayer(ObjectRef *ref)
 {
 	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == NULL)
@@ -1212,8 +1212,8 @@ int ObjectRef::l_get_player_control(lua_State *L)
 		lua_pushlstring(L, "", 0);
 		return 1;
 	}
-	// Do it
-	PlayerControl control = player->getPlayerControl();
+
+	const PlayerControl &control = player->getPlayerControl();
 	lua_newtable(L);
 	lua_pushboolean(L, control.up);
 	lua_setfield(L, -2, "up");
@@ -1467,7 +1467,7 @@ int ObjectRef::l_hud_set_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1519,7 +1519,7 @@ int ObjectRef::l_hud_set_hotbar_itemcount(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1537,7 +1537,7 @@ int ObjectRef::l_hud_get_hotbar_itemcount(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1677,7 +1677,7 @@ int ObjectRef::l_override_day_night_ratio(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1700,7 +1700,7 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 

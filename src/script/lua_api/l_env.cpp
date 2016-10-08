@@ -494,8 +494,8 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
-	Player *player = env->getPlayer(name);
-	if(player == NULL){
+	RemotePlayer *player = dynamic_cast<RemotePlayer *>(env->getPlayer(name));
+	if (player == NULL){
 		lua_pushnil(L);
 		return 1;
 	}

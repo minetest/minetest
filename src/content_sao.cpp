@@ -751,7 +751,7 @@ bool LuaEntitySAO::collideWithObjects(){
 
 // No prototype, PlayerSAO does not need to be deserialized
 
-PlayerSAO::PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
+PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_,
 		const std::set<std::string> &privs, bool is_singleplayer):
 	ServerActiveObject(env_, v3f(0,0,0)),
 	m_player(player_),
@@ -833,11 +833,10 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
-	if(m_player->getPlayerSAO() == this)
-	{
+	if (m_player->getPlayerSAO() == this) {
 		m_player->setPlayerSAO(NULL);
 		m_player->peer_id = 0;
-		m_env->savePlayer((RemotePlayer*)m_player);
+		m_env->savePlayer(m_player);
 		m_env->removePlayer(m_player);
 	}
 }

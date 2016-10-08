@@ -160,7 +160,7 @@ public:
 class PlayerSAO : public ServerActiveObject
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, Player *player_, u16 peer_id_,
+	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_,
 			const std::set<std::string> &privs, bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
@@ -231,14 +231,8 @@ public:
 
 	void disconnected();
 
-	Player* getPlayer()
-	{
-		return m_player;
-	}
-	u16 getPeerID() const
-	{
-		return m_peer_id;
-	}
+	RemotePlayer* getPlayer() { return m_player; }
+	u16 getPeerID() const { return m_peer_id; }
 
 	// Cheat prevention
 
@@ -291,7 +285,7 @@ public:
 private:
 	std::string getPropertyPacket();
 
-	Player *m_player;
+	RemotePlayer *m_player;
 	u16 m_peer_id;
 	Inventory *m_inventory;
 	s16 m_damage;
