@@ -800,8 +800,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	pitch = modulo360f(pitch);
 	yaw = modulo360f(yaw);
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -880,8 +879,7 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 
 void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 {
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1081,8 +1079,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	*pkt >> damage;
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1117,8 +1114,7 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 	*pkt >> breath;
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1231,8 +1227,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	if (pkt->getSize() < 2)
 		return;
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1308,8 +1303,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	verbosestream << "TOSERVER_INTERACT: action=" << (int)action << ", item="
 			<< item_i << ", pointed=" << pointed.dump() << std::endl;
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1730,8 +1724,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 		fields[fieldname] = pkt->readLongString();
 	}
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -1782,8 +1775,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		fields[fieldname] = pkt->readLongString();
 	}
 
-	RemotePlayer *player =
-		dynamic_cast<RemotePlayer *>(m_env->getPlayer(pkt->getPeerId()));
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "

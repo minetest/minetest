@@ -508,7 +508,7 @@ int ObjectRef::l_set_local_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 	// Do it
@@ -554,7 +554,7 @@ int ObjectRef::l_set_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 	// Do it
@@ -1256,7 +1256,7 @@ int ObjectRef::l_hud_add(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1319,7 +1319,7 @@ int ObjectRef::l_hud_remove(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1339,7 +1339,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1552,7 +1552,7 @@ int ObjectRef::l_hud_set_hotbar_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1567,7 +1567,7 @@ int ObjectRef::l_hud_get_hotbar_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1581,7 +1581,7 @@ int ObjectRef::l_hud_set_hotbar_selected_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1596,7 +1596,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1610,7 +1610,7 @@ int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 

@@ -1418,7 +1418,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::PLAYER:
 	{
-		Player *player = m_env.getPlayer(loc.name.c_str());
+		LocalPlayer *player = m_env.getPlayer(loc.name.c_str());
 		if(!player)
 			return NULL;
 		return &player->inventory;

@@ -420,7 +420,7 @@ void InvRef::create(lua_State *L, const InventoryLocation &loc)
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);
 }
-void InvRef::createPlayer(lua_State *L, Player *player)
+void InvRef::createPlayer(lua_State *L, RemotePlayer *player)
 {
 	NO_MAP_LOCK_REQUIRED;
 	InventoryLocation loc;

@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ServerActiveObject;
 class LuaEntitySAO;
 class PlayerSAO;
-class Player;
 class RemotePlayer;
 
 /*
