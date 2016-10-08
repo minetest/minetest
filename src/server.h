@@ -307,25 +307,26 @@ public:
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 
-	u32 hudAdd(Player *player, HudElement *element);
-	bool hudRemove(Player *player, u32 id);
-	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
+	u32 hudAdd(RemotePlayer *player, HudElement *element);
+	bool hudRemove(RemotePlayer *player, u32 id);
+	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
 	s32 hudGetHotbarItemcount(RemotePlayer *player) const
 			{ return player->getHotbarItemcount(); }
-	void hudSetHotbarImage(Player *player, std::string name);
-	std::string hudGetHotbarImage(Player *player);
-	void hudSetHotbarSelectedImage(Player *player, std::string name);
-	std::string hudGetHotbarSelectedImage(Player *player);
+	void hudSetHotbarImage(RemotePlayer *player, std::string name);
+	std::string hudGetHotbarImage(RemotePlayer *player);
+	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
+	std::string hudGetHotbarSelectedImage(RemotePlayer *player);
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
 
-	bool setLocalPlayerAnimations(Player *player, v2s32 animation_frames[4], f32 frame_speed);
-	bool setPlayerEyeOffset(Player *player, v3f first, v3f third);
+	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+			f32 frame_speed);
+	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
 
-	bool setSky(Player *player, const video::SColor &bgcolor,
+	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);

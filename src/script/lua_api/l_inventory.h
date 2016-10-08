@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "inventorymanager.h"
 
-class Player;
+class RemotePlayer;
 
 /*
 	InvRef
@@ -112,7 +112,7 @@ public:
 	// Creates an InvRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
 	static void create(lua_State *L, const InventoryLocation &loc);
-	static void createPlayer(lua_State *L, Player *player);
+	static void createPlayer(lua_State *L, RemotePlayer *player);
 	static void createNodeMeta(lua_State *L, v3s16 p);
 	static void Register(lua_State *L);
 };
@@ -122,11 +122,6 @@ private:
 	static int l_create_detached_inventory_raw(lua_State *L);
 
 	static int l_get_inventory(lua_State *L);
-
-	static void inventory_set_list_from_lua(Inventory *inv, const char *name,
-			lua_State *L, int tableindex, int forcesize);
-	static void inventory_get_list_to_lua(Inventory *inv, const char *name,
-			lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

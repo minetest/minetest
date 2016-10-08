@@ -127,65 +127,6 @@ Player * Environment::getPlayer(const char *name)
 	return NULL;
 }
 
-Player * Environment::getRandomConnectedPlayer()
-{
-	std::vector<Player*> connected_players = getPlayers(true);
-	u32 chosen_one = myrand() % connected_players.size();
-	u32 j = 0;
-	for(std::vector<Player*>::iterator
-			i = connected_players.begin();
-			i != connected_players.end(); ++i) {
-		if(j == chosen_one) {
-			Player *player = *i;
-			return player;
-		}
-		j++;
-	}
-	return NULL;
-}
-
-Player * Environment::getNearestConnectedPlayer(v3f pos)
-{
-	std::vector<Player*> connected_players = getPlayers(true);
-	f32 nearest_d = 0;
-	Player *nearest_player = NULL;
-	for(std::vector<Player*>::iterator
-			i = connected_players.begin();
-			i != connected_players.end(); ++i) {
-		Player *player = *i;
-		f32 d = player->getPosition().getDistanceFrom(pos);
-		if(d < nearest_d || nearest_player == NULL) {
-			nearest_d = d;
-			nearest_player = player;
-		}
-	}
-	return nearest_player;
-}
-
-std::vector<Player*> Environment::getPlayers()
-{
-	return m_players;
-}
-
-std::vector<Player*> Environment::getPlayers(bool ignore_disconnected)
-{
-	std::vector<Player*> newlist;
-	for(std::vector<Player*>::iterator
-			i = m_players.begin();
-			i != m_players.end(); ++i) {
-		Player *player = *i;
-
-		if(ignore_disconnected) {
-			// Ignore disconnected players
-			if(player->peer_id == 0)
-				continue;
-		}
-
-		newlist.push_back(player);
-	}
-	return newlist;
-}
-
 u32 Environment::getDayNightRatio()
 {
 	MutexAutoLock lock(this->m_time_lock);
@@ -197,11 +138,6 @@ u32 Environment::getDayNightRatio()
 void Environment::setTimeOfDaySpeed(float speed)
 {
 	m_time_of_day_speed = speed;
-}
-
-float Environment::getTimeOfDaySpeed()
-{
-	return m_time_of_day_speed;
 }
 
 void Environment::setDayNightRatioOverride(bool enable, u32 value)
@@ -623,6 +559,16 @@ Map & ServerEnvironment::getMap()
 ServerMap & ServerEnvironment::getServerMap()
 {
 	return *m_map;
+}
+
+RemotePlayer *ServerEnvironment::getPlayer(const u16 peer_id)
+{
+	return dynamic_cast<RemotePlayer *>(Environment::getPlayer(peer_id));
+}
+
+RemotePlayer *ServerEnvironment::getPlayer(const char* name)
+{
+	return dynamic_cast<RemotePlayer *>(Environment::getPlayer(name));
 }
 
 bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
@@ -2347,6 +2293,16 @@ Map & ClientEnvironment::getMap()
 ClientMap & ClientEnvironment::getClientMap()
 {
 	return *m_map;
+}
+
+LocalPlayer *ClientEnvironment::getPlayer(const u16 peer_id)
+{
+	return dynamic_cast<LocalPlayer *>(Environment::getPlayer(peer_id));
+}
+
+LocalPlayer *ClientEnvironment::getPlayer(const char* name)
+{
+	return dynamic_cast<LocalPlayer *>(Environment::getPlayer(name));
 }
 
 void ClientEnvironment::addPlayer(Player *player)

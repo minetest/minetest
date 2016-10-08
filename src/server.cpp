@@ -2638,7 +2638,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 				++i;
 		}
 
-		RemotePlayer *player = dynamic_cast<RemotePlayer *>(m_env->getPlayer(peer_id));
+		RemotePlayer *player = m_env->getPlayer(peer_id);
 
 		/* Run scripts and remove from environment */
 		if(player != NULL) {
@@ -2850,7 +2850,7 @@ std::string Server::getPlayerName(u16 peer_id)
 
 PlayerSAO* Server::getPlayerSAO(u16 peer_id)
 {
-	RemotePlayer *player = dynamic_cast<RemotePlayer *>(m_env->getPlayer(peer_id));
+	RemotePlayer *player = m_env->getPlayer(peer_id);
 	if (player == NULL)
 		return NULL;
 	return player->getPlayerSAO();
@@ -2989,7 +2989,7 @@ bool Server::showFormspec(const char *playername, const std::string &formspec,
 	return true;
 }
 
-u32 Server::hudAdd(Player *player, HudElement *form)
+u32 Server::hudAdd(RemotePlayer *player, HudElement *form)
 {
 	if (!player)
 		return -1;
@@ -3001,7 +3001,7 @@ u32 Server::hudAdd(Player *player, HudElement *form)
 	return id;
 }
 
-bool Server::hudRemove(Player *player, u32 id) {
+bool Server::hudRemove(RemotePlayer *player, u32 id) {
 	if (!player)
 		return false;
 
@@ -3016,7 +3016,7 @@ bool Server::hudRemove(Player *player, u32 id) {
 	return true;
 }
 
-bool Server::hudChange(Player *player, u32 id, HudElementStat stat, void *data)
+bool Server::hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *data)
 {
 	if (!player)
 		return false;
@@ -3058,7 +3058,7 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	return true;
 }
 
-void Server::hudSetHotbarImage(Player *player, std::string name)
+void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 {
 	if (!player)
 		return;
@@ -3067,14 +3067,14 @@ void Server::hudSetHotbarImage(Player *player, std::string name)
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_IMAGE, name);
 }
 
-std::string Server::hudGetHotbarImage(Player *player)
+std::string Server::hudGetHotbarImage(RemotePlayer *player)
 {
 	if (!player)
 		return "";
 	return player->getHotbarImage();
 }
 
-void Server::hudSetHotbarSelectedImage(Player *player, std::string name)
+void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 {
 	if (!player)
 		return;
@@ -3083,7 +3083,7 @@ void Server::hudSetHotbarSelectedImage(Player *player, std::string name)
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
 }
 
-std::string Server::hudGetHotbarSelectedImage(Player *player)
+std::string Server::hudGetHotbarSelectedImage(RemotePlayer *player)
 {
 	if (!player)
 		return "";
@@ -3091,8 +3091,8 @@ std::string Server::hudGetHotbarSelectedImage(Player *player)
 	return player->getHotbarSelectedImage();
 }
 
-bool Server::setLocalPlayerAnimations(Player *player,
-	v2s32 animation_frames[4], f32 frame_speed)
+bool Server::setLocalPlayerAnimations(RemotePlayer *player,
+		v2s32 animation_frames[4], f32 frame_speed)
 {
 	if (!player)
 		return false;
@@ -3102,7 +3102,7 @@ bool Server::setLocalPlayerAnimations(Player *player,
 	return true;
 }
 
-bool Server::setPlayerEyeOffset(Player *player, v3f first, v3f third)
+bool Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third)
 {
 	if (!player)
 		return false;
@@ -3113,7 +3113,7 @@ bool Server::setPlayerEyeOffset(Player *player, v3f first, v3f third)
 	return true;
 }
 
-bool Server::setSky(Player *player, const video::SColor &bgcolor,
+bool Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
 	const std::string &type, const std::vector<std::string> &params)
 {
 	if (!player)
