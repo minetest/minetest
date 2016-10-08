@@ -392,7 +392,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		}
 		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin(); 
-				ii != m_attachment_child_ids.end(); ++ii) {
+				(ii != m_attachment_child_ids.end()); ++ii) {
 			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
 			}
@@ -624,7 +624,7 @@ void LuaEntitySAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-std::set<int> LuaEntitySAO::getAttachmentChildIds()
+UNORDERED_SET<int> LuaEntitySAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }
@@ -1279,7 +1279,7 @@ void PlayerSAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-std::set<int> PlayerSAO::getAttachmentChildIds()
+UNORDERED_SET<int> PlayerSAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }

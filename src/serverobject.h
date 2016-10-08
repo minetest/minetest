@@ -167,8 +167,8 @@ public:
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
-	virtual std::set<int> getAttachmentChildIds()
-	{ return std::set<int>(); }
+	virtual UNORDERED_SET<int> getAttachmentChildIds()
+	{ return UNORDERED_SET<int>(); }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
