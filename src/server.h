@@ -64,31 +64,6 @@ enum ClientDeletionReason {
 	CDR_DENY
 };
 
-class MapEditEventIgnorer
-{
-public:
-	MapEditEventIgnorer(bool *flag):
-		m_flag(flag)
-	{
-		if(*m_flag == false)
-			*m_flag = true;
-		else
-			m_flag = NULL;
-	}
-
-	~MapEditEventIgnorer()
-	{
-		if(m_flag)
-		{
-			assert(*m_flag);
-			*m_flag = false;
-		}
-	}
-
-private:
-	bool *m_flag;
-};
-
 class MapEditEventAreaIgnorer
 {
 public:
@@ -287,7 +262,6 @@ public:
 		const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
-	void deleteParticleSpawnerAll(u32 id);
 
 	// Creates or resets inventory
 	Inventory* createDetachedInventory(const std::string &name);
@@ -527,9 +501,7 @@ private:
 	// Some timers
 	float m_liquid_transform_timer;
 	float m_liquid_transform_every;
-	float m_print_info_timer;
 	float m_masterserver_timer;
-	float m_objectdata_timer;
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
 	IntervalLimiter m_map_timer_and_unload_interval;
