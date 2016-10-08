@@ -810,12 +810,12 @@ private:
 	// item aliases too. Updated by updateAliases()
 	// Note: Not serialized.
 
-	std::map<std::string, content_t> m_name_id_mapping_with_aliases;
+	UNORDERED_MAP<std::string, content_t> m_name_id_mapping_with_aliases;
 
 	// A mapping from groups to a list of content_ts (and their levels)
 	// that belong to it.  Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
-	std::map<std::string, GroupItems> m_group_to_items;
+	UNORDERED_MAP<std::string, GroupItems> m_group_to_items;
 
 	// Next possibly free id
 	content_t m_next_id;
@@ -938,7 +938,7 @@ inline const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
 
 bool CNodeDefManager::getId(const std::string &name, content_t &result) const
 {
-	std::map<std::string, content_t>::const_iterator
+	UNORDERED_MAP<std::string, content_t>::const_iterator
 		i = m_name_id_mapping_with_aliases.find(name);
 	if(i == m_name_id_mapping_with_aliases.end())
 		return false;
@@ -968,7 +968,7 @@ bool CNodeDefManager::getIds(const std::string &name,
 	}
 	std::string group = name.substr(6);
 
-	std::map<std::string, GroupItems>::const_iterator
+	UNORDERED_MAP<std::string, GroupItems>::const_iterator
 		i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
@@ -1050,7 +1050,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		i != def.groups.end(); ++i) {
 		std::string group_name = i->first;
 
-		std::map<std::string, GroupItems>::iterator
+		UNORDERED_MAP<std::string, GroupItems>::iterator
 			j = m_group_to_items.find(group_name);
 		if (j == m_group_to_items.end()) {
 			m_group_to_items[group_name].push_back(
@@ -1086,7 +1086,7 @@ void CNodeDefManager::removeNode(const std::string &name)
 	}
 
 	// Erase node content from all groups it belongs to
-	for (std::map<std::string, GroupItems>::iterator iter_groups =
+	for (UNORDERED_MAP<std::string, GroupItems>::iterator iter_groups =
 			m_group_to_items.begin();
 			iter_groups != m_group_to_items.end();) {
 		GroupItems &items = iter_groups->second;
