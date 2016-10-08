@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define USE_UNORDERED_CONTAINERS
 #endif
 
-#if _MSC_VER >= 1800
+#if _MSC_VER >= 1600
 #define USE_UNORDERED_CONTAINERS
 #endif
 
