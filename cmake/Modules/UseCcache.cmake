@@ -1,6 +1,6 @@
 # Enable ccache if present and not already enabled system wide.
 OPTION(SKIP_CCACHE
-	"Skip enabling for ccache - no effect if ccache enabled system wide" OFF)
+	"Skip enabling for ccache - no effect if enabled system wide" OFF)
 IF(NOT SKIP_CCACHE)
 	FIND_PROGRAM(CCACHE_FOUND ccache)
 	IF(CCACHE_FOUND)
