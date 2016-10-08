@@ -182,3 +182,15 @@ std::string gob_cmd_update_nametag_attributes(video::SColor color)
 	writeARGB8(os, color);
 	return os.str();
 }
+
+std::string gob_cmd_update_infant(u16 id, u8 type, std::string client_initialization_data)
+{
+	std::ostringstream os(std::ios::binary);
+	// command 
+	writeU8(os, GENERIC_CMD_SPAWN_INFANT);
+	// parameters
+	writeU16(os, id);
+	writeU8(os, type);
+	os<<serializeLongString(client_initialization_data);
+	return os.str();
+}

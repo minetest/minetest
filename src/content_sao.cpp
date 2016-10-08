@@ -380,7 +380,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_yaw);
 		writeS16(os, m_hp);
 
-		writeU8(os, 4 + m_bone_position.size()); // number of messages stuffed in here
+		writeU8(os, 4 + m_bone_position.size() + m_attachment_child_ids.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(
@@ -391,6 +391,12 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 					(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
 		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin(); 
+				(ii != m_attachment_child_ids.end()); ++ii) {
+			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
+			}
+		}
 	}
 	else
 	{
@@ -618,7 +624,7 @@ void LuaEntitySAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-std::set<int> LuaEntitySAO::getAttachmentChildIds()
+UNORDERED_SET<int> LuaEntitySAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }
@@ -860,7 +866,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_player->getYaw());
 		writeS16(os, getHP());
 
-		writeU8(os, 6 + m_bone_position.size()); // number of messages stuffed in here
+		writeU8(os, 6 + m_bone_position.size() + m_attachment_child_ids.size()); // number of messages stuffed in here
 		os<<serializeLongString(getPropertyPacket()); // message 1
 		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 		os<<serializeLongString(gob_cmd_update_animation(
@@ -874,6 +880,12 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 				m_physics_override_sneak_glitch)); // 5
 		os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6 (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
+		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin(); 
+				ii != m_attachment_child_ids.end(); ++ii) {
+			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
+			}
+		}
 	}
 	else
 	{
@@ -1266,7 +1278,7 @@ void PlayerSAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-std::set<int> PlayerSAO::getAttachmentChildIds()
+UNORDERED_SET<int> PlayerSAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }

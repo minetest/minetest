@@ -35,7 +35,8 @@ enum GenericCMD {
 	GENERIC_CMD_SET_BONE_POSITION,
 	GENERIC_CMD_ATTACH_TO,
 	GENERIC_CMD_SET_PHYSICS_OVERRIDE,
-	GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES
+	GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES,
+	GENERIC_CMD_SPAWN_INFANT
 };
 
 #include "object_properties.h"
@@ -76,6 +77,8 @@ std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rot
 std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
 
 std::string gob_cmd_update_nametag_attributes(video::SColor color);
+
+std::string gob_cmd_update_infant(u16 id, u8 type, std::string client_initialization_data);
 
 #endif
 
