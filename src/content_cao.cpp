@@ -655,12 +655,11 @@ void GenericCAO::initialize(const std::string &data)
 
 	if(m_is_player)
 	{
-		Player *player = m_env->getPlayer(m_name.c_str());
-		if(player && player->isLocal())
-		{
+		LocalPlayer *player = m_env->getPlayer(m_name.c_str());
+		if (player && player->isLocal()) {
 			m_is_local_player = true;
 			m_is_visible = false;
-			LocalPlayer* localplayer = dynamic_cast<LocalPlayer*>(player);
+			LocalPlayer* localplayer = player;
 
 			assert( localplayer != NULL );
 			localplayer->setCAO(this);

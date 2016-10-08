@@ -460,7 +460,6 @@ public:
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
-	u16 getBreath();
 
 	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }

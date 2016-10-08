@@ -94,8 +94,8 @@ public:
 	u32 m_added_objects;
 
 protected:
-	Player * getPlayer(u16 peer_id);
-	Player * getPlayer(const char *name);
+	Player *getPlayer(u16 peer_id);
+	Player *getPlayer(const char *name);
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<Player*> m_players;
@@ -324,7 +324,7 @@ public:
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
-	Player *loadPlayer(const std::string &playername);
+	RemotePlayer *loadPlayer(const std::string &playername);
 
 	/*
 		Save and load time of day and game timer
@@ -368,7 +368,7 @@ public:
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/
-	void getAddedActiveObjects(Player *player, s16 radius,
+	void getAddedActiveObjects(RemotePlayer *player, s16 radius,
 			s16 player_radius,
 			std::set<u16> &current_objects,
 			std::queue<u16> &added_objects);
@@ -377,7 +377,7 @@ public:
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
-	void getRemovedActiveObjects(Player* player, s16 radius,
+	void getRemovedActiveObjects(RemotePlayer* player, s16 radius,
 			s16 player_radius,
 			std::set<u16> &current_objects,
 			std::queue<u16> &removed_objects);
@@ -649,7 +649,7 @@ private:
 	ITextureSource *m_texturesource;
 	IGameDef *m_gamedef;
 	IrrlichtDevice *m_irr;
-	std::map<u16, ClientActiveObject*> m_active_objects;
+	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;
