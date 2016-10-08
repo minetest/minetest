@@ -627,12 +627,6 @@ std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
-std::vector<std::string> ClientInterface::getPlayerNames()
-{
-	return m_clients_names;
-}
-
-
 void ClientInterface::step(float dtime)
 {
 	m_print_info_timer += dtime;
