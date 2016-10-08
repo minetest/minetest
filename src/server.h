@@ -34,7 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "chat_interface.h"
 #include "clientiface.h"
-#include "player.h"
+#include "remoteplayer.h"
 #include "network/networkpacket.h"
 #include <string>
 #include <list>

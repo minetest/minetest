@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
-#include "player.h"
+#include "remoteplayer.h"
 #include "server.h"
 #include "scripting_game.h"
 #include "genericobject.h"
@@ -391,7 +391,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 					(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
 		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin(); 
+		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
 				(ii != m_attachment_child_ids.end()); ++ii) {
 			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
@@ -880,7 +880,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 				m_physics_override_sneak_glitch)); // 5
 		os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6 (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin(); 
+		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
 				ii != m_attachment_child_ids.end(); ++ii) {
 			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
