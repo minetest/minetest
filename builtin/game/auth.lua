@@ -44,11 +44,10 @@ local function read_auth_file()
 			local fields = line:split(":", true)
 			local name, password, privilege_string, last_login = unpack(fields)
 			last_login = tonumber(last_login)
-			if not (name and password and privilege_string) then
-				error("Invalid line in auth.txt: "..dump(line))
+			if (name and password and privilege_string) then
+			   local privileges = core.string_to_privs(privilege_string)
+			   newtable[name] = {password=password, privileges=privileges, last_login=last_login}
 			end
-			local privileges = core.string_to_privs(privilege_string)
-			newtable[name] = {password=password, privileges=privileges, last_login=last_login}
 		end
 	end
 	io.close(file)
