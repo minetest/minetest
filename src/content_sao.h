@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "serverobject.h"
 #include "itemgroup.h"
-#include "player.h"
 #include "object_properties.h"
 
 /*
@@ -157,6 +156,8 @@ public:
 	}
 };
 
+class RemotePlayer;
+
 class PlayerSAO : public ServerActiveObject
 {
 public:
@@ -231,7 +232,7 @@ public:
 
 	void disconnected();
 
-	RemotePlayer* getPlayer() { return m_player; }
+	RemotePlayer *getPlayer() { return m_player; }
 	u16 getPeerID() const { return m_peer_id; }
 
 	// Cheat prevention

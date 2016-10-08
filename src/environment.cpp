@@ -2705,7 +2705,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 		}
 		object->setId(new_id);
 	}
-	if(!isFreeClientActiveObjectId(object->getId(), m_active_objects)) {
+	if (!isFreeClientActiveObjectId(object->getId(), m_active_objects)) {
 		infostream<<"ClientEnvironment::addActiveObject(): "
 				<<"id is not free ("<<object->getId()<<")"<<std::endl;
 		delete object;

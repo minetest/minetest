@@ -107,7 +107,7 @@ PlayerSAO* ObjectRef::getplayersao(ObjectRef *ref)
 	return (PlayerSAO*)obj;
 }
 
-RemotePlayer* ObjectRef::getplayer(ObjectRef *ref)
+RemotePlayer *ObjectRef::getplayer(ObjectRef *ref)
 {
 	PlayerSAO *playersao = getplayersao(ref);
 	if (playersao == NULL)

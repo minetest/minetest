@@ -2688,7 +2688,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		SendChatMessage(PEER_ID_INEXISTENT,message);
 }
 
-void Server::UpdateCrafting(RemotePlayer* player)
+void Server::UpdateCrafting(RemotePlayer *player)
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -3141,7 +3141,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
-		RemotePlayer* player = m_env->getPlayer(playername.c_str());
+		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return;
 		peer_id = player->peer_id;
@@ -3165,7 +3165,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
-		RemotePlayer* player = m_env->getPlayer(playername.c_str());
+		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return -1;
 		peer_id = player->peer_id;
@@ -3188,7 +3188,7 @@ void Server::deleteParticleSpawner(const std::string &playername, u32 id)
 
 	u16 peer_id = PEER_ID_INEXISTENT;
 	if (playername != "") {
-		RemotePlayer* player = m_env->getPlayer(playername.c_str());
+		RemotePlayer *player = m_env->getPlayer(playername.c_str());
 		if (!player)
 			return;
 		peer_id = player->peer_id;
