@@ -21,6 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MT_CPP11CONTAINER_HEADER
 
 #if __cplusplus >= 201103L
+#define USE_UNORDERED_CONTAINERS
+#endif
+
+#if _MSC_VER >= 1800
+#define USE_UNORDERED_CONTAINERS
+#endif
+
+#ifdef USE_UNORDERED_CONTAINERS
 	#include <unordered_map>
 	#include <unordered_set>
 	#define UNORDERED_MAP std::unordered_map
