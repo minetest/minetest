@@ -1052,7 +1052,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		message += (wchar_t)tmp_wchar;
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1179,7 +1179,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 		newpwd += c;
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1255,7 +1255,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
 {
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()

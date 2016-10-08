@@ -110,7 +110,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 	playerpos -= v3f(0, BS / 2, 0);
 
 	// Set player position
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	player->setPosition(playerpos);
 
@@ -176,7 +176,7 @@ void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
 
 
 	// Set player position
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	player->setPosition(playerpos_f);
 
@@ -333,7 +333,7 @@ void Client::handleCommand_Inventory(NetworkPacket* pkt)
 	std::string datastring(pkt->getString(0), pkt->getSize());
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	player->inventory.deSerialize(is);
@@ -486,7 +486,7 @@ void Client::handleCommand_ActiveObjectMessages(NetworkPacket* pkt)
 
 void Client::handleCommand_Movement(NetworkPacket* pkt)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	float mad, maa, maf, msw, mscr, msf, mscl, msj, lf, lfs, ls, g;
@@ -511,7 +511,7 @@ void Client::handleCommand_Movement(NetworkPacket* pkt)
 void Client::handleCommand_HP(NetworkPacket* pkt)
 {
 
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	u8 oldhp   = player->hp;
@@ -532,7 +532,7 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 
 void Client::handleCommand_Breath(NetworkPacket* pkt)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	u16 breath;
@@ -544,7 +544,7 @@ void Client::handleCommand_Breath(NetworkPacket* pkt)
 
 void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	v3f pos;
@@ -840,7 +840,7 @@ void Client::handleCommand_Privileges(NetworkPacket* pkt)
 
 void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	// Store formspec in LocalPlayer
@@ -1098,7 +1098,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 
 	*pkt >> flags >> mask;
 
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
 	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;

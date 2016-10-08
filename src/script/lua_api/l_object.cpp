@@ -533,7 +533,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -584,7 +584,7 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 	// Do it
@@ -762,7 +762,7 @@ int ObjectRef::l_is_player(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	lua_pushboolean(L, (player != NULL));
 	return 1;
 }
@@ -973,7 +973,7 @@ int ObjectRef::l_is_player_connected(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	lua_pushboolean(L, (player != NULL && player->peer_id != 0));
 	return 1;
 }
@@ -983,7 +983,7 @@ int ObjectRef::l_get_player_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
@@ -998,7 +998,7 @@ int ObjectRef::l_get_player_velocity(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) {
 		lua_pushnil(L);
 		return 1;
@@ -1013,7 +1013,7 @@ int ObjectRef::l_get_look_dir(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
 	float pitch = player->getRadPitchDep();
@@ -1033,7 +1033,7 @@ int ObjectRef::l_get_look_pitch(lua_State *L)
 		"Deprecated call to get_look_pitch, use get_look_vertical instead");
 
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadPitchDep());
@@ -1050,7 +1050,7 @@ int ObjectRef::l_get_look_yaw(lua_State *L)
 		"Deprecated call to get_look_yaw, use get_look_horizontal instead");
 
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadYawDep());
@@ -1062,7 +1062,7 @@ int ObjectRef::l_get_look_vertical(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadPitch());
@@ -1074,7 +1074,7 @@ int ObjectRef::l_get_look_horizontal(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	// Do it
 	lua_pushnumber(L, player->getRadYaw());
@@ -1179,7 +1179,7 @@ int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 	std::string formspec = luaL_checkstring(L, 2);
 
@@ -1194,7 +1194,7 @@ int ObjectRef::l_get_inventory_formspec(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) return 0;
 
 	std::string formspec = player->inventory_formspec;
@@ -1207,7 +1207,7 @@ int ObjectRef::l_get_player_control(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
@@ -1241,7 +1241,7 @@ int ObjectRef::l_get_player_control_bits(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL) {
 		lua_pushlstring(L, "", 0);
 		return 1;
@@ -1416,7 +1416,7 @@ int ObjectRef::l_hud_get(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1493,7 +1493,7 @@ int ObjectRef::l_hud_get_flags(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 
@@ -1649,7 +1649,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
-	Player *player = getplayer(ref);
+	RemotePlayer *player = getplayer(ref);
 	if (player == NULL)
 		return 0;
 	video::SColor bgcolor(255, 255, 255, 255);
