@@ -40,11 +40,10 @@ public:
 	virtual ~RemotePlayer() {}
 
 	void save(std::string savedir, IGameDef *gamedef);
-	void deSerialize(std::istream &is, const std::string &playername);
+	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
 	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
-	void setPosition(const v3f &position);
 
 	const RemotePlayerChatResult canSendChatMessage();
 
@@ -67,9 +66,6 @@ public:
 		*ratio = m_day_night_ratio;
 	}
 
-	// Use a function, if isDead can be defined by other conditions
-	bool isDead() const { return hp == 0; }
-
 	void setHotbarImage(const std::string &name)
 	{
 		hud_hotbar_image = name;
@@ -89,12 +85,6 @@ public:
 	{
 		return hud_hotbar_selected_image;
 	}
-
-	// Deprecated
-	f32 getRadPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
-
-	// Deprecated
-	f32 getRadYawDep() const { return (m_yaw + 90.) * core::DEGTORAD; }
 
 	void setSky(const video::SColor &bgcolor, const std::string &type,
 				const std::vector<std::string> &params)
@@ -121,27 +111,6 @@ public:
 			inventory.setModified(x);
 	}
 
-	virtual void setBreath(u16 breath)
-	{
-		if (breath != m_breath)
-			m_dirty = true;
-		Player::setBreath(breath);
-	}
-
-	virtual void setPitch(f32 pitch)
-	{
-		if (pitch != m_pitch)
-			m_dirty = true;
-		Player::setPitch(pitch);
-	}
-
-	virtual void setYaw(f32 yaw)
-	{
-		if (yaw != m_yaw)
-			m_dirty = true;
-		Player::setYaw(yaw);
-	}
-
 	void setLocalAnimations(v2s32 frames[4], float frame_speed)
 	{
 		for (int i = 0; i < 4; i++)
@@ -155,6 +124,8 @@ public:
 			frames[i] = local_animations[i];
 		*frame_speed = local_animation_speed;
 	}
+
+	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version;
 private:

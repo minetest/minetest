@@ -85,7 +85,7 @@ public:
 		Some more dynamic interface
 	*/
 
-	virtual void setPos(v3f pos)
+	virtual void setPos(const v3f &pos)
 		{ setBasePosition(pos); }
 	// continuous: if true, object does not stop immediately at pos
 	virtual void moveTo(v3f pos, bool continuous)

@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "map.h"
 #include "emerge.h"
-#include "serverobject.h"              // TODO this is used for cleanup of only
+#include "content_sao.h"              // TODO this is used for cleanup of only
 #include "log.h"
 #include "util/srp.h"
 
@@ -82,6 +82,10 @@ void RemoteClient::GetNextBlocks (
 	if (player == NULL)
 		return;
 
+	PlayerSAO *sao = player->getPlayerSAO();
+	if (sao == NULL)
+		return;
+
 	// Won't send anything if already sending
 	if(m_blocks_sending.size() >= g_settings->getU16
 			("max_simultaneous_block_sends_per_client"))
@@ -90,7 +94,7 @@ void RemoteClient::GetNextBlocks (
 		return;
 	}
 
-	v3f playerpos = player->getPosition();
+	v3f playerpos = sao->getBasePosition();
 	v3f playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
@@ -103,10 +107,10 @@ void RemoteClient::GetNextBlocks (
 	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	// Camera position and direction
-	v3f camera_pos = player->getEyePosition();
+	v3f camera_pos = sao->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
-	camera_dir.rotateYZBy(player->getPitch());
-	camera_dir.rotateXZBy(player->getYaw());
+	camera_dir.rotateYZBy(sao->getPitch());
+	camera_dir.rotateXZBy(sao->getYaw());
 
 	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
 			<<camera_dir.Z<<")"<<std::endl;*/

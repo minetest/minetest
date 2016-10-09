@@ -30,18 +30,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 Player::Player(const char *name, IItemDefManager *idef):
-	camera_barely_in_ceiling(false),
 	inventory(idef),
-	hp(PLAYER_MAX_HP),
 	peer_id(PEER_ID_INEXISTENT),
 	keyPressed(0),
 // protected
-	m_breath(PLAYER_MAX_BREATH),
-	m_pitch(0),
-	m_yaw(0),
-	m_speed(0,0,0),
-	m_position(0,0,0),
-	m_collisionbox(-BS*0.30,0.0,-BS*0.30,BS*0.30,BS*1.75,BS*0.30)
+	m_speed(0,0,0)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
 
@@ -88,11 +81,6 @@ Player::Player(const char *name, IItemDefManager *idef):
 Player::~Player()
 {
 	clearHud();
-}
-
-v3s16 Player::getLightPosition() const
-{
-	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
 }
 
 u32 Player::addHud(HudElement *toadd)

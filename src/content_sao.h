@@ -23,12 +23,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "itemgroup.h"
 #include "object_properties.h"
+#include "constants.h"
+
+class UnitSAO: public ServerActiveObject
+{
+public:
+	UnitSAO(ServerEnvironment *env, v3f pos):
+			ServerActiveObject(env, pos),
+			m_hp(-1), m_yaw(0) {}
+	virtual ~UnitSAO() {}
+
+	virtual void setYaw(const float yaw) { m_yaw = yaw; }
+	float getYaw() const { return m_yaw; };
+	f32 getRadYaw() const { return m_yaw * core::DEGTORAD; }
+	// Deprecated
+	f32 getRadYawDep() const { return (m_yaw + 90.) * core::DEGTORAD; }
+
+	s16 getHP() const { return m_hp; }
+	// Use a function, if isDead can be defined by other conditions
+	bool isDead() const { return m_hp == 0; }
+protected:
+	s16 m_hp;
+	float m_yaw;
+};
 
 /*
 	LuaEntitySAO needs some internals exposed.
 */
 
-class LuaEntitySAO : public ServerActiveObject
+class LuaEntitySAO : public UnitSAO
 {
 public:
 	LuaEntitySAO(ServerEnvironment *env, v3f pos,
@@ -74,8 +97,7 @@ public:
 	v3f getVelocity();
 	void setAcceleration(v3f acceleration);
 	v3f getAcceleration();
-	void setYaw(float yaw);
-	float getYaw();
+
 	void setTextureMod(const std::string &mod);
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
@@ -91,10 +113,9 @@ private:
 	bool m_registered;
 	struct ObjectProperties m_prop;
 
-	s16 m_hp;
 	v3f m_velocity;
 	v3f m_acceleration;
-	float m_yaw;
+
 	ItemGroupList m_armor_groups;
 
 	bool m_properties_sent;
@@ -158,11 +179,10 @@ public:
 
 class RemotePlayer;
 
-class PlayerSAO : public ServerActiveObject
+class PlayerSAO : public UnitSAO
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_,
-			const std::set<std::string> &privs, bool is_singleplayer);
+	PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -182,10 +202,14 @@ public:
 	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
-	void setPos(v3f pos);
+	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
-	void setYaw(float);
-	void setPitch(float);
+	void setYaw(const float yaw, bool send_data = true);
+	void setPitch(const float pitch, bool send_data = true);
+	f32 getPitch() const { return m_pitch; }
+	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
+	// Deprecated
+	f32 getRadPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
 
 	/*
 		Interaction interface
@@ -196,11 +220,10 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
-	s16 getHP() const;
-	void setHP(s16 hp);
+	void setHP(s16 hp, bool direct = false);
 	s16 readDamage();
-	u16 getBreath() const;
-	void setBreath(u16 breath);
+	u16 getBreath() const { return m_breath; }
+	void setBreath(const u16 breath);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ItemGroupList getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
@@ -283,6 +306,11 @@ public:
 	bool getCollisionBox(aabb3f *toset);
 	bool collideWithObjects();
 
+	void initialize(RemotePlayer *player, const std::set<std::string> &privs);
+
+	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
+	v3f getEyeOffset() const { return v3f(0, BS * 1.625f, 0); }
+
 private:
 	std::string getPropertyPacket();
 
@@ -326,8 +354,8 @@ private:
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
 	bool m_attachment_sent;
-
-
+	u16 m_breath;
+	f32 m_pitch;
 public:
 	float m_physics_override_speed;
 	float m_physics_override_jump;

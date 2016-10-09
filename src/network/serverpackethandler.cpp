@@ -809,13 +809,6 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		return;
 	}
 
-	// If player is dead we don't care of this packet
-	if (player->isDead()) {
-		verbosestream << "TOSERVER_PLAYERPOS: " << player->getName()
-			<< " is dead. Ignoring packet";
-		return;
-	}
-
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -825,10 +818,17 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		return;
 	}
 
-	player->setPosition(position);
+	// If player is dead we don't care of this packet
+	if (playersao->isDead()) {
+		verbosestream << "TOSERVER_PLAYERPOS: " << player->getName()
+				<< " is dead. Ignoring packet";
+		return;
+	}
+
+	playersao->setBasePosition(position);
 	player->setSpeed(speed);
-	player->setPitch(pitch);
-	player->setYaw(yaw);
+	playersao->setPitch(pitch, false);
+	playersao->setYaw(yaw, false);
 	player->keyPressed = keyPressed;
 	player->control.up = (keyPressed & 1);
 	player->control.down = (keyPressed & 2);
@@ -1100,7 +1100,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	if (g_settings->getBool("enable_damage")) {
 		actionstream << player->getName() << " damaged by "
-				<< (int)damage << " hp at " << PP(player->getPosition() / BS)
+				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
 
 		playersao->setHP(playersao->getHP() - damage);
@@ -1124,16 +1124,6 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 		return;
 	}
 
-	/*
-	 * If player is dead, we don't need to update the breath
-	 * He is dead !
-	 */
-	if (player->isDead()) {
-		verbosestream << "TOSERVER_BREATH: " << player->getName()
-			<< " is dead. Ignoring packet";
-		return;
-	}
-
 
 	PlayerSAO *playersao = player->getPlayerSAO();
 	if (playersao == NULL) {
@@ -1141,6 +1131,16 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	/*
+	 * If player is dead, we don't need to update the breath
+	 * He is dead !
+	 */
+	if (playersao->isDead()) {
+		verbosestream << "TOSERVER_BREATH: " << player->getName()
+				<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -1264,13 +1264,16 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 		return;
 	}
 
-	if (!player->isDead())
+	PlayerSAO *playersao = player->getPlayerSAO();
+	assert(playersao);
+
+	if (!playersao->isDead())
 		return;
 
 	RespawnPlayer(pkt->getPeerId());
 
 	actionstream << player->getName() << " respawns at "
-			<< PP(player->getPosition()/BS) << std::endl;
+			<< PP(playersao->getBasePosition() / BS) << std::endl;
 
 	// ActiveObject is added to environment in AsyncRunStep after
 	// the previous addition has been successfully removed
@@ -1322,9 +1325,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		return;
 	}
 
-	if (player->isDead()) {
+	if (playersao->isDead()) {
 		verbosestream << "TOSERVER_INTERACT: " << player->getName()
-			<< " is dead. Ignoring packet";
+				<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -1455,7 +1458,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			ToolCapabilities toolcap =
 					punchitem.getToolCapabilities(m_itemdef);
 			v3f dir = (pointed_object->getBasePosition() -
-					(player->getPosition() + player->getEyeOffset())
+					(playersao->getBasePosition() + playersao->getEyeOffset())
 						).normalize();
 			float time_from_last_punch =
 				playersao->resetTimeFromLastPunch();
