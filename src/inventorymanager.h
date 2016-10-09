@@ -254,9 +254,13 @@ struct ICraftAction : public InventoryAction
 };
 
 // Crafting helper
-bool getCraftingResult(Inventory *inv, ItemStack& result,
-		std::vector<ItemStack> &output_replacements,
-		bool decrementInput, IGameDef *gamedef);
+bool getCraftingResult(
+	GameScripting *script_interface, 
+	Inventory *inv, 
+	ItemStack& result,
+	std::vector<ItemStack> &output_replacements,
+	bool decrementInput, 
+	IGameDef *gamedef);
 
 #endif
 

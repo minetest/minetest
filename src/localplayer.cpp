@@ -83,6 +83,21 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
+void LocalPlayer::on_remove_item(GameScripting *script_interface, const InventoryList *inventory_list, const ItemStack &deleted_item)
+{
+	// Do nothing, because no client-side lua
+}
+
+void LocalPlayer::on_change_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &old_item, const ItemStack &new_item)
+{
+	// Do nothing, because no client-side lua
+}
+
+void LocalPlayer::on_add_item(GameScripting *script_interface, const InventoryList *inventory_list, u32 query_slot, const ItemStack &added_item)
+{
+	// Do nothing, because no client-side lua
+}
+
 void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {

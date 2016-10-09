@@ -197,7 +197,7 @@ int InvRef::l_set_stack(lua_State *L)
 	ItemStack newitem = read_item(L, 4, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list != NULL && i >= 0 && i < (int) list->getSize()){
-		list->changeItem(i, newitem);
+		list->changeItem(getServer(L)->getScriptIface(), i, newitem);
 		reportInventoryChange(L, ref);
 		lua_pushboolean(L, true);
 	} else {
@@ -298,7 +298,7 @@ int InvRef::l_add_item(lua_State *L)
 	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
-		ItemStack leftover = list->addItem(item);
+		ItemStack leftover = list->addItem(getServer(L)->getScriptIface(), item);
 		if(leftover.count != item.count)
 			reportInventoryChange(L, ref);
 		LuaItemStack::create(L, leftover);
@@ -352,7 +352,7 @@ int InvRef::l_remove_item(lua_State *L)
 	ItemStack item = read_item(L, 3, getServer(L));
 	InventoryList *list = getlist(L, ref, listname);
 	if(list){
-		ItemStack removed = list->removeItem(item);
+		ItemStack removed = list->removeItem(getServer(L)->getScriptIface(), item);
 		if(!removed.empty())
 			reportInventoryChange(L, ref);
 		LuaItemStack::create(L, removed);

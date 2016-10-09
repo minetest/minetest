@@ -553,6 +553,15 @@ core.registered_craft_predicts, core.register_craft_predict = make_registration(
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
+core.registered_on_player_inventory_remove_item, core.register_on_player_inventory_remove_item = make_registration()
+core.registered_on_player_inventory_change_item, core.register_on_player_inventory_change_item = make_registration()
+core.registered_on_player_inventory_add_item, core.register_on_player_inventory_add_item = make_registration()
+core.registered_on_nodemeta_inventory_remove_item, core.register_on_nodemeta_inventory_remove_item = make_registration()
+core.registered_on_nodemeta_inventory_change_item, core.register_on_nodemeta_inventory_change_item = make_registration()
+core.registered_on_nodemeta_inventory_add_item, core.register_on_nodemeta_inventory_add_item = make_registration()
+core.registered_on_detached_inventory_remove_item, core.register_on_detached_inventory_remove_item = make_registration()
+core.registered_on_detached_inventory_change_item, core.register_on_detached_inventory_change_item = make_registration()
+core.registered_on_detached_inventory_add_item, core.register_on_detached_inventory_add_item = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

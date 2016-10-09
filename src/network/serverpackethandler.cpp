@@ -1619,7 +1619,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// Placement was handled in lua
 
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(item)) {
+			if (playersao->setWieldedItem(m_script, item)) {
 				SendInventory(playersao);
 			}
 		}
@@ -1655,7 +1655,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		if (m_script->item_OnUse(
 				item, playersao, pointed)) {
 			// Apply returned ItemStack
-			if (playersao->setWieldedItem(item)) {
+			if (playersao->setWieldedItem(m_script, item)) {
 				SendInventory(playersao);
 			}
 		}
@@ -1673,7 +1673,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 		if (m_script->item_OnSecondaryUse(
 				item, playersao)) {
-			if( playersao->setWieldedItem(item)) {
+			if( playersao->setWieldedItem(m_script, item)) {
 				SendInventory(playersao);
 			}
 		}

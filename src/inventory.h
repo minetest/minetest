@@ -27,8 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include <string>
 #include <vector>
+#include "script/scripting_game.h"
 
 struct ToolCapabilities;
+class InventoryChangeReceiver;
 
 struct ItemStack
 {
@@ -172,7 +174,7 @@ struct ItemStack
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size, IItemDefManager *itemdef);
+	InventoryList(std::string name, u32 size, IItemDefManager *itemdef, InventoryChangeReceiver *rec);
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
@@ -200,18 +202,18 @@ public:
 	const ItemStack& getItem(u32 i) const;
 	ItemStack& getItem(u32 i);
 	// Returns old item. Parameter can be an empty item.
-	ItemStack changeItem(u32 i, const ItemStack &newitem);
+	ItemStack changeItem(GameScripting *script_interface, u32 i, const ItemStack &newitem);
 	// Delete item
-	void deleteItem(u32 i);
+	void deleteItem(GameScripting *script_interface, u32 i);
 
 	// Adds an item to a suitable place. Returns leftover item (possibly empty).
-	ItemStack addItem(const ItemStack &newitem);
+	ItemStack addItem(GameScripting *script_interface, const ItemStack &newitem);
 
 	// If possible, adds item to given slot.
 	// If cannot be added at all, returns the item back.
 	// If can be added partly, decremented item is returned back.
 	// If can be added fully, empty item is returned.
-	ItemStack addItem(u32 i, const ItemStack &newitem);
+	ItemStack addItem(GameScripting *script_interface, u32 i, const ItemStack &newitem);
 
 	// Checks whether the item could be added to the given slot
 	// If restitem is non-NULL, it receives the part of newitem that
@@ -231,12 +233,12 @@ public:
 	// If not as many items exist as requested, removes as
 	// many as possible.
 	// Returns the items that were actually removed.
-	ItemStack removeItem(const ItemStack &item);
+	ItemStack removeItem(GameScripting *script_interface, const ItemStack &item);
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
 	// Returns empty item if couldn't take any.
-	ItemStack takeItem(u32 i, u32 takecount);
+	ItemStack takeItem(GameScripting *script_interface, u32 i, u32 takecount);
 
 	// Similar to takeItem, but keeps the slot intact.
 	ItemStack peekItem(u32 i, u32 peekcount) const;
@@ -244,18 +246,63 @@ public:
 	// Move an item to a different list (or a different stack in the same list)
 	// count is the maximum number of items to move (0 for everything)
 	// returns number of moved items
-	u32 moveItem(u32 i, InventoryList *dest, u32 dest_i,
+	u32 moveItem(GameScripting *script_interface, u32 i, InventoryList *dest, u32 dest_i,
 		u32 count = 0, bool swap_if_needed = true, bool *did_swap = NULL);
 
 	// like moveItem, but without a fixed destination index
 	// also with optional rollback recording
-	void moveItemSomewhere(u32 i, InventoryList *dest, u32 count);
+	void moveItemSomewhere(GameScripting *script_interface, u32 i, InventoryList *dest, u32 count);
 
 private:
 	std::vector<ItemStack> m_items;
 	u32 m_size, m_width;
 	std::string m_name;
 	IItemDefManager *m_itemdef;
+	InventoryChangeReceiver *m_rec;
+};
+
+class InventoryChangeReceiver
+{
+public:
+    virtual void on_remove_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	const ItemStack &deleted_item) = 0;
+    virtual void on_change_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &old_item,
+	const ItemStack &new_item) = 0;
+    virtual void on_add_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &added_item) = 0;
+    virtual ~InventoryChangeReceiver() {};
+};
+
+class DetachedInventoryChangeReceiver: public InventoryChangeReceiver
+{
+    std::string m_name;
+public:
+    DetachedInventoryChangeReceiver(const std::string &name);
+    ~DetachedInventoryChangeReceiver();
+    void on_remove_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list,
+	const ItemStack &deleted_item);
+    void on_change_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &old_item,
+	const ItemStack &new_item);
+    void on_add_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &added_item);
 };
 
 class Inventory
@@ -266,7 +313,7 @@ public:
 	void clear();
 	void clearContents();
 
-	Inventory(IItemDefManager *itemdef);
+	Inventory(IItemDefManager *itemdef, InventoryChangeReceiver *m_rec);
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
 	bool operator == (const Inventory &other) const;
@@ -283,15 +330,6 @@ public:
 	const InventoryList * getList(const std::string &name) const;
 	std::vector<const InventoryList*> getLists();
 	bool deleteList(const std::string &name);
-	// A shorthand for adding items. Returns leftover item (possibly empty).
-	ItemStack addItem(const std::string &listname, const ItemStack &newitem)
-	{
-		m_dirty = true;
-		InventoryList *list = getList(listname);
-		if(list == NULL)
-			return newitem;
-		return list->addItem(newitem);
-	}
 
 	bool checkModified() const
 	{
@@ -308,6 +346,7 @@ private:
 	const s32 getListIndex(const std::string &name) const;
 
 	std::vector<InventoryList*> m_lists;
+	InventoryChangeReceiver *m_rec;
 	IItemDefManager *m_itemdef;
 	bool m_dirty;
 };

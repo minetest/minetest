@@ -2040,6 +2040,30 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_nodemeta_inventory_add_item(func(pos, list_name, slot, stack))`
+    * Called when any node metadata inventory receive item.
+    * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.
+* `minetest.register_on_nodemeta_inventory_change_item(func(pos, list_name, slot, old_item, new_item))`
+    * Called when any node metadata inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+    * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.
+* `minetest.register_on_nodemeta_inventory_remove_item(func(pos, list_name, stack))`
+    * Called when any node metadata inventory loose item.
+    * 'pos' - {'x','y','z'} - absolute position of affected node with metadata.
+* `minetest.register_on_detached_inventory_add_item(func(name, list_name, slot, stack))`
+    * Called when any detached inventory receive item.
+    * 'name' - String, name of detached inventory.
+* `minetest.register_on_detached_inventory_change_item(func(name, list_name, slot, old_item, new_item))`
+    * Called when any detached inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+    * 'name' - String, name of detached inventory.
+* `minetest.register_on_detached_inventory_remove_item(func(name, list_name, stack))`
+    * Called when any detached inventory loose item.
+    * 'name' - String, name of detached inventory.
+* `minetest.register_on_player_inventory_add_item(func(player, list_name, slot, stack))`
+    * Called when any player receive item.
+* `minetest.register_on_player_inventory_change_item(func(player, list_name, slot, old_item, new_item))`
+    * Called when any players' inventory change it content in slot number 'slot' from 'old_item' ItemStack to 'new_item' ItemStack.
+* `minetest.register_on_player_inventory_remove_item(func(player, list_name, stack))`
+    * Called when any player loose item.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
