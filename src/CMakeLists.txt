@@ -726,7 +726,7 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
 	endif()
 
-	if(NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+	if(WIN32 AND NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -DWIN32_NO_ZLIB_WINAPI")
 		message(WARNING "Defaulting to cdecl for zlib on win32 because ZLIBWAPI_DLL"
 			" isn't set, ensure that ZLIBWAPI_DLL is set if you want stdcall.")
