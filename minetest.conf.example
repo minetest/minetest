@@ -1507,7 +1507,7 @@
 
 #    Prevent mods from doing insecure things like running shell commands.
 #    type: bool
-# secure.enable_security = false
+# secure.enable_security = true
 
 #    Comma-separated list of trusted mods that are allowed to access insecure
 #    functions even when mod security is on (via request_insecure_environment()).
