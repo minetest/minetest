@@ -1161,7 +1161,7 @@ mgvalleys_np_inter_valley_slope (Valley Slope) noise_params 0.5, 0.5, (128, 128,
 [*Security]
 
 #    Prevent mods from doing insecure things like running shell commands.
-secure.enable_security (Enable mod security) bool false
+secure.enable_security (Enable mod security) bool true
 
 #    Comma-separated list of trusted mods that are allowed to access insecure
 #    functions even when mod security is on (via request_insecure_environment()).
