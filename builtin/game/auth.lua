@@ -47,6 +47,8 @@ local function read_auth_file()
 			if (name and password and privilege_string) then
 			   local privileges = core.string_to_privs(privilege_string)
 			   newtable[name] = {password=password, privileges=privileges, last_login=last_login}
+			else
+			   core.log("error", "Invalid line in "..core.auth_file_path..": "..line.."; ignoring.")
 			end
 		end
 	end
