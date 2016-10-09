@@ -659,10 +659,7 @@ void GenericCAO::initialize(const std::string &data)
 		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
 			m_is_local_player = true;
 			m_is_visible = false;
-			LocalPlayer* localplayer = player;
-
-			assert( localplayer != NULL );
-			localplayer->setCAO(this);
+			player->setCAO(this);
 		}
 		m_env->addPlayerName(m_name.c_str());
 	}
