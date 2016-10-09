@@ -287,6 +287,9 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				prompt.CompletionSend(cursorpos, line);
 				//m_client->autocompletion_chatprompt = &prompt;
 				//m_client->sendChatAutocomplete(cursorpos, line);
+
+				if (m_script->on_chat_autocomplete(m_nick, cursorpos, line))
+					prompt.CompletionReceive(cursorpos, line);
 			}
 
 			break;
