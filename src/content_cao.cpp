@@ -613,45 +613,7 @@ bool GenericCAO::collideWithObjects()
 void GenericCAO::initialize(const std::string &data)
 {
 	infostream<<"GenericCAO: Got init data"<<std::endl;
-	std::istringstream is(data, std::ios::binary);
-	int num_messages = 0;
-	// version
-	u8 version = readU8(is);
-	// check version
-	if(version == 1) // In PROTOCOL_VERSION 14
-	{
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_id = readS16(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		num_messages = readU8(is);
-	}
-	else if(version == 0) // In PROTOCOL_VERSION 13
-	{
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		num_messages = readU8(is);
-	}
-	else
-	{
-		errorstream<<"GenericCAO: Unsupported init data version"
-				<<std::endl;
-		return;
-	}
-
-	for(int i=0; i<num_messages; i++)
-	{
-		std::string message = deSerializeLongString(is);
-		processMessage(message);
-	}
-
-	pos_translator.init(m_position);
-	updateNodePos();
+	processInitData(data);
 
 	if (m_is_player) {
 		// Check if it's the current player
@@ -663,6 +625,43 @@ void GenericCAO::initialize(const std::string &data)
 		}
 		m_env->addPlayerName(m_name.c_str());
 	}
+}
+
+void GenericCAO::processInitData(const std::string &data)
+{
+	std::istringstream is(data, std::ios::binary);
+	int num_messages = 0;
+	// version
+	u8 version = readU8(is);
+	// check version
+	if (version == 1) { // In PROTOCOL_VERSION 14
+		m_name = deSerializeString(is);
+		m_is_player = readU8(is);
+		m_id = readS16(is);
+		m_position = readV3F1000(is);
+		m_yaw = readF1000(is);
+		m_hp = readS16(is);
+		num_messages = readU8(is);
+	} else if (version == 0) { // In PROTOCOL_VERSION 13
+		m_name = deSerializeString(is);
+		m_is_player = readU8(is);
+		m_position = readV3F1000(is);
+		m_yaw = readF1000(is);
+		m_hp = readS16(is);
+		num_messages = readU8(is);
+	} else {
+		errorstream<<"GenericCAO: Unsupported init data version"
+				<<std::endl;
+		return;
+	}
+
+	for (int i = 0; i < num_messages; i++) {
+		std::string message = deSerializeLongString(is);
+		processMessage(message);
+	}
+
+	pos_translator.init(m_position);
+	updateNodePos();
 }
 
 GenericCAO::~GenericCAO()
@@ -1761,7 +1760,7 @@ void GenericCAO::processMessage(const std::string &data)
 		u8 type = readU8(is);
 
 		if (GenericCAO *childobj = m_env->getGenericCAO(child_id)) {
-			childobj->initialize(deSerializeLongString(is));
+			childobj->processInitData(deSerializeLongString(is));
 		} else {
 			m_env->addActiveObject(child_id, type, deSerializeLongString(is));
 		}
