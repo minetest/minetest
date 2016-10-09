@@ -1588,7 +1588,7 @@
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-#    type: enum values: , be, cs, da, de, eo, es, et, fr, hu, id, it, ja, jbo, ko, ky, lt, nb, nl, pl, pt, pt_BR, ro, ru, tr, uk, zh_CN, zh_TW
+#    type: enum values: , be, ca, cs, da, de, en, eo, es, et, fr, he, hu, id, it, ja, jbo, ko, ky, lt, nb, nl, pl, pt, pt_BR, ro, ru, sr_Cyrl, tr, uk, zh_CN, zh_TW
 # language =
 
 #    Level of logging to be written to debug.txt:
