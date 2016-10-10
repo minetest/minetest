@@ -41,7 +41,7 @@ core.register_entity(":__builtin:falling_node", {
 	end,
 
 	on_step = function(self, dtime)
-		 -- Set gravity
+		-- Set gravity
 		local acceleration = self.object:getacceleration()
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
 			self.object:setacceleration({x = 0, y = -10, z = 0})
@@ -52,10 +52,9 @@ core.register_entity(":__builtin:falling_node", {
 		local bcn = core.get_node(bcp)
 		local bcd = core.registered_nodes[bcn.name]
 		-- Note: walkable is in the node definition, not in item groups
-		if not bcd or
-				(bcd.walkable or
+		if not bcd or bcd.walkable or
 				(core.get_item_group(self.node.name, "float") ~= 0 and
-				bcd.liquidtype ~= "none")) then
+				bcd.liquidtype ~= "none") then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
 				local addlevel = self.node.level
@@ -75,20 +74,20 @@ core.register_entity(":__builtin:falling_node", {
 			local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
 			-- Check what's here
 			local n2 = core.get_node(np)
+			local nd = core.registered_nodes[n2.name]
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
-			if n2.name ~= "air" and (not core.registered_nodes[n2.name] or
-					core.registered_nodes[n2.name].liquidtype == "none") then
+			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
 				core.remove_node(np)
-				if core.registered_nodes[n2.name].buildable_to == false then
+				if nd.buildable_to == false then
 					-- Add dropped items
 					local drops = core.get_node_drops(n2.name, "")
-					for _, dropped_item in ipairs(drops) do
+					for _, dropped_item in pairs(drops) do
 						core.add_item(np, dropped_item)
 					end
 				end
 				-- Run script hook
-				for _, callback in ipairs(core.registered_on_dignodes) do
+				for _, callback in pairs(core.registered_on_dignodes) do
 					callback(np, n2)
 				end
 			end
@@ -116,7 +115,7 @@ end
 function drop_attached_node(p)
 	local nn = core.get_node(p).name
 	core.remove_node(p)
-	for _, item in ipairs(core.get_node_drops(nn, "")) do
+	for _, item in pairs(core.get_node_drops(nn, "")) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
@@ -156,14 +155,15 @@ function nodeupdate_single(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
 		local n_bottom = core.get_node(p_bottom)
+		local d_bottom = core.registered_nodes[n_bottom.name]
 		-- Note: walkable is in the node definition, not in item groups
-		if core.registered_nodes[n_bottom.name] and
+		if d_bottom and
 				(core.get_item_group(n.name, "float") == 0 or
-					core.registered_nodes[n_bottom.name].liquidtype == "none") and
-				(n.name ~= n_bottom.name or (core.registered_nodes[n_bottom.name].leveled and
+					d_bottom.liquidtype == "none") and
+				(n.name ~= n_bottom.name or (d_bottom.leveled and
 					core.get_node_level(p_bottom) < core.get_node_max_level(p_bottom))) and
-				(not core.registered_nodes[n_bottom.name].walkable or
-					core.registered_nodes[n_bottom.name].buildable_to) then
+				(not d_bottom.walkable or
+					d_bottom.buildable_to) then
 			n.level = core.get_node_level(p)
 			core.remove_node(p)
 			spawn_falling_node(p, n)
