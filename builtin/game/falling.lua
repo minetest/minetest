@@ -38,14 +38,15 @@ core.register_entity(":__builtin:falling_node", {
 		elseif staticdata ~= "" then
 			self:set_node({name = staticdata})
 		end
-	end,
 
-	on_step = function(self, dtime)
-		 -- Set gravity
+		-- Set gravity
 		local acceleration = self.object:getacceleration()
 		if acceleration.y ~= -10 then
 			self.object:setacceleration({x = acceleration.x, y = -10, z = acceleration.z})
 		end
+	end,
+
+	on_step = function(self, dtime)
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z} -- Position of bottom center point
