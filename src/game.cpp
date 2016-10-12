@@ -605,7 +605,9 @@ public:
 	void draw(s32 x_left, s32 y_bottom, video::IVideoDriver *driver,
 		  gui::IGUIFont *font) const
 	{
-		UNORDERED_MAP<std::string, Meta> m_meta;
+		// Do *not* use UNORDERED_MAP here as the order needs
+		// to be the same for each call to prevent flickering
+		std::map<std::string, Meta> m_meta;
 
 		for (std::deque<Piece>::const_iterator k = m_log.begin();
 				k != m_log.end(); ++k) {
@@ -615,7 +617,7 @@ public:
 					i != piece.values.end(); ++i) {
 				const std::string &id = i->first;
 				const float &value = i->second;
-				UNORDERED_MAP<std::string, Meta>::iterator j = m_meta.find(id);
+				std::map<std::string, Meta>::iterator j = m_meta.find(id);
 
 				if (j == m_meta.end()) {
 					m_meta[id] = Meta(value);
@@ -642,7 +644,7 @@ public:
 			sizeof(usable_colors) / sizeof(*usable_colors);
 		u32 next_color_i = 0;
 
-		for (UNORDERED_MAP<std::string, Meta>::iterator i = m_meta.begin();
+		for (std::map<std::string, Meta>::iterator i = m_meta.begin();
 				i != m_meta.end(); ++i) {
 			Meta &meta = i->second;
 			video::SColor color(255, 200, 200, 200);
@@ -658,7 +660,7 @@ public:
 		s32 textx2 = textx + 200 - 15;
 		s32 meta_i = 0;
 
-		for (UNORDERED_MAP<std::string, Meta>::const_iterator i = m_meta.begin();
+		for (std::map<std::string, Meta>::const_iterator i = m_meta.begin();
 				i != m_meta.end(); ++i) {
 			const std::string &id = i->first;
 			const Meta &meta = i->second;
