@@ -107,7 +107,7 @@ void main(void)
 	vec4 col = vec4(color.rgb, base.a);
 	col *= gl_Color;
 	if (fogDistance != 0.0) {
-		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
+		float d = max(0.0, min(length(eyeVec) / fogDistance * 1.5 - 0.6, 1.0));
 		col = mix(col, skyBgColor, d);
 	}
 	gl_FragColor = vec4(col.rgb, base.a);
