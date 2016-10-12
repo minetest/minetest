@@ -4168,7 +4168,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 				runData->fog_range * 1.0,
 				0.01,
 				false, // pixel fog
-				false // range fog
+				true // range fog
 		);
 	} else {
 		driver->setFog(
