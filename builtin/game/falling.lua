@@ -49,11 +49,11 @@ core.register_entity(":__builtin:falling_node", {
 		-- Turn to actual sand when collides to ground or just move
 		local pos = self.object:getpos()
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z} -- Position of bottom center point
-		local bcn = core.get_node(bcp)
-		local bcd = core.registered_nodes[bcn.name]
+		local bcn = core.get_node_or_nil(bcp)
+		local bcd = bcn and core.registered_nodes[bcn.name]
 		-- Note: walkable is in the node definition, not in item groups
-		if not bcd or
-				(bcd.walkable or
+		if bcn and
+				(not bcd or bcd.walkable or
 				(core.get_item_group(self.node.name, "float") ~= 0 and
 				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
@@ -155,9 +155,8 @@ function nodeupdate_single(p)
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
-		local n_bottom = core.get_node(p_bottom)
-		-- Note: walkable is in the node definition, not in item groups
-		if core.registered_nodes[n_bottom.name] and
+		local n_bottom = core.get_node_or_nil(p_bottom)
+		if n_bottom and core.registered_nodes[n_bottom.name] and
 				(core.get_item_group(n.name, "float") == 0 or
 					core.registered_nodes[n_bottom.name].liquidtype == "none") and
 				(n.name ~= n_bottom.name or (core.registered_nodes[n_bottom.name].leveled and
