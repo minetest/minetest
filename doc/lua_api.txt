@@ -2966,13 +2966,11 @@ an itemstring, a table or `nil`.
 #### Methods
 * `is_empty()`: Returns `true` if stack is empty.
 * `get_name()`: Returns item name (e.g. `"default:stone"`).
-* `set_name(item_name)`: Returns boolean success.
-  Clears item on failure.
+* `set_name(item_name)`: Returns boolean whether item was cleared
 * `get_count()`: Returns number of items on the stack.
-* `set_count(count)`
+* `set_count(count)`: Returns boolean whether item was cleared
 * `get_wear()`: Returns tool wear (`0`-`65535`), `0` for non-tools.
-* `set_wear(wear)`: Returns boolean success.
-  Clears item on failure.
+* `set_wear(wear)`: Returns boolean whether item was cleared
 * `get_metadata()`: Returns metadata (a string attached to an item stack).
 * `set_metadata(metadata)`: Returns true.
 * `clear()`: removes all items from the stack, making it empty.
