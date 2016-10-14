@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-07-13 08:25+0000\n"
-"Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
-"Language-Team: Chinese (Taiwan) <https://hosted.weblate.org/projects/"
-"minetest/minetest/zh_TW/>\n"
+"PO-Revision-Date: 2016-10-14 16:29+0000\n"
+"Last-Translator: Mingye Wang <arthur200126@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) "
+"<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1369,12 +1369,11 @@ msgstr "活動區塊管理間隔"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
-msgstr "活動區塊調整間隔"
+msgstr "活動方塊調整間隔"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifiers"
-msgstr "活動區塊調整間隔"
+msgstr "活動區塊調整器"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1459,7 +1458,7 @@ msgstr "自動回報到伺服器列表。"
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "自動奔跑按鍵"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1495,7 +1494,7 @@ msgstr "在玩家內構建"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "內建"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1538,9 +1537,8 @@ msgid "Chat toggle key"
 msgstr "聊天切換按鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "指令"
+msgstr "聊天指令"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1633,13 +1631,12 @@ msgid "Colored fog"
 msgstr "彩色迷霧"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"以逗號分隔的 mod 清單，讓您可以存取 HTTP API，\n"
-"其可從網際網路上傳及下載資料。"
+"以逗號分隔的 mod 清單，允許其存取 HTTP API，\n"
+"從而網際網路上傳及下載資料。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1804,7 +1801,7 @@ msgstr "預設特權"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "缺省報告格式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1828,7 +1825,7 @@ msgstr "定義玩家最大可傳送的距離，以方塊計（0 = 不限制）�
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "建造后發送區塊前延遲的時間"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2018,13 +2015,12 @@ msgstr ""
 "必須啟用著色器。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Engine profiling data print interval"
-msgstr "分析列印間隔"
+msgstr "引擎性能資料印出間隔"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "主體方法"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2091,9 +2087,8 @@ msgid "Field of view"
 msgstr "視野"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Field of view for zoom"
-msgstr "視野"
+msgstr "放大后的視野"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
@@ -3003,9 +2998,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Loading Block Modifiers"
-msgstr "活動區塊調整間隔"
+msgstr "正在載入方塊調整器"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3800,11 +3794,10 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr "避免 mod 做出不安全的舉動，像是執行 shell 指令等。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Print the engine's profiling data in regular intervals (in seconds). 0 = "
 "disable. Useful for developers."
-msgstr "分析器資料印出間隔。0 = 停用。對開發者有用。"
+msgstr "引擎性能資料印出間隔的秒數。0 = 停用。對開發者有用。"
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
@@ -4255,7 +4248,7 @@ msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"物品（丟棄的物品）可以存活多久，以秒計。\n"
+"物品物體（丟棄的物品）可以存活多久，以秒計。\n"
 "設定其為 -1 以停用這個功能。"
 
 #: src/settings_translation_file.cpp
