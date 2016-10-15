@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-10-14 16:29+0000\n"
-"Last-Translator: Mingye Wang <arthur200126@gmail.com>\n"
+"PO-Revision-Date: 2016-10-15 08:04+0000\n"
+"Last-Translator: Jeff Huang <s8321414@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_TW/>\n"
 "Language: zh_TW\n"
@@ -2095,13 +2095,12 @@ msgid "Field of view in degrees."
 msgstr "以度計算的視野。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"快速移動（透過使用鍵）。\n"
-"這需要伺服器上的「快速」特權。"
+"縮放視野。\n"
+"這需要伺服器上的「縮放」特權。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2244,7 +2243,7 @@ msgstr "生成一般地圖"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "全域回呼"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2297,6 +2296,10 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"使用分析器工具本身：\n"
+"* 分析空函數。\n"
+"這會讓消耗增加，儀表增加（+1 函式呼叫）。\n"
+"* 採樣工具會被用於更新統計。"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -2438,34 +2441,38 @@ msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"內建工具。\n"
+"這通常僅被核心／內建貢獻者需要"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr ""
+msgstr "分析登錄的聊天指令。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"在登錄上分析全域回呼。\n"
+"（任何您想要傳遞給 minetest.register_*() 函數的東西）"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
+msgstr "分析登錄的活躍區塊修飾器的動作函數。"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
-msgstr ""
+msgstr "分析登錄的載入中區塊修飾器的動作函數。"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "分析登錄的實體方法。"
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr ""
+msgstr "儀表"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
@@ -2504,7 +2511,6 @@ msgstr ""
 "控制細節的品質。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick button repetition interval"
 msgstr "搖桿按鈕重覆間隔"
 
@@ -2735,15 +2741,14 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling autorun.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"切換快速模式的按鍵。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"切換自動奔跑的按鍵。\n"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2796,15 +2801,14 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "切換視角更新的按鍵。僅對開發有用。\n"
-"請見 http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"請見 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2988,7 +2992,7 @@ msgstr "液體更新 tick"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
-msgstr ""
+msgstr "載入遊戲分析器"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2996,6 +3000,9 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"載入遊戲分析器以收集遊戲分析資料。\n"
+"提供一個 /profiler 指令以存取已編譯的設定檔。\n"
+"對 mod 開發者與伺服器提供者有用。"
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
@@ -3438,14 +3445,12 @@ msgid "Maximum hotbar width"
 msgstr "快捷列最大寬度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum number of blocks that are simultaneously sent in total."
-msgstr "最大可同時連線的玩家數。"
+msgstr "最大同時總傳送的區塊數量。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum number of blocks that are simultaneously sent per client."
-msgstr "可被放進佇列內等待載入的最大區塊數。"
+msgstr "每個客戶端可同時傳送的最大區塊數量。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
@@ -3498,7 +3503,6 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr "最大靜態儲存於一個區塊中的物件數量。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum objects per block"
 msgstr "每個區塊最大物件數"
 
@@ -3511,12 +3515,10 @@ msgstr ""
 "如果有東西要顯示在快捷列左邊或右邊時很有用。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum simultaneous block sends per client"
 msgstr "每個客戶端最大同時傳送區塊數"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Maximum simultaneous block sends total"
 msgstr "總和最大同時傳送區塊數"
 
@@ -3804,18 +3806,16 @@ msgid "Privileges that players with basic_privs can grant"
 msgstr "有 basic_privs 的玩家可以提升特權"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Profiler"
-msgstr "山谷分析"
+msgstr "分析器"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
 msgstr "分析器切換鍵"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Profiling"
-msgstr "Mod 分析器"
+msgstr "分析"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3851,9 +3851,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr "以自訂選單取代預設主選單。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "字型路徑"
+msgstr "報告路徑"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -4028,7 +4027,6 @@ msgstr ""
 "必須同時啟用著色器。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
@@ -4164,6 +4162,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"設定被儲存為預設格式。\n"
+"當呼叫「/profiler save [格式]」但不包含格式時。"
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
@@ -4173,7 +4173,7 @@ msgstr "塵土或其他填充物的深度"
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved "
 "to.\n"
-msgstr ""
+msgstr "設定檔將會被儲存到的，相對於您的全域路徑的檔案路徑。\n"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -4470,7 +4470,6 @@ msgstr ""
 "硬體（例如在物品欄中節點的繪圖至材質）。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
