@@ -135,5 +135,3 @@ private:
 #endif
 
 #endif // DEBUG_HEADER
-
-
