@@ -1,4 +1,8 @@
 #!/bin/bash -e
+echo "Preparing for $TRAVIS_COMMIT_RANGE"
+. util/travis/common.sh
+
+needs_compile || exit 0
 
 if [[ $TRAVIS_OS_NAME == "linux" ]]; then
 	sudo apt-get update
