@@ -3071,6 +3071,10 @@ These functions return the leftover itemstack.
     * Replaces definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
     * `hud_definition`: definition to replace builtin definition
+* `minetest.send_join_message(player_name)`
+    * Can be overridden by mods to change the join message
+* `minetest.send_leave_message(player_name, timed_out)`
+    * Can be overridden by mods to change the leave message
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
     * Gives a unique hash number for a node position (16+16+16=48bit)
 * `minetest.get_position_from_hash(hash)`: returns a position
