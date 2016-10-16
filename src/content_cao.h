@@ -58,6 +58,8 @@ struct SmoothTranslator
 
 class GenericCAO : public ClientActiveObject
 {
+public:
+	v3f m_attachment_position;
 private:
 	// Only set at initialization
 	std::string m_name;
@@ -92,7 +94,7 @@ private:
 	bool m_animation_loop;
 	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
-	v3f m_attachment_position;
+
 	v3f m_attachment_rotation;
 	bool m_attached_to_local;
 	int m_anim_frame;
