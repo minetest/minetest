@@ -42,22 +42,30 @@ end
 
 local player_list = {}
 
-core.register_on_joinplayer(function(player)
-	local player_name = player:get_player_name()
-	player_list[player_name] = player
+function core.send_join_message(player_name)
 	if not minetest.is_singleplayer() then
 		core.chat_send_all("*** " .. player_name .. " joined the game.")
 	end
-end)
+end
 
-core.register_on_leaveplayer(function(player, timed_out)
-	local player_name = player:get_player_name()
-	player_list[player_name] = nil
+function core.send_leave_message(player_name, timed_out)
 	local announcement = "*** " ..  player_name .. " left the game."
 	if timed_out then
 		announcement = announcement .. " (timed out)"
 	end
 	core.chat_send_all(announcement)
+end
+
+core.register_on_joinplayer(function(player)
+	local player_name = player:get_player_name()
+	player_list[player_name] = player
+	core.send_join_message(player_name)
+end)
+
+core.register_on_leaveplayer(function(player, timed_out)
+	local player_name = player:get_player_name()
+	player_list[player_name] = nil
+	core.send_leave_message(player_name, timed_out)
 end)
 
 function core.get_connected_players()
