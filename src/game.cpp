@@ -1741,6 +1741,8 @@ private:
 	bool m_cache_enable_joysticks;
 	bool m_cache_enable_particles;
 	bool m_cache_enable_fog;
+	bool m_cache_enable_noclip;
+	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_right_click_time;
@@ -1789,6 +1791,10 @@ Game::Game() :
 	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("repeat_rightclick_time",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("noclip",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("free_move",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -2959,12 +2965,14 @@ void Game::toggleFreeMove(float *statustext_time)
 	static const wchar_t *msg[] = { L"free_move disabled", L"free_move enabled" };
 
 	bool free_move = !g_settings->getBool("free_move");
-	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	*statustext_time = 0;
 	statustext = msg[free_move];
-	if (free_move && !client->checkPrivilege("fly"))
+	if (free_move && !client->checkPrivilege("fly")) {
 		statustext += L" (note: no 'fly' privilege)";
+	} else {
+		g_settings->set("free_move", bool_to_cstr(free_move));
+	}
 }
 
 
@@ -2999,13 +3007,15 @@ void Game::toggleNoClip(float *statustext_time)
 {
 	static const wchar_t *msg[] = { L"noclip disabled", L"noclip enabled" };
 	bool noclip = !g_settings->getBool("noclip");
-	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	*statustext_time = 0;
 	statustext = msg[noclip];
 
-	if (noclip && !client->checkPrivilege("noclip"))
+	if (noclip && !client->checkPrivilege("noclip")) {
 		statustext += L" (note: no 'noclip' privilege)";
+	} else {
+		g_settings->set("noclip", bool_to_cstr(noclip));
+	}
 }
 
 void Game::toggleCinematic(float *statustext_time)
@@ -4097,7 +4107,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	float direct_brightness;
 	bool sunlight_seen;
 
-	if (g_settings->getBool("free_move")) {
+	if (m_cache_enable_noclip && m_cache_enable_free_move) {
 		direct_brightness = time_brightness;
 		sunlight_seen = true;
 	} else {
@@ -4533,6 +4543,9 @@ void Game::readSettings()
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
 	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
 	m_repeat_right_click_time            = g_settings->getFloat("repeat_rightclick_time");
+
+	m_cache_enable_noclip                = g_settings->getBool("noclip");
+	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 }
