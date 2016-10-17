@@ -1812,7 +1812,8 @@ Spatial Vectors
 * `vector.distance(p1, p2)`: returns a number
 * `vector.length(v)`: returns a number
 * `vector.normalize(v)`: returns a vector
-* `vector.round(v)`: returns a vector, each dimension rounded to floor
+* `vector.floor(v)`: returns a vector, each dimension rounded down
+* `vector.round(v)`: returns a vector, each dimension rounded to nearest int
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
 
