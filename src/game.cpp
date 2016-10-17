@@ -1845,6 +1845,10 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("repeat_rightclick_time",
 		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("noclip",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("free_move",
+		&settingChangedCallback, this);
 }
 
 bool Game::startup(bool *kill,
@@ -2965,14 +2969,12 @@ void Game::toggleFreeMove(float *statustext_time)
 	static const wchar_t *msg[] = { L"free_move disabled", L"free_move enabled" };
 
 	bool free_move = !g_settings->getBool("free_move");
+	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	*statustext_time = 0;
 	statustext = msg[free_move];
-	if (free_move && !client->checkPrivilege("fly")) {
+	if (free_move && !client->checkPrivilege("fly"))
 		statustext += L" (note: no 'fly' privilege)";
-	} else {
-		g_settings->set("free_move", bool_to_cstr(free_move));
-	}
 }
 
 
@@ -3007,15 +3009,13 @@ void Game::toggleNoClip(float *statustext_time)
 {
 	static const wchar_t *msg[] = { L"noclip disabled", L"noclip enabled" };
 	bool noclip = !g_settings->getBool("noclip");
+	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	*statustext_time = 0;
 	statustext = msg[noclip];
 
-	if (noclip && !client->checkPrivilege("noclip")) {
+	if (noclip && !client->checkPrivilege("noclip"))
 		statustext += L" (note: no 'noclip' privilege)";
-	} else {
-		g_settings->set("noclip", bool_to_cstr(noclip));
-	}
 }
 
 void Game::toggleCinematic(float *statustext_time)
