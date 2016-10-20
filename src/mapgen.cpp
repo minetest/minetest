@@ -102,6 +102,7 @@ Mapgen::Mapgen()
 	seed        = 0;
 	water_level = 0;
 	flags       = 0;
+	map_generation_limit = 0;
 
 	vm        = NULL;
 	ndef      = NULL;
@@ -119,6 +120,7 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	water_level = params->water_level;
 	flags       = params->flags;
 	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	map_generation_limit = MYMIN(MAX_MAP_GENERATION_LIMIT, params->map_generation_limit);
 
 	/*
 		We are losing half our entropy by doing this, but it is necessary to
@@ -990,6 +992,7 @@ void MapgenParams::readParams(const Settings *settings)
 	settings->getS16NoEx("water_level", water_level);
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
+	settings->getU16NoEx("map_generation_limit", map_generation_limit);
 
 	delete bparams;
 	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
@@ -1007,6 +1010,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->setS16("water_level", water_level);
 	settings->setS16("chunksize", chunksize);
 	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
+	settings->setU16("map_generation_limit", MYMIN(MAX_MAP_GENERATION_LIMIT, map_generation_limit));
 
 	if (bparams)
 		bparams->writeParams(settings);

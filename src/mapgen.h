@@ -125,6 +125,7 @@ struct MapgenParams {
 	u64 seed;
 	s16 water_level;
 	u32 flags;
+	u16 map_generation_limit;
 
 	BiomeParams *bparams;
 
@@ -134,6 +135,7 @@ struct MapgenParams {
 		seed(0),
 		water_level(1),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
+		map_generation_limit(MAX_MAP_GENERATION_LIMIT),
 		bparams(NULL)
 	{
 	}
@@ -161,6 +163,7 @@ public:
 	u32 flags;
 	bool generating;
 	int id;
+	u16 map_generation_limit;
 
 	MMVManip *vm;
 	INodeDefManager *ndef;

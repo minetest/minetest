@@ -109,6 +109,7 @@ std::string TestMapSettingsManager::makeMetaFile(bool make_corrupt)
 	const char *metafile_contents =
 		"mg_name = v5\n"
 		"seed = 1234\n"
+		"map_generation_limit = 20345\n"
 		"mg_flags = light\n"
 		"mgv5_np_filler_depth = 20, 1, (150, 150, 150), 261, 4, 0.7,  1.0\n"
 		"mgv5_np_height = 20, 10, (250, 250, 250), 84174,  4, 0.5,  1.0\n";
@@ -149,11 +150,14 @@ void TestMapSettingsManager::testMapSettingsManager()
 	UASSERT(value == "1234");
 	UASSERT(mgr.getMapSetting("water_level", &value));
 	UASSERT(value == "20");
+	UASSERT(mgr.getMapSetting("map_generation_limit", &value));
+	UASSERT(value == "20345");
 
     // Pretend we have some mapgen settings configured from the scripting
 	UASSERT(mgr.setMapSetting("water_level", "15"));
 	UASSERT(mgr.setMapSetting("seed", "02468"));
 	UASSERT(mgr.setMapSetting("mg_flags", "nolight", true));
+	UASSERT(mgr.setMapSetting("map_generation_limit", "8000"));
 
 	NoiseParams script_np_filler_depth(0, 100, v3f(200, 100, 200), 261, 4, 0.7, 2.0);
 	NoiseParams script_np_factor(0, 100, v3f(50, 50, 50), 920381, 3, 0.45, 2.0);
