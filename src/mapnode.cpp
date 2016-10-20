@@ -54,10 +54,10 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 	param2 = a_param2;
 }
 
-void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
+void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f)
 {
 	// If node doesn't contain light data, ignore this
-	if(nodemgr->get(*this).param_type != CPT_LIGHT)
+	if(f.param_type != CPT_LIGHT)
 		return;
 	if(bank == LIGHTBANK_DAY)
 	{
@@ -71,6 +71,11 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 	}
 	else
 		assert("Invalid light bank" == NULL);
+}
+
+void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
+{
+	setLight(bank, a_light, nodemgr->get(*this));
 }
 
 bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
@@ -101,6 +106,13 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 		light = 0;
 
 	return MYMAX(f.light_source, light);
+}
+
+u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
+{
+	if(f.param_type == CPT_LIGHT)
+		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+	return 0;
 }
 
 u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
