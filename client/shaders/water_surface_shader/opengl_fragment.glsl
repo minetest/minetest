@@ -153,14 +153,14 @@ vec4 base = texture2D(baseTexture, uv).rgba;
 #if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT || MATERIAL_TYPE == TILE_MATERIAL_LIQUID_OPAQUE
 	float alpha = gl_Color.a;
 	if (fogDistance != 0.0) {
-		float d = max(0.0, min(length(eyeVec) / fogDistance * 1.5 - 0.6, 1.0));
-		alpha = mix(alpha, 0.0, d);
+		float d = clamp((fogDistance - length(eyeVec)) / (fogDistance * 0.6), 0.0, 1.0);
+		alpha = mix(0.0, alpha, d);
 	}
 	col = vec4(col.rgb, alpha);
 #else
 	if (fogDistance != 0.0) {
-		float d = max(0.0, min(length(eyeVec) / fogDistance * 1.5 - 0.6, 1.0));
-		col = mix(col, skyBgColor, d);
+		float d = clamp((fogDistance - length(eyeVec)) / (fogDistance * 0.6), 0.0, 1.0);
+		col = mix(skyBgColor, col, d);
 	}
 	col = vec4(col.rgb, base.a);
 #endif
