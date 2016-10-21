@@ -139,8 +139,11 @@ public:
 	v3f getSelectionPos() const
 	{ return m_selection_pos; }
 
-	void setSelectionMeshColor(const video::SColor &c)
-	{ m_selection_mesh_color = c; }
+	void setSelectionMeshColor(const video::SColor &color)
+	{ m_selection_mesh_color = color; }
+
+	void setSelectedFaceNormal(const v3f &face_normal)
+	{ m_selected_face_normal = face_normal; }
 
 	void drawLuaElements(const v3s16 &camera_offset);
 
@@ -169,6 +172,8 @@ private:
 
 	scene::IMesh* m_selection_mesh;
 	video::SColor m_selection_mesh_color;
+	v3f m_selected_face_normal;	
+
 	video::SMaterial m_selection_material;
 	bool m_use_selection_mesh;
 };

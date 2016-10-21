@@ -362,12 +362,15 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 			min_distance = (selected_object->getPosition() - camera_position).getLength();
 
+			hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
 			result.type = POINTEDTHING_OBJECT;
 			result.object_id = selected_object->getId();
 		}
 	}
 
 	// That didn't work, try to find a pointed at node
+
+	v3f selected_face_normal(0.0, 0.0, 0.0);
 
 	v3s16 pos_i = floatToInt(player_position, BS);
 
@@ -468,11 +471,14 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 				}
 				v3f centerpoint = facebox.getCenter();
 				f32 distance = (centerpoint - camera_position).getLength();
-				if (distance >= face_min_distance)
+				if (distance >= face_min_distance) {
 					continue;
-				if (!facebox.intersectsWithLine(shootline))
+				}
+				if (!facebox.intersectsWithLine(shootline)) {
 					continue;
+				}
 				result.node_abovesurface = pointed_pos + facedir;
+				hud->setSelectedFaceNormal(v3f(facedir.X, facedir.Y, facedir.Z));
 				face_min_distance = distance;
 			}
 		}
