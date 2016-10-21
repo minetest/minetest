@@ -2202,13 +2202,14 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.get_mapgen_setting_noiseparams(name)`
     * Same as above, but returns the value as a NoiseParams table if the setting `name` exists
       and is a valid NoiseParams
-* `minetest.set_mapgen_setting(name, value, [override_meta=false])`
+* `minetest.set_mapgen_setting(name, value, [override_meta])`
    * Sets a mapgen param to `value`, and will take effect if the corresponding mapgen setting
-     is not already present in map_meta.txt.  If the optional boolean override_meta is set to true,
-     this setting will become the active setting regardless of the map metafile contents.
+     is not already present in map_meta.txt.
+   * `override_meta` is an optional boolean (default: `false`). If this is set to true,
+     the setting will become the active setting regardless of the map metafile contents.
    * Note: to set the seed, use "seed", not "fixed_map_seed"
-* `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta=false])`
-   * Same as above, except value is a NoiseParams table
+* `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
+   * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
     * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
