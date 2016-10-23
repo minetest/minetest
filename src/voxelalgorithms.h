@@ -58,18 +58,19 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 /*!
  * Updates the lighting on the map.
  * The result will be correct only if
- * no nodes were changed except the given one.
+ * no nodes were changed except the given ones.
+ * Before calling this procedure make sure that all new nodes on
+ * the map have zero light level!
  *
- * \param p position of the changed node
- * \param oldnode this node was overwritten on the map
+ * \param oldnodes contains the MapNodes that were replaced by the new
+ * MapNodes and their positions
  * \param modified_blocks output, contains all map blocks that
  * the function modified
  */
-void update_lighting_node(
+void update_lighting_nodes(
 	Map *map,
 	INodeDefManager *ndef,
-	v3s16 p,
-	MapNode oldnode,
+	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks);
 
 } // namespace voxalgo
