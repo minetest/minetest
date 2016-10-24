@@ -313,7 +313,8 @@ public:
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
-
+	inline float getYaw() const
+		{return 0;}
 	std::string infoText()
 		{return m_infotext;}
 
