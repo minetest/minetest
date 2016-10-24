@@ -253,11 +253,15 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 	m_time += dtime;
 
 	bool unloaded = false;
-	v3f attached_offset = v3f(0,0,0);
+	bool is_attached = false;
+	v3f attached_pos = v3f(0,0,0);
+	float attached_yaw = 0;
 	if (m_attached_id != 0) {
-		if (ClientActiveObject *attached = env->getActiveObject(m_attached_id))
-			attached_offset = attached->getPosition() / BS;
-		else
+		if (ClientActiveObject *attached = env->getActiveObject(m_attached_id)) {
+			attached_pos = attached->getPosition() / BS;
+			attached_yaw = attached->getYaw();
+			is_attached = true;
+		} else
 			unloaded = true;
 	}
 
@@ -274,12 +278,18 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				// particle if it is attached to an unloaded
 				// object.
 				if (!unloaded) {
-					v3f pos = random_v3f(m_minpos, m_maxpos)
-							+ attached_offset;
+					v3f pos = random_v3f(m_minpos, m_maxpos);
 					v3f vel = random_v3f(m_minvel, m_maxvel);
 					v3f acc = random_v3f(m_minacc, m_maxacc);
-					// Make relative to offest
-					pos += attached_offset;
+
+					if (is_attached) {
+						// Apply attachment yaw and position
+						pos.rotateXZBy(attached_yaw);
+						pos += attached_pos;
+						vel.rotateXZBy(attached_yaw);
+						acc.rotateXZBy(attached_yaw);
+					}
+
 					float exptime = rand()/(float)RAND_MAX
 							*(m_maxexptime-m_minexptime)
 							+m_minexptime;
@@ -322,10 +332,18 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 		{
 			if (rand()/(float)RAND_MAX < dtime)
 			{
-				v3f pos = random_v3f(m_minpos, m_maxpos)
-						+ attached_offset;
+				v3f pos = random_v3f(m_minpos, m_maxpos);
 				v3f vel = random_v3f(m_minvel, m_maxvel);
 				v3f acc = random_v3f(m_minacc, m_maxacc);
+
+				if (is_attached) {
+					// Apply attachment yaw and position
+					pos.rotateXZBy(attached_yaw);
+					pos += attached_pos;
+					vel.rotateXZBy(attached_yaw);
+					acc.rotateXZBy(attached_yaw);
+				}
+
 				float exptime = rand()/(float)RAND_MAX
 						*(m_maxexptime-m_minexptime)
 						+m_minexptime;
