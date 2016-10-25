@@ -274,8 +274,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				// particle if it is attached to an unloaded
 				// object.
 				if (!unloaded) {
-					v3f pos = random_v3f(m_minpos, m_maxpos)
-							+ attached_offset;
+					v3f pos = random_v3f(m_minpos, m_maxpos);
 					v3f vel = random_v3f(m_minvel, m_maxvel);
 					v3f acc = random_v3f(m_minacc, m_maxacc);
 					// Make relative to offest
