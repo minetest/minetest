@@ -722,6 +722,13 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 
 	m_clients.event(peer_id, CSE_SetClientReady);
 	m_script->on_joinplayer(playersao);
+	// Send shutdown timer if shutdown has been scheduled
+	if (m_shutdown_timer > 0.0f) {
+		std::wstringstream ws;
+		ws << L"*** Server shutting down in "
+				<< duration_to_string(round(m_shutdown_timer)).c_str() << ".";
+		SendChatMessage(pkt->getPeerId(), ws.str());
+	}
 }
 
 void Server::handleCommand_GotBlocks(NetworkPacket* pkt)

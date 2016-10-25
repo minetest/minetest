@@ -173,3 +173,8 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
+
+function core.cancel_shutdown_requests()
+	core.request_shutdown("", false, -1)
+end
+

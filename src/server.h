@@ -226,12 +226,7 @@ public:
 	inline bool getShutdownRequested() const { return m_shutdown_requested; }
 
 	// request server to shutdown
-	void requestShutdown(const std::string &msg, bool reconnect)
-	{
-		m_shutdown_requested = true;
-		m_shutdown_msg = msg;
-		m_shutdown_ask_reconnect = reconnect;
-	}
+	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
@@ -602,6 +597,7 @@ private:
 	bool m_shutdown_requested;
 	std::string m_shutdown_msg;
 	bool m_shutdown_ask_reconnect;
+	float m_shutdown_timer;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
