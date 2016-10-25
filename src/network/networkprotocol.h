@@ -162,7 +162,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define FORMSPEC_API_VERSION 1
 #define FORMSPEC_VERSION_STRING "formspec_version[" TOSTRING(FORMSPEC_API_VERSION) "]"
 
-#define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
+#define MEDIA_MOD_SEPERATOR "/"
+
+#define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-" MEDIA_MOD_SEPERATOR
 
 enum ToClientCommand
 {

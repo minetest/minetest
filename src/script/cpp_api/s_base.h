@@ -55,6 +55,7 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 class Server;
+class Client;
 class Environment;
 class GUIEngine;
 class ServerActiveObject;
@@ -76,6 +77,7 @@ public:
 	void removeObjectReference(ServerActiveObject *cobj);
 
 	Server* getServer() { return m_server; }
+	Client* getClient() { return m_client; }
 
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
@@ -99,6 +101,7 @@ protected:
 	void stackDump(std::ostream &o);
 
 	void setServer(Server* server) { m_server = server; }
+	void setClient(Client* client) { m_client = client; }
 
 	Environment* getEnv() { return m_environment; }
 	void setEnv(Environment* env) { m_environment = env; }
@@ -121,6 +124,7 @@ private:
 	lua_State*      m_luastack;
 
 	Server*         m_server;
+	Client*         m_client;
 	Environment*    m_environment;
 	GUIEngine*      m_guiengine;
 };

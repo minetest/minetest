@@ -37,6 +37,11 @@ Server *ModApiBase::getServer(lua_State *L)
 	return getScriptApiBase(L)->getServer();
 }
 
+Client *ModApiBase::getClient(lua_State *L)
+{
+	return getScriptApiBase(L)->getClient();
+}
+
 Environment *ModApiBase::getEnv(lua_State *L)
 {
 	return getScriptApiBase(L)->getEnv();

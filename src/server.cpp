@@ -2321,9 +2321,95 @@ void Server::fillMediaCache()
 			std::string sha1_base64 = base64_encode(digest, 20);
 			std::string sha1_hex = hex_encode((char*)digest, 20);
 			free(digest);
-
+			
 			// Put in list
-			m_media[filename] = MediaInfo(filepath, sha1_base64);
+			//if (removeStringEnd(filename, full_path_ext) == ""){
+				m_media[filename] = MediaInfo(filepath, sha1_base64);
+			//} else {
+			//	m_media[filepath] = MediaInfo(filepath, sha1_base64);
+			//}
+			
+			verbosestream << "Server: " << sha1_hex << " is " << filename
+					<< std::endl;
+		}
+	}
+	
+	if (!g_settings->getBool("enable_client_mods"))
+		return;
+	
+	// Add all the client side mod files
+	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+			i != m_mods.end(); ++i) {
+		const ModSpec &mod = *i;
+		std::string mediapath = mod.path + DIR_DELIM + "client";
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
+		for (u32 j = 0; j < dirlist.size(); j++) {
+			if (dirlist[j].dir) // Ignode dirs
+				continue;
+			std::string filename = dirlist[j].name;
+			std::string medianame = mod.name + MEDIA_MOD_SEPERATOR + filename;
+			// If name contains illegal characters, ignore the file
+			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
+				infostream<<"Server: ignoring illegal file name: \""
+						<< filename << "\"" << std::endl;
+				continue;
+			}
+			// If name is not in a supported format, ignore it
+			const char *supported_ext[] = {
+				".lua",
+				NULL
+			};
+			if (removeStringEnd(filename, supported_ext) == ""){
+				infostream << "Server: ignoring unsupported file extension: \""
+						<< filename << "\"" << std::endl;
+				continue;
+			}
+			// Ok, attempt to load the file and add to cache
+			std::string filepath = mediapath + DIR_DELIM + filename;
+			
+			// Read data
+			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
+			if (!fis.good()) {
+				errorstream << "Server::fillMediaCache(): Could not open \""
+						<< filename << "\" for reading" << std::endl;
+				continue;
+			}
+			std::ostringstream tmp_os(std::ios_base::binary);
+			bool bad = false;
+			for(;;) {
+				char buf[1024];
+				fis.read(buf, 1024);
+				std::streamsize len = fis.gcount();
+				tmp_os.write(buf, len);
+				if (fis.eof())
+					break;
+				if (!fis.good()) {
+					bad = true;
+					break;
+				}
+			}
+			if(bad) {
+				errorstream<<"Server::fillMediaCache(): Failed to read \""
+						<< filename << "\"" << std::endl;
+				continue;
+			}
+			if(tmp_os.str().length() == 0) {
+				errorstream << "Server::fillMediaCache(): Empty file \""
+						<< filepath << "\"" << std::endl;
+				continue;
+			}
+
+			SHA1 sha1;
+			sha1.addBytes(tmp_os.str().c_str(), tmp_os.str().length());
+
+			unsigned char *digest = sha1.getDigest();
+			std::string sha1_base64 = base64_encode(digest, 20);
+			std::string sha1_hex = hex_encode((char*)digest, 20);
+			free(digest);
+			
+			// Put in list
+			m_media[medianame] = MediaInfo(filepath, sha1_base64);
+			
 			verbosestream << "Server: " << sha1_hex << " is " << filename
 					<< std::endl;
 		}

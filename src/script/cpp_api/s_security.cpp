@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "porting.h"
 #include "server.h"
+#include "client.h"
 #include "settings.h"
+#include "scripting_client.h"
 
 #include <cerrno>
 #include <string>
@@ -257,6 +259,20 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 
 bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 {
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	Client *client = script->getClient();
+	
+	if (client) {
+		ClientScripting *s = client->getScripting();
+		if (s->contains(path)) {
+			std::string fileContents = (*s)[path];
+			return !luaL_loadbuffer(L, fileContents.c_str(), fileContents.length(), NULL);
+		}
+	}
+	
 	FILE *fp;
 	char *chunk_name;
 	if (path == NULL) {
@@ -335,7 +351,6 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	return true;
 }
 
-
 bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		bool write_required, bool *write_allowed)
 {
@@ -344,7 +359,26 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	std::string str;  // Transient
 
-	std::string abs_path = fs::AbsolutePath(path);
+	std::string norel_path = fs::RemoveRelativePathComponents(path);
+	std::string abs_path = fs::AbsolutePath(norel_path);
+	
+	// Get script base from registry
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	
+	Client *client = script->getClient();
+	
+	if (client) {
+		ClientScripting *s = client->getScripting();
+		if (s->contains(path)) {
+			return true;
+		}
+		// Determine if this is a builtin path.
+		std::string safe_path = fs::AbsolutePath(porting::path_share + DIR_DELIM + "builtin");
+		std::cout << safe_path << "->" << abs_path << std::endl;
+		return norel_path.compare(0, safe_path.length(), safe_path) == 0;
+	}
 
 	if (!abs_path.empty()) {
 		// Don't allow accessing the settings file
@@ -379,10 +413,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	if (!removed.empty())
 		abs_path += DIR_DELIM + removed;
 
-	// Get server from registry
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
-	lua_pop(L, 1);
 	const Server *server = script->getServer();
 
 	if (!server) return false;

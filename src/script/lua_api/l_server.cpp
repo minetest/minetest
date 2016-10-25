@@ -373,12 +373,19 @@ int ModApiServer::l_get_modpath(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
-	const ModSpec *mod = getServer(L)->getModSpec(modname);
-	if (!mod) {
-		lua_pushnil(L);
-		return 1;
+	Server* server = getServer(L);
+	
+	if (server == NULL)
+		lua_pushstring(L, modname.c_str());
+	else {
+		const ModSpec *mod = getServer(L)->getModSpec(modname);
+		if (!mod) {
+			lua_pushnil(L);
+			return 1;
+		}
+		lua_pushstring(L, mod->path.c_str());
 	}
-	lua_pushstring(L, mod->path.c_str());
+	
 	return 1;
 }
 
