@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "mapblock.h"
 #include "map.h"
-#include "util/timetaker.h"
 
 namespace voxalgo
 {
@@ -165,7 +164,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
  * 4=Y-
  * 5=X-
  * 6=no direction
- * Two directions ate opposite only if their sum is 5.
+ * Two directions are opposite only if their sum is 5.
  */
 typedef u8 direction;
 /*!
@@ -175,7 +174,7 @@ typedef u8 direction;
  */
 typedef v3s16 relative_v3;
 /*!
- * Position of a map block.
+ * Position of a map block (block coordinates).
  * One block_pos unit is as long as 16 node position units.
  */
 typedef v3s16 mapblock_v3;
@@ -186,7 +185,7 @@ struct ChangingLight {
 	relative_v3 rel_position;
 	//! Position of the node's block.
 	mapblock_v3 block_position;
-	//! Reference to the node's block.
+	//! Pointer to the node's block.
 	MapBlock *block;
 	/*!
 	 * Direction from the node that caused this node's changing
@@ -261,8 +260,9 @@ struct LightQueue {
 	 * The parameters are the same as in ChangingLight's constructor.
 	 * \param light light level of the ChangingLight
 	 */
-	inline void push(u8 light, relative_v3 &rel_pos, mapblock_v3 &block_pos,
-		MapBlock *block, direction source_dir)
+	inline void push(u8 light, const relative_v3 &rel_pos,
+		const mapblock_v3 &block_pos, MapBlock *block,
+		direction source_dir)
 	{
 		lights[light].push_back(
 			ChangingLight(rel_pos, block_pos, block, source_dir));
@@ -309,7 +309,7 @@ const static v3s16 neighbor_dirs[6] = {
  * \param rel_pos the node's relative position in its map block
  * \param block_pos position of the node's block
  */
-bool stepRelBlockPos(direction dir, relative_v3 &rel_pos,
+bool step_rel_block_pos(direction dir, relative_v3 &rel_pos,
 	mapblock_v3 &block_pos)
 {
 	switch (dir) {
@@ -381,9 +381,9 @@ bool stepRelBlockPos(direction dir, relative_v3 &rel_pos,
  * \param light_sources nodes that should be re-lighted
  * \param modified_blocks output, all modified map blocks are added to this
  */
-void unspreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
+void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 	UnlightQueue &from_nodes, ReLightQueue &light_sources,
-	std::map<v3s16, MapBlock*> & modified_blocks)
+	std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	// Stores data popped from from_nodes
 	u8 current_light;
@@ -419,7 +419,7 @@ void unspreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			neighbor_rel_pos = current.rel_position;
 			neighbor_block_pos = current.block_position;
 			MapBlock *neighbor_block;
-			if (stepRelBlockPos(i, neighbor_rel_pos, neighbor_block_pos)) {
+			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
 				if (neighbor_block == NULL) {
 					continue;
@@ -484,8 +484,8 @@ void unspreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
  * \param light_sources starting nodes
  * \param modified_blocks output, all modified map blocks are added to this
  */
-void spreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
-	LightQueue & light_sources, std::map<v3s16, MapBlock*> & modified_blocks)
+void spread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
+	LightQueue &light_sources, std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	// The light the current node can provide to its neighbors.
 	u8 spreading_light;
@@ -507,7 +507,7 @@ void spreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			neighbor_rel_pos = current.rel_position;
 			neighbor_block_pos = current.block_position;
 			MapBlock *neighbor_block;
-			if (stepRelBlockPos(i, neighbor_rel_pos, neighbor_block_pos)) {
+			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
 				if (neighbor_block == NULL) {
 					continue;
@@ -544,7 +544,7 @@ void spreadLight(Map *map, INodeDefManager *nodemgr, LightBank bank,
  *
  * \param pos position of the node.
  */
-bool isSunlightAbove(Map *map, v3s16 pos, INodeDefManager *ndef)
+bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
 {
 	bool sunlight = true;
 	mapblock_v3 source_block_pos;
@@ -585,7 +585,7 @@ static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
 void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
-	std::map<v3s16, MapBlock*> & modified_blocks)
+	std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	// For node getter functions
 	bool is_valid_position;
@@ -597,7 +597,7 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 		ReLightQueue light_sources(256);
 		// For each changed node process sunlight and initialize
 		for (std::vector<std::pair<v3s16, MapNode> >::iterator it =
-				oldnodes.begin(); it < oldnodes.end(); it++) {
+				oldnodes.begin(); it < oldnodes.end(); ++it) {
 			// Get position and block of the changed node
 			v3s16 p = it->first;
 			relative_v3 rel_pos;
@@ -623,7 +623,7 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 			u8 new_light = 0;
 			if (ndef->get(n).light_propagates) {
 				if (bank == LIGHTBANK_DAY && ndef->get(n).sunlight_propagates
-					&& isSunlightAbove(map, p, ndef)) {
+					&& is_sunlight_above(map, p, ndef)) {
 					new_light = LIGHT_SUN;
 				} else {
 					new_light = ndef->get(n).light_source;
@@ -728,7 +728,7 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 
 		}
 		// Remove lights
-		unspreadLight(map, ndef, bank, disappearing_lights, light_sources,
+		unspread_light(map, ndef, bank, disappearing_lights, light_sources,
 			modified_blocks);
 		// Initialize light values for light spreading.
 		for (u8 i = 0; i <= LIGHT_SUN; i++) {
@@ -742,7 +742,7 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 			}
 		}
 		// Spread lights.
-		spreadLight(map, ndef, bank, light_sources, modified_blocks);
+		spread_light(map, ndef, bank, light_sources, modified_blocks);
 	}
 }
 
