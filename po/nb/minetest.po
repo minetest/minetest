@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-10-25 21:36+0000\n"
-"Last-Translator: Christian Haug <christian@metaboks.org>\n"
+"Last-Translator: Petter Reinholdtsen <pere-weblate@hungry.com>\n"
 "Language-Team: Norwegian Bokmål "
 "<https://hosted.weblate.org/projects/minetest/minetest/nb/>\n"
 "Language: nb\n"
@@ -41,7 +41,7 @@ msgstr "Koble til på nytt"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "Tjeneren har bedt om ny tilkobling:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
