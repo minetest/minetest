@@ -1228,9 +1228,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 	// list of nodes that due to viscosity have not reached their max level height
 	std::deque<v3s16> must_reflow;
 
-	// List of MapBlocks that will require a lighting update (due to lava)
-	std::map<v3s16, MapBlock *> lighting_modified_blocks2;
-
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
 
 	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
@@ -1272,7 +1269,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 			Collect information about current node
 		 */
 		s8 liquid_level = -1;
+		// The liquid node which will be placed there if
+		// the liquid flows into this node.
 		content_t liquid_kind = CONTENT_IGNORE;
+		// The node which will be placed there if liquid
+		// can't flow into this node.
 		content_t floodable_node = CONTENT_AIR;
 		const ContentFeatures &cf = nodemgr->get(n0);
 		LiquidType liquid_type = cf.liquid_type;
@@ -1494,10 +1495,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if (block != NULL) {
 			modified_blocks[blockpos] =  block;
-			// If new or old node emits light, MapBlock requires lighting update
-			/*if (nodemgr->get(n0).light_source != 0 ||
-					nodemgr->get(n00).light_source != 0)
-				lighting_modified_blocks[block->getPos()] = block;*/
 			changed_nodes.push_back(std::pair<v3s16, MapNode>(p0, n00));
 		}
 
@@ -1527,7 +1524,6 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
 		m_transforming_liquid.push_back(*iter);
 
-	//updateLighting(lighting_modified_blocks, modified_blocks);
 	voxalgo::update_lighting_nodes(this, nodemgr, changed_nodes, modified_blocks);
 
 
