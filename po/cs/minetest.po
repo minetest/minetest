@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-03-04 04:45+0000\n"
-"Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
-"Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
-"cs/>\n"
+"PO-Revision-Date: 2016-10-25 23:09+0000\n"
+"Last-Translator: Tomáš Bělohlávek <TOMats@email.cz>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -214,7 +214,7 @@ msgstr "(Nebyl zadán popis nastavení)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Zpět do Nastavení"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -406,9 +406,8 @@ msgid "Uninstall selected modpack"
 msgstr "Odinstalovat označený balíček"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adresa / Port :"
+msgstr "Adresa / Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -432,14 +431,12 @@ msgid "Del. Favorite"
 msgstr "Oblíbené:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Oblíbené:"
+msgstr "Oblíbené"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Jméno / Heslo :"
+msgstr "Jméno / Heslo"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -485,7 +482,7 @@ msgstr "Veřejný"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr "Vyber svět:"
+msgstr "Vyberte svět:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
@@ -501,20 +498,19 @@ msgstr "Spustit hru"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "3D mraky"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
@@ -522,14 +518,13 @@ msgstr "Pokročilá nastavení"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Jste si jisti, že chcete resetovat místní svět?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Bilineární filtrování"
 
@@ -565,7 +560,7 @@ msgstr "Ne"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Žádné filtr"
+msgstr "Žádné filtrování"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -573,12 +568,11 @@ msgstr "Žádné Mipmapy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Zvýraznění bloků"
+msgstr "Osvícení bloku"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Zvýraznění bloků"
+msgstr "Obrys bloku"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -599,12 +593,11 @@ msgstr "Neprůhledná voda"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
+msgstr "Paralaxní okluze"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Povolit částice"
+msgstr "Částice"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
@@ -623,7 +616,6 @@ msgid "Simple Leaves"
 msgstr "Jednoduché listí"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Plynulé osvětlení"
 
@@ -644,22 +636,18 @@ msgid "Touchthreshold (px)"
 msgstr "Dosah dotyku (px)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Trilineární filtrování"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
 msgstr "Vlnění listů"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
 msgstr "Vlnění rostlin"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
 msgstr "Vlnění vody"
 
@@ -1451,7 +1439,7 @@ msgstr "Anizotropní filtrování"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Zveřejnit server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1459,6 +1447,9 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Zveřejnit do tohoto seznamu serverů.\n"
+"Jestliže chcete zveřejnit vaši ipv6 adresu, použijte  serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1489,9 +1480,8 @@ msgid "Basic"
 msgstr "Základní"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "Výchozí práva"
+msgstr "Základní práva"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1538,9 +1528,8 @@ msgid "Cave noise #2"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Šířka obrazovky"
+msgstr "Šířka jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1555,9 +1544,8 @@ msgid "Chat toggle key"
 msgstr "Klávesa zobrazení chatu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Příkaz"
+msgstr "Příkazy"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1635,15 +1623,16 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Seznam modů, oddělených čárkami, které mohou přistupovat k HTTP API,\n"
+"které jim dovoluje nahrávat a stahovat data na/z internetu."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Seznam důvěryhodných modů oddělených čárkami, které mohou používat "
-"potenciálně nebezpečné\n"
-"funkce ve chvílích, kdy je zapnuto zabezpečení modů (pomocí "
+"Seznam důvěryhodných modů, oddělených čárkami, které mohou používat\n"
+"nebezpečné funkce i když je zapnuto zabezpečení modů (pomocí "
 "request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
@@ -1676,11 +1665,11 @@ msgstr "Klávesa konzole"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Neustálý pohyb vpřed"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Neustálý pohyb vpřed (jen pro testování)."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1712,7 +1701,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1732,23 +1721,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Průhlednost zaměřovače"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Průhlednost zaměřovače (mezi 0 a 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Barva zaměřovače"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Barva zaměřovače (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Rychlost při plížení"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -1828,11 +1817,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Hloubka pod kterou najdete velké jeskyně."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Hloubka pod kterou najdete obrovské jeskyně."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -2069,13 +2058,12 @@ msgid "Field of view in degrees."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Turbo režim pohybu (pomocí klávesy použít).\n"
-"Vyžaduje na serveru přidělené právo \"fast\"."
+"Zorné pole při postupném přibližování.\n"
+"Vyžaduje na serveru přidělené právo \"zoom\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2149,7 +2137,7 @@ msgstr "Velikost písma"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Formát snímků obrazovky."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -2205,7 +2193,7 @@ msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Hlavní"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
@@ -2276,7 +2264,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Jak hluboké dělat řeky"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2293,7 +2281,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Jak široké dělat řeky"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2361,7 +2349,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "Jestliže je toto nastaveno, hráči se budou oživovat na uvedeném místě."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
@@ -2431,7 +2419,7 @@ msgstr "Klávesa inventáře"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Invertovat myš"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -2490,7 +2478,7 @@ msgstr "Skok"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Rychlost skákání"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2706,7 +2694,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "Klávesa Použít pro šplhání/slézání"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2714,15 +2702,15 @@ msgstr "Jazyk"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Hloubka velké jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Vlastnosti lávy"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Styl listí"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2894,7 +2882,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Interval ukládání mapy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -3198,7 +3186,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
-msgstr ""
+msgstr "Hloubka obrovské jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave noise"
@@ -3230,7 +3218,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Maximální FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
@@ -3329,7 +3317,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Zpráva dne"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
@@ -3341,7 +3329,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Minimapa"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
@@ -3353,7 +3341,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
-msgstr ""
+msgstr "Minimální velikost textury k filtrování"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
@@ -3373,15 +3361,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Cesta k neproporcionálnímu písmu"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "Velikost neproporcionálního písma"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Citlivost myši"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
@@ -3419,7 +3407,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Síť"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3628,19 +3616,19 @@ msgstr "Klávesa doprava"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Interval opakování pravého kliknutí"
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
-msgstr ""
+msgstr "Hloubka řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
-msgstr ""
+msgstr "Hlučnost řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
-msgstr ""
+msgstr "Velikost řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
@@ -3688,14 +3676,12 @@ msgid "Screenshot folder"
 msgstr "Složka se snímky obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Složka se snímky obrazovky"
+msgstr "Formát snímků obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Snímek obrazovky"
+msgstr "Kvalita snímků obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3703,6 +3689,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Kvalita snímků obrazovky. Použito jen na formát JPEG.\n"
+"1 znamená nejhorší kvalita; 100 znamená nejlepší kvalita.\n"
+"Použijte 0 pro výchozí kvalitu."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3718,11 +3707,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "Barva obrysu bloku"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "Šířka obrysu bloku"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -3801,7 +3790,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Zpráva o vypnutí"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3849,7 +3838,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Stálé místo oživení"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -3865,7 +3854,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Podpora starších serverů"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -3980,7 +3969,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Rychlost času"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -4000,7 +3989,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Zpoždění nápovědy"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
@@ -4015,7 +4004,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Důvěryhodné mody"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -4137,7 +4126,7 @@ msgstr "Vlastnosti vody"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Hladina vody"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
