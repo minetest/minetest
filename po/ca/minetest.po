@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-10-06 17:55+0000\n"
-"Last-Translator: Roc Humet <roc.humet@gmail.com>\n"
+"PO-Revision-Date: 2016-10-26 09:14+0000\n"
+"Last-Translator: tonibm19 <bennasar99@gmail.com>\n"
 "Language-Team: Catalan "
 "<https://hosted.weblate.org/projects/minetest/minetest/ca/>\n"
 "Language: ca\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "S'ha produït un error en un script Lua, com per exemple un mod :"
+msgstr "S'ha produït un error en un script Lua, com per exemple un mod."
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -534,7 +534,6 @@ msgid "Bilinear Filter"
 msgstr "Filtre Bilineal"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
 msgstr "Mapat de relleu"
 
@@ -543,9 +542,8 @@ msgid "Change keys"
 msgstr "Configurar controls"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Connected Glass"
-msgstr "Connectar"
+msgstr "Vidres connectats"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
@@ -586,7 +584,7 @@ msgstr "Ningun"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Normal Mapping"
-msgstr ""
+msgstr "Mapping normal."
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -986,7 +984,6 @@ msgid "Use"
 msgstr "Utilitzar"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
-#, fuzzy
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -1436,6 +1433,9 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Ajusta la codificació gamma per les taules de llum. Els nombrés nés petits "
+"n'augmentaràn la brillantor.\n"
+"Aquesta configuració només afecta al client, el servidor l'ignora."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1554,7 +1554,7 @@ msgstr "Soroll de cova #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "Amplada de les coves"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1569,9 +1569,8 @@ msgid "Chat toggle key"
 msgstr "Tecla alternativa per al xat"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Comandament"
+msgstr "Comands de xat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1664,7 +1663,6 @@ msgid "Colored fog"
 msgstr "Boira de color"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
@@ -1753,6 +1751,7 @@ msgstr "Controla la pendent i alçada dels turons."
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Controla l'amplada dels túnels, un valor més petit crea túnels més amples."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1862,7 +1861,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Retràs per enviar blocs després de col•locarlos"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1874,11 +1873,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Profunditat davall la qual trobaràs grans coves."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Profunditat davall la qual podràs trobar coves gegants."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -1946,9 +1945,8 @@ msgid "Enable Joysticks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "Activar MP"
+msgstr "Activar VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -2107,13 +2105,12 @@ msgid "Field of view in degrees."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Moviment ràpid (via utilitzar clau).\n"
-"Això requereix el \"privilegi\" ràpid en el servidor."
+"Camp de visió mentre s'usa el zoom (en graus)\n"
+"Això requereix el privilegi \"zoom\" en el servidor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2272,9 +2269,8 @@ msgid "Gravity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "HTTP Mods"
-msgstr "Mods"
+msgstr "Mods HTTP"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2534,15 +2530,15 @@ msgid "Jumping speed"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for decreasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla per obrir el inventari.\n"
-"Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Tecla per disminuir el rang de visió.\n"
+"Mira\n"
+"http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da"
+"1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2552,15 +2548,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for increasing the viewing range.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla per obrir el inventari.\n"
-"Veure http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Tecla per incrementar el rang de visió.\n"
+"Mira\n"
+"http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da"
+"1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3006,14 +3002,12 @@ msgid "Mapgen flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat"
-msgstr "Generador de mapes"
+msgstr "Generador de mapes plans"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Generador de mapes"
+msgstr "Amplada de les coves del generador de mapes plans"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3891,12 +3885,11 @@ msgid "Smooth lighting"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
-"Suavitza la càmera quan estiga movent-se i mirant al seu voltant.\n"
+"Suavitzat de càmara durant el seu moviment.\n"
 "Útil per a la gravació de vídeos."
 
 #: src/settings_translation_file.cpp
@@ -4214,9 +4207,8 @@ msgid "Walking speed"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Water Features"
-msgstr "Textures de objectes ..."
+msgstr "Característiques de l'aigua"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -4345,6 +4337,8 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Directori del món (totes les seves dades es guarden aquí).\n"
+"No necessari si s'inicia des de el menú principal."
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
