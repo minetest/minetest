@@ -3788,3 +3788,16 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 	}
 	return L"";
 }
+
+void GUIFormSpecMenu::setFormSpec(const std::string &formspec_string,
+			InventoryLocation current_inventory_location)
+{
+	verbosestream << "SetFormSpec:" << std::endl << formspec_string << std::endl;
+	if (formspec_string == "") {
+		quitMenu();
+	} else {
+		m_formspec_string = formspec_string;
+		m_current_inventory_location = current_inventory_location;
+		regenerateGui(m_screensize_old);
+	}
+}

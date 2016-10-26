@@ -300,12 +300,7 @@ public:
 	~GUIFormSpecMenu();
 
 	void setFormSpec(const std::string &formspec_string,
-			InventoryLocation current_inventory_location)
-	{
-		m_formspec_string = formspec_string;
-		m_current_inventory_location = current_inventory_location;
-		regenerateGui(m_screensize_old);
-	}
+			InventoryLocation current_inventory_location);
 
 	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
