@@ -606,10 +606,10 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 		bone = lua_tostring(L, 2);
 	v3f position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 3))
-		position = read_v3f(L, 3);
+		position = check_v3f(L, 3);
 	v3f rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
-		rotation = read_v3f(L, 4);
+		rotation = check_v3f(L, 4);
 	co->setBonePosition(bone, position, rotation);
 	return 0;
 }

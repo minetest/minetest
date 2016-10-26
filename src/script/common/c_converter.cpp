@@ -23,6 +23,7 @@ extern "C" {
 }
 
 #include "util/numeric.h"
+#include "util/serialize.h"
 #include "util/string.h"
 #include "common/c_converter.h"
 #include "constants.h"
@@ -37,6 +38,14 @@ extern "C" {
 		} \
 	} while(0)
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
+#define CHECK_FLOAT_RANGE(value, name) \
+if (value < F1000_MIN || value > F1000_MAX) { \
+	std::ostringstream error_text; \
+	error_text << "Invalid float vector dimension range '" name "' " << \
+	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
+	" got " << value << ")." << std::endl; \
+	throw LuaError(error_text.str()); \
+}
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
@@ -170,14 +179,17 @@ v3f check_v3f(lua_State *L, int index)
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	pos.X = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pos.X, "x")
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	pos.Y = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pos.Y, "y")
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
 	pos.Z = lua_tonumber(L, -1);
+	CHECK_FLOAT_RANGE(pos.Z, "z")
 	lua_pop(L, 1);
 	return pos;
 }
