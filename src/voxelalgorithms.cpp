@@ -423,6 +423,7 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
 				if (neighbor_block == NULL) {
+					current.block->setLightingComplete(bank, i, false);
 					continue;
 				}
 			} else {
@@ -486,7 +487,8 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
  * \param modified_blocks output, all modified map blocks are added to this
  */
 void spread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
-	LightQueue &light_sources, std::map<v3s16, MapBlock*> &modified_blocks)
+	LightQueue &light_sources,
+	std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	// The light the current node can provide to its neighbors.
 	u8 spreading_light;
@@ -511,6 +513,7 @@ void spread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 			if (step_rel_block_pos(i, neighbor_rel_pos, neighbor_block_pos)) {
 				neighbor_block = map->getBlockNoCreateNoEx(neighbor_block_pos);
 				if (neighbor_block == NULL) {
+					current.block->setLightingComplete(bank, i, false);
 					continue;
 				}
 			} else {
@@ -584,10 +587,11 @@ bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
 
 static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
 
-void update_lighting_nodes(Map *map, INodeDefManager *ndef,
+void update_lighting_nodes(Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
 	std::map<v3s16, MapBlock*> &modified_blocks)
 {
+	INodeDefManager *ndef = map->getNodeDefManager();
 	// For node getter functions
 	bool is_valid_position;
 
@@ -596,6 +600,22 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 		LightBank bank = banks[i];
 		UnlightQueue disappearing_lights(256);
 		ReLightQueue light_sources(256);
+		// Nodes that are brighter than the brightest modified node was
+		// won't change, since they didn't get their light from a
+		// modified node.
+		u8 min_safe_light = 0;
+		for (std::vector<std::pair<v3s16, MapNode> >::iterator it =
+				oldnodes.begin(); it < oldnodes.end(); ++it) {
+			u8 old_light = it->second.getLight(bank, ndef);
+			if (old_light > min_safe_light) {
+				min_safe_light = old_light;
+			}
+		}
+		// If only one node changed, even nodes with the same brightness
+		// didn't get their light from the changed node.
+		if (oldnodes.size() > 1) {
+			min_safe_light++;
+		}
 		// For each changed node process sunlight and initialize
 		for (std::vector<std::pair<v3s16, MapNode> >::iterator it =
 				oldnodes.begin(); it < oldnodes.end(); ++it) {
@@ -634,11 +654,9 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 						MapNode n2 = map->getNodeNoEx(p2, &is_valid);
 						if (is_valid) {
 							u8 spread = n2.getLight(bank, ndef);
-							// If the neighbor is at least as bright as
-							// this node then its light is not from
-							// this node.
-							// Its light can spread to this node.
-							if (spread > new_light && spread >= old_light) {
+							// If it is sure that the neighbor won't be
+							// unlighted, its light can spread to this node.
+							if (spread > new_light && spread >= min_safe_light) {
 								new_light = spread - 1;
 							}
 						}
@@ -727,6 +745,126 @@ void update_lighting_nodes(Map *map, INodeDefManager *ndef,
 				}
 			}
 
+		}
+		// Remove lights
+		unspread_light(map, ndef, bank, disappearing_lights, light_sources,
+			modified_blocks);
+		// Initialize light values for light spreading.
+		for (u8 i = 0; i <= LIGHT_SUN; i++) {
+			const std::vector<ChangingLight> &lights = light_sources.lights[i];
+			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
+					it < lights.end(); it++) {
+				MapNode n = it->block->getNodeNoCheck(it->rel_position,
+					&is_valid_position);
+				n.setLight(bank, i, ndef);
+				it->block->setNodeNoCheck(it->rel_position, n);
+			}
+		}
+		// Spread lights.
+		spread_light(map, ndef, bank, light_sources, modified_blocks);
+	}
+}
+
+/*!
+ * Borders of a map block in relative node coordinates.
+ * Compatible with type 'direction'.
+ */
+const VoxelArea block_borders[] = {
+	VoxelArea(v3s16(15, 0, 0), v3s16(15, 15, 15)), //X+
+	VoxelArea(v3s16(0, 15, 0), v3s16(15, 15, 15)), //Y+
+	VoxelArea(v3s16(0, 0, 15), v3s16(15, 15, 15)), //Z+
+	VoxelArea(v3s16(0, 0, 0), v3s16(15, 15, 0)),   //Z-
+	VoxelArea(v3s16(0, 0, 0), v3s16(15, 0, 15)),   //Y-
+	VoxelArea(v3s16(0, 0, 0), v3s16(0, 15, 15))    //X-
+};
+
+/*!
+ * Returns true if:
+ * -the node has unloaded neighbors
+ * -the node doesn't have light
+ * -the node's light is the same as the maximum of
+ * its light source and its brightest neighbor minus one.
+ * .
+ */
+bool is_light_locally_correct(Map *map, INodeDefManager *ndef, LightBank bank,
+	v3s16 pos)
+{
+	bool is_valid_position;
+	MapNode n = map->getNodeNoEx(pos, &is_valid_position);
+	const ContentFeatures &f = ndef->get(n);
+	if (f.param_type != CPT_LIGHT) {
+		return true;
+	}
+	u8 light = n.getLightNoChecks(bank, &f);
+	assert(f.light_source <= LIGHT_MAX);
+	u8 brightest_neighbor = f.light_source + 1;
+	for (direction d = 0; d < 6; ++d) {
+		MapNode n2 = map->getNodeNoEx(pos + neighbor_dirs[d],
+			&is_valid_position);
+		u8 light2 = n2.getLight(bank, ndef);
+		if (brightest_neighbor < light2) {
+			brightest_neighbor = light2;
+		}
+	}
+	assert(light <= LIGHT_SUN);
+	return brightest_neighbor == light + 1;
+}
+
+void update_block_border_lighting(Map *map, MapBlock *block,
+	std::map<v3s16, MapBlock*> &modified_blocks)
+{
+	INodeDefManager *ndef = map->getNodeDefManager();
+	bool is_valid_position;
+	for (s32 i = 0; i < 2; i++) {
+		LightBank bank = banks[i];
+		UnlightQueue disappearing_lights(256);
+		ReLightQueue light_sources(256);
+		// Get incorrect lights
+		for (direction d = 0; d < 6; d++) {
+			// For each direction
+			// Get neighbor block
+			v3s16 otherpos = block->getPos() + neighbor_dirs[d];
+			MapBlock *other = map->getBlockNoCreateNoEx(otherpos);
+			if (other == NULL) {
+				continue;
+			}
+			// Only update if lighting was not completed.
+			if (block->isLightingComplete(bank, d) &&
+					other->isLightingComplete(bank, 5 - d))
+				continue;
+			// Reset flags
+			block->setLightingComplete(bank, d, true);
+			other->setLightingComplete(bank, 5 - d, true);
+			// The two blocks and their connecting surfaces
+			MapBlock *blocks[] = {block, other};
+			VoxelArea areas[] = {block_borders[d], block_borders[5 - d]};
+			// For both blocks
+			for (u8 blocknum = 0; blocknum < 2; blocknum++) {
+				MapBlock *b = blocks[blocknum];
+				VoxelArea a = areas[blocknum];
+				// For all nodes
+				for (s32 x = a.MinEdge.X; x <= a.MaxEdge.X; x++)
+				for (s32 z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++)
+				for (s32 y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
+					MapNode n = b->getNodeNoCheck(x, y, z,
+						&is_valid_position);
+					u8 light = n.getLight(bank, ndef);
+					// Sunlight is fixed
+					if (light < LIGHT_SUN) {
+						// Unlight if not correct
+						if (!is_light_locally_correct(map, ndef, bank,
+								v3s16(x, y, z) + b->getPosRelative())) {
+							// Initialize for unlighting
+							n.setLight(bank, 0, ndef);
+							b->setNodeNoCheck(x, y, z, n);
+							modified_blocks[b->getPos()]=b;
+							disappearing_lights.push(light,
+								relative_v3(x, y, z), b->getPos(), b,
+								6);
+						}
+					}
+				}
+			}
 		}
 		// Remove lights
 		unspread_light(map, ndef, bank, disappearing_lights, light_sources,

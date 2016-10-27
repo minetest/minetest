@@ -105,7 +105,7 @@ public:
 #define MOD_REASON_INITIAL                   (1 << 0)
 #define MOD_REASON_REALLOCATE                (1 << 1)
 #define MOD_REASON_SET_IS_UNDERGROUND        (1 << 2)
-#define MOD_REASON_SET_LIGHTING_EXPIRED      (1 << 3)
+#define MOD_REASON_SET_LIGHTING_COMPLETE     (1 << 3)
 #define MOD_REASON_SET_GENERATED             (1 << 4)
 #define MOD_REASON_SET_NODE                  (1 << 5)
 #define MOD_REASON_SET_NODE_NO_CHECK         (1 << 6)
@@ -213,17 +213,42 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_IS_UNDERGROUND);
 	}
 
-	inline void setLightingExpired(bool expired)
+	inline void setLightingComplete(u16 newflags)
 	{
-		if (expired != m_lighting_expired){
-			m_lighting_expired = expired;
-			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_EXPIRED);
+		if (newflags != m_lighting_complete) {
+			m_lighting_complete = newflags;
+			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_COMPLETE);
 		}
 	}
 
-	inline bool getLightingExpired()
+	inline u16 getLightingComplete()
 	{
-		return m_lighting_expired;
+		return m_lighting_complete;
+	}
+
+	inline void setLightingComplete(LightBank bank, u8 direction,
+		bool is_complete)
+	{
+		assert(direction >= 0 && direction <= 5);
+		if (bank == LIGHTBANK_NIGHT) {
+			direction += 6;
+		}
+		u16 newflags = m_lighting_complete;
+		if (is_complete) {
+			newflags |= 1 << direction;
+		} else {
+			newflags &= ~(1 << direction);
+		}
+		setLightingComplete(newflags);
+	}
+
+	inline bool isLightingComplete(LightBank bank, u8 direction)
+	{
+		assert(direction >= 0 && direction <= 5);
+		if (bank == LIGHTBANK_NIGHT) {
+			direction += 6;
+		}
+		return (m_lighting_complete & (1 << direction)) != 0;
 	}
 
 	inline bool isGenerated()
@@ -237,15 +262,6 @@ public:
 			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_GENERATED);
 			m_generated = b;
 		}
-	}
-
-	inline bool isValid()
-	{
-		if (m_lighting_expired)
-			return false;
-		if (data == NULL)
-			return false;
-		return true;
 	}
 
 	////
@@ -613,14 +629,14 @@ private:
 	*/
 	bool is_underground;
 
-	/*
-		Set to true if changes has been made that make the old lighting
-		values wrong but the lighting hasn't been actually updated.
-
-		If this is false, lighting is exactly right.
-		If this is true, lighting might be wrong or right.
+	/*!
+	 * Each bit indicates if light spreading was finished
+	 * in a direction. (Because the neighbor could also be unloaded.)
+	 * Bits: day X+, day Y+, day Z+, day Z-, day Y-, day X-,
+	 * night X+, night Y+, night Z+, night Z-, night Y-, night X-,
+	 * nothing, nothing, nothing, nothing.
 	*/
-	bool m_lighting_expired;
+	u16 m_lighting_complete;
 
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
