@@ -3593,15 +3593,18 @@ Definition tables
         on_place = func(itemstack, placer, pointed_thing),
         --[[
         ^ Shall place item and return the leftover itemstack
+        ^ The placer may be any ObjectRef or nil.
         ^ default: minetest.item_place ]]
         on_secondary_use = func(itemstack, user, pointed_thing),
         --[[
         ^ Same as on_place but called when pointing at nothing.
+        ^ The user may be any ObjectRef or nil.
         ^ pointed_thing : always { type = "nothing" }
         ]]
         on_drop = func(itemstack, dropper, pos),
         --[[
         ^ Shall drop item and return the leftover itemstack
+        ^ The dropper may be any ObjectRef or nil.
         ^ default: minetest.item_drop ]]
         on_use = func(itemstack, user, pointed_thing),
         --[[
@@ -3610,6 +3613,7 @@ Definition tables
           inventory, or an itemstack to replace the original itemstack.
             e.g. itemstack:take_item(); return itemstack
         ^ Otherwise, the function is free to do what it wants.
+        ^ The user may be any ObjectRef or nil.
         ^ The default functions handle regular use cases.
         ]]
         after_use = func(itemstack, user, node, digparams),
@@ -3622,6 +3626,7 @@ Definition tables
               itemstack:add_wear(digparams.wear)
               return itemstack
             end
+        ^ The user may be any ObjectRef or nil.
         ]]
     }
 
