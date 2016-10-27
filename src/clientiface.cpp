@@ -283,12 +283,6 @@ void RemoteClient::GetNextBlocks (
 					surely_not_found_on_disk = true;
 				}
 
-				// Block is valid if lighting is up-to-date and data exists
-				if(block->isValid() == false)
-				{
-					block_is_invalid = true;
-				}
-
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
 

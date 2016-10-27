@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "voxel.h"
 #include "mapnode.h"
-#include <set>
-#include <map>
+#include "util/container.h"
+#include "util/cpp11_container.h"
 
 class Map;
 class MapBlock;
@@ -69,8 +69,19 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
  */
 void update_lighting_nodes(
 	Map *map,
-	INodeDefManager *ndef,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
+	std::map<v3s16, MapBlock*> &modified_blocks);
+
+/*!
+ * Updates borders of the given mapblock.
+ * Only updates if the block was marked with incomplete
+ * lighting and the neighbor is also loaded.
+ *
+ * \param block the block to update
+ * \param modified_blocks output, contains all map blocks that
+ * the function modified
+ */
+void update_block_border_lighting(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> &modified_blocks);
 
 /*!

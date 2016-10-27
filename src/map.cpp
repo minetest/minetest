@@ -824,7 +824,7 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	// Update lighting
 	std::vector<std::pair<v3s16, MapNode> > oldnodes;
 	oldnodes.push_back(std::pair<v3s16, MapNode>(p, oldnode));
-	voxalgo::update_lighting_nodes(this, m_nodedef, oldnodes, modified_blocks);
+	voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
 
 	for(std::map<v3s16, MapBlock*>::iterator
 			i = modified_blocks.begin();
@@ -1523,7 +1523,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
 		m_transforming_liquid.push_back(*iter);
 
-	voxalgo::update_lighting_nodes(this, m_nodedef, changed_nodes, modified_blocks);
+	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
 
 
 	/* ----------------------------------------------------------------------
@@ -1955,26 +1955,9 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	v3s16 bpmax = data->blockpos_max;
 
 	v3s16 extra_borders(1, 1, 1);
-	v3s16 full_bpmin = bpmin - extra_borders;
-	v3s16 full_bpmax = bpmax + extra_borders;
 
 	bool enable_mapgen_debug_info = m_emerge->enable_mapgen_debug_info;
 	EMERGE_DBG_OUT("finishBlockMake(): " PP(bpmin) " - " PP(bpmax));
-
-	/*
-		Set lighting to non-expired state in all of them.
-		This is cheating, but it is not fast enough if all of them
-		would actually be updated.
-	*/
-	for (s16 x = full_bpmin.X; x <= full_bpmax.X; x++)
-	for (s16 z = full_bpmin.Z; z <= full_bpmax.Z; z++)
-	for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
-		MapBlock *block = emergeBlock(v3s16(x, y, z), false);
-		if (!block)
-			continue;
-
-		block->setLightingExpired(false);
-	}
 
 	/*
 		Blit generated stuff to map
@@ -2991,7 +2974,6 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 		// We just loaded it from, so it's up-to-date.
 		block->resetModified();
-
 	}
 	catch(SerializationError &e)
 	{
@@ -3015,71 +2997,80 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
 	DSTACK(FUNCTION_NAME);
 
+	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
+
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
 	std::string ret;
 	dbase->loadBlock(blockpos, &ret);
 	if (ret != "") {
 		loadBlock(&ret, blockpos, createSector(p2d), false);
-		return getBlockNoCreateNoEx(blockpos);
-	}
-	// Not found in database, try the files
+	} else {
+		// Not found in database, try the files
 
-	// The directory layout we're going to load from.
-	//  1 - original sectors/xxxxzzzz/
-	//  2 - new sectors2/xxx/zzz/
-	//  If we load from anything but the latest structure, we will
-	//  immediately save to the new one, and remove the old.
-	int loadlayout = 1;
-	std::string sectordir1 = getSectorDir(p2d, 1);
-	std::string sectordir;
-	if(fs::PathExists(sectordir1))
-	{
-		sectordir = sectordir1;
-	}
-	else
-	{
-		loadlayout = 2;
-		sectordir = getSectorDir(p2d, 2);
-	}
+		// The directory layout we're going to load from.
+		//  1 - original sectors/xxxxzzzz/
+		//  2 - new sectors2/xxx/zzz/
+		//  If we load from anything but the latest structure, we will
+		//  immediately save to the new one, and remove the old.
+		int loadlayout = 1;
+		std::string sectordir1 = getSectorDir(p2d, 1);
+		std::string sectordir;
+		if (fs::PathExists(sectordir1)) {
+			sectordir = sectordir1;
+		} else {
+			loadlayout = 2;
+			sectordir = getSectorDir(p2d, 2);
+		}
 
-	/*
+		/*
 		Make sure sector is loaded
-	*/
+		 */
 
-	MapSector *sector = getSectorNoGenerateNoEx(p2d);
-	if(sector == NULL)
-	{
-		try{
-			sector = loadSectorMeta(sectordir, loadlayout != 2);
+		MapSector *sector = getSectorNoGenerateNoEx(p2d);
+		if (sector == NULL) {
+			try {
+				sector = loadSectorMeta(sectordir, loadlayout != 2);
+			} catch(InvalidFilenameException &e) {
+				return NULL;
+			} catch(FileNotGoodException &e) {
+				return NULL;
+			} catch(std::exception &e) {
+				return NULL;
+			}
 		}
-		catch(InvalidFilenameException &e)
-		{
+
+
+		/*
+		Make sure file exists
+		 */
+
+		std::string blockfilename = getBlockFilename(blockpos);
+		if (fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
 			return NULL;
-		}
-		catch(FileNotGoodException &e)
-		{
-			return NULL;
-		}
-		catch(std::exception &e)
-		{
-			return NULL;
+
+		/*
+		Load block and save it to the database
+		 */
+		loadBlock(sectordir, blockfilename, sector, true);
+	}
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if (created_new && (block != NULL)) {
+		std::map<v3s16, MapBlock*> modified_blocks;
+		// Fix lighting if necessary
+		voxalgo::update_block_border_lighting(this, block, modified_blocks);
+		if (!modified_blocks.empty()) {
+			//Modified lighting, send event
+			MapEditEvent event;
+			event.type = MEET_OTHER;
+			std::map<v3s16, MapBlock *>::iterator it;
+			for (it = modified_blocks.begin();
+					it != modified_blocks.end(); ++it)
+				event.modified_blocks.insert(it->first);
+			dispatchEvent(&event);
 		}
 	}
-
-	/*
-		Make sure file exists
-	*/
-
-	std::string blockfilename = getBlockFilename(blockpos);
-	if(fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
-		return NULL;
-
-	/*
-		Load block and save it to the database
-	*/
-	loadBlock(sectordir, blockfilename, sector, true);
-	return getBlockNoCreateNoEx(blockpos);
+	return block;
 }
 
 bool ServerMap::deleteBlock(v3s16 blockpos)

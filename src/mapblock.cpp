@@ -73,7 +73,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_modified(MOD_STATE_WRITE_NEEDED),
 		m_modified_reason(MOD_REASON_INITIAL),
 		is_underground(false),
-		m_lighting_expired(true),
+		m_lighting_complete(0xFFFF),
 		m_day_night_differs(false),
 		m_day_night_differs_expired(true),
 		m_generated(false),
@@ -571,11 +571,12 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		flags |= 0x01;
 	if(getDayNightDiff())
 		flags |= 0x02;
-	if(m_lighting_expired)
-		flags |= 0x04;
 	if(m_generated == false)
 		flags |= 0x08;
 	writeU8(os, flags);
+	if (version >= 27) {
+		writeU16(os, m_lighting_complete);
+	}
 
 	/*
 		Bulk node data
@@ -672,7 +673,11 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) ? true : false;
 	m_day_night_differs = (flags & 0x02) ? true : false;
-	m_lighting_expired = (flags & 0x04) ? true : false;
+	if (version < 27) {
+		m_lighting_complete = 0xFFFF;
+	} else {
+		m_lighting_complete = readU16(is);
+	}
 	m_generated = (flags & 0x08) ? false : true;
 
 	/*
@@ -783,7 +788,7 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	// Initialize default flags
 	is_underground = false;
 	m_day_night_differs = false;
-	m_lighting_expired = false;
+	m_lighting_complete = 0xFFFF;
 	m_generated = true;
 
 	// Make a temporary buffer
@@ -849,7 +854,6 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		is.read((char*)&flags, 1);
 		is_underground = (flags & 0x01) ? true : false;
 		m_day_night_differs = (flags & 0x02) ? true : false;
-		m_lighting_expired = (flags & 0x04) ? true : false;
 		if(version >= 18)
 			m_generated = (flags & 0x08) ? false : true;
 
@@ -1027,10 +1031,7 @@ std::string analyze_block(MapBlock *block)
 	else
 		desc<<"is_ug [ ], ";
 
-	if(block->getLightingExpired())
-		desc<<"lighting_exp [X], ";
-	else
-		desc<<"lighting_exp [ ], ";
+	desc<<"lighting_complete: "<<block->getLightingComplete()<<", ";
 
 	if(block->isDummy())
 	{
