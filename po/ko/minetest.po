@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2015-07-08 23:30+0200\n"
-"Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
-"ko/>\n"
+"PO-Revision-Date: 2016-10-28 06:40+0000\n"
+"Last-Translator: sorichan <2_0_2_0_@naver.com>\n"
+"Language-Team: Korean "
+"<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -25,11 +25,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "에러가 발생하였습니다."
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "메인 메뉴"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
@@ -37,27 +37,27 @@ msgstr "확인"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "재연결"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "재연결이 필요합니다."
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "로딩중..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "프로토콜 버전이 맞지 않습니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "서버는 프로토콜 버전 $1 을(를) 사용합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "서버는 프로토콜 버전 $1과(와) $2를(을) 제공합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -85,11 +85,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr ""
+msgstr "MP 미적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
-msgstr ""
+msgstr "MP 적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
