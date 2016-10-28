@@ -385,3 +385,8 @@ void clearKeyCache()
 {
 	g_key_setting_cache.clear();
 }
+
+irr::EKEY_CODE keyname_to_keycode(const char *name)
+{
+	return lookup_keyname(name).Key;
+}
