@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-10-28 06:40+0000\n"
-"Last-Translator: sorichan <2_0_2_0_@naver.com>\n"
+"PO-Revision-Date: 2016-10-28 06:42+0000\n"
+"Last-Translator: Dongjin Han <djhan@cleinsoft.com>\n"
 "Language-Team: Korean "
 "<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
 "Language: ko\n"
@@ -25,7 +25,7 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr "에러가 발생하였습니다."
+msgstr "에러가 발생했습니다:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
