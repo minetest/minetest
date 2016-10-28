@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-10-28 06:42+0000\n"
-"Last-Translator: Dongjin Han <djhan@cleinsoft.com>\n"
+"PO-Revision-Date: 2016-10-28 07:01+0000\n"
+"Last-Translator: sorichan <2_0_2_0_@naver.com>\n"
 "Language-Team: Korean "
 "<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
 "Language: ko\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "모드 같은 Lua 스크립트에서 오류가 발생하였습니다."
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr "에러가 발생했습니다:"
+msgstr "오류가 발생하였습니다."
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -57,7 +57,7 @@ msgstr "서버는 프로토콜 버전 $1 을(를) 사용합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "서버는 프로토콜 버전 $1과(와) $2를(을) 제공합니다. "
+msgstr "서버는 프로토콜 버전 $1과(와) $2 사이를 제공합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -65,11 +65,11 @@ msgstr ""
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "프로토콜 버전 $1만 제공합니다."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "프로토콜 버전 $1과(와) $2 사이를 제공합니다."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -93,7 +93,7 @@ msgstr "MP 적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "모두 적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
@@ -103,15 +103,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr ""
+msgstr "숨겨진 게임"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr ""
+msgstr "숨겨진 맵 콘텐츠"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "모드:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -120,31 +120,31 @@ msgstr "저장"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "월드:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "적용"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "\"$1\" 는(은) 이미 존재합니다."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "만들기"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "minetest.net 에서 minetest_game같은 서브게임을 다운로드 하세요."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "minetest.net 에서 다운로드 하세요."
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "게임"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
@@ -152,7 +152,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -164,41 +164,41 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "월드 이름"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "서브게임을 설치하지 않았습니다."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "$1 를(을) 삭제하겠습니까?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 #: src/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "삭제"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: \"$1\"를(을) 삭제할 수 없습니다."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: \"$1\" 를(을) 인식할 수 없습니다."
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "\"$1\"를(을) 삭제하겠습니까?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
-msgstr ""
+msgstr "수락"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "모드팩 이름바꾸기:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
@@ -210,7 +210,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "설정 페이지로 돌아가기"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -222,7 +222,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "수정"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -240,11 +240,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "게임"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr ""
+msgstr "모드"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -260,7 +260,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "유효한 숫자를 입력해주세요."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
@@ -298,11 +298,11 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "설치 모드: 파일: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "설치 모드: $1를(을) 찾을 수 없습니다."
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
@@ -314,23 +314,23 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "$1 를(을) 다운로드중입니다. 기다려주세요..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
-msgstr ""
+msgstr "설치"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "$2페이지 중 $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr ""
+msgstr "순위"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "검색"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
@@ -338,7 +338,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "설치 완료:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -346,7 +346,7 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr ""
+msgstr "재설치"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
