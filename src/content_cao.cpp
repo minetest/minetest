@@ -691,7 +691,7 @@ v3f GenericCAO::getPosition()
 	}
 	return pos_translator.vect_show;
 }
-float GenericCAO::getYaw()
+inline float GenericCAO::getYaw()
 {
 	return m_yaw;
 }
