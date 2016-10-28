@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-10-28 07:01+0000\n"
-"Last-Translator: sorichan <2_0_2_0_@naver.com>\n"
+"Last-Translator: Dongjin Han <djhan@cleinsoft.com>\n"
 "Language-Team: Korean "
 "<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
 "Language: ko\n"
@@ -29,7 +29,7 @@ msgstr "오류가 발생하였습니다."
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "메인 메뉴"
+msgstr "주 메뉴"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
