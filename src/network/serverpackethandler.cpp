@@ -774,9 +774,10 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
+	NetworkPacket *pkt)
 {
-	if (pkt->getSize() < 12 + 12 + 4 + 4)
+	if (pkt->getRemainingBytes() < 12 + 12 + 4 + 4)
 		return;
 
 	v3s32 ps, ss;
@@ -791,7 +792,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	f32 yaw = (f32)f32yaw / 100.0;
 	u32 keyPressed = 0;
 
-	if (pkt->getSize() >= 12 + 12 + 4 + 4 + 4)
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> keyPressed;
 
 	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
@@ -800,6 +801,30 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	pitch = modulo360f(pitch);
 	yaw = modulo360f(yaw);
 
+	playersao->setBasePosition(position);
+	player->setSpeed(speed);
+	playersao->setPitch(pitch);
+	playersao->setYaw(yaw);
+	player->keyPressed = keyPressed;
+	player->control.up = (keyPressed & 1);
+	player->control.down = (keyPressed & 2);
+	player->control.left = (keyPressed & 4);
+	player->control.right = (keyPressed & 8);
+	player->control.jump = (keyPressed & 16);
+	player->control.aux1 = (keyPressed & 32);
+	player->control.sneak = (keyPressed & 64);
+	player->control.LMB = (keyPressed & 128);
+	player->control.RMB = (keyPressed & 256);
+
+	if (playersao->checkMovementCheat()) {
+		// Call callbacks
+		m_script->on_cheat(playersao, "moved_too_fast");
+		SendMovePlayer(pkt->getPeerId());
+	}
+}
+
+void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+{
 	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
@@ -825,26 +850,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		return;
 	}
 
-	playersao->setBasePosition(position);
-	player->setSpeed(speed);
-	playersao->setPitch(pitch);
-	playersao->setYaw(yaw);
-	player->keyPressed = keyPressed;
-	player->control.up = (keyPressed & 1);
-	player->control.down = (keyPressed & 2);
-	player->control.left = (keyPressed & 4);
-	player->control.right = (keyPressed & 8);
-	player->control.jump = (keyPressed & 16);
-	player->control.aux1 = (keyPressed & 32);
-	player->control.sneak = (keyPressed & 64);
-	player->control.LMB = (keyPressed & 128);
-	player->control.RMB = (keyPressed & 256);
-
-	if (playersao->checkMovementCheat()) {
-		// Call callbacks
-		m_script->on_cheat(playersao, "moved_too_fast");
-		SendMovePlayer(pkt->getPeerId());
-	}
+	process_PlayerPos(player, playersao, pkt);
 }
 
 void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
@@ -1281,15 +1287,13 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 
 void Server::handleCommand_Interact(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
-
 	/*
 		[0] u16 command
 		[2] u8 action
 		[3] u16 item
-		[5] u32 length of the next item
+		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
+		[9 + plen] player position information
 		actions:
 		0: start digging (from undersurface) or use
 		1: stop digging (all parameters ignored)
@@ -1297,9 +1301,11 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		3: place block or item (to abovesurface)
 		4: use item
 	*/
-	u8 action = readU8(is);
-	u16 item_i = readU16(is);
-	std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+	u8 action;
+	u16 item_i;
+	*pkt >> action;
+	*pkt >> item_i;
+	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	PointedThing pointed;
 	pointed.deSerialize(tmp_is);
 
@@ -1330,6 +1336,8 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				<< " is dead. Ignoring packet";
 		return;
 	}
+
+	process_PlayerPos(player, playersao, pkt);
 
 	v3f player_pos = playersao->getLastGoodPosition();
 

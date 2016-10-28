@@ -197,6 +197,10 @@ public:
 
 	void Send(NetworkPacket* pkt);
 
+	// Helper for handleCommand_PlayerPos and handleCommand_Interact
+	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
+		NetworkPacket *pkt);
+
 	// Both setter and getter need no envlock,
 	// can be called freely from threads
 	void setTimeOfDay(u32 time);
