@@ -1,4 +1,4 @@
-﻿Minetest 한국어 번역 사이트 :
+Minetest 한국어 번역 사이트 :
 https://hosted.weblate.org/projects/minetest/minetest/ko/
 
 
