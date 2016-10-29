@@ -3263,7 +3263,9 @@ will place the schematic inside of the VoxelManip.
 * `set_light_data(light_data)`: Sets the `param1` (light) contents of each node
   in the `VoxelManip`
     * expects lighting data in the same format that `get_light_data()` returns
-* `get_param2_data()`: Gets the raw `param2` data read into the `VoxelManip` object
+* `get_param2_data([buffer])`: Gets the raw `param2` data read into the `VoxelManip` object
+    * Returns an array (indices 1 to volume) of integers ranging from `0` to `255`
+    * If the param `buffer` is present, this table will be used to store the result instead
 * `set_param2_data(param2_data)`: Sets the `param2` contents of each node in the `VoxelManip`
 * `calc_lighting([p1, p2], [propagate_shadow])`:  Calculate lighting within the `VoxelManip`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
