@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <vector>
 #include "util/string.h"
+#include "inventory.h" // For InventoryChangeReceiver class
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -37,11 +38,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class NodeMetadata
+class NodeMetadata: public InventoryChangeReceiver
 {
 public:
-	NodeMetadata(IItemDefManager *item_def_mgr);
+	NodeMetadata(IItemDefManager *item_def_mgr, v3s16 node_pos);
 	~NodeMetadata();
+
+	void on_remove_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		const ItemStack &deleted_item);
+	void on_change_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item);
+	void on_add_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		u32 query_slot, 
+		const ItemStack &added_item);
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -68,6 +85,7 @@ public:
 private:
 	StringMap m_stringvars;
 	Inventory *m_inventory;
+	v3s16 m_node_pos;
 };
 
 
@@ -81,7 +99,7 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
+	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr, v3s16 relative_map_block_pos);
 
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();

@@ -61,6 +61,25 @@ public:
 			const std::string &name,
 			const std::string &listname, int index, ItemStack &stack,
 			ServerActiveObject *player);
+
+	void on_detached_inventory_remove_item(
+		const std::string &name,
+		const std::string &inventory_list_name,
+		const ItemStack &deleted_item);
+
+	void on_detached_inventory_change_item(
+		const std::string &name,
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item);
+
+	void on_detached_inventory_add_item(
+		const std::string &name,
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &added_item);
+
 private:
 	bool getDetachedInventoryCallback(
 			const std::string &name, const char *callbackname);

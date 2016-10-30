@@ -187,7 +187,7 @@ public:
 	virtual int getWieldIndex() const
 	{ return 0; }
 	virtual ItemStack getWieldedItem() const;
-	virtual bool setWieldedItem(const ItemStack &item);
+	virtual bool setWieldedItem(GameScripting *script_interface, const ItemStack &item);
 	inline void attachParticleSpawner(u32 id)
 	{
 		m_attached_particle_spawners.insert(id);
@@ -196,7 +196,6 @@ public:
 	{
 		m_attached_particle_spawners.erase(id);
 	}
-
 
 	/*
 		Number of players which know about this object. Object won't be

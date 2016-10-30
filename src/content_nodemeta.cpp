@@ -145,7 +145,7 @@ static bool content_nodemeta_deserialize_legacy_meta(
 
 void content_nodemeta_deserialize_legacy(std::istream &is,
 		NodeMetadataList *meta, NodeTimerList *timers,
-		IItemDefManager *item_def_mgr)
+		IItemDefManager *item_def_mgr, v3s16 relative_mapblock_pos)
 {
 	meta->clear();
 	timers->clear();
@@ -181,7 +181,7 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 			continue;
 		}
 
-		NodeMetadata *data = new NodeMetadata(item_def_mgr);
+		NodeMetadata *data = new NodeMetadata(item_def_mgr, relative_mapblock_pos + p);
 		bool need_timer = content_nodemeta_deserialize_legacy_meta(is, data);
 		meta->set(p, data);
 

@@ -88,11 +88,11 @@ ItemStack ServerActiveObject::getWieldedItem() const
 	return ItemStack();
 }
 
-bool ServerActiveObject::setWieldedItem(const ItemStack &item)
+bool ServerActiveObject::setWieldedItem(GameScripting *script_interface, const ItemStack &item)
 {
 	if(Inventory *inv = getInventory()) {
 		if (InventoryList *list = inv->getList(getWieldList())) {
-			list->changeItem(getWieldIndex(), item);
+			list->changeItem(script_interface, getWieldIndex(), item);
 			return true;
 		}
 	}

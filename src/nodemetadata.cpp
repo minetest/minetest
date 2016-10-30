@@ -25,20 +25,58 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
+#include "script/scripting_game.h"
 
 /*
 	NodeMetadata
 */
 
-NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr):
+NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr, v3s16 node_pos):
 	m_stringvars(),
-	m_inventory(new Inventory(item_def_mgr))
+	m_inventory(new Inventory(item_def_mgr, this)),
+	m_node_pos(node_pos)
 {
 }
 
 NodeMetadata::~NodeMetadata()
 {
 	delete m_inventory;
+}
+
+void NodeMetadata::on_remove_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	const ItemStack &deleted_item)
+{
+	if (script_interface) {
+		script_interface->on_nodemeta_inventory_remove_item(
+			m_node_pos, inventory_list->getName(), deleted_item);
+	}
+}
+
+void NodeMetadata::on_change_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &old_item,
+	const ItemStack &new_item)
+{
+	if (script_interface) {
+		script_interface->on_nodemeta_inventory_change_item(
+			m_node_pos, inventory_list->getName(), query_slot, old_item, new_item);
+	}
+}
+
+void NodeMetadata::on_add_item(
+	GameScripting *script_interface, 
+	const InventoryList *inventory_list, 
+	u32 query_slot, 
+	const ItemStack &added_item)
+{
+	if (script_interface) {
+		script_interface->on_nodemeta_inventory_add_item(
+			m_node_pos, inventory_list->getName(), query_slot, added_item);
+	}
 }
 
 void NodeMetadata::serialize(std::ostream &os) const
@@ -114,7 +152,7 @@ void NodeMetadataList::serialize(std::ostream &os) const
 	}
 }
 
-void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_mgr)
+void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_mgr, v3s16 relative_map_block_pos)
 {
 	clear();
 
@@ -152,7 +190,7 @@ void NodeMetadataList::deSerialize(std::istream &is, IItemDefManager *item_def_m
 			continue;
 		}
 
-		NodeMetadata *data = new NodeMetadata(item_def_mgr);
+		NodeMetadata *data = new NodeMetadata(item_def_mgr, relative_map_block_pos+p);
 		data->deSerialize(is);
 		m_data[p] = data;
 	}

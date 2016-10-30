@@ -38,6 +38,22 @@ public:
 	LocalPlayer(Client *gamedef, const char *name);
 	virtual ~LocalPlayer();
 
+	void on_remove_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		const ItemStack &deleted_item);
+	void on_change_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item);
+	void on_add_item(
+		GameScripting *script_interface, 
+		const InventoryList *inventory_list, 
+		u32 query_slot, 
+		const ItemStack &added_item);
+
 	ClientActiveObject *parent;
 
 	bool got_teleported;

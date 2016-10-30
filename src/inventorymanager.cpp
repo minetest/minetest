@@ -376,7 +376,7 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		same as source), nothing happens
 	*/
 	bool did_swap = false;
-	move_count = list_from->moveItem(from_i,
+	move_count = list_from->moveItem(PLAYER_TO_SA(player), from_i,
 		list_to, to_i, count, !caused_by_move_somewhere, &did_swap);
 
 	// If source is infinite, reset it's stack
@@ -392,24 +392,24 @@ void IMoveAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 			if (from_stack_was.name != to_stack_was.name) {
 				for (u32 i = 0; i < list_to->getSize(); i++) {
 					if (list_to->getItem(i).empty()) {
-						list_to->changeItem(i, to_stack_was);
+						list_to->changeItem(PLAYER_TO_SA(player), i, to_stack_was);
 						break;
 					}
 				}
 			}
 		}
 		if (move_count > 0 || did_swap) {
-			list_from->deleteItem(from_i);
-			list_from->addItem(from_i, from_stack_was);
+			list_from->deleteItem(PLAYER_TO_SA(player), from_i);
+			list_from->addItem(PLAYER_TO_SA(player), from_i, from_stack_was);
 		}
 	}
 	// If destination is infinite, reset it's stack and take count from source
 	if(dst_can_put_count == -1){
-		list_to->deleteItem(to_i);
-		list_to->addItem(to_i, to_stack_was);
-		list_from->deleteItem(from_i);
-		list_from->addItem(from_i, from_stack_was);
-		list_from->takeItem(from_i, count);
+		list_to->deleteItem(PLAYER_TO_SA(player), to_i);
+		list_to->addItem(PLAYER_TO_SA(player), to_i, to_stack_was);
+		list_from->deleteItem(PLAYER_TO_SA(player), from_i);
+		list_from->addItem(PLAYER_TO_SA(player), from_i, from_stack_was);
+		list_from->takeItem(PLAYER_TO_SA(player), from_i, count);
 	}
 
 	infostream << "IMoveAction::apply(): moved"
@@ -550,9 +550,9 @@ void IMoveAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 		return;
 
 	if (!move_somewhere)
-		list_from->moveItem(from_i, list_to, to_i, count);
+		list_from->moveItem(NULL, from_i, list_to, to_i, count);
 	else
-		list_from->moveItemSomewhere(from_i, list_to, count);
+		list_from->moveItemSomewhere(NULL, from_i, list_to, count);
 
 	mgr->setInventoryModified(from_inv);
 	if(inv_from != inv_to)
@@ -663,7 +663,7 @@ void IDropAction::apply(InventoryManager *mgr, ServerActiveObject *player, IGame
 		// If source isn't infinite
 		if(src_can_take_count != -1){
 			// Take item from source list
-			ItemStack item2 = list_from->takeItem(from_i, actually_dropped_count);
+			ItemStack item2 = list_from->takeItem(PLAYER_TO_SA(player), from_i, actually_dropped_count);
 
 			if(item2.count != actually_dropped_count)
 				errorstream<<"Could not take dropped count of items"<<std::endl;
@@ -741,9 +741,9 @@ void IDropAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 		return;
 
 	if(count == 0)
-		list_from->changeItem(from_i, ItemStack());
+		list_from->changeItem(NULL, from_i, ItemStack());
 	else
-		list_from->takeItem(from_i, count);
+		list_from->takeItem(NULL, from_i, count);
 
 	mgr->setInventoryModified(from_inv);
 }
@@ -801,7 +801,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 	ItemStack craftresultitem;
 	int count_remaining = count;
 	std::vector<ItemStack> output_replacements;
-	getCraftingResult(inv_craft, crafted, output_replacements, false, gamedef);
+	getCraftingResult(PLAYER_TO_SA(player), inv_craft, crafted, output_replacements, false, gamedef);
 	PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 	bool found = !crafted.empty();
 
@@ -810,9 +810,9 @@ void ICraftAction::apply(InventoryManager *mgr,
 
 		std::vector<ItemStack> temp;
 		// Decrement input and add crafting output
-		getCraftingResult(inv_craft, crafted, temp, true, gamedef);
+		getCraftingResult(PLAYER_TO_SA(player), inv_craft, crafted, temp, true, gamedef);
 		PLAYER_TO_SA(player)->item_OnCraft(crafted, player, &saved_craft_list, craft_inv);
-		list_craftresult->addItem(0, crafted);
+		list_craftresult->addItem(PLAYER_TO_SA(player), 0, crafted);
 		mgr->setInventoryModified(craft_inv);
 
 		// Add the new replacements to the list
@@ -842,7 +842,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 			count_remaining--;
 
 		// Get next crafting result
-		found = getCraftingResult(inv_craft, crafted, temp, false, gamedef);
+		found = getCraftingResult(PLAYER_TO_SA(player), inv_craft, crafted, temp, false, gamedef);
 		PLAYER_TO_SA(player)->item_CraftPredict(crafted, player, list_craft, craft_inv);
 		found = !crafted.empty();
 	}
@@ -852,7 +852,7 @@ void ICraftAction::apply(InventoryManager *mgr,
 	for (std::vector<ItemStack>::iterator it = output_replacements.begin();
 			it != output_replacements.end(); ++it) {
 		if (list_main)
-			*it = list_main->addItem(*it);
+			*it = list_main->addItem(PLAYER_TO_SA(player), *it);
 		if (it->empty())
 			continue;
 		u16 count = it->count;
@@ -882,7 +882,7 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 
 
 // Crafting helper
-bool getCraftingResult(Inventory *inv, ItemStack& result,
+bool getCraftingResult(GameScripting *script_interface, Inventory *inv, ItemStack& result,
 		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef)
 {
@@ -914,7 +914,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 		// CraftInput has been changed, apply changes in clist
 		for(u16 i=0; i<clist->getSize(); i++)
 		{
-			clist->changeItem(i, ci.items[i]);
+			clist->changeItem(script_interface, i, ci.items[i]);
 		}
 	}
 
