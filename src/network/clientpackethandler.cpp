@@ -634,7 +634,6 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 		m_media_downloader->addFile(name, sha1_raw);
 	}
 
-	std::vector<std::string> remote_media;
 	try {
 		std::string str;
 

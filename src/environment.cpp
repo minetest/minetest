@@ -608,9 +608,8 @@ void ServerEnvironment::saveLoadedPlayers()
 	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
 			it != m_players.end();
 			++it) {
-		RemotePlayer *player = static_cast<RemotePlayer*>(*it);
-		if (player->checkModified()) {
-			player->save(players_path, m_gamedef);
+		if ((*it)->checkModified()) {
+			(*it)->save(players_path, m_gamedef);
 		}
 	}
 }
@@ -623,7 +622,7 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 	player->save(players_path, m_gamedef);
 }
 
-RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername)
+RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername, PlayerSAO *sao)
 {
 	bool newplayer = false;
 	bool found = false;
@@ -641,7 +640,8 @@ RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername)
 		std::ifstream is(path.c_str(), std::ios_base::binary);
 		if (!is.good())
 			continue;
-		player->deSerialize(is, path);
+
+		player->deSerialize(is, path, sao);
 		is.close();
 
 		if (player->getName() == playername) {
@@ -657,11 +657,13 @@ RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername)
 				<< " not found" << std::endl;
 		if (newplayer)
 			delete player;
+
 		return NULL;
 	}
 
-	if (newplayer)
+	if (newplayer) {
 		addPlayer(player);
+	}
 	player->setModified(false);
 	return player;
 }
@@ -1271,12 +1273,16 @@ void ServerEnvironment::step(float dtime)
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
 			assert(player);
+
 			// Ignore disconnected players
 			if (player->peer_id == 0)
 				continue;
 
+			PlayerSAO *playersao = player->getPlayerSAO();
+			assert(playersao);
+
 			v3s16 blockpos = getNodeBlockPos(
-					floatToInt(player->getPosition(), BS));
+					floatToInt(playersao->getBasePosition(), BS));
 			players_blockpos.push_back(blockpos);
 		}
 
@@ -1584,7 +1590,7 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	Finds out what new objects have been added to
 	inside a radius around a position
 */
-void ServerEnvironment::getAddedActiveObjects(RemotePlayer *player, s16 radius,
+void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		s16 player_radius,
 		std::set<u16> &current_objects,
 		std::queue<u16> &added_objects)
@@ -1594,7 +1600,6 @@ void ServerEnvironment::getAddedActiveObjects(RemotePlayer *player, s16 radius,
 
 	if (player_radius_f < 0)
 		player_radius_f = 0;
-
 	/*
 		Go through the object list,
 		- discard m_removed objects,
@@ -1602,20 +1607,21 @@ void ServerEnvironment::getAddedActiveObjects(RemotePlayer *player, s16 radius,
 		- discard objects that are found in current_objects.
 		- add remaining objects to added_objects
 	*/
-	for(ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ActiveObjectMap::iterator i = m_active_objects.begin();
 			i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
 
 		// Get object
 		ServerActiveObject *object = i->second;
-		if(object == NULL)
+		if (object == NULL)
 			continue;
 
 		// Discard if removed or deactivating
 		if(object->m_removed || object->m_pending_deactivation)
 			continue;
 
-		f32 distance_f = object->getBasePosition().getDistanceFrom(player->getPosition());
+		f32 distance_f = object->getBasePosition().
+				getDistanceFrom(playersao->getBasePosition());
 		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			// Discard if too far
 			if (distance_f > player_radius_f && player_radius_f != 0)
@@ -1637,7 +1643,7 @@ void ServerEnvironment::getAddedActiveObjects(RemotePlayer *player, s16 radius,
 	Finds out what objects have been removed from
 	inside a radius around a position
 */
-void ServerEnvironment::getRemovedActiveObjects(RemotePlayer *player, s16 radius,
+void ServerEnvironment::getRemovedActiveObjects(PlayerSAO *playersao, s16 radius,
 		s16 player_radius,
 		std::set<u16> &current_objects,
 		std::queue<u16> &removed_objects)
@@ -1647,7 +1653,6 @@ void ServerEnvironment::getRemovedActiveObjects(RemotePlayer *player, s16 radius
 
 	if (player_radius_f < 0)
 		player_radius_f = 0;
-
 	/*
 		Go through current_objects; object is removed if:
 		- object is not found in m_active_objects (this is actually an
@@ -1675,7 +1680,7 @@ void ServerEnvironment::getRemovedActiveObjects(RemotePlayer *player, s16 radius
 			continue;
 		}
 
-		f32 distance_f = object->getBasePosition().getDistanceFrom(player->getPosition());
+		f32 distance_f = object->getBasePosition().getDistanceFrom(playersao->getBasePosition());
 		if (object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			if (distance_f <= player_radius_f || player_radius_f == 0)
 				continue;

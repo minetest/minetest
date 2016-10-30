@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
 	Player(name, gamedef->idef()),
 	parent(0),
+	hp(PLAYER_MAX_HP),
 	got_teleported(false),
 	isAttached(false),
 	touching_ground(false),
@@ -62,6 +63,7 @@ LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
 	light_color(255,255,255,255),
 	hurt_tilt_timer(0.0f),
 	hurt_tilt_strength(0.0f),
+	m_position(0,0,0),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
 	m_need_to_get_new_sneak_node(true),
@@ -69,6 +71,11 @@ LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_can_jump(false),
+	m_breath(PLAYER_MAX_BREATH),
+	m_yaw(0),
+	m_pitch(0),
+	camera_barely_in_ceiling(false),
+	m_collisionbox(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30),
 	m_cao(NULL),
 	m_gamedef(gamedef)
 {

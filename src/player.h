@@ -129,49 +129,7 @@ public:
 		m_speed = speed;
 	}
 
-	v3f getPosition()
-	{
-		return m_position;
-	}
-
-	v3s16 getLightPosition() const;
-
-	v3f getEyeOffset()
-	{
-		float eye_height = camera_barely_in_ceiling ? 1.5f : 1.625f;
-		return v3f(0, BS * eye_height, 0);
-	}
-
-	v3f getEyePosition()
-	{
-		return m_position + getEyeOffset();
-	}
-
-	virtual void setPosition(const v3f &position)
-	{
-		m_position = position;
-	}
-
-	virtual void setPitch(f32 pitch)
-	{
-		m_pitch = pitch;
-	}
-
-	virtual void setYaw(f32 yaw)
-	{
-		m_yaw = yaw;
-	}
-
-	f32 getPitch() const { return m_pitch; }
-	f32 getYaw() const { return m_yaw; }
-	u16 getBreath() const { return m_breath; }
-
-	virtual void setBreath(u16 breath) { m_breath = breath; }
-
-	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
-	f32 getRadYaw() const { return m_yaw * core::DEGTORAD; }
 	const char *getName() const { return m_name; }
-	aabb3f getCollisionbox() const { return m_collisionbox; }
 
 	u32 getFreeHudID()
 	{
@@ -183,7 +141,6 @@ public:
 		return size;
 	}
 
-	bool camera_barely_in_ceiling;
 	v3f eye_offset_first;
 	v3f eye_offset_third;
 
@@ -205,8 +162,6 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	u16 hp;
-
 	u16 peer_id;
 
 	std::string inventory_formspec;
@@ -225,12 +180,7 @@ public:
 	s32 hud_hotbar_itemcount;
 protected:
 	char m_name[PLAYERNAME_SIZE];
-	u16 m_breath;
-	f32 m_pitch;
-	f32 m_yaw;
 	v3f m_speed;
-	v3f m_position;
-	aabb3f m_collisionbox;
 
 	std::vector<HudElement *> hud;
 private:
