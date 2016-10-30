@@ -238,6 +238,43 @@ function math.sign(x, tolerance)
 end
 
 --------------------------------------------------------------------------------
+-- Video enums and pack function
+
+-- E_BLEND_FACTOR
+minetest.ebf = {			     
+	zero			= 0, -- src & dest (0, 0, 0, 0)
+	one			= 1, -- src & dest (1, 1, 1, 1)
+	dst_color 		= 2, -- src (destR, destG, destB, destA)
+	one_minus_dst_color 	= 3, -- src (1-destR, 1-destG, 1-destB, 1-destA)
+	src_color 		= 4, -- dest (srcR, srcG, srcB, srcA)
+	one_minus_src_color 	= 5, -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
+	src_alpha 		= 6, -- src & dest (srcA, srcA, srcA, srcA)
+	one_minus_src_alpha 	= 7, -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
+	dst_alpha 		= 8, -- src & dest (destA, destA, destA, destA)
+	one_minus_dst_alpha 	= 9, -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
+	src_alpha_saturate  	= 10,-- src (min(srcA, 1-destA), idem, ...) 
+}
+
+-- E_MODULATE_FUNC
+minetest.emfn = {
+	modulate_1x    = 1,
+	modulate_2x    = 2,
+	modulate_4x    = 4,
+}
+
+-- E_ALPHA_SOURCE
+minetest.eas = {
+	none	 = 0,
+	vertex_color = 1,
+	texture	 = 2,
+}
+
+-- BlendFunc = source * sourceFactor + dest * destFactor
+function minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource) 
+	return alphaSource * 4096 + modulate * 256 + srcFact * 16 + dstFact
+end
+
+--------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)
 
