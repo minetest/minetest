@@ -50,9 +50,9 @@ void TestPlayer::testSave(IGameDef *gamedef)
 	sao.initialize(&rplayer, std::set<std::string>());
 	rplayer.setPlayerSAO(&sao);
 	sao.setBreath(10);
-	sao.setHP(8, true);
-	sao.setYaw(0.1f, false);
-	sao.setPitch(0.6f, false);
+	sao.setHPRaw(8);
+	sao.setYaw(0.1f);
+	sao.setPitch(0.6f);
 	sao.setBasePosition(v3f(450.2f, -15.7f, 68.1f));
 	rplayer.save(".", gamedef);
 	UASSERT(fs::PathExists("testplayer_save"));
@@ -65,9 +65,9 @@ void TestPlayer::testLoad(IGameDef *gamedef)
 	sao.initialize(&rplayer, std::set<std::string>());
 	rplayer.setPlayerSAO(&sao);
 	sao.setBreath(10);
-	sao.setHP(8, true);
-	sao.setYaw(0.1f, false);
-	sao.setPitch(0.6f, false);
+	sao.setHPRaw(8);
+	sao.setYaw(0.1f);
+	sao.setPitch(0.6f);
 	sao.setBasePosition(v3f(450.2f, -15.7f, 68.1f));
 	rplayer.save(".", gamedef);
 	UASSERT(fs::PathExists("testplayer_load"));

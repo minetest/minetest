@@ -827,8 +827,8 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
-	playersao->setPitch(pitch, false);
-	playersao->setYaw(yaw, false);
+	playersao->setPitch(pitch);
+	playersao->setYaw(yaw);
 	player->keyPressed = keyPressed;
 	player->control.up = (keyPressed & 1);
 	player->control.down = (keyPressed & 2);
