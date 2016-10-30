@@ -21,20 +21,59 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DATABASE_SQLITE3_HEADER
 
 #include "database.h"
+#include "filesys.h"
 #include <string>
 
 extern "C" {
 	#include "sqlite3.h"
 }
 
-class Database_SQLite3 : public Database
+
+// SQLite3 code that is not specific to the map database interface expected by minetest.
+class SQLite3
+{
+public:
+	SQLite3(const std::string &db_path);
+	SQLite3(const SQLite3 &db);
+	virtual ~SQLite3();
+
+	bool databaseExists() { return fs::PathExists(m_database_path); }
+	void openDatabase();
+	void closeDatabase();
+	void applySynchronousLevel();	// Per connection setting
+	void enableBusyHandler();	// Per connection setting
+	void beginTransaction();
+	void commitTransaction();
+
+protected:
+	// making this protected allows subclasses to prepare statements
+	sqlite3 *m_database;
+
+private:
+	struct BusyHandlerData
+	{
+		s64 first_time;
+		s64 prev_time;
+	};
+	BusyHandlerData m_busy_handler_data;
+	static int busyHandler(void *data, int count);
+
+	std::string m_database_path;
+	s16 m_synchronous;
+
+	sqlite3_stmt *m_stmt_begin;
+	sqlite3_stmt *m_stmt_commit;
+};
+
+
+class Database_SQLite3 : public Database, protected SQLite3
 {
 public:
 	Database_SQLite3(const std::string &savedir);
 	~Database_SQLite3();
 
-	void beginSave();
-	void endSave();
+	void beginSave() { verifyDatabase(); beginTransaction(); }
+	void endSave() { verifyDatabase(); commitTransaction(); }
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
@@ -43,8 +82,8 @@ public:
 	bool initialized() const { return m_initialized; }
 
 private:
-	// Open the database
-	void openDatabase();
+	// Initialize the database
+	void initDatabase();
 	// Create the database structure
 	void createDatabase();
 	// Open and initialize the database if needed
@@ -56,17 +95,10 @@ private:
 
 	std::string m_savedir;
 
-	sqlite3 *m_database;
 	sqlite3_stmt *m_stmt_read;
 	sqlite3_stmt *m_stmt_write;
 	sqlite3_stmt *m_stmt_list;
 	sqlite3_stmt *m_stmt_delete;
-	sqlite3_stmt *m_stmt_begin;
-	sqlite3_stmt *m_stmt_end;
-
-	s64 m_busy_handler_data[2];
-
-	static int busyHandler(void *data, int count);
 };
 
 #endif

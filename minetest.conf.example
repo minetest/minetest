@@ -1018,10 +1018,6 @@
 #    type: int
 # max_objects_per_block = 64
 
-#    See http://www.sqlite.org/pragma.html#pragma_synchronous
-#    type: enum values: 0, 1, 2
-# sqlite_synchronous = 2
-
 #    Length of a server tick and the interval at which objects are generally updated over network.
 #    type: float
 # dedicated_server_step = 0.1
@@ -1551,6 +1547,12 @@
 #    allow them to upload and download data to/from the internet.
 #    type: string
 # secure.http_mods =
+
+## Database
+
+#    See http://www.sqlite.org/pragma.html#pragma_synchronous
+#    type: enum values: 0, 1, 2
+# sqlite_synchronous = 2
 
 ## Advanced
 

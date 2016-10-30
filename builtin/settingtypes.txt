@@ -819,9 +819,6 @@ server_unload_unused_data_timeout (Unload unused server data) int 29
 #    Maximum number of statically stored objects in a block.
 max_objects_per_block (Maximum objects per block) int 64
 
-#    See http://www.sqlite.org/pragma.html#pragma_synchronous
-sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
-
 #    Length of a server tick and the interval at which objects are generally updated over network.
 dedicated_server_step (Dedicated server step) float 0.1
 
@@ -1193,6 +1190,11 @@ secure.trusted_mods (Trusted mods) string
 #	Comma-separated list of mods that are allowed to access HTTP APIs, which
 #	allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP Mods) string
+
+[*Database]
+
+#    See http://www.sqlite.org/pragma.html#pragma_synchronous
+sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
 [*Advanced]
 
