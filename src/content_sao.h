@@ -73,7 +73,7 @@ public:
 			ServerActiveObject *puncher=NULL,
 			float time_from_last_punch=1000000);
 	void rightClick(ServerActiveObject *clicker);
-	void setPos(v3f pos);
+	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
@@ -204,8 +204,12 @@ public:
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
 	void moveTo(v3f pos, bool continuous);
-	void setYaw(const float yaw, bool send_data = true);
-	void setPitch(const float pitch, bool send_data = true);
+	void setYaw(const float yaw);
+	// Data should not be sent at player initialization
+	void setYawAndSend(const float yaw);
+	void setPitch(const float pitch);
+	// Data should not be sent at player initialization
+	void setPitchAndSend(const float pitch);
 	f32 getPitch() const { return m_pitch; }
 	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
@@ -220,7 +224,8 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker);
-	void setHP(s16 hp, bool direct = false);
+	void setHP(s16 hp);
+	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath);
