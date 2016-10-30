@@ -211,7 +211,7 @@ void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, con
 {
 	int version = readU8(is);
 	name = deSerializeString(is);
-	animation.type = (TileAnimationType)readU8(is);
+	animation.type = (AnimationType)readU8(is);
 	animation.aspect_w = readU16(is);
 	animation.aspect_h = readU16(is);
 	animation.length = readF1000(is);
@@ -531,7 +531,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	tile->material_flags = 0;
 	if (backface_culling)
 		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
+	if (tiledef->animation.type == AT_VERTICAL_FRAMES)
 		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
 	if (tiledef->tileable_horizontal)
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
