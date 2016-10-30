@@ -277,6 +277,8 @@ void Client::Stop()
 	if (m_localdb) {
 		infostream << "Local map saving ended." << std::endl;
 		m_localdb->endSave();
+		delete m_localdb;
+		m_localdb = NULL;
 	}
 }
 
@@ -821,7 +823,16 @@ void Client::initLocalMapSaving(const Address &address,
 
 	fs::CreateAllDirs(world_path);
 
-	m_localdb = new Database_SQLite3(world_path);
+	Settings conf;
+	std::string conf_path = world_path + DIR_DELIM + "world.mt";
+	// It's OK if this fails. The file may not even exist...
+	(void) conf.readConfigFile(conf_path.c_str());
+	m_localdb = new Database_SQLite3(world_path, conf);
+	// Don't save world-specific settings for local-map-save databases. Leave that
+	// to the user: unless the user has wilfully configured or changed database-
+	// specific settings (i.e. created or edited world.mt), always use the default
+	// values from minetest.conf
+
 	m_localdb->beginSave();
 	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }

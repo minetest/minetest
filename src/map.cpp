@@ -2785,7 +2785,7 @@ Database *ServerMap::createDatabase(
 	Settings &conf)
 {
 	if (name == "sqlite3")
-		return new Database_SQLite3(savedir);
+		return new Database_SQLite3(savedir, conf);
 	if (name == "dummy")
 		return new Database_Dummy();
 	#if USE_LEVELDB

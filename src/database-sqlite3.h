@@ -23,17 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "filesys.h"
 #include <string>
+#include "settings.h"
 
 extern "C" {
 	#include "sqlite3.h"
 }
 
+class SQLite3CheckpointThread;
 
 // SQLite3 code that is not specific to the map database interface expected by minetest.
 class SQLite3
 {
 public:
-	SQLite3(const std::string &db_path);
+	SQLite3(const std::string &db_path, Settings &conf);
 	SQLite3(const SQLite3 &db);
 	virtual ~SQLite3();
 
@@ -41,11 +43,25 @@ public:
 	void openDatabase();
 	void closeDatabase();
 	void applySynchronousLevel();	// Per connection setting
+	std::string getJournalMode() const { return m_journal_mode; };
+	void applyJournalMode();		// Database-wide setting
 	void enableBusyHandler();	// Per connection setting
+	void checkpointWALForce();	// Fail if WAL can't be restarted
+	void checkpointWALFinal();	// Try to truncate / restart, but don't fail
+	void checkpointWALPassive();	// checkpoint as much as possible;
+					// complain if backlog is growing
+	void startWALCheckpointThread();
+	void stopWALCheckpointThread();
+	void setAutoCheckpoint(bool enable = true);
 	void beginTransaction();
 	void commitTransaction();
 
+	// This assumes there is at most one database writer instance.
+	bool WALCheckpointThreadEnabled() { return m_walCheckpointThread; }
+
 protected:
+	std::string getDBJournalMode();
+
 	// making this protected allows subclasses to prepare statements
 	sqlite3 *m_database;
 
@@ -60,20 +76,30 @@ private:
 
 	std::string m_database_path;
 	s16 m_synchronous;
+	std::string m_journal_mode;
+	int m_last_wal_backlog;
 
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_commit;
+
+	SQLite3CheckpointThread *m_walCheckpointThread;
 };
 
 
 class Database_SQLite3 : public Database, protected SQLite3
 {
 public:
-	Database_SQLite3(const std::string &savedir);
+	Database_SQLite3(const std::string &savedir, Settings &conf);
 	~Database_SQLite3();
 
 	void beginSave() { verifyDatabase(); beginTransaction(); }
-	void endSave() { verifyDatabase(); commitTransaction(); }
+	void endSave()
+	{
+		verifyDatabase();
+		commitTransaction();
+		if (!WALCheckpointThreadEnabled())
+			checkpointWALPassive();
+	}
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
