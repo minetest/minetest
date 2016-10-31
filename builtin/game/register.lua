@@ -65,14 +65,14 @@ local function check_modname_prefix(name)
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
-		
+
 		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
-		
+
 		return name
 	end
 end
@@ -553,10 +553,11 @@ core.registered_craft_predicts, core.register_craft_predict = make_registration(
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
+core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
+core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()
 --
 
 core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
-
