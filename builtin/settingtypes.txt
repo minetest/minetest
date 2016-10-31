@@ -849,6 +849,13 @@ liquid_queue_purge_time (Liquid queue purge time) int 0
 #    Liquid update interval in seconds.
 liquid_update (Liquid update tick) float 1.0
 
+#    At this distance the server will aggressively optimize which blocks are sent to clients.
+#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
+#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
+#    Setting this to a value greater than max_block_send_distance disables this optimization.
+#    Stated in mapblocks (16 nodes)
+block_send_optimize_distance (block send optimize distance) int 4 2
+
 [*Mapgen]
 
 #    Name of map generator to be used when creating a new world.

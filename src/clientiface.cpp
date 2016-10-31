@@ -174,6 +174,8 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	const s16 full_d_max = g_settings->getS16("max_block_send_distance");
+	const s16 d_opt = g_settings->getS16("block_send_optimize_distance");
+
 	s16 d_max = full_d_max;
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
 
@@ -300,7 +302,7 @@ void RemoteClient::GetNextBlocks (
 					Block is near ground level if night-time mesh
 					differs from day-time mesh.
 				*/
-				if(d >= 4)
+				if(d >= d_opt)
 				{
 					if(block->getDayNightDiff() == false)
 						continue;
