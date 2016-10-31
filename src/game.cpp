@@ -1573,7 +1573,7 @@ protected:
 			bool shift_pressed);
 	void toggleFog(float *statustext_time, bool *flag);
 	void toggleDebug(float *statustext_time, bool *show_debug,
-			bool *show_profiler_graph);
+			bool *show_profiler_graph, bool *show_wireframe);
 	void toggleUpdateCamera(float *statustext_time, bool *flag);
 	void toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 			u32 profiler_max_page);
@@ -2812,7 +2812,8 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
 		toggleUpdateCamera(statustext_time, &flags->disable_camera_update);
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
-		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph);
+		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph,
+			&draw_control->show_wireframe);
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
 		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
@@ -3119,22 +3120,33 @@ void Game::toggleFog(float *statustext_time, bool *flag)
 
 
 void Game::toggleDebug(float *statustext_time, bool *show_debug,
-		bool *show_profiler_graph)
+		bool *show_profiler_graph, bool *show_wireframe)
 {
-	// Initial / 3x toggle: Chat only
+	// Initial / 4x toggle: Chat only
 	// 1x toggle: Debug text with chat
 	// 2x toggle: Debug text with profiler graph
+	// 3x toggle: Debug text and wireframe
 	if (!*show_debug) {
 		*show_debug = true;
 		*show_profiler_graph = false;
+		*show_wireframe = false;
 		statustext = L"Debug info shown";
-	} else if (*show_profiler_graph) {
-		*show_debug = false;
-		*show_profiler_graph = false;
-		statustext = L"Debug info and profiler graph hidden";
-	} else {
+	} else if (!*show_profiler_graph) {
 		*show_profiler_graph = true;
 		statustext = L"Profiler graph shown";
+	} else if (!*show_wireframe && client->checkPrivilege("debug")) {
+		*show_profiler_graph = false;
+		*show_wireframe = true;
+		statustext = L"Wireframe shown";
+	} else {
+		*show_debug = false;
+		*show_profiler_graph = false;
+		*show_wireframe = false;
+		if (client->checkPrivilege("debug")) {
+			statustext = L"Debug info, profiler graph, and wireframe hidden";
+		} else {
+			statustext = L"Debug info and profiler graph hidden";
+		}
 	}
 	*statustext_time = 0;
 }

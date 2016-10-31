@@ -32,6 +32,7 @@ struct MapDrawControl
 		range_all(false),
 		wanted_range(0),
 		wanted_max_blocks(0),
+		show_wireframe(false),
 		blocks_drawn(0),
 		blocks_would_have_drawn(0),
 		farthest_drawn(0)
@@ -43,6 +44,8 @@ struct MapDrawControl
 	float wanted_range;
 	// Maximum number of blocks to draw
 	u32 wanted_max_blocks;
+	// show a wire frame for debugging
+	bool show_wireframe;
 	// Number of blocks rendered is written here by the renderer
 	u32 blocks_drawn;
 	// Number of blocks that would have been drawn in wanted_range
