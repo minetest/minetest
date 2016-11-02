@@ -45,6 +45,15 @@ int ModApiServer::l_get_server_status(lua_State *L)
 	return 1;
 }
 
+// get_server_uptime()
+int ModApiServer::l_get_server_uptime(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	lua_pushnumber(L, getServer(L)->getUptime());
+	return 1;
+}
+
+
 // print(text)
 int ModApiServer::l_print(lua_State *L)
 {
@@ -507,6 +516,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
 	API_FCT(get_server_status);
+	API_FCT(get_server_uptime);
 	API_FCT(get_worldpath);
 	API_FCT(is_singleplayer);
 

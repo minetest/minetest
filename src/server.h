@@ -216,6 +216,7 @@ public:
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
+	inline double getUptime() const { return m_uptime.m_value; }
 
 	// read shutdown state
 	inline bool getShutdownRequested() const { return m_shutdown_requested; }

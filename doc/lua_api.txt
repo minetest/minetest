@@ -2448,6 +2448,7 @@ These functions return the leftover itemstack.
 * `minetest.request_shutdown([message],[reconnect])`: request for server shutdown. Will display `message` to clients,
     and `reconnect` == true displays a reconnect button.
 * `minetest.get_server_status()`: returns server status string
+* `minetest.get_server_uptime()`: returns the server uptime in seconds
 
 ### Bans
 * `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)
