@@ -31,6 +31,9 @@ core.register_entity(":__builtin:item", {
 		spritediv = {x = 1, y = 1},
 		initial_sprite_basepos = {x = 0, y = 0},
 		is_visible = false,
+		collectible = 1,	-- NOTE: __builtin:item is special. If collectible
+					-- is not set, it *will* be picked up. Other
+					-- entities won't, unless collectible is positive
 	},
 
 	itemstring = '',

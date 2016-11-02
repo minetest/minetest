@@ -47,6 +47,15 @@ class WieldMeshSceneNode;
 class ClientActiveObject : public ActiveObject
 {
 public:
+	enum Type {
+		CAO_UNKNOWN,
+		CAO_ITEMSTACK,
+		CAO_FALLING_NODE,
+		CAO_BUILTIN_OTHER,
+		CAO_OTHER,
+		CAO_PROBABLY_ITEMSTACK,		// Cannot be determined for sure
+						// on older servers
+	};
 	ClientActiveObject(u16 id, IGameDef *gamedef, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
@@ -61,6 +70,8 @@ public:
 	virtual bool getCollisionBox(aabb3f *toset){return false;}
 	virtual bool collideWithObjects(){return false;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual v3f getVelocity(){return v3f(0,0,0);}
+	virtual v3f getAcceleration(){return v3f(0,0,0);}
 	virtual scene::ISceneNode *getSceneNode(){return NULL;}
 	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}
@@ -68,6 +79,11 @@ public:
 	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
 	virtual bool isPlayer() const {return false;}
 	virtual bool isLocalPlayer() const {return false;}
+	virtual bool isVisible() const {return false;}
+	virtual std::string objectTypeName() const {return "";}
+	virtual bool collectibleIsSet() const {return false;}
+	virtual int collectible() const {return 0;}
+	virtual Type objectType() const {return CAO_UNKNOWN;}
 	virtual void setAttachments(){}
 	virtual bool doShowSelectionBox(){return true;}
 	virtual void updateCameraOffset(v3s16 camera_offset){};

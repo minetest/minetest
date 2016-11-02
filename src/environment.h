@@ -543,7 +543,8 @@ enum ClientEnvEventType
 {
 	CEE_NONE,
 	CEE_PLAYER_DAMAGE,
-	CEE_PLAYER_BREATH
+	CEE_PLAYER_BREATH,
+	CEE_OBJECT_PICKUP
 };
 
 struct ClientEnvEvent
@@ -559,11 +560,38 @@ struct ClientEnvEvent
 		struct{
 			u16 amount;
 		} player_breath;
+		struct {
+			u16 id;
+		} object_pickup;
 	};
 };
 
 class ClientEnvironment : public Environment
 {
+	struct PickupKnownCAO
+	{
+		PickupKnownCAO(void)
+			: id(-1), pos(0,0,0), pick_up(0), picked_up(false),
+			  first_seen_time(0), last_seen_time(0) {}
+		PickupKnownCAO(int _id, v3f _pos, u32 time)
+			: id(_id), pos(_pos), pick_up(0), picked_up(false),
+			  first_seen_time(time), last_seen_time(time) {}
+		bool operator==(const PickupKnownCAO &cao) { return id == cao.id; }
+		bool operator!=(const PickupKnownCAO &cao) { return id != cao.id; }
+		void seen(u32 time)
+			{ if (time < last_seen_time) first_seen_time = 0; last_seen_time = time; }
+		int id;
+		v3f pos;
+		int pick_up;			// -1: not to be picked up
+						//  0: don't know yet
+						//  1: to be picked up
+		bool picked_up;
+		// These times may be inaccurate due to overflow or undeflow.
+		// There are no serious consequences, so ignore this.
+		u32 first_seen_time;
+		u32 last_seen_time;
+	};
+
 public:
 	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 			ITextureSource *texturesource, IGameDef *gamedef,
@@ -613,6 +641,7 @@ public:
 		Callbacks for activeobjects
 	*/
 
+	void pickupItem(s16 object_id);
 	void damageLocalPlayer(u8 damage, bool handle_hp=true);
 	void updateLocalPlayerBreath(u16 breath);
 
@@ -626,6 +655,11 @@ public:
 
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
+
+	bool autoPickupEnabled(f32 *current_range = NULL)
+		{ if (current_range) *current_range = m_pickup_range; return m_pickup_enabled; }
+	bool toggleAutoPickup(f32 *current_range = NULL);
+	f32 cycleAutoPickupRange(bool *enabled = NULL);
 
 	u16 attachement_parent_ids[USHRT_MAX + 1];
 
@@ -651,6 +685,16 @@ private:
 	IntervalLimiter m_breathing_interval;
 	std::list<std::string> m_player_names;
 	v3s16 m_camera_offset;
+
+	f32 m_pickup_range;
+	u32 m_pickup_enabled;
+	v3f m_prev_pickup_position;
+	u32 m_prev_pickup_time;		// Last time we tried to pickup something
+	float m_pickup_quota;		// Amount that may be picked up before exceeding the rate.
+	std::map<int, PickupKnownCAO> m_pickup_known_caos;
+
+	void pickupAnyObjects(LocalPlayer *lplayer, f32 pickup_range, bool manual);
+
 };
 
 #endif

@@ -3508,6 +3508,10 @@ Definition tables
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
         infotext = "", -- by default empty, text to be shown when pointed at object
+        collectible = -1,
+    --  ^ hint to client that this object is a candidate for automatic pick-up.
+    --    0: disable, >0: enable, <0: default value for compatibility (client will
+    --    use object_type, or a heuristic to decide)
     }
 
 ### Entity definition (`register_entity`)

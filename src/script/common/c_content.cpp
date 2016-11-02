@@ -216,6 +216,11 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 	getstringfield(L, -1, "infotext", prop->infotext);
+
+	// Ignore object_type. It is set by the server for the benefit of the client.
+	// It is not intended to be used or modified by mods.
+
+	prop->collectible = getintfield_default(L, -1, "collectible", -1);
 }
 
 /******************************************************************************/
@@ -284,6 +289,9 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
+	// Ignore object_type. The same information is available elsewhere
+	// It is not intended to be used or modified by mods.
+	lua_pushnumber(L, prop->collectible);
 }
 
 /******************************************************************************/

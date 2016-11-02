@@ -181,6 +181,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 	} else {
 		m_prop.infotext = m_init_name;
 	}
+	m_prop.object_type = m_init_name;
 }
 
 ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,

@@ -691,6 +691,18 @@ v3f GenericCAO::getPosition()
 	return pos_translator.vect_show;
 }
 
+v3f GenericCAO::getVelocity()
+{
+	ClientActiveObject *parent = getParent();
+	return parent ? parent->getVelocity() : m_velocity;
+}
+
+v3f GenericCAO::getAcceleration()
+{
+	ClientActiveObject *parent = getParent();
+	return parent ? parent->getAcceleration() : m_acceleration;
+}
+
 scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
@@ -1808,6 +1820,38 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 	}
 
 	return false;
+}
+
+ClientActiveObject::Type GenericCAO::objectType() const
+{
+	// We know what is needed for something *not* to be
+	// an itemstack. However, we don't know for sure
+	// whether anything *is* an itemstack.
+	static const v3f zero(0,0,0);
+	if (m_prop.object_type == "__builtin:item")
+		return CAO_ITEMSTACK;
+	else if (m_prop.object_type == "__builtin:falling_node")
+		return CAO_FALLING_NODE;
+	else if (m_prop.object_type.substr(0,10) == "__builtin:")
+		return CAO_BUILTIN_OTHER;
+	else if (true
+			// m_name is empty for itemstacks.
+			// Item stack may be physical or non-physical...
+			//&& m_prop.physical
+			&& !m_prop.collideWithObjects
+			&& m_is_visible
+			&& !m_prop.makes_footstep_sound
+			&& m_prop.automatic_rotate != 0
+			&& m_prop.stepheight == 0
+			&& !m_prop.automatic_face_movement_dir
+			// Item stack may be falling down first
+			//&& m_velocity == zero
+			// Acceleration may be zero or non-zero
+			//&& m_acceleration == zero
+			&& m_prop.visual == "wielditem")
+		return CAO_PROBABLY_ITEMSTACK;
+	else
+		return CAO_OTHER;
 }
 
 std::string GenericCAO::debugInfoText()

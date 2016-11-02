@@ -137,6 +137,10 @@ public:
 
 	v3f getPosition();
 
+	v3f getVelocity();
+
+	v3f getAcceleration();
+
 	scene::ISceneNode *getSceneNode();
 
 	scene::IMeshSceneNode *getMeshSceneNode();
@@ -155,6 +159,24 @@ public:
 	inline bool isLocalPlayer() const
 	{
 		return m_is_local_player;
+	}
+
+	Type objectType() const;
+
+	inline std::string objectTypeName() const
+	{
+		return m_prop.object_type;
+	}
+
+	inline bool collectibleIsSet() const
+	{
+		return m_prop.collectible >= 0;
+	}
+
+	inline int collectible() const
+	{
+		// Negative values are for internal use only ATM
+		return m_prop.collectible >= 0 ? m_prop.collectible : 0;
 	}
 
 	inline bool isVisible() const

@@ -46,7 +46,8 @@ ObjectProperties::ObjectProperties():
 	backface_culling(true),
 	nametag(""),
 	nametag_color(255, 255, 255, 255),
-	automatic_face_movement_max_rotation_per_sec(-1)
+	automatic_face_movement_max_rotation_per_sec(-1),
+	collectible(-1)
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));
@@ -82,6 +83,8 @@ std::string ObjectProperties::dump()
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+	os << ", object_type=" << object_type;
+	os << ", collectible=" << collectible;
 	return os.str();
 }
 
@@ -119,6 +122,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeARGB8(os, nametag_color);
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
+	os << serializeString(object_type);
+	writeS16(os, collectible);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -161,6 +166,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 			nametag_color = readARGB8(is);
 			automatic_face_movement_max_rotation_per_sec = readF1000(is);
 			infotext = deSerializeString(is);
+			object_type = deSerializeString(is);
+			collectible = readS16(is);
 		}catch(SerializationError &e){}
 	}
 	else
