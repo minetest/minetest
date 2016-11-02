@@ -685,7 +685,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		driver->setViewPort(oldViewPort);
 	}
 
-	if(def.type == ITEM_TOOL && item.wear != 0)
+	if(item.wear != 0)
 	{
 		// Draw a progressbar
 		float barheight = rect.getHeight()/16;
