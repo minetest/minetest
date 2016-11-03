@@ -284,27 +284,42 @@ end
 
 --------------------------------------------------------------------------------
 function modmgr.get_dependencies(modfolder)
-	local toadd = ""
+	local toadd_hard = ""
+	local toadd_soft = ""
 	if modfolder ~= nil then
 		local filename = modfolder ..
 					DIR_DELIM .. "depends.txt"
 
+		local hard_dependencies = {}
+		local soft_dependencies = {}
 		local dependencyfile = io.open(filename,"r")
-
 		if dependencyfile then
 			local dependency = dependencyfile:read("*l")
 			while dependency do
-				if toadd ~= "" then
-					toadd = toadd .. ","
+				if string.sub(dependency, -1, -1) == "?" then
+					table.insert(soft_dependencies, string.sub(dependency, 1, -2))
+				else
+					table.insert(hard_dependencies, dependency)
 				end
-				toadd = toadd .. dependency
 				dependency = dependencyfile:read()
 			end
 			dependencyfile:close()
 		end
+		for i=1, #hard_dependencies do
+			if toadd_hard ~= "" then
+				toadd_hard = toadd_hard .. ","
+			end
+			toadd_hard = toadd_hard .. hard_dependencies[i]
+		end
+		for i=1, #soft_dependencies do
+			if toadd_soft ~= "" then
+				toadd_soft = toadd_soft .. ","
+			end
+			toadd_soft = toadd_soft .. soft_dependencies[i]
+		end
 	end
 
-	return toadd
+	return toadd_hard, toadd_soft
 end
 
 --------------------------------------------------------------------------------

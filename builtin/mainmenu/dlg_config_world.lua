@@ -47,13 +47,18 @@ local function get_formspec(data)
 	if mod == nil then
 		mod = {name=""}
 	end
+
+	local hard_deps, soft_deps = modmgr.get_dependencies(mod.path)
 	
 	retval = retval ..
 		"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
 		"label[0.75,0.7;" .. mod.name .. "]" ..
-		"label[0,1.25;" .. fgettext("Depends:") .. "]" ..
-		"textlist[0,1.75;5,4.25;world_config_depends;" ..
-		modmgr.get_dependencies(mod.path) .. ";0]" ..
+		"label[0,1.25;" .. fgettext("Dependencies:") .. "]" ..
+		"textlist[0,1.75;5,2.125;world_config_depends;" ..
+		hard_deps .. ";0]" ..
+		"label[0,3.875;" .. fgettext("Optional dependencies:") .. "]" ..
+		"textlist[0,4.375;5,1.8;world_config_optdepends;" ..
+		soft_deps .. ";0]" ..
 		"button[3.25,7;2.5,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
@@ -86,11 +91,11 @@ local function get_formspec(data)
 	if enabled_all then 
 		retval = retval ..
 			"button[8.75,0.125;2.5,0.5;btn_disable_all_mods;" .. fgettext("Disable all") .. "]" ..
-			"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
+			"textlist[5.5,0.75;5.75,5.4;world_config_modlist;"
 	else
 		retval = retval ..
 			"button[8.75,0.125;2.5,0.5;btn_enable_all_mods;" .. fgettext("Enable all") .. "]" ..
-			"textlist[5.5,0.75;5.75,5.25;world_config_modlist;"
+			"textlist[5.5,0.75;5.75,5.4;world_config_modlist;"
 	end
 	retval = retval .. modmgr.render_modlist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"
