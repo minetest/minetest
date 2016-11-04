@@ -3131,7 +3131,7 @@ void Game::toggleDebug(float *statustext_time, bool *show_debug,
 		*show_profiler_graph = false;
 		*show_wireframe = false;
 		statustext = L"Debug info shown";
-	} else if (!*show_profiler_graph) {
+	} else if (!*show_profiler_graph && !*show_wireframe) {
 		*show_profiler_graph = true;
 		statustext = L"Profiler graph shown";
 	} else if (!*show_wireframe && client->checkPrivilege("debug")) {
