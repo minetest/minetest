@@ -219,14 +219,6 @@ public:
 		video::IVideoDriver *driver = services->getVideoDriver();
 		sanity_check(driver);
 
-		// set inverted world matrix
-		core::matrix4 invWorld = driver->getTransform(video::ETS_WORLD);
-		invWorld.makeInverse();
-		if(is_highlevel)
-			services->setVertexShaderConstant("mInvWorld", invWorld.pointer(), 16);
-		else
-			services->setVertexShaderConstant(invWorld.pointer(), 0, 4);
-
 		// set clip matrix
 		core::matrix4 worldViewProj;
 		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
@@ -236,14 +228,6 @@ public:
 			services->setVertexShaderConstant("mWorldViewProj", worldViewProj.pointer(), 16);
 		else
 			services->setVertexShaderConstant(worldViewProj.pointer(), 4, 4);
-
-		// set transposed world matrix
-		core::matrix4 transWorld = driver->getTransform(video::ETS_WORLD);
-		transWorld = transWorld.getTransposed();
-		if(is_highlevel)
-			services->setVertexShaderConstant("mTransWorld", transWorld.pointer(), 16);
-		else
-			services->setVertexShaderConstant(transWorld.pointer(), 8, 4);
 
 		// set world matrix
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
