@@ -293,13 +293,14 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			float step = BS * 1;
 			float stepfac = 1.1;
 			float startoff = BS * 1;
-			float endoff = -BS*MAP_BLOCKSIZE * 1.42 * 1.42;
+			// - Length of the diagonal of a mapblock.
+			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
 			v3s16 spn = cam_pos_nodes + v3s16(0, 0, 0);
 			s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
 			u32 needed_count = 1;
 			if (occlusion_culling_enabled &&
 					isOccluded(this, spn, cpn + v3s16(0, 0, 0),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff / 2, needed_count, nodemgr) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
 						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
