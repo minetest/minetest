@@ -58,4 +58,7 @@ core.register_privilege("zoom", {
 	description = "Can zoom the camera",
 	give_to_singleplayer = false,
 })
-
+core.register_privilege("debug", {
+	description = "Allows enabling various debug options that may affect gameplay",
+	give_to_singleplayer = false,
+})

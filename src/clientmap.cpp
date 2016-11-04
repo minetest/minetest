@@ -521,6 +521,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, m_cache_trilinear_filter);
 				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, m_cache_bilinear_filter);
 				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, m_cache_anistropic_filter);
+				buf->getMaterial().setFlag(video::EMF_WIREFRAME, m_control.show_wireframe);
 
 				const video::SMaterial& material = buf->getMaterial();
 				video::IMaterialRenderer* rnd =
