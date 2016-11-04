@@ -1,6 +1,4 @@
 uniform mat4 mWorldViewProj;
-uniform mat4 mInvWorld;
-uniform mat4 mTransWorld;
 uniform mat4 mWorld;
 
 uniform float dayNightRatio;
