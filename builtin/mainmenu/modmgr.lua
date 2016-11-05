@@ -305,18 +305,8 @@ function modmgr.get_dependencies(modfolder)
 			end
 			dependencyfile:close()
 		end
-		for i=1, #hard_dependencies do
-			if toadd_hard ~= "" then
-				toadd_hard = toadd_hard .. ","
-			end
-			toadd_hard = toadd_hard .. hard_dependencies[i]
-		end
-		for i=1, #soft_dependencies do
-			if toadd_soft ~= "" then
-				toadd_soft = toadd_soft .. ","
-			end
-			toadd_soft = toadd_soft .. soft_dependencies[i]
-		end
+		toadd_hard = table.concat(hard_dependencies, ",")
+		toadd_soft = table.concat(soft_dependencies, ",")
 	end
 
 	return toadd_hard, toadd_soft
