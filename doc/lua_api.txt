@@ -2800,14 +2800,21 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_animation()`: returns range, frame_speed, frame_blend and frame_loop
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+    * `position`: `{x=num, y=num, z=num}` (relative, multiplied by 10)
+    * `rotation`: `{x=pitch, y=yaw, z=roll}`
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't attached
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+	E.g. (for player model):
+        * Head
+        * Arm_Left
+        * Arm_Right
+        * Leg_Left
+        * Leg_Right
+        * Body
+    * `position`: `{x=num, y=num, z=num}` (relative, multiplied by 10)
+    * `rotation`: `{x=pitch, y=yaw, z=roll}`
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table

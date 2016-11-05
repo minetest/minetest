@@ -608,6 +608,10 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	v3f position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 3))
 		position = check_v3f(L, 3);
+	// When this method was created, position should have been multiplied
+	// by BS, but it wasn't. Make sure that if BS changes, the factor
+	// 10 remains (for backward compatibility).
+	position = position / 10 * BS;
 	v3f rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
 		rotation = check_v3f(L, 4);
@@ -631,6 +635,8 @@ int ObjectRef::l_get_bone_position(lua_State *L)
 	v3f position = v3f(0, 0, 0);
 	v3f rotation = v3f(0, 0, 0);
 	co->getBonePosition(bone, &position, &rotation);
+	// See comment in l_set_bone_position
+	position = position / BS * 10;
 
 	push_v3f(L, position);
 	push_v3f(L, rotation);
@@ -667,6 +673,8 @@ int ObjectRef::l_set_attach(lua_State *L)
 	position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
 		position = read_v3f(L, 4);
+	// See comment in l_set_bone_position
+	position = position / 10 * BS;
 	rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 5))
 		rotation = read_v3f(L, 5);
@@ -694,6 +702,8 @@ int ObjectRef::l_get_attach(lua_State *L)
 	if (!parent_id)
 		return 0;
 	ServerActiveObject *parent = env->getActiveObject(parent_id);
+	// See comment in l_set_bone_position
+	position = position / BS * 10;
 
 	getScriptApiBase(L)->objectrefGetOrCreate(L, parent);
 	lua_pushlstring(L, bone.c_str(), bone.size());
