@@ -177,13 +177,13 @@ void RemotePlayer::serialize(std::ostream &os)
 	args.set("name", m_name);
 	//args.set("password", m_password);
 
-	if (m_sao) {
-		args.setS32("hp", m_sao->getHP());
-		args.setV3F("position", m_sao->getBasePosition());
-		args.setFloat("pitch", m_sao->getPitch());
-		args.setFloat("yaw", m_sao->getYaw());
-		args.setS32("breath", m_sao->getBreath());
-	}
+	// This should not happen
+	assert(m_sao);
+	args.setS32("hp", m_sao->getHP());
+	args.setV3F("position", m_sao->getBasePosition());
+	args.setFloat("pitch", m_sao->getPitch());
+	args.setFloat("yaw", m_sao->getYaw());
+	args.setS32("breath", m_sao->getBreath());
 
 	args.writeLines(os);
 

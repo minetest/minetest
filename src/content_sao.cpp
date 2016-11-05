@@ -838,10 +838,7 @@ void PlayerSAO::removingFromEnvironment()
 {
 	ServerActiveObject::removingFromEnvironment();
 	if (m_player->getPlayerSAO() == this) {
-		m_player->peer_id = 0;
-		m_env->savePlayer(m_player);
-		m_player->setPlayerSAO(NULL);
-		m_env->removePlayer(m_player);
+		unlinkPlayerSessionAndSave();
 		for (UNORDERED_SET<u32>::iterator it = m_attached_particle_spawners.begin();
 			it != m_attached_particle_spawners.end(); ++it) {
 			m_env->deleteParticleSpawner(*it, false);
@@ -1340,15 +1337,20 @@ void PlayerSAO::setWieldIndex(int i)
 	}
 }
 
+// Erase the peer id and make the object for removal
 void PlayerSAO::disconnected()
 {
 	m_peer_id = 0;
 	m_removed = true;
-	if(m_player->getPlayerSAO() == this)
-	{
-		m_player->setPlayerSAO(NULL);
-		m_player->peer_id = 0;
-	}
+}
+
+void PlayerSAO::unlinkPlayerSessionAndSave()
+{
+	assert(m_player->getPlayerSAO() == this);
+	m_player->peer_id = 0;
+	m_env->savePlayer(m_player);
+	m_player->setPlayerSAO(NULL);
+	m_env->removePlayer(m_player);
 }
 
 std::string PlayerSAO::getPropertyPacket()
