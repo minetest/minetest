@@ -63,7 +63,10 @@ local function get_formspec(tabview, name, tabdata)
 	if current_texture_path == "" then
 		retval = retval ..
 			render_texture_pack_list(list) ..
-			";" .. index .. "]"
+			";" .. index .. "]" ..
+			"textarea[0.6,2.85;3.7,1.5;;" ..
+			fgettext("Default textures will be used.") ..
+			";]"
 		return retval
 	end
 
