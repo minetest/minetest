@@ -168,6 +168,18 @@ function core.setting_get_pos(name)
 	return core.string_to_pos(value)
 end
 
+function core.get_world_limits()
+	local absolute_limit = 31000
+	local value = core.setting_get("map_generation_limit")
+	local v
+	if not value or value > absolute_limit then
+		v = vector.new(absolute_limit, absolute_limit, absolute_limit)
+	else
+		v = vector.new(value, value, value)
+	end
+	return vector.subtract(0, v), v
+end
+
 -- To be overriden by protection mods
 function core.is_protected(pos, name)
 	return false

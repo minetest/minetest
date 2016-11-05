@@ -2089,6 +2089,7 @@ Call these functions only at load time!
 * `minetest.setting_getbool(name)`: returns boolean or `nil`
 * `minetest.setting_get_pos(name)`: returns position or nil
 * `minetest.setting_save()`, returns `nil`, save all settings to config file
+* `minetest.get_world_limits()`: returns the min and max coordinate of the world (pos, pos)
 
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
