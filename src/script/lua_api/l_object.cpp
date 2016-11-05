@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "hud.h"
 #include "scripting_game.h"
+#include "util/numeric.h"
 
 struct EnumString es_HudElementType[] =
 {
@@ -179,6 +180,9 @@ int ObjectRef::l_setpos(lua_State *L)
 	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
+	u16 limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+			g_settings->getU16("map_generation_limit"));
+	check_range_v3f(L, pos / BS, -limit, limit);
 	// Do it
 	co->setPos(pos);
 	return 0;
@@ -194,6 +198,9 @@ int ObjectRef::l_moveto(lua_State *L)
 	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
+	u16 limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+			g_settings->getU16("map_generation_limit"));
+	check_range_v3f(L, pos / BS, -limit, limit);
 	// continuous
 	bool continuous = lua_toboolean(L, 3);
 	// Do it
@@ -615,6 +622,8 @@ int ObjectRef::l_set_bone_position(lua_State *L)
 	v3f rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
 		rotation = check_v3f(L, 4);
+	check_range_v3f(L, rotation, -720, 720);
+	rotation = anglelim_v3f(rotation, v3f(1,1,1) * 360);
 	co->setBonePosition(bone, position, rotation);
 	return 0;
 }
@@ -672,12 +681,14 @@ int ObjectRef::l_set_attach(lua_State *L)
 		bone = lua_tostring(L, 3);
 	position = v3f(0, 0, 0);
 	if (!lua_isnil(L, 4))
-		position = read_v3f(L, 4);
+		position = check_v3f(L, 4);
 	// See comment in l_set_bone_position
 	position = position / 10 * BS;
 	rotation = v3f(0, 0, 0);
 	if (!lua_isnil(L, 5))
-		rotation = read_v3f(L, 5);
+		rotation = check_v3f(L, 5);
+	check_range_v3f(L, rotation, -720, 720);
+	rotation = anglelim_v3f(rotation, v3f(1,1,1) * 360);
 	co->setAttachment(parent->getId(), bone, position, rotation);
 	parent->addAttachmentChild(co->getId());
 	return 0;
@@ -841,6 +852,17 @@ int ObjectRef::l_setvelocity(lua_State *L)
 	LuaEntitySAO *co = getluaobject(ref);
 	if (co == NULL) return 0;
 	v3f pos = checkFloatPos(L, 2);
+	check_range_v3f(L, pos / BS, F1000_MIN / BS, F1000_MAX / BS);
+	v3f requested_pos = pos;
+	pos = rangelim_v3f(pos, v3f(1,1,1) * -OBJECT_MAX_SPEED * BS,
+		v3f(1,1,1) * OBJECT_MAX_SPEED * BS);
+	static bool reported = false;
+	if (requested_pos != pos && !reported) {
+		reported = true;
+		warningstream << "setvelocity: clipping velocity - due to an engine bug,"
+			<< " values larger than" << OBJECT_MAX_SPEED
+			<< " are currently not possible" << std::endl;
+	}
 	// Do it
 	co->setVelocity(pos);
 	return 0;
@@ -868,6 +890,7 @@ int ObjectRef::l_setacceleration(lua_State *L)
 	if (co == NULL) return 0;
 	// pos
 	v3f pos = checkFloatPos(L, 2);
+	check_range_v3f(L, pos / BS, F1000_MIN / BS, F1000_MAX / BS);
 	// Do it
 	co->setAcceleration(pos);
 	return 0;
@@ -894,6 +917,8 @@ int ObjectRef::l_setyaw(lua_State *L)
 	LuaEntitySAO *co = getluaobject(ref);
 	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	check_range_f(L, yaw, -720, 720, 0, 360);
+	yaw = sanitize_yaw(yaw);
 	// Do it
 	co->setYaw(yaw);
 	return 0;
@@ -1100,6 +1125,8 @@ int ObjectRef::l_set_look_vertical(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	check_range_f(L, pitch, -180, 180, -90, 90);
+	pitch = sanitize_pitch(pitch);
 	// Do it
 	co->setPitchAndSend(pitch);
 	return 1;
@@ -1113,6 +1140,8 @@ int ObjectRef::l_set_look_horizontal(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	check_range_f(L, yaw, -720, 720);
+	yaw = sanitize_yaw(yaw);
 	// Do it
 	co->setYawAndSend(yaw);
 	return 1;
@@ -1131,6 +1160,8 @@ int ObjectRef::l_set_look_pitch(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float pitch = luaL_checknumber(L, 2) * core::RADTODEG;
+	check_range_f(L, pitch, -180, 180, -90, 90);
+	pitch = sanitize_pitch(pitch);
 	// Do it
 	co->setPitchAndSend(pitch);
 	return 1;
@@ -1149,6 +1180,8 @@ int ObjectRef::l_set_look_yaw(lua_State *L)
 	PlayerSAO* co = getplayersao(ref);
 	if (co == NULL) return 0;
 	float yaw = luaL_checknumber(L, 2) * core::RADTODEG;
+	check_range_f(L, yaw, -720, 720);
+	yaw = sanitize_yaw(yaw);
 	// Do it
 	co->setYawAndSend(yaw);
 	return 1;

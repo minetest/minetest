@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONSTANTS_HEADER
 #define CONSTANTS_HEADER
 
+#include "util/serialize.h"
+
 /*
 	All kinds of constants.
 
