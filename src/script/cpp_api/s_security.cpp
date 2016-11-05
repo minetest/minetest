@@ -323,8 +323,11 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 	}
 
 	if (luaL_loadbuffer(L, code, size, chunk_name)) {
+		delete [] code;
 		return false;
 	}
+
+	delete [] code;
 
 	if (path) {
 		delete [] chunk_name;
