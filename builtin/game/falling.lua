@@ -46,15 +46,17 @@ core.register_entity(":__builtin:falling_node", {
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
 			self.object:setacceleration({x = 0, y = -10, z = 0})
 		end
-		-- Turn to actual sand when collides to ground or just move
+		-- Turn to actual node when colliding with ground, or continue to move
 		local pos = self.object:getpos()
-		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z} -- Position of bottom center point
-		local bcn = core.get_node(bcp)
-		local bcd = core.registered_nodes[bcn.name]
-		-- Note: walkable is in the node definition, not in item groups
-		if not bcd or bcd.walkable or
+		-- Position of bottom center point
+		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
+		-- Avoid bugs caused by an unloaded node below
+		local bcn = core.get_node_or_nil(bcp)
+		local bcd = bcn and core.registered_nodes[bcn.name]
+		if bcn and
+				(not bcd or bcd.walkable or
 				(core.get_item_group(self.node.name, "float") ~= 0 and
-				bcd.liquidtype ~= "none") then
+				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
 					bcn.name == self.node.name then
 				local addlevel = self.node.level
@@ -154,16 +156,19 @@ function nodeupdate_single(p)
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
-		local n_bottom = core.get_node(p_bottom)
-		local d_bottom = core.registered_nodes[n_bottom.name]
-		-- Note: walkable is in the node definition, not in item groups
+		-- Only spawn falling node if node below is loaded
+		local n_bottom = core.get_node_or_nil(p_bottom)
+		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
 		if d_bottom and
+
 				(core.get_item_group(n.name, "float") == 0 or
-					d_bottom.liquidtype == "none") and
+				d_bottom.liquidtype == "none") and
+
 				(n.name ~= n_bottom.name or (d_bottom.leveled and
-					core.get_node_level(p_bottom) < core.get_node_max_level(p_bottom))) and
-				(not d_bottom.walkable or
-					d_bottom.buildable_to) then
+				core.get_node_level(p_bottom) <
+				core.get_node_max_level(p_bottom))) and
+
+				(not d_bottom.walkable or d_bottom.buildable_to) then
 			n.level = core.get_node_level(p)
 			core.remove_node(p)
 			spawn_falling_node(p, n)
