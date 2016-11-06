@@ -129,9 +129,9 @@ public:
 
 	ClientActiveObject *getParent();
 
-	bool getCollisionBox(aabb3f *toset);
+	bool getCollisionBox(aabb3f *toset) const;
 
-	bool collideWithObjects();
+	bool collideWithObjects() const;
 
 	aabb3f *getSelectionBox();
 

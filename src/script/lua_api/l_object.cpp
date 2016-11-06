@@ -137,8 +137,8 @@ int ObjectRef::l_remove(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	UNORDERED_SET<int> child_ids = co->getAttachmentChildIds();
-	UNORDERED_SET<int>::iterator it;
+	const UNORDERED_SET<int> &child_ids = co->getAttachmentChildIds();
+	UNORDERED_SET<int>::const_iterator it;
 	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
 		ServerActiveObject *child = env->getActiveObject(*it);
 		child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
@@ -395,7 +395,7 @@ int ObjectRef::l_get_armor_groups(lua_State *L)
 	if (co == NULL)
 		return 0;
 	// Do it
-	ItemGroupList groups = co->getArmorGroups();
+	const ItemGroupList &groups = co->getArmorGroups();
 	push_groups(L, groups);
 	return 1;
 }

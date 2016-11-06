@@ -94,7 +94,7 @@ public:
 	// saving to disk may be omitted
 	virtual float getMinimumSavedMovement();
 
-	virtual std::string getDescription(){return "SAO";}
+	virtual std::string getDescription() const {return "SAO";}
 
 	/*
 		Step object in time.
@@ -119,7 +119,7 @@ public:
 		when it is created (converted from static to active - actually
 		the data is the static form)
 	*/
-	virtual std::string getStaticData()
+	virtual std::string getStaticData() const
 	{
 		assert(isStaticAllowed());
 		return "";
@@ -146,28 +146,31 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
-	virtual ItemGroupList getArmorGroups()
-	{ return ItemGroupList(); }
+	virtual const ItemGroupList &getArmorGroups() const
+	{ static const ItemGroupList rv; return rv; }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
-	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
+	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop) const
 	{}
-	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
+	virtual void setBonePosition(const std::string &bone, const v3f &position, const v3f &rotation)
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)
+#if __cplusplus >= 201103L
+		const
+#endif
 	{}
-	virtual void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+	virtual void setAttachment(int parent_id, const std::string &bone, const v3f &position, const v3f &rotation)
 	{}
-	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation)
+	virtual void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation) const
 	{}
 	virtual void addAttachmentChild(int child_id)
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
-	virtual UNORDERED_SET<int> getAttachmentChildIds()
-	{ return UNORDERED_SET<int>(); }
+	virtual const UNORDERED_SET<int> &getAttachmentChildIds() const
+	{ static const UNORDERED_SET<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()

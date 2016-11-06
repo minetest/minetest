@@ -161,7 +161,7 @@ public:
 
 	void processMessage(const std::string &data);
 
-	bool getCollisionBox(aabb3f *toset) { return false; }
+	bool getCollisionBox(aabb3f *toset) const { return false; }
 private:
 	scene::IMeshSceneNode *m_node;
 	v3f m_position;
@@ -317,7 +317,7 @@ public:
 	std::string infoText()
 		{return m_infotext;}
 
-	bool getCollisionBox(aabb3f *toset) { return false; }
+	bool getCollisionBox(aabb3f *toset) const { return false; }
 private:
 	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_node;
@@ -588,7 +588,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 	}
 }
 
-bool GenericCAO::getCollisionBox(aabb3f *toset)
+bool GenericCAO::getCollisionBox(aabb3f *toset) const
 {
 	if (m_prop.physical)
 	{
@@ -605,7 +605,7 @@ bool GenericCAO::getCollisionBox(aabb3f *toset)
 	return false;
 }
 
-bool GenericCAO::collideWithObjects()
+bool GenericCAO::collideWithObjects() const
 {
 	return m_prop.collideWithObjects;
 }
