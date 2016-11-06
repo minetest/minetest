@@ -136,7 +136,7 @@ public:
 	aabb3f *getSelectionBox();
 
 	v3f getPosition();
-	float getYaw();
+	float getYaw() const;
 
 	scene::ISceneNode *getSceneNode();
 

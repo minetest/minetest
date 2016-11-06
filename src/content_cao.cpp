@@ -313,7 +313,7 @@ public:
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
-	float getYaw()
+	inline float getYaw() const
 		{return 0;}
 	std::string infoText()
 		{return m_infotext;}
@@ -691,7 +691,7 @@ v3f GenericCAO::getPosition()
 	}
 	return pos_translator.vect_show;
 }
-inline float GenericCAO::getYaw()
+inline float GenericCAO::getYaw() const
 {
 	return m_yaw;
 }
