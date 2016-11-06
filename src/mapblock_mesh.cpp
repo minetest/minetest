@@ -1033,6 +1033,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_use_tangent_vertices = data->m_use_tangent_vertices;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
+	m_dig_crack_animation = g_settings->getBool("dig_crack_animation");
 
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap_mapblock = new MinimapMapblock;
@@ -1116,8 +1117,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		// Generate animation data
 		// - Cracks
-		if(p.tile.material_flags & MATERIAL_FLAG_CRACK)
-		{
+		if (m_dig_crack_animation && (p.tile.material_flags & MATERIAL_FLAG_CRACK)) {
 			// Find the texture name plus ^[crack:N:
 			std::ostringstream os(std::ios::binary);
 			os<<m_tsrc->getTextureName(p.tile.texture_id)<<"^[crack";

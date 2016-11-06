@@ -143,6 +143,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("selectionbox_width", "2");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("node_highlighting", "box");
+	settings->setDefault("dig_crack_animation", "true");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
 	settings->setDefault("hud_scaling", "1.0");
