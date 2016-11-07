@@ -232,6 +232,14 @@ void Sky::render()
 			driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 		}
 
+		// Draw bottom far cloudy fog thing
+		video::SColor c = cloudyfogcolor;
+		vertices[0] = video::S3DVertex(-1, -1.0, -1, 0, 1, 0, c, t, t);
+		vertices[1] = video::S3DVertex( 1, -1.0, -1, 0, 1, 0, c, o, t);
+		vertices[2] = video::S3DVertex( 1, -1.0, 1, 0, 1, 0, c, o, o);
+		vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
+		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
+
 		driver->setMaterial(m_materials[2]);
 
 		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
