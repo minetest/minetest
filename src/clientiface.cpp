@@ -235,16 +235,6 @@ void RemoteClient::GetNextBlocks (
 			// If this is true, inexistent block will be made from scratch
 			bool generate = d <= d_max_gen;
 
-			{
-				/*// Limit the generating area vertically to 2/3
-				if(abs(p.Y - center.Y) > d_max_gen - d_max_gen / 3)
-					generate = false;*/
-
-				// Limit the send area vertically to 1/2
-				if (abs(p.Y - center.Y) > full_d_max / 2)
-					continue;
-			}
-
 			/*
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
