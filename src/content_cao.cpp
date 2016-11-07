@@ -691,10 +691,6 @@ v3f GenericCAO::getPosition()
 	}
 	return pos_translator.vect_show;
 }
-inline float GenericCAO::getYaw() const
-{
-	return m_yaw;
-}
 
 scene::ISceneNode* GenericCAO::getSceneNode()
 {
