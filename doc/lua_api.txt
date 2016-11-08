@@ -2286,11 +2286,6 @@ and `minetest.auth_reload` call the authetification handler.
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * can be negative for decreasing
-* `nodeupdate_single(pos)`
-    * causes an unsupported `group:falling_node` node to fall and causes an
-      unattached `group:attached_node` node to fall.
-    * does not spread these updates to neighbours
-    * a helper function, not officially part of the API, but useful
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`
