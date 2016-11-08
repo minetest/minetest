@@ -945,6 +945,14 @@
 #    type: integer
 # chat_message_limit_trigger_kick = 50
 
+#    At this distance the server will aggressively optimize which blocks are sent to clients.
+#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
+#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
+#    Setting this to a value greater than max_block_send_distance disables this optimization.
+#    Stated in mapblocks (16 nodes)
+#    type: int
+# block_send_optimize_distance = 4
+
 ### Physics
 
 #    type: float
