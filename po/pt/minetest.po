@@ -8,20 +8,20 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-07-21 00:15+0000\n"
-"Last-Translator: Bruno Borges <borgesdossantosbruno@gmail.com>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
-"minetest/pt/>\n"
+"PO-Revision-Date: 2016-11-08 00:48+0000\n"
+"Last-Translator: João Rodrigues <joaoadriano3@gmail.com>\n"
+"Language-Team: Portuguese "
+"<https://hosted.weblate.org/projects/minetest/minetest/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"X-Generator: Weblate 2.9\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Ocorreu um erro num script Lua, como por exemplo num extra:"
+msgstr "Ocorreu um erro num script Lua, como por exemplo num mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -41,7 +41,7 @@ msgstr "Reconectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "O servidor solicitou uma reconexão:"
+msgstr "O servidor requisitou uma reconexão:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -49,20 +49,20 @@ msgstr "A carregar..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Versão do protocolo não coincide. "
+msgstr "A versão do protocolo não coincide. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "O servidor requere o protocolo versão $1. "
+msgstr "O servidor requer o protocolo versão $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr "Servidor suporta versões de protocolo entre $1 e $2. "
+msgstr "O servidor suporta versões de protocolo entre $1 e $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Tente recarregar a lista de servidores públicos e verificar a sua ligação à "
+"Tente recarregar a lista de servidores públicos e verifique a sua ligação à "
 "internet."
 
 #: builtin/mainmenu/common.lua
@@ -103,7 +103,7 @@ msgid ""
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
 "Falha ao ativar mod \"$1\" porque contém caracteres inválidos. Apenas "
-"caracteres de \"a\" até \"z\" e algarismos de 0 até 9 são permitidos."
+"caracteres [a-z0-9_] são permitidos."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -115,7 +115,7 @@ msgstr "Ocultar conteúdo do pacote"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Extra:"
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -128,7 +128,7 @@ msgstr "Mundo:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "ativo"
+msgstr "ativado"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -140,11 +140,11 @@ msgstr "Criar"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Descarregue um jogo, como o minetest_game, do sítio minetest.net"
+msgstr "Descarregue um subjogo, como o minetest_game, do site minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr "Descarregue um do sítio minetest.net"
+msgstr "Descarregue um do site minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -160,25 +160,23 @@ msgstr "Mundo sem nome ou nenhum jogo selecionado"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr "Semente aleatória"
+msgstr "Seed"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
-"Aviso: O jogo \"minimal development test\" destina-se apenas a "
-"desenvolvedores."
+msgstr "Aviso: O minimal development test destina-se apenas a desenvolvedores."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Nome do Mundo"
+msgstr "Nome do mundo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "Você não tem nenhum jogo instalado."
+msgstr "Não possui nenhum subjogo instalado."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Tem a certeza que pertende eliminar \"$1\"?"
+msgstr "Tem a certeza que pretende eliminar \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
@@ -188,15 +186,15 @@ msgstr "Eliminar"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Mensagem de Extra: falhou a eliminação de \"$1\""
+msgstr "Modmgr: falha ao apagar \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Mensagem de extra: caminho inválido \"$1\""
+msgstr "Modmgr: caminho para o mod inválido \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Eliminar Mundo \"$1\"?"
+msgstr "Eliminar mundo \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -204,7 +202,7 @@ msgstr "Aceitar"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Renomear Pacote de Extras:"
+msgstr "Renomear ModPack:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
@@ -212,11 +210,11 @@ msgstr "\"$1\" não é uma flag válida."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Descrição de configuração não fornecida)"
+msgstr "(Não há descrição para esta configuração)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Voltar para as configurações"
+msgstr "< Voltar para as definições"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -236,15 +234,15 @@ msgstr "Ativado"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "O formato é de 3 números separados por vírgulas dentro de paréntesis."
+msgstr "O formato é de 3 números separados por vírgulas dentro de parêntesis."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Formato: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+"Formato: <offset>, <escala>, (<distânciaX>, <distânciaY>, <distânciaZ>), "
+"<seed>, <oitavos>, <persistência>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -252,7 +250,7 @@ msgstr "Jogos"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Extras"
+msgstr "Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -265,7 +263,7 @@ msgstr "Por favor, introduza uma lista de flags separadas por vírgulas."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Por favor insira um inteiro válido."
+msgstr "Por favor, insira um número inteiro válido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
@@ -281,7 +279,7 @@ msgstr "Restaurar valores por defeito"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
-msgstr "Selecionar diretório"
+msgstr "Seleccionar diretório"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -301,7 +299,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Instalação de extra: o tipo de arquivo \"$1\" não é suportado ou o arquivo "
+"Instalação de mod: o tipo de ficheiro \"$1\" não é suportado ou o ficheiro "
 "está corrompido"
 
 #: builtin/mainmenu/modmgr.lua
@@ -310,25 +308,25 @@ msgstr "Falha ao instalar de $1 ao $2"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "Instalar Extra: ficheiro: \"$1\""
+msgstr "Instalação de Mod: ficheiro: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Instalação de extra: nome real de extra não encontrado para: $1"
+msgstr "Instalação de Mod: nome real de extra não encontrado para: $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Instalação de extra: não foi possível encontrar o nome adequado da pasta "
-"para o pacote de extras $1"
+"Instalação de Mod: não foi possível encontrar o nome adequado da pasta para "
+"o pacote de mods $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr "Fechar repositório de extras"
+msgstr "Fechar repositório"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr "Descarregando $1, por favor aguarde..."
+msgstr "A descarregar $1, por favor aguarde..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -360,7 +358,7 @@ msgstr "Não ordenado"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr "re-Instalar"
+msgstr "reinstalar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -380,19 +378,19 @@ msgstr "Antigos Contribuidores"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr "Desenvolvedores Chave Antigos"
+msgstr "Desenvolvedores principais anteriores"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr "Extras Instalados:"
+msgstr "Mods Instalados:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr "Informação do extra:"
+msgstr "Informação do Mod:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "Nenhuma descrição disponível do extra"
+msgstr "Nenhuma descrição do Mod disponível"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -400,20 +398,19 @@ msgstr "Renomear"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "Seleccionar ficheiro de Extra:"
+msgstr "Seleccionar ficheiro de Mod:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "Desinstalar extra selecionado"
+msgstr "Desinstalar mod selecionado"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Desinstalar pacote de extras selecionado"
+msgstr "Desinstalar pacote de mods selecionado"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Endereço / Porta :"
+msgstr "Endereço / Porta"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -432,27 +429,24 @@ msgid "Damage enabled"
 msgstr "Dano ativado"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Del. Favorite"
-msgstr "Favoritos:"
+msgstr "Rem. Favorito"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Favoritos:"
+msgstr "Favorito"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Nome / Senha :"
+msgstr "Nome / Senha"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "PvP activado"
+msgstr "PvP ativado"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
-msgstr "Endereço Bind"
+msgstr "Endereço de ligação"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
@@ -478,7 +472,7 @@ msgstr "Novo"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr "Nenhum mundo criado ou selecionado!"
+msgstr "Nenhum mundo criado ou seleccionado!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
@@ -498,11 +492,11 @@ msgstr "Servidor"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr "Porta"
+msgstr "Porta do servidor"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
-msgstr "Jogar"
+msgstr "Iniciar Jogo"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -526,7 +520,7 @@ msgstr "Configurações Avançadas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr "Antisserrilhamento:"
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -534,10 +528,9 @@ msgstr "Tem a certeza que deseja reiniciar o seu mundo?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr "Filtro bi-linear"
+msgstr "Filtro bilinear"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bump Mapping"
 msgstr "Bump mapping"
 
@@ -555,11 +548,11 @@ msgstr "Folhas detalhadas"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr "Mapa MIP"
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Mapa MIP + Filtro Anisotrópico"
+msgstr "Mipmap + Filtro Anisotrópico"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -571,14 +564,13 @@ msgstr "Sem Filtro"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "Sem mapa MIP"
+msgstr "Sem Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
 msgstr "Destaque dos Cubos"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
 msgstr "Destaque dos Cubos"
 
@@ -587,9 +579,8 @@ msgid "None"
 msgstr "Nenhum"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Normal Mapping"
-msgstr "Mapeamento de tons"
+msgstr "Mapeamento Normal"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -604,14 +595,12 @@ msgid "Parallax Occlusion"
 msgstr "Oclusão de paralaxe"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Ativar Partículas"
+msgstr "Ativar Particulas"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Reset singleplayer world"
-msgstr "Tem a certeza que deseja reiniciar o seu mundo?"
+msgstr "Reiniciar mundo singleplayer"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -635,7 +624,7 @@ msgstr "Texturização:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Para ativar os sombreadores é necessário usar o driver OpenGL."
+msgstr "Para ativar as sombras é necessário usar o controlador OpenGL."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
@@ -647,7 +636,7 @@ msgstr "Nível de sensibilidade ao toque (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr "Filtro tri-linear"
+msgstr "Filtro trilinear"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -667,7 +656,7 @@ msgstr "Sim"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr "Configurar extras"
+msgstr "Configurar mods"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
@@ -675,7 +664,7 @@ msgstr "Principal"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "Iniciar jogo solo"
+msgstr "Iniciar Um Jogador"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -687,7 +676,7 @@ msgstr "Um Jogador"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
-msgstr "Sem informação"
+msgstr "Sem informações disponíveis"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -695,7 +684,7 @@ msgstr "Selecione um pacote de texturas:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr "Pacotes texturas"
+msgstr "Pacotes de texturas"
 
 #: src/client.cpp
 msgid "Connection timed out."
@@ -703,7 +692,7 @@ msgstr "Erro de ligação (tempo excedido)."
 
 #: src/client.cpp
 msgid "Done!"
-msgstr "Terminado!"
+msgstr "Feito!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
@@ -719,11 +708,11 @@ msgstr "A carregar texturas..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Reconstruindo sombreadores..."
+msgstr "A reconstruir sombras..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Erro de conexão (excedeu tempo?)"
+msgstr "Erro de ligação (excedeu tempo?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
@@ -731,7 +720,7 @@ msgstr "Não foi possível encontrar ou carregar jogo \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr "gamespec inválido."
+msgstr "Especificação de jogo inválida."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
@@ -739,8 +728,7 @@ msgstr "Menu Principal"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
-"Nenhum mundo seleccionado e nenhum endereço providenciado. Nada para fazer."
+msgstr "Nenhum mundo seleccionado e nenhum endereço fornecido. Nada a fazer."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
@@ -748,11 +736,11 @@ msgstr "Nome de jogador demasiado longo."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr "O caminho fornecido não existe: "
+msgstr "O caminho fornecido do mundo não existe: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "necessita_fonte_alternativa"
 
 #: src/game.cpp
 msgid ""
@@ -801,7 +789,7 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "Teclas por defeito:\n"
-"- WASD: mover\n"
+"- WASD: andar\n"
 "- Barra de espaço: saltar/subir\n"
 "- Shift: andar cuidadosamente/descer\n"
 "- Q: Largar item\n"
@@ -810,7 +798,7 @@ msgstr ""
 "- Clique esquerdo: cavar/bater\n"
 "- Clique direito: colocar/utilizar\n"
 "- Roda do rato: seleccionar item\n"
-"- T: conversação\n"
+"- T: chat\n"
 
 #: src/game.cpp
 msgid ""
@@ -842,11 +830,11 @@ msgstr ""
 
 #: src/game.cpp
 msgid "Exit to Menu"
-msgstr "Sair para Menu"
+msgstr "Sair para o Menu"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr "Sair para o sistema"
+msgstr "Sair para o S.O"
 
 #: src/game.cpp
 msgid "Item definitions..."
@@ -854,11 +842,11 @@ msgstr "Definições dos Itens..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr "KB/s"
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
-msgstr "Dados..."
+msgstr "Media..."
 
 #: src/game.cpp
 msgid "MiB/s"
@@ -866,7 +854,7 @@ msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr "Definindo cubos..."
+msgstr "A definir cubos..."
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -874,7 +862,7 @@ msgstr "A resolver endereço..."
 
 #: src/game.cpp
 msgid "Respawn"
-msgstr "Reaparecer"
+msgstr "Renascer"
 
 #: src/game.cpp
 msgid "Shutting down..."
@@ -910,7 +898,7 @@ msgstr "Recuar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr "Conversa"
+msgstr "Chat"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
@@ -922,7 +910,7 @@ msgstr "Consola"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Carregue duas vezes em \"saltar\" para ativar o vôo"
+msgstr "Carregue duas vezes em \"saltar\" para voar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1014,7 +1002,7 @@ msgstr "Senha antiga"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "Senhas não correspondem!"
+msgstr "As senhas não correspondem!"
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
@@ -1026,11 +1014,11 @@ msgstr "Volume do som: "
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr "App"
+msgstr "Aplicações"
 
 #: src/keycode.cpp
 msgid "Attn"
-msgstr "Attm"
+msgstr "Attn"
 
 #: src/keycode.cpp
 msgid "Back"
@@ -1054,7 +1042,7 @@ msgstr "Control"
 
 #: src/keycode.cpp
 msgid "Convert"
-msgstr "Converter"
+msgstr "Convert"
 
 #: src/keycode.cpp
 msgid "CrSel"
@@ -1138,7 +1126,7 @@ msgstr "Menu"
 
 #: src/keycode.cpp
 msgid "Middle Button"
-msgstr "Botão Central do Rato"
+msgstr "Roda do Rato"
 
 #: src/keycode.cpp
 msgid "Minus"
@@ -1230,7 +1218,7 @@ msgstr "Pausa"
 
 #: src/keycode.cpp
 msgid "Period"
-msgstr "Período"
+msgstr "Ponto"
 
 #: src/keycode.cpp
 msgid "Plus"
@@ -1318,7 +1306,7 @@ msgid ""
 msgstr ""
 "Deslocamento (X,Y,Z) do fractal a partir do centro do mundo em unidades "
 "'escala'.\n"
-"Usado para obter uma área de nascimento apropriada, próxima de (0, 0).\n"
+"Usado para obter um spawnpoint apropriado, próximo de (0, 0).\n"
 "Valores por defeito apropriados para conjunto de Mandelbrot, necessitam ser "
 "adaptados para conjunto de Julia.\n"
 "Intervalos aproximadamente entre -2 e 2. Multiplicar por 'escala' para "
@@ -1364,14 +1352,14 @@ msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Semente aleatória para gerar um novo mundo (em branco para deixar o "
-"computador escolher).\n"
+"Seed aleatória para um novo mundo (em branco para ser aleatória).\n"
 "Será anulada quando for criado um outro novo mundo no menu principal."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
 msgstr ""
-"Mensagem a ser mostrada a todos os clientes do servidor quando ele bloqueia."
+"Mensagem a ser mostrada a todos os clientes do servidor quando o servidor "
+"crasha."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
@@ -1388,27 +1376,24 @@ msgid "Acceleration in air"
 msgstr "Aceleração no ar"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Management interval"
-msgstr "Distância de ativação de blocos"
+msgstr "Intervalo de gestão de blocos ativos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifier interval"
-msgstr "Distância de ativação de blocos"
+msgstr "Intervalo de Modificador de Blocos ativos"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifiers"
-msgstr "Distância de ativação de blocos"
+msgstr "Modificadores de Blocos Ativos"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Distância de ativação de blocos"
+msgstr "Alcance de blocos ativos"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Distância de ativação de objectos"
+msgstr "Distância de envio de objetos ativos"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1416,7 +1401,7 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
-"Endereço para conexão.\n"
+"Endereço para ligação.\n"
 "Deixe em branco para iniciar um servidor local.\n"
 "Note que o campo de endereço no menu principal sobrescreve esta configuração."
 
@@ -1425,7 +1410,7 @@ msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Ajustar configuração de dpi ao seu ecrã (não aplicável a X11/Android) e.g. "
+"Ajustar configuração de dpi ao seu ecrã (não aplicável a X11/Android) ex: "
 "para ecrãs 4K."
 
 #: src/settings_translation_file.cpp
@@ -1433,9 +1418,9 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-"Ajusta a correção gama nas tabelas de luminosidade. Valores mais baixos "
+"Ajusta a codificação gama nas tabelas de luminosidade. Valores mais baixos "
 "resultam \n"
-"em imagem mais clara. Configuração somente para o cliente e ignorada pelo "
+"numa imagem mais clara. Configuração somente para o cliente e ignorada pelo "
 "servidor."
 
 #: src/settings_translation_file.cpp
@@ -1490,7 +1475,7 @@ msgstr "Informar automáticamente a lista de servidores."
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "Tecla de autoexecução"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1505,9 +1490,8 @@ msgid "Basic"
 msgstr "Básico"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "Privilégios por defeito"
+msgstr "Privilégios básicos"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1527,7 +1511,7 @@ msgstr "Construir com o jogador dentro do cubo"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "Builtin"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1570,9 +1554,8 @@ msgid "Chat toggle key"
 msgstr "Tecla mostra/esconde conversação"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Comando"
+msgstr "Comandos do Chat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1665,7 +1648,6 @@ msgid "Colored fog"
 msgstr "Névoa colorida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
@@ -1840,7 +1822,7 @@ msgstr "Privilégios por defeito"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "Formato de report predefinido"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1866,7 +1848,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Atraso no envio de blocos após construção"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1955,7 +1937,7 @@ msgstr "Mostrar informações de depuração do gerador de mapa."
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "Ativar Joysticks"
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
@@ -1978,6 +1960,8 @@ msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Ativar a iluminação suave com oclusão de ambiente simples.\n"
+"Desativar para velocidade ou vistas diferentes."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2000,6 +1984,10 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Ativar a utilização de um servidor media remoto (se fornecido pelo servidor)."
+"\n"
+"Servidores remotos oferecem uma maneira mais rápida de descarregar media\n"
+"(ex. texturas) quando se estiver a conectar ao servidor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2023,10 +2011,14 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Ativa o bumpmapping para texturas. Mapas normais devem ser fornecidos pelo "
+"pack de\n"
+"texturas ou gerado automaticamente.\n"
+"Requer que as sombras sejam ativadas."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Ativar armazenamento em cache para os meshes das faces."
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
@@ -2121,7 +2113,6 @@ msgid "Field of view"
 msgstr "Campo de visão"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Field of view for zoom"
 msgstr "Campo de visão"
 
@@ -2130,14 +2121,12 @@ msgid "Field of view in degrees."
 msgstr "Campo de visão em graus."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Se ativado com o modo de vôo, o jogador é capaz de voar através de cubos "
-"sólidos.\n"
-"Isto requer o privilégio \"noclip\" no servidor."
+"Campo de visão durante o zoom em graus.\n"
+"Isto requer o privilégio \"zoom\" no servidor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2718,15 +2707,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling autorun.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla para ativar/desativar a exibição do mini-mapa.\n"
-"Consulte http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Tecla para ativar auto-corrida.\n"
+"Consulte http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2767,15 +2755,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tecla para imprimir pilhas de depuração. Usado para o desenvolvimento.\n"
-"Consulte http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Tecla para ativar a atualização da câmara. Usado para desenvolvimento.\n"
+"Consulte http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
+"01735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2949,9 +2936,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Loading Block Modifiers"
-msgstr "Distância de ativação de blocos"
+msgstr "A carregar modificadores de blocos"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3064,9 +3050,8 @@ msgid "Mapgen flat"
 msgstr "Gerador de mapa plano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Limite de lagos no gerador de mapa plano"
+msgstr "Tamanho de cavernas lisas no Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3117,9 +3102,8 @@ msgid "Mapgen fractal"
 msgstr "Gerador de mapa fractal"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal cave width"
-msgstr "W do corte do gerador de mapa fractal"
+msgstr "Tamanho da caverna mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
@@ -3187,9 +3171,8 @@ msgid "Mapgen v5"
 msgstr "Gerador de mapa V5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 cave width"
-msgstr "Gerador de mapa V5"
+msgstr "Tamanho da Caverna no Mapgen v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
@@ -3276,9 +3259,8 @@ msgid "Mapgen v7"
 msgstr "Gerador de mapa V7"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v7 cave width"
-msgstr "Gerador de mapa V7"
+msgstr "Tamanho da caverna no mapgen v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave1 noise parameters"
@@ -3751,9 +3733,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Caminho para ficheiro fonte"
+msgstr "Diretório para logs"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3826,14 +3807,12 @@ msgid "Screenshot folder"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Captura de ecrã"
+msgstr "Formato da captura de ecrã"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Captura de ecrã"
+msgstr "Qualidade da Captura de ecrã"
 
 #: src/settings_translation_file.cpp
 msgid ""
