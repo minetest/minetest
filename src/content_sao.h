@@ -87,6 +87,9 @@ protected:
 	virtual void sendOptionalDataToClient();
 	virtual std::string getPropertyPacket() { return gob_cmd_set_properties(m_prop); }
 
+	int serializeClientInitializationMessages0(std::ostream *os, int protocol_version);
+	int serializeClientInitializationMessages14(std::ostream *os, int protocol_version);
+
 	s16 m_hp;
 	float m_yaw;
 	ItemGroupList m_armor_groups;
