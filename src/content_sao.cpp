@@ -383,23 +383,30 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_yaw);
 		writeS16(os, m_hp);
 
-		writeU8(os, 4 + m_bone_position.size() + m_attachment_child_ids.size()); // number of messages stuffed in here
-		os<<serializeLongString(getPropertyPacket()); // message 1
-		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		os<<serializeLongString(gob_cmd_update_animation(
+		std::ostringstream msg_os(std::ios::binary);
+		msg_os << serializeLongString(getPropertyPacket()); // message 1
+		msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+		msg_os << serializeLongString(gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
 		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
+			msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
 					(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
-		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
+			m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		int message_count = 4 + m_bone_position.size();
 		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
 				(ii != m_attachment_child_ids.end()); ++ii) {
 			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
-				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
+				message_count++;
+				msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
+					obj->getClientInitializationData(protocol_version)));
 			}
 		}
+
+		writeU8(os, message_count);
+		os.write(msg_os.str().c_str(), msg_os.str().size());
 	}
 	else
 	{
@@ -865,26 +872,35 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		writeF1000(os, m_yaw);
 		writeS16(os, getHP());
 
-		writeU8(os, 6 + m_bone_position.size() + m_attachment_child_ids.size()); // number of messages stuffed in here
-		os<<serializeLongString(getPropertyPacket()); // message 1
-		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		os<<serializeLongString(gob_cmd_update_animation(
+		std::ostringstream msg_os(std::ios::binary);
+		msg_os << serializeLongString(getPropertyPacket()); // message 1
+		msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
+		msg_os << serializeLongString(gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
 		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			os<<serializeLongString(gob_cmd_update_bone_position((*ii).first, (*ii).second.X, (*ii).second.Y)); // m_bone_position.size
+			msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
+				(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
 		}
-		os<<serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-		os<<serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
+		msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
+			m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+		msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
 				m_physics_override_sneak_glitch)); // 5
-		os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6 (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
+		// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
+		msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
+		int message_count = 6 + m_bone_position.size();
 		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
 				ii != m_attachment_child_ids.end(); ++ii) {
 			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
-				os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(), obj->getClientInitializationData(protocol_version)));
+				message_count++;
+				msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
+					obj->getClientInitializationData(protocol_version)));
 			}
 		}
+
+		writeU8(os, message_count);
+		os.write(msg_os.str().c_str(), msg_os.str().size());
 	}
 	else
 	{
