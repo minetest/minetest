@@ -261,8 +261,9 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 			attached_pos = attached->getPosition() / BS;
 			attached_yaw = attached->getYaw();
 			is_attached = true;
-		} else
+		} else {
 			unloaded = true;
+		}
 	}
 
 	if (m_spawntime != 0) // Spawner exists for a predefined timespan
