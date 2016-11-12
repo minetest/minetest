@@ -929,6 +929,30 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
+// Will fill up 12 + 12 + 4 + 4 + 4 bytes
+void writePlayerPos(LocalPlayer *myplayer, NetworkPacket *pkt)
+{
+	v3f pf         = myplayer->getPosition() * 100;
+	v3f sf         = myplayer->getSpeed() * 100;
+	s32 pitch      = myplayer->getPitch() * 100;
+	s32 yaw        = myplayer->getYaw() * 100;
+	u32 keyPressed = myplayer->keyPressed;
+
+	v3s32 position(pf.X, pf.Y, pf.Z);
+	v3s32 speed(sf.X, sf.Y, sf.Z);
+
+	/*
+		Format:
+		[0] v3s32 position*100
+		[12] v3s32 speed*100
+		[12+12] s32 pitch*100
+		[12+12+4] s32 yaw*100
+		[12+12+4+4] u32 keyPressed
+	*/
+
+	*pkt << position << speed << pitch << yaw << keyPressed;
+}
+
 void Client::interact(u8 action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
@@ -938,12 +962,17 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		return;
 	}
 
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
+	if (myplayer == NULL)
+		return;
+
 	/*
 		[0] u16 command
 		[2] u8 action
 		[3] u16 item
-		[5] u32 length of the next item
+		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
+		[9 + plen] player position information
 		actions:
 		0: start digging (from undersurface) or use
 		1: stop digging (all parameters ignored)
@@ -962,6 +991,8 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	pointed.serialize(tmp_os);
 
 	pkt.putLongString(tmp_os.str());
+
+	writePlayerPos(myplayer, &pkt);
 
 	Send(&pkt);
 }
@@ -1291,26 +1322,9 @@ void Client::sendPlayerPos()
 
 	assert(myplayer->peer_id == our_peer_id);
 
-	v3f pf         = myplayer->getPosition();
-	v3f sf         = myplayer->getSpeed();
-	s32 pitch      = myplayer->getPitch() * 100;
-	s32 yaw        = myplayer->getYaw() * 100;
-	u32 keyPressed = myplayer->keyPressed;
-
-	v3s32 position(pf.X*100, pf.Y*100, pf.Z*100);
-	v3s32 speed(sf.X*100, sf.Y*100, sf.Z*100);
-	/*
-		Format:
-		[0] v3s32 position*100
-		[12] v3s32 speed*100
-		[12+12] s32 pitch*100
-		[12+12+4] s32 yaw*100
-		[12+12+4+4] u32 keyPressed
-	*/
-
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
 
-	pkt << position << speed << pitch << yaw << keyPressed;
+	writePlayerPos(myplayer, &pkt);
 
 	Send(&pkt);
 }
