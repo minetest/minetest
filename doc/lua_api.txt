@@ -3520,8 +3520,9 @@ Definition tables
     --  ^ Called sometimes; the string returned is passed to on_activate when
     --    the entity is re-activated from static state
 
-        -- Also you can define arbitrary member variables here
-        myvariable = whatever,
+        -- Also you can define arbitrary member variables here (see item definition for
+        -- more info)
+        _custom_field = whatever,
     }
 
 ### ABM (ActiveBlockModifier) definition (`register_abm`)
@@ -3636,6 +3637,15 @@ Definition tables
               return itemstack
             end
         ^ The user may be any ObjectRef or nil.
+        ]]
+        _custom_field = whatever,
+        --[[
+        ^ Add your own custom fields with your own chosen name to store
+          arbitrary additional information about an item which you can later
+          read them from `minetest.registered_items`. These fields will never
+          be used by the engine but they may be used by mods. By convention,
+          all custom field names should start with `_` to avoid naming
+          collisions with future engine usage.
         ]]
     }
 
