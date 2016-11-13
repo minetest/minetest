@@ -290,6 +290,10 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		lua_pushstring(L,games[i].name.c_str());
 		lua_settable(L, top_lvl2);
 
+		lua_pushstring(L,"mapgen_seed_used");
+		lua_pushboolean(L,games[i].mapgen_seed_used);
+		lua_settable(L, top_lvl2);
+
 		lua_pushstring(L,"menuicon_path");
 		lua_pushstring(L,games[i].menuicon_path.c_str());
 		lua_settable(L, top_lvl2);
@@ -306,6 +310,33 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 			internal_index++;
 		}
 		lua_settable(L, top_lvl2);
+
+		lua_pushstring(L,"available_mapgens");
+		lua_newtable(L);
+		int table3 = lua_gettop(L);
+		internal_index=1;
+		for (std::set<std::string>::iterator iter = games[i].available_mapgens.begin();
+				iter != games[i].available_mapgens.end(); iter++) {
+			lua_pushstring(L,(*iter).c_str());
+			lua_pushboolean(L,true);
+			lua_settable(L, table3);
+			internal_index++;
+		}
+		lua_settable(L, top_lvl2);
+
+		lua_pushstring(L,"discouraged_mapgens");
+		lua_newtable(L);
+		int table4 = lua_gettop(L);
+		internal_index=1;
+		for (std::set<std::string>::iterator iter = games[i].discouraged_mapgens.begin();
+				iter != games[i].discouraged_mapgens.end(); iter++) {
+			lua_pushstring(L,(*iter).c_str());
+			lua_pushboolean(L,true);
+			lua_settable(L, table4);
+			internal_index++;
+		}
+		lua_settable(L, top_lvl2);
+
 		lua_settable(L, top);
 		index++;
 	}

@@ -21,18 +21,6 @@ local function create_world_formspec(dialogdata)
 	local current_seed = core.setting_get("fixed_map_seed") or ""
 	local current_mg   = core.setting_get("mg_name")
 
-	local mglist = ""
-	local selindex = 1
-	local i = 1
-	for k,v in pairs(mapgens) do
-		if current_mg == v then
-			selindex = i
-		end
-		i = i + 1
-		mglist = mglist .. v .. ","
-	end
-	mglist = mglist:sub(1, -2)
-	
 	local gameid = core.setting_get("menu_last_game")
 	
 	local game, gameidx = nil , 0
@@ -44,24 +32,55 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
+	local mglist = ""
+	local selindex = 1
+	local i = 1
+	local current_mg_is_discouraged = false
+	for k, v in pairs(mapgens) do
+		if game.available_mapgens[v] then
+			if current_mg == v then
+				current_mg_is_discouraged = game.discouraged_mapgens[v] == true
+				selindex = i
+			end
+			i = i + 1
+			mglist = mglist .. v .. ","
+		end
+	end
+
+	mglist = mglist:sub(1, -2)
+
+	local input_seed = ""
+	if game.mapgen_seed_used then
+		input_seed =
+			"label[2,1;" .. fgettext("Seed") .. "]"..
+			"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]"
+	end
+
+	local label_discouraged = ""
+	if current_mg_is_discouraged then
+		label_discouraged =
+			"label[2,6;" .. fgettext("Warning: The selected map generator is not recommended for this game.") .. "]"
+	end
+
 	current_seed = core.formspec_escape(current_seed)
 	local retval =
-		"size[11.5,6.5,true]" ..
+		"size[11.5,7.5,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
 		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
 
-		"label[2,1;" .. fgettext("Seed") .. "]"..
-		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
-
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
 		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+
+		input_seed ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
 		";" .. gameidx .. ";true]" ..
 
-		"button[3.25,6;2.5,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
-		"button[5.75,6;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
+		label_discouraged ..
+
+		"button[3.25,7;2.5,0.5;world_create_confirm;" .. fgettext("Create") .. "]" ..
+		"button[5.75,7;2.5,0.5;world_create_cancel;" .. fgettext("Cancel") .. "]"
 		
 	if #gamemgr.games == 0 then
 		retval = retval .. "box[2,4;8,1;#ff8800]label[2.25,4;" ..

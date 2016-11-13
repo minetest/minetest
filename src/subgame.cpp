@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/strfnd.h"
 #include "defaultsettings.h"  // for override_default_settings
-#include "mapgen.h"  // for MapgenParams
+#include "mapgen.h"  // for MapgenParams and flagdesc_mapgen_type
 #include "util/string.h"
 
 #ifndef SERVER
@@ -51,6 +51,72 @@ std::string getGameName(const std::string &game_path)
 	if(!conf.exists("name"))
 		return "";
 	return conf.get("name");
+}
+
+std::set<std::string> mapgenTypeFlagsToSet(u32 spflags)
+{
+	std::set<std::string> mapgens;
+	if((spflags & MAPGEN_TYPE_V5))
+		mapgens.insert("v5");
+	if((spflags & MAPGEN_TYPE_V6))
+		mapgens.insert("v6");
+	if((spflags & MAPGEN_TYPE_V7))
+		mapgens.insert("v7");
+	if((spflags & MAPGEN_TYPE_VALLEYS))
+		mapgens.insert("valleys");
+	if((spflags & MAPGEN_TYPE_FRACTAL))
+		mapgens.insert("fractal");
+	if((spflags & MAPGEN_TYPE_FLAT))
+		mapgens.insert("flat");
+	if((spflags & MAPGEN_TYPE_SINGLENODE))
+		mapgens.insert("singlenode");
+	return mapgens;
+}
+
+std::set<std::string> getAvailableMapgens(const std::string &game_path)
+{
+	Settings conf;
+	std::set<std::string> mapgens;
+	bool gameConfExists = getGameConfig(game_path, conf);
+	if (!gameConfExists || (!conf.exists("available_mapgens"))) {
+		mapgens.insert("v5");
+		mapgens.insert("v6");
+		mapgens.insert("v7");
+		mapgens.insert("valleys");
+		mapgens.insert("fractal");
+		mapgens.insert("flat");
+		return mapgens;
+	}
+	u32 spflags = 0;
+	conf.getFlagStrNoEx("available_mapgens", spflags, flagdesc_mapgen_type);
+	mapgens = mapgenTypeFlagsToSet(spflags);
+
+	return mapgens;
+}
+
+std::set<std::string> getDiscouragedMapgens(const std::string &game_path)
+{
+	Settings conf;
+	std::set<std::string> mapgens;
+	if (!getGameConfig(game_path, conf))
+		return mapgens;
+	if (!conf.exists("discouraged_mapgens"))
+		return mapgens;
+	u32 spflags = 0;
+	conf.getFlagStrNoEx("discouraged_mapgens", spflags, flagdesc_mapgen_type);
+	mapgens = mapgenTypeFlagsToSet(spflags);
+
+	return mapgens;
+}
+
+bool isSeedUsedByGame(const std::string &game_path)
+{
+	Settings conf;
+	if(!getGameConfig(game_path, conf))
+		return true;
+	if(!conf.exists("mapgen_seed_used"))
+		return true;
+	return conf.getBool("mapgen_seed_used");
 }
 
 struct GameFindPath
@@ -118,12 +184,15 @@ SubgameSpec findSubgame(const std::string &id)
 	std::string game_name = getGameName(game_path);
 	if(game_name == "")
 		game_name = id;
+	bool mapgen_seed_used = isSeedUsedByGame(game_path);
+	std::set<std::string> available_mapgens = getAvailableMapgens(game_path);
+	std::set<std::string> discouraged_mapgens = getDiscouragedMapgens(game_path);
 	std::string menuicon_path;
 #ifndef SERVER
 	menuicon_path = getImagePath(game_path + DIR_DELIM + "menu" + DIR_DELIM + "icon.png");
 #endif
-	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name,
-			menuicon_path);
+	return SubgameSpec(id, game_path, gamemod_path, mods_paths, game_name, available_mapgens,
+		discouraged_mapgens, mapgen_seed_used, menuicon_path);
 }
 
 SubgameSpec findWorldSubgame(const std::string &world_path)
@@ -137,6 +206,7 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 		gamespec.path = world_gamepath;
 		gamespec.gamemods_path= world_gamepath + DIR_DELIM + "mods";
 		gamespec.name = getGameName(world_gamepath);
+		gamespec.mapgen_seed_used = isSeedUsedByGame(world_gamepath);
 		if(gamespec.name == "")
 			gamespec.name = "unknown";
 		return gamespec;
