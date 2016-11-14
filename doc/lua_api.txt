@@ -4248,12 +4248,12 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ optional, if specified spawns particle only on the player's client
-        material_type_param = 12641,
+        material_type_param = 0,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},
     --  ^ optional, note that particle and particle spawners have differences
-        glow = 15,
+        glow = 0,
     --  ^ optional, specify particle self-luminescence in darkness
     --  value range: 0 (no glow) to 15 (bright glow)
     }
@@ -4290,12 +4290,12 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
-        material_type_param = 12641,
+        material_type_param = 0,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},
     --  ^ optional, note that particle and particle spawners have differences
-        glow = 15,
+        glow = 0,
     --  ^ optional, specify particle self-luminescence in darkness
     --  value range: 0 (no glow) to 15 (bright glow)
     }
