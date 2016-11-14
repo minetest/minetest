@@ -3786,11 +3786,11 @@ Definition tables
 		min_first_frame = 0, -- particle spawners only
 		max_first_frame = 0,
 		-- ^ specify first frame to start animation.
-		frame_length = -1,
-		-- ^ specify length of a frame in seconds. Negative and zero values
-		-- disable animation. A sequence with vertical_frame_num = 4 and
-		-- horizontal_frame_num = 3, first_frame = 4 and frame_length = 0.1
-		-- will end in (4*3-4)*0.1 = 0.8 seconds
+		frame_length = nil,
+		-- ^ optional, specify length of a frame in seconds.
+		-- A sequence with vertical_frame_num = 4 and horizontal_frame_num = 3
+		-- first_frame = 4 and frame_length = 0.1 will end in
+		-- (4*3-4)*0.1 = 0.8 seconds
 		loop_animation = true,
 		-- specify if animation should start from beginning after last frame
 	}

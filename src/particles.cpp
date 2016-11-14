@@ -49,14 +49,12 @@ u32 check_material_type_param(u32 material_type_param)
 	u32 modulo  = (material_type_param & 0x00000F00) >> 8;
 	u32 srcFact = (material_type_param & 0x000000F0) >> 4;
 	u32 dstFact = material_type_param & 0x0000000F;
-	if (alphaSource <= 3 && modulo <= 4 && srcFact <= 10 && dstFact <= 10) {
+
+	if (alphaSource <= 3 && modulo <= 4 && srcFact <= 10 && dstFact <= 10)
 		return material_type_param;
-	} else {
-		errorstream << "Server send incorrect ";
-		errorstream << "material_type_param value for particle.";
-		errorstream << std::endl;
-		return 0;
-	}
+	errorstream << "Server sent incorrect material_type_param for particle"
+			<< ", ignoring it." << std::endl;
+	return 0;
 }
 
 Particle::Particle(

@@ -109,7 +109,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		acc = lua_istable(L, -1) ? check_v3f(L, -1) : acc;
 		lua_pop(L, 1);
 
-		expirationtime = getfloatfield_default(L, 1, "expirationtime", 1);	
+		expirationtime = getfloatfield_default(L, 1, "expirationtime", 1);
 		size = getfloatfield_default(L, 1, "size", 1);
 
 		lua_getfield(L, 1, "animation");

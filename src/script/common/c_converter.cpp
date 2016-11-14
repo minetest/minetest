@@ -522,16 +522,14 @@ int check_material_type_param(lua_State *L, int table,
 	u32 modulo  = (material_type_param & 0x00000F00) >> 8;
 	u32 srcFact = (material_type_param & 0x000000F0) >> 4;
 	u32 dstFact = material_type_param & 0x0000000F;
-	if (alphaSource <= 3 && modulo <= 4 && srcFact <= 10 && dstFact <= 10) {
+
+	if (alphaSource <= 3 && modulo <= 4 && srcFact <= 10 && dstFact <= 10)
 		return material_type_param;
-	} else {
-		std::ostringstream error_text;
-		error_text << "Incorrect material_type_param value ";
-		error_text << "for particle or particle spawner.";
-		error_text << std::endl;
-		throw LuaError(error_text.str());
-		return 0;
 	}
+	std::ostringstream error_text;
+	error_text << "Incorrect material_type_param value provided";
+			<< "for particle or particle spawner." << std::endl;
+	throw LuaError(error_text.str());
 }
 
 
