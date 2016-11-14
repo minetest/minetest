@@ -527,8 +527,8 @@ int check_material_type_param(lua_State *L, int table,
 		return material_type_param;
 	}
 	std::ostringstream error_text;
-	error_text << "Incorrect material_type_param value provided";
-			<< "for particle or particle spawner." << std::endl;
+	error_text << "Incorrect material_type_param value provided"
+			<< " for particle or particle spawner." << std::endl;
 	throw LuaError(error_text.str());
 }
 
