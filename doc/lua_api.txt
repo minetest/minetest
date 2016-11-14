@@ -416,116 +416,92 @@ texture pixel.
 
 Particle blend
 --------------
-Blend function is defined by integer number.
-There is a huge number of acceptable blend modificators.
-Colour of a resulting pixel calculated using formulae:
+The blend function is defined by an integer number and there are
+a huge number of acceptable blend modificators.
+The color channels (RGB) of resulting pixel are calculated using this formula:
 
 	red = source_red * source_factor + destination_red * destination_factor
 
-and so on for every channel.
 
-Here is a some examples:
+Some examples:
 
-Default value:
+Disabled blend (default):
 
 	material_type_param = 0,
 
-Use this value to disable blending. Texture will be applied to existing pixels
-using alpha channel of it. Its recomended to use 1-bit alpha
-in that case. This value will leave z-buffer writeable.
+Use this value to disable blending. The texture will be applied to existing pixels
+using their alpha channel. It's recomended to use 1-bit alpha.
 
 Additive blend:
 
 	material_type_param = 12641,
 
-Source = src_alpha, destination = one, alpha source is a texture and 
-vertex_color, modulate_1x.
-Black color is completely transparent, white color is completely opaque.
-Alpha channel still used to calculate result color, but not nessesary.
-'destination = one' means that resulting color will be calculated using 
-overwritten pixels values.
-For example with color of source (our texture) RGBA = (0,192,255,63)
-"blue-cyan", 1/4 opaque.
-and already rendered pixel color (40,192,0) "dark lime green" we will get color:
+source_factor is taken from the textures alpha channel,
+destination_factor is fixed at 1.
+For example with a source color (0,192,255,63) and already rendered
+pixel color (40,192,0) the calculation looks like this:
 
-R = source_red(0) * source_factor(src_alpha=63/255) + 
-	destination_red(40) * destination_factor(one) =
-	0 * 63/255 + 40 * 1 = 40
-
+R = 0 (source_red) * 63/255 (source_factor) +
+    40 (destination_red) * 1 (destination_factor)
+  = 0 * 63/255 + 40 * 1 = 40
 G = 192 * 63/255 + 192 * 1 = 239
 B = 255 * 63/255 + 0 * 1 = 63
 
-Result: (40,239,63), "green" (a kind of).
-Note, if you made a texture with some kind of shape with colour 662211h 
-it will appear dark red with a single particle, then yellow with a 
-several of them and white if player looking thru a lot of them. With 
-this you could made a nice-looking fire.
+Additive blend can e.g. be used to make nice-looking fire particles
+using the color (102,34,17) which will change color from red to yellow the more
+particles are stacked ontop of eachother.
 
-Substractive blend:
+Subtractive blend:
 	
 	material_type_param = 12548,
 
-Source = zero, destination = src_color, alpha source is a texture and 
-vertex_color, modulate_1x.
-Texture darkness act like an alpha channel.
-Black color is completely opaque, white color is completely transparent.
-'destination = src_color' means that destination in multiplied by
-a source values. 'source = zero' means that source values ignored
-(multiplied by 0).
+source_factor is fixed at 0, destination_factor is taken from the texture.
+Texture darkness acts like an alpha channel.
 
 Invert blend:
 
 	material_type_param = 12597,
-	
-Source = one_minus_dst_color, destination = one_minus_src_alpha, alpha source 
-is a texture and vertex_color, modulate_1x.
-Pixels invert color if source color value is big enough. If not, they just
-black.
-'destination = one_minus_src_alpha' means, that effect is masked by a
-source alpha channel.
 
-You can design and use your own blend using those enum values and function
-'minetest.pack_texture_blend_func'. Returned value of a function is 
-your 'material_type_param'.
+source_factor is the inverted color of existing pixels, destination_factor is
+the inverted alpha channel of the texture.
+Resulting pixels have inverted color if the source color value is big enough,
+otherwise they appear black.
 
-A values in a brackets is a multiplicators of a red, green, blue 
+
+It is possible combine the primitives below to design a custom blending mode
+'minetest.pack_texture_blend_func' will take take these and return an integer
+to be used as 'material_type_param' in particle definitions.
+
+A values in a brackets specify multiplicators of red, green, blue
 and alpha channels respectively.
 
-* 'minetest.ebf': global table, containing blend factor enum values. Such as:
-    *	zero			= 0  -- src & dest (0, 0, 0, 0)
-    *	one			= 1  -- src & dest (1, 1, 1, 1)
-    *	dst_color 		= 2  -- src (destR, destG, destB, destA)
-    *	one_minus_dst_color 	= 3  -- src (1-destR, 1-destG, 1-destB, 1-destA)
-    *	src_color 		= 4  -- dest (srcR, srcG, srcB, srcA)
-    *	one_minus_src_color 	= 5  -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
-    *	src_alpha 		= 6  -- src & dest (srcA, srcA, srcA, srcA)
-    *	one_minus_src_alpha 	= 7  -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
-    *	dst_alpha 		= 8  -- src & dest (destA, destA, destA, destA)
-    *	one_minus_dst_alpha 	= 9  -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
-    *	src_alpha_saturate  	= 10 -- src (min(srcA, 1-destA), idem, ...) 
+* 'minetest.ebf': global table, containing blend factor enum values
+    *  zero                = 0  -- src & dest (0, 0, 0, 0)
+    *  one                 = 1  -- src & dest (1, 1, 1, 1)
+    *  dst_color           = 2  -- src (destR, destG, destB, destA)
+    *  one_minus_dst_color = 3  -- src (1-destR, 1-destG, 1-destB, 1-destA)
+    *  src_color           = 4  -- dest (srcR, srcG, srcB, srcA)
+    *  one_minus_src_color = 5  -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
+    *  src_alpha           = 6  -- src & dest (srcA, srcA, srcA, srcA)
+    *  one_minus_src_alpha = 7  -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
+    *  dst_alpha           = 8  -- src & dest (destA, destA, destA, destA)
+    *  one_minus_dst_alpha = 9  -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
+    *  src_alpha_saturate  = 10 -- src (min(srcA, 1-destA), ...)
 
-* 'minetest.emfn': global table, containing modulate enum values. 
-    * Multiply the components of the arguments, and shift the products to the 
-    * left by x bits for brightening. Contain:
-    *	modulate_1x    = 1 -- no bit shift
-    *	modulate_2x    = 2 -- 1 bits shift
-    *	modulate_4x    = 4 -- 2 bits shift
+* 'minetest.emfn': global table, containing modulate enum values
+    * Multiply the color components by:
+    *  modulate_1x = 1 -- multiply by 1 (no shift)
+    *  modulate_2x = 2 -- multiply by 2 (x << 1)
+    *  modulate_4x = 4 -- multiply by 4 (x << 2)
 
-'modulate_4x' is quite useful when you want to make additive blend stronger
-with a lower amount of particles.
+* 'minetest.eas': global table, containing alpha source enum values
+    * none         = 0 -- no alpha
+    * vertex_color = 1 -- use alpha from existing pixel
+    * texture      = 2 -- use alpha from texture
+    * both         = 3 -- use both
 
-* 'minetest.eas': global table, containing alpha source enum values. Such as:
-    *	none	 	= 0 -- do not use alpha.
-    *	vertex_color 	= 1 -- use vertex color alpha.
-    *	texture	 	= 2 -- use texture alpha.
-
-You can use both 'vertex_color' and 'texture' source by using value 3.
-
-* 'minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)': return integer
-    * Pack texture blend funcion variable. Depending from that variable blend 
-    * function will be applied in time of a render poligons with selected material.
-    * Therefore resulting pixel will be 'source * srcFact + destination * dstFact'
-    * Use result of this function as 'material_type_param'.
+* `minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)`
+  Returns integer for use as 'material_type_param', refer to explanations above
 
 Sounds
 ------
