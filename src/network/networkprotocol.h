@@ -285,6 +285,13 @@ enum ToClientCommand
 
 	// (oops, there is some gap here)
 
+	TOCLIENT_CHAT_AUTOCOMPLETE = 0x2f,
+	/*
+		u16 cursorpos
+		[u16 length
+		wstring message]
+	*/
+
 	TOCLIENT_CHAT_MESSAGE = 0x30,
 	/*
 		u16 length
@@ -713,6 +720,13 @@ enum ToServerCommand
 		s16 id
 		u16 textlen
 		textdata
+	*/
+
+	TOSERVER_CHAT_AUTOCOMPLETE = 0x2f,
+	/*
+		u16 cursorpos
+		u16 length
+		wstring message
 	*/
 
 	TOSERVER_INVENTORY_ACTION = 0x31,

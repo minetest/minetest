@@ -1219,6 +1219,15 @@ void Client::sendChatMessage(const std::wstring &message)
 	Send(&pkt);
 }
 
+void Client::sendChatAutocomplete(u16 cursorpos, const std::wstring &message)
+{
+	NetworkPacket pkt(TOSERVER_CHAT_AUTOCOMPLETE, 2 + sizeof(u16) + message.size() * sizeof(u16));
+
+	pkt << cursorpos << message;
+
+	Send(&pkt);
+}
+
 void Client::sendChangePassword(const std::string &oldpassword,
         const std::string &newpassword)
 {

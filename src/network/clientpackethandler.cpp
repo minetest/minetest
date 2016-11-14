@@ -413,6 +413,28 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 	m_chat_queue.push(message);
 }
 
+void Client::handleCommand_ChatAutocomplete(NetworkPacket* pkt)
+{
+	std::wstring wmessage;
+	u16 cursorpos;
+
+	*pkt >> cursorpos;
+
+	// message is only sent if it is changed
+	if (cursorpos & 2) {
+		u16 len, read_wchar;
+
+		*pkt >> len;
+
+		for (u32 i = 0; i < len; i++) {
+			*pkt >> read_wchar;
+			wmessage += (wchar_t)read_wchar;
+		}
+	}
+
+	(*autocompletion_chatprompt).CompletionReceive(cursorpos, wmessage);
+}
+
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
 {
 	/*

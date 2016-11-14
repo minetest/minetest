@@ -147,6 +147,56 @@ bool ScriptApiServer::on_chat_message(const std::string &name,
 	return ate;
 }
 
+bool ScriptApiServer::on_chat_autocomplete(const std::string &name,
+		u16 &cursorpos, std::string &message) {
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get core.on_chat_autocomplete function
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "on_chat_autocomplete");
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_remove(L, -2);
+
+	// Consign params
+	lua_pushstring(L, name.c_str());
+	lua_pushnumber(L, cursorpos);
+	lua_pushstring(L, message.c_str());
+
+	// Run the function
+	PCALL_RES(lua_pcall(L, 3, 3, error_handler));
+
+	// Get autocompletion result
+	luaL_checktype(L, -3, LUA_TNUMBER);
+	u8 changeds = lua_tonumber(L, -3);
+
+	// Abort if the chatprompt does not need modification
+	if (!changeds) {
+		lua_settop(L, -5);
+		return false;
+	}
+
+	// Update cursorpos if it is changed
+	if (changeds & 1) {
+		luaL_checktype(L, -1, LUA_TNUMBER);
+		cursorpos = lua_tonumber(L, -1);
+	}
+
+	// Update message if it is changed
+	if (changeds & 2) {
+		luaL_checktype(L, -2, LUA_TSTRING);
+		message = luaL_checkstring(L, -2);
+	}
+
+	// Put the change information into cursorpos
+	cursorpos <<= 2;
+	cursorpos |= changeds;
+
+	lua_settop(L, -5);
+	return true;
+}
+
 void ScriptApiServer::on_shutdown()
 {
 	SCRIPTAPI_PRECHECKHEADER

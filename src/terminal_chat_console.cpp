@@ -279,9 +279,19 @@ void TerminalChatConsole::handleInput(int ch, bool &complete_redraw_needed)
 				ChatPrompt::CURSOROP_SCOPE_LINE);
 			break;
 		case KEY_TAB:
-			// Tab pressed
-			// Nick completion
-			prompt.nickCompletion(m_nicks, false);
+			// Chat autocompletion
+			{
+				std::wstring line;
+				u16 cursorpos;
+
+				prompt.CompletionSend(cursorpos, line);
+				//m_client->autocompletion_chatprompt = &prompt;
+				//m_client->sendChatAutocomplete(cursorpos, line);
+
+				if (m_script->on_chat_autocomplete(m_nick, cursorpos, line))
+					prompt.CompletionReceive(cursorpos, line);
+			}
+
 			break;
 		default:
 			// Add character to the prompt,

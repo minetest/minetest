@@ -31,6 +31,9 @@ public:
 	// Returns true if script handled message
 	bool on_chat_message(const std::string &name, const std::string &message);
 
+	// Returns true if something needs to be sent back to client
+	bool on_chat_autocomplete(const std::string &name, u16 &cursorpos, std::string &message);
+
 	// Calls on_shutdown handlers
 	void on_shutdown();
 

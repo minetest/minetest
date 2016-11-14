@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
+#include "chat.h"
 #include "network/networkpacket.h"
 
 struct MeshMakeData;
@@ -366,6 +367,7 @@ public:
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
 	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ChatAutocomplete(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
 	void handleCommand_Movement(NetworkPacket* pkt);
@@ -415,6 +417,7 @@ public:
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void sendChatAutocomplete(u16 cursorpos, const std::wstring &message);
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
@@ -551,6 +554,8 @@ public:
 	LocalClientState getState() { return m_state; }
 
 	void makeScreenshot(IrrlichtDevice *device);
+
+	ChatPrompt *autocompletion_chatprompt;
 
 private:
 

@@ -1641,6 +1641,21 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	}
 }
 
+void Server::SendChatAutocompletion(u16 peer_id, u16 cursorpos, const std::string &message)
+{
+	DSTACK(FUNCTION_NAME);
+
+	NetworkPacket pkt(TOCLIENT_CHAT_AUTOCOMPLETE, 0, peer_id);
+
+	pkt << cursorpos;
+
+	// send message only if it is changed
+	if (cursorpos & 2)
+		pkt << narrow_to_wide(message);
+
+	Send(&pkt);
+}
+
 void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
                                      const std::string &formname)
 {

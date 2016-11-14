@@ -71,7 +71,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
-	null_command_handler,
+	{ "TOCLIENT_CHAT_AUTOCOMPLETE",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatAutocomplete }, // 0x2f
 	{ "TOCLIENT_CHAT_MESSAGE",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatMessage }, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ActiveObjectRemoveAdd }, // 0x31
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ActiveObjectMessages }, // 0x32
@@ -174,7 +174,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x2c
 	null_command_factory, // 0x2d
 	null_command_factory, // 0x2e
-	null_command_factory, // 0x2f
+	{ "TOSERVER_CHAT_AUTOCOMPLETE",  0, true },// 0x2f
 	{ "TOSERVER_SIGNTEXT",           0, false }, // 0x30
 	{ "TOSERVER_INVENTORY_ACTION",   0, true }, // 0x31
 	{ "TOSERVER_CHAT_MESSAGE",       0, true }, // 0x32

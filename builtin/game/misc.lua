@@ -56,11 +56,11 @@ function core.check_player_privs(name, ...)
 	elseif arg_type ~= "string" then
 		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -76,11 +76,11 @@ function core.check_player_privs(name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
@@ -239,3 +239,90 @@ else
 
 end
 
+
+local function simple_list_iter(t)
+	local n = 0
+	return function()
+		n = n+1
+		return t[n]
+	end
+end
+
+-- useful to short chat autocompletion code
+function core.autocomplete_word(start, t, iter)
+	if not iter then
+		if t[1] then
+			iter = simple_list_iter
+		else
+			iter = pairs
+		end
+	end
+
+	local start_len = #start
+	local possible_words,n = {},1
+	for word in iter(t) do
+		if word:sub(1, start_len) == start then
+			possible_words[n] = word
+			n = n+1
+		end
+	end
+
+	if n < 3 then
+		return possible_words[1]
+	end
+
+	table.sort(possible_words)
+	local first_word = possible_words[1]
+	local last_word = possible_words[#possible_words]
+	local l = start_len
+	for i = l+1, math.min(#first_word, #last_word) do
+		if first_word:sub(i, i) ~= last_word:sub(i, i) then
+			break
+		end
+		l = l+1
+	end
+
+	if l ~= start_len then
+		return first_word:sub(1, l), possible_words
+	end
+
+	return possible_words
+end
+
+-- Add playernames autocompletion
+minetest.after(0, core.register_chat_autocompletion,
+	function(message, cursorpos, name, first_invocation)
+		local len = #message
+		local last_space = len - (message:reverse():find(" ") or len + 1)
+
+		local start
+		if last_space + 1 == len then
+			start = ""
+		else
+			start = message:sub(last_space - len + 1)
+		end
+
+		local pnames = core.get_connected_players()
+		for i = 1,#pnames do
+			pnames[i] = pnames[i]:get_player_name()
+		end
+		local replacement, possible_players = core.autocomplete_word(start, pnames)
+
+		if not replacement then
+			return
+		end
+
+		if type(replacement) == "string" then
+			message = message:sub(1, last_space - len) .. replacement
+			if not possible_players then
+				message = message .. " "
+			end
+			return message, #message, true
+		end
+
+		if not first_invocation then
+			core.chat_send_player(name, "Players found: " ..
+					table.concat(replacement, ", "))
+		end
+	end
+)

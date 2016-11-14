@@ -38,6 +38,56 @@ core.register_on_chat_message(function(name, message)
 	return true  -- Handled chat message
 end)
 
+core.register_chat_autocompletion(function(message, cursorpos, name, first_invocation)
+	if message:sub(1, 1) ~= "/" then
+		return
+	end
+	local firstspace = message:find(" ")
+	if firstspace then
+		local cmd = message:sub(2, firstspace-1)
+		local def = core.chatcommands[cmd]
+		if not def then
+			core.chat_send_player(name, 'Invalid chatcommand "' .. cmd .. '".')
+			return
+		end
+		if not def.autocompletion then
+			return
+		end
+		local params = message:sub(firstspace + 1)
+		local cursorpos_rel = cursorpos - firstspace
+		local newmsg, newcp, abort = def.autocompletion(params, cursorpos_rel, name, first_invocation)
+		if type(newmsg) == "string" then
+			newmsg = "/" .. cmd .. " " .. newmsg
+		end
+		if type(newcp) == "number" then
+			newcp = newcp + firstspace
+		end
+		return newmsg, newcp, abort
+	end
+
+	local cmdstart = message:sub(2)
+	local replacement, possible_cmds = core.autocomplete_word(cmdstart, core.chatcommands)
+
+	if not replacement then
+		core.chat_send_player(name, 'No chatcommand found beginning with "' ..
+				cmdstart .. '".')
+		return
+	end
+
+	if type(replacement) == "string" then
+		if not possible_cmds then
+			return "/" .. replacement .. " ", #replacement + 2, true
+		end
+		local newmsg = "/" .. replacement
+		return newmsg, #newmsg, true
+	end
+
+	if not first_invocation then
+		core.chat_send_player(name, "Available commands: " ..
+				table.concat(replacement, ", "))
+	end
+end)
+
 if core.setting_getbool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
 	-- Before any chattcommands that should be profiled

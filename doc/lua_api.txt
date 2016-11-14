@@ -1858,6 +1858,17 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `core.autocomplete_word(start, t, [iter])`
+    * `start` is the beginning of the word
+    * `t` is a table containing words which are used for autocompletion
+    * `iter` is an iteration function for the for loop
+      if omitted, either pairs or a list iteration is used depending on `t`
+    * It returns one of following:
+      nil: `t` does not contain a string beginning with `start`
+      found_word: a string, one fitting word was found
+      longer_start, possible_words: a string and a table
+        more fitting word were found and their equal beginning is longer than start
+      possible_words: a table, their equal beginning is as long as start
 
 `minetest` namespace reference
 ------------------------------
@@ -2025,6 +2036,12 @@ Call these functions only at load time!
         * `"finished_unknown_dig"`
         * `dug_unbreakable`
         * `dug_too_fast`
+* `minetest.register_chat_autocompletion(func(message, cursorpos, name, first_inquiry))`
+    * Called when the admin tips the tab key in the terminal chat
+    * message is the current text in the chat prompt
+    * cursorpos is an integer between inclusively 0 and #message
+    * first_inquiry is true if the previous message and cursorpos are not the current ones
+    * return [new_message], [new_cursorpos], [abort]
 * `minetest.register_on_chat_message(func(name, message))`
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will not be sent to other players
@@ -4047,6 +4064,10 @@ The Biome API is still in an experimental phase and subject to change.
         privs = {privs=true}, -- Require the "privs" privilege to run
         func = function(name, param), -- Called when command is run.
                                       -- Returns boolean success and text output.
+        autocompletion = func(params, cursorpos, name, first_invocation),
+    --  ^ Called after after someone presses tab in the chat terminal.
+    --  ^ For the return values see register_chat_autocompletion.
+    --  ^ Note that params and cursorpos are relative, same for these two return values.
     }
 
 ### Detached inventory callbacks

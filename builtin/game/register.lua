@@ -65,14 +65,14 @@ local function check_modname_prefix(name)
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
-		
+
 		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
-		
+
 		return name
 	end
 end
@@ -526,6 +526,49 @@ function core.register_on_player_hpchange(func, modifier)
 		mod = core.get_current_modname() or "??",
 		name = debug.getinfo(1, "n").name or "??"
 	}
+end
+
+core.registered_chat_autocompletions = {}
+function core.register_chat_autocompletion(func)
+	core.registered_chat_autocompletions[#core.registered_chat_autocompletions+1] = {
+		func = func,
+		mod_origin = core.get_current_modname() or "??"
+	}
+end
+
+local autoc_player_cache = {}
+setmetatable(autoc_player_cache, {__mode = "kv"})
+function core.on_chat_autocomplete(playername, cursorpos, message)
+	local msghash = message .. cursorpos
+	local first_inquiry = autoc_player_cache[playername] ~= msghash
+	if first_inquiry then
+		autoc_player_cache[playername] = msghash
+	end
+	local cp,msg = cursorpos,message
+	for i = 1,#core.registered_chat_autocompletions do
+		local data = core.registered_chat_autocompletions[i]
+		core.set_last_run_mod(data.mod_origin)
+		local newmsg, newcp, abort = data.func(msg, cp, playername, first_inquiry)
+		if type(newmsg) == "string" then
+			msg = newmsg
+		end
+		if type(newcp) == "number" then
+			cp = newcp
+		end
+		if abort then
+			break
+		end
+	end
+	if msg ~= message then
+		if cp ~= cursorpos then
+			return 3, msg, cp
+		end
+		return 2, msg
+	end
+	if cp ~= cursorpos then
+		return 1, nil, cp
+	end
+	return 0
 end
 
 core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")

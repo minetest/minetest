@@ -1079,6 +1079,40 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 }
 
+void Server::handleCommand_ChatAutocomplete(NetworkPacket* pkt)
+{
+	/*
+		u16 command
+		u16 cursorpos
+		u16 length
+		wstring message
+	*/
+	u16 cursorpos, len;
+	*pkt >> cursorpos >> len;
+
+	std::wstring wmessage;
+	for (u16 i = 0; i < len; i++) {
+		u16 tmp_wchar;
+		*pkt >> tmp_wchar;
+
+		wmessage += (wchar_t)tmp_wchar;
+	}
+
+	std::string message = wide_to_narrow(wmessage);
+
+	// Get id and name of this client
+	u16 peer_id = pkt->getPeerId();
+	std::string name = m_env->getPlayer(peer_id)->getName();
+
+	// If something goes wrong, this player is to blame
+	RollbackScopeActor rollback_scope(m_rollback,
+		std::string("player:") + name);
+
+	// Run script hook and send back if necessary
+	if (m_script->on_chat_autocomplete(name, cursorpos, message))
+		SendChatAutocompletion(peer_id, cursorpos, message);
+}
+
 void Server::handleCommand_Damage(NetworkPacket* pkt)
 {
 	u8 damage;
