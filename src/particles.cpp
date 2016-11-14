@@ -43,6 +43,22 @@ v3f random_v3f(v3f min, v3f max)
 			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
 }
 
+u32 check_material_type_param(u32 material_type_param)
+{
+	u32 alphaSource = (material_type_param & 0x0000F000) >> 12;
+	u32 modulo  = (material_type_param & 0x00000F00) >> 8;
+	u32 srcFact = (material_type_param & 0x000000F0) >> 4;
+	u32 dstFact = material_type_param & 0x0000000F;
+	if (alphaSource <= 3 && modulo <= 4 && srcFact <= 10 && dstFact <= 10) {
+		return material_type_param;
+	} else {
+		errorstream << "Server send incorrect ";
+		errorstream << "material_type_param value for particle.";
+		errorstream << std::endl;
+		return 0;
+	}
+}
+
 Particle::Particle(
 	IGameDef *gamedef,
 	scene::ISceneManager* smgr,
@@ -58,7 +74,14 @@ Particle::Particle(
 	bool vertical,
 	video::ITexture *texture,
 	v2f texpos,
-	v2f texsize
+	v2f texsize,
+	u32 material_type_param,
+	u16 vertical_frame_num,
+	u16 horizontal_frame_num,
+	u16 first_frame,
+	float frame_length,
+	bool loop_animation,
+	u8 glow
 ):
 	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
 {
@@ -71,11 +94,26 @@ Particle::Particle(
 	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
 	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
 	m_material.setFlag(video::EMF_FOG_ENABLE, true);
-	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	if (material_type_param != 0) {
+		m_material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+		m_material.MaterialTypeParam = irr::core::FR(material_type_param);
+		// We must disable z-buffer if we want to avoid transparent pixels
+		// to overlap pixels with lower z-value.
+		m_material.setFlag(video::EMF_ZWRITE_ENABLE, false); 
+	} else {
+		m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	}
 	m_material.setTexture(0, texture);
+
 	m_texpos = texpos;
 	m_texsize = texsize;
-
+	m_vertical_frame_num = vertical_frame_num;
+	m_horizontal_frame_num = horizontal_frame_num;
+	m_first_frame = first_frame;
+	m_frame_length = frame_length;
+	m_loop_animation = loop_animation;
+	m_texsize.Y /= m_vertical_frame_num;
+	m_texsize.X /= m_horizontal_frame_num;
 
 	// Particle related
 	m_pos = pos;
@@ -88,6 +126,7 @@ Particle::Particle(
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
 	m_vertical = vertical;
+	m_glow = glow;
 
 	// Irrlicht stuff
 	m_collisionbox = aabb3f
@@ -170,16 +209,29 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	m_light = decode_light(light);
+	m_light = decode_light(light + m_glow);
 }
 
 void Particle::updateVertices()
 {
 	video::SColor c(255, m_light, m_light, m_light);
-	f32 tx0 = m_texpos.X;
-	f32 tx1 = m_texpos.X + m_texsize.X;
-	f32 ty0 = m_texpos.Y;
-	f32 ty1 = m_texpos.Y + m_texsize.Y;
+	u16 frame = m_first_frame;
+	if (m_frame_length > 0) {
+		if (m_loop_animation)
+			frame = m_first_frame + (u32)(m_time / m_frame_length)
+					% (m_vertical_frame_num * 
+					m_horizontal_frame_num - m_first_frame);
+		else if (m_time >= 
+				(m_vertical_frame_num * m_horizontal_frame_num 
+				- m_first_frame) * m_frame_length)
+			frame = m_vertical_frame_num * m_horizontal_frame_num - 1;
+		else
+			frame = m_first_frame + (u16)(m_time / m_frame_length);
+	}
+	f32 tx0 = m_texpos.X + m_texsize.X * (frame % m_horizontal_frame_num);
+	f32 tx1 = m_texpos.X + m_texsize.X * (frame % m_horizontal_frame_num + 1);
+	f32 ty0 = m_texpos.Y + m_texsize.Y * (frame / m_horizontal_frame_num);
+	f32 ty1 = m_texpos.Y + m_texsize.Y * (frame / m_horizontal_frame_num + 1);
 
 	m_vertices[0] = video::S3DVertex(-m_size/2,-m_size/2,0, 0,0,0,
 			c, tx0, ty1);
@@ -214,7 +266,16 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
-	video::ITexture *texture, u32 id, ParticleManager *p_manager) :
+	video::ITexture *texture, u32 id, 
+	u32 material_type_param,
+	u16 vertical_frame_num,
+	u16 horizontal_frame_num,
+	u16 min_first_frame,
+	u16 max_first_frame,
+	float frame_length,
+	bool loop_animation,
+	u8 glow,
+	ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
@@ -238,6 +299,14 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_vertical = vertical;
 	m_texture = texture;
 	m_time = 0;
+	m_vertical_frame_num = vertical_frame_num;
+	m_horizontal_frame_num = horizontal_frame_num;
+	m_min_first_frame = min_first_frame;
+	m_max_first_frame = max_first_frame;
+	m_frame_length = frame_length;
+	m_loop_animation = loop_animation;
+	m_material_type_param = material_type_param;
+	m_glow = glow;
 
 	for (u16 i = 0; i<=m_amount; i++)
 	{
@@ -251,7 +320,6 @@ ParticleSpawner::~ParticleSpawner() {}
 void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
-
 	bool unloaded = false;
 	v3f attached_offset = v3f(0,0,0);
 	if (m_attached_id != 0) {
@@ -285,7 +353,10 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					float size = rand()/(float)RAND_MAX
 							*(m_maxsize-m_minsize)
 							+m_minsize;
-
+					u16 first_frame = m_min_first_frame + 
+							rand() % 
+							(m_max_first_frame - 
+							m_min_first_frame + 1);
 					Particle* toadd = new Particle(
 						m_gamedef,
 						m_smgr,
@@ -301,7 +372,14 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						m_vertical,
 						m_texture,
 						v2f(0.0, 0.0),
-						v2f(1.0, 1.0));
+						v2f(1.0, 1.0),
+						m_material_type_param, 
+						m_vertical_frame_num,
+						m_horizontal_frame_num,
+						first_frame,
+						m_frame_length,
+						m_loop_animation,
+						m_glow);
 					m_particlemanager->addParticle(toadd);
 				}
 				i = m_spawntimes.erase(i);
@@ -331,7 +409,10 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				float size = rand()/(float)RAND_MAX
 						*(m_maxsize-m_minsize)
 						+m_minsize;
-
+				u16 first_frame = m_min_first_frame + 
+						rand() % 
+						(m_max_first_frame - 
+						m_min_first_frame + 1);
 				Particle* toadd = new Particle(
 					m_gamedef,
 					m_smgr,
@@ -347,7 +428,14 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					m_vertical,
 					m_texture,
 					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					v2f(1.0, 1.0),
+					m_material_type_param, 
+					m_vertical_frame_num,
+					m_horizontal_frame_num,
+					first_frame,
+					m_frame_length,
+					m_loop_animation,
+					m_glow);
 				m_particlemanager->addParticle(toadd);
 			}
 		}
@@ -459,6 +547,39 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			video::ITexture *texture =
 				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
+			float frame_length = -1;
+			u16 vertical_frame_num = 1;
+			u16 horizontal_frame_num = 1;
+			u32 material_type_param =
+				check_material_type_param(event->add_particlespawner.material_type_param);
+
+			switch (event->add_particlespawner.animation_type) {
+				case AT_NONE:
+					break;
+				case AT_VERTICAL_FRAMES: {
+					v2u32 size = texture->getOriginalSize();
+					int frame_height = (float)size.X /
+						(float)event->add_particlespawner.vertical_frame_num *
+						(float)event->add_particlespawner.horizontal_frame_num;
+					vertical_frame_num = size.Y / frame_height;
+					frame_length = 
+						event->add_particlespawner.frame_length / 
+						vertical_frame_num;
+					break;
+				}
+				case AT_2D_ANIMATION_SHEET: {
+					vertical_frame_num =
+						event->add_particlespawner.vertical_frame_num;
+					horizontal_frame_num =
+						event->add_particlespawner.horizontal_frame_num;
+					frame_length = 
+						event->add_particlespawner.frame_length;
+					break;
+				}
+				default:
+					break;
+			}
+
 			ParticleSpawner* toadd = new ParticleSpawner(gamedef, smgr, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
@@ -478,6 +599,14 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 					event->add_particlespawner.vertical,
 					texture,
 					event->add_particlespawner.id,
+					material_type_param,
+					vertical_frame_num,
+					horizontal_frame_num,
+					event->add_particlespawner.min_first_frame,
+					event->add_particlespawner.max_first_frame,
+					frame_length,
+					event->add_particlespawner.loop_animation,
+					event->add_particlespawner.glow,
 					this);
 
 			/* delete allocated content of event */
@@ -502,6 +631,39 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			video::ITexture *texture =
 				gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
+			float frame_length = -1;
+			u16 vertical_frame_num = 1;
+			u16 horizontal_frame_num = 1;
+			u32 material_type_param =
+				check_material_type_param(event->spawn_particle.material_type_param);
+
+			switch (event->spawn_particle.animation_type) {
+				case AT_NONE:
+					break;
+				case AT_VERTICAL_FRAMES: {
+					v2u32 size = texture->getOriginalSize();
+					int frame_height = (float)size.X /
+						(float)event->spawn_particle.vertical_frame_num *
+						(float)event->spawn_particle.horizontal_frame_num;
+					vertical_frame_num = size.Y / frame_height;
+					frame_length = 
+						event->spawn_particle.frame_length / 
+						vertical_frame_num;
+					break;
+				}
+				case AT_2D_ANIMATION_SHEET: {
+					vertical_frame_num =
+						event->spawn_particle.vertical_frame_num;
+					horizontal_frame_num =
+						event->spawn_particle.horizontal_frame_num;
+					frame_length = 
+						event->spawn_particle.frame_length;
+					break;
+				}
+				default:
+					break;
+			}
+
 			Particle* toadd = new Particle(gamedef, smgr, player, m_env,
 					*event->spawn_particle.pos,
 					*event->spawn_particle.vel,
@@ -513,13 +675,21 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 					event->spawn_particle.vertical,
 					texture,
 					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					v2f(1.0, 1.0),
+					material_type_param,
+					vertical_frame_num,
+					horizontal_frame_num,
+					event->spawn_particle.first_frame,
+					frame_length,
+					event->spawn_particle.loop_animation,
+					event->spawn_particle.glow);
 
 			addParticle(toadd);
 
 			delete event->spawn_particle.pos;
 			delete event->spawn_particle.vel;
 			delete event->spawn_particle.acc;
+			delete event->spawn_particle.texture;
 
 			break;
 		}
@@ -588,7 +758,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		false,
 		texture,
 		texpos,
-		texsize);
+		texsize,
+		0, 1, 1, 0, -1, true, 0);
 
 	addParticle(toadd);
 }

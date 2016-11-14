@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "gamedef.h"
 #include "serialization.h" // For SER_FMT_VER_INVALID
+#include "nodedef.h" // AnimationType
 #include "mods.h"
 #include "inventorymanager.h"
 #include "subgame.h"
@@ -254,7 +255,11 @@ public:
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, const std::string &texture);
+		bool vertical, const std::string &texture,
+		u32 material_type_param,  AnimationType animation_type, 
+		u16 vertical_frame_num, u16 horizontal_frame_num, u16 first_frame,
+		float frame_length, bool loop_animation,
+		u8 glow);
 
 	u32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -265,7 +270,12 @@ public:
 		bool collisiondetection, bool collision_removal,
 		ServerActiveObject *attached,
 		bool vertical, const std::string &texture,
-		const std::string &playername);
+		const std::string &playername,
+		u32 material_type_param,  AnimationType animation_type, 
+		u16 vertical_frame_num, u16 horizontal_frame_num, 
+		u16 min_first_frame, u16 max_first_frame, 
+		float frame_length, bool loop_animation,
+		u8 glow);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
@@ -441,7 +451,12 @@ private:
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal,
 		u16 attached_id,
-		bool vertical, const std::string &texture, u32 id);
+		bool vertical, const std::string &texture, u32 id,
+		u32 material_type_param,  AnimationType animation_type, 
+		u16 vertical_frame_num, u16 horizontal_frame_num, 
+		u16 min_first_frame, u16 max_first_frame, 
+		float frame_length, bool loop_animation,
+		u8 glow);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
 
@@ -450,7 +465,11 @@ private:
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, const std::string &texture);
+		bool vertical, const std::string &texture,
+		u32 material_type_param,  AnimationType animation_type, 
+		u16 vertical_frame_num, u16 horizontal_frame_num, u16 first_frame,
+		float frame_length, bool loop_animation,
+		u8 glow);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
