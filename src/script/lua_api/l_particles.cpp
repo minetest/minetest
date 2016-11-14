@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_object.h"
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
-#include "common/c_content.h"
 #include "server.h"
 #include "particles.h"
 
@@ -35,9 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
-// material_type_param = num
-// animation = animation definition
-// glow = indexed color or color string
 int ModApiParticles::l_add_particle(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
@@ -48,23 +44,12 @@ int ModApiParticles::l_add_particle(lua_State *L)
 
 	float expirationtime, size;
 	expirationtime = size = 1;
-	float frame_or_loop_length = -1;
-	
-	AnimationType animation_type = AT_NONE;
-
-	u16 vertical_frame_num_or_aspect = 1;
-	u16 horizontal_frame_num_or_aspect = 1;
-	u16 first_frame = 0;
 
 	bool collisiondetection, vertical, collision_removal;
 	collisiondetection = vertical = collision_removal = false;
-	bool loop_animation = true;
 
 	std::string texture = "";
 	std::string playername = "";
-
-	u32 material_type_param = 0;
-	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) // deprecated
 	{
@@ -109,61 +94,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		acc = lua_istable(L, -1) ? check_v3f(L, -1) : acc;
 		lua_pop(L, 1);
 
-		expirationtime = getfloatfield_default(L, 1, "expirationtime", 1);	
+		expirationtime = getfloatfield_default(L, 1, "expirationtime", 1);
 		size = getfloatfield_default(L, 1, "size", 1);
-
-		lua_getfield(L, 1, "animation");
-		if (lua_istable(L, -1)) {
-			animation_type = (AnimationType)
-				getenumfield(L, -1, "type", es_AnimationType,
-				AT_NONE);
-		}
-		switch (animation_type) {
-			case AT_NONE:
-				break;
-			case AT_2D_ANIMATION_SHEET:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "frame_length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "vertical_frame_num", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "horizontal_frame_num", 1);
-				first_frame = 
-					getintfield_default(L, -1, "first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			case AT_VERTICAL_FRAMES:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_w", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_h", 1);
-				first_frame = 
-					getintfield_default(L, -1, "first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			default:
-				break;
-		}
-		lua_pop(L, 1);
-
-		if (animation_type == AT_2D_ANIMATION_SHEET && 
-				first_frame >= vertical_frame_num_or_aspect * 
-				horizontal_frame_num_or_aspect) {
-			std::ostringstream error_text; 
-			error_text << "first_frame should be lower, than "
-				<< "vertical_frame_num * horizontal_frame_num. "
-				<< "Got first_frame=" << first_frame
-				<< ", vertical_frame_num="
-				<< vertical_frame_num_or_aspect
-				<< " and horizontal_frame_num="
-				<< horizontal_frame_num_or_aspect << std::endl;
-			throw LuaError(error_text.str());
-		}
-
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);
 		collision_removal = getboolfield_default(L, 1,
@@ -171,16 +103,9 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
-		material_type_param = check_material_type_param(L, 1, "material_type_param", 0);
-		glow = getintfield_default (L, 1, "glow", 0);
 	}
-	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, 
-		size, collisiondetection, collision_removal, vertical, 
-		texture, material_type_param,
-		animation_type,
-		vertical_frame_num_or_aspect, 
-		horizontal_frame_num_or_aspect,
-		first_frame, frame_or_loop_length, loop_animation, glow);
+	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, size,
+			collisiondetection, collision_removal, vertical, texture);
 	return 1;
 }
 
@@ -202,33 +127,21 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
-// material_type_param = num
-// animation = animation definition
-// glow = indexed color or color string
 int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
 	// Get parameters
 	u16 amount = 1;
-	u16 vertical_frame_num_or_aspect = 1;
-	u16 horizontal_frame_num_or_aspect = 1;
-	u16 min_first_frame = 0;
-	u16 max_first_frame = 0;
 	v3f minpos, maxpos, minvel, maxvel, minacc, maxacc;
 	    minpos= maxpos= minvel= maxvel= minacc= maxacc= v3f(0, 0, 0);
 	float time, minexptime, maxexptime, minsize, maxsize;
 	      time= minexptime= maxexptime= minsize= maxsize= 1;
-	AnimationType animation_type = AT_NONE;
-	float frame_or_loop_length = -1;
 	bool collisiondetection, vertical, collision_removal;
 	     collisiondetection = vertical = collision_removal = false;
-	bool loop_animation = true;
 	ServerActiveObject *attached = NULL;
 	std::string texture = "";
 	std::string playername = "";
-	u32 material_type_param = 0;
-	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
@@ -283,65 +196,6 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		maxexptime = getfloatfield_default(L, 1, "maxexptime", maxexptime);
 		minsize = getfloatfield_default(L, 1, "minsize", minsize);
 		maxsize = getfloatfield_default(L, 1, "maxsize", maxsize);
-
-
-		lua_getfield(L, 1, "animation");
-		if (lua_istable(L, -1)) {
-			animation_type = (AnimationType)
-				getenumfield(L, -1, "type", es_AnimationType,
-				AT_NONE);
-		}
-		switch (animation_type) {
-			case AT_NONE:
-				break;
-			case AT_2D_ANIMATION_SHEET:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "frame_length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "vertical_frame_num", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "horizontal_frame_num", 1);
-				min_first_frame = 
-					getintfield_default(L, -1, "min_first_frame", 0);
-				max_first_frame = 
-					getintfield_default(L, -1, "max_first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			case AT_VERTICAL_FRAMES:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_w", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_h", 1);
-				min_first_frame = 
-					getintfield_default(L, -1, "min_first_frame", 0);
-				max_first_frame = 
-					getintfield_default(L, -1, "max_first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			default:
-				break;
-		}
-		lua_pop(L, 1);
-
-		if (animation_type == AT_2D_ANIMATION_SHEET && 
-				max_first_frame >= vertical_frame_num_or_aspect * 
-				horizontal_frame_num_or_aspect) {
-			std::ostringstream error_text; 
-			error_text << "max_first_frame should be lower, than "
-				<< "vertical_frame_num * horizontal_frame_num. " 
-				<< "Got max_first_frame="
-				<< max_first_frame
-				<< ", vertical_frame_num="
-				<< vertical_frame_num_or_aspect
-				<< " and horizontal_frame_num="
-				<< horizontal_frame_num_or_aspect << std::endl;
-			throw LuaError(error_text.str());
-		}
-		
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);
 		collision_removal = getboolfield_default(L, 1,
@@ -357,8 +211,6 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
-		material_type_param = check_material_type_param(L, 1, "material_type_param", 0);
-		glow = getintfield_default(L, 1, "glow", 0);
 	}
 
 	u32 id = getServer(L)->addParticleSpawner(amount, time,
@@ -371,17 +223,9 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			collision_removal,
 			attached,
 			vertical,
-			texture, 
-			playername, 
-			material_type_param, 
-			animation_type,
-			vertical_frame_num_or_aspect, 
-			horizontal_frame_num_or_aspect,
-			min_first_frame, max_first_frame, 
-			frame_or_loop_length, 
-			loop_animation,
-			glow);
+			texture, playername);
 	lua_pushnumber(L, id);
+
 	return 1;
 }
 

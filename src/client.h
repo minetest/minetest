@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "particles.h"
 #include "network/networkpacket.h"
-#include "nodedef.h" // AnimationType
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -186,14 +185,6 @@ struct ClientEvent
 			bool collision_removal;
 			bool vertical;
 			std::string *texture;
-			u32 material_type_param;
-			AnimationType animation_type;
-			u16 vertical_frame_num;
-			u16 horizontal_frame_num;
-			u16 first_frame;
-			float frame_length;
-			bool loop_animation;
-			u8 glow;
 		} spawn_particle;
 		struct{
 			u16 amount;
@@ -214,15 +205,6 @@ struct ClientEvent
 			bool vertical;
 			std::string *texture;
 			u32 id;
-			u32 material_type_param;
-			AnimationType animation_type;
-			u16 vertical_frame_num;
-			u16 horizontal_frame_num;
-			u16 min_first_frame;
-			u16 max_first_frame;
-			float frame_length;
-			bool loop_animation;
-			u8 glow;
 		} add_particlespawner;
 		struct{
 			u32 id;

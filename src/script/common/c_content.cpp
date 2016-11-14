@@ -35,11 +35,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include <json/json.h>
 
-struct EnumString es_AnimationType[] =
+struct EnumString es_TileAnimationType[] =
 {
-	{AT_NONE, "none"},
-	{AT_VERTICAL_FRAMES, "vertical_frames"},
-	{AT_2D_ANIMATION_SHEET, "2d_animation_sheet"},
+	{TAT_NONE, "none"},
+	{TAT_VERTICAL_FRAMES, "vertical_frames"},
 	{0, NULL},
 };
 
@@ -336,9 +335,9 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		lua_getfield(L, index, "animation");
 		if(lua_istable(L, -1)){
 			// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
-			tiledef.animation.type = (AnimationType)
-				getenumfield(L, -1, "type", es_AnimationType,
-				AT_NONE);
+			tiledef.animation.type = (TileAnimationType)
+				getenumfield(L, -1, "type", es_TileAnimationType,
+				TAT_NONE);
 			tiledef.animation.aspect_w =
 				getintfield_default(L, -1, "aspect_w", 16);
 			tiledef.animation.aspect_h =

@@ -161,10 +161,9 @@ enum NodeDrawType
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
-enum AnimationType{
-	AT_NONE = 0,
-	AT_VERTICAL_FRAMES = 1,
-	AT_2D_ANIMATION_SHEET = 2,
+enum TileAnimationType{
+	TAT_NONE=0,
+	TAT_VERTICAL_FRAMES=1,
 };
 struct TileDef
 {
@@ -173,7 +172,7 @@ struct TileDef
 	bool tileable_horizontal;
 	bool tileable_vertical;
 	struct{
-		enum AnimationType type;
+		enum TileAnimationType type;
 		int aspect_w; // width for aspect ratio
 		int aspect_h; // height for aspect ratio
 		float length; // seconds
@@ -185,7 +184,7 @@ struct TileDef
 		backface_culling = true;
 		tileable_horizontal = true;
 		tileable_vertical = true;
-		animation.type = AT_NONE;
+		animation.type = TAT_NONE;
 		animation.aspect_w = 1;
 		animation.aspect_h = 1;
 		animation.length = 1.0;

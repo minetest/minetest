@@ -45,8 +45,6 @@ float              getfloatfield_default(lua_State *L, int table,
                              const char *fieldname, float default_);
 int                getintfield_default           (lua_State *L, int table,
                              const char *fieldname, int default_);
-int                check_material_type_param(lua_State *L, int table,
-                             const char *fieldname, int default_);
 
 bool               getstringfield(lua_State *L, int table,
                              const char *fieldname, std::string &result);

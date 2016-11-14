@@ -414,119 +414,6 @@ the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
 
-Particle blend
---------------
-Blend function is defined by integer number.
-There is a huge number of acceptable blend modificators.
-Colour of a resulting pixel calculated using formulae:
-
-	red = source_red * source_factor + destination_red * destination_factor
-
-and so on for every channel.
-
-Here is a some examples:
-
-Default value:
-
-	material_type_param = 0,
-
-Use this value to disable blending. Texture will be applied to existing pixels
-using alpha channel of it. Its recomended to use 1-bit alpha
-in that case. This value will leave z-buffer writeable.
-
-Additive blend:
-
-	material_type_param = 12641,
-
-Source = src_alpha, destination = one, alpha source is a texture and 
-vertex_color, modulate_1x.
-Black color is completely transparent, white color is completely opaque.
-Alpha channel still used to calculate result color, but not nessesary.
-'destination = one' means that resulting color will be calculated using 
-overwritten pixels values.
-For example with color of source (our texture) RGBA = (0,192,255,63)
-"blue-cyan", 1/4 opaque.
-and already rendered pixel color (40,192,0) "dark lime green" we will get color:
-
-R = source_red(0) * source_factor(src_alpha=63/255) + 
-	destination_red(40) * destination_factor(one) =
-	0 * 63/255 + 40 * 1 = 40
-
-G = 192 * 63/255 + 192 * 1 = 239
-B = 255 * 63/255 + 0 * 1 = 63
-
-Result: (40,239,63), "green" (a kind of).
-Note, if you made a texture with some kind of shape with colour 662211h 
-it will appear dark red with a single particle, then yellow with a 
-several of them and white if player looking thru a lot of them. With 
-this you could made a nice-looking fire.
-
-Substractive blend:
-	
-	material_type_param = 12548,
-
-Source = zero, destination = src_color, alpha source is a texture and 
-vertex_color, modulate_1x.
-Texture darkness act like an alpha channel.
-Black color is completely opaque, white color is completely transparent.
-'destination = src_color' means that destination in multiplied by
-a source values. 'source = zero' means that source values ignored
-(multiplied by 0).
-
-Invert blend:
-
-	material_type_param = 12597,
-	
-Source = one_minus_dst_color, destination = one_minus_src_alpha, alpha source 
-is a texture and vertex_color, modulate_1x.
-Pixels invert color if source color value is big enough. If not, they just
-black.
-'destination = one_minus_src_alpha' means, that effect is masked by a
-source alpha channel.
-
-You can design and use your own blend using those enum values and function
-'minetest.pack_texture_blend_func'. Returned value of a function is 
-your 'material_type_param'.
-
-A values in a brackets is a multiplicators of a red, green, blue 
-and alpha channels respectively.
-
-* 'minetest.ebf': global table, containing blend factor enum values. Such as:
-    *	zero			= 0  -- src & dest (0, 0, 0, 0)
-    *	one			= 1  -- src & dest (1, 1, 1, 1)
-    *	dst_color 		= 2  -- src (destR, destG, destB, destA)
-    *	one_minus_dst_color 	= 3  -- src (1-destR, 1-destG, 1-destB, 1-destA)
-    *	src_color 		= 4  -- dest (srcR, srcG, srcB, srcA)
-    *	one_minus_src_color 	= 5  -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
-    *	src_alpha 		= 6  -- src & dest (srcA, srcA, srcA, srcA)
-    *	one_minus_src_alpha 	= 7  -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
-    *	dst_alpha 		= 8  -- src & dest (destA, destA, destA, destA)
-    *	one_minus_dst_alpha 	= 9  -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
-    *	src_alpha_saturate  	= 10 -- src (min(srcA, 1-destA), idem, ...) 
-
-* 'minetest.emfn': global table, containing modulate enum values. 
-    * Multiply the components of the arguments, and shift the products to the 
-    * left by x bits for brightening. Contain:
-    *	modulate_1x    = 1 -- no bit shift
-    *	modulate_2x    = 2 -- 1 bits shift
-    *	modulate_4x    = 4 -- 2 bits shift
-
-'modulate_4x' is quite useful when you want to make additive blend stronger
-with a lower amount of particles.
-
-* 'minetest.eas': global table, containing alpha source enum values. Such as:
-    *	none	 	= 0 -- do not use alpha.
-    *	vertex_color 	= 1 -- use vertex color alpha.
-    *	texture	 	= 2 -- use texture alpha.
-
-You can use both 'vertex_color' and 'texture' source by using value 3.
-
-* 'minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)': return integer
-    * Pack texture blend funcion variable. Depending from that variable blend 
-    * function will be applied in time of a render poligons with selected material.
-    * Therefore resulting pixel will be 'source * srcFact + destination * dstFact'
-    * Use result of this function as 'material_type_param'.
-
 Sounds
 ------
 Only Ogg Vorbis files are supported.
@@ -3763,7 +3650,7 @@ Definition tables
 
 ### Tile definition
 * `"image.png"`
-* `{name="image.png", animation={Animation definition}}`
+* `{name="image.png", animation={Tile Animation definition}}`
 * `{name="image.png", backface_culling=bool, tileable_vertical=bool,
     tileable_horizontal=bool}`
     * backface culling enabled by default for most nodes
@@ -3774,50 +3661,8 @@ Definition tables
 * deprecated, yet still supported field names:
     * `image` (name)
 
-### Animation definition
-
-#### Node animation, particle and particle spawners
-* `{	type="vertical_frames", 
-	aspect_w=16, 
-    --  ^ specify width of a picture in pixels. 
-	aspect_h=16, 
-    --  ^ specify height of a frame in pixels. 
-	length=3.0
-    --  ^ specify full loop length. 
-	first_frame = 0, -- <- only for particles, use
-	min_first_frame = 0, -- <- for particle spawners
-	max_first_frame = 0,
-	loop_animation = true,  -- <- only for particles and particle spawners
-    --  specify if animation should start from beginning after last frame.
-}`
-
-#### Particle and particle spawners only
-* `{	
-	type="2d_animation_sheet", -- <- only for particles and particle spawners
-	vertical_frame_num = 1,
-	horizontal_frame_num = 1,
-    --  ^ specify amount of frames in texture. 
-    --	Can be used both for animation or for texture transform 
-    --	together with first_frame variable.
-    --	A animation texture separated on equal parts of frames,
-    --	by horizontal and vertical numbers. For example with 
-    --	vertical_frame_num = 4 and horizontal_frame_num = 3 we got
-    --	4*3 = 12 frames in total. Animation sequence start from
-    --	left top frame and go on to the right until reach end of
-    --	row. Next row also start from left frame.
-	first_frame = 0, -- <- only for particles, use
-	min_first_frame = 0, -- <- for particle spawners
-	max_first_frame = 0,
-    --  ^ specify first frame to start animation.
-	frame_length = -1,
-    --  ^ specify length of a frame in seconds. Negative and zero values
-    --	disable animation. A sequence with vertical_frame_num = 4 and 
-    --	horizontal_frame_num = 3, first_frame = 4 and frame_length = 0.1 
-    --	will end in (4*3-4)*0.1 = 0.8 seconds.
-	loop_animation = true,
-    --  specify if animation should start from beginning after last frame.
-}`
-    * All settings are optional. Default values is located in this example.
+### Tile animation definition
+* `{type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}`
 
 ### Node definition (`register_node`)
 
@@ -4272,20 +4117,6 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ optional, if specified spawns particle only on the player's client
-	material_type_param = 12641,
-    --  ^ optional, if specified spawns particle with 
-    --  specified material type param and disable z-buffer.
-    --  Some examples:
-    --  Default value: 0,
-    --  Additive blend: 12641,
-    --  Substractive blend: 12548,
-    --  Invert blend: 12597,
-    --  See also "Particle blend".
-    	animation = {Animation definition},
-    --	^ see above. Note, that particle and particle spawners have differences.
-	glow = 15,
-    --  ^ optional, specify particle self-luminescence in darkness. 
-	values may vary from 0 (no glow) to 15 (bright glow). 
     }
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
@@ -4320,20 +4151,6 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
-	material_type_param = 12641,
-    --	^ optional, if specified spawns particle with specified material type 
-    --	param and disable z-buffer.
-    --  Some examples:
-    --  Default value: 0,
-    --  Additive blend: 12641,
-    --  Substractive blend: 12548,
-    --  Invert blend: 12597,
-    --  See also "Particle blend".
-    	animation = {Animation definition},
-    --	^ see above. Note, that particle and particle spawners have differences.
-	glow = 15,
-    --  ^ optional, specify particle self-luminescence in darkness. 
-	values may vary from 0 (no glow) to 15 (bright glow).
     }
 
 ### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)
