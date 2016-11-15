@@ -241,7 +241,7 @@ end
 -- Video enums and packing function
 
 -- E_BLEND_FACTOR
-minetest.ebf = {
+core.ebf = {
 	zero                  = 0, -- src & dest (0, 0, 0, 0)
 	one                   = 1, -- src & dest (1, 1, 1, 1)
 	dst_color             = 2, -- src (destR, destG, destB, destA)
@@ -256,26 +256,26 @@ minetest.ebf = {
 }
 
 -- E_MODULATE_FUNC
-minetest.emfn = {
+core.emfn = {
 	modulate_1x    = 1,
 	modulate_2x    = 2,
 	modulate_4x    = 4,
 }
 
 -- E_ALPHA_SOURCE
-minetest.eas = {
+core.eas = {
 	none         = 0,
 	vertex_color = 1,
 	texture      = 2,
 	both         = 3,
 }
 
-function minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource) 
+function core.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource) 
 	return alphaSource * 4096 + modulate * 256 + srcFact * 16 + dstFact
 end
 
 -- predefined blend types
-minetest.blend_type = {
+core.blend_type = {
 	additive    = 12641,
 	subtractive = 12548,
 	invert      = 12597,
