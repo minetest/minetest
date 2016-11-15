@@ -274,6 +274,13 @@ function minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSourc
 	return alphaSource * 4096 + modulate * 256 + srcFact * 16 + dstFact
 end
 
+-- predefined blend types
+minetest.blend_type = {
+	additive    = 12641,
+	subtractive = 12548,
+	invert      = 12597,
+}
+
 --------------------------------------------------------------------------------
 function get_last_folder(text,count)
 	local parts = text:split(DIR_DELIM)

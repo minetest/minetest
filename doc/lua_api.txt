@@ -434,7 +434,7 @@ using their alpha channel. It's recomended to use 1-bit alpha.
 
 Additive blend:
 
-	material_type_param = 12641,
+	material_type_param = minetest.blend_type.additive,
 
 source_factor is taken from the textures alpha channel,
 destination_factor is fixed at 1.
@@ -453,14 +453,14 @@ particles are stacked ontop of eachother.
 
 Subtractive blend:
 	
-	material_type_param = 12548,
+	material_type_param = minetest.blend_type.subtractive,
 
 source_factor is fixed at 0, destination_factor is taken from the texture.
 Texture darkness acts like an alpha channel.
 
 Invert blend:
 
-	material_type_param = 12597,
+	material_type_param = minetest.blend_type.invert,
 
 source_factor is the inverted color of existing pixels, destination_factor is
 the inverted alpha channel of the texture.
@@ -502,6 +502,12 @@ and alpha channels respectively.
 
 * `minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)`
   Returns integer for use as 'material_type_param', refer to explanations above
+
+* `minetest.blend_type`: Contains pre-defined commonly used blend types
+    * Refer to examples above for explanations
+    *  additive    = 12641
+    *  subtractive = 12548
+    *  invert      = 12597
 
 Sounds
 ------
