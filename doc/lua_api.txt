@@ -1841,6 +1841,12 @@ Helper functions
     * If `max_splits` is negative, do not limit splits.
     * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
     * e.g. `string:split("a,b", ",") == {"a","b"}`
+* `string.split_iter(str, separator=",", include_empty=false, max_splits=-1,
+* sep_is_pattern=false)`
+    * Same as `string.split`, but returns an iterator function that returns a
+      new part each time it is called.
+    * Useful if you don't need/want to create a temporary table.
+    * e.g.: `for part in string.split_iter("a,b") do ... end`
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
 * `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns `"(X,Y,Z)"`

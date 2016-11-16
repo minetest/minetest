@@ -159,27 +159,39 @@ function dump(o, indent, nested, level)
 end
 
 --------------------------------------------------------------------------------
-function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
+function string.split_iter(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
 	max_splits = max_splits or -1
-	local items = {}
-	local pos, len, seplen = 1, #str, #delim
+	local pos, endp, seplen = 1, #str+1, #delim
 	local plain = not sep_is_pattern
-	max_splits = max_splits + 1
-	repeat
-		local np, npe = string_find(str, delim, pos, plain)
-		np, npe = (np or (len+1)), (npe or (len+1))
-		if (not np) or (max_splits == 1) then
-			np = len + 1
-			npe = np
+	local function iter()
+		if (not pos) or pos > endp then
+			return
+		elseif max_splits == 0 then
+			local s = string_sub(str, pos)
+			pos = nil
+			return s
 		end
-		local s = string_sub(str, pos, np - 1)
+		local np, npe = string_find(str, delim, pos, plain)
+		local s = string_sub(str, pos, np and np - 1)
+		pos = npe and npe + 1
 		if include_empty or (s ~= "") then
 			max_splits = max_splits - 1
-			items[#items + 1] = s
+			return s
+		else
+			-- Tail call
+			return iter()
 		end
-		pos = npe + 1
-	until (max_splits == 0) or (pos > (len + 1))
+	end
+	return iter
+end
+
+--------------------------------------------------------------------------------
+function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
+	local items = {}
+	for part in string.split_iter(str, delim, include_empty, max_splits, sep_is_pattern) do
+		items[#items + 1] = part
+	end
 	return items
 end
 
