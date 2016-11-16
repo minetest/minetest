@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-10-17 08:40+0000\n"
-"Last-Translator: Onyx Steinheim <thevoxelmanonyx@gmail.com>\n"
+"PO-Revision-Date: 2016-11-25 10:44+0000\n"
+"Last-Translator: AcidDragon (AcidNinjaFWHR) <fabienwang@free.fr>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.9-dev\n"
+"X-Generator: Weblate 2.10-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Une erreur est survenue avec un script Lua, il peut s'agir d'un mod :"
+msgstr "Une erreur est survenue dans un script Lua, il peut s'agir d'un mod :"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -103,7 +103,7 @@ msgid ""
 msgstr ""
 "Échec du chargement du mod \"$1\" car il contient des caractères non-"
 "autorisés.\n"
-"Seulement les caractères alphanumériques [a-z0-9_] sont autorisés."
+"Seuls les caractères alphanumériques [a-z0-9_] sont autorisés."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -234,8 +234,7 @@ msgstr "Activé"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
-"Le format est 3 nombres séparés par des virgules et entre les parenthèses."
+msgstr "Le format est 3 nombres séparés par des virgules et entre parenthèses."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
@@ -341,7 +340,7 @@ msgstr "Page $1 de $2"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr "Note"
+msgstr "Évaluation"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
@@ -361,7 +360,7 @@ msgstr "Non-trié"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr "Ré-installer"
+msgstr "Réinstaller"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -405,7 +404,7 @@ msgstr "Sélectionner le fichier du mod :"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "Désinstaller le mod"
+msgstr "Désinstaller le mod sélectionné"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
@@ -1386,9 +1385,8 @@ msgid "Active Block Modifier interval"
 msgstr "Intervalle du modificateur de bloc actif"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifiers"
-msgstr "Modificateurs actifs de bloc"
+msgstr "Modificateurs de bloc actif"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1477,9 +1475,8 @@ msgstr ""
 "Déclarer automatiquement votre serveur à la liste des serveurs publics."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Autorun key"
-msgstr "Touche d'exécution automatique"
+msgstr "Touche pour courir"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -2058,9 +2055,8 @@ msgid "Engine profiling data print interval"
 msgstr "Intervalle d'impression des données du moteur de profil"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Entity methods"
-msgstr "Systèmes d'entité"
+msgstr "Méthodes d'entité"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2345,7 +2341,6 @@ msgstr ""
 "développeurs de mods)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Have the profiler instrument itself:\n"
 "* Instrument an empty function.\n"
@@ -2353,12 +2348,11 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Avoir l'instrument de profilage lui-même:\n"
-"* Instrumentalise une fonction vide.\n"
-"Cela estime de manière supérieure, que l'instrumentation est ajoutée (+1 "
-"appel de fonction).\n"
-"* Instrumentalise l’échantillonneur utilisé pour mettre à jour les "
-"statistiques."
+"Auto-instrumenter le profileur:\n"
+"* Instrumente une fonction vide.\n"
+"La surcharge sera évaluée. (l'auto-instrumentation ajoute 1 appel de "
+"fonction à chaque fois).\n"
+"* Instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -2521,34 +2515,30 @@ msgid "Instrument chatcommands on registration."
 msgstr "Instrument d'enregistrement des commandes de chat."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Instrument des fonctions de rappel global enregistrées.\n"
-"(tout ce que vous passez dans minetest.register_*() function)"
+"Instrumenter globalement les fonctions de rappel enregistrées.\n"
+"(tout ce que vous passez dans les fonctions minetest.register_* )"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
-"Instrumentalise la fonction d'action des modificateurs actifs de bloc lors "
-"de l'enregistrement."
+"Instrumente la fonction d'action des modificateurs actifs de bloc lors de "
+"l'enregistrement."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
-"Instrumentalise les fonctions d'action du chargement des modificateurs de "
-"blocs enregistrés."
+"Instrumenter les fonctions d'action du chargement des modificateurs de blocs "
+"enregistrés."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Instrument the methods of entities on registration."
-msgstr "Instrumentalise les systèmes d'entités enregistrés."
+msgstr "Instrumenter les méthodes d'entités à l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
@@ -2561,7 +2551,6 @@ msgstr ""
 "en secondes."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Interval of sending time of day to clients."
 msgstr "Intervalle d'envoi de l'heure aux clients."
 
@@ -2594,9 +2583,8 @@ msgstr ""
 "Contrôle la quantité de détails fins."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Joystick button repetition interval"
-msgstr "Intervalle de répétition du clic droit"
+msgstr "Intervalle de répétition du bouton du Joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
@@ -2827,13 +2815,12 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Key for toggling autorun.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour basculer en automatique.\n"
+"Touche pour courir automatiquement.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
 "5e3da1b0edf72eb3"
 
@@ -3311,9 +3298,8 @@ msgid "Mapgen fractal fractal"
 msgstr "Drapeaux des fractales de la génération de terrain"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal iterations"
-msgstr "Itérations du générateur de terrain Julia"
+msgstr "Itérations du générateur de terrain julia"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia w"
@@ -3340,21 +3326,17 @@ msgid "Mapgen fractal scale"
 msgstr "Générateur de terrain Julia: échelles fractales"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen fractal seabed noise parameters"
-msgstr ""
-"Paramètres du bruit pour le fond des mers du générateur de terrain julia"
+msgstr "Paramètres de bruit du fond marin pour le générateur de terrain julia"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal slice w"
 msgstr "Générateur de terrain Julia: couche fractale W"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen heat blend noise parameters"
 msgstr ""
-"Paramètres du bruit  pour le mélange de la température du générateur de "
-"terrain"
+"Paramètres de bruit du mélange de température pour le générateur de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
@@ -3369,40 +3351,34 @@ msgid "Mapgen v5 cave width"
 msgstr "Ampleur des grottes du générateur de terrain V5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr "Paramètres du bruit cave1 du générateur de terrain V5"
+msgstr "Paramètres du bruit cave1 du générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr "Paramètres du bruit cave2 du générateur de terrain V5"
+msgstr "Paramètres du bruit cave2 du générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 factor noise parameters"
-msgstr "Paramètres du facteur de dispersion du générateur de terrain V5"
+msgstr "Paramètres du facteur de dispersion du générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 filler depth noise parameters"
 msgstr ""
 "Paramètres du bruit de la profondeur de remplissage du générateur de terrain "
-"V5"
+"v5"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v5 height noise parameters"
-msgstr "Paramètres du bruit en altitude du générateur de terrain V5"
+msgstr "Paramètres du bruit en altitude du générateur de terrain v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
 msgstr "Générateur de terrain V6"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr "Paramètres du bruit des pommiers du générateur de terrain V6"
+msgstr "Paramètres du bruit des pommiers du générateur de terrain v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
@@ -4164,7 +4140,7 @@ msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Mettre sur \"true\" active les liquides mouvants.\n"
+"Mettre sur \"true\" active les vagues.\n"
 "Nécessite les shaders pour être activé."
 
 #: src/settings_translation_file.cpp
@@ -4604,11 +4580,11 @@ msgstr "Plantes mouvantes"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water"
-msgstr "Liquides mouvants"
+msgstr "Vagues"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water height"
-msgstr "Hauteur des liquides mouvants"
+msgstr "Hauteur des vagues"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water length"
@@ -4629,18 +4605,17 @@ msgstr ""
 "par le matériel (ex.: textures des blocs dans l'inventaire)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Quand gui_scaling_filter_txr2img est activé, cela copie les images depuis\n"
-"votre matériel vers Minetest pour mise à l'échelle. Si désactivé, retour à "
-"la méthode par défaut\n"
-"pour les pilotes vidéo qui ne supportent pas le chargement des textures "
-"depuis le matériel."
+"Si gui_scaling_filter_txr2img est activé, c'est Minetest qui s'occupe de\n"
+"la mise à l'échelle des images et non votre matériel. Si désactivé,\n"
+"l'ancienne méthode de mise à l'échelle est utilisée, pour les pilotes "
+"vidéos\n"
+"qui ne supportent pas le chargement des textures depuis le matériel."
 
 #: src/settings_translation_file.cpp
 msgid ""
