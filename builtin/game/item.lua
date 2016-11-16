@@ -1,5 +1,7 @@
 -- Minetest: builtin/item.lua
 
+local builtin_shared = ...
+
 local function copy_pointed_thing(pointed_thing)
 	return {
 		type  = pointed_thing.type,
@@ -275,7 +277,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	-- Check if the node is attached and if it can be placed there
 	if core.get_item_group(def.name, "attached_node") ~= 0 and
-		not check_attached_node(place_to, newnode) then
+		not builtin_shared.check_attached_node(place_to, newnode) then
 		core.log("action", "attached node " .. def.name ..
 			" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, false
