@@ -1,5 +1,7 @@
 -- Minetest: builtin/item.lua
 
+local builtin_shared = ...
+
 --
 -- Falling stuff
 --
@@ -127,7 +129,7 @@ local function drop_attached_node(p)
 	end
 end
 
-local function check_attached_node(p, n)
+function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
 	if def.paramtype2 == "wallmounted" then
@@ -177,7 +179,7 @@ function core.check_single_for_falling(p)
 	end
 
 	if core.get_item_group(n.name, "attached_node") ~= 0 then
-		if not check_attached_node(p, n) then
+		if not builtin_shared.check_attached_node(p, n) then
 			drop_attached_node(p)
 			return true
 		end
