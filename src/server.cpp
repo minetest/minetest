@@ -1654,6 +1654,19 @@ void Server::SendShowFormspecMessage(u16 peer_id, const std::string &formspec,
 	Send(&pkt);
 }
 
+void Server::SendDeathFormspec(u16 peer_id, const std::string &formspec,
+		bool use_custom, bool enable)
+{
+	DSTACK(FUNCTION_NAME);
+
+	NetworkPacket pkt(TOCLIENT_DEATHSCREEN_FORMSPEC, 0, peer_id);
+	pkt << use_custom;
+	pkt << enable;
+	pkt.putLongString(FORMSPEC_VERSION_STRING + formspec);
+
+	Send(&pkt);
+}
+
 // Spawns a particle on peer with peer_id
 void Server::SendSpawnParticle(u16 peer_id, v3f pos, v3f velocity, v3f acceleration,
 				float expirationtime, float size, bool collisiondetection,
@@ -2997,6 +3010,23 @@ bool Server::showFormspec(const char *playername, const std::string &formspec,
 		return false;
 
 	SendShowFormspecMessage(player->peer_id, formspec, formname);
+	return true;
+}
+
+bool Server::UpdateDeathFormspec(const char *playername)
+{
+	// m_env will be NULL if the server is initializing
+	if (!m_env)
+		return false;
+
+	RemotePlayer *player = m_env->getPlayer(playername);
+	if (!player)
+		return false;
+
+	std::string formspec = player->get_deathscreen_formspec();
+	bool use_custom = player->custom_deathscreen;
+	bool enable = player->enable_deathscreen;
+	SendDeathFormspec(player->peer_id, formspec, use_custom, enable);
 	return true;
 }
 

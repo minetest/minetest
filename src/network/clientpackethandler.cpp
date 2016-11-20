@@ -846,6 +846,18 @@ void Client::handleCommand_InventoryFormSpec(NetworkPacket* pkt)
 	player->inventory_formspec = pkt->readLongString();
 }
 
+void Client::handleCommand_DeathScreenFormSpec(NetworkPacket* pkt)
+{
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	// Store formspec in LocalPlayer
+	*pkt >> player->custom_deathscreen;
+	*pkt >> player->enable_deathscreen;
+	std::string formspec = pkt->readLongString();
+	player->set_deathscreen_formspec(formspec);
+}
+
 void Client::handleCommand_DetachedInventory(NetworkPacket* pkt)
 {
 	std::string datastring(pkt->getString(0), pkt->getSize());

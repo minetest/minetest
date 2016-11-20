@@ -2904,6 +2904,9 @@ This is basically a reference to a C++ `ServerActiveObject`
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
 * `get_eye_offset()`: returns offset_first and offset_third
+* `disable_death_formspec()` : Don't show a formspec to a player when they die and respawn them immediately.
+* `enable_death_formspec()` : Show a formspec to a player when they die.
+* `set_death_formspec(formspec or nil)` : Resets the formspec to default if input is not a string.
 
 ### `InvRef`
 An `InvRef` is a reference to an inventory.

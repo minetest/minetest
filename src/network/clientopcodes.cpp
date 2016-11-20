@@ -119,7 +119,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
-	null_command_handler,
+	{ "TOCLIENT_DEATHSCREEN_FORMSPEC",     TOCLIENT_STATE_CONNECTED,     &Client::handleCommand_DeathScreenFormSpec }, //0x59
 	{ "TOCLIENT_SRP_BYTES_S_B",            TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_SrpBytesSandB }, // 0x60
 };
 

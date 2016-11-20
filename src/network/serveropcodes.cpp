@@ -208,6 +208,6 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_DEATHSCREEN_FORMSPEC", 0, true }, // 0x59
 	{ "TOSERVER_SRP_BYTES_S_B",            0, true }, // 0x60
 };

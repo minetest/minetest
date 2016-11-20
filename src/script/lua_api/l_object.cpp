@@ -1717,6 +1717,56 @@ int ObjectRef::l_get_day_night_ratio(lua_State *L)
 	return 1;
 }
 
+// set_death_formspec(self, formspec or nil)
+int ObjectRef::l_set_death_formspec(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL) return 0;
+
+	std::string formspec = "";
+	bool enable = false;
+	if (lua_isstring(L, 2)) {
+		formspec = luaL_checkstring(L, 2);
+		enable = true;
+	}
+
+	player->set_deathscreen_formspec(formspec);
+	player->custom_deathscreen = enable;
+	getServer(L)->UpdateDeathFormspec(player->getName());
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// enable_death_formspec(self)
+int ObjectRef::l_enable_death_formspec(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL) return 0;
+
+	player->enable_deathscreen = true;
+	getServer(L)->UpdateDeathFormspec(player->getName());
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+// disable_death_formspec(self)
+int ObjectRef::l_disable_death_formspec(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL) return 0;
+
+	player->enable_deathscreen = false;
+	getServer(L)->UpdateDeathFormspec(player->getName());
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 ObjectRef::ObjectRef(ServerActiveObject *object):
 	m_object(object)
 {
@@ -1859,5 +1909,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_local_animation),
 	luamethod(ObjectRef, set_eye_offset),
 	luamethod(ObjectRef, get_eye_offset),
+	luamethod(ObjectRef, set_death_formspec),
+	luamethod(ObjectRef, enable_death_formspec),
+	luamethod(ObjectRef, disable_death_formspec),
 	{0,0}
 };

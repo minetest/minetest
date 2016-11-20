@@ -166,6 +166,11 @@ public:
 
 	std::string inventory_formspec;
 
+	bool custom_deathscreen;
+	bool enable_deathscreen;
+	std::string get_deathscreen_formspec() { return deathscreen_formspec; }
+	void set_deathscreen_formspec(std::string input) { deathscreen_formspec = input; }
+
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
 
@@ -188,6 +193,7 @@ private:
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
 	Mutex m_mutex;
+	std::string deathscreen_formspec;
 };
 
 #endif
