@@ -427,14 +427,14 @@ Some examples:
 
 Disabled blend (default):
 
-	material_type_param = 0,
+	blend_type = 0,
 
 Use this value to disable blending. The texture will be applied to existing pixels
 using their alpha channel. It's recomended to use 1-bit alpha.
 
 Additive blend:
 
-	material_type_param = minetest.blend_type.additive,
+	blend_type = minetest.blend_type.additive,
 
 source_factor is taken from the textures alpha channel,
 destination_factor is fixed at 1.
@@ -453,14 +453,14 @@ particles are stacked ontop of eachother.
 
 Subtractive blend:
 	
-	material_type_param = minetest.blend_type.subtractive,
+	blend_type = minetest.blend_type.subtractive,
 
 source_factor is fixed at 0, destination_factor is taken from the texture.
 Texture darkness acts like an alpha channel.
 
 Invert blend:
 
-	material_type_param = minetest.blend_type.invert,
+	blend_type = minetest.blend_type.invert,
 
 source_factor is the inverted color of existing pixels, destination_factor is
 the inverted alpha channel of the texture.
@@ -470,7 +470,7 @@ otherwise they appear black.
 
 It is possible combine the primitives below to design a custom blending mode
 'minetest.pack_texture_blend_func' will take take these and return an integer
-to be used as 'material_type_param' in particle definitions.
+to be used as 'blend_type' in particle definitions.
 
 A values in a brackets specify multiplicators of red, green, blue
 and alpha channels respectively.
@@ -501,7 +501,7 @@ and alpha channels respectively.
     * both         = 3 -- use both
 
 * `minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)`
-  Returns integer for use as 'material_type_param', refer to explanations above
+  Returns integer for use as 'blend_type', refer to explanations above
 
 * `minetest.blend_type`: Contains pre-defined commonly used blend types
     * Refer to examples above for explanations
@@ -4254,7 +4254,7 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ optional, if specified spawns particle only on the player's client
-        material_type_param = 0,
+        blend_type = 0,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},
@@ -4296,7 +4296,7 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
-        material_type_param = 0,
+        blend_type = 0,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},

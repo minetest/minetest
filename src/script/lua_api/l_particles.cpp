@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
-// material_type_param = num
+// blend_type = num
 // animation = animation definition
 // glow = indexed color or color string
 int ModApiParticles::l_add_particle(lua_State *L)
@@ -63,7 +63,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	std::string texture = "";
 	std::string playername = "";
 
-	u32 material_type_param = 0;
+	u32 blend_type = 0;
 	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) // deprecated
@@ -171,12 +171,12 @@ int ModApiParticles::l_add_particle(lua_State *L)
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
-		material_type_param = check_material_type_param(L, 1, "material_type_param", 0);
+		blend_type = check_blend_type(L, 1, "blend_type");
 		glow = getintfield_default (L, 1, "glow", 0);
 	}
 	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, 
 		size, collisiondetection, collision_removal, vertical, 
-		texture, material_type_param,
+		texture, blend_type,
 		animation_type,
 		vertical_frame_num_or_aspect, 
 		horizontal_frame_num_or_aspect,
@@ -202,7 +202,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // collision_removal = bool
 // vertical = bool
 // texture = e.g."default_wood.png"
-// material_type_param = num
+// blend_type = num
 // animation = animation definition
 // glow = indexed color or color string
 int ModApiParticles::l_add_particlespawner(lua_State *L)
@@ -227,7 +227,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	ServerActiveObject *attached = NULL;
 	std::string texture = "";
 	std::string playername = "";
-	u32 material_type_param = 0;
+	u32 blend_type = 0;
 	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) //deprecated
@@ -357,7 +357,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
-		material_type_param = check_material_type_param(L, 1, "material_type_param", 0);
+		blend_type = check_blend_type(L, 1, "blend_type");
 		glow = getintfield_default(L, 1, "glow", 0);
 	}
 
@@ -373,7 +373,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			vertical,
 			texture, 
 			playername, 
-			material_type_param, 
+			blend_type, 
 			animation_type,
 			vertical_frame_num_or_aspect, 
 			horizontal_frame_num_or_aspect,
