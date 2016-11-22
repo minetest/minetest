@@ -2180,39 +2180,29 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
-					warningstream << "ServerEnv: Trying to store id = " << obj->getId()
-							<< " statically but block " << PP(blockpos)
-							<< " already contains "
-							<< block->m_static_objects.m_stored.size()
-							<< " objects."
-							<< " Forcing delete." << std::endl;
-					force_delete = true;
-				} else {
-					// If static counterpart already exists in target block,
-					// remove it first.
-					// This shouldn't happen because the object is removed from
-					// the previous block before this according to
-					// obj->m_static_block, but happens rarely for some unknown
-					// reason. Unsuccessful attempts have been made to find
-					// said reason.
-					if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
-						warningstream<<"ServerEnv: Performing hack #83274"
-								<<std::endl;
-						block->m_static_objects.remove(id);
-					}
-					// Store static data
-					u16 store_id = pending_delete ? id : 0;
-					block->m_static_objects.insert(store_id, s_obj);
-
-					// Only mark block as modified if data changed considerably
-					if(shall_be_written)
-						block->raiseModified(MOD_STATE_WRITE_NEEDED,
-							MOD_REASON_STATIC_DATA_CHANGED);
-
-					obj->m_static_exists = true;
-					obj->m_static_block = block->getPos();
+				// If static counterpart already exists in target block,
+				// remove it first.
+				// This shouldn't happen because the object is removed from
+				// the previous block before this according to
+				// obj->m_static_block, but happens rarely for some unknown
+				// reason. Unsuccessful attempts have been made to find
+				// said reason.
+				if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
+					warningstream<<"ServerEnv: Performing hack #83274"
+							<<std::endl;
+					block->m_static_objects.remove(id);
 				}
+				// Store static data
+				u16 store_id = pending_delete ? id : 0;
+				block->m_static_objects.insert(store_id, s_obj);
+
+				// Only mark block as modified if data changed considerably
+				if(shall_be_written)
+					block->raiseModified(MOD_STATE_WRITE_NEEDED,
+						MOD_REASON_STATIC_DATA_CHANGED);
+
+				obj->m_static_exists = true;
+				obj->m_static_block = block->getPos();
 			}
 			else{
 				if(!force_delete){
