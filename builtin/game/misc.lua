@@ -239,3 +239,7 @@ else
 
 end
 
+function core.close_formspec(player_name, formname)
+	return minetest.show_formspec(player_name, formname, "")
+end
+

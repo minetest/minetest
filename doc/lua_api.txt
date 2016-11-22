@@ -2316,6 +2316,13 @@ and `minetest.auth_reload` call the authetification handler.
     * `formname`: name passed to `on_player_receive_fields` callbacks.
       It should follow the `"modname:<whatever>"` naming convention
     * `formspec`: formspec to display
+* `minetest.close_formspec(playername, formname)`
+    * `playername`: name of player to close formspec
+    * `formname`: has to exactly match the one given in show_formspec, or the formspec will
+       not close.
+    * calling show_formspec(playername, formname, "") is equal to this expression
+    * to close a formspec regardless of the formname, call 
+      minetest.close_formspec(playername, ""). USE THIS ONLY WHEN ABSOLUTELY NECESSARY!
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
 * `minetest.explode_table_event(string)`: returns a table
