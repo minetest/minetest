@@ -557,7 +557,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	}
 
 	bool enable_shaders = g_settings->getBool("enable_shaders");
-	if(!enable_shaders)
+	if (!enable_shaders)
 		return shaderinfo;
 
 	video::IVideoDriver* driver = device->getVideoDriver();
