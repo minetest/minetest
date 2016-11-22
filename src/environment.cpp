@@ -2187,7 +2187,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				// obj->m_static_block, but happens rarely for some unknown
 				// reason. Unsuccessful attempts have been made to find
 				// said reason.
-				if(id && block->m_static_objects.m_active.find(id) != block->m_static_objects.m_active.end()){
+				if (id && block->m_static_objects.m_active.find(id) !=
+						block->m_static_objects.m_active.end()) {
 					warningstream<<"ServerEnv: Performing hack #83274"
 							<<std::endl;
 					block->m_static_objects.remove(id);
@@ -2197,7 +2198,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				block->m_static_objects.insert(store_id, s_obj);
 
 				// Only mark block as modified if data changed considerably
-				if(shall_be_written)
+				if (shall_be_written)
 					block->raiseModified(MOD_STATE_WRITE_NEEDED,
 						MOD_REASON_STATIC_DATA_CHANGED);
 
