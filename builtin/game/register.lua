@@ -132,11 +132,11 @@ function core.register_item(name, itemdef)
 			core.log("warning", "Node 'light_source' value exceeds maximum," ..
 				" limiting to maximum: " ..name)
 		end
+		setmetatable(itemdef, {__index = core.nodedef_default})
 		--if 'solid' is not explicitly set, default to the value of 'walkable'
 		if itemdef.solid == nil then
 			itemdef.solid = itemdef.walkable
 		end
-		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
 		setmetatable(itemdef, {__index = core.craftitemdef_default})
