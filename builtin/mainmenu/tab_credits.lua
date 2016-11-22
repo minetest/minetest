@@ -38,7 +38,6 @@ local active_contributors = {
 	"SmallJoker <mk939@ymail.com>",
 	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
 	"Jeija <jeija@mesecons.net>",
-	"Gregory Currie (gregorycu)",
 	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"TeTpaAka",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
