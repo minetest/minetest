@@ -240,8 +240,8 @@ end
 --------------------------------------------------------------------------------
 -- Video enums and packing function
 
--- E_BLEND_FACTOR
-core.ebf = {
+
+local blend_ebf = { -- E_BLEND_FACTOR in irrlicht
 	zero                  = 0, -- src & dest (0, 0, 0, 0)
 	one                   = 1, -- src & dest (1, 1, 1, 1)
 	dst_color             = 2, -- src (destR, destG, destB, destA)
@@ -255,31 +255,33 @@ core.ebf = {
 	src_alpha_saturate    = 10,-- src (min(srcA, 1-destA), ...)
 }
 
--- E_MODULATE_FUNC
-core.emfn = {
+local blend_emfn = { -- E_MODULATE_FUNC in irrlicht
 	modulate_1x    = 1,
 	modulate_2x    = 2,
 	modulate_4x    = 4,
 }
 
--- E_ALPHA_SOURCE
-core.eas = {
+local blend_eas = { -- E_ALPHA_SOURCE in irrlicht
 	none         = 0,
 	vertex_color = 1,
 	texture      = 2,
 	both         = 3,
 }
 
-function core.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource) 
+function core.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)
+	local srcFact     = assert(blend_ebf[srcFact], "invalid srcFact")
+	local dstFact     = assert(blend_ebf[dstFact], "invalid dstFact")
+	local modulate    = assert(blend_emfn[modulate], "invalid modulate")
+	local alphaSource = assert(blend_eas[alphaSource], "invalid alphaSource")
 	return alphaSource * 4096 + modulate * 256 + srcFact * 16 + dstFact
 end
 
 -- predefined blend types
 core.blend_type = {
 	none        = 0,
-	additive    = core.pack_texture_blend_func(core.ebf.src_alpha, core.ebf.one, core.emfn.modulate_1x, core.eas.both),
-	subtractive = core.pack_texture_blend_func(core.ebf.zero, core.ebf.src_color, core.emfn.modulate_1x, core.eas.both),
-	invert      = core.pack_texture_blend_func(core.ebf.one_minus_dst_color, core.ebf.one_minus_src_color, core.emfn.modulate_1x, core.eas.both),
+	additive    = core.pack_texture_blend_func("src_alpha", "one", "modulate_1x", "both"),
+	subtractive = core.pack_texture_blend_func("zero", "src_color", "modulate_1x", "both"),
+	invert      = core.pack_texture_blend_func("one_minus_dst_color", "one_minus_src_color", "modulate_1x", "both"),
 }
 
 --------------------------------------------------------------------------------

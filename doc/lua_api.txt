@@ -475,36 +475,34 @@ to be used as 'blend_type' in particle definitions.
 A values in a brackets specify multiplicators of red, green, blue
 and alpha channels respectively.
 
-* 'minetest.ebf': global table, containing blend factor enum values
-    *  zero                = 0  -- src & dest (0, 0, 0, 0)
-    *  one                 = 1  -- src & dest (1, 1, 1, 1)
-    *  dst_color           = 2  -- src (destR, destG, destB, destA)
-    *  one_minus_dst_color = 3  -- src (1-destR, 1-destG, 1-destB, 1-destA)
-    *  src_color           = 4  -- dest (srcR, srcG, srcB, srcA)
-    *  one_minus_src_color = 5  -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
-    *  src_alpha           = 6  -- src & dest (srcA, srcA, srcA, srcA)
-    *  one_minus_src_alpha = 7  -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
-    *  dst_alpha           = 8  -- src & dest (destA, destA, destA, destA)
-    *  one_minus_dst_alpha = 9  -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
-    *  src_alpha_saturate  = 10 -- src (min(srcA, 1-destA), ...)
+* Blend types (for srcFact & dstFact):
+    *  "zero"                -- src & dest (0, 0, 0, 0)
+    *  "one"                 -- src & dest (1, 1, 1, 1)
+    *  "dst_color"           -- src (destR, destG, destB, destA)
+    *  "one_minus_dst_color" -- src (1-destR, 1-destG, 1-destB, 1-destA)
+    *  "src_color"           -- dest (srcR, srcG, srcB, srcA)
+    *  "one_minus_src_color" -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
+    *  "src_alpha"           -- src & dest (srcA, srcA, srcA, srcA)
+    *  "one_minus_src_alpha" -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
+    *  "dst_alpha"           -- src & dest (destA, destA, destA, destA)
+    *  "one_minus_dst_alpha" -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
+    *  "src_alpha_saturate"  -- src (min(srcA, 1-destA), ...)
 
-* 'minetest.emfn': global table, containing modulate enum values
-    * Multiply the color components by:
-    *  modulate_1x = 1 -- multiply by 1 (no shift)
-    *  modulate_2x = 2 -- multiply by 2 (x << 1)
-    *  modulate_4x = 4 -- multiply by 4 (x << 2)
+* Modulate values (for modulate):
+    *  "modulate_1x" -- multiply components by 1 (no shift)
+    *  "modulate_2x" -- multiply components by 2 (x << 1)
+    *  "modulate_4x" -- multiply components by 4 (x << 2)
 
-* 'minetest.eas': global table, containing alpha source enum values
-    * none         = 0 -- no alpha
-    * vertex_color = 1 -- use alpha from existing pixel
-    * texture      = 2 -- use alpha from texture
-    * both         = 3 -- use both
+* Alpha sources (for alphaSource):
+    * "none"         -- no alpha
+    * "vertex_color" -- use alpha from existing pixel
+    * "texture"      -- use alpha from texture
+    * "both"         -- use both
 
 * `minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)`
-  Returns integer for use as 'blend_type', refer to explanations above
+  Returns integer for use as 'blend_type', see above
 
 * `minetest.blend_type`: Contains pre-defined commonly used blend types
-    * Refer to examples above for explanations
     *  none        = 0
     *  additive    = 12641
     *  subtractive = 12548
