@@ -463,7 +463,7 @@ Invert blend:
 	blend_type = minetest.blend_type.invert,
 
 source_factor is the inverted color of existing pixels, destination_factor is
-the inverted alpha channel of the texture.
+the inverted color of the texture.
 Resulting pixels have inverted color if the source color value is big enough,
 otherwise they appear black.
 
@@ -505,6 +505,7 @@ and alpha channels respectively.
 
 * `minetest.blend_type`: Contains pre-defined commonly used blend types
     * Refer to examples above for explanations
+    *  none        = 0
     *  additive    = 12641
     *  subtractive = 12548
     *  invert      = 12597

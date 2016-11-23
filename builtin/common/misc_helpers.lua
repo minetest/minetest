@@ -277,9 +277,9 @@ end
 -- predefined blend types
 core.blend_type = {
 	none        = 0,
-	additive    = 12641,
-	subtractive = 12548,
-	invert      = 12597,
+	additive    = core.pack_texture_blend_func(core.ebf.src_alpha, core.ebf.one, core.emfn.modulate_1x, core.eas.both),
+	subtractive = core.pack_texture_blend_func(core.ebf.zero, core.ebf.src_color, core.emfn.modulate_1x, core.eas.both),
+	invert      = core.pack_texture_blend_func(core.ebf.one_minus_dst_color, core.ebf.one_minus_src_color, core.emfn.modulate_1x, core.eas.both),
 }
 
 --------------------------------------------------------------------------------
