@@ -118,51 +118,19 @@ int ModApiParticles::l_add_particle(lua_State *L)
 				getenumfield(L, -1, "type", es_AnimationType,
 				AT_NONE);
 		}
-		switch (animation_type) {
-			case AT_NONE:
-				break;
-			case AT_2D_ANIMATION_SHEET:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "frame_length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "vertical_frame_num", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "horizontal_frame_num", 1);
-				first_frame = 
-					getintfield_default(L, -1, "first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			case AT_VERTICAL_FRAMES:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_w", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_h", 1);
-				first_frame = 
-					getintfield_default(L, -1, "first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			default:
-				break;
+		if (animation_type == AT_VERTICAL_FRAMES) {
+			frame_or_loop_length = 
+				getfloatfield_default(L, -1, "length", -1);
+			vertical_frame_num_or_aspect = 
+				getintfield_default(L, -1, "aspect_w", 1);
+			horizontal_frame_num_or_aspect = 
+				getintfield_default(L, -1, "aspect_h", 1);
+			first_frame = 
+				getintfield_default(L, -1, "first_frame", 0);
+			loop_animation = 
+				getboolfield_default(L, -1, "loop_animation", true);
 		}
 		lua_pop(L, 1);
-
-		if (animation_type == AT_2D_ANIMATION_SHEET && 
-				first_frame >= vertical_frame_num_or_aspect * 
-				horizontal_frame_num_or_aspect) {
-			std::ostringstream error_text; 
-			error_text << "first_frame should be lower, than "
-				<< "vertical_frame_num * horizontal_frame_num. "
-				<< "Got first_frame=" << first_frame
-				<< ", vertical_frame_num="
-				<< vertical_frame_num_or_aspect
-				<< " and horizontal_frame_num="
-				<< horizontal_frame_num_or_aspect << std::endl;
-			throw LuaError(error_text.str());
-		}
 
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);
@@ -291,56 +259,21 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 				getenumfield(L, -1, "type", es_AnimationType,
 				AT_NONE);
 		}
-		switch (animation_type) {
-			case AT_NONE:
-				break;
-			case AT_2D_ANIMATION_SHEET:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "frame_length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "vertical_frame_num", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "horizontal_frame_num", 1);
-				min_first_frame = 
-					getintfield_default(L, -1, "min_first_frame", 0);
-				max_first_frame = 
-					getintfield_default(L, -1, "max_first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			case AT_VERTICAL_FRAMES:
-				frame_or_loop_length = 
-					getfloatfield_default(L, -1, "length", -1);
-				vertical_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_w", 1);
-				horizontal_frame_num_or_aspect = 
-					getintfield_default(L, -1, "aspect_h", 1);
-				min_first_frame = 
-					getintfield_default(L, -1, "min_first_frame", 0);
-				max_first_frame = 
-					getintfield_default(L, -1, "max_first_frame", 0);
-				loop_animation = 
-					getboolfield_default(L, -1, "loop_animation", true);
-				break;
-			default:
-				break;
+		if (animation_type == AT_VERTICAL_FRAMES) {
+			frame_or_loop_length = 
+				getfloatfield_default(L, -1, "length", -1);
+			vertical_frame_num_or_aspect = 
+				getintfield_default(L, -1, "aspect_w", 1);
+			horizontal_frame_num_or_aspect = 
+				getintfield_default(L, -1, "aspect_h", 1);
+			min_first_frame = 
+				getintfield_default(L, -1, "min_first_frame", 0);
+			max_first_frame = 
+				getintfield_default(L, -1, "max_first_frame", 0);
+			loop_animation = 
+				getboolfield_default(L, -1, "loop_animation", true);
 		}
 		lua_pop(L, 1);
-
-		if (animation_type == AT_2D_ANIMATION_SHEET && 
-				max_first_frame >= vertical_frame_num_or_aspect * 
-				horizontal_frame_num_or_aspect) {
-			std::ostringstream error_text; 
-			error_text << "max_first_frame should be lower, than "
-				<< "vertical_frame_num * horizontal_frame_num. " 
-				<< "Got max_first_frame="
-				<< max_first_frame
-				<< ", vertical_frame_num="
-				<< vertical_frame_num_or_aspect
-				<< " and horizontal_frame_num="
-				<< horizontal_frame_num_or_aspect << std::endl;
-			throw LuaError(error_text.str());
-		}
 		
 		collisiondetection = getboolfield_default(L, 1,
 			"collisiondetection", collisiondetection);

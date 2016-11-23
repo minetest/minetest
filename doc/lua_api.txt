@@ -3758,8 +3758,6 @@ Definition tables
 
 ### Animation definition
 
-#### Node animation, particle and particle spawners
-
 	{
 		type="vertical_frames",
 		aspect_w = 16,
@@ -3770,35 +3768,9 @@ Definition tables
 		-- ^ specify full loop length
 		first_frame = 0, -- particles only
 		min_first_frame = 0, -- particle spawners only
-		max_first_frame = 0,
+		max_first_frame = 0, -- particle spawners only
 		loop_animation = true, -- particles and particle spawners only
 		-- ^ specify if animation should start from beginning after last frame
-	}
-
-#### Particle and particle spawners only
-
-	{
-		type = "2d_animation_sheet",
-		vertical_frame_num = 1,
-		horizontal_frame_num = 1,
-		-- ^ specify amount of frames in texture
-		-- A animation texture separated on equal parts of frames,
-		-- by horizontal and vertical numbers. For example with
-		-- vertical_frame_num = 4 and horizontal_frame_num = 3 we got
-		-- 4*3 = 12 frames in total. Animation sequence start from
-		-- left top frame and go on to the right until reach end of
-		-- row. Next row also start from left frame.
-		first_frame = 0, -- particles only
-		min_first_frame = 0, -- particle spawners only
-		max_first_frame = 0,
-		-- ^ specify first frame to start animation.
-		frame_length = nil,
-		-- ^ optional, specify length of a frame in seconds.
-		-- A sequence with vertical_frame_num = 4 and horizontal_frame_num = 3
-		-- first_frame = 4 and frame_length = 0.1 will end in
-		-- (4*3-4)*0.1 = 0.8 seconds
-		loop_animation = true,
-		-- specify if animation should start from beginning after last frame
 	}
 
 ### Node definition (`register_node`)

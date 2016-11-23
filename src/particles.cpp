@@ -551,31 +551,15 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			u32 material_type_param =
 				check_material_type_param(event->add_particlespawner.material_type_param);
 
-			switch (event->add_particlespawner.animation_type) {
-				case AT_NONE:
-					break;
-				case AT_VERTICAL_FRAMES: {
-					v2u32 size = texture->getOriginalSize();
-					int frame_height = (float)size.X /
-						(float)event->add_particlespawner.vertical_frame_num *
-						(float)event->add_particlespawner.horizontal_frame_num;
-					vertical_frame_num = size.Y / frame_height;
-					frame_length = 
-						event->add_particlespawner.frame_length / 
-						vertical_frame_num;
-					break;
-				}
-				case AT_2D_ANIMATION_SHEET: {
-					vertical_frame_num =
-						event->add_particlespawner.vertical_frame_num;
-					horizontal_frame_num =
-						event->add_particlespawner.horizontal_frame_num;
-					frame_length = 
-						event->add_particlespawner.frame_length;
-					break;
-				}
-				default:
-					break;
+			if (event->add_particlespawner.animation_type == AT_VERTICAL_FRAMES) {
+				v2u32 size = texture->getOriginalSize();
+				int frame_height = (float)size.X /
+					(float)event->add_particlespawner.vertical_frame_num *
+					(float)event->add_particlespawner.horizontal_frame_num;
+				vertical_frame_num = size.Y / frame_height;
+				frame_length = 
+					event->add_particlespawner.frame_length / 
+					vertical_frame_num;
 			}
 
 			ParticleSpawner* toadd = new ParticleSpawner(gamedef, smgr, player,
@@ -635,31 +619,15 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			u32 material_type_param =
 				check_material_type_param(event->spawn_particle.material_type_param);
 
-			switch (event->spawn_particle.animation_type) {
-				case AT_NONE:
-					break;
-				case AT_VERTICAL_FRAMES: {
-					v2u32 size = texture->getOriginalSize();
-					int frame_height = (float)size.X /
-						(float)event->spawn_particle.vertical_frame_num *
-						(float)event->spawn_particle.horizontal_frame_num;
-					vertical_frame_num = size.Y / frame_height;
-					frame_length = 
-						event->spawn_particle.frame_length / 
-						vertical_frame_num;
-					break;
-				}
-				case AT_2D_ANIMATION_SHEET: {
-					vertical_frame_num =
-						event->spawn_particle.vertical_frame_num;
-					horizontal_frame_num =
-						event->spawn_particle.horizontal_frame_num;
-					frame_length = 
-						event->spawn_particle.frame_length;
-					break;
-				}
-				default:
-					break;
+			if (event->spawn_particle.animation_type == AT_VERTICAL_FRAMES) {
+				v2u32 size = texture->getOriginalSize();
+				int frame_height = (float)size.X /
+					(float)event->spawn_particle.vertical_frame_num *
+					(float)event->spawn_particle.horizontal_frame_num;
+				vertical_frame_num = size.Y / frame_height;
+				frame_length = 
+					event->spawn_particle.frame_length / 
+					vertical_frame_num;
 			}
 
 			Particle* toadd = new Particle(gamedef, smgr, player, m_env,

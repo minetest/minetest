@@ -39,7 +39,6 @@ struct EnumString es_AnimationType[] =
 {
 	{AT_NONE, "none"},
 	{AT_VERTICAL_FRAMES, "vertical_frames"},
-	{AT_2D_ANIMATION_SHEET, "2d_animation_sheet"},
 	{0, NULL},
 };
 

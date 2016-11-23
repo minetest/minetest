@@ -161,10 +161,10 @@ enum NodeDrawType
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
-enum AnimationType{
+enum AnimationType
+{
 	AT_NONE = 0,
 	AT_VERTICAL_FRAMES = 1,
-	AT_2D_ANIMATION_SHEET = 2,
 };
 struct TileDef
 {
