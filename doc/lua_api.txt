@@ -427,7 +427,7 @@ Some examples:
 
 Disabled blend (default):
 
-	blend_type = 0,
+	blend_type = minetest.blend_type.none,
 
 Use this value to disable blending. The texture will be applied to existing pixels
 using their alpha channel. It's recomended to use 1-bit alpha.
@@ -4254,7 +4254,7 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ optional, if specified spawns particle only on the player's client
-        blend_type = 0,
+        blend_type = minetest.blend_type.none,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},
@@ -4296,7 +4296,7 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
-        blend_type = 0,
+        blend_type = minetest.blend_type.none,
     --  ^ optional, if specified spawns particle with
     --  specified material type param, refer to "Particle blend" section
         animation = {Animation definition},

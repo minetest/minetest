@@ -276,6 +276,7 @@ end
 
 -- predefined blend types
 core.blend_type = {
+	none        = 0,
 	additive    = 12641,
 	subtractive = 12548,
 	invert      = 12597,
