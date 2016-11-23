@@ -479,23 +479,23 @@ and alpha channels respectively.
     *  "zero"                -- src & dest (0, 0, 0, 0)
     *  "one"                 -- src & dest (1, 1, 1, 1)
     *  "dst_color"           -- src (destR, destG, destB, destA)
-    *  "one_minus_dst_color" -- src (1-destR, 1-destG, 1-destB, 1-destA)
+    *  "dst_color_inv"       -- src (1-destR, 1-destG, 1-destB, 1-destA)
     *  "src_color"           -- dest (srcR, srcG, srcB, srcA)
-    *  "one_minus_src_color" -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
+    *  "src_color_inv"       -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
     *  "src_alpha"           -- src & dest (srcA, srcA, srcA, srcA)
-    *  "one_minus_src_alpha" -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
+    *  "src_alpha_inv"       -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
     *  "dst_alpha"           -- src & dest (destA, destA, destA, destA)
-    *  "one_minus_dst_alpha" -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
+    *  "dst_alpha_inv"       -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
     *  "src_alpha_saturate"  -- src (min(srcA, 1-destA), ...)
 
 * Modulate values (for modulate):
-    *  "modulate_1x" -- multiply components by 1 (no shift)
-    *  "modulate_2x" -- multiply components by 2 (x << 1)
-    *  "modulate_4x" -- multiply components by 4 (x << 2)
+    *  "1x" -- multiply components by 1 (no shift)
+    *  "2x" -- multiply components by 2 (x << 1)
+    *  "4x" -- multiply components by 4 (x << 2)
 
 * Alpha sources (for alphaSource):
     * "none"         -- no alpha
-    * "vertex_color" -- use alpha from existing pixel
+    * "vertex"       -- use alpha from existing pixel
     * "texture"      -- use alpha from texture
     * "both"         -- use both
 
