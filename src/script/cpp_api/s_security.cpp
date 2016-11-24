@@ -577,13 +577,13 @@ int ScriptApiSecurity::sl_io_lines(lua_State *L)
 		CHECK_SECURE_PATH(L, path);
 	}
 
+	int top_precall = lua_gettop(L);
 	push_original(L, "io", "lines");
 	lua_pushvalue(L, 1);
-	int top_precall = lua_gettop(L);
 	lua_call(L, 1, LUA_MULTRET);
 	// Return number of arguments returned by the function,
 	// adjusting for the function being poped.
-	return lua_gettop(L) - (top_precall - 1);
+	return lua_gettop(L) - top_precall;
 }
 
 
