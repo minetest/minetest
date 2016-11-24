@@ -1759,6 +1759,13 @@ Inventory locations
 * `"nodemeta:<X>,<Y>,<Z>"`: Any node metadata
 * `"detached:<name>"`: A detached inventory
 
+Player Inventory lists
+----------------------
+* `main`: list containing the default inventory
+* `craft`: list containing the craft input
+* `craftpreview`: list containing the craft output
+* `hand`: list containing an override for the empty hand
+
 `ColorString`
 -------------
 `#RGB` defines a color in hexadecimal format.
