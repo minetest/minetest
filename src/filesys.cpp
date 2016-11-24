@@ -631,7 +631,7 @@ std::string RemoveRelativePathComponents(std::string path)
 		std::string component = path.substr(component_start,
 				component_end - component_start);
 		bool remove_this_component = false;
-		if(component == "."){
+		if(component == "." && component_start != 0){
 			remove_this_component = true;
 		}
 		else if(component == ".."){
