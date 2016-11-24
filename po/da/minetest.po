@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-12 20:49+0200\n"
-"PO-Revision-Date: 2016-10-20 13:59+0000\n"
+"PO-Revision-Date: 2016-11-24 16:48+0100\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish "
 "<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
@@ -3259,11 +3259,11 @@ msgstr "Mapgen - fraktal hulebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave1 noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen fraktal grotte1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal cave2 noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen fraktal grotte2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal filler depth noise parameters"
@@ -3271,71 +3271,71 @@ msgstr "Mapgen - støjparametre for fraktal fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal fractal"
-msgstr ""
+msgstr "Mapgen fraktal fraktal"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal iterations"
-msgstr ""
+msgstr "Mapgen fraktaliterationer"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia w"
-msgstr ""
+msgstr "Mapgen fraktal Julia w"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia x"
-msgstr ""
+msgstr "Mapgen fraktal Julia x"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia y"
-msgstr ""
+msgstr "Mapgen fraktal Julia y"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal julia z"
-msgstr ""
+msgstr "Mapgen fraktal Julia z"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal offset"
-msgstr ""
+msgstr "Mapgen fraktal forskydning"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal scale"
-msgstr ""
+msgstr "Mapgen fraktal skalering"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal seabed noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen fraktal havbund"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal slice w"
-msgstr ""
+msgstr "Mapgen fraktal udsnit w"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen varmeblanding"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr ""
+msgstr "Mapgen-navn"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
-msgstr ""
+msgstr "Mapgen v5"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave width"
-msgstr ""
+msgstr "Mapgen v5 grottebredde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave1 noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen v5 grotte1"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 cave2 noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen v5 grotte2"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 factor noise parameters"
-msgstr ""
+msgstr "Støjparametre for Mapgen v5 faktor"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
@@ -3343,43 +3343,43 @@ msgstr "Mapgen v5 - støjparametre for fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
-msgstr ""
+msgstr "Mapgen v5 – støjparametre for højde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
-msgstr ""
+msgstr "Mapgen v6"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 apple trees noise parameters"
-msgstr ""
+msgstr "Mapgen v6 – støjparametre for æbletræer"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach frequency"
-msgstr ""
+msgstr "Mapgen v6 – strandhyppighed"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 beach noise parameters"
-msgstr ""
+msgstr "Mapgen v6 – støjparametre for strand"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 biome noise parameters"
-msgstr ""
+msgstr "Mapgen v6 – støjparametre for økosystem"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 cave noise parameters"
-msgstr ""
+msgstr "Mapgen v6 – støjparametre for grotter"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 desert frequency"
-msgstr ""
+msgstr "Mapgen v6 – ørkenhyppighed"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 flags"
-msgstr ""
+msgstr "Mapgen v6 – flag"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 height select noise parameters"
-msgstr ""
+msgstr "Mapgen v6 – støjparametre for højdevalg"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 humidity noise parameters"
@@ -3407,7 +3407,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
-msgstr ""
+msgstr "Mapgen v7"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 cave width"
@@ -3427,11 +3427,11 @@ msgstr "Mapgen v7 - støjparametre for fyldstofdybde"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
-msgstr ""
+msgstr "Mapgen v7 – flag"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 height select noise parameters"
-msgstr ""
+msgstr "Mapgen v7 – støjparametre for højdevalg"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 mount height noise parameters"
@@ -3582,7 +3582,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "Maksimum antal brugere"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3594,11 +3594,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Dagens besked"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
-msgstr ""
+msgstr "Dagens besked"
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
@@ -3901,7 +3901,7 @@ msgstr "Floddybde"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
-msgstr ""
+msgstr "Flodstøj"
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
@@ -3917,7 +3917,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Rundt minikort"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
@@ -4073,7 +4073,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Nedlukningsbesked"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4145,7 +4145,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Terrain Height"
-msgstr ""
+msgstr "Terrænhøjde"
 
 #: src/settings_translation_file.cpp
 msgid ""
