@@ -525,14 +525,19 @@ int ScriptApiSecurity::sl_g_require(lua_State *L)
 
 int ScriptApiSecurity::sl_io_open(lua_State *L)
 {
+	bool with_mode = lua_gettop(L) > 1;
+
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
 	CHECK_SECURE_PATH(L, path);
 
 	push_original(L, "io", "open");
 	lua_pushvalue(L, 1);
-	lua_pushvalue(L, 2);
-	lua_call(L, 2, 2);
+	if (with_mode) {
+		lua_pushvalue(L, 2);
+	}
+
+	lua_call(L, with_mode ? 2 : 1, 2);
 	return 2;
 }
 
