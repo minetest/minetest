@@ -93,13 +93,8 @@ public:
 		}
 	}
 
-	bool getCollisionBox(aabb3f *toset) {
-		return false;
-	}
-
-	bool collideWithObjects() {
-		return false;
-	}
+	bool getCollisionBox(aabb3f *toset) const { return false; }
+	bool collideWithObjects() const { return false; }
 
 private:
 	float m_timer1;
@@ -108,6 +103,178 @@ private:
 
 // Prototype (registers item for deserialization)
 TestSAO proto_TestSAO(NULL, v3f(0,0,0));
+
+/*
+	UnitSAO
+*/
+
+
+UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos) :
+	ServerActiveObject(env, pos),
+	m_hp(-1),
+	m_yaw(0),
+	m_armor_groups_sent(false),
+	m_properties_sent(true),
+	m_animation_range(0,0),
+	m_animation_speed(0),
+	m_animation_blend(0),
+	m_animation_loop(true),
+	m_animation_sent(false),
+	m_bone_position_sent(false),
+	m_attachment_parent_id(0),
+	m_attachment_sent(false)
+{
+	// Initialize something to armor groups
+	m_armor_groups["fleshy"] = 100;
+}
+
+
+void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
+{
+	// store these so they can be updated to clients
+	m_animation_range = frame_range;
+	m_animation_speed = frame_speed;
+	m_animation_blend = frame_blend;
+	m_animation_loop = frame_loop;
+	m_animation_sent = false;
+}
+
+
+void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend,
+	bool *frame_loop) const
+{
+	*frame_range = m_animation_range;
+	*frame_speed = m_animation_speed;
+	*frame_blend = m_animation_blend;
+	*frame_loop = m_animation_loop;
+}
+
+
+void UnitSAO::setAttachment(int parent_id, const std::string &bone, const v3f &position, const v3f &rotation)
+{
+	// Attachments need to be handled on both the server and client.
+	// If we just attach on the server, we can only copy the position of the parent. Attachments
+	// are still sent to clients at an interval so players might see them lagging, plus we can't
+	// read and attach to skeletal bones.
+	// If we just attach on the client, the server still sees the child at its original location.
+	// This breaks some things so we also give the server the most accurate representation
+	// even if players only see the client changes.
+
+	m_attachment_parent_id = parent_id;
+	m_attachment_bone = bone;
+	m_attachment_position = position;
+	m_attachment_rotation = rotation;
+	m_attachment_sent = false;
+}
+
+
+void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
+	v3f *rotation) const
+{
+	*parent_id = m_attachment_parent_id;
+	*bone = m_attachment_bone;
+	*position = m_attachment_position;
+	*rotation = m_attachment_rotation;
+}
+
+
+void UnitSAO::sendMandatoryDataToClient()
+{
+	if (!m_properties_sent) {
+		m_properties_sent = true;
+		std::string str = getPropertyPacket();
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+}
+
+
+void UnitSAO::sendOptionalDataToClient()
+{
+	if (!m_armor_groups_sent) {
+		m_armor_groups_sent = true;
+		std::string str = gob_cmd_update_armor_groups(m_armor_groups);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_animation_sent) {
+		m_animation_sent = true;
+		std::string str = gob_cmd_update_animation(
+			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_bone_position_sent) {
+		m_bone_position_sent = true;
+		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
+			std::string str = gob_cmd_update_bone_position((*ii).first,
+					(*ii).second.X, (*ii).second.Y);
+			// create message and add to list
+			ActiveObjectMessage aom(getId(), true, str);
+			m_messages_out.push(aom);
+		}
+	}
+
+	if (!m_attachment_sent) {
+		m_attachment_sent = true;
+		std::string str = gob_cmd_update_attachment(m_attachment_parent_id,
+				m_attachment_bone, m_attachment_position, m_attachment_rotation);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+}
+
+
+// Applies to LuaEntitySAO for protocol >= 14
+// Applies to PlayerSAO for protocol >= 15
+int UnitSAO::serializeClientInitializationMessages14(std::ostream *os, int protocol_version)
+{
+	// Message 1
+	*os << serializeLongString(getPropertyPacket());
+	// Message 2
+	*os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups));
+	// Message 3
+	*os << serializeLongString(gob_cmd_update_animation(
+		m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop));
+	// Additional message count: m_bone_position.size()
+	for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
+		*os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
+				(*ii).second.X, (*ii).second.Y));
+	}
+	// Message 4
+	*os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
+		m_attachment_bone, m_attachment_position, m_attachment_rotation));
+	int message_count = 4 + m_bone_position.size();
+	for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
+			(ii != m_attachment_child_ids.end()); ++ii) {
+		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
+			message_count++;
+			*os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
+				obj->getClientInitializationData(protocol_version)));
+		}
+	}
+
+	return message_count;
+}
+
+
+// Applies to LuaEntitySAO for protocol < 14
+// Applies to PlayerSAO for protocol < 15
+int UnitSAO::serializeClientInitializationMessages0(std::ostream *os, int protocol_version)
+{
+	*os << serializeLongString(getPropertyPacket());
+	*os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups));
+	return 2;
+}
+
 
 /*
 	LuaEntitySAO
@@ -124,29 +291,17 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_registered(false),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
-	m_properties_sent(true),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
 	m_last_sent_velocity(0,0,0),
 	m_last_sent_position_timer(0),
-	m_last_sent_move_precision(0),
-	m_armor_groups_sent(false),
-	m_animation_speed(0),
-	m_animation_blend(0),
-	m_animation_loop(true),
-	m_animation_sent(false),
-	m_bone_position_sent(false),
-	m_attachment_parent_id(0),
-	m_attachment_sent(false)
+	m_last_sent_move_precision(0)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
 		ServerActiveObject::registerType(getType(), create);
 		return;
 	}
-
-	// Initialize something to armor groups
-	m_armor_groups["fleshy"] = 100;
 }
 
 LuaEntitySAO::~LuaEntitySAO()
@@ -218,27 +373,9 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	return sao;
 }
 
-bool LuaEntitySAO::isAttached()
-{
-	if(!m_attachment_parent_id)
-		return false;
-	// Check if the parent still exists
-	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if(obj)
-		return true;
-	return false;
-}
-
 void LuaEntitySAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
-		m_properties_sent = true;
-		std::string str = getPropertyPacket();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+	sendMandatoryDataToClient();
 
 	// If attached, check that our parent is still there. If it isn't, detach.
 	if(m_attachment_parent_id && !isAttached())
@@ -329,103 +466,38 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			sendPosition(true, false);
 		}
 	}
-
-	if(m_armor_groups_sent == false){
-		m_armor_groups_sent = true;
-		std::string str = gob_cmd_update_armor_groups(
-				m_armor_groups);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
-
-	if(m_animation_sent == false){
-		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
-
-	if(m_bone_position_sent == false){
-		m_bone_position_sent = true;
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
-			std::string str = gob_cmd_update_bone_position((*ii).first,
-					(*ii).second.X, (*ii).second.Y);
-			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
-		}
-	}
-
-	if(m_attachment_sent == false){
-		m_attachment_sent = true;
-		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+	sendOptionalDataToClient();
 }
+
 
 std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	if(protocol_version >= 14)
-	{
-		writeU8(os, 1); // version
-		os<<serializeString(""); // name
-		writeU8(os, 0); // is_player
+	writeU8(os, protocol_version < 14 ? 0 : 1); // version
+	os << serializeString(""); // name
+	writeU8(os, 0); // is_player
+	if (protocol_version >= 14)
 		writeS16(os, getId()); //id
-		writeV3F1000(os, m_base_position);
-		writeF1000(os, m_yaw);
-		writeS16(os, m_hp);
+	writeV3F1000(os, m_base_position);
+	writeF1000(os, m_yaw);
+	writeS16(os, getHP());
 
-		std::ostringstream msg_os(std::ios::binary);
-		msg_os << serializeLongString(getPropertyPacket()); // message 1
-		msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		msg_os << serializeLongString(gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
-					(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
-		}
-		msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
-			m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
-		int message_count = 4 + m_bone_position.size();
-		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
-				(ii != m_attachment_child_ids.end()); ++ii) {
-			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
-				message_count++;
-				msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
-					obj->getClientInitializationData(protocol_version)));
-			}
-		}
-
-		writeU8(os, message_count);
-		os.write(msg_os.str().c_str(), msg_os.str().size());
-	}
+	std::ostringstream msg_os(std::ios::binary);
+	int message_count;
+	if(protocol_version >= 14)
+		message_count = serializeClientInitializationMessages14(&msg_os, protocol_version);
 	else
-	{
-		writeU8(os, 0); // version
-		os<<serializeString(""); // name
-		writeU8(os, 0); // is_player
-		writeV3F1000(os, m_base_position);
-		writeF1000(os, m_yaw);
-		writeS16(os, m_hp);
-		writeU8(os, 2); // number of messages stuffed in here
-		os<<serializeLongString(getPropertyPacket()); // message 1
-		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	}
+		message_count = serializeClientInitializationMessages0(&msg_os, protocol_version);
+
+	writeU8(os, message_count);
+	os.write(msg_os.str().c_str(), msg_os.str().size());
 
 	// return result
 	return os.str();
 }
 
-std::string LuaEntitySAO::getStaticData()
+std::string LuaEntitySAO::getStaticData() const
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
@@ -531,12 +603,8 @@ void LuaEntitySAO::moveTo(v3f pos, bool continuous)
 		sendPosition(true, true);
 }
 
-float LuaEntitySAO::getMinimumSavedMovement()
-{
-	return 0.1 * BS;
-}
 
-std::string LuaEntitySAO::getDescription()
+std::string LuaEntitySAO::getDescription() const
 {
 	std::ostringstream os(std::ios::binary);
 	os<<"LuaEntitySAO at (";
@@ -547,127 +615,6 @@ std::string LuaEntitySAO::getDescription()
 	return os.str();
 }
 
-void LuaEntitySAO::setHP(s16 hp)
-{
-	if(hp < 0) hp = 0;
-	m_hp = hp;
-}
-
-s16 LuaEntitySAO::getHP() const
-{
-	return m_hp;
-}
-
-void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
-{
-	m_armor_groups = armor_groups;
-	m_armor_groups_sent = false;
-}
-
-ItemGroupList LuaEntitySAO::getArmorGroups()
-{
-	return m_armor_groups;
-}
-
-void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
-{
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
-	m_animation_loop = frame_loop;
-	m_animation_sent = false;
-}
-
-void LuaEntitySAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
-{
-	*frame_range = m_animation_range;
-	*frame_speed = m_animation_speed;
-	*frame_blend = m_animation_blend;
-	*frame_loop = m_animation_loop;
-}
-
-void LuaEntitySAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
-{
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
-}
-
-void LuaEntitySAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
-{
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
-}
-
-void LuaEntitySAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-{
-	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players might see them lagging, plus we can't
-	// read and attach to skeletal bones.
-	// If we just attach on the client, the server still sees the child at its original location.
-	// This breaks some things so we also give the server the most accurate representation
-	// even if players only see the client changes.
-
-	m_attachment_parent_id = parent_id;
-	m_attachment_bone = bone;
-	m_attachment_position = position;
-	m_attachment_rotation = rotation;
-	m_attachment_sent = false;
-}
-
-void LuaEntitySAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
-{
-	*parent_id = m_attachment_parent_id;
-	*bone = m_attachment_bone;
-	*position = m_attachment_position;
-	*rotation = m_attachment_rotation;
-}
-
-void LuaEntitySAO::addAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.insert(child_id);
-}
-
-void LuaEntitySAO::removeAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.erase(child_id);
-}
-
-UNORDERED_SET<int> LuaEntitySAO::getAttachmentChildIds()
-{
-	return m_attachment_child_ids;
-}
-
-ObjectProperties* LuaEntitySAO::accessObjectProperties()
-{
-	return &m_prop;
-}
-
-void LuaEntitySAO::notifyObjectPropertiesModified()
-{
-	m_properties_sent = false;
-}
-
-void LuaEntitySAO::setVelocity(v3f velocity)
-{
-	m_velocity = velocity;
-}
-
-v3f LuaEntitySAO::getVelocity()
-{
-	return m_velocity;
-}
-
-void LuaEntitySAO::setAcceleration(v3f acceleration)
-{
-	m_acceleration = acceleration;
-}
-
-v3f LuaEntitySAO::getAcceleration()
-{
-	return m_acceleration;
-}
 
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
@@ -691,15 +638,6 @@ void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
 	m_messages_out.push(aom);
 }
 
-std::string LuaEntitySAO::getName()
-{
-	return m_init_name;
-}
-
-std::string LuaEntitySAO::getPropertyPacket()
-{
-	return gob_cmd_set_properties(m_prop);
-}
 
 void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 {
@@ -731,7 +669,7 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push(aom);
 }
 
-bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
+bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const {
 	if (m_prop.physical)
 	{
 		//update collision box
@@ -747,9 +685,6 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
 	return false;
 }
 
-bool LuaEntitySAO::collideWithObjects(){
-	return m_prop.collideWithObjects;
-}
 
 /*
 	PlayerSAO
@@ -769,16 +704,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_nocheat_dig_time(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
-	m_armor_groups_sent(false),
-	m_properties_sent(true),
 	m_is_singleplayer(is_singleplayer),
-	m_animation_speed(0),
-	m_animation_blend(0),
-	m_animation_loop(true),
-	m_animation_sent(false),
-	m_bone_position_sent(false),
-	m_attachment_parent_id(0),
-	m_attachment_sent(false),
 	m_breath(PLAYER_MAX_BREATH),
 	m_pitch(0),
 	// public
@@ -790,7 +716,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_physics_override_sent(false)
 {
 	assert(m_peer_id != 0);	// pre-condition
-	m_armor_groups["fleshy"] = 100;
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
@@ -825,10 +750,6 @@ void PlayerSAO::initialize(RemotePlayer *player, const std::set<std::string> &pr
 	m_inventory = &m_player->inventory;
 }
 
-std::string PlayerSAO::getDescription()
-{
-	return std::string("player ") + m_player->getName();
-}
 
 // Called after id has been set and has been inserted in environment
 void PlayerSAO::addedToEnvironment(u32 dtime_s)
@@ -853,99 +774,46 @@ void PlayerSAO::removingFromEnvironment()
 	}
 }
 
-bool PlayerSAO::isStaticAllowed() const
-{
-	return false;
-}
 
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
 
-	if(protocol_version >= 15)
-	{
-		writeU8(os, 1); // version
-		os<<serializeString(m_player->getName()); // name
-		writeU8(os, 1); // is_player
+	writeU8(os, protocol_version < 15 ? 0 : 1); // version
+	os << serializeString(m_player->getName()); // name
+	writeU8(os, 1); // is_player
+	if (protocol_version >= 15)
 		writeS16(os, getId()); //id
-		writeV3F1000(os, m_base_position + v3f(0,BS*1,0));
-		writeF1000(os, m_yaw);
-		writeS16(os, getHP());
+	writeV3F1000(os, m_base_position + v3f(0,BS*1,0));
+	writeF1000(os, m_yaw);
+	writeS16(os, getHP());
 
-		std::ostringstream msg_os(std::ios::binary);
-		msg_os << serializeLongString(getPropertyPacket()); // message 1
-		msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-		msg_os << serializeLongString(gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
-				(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
-		}
-		msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
-			m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
+	std::ostringstream msg_os(std::ios::binary);
+	int message_count;
+	if(protocol_version >= 15) {
+		message_count = serializeClientInitializationMessages14(&msg_os, protocol_version);
 		msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
-				m_physics_override_sneak_glitch)); // 5
+				m_physics_override_sneak_glitch));
 		// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
-		msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
-		int message_count = 6 + m_bone_position.size();
-		for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
-				ii != m_attachment_child_ids.end(); ++ii) {
-			if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
-				message_count++;
-				msg_os << serializeLongString(gob_cmd_update_infant(*ii, obj->getSendType(),
-					obj->getClientInitializationData(protocol_version)));
-			}
-		}
+		msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color));
+		message_count += 2;
+	}
+	else {
+		message_count = serializeClientInitializationMessages0(&msg_os, protocol_version);
+	}
 
-		writeU8(os, message_count);
-		os.write(msg_os.str().c_str(), msg_os.str().size());
-	}
-	else
-	{
-		writeU8(os, 0); // version
-		os<<serializeString(m_player->getName()); // name
-		writeU8(os, 1); // is_player
-		writeV3F1000(os, m_base_position + v3f(0,BS*1,0));
-		writeF1000(os, m_yaw);
-		writeS16(os, getHP());
-		writeU8(os, 2); // number of messages stuffed in here
-		os<<serializeLongString(getPropertyPacket()); // message 1
-		os<<serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
-	}
+	writeU8(os, message_count);
+	os.write(msg_os.str().c_str(), msg_os.str().size());
 
 	// return result
 	return os.str();
 }
 
-std::string PlayerSAO::getStaticData()
-{
-	FATAL_ERROR("Deprecated function (?)");
-	return "";
-}
-
-bool PlayerSAO::isAttached()
-{
-	if(!m_attachment_parent_id)
-		return false;
-	// Check if the parent still exists
-	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if(obj)
-		return true;
-	return false;
-}
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
-		m_properties_sent = true;
-		std::string str = getPropertyPacket();
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+	sendMandatoryDataToClient();
 
 	// If attached, check that our parent is still there. If it isn't, detach.
 	if(m_attachment_parent_id && !isAttached())
@@ -1008,15 +876,12 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		ActiveObjectMessage aom(getId(), false, str);
 		m_messages_out.push(aom);
 	}
+	sendOptionalDataToClient();
+}
 
-	if (!m_armor_groups_sent) {
-		m_armor_groups_sent = true;
-		std::string str = gob_cmd_update_armor_groups(
-				m_armor_groups);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
+void PlayerSAO::sendOptionalDataToClient()
+{
+	UnitSAO::sendOptionalDataToClient();
 
 	if (!m_physics_override_sent) {
 		m_physics_override_sent = true;
@@ -1027,37 +892,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
 	}
-
-	if (!m_animation_sent) {
-		m_animation_sent = true;
-		std::string str = gob_cmd_update_animation(
-			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
-
-	if (!m_bone_position_sent) {
-		m_bone_position_sent = true;
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
-				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
-			std::string str = gob_cmd_update_bone_position((*ii).first,
-					(*ii).second.X, (*ii).second.Y);
-			// create message and add to list
-			ActiveObjectMessage aom(getId(), true, str);
-			m_messages_out.push(aom);
-		}
-	}
-
-	if (!m_attachment_sent){
-		m_attachment_sent = true;
-		std::string str = gob_cmd_update_attachment(m_attachment_parent_id,
-				m_attachment_bone, m_attachment_position, m_attachment_rotation);
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
-	}
 }
+
 
 void PlayerSAO::setBasePosition(const v3f &position)
 {
@@ -1180,16 +1016,6 @@ int PlayerSAO::punch(v3f dir,
 	return hitparams.wear;
 }
 
-void PlayerSAO::rightClick(ServerActiveObject *)
-{
-}
-
-s16 PlayerSAO::readDamage()
-{
-	s16 damage = m_damage;
-	m_damage = 0;
-	return damage;
-}
 
 void PlayerSAO::setHP(s16 hp)
 {
@@ -1227,138 +1053,6 @@ void PlayerSAO::setBreath(const u16 breath)
 	m_breath = breath;
 }
 
-void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
-{
-	m_armor_groups = armor_groups;
-	m_armor_groups_sent = false;
-}
-
-ItemGroupList PlayerSAO::getArmorGroups()
-{
-	return m_armor_groups;
-}
-
-void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
-{
-	// store these so they can be updated to clients
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
-	m_animation_loop = frame_loop;
-	m_animation_sent = false;
-}
-
-void PlayerSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
-{
-	*frame_range = m_animation_range;
-	*frame_speed = m_animation_speed;
-	*frame_blend = m_animation_blend;
-	*frame_loop = m_animation_loop;
-}
-
-void PlayerSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
-{
-	// store these so they can be updated to clients
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
-}
-
-void PlayerSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
-{
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
-}
-
-void PlayerSAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-{
-	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players might see them lagging, plus we can't
-	// read and attach to skeletal bones.
-	// If we just attach on the client, the server still sees the child at its original location.
-	// This breaks some things so we also give the server the most accurate representation
-	// even if players only see the client changes.
-
-	m_attachment_parent_id = parent_id;
-	m_attachment_bone = bone;
-	m_attachment_position = position;
-	m_attachment_rotation = rotation;
-	m_attachment_sent = false;
-}
-
-void PlayerSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
-{
-	*parent_id = m_attachment_parent_id;
-	*bone = m_attachment_bone;
-	*position = m_attachment_position;
-	*rotation = m_attachment_rotation;
-}
-
-void PlayerSAO::addAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.insert(child_id);
-}
-
-void PlayerSAO::removeAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.erase(child_id);
-}
-
-UNORDERED_SET<int> PlayerSAO::getAttachmentChildIds()
-{
-	return m_attachment_child_ids;
-}
-
-ObjectProperties* PlayerSAO::accessObjectProperties()
-{
-	return &m_prop;
-}
-
-void PlayerSAO::notifyObjectPropertiesModified()
-{
-	m_properties_sent = false;
-}
-
-Inventory* PlayerSAO::getInventory()
-{
-	return m_inventory;
-}
-const Inventory* PlayerSAO::getInventory() const
-{
-	return m_inventory;
-}
-
-InventoryLocation PlayerSAO::getInventoryLocation() const
-{
-	InventoryLocation loc;
-	loc.setPlayer(m_player->getName());
-	return loc;
-}
-
-std::string PlayerSAO::getWieldList() const
-{
-	return "main";
-}
-
-int PlayerSAO::getWieldIndex() const
-{
-	return m_wield_index;
-}
-
-void PlayerSAO::setWieldIndex(int i)
-{
-	if(i != m_wield_index) {
-		m_wield_index = i;
-	}
-}
-
-// Erase the peer id and make the object for removal
-void PlayerSAO::disconnected()
-{
-	m_peer_id = 0;
-	m_removed = true;
-}
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
@@ -1369,11 +1063,6 @@ void PlayerSAO::unlinkPlayerSessionAndSave()
 	m_env->removePlayer(m_player);
 }
 
-std::string PlayerSAO::getPropertyPacket()
-{
-	m_prop.is_visible = (true);
-	return gob_cmd_set_properties(m_prop);
-}
 
 bool PlayerSAO::checkMovementCheat()
 {
@@ -1427,15 +1116,10 @@ bool PlayerSAO::checkMovementCheat()
 	return cheated;
 }
 
-bool PlayerSAO::getCollisionBox(aabb3f *toset)
+bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 {
 	*toset = aabb3f(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30);
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
-	return true;
-}
-
-bool PlayerSAO::collideWithObjects()
-{
 	return true;
 }

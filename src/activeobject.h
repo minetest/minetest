@@ -76,8 +76,8 @@ public:
 	}
 
 	virtual ActiveObjectType getType() const = 0;
-	virtual bool getCollisionBox(aabb3f *toset) = 0;
-	virtual bool collideWithObjects() = 0;
+	virtual bool getCollisionBox(aabb3f *toset) const = 0;
+	virtual bool collideWithObjects() const = 0;
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };
