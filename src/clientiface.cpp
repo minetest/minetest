@@ -176,6 +176,7 @@ void RemoteClient::GetNextBlocks (
 	const s16 full_d_max = g_settings->getS16("max_block_send_distance");
 	const s16 d_opt = g_settings->getS16("block_send_optimize_distance");
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	const float camera_fov = (g_settings->getFloat("fov")*M_PI/180) * 4./3.;
 
 	s16 d_max = full_d_max;
 	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
@@ -238,11 +239,9 @@ void RemoteClient::GetNextBlocks (
 
 			/*
 				Don't generate or send if not in sight
-				FIXME This only works if the client uses a small enough
-				FOV setting. The default of 72 degrees is fine.
+				NOTE This only works if client and server use the same
+				FOV setting.
 			*/
-
-			float camera_fov = (72.0*M_PI/180) * 4./3.;
 			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight) == false)
 			{
 				continue;
@@ -350,7 +349,7 @@ queue_full_break:
 	} else if(nearest_emergefull_d != -1){
 		new_nearest_unsent_d = nearest_emergefull_d;
 	} else {
-		if(d > g_settings->getS16("max_block_send_distance")){
+		if(d > full_d_max){
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0;
 		} else {
