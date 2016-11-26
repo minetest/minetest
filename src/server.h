@@ -270,7 +270,7 @@ public:
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
 	// Creates or resets inventory
-	Inventory* createDetachedInventory(const std::string &name);
+	Inventory* createDetachedInventory(const std::string &name, const std::string &player="");
 
 	// Envlock and conlock should be locked when using scriptapi
 	GameScripting *getScriptIface(){ return m_script; }
@@ -647,6 +647,8 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+	// value = "" (visible to all players) or player name
+	std::map<std::string, std::string> m_detached_inventories_player;
 
 	DISABLE_CLASS_COPY(Server);
 };

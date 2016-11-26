@@ -2310,8 +2310,11 @@ and `minetest.auth_reload` call the authetification handler.
     * `{type="player", name="celeron55"}`
     * `{type="node", pos={x=, y=, z=}}`
     * `{type="detached", name="creative"}`
-* `minetest.create_detached_inventory(name, callbacks)`: returns an `InvRef`
+* `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns an `InvRef`
     * callbacks: See "Detached inventory callbacks"
+    * player_name: Make detached inventory available to one player exclusively,
+      by default they will be sent to every player (even if not used).
+      Note that this parameter is mostly just a workaround and will be removed in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
    returns left over ItemStack

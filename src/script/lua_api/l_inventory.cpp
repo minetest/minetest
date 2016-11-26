@@ -520,16 +520,17 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 	}
 }
 
-// create_detached_inventory_raw(name)
+// create_detached_inventory_raw(name, [player_name])
 int ModApiInventory::l_create_detached_inventory_raw(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
-	if(getServer(L)->createDetachedInventory(name) != NULL){
+	const char *player = lua_isstring(L, 2) ? lua_tostring(L, 2) : "";
+	if (getServer(L)->createDetachedInventory(name, player) != NULL) {
 		InventoryLocation loc;
 		loc.setDetached(name);
 		InvRef::create(L, loc);
-	}else{
+	} else {
 		lua_pushnil(L);
 	}
 	return 1;
