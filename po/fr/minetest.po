@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-11-25 10:44+0000\n"
-"Last-Translator: AcidDragon (AcidNinjaFWHR) <fabienwang@free.fr>\n"
+"PO-Revision-Date: 2016-11-27 10:39+0000\n"
+"Last-Translator: Onyx Steinheim <thevoxelmanonyx@gmail.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
@@ -234,7 +234,9 @@ msgstr "Activé"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "Le format est 3 nombres séparés par des virgules et entre parenthèses."
+msgstr ""
+"Le format est composé de 3 nombres séparés par des virgules et entre "
+"parenthèses."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
@@ -626,7 +628,7 @@ msgstr "Textures :"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr "Pour activer les shaders, le pilote OpenGL doit être utilisé."
+msgstr "Pour activer les textures nuancées, le pilote OpenGL doit être utilisé."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
@@ -662,7 +664,7 @@ msgstr "Configurer les mods"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr "Menu principal"
+msgstr "Principal"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
@@ -710,7 +712,7 @@ msgstr "Chargement des textures..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Reconstruction des shaders..."
+msgstr "Reconstruction des textures nuancées..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
@@ -718,7 +720,7 @@ msgstr "Erreur de connexion (perte de connexion ?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Le jeu \" n'a pas pu être trouvé"
+msgstr "Impossible de trouver ou charger le jeu"
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -826,7 +828,7 @@ msgstr ""
 "Menu / Inventaire visible :\n"
 "- double-appui (en dehors) : fermeture\n"
 "- objet(s) dans l'inventaire : déplacement\n"
-"- appui, glissement et appui : placement d'un seul item par slot\n"
+"- appui, glissement et appui : pose d'un seul item par emplacement\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
@@ -2056,7 +2058,7 @@ msgstr "Intervalle d'impression des données du moteur de profil"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr "Méthodes d'entité"
+msgstr "Systèmes d'entité"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2076,7 +2078,7 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr "Fréquence du mouvement du bras en tombant"
+msgstr "Fréquence de mouvement du bras en tombant"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
@@ -2348,11 +2350,12 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
-"Auto-instrumenter le profileur:\n"
-"* Instrumente une fonction vide.\n"
-"La surcharge sera évaluée. (l'auto-instrumentation ajoute 1 appel de "
+"Auto-instrumentaliser le profileur:\n"
+"* Instrumentalise une fonction vide.\n"
+"La surcharge sera évaluée. (l'auto-instrumentalisation ajoute 1 appel de "
 "fonction à chaque fois).\n"
-"* Instrumente l’échantillonneur utilisé pour mettre à jour les statistiques."
+"* Instrumentalise l’échantillonneur utilisé pour mettre à jour les "
+"statistiques."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
@@ -2519,26 +2522,26 @@ msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
-"Instrumenter globalement les fonctions de rappel enregistrées.\n"
-"(tout ce que vous passez dans les fonctions minetest.register_* )"
+"Instrument des fonctions de rappel global enregistrées.\n"
+"(tout ce que vous passez dans une fonction minetest.register_*())"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
-"Instrumente la fonction d'action des modificateurs actifs de bloc lors de "
-"l'enregistrement."
+"Instrumentalise la fonction d'action des modificateurs actifs de bloc lors "
+"de l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
-"Instrumenter les fonctions d'action du chargement des modificateurs de blocs "
-"enregistrés."
+"Instrumentalise la fonction d'action des modificateurs de blocs chargés lors "
+"de l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr "Instrumenter les méthodes d'entités à l'enregistrement."
+msgstr "Instrumentalise les systèmes d'entités lors de l'enregistrement."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
@@ -2820,7 +2823,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Touche pour courir automatiquement.\n"
+"Touche d’exécution automatique.\n"
 "Voir http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e23190173"
 "5e3da1b0edf72eb3"
 
@@ -3295,7 +3298,7 @@ msgstr "Mapgen V5 : paramètres de bruit sur la profondeur"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal fractal"
-msgstr "Drapeaux des fractales de la génération de terrain"
+msgstr "Drapeaux des fractales du générateur de terrain"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal iterations"
@@ -3763,7 +3766,7 @@ msgstr "Mode sans collision"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr "Eclairage des blocs"
+msgstr "Surbrillance des blocs"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
@@ -3772,7 +3775,7 @@ msgstr "Intervalle de temps d'un nœud"
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
 msgstr ""
-"Paramètres de mélange pour la température, humidité et mélange de biomes."
+"Paramètres de bruit pour la température, l'humidité et le mélange de biomes."
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -3822,12 +3825,11 @@ msgstr "Nombre d'itérations sur l'occlusion parallaxe."
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
-"Bias général de l'occlusion parallaxe, habituellement échelle divisée par 2."
+msgstr "Bias général de l'occlusion parallaxe, habituellement échelle/2."
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr "Echelle générale de l'occlusion parallaxe."
+msgstr "Echelle générale de l'effet de l'occlusion parallaxe."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
@@ -3897,7 +3899,7 @@ msgid ""
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
 "Port où se connecter (UDP).\n"
-"Le champ de port dans le menu va annuler ce paramètre."
+"Notez que le champ de port dans le menu principal passe outre ce réglage."
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
@@ -3938,7 +3940,7 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
-"Rayon de l'aire des nuages où se trouve 64 blocs de nuage.\n"
+"Rayon de l'aire des nuages où se trouve 64 blocs carrés de nuages.\n"
 "Les valeurs plus grandes que 26 entraînent une \"coupure\" nette des nuages "
 "aux coins de l'aire."
 
@@ -3992,7 +3994,7 @@ msgstr "Taille des rivières"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
-msgstr "Bruit des rivières"
+msgstr "Bruit des rivières -- les rivières se forment près de zéro"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
@@ -4155,7 +4157,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr "Forme de la mini-carte. Activé = ronde, désactivé = carré."
+msgstr "Forme de la mini-carte. Activé = ronde, désactivé = carrée."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
@@ -4217,14 +4219,15 @@ msgid ""
 msgstr ""
 "Spécifie l'URL à laquelle les clients obtiennent les fichiers média au lieu "
 "d'utiliser le port UDP.\n"
-"$filename doit être accessible depuis $remote_media$filename via cURL "
-"(évidemment, remote_media devrait\n"
+"$filename doit être accessible depuis $remote_media$filename via cURL ("
+"évidemment, remote_media devrait\n"
 "se terminer avec un slash).\n"
-"Les fichiers qui ne sont pas présents seront obtenus avec le moyen usuel."
+"Les fichiers qui ne sont pas présents seront récupérés de la manière "
+"habituelle."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr "Emplacement du spawn"
+msgstr "Emplacement du spawn statique"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -4344,9 +4347,9 @@ msgid ""
 msgstr ""
 "Le temps (en secondes) où la file des liquides peut s'agrandir au-delà de "
 "sa\n"
-"capacité de traitement jusqu'à ce qu'une tentative est faite pour réduire sa "
-"taille en vidant\n"
-"l'ancienne file d'items. Une valeur de 0 désactive cette fonctionnalité."
+"capacité de traitement jusqu'à ce qu'une tentative soit faite pour réduire "
+"sa taille en vidant\n"
+"l'ancienne file d'articles. Une valeur de 0 désactive cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4377,8 +4380,8 @@ msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"Durée de visibilité des objets jetés.\n"
-"Définir ceci à -1 pour désactiver cette fonctionnalité."
+"Durée en secondes pendant laquelle les objets jetés sont présents.\n"
+"Définir à -1 pour désactiver cette fonctionnalité."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -4391,7 +4394,7 @@ msgstr "Vitesse du temps"
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
-"Temps de délais pour le client pour supprimer les données de la carte de sa "
+"Délai pendant lequel le client supprime les données de la carte de sa "
 "mémoire."
 
 #: src/settings_translation_file.cpp
@@ -4401,7 +4404,7 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
-"Pour réduire le lag, le transfert des mapblocks sont ralentis quand un "
+"Pour réduire le lag, les transferts des mapblocks sont ralentis quand un "
 "joueur\n"
 "est en train de construire quelque chose.\n"
 "Cela détermine la durée du ralentissement après placement ou destruction "
@@ -4409,7 +4412,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr "Changer de caméra"
+msgstr "Basculement en mode caméra"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4448,15 +4451,17 @@ msgstr "Purger les données de serveur inutiles"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr "Activation des nuages 3D au lieu des nuages 2D (plats)."
+msgstr "Activer les nuages 3D au lieu des nuages 2D (plats)."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr "Mouvement des nuages dans le menu."
+msgstr "Utiliser une animation de nuages pour l'arrière-plan du menu principal."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr "Utilisation du filtrage anisotrope."
+msgstr ""
+"Utilisation du filtrage anisotrope lors de la visualisation des textures de "
+"biais."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
@@ -4468,7 +4473,7 @@ msgstr "Utiliser"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
-msgstr "Utilisation du mip-mapping. Peut impacter les performances."
+msgstr "Utilisation du mip-mapping. Peut augmenter légèrement les performances."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
@@ -4564,7 +4569,7 @@ msgstr "Niveau de l'eau"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr "Niveau de la surface de l'eau dans le monde."
+msgstr "Niveau de la surface de l'eau du monde."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
@@ -4611,7 +4616,7 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
-"Si gui_scaling_filter_txr2img est activé, c'est Minetest qui s'occupe de\n"
+"Quand gui_scaling_filter_txr2img est activé, c'est Minetest qui s'occupe de\n"
 "la mise à l'échelle des images et non votre matériel. Si désactivé,\n"
 "l'ancienne méthode de mise à l'échelle est utilisée, pour les pilotes "
 "vidéos\n"
@@ -4629,16 +4634,16 @@ msgid ""
 msgstr ""
 "En utilisant le filtrage bilinéaire / trilinéaire / anisotrope, les textures "
 "de basse résolution\n"
-"peuvent être floues en agrandissat automatiquement les textures avec une "
+"peuvent être floues en agrandissant automatiquement les textures avec une "
 "interpolation précise\n"
 "pour préserver les pixels hasardeux.\n"
 "\n"
-"Ceci détermine la taille de la texture minimale pour les textures agrandie. "
+"Ceci détermine la taille de la texture minimale pour les textures agrandies. "
 "Les valeurs plus hautes rendent\n"
 "les textures plus détaillées, mais nécessitent plus de mémoire.\n"
 "Les valeurs en puissance de 2 sont recommandées. Définir une valeur "
 "supérieure à 1 peut ne pas\n"
-"avoir un effet visible sauf le filtrage bilinéaire / trilinéaire / "
+"avoir un effet visible sauf si le filtrage bilinéaire / trilinéaire / "
 "anisotrope est activé."
 
 #: src/settings_translation_file.cpp
@@ -4687,9 +4692,9 @@ msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"Détermine la possibilité des clients de se re-connecter après une "
-"interruption de serveur.\n"
-"Activé-le si votre serveur est paramétré pour redémarrer automatiquement."
+"Détermine la possibilité des clients à se reconnecter après une extinction "
+"du serveur.\n"
+"Activez-le si votre serveur est paramétré pour redémarrer automatiquement."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
