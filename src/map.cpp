@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/mathconstants.h"
 #include "rollback_interface.h"
 #include "environment.h"
+#include "reflowscan.h"
 #include "emerge.h"
 #include "mapgen_v6.h"
 #include "mg_biome.h"
@@ -2905,8 +2906,11 @@ void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
 		block->deSerialize(is, version, true);
 
 		// If it's a new block, insert it to the map
-		if(created_new)
+		if (created_new) {
 			sector->insertBlock(block);
+			ReflowScan scanner(this, m_emerge->ndef);
+			scanner.scan(block, &m_transforming_liquid);
+		}
 
 		/*
 			Save blocks loaded in old format in new format
@@ -2972,8 +2976,11 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		block->deSerialize(is, version, true);
 
 		// If it's a new block, insert it to the map
-		if(created_new)
+		if (created_new) {
 			sector->insertBlock(block);
+			ReflowScan scanner(this, m_emerge->ndef);
+			scanner.scan(block, &m_transforming_liquid);
+		}
 
 		/*
 			Save blocks loaded in old format in new format
