@@ -445,6 +445,7 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	quicktune.cpp
+	reflowscan.cpp
 	remoteplayer.cpp
 	rollback.cpp
 	rollback_interface.cpp
