@@ -251,7 +251,7 @@ void TestFilePath::testRemoveRelativePathComponent()
 	UASSERT(result == p("/home/user/minetest/worlds/world1"));
 	path = p(".");
 	result = fs::RemoveRelativePathComponents(path);
-	UASSERT(result == "");
+	UASSERT(result == ".");
 	path = p("./subdir/../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");
