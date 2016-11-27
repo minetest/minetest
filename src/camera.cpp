@@ -484,13 +484,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 void Camera::updateViewingRange()
 {
+	f32 viewing_range = g_settings->getFloat("viewing_range");
+	m_draw_control.wanted_range = viewing_range;
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
 	}
-
-	f32 viewing_range = g_settings->getFloat("viewing_range");
-	m_draw_control.wanted_range = viewing_range;
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
 }
 

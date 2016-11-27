@@ -138,7 +138,9 @@ public:
 	{
 		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
 	}
-	
+
+	const MapDrawControl & getControl() const { return m_control; }
+	f32 getCameraFov() const { return m_camera_fov; }
 private:
 	Client *m_client;
 	
