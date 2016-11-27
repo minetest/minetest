@@ -1309,6 +1309,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
 		int num_neutrals = 0;
 		bool flowing_down = false;
+		bool ignored_sources = false;
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
@@ -1336,10 +1337,15 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 							flowing_down = true;
 					} else {
 						neutrals[num_neutrals++] = nb;
-						// If neutral below is ignore prevent water spreading outwards
-						if (nb.t == NEIGHBOR_LOWER &&
-								nb.n.getContent() == CONTENT_IGNORE)
-							flowing_down = true;
+						if (nb.n.getContent() == CONTENT_IGNORE) {
+							// If node below is ignore prevent water from
+							// spreading outwards and otherwise prevent from
+							// flowing away as ignore node might be the source
+							if (nb.t == NEIGHBOR_LOWER)
+								flowing_down = true;
+							else
+								ignored_sources = true;
+						}
 					}
 					break;
 				case LIQUID_SOURCE:
@@ -1392,6 +1398,11 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 				new_node_content = liquid_kind;
 			else
 				new_node_content = floodable_node;
+		} else if (ignored_sources && liquid_level >= 0) {
+			// Maybe there are neighbouring sources that aren't loaded yet
+			// so prevent flowing away.
+			new_node_level = liquid_level;
+			new_node_content = liquid_kind;
 		} else {
 			// no surrounding sources, so get the maximum level that can flow into this node
 			for (u16 i = 0; i < num_flows; i++) {
