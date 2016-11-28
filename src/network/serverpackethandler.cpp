@@ -794,7 +794,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 
 	// default behavior (in case an old client doesn't send these)
 	f32 fov = (72.0*M_PI/180) * 4./3.;
-	s32 wanted_range = 10000;
+	s32 wanted_range = 100000;
 
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> keyPressed;

@@ -173,7 +173,7 @@ void RemoteClient::GetNextBlocks (
 	*/
 	s32 new_nearest_unsent_d = -1;
 
-	s32 wanted_range = sao->getWantedRange() / MAP_BLOCKSIZE;
+	s16 wanted_range = sao->getWantedRange() / MAP_BLOCKSIZE;
 	wanted_range = wanted_range <= 0 ? 10000 : wanted_range;
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);

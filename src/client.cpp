@@ -932,13 +932,13 @@ void Client::Send(NetworkPacket* pkt)
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
-	v3f pf         = myplayer->getPosition() * 100;
-	v3f sf         = myplayer->getSpeed() * 100;
-	s32 pitch      = myplayer->getPitch() * 100;
-	s32 yaw        = myplayer->getYaw() * 100;
-	u32 keyPressed = myplayer->keyPressed;
-	s32 fov        = clientMap->getCameraFov() * 100;
-	s32 wanted_range    = clientMap->getControl().wanted_range;
+	v3f pf           = myplayer->getPosition() * 100;
+	v3f sf           = myplayer->getSpeed() * 100;
+	s32 pitch        = myplayer->getPitch() * 100;
+	s32 yaw          = myplayer->getYaw() * 100;
+	u32 keyPressed   = myplayer->keyPressed;
+	s32 fov          = clientMap->getCameraFov() * 100;
+	s32 wanted_range = clientMap->getControl().wanted_range;
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);

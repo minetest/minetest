@@ -706,6 +706,8 @@ void Server::AsyncRunStep(bool initial_step)
 				continue;
 
 			s16 my_radius = MYMIN(radius, playersao->getWantedRange());
+			//infostream << "Server: Active Radius " << my_radius << std::endl;
+
 			std::queue<u16> removed_objects;
 			std::queue<u16> added_objects;
 			m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
