@@ -482,6 +482,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	liquid_viscosity = readU8(is);
 	liquid_renewable = readU8(is);
 	light_source = readU8(is);
+	light_source = MYMIN(light_source, LIGHT_MAX);
 	damage_per_second = readU32(is);
 	node_box.deSerialize(is);
 	selection_box.deSerialize(is);
@@ -1442,6 +1443,7 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		liquid_alternative_source = deSerializeString(is);
 		liquid_viscosity = readU8(is);
 		light_source = readU8(is);
+		light_source = MYMIN(light_source, LIGHT_MAX);
 		damage_per_second = readU32(is);
 		node_box.deSerialize(is);
 		selection_box.deSerialize(is);
