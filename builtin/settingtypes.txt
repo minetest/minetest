@@ -436,9 +436,6 @@ fullscreen_bpp (Full screen BPP) int 24
 #    Vertical screen synchronization.
 vsync (V-Sync) bool false
 
-#    Field of view in degrees.
-fov (Field of view) int 72 30 160
-
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
 zoom_fov (Field of view for zoom) int 15 15 160
@@ -1297,3 +1294,8 @@ modstore_details_url (Modstore details URL) string https://forum.minetest.net/mm
 
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 profiler_print_interval (Engine profiling data print interval) int 0
+
+#    Field of view in degrees.
+#    Used to determine visible blocks on both client and server.
+#    Client and server should have matching settings.
+fov (Field of view) int 72 30 160

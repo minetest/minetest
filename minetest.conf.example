@@ -497,10 +497,6 @@
 #    type: bool
 # vsync = false
 
-#    Field of view in degrees.
-#    type: int min: 30 max: 160
-# fov = 72
-
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
 #    type: int min: 15 max: 160
@@ -1685,3 +1681,6 @@
 #    type: int
 # profiler_print_interval = 0
 
+#    Field of view in degrees.
+#    type: int min: 30 max: 160
+# fov = 72
