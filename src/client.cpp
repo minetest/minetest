@@ -526,6 +526,7 @@ void Client::step(float dtime)
 		{
 			counter = 0.0;
 			sendPlayerPos();
+			sendViewSettings();
 		}
 	}
 
@@ -930,15 +931,13 @@ void Client::Send(NetworkPacket* pkt)
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
-void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
+void writePlayerPos(LocalPlayer *myplayer, NetworkPacket *pkt)
 {
-	v3f pf           = myplayer->getPosition() * 100;
-	v3f sf           = myplayer->getSpeed() * 100;
-	s32 pitch        = myplayer->getPitch() * 100;
-	s32 yaw          = myplayer->getYaw() * 100;
-	u32 keyPressed   = myplayer->keyPressed;
-	s32 fov          = clientMap->getCameraFov() * 100;
-	s32 wanted_range = clientMap->getControl().wanted_range;
+	v3f pf         = myplayer->getPosition() * 100;
+	v3f sf         = myplayer->getSpeed() * 100;
+	s32 pitch      = myplayer->getPitch() * 100;
+	s32 yaw        = myplayer->getYaw() * 100;
+	u32 keyPressed = myplayer->keyPressed;
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
@@ -950,11 +949,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12] s32 pitch*100
 		[12+12+4] s32 yaw*100
 		[12+12+4+4] u32 keyPressed
-		[12+12+4+4+4] s32 fov*100
-		[12+12+4+4+4+4] s32 wanted_range
 	*/
+
 	*pkt << position << speed << pitch << yaw << keyPressed;
-	*pkt << fov << wanted_range;
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)
@@ -996,8 +993,30 @@ void Client::interact(u8 action, const PointedThing& pointed)
 
 	pkt.putLongString(tmp_os.str());
 
-	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
+	writePlayerPos(myplayer, &pkt);
 
+	Send(&pkt);
+}
+
+void Client::sendViewSettings() {
+	DSTACK(FUNCTION_NAME);
+
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
+	if(myplayer == NULL)
+		return;
+
+	s32 fov          = m_env.getClientMap().getCameraFov() * 100;
+	s32 wanted_range = m_env.getClientMap().getControl().wanted_range;
+
+	if (myplayer->last_camera_fov == fov && myplayer->last_wanted_range == wanted_range)
+		return;
+	//infostream << "Sending new FOV and range" << std::endl;
+
+	myplayer->last_camera_fov = fov;
+	myplayer->last_wanted_range = wanted_range;
+
+	NetworkPacket pkt(TOSERVER_VIEW_SETTINGS, sizeof(s32)*2);
+	pkt << fov << wanted_range;
 	Send(&pkt);
 }
 
@@ -1328,7 +1347,7 @@ void Client::sendPlayerPos()
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
 
-	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
+	writePlayerPos(myplayer, &pkt);
 
 	Send(&pkt);
 }

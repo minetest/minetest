@@ -651,8 +651,6 @@ enum ToServerCommand
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
 		[2+12+12+4+4] u32 keyPressed
-		[2+12+12+4+4+4] s32 fov*100
-		[2+12+12+4+4+4+4] s32 wanted_range
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,
@@ -817,6 +815,12 @@ enum ToServerCommand
 			u8[len] field name
 			u32 len
 			u8[len] field value
+	*/
+
+	TOSERVER_VIEW_SETTINGS = 0x3d,
+	/*
+		s32 camera_fov * 100
+		s32 wanted_range
 	*/
 
 	TOSERVER_REQUEST_MEDIA = 0x40,

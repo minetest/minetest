@@ -781,7 +781,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		return;
 
 	v3s32 ps, ss;
-	s32 f32pitch, f32yaw, f32fov;
+	s32 f32pitch, f32yaw;
 
 	*pkt >> ps;
 	*pkt >> ss;
@@ -792,18 +792,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	f32 yaw = (f32)f32yaw / 100.0;
 	u32 keyPressed = 0;
 
-	// default behavior (in case an old client doesn't send these)
-	f32 fov = (72.0*M_PI/180) * 4./3.;
-	s32 wanted_range = 100000;
-
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> keyPressed;
-	if (pkt->getRemainingBytes() >= 4) {
-		*pkt >> f32fov;
-		fov = (f32)f32fov / 100.0;
-	}
-	if (pkt->getRemainingBytes() >= 4)
-		*pkt >> wanted_range;
 
 	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
 	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
@@ -815,8 +805,6 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->setSpeed(speed);
 	playersao->setPitch(pitch);
 	playersao->setYaw(yaw);
-	playersao->setFov(fov);
-	playersao->setWantedRange(wanted_range);
 	player->keyPressed = keyPressed;
 	player->control.up = (keyPressed & 1);
 	player->control.down = (keyPressed & 2);
@@ -1707,6 +1695,40 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		warningstream << "Server: Invalid action "
 				<< action << std::endl;
 	}
+}
+
+void Server::handleCommand_ViewSettings(NetworkPacket* pkt)
+{
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
+	if (player == NULL) {
+		errorstream << "Server::ProcessData(): Canceling: "
+				"No player for peer_id=" << pkt->getPeerId()
+				<< " disconnecting peer!" << std::endl;
+		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	PlayerSAO *playersao = player->getPlayerSAO();
+	if (playersao == NULL) {
+		errorstream << "Server::ProcessData(): Canceling: "
+				"No player object for peer_id=" << pkt->getPeerId()
+				<< " disconnecting peer!" << std::endl;
+		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	s32 f32fov;
+	f32 fov;
+	s32 wanted_range;
+
+	*pkt >> f32fov;
+	fov = (f32)f32fov / 100.0;
+	*pkt >> wanted_range;
+
+	//infostream << "Retrieved FOV: " << fov << " and view range: " << wanted_range << " from client" << std::endl;
+	playersao->setFov(fov);
+	playersao->setWantedRange(wanted_range);
 }
 
 void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
