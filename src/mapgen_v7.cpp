@@ -346,8 +346,11 @@ bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 
 bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
-	float density_gradient =
-		-pow(fabs((float)(y - floatland_level) / float_mount_height), 0.8f);
+	// Make rim 2 nodes thick to match floatland base terrain
+	float density_gradient = (y >= floatland_level) ?
+		-pow((float)(y - floatland_level) / float_mount_height, 0.75f) :
+		-pow((float)(floatland_level - 1 - y) / float_mount_height, 0.75f);
+
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
 
 	return floatn + density_gradient >= 0.0f;
@@ -362,11 +365,10 @@ void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, 
 
 	float n_base = noise_floatland_base->result[idx_xz];
 	if (n_base > 0.0f) {
-		float n_base_height =
-			MYMAX(noise_float_base_height->result[idx_xz], 0.0f);
+		float n_base_height = noise_float_base_height->result[idx_xz];
 		float amp = n_base * n_base_height;
 		float ridge = n_base_height / 3.0f;
-		base_min = floatland_level - amp / 2.0f;
+		base_min = floatland_level - amp / 1.5f;
 
 		if (amp > ridge * 2.0f) {
 			// Lake bed
