@@ -174,10 +174,10 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	// get view range and camera fov from the client
-	s16 wanted_range = sao->getWantedRange() / MAP_BLOCKSIZE;
+	s16 wanted_range = sao->getWantedRange();
 	float camera_fov = sao->getFov();
 	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 10000;
+	if (wanted_range <= 0) wanted_range = 1000;
 	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
 
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);

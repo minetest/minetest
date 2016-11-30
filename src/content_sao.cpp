@@ -1109,7 +1109,7 @@ void PlayerSAO::setFov(const float fov)
 	m_fov = fov;
 }
 
-void PlayerSAO::setWantedRange(const s32 range)
+void PlayerSAO::setWantedRange(const s16 range)
 {
 	if (m_player && range != m_wanted_range)
 		m_player->setDirty(true);

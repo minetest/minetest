@@ -705,7 +705,7 @@ void Server::AsyncRunStep(bool initial_step)
 			if (playersao == NULL)
 				continue;
 
-			s16 my_radius = MYMIN(radius, playersao->getWantedRange());
+			s16 my_radius = MYMIN(radius, playersao->getWantedRange() * MAP_BLOCKSIZE);
 			if (my_radius <= 0) my_radius = radius;
 			//infostream << "Server: Active Radius " << my_radius << std::endl;
 

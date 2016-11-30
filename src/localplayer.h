@@ -69,16 +69,14 @@ public:
 
 	v3s16 getStandingNodePos();
 
-	// Used to check if anything changed and prevent sending pos packets if not
+	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
 	v3f last_speed;
 	float last_pitch;
 	float last_yaw;
 	unsigned int last_keyPressed;
-
-	// Used to check if anything changed and prevent sending settings packets if not
-	s32 last_camera_fov;
-	s32 last_wanted_range;
+	u8 last_camera_fov;
+	u8 last_wanted_range;
 
 	float camera_impact;
 

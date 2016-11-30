@@ -421,7 +421,6 @@ public:
 	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
-	void sendViewSettings();
 
 	ClientEnvironment& getEnv()
 	{ return m_env; }
