@@ -930,13 +930,16 @@ void Client::Send(NetworkPacket* pkt)
 }
 
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
-void writePlayerPos(LocalPlayer *myplayer, NetworkPacket *pkt)
+void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
-	v3f pf         = myplayer->getPosition() * 100;
-	v3f sf         = myplayer->getSpeed() * 100;
-	s32 pitch      = myplayer->getPitch() * 100;
-	s32 yaw        = myplayer->getYaw() * 100;
-	u32 keyPressed = myplayer->keyPressed;
+	v3f pf           = myplayer->getPosition() * 100;
+	v3f sf           = myplayer->getSpeed() * 100;
+	s32 pitch        = myplayer->getPitch() * 100;
+	s32 yaw          = myplayer->getYaw() * 100;
+	u32 keyPressed   = myplayer->keyPressed;
+	// scaled by 80, so that pi can fit into a u8
+	u8 fov           = clientMap->getCameraFov() * 80;
+	u8 wanted_range  = clientMap->getControl().wanted_range / MAP_BLOCKSIZE;
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
@@ -948,9 +951,11 @@ void writePlayerPos(LocalPlayer *myplayer, NetworkPacket *pkt)
 		[12+12] s32 pitch*100
 		[12+12+4] s32 yaw*100
 		[12+12+4+4] u32 keyPressed
+		[12+12+4+4+1] u8 fov*80
+		[12+12+4+4+4+1] u8 wanted_range / MAP_BLOCKSIZE
 	*/
-
 	*pkt << position << speed << pitch << yaw << keyPressed;
+	*pkt << fov << wanted_range;
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)
@@ -992,7 +997,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 
 	pkt.putLongString(tmp_os.str());
 
-	writePlayerPos(myplayer, &pkt);
+	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
 
 	Send(&pkt);
 }
@@ -1296,19 +1301,30 @@ void Client::sendPlayerPos()
 	if(myplayer == NULL)
 		return;
 
+	ClientMap &map = m_env.getClientMap();
+
+	u8 camera_fov    = map.getCameraFov();
+	u8 wanted_range  = map.getControl().wanted_range;
+
 	// Save bandwidth by only updating position when something changed
 	if(myplayer->last_position        == myplayer->getPosition() &&
-			myplayer->last_speed      == myplayer->getSpeed()    &&
-			myplayer->last_pitch      == myplayer->getPitch()    &&
-			myplayer->last_yaw        == myplayer->getYaw()      &&
-			myplayer->last_keyPressed == myplayer->keyPressed)
+			myplayer->last_speed        == myplayer->getSpeed()    &&
+			myplayer->last_pitch        == myplayer->getPitch()    &&
+			myplayer->last_yaw          == myplayer->getYaw()      &&
+			myplayer->last_keyPressed   == myplayer->keyPressed    &&
+			myplayer->last_camera_fov   == camera_fov              &&
+			myplayer->last_wanted_range == wanted_range)
 		return;
 
-	myplayer->last_position   = myplayer->getPosition();
-	myplayer->last_speed      = myplayer->getSpeed();
-	myplayer->last_pitch      = myplayer->getPitch();
-	myplayer->last_yaw        = myplayer->getYaw();
-	myplayer->last_keyPressed = myplayer->keyPressed;
+	myplayer->last_position     = myplayer->getPosition();
+	myplayer->last_speed        = myplayer->getSpeed();
+	myplayer->last_pitch        = myplayer->getPitch();
+	myplayer->last_yaw          = myplayer->getYaw();
+	myplayer->last_keyPressed   = myplayer->keyPressed;
+	myplayer->last_camera_fov   = camera_fov;
+	myplayer->last_wanted_range = wanted_range;
+
+	//infostream << "Sending Player Position information" << std::endl;
 
 	u16 our_peer_id;
 	{
@@ -1324,7 +1340,7 @@ void Client::sendPlayerPos()
 
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
 
-	writePlayerPos(myplayer, &pkt);
+	writePlayerPos(myplayer, &map, &pkt);
 
 	Send(&pkt);
 }

@@ -173,12 +173,20 @@ void RemoteClient::GetNextBlocks (
 	*/
 	s32 new_nearest_unsent_d = -1;
 
-	const s16 full_d_max = g_settings->getS16("max_block_send_distance");
-	const s16 d_opt = g_settings->getS16("block_send_optimize_distance");
+	// get view range and camera fov from the client
+	s16 wanted_range = sao->getWantedRange();
+	float camera_fov = sao->getFov();
+	// if FOV, wanted_range are not available (old client), fall back to old default
+	if (wanted_range <= 0) wanted_range = 1000;
+	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
+
+	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
+	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = g_settings->getS16("max_block_generate_distance");
+	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
 
 	// Don't loop very much at a time
 	s16 max_d_increment_at_time = 2;
@@ -242,7 +250,6 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			float camera_fov = (72.0*M_PI/180) * 4./3.;
 			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight) == false)
 			{
 				continue;

@@ -214,6 +214,10 @@ public:
 	f32 getRadPitch() const { return m_pitch * core::DEGTORAD; }
 	// Deprecated
 	f32 getRadPitchDep() const { return -1.0 * m_pitch * core::DEGTORAD; }
+	void setFov(const float pitch);
+	f32 getFov() const { return m_fov; }
+	void setWantedRange(const s16 range);
+	s16 getWantedRange() const { return m_wanted_range; }
 
 	/*
 		Interaction interface
@@ -364,6 +368,8 @@ private:
 	bool m_attachment_sent;
 	u16 m_breath;
 	f32 m_pitch;
+	f32 m_fov;
+	s16 m_wanted_range;
 public:
 	float m_physics_override_speed;
 	float m_physics_override_jump;

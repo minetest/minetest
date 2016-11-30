@@ -75,6 +75,8 @@ public:
 	float last_pitch;
 	float last_yaw;
 	unsigned int last_keyPressed;
+	u8 last_camera_fov;
+	u8 last_wanted_range;
 
 	float camera_impact;
 

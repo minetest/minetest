@@ -781,6 +781,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_attachment_sent(false),
 	m_breath(PLAYER_MAX_BREATH),
 	m_pitch(0),
+	m_fov(0),
+	m_wanted_range(0),
 	// public
 	m_physics_override_speed(1),
 	m_physics_override_jump(1),
@@ -1097,6 +1099,22 @@ void PlayerSAO::setYaw(const float yaw)
 		m_player->setDirty(true);
 
 	UnitSAO::setYaw(yaw);
+}
+
+void PlayerSAO::setFov(const float fov)
+{
+	if (m_player && fov != m_fov)
+		m_player->setDirty(true);
+
+	m_fov = fov;
+}
+
+void PlayerSAO::setWantedRange(const s16 range)
+{
+	if (m_player && range != m_wanted_range)
+		m_player->setDirty(true);
+
+	m_wanted_range = range;
 }
 
 void PlayerSAO::setYawAndSend(const float yaw)

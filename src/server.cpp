@@ -705,11 +705,15 @@ void Server::AsyncRunStep(bool initial_step)
 			if (playersao == NULL)
 				continue;
 
+			s16 my_radius = MYMIN(radius, playersao->getWantedRange() * MAP_BLOCKSIZE);
+			if (my_radius <= 0) my_radius = radius;
+			//infostream << "Server: Active Radius " << my_radius << std::endl;
+
 			std::queue<u16> removed_objects;
 			std::queue<u16> added_objects;
-			m_env->getRemovedActiveObjects(playersao, radius, player_radius,
+			m_env->getRemovedActiveObjects(playersao, my_radius, player_radius,
 					client->m_known_objects, removed_objects);
-			m_env->getAddedActiveObjects(playersao, radius, player_radius,
+			m_env->getAddedActiveObjects(playersao, my_radius, player_radius,
 					client->m_known_objects, added_objects);
 
 			// Ignore if nothing happened
