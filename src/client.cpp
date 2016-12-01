@@ -951,7 +951,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12] s32 pitch*100
 		[12+12+4] s32 yaw*100
 		[12+12+4+4] u32 keyPressed
-		[12+12+4+4+1] u8 fov*80
+		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 wanted_range / MAP_BLOCKSIZE
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
@@ -1338,7 +1338,7 @@ void Client::sendPlayerPos()
 
 	assert(myplayer->peer_id == our_peer_id);
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(myplayer, &map, &pkt);
 
