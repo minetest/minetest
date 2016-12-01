@@ -2876,13 +2876,12 @@ and `minetest.auth_reload` call the authentication handler.
     *   parameter was absent)
 * `minetest.delete_area(pos1, pos2)`
     * delete all mapblocks in the area from pos1 to pos2, inclusive
-* `minetest.line_of_sight(pos1, pos2, stepsize)`: returns `boolean, pos`
-    * Check if there is a direct line of sight between `pos1` and `pos2`
+* `minetest.line_of_sight(pos1, pos2)`: returns `boolean, pos`
+    * Checks if there is anything other than air between pos1 and pos2.
+    * Returns false if something is blocking the sight.
     * Returns the position of the blocking node when `false`
     * `pos1`: First position
     * `pos2`: Second position
-    * `stepsize`: smaller gives more accurate results but requires more computing
-      time. Default is `1`.
 * `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
     * Creates a `Raycast` object.
     * `pos1`: start of the ray

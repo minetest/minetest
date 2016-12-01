@@ -489,30 +489,21 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
+bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, v3s16 *p)
 {
-	float distance = pos1.getDistanceFrom(pos2);
+	// Iterate trough nodes on the line
+	voxalgo::VoxelLineIterator iterator(pos1 / BS, (pos2 - pos1) / BS);
+	do {
+		MapNode n = getMap().getNodeNoEx(iterator.m_current_node_pos);
 
-	//calculate normalized direction vector
-	v3f normalized_vector = v3f((pos2.X - pos1.X)/distance,
-		(pos2.Y - pos1.Y)/distance,
-		(pos2.Z - pos1.Z)/distance);
-
-	//find out if there's a node on path between pos1 and pos2
-	for (float i = 1; i < distance; i += stepsize) {
-		v3s16 pos = floatToInt(v3f(normalized_vector.X * i,
-			normalized_vector.Y * i,
-			normalized_vector.Z * i) +pos1,BS);
-
-		MapNode n = getMap().getNodeNoEx(pos);
-
-		if(n.param0 != CONTENT_AIR) {
-			if (p) {
-				*p = pos;
-			}
+		// Return non-air
+		if (n.param0 != CONTENT_AIR) {
+			if (p)
+				*p = iterator.m_current_node_pos;
 			return false;
 		}
-	}
+		iterator.next();
+	} while (iterator.m_current_index <= iterator.m_last_index);
 	return true;
 }
 

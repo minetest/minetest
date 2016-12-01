@@ -156,7 +156,7 @@ private:
 	// spawn_tree(pos, treedef)
 	static int l_spawn_tree(lua_State *L);
 
-	// line_of_sight(pos1, pos2, stepsize) -> true/false
+	// line_of_sight(pos1, pos2) -> true/false
 	static int l_line_of_sight(lua_State *L);
 
 	// raycast(pos1, pos2, objects, liquids) -> Raycast
