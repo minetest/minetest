@@ -357,7 +357,7 @@ queue_full_break:
 	} else if(nearest_emergefull_d != -1){
 		new_nearest_unsent_d = nearest_emergefull_d;
 	} else {
-		if(d > g_settings->getS16("max_block_send_distance")){
+		if(d > full_d_max){
 			new_nearest_unsent_d = 0;
 			m_nothing_to_send_pause_timer = 2.0;
 		} else {
