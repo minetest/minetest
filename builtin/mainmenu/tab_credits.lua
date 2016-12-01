@@ -29,14 +29,15 @@ local core_developers = {
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"Matt Gregory (paramat)",
 	"est31 <MTest31@outlook.com>",
-	"Craig Robbins (Zeno)",
+	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
+	"Auke Kok (sofar) <sofar@foo-projects.org>",
 }
 
 local active_contributors = {
-	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Duane Robertson <duane@duanerobertson.com>",
 	"SmallJoker <mk939@ymail.com>",
 	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
+	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
 	"Gregory Currie (gregorycu)",
 	"Sokomine <wegwerf@anarres.dyndns.org>",
