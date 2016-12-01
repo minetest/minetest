@@ -2134,7 +2134,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.set_node(pos, node)`
 * `minetest.add_node(pos, node): alias set_node(pos, node)`
     * Set node at position (`node = {name="foo", param1=0, param2=0}`)
-* `minetest.swap_node(pos, node`
+* `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
     * Equivalent to `set_node(pos, "air")`
@@ -2340,7 +2340,7 @@ and `minetest.auth_reload` call the authetification handler.
     * `formname`: has to exactly match the one given in show_formspec, or the formspec will
        not close.
     * calling show_formspec(playername, formname, "") is equal to this expression
-    * to close a formspec regardless of the formname, call 
+    * to close a formspec regardless of the formname, call
       minetest.close_formspec(playername, ""). USE THIS ONLY WHEN ABSOLUTELY NECESSARY!
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
