@@ -322,7 +322,16 @@ public:
 	// This makes stuff happen
 	void step(f32 dtime);
 
-	//check if there's a line of sight between two positions
+	/*!
+	 * Returns true if the given line intersects with a
+	 * non-air node.
+	 * \param pos1 start of the line
+	 * \param pos2 end of the line
+	 * \param stepsize kept for compatibility. The starting point of the
+	 * line is translated by stepsize towards the end.
+	 * \param p output, position of the first non-air node
+	 * the line intersects
+	 */
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
 
 	u32 getGameTime() const { return m_game_time; }
