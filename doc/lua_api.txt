@@ -441,18 +441,24 @@ from the available ones of the following files:
 
 Examples of sound parameter tables:
 
-    -- Play location-less on all clients
+    -- Play locationless on all clients
     {
         gain = 1.0, -- default
     }
-    -- Play location-less to a player
+    -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
     }
+    -- Play locationless to one player, looped
+    {
+        to_player = name,
+        gain = 1.0, -- default
+        loop = true,
+    }
     -- Play in a location
     {
-        pos = {x=1,y=2,z=3},
+        pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
     }
@@ -461,15 +467,18 @@ Examples of sound parameter tables:
         object = <an ObjectRef>,
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
-        loop = true, -- only sounds connected to objects can be looped
+        loop = true,
     }
+
+Looped sounds must either be connected to an object or played locationless to
+one player using `to_player = name,`
 
 ### `SimpleSoundSpec`
 * e.g. `""`
 * e.g. `"default_place_node"`
 * e.g. `{}`
-* e.g. `{name="default_place_node"}`
-* e.g. `{name="default_place_node", gain=1.0}`
+* e.g. `{name = "default_place_node"}`
+* e.g. `{name = "default_place_node", gain = 1.0}`
 
 Registered definitions of stuff
 -------------------------------
