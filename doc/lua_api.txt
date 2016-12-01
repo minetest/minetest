@@ -458,9 +458,9 @@ Subtractive blend:
 source_factor is fixed at 0, destination_factor is taken from the texture.
 Texture darkness acts like an alpha channel.
 
-Invert blend:
+Inverted blend:
 
-	blend_type = minetest.blend_type.invert,
+	blend_type = minetest.blend_type.inverted,
 
 source_factor is the inverted color of existing pixels, destination_factor is
 the inverted color of the texture.
@@ -495,7 +495,7 @@ and alpha channels respectively.
 
 * Alpha sources (for alphaSource):
     * "none"         -- no alpha
-    * "vertex"       -- use alpha from existing pixel
+    * "vertex"       -- use alpha from vertex color
     * "texture"      -- use alpha from texture
     * "both"         -- use both
 
@@ -506,7 +506,7 @@ and alpha channels respectively.
     *  none        = 0
     *  additive    = 12641
     *  subtractive = 12548
-    *  invert      = 12597
+    *  inverted    = 12597
 
 Sounds
 ------

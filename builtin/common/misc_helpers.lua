@@ -280,7 +280,7 @@ core.blend_type = {
 	none        = 0,
 	additive    = core.pack_texture_blend_func("src_alpha", "one", "1x", "both"),
 	subtractive = core.pack_texture_blend_func("zero", "src_color", "1x", "both"),
-	invert      = core.pack_texture_blend_func("dst_color_inv", "src_color_inv", "1x", "both"),
+	inverted    = core.pack_texture_blend_func("dst_color_inv", "src_color_inv", "1x", "both"),
 }
 
 --------------------------------------------------------------------------------
