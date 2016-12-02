@@ -31,12 +31,12 @@ local core_developers = {
 	"est31 <MTest31@outlook.com>",
 	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
+	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
 }
 
 local active_contributors = {
 	"Duane Robertson <duane@duanerobertson.com>",
 	"SmallJoker <mk939@ymail.com>",
-	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
 	"Gregory Currie (gregorycu)",
