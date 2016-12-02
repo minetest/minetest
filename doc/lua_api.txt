@@ -2576,6 +2576,10 @@ These functions return the leftover itemstack.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
+* `minetest.hud_replace_builtin(name, hud_definition)`
+    * Replaces definition of a builtin hud element
+    * `name`: `"breath"` or `"health"`
+    * `hud_definition`: definition to replace builtin definition
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
     * Gives a unique hash number for a node position (16+16+16=48bit)
 * `minetest.get_position_from_hash(hash)`: returns a position
@@ -2901,10 +2905,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `hud_replace_builtin(name, hud_definition)`
-    * replace definition of a builtin hud element
-    * `name`: `"breath"` or `"health"`
-    * `hud_definition`: definition to replace builtin definition
 * `set_sky(bgcolor, type, {texture names})`
     * `bgcolor`: ColorSpec, defaults to white
     * Available types:
