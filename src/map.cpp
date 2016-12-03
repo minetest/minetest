@@ -1309,6 +1309,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 		NodeNeighbor neutrals[6]; // nodes that are solid or another kind of liquid
 		int num_neutrals = 0;
 		bool flowing_down = false;
+		bool top_neighbor_flowing = false;
 		for (u16 i = 0; i < 6; i++) {
 			NeighborType nt = NEIGHBOR_SAME_LEVEL;
 			switch (i) {
@@ -1344,6 +1345,9 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 					break;
 				case LIQUID_SOURCE:
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
+					if (nb.t == NEIGHBOR_LOWER && top_neighbor_flowing) 
+						flowing_down = true;
+					
 					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = nodemgr->getId(cfnb.liquid_alternative_flowing);
 					if (nodemgr->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
@@ -1358,6 +1362,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 					// if this node is not (yet) of a liquid type, choose the first liquid type we encounter
 					if (liquid_kind == CONTENT_AIR)
 						liquid_kind = nodemgr->getId(cfnb.liquid_alternative_flowing);
+					if (nt == NEIGHBOR_UPPER && (n0.param2 & LIQUID_FLOW_DOWN_MASK == LIQUID_FLOW_DOWN_MASK))
+						top_neighbor_flowing = true;
 					if (nodemgr->getId(cfnb.liquid_alternative_flowing) != liquid_kind) {
 						neutrals[num_neutrals++] = nb;
 					} else {
