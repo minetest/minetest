@@ -615,6 +615,9 @@
 #    type: bool
 # inventory_items_animations = false
 
+#    Percent of the visible distance at which fog starts to be rendered
+# fog_start_pct = 40
+
 ### Menus
 
 #    Use a cloud animation for the main menu background.

@@ -21,7 +21,7 @@ bool texSeamless = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
-const float fogStart = 0.4;
+const float fogStart = FOG_START;
 const float fogShadingParameter = 1 / ( 1 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
