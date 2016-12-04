@@ -106,6 +106,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "5000");
 	settings->setDefault("enable_fog", "true");
+	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("fov", "72");
 	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("leaves_style", "fancy");

@@ -529,6 +529,9 @@ ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
+#    Fraction of the visible distance at which fog starts to be rendered
+fog_start (Fog Start) float 0.4 0.0 0.99
+
 [**Menus]
 
 #    Use a cloud animation for the main menu background.

@@ -751,6 +751,10 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 	if (g_settings->getBool("tone_mapping"))
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 
+	shaders_header += "#define FOG_START ";
+	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
+	shaders_header += "\n";
+
 	// Call addHighLevelShaderMaterial() or addShaderMaterial()
 	const c8* vertex_program_ptr = 0;
 	const c8* pixel_program_ptr = 0;

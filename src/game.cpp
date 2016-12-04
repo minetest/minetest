@@ -1825,6 +1825,8 @@ private:
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
 	f32  m_repeat_right_click_time;
+	f32  m_cache_cam_smoothing;
+	f32  m_cache_fog_start;
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
@@ -1875,6 +1877,12 @@ Game::Game() :
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("free_move",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("cinematic",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("cinematic_camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
 
 	readSettings();
@@ -1928,6 +1936,12 @@ Game::~Game()
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("free_move",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("cinematic",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
 }
 
@@ -2034,16 +2048,10 @@ void Game::run()
 		processUserInput(&flags, &runData, dtime);
 		// Update camera before player movement to avoid camera lag of one frame
 		updateCameraDirection(&cam_view_target, &flags, dtime);
-		float cam_smoothing = 0;
-		if (g_settings->getBool("cinematic"))
-			cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
-		else
-			cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
-		cam_smoothing = rangelim(cam_smoothing, 0.01f, 1.0f);
 		cam_view.camera_yaw += (cam_view_target.camera_yaw -
-				cam_view.camera_yaw) * cam_smoothing;
+				cam_view.camera_yaw) * m_cache_cam_smoothing;
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
-				cam_view.camera_pitch) * cam_smoothing;
+				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 		step(&dtime);
 		processClientEvents(&cam_view_target, &runData.damage_flash);
@@ -4284,7 +4292,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
-				runData->fog_range * 0.4,
+				runData->fog_range * m_cache_fog_start,
 				runData->fog_range * 1.0,
 				0.01,
 				false, // pixel fog
@@ -4660,7 +4668,18 @@ void Game::readSettings()
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
+	m_cache_fog_start                    = g_settings->getFloat("fog_start");
+
+	m_cache_cam_smoothing = 0;
+	if (g_settings->getBool("cinematic"))
+		m_cache_cam_smoothing = 1 - g_settings->getFloat("cinematic_camera_smoothing");
+	else
+		m_cache_cam_smoothing = 1 - g_settings->getFloat("camera_smoothing");
+
+	m_cache_fog_start = rangelim(m_cache_fog_start, 0.0f, 0.99f);
+	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
+
 }
 
 /****************************************************************************/
