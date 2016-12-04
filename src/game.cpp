@@ -4668,7 +4668,7 @@ void Game::readSettings()
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");
 
-	m_cache_fog_start                    = g_settings->getFloat("fog_start_pct")/100.0;
+	m_cache_fog_start                    = g_settings->getFloat("fog_start");
 
 	m_cache_cam_smoothing = 0;
 	if (g_settings->getBool("cinematic"))
