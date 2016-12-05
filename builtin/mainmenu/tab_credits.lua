@@ -44,7 +44,7 @@ local active_contributors = {
 	"TeTpaAka",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
-	"juhdanad <juhdanad@gmail.com>",
+	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 }
 
 local previous_core_developers = {
