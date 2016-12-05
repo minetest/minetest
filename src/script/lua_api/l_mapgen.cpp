@@ -1295,7 +1295,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
 
 	const char *filename = luaL_checkstring(L, 4);
-	CHECK_SECURE_PATH_OPTIONAL(L, filename);
+	CHECK_SECURE_PATH(L, filename, true);
 
 	Map *map = &(getEnv(L)->getMap());
 	Schematic schem;

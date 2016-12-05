@@ -388,7 +388,7 @@ int ModApiUtil::l_mkdir(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *path = luaL_checkstring(L, 1);
-	CHECK_SECURE_PATH_OPTIONAL(L, path);
+	CHECK_SECURE_PATH(L, path, true);
 	lua_pushboolean(L, fs::CreateAllDirs(path));
 	return 1;
 }
@@ -400,7 +400,7 @@ int ModApiUtil::l_get_dir_list(lua_State *L)
 	const char *path = luaL_checkstring(L, 1);
 	short is_dir = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : -1;
 
-	CHECK_SECURE_PATH_OPTIONAL(L, path);
+	CHECK_SECURE_PATH(L, path, false);
 
 	std::vector<fs::DirListNode> list = fs::GetDirListing(path);
 
