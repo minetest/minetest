@@ -508,13 +508,15 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 
 	// 1). Attempt to fetch block from memory
 	*block = m_map->getBlockNoCreateNoEx(pos);
-	if (*block && !(*block)->isDummy() && (*block)->isGenerated())
-		return EMERGE_FROM_MEMORY;
-
-	// 2). Attempt to load block from disk
-	*block = m_map->loadBlock(pos);
-	if (*block && (*block)->isGenerated())
-		return EMERGE_FROM_DISK;
+	if (*block && !(*block)->isDummy()) {
+		if ((*block)->isGenerated())
+			return EMERGE_FROM_MEMORY;
+	} else {
+		// 2). Attempt to load block from disk if it was not in the memory
+		*block = m_map->loadBlock(pos);
+		if (*block && (*block)->isGenerated())
+			return EMERGE_FROM_DISK;
+	}
 
 	// 3). Attempt to start generation
 	if (allow_gen && m_map->initBlockMake(pos, bmdata))
