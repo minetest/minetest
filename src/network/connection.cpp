@@ -1237,7 +1237,7 @@ void UDPPeer::RunCommandQueues(
 u16 UDPPeer::getNextSplitSequenceNumber(u8 channel)
 {
 	assert(channel < CHANNEL_COUNT); // Pre-condition
-	return channels[channel].readNextIncomingSeqNum();
+	return channels[channel].readNextSplitSeqNum();
 }
 
 void UDPPeer::setNextSplitSequenceNumber(u8 channel, u16 seqnum)
