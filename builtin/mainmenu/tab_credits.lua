@@ -85,11 +85,6 @@ return {
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,5.8;list_credits;" ..
-			"#FFFF00," .. "Dedication of the current release" .. ",," ..
-			"The 0.4.14 release is dedicated to the memory of" .. ",," ..
-			"Minetest developer Maciej Kasatkin (RealBadAngel)" .. ",," ..
-			"who died on March 24 2016." .. ",," ..
-			"Our thoughts are with his family and friends." .. ",,," ..
 			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
 			table.concat(core_developers, ",,") .. ",,," ..
 			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..
