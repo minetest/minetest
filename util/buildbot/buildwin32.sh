@@ -20,7 +20,7 @@ curl_version=7.50.3
 gettext_version=0.14.4
 freetype_version=2.7
 sqlite3_version=3.14.2
-luajit_version=2.0.1
+luajit_version=2.1.0-beta2
 leveldb_version=1.18
 zlib_version=1.2.8
 
@@ -46,8 +46,8 @@ cd $builddir
 	-c -O $packagedir/freetype2-$freetype_version.zip
 [ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win32.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
-[ -e $packagedir/luajit-$luajit_version-static-win32.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win32.zip \
-	-c -O $packagedir/luajit-$luajit_version-static-win32.zip
+[ -e $packagedir/luajit-$luajit_version.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-win32.zip \
+	-c -O $packagedir/luajit-$luajit_version.zip
 [ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win32.zip \
 	-c -O $packagedir/libleveldb-$leveldb_version.zip
 [ -e $packagedir/openal_stripped.zip ] || wget http://minetest.kitsunemimi.pw/openal_stripped.zip \
@@ -64,7 +64,7 @@ cd $libdir
 [ -d freetype ] || unzip -o $packagedir/freetype2-$freetype_version.zip -d freetype
 [ -d sqlite3 ] || unzip -o $packagedir/sqlite3-$sqlite3_version.zip -d sqlite3
 [ -d openal_stripped ] || unzip -o $packagedir/openal_stripped.zip
-[ -d luajit ] || unzip -o $packagedir/luajit-$luajit_version-static-win32.zip -d luajit
+[ -d luajit ] || unzip -o $packagedir/luajit-$luajit_version.zip -d luajit
 [ -d leveldb ] || unzip -o $packagedir/libleveldb-$leveldb_version.zip -d leveldb
 
 # Get minetest
