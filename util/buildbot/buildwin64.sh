@@ -20,7 +20,7 @@ curl_version=7.50.3
 gettext_version=0.18.2
 freetype_version=2.7
 sqlite3_version=3.14.2
-luajit_version=2.0.3
+luajit_version=2.1.0-beta2
 leveldb_version=1.18
 zlib_version=1.2.8
 
@@ -46,7 +46,7 @@ cd $builddir
 	-c -O $packagedir/freetype2-$freetype_version.zip
 [ -e $packagedir/sqlite3-$sqlite3_version.zip ] || wget http://minetest.kitsunemimi.pw/sqlite3-$sqlite3_version-win64.zip \
 	-c -O $packagedir/sqlite3-$sqlite3_version.zip
-[ -e $packagedir/luajit-$luajit_version.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-static-win64.zip \
+[ -e $packagedir/luajit-$luajit_version.zip ] || wget http://minetest.kitsunemimi.pw/luajit-$luajit_version-win64.zip \
 	-c -O $packagedir/luajit-$luajit_version.zip
 [ -e $packagedir/libleveldb-$leveldb_version.zip ] || wget http://minetest.kitsunemimi.pw/libleveldb-$leveldb_version-win64.zip \
 	-c -O $packagedir/libleveldb-$leveldb_version.zip
