@@ -119,6 +119,13 @@ local function get_formspec(tabview, name, tabdata)
 	return retval
 end
 
+local function check_filters(filters, server)
+		return  (filters.pvp == nil or filters.pvp == server.pvp) and
+				(filters.creative == nil or filters.creative == server.creative) and
+				(filters.version  == nil or filters.version  == server.version) and
+				(filters.damage   == nil or filters.damage   == server.damage)
+end
+
 --------------------------------------------------------------------------------
 local function main_button_handler(tabview, fields, name, tabdata)
 	local serverlist = menudata.search_result or menudata.favorites
@@ -235,46 +242,87 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local input = fields.te_search:lower()
 		tabdata.search_for = fields.te_search
 
+		if input == "" then 
+			menudata.search_result = nil
+			return true 
+		end
+
 		if #menudata.favorites < 2 then 
 			return true 
 		end
 
 		menudata.search_result = {}
 
-		-- setup the keyword list
+		-- setup the filter and keyword list
+		local filters = {}
 		local keywords = {}
 		for word in input:gmatch("%S+") do
-			table.insert(keywords, word)
+			local index = word:find(":")
+			if index then
+				local filter = word:sub(1,index-1)
+				local setting = word:sub(index+1,-1)
+
+				if filter == "pvp" then
+					filters.pvp = core.is_yes(setting)
+				elseif filter == "creative" then
+					filters.creative = core.is_yes(setting)
+				elseif filter == "version" then
+					if setting ~= "" then
+						filters.version = setting
+					end
+				elseif filter == "damage" then
+					filters.damage = core.is_yes(setting)
+				else
+					table.insert(keywords, word)
+				end
+			else
+				table.insert(keywords, word)
+			end
 		end
 
-		if #keywords == 0 then 
-			menudata.search_result = nil
-			return true 
+		if #keywords == 0 then
+			local search_result = {}
+			for i = 1, #menudata.favorites do
+				local server = menudata.favorites[i]
+				if check_filters(filters, server) then
+					table.insert(search_result, server)
+				end
+			end
+			menudata.search_result = search_result
+			if #search_result > 0 then
+				local first_server = search_result[1]
+				core.setting_set("address",     first_server.address)
+				core.setting_set("remote_port", first_server.port)
+			end
+			return true
 		end
 
 		-- Search the serverlist
 		local search_result = {}
 		for i = 1, #menudata.favorites do
 			local server = menudata.favorites[i]
-			local found = 0
-			for k = 1, #keywords do
-				local keyword = keywords[k]
-				if server.name then
-					local name = server.name:lower()
-					local _, count = name:gsub(keyword, keyword)
-					found = found + count * 4
-				end
+			if check_filters(filters, server) then
+				local found = 0
 
-				if server.description then
-					local desc = server.description:lower()
-					local _, count = desc:gsub(keyword, keyword)
-					found = found + count * 2
+				for k = 1, #keywords do
+					local keyword = keywords[k]
+					if server.name then
+						local name = server.name:lower()
+						local _, count = name:gsub(keyword, keyword)
+						found = found + count * 4
+					end
+
+					if server.description then
+						local desc = server.description:lower()
+						local _, count = desc:gsub(keyword, keyword)
+						found = found + count * 2
+					end
 				end
-			end
-			if found > 0 then
-				local points = (#menudata.favorites - i) / 5 + found
-				server.points = points
-				table.insert(search_result, server)
+				if found > 0 then
+					local points = (#menudata.favorites - i) / 5 + found
+					server.points = points
+					table.insert(search_result, server)
+				end
 			end
 		end
 		if #search_result > 0 then
