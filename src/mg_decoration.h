@@ -100,6 +100,7 @@ public:
 	std::vector<content_t> c_decos;
 	s16 deco_height;
 	s16 deco_height_max;
+	u8 deco_param2;
 };
 
 class DecoSchematic : public Decoration {
