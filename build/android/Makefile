@@ -91,7 +91,7 @@ IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ANDR_ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.2h
+OPENSSL_VERSION = 1.0.2j
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ANDR_ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -99,14 +99,14 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openssl_timestamp
 OPENSSL_URL = https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.48.0
+CURL_VERSION = 7.51.0
 CURL_DIR = $(ANDR_ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
 CURL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/curl_timestamp
 CURL_URL_HTTP = https://curl.haxx.se/download/curl-${CURL_VERSION}.tar.bz2
 
-GMP_VERSION = 6.1.0
+GMP_VERSION = 6.1.1
 GMP_DIR = $(ANDR_ROOT)/deps/gmp-$(GMP_VERSION)
 GMP_LIB = $(GMP_DIR)/usr/lib/libgmp.so
 GMP_TIMESTAMP = $(GMP_DIR)/timestamp
@@ -126,7 +126,7 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ANDR_ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3120200
+SQLITE3_FOLDER = sqlite-amalgamation-3150200
 SQLITE3_URL = https://www.sqlite.org/2016/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
