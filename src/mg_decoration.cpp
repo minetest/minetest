@@ -315,7 +315,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 				!force_placement)
 			break;
 
-		vm->m_data[vi] = MapNode(c_place);
+		vm->m_data[vi] = MapNode(c_place, 0, deco_param2);
 	}
 
 	return 1;

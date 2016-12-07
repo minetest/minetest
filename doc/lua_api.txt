@@ -4040,8 +4040,10 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Number of nodes high the decoration is made.
     --  ^ If height_max is not 0, this is the lower bound of the randomly selected height.
         height_max = 0,
-    --      ^ Number of nodes the decoration can be at maximum.
+    --  ^ Number of nodes the decoration can be at maximum.
     --  ^ If absent, the parameter 'height' is used as a constant.
+        param2 = 0,
+    --  ^ Param2 value of placed decoration node.
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",
