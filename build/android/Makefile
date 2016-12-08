@@ -665,7 +665,9 @@ deps/${SQLITE3_FOLDER}/sqlite3.c :
 	cd deps;                                                                    \
 	wget ${SQLITE3_URL};                                                        \
 	unzip ${SQLITE3_FOLDER}.zip;                                                \
-	ln -s ${SQLITE3_FOLDER} sqlite
+	ln -s ${SQLITE3_FOLDER} sqlite;                                             \
+	cd ${SQLITE3_FOLDER};                                                       \
+	patch sqlite3.c < ${ANDR_ROOT}/patches/sqlite3-readonly-fix.patch
 
 clean_sqlite3:
 	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
@@ -831,4 +833,3 @@ $(ANDR_ROOT)/jni/src/android_version.h : prep_srcdir
 	fi
 
 clean : clean_apk clean_assets
-
