@@ -48,8 +48,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // for the network stack.
 // The smallest value that must always be supported by the network
 // (IPv4) is 548 (576 - 28 for the UDP/IP headers)
-#define MAX_SEND_PACKET_SIZE 512
-#define MAX_SEND_PACKET_SIZE_INITIAL MAX_SEND_PACKET_SIZE
+#define MAX_SEND_PACKET_SIZE_IPV4 512
+// Theoretical maximum for UDP/IPv6: 65487, but the presence of
+// additional options in the header would lower that limit.
+// The smallest value that must always be supported for IPv6 is 1500
+// including headers. Such packets may end up being fragmented.
+// The minimum packet size that can always be transmitted without
+// fragmentation is 1280, including headers of at least 48 bytes.
+#define MAX_SEND_PACKET_SIZE_IPV6 1200
+#define MAX_SEND_PACKET_SIZE_INITIAL MAX_SEND_PACKET_SIZE_IPV4
 
 #define CONNECTION_TIMEOUT 30
 

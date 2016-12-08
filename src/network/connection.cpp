@@ -1019,6 +1019,10 @@ UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
 	resend_timeout(0.5),
 	m_legacy_peer(true)
 {
+	if (a_address.isIPv6() && !a_address.isIPv4MappedIPv6())
+		setMaxPacketSize(MAX_SEND_PACKET_SIZE_IPV6);
+	else
+		setMaxPacketSize(MAX_SEND_PACKET_SIZE_IPV4);
 }
 
 bool UDPPeer::getAddress(MTProtocols type,Address& toset)

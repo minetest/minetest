@@ -255,6 +255,17 @@ int Address::getFamily() const
 	return m_addr_family;
 }
 
+bool Address::isIPv4MappedIPv6() const
+{
+	static const in6_addr ipv4_mapped_prefix = {{
+		   0,    0,    0,    0,
+		   0,    0,    0,    0,
+		   0,    0, 0xff, 0xff,
+		   0,    0,    0,    0
+	}};
+	return 0 == memcmp(m_address.ipv6.sin6_addr.s6_addr, ipv4_mapped_prefix.s6_addr, 12);
+}
+
 bool Address::isIPv6() const
 {
 	return m_addr_family == AF_INET6;
