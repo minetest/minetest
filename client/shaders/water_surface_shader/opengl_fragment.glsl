@@ -114,7 +114,8 @@ void main(void)
 	} 
 #endif
 
-	if (GENERATE_NORMALMAPS == 1 && use_normalmap == false) {
+#if GENERATE_NORMALMAPS == 1
+	if (use_normalmap == false) {
 		float tl = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y+SAMPLE_STEP));
 		float t  = get_rgb_height (vec2(uv.x-SAMPLE_STEP,uv.y-SAMPLE_STEP));
 		float tr = get_rgb_height (vec2(uv.x+SAMPLE_STEP,uv.y+SAMPLE_STEP));
@@ -128,6 +129,7 @@ void main(void)
 		bump = vec4 (normalize(vec3 (dX, -dY, NORMALMAPS_STRENGTH)),1.0);
 		use_normalmap = true;
 	}
+#endif
 
 vec4 base = texture2D(baseTexture, uv).rgba;
 
@@ -156,20 +158,18 @@ vec4 base = texture2D(baseTexture, uv).rgba;
 	col = applyToneMapping(col);
 #endif
 
-	if (fogDistance != 0.0) {
-		// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
-		// the fog will only be rendered correctly if the last operation before the
-		// clamp() is an addition. Else, the clamp() seems to be ignored.
-		// E.g. the following won't work:
-		//      float clarity = clamp(fogShadingParameter
-		//		* (fogDistance - length(eyeVec)) / fogDistance), 0.0, 1.0);
-		// As additions usually come for free following a multiplication, the new formula
-		// should be more efficient as well.
-		// Note: clarity = (1 - fogginess)
-		float clarity = clamp(fogShadingParameter
-			- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
-		col = mix(skyBgColor, col, clarity);
-	}
+	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
+	// the fog will only be rendered correctly if the last operation before the
+	// clamp() is an addition. Else, the clamp() seems to be ignored.
+	// E.g. the following won't work:
+	//      float clarity = clamp(fogShadingParameter
+	//		* (fogDistance - length(eyeVec)) / fogDistance), 0.0, 1.0);
+	// As additions usually come for free following a multiplication, the new formula
+	// should be more efficient as well.
+	// Note: clarity = (1 - fogginess)
+	float clarity = clamp(fogShadingParameter
+		- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
 	gl_FragColor = col;
