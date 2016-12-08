@@ -404,7 +404,8 @@ enum ConnectionCommandType{
 	CONNCMD_SEND_TO_ALL,
 	CONCMD_ACK,
 	CONCMD_CREATE_PEER,
-	CONCMD_DISABLE_LEGACY
+	CONCMD_DISABLE_LEGACY,
+	CONCMD_SET_MAX_PACKET_SIZE
 };
 
 struct ConnectionCommand
@@ -416,6 +417,7 @@ struct ConnectionCommand
 	Buffer<u8> data;
 	bool reliable;
 	bool raw;
+	u32 param;
 
 	ConnectionCommand(): type(CONNCMD_NONE), peer_id(PEER_ID_INEXISTENT), reliable(false), raw(false) {}
 
@@ -475,6 +477,14 @@ struct ConnectionCommand
 		channelnum = 0;
 		reliable = true;
 		raw = true;
+	}
+
+	void setMaxPacketSize(u16 peer_id_, u32 max_packet_size)
+	{
+		type = CONCMD_SET_MAX_PACKET_SIZE;
+		peer_id = peer_id_;
+		param = max_packet_size;
+		reliable = false;
 	}
 };
 
@@ -663,7 +673,8 @@ class Peer {
 			m_last_rtt(-1.0),
 			m_usage(0),
 			m_timeout_counter(0.0),
-			m_last_timeout_check(porting::getTimeMs())
+			m_last_timeout_check(porting::getTimeMs()),
+			m_max_packet_size(MAX_SEND_PACKET_SIZE_INITIAL)
 		{
 			m_rtt.avg_rtt = -1.0;
 			m_rtt.jitter_avg = -1.0;
@@ -681,10 +692,12 @@ class Peer {
 		// Unique id of the peer
 		u16 id;
 
+		u32 getMaxPacketSize() const { return m_max_packet_size; }
+		void setMaxPacketSize(u32 max_packet_size) { m_max_packet_size = max_packet_size; }
+
 		void Drop();
 
-		virtual void PutReliableSendCommand(ConnectionCommand &c,
-						unsigned int max_packet_size) {};
+		virtual void PutReliableSendCommand(ConnectionCommand &c) {}
 
 		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
 
@@ -770,6 +783,8 @@ class Peer {
 		float m_timeout_counter;
 
 		u32 m_last_timeout_check;
+
+		u32 m_max_packet_size;
 };
 
 class UDPPeer : public Peer
@@ -784,8 +799,7 @@ public:
 	UDPPeer(u16 a_id, Address a_address, Connection* connection);
 	virtual ~UDPPeer() {};
 
-	void PutReliableSendCommand(ConnectionCommand &c,
-							unsigned int max_packet_size);
+	void PutReliableSendCommand(ConnectionCommand &c);
 
 	bool getAddress(MTProtocols type, Address& toset);
 
@@ -809,10 +823,8 @@ protected:
 	*/
 	void reportRTT(float rtt);
 
-	void RunCommandQueues(
-					unsigned int max_packet_size,
-					unsigned int maxcommands,
-					unsigned int maxtransfer);
+	void RunCommandQueues(unsigned int maxcommands,
+				unsigned int maxtransfer);
 
 	float getResendTimeout()
 		{ MutexAutoLock lock(m_exclusive_access_mutex); return resend_timeout; }
@@ -827,9 +839,7 @@ private:
 	// This is changed dynamically
 	float resend_timeout;
 
-	bool processReliableSendCommand(
-					ConnectionCommand &c,
-					unsigned int max_packet_size);
+	bool processReliableSendCommand(ConnectionCommand &c);
 
 	bool m_legacy_peer;
 };
@@ -904,7 +914,7 @@ class ConnectionSendThread : public Thread {
 public:
 	friend class UDPPeer;
 
-	ConnectionSendThread(unsigned int max_packet_size, float timeout);
+	ConnectionSendThread(float timeout);
 
 	void *run();
 
@@ -947,7 +957,6 @@ private:
 	bool packetsQueued();
 
 	Connection*           m_connection;
-	unsigned int          m_max_packet_size;
 	float                 m_timeout;
 	std::queue<OutgoingPacket> m_outgoing_queue;
 	Semaphore             m_send_sleep_semaphore;
@@ -960,7 +969,7 @@ private:
 
 class ConnectionReceiveThread : public Thread {
 public:
-	ConnectionReceiveThread(unsigned int max_packet_size);
+	ConnectionReceiveThread();
 
 	void *run();
 
@@ -1002,7 +1011,7 @@ public:
 	friend class ConnectionSendThread;
 	friend class ConnectionReceiveThread;
 
-	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
+	Connection(u32 protocol_id, float timeout, bool ipv6,
 			PeerHandler *peerhandler);
 	~Connection();
 
@@ -1024,6 +1033,9 @@ public:
 	const u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(u16 peer_id);
+	// For calling by other threads.
+	// Queues CONCMD_SET_MAX_PACKET_SIZE to ConnectionSendThread.
+	void setMaxPacketSize(u16 peer_id, u32 max_packet_size);
 
 protected:
 	PeerHelper getPeer(u16 peer_id);
@@ -1037,6 +1049,9 @@ protected:
 	void SetPeerID(u16 id) { m_peer_id = id; }
 
 	void sendAck(u16 peer_id, u8 channelnum, u16 seqnum);
+
+	// Processing of CONCMD_SET_MAX_PACKET_SIZE packet inside ConnectionSendThread
+	void setMaxPacketSizeCommand(u16 peer_id, u32 max_packet_size);
 
 	void PrintInfo(std::ostream &out);
 	void PrintInfo();

@@ -226,7 +226,7 @@ Client::Client(
 		tsrc, this, device
 	),
 	m_particle_manager(&m_env),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+	m_con(PROTOCOL_ID, CONNECTION_TIMEOUT, ipv6, this),
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
