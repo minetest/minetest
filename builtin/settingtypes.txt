@@ -442,9 +442,9 @@ fov (Field of view) int 72 30 160
 #    This requires the "zoom" privilege on the server.
 zoom_fov (Field of view for zoom) int 15 15 160
 
-#    Adjust the gamma encoding for the light tables. Lower numbers are brighter.
+#    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
-display_gamma (Gamma) float 1.8 1.0 3.0
+display_gamma (Gamma) float 2.2 1.0 3.0
 
 #    Path to texture directory. All textures are first searched from here.
 texture_path (Texture path) path
