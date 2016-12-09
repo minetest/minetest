@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define INTERNET_SIMULATOR_PACKET_LOSS 10 // 10 = easy, 4 = hard
 
 // Max packet size that can be received.
-#define MAX_RECV_PACKET_SIZE 1500
+#define MAX_RECV_PACKET_SIZE 65536
 // Max packet-size to use for transmission
 // Theoretical maximum for UDP is 65507, but that may be too large
 // for the network stack.
@@ -56,6 +56,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The minimum packet size that can always be transmitted without
 // fragmentation is 1280, including headers of at least 48 bytes.
 #define MAX_SEND_PACKET_SIZE_IPV6 1200
+// For local packets, use the same maximum for IPv4 and IPv6.
+// Not too close to the theoretical maximum.
+#define MAX_SEND_PACKET_SIZE_LOCAL 65000
 #define MAX_SEND_PACKET_SIZE_INITIAL MAX_SEND_PACKET_SIZE_IPV4
 
 #define CONNECTION_TIMEOUT 30

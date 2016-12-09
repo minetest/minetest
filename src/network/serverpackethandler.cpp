@@ -159,6 +159,13 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		}
 	}
 
+	// Protocol version 29 and up can receive larger packet sizes
+	if (net_proto_version >= 29) {
+		Address address = m_con.GetPeerAddress(pkt->getPeerId());
+		if (!INTERNET_SIMULATOR && address.isLoopback())
+			m_con.setMaxPacketSize(pkt->getPeerId(), MAX_SEND_PACKET_SIZE_LOCAL);
+	}
+
 	/*
 		Validate player name
 	*/

@@ -283,6 +283,24 @@ bool Address::isZero() const
 	return false;
 }
 
+bool Address::isLoopback() const
+{
+	if (isIPv6() && isIPv4MappedIPv6()) {
+		static const in6_addr ipv4_mapped_loopback = {{
+			   0,    0,    0,    0,
+			   0,    0,    0,    0,
+			   0,    0, 0xff, 0xff,
+			0x7f,    0,    0,    0
+		}};
+		return 0 == memcmp(m_address.ipv6.sin6_addr.s6_addr, ipv4_mapped_loopback.s6_addr, 13);
+	} else if (isIPv6()) {
+		return 0 == memcmp(m_address.ipv6.sin6_addr.s6_addr, in6addr_loopback.s6_addr, 16);
+	} else {
+		u32 addr = ntohl(m_address.ipv4.sin_addr.s_addr);
+		return (addr & 0xff000000) == 0x7f000000;
+	}
+}
+
 void Address::setAddress(u32 address)
 {
 	m_addr_family = AF_INET;
