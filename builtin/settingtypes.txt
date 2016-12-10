@@ -758,7 +758,7 @@ active_object_send_range_blocks (Active object send range) int 3
 
 #    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
-active_block_range (Active block range) int 2
+active_block_range (Active block range) int 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 max_block_send_distance (Max block send distance) int 10

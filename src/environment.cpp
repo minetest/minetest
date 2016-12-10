@@ -397,8 +397,11 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 	for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
 	for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
 	{
-		// Set in list
-		list.insert(p);
+		// limit to a sphere
+		if (p.getDistanceFrom(p0) <= r) {
+			// Set in list
+			list.insert(p);
+		}
 	}
 }
 

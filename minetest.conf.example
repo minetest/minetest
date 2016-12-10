@@ -913,7 +913,7 @@
 #    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    type: int
-# active_block_range = 2
+# active_block_range = 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 #    type: int
