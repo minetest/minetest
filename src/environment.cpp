@@ -397,8 +397,11 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 	for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
 	for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
 	{
-		// Set in list
-		list.insert(p);
+		// limit to a sphere
+		if (p.getDistanceFrom(p0) <= r) {
+			// Set in list
+			list.insert(p);
+		}
 	}
 }
 
@@ -1269,6 +1272,7 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<v3s16> players_blockpos;
+
 		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
@@ -1289,7 +1293,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		static const s16 active_block_range = g_settings->getS16("active_block_range");
+		const s16 active_block_range = g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
