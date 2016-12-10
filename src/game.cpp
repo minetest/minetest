@@ -3277,9 +3277,16 @@ void Game::increaseViewRange(float *statustext_time)
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
+
+	if (range_new > 4000) {
+		range_new = 4000;
+		statustext = utf8_to_wide("Viewing range is at maximum: "
+				+ itos(range_new));
+	} else {
+		statustext = utf8_to_wide("Viewing range changed to "
+				+ itos(range_new));
+	}
 	g_settings->set("viewing_range", itos(range_new));
-	statustext = utf8_to_wide("Viewing range changed to "
-			+ itos(range_new));
 	*statustext_time = 0;
 }
 
@@ -3289,12 +3296,15 @@ void Game::decreaseViewRange(float *statustext_time)
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
-	if (range_new < 20)
+	if (range_new < 20) {
 		range_new = 20;
-
+		statustext = utf8_to_wide("Viewing range is at minimum: "
+				+ itos(range_new));
+	} else {
+		statustext = utf8_to_wide("Viewing range changed to "
+				+ itos(range_new));
+	}
 	g_settings->set("viewing_range", itos(range_new));
-	statustext = utf8_to_wide("Viewing range changed to "
-			+ itos(range_new));
 	*statustext_time = 0;
 }
 

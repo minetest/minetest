@@ -418,8 +418,7 @@ fps_max (Maximum FPS) int 60
 pause_fps_max (FPS in pause menu) int 20
 
 #    View distance in nodes.
-#    Min = 20
-viewing_range (Viewing range) int 100
+viewing_range (Viewing range) int 100 20 4000
 
 #    Width component of the initial window size.
 screenW (Screen width) int 800
