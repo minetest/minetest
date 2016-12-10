@@ -3282,9 +3282,6 @@ format as produced by get_data() et al. and is *not required* to be a table retr
 Once the internal VoxelManip state has been modified to your liking, the changes can be committed back
 to the map by calling `VoxelManip:write_to_map()`.
 
-Finally, a call to `VoxelManip:update_map()` is required to re-calculate lighting and set the blocks
-as being modified so that connected clients are sent the updated parts of map.
-
 
 ##### Flat array format
 Let
@@ -3349,8 +3346,6 @@ but with a few differences:
   will also update the Mapgen VoxelManip object's internal state active on the current thread.
 * After modifying the Mapgen VoxelManip object's internal buffer, it may be necessary to update lighting
   information using either: `VoxelManip:calc_lighting()` or `VoxelManip:set_lighting()`.
-* `VoxelManip:update_map()` does not need to be called after `write_to_map()`.  The map update is performed
-  automatically after all on_generated callbacks have been run for that generated block.
 
 ##### Other API functions operating on a VoxelManip
 If any VoxelManip contents were set to a liquid node, `VoxelManip:update_liquids()` must be called
@@ -3393,9 +3388,7 @@ will place the schematic inside of the VoxelManip.
     * returns raw node data in the form of an array of node content IDs
     * if the param `buffer` is present, this table will be used to store the result instead
 * `set_data(data)`: Sets the data contents of the `VoxelManip` object
-* `update_map()`: Update map after writing chunk back to map.
-    * To be used only by `VoxelManip` objects created by the mod itself;
-      not a `VoxelManip` that was retrieved from `minetest.get_mapgen_object`
+* `update_map()`: Does nothing, kept for compatibility.
 * `set_lighting(light, [p1, p2])`: Set the lighting within the `VoxelManip` to a uniform value
     * `light` is a table, `{day=<0...15>, night=<0...15>}`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`

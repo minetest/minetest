@@ -1357,7 +1357,9 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	Map *map = &(getEnv(L)->getMap());
+	GET_ENV_PTR;
+
+	ServerMap *map = &(env->getServerMap());
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position
