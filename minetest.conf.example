@@ -473,8 +473,7 @@
 # pause_fps_max = 20
 
 #    View distance in nodes.
-#    Min = 20
-#    type: int
+#    type: int min: 20 max: 4000
 # viewing_range = 100
 
 #    Width component of the initial window size.
