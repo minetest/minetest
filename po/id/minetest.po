@@ -7,9 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-08 15:51+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2016-12-10 10:03+0000\n"
+"Last-Translator: Alvin Hikmawan <alvin.hikmawan@gmail.com>\n"
 "Language-Team: Indonesian "
 "<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
@@ -1842,10 +1841,14 @@ msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"Menentukan tahap sampling atas tekstur\n"
+"Nilai yg lebih tinggi menghasilkan peta yg lebih halus"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Menentukan jarak maksimal perpindahan pemain dalam blok (0 = tak terhingga)"
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
