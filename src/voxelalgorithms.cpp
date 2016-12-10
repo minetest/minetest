@@ -917,44 +917,41 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
 	bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
 {
 	// Distance in array between two nodes on top of each other.
-	s16 step=vm->m_area.getExtent().X;
+	s16 ystride = vm->m_area.getExtent().X;
 	// Cache the ignore node.
-	MapNode ignore=MapNode(CONTENT_IGNORE);
+	MapNode ignore = MapNode(CONTENT_IGNORE);
 	// For each column of nodes:
-	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-		for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-			// Position of the column on the map.
-			v2s16 realpos = offset + v2s16(x, z);
-			// Array indices in the voxel manipulator
-			s32 maxindex = vm->m_area.index(realpos.X, vm->m_area.MaxEdge.Y,
-				realpos.Y);
-			s32 minindex = vm->m_area.index(realpos.X, vm->m_area.MinEdge.Y,
-				realpos.Y);
-			// True if the current node has sunlight.
-			bool lig = light[x][z];
-			// For each node, downwards:
-			for (s32 i = maxindex; i >= minindex; i-=step) {
-				MapNode *n;
-				if (vm->m_flags[i] & VOXELFLAG_NO_DATA) {
-					n = &ignore;
-				} else {
-					n = &vm->m_data[i];
-				}
-				// Ignore IGNORE nodes, these are not generated yet.
-				if(n->getContent()==CONTENT_IGNORE)
-					continue;
-				const ContentFeatures &f = ndef->get(n->getContent());
-				if (lig && !f.sunlight_propagates) {
-					// Sunlight is stopped.
-					lig = false;
-				}
-				// Reset light
-				n->setLight(LIGHTBANK_DAY, lig ? 15 : 0, f);
-				n->setLight(LIGHTBANK_NIGHT, 0, f);
-			}
-			// Output outgoing light.
-			light[x][z] = lig;
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+		// Position of the column on the map.
+		v2s16 realpos = offset + v2s16(x, z);
+		// Array indices in the voxel manipulator
+		s32 maxindex = vm->m_area.index(realpos.X, vm->m_area.MaxEdge.Y,
+			realpos.Y);
+		s32 minindex = vm->m_area.index(realpos.X, vm->m_area.MinEdge.Y,
+			realpos.Y);
+		// True if the current node has sunlight.
+		bool lig = light[x][z];
+		// For each node, downwards:
+		for (s32 i = maxindex; i >= minindex; i -= ystride) {
+			MapNode *n;
+			if (vm->m_flags[i] & VOXELFLAG_NO_DATA)
+				n = &ignore;
+			else
+				n = &vm->m_data[i];
+			// Ignore IGNORE nodes, these are not generated yet.
+			if(n->getContent() == CONTENT_IGNORE)
+				continue;
+			const ContentFeatures &f = ndef->get(n->getContent());
+			if (lig && !f.sunlight_propagates)
+				// Sunlight is stopped.
+				lig = false;
+			// Reset light
+			n->setLight(LIGHTBANK_DAY, lig ? 15 : 0, f);
+			n->setLight(LIGHTBANK_NIGHT, 0, f);
 		}
+		// Output outgoing light.
+		light[x][z] = lig;
 	}
 }
 
@@ -977,36 +974,31 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 	MapBlock *source_block = map->emergeBlock(source_block_pos, false);
 	// Trust only generated blocks.
 	if (source_block == NULL || source_block->isDummy()
-		|| !source_block->isGenerated()) {
+			|| !source_block->isGenerated()) {
 		// But if there is no block above, then use heuristics
 		bool sunlight = true;
 		MapBlock *node_block = map->getBlockNoCreateNoEx(pos);
-		if (node_block == NULL) {
+		if (node_block == NULL)
 			// This should not happen.
 			sunlight = false;
-		} else {
+		else
 			sunlight = !node_block->getIsUnderground();
-		}
-		for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-			for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-				light[x][z] = sunlight;
-			}
-		}
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+			light[x][z] = sunlight;
 	} else {
 		// Dummy boolean, the position is valid.
 		bool is_valid_position;
 		// For each column:
-		for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-			for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-				// Get the bottom block.
-				MapNode above = source_block->getNodeNoCheck(x, 0, z,
-					&is_valid_position);
-				if (above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN) {
-					light[x][z] = true;
-				} else {
-					light[x][z] = false;
-				}
-			}
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+		for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+			// Get the bottom block.
+			MapNode above = source_block->getNodeNoCheck(x, 0, z,
+				&is_valid_position);
+			if (above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
+				light[x][z] = true;
+			else
+				light[x][z] = false;
 		}
 	}
 }
@@ -1055,10 +1047,9 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 					modified = true;
 					relight->push(LIGHT_SUN, current_pos, data->target_block,
 						block, 4);
-				} else {
+				} else
 					// Light already valid, propagation stopped.
 					break;
-				}
 			}
 		} else {
 			// Propagate shadow.
@@ -1073,10 +1064,9 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 					modified = true;
 					unlight->push(LIGHT_SUN, current_pos, data->target_block,
 						block, 4);
-				} else {
+				} else
 					// Reached shadow, propagation stopped.
 					break;
-				}
 			}
 		}
 		if (current_pos.Y >= 0) {
@@ -1121,32 +1111,28 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	// --- STEP 1: reset everything to sunlight
 
 	// For each map block:
-	for (s16 x = minblock.X; x <= maxblock.X; x++) {
-		for (s16 z = minblock.Z; z <= maxblock.Z; z++) {
-			// Extract sunlight above.
-			is_sunlight_above_block(map, v3s16(x, maxblock.Y, z), ndef, lights);
-			v2s16 offset(x, z);
-			offset *= MAP_BLOCKSIZE;
-			// Reset the voxel manipulator.
-			fill_with_sunlight(vm, ndef, offset, lights);
-			// Copy sunlight data
-			data.target_block = v3s16(x, minblock.Y - 1, z);
-			for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-				for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-					data.data.push_back(
-						SunlightPropagationUnit(v2s16(x, z), lights[x][z]));
-				}
-			}
-			// Propagate sunlight and shadow below the voxel manipulator.
-			while (!data.data.empty()) {
-				if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
-						&relight[0])) {
-					(*modified_blocks)[data.target_block] =
-						map->getBlockNoCreateNoEx(data.target_block);
-				}
-				// Step downwards.
-				data.target_block.Y--;
-			}
+	for (s16 x = minblock.X; x <= maxblock.X; x++)
+	for (s16 z = minblock.Z; z <= maxblock.Z; z++) {
+		// Extract sunlight above.
+		is_sunlight_above_block(map, v3s16(x, maxblock.Y, z), ndef, lights);
+		v2s16 offset(x, z);
+		offset *= MAP_BLOCKSIZE;
+		// Reset the voxel manipulator.
+		fill_with_sunlight(vm, ndef, offset, lights);
+		// Copy sunlight data
+		data.target_block = v3s16(x, minblock.Y - 1, z);
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+			data.data.push_back(
+				SunlightPropagationUnit(v2s16(x, z), lights[x][z]));
+		// Propagate sunlight and shadow below the voxel manipulator.
+		while (!data.data.empty()) {
+			if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
+					&relight[0]))
+				(*modified_blocks)[data.target_block] =
+					map->getBlockNoCreateNoEx(data.target_block);
+			// Step downwards.
+			data.target_block.Y--;
 		}
 	}
 
@@ -1160,10 +1146,9 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
 		v3s16 blockpos(b_x, b_y, b_z);
 		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
-		if (!block || block->isDummy()) {
+		if (!block || block->isDummy())
 			// Skip not existing blocks.
 			continue;
-		}
 		v3s16 offset = block->getPosRelative();
 		// For each border of the block:
 		for (direction d = 0; d < 6; d++) {
@@ -1213,10 +1198,9 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
 		v3s16 blockpos(b_x, b_y, b_z);
 		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
-		if (!block || block->isDummy()) {
+		if (!block || block->isDummy())
 			// Skip not existing blocks
 			continue;
-		}
 		// For each node in the block:
 		for (s32 x = 0; x < MAP_BLOCKSIZE; x++)
 		for (s32 z = 0; z < MAP_BLOCKSIZE; z++)
@@ -1228,9 +1212,8 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 			for (size_t b = 0; b < 2; b++) {
 				LightBank bank = banks[b];
 				u8 light = node.getLightNoChecks(bank, &f);
-				if (light > 1) {
+				if (light > 1)
 					relight[b].push(light, relpos, blockpos, block, 6);
-				}
 			} // end of banks
 		} // end of nodes
 	} // end of blocks
