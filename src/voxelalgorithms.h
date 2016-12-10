@@ -26,7 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/cpp11_container.h"
 
 class Map;
+class ServerMap;
 class MapBlock;
+class MMVManip;
 
 namespace voxalgo
 {
@@ -83,6 +85,17 @@ void update_lighting_nodes(
  */
 void update_block_border_lighting(Map *map, MapBlock *block,
 	std::map<v3s16, MapBlock*> &modified_blocks);
+
+/*!
+ * Copies back nodes from a voxel manipulator
+ * to the map and updates lighting.
+ * For server use only.
+ *
+ * \param modified_blocks output, contains all map blocks that
+ * the function modified
+ */
+void blit_back_with_light(ServerMap *map, MMVManip *vm,
+	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!
  * This class iterates trough voxels that intersect with

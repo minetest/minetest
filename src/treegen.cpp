@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
+#include "voxelalgorithms.h"
 
 namespace treegen
 {
@@ -125,12 +126,8 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	if (e != SUCCESS)
 		return e;
 
-	vmanip.blitBackAll(&modified_blocks);
+	voxalgo::blit_back_with_light(map, &vmanip, &modified_blocks);
 
-	// update lighting
-	std::map<v3s16, MapBlock*> lighting_modified_blocks;
-	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
-	map->updateLighting(lighting_modified_blocks, modified_blocks);
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;

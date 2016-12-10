@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 class Map;
+class ServerMap;
 class Mapgen;
 class MMVManip;
 class PseudoRandom;
@@ -108,7 +109,7 @@ public:
 
 	void blitToVManip(MMVManip *vm, v3s16 p, Rotation rot, bool force_place);
 	bool placeOnVManip(MMVManip *vm, v3s16 p, u32 flags, Rotation rot, bool force_place);
-	void placeOnMap(Map *map, v3s16 p, u32 flags, Rotation rot, bool force_place);
+	void placeOnMap(ServerMap *map, v3s16 p, u32 flags, Rotation rot, bool force_place);
 
 	void applyProbabilities(v3s16 p0,
 		std::vector<std::pair<v3s16, u8> > *plist,

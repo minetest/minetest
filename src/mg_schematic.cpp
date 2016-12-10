@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "serialization.h"
 #include "filesys.h"
+#include "voxelalgorithms.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -202,7 +203,7 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 	return vm->m_area.contains(VoxelArea(p, p + s - v3s16(1,1,1)));
 }
 
-void Schematic::placeOnMap(Map *map, v3s16 p, u32 flags,
+void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
@@ -238,14 +239,9 @@ void Schematic::placeOnMap(Map *map, v3s16 p, u32 flags,
 
 	blitToVManip(&vm, p, rot, force_place);
 
-	vm.blitBackAll(&modified_blocks);
+	voxalgo::blit_back_with_light(map, &vm, &modified_blocks);
 
 	//// Carry out post-map-modification actions
-
-	//// Update lighting
-	// TODO: Optimize this by using Mapgen::calcLighting() instead
-	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
-	map->updateLighting(lighting_modified_blocks, modified_blocks);
 
 	//// Create & dispatch map modification events to observers
 	MapEditEvent event;

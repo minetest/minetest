@@ -208,22 +208,6 @@ public:
 	// position is valid, otherwise false
 	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
 
-	void unspreadLight(enum LightBank bank,
-			std::map<v3s16, u8> & from_nodes,
-			std::set<v3s16> & light_sources,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
-	void spreadLight(enum LightBank bank,
-			std::set<v3s16> & from_nodes,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-	
-	void updateLighting(enum LightBank bank,
-			std::map<v3s16, MapBlock*>  & a_blocks,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
-	void updateLighting(std::map<v3s16, MapBlock*>  & a_blocks,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
 	/*
 		These handle lighting but not faces.
 	*/
