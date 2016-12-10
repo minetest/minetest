@@ -251,8 +251,8 @@ private:
 class ActiveBlockList
 {
 public:
-	void update(std::vector<v3s16> &active_positions,
-			std::vector<s16> &ranges,
+	void update(const std::vector<v3s16> &active_positions,
+			const std::vector<s16> &ranges,
 			std::set<v3s16> &blocks_removed,
 			std::set<v3s16> &blocks_added);
 

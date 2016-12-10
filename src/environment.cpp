@@ -405,8 +405,8 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 	}
 }
 
-void ActiveBlockList::update(std::vector<v3s16> &active_positions,
-		std::vector<s16> &ranges,
+void ActiveBlockList::update(const std::vector<v3s16> &active_positions,
+		const std::vector<s16> &ranges,
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added)
 {
@@ -414,8 +414,8 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 		Create the new list
 	*/
 	std::set<v3s16> newlist = m_forceloaded_list;
-	std::vector<s16>::iterator j = ranges.begin();
-	for(std::vector<v3s16>::iterator i = active_positions.begin();
+	std::vector<s16>::const_iterator j = ranges.begin();
+	for(std::vector<v3s16>::const_iterator i = active_positions.begin();
 	    i != active_positions.end(); ++i, ++j)
 	{
 		fillRadiusBlock(*i, *j, newlist);
@@ -1274,7 +1274,8 @@ void ServerEnvironment::step(float dtime)
 		*/
 		std::vector<v3s16> players_blockpos;
 		std::vector<s16> players_range;
-		static const s16 active_block_range = g_settings->getS16("active_block_range");
+		const s16 active_block_range = g_settings->getS16("active_block_range");
+
 		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
@@ -1291,7 +1292,8 @@ void ServerEnvironment::step(float dtime)
 					floatToInt(playersao->getBasePosition(), BS));
 			players_blockpos.push_back(blockpos);
 			s16 range = MYMIN(playersao->getWantedRange(), active_block_range);
-			if (range <= 0) range = active_block_range;
+			if (range <= 0)
+				range = active_block_range;
 			players_range.push_back(range);
 		}
 
