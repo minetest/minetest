@@ -4214,7 +4214,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	if (draw_control->range_all) {
 		runData->fog_range = 100000 * BS;
 	} else {
-		runData->fog_range = 0.9 * draw_control->wanted_range * BS;
+		runData->fog_range = draw_control->wanted_range * BS;
 	}
 
 	/*

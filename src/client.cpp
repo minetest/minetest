@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <cmath>
 #include <IFileSystem.h>
 #include "threading/mutex_auto_lock.h"
 #include "util/auth.h"
@@ -939,7 +940,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	u32 keyPressed   = myplayer->keyPressed;
 	// scaled by 80, so that pi can fit into a u8
 	u8 fov           = clientMap->getCameraFov() * 80;
-	u8 wanted_range  = clientMap->getControl().wanted_range / MAP_BLOCKSIZE;
+	u8 wanted_range  = std::ceil(clientMap->getControl().wanted_range / MAP_BLOCKSIZE);
 
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
@@ -952,7 +953,7 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4] s32 yaw*100
 		[12+12+4+4] u32 keyPressed
 		[12+12+4+4+4] u8 fov*80
-		[12+12+4+4+4+1] u8 wanted_range / MAP_BLOCKSIZE
+		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
