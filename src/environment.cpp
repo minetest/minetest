@@ -1272,7 +1272,6 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<v3s16> players_blockpos;
-
 		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
@@ -1293,7 +1292,7 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		const s16 active_block_range = g_settings->getS16("active_block_range");
+		static const s16 active_block_range = g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
