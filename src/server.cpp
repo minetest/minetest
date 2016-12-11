@@ -307,8 +307,17 @@ Server::Server(
 
 	// Apply texture overrides from texturepack/override.txt
 	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "" && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	if (texture_path != "" && fs::IsDir(texture_path)) {
+		std::vector<std::string> paths;
+		paths.push_back(texture_path);
+		static char ignore[] = { '_', '.' };
+		std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);;
+		for (std::vector<std::string>::iterator i = paths.begin();
+			i != paths.end(); ++i) {
+			m_nodedef->applyTextureOverrides(*i + DIR_DELIM + "override.txt");
+		}
+	}
 
 	m_nodedef->setNodeRegistrationStatus(true);
 
@@ -2242,16 +2251,19 @@ void Server::fillMediaCache()
 
 	// Collect all media file paths
 	std::vector<std::string> paths;
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
-			i != m_mods.end(); ++i) {
+	for (std::vector<ModSpec>::iterator i = m_mods.begin();
+		i != m_mods.end(); ++i) {
 		const ModSpec &mod = *i;
 		paths.push_back(mod.path + DIR_DELIM + "textures");
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
 		paths.push_back(mod.path + DIR_DELIM + "media");
 		paths.push_back(mod.path + DIR_DELIM + "models");
 	}
-	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
-
+	std::string texturepack_path = porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server";
+	static char ignore[] = { '_', '.' };
+	std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+	fs::GetRecursiveSubPaths(texturepack_path, paths, false, &chars_to_ignore);
+	paths.push_back(texturepack_path);
 	// Collect media file information from paths into cache
 	for(std::vector<std::string>::iterator i = paths.begin();
 			i != paths.end(); ++i) {
