@@ -7,6 +7,20 @@
 local jobs = {}
 local time = 0.0
 local last = core.get_us_time() / 1000000
+local join_message
+local leave_message
+local leave_time_out_append
+
+function core.set_join_message(str)
+	join_message = str
+	return true
+end
+
+function core.set_leave_message(str, time_out_append)
+	leave_message = str
+	leave_time_out_append = time_out_append
+	return true
+end
 
 core.register_globalstep(function(dtime)
 	local new = core.get_us_time() / 1000000
@@ -90,16 +104,16 @@ core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	player_list[player_name] = player
 	if not minetest.is_singleplayer() then
-		core.chat_send_all("*** " .. player_name .. " joined the game.")
+		core.chat_send_all(string.format(join_message or "*** %s joined the game.", player_name))
 	end
 end)
 
 core.register_on_leaveplayer(function(player, timed_out)
 	local player_name = player:get_player_name()
 	player_list[player_name] = nil
-	local announcement = "*** " ..  player_name .. " left the game."
+	local announcement = string.format(leave_message or "*** %s left the game.", player_name)
 	if timed_out then
-		announcement = announcement .. " (timed out)"
+		announcement = announcement .. leave_time_out_append or " (timed out)"
 	end
 	core.chat_send_all(announcement)
 end)
