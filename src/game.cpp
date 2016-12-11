@@ -1205,7 +1205,7 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 		(*cur_formspec)->setFormSource(fs_src);
 		(*cur_formspec)->setTextDest(txt_dest);
 	}
-	
+
 }
 
 #ifdef __ANDROID__
@@ -3362,8 +3362,8 @@ void Game::updateCameraOrientation(CameraOrientation *cam,
 {
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
-		cam->camera_yaw   = g_touchscreengui->getYaw();
-		cam->camera_pitch = g_touchscreengui->getPitch();
+		cam->camera_yaw   += g_touchscreengui->getYawChange();
+		cam->camera_pitch  = g_touchscreengui->getPitch();
 	} else {
 #endif
 
