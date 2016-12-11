@@ -75,7 +75,7 @@ struct button_info {
 	float            repeatdelay;
 	irr::EKEY_CODE   keycode;
 	std::vector<int> ids;
-	IGUIButton*      guibutton;
+	IGUIButton*      guibutton = NULL;
 	bool             immediate_release;
 };
 

@@ -177,8 +177,10 @@ void AutoHideButtonBar::init(ISimpleTextureSource* tsrc,
 
 AutoHideButtonBar::~AutoHideButtonBar()
 {
-	m_starter.guibutton->setVisible(false);
-	m_starter.guibutton->drop();
+	if (m_starter.guibutton) {
+		m_starter.guibutton->setVisible(false);
+		m_starter.guibutton->drop();
+	}
 }
 
 void AutoHideButtonBar::addButton(touch_gui_button_id button_id,
