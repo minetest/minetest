@@ -479,13 +479,13 @@ local function handle_change_setting_buttons(this, fields)
 				return true
 			end
 			if setting.min and new_value < setting.min then
-				this.data.error_message = fgettext_ne("The value must be greater than $1.", setting.min)
+				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
-				this.data.error_message = fgettext_ne("The value must be lower than $1.", setting.max)
+				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
