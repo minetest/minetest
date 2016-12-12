@@ -101,7 +101,7 @@ MapgenV7::~MapgenV7()
 MapgenV7Params::MapgenV7Params()
 {
 	spflags             = MGV7_MOUNTAINS | MGV7_RIDGES;
-	cave_width          = 0.2;
+	cave_width          = 0.09;
 	float_mount_density = 0.6;
 	float_mount_height  = 128.0;
 	floatland_level     = 1280;
