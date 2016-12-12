@@ -972,7 +972,7 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,floatlands,nomountains,noridges,nofloatlands
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgv7_cave_width (Mapgen v7 cave width) float 0.2
+mgv7_cave_width (Mapgen v7 cave width) float 0.09
 
 #    Controls the density of floatland mountain terrain.
 #    Is an offset added to the 'np_mountain' noise value.
