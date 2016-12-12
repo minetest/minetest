@@ -296,6 +296,7 @@ function modmgr.get_dependencies(modfolder)
 		if dependencyfile then
 			local dependency = dependencyfile:read("*l")
 			while dependency do
+				dependency = dependency:gsub("\r", "")
 				if string.sub(dependency, -1, -1) == "?" then
 					table.insert(soft_dependencies, string.sub(dependency, 1, -2))
 				else
