@@ -84,7 +84,7 @@ MapgenFractal::~MapgenFractal()
 MapgenFractalParams::MapgenFractalParams()
 {
 	spflags    = 0;
-	cave_width = 0.2;
+	cave_width = 0.09;
 	fractal    = 1;
 	iterations = 11;
 	scale      = v3f(4096.0, 1024.0, 4096.0);

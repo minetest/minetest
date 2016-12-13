@@ -82,7 +82,7 @@ MapgenFlatParams::MapgenFlatParams()
 	spflags          = 0;
 	ground_level     = 8;
 	large_cave_depth = -33;
-	cave_width       = 0.2;
+	cave_width       = 0.09;
 	lake_threshold   = -0.45;
 	lake_steepness   = 48.0;
 	hill_threshold   = 0.45;

@@ -143,7 +143,7 @@ MapgenValleysParams::MapgenValleysParams()
 	river_depth        = 4;  // How deep to carve river channels.
 	river_size         = 5;  // How wide to make rivers.
 	water_features     = 0;  // How often water will occur in caves.
-	cave_width         = 0.2;
+	cave_width         = 0.09;
 
 	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
 	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
