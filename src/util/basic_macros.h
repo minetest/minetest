@@ -50,4 +50,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define STATIC_ASSERT(expr, msg) \
 	UNUSED_ATTRIBUTE typedef char msg[!!(expr) * 2 - 1]
 
+// Macros to facilitate writing position vectors to a stream
+// Usage:
+//	v3s16 pos(1,2,3);
+//	mystream << "message " << PP(pos) << std::endl;
+
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
+#define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
+
 #endif

@@ -24,10 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
-
-#ifndef PP
-	#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
-#endif
+#include "util/basic_macros.h"
 
 class Database
 {

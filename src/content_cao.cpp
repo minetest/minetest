@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
 #include "util/mathconstants.h"
+#include "util/basic_macros.h"
 #include "client/tile.h"
 #include "environment.h"
 #include "collision.h"
@@ -48,8 +49,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 struct ToolCapabilities;
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 UNORDERED_MAP<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
