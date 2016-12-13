@@ -4343,60 +4343,60 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Dokular yükleniyor..."
+#~ msgid "Useful for mod developers."
+#~ msgstr "Ana geliştiriciler"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Ölçeklendirme menülere işlendi:"
+#~ msgid "No of course not!"
+#~ msgstr "Elbette hayır!"
 
-#~ msgid "Touch free target"
-#~ msgstr "Touch free target"
-
-#~ msgid "Downloading"
-#~ msgstr "İndiriliyor"
-
-#~ msgid "please wait..."
-#~ msgstr "lütfen bekleyin..."
-
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
-
-#~ msgid "Numpad "
-#~ msgstr "Numpad "
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
-
-#~ msgid "Rendering:"
-#~ msgstr "Kaplama:"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Etkinleştirildi"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Paketi Kapat"
-
-#~ msgid "\""
-#~ msgstr "\""
-
-#~ msgid "No!!!"
-#~ msgstr "Hayır!!!"
+#~ msgid "Public Serverlist"
+#~ msgstr "Çevirimiçi Oyun Listesi"
 
 #, fuzzy
 #~ msgid "Generate Normalmaps"
 #~ msgstr "Normal haritalar oluştur"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Çevirimiçi Oyun Listesi"
+#~ msgid "No!!!"
+#~ msgstr "Hayır!!!"
 
-#~ msgid "No of course not!"
-#~ msgstr "Elbette hayır!"
+#~ msgid "\""
+#~ msgstr "\""
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Ana geliştiriciler"
+#~ msgid "If disabled "
+#~ msgstr "Paketi Kapat"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Etkinleştirildi"
+
+#~ msgid "Rendering:"
+#~ msgstr "Kaplama:"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Değişikliklerin etkin olabilmesi için minetesti yeniden başlatın"
+
+#~ msgid "Numpad "
+#~ msgstr "Numpad "
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid "please wait..."
+#~ msgstr "lütfen bekleyin..."
+
+#~ msgid "Downloading"
+#~ msgstr "İndiriliyor"
+
+#~ msgid "Touch free target"
+#~ msgstr "Touch free target"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Ölçeklendirme menülere işlendi:"
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Dokular yükleniyor..."

@@ -5,8 +5,8 @@ msgstr ""
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-11-16 13:08+0000\n"
 "Last-Translator: Rui <rui.minetest@gmail.com>\n"
-"Language-Team: Japanese "
-"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
+"minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -133,7 +133,8 @@ msgstr "作成"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "minetest.netからminetest_gameなどのサブゲームをダウンロードしてください"
+msgstr ""
+"minetest.netからminetest_gameなどのサブゲームをダウンロードしてください"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -4442,52 +4443,52 @@ msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "テクスチャ読み込み中..."
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "メニューの大きさとして設定されている数値: "
-
-#~ msgid "Touch free target"
-#~ msgstr "タッチ位置を自由にする"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/秒"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/秒"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "ドライバーを変更するためMinetestを再起動します"
-
-#~ msgid "Rendering:"
-#~ msgstr "レンダリング:"
-
-#~ msgid "If enabled, "
-#~ msgstr "有効化の場合 "
-
-#~ msgid "If disabled "
-#~ msgstr "無効化の場合 "
-
-#~ msgid "No!!!"
-#~ msgstr "いいえ！！！"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "ノーマルマップの生成"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公開サーバ一覧"
-
-#~ msgid "No of course not!"
-#~ msgstr "いいえ！"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Mod開発に便利。"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
 
 #, fuzzy
 #~ msgid "Detailed mod profiling"
 #~ msgstr "詳細なModのプロファイル化"
 
+#~ msgid "Useful for mod developers."
+#~ msgstr "Mod開発に便利。"
+
+#~ msgid "No of course not!"
+#~ msgstr "いいえ！"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "公開サーバ一覧"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "ノーマルマップの生成"
+
+#~ msgid "No!!!"
+#~ msgstr "いいえ！！！"
+
+#~ msgid "If disabled "
+#~ msgstr "無効化の場合 "
+
+#~ msgid "If enabled, "
+#~ msgstr "有効化の場合 "
+
+#~ msgid "Rendering:"
+#~ msgstr "レンダリング:"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "ドライバーを変更するためMinetestを再起動します"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/秒"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/秒"
+
+#~ msgid "Touch free target"
+#~ msgstr "タッチ位置を自由にする"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "メニューの大きさとして設定されている数値: "
+
 #, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
+#~ msgid "Preload inventory textures"
+#~ msgstr "テクスチャ読み込み中..."

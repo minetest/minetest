@@ -10,8 +10,8 @@ msgstr ""
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-11-08 17:20+0000\n"
 "Last-Translator: Jakub Mendel <jimikuba@o2.pl>\n"
-"Language-Team: Polish "
-"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
+"pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1459,8 +1459,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Zgłoś do tej listy serwerów.\n"
-"Jeśli chcesz zgłosić twój adres ipv6, użyj serverlist_url = "
-"v6.servers.minetest.net."
+"Jeśli chcesz zgłosić twój adres ipv6, użyj serverlist_url = v6.servers."
+"minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1987,8 +1987,8 @@ msgid ""
 "when connecting to the server."
 msgstr ""
 "Włącza używanie zdalnego serwera mediów (jeżeli dostarczany przez serwer).\n"
-"Zdalny serwer oferuje znacząco szybszy sposób pobierania mediów (np. tekstur)"
-"\n"
+"Zdalny serwer oferuje znacząco szybszy sposób pobierania mediów (np. "
+"tekstur)\n"
 "jeżeli następuje połączenie z serwerem."
 
 #: src/settings_translation_file.cpp
@@ -2234,8 +2234,8 @@ msgstr ""
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Z jakiej odległości bloki są przesyłane do klientów, zapisane w blokach map ("
-"16 węzłów)."
+"Z jakiej odległości bloki są przesyłane do klientów, zapisane w blokach map "
+"(16 węzłów)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2324,8 +2324,8 @@ msgid ""
 msgstr ""
 "Obsługa przestarzałych wywołań lua api:\n"
 "- legacy: (próbuje) naśladuje stare zachowanie (domyślne dla wydań).\n"
-"- log: naśladuje i loguje przestarzałe wywołania (domyślne dla wersji debug)."
-"\n"
+"- log: naśladuje i loguje przestarzałe wywołania (domyślne dla wersji "
+"debug).\n"
 "- error: przerywa kiedy zostanie użyte przestarzałe api (sugerowane dla "
 "twórców modów)."
 
@@ -2414,8 +2414,8 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
-"Jeżeli włączone razem z trybem latania, gracz może latać przez solidne bloki."
-"\n"
+"Jeżeli włączone razem z trybem latania, gracz może latać przez solidne "
+"bloki.\n"
 "Wymaga przywileju \"noclip\" na serwerze."
 
 #: src/settings_translation_file.cpp
@@ -4604,59 +4604,119 @@ msgid "cURL timeout"
 msgstr "Limit czasu cURL"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ładowanie..."
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Szczegółowe dane profilowania. Przydatne dla twórców modyfikacji."
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ściągnij"
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Szczegółowe profilowanie modyfikacji"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#, fuzzy
+#~ msgid ""
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
 #~ msgstr ""
-#~ "Lewy przycisk myszy: przenieś wszystkie przedmioty, Prawy przycisk myszy: "
-#~ "przenieś pojedynczy przedmiot"
+#~ "Jak dużo bloków może jednocześnie być przesyłana przez sieć dla całego "
+#~ "serwera."
 
-#~ msgid "is required by:"
-#~ msgstr "wymagane przez:"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Przydatne dla twórców modyfikacji."
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguracja zapisana.  "
+#~ msgid "No of course not!"
+#~ msgstr "Oczywiście, że nie!"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny.  "
+#~ msgid "Public Serverlist"
+#~ msgstr "Lista publicznych serwerów"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Nie można stworzyć świata: Nazwa zawiera niedozwolone znaki"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generuj mapy normalnych"
 
-#~ msgid "Show Public"
-#~ msgstr "Pokaż publiczne"
+#~ msgid "No!!!"
+#~ msgstr "Nie!!"
 
-#~ msgid "Show Favorites"
-#~ msgstr "Pokaż ulubione"
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Wyłącz wszystkie"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Pozostaw pole adresu puste, by uruchomić serwer lokalny."
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "włączone"
 
-#~ msgid "Create world"
-#~ msgstr "Stwórz świat"
+#~ msgid "Game Name"
+#~ msgstr "Nazwa Gry"
 
-#~ msgid "Address required."
-#~ msgstr "Wymagany adres."
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Kopiowanie moda \"$1\" do gry \"$2\" nie powiodło się"
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Nie można skasować świata: nic nie zaznaczono"
+#~ msgid "GAMES"
+#~ msgstr "GRY"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "Pliki do skasowania"
+#~ msgid "Mods:"
+#~ msgstr "Mody:"
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Nie można utworzyć świata: Nie znaleziono żadnego trybu gry"
+#~ msgid "new game"
+#~ msgstr "nowa gra"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Nie można skonfigurować świata: Nic nie zaznaczono"
+#~ msgid "EDIT GAME"
+#~ msgstr "EDYTUJ GRĘ"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Nie udało się skasować wszystkich plików świata"
+#~ msgid "Remove selected mod"
+#~ msgstr "Usuń zaznaczony mod"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<--Dodaj mod"
+
+#~ msgid "CLIENT"
+#~ msgstr "KLIENT"
+
+#~ msgid "START SERVER"
+#~ msgstr "URUCHOM SERWER"
+
+#~ msgid "Name"
+#~ msgstr "Nazwa"
+
+#~ msgid "Password"
+#~ msgstr "Hasło"
+
+#~ msgid "SETTINGS"
+#~ msgstr "USTAWIENIA"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Ładuj obrazy przedmiotów"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Realistyczne ciecze"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "TRYB JEDNOOSOBOWY"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACZKI TEKSTUR"
+
+#~ msgid "MODS"
+#~ msgstr "MODY"
+
+#, fuzzy
+#~ msgid "Add mod:"
+#~ msgstr "<<--Dodaj mod"
+
+#, fuzzy
+#~ msgid "Local install"
+#~ msgstr "Instaluj"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Uwaga: Niektóre z modyfikacji nie zostały jeszcze skonfigurowane.\n"
+#~ "Zostaną domyślnie włączone gdy zapiszesz konfigurację.  "
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Ostrzeżenie: Niektóre z modyfikacji nie zostały znalezione.\n"
+#~ "Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację.  "
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4683,117 +4743,57 @@ msgstr "Limit czasu cURL"
 #~ "- ESC: to menu\n"
 #~ "- T: czat\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Nie udało się skasować wszystkich plików świata"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Nie można skonfigurować świata: Nic nie zaznaczono"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Nie można utworzyć świata: Nie znaleziono żadnego trybu gry"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Pliki do skasowania"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Nie można skasować świata: nic nie zaznaczono"
+
+#~ msgid "Address required."
+#~ msgstr "Wymagany adres."
+
+#~ msgid "Create world"
+#~ msgstr "Stwórz świat"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Pozostaw pole adresu puste, by uruchomić serwer lokalny."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Pokaż ulubione"
+
+#~ msgid "Show Public"
+#~ msgstr "Pokaż publiczne"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Nie można stworzyć świata: Nazwa zawiera niedozwolone znaki"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguracja zapisana.  "
+
+#~ msgid "is required by:"
+#~ msgstr "wymagane przez:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Ostrzeżenie: Niektóre z modyfikacji nie zostały znalezione.\n"
-#~ "Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację.  "
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Uwaga: Niektóre z modyfikacji nie zostały jeszcze skonfigurowane.\n"
-#~ "Zostaną domyślnie włączone gdy zapiszesz konfigurację.  "
+#~ "Lewy przycisk myszy: przenieś wszystkie przedmioty, Prawy przycisk myszy: "
+#~ "przenieś pojedynczy przedmiot"
 
 #, fuzzy
-#~ msgid "Local install"
-#~ msgstr "Instaluj"
+#~ msgid "Downloading"
+#~ msgstr "Ściągnij"
 
 #, fuzzy
-#~ msgid "Add mod:"
-#~ msgstr "<<--Dodaj mod"
-
-#~ msgid "MODS"
-#~ msgstr "MODY"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACZKI TEKSTUR"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "TRYB JEDNOOSOBOWY"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Realistyczne ciecze"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Ładuj obrazy przedmiotów"
-
-#~ msgid "SETTINGS"
-#~ msgstr "USTAWIENIA"
-
-#~ msgid "Password"
-#~ msgstr "Hasło"
-
-#~ msgid "Name"
-#~ msgstr "Nazwa"
-
-#~ msgid "START SERVER"
-#~ msgstr "URUCHOM SERWER"
-
-#~ msgid "CLIENT"
-#~ msgstr "KLIENT"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<--Dodaj mod"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Usuń zaznaczony mod"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "EDYTUJ GRĘ"
-
-#~ msgid "new game"
-#~ msgstr "nowa gra"
-
-#~ msgid "Mods:"
-#~ msgstr "Mody:"
-
-#~ msgid "GAMES"
-#~ msgstr "GRY"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Kopiowanie moda \"$1\" do gry \"$2\" nie powiodło się"
-
-#~ msgid "Game Name"
-#~ msgstr "Nazwa Gry"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "włączone"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Wyłącz wszystkie"
-
-#~ msgid "No!!!"
-#~ msgstr "Nie!!"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generuj mapy normalnych"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Lista publicznych serwerów"
-
-#~ msgid "No of course not!"
-#~ msgstr "Oczywiście, że nie!"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Przydatne dla twórców modyfikacji."
-
-#, fuzzy
-#~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr ""
-#~ "Jak dużo bloków może jednocześnie być przesyłana przez sieć dla całego "
-#~ "serwera."
-
-#, fuzzy
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Szczegółowe profilowanie modyfikacji"
-
-#, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "Szczegółowe dane profilowania. Przydatne dla twórców modyfikacji."
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ładowanie..."

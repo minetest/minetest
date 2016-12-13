@@ -4317,70 +4317,108 @@ msgstr "cURL 并发限制"
 msgid "cURL timeout"
 msgstr "cURL 超时"
 
+#~ msgid "Detailed mod profiling"
+#~ msgstr "详细 mod 剖析"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "适用 MOD 开发者。"
+
+#~ msgid "No of course not!"
+#~ msgstr "当然不！"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "公共服务器列表"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "生成一般地图"
+
+#~ msgid "No!!!"
+#~ msgstr "不!!!"
+
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "载入中..."
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "菜单元素应用缩放因子"
-
-#~ msgid "Touch free target"
-#~ msgstr "自由触摸目标"
+#~ msgid "If disabled "
+#~ msgstr "禁用MOD包"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "下载中"
+#~ msgid "If enabled, "
+#~ msgstr "启用"
 
-#~ msgid " KB/s"
-#~ msgstr "千字节/秒"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "重启minetest让驱动变化生效"
 
-#~ msgid " MB/s"
-#~ msgstr "兆字节/秒"
+#~ msgid "Game Name"
+#~ msgstr "游戏名"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "左键：移动所有物品，右键：移动单个物品"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
 
-#~ msgid "is required by:"
-#~ msgstr "被需要："
+#~ msgid "GAMES"
+#~ msgstr "游戏"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "配置已保存。  "
+#~ msgid "Mods:"
+#~ msgstr "MODS："
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "警告：配置不一致。  "
+#~ msgid "new game"
+#~ msgstr "新建游戏"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "无法创建世界：名字包含非法字符"
+#~ msgid "EDIT GAME"
+#~ msgstr "编辑游戏"
 
-#~ msgid "Show Public"
-#~ msgstr "显示公共"
+#~ msgid "Remove selected mod"
+#~ msgstr "删除选中MOD"
 
-#~ msgid "Show Favorites"
-#~ msgstr "显示最爱"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- 添加MOD"
 
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "地址栏留空可启动本地服务器。"
+#~ msgid "CLIENT"
+#~ msgstr "客户端"
 
-#~ msgid "Create world"
-#~ msgstr "创造世界"
+#~ msgid "START SERVER"
+#~ msgstr "启动服务器"
 
-#~ msgid "Address required."
-#~ msgstr "需要地址。"
+#~ msgid "Name"
+#~ msgstr "名字"
 
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "无法删除世界：没有选择世界"
+#~ msgid "Password"
+#~ msgstr "密码"
 
-#~ msgid "Files to be deleted"
-#~ msgstr "将被删除的文件"
+#~ msgid "SETTINGS"
+#~ msgstr "设置"
 
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "无法创造世界：未找到游戏模式"
+#~ msgid "Preload item visuals"
+#~ msgstr "预先加载物品图像"
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "无法配置世界：没有选择世界"
+#~ msgid "Finite Liquid"
+#~ msgstr "液体有限延伸"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "无法删除所有该世界的文件"
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "单人游戏"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "材质包"
+
+#~ msgid "MODS"
+#~ msgstr "MODS"
+
+#~ msgid "Add mod:"
+#~ msgstr "添加MOD："
+
+#~ msgid "Local install"
+#~ msgstr "本地安装"
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：一些MOD仍未设定。\n"
+#~ "它们会在你保存配置的时候自动启用。  "
+
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "警告：缺少一些设定了的MOD。\n"
+#~ "它们的设置会在你保存配置的时候被移除。  "
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4408,105 +4446,67 @@ msgstr "cURL 超时"
 #~ "ESC：菜单\n"
 #~ "T：聊天\n"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：缺少一些设定了的MOD。\n"
-#~ "它们的设置会在你保存配置的时候被移除。  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "无法删除所有该世界的文件"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "警告：一些MOD仍未设定。\n"
-#~ "它们会在你保存配置的时候自动启用。  "
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "无法配置世界：没有选择世界"
 
-#~ msgid "Local install"
-#~ msgstr "本地安装"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "无法创造世界：未找到游戏模式"
 
-#~ msgid "Add mod:"
-#~ msgstr "添加MOD："
+#~ msgid "Files to be deleted"
+#~ msgstr "将被删除的文件"
 
-#~ msgid "MODS"
-#~ msgstr "MODS"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "无法删除世界：没有选择世界"
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "材质包"
+#~ msgid "Address required."
+#~ msgstr "需要地址。"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "单人游戏"
+#~ msgid "Create world"
+#~ msgstr "创造世界"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "液体有限延伸"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "地址栏留空可启动本地服务器。"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "预先加载物品图像"
+#~ msgid "Show Favorites"
+#~ msgstr "显示最爱"
 
-#~ msgid "SETTINGS"
-#~ msgstr "设置"
+#~ msgid "Show Public"
+#~ msgstr "显示公共"
 
-#~ msgid "Password"
-#~ msgstr "密码"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "无法创建世界：名字包含非法字符"
 
-#~ msgid "Name"
-#~ msgstr "名字"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "警告：配置不一致。  "
 
-#~ msgid "START SERVER"
-#~ msgstr "启动服务器"
+#~ msgid "Configuration saved.  "
+#~ msgstr "配置已保存。  "
 
-#~ msgid "CLIENT"
-#~ msgstr "客户端"
+#~ msgid "is required by:"
+#~ msgstr "被需要："
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- 添加MOD"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "左键：移动所有物品，右键：移动单个物品"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "删除选中MOD"
+#~ msgid " MB/s"
+#~ msgstr "兆字节/秒"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "编辑游戏"
-
-#~ msgid "new game"
-#~ msgstr "新建游戏"
-
-#~ msgid "Mods:"
-#~ msgstr "MODS："
-
-#~ msgid "GAMES"
-#~ msgstr "游戏"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "游戏管理: 无法复制MOD“$1”到游戏“$2”"
-
-#~ msgid "Game Name"
-#~ msgstr "游戏名"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "重启minetest让驱动变化生效"
+#~ msgid " KB/s"
+#~ msgstr "千字节/秒"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "启用"
+#~ msgid "Downloading"
+#~ msgstr "下载中"
+
+#~ msgid "Touch free target"
+#~ msgstr "自由触摸目标"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "菜单元素应用缩放因子"
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "禁用MOD包"
-
-#~ msgid "No!!!"
-#~ msgstr "不!!!"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "生成一般地图"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "公共服务器列表"
-
-#~ msgid "No of course not!"
-#~ msgstr "当然不！"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "适用 MOD 开发者。"
-
-#~ msgid "Detailed mod profiling"
-#~ msgstr "详细 mod 剖析"
+#~ msgid "Preload inventory textures"
+#~ msgstr "载入中..."

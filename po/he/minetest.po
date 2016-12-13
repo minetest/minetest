@@ -4185,8 +4185,8 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Public Serverlist"
-#~ msgstr "רשימת שרתים פומבי"
-
 #~ msgid "No of course not!"
 #~ msgstr "לא ברור שלא!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "רשימת שרתים פומבי"

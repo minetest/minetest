@@ -10,8 +10,8 @@ msgstr ""
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-10-25 11:59+0000\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
-"Language-Team: Czech "
-"<https://hosted.weblate.org/projects/minetest/minetest/cs/>\n"
+"Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
+"cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1448,8 +1448,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Zveřejnit do tohoto seznamu serverů.\n"
-"Jestliže chcete zveřejnit vaši ipv6 adresu, použijte  serverlist_url = "
-"v6.servers.minetest.net."
+"Jestliže chcete zveřejnit vaši ipv6 adresu, použijte  serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -4272,120 +4272,120 @@ msgstr "cURL limit paralelních stahování"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid "Preload inventory textures"
-#~ msgstr "Přednačíst inventářové textury"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Měřítko aplikované na prvky menu: "
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Detailní profilování modů"
 
-#~ msgid "Touch free target"
-#~ msgstr "Středový kurzor"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Užitečné pro vývojáře modů."
 
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
+#~ msgid "No of course not!"
+#~ msgstr "Jistě že ne!"
 
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
+#~ msgid "Public Serverlist"
+#~ msgstr "Seznam veřejných serverů"
 
-#~ msgid "Downloading"
-#~ msgstr "Stahuji"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generovat normálové mapy"
 
-#~ msgid "Game Name"
-#~ msgstr "Název hry"
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
+#~ msgid "\""
+#~ msgstr "\""
 
-#~ msgid "GAMES"
-#~ msgstr "HRY"
+#~ msgid "If disabled "
+#~ msgstr "Je-li zakázáno "
 
-#~ msgid "Mods:"
-#~ msgstr "Mody:"
+#~ msgid "If enabled, "
+#~ msgstr "Je-li povoleno, "
 
-#~ msgid "new game"
-#~ msgstr "nová hra"
+#~ msgid "Rendering:"
+#~ msgstr "Renderování:"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "UPRAVIT HRU"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Odstranit vybraný mod"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Přidat mod"
-
-#~ msgid "CLIENT"
-#~ msgstr "KLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "MÍSTNÍ SERVER"
-
-#~ msgid "Name"
-#~ msgstr "Jméno"
-
-#~ msgid "Password"
-#~ msgstr "Heslo"
-
-#~ msgid "SETTINGS"
-#~ msgstr "NASTAVENÍ"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Přednačíst textury předmětů"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Konečná voda"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "HRA JEDNOHO HRÁČE"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "BALÍČKY TEXTUR"
-
-#~ msgid "MODS"
-#~ msgstr "MODY"
-
-#~ msgid "Add mod:"
-#~ msgstr "Přidat mod:"
-
-#~ msgid "Local install"
-#~ msgstr "Místní instalace"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
 #~ "Levý klik: Přesunout všechny předměty, Pravý klik: Přesunout jeden předmět"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
+#~ msgid "Local install"
+#~ msgstr "Místní instalace"
 
-#~ msgid "Rendering:"
-#~ msgstr "Renderování:"
+#~ msgid "Add mod:"
+#~ msgstr "Přidat mod:"
 
-#~ msgid "If enabled, "
-#~ msgstr "Je-li povoleno, "
+#~ msgid "MODS"
+#~ msgstr "MODY"
 
-#~ msgid "If disabled "
-#~ msgstr "Je-li zakázáno "
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "BALÍČKY TEXTUR"
 
-#~ msgid "\""
-#~ msgstr "\""
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "HRA JEDNOHO HRÁČE"
 
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
+#~ msgid "Finite Liquid"
+#~ msgstr "Konečná voda"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generovat normálové mapy"
+#~ msgid "Preload item visuals"
+#~ msgstr "Přednačíst textury předmětů"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Seznam veřejných serverů"
+#~ msgid "SETTINGS"
+#~ msgstr "NASTAVENÍ"
 
-#~ msgid "No of course not!"
-#~ msgstr "Jistě že ne!"
+#~ msgid "Password"
+#~ msgstr "Heslo"
 
-#~ msgid "Useful for mod developers."
-#~ msgstr "Užitečné pro vývojáře modů."
+#~ msgid "Name"
+#~ msgstr "Jméno"
 
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Detailní profilování modů"
+#~ msgid "START SERVER"
+#~ msgstr "MÍSTNÍ SERVER"
 
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
+#~ msgid "CLIENT"
+#~ msgstr "KLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Přidat mod"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Odstranit vybraný mod"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "UPRAVIT HRU"
+
+#~ msgid "new game"
+#~ msgstr "nová hra"
+
+#~ msgid "Mods:"
+#~ msgstr "Mody:"
+
+#~ msgid "GAMES"
+#~ msgstr "HRY"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
+
+#~ msgid "Game Name"
+#~ msgstr "Název hry"
+
+#~ msgid "Downloading"
+#~ msgstr "Stahuji"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid "Touch free target"
+#~ msgstr "Středový kurzor"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Měřítko aplikované na prvky menu: "
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Přednačíst inventářové textury"

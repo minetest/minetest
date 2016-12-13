@@ -4306,42 +4306,42 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ŝargi teksturojn…"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Eksaj kernprogramistoj"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
+#~ msgid "No of course not!"
+#~ msgstr "Ne, memkompreneble!"
 
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
-
-#~ msgid "Rendering:"
-#~ msgstr "Bildigo:"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ŝaltita"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Malŝaltu modifaron"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
+#~ msgid "Public Serverlist"
+#~ msgstr "Publika servilolisto"
 
 #, fuzzy
 #~ msgid "Generate Normalmaps"
 #~ msgstr "Generi Normalmapojn"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Publika servilolisto"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, memkompreneble!"
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Eksaj kernprogramistoj"
+#~ msgid "If disabled "
+#~ msgstr "Malŝaltu modifaron"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "ŝaltita"
+
+#~ msgid "Rendering:"
+#~ msgstr "Bildigo:"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
+
+#~ msgid "Touch free target"
+#~ msgstr "Sentuŝa celo"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Skala faktoro por menuoj "
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ŝargi teksturojn…"

@@ -4303,54 +4303,28 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Жүктөлүүдө..."
+#~ msgid "Public Serverlist"
+#~ msgstr "Жалпылык серверлердин тизмеси:"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ылдый"
+#~ msgid "If disabled "
+#~ msgstr "Баарын өчүрүү"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "күйгүзүлгөн"
 
-#~ msgid "is required by:"
-#~ msgstr "талап кылынганы:"
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Оюн"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Конфигурация сакталды.  "
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Эски сырсөз"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
-
-#~ msgid "Show Public"
-#~ msgstr "Жалпылыкты көрсөтүү"
-
-#~ msgid "Show Favorites"
-#~ msgstr "Тандалмаларды көрсөтүү"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
-
-#~ msgid "Create world"
-#~ msgstr "Дүйнөнү жаратуу"
-
-#~ msgid "Address required."
-#~ msgstr "Дареги талап кылынат."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Өчүрүлө турган файлдар"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Чектүү суюктук"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4377,26 +4351,52 @@ msgstr ""
 #~ "- ESC: бул меню\n"
 #~ "- T: маек\n"
 
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Чектүү суюктук"
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Өчүрүлө турган файлдар"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Address required."
+#~ msgstr "Дареги талап кылынат."
+
+#~ msgid "Create world"
+#~ msgstr "Дүйнөнү жаратуу"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Тандалмаларды көрсөтүү"
+
+#~ msgid "Show Public"
+#~ msgstr "Жалпылыкты көрсөтүү"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Конфигурация сакталды.  "
+
+#~ msgid "is required by:"
+#~ msgstr "талап кылынганы:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
 
 #, fuzzy
-#~ msgid "Password"
-#~ msgstr "Эски сырсөз"
+#~ msgid "Downloading"
+#~ msgstr "Ылдый"
 
 #, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Оюн"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "күйгүзүлгөн"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Баарын өчүрүү"
-
-#, fuzzy
-#~ msgid "Public Serverlist"
-#~ msgstr "Жалпылык серверлердин тизмеси:"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Жүктөлүүдө..."

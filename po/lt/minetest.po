@@ -10,14 +10,14 @@ msgstr ""
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-12-10 20:29+0000\n"
 "Last-Translator: Zygi Mantus <zygimantus@gmail.com>\n"
-"Language-Team: Lithuanian "
-"<https://hosted.weblate.org/projects/minetest/minetest/lt/>\n"
+"Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
+"minetest/lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"(n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
+"%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.10-dev\n"
 
 #: builtin/fstk/ui.lua
@@ -4281,69 +4281,69 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Įkeliama..."
+#~ msgid "Useful for mod developers."
+#~ msgstr "Pagrindiniai kūrėjai"
 
-#~ msgid "Add mod:"
-#~ msgstr "Pridėti papildinį:"
+#~ msgid "No of course not!"
+#~ msgstr "Ne, tikrai ne!"
 
-#~ msgid "MODS"
-#~ msgstr "PAPILDINIAI"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "VIENAS ŽAIDĖJAS"
-
-#~ msgid "SETTINGS"
-#~ msgstr "NUSTATYMAI"
-
-#~ msgid "Password"
-#~ msgstr "Slaptažodis"
-
-#~ msgid "Name"
-#~ msgstr "Vardas"
-
-#~ msgid "START SERVER"
-#~ msgstr "PALEISTI SERVERĮ"
-
-#~ msgid "CLIENT"
-#~ msgstr "ŽAISTI TINKLE"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Pridėti papildinį"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Pašalinti pasirinktą papildinį"
-
-#, fuzzy
-#~ msgid "EDIT GAME"
-#~ msgstr "KEISTI ŽAIDIMĄ"
-
-#~ msgid "new game"
-#~ msgstr "naujas žaidimas"
-
-#~ msgid "Mods:"
-#~ msgstr "Papildiniai:"
-
-#~ msgid "GAMES"
-#~ msgstr "ŽAIDIMAI"
-
-#~ msgid "Game Name"
-#~ msgstr "Žaidimo pavadinimas"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "įjungtas"
+#~ msgid "Public Serverlist"
+#~ msgstr "Viešų serverių sąrašas"
 
 #, fuzzy
 #~ msgid "If disabled "
 #~ msgstr "Išjungti papildinį"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Viešų serverių sąrašas"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "įjungtas"
 
-#~ msgid "No of course not!"
-#~ msgstr "Ne, tikrai ne!"
+#~ msgid "Game Name"
+#~ msgstr "Žaidimo pavadinimas"
+
+#~ msgid "GAMES"
+#~ msgstr "ŽAIDIMAI"
+
+#~ msgid "Mods:"
+#~ msgstr "Papildiniai:"
+
+#~ msgid "new game"
+#~ msgstr "naujas žaidimas"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Pagrindiniai kūrėjai"
+#~ msgid "EDIT GAME"
+#~ msgstr "KEISTI ŽAIDIMĄ"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Pašalinti pasirinktą papildinį"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Pridėti papildinį"
+
+#~ msgid "CLIENT"
+#~ msgstr "ŽAISTI TINKLE"
+
+#~ msgid "START SERVER"
+#~ msgstr "PALEISTI SERVERĮ"
+
+#~ msgid "Name"
+#~ msgstr "Vardas"
+
+#~ msgid "Password"
+#~ msgstr "Slaptažodis"
+
+#~ msgid "SETTINGS"
+#~ msgstr "NUSTATYMAI"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "VIENAS ŽAIDĖJAS"
+
+#~ msgid "MODS"
+#~ msgstr "PAPILDINIAI"
+
+#~ msgid "Add mod:"
+#~ msgstr "Pridėti papildinį:"
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Įkeliama..."

@@ -4336,91 +4336,91 @@ msgid "cURL timeout"
 msgstr ""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Se încarcă..."
+#~ msgid "Useful for mod developers."
+#~ msgstr "Dezvoltatori de bază"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarcă"
+#~ msgid "No of course not!"
+#~ msgstr "Nu, sigur că nu!"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
-
-#~ msgid "Local install"
-#~ msgstr "Instalare locală"
-
-#~ msgid "Add mod:"
-#~ msgstr "Adăugaţi mod:"
-
-#~ msgid "MODS"
-#~ msgstr "MODURI"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACHETE DE TEXTURĂ"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLE PLAYER"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Lichid finit"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Pre-încarcă imaginile obiectelor"
-
-#~ msgid "SETTINGS"
-#~ msgstr "SETĂRI"
-
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
-#~ msgid "Name"
-#~ msgstr "Nume"
-
-#~ msgid "START SERVER"
-#~ msgstr "DESCHIDE SERVERUL"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adaugă modul"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Șterge modul selectat"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICĂ JOCUL"
-
-#~ msgid "new game"
-#~ msgstr "joc nou"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduri:"
-
-#~ msgid "GAMES"
-#~ msgstr "JOCURI"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
-
-#~ msgid "Game Name"
-#~ msgstr "Numele jocului"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "activat"
+#~ msgid "Public Serverlist"
+#~ msgstr "Listă de servere publică"
 
 #, fuzzy
 #~ msgid "If disabled "
 #~ msgstr "Dezactivează MP"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Listă de servere publică"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "activat"
 
-#~ msgid "No of course not!"
-#~ msgstr "Nu, sigur că nu!"
+#~ msgid "Game Name"
+#~ msgstr "Numele jocului"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
+
+#~ msgid "GAMES"
+#~ msgstr "JOCURI"
+
+#~ msgid "Mods:"
+#~ msgstr "Moduri:"
+
+#~ msgid "new game"
+#~ msgstr "joc nou"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICĂ JOCUL"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Șterge modul selectat"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adaugă modul"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "START SERVER"
+#~ msgstr "DESCHIDE SERVERUL"
+
+#~ msgid "Name"
+#~ msgstr "Nume"
+
+#~ msgid "Password"
+#~ msgstr "Parolă"
+
+#~ msgid "SETTINGS"
+#~ msgstr "SETĂRI"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Pre-încarcă imaginile obiectelor"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Lichid finit"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLE PLAYER"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACHETE DE TEXTURĂ"
+
+#~ msgid "MODS"
+#~ msgstr "MODURI"
+
+#~ msgid "Add mod:"
+#~ msgstr "Adăugaţi mod:"
+
+#~ msgid "Local install"
+#~ msgstr "Instalare locală"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Dezvoltatori de bază"
+#~ msgid "Downloading"
+#~ msgstr "Descarcă"
+
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Se încarcă..."

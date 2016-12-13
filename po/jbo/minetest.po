@@ -4249,16 +4249,16 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr ".i ca'o samymo'i le tengu datnyvei"
+#~ msgid "No of course not!"
+#~ msgstr "nasai go'i"
+
+#~ msgid "No!!!"
+#~ msgstr "nasai go'i"
 
 #, fuzzy
 #~ msgid "If enabled, "
 #~ msgstr "selpli"
 
-#~ msgid "No!!!"
-#~ msgstr "nasai go'i"
-
-#~ msgid "No of course not!"
-#~ msgstr "nasai go'i"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr ".i ca'o samymo'i le tengu datnyvei"

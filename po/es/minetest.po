@@ -10,8 +10,8 @@ msgstr ""
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-10-04 03:39+0000\n"
 "Last-Translator: Alfonso R. Zepeda R. <ing.a.zepeda@gmx.com>\n"
-"Language-Team: Spanish "
-"<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/minetest/"
+"minetest/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4424,59 +4424,59 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "Tiempo de espera de cURL"
 
-#~ msgid "Preload inventory textures"
-#~ msgstr "Precarga de las texturas del inventario"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Factor de escala aplicado a los elementos del menú: "
-
-#~ msgid "Touch free target"
-#~ msgstr "Tocar para interactuar"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
-
-#~ msgid "Restart minetest for driver change to take effect"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
 #~ msgstr ""
-#~ "Reinicia minetest para que los cambios en el controlador tengan efecto"
+#~ "Datos detallados de perfilación de mod. Útil para desarrolladores de mods."
 
-#~ msgid "Rendering:"
-#~ msgstr "Renderizado:"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Activado"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Desactivar paquete"
-
-#~ msgid "No!!!"
-#~ msgstr "¡¡¡No!!!"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generar mapas normales"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Lista de servidores públicos"
-
-#~ msgid "No of course not!"
-#~ msgstr "¡No, claro que no!"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Útil para los desarrolladores de mods."
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Perfilador detallado de los mods"
 
 #~ msgid ""
 #~ "How many blocks are flying in the wire simultaneously for the whole "
 #~ "server."
 #~ msgstr "Cantidad de bloques que flotan simultáneamente en todo el servidor."
 
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Perfilador detallado de los mods"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Útil para los desarrolladores de mods."
 
-#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgid "No of course not!"
+#~ msgstr "¡No, claro que no!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Lista de servidores públicos"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generar mapas normales"
+
+#~ msgid "No!!!"
+#~ msgstr "¡¡¡No!!!"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Desactivar paquete"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Activado"
+
+#~ msgid "Rendering:"
+#~ msgstr "Renderizado:"
+
+#~ msgid "Restart minetest for driver change to take effect"
 #~ msgstr ""
-#~ "Datos detallados de perfilación de mod. Útil para desarrolladores de mods."
+#~ "Reinicia minetest para que los cambios en el controlador tengan efecto"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid "Touch free target"
+#~ msgstr "Tocar para interactuar"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Factor de escala aplicado a los elementos del menú: "
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Precarga de las texturas del inventario"

@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 20:49+0200\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-11-24 16:48+0100\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
-"Language-Team: Danish "
-"<https://hosted.weblate.org/projects/minetest/minetest/da/>\n"
+"Language-Team: Danish <https://hosted.weblate.org/projects/minetest/minetest/"
+"da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1459,8 +1459,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Meddel på denne serverliste\n"
-"Hvis du ønsker at annoncere din ipv6-adresse, så brug serverlist_url = "
-"v6.servers.minetest.net."
+"Hvis du ønsker at annoncere din ipv6-adresse, så brug serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1923,7 +1923,8 @@ msgstr "Tryk to gange på »hop« for at flyve"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "Tryk på »hop« to gange for at skifte frem og tilbage fra flyvetilstand."
+msgstr ""
+"Tryk på »hop« to gange for at skifte frem og tilbage fra flyvetilstand."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -1982,8 +1983,8 @@ msgid ""
 "when connecting to the server."
 msgstr ""
 "Aktiver brug af ekstern medieserver (hvis tilbudt af server).\n"
-"Eksterne servere tilbyder en signifikant hurtigere måde at hente medier ("
-"f.eks. teksturer\n"
+"Eksterne servere tilbyder en signifikant hurtigere måde at hente medier (f."
+"eks. teksturer\n"
 "ved forbindelse til serveren."
 
 #: src/settings_translation_file.cpp
@@ -2153,8 +2154,8 @@ msgid ""
 "at texture load time."
 msgstr ""
 "Filtrerede teksturer kan blande RGB-værdier med fuldt gennemsigtige naboer,\n"
-"som PNG-optimeringsprogrammer normalt fjerner, undertiden resulterende i en "
-"\n"
+"som PNG-optimeringsprogrammer normalt fjerner, undertiden resulterende i "
+"en \n"
 "mørk eller lys kant  for gennemsigtige teksturer. Anvend dette filter for at "
 "rydde\n"
 "op i dette på indlæsningstidspunktet for tekstur."
@@ -2530,7 +2531,8 @@ msgstr "Instrumentering"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr "Interval for lagring af vigtige ændringer i verden, angivet i sekunder."
+msgstr ""
+"Interval for lagring af vigtige ændringer i verden, angivet i sekunder."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
@@ -2579,8 +2581,8 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Kun Juliasæt: W-komponent for hyperkompleks konstant der bestemmer Juliaform."
-"\n"
+"Kun Juliasæt: W-komponent for hyperkompleks konstant der bestemmer "
+"Juliaform.\n"
 "Har ingen effekt på 3D-fraktaler.\n"
 "Interval cirka -2 til 2."
 
@@ -2590,8 +2592,8 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Kun Juliasæt: X-komponent for hyperkompleks konstant der bestemmer Juliaform."
-"\n"
+"Kun Juliasæt: X-komponent for hyperkompleks konstant der bestemmer "
+"Juliaform.\n"
 "Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
@@ -2600,8 +2602,8 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Kun Juliasæt: Y-komponent for hyperkompleks konstant der bestemmer Juliaform."
-"\n"
+"Kun Juliasæt: Y-komponent for hyperkompleks konstant der bestemmer "
+"Juliaform.\n"
 "Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
@@ -2610,8 +2612,8 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Kun Juliasæt: Z-komponent for hyperkompleks konstant der bestemmer Juliaform."
-"\n"
+"Kun Juliasæt: Z-komponent for hyperkompleks konstant der bestemmer "
+"Juliaform.\n"
 "Interval cirka -2 til 2."
 
 #: src/settings_translation_file.cpp
@@ -2629,8 +2631,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for mindskning af den sete afstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2639,8 +2641,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast som smider det nuværende valgte element.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2649,8 +2651,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for øgning af den sete afstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2659,8 +2661,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for hop.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2669,8 +2671,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at bevæge sig hurtigt i tilstanden hurtig.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2679,8 +2681,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at bevæge spilleren baglæns.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2689,8 +2691,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at bevæge spilleren fremad.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2699,8 +2701,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at bevæge spilleren mod venstre.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2709,8 +2711,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at bevæge spilleren mod højre.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2719,8 +2721,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at åbne snakkekonsollen (chat).\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2729,8 +2731,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at åbne snakkevinduet for at indtaste kommandoer.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2739,8 +2741,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at åbne snakkevinduet (chat).\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2749,8 +2751,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at åbne lageret.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2759,8 +2761,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at udskrive fejlsøgningsstakke. Brugt til udvikling.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2773,8 +2775,8 @@ msgstr ""
 "Tast til snigning.\n"
 "Bruges også til at klatre ned og synke ned i vand hvis aux1_descends er "
 "deaktiveret.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2783,8 +2785,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte mellem første- og tredjepersons kamera.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2793,8 +2795,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at lave skærmbilleder.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2803,8 +2805,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til automatisk løb.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2813,8 +2815,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til biograftilstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2823,8 +2825,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til visning af minikort.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2833,8 +2835,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til hurtig tilstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2843,8 +2845,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til flyvning.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2853,8 +2855,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til noclip-tilstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2863,8 +2865,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast for at skifte kameraopdateringen. Bruges kun til udvikling\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2873,8 +2875,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til visning af fejlsøgningsinformation.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2883,8 +2885,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til skift af visningen for HUD'en.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2893,8 +2895,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte visningen af snakken (chat).\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2903,8 +2905,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte visningen af tåge.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2912,10 +2914,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tast til at skifte visningen af profileringsprogrammet. Brugt til udvikling."
-"\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Tast til at skifte visningen af profileringsprogrammet. Brugt til "
+"udvikling.\n"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2924,8 +2926,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Tast til at skifte til ubegrænset se-afstand.\n"
-"Se http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
-"3da1b0edf72eb3"
+"Se http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -4555,54 +4557,47 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL-tidsudløb"
 
+#~ msgid "No of course not!"
+#~ msgstr "Nej selvfølgelig ikke!"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Offentlig serverliste"
+
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ned"
+#~ msgid "If disabled "
+#~ msgstr "Deaktivér alle"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "aktiveret"
 
-#~ msgid "is required by:"
-#~ msgstr "er påkrævet af:"
+#, fuzzy
+#~ msgid "Game Name"
+#~ msgstr "Spil"
 
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguration gemt.  "
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Gammelt kodeord"
 
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
+#~ msgid "Preload item visuals"
+#~ msgstr "For-indlæs elementernes grafik"
 
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
+#~ "De vil blive aktiveret som standard når du gemmer konfigurationen.  "
 
-#~ msgid "Show Public"
-#~ msgstr "Vis offentlig"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Advarsel: nogle konfigurerede modifikationer mangler.\n"
+#~ "Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
 
-#~ msgid "Show Favorites"
-#~ msgstr "Vis favoritter"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
-
-#~ msgid "Create world"
-#~ msgstr "Skab verden"
-
-#~ msgid "Address required."
-#~ msgstr "Adresse påkrævet."
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Kan ikke slette verden: ingenting valgt"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Filer som slettes"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Kan ikke skabe verden: ingen spil fundet"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Kan ikke konfigurere verden: ingenting valgt"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Mislykkedes i at slette alle verdenens filer"
+#~ msgid "Delete map"
+#~ msgstr "Slet mappen"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4629,44 +4624,51 @@ msgstr "cURL-tidsudløb"
 #~ "- ESC: denne menu\n"
 #~ "- T: snak\n"
 
-#~ msgid "Delete map"
-#~ msgstr "Slet mappen"
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Mislykkedes i at slette alle verdenens filer"
 
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: nogle konfigurerede modifikationer mangler.\n"
-#~ "Deres indstillinger vil blive fjernet når du gemmer konfigurationen.  "
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Kan ikke konfigurere verden: ingenting valgt"
 
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Advarsel: nogle modifikationer er endnu ikke konfigureret.\n"
-#~ "De vil blive aktiveret som standard når du gemmer konfigurationen.  "
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Kan ikke skabe verden: ingen spil fundet"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "For-indlæs elementernes grafik"
+#~ msgid "Files to be deleted"
+#~ msgstr "Filer som slettes"
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Kan ikke slette verden: ingenting valgt"
+
+#~ msgid "Address required."
+#~ msgstr "Adresse påkrævet."
+
+#~ msgid "Create world"
+#~ msgstr "Skab verden"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Lad adresse-feltet være tomt for at starte en lokal server."
+
+#~ msgid "Show Favorites"
+#~ msgstr "Vis favoritter"
+
+#~ msgid "Show Public"
+#~ msgstr "Vis offentlig"
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Kan ikke skabe verden: navnet indeholder ugyldige bogstaver"
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Advarsel: konfigurationen er ikke sammenhængende.  "
+
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguration gemt.  "
+
+#~ msgid "is required by:"
+#~ msgstr "er påkrævet af:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Venstre klik: flyt alle enheder. Højre klik: flyt en enkelt enhed"
 
 #, fuzzy
-#~ msgid "Password"
-#~ msgstr "Gammelt kodeord"
-
-#, fuzzy
-#~ msgid "Game Name"
-#~ msgstr "Spil"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "aktiveret"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Deaktivér alle"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Offentlig serverliste"
-
-#~ msgid "No of course not!"
-#~ msgstr "Nej selvfølgelig ikke!"
+#~ msgid "Downloading"
+#~ msgstr "Ned"
