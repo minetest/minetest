@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-06 10:17+0000\n"
-"Last-Translator: Maksim Gamarnik <MoNTE48@mail.ua>\n"
+"PO-Revision-Date: 2016-12-13 03:10+0000\n"
+"Last-Translator: Andrey <lordofmist@mail.ru>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -98,14 +98,13 @@ msgid "Enable all"
 msgstr "Включить всё"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Ошибка при попытке включения мода \"$1\" поскольку он содержит недопустимые "
-"символы. Допускается использование строчных букв латинского алфавита, цифр, "
-"и знака подчёркивания."
+"Ошибка при попытке подключения мода \"$1\", поскольку он содержит "
+"недопустимые символы. Допускается использование строчных букв латинского "
+"алфавита, цифр, и знака подчёркивания."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -142,7 +141,7 @@ msgstr "Создать"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Скачайте мини-игры, такие как minetest_game, на minetest.net"
+msgstr "Скачивайте мини-игры, такие как minetest_game, на minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -194,7 +193,7 @@ msgstr "Modmgr: невозможно удалить \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: неправильный путь \"$1\""
+msgstr "Modmgr: неправильный путь к \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -218,7 +217,7 @@ msgstr "(Отсутствует описание настройки)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Назад к странице Настройки"
+msgstr "< Назад к странице Настроек"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
