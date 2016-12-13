@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "log.h"
 #include "irr_aabb3d.h"
+#include "util/basic_macros.h"
 
 //#define PATHFINDER_DEBUG
 //#define PATHFINDER_CALC_TIME
@@ -46,9 +47,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 /* Typedefs and macros                                                        */
 /******************************************************************************/
-
-/** shortcut to print a 3d pos */
-#define PPOS(pos) "(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 
 #define LVL "(" << level << ")" <<
 
@@ -531,25 +529,25 @@ void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
 
 	if ((current.param0 == CONTENT_IGNORE) ||
 			(below.param0 == CONTENT_IGNORE)) {
-		DEBUG_OUT("Pathfinder: " << PPOS(realpos) <<
+		DEBUG_OUT("Pathfinder: " << PP(realpos) <<
 			" current or below is invalid element" << std::endl);
 		if (current.param0 == CONTENT_IGNORE) {
 			elem.type = 'i';
-			DEBUG_OUT(PPOS(ipos) << ": " << 'i' << std::endl);
+			DEBUG_OUT(PP(ipos) << ": " << 'i' << std::endl);
 		}
 		return;
 	}
 
 	//don't add anything if it isn't an air node
 	if (ndef->get(current).walkable || !ndef->get(below).walkable) {
-			DEBUG_OUT("Pathfinder: " << PPOS(realpos)
+			DEBUG_OUT("Pathfinder: " << PP(realpos)
 				<< " not on surface" << std::endl);
 			if (ndef->get(current).walkable) {
 				elem.type = 's';
-				DEBUG_OUT(PPOS(ipos) << ": " << 's' << std::endl);
+				DEBUG_OUT(PP(ipos) << ": " << 's' << std::endl);
 			} else {
 				elem.type = '-';
-				DEBUG_OUT(PPOS(ipos) << ": " << '-' << std::endl);
+				DEBUG_OUT(PP(ipos) << ": " << '-' << std::endl);
 			}
 			return;
 	}
@@ -557,7 +555,7 @@ void GridNodeContainer::initNode(v3s16 ipos, PathGridnode *p_node)
 	elem.valid = true;
 	elem.pos   = realpos;
 	elem.type  = 'g';
-	DEBUG_OUT(PPOS(ipos) << ": " << 'a' << std::endl);
+	DEBUG_OUT(PP(ipos) << ": " << 'a' << std::endl);
 
 	if (m_pathf->m_prefetch) {
 		elem.directions[DIR_XP] = m_pathf->calcCost(realpos, v3s16( 1, 0, 0));
@@ -686,14 +684,14 @@ std::vector<v3s16> Pathfinder::getPath(ServerEnvironment *env,
 
 	if (!startpos.valid) {
 		VERBOSE_TARGET << "invalid startpos" <<
-				"Index: " << PPOS(StartIndex) <<
-				"Realpos: " << PPOS(getRealPos(StartIndex)) << std::endl;
+				"Index: " << PP(StartIndex) <<
+				"Realpos: " << PP(getRealPos(StartIndex)) << std::endl;
 		return retval;
 	}
 	if (!endpos.valid) {
 		VERBOSE_TARGET << "invalid stoppos" <<
-				"Index: " << PPOS(EndIndex) <<
-				"Realpos: " << PPOS(getRealPos(EndIndex)) << std::endl;
+				"Index: " << PP(EndIndex) <<
+				"Realpos: " << PP(getRealPos(EndIndex)) << std::endl;
 		return retval;
 	}
 
@@ -809,7 +807,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 
 	//check limits
 	if (!m_limits.isPointInside(pos2)) {
-		DEBUG_OUT("Pathfinder: " << PPOS(pos2) <<
+		DEBUG_OUT("Pathfinder: " << PP(pos2) <<
 				" no cost -> out of limits" << std::endl);
 		return retval;
 	}
@@ -819,7 +817,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 	//did we get information about node?
 	if (node_at_pos2.param0 == CONTENT_IGNORE ) {
 			VERBOSE_TARGET << "Pathfinder: (1) area at pos: "
-					<< PPOS(pos2) << " not loaded";
+					<< PP(pos2) << " not loaded";
 			return retval;
 	}
 
@@ -830,7 +828,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 		//did we get information about node?
 		if (node_below_pos2.param0 == CONTENT_IGNORE ) {
 				VERBOSE_TARGET << "Pathfinder: (2) area at pos: "
-					<< PPOS((pos2 + v3s16(0, -1, 0))) << " not loaded";
+					<< PP((pos2 + v3s16(0, -1, 0))) << " not loaded";
 				return retval;
 		}
 
@@ -838,7 +836,7 @@ PathCost Pathfinder::calcCost(v3s16 pos, v3s16 dir)
 			retval.valid = true;
 			retval.value = 1;
 			retval.direction = 0;
-			DEBUG_OUT("Pathfinder: "<< PPOS(pos)
+			DEBUG_OUT("Pathfinder: "<< PP(pos)
 					<< " cost same height found" << std::endl);
 		}
 		else {
@@ -991,8 +989,8 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 				v3s16 ipos2 = ipos + directions[i];
 
 				if (!isValidIndex(ipos2)) {
-					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
-						" out of range, max=" << PPOS(m_limits.MaxEdge) << std::endl);
+					DEBUG_OUT(LVL " Pathfinder: " << PP(ipos2) <<
+						" out of range, max=" << PP(m_limits.MaxEdge) << std::endl);
 					continue;
 				}
 
@@ -1000,7 +998,7 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 
 				if (!g_pos2.valid) {
 					VERBOSE_TARGET << LVL "Pathfinder: no data for new position: "
-												<< PPOS(ipos2) << std::endl;
+												<< PP(ipos2) << std::endl;
 					continue;
 				}
 
@@ -1017,7 +1015,7 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 				if ((g_pos2.totalcost < 0) ||
 						(g_pos2.totalcost > new_cost)) {
 					DEBUG_OUT(LVL "Pathfinder: updating path at: "<<
-							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
+							PP(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << std::endl);
 					if (updateAllCosts(ipos2, invert(directions[i]),
 											new_cost, level)) {
@@ -1027,13 +1025,13 @@ bool Pathfinder::updateAllCosts(v3s16 ipos,
 				else {
 					DEBUG_OUT(LVL "Pathfinder:"
 							" already found shorter path to: "
-							<< PPOS(ipos2) << std::endl);
+							<< PP(ipos2) << std::endl);
 				}
 			}
 			else {
 				DEBUG_OUT(LVL "Pathfinder:"
 						" not moving to invalid direction: "
-						<< PPOS(directions[i]) << std::endl);
+						<< PP(directions[i]) << std::endl);
 			}
 		}
 	}
@@ -1147,8 +1145,8 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 				v3s16 ipos2 = ipos + direction;
 
 				if (!isValidIndex(ipos2)) {
-					DEBUG_OUT(LVL " Pathfinder: " << PPOS(ipos2) <<
-						" out of range, max=" << PPOS(m_limits.MaxEdge) << std::endl);
+					DEBUG_OUT(LVL " Pathfinder: " << PP(ipos2) <<
+						" out of range, max=" << PP(m_limits.MaxEdge) << std::endl);
 					direction = getDirHeuristic(directions, g_pos);
 					continue;
 				}
@@ -1157,7 +1155,7 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 
 				if (!g_pos2.valid) {
 					VERBOSE_TARGET << LVL "Pathfinder: no data for new position: "
-												<< PPOS(ipos2) << std::endl;
+												<< PP(ipos2) << std::endl;
 					direction = getDirHeuristic(directions, g_pos);
 					continue;
 				}
@@ -1171,16 +1169,16 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 						(m_min_target_distance < new_cost)) {
 					DEBUG_OUT(LVL "Pathfinder:"
 							" already longer than best already found path "
-							<< PPOS(ipos2) << std::endl);
+							<< PP(ipos2) << std::endl);
 					return false;
 				}
 
 				if ((g_pos2.totalcost < 0) ||
 						(g_pos2.totalcost > new_cost)) {
 					DEBUG_OUT(LVL "Pathfinder: updating path at: "<<
-							PPOS(ipos2) << " from: " << g_pos2.totalcost << " to "<<
+							PP(ipos2) << " from: " << g_pos2.totalcost << " to "<<
 							new_cost << " srcdir=" <<
-							PPOS(invert(direction))<< std::endl);
+							PP(invert(direction))<< std::endl);
 					if (updateCostHeuristic(ipos2, invert(direction),
 											new_cost, level)) {
 						retval = true;
@@ -1189,19 +1187,19 @@ bool Pathfinder::updateCostHeuristic(	v3s16 ipos,
 				else {
 					DEBUG_OUT(LVL "Pathfinder:"
 							" already found shorter path to: "
-							<< PPOS(ipos2) << std::endl);
+							<< PP(ipos2) << std::endl);
 				}
 			}
 			else {
 				DEBUG_OUT(LVL "Pathfinder:"
 						" not moving to invalid direction: "
-						<< PPOS(direction) << std::endl);
+						<< PP(direction) << std::endl);
 			}
 		}
 		else {
 			DEBUG_OUT(LVL "Pathfinder:"
 							" skipping srcdir: "
-							<< PPOS(direction) << std::endl);
+							<< PP(direction) << std::endl);
 		}
 		direction = getDirHeuristic(directions, g_pos);
 	}
@@ -1409,7 +1407,7 @@ void Pathfinder::printPath(std::vector<v3s16> path)
 	unsigned int current = 0;
 	for (std::vector<v3s16>::iterator i = path.begin();
 			i != path.end(); ++i) {
-		std::cout << std::setw(3) << current << ":" << PPOS((*i)) << std::endl;
+		std::cout << std::setw(3) << current << ":" << PP((*i)) << std::endl;
 		current++;
 	}
 }

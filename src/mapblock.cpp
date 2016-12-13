@@ -35,8 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #include "util/string.h"
 #include "util/serialize.h"
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+#include "util/basic_macros.h"
 
 static const char *modified_reason_strings[] = {
 	"initial",

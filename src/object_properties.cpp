@@ -21,10 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "util/serialize.h"
+#include "util/basic_macros.h"
 #include <sstream>
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
-#define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
 
 ObjectProperties::ObjectProperties():
 	hp_max(1),

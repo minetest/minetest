@@ -30,9 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "camera.h"               // CameraModes
 #include "util/mathconstants.h"
+#include "util/basic_macros.h"
 #include <algorithm>
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 ClientMap::ClientMap(
 		Client *client,

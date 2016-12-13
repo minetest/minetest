@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "util/numeric.h"
 #include "util/thread.h"
+#include "util/basic_macros.h"
 #include "environment.h"
 #include "chat_interface.h"
 #include "clientiface.h"
@@ -40,8 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <vector>
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 class IWritableItemDefManager;
 class IWritableNodeDefManager;

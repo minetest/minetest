@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "util/numeric.h"
+#include "util/basic_macros.h"
 #include "map.h"
 #include "gamedef.h"
 #include "nodedef.h"
@@ -31,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "inventory.h"
 #include "mapblock.h"
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 
 RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
