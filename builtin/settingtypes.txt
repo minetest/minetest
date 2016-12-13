@@ -1016,7 +1016,7 @@ mgflat_ground_level (Mapgen flat ground level) int 8
 mgflat_large_cave_depth (Mapgen flat large cave depth) int -33
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgflat_cave_width (Mapgen flat cave width) float 0.2
+mgflat_cave_width (Mapgen flat cave width) float 0.09
 
 #    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
@@ -1046,7 +1046,7 @@ mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (67, 67
 [***Mapgen fractal]
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgfractal_cave_width (Mapgen fractal cave width) float 0.2
+mgfractal_cave_width (Mapgen fractal cave width) float 0.09
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1148,7 +1148,7 @@ mgvalleys_river_size (River Size) int 5
 mgvalleys_water_features (Water Features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgvalleys_cave_width (Cave width) float 0.2
+mgvalleys_cave_width (Cave width) float 0.09
 
 # Noise parameters
 [****Noises]
