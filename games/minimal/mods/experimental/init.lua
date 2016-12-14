@@ -28,7 +28,7 @@ minetest.after(1.0, switch_player_visual)
 ]]
 
 minetest.register_node("experimental:soundblock", {
-	tile_images = {"unknown_node.png", "default_tnt_bottom.png",
+	tiles = {"unknown_node.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("unknown_node.png",
@@ -120,7 +120,7 @@ minetest.register_craft({
 })
 
 minetest.register_node("experimental:tnt", {
-	tile_images = {"default_tnt_top.png", "default_tnt_bottom.png",
+	tiles = {"default_tnt_top.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("default_tnt_top.png",
@@ -453,7 +453,7 @@ minetest.register_abm({
 
 minetest.register_node("experimental:tester_node_1", {
 	description = "Tester Node 1 (construct/destruct/timer)",
-	tile_images = {"wieldhand.png"},
+	tiles = {"wieldhand.png"},
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
 	-- This was known to cause a bug in minetest.item_place_node() when used
