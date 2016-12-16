@@ -1053,7 +1053,7 @@
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
 #    type: enum values: v5, v6, v7, flat, valleys, fractal, singlenode
-# mg_name = v6
+# mg_name = v7
 
 #    Water surface level of the world.
 #    type: int

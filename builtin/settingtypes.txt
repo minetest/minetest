@@ -862,7 +862,7 @@ block_send_optimize_distance (block send optimize distance) int 4 2
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-mg_name (Mapgen name) enum v6 v5,v6,v7,flat,valleys,fractal,singlenode
+mg_name (Mapgen name) enum v7 v5,v6,v7,flat,valleys,fractal,singlenode
 
 #    Water surface level of the world.
 water_level (Water level) int 1
