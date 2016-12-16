@@ -617,48 +617,51 @@ std::string RemoveRelativePathComponents(std::string path)
 {
 	size_t pos = path.size();
 	size_t dotdot_count = 0;
-	while(pos != 0){
+	while (pos != 0) {
 		size_t component_with_delim_end = pos;
 		// skip a dir delimiter
-		while(pos != 0 && IsDirDelimiter(path[pos-1]))
+		while (pos != 0 && IsDirDelimiter(path[pos-1]))
 			pos--;
 		// strip a path component
 		size_t component_end = pos;
-		while(pos != 0 && !IsDirDelimiter(path[pos-1]))
+		while (pos != 0 && !IsDirDelimiter(path[pos-1]))
 			pos--;
 		size_t component_start = pos;
 
 		std::string component = path.substr(component_start,
 				component_end - component_start);
 		bool remove_this_component = false;
-		if(component == "." && component_start != 0){
+		if (component == ".") {
 			remove_this_component = true;
-		}
-		else if(component == ".."){
+		} else if (component == "..") {
 			remove_this_component = true;
 			dotdot_count += 1;
-		}
-		else if(dotdot_count != 0){
+		} else if (dotdot_count != 0) {
 			remove_this_component = true;
 			dotdot_count -= 1;
 		}
 
-		if(remove_this_component){
-			while(pos != 0 && IsDirDelimiter(path[pos-1]))
+		if (remove_this_component) {
+			while (pos != 0 && IsDirDelimiter(path[pos-1]))
 				pos--;
-			path = path.substr(0, pos) + DIR_DELIM +
-				path.substr(component_with_delim_end,
-						std::string::npos);
-			pos++;
+			if (component_start == 0) {
+				// We need to remove the delemiter too
+				path = path.substr(component_with_delim_end, std::string::npos);
+			} else {
+				path = path.substr(0, pos) + DIR_DELIM +
+					path.substr(component_with_delim_end, std::string::npos);
+			}
+			if (pos > 0)
+				pos++;
 		}
 	}
 
-	if(dotdot_count > 0)
+	if (dotdot_count > 0)
 		return "";
 
 	// remove trailing dir delimiters
 	pos = path.size();
-	while(pos != 0 && IsDirDelimiter(path[pos-1]))
+	while (pos != 0 && IsDirDelimiter(path[pos-1]))
 		pos--;
 	return path.substr(0, pos);
 }
