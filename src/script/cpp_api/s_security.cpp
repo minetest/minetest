@@ -344,8 +344,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	std::string str;  // Transient
 
-	std::string norel_path = fs::RemoveRelativePathComponents(path);
-	std::string abs_path = fs::AbsolutePath(norel_path);
+	std::string abs_path = fs::AbsolutePath(path);
 
 	if (!abs_path.empty()) {
 		// Don't allow accessing the settings file
@@ -356,18 +355,29 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	// If we couldn't find the absolute path (path doesn't exist) then
 	// try removing the last components until it works (to allow
 	// non-existent files/folders for mkdir).
-	std::string cur_path = norel_path;
+	std::string cur_path = path;
 	std::string removed;
 	while (abs_path.empty() && !cur_path.empty()) {
-		std::string tmp_rmed;
-		cur_path = fs::RemoveLastPathComponent(cur_path, &tmp_rmed);
-		removed = tmp_rmed + (removed.empty() ? "" : DIR_DELIM + removed);
+		std::string component;
+		cur_path = fs::RemoveLastPathComponent(cur_path, &component);
+		if (component == "..") {
+			// Parent components can't be allowed or we could allow something like
+			// /home/user/minetest/worlds/foo/noexist/../../../../../../etc/passwd.
+			// If we have previous non-relative elements in the path we might be
+			// able to remove them so that things like worlds/foo/noexist/../auth.txt
+			// could be allowed, but those paths will be interpreted as nonexistent
+			// by the operating system anyways.
+			return false;
+		}
+		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
 		abs_path = fs::AbsolutePath(cur_path);
 	}
-	if (abs_path.empty()) return false;
+	if (abs_path.empty())
+		return false;
 	// Add the removed parts back so that you can't, eg, create a
 	// directory in worldmods if worldmods doesn't exist.
-	if (!removed.empty()) abs_path += DIR_DELIM + removed;
+	if (!removed.empty())
+		abs_path += DIR_DELIM + removed;
 
 	// Get server from registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
