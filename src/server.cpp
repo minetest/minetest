@@ -1507,6 +1507,10 @@ void Server::SendHP(u16 peer_id, u8 hp)
 	DSTACK(FUNCTION_NAME);
 
 	NetworkPacket pkt(TOCLIENT_HP, 1, peer_id);
+
+	if (!g_settings->getBool("enable_damage"))
+		hp = 0;
+
 	pkt << hp;
 	Send(&pkt);
 }
