@@ -200,7 +200,7 @@ inline void Database_SQLite3::bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int 
 		"Internal error: failed to bind query at " __FILE__ ":" TOSTRING(__LINE__));
 }
 
-bool Database_SQLite3::deleteBlock(const v3s16 &pos)
+bool Database_SQLite3::deleteBlockFromDatabase(const v3s16 &pos)
 {
 	verifyDatabase();
 
@@ -210,13 +210,13 @@ bool Database_SQLite3::deleteBlock(const v3s16 &pos)
 	sqlite3_reset(m_stmt_delete);
 
 	if (!good) {
-		warningstream << "deleteBlock: Block failed to delete "
+		warningstream << "deleteBlockFromDatabase: Block failed to delete "
 			<< PP(pos) << ": " << sqlite3_errmsg(m_database) << std::endl;
 	}
 	return good;
 }
 
-bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_SQLite3::saveBlockToDatabase(const v3s16 &pos, const std::string &data)
 {
 	verifyDatabase();
 
@@ -228,7 +228,7 @@ bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 	bindPos(m_stmt_read, pos);
 
 	if (sqlite3_step(m_stmt_read) == SQLITE_ROW) {
-		deleteBlock(pos);
+		deleteBlockFromDatabase(pos);
 	}
 	sqlite3_reset(m_stmt_read);
 #endif
@@ -243,7 +243,7 @@ bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void Database_SQLite3::loadBlock(const v3s16 &pos, std::string *block)
+void Database_SQLite3::loadBlockFromDatabase(const v3s16 &pos, std::string *block)
 {
 	verifyDatabase();
 

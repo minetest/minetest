@@ -52,12 +52,12 @@ Database_LevelDB::~Database_LevelDB()
 	delete m_database;
 }
 
-bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_LevelDB::saveBlockToDatabase(const v3s16 &pos, const std::string &data)
 {
 	leveldb::Status status = m_database->Put(leveldb::WriteOptions(),
 			i64tos(getBlockAsInteger(pos)), data);
 	if (!status.ok()) {
-		warningstream << "saveBlock: LevelDB error saving block "
+		warningstream << "saveBlockToDatabase: LevelDB error saving block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
 		return false;
 	}
@@ -65,7 +65,7 @@ bool Database_LevelDB::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
+void Database_LevelDB::loadBlockFromDatabase(const v3s16 &pos, std::string *block)
 {
 	std::string datastr;
 	leveldb::Status status = m_database->Get(leveldb::ReadOptions(),
@@ -74,12 +74,12 @@ void Database_LevelDB::loadBlock(const v3s16 &pos, std::string *block)
 	*block = (status.ok()) ? datastr : "";
 }
 
-bool Database_LevelDB::deleteBlock(const v3s16 &pos)
+bool Database_LevelDB::deleteBlockFromDatabase(const v3s16 &pos)
 {
 	leveldb::Status status = m_database->Delete(leveldb::WriteOptions(),
 			i64tos(getBlockAsInteger(pos)));
 	if (!status.ok()) {
-		warningstream << "deleteBlock: LevelDB error deleting block "
+		warningstream << "deleteBlockFromDatabase: LevelDB error deleting block "
 			<< PP(pos) << ": " << status.ToString() << std::endl;
 		return false;
 	}

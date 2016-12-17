@@ -194,12 +194,12 @@ void Database_PostgreSQL::endSave()
 	checkResults(PQexec(m_conn, "COMMIT;"));
 }
 
-bool Database_PostgreSQL::saveBlock(const v3s16 &pos,
+bool Database_PostgreSQL::saveBlockToDatabase(const v3s16 &pos,
 		const std::string &data)
 {
 	// Verify if we don't overflow the platform integer with the mapblock size
 	if (data.size() > INT_MAX) {
-		errorstream << "Database_PostgreSQL::saveBlock: Data truncation! "
+		errorstream << "Database_PostgreSQL::saveBlockToDatabase: Data truncation! "
 				<< "data.size() over 0xFFFF (== " << data.size()
 				<< ")" << std::endl;
 		return false;
@@ -222,7 +222,7 @@ bool Database_PostgreSQL::saveBlock(const v3s16 &pos,
 	return true;
 }
 
-void Database_PostgreSQL::loadBlock(const v3s16 &pos,
+void Database_PostgreSQL::loadBlockFromDatabase(const v3s16 &pos,
 		std::string *block)
 {
 	verifyDatabase();
@@ -249,7 +249,7 @@ void Database_PostgreSQL::loadBlock(const v3s16 &pos,
 	PQclear(results);
 }
 
-bool Database_PostgreSQL::deleteBlock(const v3s16 &pos)
+bool Database_PostgreSQL::deleteBlockFromDatabase(const v3s16 &pos)
 {
 	verifyDatabase();
 

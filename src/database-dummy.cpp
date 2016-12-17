@@ -24,13 +24,13 @@ Dummy database class
 #include "database-dummy.h"
 
 
-bool Database_Dummy::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_Dummy::saveBlockToDatabase(const v3s16 &pos, const std::string &data)
 {
 	m_database[getBlockAsInteger(pos)] = data;
 	return true;
 }
 
-void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
+void Database_Dummy::loadBlockFromDatabase(const v3s16 &pos, std::string *block)
 {
 	s64 i = getBlockAsInteger(pos);
 	std::map<s64, std::string>::iterator it = m_database.find(i);
@@ -42,7 +42,7 @@ void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
 	*block = it->second;
 }
 
-bool Database_Dummy::deleteBlock(const v3s16 &pos)
+bool Database_Dummy::deleteBlockFromDatabase(const v3s16 &pos)
 {
 	m_database.erase(getBlockAsInteger(pos));
 	return true;
