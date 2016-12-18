@@ -233,6 +233,98 @@ keymap_drop (Drop item key) key KEY_KEY_Q
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_zoom (View zoom key) key KEY_KEY_Z
 
+#    Key for selecting the first hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot1 (Hotbar slot 1 key) key KEY_KEY_1
+
+#    Key for selecting the second hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot2 (Hotbar slot 2 key) key KEY_KEY_2
+
+#    Key for selecting the third hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot3 (Hotbar slot 3 key) key KEY_KEY_3
+
+#    Key for selecting the fourth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot4 (Hotbar slot 4 key) key KEY_KEY_4
+
+#    Key for selecting the fifth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot5 (Hotbar slot 5 key) key KEY_KEY_5
+
+#    Key for selecting the sixth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot6 (Hotbar slot 6 key) key KEY_KEY_6
+
+#    Key for selecting the seventh hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot7 (Hotbar slot 7 key) key KEY_KEY_7
+
+#    Key for selecting the eighth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot8 (Hotbar slot 8 key) key KEY_KEY_8
+
+#    Key for selecting the ninth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot9 (Hotbar slot 9 key) key KEY_KEY_9
+
+#    Key for selecting the tenth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot10 (Hotbar slot 10 key) key KEY_KEY_0
+
+#    Key for selecting the 11th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot11 (Hotbar slot 11 key) key
+
+#    Key for selecting the 12th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot12 (Hotbar slot 12 key) key
+
+#    Key for selecting the 13th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot13 (Hotbar slot 13 key) key
+
+#    Key for selecting the 14th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot14 (Hotbar slot 14 key) key
+
+#    Key for selecting the 15th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot15 (Hotbar slot 15 key) key
+
+#    Key for selecting the 16th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot16 (Hotbar slot 16 key) key
+
+#    Key for selecting the 17th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot17 (Hotbar slot 17 key) key
+
+#    Key for selecting the 18th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot18 (Hotbar slot 18 key) key
+
+#    Key for selecting the 19th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot19 (Hotbar slot 19 key) key
+
+#    Key for selecting the 20th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot20 (Hotbar slot 20 key) key
+
+#    Key for selecting the 21th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot21 (Hotbar slot 21 key) key
+
+#    Key for selecting the 22th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot22 (Hotbar slot 22 key) key
+
+#    Key for selecting the 23th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_slot23 (Hotbar slot 23 key) key
+
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_hud (HUD toggle key) key KEY_F1

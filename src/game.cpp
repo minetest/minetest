@@ -1107,6 +1107,11 @@ void KeyCache::populate()
 
 	key[KeyType::DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
 
+	for (int i = 0; i < 23; i++) {
+		std::string slot_key_name = "keymap_slot" + std::to_string(i + 1);
+		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
+	}
+
 	if (handler) {
 		// First clear all keys, then re-add the ones we listen for
 		handler->dontListenForKeys();
@@ -1115,9 +1120,6 @@ void KeyCache::populate()
 		}
 		handler->listenForKey(EscapeKey);
 		handler->listenForKey(CancelKey);
-		for (size_t i = 0; i < 10; i++) {
-			handler->listenForKey(NumberKey[i]);
-		}
 	}
 }
 
@@ -2639,16 +2641,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 		*new_playeritem = *new_playeritem > 0 ? *new_playeritem - 1 : max_item;
 	// else dir == 0
 
-	/* Item selection using keyboard
+	/* Item selection using hotbar slot keys
 	 */
-	for (u16 i = 0; i < 10; i++) {
-		static const KeyPress *item_keys[10] = {
-			NumberKey + 1, NumberKey + 2, NumberKey + 3, NumberKey + 4,
-			NumberKey + 5, NumberKey + 6, NumberKey + 7, NumberKey + 8,
-			NumberKey + 9, NumberKey + 0,
-		};
-
-		if (input->wasKeyDown(*item_keys[i])) {
+	for (u16 i = 0; i < 23; i++) {
+		if (wasKeyDown((GameKeyType) (KeyType::SLOT_1 + i))) {
 			if (i < PLAYER_INVENTORY_SIZE && i < player->hud_hotbar_itemcount) {
 				*new_playeritem = i;
 				infostream << "Selected item: " << new_playeritem << std::endl;
