@@ -351,10 +351,6 @@ const char *KeyPress::name() const
 
 const KeyPress EscapeKey("KEY_ESCAPE");
 const KeyPress CancelKey("KEY_CANCEL");
-const KeyPress NumberKey[] = {
-	KeyPress("0"), KeyPress("1"), KeyPress("2"), KeyPress("3"), KeyPress("4"),
-	KeyPress("5"), KeyPress("6"), KeyPress("7"), KeyPress("8"), KeyPress("9")
-};
 
 /*
 	Key config
