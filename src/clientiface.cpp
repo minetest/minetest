@@ -199,6 +199,8 @@ void RemoteClient::GetNextBlocks (
 	//bool queue_is_full = false;
 
 	s16 d;
+	UNORDERED_SET<v3s16> extra_blockpos;
+	std::vector<PrioritySortedBlockTransfer> extra_blocks[3];
 	for(d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
@@ -293,18 +295,6 @@ void RemoteClient::GetNextBlocks (
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
 
-				/*
-					If block is not close, don't send it unless it is near
-					ground level.
-
-					Block is near ground level if night-time mesh
-					differs from day-time mesh.
-				*/
-				if(d >= d_opt)
-				{
-					if(block->getDayNightDiff() == false)
-						continue;
-				}
 			}
 
 			/*
@@ -335,6 +325,60 @@ void RemoteClient::GetNextBlocks (
 				continue;
 			}
 
+			/*
+				If block is not close, don't send it unless it is near
+				ground level.
+
+				Block is near ground level if night-time mesh
+				differs from day-time mesh.
+			*/
+			if (block && d >= d_opt && !block->getDayNightDiff()) {
+				// getDayNightDiff() does not take adjacent blocks into account.
+				// If necessary, remember this block, so that it may be sent anyway if possible.
+				if (extra_blockpos.count(p))
+					continue;
+				int extra = -1;
+				do {		// Can break out of this
+					MapBlock *block2;
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X, p.Y - 1, p.Z));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 0;
+						break;
+					}
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X - 1, p.Y, p.Z));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 1;
+						break;
+					}
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X + 1, p.Y, p.Z));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 1;
+						break;
+					}
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X, p.Y, p.Z - 1));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 1;
+						break;
+					}
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X, p.Y, p.Z + 1));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 1;
+						break;
+					}
+					block2 = env->getMap().getBlockNoCreateNoEx(v3s16(p.X, p.Y + 1, p.Z));
+					if (block2 && block2->getDayNightDiff()) {
+						extra = 2;
+						break;
+					}
+				} while (false);
+				if (extra >= 0) {
+					PrioritySortedBlockTransfer q((float)d, p, peer_id);
+					extra_blockpos.insert(p);
+					extra_blocks[extra].push_back(q);
+				}
+				continue;
+			}
+
 			if(nearest_sent_d == -1)
 				nearest_sent_d = d;
 
@@ -349,6 +393,25 @@ void RemoteClient::GetNextBlocks (
 		}
 	}
 queue_full_break:
+
+	// further-away blocks that have no day-night difference are normally
+	// not sent. Sometimes, the day-night difference starts on a block
+	// boundary, and if the block in question is not sent, this causes
+	// the adjacent block to remain partly unrendered.
+	//
+	// Solve this by sending 'air' blocks that have adjacent 'non-air' blocks
+	// if there is some leftover bandwidth, but don't consume all bandwidth.
+	//
+	// Prioritize sending blocks which have non-air blocks below (extra_blocks[0]),
+	// as presumably, those will be most noticed by the player.
+	for (int extra = 0; extra < 3; extra++) {
+		std::sort(extra_blocks[extra].begin(), extra_blocks[extra].end());
+		for (unsigned i = 0; num_blocks_selected < max_simul_sends_usually / 3
+				&& i < extra_blocks[extra].size(); i++) {
+			dest.push_back(extra_blocks[extra][i]);
+			num_blocks_selected++;
+		}
+	}
 
 	// If nothing was found for sending and nothing was queued for
 	// emerging, continue next time browsing from here
