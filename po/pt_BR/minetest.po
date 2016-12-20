@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2016-12-20 04:19+0000\n"
-"Last-Translator: Cold Meson 06 <fernando.devmines@gmail.com>\n"
+"Last-Translator: Bruno Borges <borgesdossantosbruno@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) "
 "<https://hosted.weblate.org/projects/minetest/minetest/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -413,7 +413,7 @@ msgstr "Desinstalar o pacote de módulos selecionado"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
-msgstr "Endereço / Porta"
+msgstr "Endereço / Porta :"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
