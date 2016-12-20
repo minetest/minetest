@@ -2362,6 +2362,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
+	rect.constrainTo(driver->getViewPort());
 	drawItemStack(driver, m_font, stack, rect, NULL, m_gamedef, IT_ROT_DRAGGED);
 }
 
