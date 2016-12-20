@@ -23,8 +23,8 @@ local function get_formspec(tabview, name, tabdata)
 	local fav_selected = menudata.favorites[tabdata.fav_selected]
 
 	local retval =
-		"label[7.75,-0.15;" .. fgettext("Address / Port") .. "]" ..
-		"label[7.75,1.05;" .. fgettext("Name / Password") .. "]" ..
+		"label[7.75,-0.15;" .. fgettext("Address / Port :") .. "]" ..
+		"label[7.75,1.05;" .. fgettext("Name / Password :") .. "]" ..
 		"field[8,0.75;3.3,0.5;te_address;;" ..
 			core.formspec_escape(core.setting_get("address")) .. "]" ..
 		"field[11.15,0.75;1.4,0.5;te_port;;" ..
