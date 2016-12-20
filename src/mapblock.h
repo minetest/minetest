@@ -637,16 +637,23 @@ private:
 
 typedef std::vector<MapBlock*> MapBlockVect;
 
+/*
+	This is a temporary workaround to avoid crashes caused by bugs in
+	map gen limit code.
+	If the limit is reduced for a world, returning to previously generated
+	world can load in world that extends slightly over-limit, any entities
+	added over-limit are deleted, which causes falling.lua, boats mod and
+	carts mod to crash due to missing entities.
+*/
 inline bool objectpos_over_limit(v3f p)
 {
-	const static float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit")) * BS;
-	return (p.X < -map_gen_limit_bs
-		|| p.X >  map_gen_limit_bs
-		|| p.Y < -map_gen_limit_bs
-		|| p.Y >  map_gen_limit_bs
-		|| p.Z < -map_gen_limit_bs
-		|| p.Z >  map_gen_limit_bs);
+	const static float max_map_gen_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+	return (p.X < -max_map_gen_limit_bs
+		|| p.X >  max_map_gen_limit_bs
+		|| p.Y < -max_map_gen_limit_bs
+		|| p.Y >  max_map_gen_limit_bs
+		|| p.Z < -max_map_gen_limit_bs
+		|| p.Z >  max_map_gen_limit_bs);
 }
 
 inline bool blockpos_over_limit(v3s16 p)
