@@ -112,7 +112,7 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
-static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
+static bool isOccluded(Map *map, const v3s16 &p0, const v3s16 &p1, float step, float stepfac,
 		float start_off, float end_off, u32 needed_count, INodeDefManager *nodemgr)
 {
 	float d0 = (float)BS * p0.getDistanceFrom(p1);
@@ -139,6 +139,27 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 		step *= stepfac;
 	}
 	return false;
+}
+
+static bool isCubeOccluded(Map *map, const v3s16 &spn, const v3s16 &cpn, s16 cs, float step, float stepfac,
+		float startoff, float endoff, u32 needed_count, INodeDefManager *nodemgr)
+{
+	return  isOccluded(map, spn, cpn + v3s16(cs,cs,cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(cs,cs,-cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(cs,-cs,cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(cs,-cs,-cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(-cs,cs,cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(-cs,cs,-cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(-cs,-cs,cs),
+			step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+		isOccluded(map, spn, cpn + v3s16(-cs,-cs,-cs),
+			   step, stepfac, startoff, endoff, needed_count, nodemgr);
 }
 
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes, 
@@ -292,6 +313,8 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
 			float step = BS * 1;
 			float stepfac = 1.1;
+			// BS * 4 avoids sharp angles close to the camera
+			// for better accuracy
 			float startoff = BS * 4;
 			// The occlusion search of 'isOccluded()' must stop short of the target
 			// point by distance 'endoff' (end offset) to not enter the target mapblock.
@@ -300,46 +323,18 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			// sqrt(1^2 + 1^2 + 1^2) = 1.732
 			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
 			v3s16 spn = cam_pos_nodes;
-			s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
-			s16 bs4 = MAP_BLOCKSIZE / 4 + 1;
 			u32 needed_count = 1;
 			if (occlusion_culling_enabled &&
-					// For the central point of the mapblock 'endoff' can be halved
+					// First see if the block's center is occluded
+					// (for the central point of the mapblock 'endoff' can be halved)
 					isOccluded(this, spn, cpn,
 						step, stepfac, startoff, endoff / 2.0f, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
+					// if the center is occluded try the corners of the mapblock
+					isCubeOccluded(this, spn, cpn, MAP_BLOCKSIZE / 2 + 1,
 						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					// also try 1/2 the distance to the corners of the MapBlock for
-					// for better accuracy in tunnels, etc.
-					isOccluded(this, spn, cpn + v3s16(bs4,bs4,bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs4,bs4,-bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs4,-bs4,bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(bs4,-bs4,-bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs4,bs4,bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs4,bs4,-bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs4,-bs4,bs4),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
-					isOccluded(this, spn, cpn + v3s16(-bs4,-bs4,-bs4),
+					// if still occluded, try a small cube 1/2 size inside the mapblock
+					// for better accuracy in tunnels, etc
+					isCubeOccluded(this, spn, cpn, MAP_BLOCKSIZE / 4 + 1,
 						step, stepfac, startoff, endoff, needed_count, nodemgr)) {
 				blocks_occlusion_culled++;
 				continue;
