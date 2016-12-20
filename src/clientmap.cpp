@@ -292,9 +292,6 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
 			float step = BS * 1;
 			float stepfac = 1.1;
-			// avoid the extreme angles close to camera
-			// to prevent occlusion errors
-			// why 4? no idea, tested fine
 			float startoff = BS * 4;
 			// The occlusion search of 'isOccluded()' must stop short of the target
 			// point by distance 'endoff' (end offset) to not enter the target mapblock.
@@ -304,6 +301,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
 			v3s16 spn = cam_pos_nodes;
 			s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
+			s16 bs4 = MAP_BLOCKSIZE / 4 + 1;
 			u32 needed_count = 1;
 			if (occlusion_culling_enabled &&
 					// For the central point of the mapblock 'endoff' can be halved
@@ -324,6 +322,24 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
 						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
 					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					// also try 1/2 the distance to the corners of the MapBlock for
+					// for better accuracy in tunnels, etc.
+					isOccluded(this, spn, cpn + v3s16(bs4,bs4,bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(bs4,bs4,-bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(bs4,-bs4,bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(bs4,-bs4,-bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(-bs4,bs4,bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(-bs4,bs4,-bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(-bs4,-bs4,bs4),
+						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+					isOccluded(this, spn, cpn + v3s16(-bs4,-bs4,-bs4),
 						step, stepfac, startoff, endoff, needed_count, nodemgr)) {
 				blocks_occlusion_culled++;
 				continue;
