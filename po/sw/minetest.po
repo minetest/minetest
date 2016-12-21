@@ -48,7 +48,7 @@ msgstr "Itifaki ya toleo haifanani."
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Seva anahimiza itifaki toleo dola 1."
+msgstr "Seva anahimiza itifaki toleo $1."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -95,8 +95,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Ilishindwa kuwezesha Moduli \"dola 1\" kama lina vibambo ilipopiga. Tu "
-"chararacters [kwa-z0-9_] wanaruhusiwa."
+"Ilishindwa kuwezesha Moduli \"$1\" kama lina vibambo ilipopiga. Tu "
+"chararacters [a-z0-9_] wanaruhusiwa."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -125,7 +125,7 @@ msgstr "kuwezeshwa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "Ulimwengu inayoitwa \"dola 1\" tayari ipo"
+msgstr "Ulimwengu inayoitwa \"$1\" tayari ipo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -169,7 +169,7 @@ msgstr "Una subgames hakuna imewekwa."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Una uhakika unataka kufuta \"dola 1\"?"
+msgstr "Una uhakika unataka kufuta \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
@@ -179,15 +179,15 @@ msgstr "Futa"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr: imeshindwa kufuta \"dola 1\""
+msgstr "Modmgr: imeshindwa kufuta \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: batili modpath \"dola 1\""
+msgstr "Modmgr: batili modpath \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Futa ulimwengu \"dola 1\"?"
+msgstr "Futa ulimwengu \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -199,7 +199,7 @@ msgstr "Ita jina jipya Modpack:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
-msgstr "\"dola 1\" si bendera halali."
+msgstr "\"$1\" si bendera halali."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -208,8 +208,6 @@ msgstr "(Hakuna maelezo ya kuweka kupewa)"
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
 msgstr ""
-"< Back to Settings page back=\"\" to=\"\" settings=\"\"></ Back to Settings "
-"page>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -236,9 +234,6 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence></persistence></octaves></seed></spreadZ></spreadY></"
-"spreadX></scale></offset>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -282,11 +277,11 @@ msgstr "Onyesha majina ya kiufundi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr "Thamani lazima iwe kubwa kuliko dola 1."
+msgstr "Thamani lazima iwe kubwa kuliko $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr "Thamani lazima iwe chini kuliko dola 1."
+msgstr "Thamani lazima iwe chini kuliko $1."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -294,15 +289,15 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Sakinisha Moduli: filetype visivyotegemezwa \"dola 1\" au nyaraka kuvunjwa"
+"Sakinisha Moduli: filetype visivyotegemezwa \"$1\" au nyaraka kuvunjwa"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "Imeshindwa kusakinisha dola 1 hadi $2"
+msgstr "Imeshindwa kusakinisha $1 hadi $2"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "Sakinisha Moduli: faili: \"dola 1\""
+msgstr "Sakinisha Moduli: faili: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
@@ -327,7 +322,7 @@ msgstr "Sakinisha"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr "Ukurasa dola 1 ya $2"
+msgstr "Ukurasa $1 ya $2"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
@@ -733,9 +728,8 @@ msgid "Provided world path doesn't exist: "
 msgstr "Njia ya dunia iliyotolewa haipo:"
 
 #: src/fontengine.cpp
-#, fuzzy
 msgid "needs_fallback_font"
-msgstr "Maalum Alphabet Inahitajika"
+msgstr "no"
 
 #: src/game.cpp
 msgid ""
