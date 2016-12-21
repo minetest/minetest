@@ -194,7 +194,7 @@ void LuaSettings::Register(lua_State* L)
 int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	bool write_allowed;
+	bool write_allowed = true;
 	const char* filename = luaL_checkstring(L, 1);
 	CHECK_SECURE_PATH_POSSIBLE_WRITE(L, filename, &write_allowed);
 	LuaSettings* o = new LuaSettings(filename, write_allowed);
