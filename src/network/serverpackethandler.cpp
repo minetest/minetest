@@ -1385,6 +1385,28 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	/*
+		Make sure the player is allowed to do it
+	*/
+	if (!checkPriv(player->getName(), "interact")) {
+		actionstream<<player->getName()<<" attempted to interact with "
+				<<pointed.dump()<<" without 'interact' privilege"
+				<<std::endl;
+		// Re-send block to revert change on client-side
+		RemoteClient *client = getClient(pkt->getPeerId());
+		// Digging completed -> under
+		if (action == 2) {
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			client->SetBlockNotSent(blockpos);
+		}
+		// Placement -> above
+		if (action == 3) {
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
+			client->SetBlockNotSent(blockpos);
+		}
+		return;
+	}
+
+	/*
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
@@ -1415,28 +1437,6 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// Do nothing else
 			return;
 		}
-	}
-
-	/*
-		Make sure the player is allowed to do it
-	*/
-	if (!checkPriv(player->getName(), "interact")) {
-		actionstream<<player->getName()<<" attempted to interact with "
-				<<pointed.dump()<<" without 'interact' privilege"
-				<<std::endl;
-		// Re-send block to revert change on client-side
-		RemoteClient *client = getClient(pkt->getPeerId());
-		// Digging completed -> under
-		if (action == 2) {
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			client->SetBlockNotSent(blockpos);
-		}
-		// Placement -> above
-		if (action == 3) {
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
-			client->SetBlockNotSent(blockpos);
-		}
-		return;
 	}
 
 	/*
