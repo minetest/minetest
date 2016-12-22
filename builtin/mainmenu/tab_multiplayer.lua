@@ -58,7 +58,7 @@ local function get_formspec(tabview, name, tabdata)
 		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
 		"color,span=1;" ..
 		"text,padding=1]" ..
-		"table[-0.15,-0.1;7.75,5.5;favourites;"
+		"table[-0.15,-0.1;7.75,4.75;favourites;"
 
 	if #menudata.favorites > 0 then
 		local favs = core.get_favorites("local")
@@ -86,6 +86,13 @@ local function get_formspec(tabview, name, tabdata)
 	else
 		retval = retval .. ";0]"
 	end
+
+	if tabdata.fav_selected then
+		retval = retval .. "field[0.15,5;7,1;search;;".. (menudata.favorites[tabdata.fav_selected].name or "") .."]"
+	else
+		retval = retval .. "field[0.15,5;7,1;search;;]"
+	end
+	retval = retval .. "button[6.75,4.68;1,1;btn_search;?]"
 
 	return retval
 end
@@ -196,6 +203,19 @@ local function main_button_handler(tabview, fields, name, tabdata)
 
 		core.setting_set("address", "")
 		core.setting_set("remote_port", "30000")
+		return true
+	end
+
+	if fields.btn_search then
+		local str = string.lower(fields.search)
+		for i,v in ipairs(menudata.favorites) do
+			if string.find(string.lower(v.name or ""), str or "") then
+				core.setting_set("address", v.address)
+				core.setting_set("remote_port", v.port)
+				tabdata.fav_selected = i
+				break
+			end
+		end
 		return true
 	end
 
