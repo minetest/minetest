@@ -1389,11 +1389,18 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		(only when digging or placing things)
 	*/
 	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
-	if ((action == 0 || action == 2 || action == 3) &&
+	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			(enable_anticheat && !isSingleplayer())) {
 		float d = player_pos.getDistanceFrom(pointed_pos_under);
-		float max_d = BS * 14; // Just some large enough value
-		if (d > max_d) {
+		const ItemDefinition &playeritem_def =
+			playersao->getWieldedItem().getDefinition(m_itemdef);
+		float max_d = BS * playeritem_def.range;
+		float max_d_hand = BS * m_itemdef->get("").range;
+		if (max_d < 0 && max_d_hand >= 0)
+			max_d = max_d_hand;
+		else if (max_d < 0)
+			max_d = BS * 4.0;
+		if (d > max_d * 1.5) {
 			actionstream << "Player " << player->getName()
 					<< " tried to access " << pointed.dump()
 					<< " from too far: "
