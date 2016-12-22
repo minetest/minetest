@@ -839,7 +839,7 @@ static void updateFastFaceRow(
 {
 	v3s16 p = startpos;
 
-	u16 continuous_tiles_count = 0;
+	u16 continuous_tiles_count = 1;
 
 	bool makes_face = false;
 	v3s16 p_corrected;
@@ -889,8 +889,8 @@ static void updateFastFaceRow(
 					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
 					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
 				next_is_different = false;
-			}
-			else{
+				continuous_tiles_count++;
+			} else {
 				/*if(makes_face){
 					g_profiler->add("Meshgen: diff: next_makes_face != makes_face",
 							next_makes_face != makes_face ? 1 : 0);
@@ -915,8 +915,6 @@ static void updateFastFaceRow(
 				g_profiler->add("Meshgen: diff: last position", 1);*/
 		}
 
-		continuous_tiles_count++;
-
 		if(next_is_different)
 		{
 			/*
@@ -928,8 +926,6 @@ static void updateFastFaceRow(
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
 				v3f sp = pf - ((f32)continuous_tiles_count / 2.0 - 0.5) * translate_dir_f;
-				if(continuous_tiles_count != 1)
-					sp += translate_dir_f;
 				v3f scale(1,1,1);
 
 				if(translate_dir.X != 0) {
@@ -952,19 +948,18 @@ static void updateFastFaceRow(
 				}
 			}
 
-			continuous_tiles_count = 0;
-
-			makes_face = next_makes_face;
-			p_corrected = next_p_corrected;
-			face_dir_corrected = next_face_dir_corrected;
-			lights[0] = next_lights[0];
-			lights[1] = next_lights[1];
-			lights[2] = next_lights[2];
-			lights[3] = next_lights[3];
-			tile = next_tile;
-			light_source = next_light_source;
+			continuous_tiles_count = 1;
 		}
 
+		makes_face = next_makes_face;
+		p_corrected = next_p_corrected;
+		face_dir_corrected = next_face_dir_corrected;
+		lights[0] = next_lights[0];
+		lights[1] = next_lights[1];
+		lights[2] = next_lights[2];
+		lights[3] = next_lights[3];
+		tile = next_tile;
+		light_source = next_light_source;
 		p = p_next;
 	}
 }
@@ -1038,7 +1033,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_enable_shaders = data->m_use_shaders;
 	m_use_tangent_vertices = data->m_use_tangent_vertices;
 	m_enable_vbo = g_settings->getBool("enable_vbo");
-	
+
 	if (g_settings->getBool("enable_minimap")) {
 		m_minimap_mapblock = new MinimapMapblock;
 		m_minimap_mapblock->getMinimapNodes(
@@ -1303,10 +1298,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	// Cracks
 	if(crack != m_last_crack)
 	{
-		for(std::map<u32, std::string>::iterator
-				i = m_crack_materials.begin();
-				i != m_crack_materials.end(); ++i)
-		{
+		for (UNORDERED_MAP<u32, std::string>::iterator i = m_crack_materials.begin();
+				i != m_crack_materials.end(); ++i) {
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 			std::string basename = i->second;
 
@@ -1320,9 +1313,9 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 
 			// If the current material is also animated,
 			// update animation info
-			std::map<u32, TileSpec>::iterator anim_iter =
-				m_animation_tiles.find(i->first);
-			if(anim_iter != m_animation_tiles.end()){
+			UNORDERED_MAP<u32, TileSpec>::iterator anim_iter =
+					m_animation_tiles.find(i->first);
+			if (anim_iter != m_animation_tiles.end()){
 				TileSpec &tile = anim_iter->second;
 				tile.texture = new_texture;
 				tile.texture_id = new_texture_id;
@@ -1335,10 +1328,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 	}
 
 	// Texture animation
-	for(std::map<u32, TileSpec>::iterator
-			i = m_animation_tiles.begin();
-			i != m_animation_tiles.end(); ++i)
-	{
+	for (UNORDERED_MAP<u32, TileSpec>::iterator i = m_animation_tiles.begin();
+			i != m_animation_tiles.end(); ++i) {
 		const TileSpec &tile = i->second;
 		// Figure out current frame
 		int frameoffset = m_animation_frame_offsets[i->first];
@@ -1448,7 +1439,7 @@ void MeshCollector::append(const TileSpec &tile,
 				vertices[i].Color, vertices[i].TCoords);
 			p->vertices.push_back(vert);
 		}
-	} 
+	}
 
 	for (u32 i = 0; i < numIndices; i++) {
 		u32 j = indices[i] + vertex_count;
@@ -1504,7 +1495,7 @@ void MeshCollector::append(const TileSpec &tile,
 				vertices[i].Normal, c, vertices[i].TCoords);
 			p->vertices.push_back(vert);
 		}
-	} 
+	}
 
 	for (u32 i = 0; i < numIndices; i++) {
 		u32 j = indices[i] + vertex_count;

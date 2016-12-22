@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_FREETYPE
-#include "xCGUITTFont.h"
+	#include "xCGUITTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -340,13 +340,28 @@ void GUIChatConsole::drawText()
 			s32 x = (fragment.column + 1) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
-			m_font->draw(
-				fragment.text.c_str(),
-				destrect,
-				video::SColor(255, 255, 255, 255),
-				false,
-				false,
-				&AbsoluteClippingRect);
+
+
+			#if USE_FREETYPE
+			// Draw colored text if FreeType is enabled
+				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
+				tmp->draw(
+					fragment.text,
+					destrect,
+					video::SColor(255, 255, 255, 255),
+					false,
+					false,
+					&AbsoluteClippingRect);
+			#else
+			// Otherwise use standard text
+				m_font->draw(
+					fragment.text.c_str(),
+					destrect,
+					video::SColor(255, 255, 255, 255),
+					false,
+					false,
+					&AbsoluteClippingRect);
+			#endif
 		}
 	}
 }
@@ -615,7 +630,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 		}
 		else if(event.KeyInput.Char != 0 && !event.KeyInput.Control)
 		{
-			#if (defined(linux) || defined(__linux))
+			#if (defined(__linux__))
 				wchar_t wc = L'_';
 				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );
 				prompt.input(wc);

@@ -1,9 +1,16 @@
 #!/bin/bash -e
+. util/travis/common.sh
+
+needs_compile || exit 0
 
 if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
 	cd travisbuild || exit 1
 	CMAKE_FLAGS=''
+	if [[ $COMPILER == "g++-6" ]]; then
+		export CC=gcc-6
+		export CXX=g++-6
+	fi
 	# Clang builds with FreeType fail on Travis
 	if [[ $CC == "clang" ]]; then
 		CMAKE_FLAGS+=' -DENABLE_FREETYPE=FALSE'

@@ -3,7 +3,7 @@
 # General format:
 #    name (Readable name) type type_args
 #
-# Note that the parts are seperated by exactly one space
+# Note that the parts are separated by exactly one space
 #
 # `type` can be:
 #    - int
@@ -70,7 +70,7 @@ fast_move (Fast movement) bool false
 #    This requires the "noclip" privilege on the server.
 noclip (Noclip) bool false
 
-#    Smooths camera when moving and looking around.
+#    Smooths camera when looking around. Also called look or mouse smoothing.
 #    Useful for recording videos.
 cinematic (Cinematic mode) bool false
 
@@ -103,6 +103,17 @@ random_input (Random input) bool false
 
 #    Continuous forward movement (only used for testing).
 continuous_forward (Continuous forward) bool false
+
+#    Enable Joysticks
+enable_joysticks (Enable Joysticks) bool false
+
+#    The time in seconds it takes between repeated events
+#    when holding down a joystick button combination.
+repeat_joystick_button_time (Joystick button repetition interval) float 0.17
+
+#    The sensitivity of the joystick axes for moving the
+#    ingame view frustum around.
+joystick_frustum_sensitivity (Joystick frustum sensitivity) float 170
 
 #    Key for moving the player forward.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -165,9 +176,13 @@ keymap_fastmove (Fast key) key KEY_KEY_J
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_noclip (Noclip key) key KEY_KEY_H
 
+#    Key for toggling autorun.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_autorun (Autorun key) key
+
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_cinematic (Cinematic mode key) key KEY_F8
+keymap_cinematic (Cinematic mode key) key
 
 #    Key for toggling display of minimap.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -193,7 +208,7 @@ keymap_toggle_chat (Chat toggle key) key KEY_F2
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_force_fog_off (Fog toggle key) key KEY_F3
 
-#    Key for toggling the camrea update. Only used for development
+#    Key for toggling the camera update. Only used for development
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_update_camera (Camera update toggle key) key
 
@@ -236,7 +251,7 @@ remote_port (Remote port) int 30000 1 65535
 #    Enable if you want to connect to 0.4.12 servers and before.
 #    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
 #    Disabling this option will protect your password better.
-send_pre_v25_init (Support older servers) bool true
+send_pre_v25_init (Support older servers) bool false
 
 #    Save the map received by the client on disk.
 enable_local_map_saving (Saving map received from server) bool false
@@ -324,7 +339,7 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 
 [***Shaders]
 
-#    Shaders allow advanced visul effects and may increase performance on some video cards.
+#    Shaders allow advanced visual effects and may increase performance on some video cards.
 #    Thy only work with the OpenGL video backend.
 enable_shaders (Shaders) bool true
 
@@ -403,8 +418,7 @@ fps_max (Maximum FPS) int 60
 pause_fps_max (FPS in pause menu) int 20
 
 #    View distance in nodes.
-#    Min = 20
-viewing_range (Viewing range) int 100
+viewing_range (Viewing range) int 100 20 4000
 
 #    Width component of the initial window size.
 screenW (Screen width) int 800
@@ -423,6 +437,10 @@ vsync (V-Sync) bool false
 
 #    Field of view in degrees.
 fov (Field of view) int 72 30 160
+
+#    Field of view while zooming in degrees.
+#    This requires the "zoom" privilege on the server.
+zoom_fov (Field of view for zoom) int 15 15 160
 
 #    Adjust the gamma encoding for the light tables. Lower numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
@@ -510,6 +528,9 @@ ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
+#    Fraction of the visible distance at which fog starts to be rendered
+fog_start (Fog Start) float 0.4 0.0 0.99
+
 [**Menus]
 
 #    Use a cloud animation for the main menu background.
@@ -530,7 +551,7 @@ gui_scaling_filter (GUI scaling filter) bool false
 #    When gui_scaling_filter_txr2img is true, copy those images
 #    from hardware to software for scaling.  When false, fall back
 #    to the old scaling method, for video drivers that don't
-#    propery support downloading textures back from hardware.
+#    properly support downloading textures back from hardware.
 gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
 
 #    Delay showing tooltips, stated in milliseconds.
@@ -542,13 +563,13 @@ freetype (Freetype fonts) bool true
 #    Path to TrueTypeFont or bitmap.
 font_path (Font path) path fonts/liberationsans.ttf
 
-font_size (Font size) int 15
+font_size (Font size) int 16
 
 #    Font shadow offset, if 0 then shadow will not be drawn.
 font_shadow (Font shadow) int 1
 
 #    Font shadow alpha (opaqueness, between 0 and 255).
-font_shadow_alpha (Font shadow alpha) int 128 0 255
+font_shadow_alpha (Font shadow alpha) int 127 0 255
 
 mono_font_path (Monospace font path) path fonts/liberationmono.ttf
 
@@ -615,6 +636,11 @@ server_announce (Announce server) bool false
 #    If you want to announce your ipv6 address, use  serverlist_url = v6.servers.minetest.net.
 serverlist_url (Serverlist URL) string servers.minetest.net
 
+#    Disable escape sequences, e.g. chat coloring.
+#    Use this if you want to run a server with pre-0.4.14 clients and you want to disable
+#    the escape sequences generated by mods.
+disable_escape_sequences (Disable escape sequences) bool false
+
 [*Network]
 
 #    Network port to listen (UDP).
@@ -642,15 +668,15 @@ ipv6_server (IPv6 server) bool false
 
 [**Advanced]
 
-#    How many blocks are flying in the wire simultaneously per client.
-max_simultaneous_block_sends_per_client (Maximum simultaneously blocks send per client) int 10
+#    Maximum number of blocks that are simultaneously sent per client.
+max_simultaneous_block_sends_per_client (Maximum simultaneous block sends per client) int 10
 
-#    How many blocks are flying in the wire simultaneously for the whole server.
-max_simultaneous_block_sends_server_total (Maximum simultaneously bocks send total) int 40
+#   Maximum number of blocks that are simultaneously sent in total.
+max_simultaneous_block_sends_server_total (Maximum simultaneous block sends total) int 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.
-full_block_send_enable_min_time_from_building () float 2.0
+full_block_send_enable_min_time_from_building (Delay in sending blocks after building) float 2.0
 
 #    Maximum number of packets sent per send step, if you have a slow connection
 #    try reducing it, but don't reduce it to a number below double of targeted
@@ -750,6 +776,15 @@ time_speed (Time speed) int 72
 #    Interval of saving important changes in the world, stated in seconds.
 server_map_save_interval (Map save interval) float 5.3
 
+#    Set the maximum character length of a chat message sent by clients.
+# chat_message_max_size int 500
+
+#    Limit a single player to send X messages per 10 seconds.
+# chat_message_limit_per_10sec float 10.0
+
+#    Kick player if send more than X messages per 10 seconds.
+# chat_message_limit_trigger_kick int 50
+
 [**Physics]
 
 movement_acceleration_default (Default acceleration) float 3
@@ -774,15 +809,6 @@ movement_gravity (Gravity) float 9.81
 #    -    error: abort on usage of deprecated call (suggested for mod developers).
 deprecated_lua_api_handling (Deprecated Lua API handling) enum legacy legacy,log,error
 
-#    Useful for mod developers.
-mod_profiling (Mod profiling) bool false
-
-#    Detailed mod profile data. Useful for mod developers.
-detailed_profiling (Detailed mod profiling) bool false
-
-#    Profiler data print interval. 0 = disable. Useful for developers.
-profiler_print_interval (Profiling print interval) int 0
-
 #    Number of extra blocks that can be loaded by /clearobjects at once.
 #    This is a trade-off between sqlite transaction overhead and
 #    memory consumption (4096=100MB, as a rule of thumb).
@@ -793,7 +819,7 @@ max_clearobjects_extra_loaded_blocks (Max. clearobjects extra blocks) int 4096
 server_unload_unused_data_timeout (Unload unused server data) int 29
 
 #    Maximum number of statically stored objects in a block.
-max_objects_per_block (Maxmimum objects per block) int 49
+max_objects_per_block (Maximum objects per block) int 64
 
 #    See http://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
@@ -825,11 +851,18 @@ liquid_queue_purge_time (Liquid queue purge time) int 0
 #    Liquid update interval in seconds.
 liquid_update (Liquid update tick) float 1.0
 
+#    At this distance the server will aggressively optimize which blocks are sent to clients.
+#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
+#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
+#    Setting this to a value greater than max_block_send_distance disables this optimization.
+#    Stated in mapblocks (16 nodes)
+block_send_optimize_distance (block send optimize distance) int 4 2
+
 [*Mapgen]
 
 #    Name of map generator to be used when creating a new world.
 #    Creating a world in the main menu will override this.
-mg_name (Mapgen name) enum v6 v5,v6,v7,flat,valleys,fractal,singlenode
+mg_name (Mapgen name) enum v7 v5,v6,v7,flat,valleys,fractal,singlenode
 
 #    Water surface level of the world.
 water_level (Water level) int 1
@@ -848,8 +881,6 @@ map_generation_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    The default flags set in the engine are: caves, light, decorations
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
@@ -910,8 +941,6 @@ mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50
 
 #    Map generation attributes specific to Mapgen v6.
 #    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
-#    The default flags set in the engine are: biomeblend, mudflow
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv6_spflags (Mapgen v6 flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
@@ -936,15 +965,27 @@ mgv6_np_apple_trees (Mapgen v6 apple trees noise parameters) noise_params 0, 1, 
 [***Mapgen v7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag controls the rivers.
-#    The default flags set in the engine are: mountains, ridges
-#    The flags string modifies the engine defaults.
+#    The 'ridges' flag enables the rivers.
+#    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,nomountains,noridges
+mgv7_spflags (Mapgen v7 flags) flags mountains,ridges mountains,ridges,floatlands,nomountains,noridges,nofloatlands
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgv7_cave_width (Mapgen v7 cave width) float 0.3
+mgv7_cave_width (Mapgen v7 cave width) float 0.09
+
+#    Controls the density of floatland mountain terrain.
+#    Is an offset added to the 'np_mountain' noise value.
+mgv7_float_mount_density (Mapgen v7 floatland mountain density) float 0.6
+
+#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+mgv7_float_mount_height (Mapgen v7 floatland mountain height) float 128.0
+
+#    Y-level of floatland midpoint and lake surface.
+mgv7_floatland_level (Mapgen v7 floatland level) int 1280
+
+#    Y-level to which floatland shadows extend.
+mgv7_shadow_limit (Mapgen v7 shadow limit) int 1024
 
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 mgv7_np_terrain_alt (Mapgen v7 terrain altitude noise parameters) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
@@ -952,18 +993,18 @@ mgv7_np_terrain_persist (Mapgen v7 terrain persistation noise parameters) noise_
 mgv7_np_height_select (Mapgen v7 height select noise parameters) noise_params -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 mgv7_np_filler_depth (Mapgen v7 filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 mgv7_np_mount_height (Mapgen v7 mount height noise parameters) noise_params 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
-mgv7_np_ridge_uwater (Mapgen v7 ridge water noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_ridge_uwater (Mapgen v7 river course noise parameters) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_floatland_base (Mapgen v7 floatland base terrain noise parameters) noise_params -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+mgv7_np_float_base_height (Mapgen v7 floatland base terrain height noise parameters) noise_params 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 mgv7_np_mountain (Mapgen v7 mountain noise parameters) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
-mgv7_np_ridge (Mapgen v7 ridge noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
-mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
-mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+mgv7_np_ridge (Mapgen v7 river channel wall noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [***Mapgen flat]
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    The default flags set in the engine are: none
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgflat_spflags (Mapgen flat flags) flags  lakes,hills,,nolakes,nohills
@@ -975,7 +1016,7 @@ mgflat_ground_level (Mapgen flat ground level) int 8
 mgflat_large_cave_depth (Mapgen flat large cave depth) int -33
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgflat_cave_width (Mapgen flat cave width) float 0.3
+mgflat_cave_width (Mapgen flat cave width) float 0.09
 
 #    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
@@ -999,13 +1040,13 @@ mgflat_hill_steepness (Mapgen flat hill steepness) float 64.0
 mgflat_np_terrain (Mapgen flat terrain noise parameters) noise_params 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
 
 mgflat_np_filler_depth (Mapgen flat filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-mgflat_np_cave1 (Mapgen flat cave1 noise parameters) noise_params 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
-mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+mgflat_np_cave1 (Mapgen flat cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgflat_np_cave2 (Mapgen flat cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [***Mapgen fractal]
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgfractal_cave_width (Mapgen fractal cave width) float 0.3
+mgfractal_cave_width (Mapgen fractal cave width) float 0.09
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.
@@ -1066,8 +1107,8 @@ mgfractal_julia_w (Mapgen fractal julia w) float 0.33
 
 mgfractal_np_seabed (Mapgen fractal seabed noise parameters) noise_params -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
 mgfractal_np_filler_depth (Mapgen fractal filler depth noise parameters) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-mgfractal_np_cave1 (Mapgen fractal cave1 noise parameters) noise_params 0, 12, (128, 128, 128), 52534, 4, 0.5, 2.0
-mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (128, 128, 128), 10325, 4, 0.5, 2.0
+mgfractal_np_cave1 (Mapgen fractal cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # Mapgen Valleys parameters
 [***Mapgen Valleys]
@@ -1079,8 +1120,6 @@ mgfractal_np_cave2 (Mapgen fractal cave2 noise parameters) noise_params 0, 12, (
 #    'altitude_chill' makes higher elevations colder, which may cause biome issues.
 #    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
 #    it may interfere with delicately adjusted biomes.
-#    The default flags set in the engine are: altitude_chill, humid_rivers
-#    The flags string modifies the engine defaults.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_valleys_spflags (Valleys C Flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
@@ -1109,16 +1148,16 @@ mgvalleys_river_size (River Size) int 5
 mgvalleys_water_features (Water Features) int 0
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
-mgvalleys_cave_width (Cave width) float 0.3
+mgvalleys_cave_width (Cave width) float 0.09
 
 # Noise parameters
 [****Noises]
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave1 (Cave noise #1) noise_params 0, 12, (100, 100, 100), 52534, 4, 0.5, 2.0
+mgvalleys_np_cave1 (Cave noise #1) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave2 (Cave noise #2) noise_params 0, 12, (100, 100, 100), 10325, 4, 0.5, 2.0
+mgvalleys_np_cave2 (Cave noise #2) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # The depth of dirt or other filler
 mgvalleys_np_filler_depth (Filler Depth) noise_params 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
@@ -1153,9 +1192,54 @@ secure.enable_security (Enable mod security) bool false
 #    functions even when mod security is on (via request_insecure_environment()).
 secure.trusted_mods (Trusted mods) string
 
-#	Comma-seperated list of mods that are allowed to access HTTP APIs, which
+#	Comma-separated list of mods that are allowed to access HTTP APIs, which
 #	allow them to upload and download data to/from the internet.
 secure.http_mods (HTTP Mods) string
+
+[*Advanced]
+
+[**Profiling]
+#    Load the game profiler to collect game profiling data.
+#    Provides a /profiler command to access the compiled profile.
+#    Useful for mod developers and server operators.
+profiler.load (Load the game profiler) bool false
+
+#    The default format in which profiles are being saved,
+#    when calling `/profiler save [format]` without format.
+profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
+
+#    The file path relative to your worldpath in which profiles will be saved to.
+#
+profiler.report_path (Report path) string ""
+
+[***Instrumentation]
+
+#    Instrument the methods of entities on registration.
+instrument.entity (Entity methods) bool true
+
+#    Instrument the action function of Active Block Modifiers on registration.
+instrument.abm (Active Block Modifiers) bool true
+
+#    Instrument the action function of Loading Block Modifiers on registration.
+instrument.lbm (Loading Block Modifiers) bool true
+
+#    Instrument chatcommands on registration.
+instrument.chatcommand (Chatcommands) bool true
+
+#    Instrument global callback functions on registration.
+#    (anything you pass to a minetest.register_*() function)
+instrument.global_callback (Global callbacks) bool true
+
+[****Advanced]
+#    Instrument builtin.
+#    This is usually only needed by core/builtin contributors
+instrument.builtin (Builtin) bool false
+
+#    Have the profiler instrument itself:
+#     * Instrument an empty function.
+#       This estimates the overhead, that instrumentation is adding (+1 function call).
+#     * Instrument the sampler being used to update the statistics.
+instrument.profiler (Profiler) bool false
 
 [Client and Server]
 
@@ -1166,7 +1250,7 @@ name (Player name) string
 
 #    Set the language. Leave empty to use the system language.
 #    A restart is required after changing this.
-language (Language) enum   ,be,cs,da,de,eo,es,et,fr,hu,id,it,ja,jbo,ko,ky,lt,nb,nl,pl,pt,pt_BR,ro,ru,tr,uk,zh_CN,zh_TW
+language (Language) enum   ,be,ca,cs,da,de,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,ky,lt,nb,nl,pl,pt,pt_BR,ro,ru,sr_Cyrl,tr,uk,zh_CN,zh_TW
 
 #    Level of logging to be written to debug.txt:
 #    -    <nothing> (no logging)
@@ -1212,3 +1296,6 @@ modstore_download_url (Modstore download URL) string https://forum.minetest.net/
 modstore_listmods_url (Modstore mods list URL) string https://forum.minetest.net/mmdb/mods/
 
 modstore_details_url (Modstore details URL) string https://forum.minetest.net/mmdb/mod/*/
+
+#    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
+profiler_print_interval (Engine profiling data print interval) int 0

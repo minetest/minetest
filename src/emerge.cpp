@@ -34,13 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "map.h"
 #include "mapblock.h"
-#include "mapgen_flat.h"
-#include "mapgen_fractal.h"
-#include "mapgen_v5.h"
-#include "mapgen_v6.h"
-#include "mapgen_v7.h"
-#include "mapgen_valleys.h"
-#include "mapgen_singlenode.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"
@@ -52,13 +45,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverobject.h"
 #include "settings.h"
 #include "voxel.h"
-
-
-struct MapgenDesc {
-	const char *name;
-	MapgenFactory *factory;
-	bool is_user_visible;
-};
 
 class EmergeThread : public Thread {
 public:
@@ -97,20 +83,6 @@ private:
 		std::map<v3s16, MapBlock *> *modified_blocks);
 
 	friend class EmergeManager;
-};
-
-////
-//// Built-in mapgens
-////
-
-MapgenDesc g_reg_mapgens[] = {
-	{"v5",         new MapgenFactoryV5,         true},
-	{"v6",         new MapgenFactoryV6,         true},
-	{"v7",         new MapgenFactoryV7,         true},
-	{"flat",       new MapgenFactoryFlat,       true},
-	{"fractal",    new MapgenFactoryFractal,    true},
-	{"valleys",    new MapgenFactoryValleys,    true},
-	{"singlenode", new MapgenFactorySinglenode, false},
 };
 
 ////
@@ -181,42 +153,22 @@ EmergeManager::~EmergeManager()
 	delete oremgr;
 	delete decomgr;
 	delete schemmgr;
-
-	delete params.sparams;
 }
 
 
-void EmergeManager::loadMapgenParams()
-{
-	params.load(*g_settings);
-}
-
-
-void EmergeManager::initMapgens()
+bool EmergeManager::initMapgens(MapgenParams *params)
 {
 	if (m_mapgens.size())
-		return;
+		return false;
 
-	MapgenFactory *mgfactory = getMapgenFactory(params.mg_name);
-	if (!mgfactory) {
-		errorstream << "EmergeManager: mapgen " << params.mg_name <<
-			" not registered; falling back to " << DEFAULT_MAPGEN << std::endl;
-
-		params.mg_name = DEFAULT_MAPGEN;
-
-		mgfactory = getMapgenFactory(params.mg_name);
-		FATAL_ERROR_IF(mgfactory == NULL, "Couldn't use any mapgen!");
-	}
-
-	if (!params.sparams) {
-		params.sparams = mgfactory->createMapgenParams();
-		params.sparams->readParams(g_settings);
-	}
+	this->mgparams = params;
 
 	for (u32 i = 0; i != m_threads.size(); i++) {
-		Mapgen *mg = mgfactory->createMapgen(i, &params, this);
+		Mapgen *mg = Mapgen::createMapgen(params->mgtype, i, params, this);
 		m_mapgens.push_back(mg);
 	}
+
+	return true;
 }
 
 
@@ -318,12 +270,14 @@ bool EmergeManager::enqueueBlockEmergeEx(
 // Mapgen-related helper functions
 //
 
+
+// TODO(hmmmm): Move this to ServerMap
 v3s16 EmergeManager::getContainingChunk(v3s16 blockpos)
 {
-	return getContainingChunk(blockpos, params.chunksize);
+	return getContainingChunk(blockpos, mgparams->chunksize);
 }
 
-
+// TODO(hmmmm): Move this to ServerMap
 v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 {
 	s16 coff = -chunksize / 2;
@@ -357,7 +311,7 @@ int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 	return m_mapgens[0]->getGroundLevelAtPoint(p);
 }
 
-
+// TODO(hmmmm): Move this to ServerMap
 bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 {
 #if 0
@@ -368,30 +322,8 @@ bool EmergeManager::isBlockUnderground(v3s16 blockpos)
 #endif
 
 	// Use a simple heuristic; the above method is wildly inaccurate anyway.
-	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= params.water_level;
+	return blockpos.Y * (MAP_BLOCKSIZE + 1) <= mgparams->water_level;
 }
-
-
-void EmergeManager::getMapgenNames(
-	std::vector<const char *> *mgnames, bool include_hidden)
-{
-	for (u32 i = 0; i != ARRLEN(g_reg_mapgens); i++) {
-		if (include_hidden || g_reg_mapgens[i].is_user_visible)
-			mgnames->push_back(g_reg_mapgens[i].name);
-	}
-}
-
-
-MapgenFactory *EmergeManager::getMapgenFactory(const std::string &mgname)
-{
-	for (u32 i = 0; i != ARRLEN(g_reg_mapgens); i++) {
-		if (mgname == g_reg_mapgens[i].name)
-			return g_reg_mapgens[i].factory;
-	}
-
-	return NULL;
-}
-
 
 bool EmergeManager::pushBlockEmergeData(
 	v3s16 pos,
@@ -437,12 +369,10 @@ bool EmergeManager::pushBlockEmergeData(
 }
 
 
-bool EmergeManager::popBlockEmergeData(
-	v3s16 pos,
-	BlockEmergeData *bedata)
+bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
 	std::map<v3s16, BlockEmergeData>::iterator it;
-	std::map<u16, u16>::iterator it2;
+	UNORDERED_MAP<u16, u16>::iterator it2;
 
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
@@ -578,13 +508,15 @@ EmergeAction EmergeThread::getBlockOrStartGen(
 
 	// 1). Attempt to fetch block from memory
 	*block = m_map->getBlockNoCreateNoEx(pos);
-	if (*block && !(*block)->isDummy() && (*block)->isGenerated())
-		return EMERGE_FROM_MEMORY;
-
-	// 2). Attempt to load block from disk
-	*block = m_map->loadBlock(pos);
-	if (*block && (*block)->isGenerated())
-		return EMERGE_FROM_DISK;
+	if (*block && !(*block)->isDummy()) {
+		if ((*block)->isGenerated())
+			return EMERGE_FROM_MEMORY;
+	} else {
+		// 2). Attempt to load block from disk if it was not in the memory
+		*block = m_map->loadBlock(pos);
+		if (*block && (*block)->isGenerated())
+			return EMERGE_FROM_DISK;
+	}
 
 	// 3). Attempt to start generation
 	if (allow_gen && m_map->initBlockMake(pos, bmdata))

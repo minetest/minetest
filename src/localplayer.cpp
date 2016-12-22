@@ -26,27 +26,46 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "environment.h"
 #include "map.h"
-#include "util/numeric.h"
+#include "client.h"
 
 /*
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
-	Player(gamedef, name),
+LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
+	Player(name, gamedef->idef()),
 	parent(0),
+	hp(PLAYER_MAX_HP),
+	got_teleported(false),
 	isAttached(false),
+	touching_ground(false),
+	in_liquid(false),
+	in_liquid_stable(false),
+	liquid_viscosity(0),
+	is_climbing(false),
+	swimming_vertical(false),
+	// Movement overrides are multipliers and must be 1 by default
+	physics_override_speed(1.0f),
+	physics_override_jump(1.0f),
+	physics_override_gravity(1.0f),
+	physics_override_sneak(true),
+	physics_override_sneak_glitch(true),
 	overridePosition(v3f(0,0,0)),
 	last_position(v3f(0,0,0)),
 	last_speed(v3f(0,0,0)),
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
+	last_camera_fov(0),
+	last_wanted_range(0),
 	camera_impact(0.f),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
 	light_color(255,255,255,255),
+	hurt_tilt_timer(0.0f),
+	hurt_tilt_strength(0.0f),
+	m_position(0,0,0),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
 	m_need_to_get_new_sneak_node(true),
@@ -54,7 +73,13 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_can_jump(false),
-	m_cao(NULL)
+	m_breath(PLAYER_MAX_BREATH),
+	m_yaw(0),
+	m_pitch(0),
+	camera_barely_in_ceiling(false),
+	m_collisionbox(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30),
+	m_cao(NULL),
+	m_gamedef(gamedef)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -528,17 +553,22 @@ void LocalPlayer::applyControl(float dtime)
 			speedH += move_direction;
 		}
 	}
-	if(control.down)
-	{
+	if (control.down) {
 		speedH -= move_direction;
 	}
-	if(control.left)
-	{
+	if (!control.up && !control.down) {
+		speedH -= move_direction *
+			(control.forw_move_joystick_axis / 32767.f);
+	}
+	if (control.left) {
 		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
-	if(control.right)
-	{
+	if (control.right) {
 		speedH += move_direction.crossProduct(v3f(0,-1,0));
+	}
+	if (!control.left && !control.right) {
+		speedH -= move_direction.crossProduct(v3f(0,1,0)) *
+			(control.sidew_move_joystick_axis / 32767.f);
 	}
 	if(control.jump)
 	{

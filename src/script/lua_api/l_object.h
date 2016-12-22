@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ServerActiveObject;
 class LuaEntitySAO;
 class PlayerSAO;
-class Player;
+class RemotePlayer;
 
 /*
 	ObjectRef
@@ -47,7 +47,7 @@ private:
 
 	static PlayerSAO* getplayersao(ObjectRef *ref);
 
-	static Player* getplayer(ObjectRef *ref);
+	static RemotePlayer *getplayer(ObjectRef *ref);
 
 	// Exported functions
 
@@ -189,15 +189,31 @@ private:
 	// get_look_dir(self)
 	static int l_get_look_dir(lua_State *L);
 
+	// DEPRECATED
 	// get_look_pitch(self)
 	static int l_get_look_pitch(lua_State *L);
 
+	// DEPRECATED
 	// get_look_yaw(self)
 	static int l_get_look_yaw(lua_State *L);
 
+	// get_look_pitch2(self)
+	static int l_get_look_vertical(lua_State *L);
+
+	// get_look_yaw2(self)
+	static int l_get_look_horizontal(lua_State *L);
+
+	// set_look_vertical(self, radians)
+	static int l_set_look_vertical(lua_State *L);
+
+	// set_look_horizontal(self, radians)
+	static int l_set_look_horizontal(lua_State *L);
+
+	// DEPRECATED
 	// set_look_pitch(self, radians)
 	static int l_set_look_pitch(lua_State *L);
 
+	// DEPRECATED
 	// set_look_yaw(self, radians)
 	static int l_set_look_yaw(lua_State *L);
 

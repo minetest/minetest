@@ -75,7 +75,7 @@ struct button_info {
 	float            repeatdelay;
 	irr::EKEY_CODE   keycode;
 	std::vector<int> ids;
-	IGUIButton*      guibutton;
+	IGUIButton*      guibutton = NULL;
 	bool             immediate_release;
 };
 
@@ -147,8 +147,14 @@ public:
 
 	void init(ISimpleTextureSource* tsrc);
 
-	double getYaw() { return m_camera_yaw; }
+	double getYawChange() {
+		double res = m_camera_yaw_change;
+		m_camera_yaw_change = 0;
+		return res;
+	}
+
 	double getPitch() { return m_camera_pitch; }
+
 	line3d<f32> getShootline() { return m_shootline; }
 
 	void step(float dtime);
@@ -170,7 +176,7 @@ private:
 	bool                    m_visible; // is the gui visible
 
 	/* value in degree */
-	double                  m_camera_yaw;
+	double                  m_camera_yaw_change;
 	double                  m_camera_pitch;
 
 	line3d<f32>             m_shootline;

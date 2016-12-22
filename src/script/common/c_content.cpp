@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mg_schematic.h"
 #include "noise.h"
-#include "json/json.h"
+#include <json/json.h>
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -65,9 +65,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	}
 	lua_pop(L, 1);
 
-	def.stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
-	if(def.stack_max == 0)
-		def.stack_max = 1;
+	int stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
+	def.stack_max = rangelim(stack_max, 1, U16_MAX);
 
 	lua_getfield(L, index, "on_use");
 	def.usable = lua_isfunction(L, -1);
@@ -527,6 +526,12 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// Amount of light the node emits
 	f.light_source = getintfield_default(L, index,
 			"light_source", f.light_source);
+	if (f.light_source > LIGHT_MAX) {
+		warningstream << "Node " << f.name.c_str()
+			<< " had greater light_source than " << LIGHT_MAX
+			<< ", it was reduced." << std::endl;
+		f.light_source = LIGHT_MAX;
+	}
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
 
@@ -830,20 +835,18 @@ void push_tool_capabilities(lua_State *L,
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
-		for(std::map<std::string, ToolGroupCap>::const_iterator
-				i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
+		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
+			i != toolcap.groupcaps.end(); i++) {
 			// Create groupcap table
 			lua_newtable(L);
 			const std::string &name = i->first;
 			const ToolGroupCap &groupcap = i->second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for(std::map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); i++){
-				int rating = i->first;
-				float time = i->second;
-				lua_pushinteger(L, rating);
-				lua_pushnumber(L, time);
+			for (UNORDERED_MAP<int, float>::const_iterator
+					i = groupcap.times.begin(); i != groupcap.times.end(); i++) {
+				lua_pushinteger(L, i->first);
+				lua_pushnumber(L, i->second);
 				lua_settable(L, -3);
 			}
 			// Set subtable "times"
@@ -859,8 +862,8 @@ void push_tool_capabilities(lua_State *L,
 		//Create damage_groups table
 		lua_newtable(L);
 		// For each damage group
-		for(std::map<std::string, s16>::const_iterator
-				i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
+		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
+			i != toolcap.damageGroups.end(); i++) {
 			// Create damage group table
 			lua_pushinteger(L, i->second);
 			lua_setfield(L, -2, i->first.c_str());
@@ -1066,8 +1069,7 @@ void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask
 /******************************************************************************/
 
 /******************************************************************************/
-void read_groups(lua_State *L, int index,
-		std::map<std::string, int> &result)
+void read_groups(lua_State *L, int index, ItemGroupList &result)
 {
 	if (!lua_istable(L,index))
 		return;
@@ -1086,11 +1088,10 @@ void read_groups(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void push_groups(lua_State *L, const std::map<std::string, int> &groups)
+void push_groups(lua_State *L, const ItemGroupList &groups)
 {
 	lua_newtable(L);
-	std::map<std::string, int>::const_iterator it;
-	for (it = groups.begin(); it != groups.end(); ++it) {
+	for (ItemGroupList::const_iterator it = groups.begin(); it != groups.end(); ++it) {
 		lua_pushnumber(L, it->second);
 		lua_setfield(L, -2, it->first.c_str());
 	}
@@ -1250,8 +1251,13 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_newtable(L);
 			for (Json::Value::const_iterator it = value.begin();
 					it != value.end(); ++it) {
+#ifndef JSONCPP_STRING
 				const char *str = it.memberName();
 				lua_pushstring(L, str ? str : "");
+#else
+				std::string str = it.name();
+				lua_pushstring(L, str.c_str());
+#endif
 				push_json_value_helper(L, *it, nullindex);
 				lua_rawset(L, -3);
 			}

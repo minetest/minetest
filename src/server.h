@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "chat_interface.h"
 #include "clientiface.h"
+#include "remoteplayer.h"
 #include "network/networkpacket.h"
 #include <string>
 #include <list>
@@ -48,7 +49,6 @@ class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
 class Inventory;
-class Player;
 class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
@@ -62,31 +62,6 @@ enum ClientDeletionReason {
 	CDR_LEAVE,
 	CDR_TIMEOUT,
 	CDR_DENY
-};
-
-class MapEditEventIgnorer
-{
-public:
-	MapEditEventIgnorer(bool *flag):
-		m_flag(flag)
-	{
-		if(*m_flag == false)
-			*m_flag = true;
-		else
-			m_flag = NULL;
-	}
-
-	~MapEditEventIgnorer()
-	{
-		if(m_flag)
-		{
-			assert(*m_flag);
-			*m_flag = false;
-		}
-	}
-
-private:
-	bool *m_flag;
 };
 
 class MapEditEventAreaIgnorer
@@ -157,7 +132,7 @@ struct ServerSoundParams
 struct ServerPlayingSound
 {
 	ServerSoundParams params;
-	std::set<u16> clients; // peer ids
+	UNORDERED_SET<u16> clients; // peer ids
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -222,6 +197,10 @@ public:
 
 	void Send(NetworkPacket* pkt);
 
+	// Helper for handleCommand_PlayerPos and handleCommand_Interact
+	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
+		NetworkPacket *pkt);
+
 	// Both setter and getter need no envlock,
 	// can be called freely from threads
 	void setTimeOfDay(u32 time);
@@ -241,13 +220,12 @@ public:
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
+	inline double getUptime() const { return m_uptime.m_value; }
 
 	// read shutdown state
-	inline bool getShutdownRequested()
-			{ return m_shutdown_requested; }
+	inline bool getShutdownRequested() const { return m_shutdown_requested; }
 
 	// request server to shutdown
-	inline void requestShutdown() { m_shutdown_requested = true; }
 	void requestShutdown(const std::string &msg, bool reconnect)
 	{
 		m_shutdown_requested = true;
@@ -275,7 +253,8 @@ public:
 	void spawnParticle(const std::string &playername,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, const std::string &texture);
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture);
 
 	u32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -283,14 +262,15 @@ public:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, const std::string &texture,
+		bool collisiondetection, bool collision_removal,
+		ServerActiveObject *attached,
+		bool vertical, const std::string &texture,
 		const std::string &playername);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
-	void deleteParticleSpawnerAll(u32 id);
 
 	// Creates or resets inventory
-	Inventory* createDetachedInventory(const std::string &name);
+	Inventory* createDetachedInventory(const std::string &name, const std::string &player="");
 
 	// Envlock and conlock should be locked when using scriptapi
 	GameScripting *getScriptIface(){ return m_script; }
@@ -318,11 +298,11 @@ public:
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
+	const std::vector<ModSpec> &getMods() const { return m_mods; }
 	const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	inline std::string getWorldPath() const
-			{ return m_path_world; }
+	inline std::string getWorldPath() const { return m_path_world; }
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
@@ -334,28 +314,32 @@ public:
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 
-	u32 hudAdd(Player *player, HudElement *element);
-	bool hudRemove(Player *player, u32 id);
-	bool hudChange(Player *player, u32 id, HudElementStat stat, void *value);
-	bool hudSetFlags(Player *player, u32 flags, u32 mask);
-	bool hudSetHotbarItemcount(Player *player, s32 hotbar_itemcount);
-	s32 hudGetHotbarItemcount(Player *player);
-	void hudSetHotbarImage(Player *player, std::string name);
-	std::string hudGetHotbarImage(Player *player);
-	void hudSetHotbarSelectedImage(Player *player, std::string name);
-	std::string hudGetHotbarSelectedImage(Player *player);
+	u32 hudAdd(RemotePlayer *player, HudElement *element);
+	bool hudRemove(RemotePlayer *player, u32 id);
+	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
+	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
+	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
+	s32 hudGetHotbarItemcount(RemotePlayer *player) const
+			{ return player->getHotbarItemcount(); }
+	void hudSetHotbarImage(RemotePlayer *player, std::string name);
+	std::string hudGetHotbarImage(RemotePlayer *player);
+	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
+	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const
+	{
+		return player->getHotbarSelectedImage();
+	}
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
 
-	bool setLocalPlayerAnimations(Player *player, v2s32 animation_frames[4], f32 frame_speed);
-	bool setPlayerEyeOffset(Player *player, v3f first, v3f third);
+	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
+			f32 frame_speed);
+	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
 
-	bool setSky(Player *player, const video::SColor &bgcolor,
+	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
 
-	bool overrideDayNightRatio(Player *player, bool do_override,
-			float brightness);
+	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
 	/* con::PeerHandler implementation. */
 	void peerAdded(con::Peer *peer);
@@ -456,7 +440,9 @@ private:
 		v3f minacc, v3f maxacc,
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
-		bool collisiondetection, bool vertical, std::string texture, u32 id);
+		bool collisiondetection, bool collision_removal,
+		u16 attached_id,
+		bool vertical, const std::string &texture, u32 id);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
 
@@ -464,7 +450,8 @@ private:
 	void SendSpawnParticle(u16 peer_id,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
-		bool collisiondetection, bool vertical, std::string texture);
+		bool collisiondetection, bool collision_removal,
+		bool vertical, const std::string &texture);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
@@ -475,7 +462,7 @@ private:
 	void DiePlayer(u16 peer_id);
 	void RespawnPlayer(u16 peer_id);
 	void DeleteClient(u16 peer_id, ClientDeletionReason reason);
-	void UpdateCrafting(Player *player);
+	void UpdateCrafting(RemotePlayer *player);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
 
@@ -483,7 +470,7 @@ private:
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
 		const std::wstring &wmessage,
 		bool check_shout_priv = false,
-		u16 peer_id_to_avoid_sending = PEER_ID_INEXISTENT);
+		RemotePlayer *player = NULL);
 	void handleAdminChat(const ChatEventChat *evt);
 
 	v3f findSpawnPos();
@@ -518,6 +505,7 @@ private:
 	// If true, do not allow multiple players and hide some multiplayer
 	// functionality
 	bool m_simple_singleplayer_mode;
+	u16 m_max_chatmessage_length;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
@@ -525,9 +513,7 @@ private:
 	// Some timers
 	float m_liquid_transform_timer;
 	float m_liquid_transform_every;
-	float m_print_info_timer;
 	float m_masterserver_timer;
-	float m_objectdata_timer;
 	float m_emergethread_trigger_timer;
 	float m_savemap_timer;
 	IntervalLimiter m_map_timer_and_unload_interval;
@@ -649,12 +635,12 @@ private:
 	u16 m_ignore_map_edit_events_peer_id;
 
 	// media files known to server
-	std::map<std::string,MediaInfo> m_media;
+	UNORDERED_MAP<std::string, MediaInfo> m_media;
 
 	/*
 		Sounds
 	*/
-	std::map<s32, ServerPlayingSound> m_playing_sounds;
+	UNORDERED_MAP<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
 
 	/*
@@ -662,6 +648,8 @@ private:
 	*/
 	// key = name
 	std::map<std::string, Inventory*> m_detached_inventories;
+	// value = "" (visible to all players) or player name
+	std::map<std::string, std::string> m_detached_inventories_player;
 
 	DISABLE_CLASS_COPY(Server);
 };

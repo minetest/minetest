@@ -51,7 +51,7 @@ struct ToolCapabilities;
 
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
-std::map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+UNORDERED_MAP<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 SmoothTranslator::SmoothTranslator():
 	vect_old(0,0,0),
@@ -313,7 +313,8 @@ public:
 		{return &m_selection_box;}
 	v3f getPosition()
 		{return m_position;}
-
+	inline float getYaw() const
+		{return 0;}
 	std::string infoText()
 		{return m_infotext;}
 
@@ -546,7 +547,6 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
-		m_camera(NULL),
 		m_gamedef(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
@@ -567,7 +567,7 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_animation_speed(15),
 		m_animation_blend(0),
 		m_animation_loop(true),
-		m_bone_position(std::map<std::string, core::vector2d<v3f> >()),
+		m_bone_position(UNORDERED_MAP<std::string, core::vector2d<v3f> >()),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
@@ -614,13 +614,28 @@ bool GenericCAO::collideWithObjects()
 void GenericCAO::initialize(const std::string &data)
 {
 	infostream<<"GenericCAO: Got init data"<<std::endl;
+	processInitData(data);
+
+	if (m_is_player) {
+		// Check if it's the current player
+		LocalPlayer *player = m_env->getLocalPlayer();
+		if (player && strcmp(player->getName(), m_name.c_str()) == 0) {
+			m_is_local_player = true;
+			m_is_visible = false;
+			player->setCAO(this);
+		}
+		m_env->addPlayerName(m_name.c_str());
+	}
+}
+
+void GenericCAO::processInitData(const std::string &data)
+{
 	std::istringstream is(data, std::ios::binary);
 	int num_messages = 0;
 	// version
 	u8 version = readU8(is);
 	// check version
-	if(version == 1) // In PROTOCOL_VERSION 14
-	{
+	if (version == 1) { // In PROTOCOL_VERSION 14
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
 		m_id = readS16(is);
@@ -628,46 +643,26 @@ void GenericCAO::initialize(const std::string &data)
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
-	}
-	else if(version == 0) // In PROTOCOL_VERSION 13
-	{
+	} else if (version == 0) { // In PROTOCOL_VERSION 13
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
-	}
-	else
-	{
+	} else {
 		errorstream<<"GenericCAO: Unsupported init data version"
 				<<std::endl;
 		return;
 	}
 
-	for(int i=0; i<num_messages; i++)
-	{
+	for (int i = 0; i < num_messages; i++) {
 		std::string message = deSerializeLongString(is);
 		processMessage(message);
 	}
 
 	pos_translator.init(m_position);
 	updateNodePos();
-
-	if(m_is_player)
-	{
-		Player *player = m_env->getPlayer(m_name.c_str());
-		if(player && player->isLocal())
-		{
-			m_is_local_player = true;
-			m_is_visible = false;
-			LocalPlayer* localplayer = dynamic_cast<LocalPlayer*>(player);
-
-			assert( localplayer != NULL );
-			localplayer->setCAO(this);
-		}
-		m_env->addPlayerName(m_name.c_str());
-	}
 }
 
 GenericCAO::~GenericCAO()
@@ -804,7 +799,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::addToScene(scene::ISceneManager *smgr, 
+void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		ITextureSource *tsrc, IrrlichtDevice *irr)
 {
 	m_smgr = smgr;
@@ -840,54 +835,50 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 			setBillboardTextureMatrix(m_spritenode,
 					txs, tys, 0, 0);
 		}
-	}
-	else if(m_prop.visual == "upright_sprite") {
+	} else if (m_prop.visual == "upright_sprite") {
 		scene::SMesh *mesh = new scene::SMesh();
-		double dx = BS*m_prop.visual_size.X/2;
-		double dy = BS*m_prop.visual_size.Y/2;
-		{ // Front
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+		double dx = BS * m_prop.visual_size.X / 2;
+		double dy = BS * m_prop.visual_size.Y / 2;
 		u8 li = m_last_light;
-		video::SColor c(255,li,li,li);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-dx,-dy,0, 0,0,0, c, 0,1),
-			video::S3DVertex(dx,-dy,0, 0,0,0, c, 1,1),
-			video::S3DVertex(dx,dy,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-dx,dy,0, 0,0,0, c, 0,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
+		video::SColor c(255, li, li, li);
+
+		{ // Front
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::S3DVertex vertices[4] = {
+				video::S3DVertex(-dx, -dy, 0, 0,0,0, c, 1,1),
+				video::S3DVertex( dx, -dy, 0, 0,0,0, c, 0,1),
+				video::S3DVertex( dx,  dy, 0, 0,0,0, c, 0,0),
+				video::S3DVertex(-dx,  dy, 0, 0,0,0, c, 1,0),
+			};
+			u16 indices[] = {0,1,2,2,3,0};
+			buf->append(vertices, 4, indices, 6);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
 		}
 		{ // Back
-		scene::IMeshBuffer *buf = new scene::SMeshBuffer();
-		u8 li = m_last_light;
-		video::SColor c(255,li,li,li);
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(dx,-dy,0, 0,0,0, c, 1,1),
-			video::S3DVertex(-dx,-dy,0, 0,0,0, c, 0,1),
-			video::S3DVertex(-dx,dy,0, 0,0,0, c, 0,0),
-			video::S3DVertex(dx,dy,0, 0,0,0, c, 1,0),
-		};
-		u16 indices[] = {0,1,2,2,3,0};
-		buf->append(vertices, 4, indices, 6);
-		// Set material
-		buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
-		buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
-		buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-		buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-		// Add to mesh
-		mesh->addMeshBuffer(buf);
-		buf->drop();
+			scene::IMeshBuffer *buf = new scene::SMeshBuffer();
+			video::S3DVertex vertices[4] = {
+				video::S3DVertex( dx,-dy, 0, 0,0,0, c, 1,1),
+				video::S3DVertex(-dx,-dy, 0, 0,0,0, c, 0,1),
+				video::S3DVertex(-dx, dy, 0, 0,0,0, c, 0,0),
+				video::S3DVertex( dx, dy, 0, 0,0,0, c, 1,0),
+			};
+			u16 indices[] = {0,1,2,2,3,0};
+			buf->append(vertices, 4, indices, 6);
+			// Set material
+			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
+			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
+			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
+			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			// Add to mesh
+			mesh->addMeshBuffer(buf);
+			buf->drop();
 		}
 		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
 		m_meshnode->grab();
@@ -1057,7 +1048,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			PlayerControl controls = player->getPlayerControl();
 
 			bool walking = false;
-			if(controls.up || controls.down || controls.left || controls.right)
+			if (controls.up || controls.down || controls.left || controls.right ||
+					controls.forw_move_joystick_axis != 0.f ||
+					controls.sidew_move_joystick_axis != 0.f)
 				walking = true;
 
 			f32 new_speed = player->local_animation_speed;
@@ -1508,10 +1501,8 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(std::map<std::string,
-			core::vector2d<v3f> >::const_iterator ii = m_bone_position.begin();
-			ii != m_bone_position.end(); ++ii)
-	{
+	for(UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
 		v3f bone_rot = (*ii).second.Y;
@@ -1572,8 +1563,7 @@ void GenericCAO::processMessage(const std::string &data)
 	std::istringstream is(data, std::ios::binary);
 	// command
 	u8 cmd = readU8(is);
-	if(cmd == GENERIC_CMD_SET_PROPERTIES)
-	{
+	if (cmd == GENERIC_CMD_SET_PROPERTIES) {
 		m_prop = gob_read_set_properties(is);
 
 		m_selection_box = m_prop.collisionbox;
@@ -1592,9 +1582,7 @@ void GenericCAO::processMessage(const std::string &data)
 			m_prop.nametag = m_name;
 
 		expireVisuals();
-	}
-	else if(cmd == GENERIC_CMD_UPDATE_POSITION)
-	{
+	} else if (cmd == GENERIC_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
 		m_position = readV3F1000(is);
@@ -1624,12 +1612,10 @@ void GenericCAO::processMessage(const std::string &data)
 			pos_translator.init(m_position);
 		}
 		updateNodePos();
-	}
-	else if(cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
+	} else if (cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
 		updateTextures(mod);
-	}
-	else if(cmd == GENERIC_CMD_SET_SPRITE) {
+	} else if (cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
 		int num_frames = readU16(is);
 		float framelength = readF1000(is);
@@ -1641,8 +1627,7 @@ void GenericCAO::processMessage(const std::string &data)
 		m_tx_select_horiz_by_yawpitch = select_horiz_by_yawpitch;
 
 		updateTexturePos();
-	}
-	else if(cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
+	} else if (cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
 		float override_speed = readF1000(is);
 		float override_jump = readF1000(is);
 		float override_gravity = readF1000(is);
@@ -1660,8 +1645,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_sneak = sneak;
 			player->physics_override_sneak_glitch = sneak_glitch;
 		}
-	}
-	else if(cmd == GENERIC_CMD_SET_ANIMATION) {
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
 		v2f range = readV2F1000(is);
 		if (!m_is_local_player) {
@@ -1695,8 +1679,7 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
-	}
-	else if(cmd == GENERIC_CMD_SET_BONE_POSITION) {
+	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
 		v3f rotation = readV3F1000(is);
@@ -1729,8 +1712,7 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		updateAttachments();
-	}
-	else if(cmd == GENERIC_CMD_PUNCHED) {
+	} else if (cmd == GENERIC_CMD_PUNCHED) {
 		/*s16 damage =*/ readS16(is);
 		s16 result_hp = readS16(is);
 
@@ -1758,8 +1740,7 @@ void GenericCAO::processMessage(const std::string &data)
 				updateTextures("^[brighten");
 			}
 		}
-	}
-	else if(cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
+	} else if (cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
 		m_armor_groups.clear();
 		int armor_groups_size = readU16(is);
 		for(int i=0; i<armor_groups_size; i++)
@@ -1775,6 +1756,19 @@ void GenericCAO::processMessage(const std::string &data)
 		if (m_nametag != NULL) {
 			m_nametag->nametag_color = m_prop.nametag_color;
 		}
+	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
+		u16 child_id = readU16(is);
+		u8 type = readU8(is);
+
+		if (GenericCAO *childobj = m_env->getGenericCAO(child_id)) {
+			childobj->processInitData(deSerializeLongString(is));
+		} else {
+			m_env->addActiveObject(child_id, type, deSerializeLongString(is));
+		}
+	} else {
+		warningstream << FUNCTION_NAME
+			<< ": unknown command or outdated client \""
+			<< cmd << std::endl;
 	}
 }
 

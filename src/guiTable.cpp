@@ -565,10 +565,8 @@ void GUITable::setSelected(s32 index)
 	--index; // Switch from 1-based indexing to 0-based indexing
 
 	s32 rowcount = m_rows.size();
-	if (rowcount == 0) {
+	if (rowcount == 0 || index < 0) {
 		return;
-	} else if (index < 0) {
-		index = 0;
 	} else if (index >= rowcount) {
 		index = rowcount - 1;
 	}

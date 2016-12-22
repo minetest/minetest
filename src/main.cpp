@@ -17,15 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifdef _MSC_VER
-	#ifndef SERVER // Dedicated server isn't linked with Irrlicht
-		#pragma comment(lib, "Irrlicht.lib")
-		// This would get rid of the console window
-		//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-	#endif
-	#pragma comment(lib, "zlibwapi.lib")
-	#pragma comment(lib, "Shell32.lib")
-#endif
+// This would get rid of the console window
+//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 
 #include "irrlicht.h" // createDevice
 
@@ -948,7 +941,8 @@ static bool migrate_database(const GameParams &game_params, const Settings &cmd_
 	for (std::vector<v3s16>::const_iterator it = blocks.begin(); it != blocks.end(); ++it) {
 		if (kill) return false;
 
-		const std::string &data = old_db->loadBlock(*it);
+		std::string data;
+		old_db->loadBlock(*it, &data);
 		if (!data.empty()) {
 			new_db->saveBlock(*it, data);
 		} else {

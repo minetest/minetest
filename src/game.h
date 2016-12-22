@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
+#include "client/keys.h"
+#include "client/joystick_controller.h"
 #include "keycode.h"
 #include <list>
 
@@ -110,6 +112,9 @@ public:
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
 
+	virtual void listenForKey(const KeyPress &keyCode) {}
+	virtual void dontListenForKeys() {}
+
 	virtual v2s32 getMousePos() = 0;
 	virtual void setMousePos(s32 x, s32 y) = 0;
 
@@ -131,6 +136,8 @@ public:
 	virtual void step(float dtime) {}
 
 	virtual void clear() {}
+
+	JoystickController joystick;
 };
 
 class ChatBackend;  /* to avoid having to include chat.h */

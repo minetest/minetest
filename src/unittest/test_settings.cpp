@@ -32,7 +32,7 @@ public:
 	void testAllSettings();
 
 	static const char *config_text_before;
-	static const char *config_text_after;
+	static const std::string config_text_after;
 };
 
 static TestSettings g_test_instance;
@@ -69,7 +69,7 @@ const char *TestSettings::config_text_before =
 	"np_terrain = 5, 40, (250, 250, 250), 12341, 5, 0.7, 2.4\n"
 	"zoop = true";
 
-const char *TestSettings::config_text_after =
+const std::string TestSettings::config_text_after =
 	"leet = 1337\n"
 	"leetleet = 13371337\n"
 	"leetleet_neg = -13371337\n"
@@ -197,7 +197,10 @@ void TestSettings::testAllSettings()
 	UASSERT(s.updateConfigObject(is, os, "", 0) == true);
 	//printf(">>>> expected config:\n%s\n", TEST_CONFIG_TEXT_AFTER);
 	//printf(">>>> actual config:\n%s\n", os.str().c_str());
+#if __cplusplus < 201103L
+	// This test only works in older C++ versions than C++11 because we use unordered_map
 	UASSERT(os.str() == config_text_after);
+#endif
 	} catch (SettingNotFoundException &e) {
 		UASSERT(!"Setting not found!");
 	}

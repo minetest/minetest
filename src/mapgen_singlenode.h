@@ -22,11 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-struct MapgenSinglenodeParams : public MapgenSpecificParams {
-	
+struct MapgenSinglenodeParams : public MapgenParams {
 	MapgenSinglenodeParams() {}
 	~MapgenSinglenodeParams() {}
-	
+
 	void readParams(const Settings *settings) {}
 	void writeParams(Settings *settings) const {}
 };
@@ -39,19 +38,11 @@ public:
 
 	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	~MapgenSinglenode();
-	
+
+	virtual MapgenType getType() const { return MAPGEN_SINGLENODE; }
+
 	void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
-};
-
-struct MapgenFactorySinglenode : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge) {
-		return new MapgenSinglenode(mgid, params, emerge);
-	};
-	
-	MapgenSpecificParams *createMapgenParams() {
-		return new MapgenSinglenodeParams();
-	};
 };
 
 #endif

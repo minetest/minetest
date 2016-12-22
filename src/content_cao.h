@@ -68,7 +68,6 @@ private:
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
-	Camera* m_camera;
 	IGameDef *m_gamedef;
 	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
@@ -91,7 +90,7 @@ private:
 	int m_animation_speed;
 	int m_animation_blend;
 	bool m_animation_loop;
-	std::map<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
+	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -126,6 +125,8 @@ public:
 
 	void initialize(const std::string &data);
 
+	void processInitData(const std::string &data);
+
 	ClientActiveObject *getParent();
 
 	bool getCollisionBox(aabb3f *toset);
@@ -135,6 +136,10 @@ public:
 	aabb3f *getSelectionBox();
 
 	v3f getPosition();
+	inline float getYaw() const
+	{
+		return m_yaw;
+	}
 
 	scene::ISceneNode *getSceneNode();
 
@@ -206,7 +211,7 @@ public:
 			float time_from_last_punch=1000000);
 
 	std::string debugInfoText();
-	
+
 	std::string infoText()
 	{
 		return m_prop.infotext;

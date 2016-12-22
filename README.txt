@@ -27,39 +27,47 @@ This game is not finished
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs. When doing that, debug.txt is useful.
 
-Default Controls
+Default controls
 -----------------
-- WASD: move
-- Space: jump/climb
-- Shift: sneak/go down
-- Q: drop itemstack (+ SHIFT for single item)
-- I: inventory
-- Mouse: turn/look
-- Mouse left: dig/punch
-- Mouse right: place/use
-- Mouse wheel: select item
-- T: chat
-- 1-8: select item
+- Move mouse: Look around
+- W, A, S, D: Move
+- Space: Jump/move up
+- Shift: Sneak/move down
+- Q: Drop itemstack
+- Shift + Q: Drop single item
+- Left mouse button: Dig/punch/take item
+- Right mouse button: Place/use
+- Shift + right mouse button: Build (without using)
+- I: Inventory menu
+- Mouse wheel: Select item
+- 0-9: Select item
+- Z: Zoom (needs zoom privilege)
+- T: Chat
+- /: Commad
 
-- Esc: pause menu (pauses only singleplayer game)
-- R: Enable/Disable full range view
+- Esc: Pause menu/abort/exit (pauses only singleplayer game)
+- R: Enable/disable full range view
 - +: Increase view range
 - -: Decrease view range
-- K: Enable/Disable fly (needs fly privilege)
-- J: Enable/Disable fast (needs fast privilege)
-- H: Enable/Disable noclip (needs noclip privilege)
+- K: Enable/disable fly mode (needs fly privilege)
+- J: Enable/disable fast mode (needs fast privilege)
+- H: Enable/disable noclip mode (needs noclip privilege)
 
-- F1:  Hide/Show HUD
-- F2:  Hide/Show Chat
-- F3:  Disable/Enable Fog
-- F4:  Disable/Enable Camera update (Mapblocks are not updated anymore when disabled)
-- F5:  Toogle through debug info screens
-- F6:  Toogle through output data
-- F7:  Toggle through camera modes
-- F10: Show/Hide console
+- F1:  Hide/show HUD
+- F2:  Hide/show chat
+- F3:  Disable/enable fog
+- F4:  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)
+- F5:  Cycle through debug info screens
+- F6:  Cycle through profiler info screens
+- F7:  Cycle through camera modes
+- F8:  Toggle cinematic mode
+- F9:  Cycle through minimap modes
+- Shift + F9: Change minimap orientation
+- F10: Show/hide console
 - F12: Take screenshot
+- P: Write stack traces into debug.txt
 
-- Settable in the configuration file, see the section below.
+Most controls are settable in the configuration file, see the section below.
 
 Paths
 ------
@@ -103,7 +111,7 @@ Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng12-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 For Fedora users:
 $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
@@ -111,10 +119,10 @@ $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal*
 You can install git for easily keeping your copy up to date.
 If you dont want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
-$ sudo apt-get install git-core
+$ sudo apt-get install git
 
 For Fedora users:
-$ sudo dnf install git-core
+$ sudo dnf install git
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
 $ git clone --depth 1 https://github.com/minetest/minetest.git
@@ -169,7 +177,8 @@ ENABLE_CURSES       - Build with (n)curses; Enables a server side terminal (comm
 ENABLE_FREETYPE     - Build with FreeType2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
-ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend (faster than SQLite3)
+ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend
+ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater required)
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
@@ -203,6 +212,8 @@ IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlic
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
+POSTGRESQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
+POSTGRESQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so
 REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
 REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
 SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
@@ -249,6 +260,8 @@ Compiling on Windows:
 		http://www.winimage.com/zLibDll/index.html
 	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
 		http://www.winimage.com/zLibDll/index.html
+	* SQLite3 headers and library
+		https://www.sqlite.org/download.html
 	* Optional: gettext library and tools:
 		http://gnuwin32.sourceforge.net/downlinks/gettext.php
 		- This is used for other UI languages. Feel free to leave it out.
@@ -260,6 +273,10 @@ Compiling on Windows:
 	- Download all the other stuff to DIR and extract them into there.
 	  ("extract here", not "extract to packagename/")
 	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
+	  NOTE: You need to extract sqlite3.h & sqlite3ext.h from sqlite3 source
+	      and sqlite3.dll & sqlite3.def from sqlite3 precompiled binaries
+	      into "sqlite3" directory, and generate sqlite3.lib using command
+	      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
 	- All those packages contain a nice base directory in them, which
 	  should end up being the direct subdirectories of DIR.
 	- You will end up with a directory structure like this (+=dir, -=file):
@@ -267,7 +284,9 @@ Compiling on Windows:
 	+ DIR
 		- zlib-1.2.5.tar.gz
 		- zlib125dll.zip
-		- irrlicht-1.7.1.zip
+		- irrlicht-1.8.3.zip
+		- sqlite-amalgamation-3130000.zip (SQLite3 headers)
+		- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
 		- 110214175330.zip (or whatever, this is the minetest source)
 		+ zlib-1.2.5
 			- zlib.h
@@ -277,10 +296,15 @@ Compiling on Windows:
 			- readme.txt
 			+ dll32
 			...
-		+ irrlicht-1.7.1
+		+ irrlicht-1.8.3
 			+ lib
 			+ include
 			...
+		+ sqlite3
+			sqlite3.h
+			sqlite3ext.h
+			sqlite3.lib
+			sqlite3.dll
 		+ gettext (optional)
 			+bin
 			+include
@@ -307,7 +331,7 @@ Compiling on Windows:
 	BUILD_SERVER             [ ]
 	CMAKE_BUILD_TYPE         Release
 	CMAKE_INSTALL_PREFIX     DIR/minetest-install
-	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.7.1
+	IRRLICHT_SOURCE_DIR      DIR/irrlicht-1.8.3
 	RUN_IN_PLACE             [X]
 	WARN_ALL                 [ ]
 	ZLIB_DLL                 DIR/zlib125dll/dll32/zlibwapi.dll
@@ -318,6 +342,11 @@ Compiling on Windows:
 	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
 	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 	-----------------
+	- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
+	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
+	  SQLITE3_LIBRARY manually.
+	- If you want to build 64-bit minetest, you will need to build 64-bit version
+	  of irrlicht engine manually, as only 32-bit pre-built library is provided.
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
 	- If something is still coloured red, you have a problem.
@@ -381,6 +410,9 @@ Authors of media files
 -----------------------
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+ShadowNinja:
+  textures/base/pack/smoke_puff.png
 
 Paramat:
   textures/base/pack/menu_header.png

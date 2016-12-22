@@ -39,7 +39,9 @@ static TestThreading g_test_instance;
 
 void TestThreading::runTests(IGameDef *gamedef)
 {
+#if !(defined(__MACH__) && defined(__APPLE__))
 	TEST(testStartStopWait);
+#endif
 	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
 }
@@ -161,6 +163,7 @@ private:
 void TestThreading::testAtomicSemaphoreThread()
 {
 	Atomic<u32> val;
+	val = 0;
 	Semaphore trigger;
 	static const u8 num_threads = 4;
 

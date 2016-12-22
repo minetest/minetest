@@ -249,8 +249,8 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 
 #define CHECK_FILE_ERR(ret, fp) \
 	if (ret) { \
-		if (fp) std::fclose(fp); \
 		lua_pushfstring(L, "%s: %s", path, strerror(errno)); \
+		if (fp) std::fclose(fp); \
 		return false; \
 	}
 
@@ -285,38 +285,49 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 
 	if (c == LUA_SIGNATURE[0]) {
 		lua_pushliteral(L, "Bytecode prohibited when mod security is enabled.");
+		std::fclose(fp);
+		if (path) {
+			delete [] chunk_name;
+		}
 		return false;
 	}
 
 	// Read the file
 	int ret = std::fseek(fp, 0, SEEK_END);
 	CHECK_FILE_ERR(ret, fp);
-	if (ret) {
-		std::fclose(fp);
-		lua_pushfstring(L, "%s: %s", path, strerror(errno));
-		return false;
-	}
+
 	size_t size = std::ftell(fp) - start;
 	char *code = new char[size];
 	ret = std::fseek(fp, start, SEEK_SET);
-	CHECK_FILE_ERR(ret, fp);
 	if (ret) {
-		std::fclose(fp);
 		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		std::fclose(fp);
+		delete [] code;
+		if (path) {
+			delete [] chunk_name;
+		}
 		return false;
 	}
+
 	size_t num_read = std::fread(code, 1, size, fp);
 	if (path) {
 		std::fclose(fp);
 	}
 	if (num_read != size) {
 		lua_pushliteral(L, "Error reading file to load.");
+		delete [] code;
+		if (path) {
+			delete [] chunk_name;
+		}
 		return false;
 	}
 
 	if (luaL_loadbuffer(L, code, size, chunk_name)) {
+		delete [] code;
 		return false;
 	}
+
+	delete [] code;
 
 	if (path) {
 		delete [] chunk_name;
@@ -325,12 +336,15 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 }
 
 
-bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
+bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
+		bool write_required, bool *write_allowed)
 {
+	if (write_allowed)
+		*write_allowed = false;
+
 	std::string str;  // Transient
 
-	std::string norel_path = fs::RemoveRelativePathComponents(path);
-	std::string abs_path = fs::AbsolutePath(norel_path);
+	std::string abs_path = fs::AbsolutePath(path);
 
 	if (!abs_path.empty()) {
 		// Don't allow accessing the settings file
@@ -341,18 +355,29 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 	// If we couldn't find the absolute path (path doesn't exist) then
 	// try removing the last components until it works (to allow
 	// non-existent files/folders for mkdir).
-	std::string cur_path = norel_path;
+	std::string cur_path = path;
 	std::string removed;
 	while (abs_path.empty() && !cur_path.empty()) {
-		std::string tmp_rmed;
-		cur_path = fs::RemoveLastPathComponent(cur_path, &tmp_rmed);
-		removed = tmp_rmed + (removed.empty() ? "" : DIR_DELIM + removed);
+		std::string component;
+		cur_path = fs::RemoveLastPathComponent(cur_path, &component);
+		if (component == "..") {
+			// Parent components can't be allowed or we could allow something like
+			// /home/user/minetest/worlds/foo/noexist/../../../../../../etc/passwd.
+			// If we have previous non-relative elements in the path we might be
+			// able to remove them so that things like worlds/foo/noexist/../auth.txt
+			// could be allowed, but those paths will be interpreted as nonexistent
+			// by the operating system anyways.
+			return false;
+		}
+		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
 		abs_path = fs::AbsolutePath(cur_path);
 	}
-	if (abs_path.empty()) return false;
+	if (abs_path.empty())
+		return false;
 	// Add the removed parts back so that you can't, eg, create a
 	// directory in worldmods if worldmods doesn't exist.
-	if (!removed.empty()) abs_path += DIR_DELIM + removed;
+	if (!removed.empty())
+		abs_path += DIR_DELIM + removed;
 
 	// Get server from registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
@@ -369,32 +394,53 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path)
 
 		// Builtin can access anything
 		if (mod_name == BUILTIN_MOD_NAME) {
+			if (write_allowed) *write_allowed = true;
 			return true;
 		}
 
 		// Allow paths in mod path
-		const ModSpec *mod = server->getModSpec(mod_name);
-		if (mod) {
-			str = fs::AbsolutePath(mod->path);
-			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
-				return true;
+		// Don't bother if write access isn't important, since it will be handled later
+		if (write_required || write_allowed != NULL) {
+			const ModSpec *mod = server->getModSpec(mod_name);
+			if (mod) {
+				str = fs::AbsolutePath(mod->path);
+				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+					if (write_allowed) *write_allowed = true;
+					return true;
+				}
 			}
 		}
 	}
 	lua_pop(L, 1);  // Pop mod name
 
-	str = fs::AbsolutePath(server->getWorldPath());
-	if (str.empty()) return false;
-	// Don't allow access to world mods.  We add to the absolute path
-	// of the world instead of getting the absolute paths directly
-	// because that won't work if they don't exist.
-	if (fs::PathStartsWith(abs_path, str + DIR_DELIM + "worldmods") ||
-			fs::PathStartsWith(abs_path, str + DIR_DELIM + "game")) {
-		return false;
+	// Allow read-only access to all mod directories
+	if (!write_required) {
+		const std::vector<ModSpec> mods = server->getMods();
+		for (size_t i = 0; i < mods.size(); ++i) {
+			str = fs::AbsolutePath(mods[i].path);
+			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
+				return true;
+			}
+		}
 	}
-	// Allow all other paths in world path
-	if (fs::PathStartsWith(abs_path, str)) {
-		return true;
+
+	str = fs::AbsolutePath(server->getWorldPath());
+	if (!str.empty()) {
+		// Don't allow access to other paths in the world mod/game path.
+		// These have to be blocked so you can't override a trusted mod
+		// by creating a mod with the same name in a world mod directory.
+		// We add to the absolute path of the world instead of getting
+		// the absolute paths directly because that won't work if they
+		// don't exist.
+		if (fs::PathStartsWith(abs_path, str + DIR_DELIM + "worldmods") ||
+				fs::PathStartsWith(abs_path, str + DIR_DELIM + "game")) {
+			return false;
+		}
+		// Allow all other paths in world path
+		if (fs::PathStartsWith(abs_path, str)) {
+			if (write_allowed) *write_allowed = true;
+			return true;
+		}
 	}
 
 	// Default to disallowing
@@ -465,7 +511,7 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 
 	if (lua_isstring(L, 1)) {
 		path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH(L, path);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
 	}
 
 	if (!safeLoadFile(L, path)) {
@@ -514,14 +560,28 @@ int ScriptApiSecurity::sl_g_require(lua_State *L)
 
 int ScriptApiSecurity::sl_io_open(lua_State *L)
 {
+	bool with_mode = lua_gettop(L) > 1;
+
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
-	CHECK_SECURE_PATH(L, path);
+
+	bool write_requested = false;
+	if (with_mode) {
+		luaL_checktype(L, 2, LUA_TSTRING);
+		const char *mode = lua_tostring(L, 2);
+		write_requested = strchr(mode, 'w') != NULL ||
+			strchr(mode, '+') != NULL ||
+			strchr(mode, 'a') != NULL;
+	}
+	CHECK_SECURE_PATH_INTERNAL(L, path, write_requested, NULL);
 
 	push_original(L, "io", "open");
 	lua_pushvalue(L, 1);
-	lua_pushvalue(L, 2);
-	lua_call(L, 2, 2);
+	if (with_mode) {
+		lua_pushvalue(L, 2);
+	}
+
+	lua_call(L, with_mode ? 2 : 1, 2);
 	return 2;
 }
 
@@ -530,7 +590,7 @@ int ScriptApiSecurity::sl_io_input(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH(L, path);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
 	}
 
 	push_original(L, "io", "input");
@@ -544,7 +604,7 @@ int ScriptApiSecurity::sl_io_output(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH(L, path);
+		CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
 	}
 
 	push_original(L, "io", "output");
@@ -558,16 +618,16 @@ int ScriptApiSecurity::sl_io_lines(lua_State *L)
 {
 	if (lua_isstring(L, 1)) {
 		const char *path = lua_tostring(L, 1);
-		CHECK_SECURE_PATH(L, path);
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, NULL);
 	}
 
+	int top_precall = lua_gettop(L);
 	push_original(L, "io", "lines");
 	lua_pushvalue(L, 1);
-	int top_precall = lua_gettop(L);
 	lua_call(L, 1, LUA_MULTRET);
 	// Return number of arguments returned by the function,
 	// adjusting for the function being poped.
-	return lua_gettop(L) - (top_precall - 1);
+	return lua_gettop(L) - top_precall;
 }
 
 
@@ -575,11 +635,11 @@ int ScriptApiSecurity::sl_os_rename(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path1 = lua_tostring(L, 1);
-	CHECK_SECURE_PATH(L, path1);
+	CHECK_SECURE_PATH_INTERNAL(L, path1, true, NULL);
 
 	luaL_checktype(L, 2, LUA_TSTRING);
 	const char *path2 = lua_tostring(L, 2);
-	CHECK_SECURE_PATH(L, path2);
+	CHECK_SECURE_PATH_INTERNAL(L, path2, true, NULL);
 
 	push_original(L, "os", "rename");
 	lua_pushvalue(L, 1);
@@ -593,7 +653,7 @@ int ScriptApiSecurity::sl_os_remove(lua_State *L)
 {
 	luaL_checktype(L, 1, LUA_TSTRING);
 	const char *path = lua_tostring(L, 1);
-	CHECK_SECURE_PATH(L, path);
+	CHECK_SECURE_PATH_INTERNAL(L, path, true, NULL);
 
 	push_original(L, "os", "remove");
 	lua_pushvalue(L, 1);

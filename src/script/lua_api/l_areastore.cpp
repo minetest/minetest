@@ -111,6 +111,9 @@ int LuaAreaStore::l_get_area(lua_State *L)
 	const Area *res;
 
 	res = ast->getArea(id);
+	if (!res)
+		return 0;
+
 	push_area(L, res, include_borders, include_data);
 
 	return 1;
@@ -260,7 +263,7 @@ int LuaAreaStore::l_to_file(lua_State *L)
 	AreaStore *ast = o->as;
 
 	const char *filename = luaL_checkstring(L, 2);
-	CHECK_SECURE_PATH_OPTIONAL(L, filename);
+	CHECK_SECURE_PATH(L, filename, true);
 
 	std::ostringstream os(std::ios_base::binary);
 	ast->serialize(os);
@@ -291,7 +294,7 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 
 	const char *filename = luaL_checkstring(L, 2);
-	CHECK_SECURE_PATH_OPTIONAL(L, filename);
+	CHECK_SECURE_PATH(L, filename, false);
 
 	std::ifstream is(filename, std::ios::binary);
 	return deserialization_helper(L, o->as, is);

@@ -98,12 +98,24 @@ local function get_formspec(tabview, name, tabdata)
 				.. fgettext("Uninstall selected modpack") .. "]"
 		else
 			--show dependencies
+			local toadd_hard, toadd_soft = modmgr.get_dependencies(selected_mod.path)
+			if toadd_hard == "" and toadd_soft == "" then
+				retval = retval .. "," .. fgettext("No dependencies.")
+			else
+				if toadd_hard ~= "" then
+					retval = retval .. "," .. fgettext("Dependencies:") .. ","
+					retval = retval .. toadd_hard
+				end
+				if toadd_soft ~= "" then
+					if toadd_hard ~= "" then
+						retval = retval .. ","
+					end
+					retval = retval .. "," .. fgettext("Optional dependencies:") .. ","
+					retval = retval .. toadd_soft
+				end
+			end
 
-			retval = retval .. "," .. fgettext("Depends:") .. ","
-
-			local toadd = modmgr.get_dependencies(selected_mod.path)
-
-			retval = retval .. toadd .. ";0]"
+			retval = retval .. ";0]"
 
 			retval = retval .. "button[5.5,4.85;4.5,0.5;btn_mod_mgr_delete_mod;"
 				.. fgettext("Uninstall selected mod") .. "]"

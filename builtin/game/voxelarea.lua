@@ -50,7 +50,7 @@ end
 function VoxelArea:position(i)
 	local p = {}
 	local MinEdge = self.MinEdge
- 
+
 	i = i - 1
 
 	p.z = math.floor(i / self.zstride) + MinEdge.z
@@ -84,23 +84,46 @@ end
 
 function VoxelArea:iter(minx, miny, minz, maxx, maxy, maxz)
 	local i = self:index(minx, miny, minz) - 1
-	local last = self:index(maxx, maxy, maxz)
-	local ystride = self.ystride
-	local zstride = self.zstride
-	local yoff = (last+1) % ystride
-	local zoff = (last+1) % zstride
-	local ystridediff = (i - last) % ystride
-	local zstridediff = (i - last) % zstride
+	local xrange = maxx - minx + 1
+	local nextaction = i + 1 + xrange
+
+	local y = 0
+	local yrange = maxy - miny + 1
+	local yreqstride = self.ystride - xrange
+
+	local z = 0
+	local zrange = maxz - minz + 1
+	local multistride = self.zstride - ((yrange - 1) * self.ystride + xrange)
+
 	return function()
+		-- continue i until it needs to jump
 		i = i + 1
-		if i % zstride == zoff then
-			i = i + zstridediff
-		elseif i % ystride == yoff then
-			i = i + ystridediff
-		end
-		if i <= last then
+		if i ~= nextaction then
 			return i
 		end
+
+		-- continue y until maxy is exceeded
+		y = y + 1
+		if y ~= yrange then
+			-- set i to index(minx, miny + y, minz + z) - 1
+			i = i + yreqstride
+			nextaction = i + xrange
+			return i
+		end
+
+		-- continue z until maxz is exceeded
+		z = z + 1
+		if z == zrange then
+			-- cuboid finished, return nil
+			return
+		end
+
+		-- set i to index(minx, miny, minz + z) - 1
+		i = i + multistride
+
+		y = 0
+		nextaction = i + xrange
+		return i
 	end
 end
 

@@ -1,5 +1,7 @@
 -- Minetest: builtin/item.lua
 
+local builtin_shared = ...
+
 --
 -- Falling stuff
 --
@@ -41,19 +43,20 @@ core.register_entity(":__builtin:falling_node", {
 	end,
 
 	on_step = function(self, dtime)
-		 -- Set gravity
+		-- Set gravity
 		local acceleration = self.object:getacceleration()
 		if not vector.equals(acceleration, {x = 0, y = -10, z = 0}) then
 			self.object:setacceleration({x = 0, y = -10, z = 0})
 		end
-		-- Turn to actual sand when collides to ground or just move
+		-- Turn to actual node when colliding with ground, or continue to move
 		local pos = self.object:getpos()
-		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z} -- Position of bottom center point
-		local bcn = core.get_node(bcp)
-		local bcd = core.registered_nodes[bcn.name]
-		-- Note: walkable is in the node definition, not in item groups
-		if not bcd or
-				(bcd.walkable or
+		-- Position of bottom center point
+		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
+		-- Avoid bugs caused by an unloaded node below
+		local bcn = core.get_node_or_nil(bcp)
+		local bcd = bcn and core.registered_nodes[bcn.name]
+		if bcn and
+				(not bcd or bcd.walkable or
 				(core.get_item_group(self.node.name, "float") ~= 0 and
 				bcd.liquidtype ~= "none")) then
 			if bcd and bcd.leveled and
@@ -75,20 +78,20 @@ core.register_entity(":__builtin:falling_node", {
 			local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
 			-- Check what's here
 			local n2 = core.get_node(np)
+			local nd = core.registered_nodes[n2.name]
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
-			if n2.name ~= "air" and (not core.registered_nodes[n2.name] or
-					core.registered_nodes[n2.name].liquidtype == "none") then
+			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
 				core.remove_node(np)
-				if core.registered_nodes[n2.name].buildable_to == false then
+				if nd.buildable_to == false then
 					-- Add dropped items
 					local drops = core.get_node_drops(n2.name, "")
-					for _, dropped_item in ipairs(drops) do
+					for _, dropped_item in pairs(drops) do
 						core.add_item(np, dropped_item)
 					end
 				end
 				-- Run script hook
-				for _, callback in ipairs(core.registered_on_dignodes) do
+				for _, callback in pairs(core.registered_on_dignodes) do
 					callback(np, n2)
 				end
 			end
@@ -97,7 +100,7 @@ core.register_entity(":__builtin:falling_node", {
 				core.add_node(np, self.node)
 			end
 			self.object:remove()
-			nodeupdate(np)
+			core.check_for_falling(np)
 			return
 		end
 		local vel = self.object:getvelocity()
@@ -108,15 +111,17 @@ core.register_entity(":__builtin:falling_node", {
 	end
 })
 
-function spawn_falling_node(p, node)
+local function spawn_falling_node(p, node)
 	local obj = core.add_entity(p, "__builtin:falling_node")
-	obj:get_luaentity():set_node(node)
+	if obj then
+		obj:get_luaentity():set_node(node)
+	end
 end
 
-function drop_attached_node(p)
+local function drop_attached_node(p)
 	local nn = core.get_node(p).name
 	core.remove_node(p)
-	for _, item in ipairs(core.get_node_drops(nn, "")) do
+	for _, item in pairs(core.get_node_drops(nn, "")) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,
@@ -126,11 +131,15 @@ function drop_attached_node(p)
 	end
 end
 
-function check_attached_node(p, n)
+function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
 	if def.paramtype2 == "wallmounted" then
-		d = core.wallmounted_to_dir(n.param2)
+		-- The fallback vector here is in case 'wallmounted to dir' is nil due
+		-- to voxelmanip placing a wallmounted node without resetting a
+		-- pre-existing param2 value that is out-of-range for wallmounted.
+		-- The fallback vector corresponds to param2 = 0.
+		d = core.wallmounted_to_dir(n.param2) or {x = 0, y = 1, z = 0}
 	else
 		d.y = -1
 	end
@@ -147,19 +156,23 @@ end
 -- Some common functions
 --
 
-function nodeupdate_single(p)
+function core.check_single_for_falling(p)
 	local n = core.get_node(p)
 	if core.get_item_group(n.name, "falling_node") ~= 0 then
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
-		local n_bottom = core.get_node(p_bottom)
-		-- Note: walkable is in the node definition, not in item groups
-		if core.registered_nodes[n_bottom.name] and
+		-- Only spawn falling node if node below is loaded
+		local n_bottom = core.get_node_or_nil(p_bottom)
+		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
+		if d_bottom and
+
 				(core.get_item_group(n.name, "float") == 0 or
-					core.registered_nodes[n_bottom.name].liquidtype == "none") and
-				(n.name ~= n_bottom.name or (core.registered_nodes[n_bottom.name].leveled and
-					core.get_node_level(p_bottom) < core.get_node_max_level(p_bottom))) and
-				(not core.registered_nodes[n_bottom.name].walkable or
-					core.registered_nodes[n_bottom.name].buildable_to) then
+				d_bottom.liquidtype == "none") and
+
+				(n.name ~= n_bottom.name or (d_bottom.leveled and
+				core.get_node_level(p_bottom) <
+				core.get_node_max_level(p_bottom))) and
+
+				(not d_bottom.walkable or d_bottom.buildable_to) then
 			n.level = core.get_node_level(p)
 			core.remove_node(p)
 			spawn_falling_node(p, n)
@@ -168,7 +181,7 @@ function nodeupdate_single(p)
 	end
 
 	if core.get_item_group(n.name, "attached_node") ~= 0 then
-		if not check_attached_node(p, n) then
+		if not builtin_shared.check_attached_node(p, n) then
 			drop_attached_node(p)
 			return true
 		end
@@ -181,7 +194,7 @@ end
 -- We don't walk diagonals, only our direct neighbors, and self.
 -- Down first as likely case, but always before self. The same with sides.
 -- Up must come last, so that things above self will also fall all at once.
-local nodeupdate_neighbors = {
+local check_for_falling_neighbors = {
 	{x = -1, y = -1, z = 0},
 	{x = 1, y = -1, z = 0},
 	{x = 0, y = -1, z = -1},
@@ -195,7 +208,7 @@ local nodeupdate_neighbors = {
 	{x = 0, y = 1, z = 0},
 }
 
-function nodeupdate(p)
+function core.check_for_falling(p)
 	-- Round p to prevent falling entities to get stuck.
 	p = vector.round(p)
 
@@ -214,10 +227,10 @@ function nodeupdate(p)
 		n = n + 1
 		s[n] = {p = p, v = v}
 		-- Select next node from neighbor list.
-		p = vector.add(p, nodeupdate_neighbors[v])
+		p = vector.add(p, check_for_falling_neighbors[v])
 		-- Now we check out the node. If it is in need of an update,
 		-- it will let us know in the return value (true = updated).
-		if not nodeupdate_single(p) then
+		if not core.check_single_for_falling(p) then
 			-- If we don't need to "recurse" (walk) to it then pop
 			-- our previous pos off the stack and continue from there,
 			-- with the v value we were at when we last were at that
@@ -249,12 +262,33 @@ end
 -- Global callbacks
 --
 
-function on_placenode(p, node)
-	nodeupdate(p)
+local function on_placenode(p, node)
+	core.check_for_falling(p)
 end
 core.register_on_placenode(on_placenode)
 
-function on_dignode(p, node)
-	nodeupdate(p)
+local function on_dignode(p, node)
+	core.check_for_falling(p)
 end
 core.register_on_dignode(on_dignode)
+
+local function on_punchnode(p, node)
+	core.check_for_falling(p)
+end
+core.register_on_punchnode(on_punchnode)
+
+--
+-- Globally exported functions
+--
+
+-- TODO remove this function after the 0.4.15 release
+function nodeupdate(p)
+	core.log("deprecated", "nodeupdate: deprecated, please use core.check_for_falling instead")
+	core.check_for_falling(p)
+end
+
+-- TODO remove this function after the 0.4.15 release
+function nodeupdate_single(p)
+	core.log("deprecated", "nodeupdate_single: deprecated, please use core.check_single_for_falling instead")
+	core.check_single_for_falling(p)
+end

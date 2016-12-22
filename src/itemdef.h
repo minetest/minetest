@@ -61,7 +61,7 @@ struct ItemDefinition
 	/*
 		Item stack and interaction properties
 	*/
-	s16 stack_max;
+	u16 stack_max;
 	bool usable;
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor
@@ -144,6 +144,7 @@ public:
 	virtual void clear()=0;
 	// Register item definition
 	virtual void registerItem(const ItemDefinition &def)=0;
+	virtual void unregisterItem(const std::string &name)=0;
 	// Set an alias so that items named <name> will load as <convert_to>.
 	// Alias is not set if <name> has already been defined.
 	// Alias will be removed if <name> is defined at a later point of time.

@@ -137,6 +137,10 @@ void LuaEmergeAreaCallback(v3s16 blockpos, EmergeAction action, void *param)
 	assert(state->script != NULL);
 	assert(state->refcount > 0);
 
+	// state must be protected by envlock
+	Server *server = state->script->getServer();
+	MutexAutoLock envlock(server->m_env_mutex);
+
 	state->refcount--;
 
 	state->script->on_emerge_area_completion(blockpos, action, state);
@@ -494,8 +498,8 @@ int ModApiEnvMod::l_get_player_by_name(lua_State *L)
 
 	// Do it
 	const char *name = luaL_checkstring(L, 1);
-	Player *player = env->getPlayer(name);
-	if(player == NULL){
+	RemotePlayer *player = dynamic_cast<RemotePlayer *>(env->getPlayer(name));
+	if (player == NULL){
 		lua_pushnil(L);
 		return 1;
 	}
@@ -758,7 +762,7 @@ int ModApiEnvMod::l_get_perlin_map(lua_State *L)
 		return 0;
 	v3s16 size = read_v3s16(L, 2);
 
-	int seed = (int)(env->getServerMap().getSeed());
+	s32 seed = (s32)(env->getServerMap().getSeed());
 	LuaPerlinNoiseMap *n = new LuaPerlinNoiseMap(&np, seed, size);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = n;
 	luaL_getmetatable(L, "PerlinNoiseMap");

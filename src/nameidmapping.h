@@ -23,15 +23,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <set>
-#include <map>
 #include "irrlichttypes_bloated.h"
+#include "util/cpp11_container.h"
 
 class NameIdMapping
 {
 public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
+
 	void clear(){
 		m_id_to_name.clear();
 		m_name_to_id.clear();
@@ -55,7 +55,7 @@ public:
 		m_name_to_id.erase(name);
 	}
 	bool getName(u16 id, std::string &result) const{
-		std::map<u16, std::string>::const_iterator i;
+		UNORDERED_MAP<u16, std::string>::const_iterator i;
 		i = m_id_to_name.find(id);
 		if(i == m_id_to_name.end())
 			return false;
@@ -63,7 +63,7 @@ public:
 		return true;
 	}
 	bool getId(const std::string &name, u16 &result) const{
-		std::map<std::string, u16>::const_iterator i;
+		UNORDERED_MAP<std::string, u16>::const_iterator i;
 		i = m_name_to_id.find(name);
 		if(i == m_name_to_id.end())
 			return false;
@@ -74,8 +74,8 @@ public:
 		return m_id_to_name.size();
 	}
 private:
-	std::map<u16, std::string> m_id_to_name;
-	std::map<std::string, u16> m_name_to_id;
+	UNORDERED_MAP<u16, std::string> m_id_to_name;
+	UNORDERED_MAP<std::string, u16> m_name_to_id;
 };
 
 #endif

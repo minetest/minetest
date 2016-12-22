@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.14
+Minetest Lua Modding API Reference 0.4.15
 =========================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -65,15 +65,19 @@ e.g.
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
 It can also contain a settingtypes.txt in the same format as the one in builtin.
-This settingtypes.txt will be parsed by the menu and the settings will be displayed in the "Games" category in the settings tab.
+This settingtypes.txt will be parsed by the menu and the settings will be displayed
+in the "Games" category in the settings tab.
 
 ### Menu images
 
-Games can provide custom main menu images. They are put inside a `menu` directory inside the game directory.
+Games can provide custom main menu images. They are put inside a `menu` directory
+inside the game directory.
 
-The images are named `$identifier.png`, where `$identifier` is one of `overlay,background,footer,header`.
-If you want to specify multiple images for one identifier, add additional images named like `$identifier.$n.png`, with an ascending number $n starting with 1,
-and a random image will be chosen from the provided ones.
+The images are named `$identifier.png`, where `$identifier` is
+one of `overlay,background,footer,header`.
+If you want to specify multiple images for one identifier, add additional images named
+like `$identifier.$n.png`, with an ascending number $n starting with 1, and a random
+image will be chosen from the provided ones.
 
 
 Mod load path
@@ -153,7 +157,8 @@ to a single modname. Their meaning is that if the specified mod
 is missing, that does not prevent this mod from being loaded.
 
 ### `screenshot.png`
-A screenshot shown in modmanager within mainmenu.
+A screenshot shown in the mod manager within the main menu. It should
+have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
 ### `description.txt`
 A File containing description to be shown within mainmenu.
@@ -203,10 +208,16 @@ when registering it.
 The `:` prefix can also be used for maintaining backwards compatibility.
 
 ### Aliases
-Aliases can be added by using `minetest.register_alias(name, convert_to)`.
+Aliases can be added by using `minetest.register_alias(name, convert_to)` or
+`minetest.register_alias_force(name, convert_to).
 
 This will make Minetest to convert things called name to things called
 `convert_to`.
+
+The only difference between `minetest.register_alias` and
+`minetest.register_alias_force` is that if an item called `name` exists,
+`minetest.register_alias` will do nothing while
+`minetest.register_alias_force` will unregister it.
 
 This can be used for maintaining backwards compatibility.
 
@@ -243,7 +254,8 @@ Example:
     default_dirt.png^default_grass_side.png
 
 `default_grass_side.png` is overlayed over `default_dirt.png`.
-The texture with the lower resolution will be automatically upscaled to the higher resolution texture.
+The texture with the lower resolution will be automatically upscaled to
+the higher resolution texture.
 
 ### Texture grouping
 Textures can be grouped together by enclosing them in `(` and `)`.
@@ -251,7 +263,17 @@ Textures can be grouped together by enclosing them in `(` and `)`.
 Example: `cobble.png^(thing1.png^thing2.png)`
 
 A texture for `thing1.png^thing2.png` is created and the resulting
-texture is overlaid over `cobble.png`.
+texture is overlaid on top of `cobble.png`.
+
+### Escaping
+Modifiers that accept texture names (e.g. `[combine`) accept escaping to allow
+passing complex texture names as arguments. Escaping is done with backslash and
+is required for `^` and `:`.
+
+Example: `cobble.png^[lowpart:50:color.png\^[mask\:trans.png`
+
+The lower 50 percent of `color.png^[mask:trans.png` are overlaid
+on top of `cobble.png`.
 
 ### Advanced texture modifiers
 
@@ -285,6 +307,25 @@ Resizes the texture to the given dimensions.
 Example:
 
     default_sandstone.png^[resize:16x16
+
+#### `[opacity:<r>`
+    Makes the base image transparent according to the given ratio.
+    r must be between 0 and 255.
+    0 means totally transparent.
+    255 means totally opaque.
+
+Example:
+
+    default_sandstone.png^[opacity:127
+
+#### `[invert:<mode>`
+Inverts the given channels of the base image.
+Mode may contain the characters "r", "g", "b", "a".
+Only the channels that are mentioned in the mode string will be inverted.
+
+Example:
+
+	default_apple.png^[invert:rgb
 
 #### `[brighten`
 Brightens the texture.
@@ -329,7 +370,7 @@ Example:
     default_stone.png^[transformFXR90
 
 #### `[inventorycube{<top>{<left>{<right>`
-`^` is replaced by `&` in texture names.
+Escaping does not apply here and `^` is replaced by `&` in texture names instead.
 
 Create an inventory cube texture using the side textures.
 
@@ -400,18 +441,24 @@ from the available ones of the following files:
 
 Examples of sound parameter tables:
 
-    -- Play location-less on all clients
+    -- Play locationless on all clients
     {
         gain = 1.0, -- default
     }
-    -- Play location-less to a player
+    -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
     }
+    -- Play locationless to one player, looped
+    {
+        to_player = name,
+        gain = 1.0, -- default
+        loop = true,
+    }
     -- Play in a location
     {
-        pos = {x=1,y=2,z=3},
+        pos = {x = 1, y = 2, z = 3},
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
     }
@@ -420,15 +467,18 @@ Examples of sound parameter tables:
         object = <an ObjectRef>,
         gain = 1.0, -- default
         max_hear_distance = 32, -- default, uses an euclidean metric
-        loop = true, -- only sounds connected to objects can be looped
+        loop = true,
     }
+
+Looped sounds must either be connected to an object or played locationless to
+one player using `to_player = name,`
 
 ### `SimpleSoundSpec`
 * e.g. `""`
 * e.g. `"default_place_node"`
 * e.g. `{}`
-* e.g. `{name="default_place_node"}`
-* e.g. `{name="default_place_node", gain=1.0}`
+* e.g. `{name = "default_place_node"}`
+* e.g. `{name = "default_place_node", gain = 1.0}`
 
 Registered definitions of stuff
 -------------------------------
@@ -447,6 +497,11 @@ the global `minetest.registered_*` tables.
 
 * `minetest.register_craftitem(name, item definition)`
     * added to `minetest.registered_items[name]`
+
+* `minetest.unregister_item(name)`
+    * Unregisters the item name from engine, and deletes the entry with key
+    * `name` from `minetest.registered_items` and from the associated item
+    * table according to its nature: minetest.registered_nodes[] etc
 
 * `minetest.register_biome(biome definition)`
     * returns an integer uniquely identifying the registered biome
@@ -468,8 +523,8 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_schematic` with the key of `schematic.name`
     * if `schematic.name` is nil, the key is the returned ID
     * if the schematic is loaded from a file, schematic.name is set to the filename
-    * if the function is called when loading the mod, and schematic.name is a relative path,
-    * then the current mod path will be prepended to the schematic filename
+    * if the function is called when loading the mod, and schematic.name is a relative
+      path, then the current mod path will be prepended to the schematic filename
 
 * `minetest.clear_registered_biomes()`
     * clears all biomes currently registered
@@ -562,6 +617,22 @@ node definition:
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
       get the actual rotation of the node.
+    paramtype2 == "meshoptions"
+    ^ Only valid for "plantlike". The value of param2 becomes a bitfield which can
+      be used to change how the client draws plantlike nodes. Bits 0, 1 and 2 form
+      a mesh selector. Currently the following meshes are choosable:
+        0 = a "x" shaped plant (ordinary plant)
+        1 = a "+" shaped plant (just rotated 45 degrees)
+        2 = a "*" shaped plant with 3 faces instead of 2
+        3 = a "#" shaped plant with 4 faces instead of 2
+        4 = a "#" shaped plant with 4 faces that lean outwards
+        5-7 are unused and reserved for future meshes.
+      Bits 3 through 7 are optional flags that can be combined and give these
+      effects:
+        bit 3 (0x08) - Makes the plant slightly vary placement horizontally
+        bit 4 (0x10) - Makes the plant mesh 1.4x larger
+        bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
+        bits 6-7 are reserved for future use.
     collision_box = {
       type = "fixed",
       fixed = {
@@ -1407,6 +1478,15 @@ examples.
 * `fixed_size`: `true`/`false` (optional)
 * deprecated: `invsize[<W>,<H>;]`
 
+#### `container[<X>,<Y>]`
+* Start of a container block, moves all physical elements in the container by (X, Y)
+* Must have matching container_end
+* Containers can be nested, in which case the offsets are added
+  (child containers are relative to parent containers)
+
+#### `container_end[]`
+* End of a container, following elements are no longer relative to this container
+
 #### `list[<inventory location>;<list name>;<X>,<Y>;<W>,<H>;]`
 * Show an inventory list
 
@@ -1416,13 +1496,13 @@ examples.
 #### `listring[<inventory location>;<list name>]`
 * Allows to create a ring of inventory lists
 * Shift-clicking on items in one element of the ring
-* will send them to the next inventory list inside the ring
+  will send them to the next inventory list inside the ring
 * The first occurrence of an element inside the ring will
-* determine the inventory where items will be sent to
+  determine the inventory where items will be sent to
 
 #### `listring[]`
 * Shorthand for doing `listring[<inventory location>;<list name>]`
-* for the last two inventory lists added by list[...]
+  for the last two inventory lists added by list[...]
 
 #### `listcolors[<slot_bg_normal>;<slot_bg_hover>]`
 * Sets background color of slots as `ColorString`
@@ -1473,18 +1553,23 @@ examples.
 
 #### `pwdfield[<X>,<Y>;<W>,<H>;<name>;<label>]`
 * Textual password style field; will be sent to server when a button is clicked
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centred on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
+* See field_close_on_enter to stop enter closing the formspec
 
 #### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Textual field; will be sent to server when a button is clicked
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
-* fields are a set height, but will be vertically centred on `h`
+* Fields are a set height, but will be vertically centred on `h`
 * Position and size units are inventory slots
 * `name` is the name of the field as returned in fields to `on_receive_fields`
 * `label`, if not blank, will be text printed on the top left above the field
@@ -1492,15 +1577,24 @@ examples.
     * `default` may contain variable references such as `${text}'` which
       will fill the value from the metadata value `text`
     * **Note**: no extra text or more than a single variable is supported ATM.
+* See field_close_on_enter to stop enter closing the formspec
 
 #### `field[<name>;<label>;<default>]`
-* as above, but without position/size units
-* special field for creating simple forms, such as sign text input
-* must be used without a `size[]` element
-* a "Proceed" button will be added automatically
+* As above, but without position/size units
+* When enter is pressed in field, fields.key_enter_field will be sent with the name
+  of this field.
+* Special field for creating simple forms, such as sign text input
+* Must be used without a `size[]` element
+* A "Proceed" button will be added automatically
+* See field_close_on_enter to stop enter closing the formspec
+
+#### `field_close_on_enter[<name>;<close_on_enter>]`
+* <name> is the name of the field
+* if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
+* defaults to true when not specified (ie: no tag for a field)
 
 #### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
-* same as fields above, but with multi-line input
+* Same as fields above, but with multi-line input
 
 #### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field
@@ -1561,12 +1655,12 @@ examples.
 * `name` fieldname sent to server on doubleclick value is current selected element
 * `listelements` can be prepended by #RRGGBB (only) in hexadecimal format
      * if you want a listelement to start with "#" write "##"
-* index to be selected within textlist
+* Index to be selected within textlist
 * `true`/`false`: draw transparent background
-* see also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
+* See also `minetest.explode_textlist_event` (main menu: `engine.explode_textlist_event`)
 
 #### `tabheader[<X>,<Y>;<name>;<caption 1>,<caption 2>,...,<caption n>;<current_tab>;<transparent>;<draw_border>]`
-* show a tab**header** at specific position (ignores formsize)
+* Show a tab**header** at specific position (ignores formsize)
 * `x` and `y` position the itemlist relative to the top left of the menu
 * `name` fieldname data is transferred to Lua
 * `caption 1`...: name shown on top of tab
@@ -1575,54 +1669,53 @@ examples.
 * `draw_border` (optional): draw border
 
 #### `box[<X>,<Y>;<W>,<H>;<color>]`
-* simple colored semitransparent box
+* Simple colored semitransparent box
 * `x` and `y` position the box relative to the top left of the menu
 * `w` and `h` are the size of box
 * `color` is color specified as a `ColorString`
 
 #### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
-* show a dropdown field
+* Show a dropdown field
 * **Important note**: There are two different operation modes:
      1. handle directly on change (only changed dropdown is submitted)
      2. read the value on pressing a button (all dropdown values are available)
 * `x` and `y` position of dropdown
-* width of dropdown
-* fieldname data is transferred to Lua
-* items to be shown in dropdown
-* index of currently selected dropdown item
+* Width of dropdown
+* Fieldname data is transferred to Lua
+* Items to be shown in dropdown
+* Index of currently selected dropdown item
 
-#### `checkbox[<X>,<Y>;<name>;<label>;<selected>;<tooltip>]`
-* show a checkbox
+#### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
+* Show a checkbox
 * `x` and `y`: position of checkbox
 * `name` fieldname data is transferred to Lua
 * `label` to be shown left of checkbox
 * `selected` (optional): `true`/`false`
-* `tooltip` (optional)
 
 #### `scrollbar[<X>,<Y>;<W>,<H>;<orientation>;<name>;<value>]`
-* show a scrollbar
-* there are two ways to use it:
+* Show a scrollbar
+* There are two ways to use it:
      1. handle the changed event (only changed scrollbar is available)
      2. read the value on pressing a button (all scrollbars are available)
 * `x` and `y`: position of trackbar
 * `w` and `h`: width and height
 * `orientation`:  `vertical`/`horizontal`
-* fieldname data is transferred to Lua
-* value this trackbar is set to (`0`-`1000`)
-* see also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
+* Fieldname data is transferred to Lua
+* Value this trackbar is set to (`0`-`1000`)
+* See also `minetest.explode_scrollbar_event` (main menu: `engine.explode_scrollbar_event`)
 
 #### `table[<X>,<Y>;<W>,<H>;<name>;<cell 1>,<cell 2>,...,<cell n>;<selected idx>]`
-* show scrollable table using options defined by the previous `tableoptions[]`
-* displays cells as defined by the previous `tablecolumns[]`
+* Show scrollable table using options defined by the previous `tableoptions[]`
+* Displays cells as defined by the previous `tablecolumns[]`
 * `x` and `y`: position the itemlist relative to the top left of the menu
 * `w` and `h` are the size of the itemlist
 * `name`: fieldname sent to server on row select or doubleclick
 * `cell 1`...`cell n`: cell contents given in row-major order
 * `selected idx`: index of row to be selected within table (first row = `1`)
-* see also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
+* See also `minetest.explode_table_event` (main menu: `engine.explode_table_event`)
 
 #### `tableoptions[<opt 1>;<opt 2>;...]`
-* sets options for `table[]`
+* Sets options for `table[]`
 * `color=#RRGGBB`
      * default text color (`ColorString`), defaults to `#FFFFFF`
 * `background=#RRGGBB`
@@ -1638,14 +1731,14 @@ examples.
      * only useful when there is a column of type "tree"
 
 #### `tablecolumns[<type 1>,<opt 1a>,<opt 1b>,...;<type 2>,<opt 2a>,<opt 2b>;...]`
-* sets columns for `table[]`
-* types: `text`, `image`, `color`, `indent`, `tree`
+* Sets columns for `table[]`
+* Types: `text`, `image`, `color`, `indent`, `tree`
     * `text`:   show cell contents as text
     * `image`:  cell contents are an image index, use column options to define images
     * `color`:   cell contents are a ColorString and define color of following cell
     * `indent`: cell contents are a number and define indentation of following cell
     * `tree`:   same as indent, but user can open and close subtrees (treeview-like)
-* column options:
+* Column options:
     * `align=<value>`
         * for `text` and `image`: content alignment within cells.
           Available values: `left` (default), `center`, `right`, `inline`
@@ -1675,6 +1768,13 @@ Inventory locations
 * `"nodemeta:<X>,<Y>,<Z>"`: Any node metadata
 * `"detached:<name>"`: A detached inventory
 
+Player Inventory lists
+----------------------
+* `main`: list containing the default inventory
+* `craft`: list containing the craft input
+* `craftpreview`: list containing the craft output
+* `hand`: list containing an override for the empty hand
+
 `ColorString`
 -------------
 `#RGB` defines a color in hexadecimal format.
@@ -1701,6 +1801,24 @@ numerical form, the raw integer value of an ARGB8 quad:
 or string form, a ColorString (defined above):
     `colorspec = "green"`
 
+Escape sequences
+----------------
+Most text can contain escape sequences, that can for example color the text.
+There are a few exceptions: tab headers, dropdowns and vertical labels can't.
+The following functions provide escape sequences:
+* `core.get_color_escape_sequence(color)`:
+    * `color` is a ColorString
+    * The escape sequence sets the text color to `color`
+* `core.colorize(color, message)`:
+    * Equivalent to:
+      `core.get_color_escape_sequence(color) ..
+       message ..
+       core.get_color_escape_sequence("#ffffff")`
+* `color.get_background_escape_sequence(color)`
+    * `color` is a ColorString
+    * The escape sequence sets the background of the whole text element to
+      `color`. Only defined for item descriptions and tooltips.
+
 Spatial Vectors
 ---------------
 * `vector.new(a[, b, c])`: returns a vector:
@@ -1710,7 +1828,8 @@ Spatial Vectors
 * `vector.distance(p1, p2)`: returns a number
 * `vector.length(v)`: returns a number
 * `vector.normalize(v)`: returns a vector
-* `vector.round(v)`: returns a vector, each dimension rounded to floor
+* `vector.floor(v)`: returns a vector, each dimension rounded down
+* `vector.round(v)`: returns a vector, each dimension rounded to nearest int
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
 
@@ -1805,6 +1924,17 @@ Helper functions
       * nil: return all entries,
       * true: return only subdirectory names, or
       * false: return only file names.
+* `minetest.get_version()`: returns a table containing components of the
+   engine version.  Components:
+    * `project`: Name of the project, eg, "Minetest"
+    * `string`: Simple version, eg, "1.2.3-dev"
+    * `hash`: Full git version (only set if available), eg, "1.2.3-dev-01234567-dirty"
+  Use this for informational purposes only. The information in the returned
+  table does not represent the capabilities of the engine, nor is it
+  reliable or verifyable. Compatible forks will have a different name and
+  version entirely. To check for the presence of engine features, test
+  whether the functions exported by the wanted features exist. For example:
+  `if core.nodeupdate then ... end`.
 
 ### Logging
 * `minetest.debug(...)`
@@ -1822,16 +1952,27 @@ Call these functions only at load time!
 * `minetest.register_node(name, node definition)`
 * `minetest.register_tool(name, item definition)`
 * `minetest.register_craftitem(name, item definition)`
+* `minetest.unregister_item(name)`
 * `minetest.register_alias(name, convert_to)`
+* `minetest.register_alias_force(name, convert_to)`
 * `minetest.register_craft(recipe)`
+    * Check recipe table syntax for different types below.
+* `minetest.clear_craft(recipe)`
+    * Will erase existing craft based either on output item or on input recipe.
+    * Specify either output or input only. If you specify both, input will be ignored. For input use the same recipe table
+      syntax as for `minetest.register_craft(recipe)`. For output specify only the item, without a quantity.
+    * If no erase candidate could be found, Lua exception will be thrown.
+    * Warning! The type field ("shaped","cooking" or any other) will be ignored if the recipe
+      contains output. Erasing is then done independently from the crafting method.
 * `minetest.register_ore(ore definition)`
+* `minetest.register_biome(biome definition)`
 * `minetest.register_decoration(decoration definition)`
 * `minetest.override_item(name, redefinition)`
     * Overrides fields of an item registered with register_node/tool/craftitem.
     * Note: Item must already be defined, (opt)depend on the mod defining it.
     * Example: `minetest.override_item("default:mese", {light_source=LIGHT_MAX})`
-
 * `minetest.clear_registered_ores()`
+* `minetest.clear_registered_biomes()`
 * `minetest.clear_registered_decorations()`
 
 ### Global callback registration functions
@@ -1889,8 +2030,9 @@ Call these functions only at load time!
      * If it returns a string, the player is disconnected with that string as reason
 * `minetest.register_on_joinplayer(func(ObjectRef))`
     * Called when a player joins the game
-* `minetest.register_on_leaveplayer(func(ObjectRef))`
+* `minetest.register_on_leaveplayer(func(ObjectRef, timed_out))`
     * Called when a player leaves the game
+    * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
@@ -1930,7 +2072,8 @@ Call these functions only at load time!
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
-    * `definition`: `{ description = "description text", give_to_singleplayer = boolean, -- default: true }`
+    * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
+      the default of `give_to_singleplayer` is true
     * To allow players with basic_privs to grant, see basic_privs minetest.conf setting.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
@@ -1951,12 +2094,21 @@ Call these functions only at load time!
 * `minetest.notify_authentication_modified(name)`
     * Should be called by the authentication handler if privileges changes.
     * To report everybody, set `name=nil`.
+* `minetest.check_password_entry(name, entry, password)`
+    * Returns true if the "db entry" for a player with name matches given
+    * password, false otherwise.
+    * The "db entry" is the usually player-individual value that is derived
+    * from the player's chosen password and stored on the server in order to allow
+    * authentication whenever the player desires to log in.
+    * Only use this function for making it possible to log in via the password from
+    * via protocols like IRC, other uses for inside the game are frowned upon.
 * `minetest.get_password_hash(name, raw_password)`
     * Convert a name-password pair to a password hash that Minetest can use.
     * The returned value alone is not a good basis for password checks based
     * on comparing the password hash in the database with the password hash
     * from the function, with an externally provided password, as the hash
     * in the db might use the new SRP verifier format.
+    * For this purpose, use minetest.check_password_entry instead.
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
@@ -1982,7 +2134,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.set_node(pos, node)`
 * `minetest.add_node(pos, node): alias set_node(pos, node)`
     * Set node at position (`node = {name="foo", param1=0, param2=0}`)
-* `minetest.swap_node(pos, node`
+* `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
     * Equivalent to `set_node(pos, "air")`
@@ -2055,7 +2207,9 @@ and `minetest.auth_reload` call the authetification handler.
       given biome_name string.
 * `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
   `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
+  * Deprecated: use minetest.get_mapgen_setting(name) instead
 * `minetest.set_mapgen_params(MapgenParams)`
+    * Deprecated: use minetest.set_mapgen_setting(name, value, override) instead
     * Set map generation parameters
     * Function cannot be called after the registration period; only initialization
       and `on_mapgen_init`
@@ -2065,6 +2219,24 @@ and `minetest.auth_reload` call the authetification handler.
         * `flags` contains a comma-delimited string of flags to set,
           or if the prefix `"no"` is attached, clears instead.
         * `flags` is in the same format and has the same options as `mg_flags` in `minetest.conf`
+* `minetest.get_mapgen_setting(name)`
+    * Gets the *active* mapgen setting (or nil if none exists) in string format with the following
+      order of precedence:
+        1) Settings loaded from map_meta.txt or overrides set during mod execution
+        2) Settings set by mods without a metafile override
+        3) Settings explicitly set in the user config file, minetest.conf
+        4) Settings set as the user config default
+* `minetest.get_mapgen_setting_noiseparams(name)`
+    * Same as above, but returns the value as a NoiseParams table if the setting `name` exists
+      and is a valid NoiseParams
+* `minetest.set_mapgen_setting(name, value, [override_meta])`
+   * Sets a mapgen param to `value`, and will take effect if the corresponding mapgen setting
+     is not already present in map_meta.txt.
+   * `override_meta` is an optional boolean (default: `false`). If this is set to true,
+     the setting will become the active setting regardless of the map metafile contents.
+   * Note: to set the seed, use "seed", not "fixed_map_seed"
+* `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
+   * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
     * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
@@ -2130,6 +2302,15 @@ and `minetest.auth_reload` call the authetification handler.
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * can be negative for decreasing
+* `core.check_single_for_falling(pos)`
+    * causes an unsupported `group:falling_node` node to fall and causes an
+      unattached `group:attached_node` node to fall.
+    * does not spread these updates to neighbours.
+* `core.check_for_falling(pos)`
+    * causes an unsupported `group:falling_node` node to fall and causes an
+      unattached `group:attached_node` node to fall.
+    * spread these updates to neighbours and can cause a cascade
+      of nodes to fall.
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`
@@ -2138,8 +2319,11 @@ and `minetest.auth_reload` call the authetification handler.
     * `{type="player", name="celeron55"}`
     * `{type="node", pos={x=, y=, z=}}`
     * `{type="detached", name="creative"}`
-* `minetest.create_detached_inventory(name, callbacks)`: returns an `InvRef`
+* `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns an `InvRef`
     * callbacks: See "Detached inventory callbacks"
+    * player_name: Make detached inventory available to one player exclusively,
+      by default they will be sent to every player (even if not used).
+      Note that this parameter is mostly just a workaround and will be removed in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
 * `minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)`:
    returns left over ItemStack
@@ -2151,6 +2335,13 @@ and `minetest.auth_reload` call the authetification handler.
     * `formname`: name passed to `on_player_receive_fields` callbacks.
       It should follow the `"modname:<whatever>"` naming convention
     * `formspec`: formspec to display
+* `minetest.close_formspec(playername, formname)`
+    * `playername`: name of player to close formspec
+    * `formname`: has to exactly match the one given in show_formspec, or the formspec will
+       not close.
+    * calling show_formspec(playername, formname, "") is equal to this expression
+    * to close a formspec regardless of the formname, call
+      minetest.close_formspec(playername, ""). USE THIS ONLY WHEN ABSOLUTELY NECESSARY!
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
 * `minetest.explode_table_event(string)`: returns a table
@@ -2287,6 +2478,7 @@ These functions return the leftover itemstack.
 * `minetest.request_shutdown([message],[reconnect])`: request for server shutdown. Will display `message` to clients,
     and `reconnect` == true displays a reconnect button.
 * `minetest.get_server_status()`: returns server status string
+* `minetest.get_server_uptime()`: returns the server uptime in seconds
 
 ### Bans
 * `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)
@@ -2378,12 +2570,16 @@ These functions return the leftover itemstack.
     * callback: `function(HTTPRequestResult res)`
     * Use this HTTP function if you are unsure, the others are for advanced use.
 * `HTTPApiTable.fetch_async(HTTPRequest req)`: returns handle
-    * Performs given request asynchronously and returns handle for `minetest.http_fetch_async_get`
+    * Performs given request asynchronously and returns handle for `HTTPApiTable.fetch_async_get`
 * `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
     * Return response data for given asynchronous HTTP request
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
+* `minetest.hud_replace_builtin(name, hud_definition)`
+    * Replaces definition of a builtin hud element
+    * `name`: `"breath"` or `"health"`
+    * `hud_definition`: definition to replace builtin definition
 * `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
     * Gives a unique hash number for a node position (16+16+16=48bit)
 * `minetest.get_position_from_hash(hash)`: returns a position
@@ -2438,6 +2634,10 @@ These functions return the leftover itemstack.
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.encode_base64(string)`: returns string encoded in base64
+    * Encodes a string in base64.
+* `minetest.decode_base64(string)`: returns string
+    * Decodes a string encoded in base64.
 * `minetest.is_protected(pos, name)`: returns boolean
     * Returns true, if player `name` shouldn't be abled to dig at `pos` or do other
       actions, defineable by mods, due to some mod-defined ownership-like concept.
@@ -2478,13 +2678,17 @@ These functions return the leftover itemstack.
        the creative mode setting, and checks for "sneak" to set the `invert_wall`
        parameter.
 
-* `minetest.forceload_block(pos)`
+* `minetest.forceload_block(pos[, transient])`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
-    * Please note that forceloaded areas are saved when the server restarts.
+    * If `transient` is `false` or absent, the forceload will be persistent
+      (saved between server runs). If `true`, the forceload will be transient
+      (not saved between server runs).
 
-* `minetest.forceload_free_block(pos)`
+* `minetest.forceload_free_block(pos[, transient])`
     * stops forceloading the position `pos`
+    * If `transient` is `false` or absent, frees a persistent forceload.
+      If `true`, frees a transient forceload.
 
 * `minetest.request_insecure_environment()`: returns an environment containing
   insecure functions if the calling mod has been listed as trusted in the
@@ -2542,6 +2746,7 @@ Can be gotten via `minetest.get_meta(pos)`.
 * `get_inventory()`: returns `InvRef`
 * `to_table()`: returns `nil` or `{fields = {...}, inventory = {list1 = {}, ...}}`
 * `from_table(nil or {})`
+    * to clear metadata, use from_table(nil)
     * See "Node Metadata"
 
 ### `NodeTimerRef`
@@ -2638,12 +2843,23 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ##### Player-only (no-op for other objects)
 * `get_player_name()`: returns `""` if is not a player
-* `get_player_velocity()`: returns `nil` if is not a player otherwise a table {x, y, z} representing the player's instantaneous velocity in nodes/s
+* `get_player_velocity()`: returns `nil` if is not a player, otherwise a
+  table {x, y, z} representing the player's instantaneous velocity in nodes/s
 * `get_look_dir()`: get camera direction as a unit vector
-* `get_look_pitch()`: pitch in radians
-* `get_look_yaw()`: yaw in radians (wraps around pretty randomly as of now)
-* `set_look_pitch(radians)`: sets look pitch
-* `set_look_yaw(radians)`: sets look yaw
+* `get_look_vertical()`: pitch in radians
+     * Angle ranges between -pi/2 and pi/2, which are straight up and down respectively.
+* `get_look_horizontal()`: yaw in radians
+     * Angle is counter-clockwise from the +z direction.
+* `set_look_vertical(radians)`: sets look pitch
+     * radians - Angle from looking forward, where positive is downwards.
+* `set_look_horizontal(radians)`: sets look yaw
+     * radians - Angle from the +z direction, where positive is counter-clockwise.
+* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use get_look_vertical.
+     * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
+* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use get_look_horizontal.
+     * Angle is counter-clockwise from the +x direction.
+* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use set_look_vertical.
+* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use set_look_horizontal.
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
      * values:
@@ -2689,10 +2905,6 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `hud_replace_builtin(name, hud_definition)`
-    * replace definition of a builtin hud element
-    * `name`: `"breath"` or `"health"`
-    * `hud_definition`: definition to replace builtin definition
 * `set_sky(bgcolor, type, {texture names})`
     * `bgcolor`: ColorSpec, defaults to white
     * Available types:
@@ -2752,25 +2964,41 @@ An `InvRef` is a reference to an inventory.
 A fast access data structure to store areas, and find areas near a given position or area.
 Every area has a `data` string attribute to store additional information.
 You can create an empty `AreaStore` by calling `AreaStore()`, or `AreaStore(type_name)`.
-If you chose the parameter-less constructor, a fast implementation will be automatically chosen for you.
+If you chose the parameter-less constructor, a fast implementation will be automatically
+chosen for you.
 
 #### Methods
-* `get_area(id, include_borders, include_data)`: returns the area with the id `id`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain the position `pos`. (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`: returns all areas that contain all nodes inside the area specified by `edge1` and `edge2` (inclusive). If `accept_overlap` is true, also areas are returned that have nodes in common with the specified area. (optional) Boolean values `include_borders` and `include_data` control what's copied.
-* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store. Returns the new area's ID, or nil if the insertion failed. The (inclusive) positions `edge1` and `edge2` describe the area. `data` is a string stored with the area.  If passed, `id` will be used as the internal area ID, it must be a unique number between 0 and 2^32-2. If you use the `id` parameter you must always use it, or insertions are likely to fail due to conflicts.
-* `reserve(count)`: reserves resources for at most `count` many contained areas. Only needed for efficiency, and only some implementations profit.
+* `get_area(id, include_borders, include_data)`: returns the area with the id `id`.
+  (optional) Boolean values `include_borders` and `include_data` control what's copied.
+  Returns nil if specified area id does not exist.
+* `get_areas_for_pos(pos, include_borders, include_data)`: returns all areas that contain
+  the position `pos`. (optional) Boolean values `include_borders` and `include_data` control
+  what's copied.
+* `get_areas_in_area(edge1, edge2, accept_overlap, include_borders, include_data)`:
+  returns all areas that contain all nodes inside the area specified by `edge1` and `edge2` (inclusive).
+  If `accept_overlap` is true, also areas are returned that have nodes in common with the specified area.
+  (optional) Boolean values `include_borders` and `include_data` control what's copied.
+* `insert_area(edge1, edge2, data, [id])`: inserts an area into the store. Returns the new area's ID,
+  or nil if the insertion failed. The (inclusive) positions `edge1` and `edge2` describe the area.
+  `data` is a string stored with the area.  If passed, `id` will be used as the internal area ID,
+  it must be a unique number between 0 and 2^32-2. If you use the `id` parameter you must always use it,
+  or insertions are likely to fail due to conflicts.
+* `reserve(count)`: reserves resources for at most `count` many contained areas.
+  Only needed for efficiency, and only some implementations profit.
 * `remove_area(id)`: removes the area with the given id from the store, returns success.
-* `set_cache_params(params)`: sets params for the included prefiltering cache. Calling invalidates the cache, so that its elements have to be newly generated.
+* `set_cache_params(params)`: sets params for the included prefiltering cache.
+  Calling invalidates the cache, so that its elements have to be newly generated.
     * `params`:
       {
         enabled = boolean, -- whether to enable, default true
-        block_radius = number, -- the radius (in nodes) of the areas the cache generates prefiltered lists for, minimum 16, default 64
+        block_radius = number, -- the radius (in nodes) of the areas the cache generates
+                                  prefiltered lists for, minimum 16, default 64
         limit = number, -- the cache's size, minimum 20, default 1000
       }
 * `to_string()`: Experimental. Returns area store serialized as a (binary) string.
 * `to_file(filename)`: Experimental. Like `to_string()`, but writes the data to a file.
-* `from_string(str)`: Experimental. Deserializes string and loads it into the AreaStore.  Returns success and, optionally, an error message.
+* `from_string(str)`: Experimental. Deserializes string and loads it into the AreaStore.
+  Returns success and, optionally, an error message.
 * `from_file(filename)`: Experimental. Like `from_string()`, but reads the data from a file.
 
 ### `ItemStack`
@@ -2782,13 +3010,11 @@ an itemstring, a table or `nil`.
 #### Methods
 * `is_empty()`: Returns `true` if stack is empty.
 * `get_name()`: Returns item name (e.g. `"default:stone"`).
-* `set_name(item_name)`: Returns boolean success.
-  Clears item on failure.
+* `set_name(item_name)`: Returns boolean whether item was cleared
 * `get_count()`: Returns number of items on the stack.
-* `set_count(count)`
+* `set_count(count)`: Returns boolean whether item was cleared
 * `get_wear()`: Returns tool wear (`0`-`65535`), `0` for non-tools.
-* `set_wear(wear)`: Returns boolean success.
-  Clears item on failure.
+* `set_wear(wear)`: Returns boolean whether item was cleared
 * `get_metadata()`: Returns metadata (a string attached to an item stack).
 * `set_metadata(metadata)`: Returns true.
 * `clear()`: removes all items from the stack, making it empty.
@@ -2834,7 +3060,9 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 * `next()`: return next integer random number [`-2147483648`...`2147483647`]
 * `next(min, max)`: return next integer random number [`min`...`max`]
 * `rand_normal_dist(min, max, num_trials=6)`: return normally distributed random number [`min`...`max`]
-    * This is only a rough approximation of a normal distribution with mean=(max-min)/2 and variance=1
+    * This is only a rough approximation of a normal distribution with:
+    *   mean = (max - min) / 2, and
+    *   variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)
     * Increasing num_trials improves accuracy of the approximation
 
 ### `SecureRandom`
@@ -3077,7 +3305,9 @@ will place the schematic inside of the VoxelManip.
 * `set_light_data(light_data)`: Sets the `param1` (light) contents of each node
   in the `VoxelManip`
     * expects lighting data in the same format that `get_light_data()` returns
-* `get_param2_data()`: Gets the raw `param2` data read into the `VoxelManip` object
+* `get_param2_data([buffer])`: Gets the raw `param2` data read into the `VoxelManip` object
+    * Returns an array (indices 1 to volume) of integers ranging from `0` to `255`
+    * If the param `buffer` is present, this table will be used to store the result instead
 * `set_param2_data(param2_data)`: Sets the `param2` contents of each node in the `VoxelManip`
 * `calc_lighting([p1, p2], [propagate_shadow])`:  Calculate lighting within the `VoxelManip`
     * To be used only by a `VoxelManip` object from `minetest.get_mapgen_object`
@@ -3183,13 +3413,15 @@ Registered entities
     * It has the member `.object`, which is an `ObjectRef` pointing to the object
     * The original prototype stuff is visible directly via a metatable
 * Callbacks:
-    * `on_activate(self, staticdata)`
+    * `on_activate(self, staticdata, dtime_s)`
         * Called when the object is instantiated.
+        * `dtime_s` is the time passed since the object was unloaded, which can
+          be used for updating the entity state.
     * `on_step(self, dtime)`
         * Called on every server tick, after movement and collision processing.
           `dtime` is usually 0.1 seconds, as per the `dedicated_server_step` setting
           `in minetest.conf`.
-    * `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir`
+    * `on_punch(self, puncher, time_from_last_punch, tool_capabilities, dir)`
         * Called when somebody punches the object.
         * Note that you probably want to handle most punches using the
           automatic armor group system.
@@ -3317,19 +3549,23 @@ Definition tables
 
         on_activate = function(self, staticdata, dtime_s),
         on_step = function(self, dtime),
-        on_punch = function(self, hitter),
+        on_punch = function(self, puncher, time_from_last_punch, tool_capabilities, dir),
         on_rightclick = function(self, clicker),
         get_staticdata = function(self),
     --  ^ Called sometimes; the string returned is passed to on_activate when
     --    the entity is re-activated from static state
 
-        -- Also you can define arbitrary member variables here
-        myvariable = whatever,
+        -- Also you can define arbitrary member variables here (see item definition for
+        -- more info)
+        _custom_field = whatever,
     }
 
 ### ABM (ActiveBlockModifier) definition (`register_abm`)
 
     {
+        label = "Lava cooling",
+    --  ^ Descriptive label for profiling purposes (optional).
+    --    Definitions with identical labels will be listed as one.
     --  In the following two fields, also group:groupname will work.
         nodenames = {"default:lava_source"},
         neighbors = {"default:water_source", "default:water_flowing"}, -- Any of these --[[
@@ -3346,6 +3582,9 @@ Definition tables
 ### LBM (LoadingBlockModifier) definition (`register_lbm`)
 
     {
+        label = "Upgrade legacy doors",
+    --  ^ Descriptive label for profiling purposes (optional).
+    --    Definitions with identical labels will be listed as one.
         name = "modname:replace_legacy_door",
         nodenames = {"default:lava_source"},
     --  ^ List of node names to trigger the LBM on.
@@ -3362,27 +3601,26 @@ Definition tables
 
     {
         description = "Steel Axe",
-        groups = {}, -- key=name, value=rating; rating=1..3.
+        groups = {}, -- key = name, value = rating; rating = 1..3.
                         if rating not applicable, use 1.
-                        e.g. {wool=1, fluffy=3}
-                            {soil=2, outerspace=1, crumbly=1}
-                            {bendy=2, snappy=1},
-                            {hard=1, metal=1, spikes=1}
+                        e.g. {wool = 1, fluffy = 3}
+                            {soil = 2, outerspace = 1, crumbly = 1}
+                            {bendy = 2, snappy = 1},
+                            {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
         wield_image = "",
-        wield_scale = {x=1,y=1,z=1},
+        wield_scale = {x = 1, y = 1, z = 1},
         stack_max = 99,
         range = 4.0,
         liquids_pointable = false,
         tool_capabilities = {
             full_punch_interval = 1.0,
-            max_drop_level=0,
-            groupcaps={
+            max_drop_level = 0,
+            groupcaps = {
                 -- For example:
-                snappy={times={[2]=0.80, [3]=0.40}, maxwear=0.05, maxlevel=1},
-                choppy={times={[3]=0.90}, maxwear=0.05, maxlevel=0}
+                choppy = {times = {[1] = 2.50, [2] = 1.40, [3] = 1.00}, uses = 20, maxlevel = 2},
             },
-            damage_groups = {groupname=damage},
+            damage_groups = {groupname = damage},
         },
         node_placement_prediction = nil,
         --[[
@@ -3394,21 +3632,25 @@ Definition tables
           actual result to client in a short moment.
         ]]
         sound = {
+            breaks = "default_tool_break", -- tools only
             place = --[[<SimpleSoundSpec>]],
         },
 
         on_place = func(itemstack, placer, pointed_thing),
         --[[
         ^ Shall place item and return the leftover itemstack
+        ^ The placer may be any ObjectRef or nil.
         ^ default: minetest.item_place ]]
         on_secondary_use = func(itemstack, user, pointed_thing),
         --[[
         ^ Same as on_place but called when pointing at nothing.
+        ^ The user may be any ObjectRef or nil.
         ^ pointed_thing : always { type = "nothing" }
         ]]
         on_drop = func(itemstack, dropper, pos),
         --[[
         ^ Shall drop item and return the leftover itemstack
+        ^ The dropper may be any ObjectRef or nil.
         ^ default: minetest.item_drop ]]
         on_use = func(itemstack, user, pointed_thing),
         --[[
@@ -3417,6 +3659,7 @@ Definition tables
           inventory, or an itemstack to replace the original itemstack.
             e.g. itemstack:take_item(); return itemstack
         ^ Otherwise, the function is free to do what it wants.
+        ^ The user may be any ObjectRef or nil.
         ^ The default functions handle regular use cases.
         ]]
         after_use = func(itemstack, user, node, digparams),
@@ -3429,6 +3672,13 @@ Definition tables
               itemstack:add_wear(digparams.wear)
               return itemstack
             end
+        ^ The user may be any ObjectRef or nil.
+        ]]
+        _custom_field = whatever,
+        --[[
+        ^ Add your own custom fields. By convention, all custom field names
+          should start with `_` to avoid naming collisions with future engine
+          usage.
         ]]
     }
 
@@ -3472,6 +3722,7 @@ Definition tables
         ^ paramtype = "light" allows light to propagate from or through the node with light value
         ^ falling by 1 per node. This line is essential for a light source node to spread its light. ]]
         paramtype2 = "none", -- See "Nodes"
+        place_param2 = nil, -- Force value for param2 when player places node
         is_ground_content = true, -- If false, the cave generator will not carve through this
         sunlight_propagates = false, -- If true, sunlight will go infinitely through this
         walkable = true, -- If true, objects collide with node
@@ -3484,13 +3735,17 @@ Definition tables
         liquid_alternative_flowing = "", -- Flowing version of source liquid
         liquid_alternative_source = "", -- Source version of flowing liquid
         liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
-        liquid_renewable = true, -- Can new liquid source be created by placing two or more sources nearby?
+        liquid_renewable = true, --[[
+        ^ If true, a new liquid source can be created by placing two or more sources nearby ]]
         leveled = 0, --[[
         ^ Block contains level in param2. Value is default level, used for snow.
         ^ Don't forget to use "leveled" type nodebox. ]]
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
         drowning = 0, -- Player will take this amount of damage if no bubbles are left
-        light_source = 0, -- Amount of light emitted by node
+        light_source = 0, --[[
+        ^ Amount of light emitted by node.
+        ^ To set the maximum (currently 14), use the value 'minetest.LIGHT_MAX'.
+        ^ A value outside the range 0 to minetest.LIGHT_MAX causes undefined behavior.]]
         damage_per_second = 0, -- If player is inside node, this damage is caused
         node_box = {type="regular"}, -- See "Node boxes"
         connects_to = nodenames, --[[
@@ -3517,8 +3772,8 @@ Definition tables
             max_items = 1,  -- Maximum number of items to drop.
             items = { -- Choose max_items randomly from this list.
                 {
-                    items = {"foo:bar", "baz:frob"},  -- Choose one item randomly from this list.
-                    rarity = 1,  -- Probability of getting is 1 / rarity.
+                    items = {"foo:bar", "baz:frob"},  -- Items to drop.
+                    rarity = 1,  -- Probability of dropping is 1 / rarity.
                 },
             },
         },
@@ -3690,6 +3945,9 @@ Definition tables
 
 ### Biome definition (`register_biome`)
 
+**Note**
+The Biome API is still in an experimental phase and subject to change.
+
     {
         name = "tundra",
         node_dust = "default:snow",
@@ -3709,6 +3967,9 @@ Definition tables
     --  ^ Node that replaces all seawater nodes not in the defined surface layer.
         node_river_water = "default:ice",
     --  ^ Node that replaces river water in mapgens that use default:river_water.
+        node_riverbed = "default:gravel",
+        depth_riverbed = 2,
+    --  ^ Node placed under river water and thickness of this layer.
         y_min = 1,
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
@@ -3738,7 +3999,7 @@ Definition tables
     {
         deco_type = "simple", -- See "Decoration types"
         place_on = "default:dirt_with_grass",
-    --  ^ Node that decoration can be placed on
+    --  ^ Node (or list of nodes) that the decoration can be placed on
         sidelen = 8,
     --  ^ Size of divisions made in the chunk being generated.
     --  ^ If the chunk size is not evenly divisible by sidelen, sidelen is made equal to the chunk size.
@@ -3757,6 +4018,13 @@ Definition tables
     -- ^ Minimum and maximum `y` positions these decorations can be generated at.
     -- ^ This parameter refers to the `y` position of the decoration base, so
     --   the actual maximum height would be `height_max + size.Y`.
+        spawn_by = "default:water",
+    --  ^ Node (or list of nodes) that the decoration only spawns next to.
+    --  ^ Checks two horizontal planes of neighbouring nodes (including diagonal neighbours),
+    --  ^ one plane at Y = surface and one plane at Y = surface = + 1.
+        num_spawn_by = 1,
+    --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
+    --  ^ If absent or -1, decorations occur next to any nodes.
         flags = "liquid_surface, force_placement",
     --  ^ Flags for all decoration types.
     --  ^ "liquid_surface": Instead of placement on the highest solid surface
@@ -3772,15 +4040,10 @@ Definition tables
     --  ^ Number of nodes high the decoration is made.
     --  ^ If height_max is not 0, this is the lower bound of the randomly selected height.
         height_max = 0,
-    --      ^ Number of nodes the decoration can be at maximum.
+    --  ^ Number of nodes the decoration can be at maximum.
     --  ^ If absent, the parameter 'height' is used as a constant.
-        spawn_by = "default:water",
-    --  ^ Node that the decoration only spawns next to.
-    --  ^ The neighbours checked are the 8 nodes horizontally surrounding the lowest node of the
-    --  ^ decoration, and the 8 nodes horizontally surrounding the ground node below the decoration.
-        num_spawn_by = 1,
-    --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
-    --  ^ If absent or -1, decorations occur next to any nodes.
+        param2 = 0,
+    --  ^ Param2 value of placed decoration node.
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",
@@ -3881,6 +4144,9 @@ Definition tables
         size = 1,
         collisiondetection = false,
     --  ^ collisiondetection: if true collides with physical objects
+        collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
@@ -3910,6 +4176,12 @@ Definition tables
     --  ^ minsize/maxsize, minexptime/maxexptime (expirationtime)
         collisiondetection = false,
     --  ^ collisiondetection: if true uses collision detection
+        collision_removal = false,
+    --  ^ collision_removal: if true then particle is removed when it collides,
+    --  ^ requires collisiondetection = true to have any effect
+        attached = ObjectRef,
+    --  ^ attached: if defined, particle positions, velocities and accelerations
+    --  ^ are relative to this object's position and yaw.
         vertical = false,
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
@@ -3918,7 +4190,7 @@ Definition tables
     --  ^ Playername is optional, if specified spawns particle only on the player's client
     }
 
-### `HTTPRequest` definition (`http_fetch`, `http_fetch_async`)
+### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)
 
     {
         url = "http://example.org",
@@ -3938,7 +4210,7 @@ Definition tables
      -- ^ Optional, if true performs a multipart HTTP request. Default is false.
     }
 
-### `HTTPRequestResult` definition (`http_fetch` callback, `http_fetch_async_get`)
+### `HTTPRequestResult` definition (`HTTPApiTable.fetch` callback, `HTTPApiTable.fetch_async_get`)
 
     {
         completed = true,

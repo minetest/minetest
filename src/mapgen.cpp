@@ -39,12 +39,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "filesys.h"
 #include "log.h"
+#include "mapgen_flat.h"
+#include "mapgen_fractal.h"
+#include "mapgen_v5.h"
+#include "mapgen_v6.h"
+#include "mapgen_v7.h"
+#include "mapgen_valleys.h"
+#include "mapgen_singlenode.h"
+#include "cavegen.h"
+#include "dungeongen.h"
 
 FlagDesc flagdesc_mapgen[] = {
-	{"trees",       MG_TREES},
 	{"caves",       MG_CAVES},
 	{"dungeons",    MG_DUNGEONS},
-	{"flat",        MG_FLAT},
 	{"light",       MG_LIGHT},
 	{"decorations", MG_DECORATIONS},
 	{NULL,       0}
@@ -61,6 +68,28 @@ FlagDesc flagdesc_gennotify[] = {
 	{NULL,               0}
 };
 
+struct MapgenDesc {
+	const char *name;
+	bool is_user_visible;
+};
+
+////
+//// Built-in mapgens
+////
+
+static MapgenDesc g_reg_mapgens[] = {
+	{"v5",         true},
+	{"v6",         true},
+	{"v7",         true},
+	{"flat",       true},
+	{"fractal",    true},
+	{"valleys",    true},
+	{"singlenode", false},
+};
+
+STATIC_ASSERT(
+	ARRLEN(g_reg_mapgens) == MAPGEN_INVALID,
+	registered_mapgens_is_wrong_size);
 
 ////
 //// Mapgen
@@ -76,10 +105,9 @@ Mapgen::Mapgen()
 
 	vm        = NULL;
 	ndef      = NULL;
-	heightmap = NULL;
+	biomegen  = NULL;
 	biomemap  = NULL;
-	heatmap   = NULL;
-	humidmap  = NULL;
+	heightmap = NULL;
 }
 
 
@@ -88,17 +116,30 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 {
 	generating  = false;
 	id          = mapgenid;
-	seed        = (int)params->seed;
 	water_level = params->water_level;
 	flags       = params->flags;
 	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
+	/*
+		We are losing half our entropy by doing this, but it is necessary to
+		preserve reverse compatibility.  If the top half of our current 64 bit
+		seeds ever starts getting used, existing worlds will break due to a
+		different hash outcome and no way to differentiate between versions.
+
+		A solution could be to add a new bit to designate that the top half of
+		the seed value should be used, essentially a 1-bit version code, but
+		this would require increasing the total size of a seed to 9 bytes (yuck)
+
+		It's probably okay if this never gets fixed.  4.2 billion possibilities
+		ought to be enough for anyone.
+	*/
+	seed = (s32)params->seed;
+
 	vm        = NULL;
-	ndef      = NULL;
-	heightmap = NULL;
+	ndef      = emerge->ndef;
+	biomegen  = NULL;
 	biomemap  = NULL;
-	heatmap   = NULL;
-	humidmap  = NULL;
+	heightmap = NULL;
 }
 
 
@@ -107,7 +148,84 @@ Mapgen::~Mapgen()
 }
 
 
-u32 Mapgen::getBlockSeed(v3s16 p, int seed)
+MapgenType Mapgen::getMapgenType(const std::string &mgname)
+{
+	for (size_t i = 0; i != ARRLEN(g_reg_mapgens); i++) {
+		if (mgname == g_reg_mapgens[i].name)
+			return (MapgenType)i;
+	}
+
+	return MAPGEN_INVALID;
+}
+
+
+const char *Mapgen::getMapgenName(MapgenType mgtype)
+{
+	size_t index = (size_t)mgtype;
+	if (index == MAPGEN_INVALID || index >= ARRLEN(g_reg_mapgens))
+		return "invalid";
+
+	return g_reg_mapgens[index].name;
+}
+
+
+Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
+	MapgenParams *params, EmergeManager *emerge)
+{
+	switch (mgtype) {
+	case MAPGEN_FLAT:
+		return new MapgenFlat(mgid, (MapgenFlatParams *)params, emerge);
+	case MAPGEN_FRACTAL:
+		return new MapgenFractal(mgid, (MapgenFractalParams *)params, emerge);
+	case MAPGEN_SINGLENODE:
+		return new MapgenSinglenode(mgid, (MapgenSinglenodeParams *)params, emerge);
+	case MAPGEN_V5:
+		return new MapgenV5(mgid, (MapgenV5Params *)params, emerge);
+	case MAPGEN_V6:
+		return new MapgenV6(mgid, (MapgenV6Params *)params, emerge);
+	case MAPGEN_V7:
+		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
+	case MAPGEN_VALLEYS:
+		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
+	default:
+		return NULL;
+	}
+}
+
+
+MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
+{
+	switch (mgtype) {
+	case MAPGEN_FLAT:
+		return new MapgenFlatParams;
+	case MAPGEN_FRACTAL:
+		return new MapgenFractalParams;
+	case MAPGEN_SINGLENODE:
+		return new MapgenSinglenodeParams;
+	case MAPGEN_V5:
+		return new MapgenV5Params;
+	case MAPGEN_V6:
+		return new MapgenV6Params;
+	case MAPGEN_V7:
+		return new MapgenV7Params;
+	case MAPGEN_VALLEYS:
+		return new MapgenValleysParams;
+	default:
+		return NULL;
+	}
+}
+
+
+void Mapgen::getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden)
+{
+	for (u32 i = 0; i != ARRLEN(g_reg_mapgens); i++) {
+		if (include_hidden || g_reg_mapgens[i].is_user_visible)
+			mgnames->push_back(g_reg_mapgens[i].name);
+	}
+}
+
+
+u32 Mapgen::getBlockSeed(v3s16 p, s32 seed)
 {
 	return (u32)seed   +
 		p.Z * 38134234 +
@@ -116,7 +234,7 @@ u32 Mapgen::getBlockSeed(v3s16 p, int seed)
 }
 
 
-u32 Mapgen::getBlockSeed2(v3s16 p, int seed)
+u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 {
 	u32 n = 1619 * p.X + 31337 * p.Y + 52591 * p.Z + 1013 * seed;
 	n = (n >> 13) ^ n;
@@ -199,27 +317,86 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 	//printf("updateHeightmap: %dus\n", t.stop());
 }
 
+inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
+{
+	u32 vi_neg_x = vi;
+	vm->m_area.add_x(em, vi_neg_x, -1);
+	if (vm->m_data[vi_neg_x].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_nx = ndef->get(vm->m_data[vi_neg_x]);
+		if (c_nx.floodable && !c_nx.isLiquid())
+			return true;
+	}
+	u32 vi_pos_x = vi;
+	vm->m_area.add_x(em, vi_pos_x, +1);
+	if (vm->m_data[vi_pos_x].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_px = ndef->get(vm->m_data[vi_pos_x]);
+		if (c_px.floodable && !c_px.isLiquid())
+			return true;
+	}
+	u32 vi_neg_z = vi;
+	vm->m_area.add_z(em, vi_neg_z, -1);
+	if (vm->m_data[vi_neg_z].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_nz = ndef->get(vm->m_data[vi_neg_z]);
+		if (c_nz.floodable && !c_nz.isLiquid())
+			return true;
+	}
+	u32 vi_pos_z = vi;
+	vm->m_area.add_z(em, vi_pos_z, +1);
+	if (vm->m_data[vi_pos_z].getContent() != CONTENT_IGNORE) {
+		const ContentFeatures &c_pz = ndef->get(vm->m_data[vi_pos_z]);
+		if (c_pz.floodable && !c_pz.isLiquid())
+			return true;
+	}
+	return false;
+}
 
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
 {
-	bool isliquid, wasliquid;
+	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
 	v3s16 em  = vm->m_area.getExtent();
 
-	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 x = nmin.X; x <= nmax.X; x++) {
-			wasliquid = true;
+	for (s16 z = nmin.Z + 1; z <= nmax.Z - 1; z++)
+	for (s16 x = nmin.X + 1; x <= nmax.X - 1; x++) {
+		wasignored = true;
+		wasliquid = false;
+		waschecked = false;
+		waspushed = false;
 
-			u32 i = vm->m_area.index(x, nmax.Y, z);
-			for (s16 y = nmax.Y; y >= nmin.Y; y--) {
-				isliquid = ndef->get(vm->m_data[i]).isLiquid();
+		u32 vi = vm->m_area.index(x, nmax.Y, z);
+		for (s16 y = nmax.Y; y >= nmin.Y; y--) {
+			isignored = vm->m_data[vi].getContent() == CONTENT_IGNORE;
+			isliquid = ndef->get(vm->m_data[vi]).isLiquid();
 
-				// there was a change between liquid and nonliquid, add to queue.
-				if (isliquid != wasliquid)
+			if (isignored || wasignored || isliquid == wasliquid) {
+				// Neither topmost node of liquid column nor topmost node below column
+				waschecked = false;
+				waspushed = false;
+			} else if (isliquid) {
+				// This is the topmost node in the column
+				bool ispushed = false;
+				if (isLiquidHorizontallyFlowable(vi, em)) {
 					trans_liquid->push_back(v3s16(x, y, z));
-
-				wasliquid = isliquid;
-				vm->m_area.add_y(em, i, -1);
+					ispushed = true;
+				}
+				// Remember waschecked and waspushed to avoid repeated
+				// checks/pushes in case the column consists of only this node
+				waschecked = true;
+				waspushed = ispushed;
+			} else {
+				// This is the topmost node below a liquid column
+				u32 vi_above = vi;
+				vm->m_area.add_y(em, vi_above, 1);
+				if (!waspushed && (ndef->get(vm->m_data[vi]).floodable ||
+						(!waschecked && isLiquidHorizontallyFlowable(vi_above, em)))) {
+					// Push back the lowest node in the column which is one
+					// node above this one
+					trans_liquid->push_back(v3s16(x, y + 1, z));
+				}
 			}
+
+			wasliquid = isliquid;
+			wasignored = isignored;
+			vm->m_area.add_y(em, vi, -1);
 		}
 	}
 }
@@ -372,6 +549,349 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 
 
 ////
+//// MapgenBasic
+////
+
+MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge)
+	: Mapgen(mapgenid, params, emerge)
+{
+	this->m_emerge = emerge;
+	this->m_bmgr   = emerge->biomemgr;
+
+	//// Here, 'stride' refers to the number of elements needed to skip to index
+	//// an adjacent element for that coordinate in noise/height/biome maps
+	//// (*not* vmanip content map!)
+
+	// Note there is no X stride explicitly defined.  Items adjacent in the X
+	// coordinate are assumed to be adjacent in memory as well (i.e. stride of 1).
+
+	// Number of elements to skip to get to the next Y coordinate
+	this->ystride = csize.X;
+
+	// Number of elements to skip to get to the next Z coordinate
+	this->zstride = csize.X * csize.Y;
+
+	// Z-stride value for maps oversized for 1-down overgeneration
+	this->zstride_1d = csize.X * (csize.Y + 1);
+
+	// Z-stride value for maps oversized for 1-up 1-down overgeneration
+	this->zstride_1u1d = csize.X * (csize.Y + 2);
+
+	//// Allocate heightmap
+	this->heightmap = new s16[csize.X * csize.Z];
+
+	//// Initialize biome generator
+	// TODO(hmmmm): should we have a way to disable biomemanager biomes?
+	biomegen = m_bmgr->createBiomeGen(BIOMEGEN_ORIGINAL, params->bparams, csize);
+	biomemap = biomegen->biomemap;
+
+	//// Look up some commonly used content
+	c_stone              = ndef->getId("mapgen_stone");
+	c_water_source       = ndef->getId("mapgen_water_source");
+	c_desert_stone       = ndef->getId("mapgen_desert_stone");
+	c_sandstone          = ndef->getId("mapgen_sandstone");
+	c_river_water_source = ndef->getId("mapgen_river_water_source");
+
+	// Fall back to more basic content if not defined
+	if (c_desert_stone == CONTENT_IGNORE)
+		c_desert_stone = c_stone;
+	if (c_sandstone == CONTENT_IGNORE)
+		c_sandstone = c_stone;
+	if (c_river_water_source == CONTENT_IGNORE)
+		c_river_water_source = c_water_source;
+
+	//// Content used for dungeon generation
+	c_cobble               = ndef->getId("mapgen_cobble");
+	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
+	c_mossycobble          = ndef->getId("mapgen_mossycobble");
+	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
+	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
+
+	// Fall back to more basic content if not defined
+	if (c_mossycobble == CONTENT_IGNORE)
+		c_mossycobble = c_cobble;
+	if (c_stair_cobble == CONTENT_IGNORE)
+		c_stair_cobble = c_cobble;
+	if (c_sandstonebrick == CONTENT_IGNORE)
+		c_sandstonebrick = c_sandstone;
+	if (c_stair_sandstonebrick == CONTENT_IGNORE)
+		c_stair_sandstonebrick = c_sandstone;
+}
+
+
+MapgenBasic::~MapgenBasic()
+{
+	delete biomegen;
+	delete []heightmap;
+}
+
+
+MgStoneType MapgenBasic::generateBiomes()
+{
+	// can't generate biomes without a biome generator!
+	assert(biomegen);
+	assert(biomemap);
+
+	v3s16 em = vm->m_area.getExtent();
+	u32 index = 0;
+	MgStoneType stone_type = MGSTONE_STONE;
+
+	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+		Biome *biome = NULL;
+		u16 depth_top = 0;
+		u16 base_filler = 0;
+		u16 depth_water_top = 0;
+		u16 depth_riverbed = 0;
+		u32 vi = vm->m_area.index(x, node_max.Y, z);
+
+		// Check node at base of mapchunk above, either a node of a previously
+		// generated mapchunk or if not, a node of overgenerated base terrain.
+		content_t c_above = vm->m_data[vi + em.X].getContent();
+		bool air_above = c_above == CONTENT_AIR;
+		bool river_water_above = c_above == c_river_water_source;
+		bool water_above = c_above == c_water_source || river_water_above;
+
+		biomemap[index] = BIOME_NONE;
+
+		// If there is air or water above enable top/filler placement, otherwise force
+		// nplaced to stone level by setting a number exceeding any possible filler depth.
+		u16 nplaced = (air_above || water_above) ? 0 : U16_MAX;
+
+		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
+			content_t c = vm->m_data[vi].getContent();
+
+			// Biome is recalculated each time an upper surface is detected while
+			// working down a column. The selected biome then remains in effect for
+			// all nodes below until the next surface and biome recalculation.
+			// Biome is recalculated:
+			// 1. At the surface of stone below air or water.
+			// 2. At the surface of water below air.
+			// 3. When stone or water is detected but biome has not yet been calculated.
+			bool is_stone_surface = (c == c_stone) &&
+				(air_above || water_above || !biome);
+
+			bool is_water_surface =
+				(c == c_water_source || c == c_river_water_source) &&
+				(air_above || !biome);
+
+			if (is_stone_surface || is_water_surface) {
+				biome = biomegen->getBiomeAtIndex(index, y);
+
+				if (biomemap[index] == BIOME_NONE && is_stone_surface)
+					biomemap[index] = biome->index;
+
+				depth_top = biome->depth_top;
+				base_filler = MYMAX(depth_top +
+					biome->depth_filler +
+					noise_filler_depth->result[index], 0.f);
+				depth_water_top = biome->depth_water_top;
+				depth_riverbed = biome->depth_riverbed;
+
+				// Detect stone type for dungeons during every biome calculation.
+				// This is more efficient than detecting per-node and will not
+				// miss any desert stone or sandstone biomes.
+				if (biome->c_stone == c_desert_stone)
+					stone_type = MGSTONE_DESERT_STONE;
+				else if (biome->c_stone == c_sandstone)
+					stone_type = MGSTONE_SANDSTONE;
+			}
+
+			if (c == c_stone) {
+				content_t c_below = vm->m_data[vi - em.X].getContent();
+
+				// If the node below isn't solid, make this node stone, so that
+				// any top/filler nodes above are structurally supported.
+				// This is done by aborting the cycle of top/filler placement
+				// immediately by forcing nplaced to stone level.
+				if (c_below == CONTENT_AIR
+						|| c_below == c_water_source
+						|| c_below == c_river_water_source)
+					nplaced = U16_MAX;
+
+				if (river_water_above) {
+					if (nplaced < depth_riverbed) {
+						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						nplaced++;
+					} else {
+						nplaced = U16_MAX;  // Disable top/filler placement
+						river_water_above = false;
+					}
+				} else if (nplaced < depth_top) {
+					vm->m_data[vi] = MapNode(biome->c_top);
+					nplaced++;
+				} else if (nplaced < base_filler) {
+					vm->m_data[vi] = MapNode(biome->c_filler);
+					nplaced++;
+				} else {
+					vm->m_data[vi] = MapNode(biome->c_stone);
+				}
+
+				air_above = false;
+				water_above = false;
+			} else if (c == c_water_source) {
+				vm->m_data[vi] = MapNode((y > (s32)(water_level - depth_water_top))
+						? biome->c_water_top : biome->c_water);
+				nplaced = 0;  // Enable top/filler placement for next surface
+				air_above = false;
+				water_above = true;
+			} else if (c == c_river_water_source) {
+				vm->m_data[vi] = MapNode(biome->c_river_water);
+				nplaced = 0;  // Enable riverbed placement for next surface
+				air_above = false;
+				water_above = true;
+				river_water_above = true;
+			} else if (c == CONTENT_AIR) {
+				nplaced = 0;  // Enable top/filler placement for next surface
+				air_above = true;
+				water_above = false;
+			} else {  // Possible various nodes overgenerated from neighbouring mapchunks
+				nplaced = U16_MAX;  // Disable top/filler placement
+				air_above = false;
+				water_above = false;
+			}
+
+			vm->m_area.add_y(em, vi, -1);
+		}
+	}
+
+	return stone_type;
+}
+
+
+void MapgenBasic::dustTopNodes()
+{
+	if (node_max.Y < water_level)
+		return;
+
+	v3s16 em = vm->m_area.getExtent();
+	u32 index = 0;
+
+	for (s16 z = node_min.Z; z <= node_max.Z; z++)
+	for (s16 x = node_min.X; x <= node_max.X; x++, index++) {
+		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index]);
+
+		if (biome->c_dust == CONTENT_IGNORE)
+			continue;
+
+		u32 vi = vm->m_area.index(x, full_node_max.Y, z);
+		content_t c_full_max = vm->m_data[vi].getContent();
+		s16 y_start;
+
+		if (c_full_max == CONTENT_AIR) {
+			y_start = full_node_max.Y - 1;
+		} else if (c_full_max == CONTENT_IGNORE) {
+			vi = vm->m_area.index(x, node_max.Y + 1, z);
+			content_t c_max = vm->m_data[vi].getContent();
+
+			if (c_max == CONTENT_AIR)
+				y_start = node_max.Y;
+			else
+				continue;
+		} else {
+			continue;
+		}
+
+		vi = vm->m_area.index(x, y_start, z);
+		for (s16 y = y_start; y >= node_min.Y - 1; y--) {
+			if (vm->m_data[vi].getContent() != CONTENT_AIR)
+				break;
+
+			vm->m_area.add_y(em, vi, -1);
+		}
+
+		content_t c = vm->m_data[vi].getContent();
+		if (!ndef->get(c).buildable_to && c != CONTENT_IGNORE && c != biome->c_dust) {
+			vm->m_area.add_y(em, vi, 1);
+			vm->m_data[vi] = MapNode(biome->c_dust);
+		}
+	}
+}
+
+
+void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
+{
+	if (max_stone_y < node_min.Y)
+		return;
+
+	CavesNoiseIntersection caves_noise(ndef, m_bmgr, csize,
+		&np_cave1, &np_cave2, seed, cave_width);
+
+	caves_noise.generateCaves(vm, node_min, node_max, biomemap);
+
+	if (node_max.Y > large_cave_depth)
+		return;
+
+	PseudoRandom ps(blockseed + 21343);
+	u32 bruises_count = ps.range(0, 2);
+	for (u32 i = 0; i < bruises_count; i++) {
+		CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
+			c_water_source, CONTENT_IGNORE);
+
+		cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
+	}
+}
+
+
+void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
+{
+	if (max_stone_y < node_min.Y)
+		return;
+
+	DungeonParams dp;
+
+	dp.seed          = seed;
+	dp.c_water       = c_water_source;
+	dp.c_river_water = c_river_water_source;
+	dp.rooms_min     = 2;
+	dp.rooms_max     = 16;
+	dp.y_min         = -MAX_MAP_GENERATION_LIMIT;
+	dp.y_max         = MAX_MAP_GENERATION_LIMIT;
+	dp.np_density    = nparams_dungeon_density;
+	dp.np_alt_wall   = nparams_dungeon_alt_wall;
+
+	switch (stone_type) {
+	default:
+	case MGSTONE_STONE:
+		dp.c_wall     = c_cobble;
+		dp.c_alt_wall = c_mossycobble;
+		dp.c_stair    = c_stair_cobble;
+
+		dp.diagonal_dirs = false;
+		dp.holesize      = v3s16(1, 2, 1);
+		dp.roomsize      = v3s16(0, 0, 0);
+		dp.notifytype    = GENNOTIFY_DUNGEON;
+		break;
+	case MGSTONE_DESERT_STONE:
+		dp.c_wall     = c_desert_stone;
+		dp.c_alt_wall = CONTENT_IGNORE;
+		dp.c_stair    = c_desert_stone;
+
+		dp.diagonal_dirs = true;
+		dp.holesize      = v3s16(2, 3, 2);
+		dp.roomsize      = v3s16(2, 5, 2);
+		dp.notifytype    = GENNOTIFY_TEMPLE;
+		break;
+	case MGSTONE_SANDSTONE:
+		dp.c_wall     = c_sandstonebrick;
+		dp.c_alt_wall = CONTENT_IGNORE;
+		dp.c_stair    = c_sandstonebrick;
+
+		dp.diagonal_dirs = false;
+		dp.holesize      = v3s16(2, 2, 2);
+		dp.roomsize      = v3s16(2, 0, 2);
+		dp.notifytype    = GENNOTIFY_DUNGEON;
+		break;
+	}
+
+	DungeonGen dgen(ndef, &gennotify, &dp);
+	dgen.generate(vm, blockseed, full_node_min, full_node_max);
+}
+
+
+////
 //// GenerateNotifier
 ////
 
@@ -444,46 +964,50 @@ void GenerateNotifier::getEvents(
 //// MapgenParams
 ////
 
-void MapgenParams::load(const Settings &settings)
+
+MapgenParams::~MapgenParams()
+{
+	delete bparams;
+}
+
+
+void MapgenParams::readParams(const Settings *settings)
 {
 	std::string seed_str;
-	const char *seed_name = (&settings == g_settings) ? "fixed_map_seed" : "seed";
+	const char *seed_name = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings.getNoEx(seed_name, seed_str) && !seed_str.empty())
-		seed = read_seed(seed_str.c_str());
-	else
-		myrand_bytes(&seed, sizeof(seed));
+	if (settings->getNoEx(seed_name, seed_str)) {
+		if (!seed_str.empty())
+			seed = read_seed(seed_str.c_str());
+		else
+			myrand_bytes(&seed, sizeof(seed));
+	}
 
-	settings.getNoEx("mg_name", mg_name);
-	settings.getS16NoEx("water_level", water_level);
-	settings.getS16NoEx("chunksize", chunksize);
-	settings.getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
-	settings.getNoiseParams("mg_biome_np_heat", np_biome_heat);
-	settings.getNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
-	settings.getNoiseParams("mg_biome_np_humidity", np_biome_humidity);
-	settings.getNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
+	std::string mg_name;
+	if (settings->getNoEx("mg_name", mg_name))
+		this->mgtype = Mapgen::getMapgenType(mg_name);
 
-	delete sparams;
-	MapgenFactory *mgfactory = EmergeManager::getMapgenFactory(mg_name);
-	if (mgfactory) {
-		sparams = mgfactory->createMapgenParams();
-		sparams->readParams(&settings);
+	settings->getS16NoEx("water_level", water_level);
+	settings->getS16NoEx("chunksize", chunksize);
+	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
+
+	delete bparams;
+	bparams = BiomeManager::createBiomeParams(BIOMEGEN_ORIGINAL);
+	if (bparams) {
+		bparams->readParams(settings);
+		bparams->seed = seed;
 	}
 }
 
 
-void MapgenParams::save(Settings &settings) const
+void MapgenParams::writeParams(Settings *settings) const
 {
-	settings.set("mg_name", mg_name);
-	settings.setU64("seed", seed);
-	settings.setS16("water_level", water_level);
-	settings.setS16("chunksize", chunksize);
-	settings.setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
-	settings.setNoiseParams("mg_biome_np_heat", np_biome_heat);
-	settings.setNoiseParams("mg_biome_np_heat_blend", np_biome_heat_blend);
-	settings.setNoiseParams("mg_biome_np_humidity", np_biome_humidity);
-	settings.setNoiseParams("mg_biome_np_humidity_blend", np_biome_humidity_blend);
+	settings->set("mg_name", Mapgen::getMapgenName(mgtype));
+	settings->setU64("seed", seed);
+	settings->setS16("water_level", water_level);
+	settings->setS16("chunksize", chunksize);
+	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
 
-	if (sparams)
-		sparams->writeParams(&settings);
+	if (bparams)
+		bparams->writeParams(settings);
 }

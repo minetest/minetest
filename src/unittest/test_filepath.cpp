@@ -252,6 +252,9 @@ void TestFilePath::testRemoveRelativePathComponent()
 	path = p(".");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");
+	path = p("../a");
+	result = fs::RemoveRelativePathComponents(path);
+	UASSERT(result == "");
 	path = p("./subdir/../..");
 	result = fs::RemoveRelativePathComponents(path);
 	UASSERT(result == "");

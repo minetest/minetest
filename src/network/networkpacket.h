@@ -40,6 +40,7 @@ public:
 		u32 getSize() { return m_datasize; }
 		u16 getPeerId() { return m_peer_id; }
 		u16 getCommand() { return m_command; }
+		const u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 
 		// Returns a c-string without copying.
 		// A better name for this would be getRawString()

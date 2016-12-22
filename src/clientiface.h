@@ -25,10 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"             // for SER_FMT_VER_INVALID
 #include "threading/mutex.h"
 #include "network/networkpacket.h"
+#include "util/cpp11_container.h"
 
 #include <list>
 #include <vector>
-#include <map>
 #include <set>
 
 class MapBlock;
@@ -453,7 +453,7 @@ public:
 	std::vector<u16> getClientIDs(ClientState min_state=CS_Active);
 
 	/* get list of client player names */
-	std::vector<std::string> getPlayerNames();
+	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
 	/* send message to client */
 	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
@@ -502,8 +502,7 @@ protected:
 	void lock() { m_clients_mutex.lock(); }
 	void unlock() { m_clients_mutex.unlock(); }
 
-	std::map<u16, RemoteClient*>& getClientList()
-		{ return m_clients; }
+	UNORDERED_MAP<u16, RemoteClient*>& getClientList() { return m_clients; }
 
 private:
 	/* update internal player list */
@@ -513,7 +512,7 @@ private:
 	con::Connection* m_con;
 	Mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
-	std::map<u16, RemoteClient*> m_clients;
+	UNORDERED_MAP<u16, RemoteClient*> m_clients;
 	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Environment

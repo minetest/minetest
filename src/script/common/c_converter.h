@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define C_CONVERTER_H_
 
 #include <vector>
-#include <map>
+#include "util/cpp11_container.h"
 
 #include "irrlichttypes_bloated.h"
 #include "common/c_types.h"
@@ -60,7 +60,7 @@ bool               getintfield(lua_State *L, int table,
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u32 &result);
 void               read_groups(lua_State *L, int index,
-                             std::map<std::string, int> &result);
+                             UNORDERED_MAP<std::string, int> &result);
 bool               getboolfield(lua_State *L, int table,
                              const char *fieldname, bool &result);
 bool               getfloatfield(lua_State *L, int table,

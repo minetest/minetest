@@ -103,6 +103,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
+	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
 	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
 	m_nametags.clear();
 }
@@ -387,8 +388,13 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 		m_camera_position = my_cp;
 
-	// Get FOV setting
-	f32 fov_degrees = m_cache_fov;
+	// Get FOV
+	f32 fov_degrees;
+	if (player->getPlayerControl().zoom && m_gamedef->checkLocalPrivilege("zoom")) {
+		fov_degrees = m_cache_zoom_fov;
+	} else {
+		fov_degrees = m_cache_fov;
+	}
 	fov_degrees = MYMAX(fov_degrees, 10.0);
 	fov_degrees = MYMIN(fov_degrees, 170.0);
 
@@ -466,7 +472,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
-		m_view_bobbing_speed = MYMIN(speed.getLength(), 40);
+		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);
 	}
 	else if (m_view_bobbing_state == 1)
 	{
@@ -478,13 +484,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 void Camera::updateViewingRange()
 {
+	f32 viewing_range = g_settings->getFloat("viewing_range");
+	m_draw_control.wanted_range = viewing_range;
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
 	}
-
-	f32 viewing_range = g_settings->getFloat("viewing_range");
-	m_draw_control.wanted_range = viewing_range;
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
 }
 
@@ -546,7 +551,7 @@ void Camera::drawNametags()
 			// shadow can remain.
 			continue;
 		}
-		v3f pos = nametag->parent_node->getPosition() + v3f(0.0, 1.1 * BS, 0.0);
+		v3f pos = nametag->parent_node->getAbsolutePosition() + v3f(0.0, 1.1 * BS, 0.0);
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {

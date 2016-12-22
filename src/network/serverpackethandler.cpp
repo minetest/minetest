@@ -774,13 +774,15 @@ void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
+	NetworkPacket *pkt)
 {
-	if (pkt->getSize() < 12 + 12 + 4 + 4)
+	if (pkt->getRemainingBytes() < 12 + 12 + 4 + 4)
 		return;
 
 	v3s32 ps, ss;
 	s32 f32pitch, f32yaw;
+	u8 f32fov;
 
 	*pkt >> ps;
 	*pkt >> ss;
@@ -791,8 +793,18 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	f32 yaw = (f32)f32yaw / 100.0;
 	u32 keyPressed = 0;
 
-	if (pkt->getSize() >= 12 + 12 + 4 + 4 + 4)
+	// default behavior (in case an old client doesn't send these)
+	f32 fov = 0;
+	u8 wanted_range = 0;
+
+	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> keyPressed;
+	if (pkt->getRemainingBytes() >= 1) {
+		*pkt >> f32fov;
+		fov = (f32)f32fov / 80.0;
+	}
+	if (pkt->getRemainingBytes() >= 1)
+		*pkt >> wanted_range;
 
 	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
 	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
@@ -800,35 +812,12 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 	pitch = modulo360f(pitch);
 	yaw = modulo360f(yaw);
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
-	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-	// If player is dead we don't care of this packet
-	if (player->isDead()) {
-		verbosestream << "TOSERVER_PLAYERPOS: " << player->getName()
-			<< " is dead. Ignoring packet";
-		return;
-	}
-
-	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player object for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-	player->setPosition(position);
+	playersao->setBasePosition(position);
 	player->setSpeed(speed);
-	player->setPitch(pitch);
-	player->setYaw(yaw);
+	playersao->setPitch(pitch);
+	playersao->setYaw(yaw);
+	playersao->setFov(fov);
+	playersao->setWantedRange(wanted_range);
 	player->keyPressed = keyPressed;
 	player->control.up = (keyPressed & 1);
 	player->control.down = (keyPressed & 2);
@@ -845,6 +834,36 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		m_script->on_cheat(playersao, "moved_too_fast");
 		SendMovePlayer(pkt->getPeerId());
 	}
+}
+
+void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
+{
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+	if (player == NULL) {
+		errorstream << "Server::ProcessData(): Canceling: "
+				"No player for peer_id=" << pkt->getPeerId()
+				<< " disconnecting peer!" << std::endl;
+		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	PlayerSAO *playersao = player->getPlayerSAO();
+	if (playersao == NULL) {
+		errorstream << "Server::ProcessData(): Canceling: "
+				"No player object for peer_id=" << pkt->getPeerId()
+				<< " disconnecting peer!" << std::endl;
+		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	// If player is dead we don't care of this packet
+	if (playersao->isDead()) {
+		verbosestream << "TOSERVER_PLAYERPOS: " << player->getName()
+				<< " is dead. Ignoring packet";
+		return;
+	}
+
+	process_PlayerPos(player, playersao, pkt);
 }
 
 void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
@@ -879,7 +898,8 @@ void Server::handleCommand_DeletedBlocks(NetworkPacket* pkt)
 
 void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 {
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1051,7 +1071,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		message += (wchar_t)tmp_wchar;
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1065,7 +1085,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	std::wstring wname = narrow_to_wide(name);
 
 	std::wstring answer_to_sender = handleChat(name, wname, message,
-		true, pkt->getPeerId());
+		true, dynamic_cast<RemotePlayer *>(player));
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
 		SendChatMessage(pkt->getPeerId(), answer_to_sender);
@@ -1078,7 +1098,8 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	*pkt >> damage;
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1098,7 +1119,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 
 	if (g_settings->getBool("enable_damage")) {
 		actionstream << player->getName() << " damaged by "
-				<< (int)damage << " hp at " << PP(player->getPosition() / BS)
+				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
 
 		playersao->setHP(playersao->getHP() - damage);
@@ -1112,22 +1133,13 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 
 	*pkt >> breath;
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-	/*
-	 * If player is dead, we don't need to update the breath
-	 * He is dead !
-	 */
-	if (player->isDead()) {
-		verbosestream << "TOSERVER_BREATH: " << player->getName()
-			<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -1138,6 +1150,16 @@ void Server::handleCommand_Breath(NetworkPacket* pkt)
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
 		m_con.DisconnectPeer(pkt->getPeerId());
+		return;
+	}
+
+	/*
+	 * If player is dead, we don't need to update the breath
+	 * He is dead !
+	 */
+	if (playersao->isDead()) {
+		verbosestream << "TOSERVER_BREATH: " << player->getName()
+				<< " is dead. Ignoring packet";
 		return;
 	}
 
@@ -1176,7 +1198,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 		newpwd += c;
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1224,7 +1246,8 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 	if (pkt->getSize() < 2)
 		return;
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1251,7 +1274,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 
 void Server::handleCommand_Respawn(NetworkPacket* pkt)
 {
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1260,13 +1283,16 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 		return;
 	}
 
-	if (!player->isDead())
+	PlayerSAO *playersao = player->getPlayerSAO();
+	assert(playersao);
+
+	if (!playersao->isDead())
 		return;
 
 	RespawnPlayer(pkt->getPeerId());
 
 	actionstream << player->getName() << " respawns at "
-			<< PP(player->getPosition()/BS) << std::endl;
+			<< PP(playersao->getBasePosition() / BS) << std::endl;
 
 	// ActiveObject is added to environment in AsyncRunStep after
 	// the previous addition has been successfully removed
@@ -1274,15 +1300,13 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 
 void Server::handleCommand_Interact(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
-
 	/*
 		[0] u16 command
 		[2] u8 action
 		[3] u16 item
-		[5] u32 length of the next item
+		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
+		[9 + plen] player position information
 		actions:
 		0: start digging (from undersurface) or use
 		1: stop digging (all parameters ignored)
@@ -1290,16 +1314,19 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		3: place block or item (to abovesurface)
 		4: use item
 	*/
-	u8 action = readU8(is);
-	u16 item_i = readU16(is);
-	std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+	u8 action;
+	u16 item_i;
+	*pkt >> action;
+	*pkt >> item_i;
+	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	PointedThing pointed;
 	pointed.deSerialize(tmp_is);
 
 	verbosestream << "TOSERVER_INTERACT: action=" << (int)action << ", item="
 			<< item_i << ", pointed=" << pointed.dump() << std::endl;
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1317,11 +1344,13 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		return;
 	}
 
-	if (player->isDead()) {
+	if (playersao->isDead()) {
 		verbosestream << "TOSERVER_INTERACT: " << player->getName()
-			<< " is dead. Ignoring packet";
+				<< " is dead. Ignoring packet";
 		return;
 	}
+
+	process_PlayerPos(player, playersao, pkt);
 
 	v3f player_pos = playersao->getLastGoodPosition();
 
@@ -1450,7 +1479,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			ToolCapabilities toolcap =
 					punchitem.getToolCapabilities(m_itemdef);
 			v3f dir = (pointed_object->getBasePosition() -
-					(player->getPosition() + player->getEyeOffset())
+					(playersao->getBasePosition() + playersao->getEyeOffset())
 						).normalize();
 			float time_from_last_punch =
 				playersao->resetTimeFromLastPunch();
@@ -1513,10 +1542,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					m_script->on_cheat(playersao, "finished_unknown_dig");
 				}
 				// Get player's wielded item
-				ItemStack playeritem;
-				InventoryList *mlist = playersao->getInventory()->getList("main");
-				if (mlist != NULL)
-					playeritem = mlist->getItem(playersao->getWieldIndex());
+				ItemStack playeritem = playersao->getWieldedItem();
 				ToolCapabilities playeritem_toolcap =
 						playeritem.getToolCapabilities(m_itemdef);
 				// Get diggability and expected digging time
@@ -1656,16 +1682,16 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		}
 
 	} // action == 4
-	
+
 	/*
 		5: rightclick air
 	*/
 	else if (action == 5) {
 		ItemStack item = playersao->getWieldedItem();
-		
-		actionstream << player->getName() << " activates " 
+
+		actionstream << player->getName() << " activates "
 				<< item.name << std::endl;
-		
+
 		if (m_script->item_OnSecondaryUse(
 				item, playersao)) {
 			if( playersao->setWieldedItem(item)) {
@@ -1693,9 +1719,7 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 
 		*pkt >> id;
 
-		std::map<s32, ServerPlayingSound>::iterator i =
-			m_playing_sounds.find(id);
-
+		UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(id);
 		if (i == m_playing_sounds.end())
 			continue;
 
@@ -1721,7 +1745,8 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 		fields[fieldname] = pkt->readLongString();
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
@@ -1771,7 +1796,8 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		fields[fieldname] = pkt->readLongString();
 	}
 
-	Player *player = m_env->getPlayer(pkt->getPeerId());
+	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
+
 	if (player == NULL) {
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()

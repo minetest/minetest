@@ -663,8 +663,7 @@ class Peer {
 			m_last_rtt(-1.0),
 			m_usage(0),
 			m_timeout_counter(0.0),
-			m_last_timeout_check(porting::getTimeMs()),
-			m_has_sent_with_id(false)
+			m_last_timeout_check(porting::getTimeMs())
 		{
 			m_rtt.avg_rtt = -1.0;
 			m_rtt.jitter_avg = -1.0;
@@ -687,20 +686,15 @@ class Peer {
 		virtual void PutReliableSendCommand(ConnectionCommand &c,
 						unsigned int max_packet_size) {};
 
-		virtual bool isActive() { return false; };
-
 		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
+
+		bool isPendingDeletion()
+		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_pending_deletion; };
 
 		void ResetTimeout()
 			{MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter=0.0; };
 
 		bool isTimedOut(float timeout);
-
-		void setSentWithID()
-		{ MutexAutoLock lock(m_exclusive_access_mutex); m_has_sent_with_id = true; };
-
-		bool hasSentWithID()
-		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_has_sent_with_id; };
 
 		unsigned int m_increment_packets_remaining;
 		unsigned int m_increment_bytes_remaining;
@@ -776,8 +770,6 @@ class Peer {
 		float m_timeout_counter;
 
 		u32 m_last_timeout_check;
-
-		bool m_has_sent_with_id;
 };
 
 class UDPPeer : public Peer
@@ -794,9 +786,6 @@ public:
 
 	void PutReliableSendCommand(ConnectionCommand &c,
 							unsigned int max_packet_size);
-
-	bool isActive()
-	{ return ((hasSentWithID()) && (!m_pending_deletion)); };
 
 	bool getAddress(MTProtocols type, Address& toset);
 

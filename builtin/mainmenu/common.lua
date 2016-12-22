@@ -248,14 +248,18 @@ end
 
 --------------------------------------------------------------------------------
 function is_server_protocol_compat(server_proto_min, server_proto_max)
-	return min_supp_proto <= (server_proto_max or 24) and max_supp_proto >= (server_proto_min or 13)
+	if (not server_proto_min) or (not server_proto_max) then
+		-- There is no info. Assume the best and act as if we would be compatible.
+		return true
+	end
+	return min_supp_proto <= server_proto_max and max_supp_proto >= server_proto_min
 end
 --------------------------------------------------------------------------------
 function is_server_protocol_compat_or_error(server_proto_min, server_proto_max)
 	if not is_server_protocol_compat(server_proto_min, server_proto_max) then
 		local server_prot_ver_info, client_prot_ver_info
-		local s_p_min = server_proto_min or 13
-		local s_p_max = server_proto_max or 24
+		local s_p_min = server_proto_min
+		local s_p_max = server_proto_max
 
 		if s_p_min ~= s_p_max then
 			server_prot_ver_info = fgettext_ne("Server supports protocol versions between $1 and $2. ",

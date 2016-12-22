@@ -29,20 +29,23 @@ local core_developers = {
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"Matt Gregory (paramat)",
 	"est31 <MTest31@outlook.com>",
-	"Craig Robbins (Zeno)",
+	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
+	"Auke Kok (sofar) <sofar@foo-projects.org>",
+	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
 }
 
 local active_contributors = {
-	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Duane Robertson <duane@duanerobertson.com>",
 	"SmallJoker <mk939@ymail.com>",
-	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
+	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
 	"Gregory Currie (gregorycu)",
 	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"TeTpaAka",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
+	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
+	"Rogier <rogier777@gmail.com>",
 }
 
 local previous_core_developers = {
@@ -76,17 +79,13 @@ return {
 	caption = fgettext("Credits"),
 	cbf_formspec = function(tabview, name, tabdata)
 		local logofile = defaulttexturedir .. "logo.png"
+		local version = core.get_version()
 		return "image[0.5,1;" .. core.formspec_escape(logofile) .. "]" ..
-			"label[0.5,3.2;Minetest " .. core.get_version() .. "]" ..
+			"label[0.5,3.2;" .. version.project .. " " .. version.string .. "]" ..
 			"label[0.5,3.5;http://minetest.net]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,5.8;list_credits;" ..
-			"#FFFF00," .. "Dedication of the current release" .. ",," ..
-			"The 0.4.14 release is dedicated to the memory of" .. ",," ..
-			"Minetest developer Maciej Kasatkin (RealBadAngel)" .. ",," ..
-			"who died on March 24 2016." .. ",," ..
-			"Our thoughts are with his family and friends." .. ",,," ..
 			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
 			table.concat(core_developers, ",,") .. ",,," ..
 			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..

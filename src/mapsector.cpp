@@ -42,9 +42,8 @@ void MapSector::deleteBlocks()
 	m_block_cache = NULL;
 
 	// Delete all
-	for(std::map<s16, MapBlock*>::iterator i = m_blocks.begin();
-		i != m_blocks.end(); ++i)
-	{
+	for (UNORDERED_MAP<s16, MapBlock*>::iterator i = m_blocks.begin();
+		 	i != m_blocks.end(); ++i) {
 		delete i->second;
 	}
 
@@ -56,20 +55,13 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 {
 	MapBlock *block;
 
-	if(m_block_cache != NULL && y == m_block_cache_y){
+	if (m_block_cache != NULL && y == m_block_cache_y) {
 		return m_block_cache;
 	}
 
 	// If block doesn't exist, return NULL
-	std::map<s16, MapBlock*>::iterator n = m_blocks.find(y);
-	if(n == m_blocks.end())
-	{
-		block = NULL;
-	}
-	// If block exists, return it
-	else{
-		block = n->second;
-	}
+	UNORDERED_MAP<s16, MapBlock*>::iterator n = m_blocks.find(y);
+	block = (n != m_blocks.end() ? n->second : NULL);
 
 	// Cache the last result
 	m_block_cache_y = y;
@@ -135,16 +127,10 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
-	for(std::map<s16, MapBlock*>::iterator bi = m_blocks.begin();
-		bi != m_blocks.end(); ++bi)
-	{
+	for (UNORDERED_MAP<s16, MapBlock*>::iterator bi = m_blocks.begin();
+		bi != m_blocks.end(); ++bi) {
 		dest.push_back(bi->second);
 	}
-}
-
-bool MapSector::empty()
-{
-	return m_blocks.empty();
 }
 
 /*

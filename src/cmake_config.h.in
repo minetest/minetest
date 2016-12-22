@@ -14,6 +14,7 @@
 #define STATIC_SHAREDIR "@SHAREDIR@"
 #define STATIC_LOCALEDIR "@LOCALEDIR@"
 #define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define ICON_DIR "@ICONDIR@"
 #cmakedefine01 RUN_IN_PLACE
 #cmakedefine01 USE_GETTEXT
 #cmakedefine01 USE_CURL
@@ -22,6 +23,7 @@
 #cmakedefine01 USE_CURSES
 #cmakedefine01 USE_LEVELDB
 #cmakedefine01 USE_LUAJIT
+#cmakedefine01 USE_POSTGRESQL
 #cmakedefine01 USE_SPATIAL
 #cmakedefine01 USE_SYSTEM_GMP
 #cmakedefine01 USE_REDIS

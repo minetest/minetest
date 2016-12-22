@@ -54,7 +54,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 // for setName
-#if defined(linux) || defined(__linux)
+#if defined(__linux__)
 	#include <sys/prctl.h>
 #elif defined(__FreeBSD__) || defined(__OpenBSD__)
 	#include <pthread_np.h>
@@ -70,7 +70,7 @@ DEALINGS IN THE SOFTWARE.
 // for bindToProcessor
 #if __FreeBSD_version >= 702106
 	typedef cpuset_t cpu_set_t;
-#elif defined(__linux) || defined(linux)
+#elif defined(__linux__)
 	#include <sched.h>
 #elif defined(__sun) || defined(sun)
 	#include <sys/types.h>
@@ -198,7 +198,7 @@ bool Thread::kill()
 
 	m_running = false;
 
-#ifdef _WIN32
+#if USE_WIN_THREADS
 	TerminateThread(m_thread_handle, 0);
 	CloseHandle(m_thread_handle);
 #else
@@ -261,7 +261,7 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 
 void Thread::setName(const std::string &name)
 {
-#if defined(linux) || defined(__linux)
+#if defined(__linux__)
 
 	// It would be cleaner to do this with pthread_setname_np,
 	// which was added to glibc in version 2.12, but some major
@@ -310,9 +310,15 @@ void Thread::setName(const std::string &name)
 
 unsigned int Thread::getNumberOfProcessors()
 {
-#if __cplusplus >= 201103L
+#if USE_CPP11_THREADS
 
 	return std::thread::hardware_concurrency();
+
+#elif USE_WIN_THREADS
+
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	return sysinfo.dwNumberOfProcessors;
 
 #elif defined(_SC_NPROCESSORS_ONLN)
 
@@ -335,12 +341,6 @@ unsigned int Thread::getNumberOfProcessors()
 
 	return get_nprocs();
 
-#elif defined(_WIN32)
-
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	return sysinfo.dwNumberOfProcessors;
-
 #elif defined(PTW32_VERSION) || defined(__hpux)
 
 	return pthread_num_processors_np();
@@ -359,11 +359,11 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 	return false;
 
-#elif defined(_WIN32)
+#elif USE_WIN_THREADS
 
 	return SetThreadAffinityMask(getThreadHandle(), 1 << proc_number);
 
-#elif __FreeBSD_version >= 702106 || defined(__linux) || defined(linux)
+#elif __FreeBSD_version >= 702106 || defined(__linux__)
 
 	cpu_set_t cpuset;
 
@@ -407,7 +407,7 @@ bool Thread::bindToProcessor(unsigned int proc_number)
 
 bool Thread::setPriority(int prio)
 {
-#if defined(_WIN32)
+#if USE_WIN_THREADS
 
 	return SetThreadPriority(getThreadHandle(), prio);
 

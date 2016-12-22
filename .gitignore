@@ -21,6 +21,7 @@
 tags
 !tags/
 gtags.files
+.idea/*
 
 ## Files related to minetest development cycle
 /*.patch
@@ -71,6 +72,8 @@ locale/
 *.layout
 *.o
 *.a
+*.ninja
+.ninja*
 
 ## Android build files
 build/android/src/main/assets

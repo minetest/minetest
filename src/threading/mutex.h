@@ -26,14 +26,15 @@ DEALINGS IN THE SOFTWARE.
 #ifndef THREADING_MUTEX_H
 #define THREADING_MUTEX_H
 
-// Windows std::mutex is much slower than the critical section API
-#if __cplusplus >= 201103L && !defined(_WIN32)
+#include "threads.h"
+
+#if USE_CPP11_MUTEX
 	#include <mutex>
 	using Mutex = std::mutex;
 	using RecursiveMutex = std::recursive_mutex;
 #else
 
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
 	#endif
@@ -41,7 +42,7 @@ DEALINGS IN THE SOFTWARE.
 		#define WIN32_LEAN_AND_MEAN
 	#endif
 	#include <windows.h>
-#else // pthread
+#else
 	#include <pthread.h>
 #endif
 
@@ -59,9 +60,9 @@ protected:
 	Mutex(bool recursive);
 	void init_mutex(bool recursive);
 private:
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	CRITICAL_SECTION mutex;
-#else // pthread
+#else
 	pthread_mutex_t mutex;
 #endif
 
@@ -76,6 +77,6 @@ public:
 	DISABLE_CLASS_COPY(RecursiveMutex);
 };
 
-#endif  // C++11
+#endif // C++11
 
 #endif

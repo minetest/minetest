@@ -212,11 +212,13 @@ void ScriptApiEnv::on_emerge_area_completion(
 {
 	Server *server = getServer();
 
+	// This function should be executed with envlock held.
+	// The caller (LuaEmergeAreaCallback in src/script/lua_api/l_env.cpp)
+	// should have obtained the lock.
 	// Note that the order of these locks is important!  Envlock must *ALWAYS*
 	// be acquired before attempting to acquire scriptlock, or else ServerThread
 	// will try to acquire scriptlock after it already owns envlock, thus
 	// deadlocking EmergeThread and ServerThread
-	MutexAutoLock envlock(server->m_env_mutex);
 
 	SCRIPTAPI_PRECHECKHEADER
 

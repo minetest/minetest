@@ -25,6 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <map>
 
+class Map;
+class MapBlock;
+
 namespace voxalgo
 {
 
@@ -51,6 +54,24 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		bool inexistent_top_provides_sunlight,
 		std::set<v3s16> & light_sources,
 		INodeDefManager *ndef);
+
+/*!
+ * Updates the lighting on the map.
+ * The result will be correct only if
+ * no nodes were changed except the given ones.
+ * Before calling this procedure make sure that all new nodes on
+ * the map have zero light level!
+ *
+ * \param oldnodes contains the MapNodes that were replaced by the new
+ * MapNodes and their positions
+ * \param modified_blocks output, contains all map blocks that
+ * the function modified
+ */
+void update_lighting_nodes(
+	Map *map,
+	INodeDefManager *ndef,
+	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
+	std::map<v3s16, MapBlock*> &modified_blocks);
 
 } // namespace voxalgo
 

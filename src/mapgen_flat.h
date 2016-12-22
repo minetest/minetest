@@ -32,7 +32,7 @@ class BiomeManager;
 extern FlagDesc flagdesc_mapgen_flat[];
 
 
-struct MapgenFlatParams : public MapgenSpecificParams {
+struct MapgenFlatParams : public MapgenParams {
 	u32 spflags;
 	s16 ground_level;
 	s16 large_cave_depth;
@@ -53,72 +53,25 @@ struct MapgenFlatParams : public MapgenSpecificParams {
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenFlat : public Mapgen {
+class MapgenFlat : public MapgenBasic {
 public:
-	EmergeManager *m_emerge;
-	BiomeManager *bmgr;
+	MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge);
+	~MapgenFlat();
 
-	int ystride;
-	int zstride_1d;
+	virtual MapgenType getType() const { return MAPGEN_FLAT; }
 
-	v3s16 node_min;
-	v3s16 node_max;
-	v3s16 full_node_min;
-	v3s16 full_node_max;
+	virtual void makeChunk(BlockMakeData *data);
+	int getSpawnLevelAtPoint(v2s16 p);
+	s16 generateTerrain();
 
-	u32 spflags;
+private:
 	s16 ground_level;
 	s16 large_cave_depth;
-	float cave_width;
 	float lake_threshold;
 	float lake_steepness;
 	float hill_threshold;
 	float hill_steepness;
 	Noise *noise_terrain;
-	Noise *noise_filler_depth;
-	Noise *noise_cave1;
-	Noise *noise_cave2;
-
-	Noise *noise_heat;
-	Noise *noise_humidity;
-	Noise *noise_heat_blend;
-	Noise *noise_humidity_blend;
-
-	content_t c_stone;
-	content_t c_water_source;
-	content_t c_lava_source;
-	content_t c_desert_stone;
-	content_t c_ice;
-	content_t c_sandstone;
-
-	content_t c_cobble;
-	content_t c_stair_cobble;
-	content_t c_mossycobble;
-	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
-
-	MapgenFlat(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	~MapgenFlat();
-
-	virtual void makeChunk(BlockMakeData *data);
-	int getSpawnLevelAtPoint(v2s16 p);
-	void calculateNoise();
-	s16 generateTerrain();
-	MgStoneType generateBiomes(float *heat_map, float *humidity_map);
-	void dustTopNodes();
-	void generateCaves(s16 max_stone_y);
-};
-
-struct MapgenFactoryFlat : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenFlat(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenFlatParams();
-	};
 };
 
 #endif

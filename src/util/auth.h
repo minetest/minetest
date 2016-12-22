@@ -45,6 +45,6 @@ std::string encode_srp_verifier(const std::string &verifier,
 /// Reads the DB-formatted SRP verifier and gets the verifier
 /// and salt components.
 bool decode_srp_verifier_and_salt(const std::string &encoded,
-	std::string *salt, std::string *bytes_v);
+	std::string *verifier, std::string *salt);
 
 #endif

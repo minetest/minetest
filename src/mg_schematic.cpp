@@ -564,14 +564,14 @@ void Schematic::applyProbabilities(v3s16 p0,
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
 	std::vector<std::string> *usednodes, INodeDefManager *ndef)
 {
-	std::map<content_t, content_t> nodeidmap;
+	UNORDERED_MAP<content_t, content_t> nodeidmap;
 	content_t numids = 0;
 
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;
 		content_t c = nodes[i].getContent();
 
-		std::map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		UNORDERED_MAP<content_t, content_t>::const_iterator it = nodeidmap.find(c);
 		if (it == nodeidmap.end()) {
 			id = numids;
 			numids++;

@@ -146,9 +146,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os<<serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for(std::map<std::string, int>::const_iterator
+	for (ItemGroupList::const_iterator
 			i = groups.begin(); i != groups.end(); ++i){
-		os<<serializeString(i->first);
+		os << serializeString(i->first);
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
@@ -466,11 +466,17 @@ public:
 			infostream<<"ItemDefManager: erased alias "<<def.name
 					<<" because item was defined"<<std::endl;
 	}
+	virtual void unregisterItem(const std::string &name)
+	{
+		verbosestream<<"ItemDefManager: unregistering \""<<name<<"\""<<std::endl;
+
+		delete m_item_definitions[name];
+		m_item_definitions.erase(name);
+	}
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)
 	{
-		if(m_item_definitions.find(name) == m_item_definitions.end())
-		{
+		if (m_item_definitions.find(name) == m_item_definitions.end()) {
 			verbosestream<<"ItemDefManager: setting alias "<<name
 				<<" -> "<<convert_to<<std::endl;
 			m_aliases[name] = convert_to;

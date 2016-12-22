@@ -59,6 +59,7 @@ enum
 	GUI_ID_KEY_INVENTORY_BUTTON,
 	GUI_ID_KEY_DUMP_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON,
+	GUI_ID_KEY_ZOOM_BUTTON,
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
@@ -137,7 +138,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 	{
 		key_setting *k = key_settings.at(i);
 		{
-			core::rect < s32 > rect(0, 0, 110, 20);
+			core::rect < s32 > rect(0, 0, 150, 20);
 			rect += topleft + v2s32(offset.X, offset.Y);
 			Environment->addStaticText(k->button_name, rect, false, true, this, -1);
 		}
@@ -414,5 +415,6 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_NOCLIP_BUTTON,    wgettext("Toggle noclip"),    "keymap_noclip");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),     "keymap_rangeselect");
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
+	this->add_key(GUI_ID_KEY_ZOOM_BUTTON,      wgettext("Zoom"),             "keymap_zoom");
 }
 

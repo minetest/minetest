@@ -32,7 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "player.h"
 #include "fontengine.h"
+#include "joystick_controller.h"
 #include "clientlauncher.h"
+#include "version.h"
 
 /* mainmenumanager.h
  */
@@ -112,6 +114,8 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	porting::setXorgClassHint(video_driver->getExposedVideoData(), PROJECT_NAME_C);
 
+	porting::setXorgWindowIcon(device);
+
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
 		Default is 500.
@@ -184,7 +188,9 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	{
 		// Set the window caption
 		const wchar_t *text = wgettext("Main Menu");
-		device->setWindowCaption((utf8_to_wide(PROJECT_NAME_C) + L" [" + text + L"]").c_str());
+		device->setWindowCaption((utf8_to_wide(PROJECT_NAME_C) +
+			L" " + utf8_to_wide(g_version_hash) +
+			L" [" + text + L"]").c_str());
 		delete[] text;
 
 		try {	// This is used for catching disconnects
@@ -499,7 +505,8 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 #endif
 
 	/* show main menu */
-	GUIEngine mymenu(device, guiroot, &g_menumgr, smgr, menudata, *kill);
+	GUIEngine mymenu(device, &input->joystick, guiroot,
+		&g_menumgr, smgr, menudata, *kill);
 
 	smgr->clear();	/* leave scene manager in a clean state */
 }
@@ -558,6 +565,22 @@ bool ClientLauncher::create_engine_device()
 	device = createDeviceEx(params);
 
 	if (device) {
+		if (g_settings->getBool("enable_joysticks")) {
+			irr::core::array<irr::SJoystickInfo> infos;
+			std::vector<irr::SJoystickInfo> joystick_infos;
+			// Make sure this is called maximum once per
+			// irrlicht device, otherwise it will give you
+			// multiple events for the same joystick.
+			if (device->activateJoysticks(infos)) {
+				infostream << "Joystick support enabled" << std::endl;
+				joystick_infos.reserve(infos.size());
+				for (u32 i = 0; i < infos.size(); i++) {
+					joystick_infos.push_back(infos[i]);
+				}
+			} else {
+				errorstream << "Could not activate joystick support." << std::endl;
+			}
+		}
 		porting::initIrrlicht(device);
 	}
 

@@ -148,7 +148,7 @@ struct NoiseParams {
 class Noise {
 public:
 	NoiseParams np;
-	int seed;
+	s32 seed;
 	u32 sx;
 	u32 sy;
 	u32 sz;
@@ -157,7 +157,7 @@ public:
 	float *persist_buf;
 	float *result;
 
-	Noise(NoiseParams *np, int seed, u32 sx, u32 sy, u32 sz=1);
+	Noise(NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz=1);
 	~Noise();
 
 	void setSize(u32 sx, u32 sy, u32 sz=1);
@@ -167,11 +167,11 @@ public:
 	void gradientMap2D(
 		float x, float y,
 		float step_x, float step_y,
-		int seed);
+		s32 seed);
 	void gradientMap3D(
 		float x, float y, float z,
 		float step_x, float step_y, float step_z,
-		int seed);
+		s32 seed);
 
 	float *perlinMap2D(float x, float y, float *persistence_map=NULL);
 	float *perlinMap3D(float x, float y, float z, float *persistence_map=NULL);
@@ -202,11 +202,11 @@ private:
 
 };
 
-float NoisePerlin2D(NoiseParams *np, float x, float y, int seed);
-float NoisePerlin3D(NoiseParams *np, float x, float y, float z, int seed);
+float NoisePerlin2D(NoiseParams *np, float x, float y, s32 seed);
+float NoisePerlin3D(NoiseParams *np, float x, float y, float z, s32 seed);
 
 inline float NoisePerlin2D_PO(NoiseParams *np, float x, float xoff,
-	float y, float yoff, int seed)
+	float y, float yoff, s32 seed)
 {
 	return NoisePerlin2D(np,
 		x + xoff * np->spread.X,
@@ -215,7 +215,7 @@ inline float NoisePerlin2D_PO(NoiseParams *np, float x, float xoff,
 }
 
 inline float NoisePerlin3D_PO(NoiseParams *np, float x, float xoff,
-	float y, float yoff, float z, float zoff, int seed)
+	float y, float yoff, float z, float zoff, s32 seed)
 {
 	return NoisePerlin3D(np,
 		x + xoff * np->spread.X,
@@ -225,22 +225,22 @@ inline float NoisePerlin3D_PO(NoiseParams *np, float x, float xoff,
 }
 
 // Return value: -1 ... 1
-float noise2d(int x, int y, int seed);
-float noise3d(int x, int y, int z, int seed);
+float noise2d(int x, int y, s32 seed);
+float noise3d(int x, int y, int z, s32 seed);
 
-float noise2d_gradient(float x, float y, int seed, bool eased=true);
-float noise3d_gradient(float x, float y, float z, int seed, bool eased=false);
+float noise2d_gradient(float x, float y, s32 seed, bool eased=true);
+float noise3d_gradient(float x, float y, float z, s32 seed, bool eased=false);
 
-float noise2d_perlin(float x, float y, int seed,
+float noise2d_perlin(float x, float y, s32 seed,
 		int octaves, float persistence, bool eased=true);
 
-float noise2d_perlin_abs(float x, float y, int seed,
+float noise2d_perlin_abs(float x, float y, s32 seed,
 		int octaves, float persistence, bool eased=true);
 
-float noise3d_perlin(float x, float y, float z, int seed,
+float noise3d_perlin(float x, float y, float z, s32 seed,
 		int octaves, float persistence, bool eased=false);
 
-float noise3d_perlin_abs(float x, float y, float z, int seed,
+float noise3d_perlin_abs(float x, float y, float z, s32 seed,
 		int octaves, float persistence, bool eased=false);
 
 inline float easeCurve(float t)

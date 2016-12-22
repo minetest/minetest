@@ -53,7 +53,7 @@ enum BiomeV6Type
 };
 
 
-struct MapgenV6Params : public MapgenSpecificParams {
+struct MapgenV6Params : public MapgenParams {
 	u32 spflags;
 	float freq_desert;
 	float freq_beach;
@@ -124,8 +124,10 @@ public:
 	content_t c_mossycobble;
 	content_t c_stair_cobble;
 
-	MapgenV6(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
 	~MapgenV6();
+
+	virtual MapgenType getType() const { return MAPGEN_V6; }
 
 	void makeChunk(BlockMakeData *data);
 	int getGroundLevelAtPoint(v2s16 p);
@@ -161,19 +163,5 @@ public:
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);
 };
-
-
-struct MapgenFactoryV6 : public MapgenFactory {
-	Mapgen *createMapgen(int mgid, MapgenParams *params, EmergeManager *emerge)
-	{
-		return new MapgenV6(mgid, params, emerge);
-	};
-
-	MapgenSpecificParams *createMapgenParams()
-	{
-		return new MapgenV6Params();
-	};
-};
-
 
 #endif

@@ -19,6 +19,8 @@ bool normalTexturePresent = false;
 
 const float e = 2.718281828459;
 const float BS = 10.0;
+const float fogStart = FOG_START;
+const float fogShadingParameter = 1 / ( 1 - fogStart);
 
 #ifdef ENABLE_TONE_MAPPING
 
@@ -194,24 +196,25 @@ void main(void)
 
 	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
 	
-#if MATERIAL_TYPE == TILE_MATERIAL_LIQUID_TRANSPARENT
-	float alpha = gl_Color.a;
-	if (fogDistance != 0.0) {
-		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
-		alpha = mix(alpha, 0.0, d);
-	}
-	col = vec4(col.rgb, alpha);
-#else
-	if (fogDistance != 0.0) {
-		float d = max(0.0, min(vPosition.z / fogDistance * 1.5 - 0.6, 1.0));
-		col = mix(col, skyBgColor, d);
-	}
-	col = vec4(col.rgb, base.a);
+#ifdef ENABLE_TONE_MAPPING
+	col = applyToneMapping(col);
 #endif
 
-#ifdef ENABLE_TONE_MAPPING
-	gl_FragColor = applyToneMapping(col);
-#else
+	if (fogDistance != 0.0) {
+		// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
+		// the fog will only be rendered correctly if the last operation before the
+		// clamp() is an addition. Else, the clamp() seems to be ignored.
+		// E.g. the following won't work:
+		//      float clarity = clamp(fogShadingParameter
+		//		* (fogDistance - length(eyeVec)) / fogDistance), 0.0, 1.0);
+		// As additions usually come for free following a multiplication, the new formula
+		// should be more efficient as well.
+		// Note: clarity = (1 - fogginess)
+		float clarity = clamp(fogShadingParameter
+			- fogShadingParameter * length(eyeVec) / fogDistance, 0.0, 1.0);
+		col = mix(skyBgColor, col, clarity);
+	}
+	col = vec4(col.rgb, base.a);
+
 	gl_FragColor = col;
-#endif
 }

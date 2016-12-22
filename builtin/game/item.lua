@@ -1,5 +1,7 @@
 -- Minetest: builtin/item.lua
 
+local builtin_shared = ...
+
 local function copy_pointed_thing(pointed_thing)
 	return {
 		type  = pointed_thing.type,
@@ -250,7 +252,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local newnode = {name = def.name, param1 = 0, param2 = param2}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
-	if def.paramtype2 == 'wallmounted' and not param2 then
+	if def.place_param2 ~= nil then
+		newnode.param2 = def.place_param2
+	elseif def.paramtype2 == 'wallmounted' and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -273,7 +277,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	-- Check if the node is attached and if it can be placed there
 	if core.get_item_group(def.name, "attached_node") ~= 0 and
-		not check_attached_node(place_to, newnode) then
+		not builtin_shared.check_attached_node(place_to, newnode) then
 		core.log("action", "attached node " .. def.name ..
 			" can not be placed at " .. core.pos_to_string(place_to))
 		return itemstack, false
@@ -470,6 +474,9 @@ function core.node_dig(pos, node, digger)
 		-- Wear out tool
 		if not core.setting_getbool("creative_mode") then
 			wielded:add_wear(dp.wear)
+			if wielded:get_count() == 0 and wdef.sound and wdef.sound.breaks then
+				core.sound_play(wdef.sound.breaks, {pos = pos, gain = 0.5})
+			end
 		end
 	end
 	digger:set_wielded_item(wielded)

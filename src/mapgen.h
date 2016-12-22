@@ -26,15 +26,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/container.h"
 
-#define DEFAULT_MAPGEN "v6"
+#define MAPGEN_DEFAULT MAPGEN_V7
+#define MAPGEN_DEFAULT_NAME "v7"
 
 /////////////////// Mapgen flags
-#define MG_TREES       0x01
+#define MG_TREES       0x01  // Deprecated. Moved into mgv6 flags
 #define MG_CAVES       0x02
 #define MG_DUNGEONS    0x04
-#define MG_FLAT        0x08
+#define MG_FLAT        0x08  // Deprecated. Moved into mgv6 flags
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
+
+typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
 class MMVManip;
@@ -44,6 +47,9 @@ extern FlagDesc flagdesc_mapgen[];
 extern FlagDesc flagdesc_gennotify[];
 
 class Biome;
+class BiomeGen;
+struct BiomeParams;
+class BiomeManager;
 class EmergeManager;
 class MapBlock;
 class VoxelManipulator;
@@ -73,9 +79,9 @@ enum GenNotifyType {
 
 // TODO(hmmmm/paramat): make stone type selection dynamic
 enum MgStoneType {
-	STONE,
-	DESERT_STONE,
-	SANDSTONE,
+	MGSTONE_STONE,
+	MGSTONE_DESERT_STONE,
+	MGSTONE_SANDSTONE,
 };
 
 struct GenNotifyEvent {
@@ -102,46 +108,55 @@ private:
 	std::list<GenNotifyEvent> m_notify_events;
 };
 
-struct MapgenSpecificParams {
-	virtual void readParams(const Settings *settings) = 0;
-	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~MapgenSpecificParams() {}
+enum MapgenType {
+	MAPGEN_V5,
+	MAPGEN_V6,
+	MAPGEN_V7,
+	MAPGEN_FLAT,
+	MAPGEN_FRACTAL,
+	MAPGEN_VALLEYS,
+	MAPGEN_SINGLENODE,
+	MAPGEN_INVALID,
 };
 
 struct MapgenParams {
-	std::string mg_name;
+	MapgenType mgtype;
 	s16 chunksize;
 	u64 seed;
 	s16 water_level;
 	u32 flags;
 
-	NoiseParams np_biome_heat;
-	NoiseParams np_biome_heat_blend;
-	NoiseParams np_biome_humidity;
-	NoiseParams np_biome_humidity_blend;
-
-	MapgenSpecificParams *sparams;
+	BiomeParams *bparams;
 
 	MapgenParams() :
-		mg_name(DEFAULT_MAPGEN),
+		mgtype(MAPGEN_DEFAULT),
 		chunksize(5),
 		seed(0),
 		water_level(1),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		np_biome_heat(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 5349, 3, 0.5, 2.0)),
-		np_biome_heat_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0)),
-		np_biome_humidity(NoiseParams(50, 50, v3f(750.0, 750.0, 750.0), 842, 3, 0.5, 2.0)),
-		np_biome_humidity_blend(NoiseParams(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)),
-		sparams(NULL)
-	{}
+		bparams(NULL)
+	{
+	}
 
-	void load(const Settings &settings);
-	void save(Settings &settings) const;
+	virtual ~MapgenParams();
+
+	virtual void readParams(const Settings *settings);
+	virtual void writeParams(Settings *settings) const;
 };
 
+
+/*
+	Generic interface for map generators.  All mapgens must inherit this class.
+	If a feature exposed by a public member pointer is not supported by a
+	certain mapgen, it must be set to NULL.
+
+	Apart from makeChunk, getGroundLevelAtPoint, and getSpawnLevelAtPoint, all
+	methods can be used by constructing a Mapgen base class and setting the
+	appropriate public members (e.g. vm, ndef, and so on).
+*/
 class Mapgen {
 public:
-	int seed;
+	s32 seed;
 	int water_level;
 	u32 flags;
 	bool generating;
@@ -152,19 +167,20 @@ public:
 
 	u32 blockseed;
 	s16 *heightmap;
-	u8 *biomemap;
-	float *heatmap;
-	float *humidmap;
+	biome_t *biomemap;
 	v3s16 csize;
 
+	BiomeGen *biomegen;
 	GenerateNotifier gennotify;
 
 	Mapgen();
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
 
-	static u32 getBlockSeed(v3s16 p, int seed);
-	static u32 getBlockSeed2(v3s16 p, int seed);
+	virtual MapgenType getType() const { return MAPGEN_INVALID; }
+
+	static u32 getBlockSeed(v3s16 p, s32 seed);
+	static u32 getBlockSeed2(v3s16 p, s32 seed);
 	s16 findGroundLevelFull(v2s16 p2d);
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
@@ -188,15 +204,81 @@ public:
 	// signify this and to cause Server::findSpawnPos() to try another (X, Z).
 	virtual int getSpawnLevelAtPoint(v2s16 p) { return 0; }
 
+	// Mapgen management functions
+	static MapgenType getMapgenType(const std::string &mgname);
+	static const char *getMapgenName(MapgenType mgtype);
+	static Mapgen *createMapgen(MapgenType mgtype, int mgid,
+		MapgenParams *params, EmergeManager *emerge);
+	static MapgenParams *createMapgenParams(MapgenType mgtype);
+	static void getMapgenNames(std::vector<const char *> *mgnames, bool include_hidden);
+
 private:
+	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
+	// that checks whether there are floodable nodes without liquid beneath
+	// the node at index vi.
+	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
 	DISABLE_CLASS_COPY(Mapgen);
 };
 
-struct MapgenFactory {
-	virtual Mapgen *createMapgen(int mgid, MapgenParams *params,
-		EmergeManager *emerge) = 0;
-	virtual MapgenSpecificParams *createMapgenParams() = 0;
-	virtual ~MapgenFactory() {}
+/*
+	MapgenBasic is a Mapgen implementation that handles basic functionality
+	the majority of conventional mapgens will probably want to use, but isn't
+	generic enough to be included as part of the base Mapgen class (such as
+	generating biome terrain over terrain node skeletons, generating caves,
+	dungeons, etc.)
+
+	Inherit MapgenBasic instead of Mapgen to add this basic functionality to
+	your mapgen without having to reimplement it.  Feel free to override any of
+	these methods if you desire different or more advanced behavior.
+
+	Note that you must still create your own generateTerrain implementation when
+	inheriting MapgenBasic.
+*/
+class MapgenBasic : public Mapgen {
+public:
+	MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emerge);
+	virtual ~MapgenBasic();
+
+	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
+	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
+	virtual MgStoneType generateBiomes();
+	virtual void dustTopNodes();
+
+protected:
+	EmergeManager *m_emerge;
+	BiomeManager *m_bmgr;
+
+	Noise *noise_filler_depth;
+
+	v3s16 node_min;
+	v3s16 node_max;
+	v3s16 full_node_min;
+	v3s16 full_node_max;
+
+	// Content required for generateBiomes
+	content_t c_stone;
+	content_t c_water_source;
+	content_t c_river_water_source;
+	content_t c_desert_stone;
+	content_t c_sandstone;
+
+	// Content required for generateDungeons
+	content_t c_cobble;
+	content_t c_stair_cobble;
+	content_t c_mossycobble;
+	content_t c_sandstonebrick;
+	content_t c_stair_sandstonebrick;
+
+	int ystride;
+	int zstride;
+	int zstride_1d;
+	int zstride_1u1d;
+
+	u32 spflags;
+
+	NoiseParams np_cave1;
+	NoiseParams np_cave2;
+	float cave_width;
 };
 
 #endif

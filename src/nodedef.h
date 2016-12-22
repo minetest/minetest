@@ -65,6 +65,8 @@ enum ContentParamType2
 	CPT2_LEVELED,
 	// 2D rotation for things like plants
 	CPT2_DEGROTATE,
+	// Mesh options for plants
+	CPT2_MESHOPTIONS
 };
 
 enum LiquidType
@@ -111,6 +113,26 @@ struct NodeBox
 
 struct MapNode;
 class NodeMetadata;
+
+enum LeavesStyle {
+	LEAVES_FANCY,
+	LEAVES_SIMPLE,
+	LEAVES_OPAQUE,
+};
+
+class TextureSettings {
+public:
+	LeavesStyle leaves_style;
+	bool opaque_water;
+	bool connected_glass;
+	bool use_normal_texture;
+	bool enable_mesh_cache;
+	bool enable_minimap;
+
+	TextureSettings() {}
+
+	void readSettings();
+};
 
 enum NodeDrawType
 {
@@ -304,6 +326,15 @@ struct ContentFeatures
 		if(!isLiquid() || !f.isLiquid()) return false;
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
+
+#ifndef SERVER
+	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
+		u32 shader_id, bool use_normal_texture, bool backface_culling,
+		u8 alpha, u8 material_type);
+	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
+		scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip,
+		IGameDef *gamedef, const TextureSettings &tsettings);
+#endif
 };
 
 class INodeDefManager {
@@ -353,6 +384,8 @@ public:
 			const ContentFeatures &def)=0;
 	// If returns CONTENT_IGNORE, could not allocate id
 	virtual content_t allocateDummy(const std::string &name)=0;
+	// Remove a node
+	virtual void removeNode(const std::string &name)=0;
 
 	/*
 		Update item alias mapping.

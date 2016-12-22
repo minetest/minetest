@@ -115,7 +115,7 @@ if(CURSES_USE_NCURSESW)
   get_filename_component(_cursesParentDir "${_cursesLibDir}" PATH)
 
   find_path(CURSES_INCLUDE_PATH
-    NAMES ncursesw/ncurses.h ncursesw/curses.h
+    NAMES ncursesw/ncurses.h ncursesw/curses.h ncurses.h curses.h
     HINTS "${_cursesParentDir}/include"
     )
 

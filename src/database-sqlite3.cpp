@@ -47,7 +47,7 @@ SQLite format specification:
 
 #define SQLRES(s, r, m) \
 	if ((s) != (r)) { \
-		throw FileNotGoodException(std::string(m) + ": " +\
+		throw DatabaseException(std::string(m) + ": " +\
 				sqlite3_errmsg(m_database)); \
 	}
 #define SQLOK(s, m) SQLRES(s, SQLITE_OK, m)
@@ -56,8 +56,14 @@ SQLite format specification:
 	SQLOK(sqlite3_prepare_v2(m_database, query, -1, &m_stmt_##name, NULL),\
 		"Failed to prepare query '" query "'")
 
-#define FINALIZE_STATEMENT(statement) \
-	SQLOK(sqlite3_finalize(statement), "Failed to finalize " #statement)
+#define SQLOK_ERRSTREAM(s, m)                           \
+	if ((s) != SQLITE_OK) {                             \
+		errorstream << (m) << ": "                      \
+			<< sqlite3_errmsg(m_database) << std::endl; \
+	}
+
+#define FINALIZE_STATEMENT(statement) SQLOK_ERRSTREAM(sqlite3_finalize(statement), \
+	"Failed to finalize " #statement)
 
 int Database_SQLite3::busyHandler(void *data, int count)
 {
@@ -237,7 +243,7 @@ bool Database_SQLite3::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-std::string Database_SQLite3::loadBlock(const v3s16 &pos)
+void Database_SQLite3::loadBlock(const v3s16 &pos, std::string *block)
 {
 	verifyDatabase();
 
@@ -245,20 +251,17 @@ std::string Database_SQLite3::loadBlock(const v3s16 &pos)
 
 	if (sqlite3_step(m_stmt_read) != SQLITE_ROW) {
 		sqlite3_reset(m_stmt_read);
-		return "";
+		return;
 	}
+
 	const char *data = (const char *) sqlite3_column_blob(m_stmt_read, 0);
 	size_t len = sqlite3_column_bytes(m_stmt_read, 0);
 
-	std::string s;
-	if (data)
-		s = std::string(data, len);
+	*block = (data) ? std::string(data, len) : "";
 
 	sqlite3_step(m_stmt_read);
 	// We should never get more than 1 row, so ok to reset
 	sqlite3_reset(m_stmt_read);
-
-	return s;
 }
 
 void Database_SQLite3::createDatabase()
@@ -292,6 +295,6 @@ Database_SQLite3::~Database_SQLite3()
 	FINALIZE_STATEMENT(m_stmt_end)
 	FINALIZE_STATEMENT(m_stmt_delete)
 
-	SQLOK(sqlite3_close(m_database), "Failed to close database");
+	SQLOK_ERRSTREAM(sqlite3_close(m_database), "Failed to close database");
 }
 

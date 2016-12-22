@@ -44,8 +44,6 @@ public:
 
 	const char *sym() const;
 	const char *name() const;
-
-	std::string debug() const;
 protected:
 	static bool valid_kcode(irr::EKEY_CODE k)
 	{

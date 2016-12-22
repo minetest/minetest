@@ -2,34 +2,33 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2015-07-08 23:30+0200\n"
-"Last-Translator: Tae Lim Kook <tkook11@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
-"ko/>\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
+"PO-Revision-Date: 2016-10-31 05:41+0000\n"
+"Last-Translator: Han So Ri <2_0_2_0_@naver.com>\n"
+"Language-Team: Korean "
+"<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.4-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Lua 스크립트에서 오류가 발생하였습니다. 해당 모드:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr ""
+msgstr "오류가 발생하였습니다:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr ""
+msgstr "주 메뉴"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
@@ -37,39 +36,39 @@ msgstr "확인"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr ""
+msgstr "재접속"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr ""
+msgstr "재연결이 필요합니다:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
-msgstr ""
+msgstr "로딩중..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "프로토콜 버전이 맞지 않습니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "서버는 프로토콜 버전 $1 을(를) 사용합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "서버는 프로토콜 버전 $1과(와) $2 사이를 제공합니다. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
-msgstr ""
+msgstr "인터넷 연결을 확인한 후 서버 리스트를 확인하세요."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "프로토콜 버전 $1만 제공합니다."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "프로토콜 버전 $1과(와) $2 사이를 제공합니다."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -85,33 +84,33 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr ""
+msgstr "MP 미적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
-msgstr ""
+msgstr "MP 적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr ""
+msgstr "모두 적용"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr ""
+msgstr "\"$1\"는(은) 허락되지 않은 캐릭터로 사용할 수 없습니다. [a-z0-9_]만 사용할 수 있습니다."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr ""
+msgstr "숨겨진 게임"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr ""
+msgstr "숨겨진 맵 콘텐츠"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr ""
+msgstr "모드:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -120,131 +119,133 @@ msgstr "저장"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
-msgstr ""
+msgstr "월드:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr ""
+msgstr "적용"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr ""
+msgstr "\"$1\" 는(은) 이미 존재합니다"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr ""
+msgstr "만들기"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
+msgstr "minetest.net 에서 minetest_game같은 서브게임을 다운로드 하세요"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr ""
+msgstr "minetest.net 에서 다운로드 하세요"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
-msgstr ""
+msgstr "게임"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr ""
+msgstr "맵젠"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr ""
+msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr ""
+msgstr "시드"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr ""
+msgstr "경고: 최소한의 개발 테스트는 개발자를 위한 것입니다."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr ""
+msgstr "월드 이름"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr ""
+msgstr "서브게임을 설치하지 않았습니다."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr ""
+msgstr "$1 를(을) 삭제하겠습니까?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 #: src/keycode.cpp
 msgid "Delete"
-msgstr ""
+msgstr "삭제"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr ""
+msgstr "Modmgr: \"$1\"를(을) 삭제할 수 없습니다"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr ""
+msgstr "Modmgr: \"$1\" 를(을) 인식할 수 없습니다"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr ""
+msgstr "\"$1\"를(을) 삭제하겠습니까?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
-msgstr ""
+msgstr "확인"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr ""
+msgstr "모드팩 이름바꾸기:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" 는(은) 유효한 플래그가 아닙니다."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(설정의 설명이 없습니다)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "설정 페이지로 돌아가기"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr ""
+msgstr "열기"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr ""
+msgstr "적용 안함"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "수정"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr ""
+msgstr "적용"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "3개의 수가 쉼표와 괄호로 구분되는 형식입니다."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
+"형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, "
+"<persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr ""
+msgstr "게임"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr ""
+msgstr "모드"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -252,61 +253,63 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "플래그의 리스트를 쉼표로 구분하여 입력 하십시오."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "유효한 정수를 입력해주세요."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "유효한 숫자를 입력해주세요."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "가능한 값: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr ""
+msgstr "기본값 복원"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
-msgstr ""
+msgstr "경로 선택"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "기술적 이름 보기"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "값은 $1 (이)보다 커야 합니다."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "값은 $1 (이)보다 더 낮아야합니다."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
 "\n"
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
+"\n"
+"설치 모드: \"$1\"는(은) 지원 되지 않는 파일 형식 이거나 깨진 압축 파일입니다"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr ""
+msgstr "$1에서 $2는(은) 설치 할 수 없습니다"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr ""
+msgstr "설치 모드: 파일: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr ""
+msgstr "설치 모드: $1를(을) 찾을 수 없습니다"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr ""
+msgstr "설치 모드: 모드 팩 $1 (이)의 올바른 폴더를 찾을 수 없습니다"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -314,123 +317,123 @@ msgstr ""
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr ""
+msgstr "$1 를(을) 다운로드중입니다. 기다려주세요..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
-msgstr ""
+msgstr "설치"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr ""
+msgstr "$2페이지 중 $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr ""
+msgstr "순위"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr ""
+msgstr "검색"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
-msgstr ""
+msgstr "짧은 이름:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr ""
+msgstr "설치 완료:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
-msgstr ""
+msgstr "기타"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
-msgstr ""
+msgstr "재설치"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr ""
+msgstr "활동적인 공헌자"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr ""
+msgstr "코어 개발자"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
-msgstr ""
+msgstr "만든이"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr ""
+msgstr "이전 공헌자들"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr ""
+msgstr "이전 코어 개발자들"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr ""
+msgstr "설치한 모드:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr ""
+msgstr "모드 정보:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr ""
+msgstr "모드 설명이 없습니다"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
-msgstr ""
+msgstr "이름 바꾸기"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr ""
+msgstr "선택한 모드 파일:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr ""
+msgstr "선택한 모드 삭제"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr ""
+msgstr "선택한 모드팩 삭제"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
-msgstr ""
+msgstr "주소/포트"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
-msgstr ""
+msgstr "클라이언트"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr ""
+msgstr "연결"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr ""
+msgstr "크리에이티브 모드"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr ""
+msgstr "데미지를 입을 수 있습니다"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr ""
+msgstr "즐겨찾기 삭제"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
-msgstr ""
+msgstr "즐겨찾기"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr ""
+msgstr "이름/비밀번호"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr ""
+msgstr "PvP 가능"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -438,93 +441,93 @@ msgstr ""
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr ""
+msgstr "환경설정"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Creative Mode"
-msgstr ""
+msgstr "크리에이티브 모드"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr ""
+msgstr "데미지를 받을 수 있습니다"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
-msgstr ""
+msgstr "이름/비밀번호"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
-msgstr ""
+msgstr "새로 만들기"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "No world created or selected!"
-msgstr ""
+msgstr "월드를 만들거나 선택하지 않았습니다!"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Port"
-msgstr ""
+msgstr "포트"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Public"
-msgstr ""
+msgstr "일반"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr ""
+msgstr "비밀 월드:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
-msgstr ""
+msgstr "서버"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr ""
+msgstr "서버 포트"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
-msgstr ""
+msgstr "게임 시작"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2 x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D 구름 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4 x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8 배속"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
-msgstr ""
+msgstr "고급 설정"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "매끄럽게 표현하기:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr ""
+msgstr "싱글 플레이어 월드를 다시 시작하겠습니까?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr ""
+msgstr "이중 선형 필터"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
-msgstr ""
+msgstr "범프 매핑"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
-msgstr ""
+msgstr "키 변경"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
@@ -532,11 +535,11 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Fancy Leaves"
-msgstr ""
+msgstr "아름다운 나무 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr ""
+msgstr "밉 맵"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
@@ -544,39 +547,39 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "아니오"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr ""
+msgstr "필터 없음"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr ""
+msgstr "밉 맵 없음"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr ""
+msgstr "Node 강조"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr ""
+msgstr "Node 설명"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
-msgstr ""
+msgstr "없음"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Normal Mapping"
-msgstr ""
+msgstr "노멀 매핑"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
-msgstr ""
+msgstr "불투명한 나뭇잎 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "불투명한 물 효과"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
@@ -584,143 +587,147 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
-msgstr ""
+msgstr "입자 효과"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Reset singleplayer world"
+msgstr "싱글 플레이어 월드 다시 시작"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "설정"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
-msgstr ""
+msgstr "쉐이더"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Simple Leaves"
-msgstr ""
+msgstr "단순한 나뭇잎 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr ""
+msgstr "부드러운 조명 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
-msgstr ""
+msgstr "질감:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "To enable shaders the OpenGL driver needs to be used."
-msgstr ""
+msgstr "쉐이더를 사용하려면 OpenGL 드라이버를 사용할 필요가 있습니다."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Tone Mapping"
-msgstr ""
+msgstr "톤 매핑"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
-msgstr ""
+msgstr "터치임계값 (픽셀)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr ""
+msgstr "선형 필터"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
-msgstr ""
+msgstr "움직이는 나뭇잎 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Plants"
-msgstr ""
+msgstr "움직이는 식물 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Water"
-msgstr ""
+msgstr "물결 효과"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Yes"
-msgstr ""
+msgstr "예"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr ""
+msgstr "모드 설정"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
-msgstr ""
+msgstr "메인"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr ""
+msgstr "싱글 플레이어 시작"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
-msgstr ""
+msgstr "시작"
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
-msgstr ""
+msgstr "싱글 플레이어"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
-msgstr ""
+msgstr "정보가 없습니다"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
-msgstr ""
+msgstr "선택한 텍스쳐 팩:"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Texturepacks"
-msgstr ""
+msgstr "텍스쳐 팩"
 
 #: src/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "연결 시간이 초과했습니다."
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "실행 중입니다!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "node 초기값 설정중"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "node 초기값 설정중..."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "텍스쳐 로딩중..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "쉐이더 개축중..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "연결 오류 (시간초과)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "게임을 찾지 못했거나 로딩할 수 없습니다\""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "인식할 수 없는 게임 사양입니다."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "주 메뉴"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr ""
+msgstr "월드를 선택하지 않아 주소를 받을 수 없습니다."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "이름이 너무 깁니다."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "월드가 존재하지 않습니다: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
@@ -731,30 +738,32 @@ msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"자세한 내용은 debug.txt을 확인 합니다."
 
 #: src/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "키 변경"
 
 #: src/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "비밀번호 변경"
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "서버 연결중..."
 
 #: src/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "계속"
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "클라이언트 만드는 중..."
 
 #: src/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "서버 만드는 중..."
 
 #: src/game.cpp
 msgid ""
@@ -770,6 +779,16 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"기본 컨트롤:-WASD: 이동\n"
+"-스페이스: 점프/오르기\n"
+"-쉬프트:살금살금/내려가기\n"
+"-Q: 아이템 드롭\n"
+"-I: 인벤토리\n"
+"-마우스: 돌아보기/보기\n"
+"-마우스 왼쪽: 파내기/공격\n"
+"-마우스 오른쪽: 배치/사용\n"
+"-마우스 휠: 아이템 선택\n"
+"-T: 채팅\n"
 
 #: src/game.cpp
 msgid ""
@@ -786,86 +805,98 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"기본 컨트롤: \n"
+"표시가 없는 메뉴:\n"
+"- 단일 탭: 버튼 활성화\n"
+"- 더블 탭: 배치/사용\n"
+"- 드래그: 둘러보기\n"
+" 메뉴/인벤토리:\n"
+"- 더블 탭 (외부):\n"
+" -->닫기\n"
+"- 무더기(stack) 터치, 슬롯 터치: \n"
+" --> 무더기(stack) 이동 \n"
+"- 터치 및 드래그, 검지로 탭\n"
+" --> 슬롯에 한개의 아이템 배치\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "메뉴 나가기"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "게임 종료"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "아이템 정의중..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "미디어..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Node 정의중..."
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "주소 분석중..."
 
 #: src/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "리스폰"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "서버가 닫혔습니다..."
 
 #: src/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "볼륨 조절"
 
 #: src/game.cpp
 msgid "You died."
-msgstr ""
+msgstr "당신은 죽었습니다."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "확인"
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "들어가기 "
 
 #: src/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "계속하기"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Use\" = 내려가기"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "뒤로"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "채팅"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "명령어"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "콘솔"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -873,31 +904,31 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "떨어뜨리기"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "앞으로"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "인벤토리"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "점프"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "이미 사용하고 있는 키입니다"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr ""
+msgstr "Keybindings. (이 메뉴를 고정하려면 minetest.cof에서 stuff를 제거해야합니다.)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
-msgstr ""
+msgstr "왼쪽"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
@@ -905,83 +936,87 @@ msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "범위 선택"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Right"
-msgstr ""
+msgstr "오른쪽"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "살금살금"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr ""
+msgstr "시네마틱 스위치"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "고속 스위치"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "비행 스위치"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "자유시점 스위치"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
-msgstr ""
+msgstr "사용"
+
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "확대/축소"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "키를 누르세요"
 
 #: src/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "변경"
 
 #: src/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "비밀번호 확인"
 
 #: src/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "새로운 비밀번호"
 
 #: src/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "현재 비밀번호"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "비밀번호가 맞지 않습니다!"
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "나가기"
 
 #: src/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "볼륨 조절: "
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "애플 리 케이 션"
 
 #: src/keycode.cpp
 msgid "Attn"
-msgstr ""
+msgstr "담당자"
 
 #: src/keycode.cpp
 msgid "Back"
-msgstr ""
+msgstr "뒤로"
 
 #: src/keycode.cpp
 msgid "Capital"
-msgstr ""
+msgstr "자본"
 
 #: src/keycode.cpp
 msgid "Clear"
@@ -989,7 +1024,7 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Comma"
-msgstr ""
+msgstr "쉼표"
 
 #: src/keycode.cpp
 msgid "Control"
@@ -997,7 +1032,7 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Convert"
-msgstr ""
+msgstr "변환"
 
 #: src/keycode.cpp
 msgid "CrSel"
@@ -1009,7 +1044,7 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "끝"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
@@ -1025,23 +1060,23 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Execute"
-msgstr ""
+msgstr "실행"
 
 #: src/keycode.cpp
 msgid "Final"
-msgstr ""
+msgstr "최종"
 
 #: src/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "도움말"
 
 #: src/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: src/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Insert"
 
 #: src/keycode.cpp
 msgid "Junja"
@@ -1057,107 +1092,109 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "왼쪽된 버튼"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "왼쪽 컨트롤"
 
 #: src/keycode.cpp
 msgid "Left Menu"
-msgstr ""
+msgstr "왼쪽 메뉴"
 
 #: src/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "왼쪽 쉬프트"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "왼쪽 창"
 
 #: src/keycode.cpp
 msgid "Menu"
-msgstr ""
+msgstr "메뉴"
 
 #: src/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "가운데 버튼"
 
 #: src/keycode.cpp
 msgid "Minus"
-msgstr ""
+msgstr "마이너스"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr ""
+msgstr "모드 변경"
 
 #: src/keycode.cpp
 msgid "Next"
-msgstr ""
+msgstr "다음"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Nonconvert"
-msgstr ""
+msgstr "변환 안함"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Num Lock"
-msgstr ""
+msgstr "Num Lock"
 
 #: src/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "숫자 키패드 *"
 
 #: src/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "숫자 키패드 +"
 
 #: src/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "숫자 키패드 -"
 
 #: src/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "숫자 키패드 /"
 
 #: src/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "숫자 키패드 0"
 
 #: src/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "숫자 키패드 1"
 
 #: src/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "숫자 키패드 2"
 
 #: src/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "숫자 키패드 3"
 
 #: src/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "숫자 키패드 4"
 
 #: src/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "숫자 키패드 5"
 
 #: src/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "숫자 키패드 6"
 
 #: src/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "숫자 키패드 7"
 
 #: src/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "숫자 키패드 8"
 
 #: src/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "숫자 키패드 9"
 
 #: src/keycode.cpp
 msgid "OEM Clear"
@@ -1168,76 +1205,81 @@ msgid "PA1"
 msgstr ""
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Pause"
-msgstr ""
+msgstr "일시 중지"
 
 #: src/keycode.cpp
 msgid "Period"
-msgstr ""
+msgstr "기간"
 
 #: src/keycode.cpp
 msgid "Plus"
-msgstr ""
+msgstr "플러스"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Print"
-msgstr ""
+msgstr "인쇄"
 
 #: src/keycode.cpp
 msgid "Prior"
-msgstr ""
+msgstr "이전"
 
 #: src/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "되돌리기"
 
 #: src/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "오른쪽 버튼"
 
 #: src/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "오른쪽 컨트롤"
 
 #: src/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "오른쪽 메뉴"
 
 #: src/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "오른쪽 쉬프트"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "오른쪽 창"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Scroll Lock"
-msgstr ""
+msgstr "스크롤 락"
 
 #: src/keycode.cpp
 msgid "Select"
-msgstr ""
+msgstr "선택"
 
 #: src/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "쉬프트"
 
 #: src/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "잠자기"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Snapshot"
-msgstr ""
+msgstr "스냅숏"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Space"
-msgstr ""
+msgstr "스페이스"
 
 #: src/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "탭"
 
 #: src/keycode.cpp
 msgid "Up"
@@ -1249,10 +1291,6 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "X Button 2"
-msgstr ""
-
-#: src/keycode.cpp
-msgid "Zoom"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1272,13 +1310,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "3D 구름 효과"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D 모드"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1289,20 +1328,30 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"3D 지원.\n"
+"현재 지원되는 것:\n"
+"- 없음: 3d 출력 없음.\n"
+"- 입체 사진: 청록색/자홍색 3d.\n"
+"- interlaced: odd/even line based polarisation screen support.↵\n"
+"- topbottom: split screen top/bottom.↵\n"
+"- sidebyside: split screen side by side.↵\n"
+"- pageflip: quadbuffer based 3d."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"새로운 맵을 위해 선택한 맵 시드가 무작위로 비워져있다면\n"
+"메인메뉴에서 새로운 월드를 만들때 재정의 될 것입니다."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "서버 충돌 하는 경우 모든 사용자들에게 표시 될 메시지입니다."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "서버가 닫힐 때 모든 사용자들에게 표시 될 메시지입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
@@ -1321,8 +1370,12 @@ msgid "Active Block Modifier interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Active Block Modifiers"
+msgstr "블록 수식어 활성"
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "블록 범위 활성"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
@@ -1364,23 +1417,28 @@ msgid "Ambient occlusion gamma"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "계곡 증폭"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "이방성 필터링"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Announce server"
-msgstr ""
+msgstr "서버 발표"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Announce to this serverlist.\n"
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"서버리스트에 발표합니다.\n"
+"만약 당신의 Ipv6 주소를 알리기 원한다면 serverlist_url = v6.servers.minetest.net 을 사용하세요."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1388,31 +1446,35 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "충돌 후 재연결 요청"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Backward key"
+msgid "Autorun key"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Backward key"
+msgstr "뒤로 이동하는 키"
 
 #: src/settings_translation_file.cpp
 msgid "Base terrain height"
-msgstr ""
+msgstr "기본 지형 높이"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "기본"
 
 #: src/settings_translation_file.cpp
 msgid "Basic Privileges"
-msgstr ""
+msgstr "기본 권한"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
-msgstr ""
+msgstr "이중 선형 필터링"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
@@ -1424,6 +1486,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Builtin"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1444,15 +1510,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
-msgstr ""
+msgstr "동굴 잡음 #1"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #2"
-msgstr ""
+msgstr "동굴 잡음 #2"
 
 #: src/settings_translation_file.cpp
 msgid "Cave width"
-msgstr ""
+msgstr "동굴 너비"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1460,11 +1526,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "채팅"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr ""
+msgstr "채팅 스위치"
+
+#: src/settings_translation_file.cpp
+msgid "Chatcommands"
+msgstr "채팅 명렁어"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1490,40 +1560,42 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Chunk size"
-msgstr ""
+msgstr "덩어리 크기"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
+msgstr "시네마틱 모드"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr ""
+msgstr "시네마틱 모드 스위치"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "깨끗하고 투명한 텍스처"
 
 #: src/settings_translation_file.cpp
 msgid "Client and Server"
-msgstr ""
+msgstr "클라이언트와 서버"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "오르기 속도"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "구름 높이"
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "구름 반지름"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "구름"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
@@ -1535,7 +1607,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
+msgstr "색깔있는 안개"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
 msgstr ""
+"쉼표로 구분된 모드의 리스트는 HTTP API에 접근 할 수 있습니다.\n"
+"인터넷에서 데이터를 다운로드 하거나 업로드 할 수 있습니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1544,14 +1625,8 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "명령 키"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
@@ -1616,7 +1691,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "충돌 메시지"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1652,11 +1727,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "감도(DPI)"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "데미지"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -1676,20 +1751,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "기본 게임"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"새로운 월드를 만들 때 기본 게임으로 시작합니다.\n"
+"주 메뉴에서 월드를 만들 때 재정의 될 것입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr ""
+msgstr "기본 비밀 번호"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
+msgstr "기본 권한"
+
+#: src/settings_translation_file.cpp
+msgid "Default report format"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1699,14 +1781,22 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"텍스처의 샘플링 단계를 정의합니다.\n"
+"일반 맵에 부드럽게 높은 값을 나타냅니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
-msgstr ""
+msgstr "블록에 최대 플레이어 전송 거리를 정의 합니다 (0 = 무제한)."
+
+#: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
+msgstr "건축 후 블록 전송 지연"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1739,14 +1829,6 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Determines terrain shape.\n"
 "The 3 numbers in brackets control the scale of the\n"
@@ -1758,12 +1840,24 @@ msgid "Disable anticheat"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Disallow empty passwords"
+msgid "Disable escape sequences"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Domain name of server, to be displayed in the serverlist."
+msgid ""
+"Disable escape sequences, e.g. chat coloring.\n"
+"Use this if you want to run a server with pre-0.4.14 clients and you want to "
+"disable\n"
+"the escape sequences generated by mods."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Disallow empty passwords"
+msgstr "비밀번호 없으면 불가"
+
+#: src/settings_translation_file.cpp
+msgid "Domain name of server, to be displayed in the serverlist."
+msgstr "도메인 서버의 이름은 서버리스트에 표시 됩니다."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
@@ -1775,23 +1869,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "아이템 드랍 키"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Enable Joysticks"
+msgstr "조이스틱 적용"
+
+#: src/settings_translation_file.cpp
 msgid "Enable VBO"
-msgstr ""
+msgstr "VBO 적용"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr ""
+msgstr "보안 모드 적용"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "플레이어는 데미지를 받거나 죽을 수 있습니다."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -1829,7 +1927,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "인벤토리 아이템의 애니메이션 적용."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1838,6 +1936,8 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"텍스처에 bumpmapping을 할 수 있습니다. Normalmaps는 텍스쳐 팩에서 받거나 자동 생성될 필요가 있습니다.\n"
+"쉐이더를 활성화 해야 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -1849,18 +1949,29 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
+msgstr "미니맵 적용."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"비행 노멀맵 생성 적용 (엠보스 효과).\n"
+"Bumpmapping를 활성화 해야 합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1925,7 +2036,17 @@ msgid "Field of view"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Field of view for zoom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1952,35 +2073,35 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
-msgstr ""
+msgstr "필터링"
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr ""
+msgstr "수정된 맵 시드"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "비행 키"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "비행"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "안개"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "안개 스위치"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "글꼴 경로"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "글꼴 그림자"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
@@ -1996,7 +2117,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "글꼴 크기"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -2028,7 +2149,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "전체 화면"
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
@@ -2036,7 +2157,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "전체 화면 모드."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
@@ -2052,14 +2173,18 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "감마"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "일반"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
+msgstr "Normalmaps 생성"
+
+#: src/settings_translation_file.cpp
+msgid "Global callbacks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2067,8 +2192,6 @@ msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"The default flags set in the engine are: caves, light, decorations\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2076,7 +2199,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "그래픽"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
@@ -2084,7 +2207,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HTTP Mods"
-msgstr ""
+msgstr "HTTP 모드"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2096,6 +2219,15 @@ msgid ""
 "-    legacy: (try to) mimic old behaviour (default for release).\n"
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2112,26 +2244,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "서버의 홈페이지는 서버 리스트에 나타납니다."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "얼마나 강을 깊게 만들건가요"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How large area of blocks are subject to the active block stuff, stated in "
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2146,11 +2269,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "IPv6 서버"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 support."
@@ -2218,14 +2341,49 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
-msgstr ""
+msgstr "인게임"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "게임 내에서 채팅 콘솔 배경 알파 (불투명 함, 0와 255 사이)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
+msgstr "게임 내에서 채팅 콘솔 배경 색상 (빨,초,파)."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2242,7 +2400,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "인벤토리 키"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -2260,6 +2418,14 @@ msgstr ""
 msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick button repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick frustum sensitivity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2293,11 +2459,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "점프 키"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "점프 속도"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2305,6 +2471,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"보여지는 범위 감소에 대한 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2312,6 +2481,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"현재 선택된 아이템 드롭에 대한 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2319,6 +2491,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"보여지는 범위 증가에 대한 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2326,6 +2501,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"점프키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2333,6 +2511,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"고속 모드에서 빠르게 이동하는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2340,6 +2521,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"플레이어가 뒤쪽으로 움직이는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2347,6 +2531,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"플레이어가 앞으로 움직이는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2354,6 +2541,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"플레이어가 왼쪽으로 움직이는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2361,6 +2551,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"플레이어가 오른쪽으로 움직이는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2368,6 +2561,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"채팅 창을 여는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2375,6 +2571,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"명령어를 입력하기 위해 채팅창을 여는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2382,6 +2581,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"채팅창을 여는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2389,6 +2591,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"인벤토리를 여는 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2396,6 +2601,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"디버그 무더기(stacks) 인쇄 키. 개발을 위해 사용됨.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2405,6 +2613,10 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"살금살금걷기 키입니다.\n"
+"만약 aux1_descends를 사용할 수 없는 경우에 물에서 내려가거나 올라올 수 있습니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2412,10 +2624,23 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"1인칭에서 3인칭간 카메라 전환키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for taking screenshots.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"스크린샷키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Key for toggling autorun.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2426,6 +2651,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"시네마틱 모드 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2433,6 +2661,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"미니 맵 표시 설정/해제 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2440,6 +2671,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"고속 모드 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2447,6 +2681,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"비행 모드 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2454,13 +2691,19 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"자유시점 모드 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"카메라 업데이트 스위치 키입니다. 개발을 위해서만 사용됩니다. \n"
+"참조 http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e"
+"3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2468,6 +2711,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"디버그 정보 표시 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2475,6 +2721,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"HUD 표시 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2482,6 +2731,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"채팅 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2489,6 +2741,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"안개 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2503,6 +2758,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"제한없이 보여지는 범위에 대한 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr.html#"
+"a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -2510,11 +2768,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "언어"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "큰 동굴 깊이"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
@@ -2522,15 +2780,20 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "나뭇잎 스타일"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Leaves style:\n"
 "-   Fancy:  all faces visible\n"
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"나뭇잎 스타일:\n"
+"- 아름다운: 모든 면 표시\n"
+"- 간단: 외부 면만 표시, special_tiles를 정의 하는 경우만 사용\n"
+"- 불투명: 투명도 사용 안 함"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
@@ -2608,16 +2871,31 @@ msgid "Liquid update tick"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Main menu game manager"
+msgid "Load the game profiler"
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Loading Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Main menu game manager"
+msgstr "주 메뉴 게임 관리자"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu mod manager"
-msgstr ""
+msgstr "주 메뉴 모드 관리자"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
-msgstr ""
+msgstr "주 메뉴 스크립트"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2640,8 +2918,6 @@ msgid ""
 "'humid_rivers' modifies the humidity around rivers and in areas where water "
 "would tend to pool,\n"
 "it may interfere with delicately adjusted biomes.\n"
-"The default flags set in the engine are: altitude_chill, humid_rivers\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2651,8 +2927,6 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world.\n"
-"The default flags set in the engine are: none\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2663,8 +2937,6 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
 "flag is ignored.\n"
-"The default flags set in the engine are: biomeblend, mudflow\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2674,8 +2946,6 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "The 'ridges' flag controls the rivers.\n"
-"The default flags set in the engine are: mountains, ridges\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2683,7 +2953,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "맵 생성 제한"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
@@ -2987,11 +3257,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
-msgstr ""
+msgstr "거대한 동굴 깊이"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave noise"
-msgstr ""
+msgstr "거대한 동굴 잡음"
 
 #: src/settings_translation_file.cpp
 msgid "Massive caves form here."
@@ -3003,7 +3273,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr ""
+msgstr "최대 블록 전송 거리"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
@@ -3019,11 +3289,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "최대 FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "최대 FPS는 게임이 일시정지될때 나타납니다."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -3031,6 +3301,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr "최대 hotbar 폭"
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3075,17 +3353,25 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr "블록 당 최대 개체"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"현재 윈도우의 최대 부분은 hotbar를 사용할 것입니다.\n"
+"hotbar의 오른쪽이나 왼쪽에 무언가를 나타낼 때 유용합니다."
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
-msgstr ""
+#, fuzzy
+msgid "Maximum simultaneous block sends per client"
+msgstr "클라이언트 당 최대 동시 블록 전송"
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3094,19 +3380,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
-msgstr ""
+msgstr "최대 사용자"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
-msgstr ""
+msgstr "메뉴"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "메쉬 캐시"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -3122,51 +3404,48 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "미니맵"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "미니맵 키"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
-msgstr ""
+msgstr "미니맵 검색 높이"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Minimum texture size for filters"
-msgstr ""
+msgstr "필터 최소 텍스처 크기"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
+msgstr "밉매핑(Mipmapping)"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
-msgstr ""
+msgstr "Modstore 정보 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore download URL"
-msgstr ""
+msgstr "Modstore 다운로드 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore mods list URL"
-msgstr ""
+msgstr "Modstore 모드 리스트 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "고정 폭 글꼴 경로"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "고정 폭 글꼴 크기"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "마우스 감도"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
@@ -3185,10 +3464,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
 msgstr ""
+"맵 생성기의 이름은 새로운 월드를 만들때 사용됩니다.\n"
+"주 메뉴에서 새 월드를 만들면 이것은 무시될 것입니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3200,11 +3482,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of the server, to be displayed when players join and in the serverlist."
-msgstr ""
+msgstr "서버이름은 플레이어가 서버 리스트에 들어갈 때 나타납니다."
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "네트워크"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3214,23 +3496,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "신규 사용자는 비밀번호를 입력하세요."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "자유시점"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "자유시점 키"
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr ""
+msgstr "Node 강조"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
-msgstr ""
+msgstr "NodeTimer 간격"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
@@ -3238,15 +3520,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
-msgstr ""
+msgstr "소리"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
-msgstr ""
+msgstr "Normalmaps 샘플링"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps strength"
-msgstr ""
+msgstr "Normalmaps 강도"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
@@ -3277,16 +3559,18 @@ msgid "Overall bias of parallax occlusion effect, usually scale/2."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Overall scale of parallax occlusion effect."
-msgstr ""
+msgstr "시차 교합 효과의 전체 규모"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
-msgstr ""
+msgstr "시차 교합"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Parallax occlusion Scale"
-msgstr ""
+msgstr "시차 교합 규모"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion bias"
@@ -3297,38 +3581,42 @@ msgid "Parallax occlusion iterations"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Parallax occlusion mode"
-msgstr ""
+msgstr "시차 교합 모드"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Parallax occlusion strength"
-msgstr ""
+msgstr "시차 교합 강도"
 
 #: src/settings_translation_file.cpp
 msgid "Path to TrueTypeFont or bitmap."
-msgstr ""
+msgstr "TrueTypeFont 또는 비트맵의 경로입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr ""
+msgstr "스크린샷 저장 경로입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
+msgstr "텍스처 디렉터리 경로입니다. 모든 텍스처는 여기에서 먼저 검색 됩니다."
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "물리학"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"플레이어는 중력에 의해 영향을 받지 않고 날 수 있습니다.\n"
+"서버에서 \"비행\" 권한이 필요로 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr ""
+msgstr "플레이어 이름"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -3336,16 +3624,26 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
-msgstr ""
+msgstr "PVP"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
+"(UDP)에 연결 하는 포트.\n"
+"참고 주 메뉴의 포트 필트는 이 설정으로 재정의 됩니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Prevent mods from doing insecure things like running shell commands."
+msgstr "shell 명령어 실행 같은 안전 하지 않은 것으로부터 모드를 보호합니다."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3353,16 +3651,17 @@ msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
-msgstr ""
+msgid "Profiler"
+msgstr "프로파일러"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr ""
+msgstr "프로파일러 토글 키"
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
-msgstr ""
+#, fuzzy
+msgid "Profiling"
+msgstr "프로 파일링"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3372,68 +3671,78 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Raises terrain to make valleys around the rivers"
-msgstr ""
+msgstr "강 주변에 계곡을 만들기 위해 지형을 올립니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Random input"
-msgstr ""
+msgstr "임의 입력"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr ""
+msgstr "범위 선택 키"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "원격 미디어"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "원격 포트"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Replaces the default main menu with a custom one."
-msgstr ""
+msgstr "기본 주 메뉴를 커스텀 메뉴로 바꿉니다."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "보고서 경로"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "오른쪽 키"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "오른쪽 클릭 반복 간격"
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
-msgstr ""
+msgstr "강 깊이"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
-msgstr ""
+msgstr "강 소리"
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
-msgstr ""
+msgstr "강 크기"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
-msgstr ""
+msgstr "강 소리 -- 강이 0에 가까울 때 발생"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Rollback recording"
-msgstr ""
+msgstr "롤백 레코딩"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "원형 미니맵"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "디스크에 클라이언트에서 받은 맵을 저장 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "서버로부터 받은 맵을 저장"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3446,27 +3755,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "화면 높이"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "화면 너비"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "스크린샷"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "스크린샷 폴더"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
-msgstr ""
+msgstr "화면 캡처 형식"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot quality"
-msgstr ""
+msgstr "스크린샷 품질"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3474,105 +3783,120 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"화면 캡처 품질입니다. JPEG 형식에만 사용.\n"
+"1은 최악의 품질; 100은 최고의 품질을 의미합니다.\n"
+"기본 품질은 0을 사용 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
-msgstr ""
+msgstr "보안"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "Http://www.sqlite.org/pragma.html#pragma_synchronous 참조"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "선택 박스 테두리 색 (빨, 초, 파)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "선택 박스 컬러"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "선택 박스 너비"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
-msgstr ""
+msgstr "서버 / 싱글 플레이어"
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr ""
+msgstr "서버 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr ""
+msgstr "서버 주소"
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
-msgstr ""
+msgstr "서버 설명"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr ""
+msgstr "서버 이름"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
-msgstr ""
+msgstr "서버 포트"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
-msgstr ""
+msgstr "서버리스트 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
-msgstr ""
+msgstr "서버리스트 파일"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"언어 설정. 시스템 언어를 사용하려면 비워두세요.\n"
+"설정 적용 후 재시작이 필요합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"True로 설정하면 흔들리는 나뭇잎 효과가 적용됩니다.\n"
+"쉐이더를 활성화 해야 합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"True로 설정하면 흔들리는 식물 효과가 적용됩니다.\n"
+"쉐이더를 활성화 해야 합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"True로 설정하면 물결효과가 적용됩니다.\n"
+"쉐이더를 활성화해야 합니다.."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"쉐이더는 확장된 시각 효과를 제공합니다 그래서 비디오 카드의 성능이 증가될 것입니다.\n"
+"Thy only work with the OpenGL video backend."
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
+msgstr "미니맵 모양. 활성화 = 원형, 비활성화 = 정사각형."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
-msgstr ""
+msgstr "디버그 정보 보기"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "개체 선택 상자 보기"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "서버닫힘 메시지"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3581,34 +3905,38 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Slope and fill work together to modify the heights"
-msgstr ""
+msgstr "높이 수정을 위해 기울기와 채우기를 함께 작용합니다"
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
-msgstr ""
+msgstr "부드러운 조명효과"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Smooths camera when moving and looking around.\n"
+"Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"주위를 돌아볼 때 카메라를 부드럽게 해줍니다. 보기 또는 부드러운 마우스라고도 합니다.\n"
+"비디오를 녹화하기에 유용합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
+msgstr "시네마틱 모드에서 카메라의 회전을 매끄럽게 만듭니다. 사용 하지 않으려면 0입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "카메라의 회전을 매끄럽게 만듭니다. 사용 하지 않으려면 0입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "살금살금걷기 키"
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "사운드"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3620,7 +3948,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "고정된 스폰포인트"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -3632,7 +3960,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "엄격한 프로토콜 검사"
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
@@ -3644,7 +3972,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Terrain Height"
-msgstr ""
+msgstr "지형 높이"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3662,14 +3990,27 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
-msgstr ""
+msgstr "텍스처 경로"
 
 #: src/settings_translation_file.cpp
 msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "The depth of dirt or other filler"
+msgstr "흙이나 다른 것의 깊이"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3684,6 +4025,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The sensitivity of the joystick axes for moving the\n"
+"ingame view frustum around."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3703,13 +4050,19 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The time in seconds it takes between repeated events\n"
+"when holding down a joystick button combination."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "이 글꼴은 특정 언어에 사용 됩니다."
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
@@ -3722,36 +4075,43 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Time send interval"
-msgstr ""
+msgstr "시간 전송 간격"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "시간 속도"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Timeout for client to remove unused map data from memory."
-msgstr ""
+msgstr "메모리에서 사용 하지 않는 맵 데이터를 제거하기 위해 클라이언트에 대한 시간 제한입니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "To reduce lag, block transfers are slowed down when a player is building "
 "something.\n"
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"플레이어가 무엇을 건설할 때 딜레이를 줄이기 위해 블럭 전송이 느려집니다.\n"
+"이것은 node가 배치되거나 제거된 후 얼마나 오래 느려지는지를 결정합니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "카메라모드 스위치 키"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Tooltip delay"
-msgstr ""
+msgstr "도구 설명 지연"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
-msgstr ""
+msgstr "삼중 선형 필터링"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3759,58 +4119,60 @@ msgid ""
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
+"True = 256 \n"
+"False = 128 \n"
+"느린 컴퓨터에서 미니맵을 부드럽게 만들어줍니다."
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "신뢰할 수 있는 모드"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
-msgstr ""
+msgstr "멀티 탭에 표시 된 서버 목록 URL입니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "무제한 플레이어 전송 거리"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr ""
+msgstr "사용하지 않은 서버 데이터 삭제"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "평평하게 보는 대신에 3D 구름 효과를 사용합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "주 메뉴 배경에 구름 애니메이션을 사용 합니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+msgstr "각도에 따라 텍스처를 볼 때 이방성 필터링을 사용 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "이중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "Use key"
-msgstr ""
+msgstr "키 사용"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
-msgstr ""
+msgstr "텍스쳐를 크게하기 위해 mip mapping을 사용 합니다. 성능이 약간 증가할겁니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr ""
+msgstr "삼중 선형 필터링은 질감 스케일링을 할 때 사용 합니다."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "수직동기화 V-Sync"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
@@ -3818,57 +4180,64 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Valley Depth"
-msgstr ""
+msgstr "계곡 깊이"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Valley Fill"
-msgstr ""
+msgstr "계곡 채우기"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Valley Profile"
-msgstr ""
+msgstr "계곡 측면"
 
 #: src/settings_translation_file.cpp
 msgid "Valley Slope"
-msgstr ""
+msgstr "계곡 경사"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Valleys C Flags"
-msgstr ""
+msgstr "계곡 C 플래그"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "세로 화면 동기화."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "비디오 드라이버"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "View bobbing"
-msgstr ""
+msgstr "보기 만료"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "View distance in nodes.\n"
 "Min = 20"
 msgstr ""
+"node의 보여지는 거리\n"
+"최소 = 20"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "보여지는 범위 감소 키"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "보여지는 범위 증가 키"
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
-msgstr ""
+msgstr "보여지는 범위"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "볼륨"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3880,64 +4249,69 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "빠르게 걷기"
 
 #: src/settings_translation_file.cpp
 msgid "Water Features"
-msgstr ""
+msgstr "물 특징"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "물의 높이"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "월드의 물 표면 높이."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Waving Nodes"
-msgstr ""
+msgstr "움직이는 Node"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr ""
+msgstr "흔들리는 나뭇잎 효과"
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "흔들리는 식물 효과"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water"
-msgstr ""
+msgstr "물결 효과"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water height"
-msgstr ""
+msgstr "물결 높이"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water length"
-msgstr ""
+msgstr "물결 길이"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water speed"
-msgstr ""
+msgstr "물결 속도"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "When gui_scaling_filter is true, all GUI images need to be\n"
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"Gui_scaling_filter이 true 이면 모든 GUI 이미지 소프트웨어에서 필터링 될 필요가 있습니다. 하지만 일부 이미지는 "
+"바로 하드웨어에 생성됩니다. (e.g. render-to-texture for nodes in inventory)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "When using bilinear/trilinear/anisotropic filters, low-resolution textures\n"
 "can be blurred, so automatically upscale them with nearest-neighbor\n"
@@ -3947,6 +4321,12 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
+"이중선형/삼중선형/이방성 필터를 사용할 때 저해상도 택스쳐는 희미하게 보일 수 있습니다.so automatically upscale "
+"them with nearest-neighbor interpolation to preserve crisp pixels. This sets "
+"the minimum texture size for the upscaled textures; 값이 높을수록 선명하게 보입니다. 하지만 "
+"많은 메모리가 필요합니다. Powers of 2 are recommended. Setting this higher than 1 may "
+"not have a visible effect unless bilinear/trilinear/anisotropic filtering is "
+"enabled."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4001,18 +4381,23 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Width component of the initial window size."
-msgstr ""
+msgstr "폭은 초기 창 크기로 구성되어 있습니다."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Width of the selectionbox's lines around nodes."
 msgstr ""
+"node 주위 “selectionbox'” or (if UTF-8 supported) “selectionbox’” 라인의 너비입니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"월드 디렉토리 (월드의 모든 것은 여기에 저장됩니다).\n"
+"주 메뉴에서 시작 하는 경우 필요 하지 않습니다."
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."

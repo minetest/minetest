@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string.h>
 #include <iostream>
 
-std::map<u16, std::vector<v3s16> > FacePositionCache::m_cache;
+UNORDERED_MAP<u16, std::vector<v3s16> > FacePositionCache::m_cache;
 Mutex FacePositionCache::m_cache_mutex;
 // Calculate the borders of a "d-radius" cube
 // TODO: Make it work without mutex and data races, probably thread-local
@@ -188,14 +188,19 @@ u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed)
 }
 
 /*
-	blockpos: position of block in block coordinates
+	blockpos_b: position of block in block coordinates
 	camera_pos: position of camera in nodes
 	camera_dir: an unit vector pointing to camera direction
 	range: viewing range
+	distance_ptr: return location for distance from the camera
 */
 bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 		f32 camera_fov, f32 range, f32 *distance_ptr)
 {
+	// Maximum radius of a block.  The magic number is
+	// sqrt(3.0) / 2.0 in literal form.
+	const f32 block_max_radius = 0.866025403784 * MAP_BLOCKSIZE * BS;
+
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 
 	// Block center position
@@ -209,7 +214,7 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	v3f blockpos_relative = blockpos - camera_pos;
 
 	// Total distance
-	f32 d = blockpos_relative.getLength();
+	f32 d = MYMAX(0, blockpos_relative.getLength() - block_max_radius);
 
 	if(distance_ptr)
 		*distance_ptr = d;
@@ -218,13 +223,9 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir,
 	if(d > range)
 		return false;
 
-	// Maximum radius of a block.  The magic number is
-	// sqrt(3.0) / 2.0 in literal form.
-	f32 block_max_radius = 0.866025403784 * MAP_BLOCKSIZE * BS;
-
 	// If block is (nearly) touching the camera, don't
 	// bother validating further (that is, render it anyway)
-	if(d < block_max_radius)
+	if(d == 0)
 		return true;
 
 	// Adjust camera position, for purposes of computing the angle,

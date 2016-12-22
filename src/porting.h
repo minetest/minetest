@@ -60,7 +60,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <unistd.h>
 	#include <stdint.h> //for uintptr_t
 
-	#if (defined(linux) || defined(__linux) || defined(__GNU__)) && !defined(_GNU_SOURCE)
+	// Use standard Posix macro for Linux
+	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
+		#define __linux__ 
+	#endif
+	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
 	#endif
 
@@ -321,7 +325,7 @@ inline const char *getPlatformName()
 	return
 #if defined(ANDROID)
 	"Android"
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#elif defined(__linux__)
 	"Linux"
 #elif defined(_WIN32) || defined(_WIN64)
 	"Windows"
@@ -362,6 +366,11 @@ inline const char *getPlatformName()
 
 void setXorgClassHint(const video::SExposedVideoData &video_data,
 	const std::string &name);
+
+bool setXorgWindowIcon(IrrlichtDevice *device);
+
+bool setXorgWindowIconFromPath(IrrlichtDevice *device,
+	const std::string &icon_file);
 
 // This only needs to be called at the start of execution, since all future
 // threads in the process inherit this exception handler

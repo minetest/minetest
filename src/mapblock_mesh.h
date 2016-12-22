@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "voxel.h"
+#include "util/cpp11_container.h"
 #include <map>
 
 class IGameDef;
@@ -121,7 +122,7 @@ public:
 		if(m_animation_force_timer > 0)
 			m_animation_force_timer--;
 	}
-	
+
 	void updateCameraOffset(v3s16 camera_offset);
 
 private:
@@ -144,20 +145,20 @@ private:
 	// Last crack value passed to animate()
 	int m_last_crack;
 	// Maps mesh buffer (i.e. material) indices to base texture names
-	std::map<u32, std::string> m_crack_materials;
+	UNORDERED_MAP<u32, std::string> m_crack_materials;
 
 	// Animation info: texture animationi
 	// Maps meshbuffers to TileSpecs
-	std::map<u32, TileSpec> m_animation_tiles;
-	std::map<u32, int> m_animation_frames; // last animation frame
-	std::map<u32, int> m_animation_frame_offsets;
-	
+	UNORDERED_MAP<u32, TileSpec> m_animation_tiles;
+	UNORDERED_MAP<u32, int> m_animation_frames; // last animation frame
+	UNORDERED_MAP<u32, int> m_animation_frame_offsets;
+
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
 	// For each meshbuffer, maps vertex indices to (day,night) pairs
 	std::map<u32, std::map<u32, std::pair<u8, u8> > > m_daynight_diffs;
-	
+
 	// Camera offset info -> do we have to translate the mesh?
 	v3s16 m_camera_offset;
 };

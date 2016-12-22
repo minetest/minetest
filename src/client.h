@@ -182,6 +182,7 @@ struct ClientEvent
 			f32 expirationtime;
 			f32 size;
 			bool collisiondetection;
+			bool collision_removal;
 			bool vertical;
 			std::string *texture;
 		} spawn_particle;
@@ -199,6 +200,8 @@ struct ClientEvent
 			f32 minsize;
 			f32 maxsize;
 			bool collisiondetection;
+			bool collision_removal;
+			u16 attached_id;
 			bool vertical;
 			std::string *texture;
 			u32 id;
@@ -450,7 +453,10 @@ public:
 			core::line3d<f32> shootline_on_map
 	);
 
-	std::list<std::string> getConnectedPlayerNames();
+	const std::list<std::string> &getConnectedPlayerNames()
+	{
+		return m_env.getPlayerNames();
+	}
 
 	float getAnimationTime();
 
@@ -458,9 +464,8 @@ public:
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
-	u16 getBreath();
 
-	bool checkPrivilege(const std::string &priv)
+	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
 
 	bool getChatMessage(std::wstring &message);
@@ -496,6 +501,9 @@ public:
 
 	u8 getProtoVersion()
 	{ return m_proto_ver; }
+
+	bool connectedToServer()
+	{ return m_con.Connected(); }
 
 	float mediaReceiveProgress();
 
@@ -658,18 +666,18 @@ private:
 	// Sounds
 	float m_removed_sounds_check_timer;
 	// Mapping from server sound ids to our sound ids
-	std::map<s32, int> m_sounds_server_to_client;
+	UNORDERED_MAP<s32, int> m_sounds_server_to_client;
 	// And the other way!
-	std::map<int, s32> m_sounds_client_to_server;
+	UNORDERED_MAP<int, s32> m_sounds_client_to_server;
 	// And relations to objects
-	std::map<int, u16> m_sounds_to_objects;
+	UNORDERED_MAP<int, u16> m_sounds_to_objects;
 
 	// Privileges
-	std::set<std::string> m_privileges;
+	UNORDERED_SET<std::string> m_privileges;
 
 	// Detached inventories
 	// key = name
-	std::map<std::string, Inventory*> m_detached_inventories;
+	UNORDERED_MAP<std::string, Inventory*> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;

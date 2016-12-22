@@ -32,7 +32,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "modifiedstate.h"
 #include "util/container.h"
+#include "util/cpp11_container.h"
 #include "nodetimer.h"
+#include "map_settings_manager.h"
 
 class Settings;
 class Database;
@@ -46,8 +48,6 @@ class IRollbackManager;
 class EmergeManager;
 class ServerEnvironment;
 struct BlockMakeData;
-struct MapgenParams;
-
 
 /*
 	MapEditEvent
@@ -211,24 +211,10 @@ public:
 			std::set<v3s16> & light_sources,
 			std::map<v3s16, MapBlock*> & modified_blocks);
 
-	void unLightNeighbors(enum LightBank bank,
-			v3s16 pos, u8 lightwas,
-			std::set<v3s16> & light_sources,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
 	void spreadLight(enum LightBank bank,
 			std::set<v3s16> & from_nodes,
 			std::map<v3s16, MapBlock*> & modified_blocks);
-
-	void lightNeighbors(enum LightBank bank,
-			v3s16 pos,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
-	v3s16 getBrightestNeighbour(enum LightBank bank, v3s16 p);
-
-	s16 propagateSunlight(v3s16 start,
-			std::map<v3s16, MapBlock*> & modified_blocks);
-
+	
 	void updateLighting(enum LightBank bank,
 			std::map<v3s16, MapBlock*>  & a_blocks,
 			std::map<v3s16, MapBlock*> & modified_blocks);
@@ -327,7 +313,7 @@ public:
 	*/
 
 	NodeTimer getNodeTimer(v3s16 p);
-	void setNodeTimer(v3s16 p, NodeTimer t);
+	void setNodeTimer(const NodeTimer &t);
 	void removeNodeTimer(v3s16 p);
 
 	/*
@@ -463,9 +449,8 @@ public:
 	void save(ModifiedState save_level);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
-	// Saves map seed and possibly other stuff
-	void saveMapMeta();
-	void loadMapMeta();
+
+	MapgenParams *getMapgenParams();
 
 	/*void saveChunkMeta();
 	void loadChunkMeta();*/
@@ -505,6 +490,8 @@ public:
 
 	u64 getSeed();
 	s16 getWaterLevel();
+
+	MapSettingsManager settings_mgr;
 
 private:
 	// Emerge manager

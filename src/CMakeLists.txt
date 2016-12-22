@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 project(minetest)
 
 INCLUDE(CheckIncludeFiles)
+INCLUDE(CheckLibraryExists)
 
 # Add custom SemiDebug build mode
 set(CMAKE_CXX_FLAGS_SEMIDEBUG "-O1 -g -Wall -Wabi" CACHE STRING
@@ -189,6 +190,36 @@ if(ENABLE_CURSES)
 	endif()
 endif(ENABLE_CURSES)
 
+option(ENABLE_POSTGRESQL "Enable PostgreSQL backend" TRUE)
+set(USE_POSTGRESQL FALSE)
+
+if(ENABLE_POSTGRESQL)
+	find_program(POSTGRESQL_CONFIG_EXECUTABLE pg_config DOC "pg_config")
+	find_library(POSTGRESQL_LIBRARY pq)
+	if(POSTGRESQL_CONFIG_EXECUTABLE)
+		execute_process(COMMAND ${POSTGRESQL_CONFIG_EXECUTABLE} --includedir-server
+			OUTPUT_VARIABLE POSTGRESQL_SERVER_INCLUDE_DIRS
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+		execute_process(COMMAND ${POSTGRESQL_CONFIG_EXECUTABLE}
+			OUTPUT_VARIABLE POSTGRESQL_CLIENT_INCLUDE_DIRS
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
+		# This variable is case sensitive for the cmake PostgreSQL module
+		set(PostgreSQL_ADDITIONAL_SEARCH_PATHS ${POSTGRESQL_SERVER_INCLUDE_DIRS} ${POSTGRESQL_CLIENT_INCLUDE_DIRS})
+	endif()
+
+	find_package("PostgreSQL")
+
+	if(POSTGRESQL_FOUND)
+		set(USE_POSTGRESQL TRUE)
+		message(STATUS "PostgreSQL backend enabled")
+		# This variable is case sensitive, don't try to change it to POSTGRESQL_INCLUDE_DIR
+		message(STATUS "PostgreSQL includes: ${PostgreSQL_INCLUDE_DIR}")
+		include_directories(${PostgreSQL_INCLUDE_DIR})
+	else()
+		message(STATUS "PostgreSQL not found!")
+	endif()
+endif(ENABLE_POSTGRESQL)
+
 option(ENABLE_LEVELDB "Enable LevelDB backend" TRUE)
 set(USE_LEVELDB FALSE)
 
@@ -262,9 +293,10 @@ if(WIN32)
 	set(ZLIB_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../zlib/zlib-1.2.5"
 			CACHE PATH "Zlib include directory")
 	set(ZLIB_LIBRARIES "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.lib"
-			CACHE FILEPATH "Path to zlibwapi.lib")
+			CACHE FILEPATH "Path to zlib library (usually zlibwapi.lib)")
 	set(ZLIB_DLL "${PROJECT_SOURCE_DIR}/../../zlib125dll/dll32/zlibwapi.dll"
-			CACHE FILEPATH "Path to zlibwapi.dll (for installation)")
+			CACHE FILEPATH "Path to zlib DLL (for installation)")
+	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
 	if(USE_FREETYPE)
@@ -306,7 +338,10 @@ else()
 	if(APPLE)
 		set(PLATFORM_LIBS "-framework CoreFoundation" ${PLATFORM_LIBS})
 	else()
-		set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+		check_library_exists(rt clock_gettime "" HAVE_LIBRT)
+		if (HAVE_LIBRT)
+			set(PLATFORM_LIBS -lrt ${PLATFORM_LIBS})
+		endif(HAVE_LIBRT)
 	endif(APPLE)
 
 	# This way Xxf86vm is found on OpenBSD too
@@ -346,6 +381,7 @@ add_subdirectory(network)
 add_subdirectory(script)
 add_subdirectory(unittest)
 add_subdirectory(util)
+add_subdirectory(irrlicht_changes)
 
 set(common_SRCS
 	ban.cpp
@@ -361,6 +397,7 @@ set(common_SRCS
 	craftdef.cpp
 	database-dummy.cpp
 	database-leveldb.cpp
+	database-postgresql.cpp
 	database-redis.cpp
 	database-sqlite3.cpp
 	database.cpp
@@ -379,6 +416,7 @@ set(common_SRCS
 	light.cpp
 	log.cpp
 	map.cpp
+	map_settings_manager.cpp
 	mapblock.cpp
 	mapgen.cpp
 	mapgen_flat.cpp
@@ -407,6 +445,8 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	quicktune.cpp
+	reflowscan.cpp
+	remoteplayer.cpp
 	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp
@@ -435,6 +475,7 @@ set(common_SRCS
 # This gives us the icon and file version information
 if(WIN32)
 	set(WINRESOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/winresource.rc")
+	set(MINETEST_EXE_MANIFEST_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../misc/minetest.exe.manifest")
 	if(MINGW)
 		if(NOT CMAKE_RC_COMPILER)
 			set(CMAKE_RC_COMPILER "windres.exe")
@@ -447,7 +488,7 @@ if(WIN32)
 			DEPENDS ${WINRESOURCE_FILE})
 		SET(common_SRCS ${common_SRCS} ${CMAKE_CURRENT_BINARY_DIR}/winresource_rc.o)
 	else(MINGW) # Probably MSVC
-		set(common_SRCS ${common_SRCS} ${WINRESOURCE_FILE})
+		set(common_SRCS ${common_SRCS} ${WINRESOURCE_FILE} ${MINETEST_EXE_MANIFEST_FILE})
 	endif(MINGW)
 endif()
 
@@ -462,6 +503,7 @@ set(client_SRCS
 	${common_SRCS}
 	${sound_SRCS}
 	${client_network_SRCS}
+	${client_irrlicht_changes_SRCS}
 	camera.cpp
 	client.cpp
 	clientmap.cpp
@@ -499,6 +541,7 @@ set(client_SRCS
 	sky.cpp
 	wieldmesh.cpp
 	${client_SCRIPT_SRCS}
+	${UNITTEST_CLIENT_SRCS}
 )
 list(SORT client_SRCS)
 
@@ -522,6 +565,7 @@ include_directories(
 	${LUA_INCLUDE_DIR}
 	${GMP_INCLUDE_DIR}
 	${JSON_INCLUDE_DIR}
+	${X11_INCLUDE_DIR}
 	${PROJECT_SOURCE_DIR}/script
 )
 
@@ -592,6 +636,9 @@ if(BUILD_CLIENT)
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
 	endif()
+	if (USE_POSTGRESQL)
+		target_link_libraries(${PROJECT_NAME} ${POSTGRESQL_LIBRARY})
+	endif()
 	if (USE_LEVELDB)
 		target_link_libraries(${PROJECT_NAME} ${LEVELDB_LIBRARY})
 	endif()
@@ -622,6 +669,9 @@ if(BUILD_SERVER)
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME}server ${CURSES_LIBRARIES})
 	endif()
+	if (USE_POSTGRESQL)
+		target_link_libraries(${PROJECT_NAME}server ${POSTGRESQL_LIBRARY})
+	endif()
 	if (USE_LEVELDB)
 		target_link_libraries(${PROJECT_NAME}server ${LEVELDB_LIBRARY})
 	endif()
@@ -639,6 +689,28 @@ if(BUILD_SERVER)
 	endif()
 endif(BUILD_SERVER)
 
+# Blacklisted locales that don't work.
+# see issue #4638
+set(GETTEXT_BLACKLISTED_LOCALES
+	be
+	he
+	ko
+	ky
+	zh_CN
+	zh_TW
+)
+
+option(APPLY_LOCALE_BLACKLIST "Use a blacklist to avoid broken locales" TRUE)
+
+if (GETTEXT_FOUND AND APPLY_LOCALE_BLACKLIST)
+	set(GETTEXT_USED_LOCALES "")
+	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+		if (NOT ";${GETTEXT_BLACKLISTED_LOCALES};" MATCHES ";${LOCALE};")
+			list(APPEND GETTEXT_USED_LOCALES ${LOCALE})
+		endif()
+	endforeach()
+	message(STATUS "Locale blacklist applied; Locales used: ${GETTEXT_USED_LOCALES}")
+endif()
 
 # Set some optimizations and tweaks
 
@@ -648,9 +720,9 @@ if(MSVC)
 	# Visual Studio
 
 	# EHa enables SEH exceptions (used for catching segfaults)
-	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /Ob2 /Oi /Ot /Oy /GL /FD /MT /GS- /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MT /GS- /Zi /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
 	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /DEBUG /OPT:REF /OPT:ICF")
 
 	set(CMAKE_CXX_FLAGS_SEMIDEBUG "/MDd /Zi /Ob0 /O1 /RTC1")
 
@@ -678,8 +750,14 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
 	endif()
 
+	if(WIN32 AND NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
+		set(OTHER_FLAGS "${OTHER_FLAGS} -DWIN32_NO_ZLIB_WINAPI")
+		message(WARNING "Defaulting to cdecl for zlib on win32 because ZLIBWAPI_DLL"
+			" isn't set, ensure that ZLIBWAPI_DLL is set if you want stdcall.")
+	endif()
+
 	if(MINGW)
-		set(OTHER_FLAGS "-mthreads -fexceptions")
+		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
@@ -751,7 +829,7 @@ if(BUILD_CLIENT)
 	endif()
 
 	if(USE_GETTEXT)
-		foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+		foreach(LOCALE ${GETTEXT_USED_LOCALES})
 			set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
 			set(MO_BUILD_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")
 			install(FILES ${MO_BUILD_PATH} DESTINATION ${MO_DEST_PATH})
@@ -780,7 +858,7 @@ endif()
 if (USE_GETTEXT)
 	set(MO_FILES)
 
-	foreach(LOCALE ${GETTEXT_AVAILABLE_LOCALES})
+	foreach(LOCALE ${GETTEXT_USED_LOCALES})
 		set(PO_FILE_PATH "${GETTEXT_PO_PATH}/${LOCALE}/${PROJECT_NAME}.po")
 		set_mo_paths(MO_BUILD_PATH MO_DEST_PATH ${LOCALE})
 		set(MO_FILE_PATH "${MO_BUILD_PATH}/${PROJECT_NAME}.mo")

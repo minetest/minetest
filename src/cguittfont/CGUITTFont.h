@@ -1,6 +1,7 @@
 /*
    CGUITTFont FreeType class for Irrlicht
    Copyright (c) 2009-2010 John Norman
+   Copyright (c) 2016 Nathanaël Courant
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -33,6 +34,8 @@
 
 #include <irrlicht.h>
 #include <ft2build.h>
+#include <vector>
+#include "util/enriched_string.h"
 #include FT_FREETYPE_H
 
 namespace irr
@@ -256,6 +259,10 @@ namespace gui
 
 			//! Draws some text and clips it to the specified rectangle if wanted.
 			virtual void draw(const core::stringw& text, const core::rect<s32>& position,
+				video::SColor color, bool hcenter=false, bool vcenter=false,
+				const core::rect<s32>* clip=0);
+			
+			virtual void draw(const EnrichedString& text, const core::rect<s32>& position,
 				video::SColor color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
 

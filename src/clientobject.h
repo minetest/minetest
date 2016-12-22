@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
 #include <map>
+#include "util/cpp11_container.h"
 
 /*
 
@@ -60,6 +61,7 @@ public:
 	virtual bool getCollisionBox(aabb3f *toset){return false;}
 	virtual bool collideWithObjects(){return false;}
 	virtual v3f getPosition(){return v3f(0,0,0);}
+	virtual float getYaw() const {return 0;}
 	virtual scene::ISceneNode *getSceneNode(){return NULL;}
 	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}
@@ -103,7 +105,7 @@ protected:
 	ClientEnvironment *m_env;
 private:
 	// Used for creating objects based on type
-	static std::map<u16, Factory> m_types;
+	static UNORDERED_MAP<u16, Factory> m_types;
 };
 
 struct DistanceSortedActiveObject

@@ -53,11 +53,12 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State* L);
 
+	bool m_write_allowed;
 	Settings* m_settings;
 	std::string m_filename;
 
 public:
-	LuaSettings(const char* filename);
+	LuaSettings(const char* filename, bool write_allowed);
 	~LuaSettings();
 
 	// LuaSettings(filename)

@@ -190,7 +190,7 @@ int LuaVoxelManip::l_calc_lighting(lua_State *L)
 	Mapgen mg;
 	mg.vm          = vm;
 	mg.ndef        = ndef;
-	mg.water_level = emerge->params.water_level;
+	mg.water_level = emerge->mgparams->water_level;
 
 	mg.calcLighting(pmin, pmax, fpmin, fpmax, propagate_shadow);
 
@@ -277,11 +277,17 @@ int LuaVoxelManip::l_get_param2_data(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
+	bool use_buffer  = lua_istable(L, 2);
+
 	MMVManip *vm = o->vm;
 
 	u32 volume = vm->m_area.getVolume();
 
-	lua_newtable(L);
+	if (use_buffer)
+		lua_pushvalue(L, 2);
+	else
+		lua_newtable(L);
+
 	for (u32 i = 0; i != volume; i++) {
 		lua_Integer param2 = vm->m_data[i].param2;
 		lua_pushinteger(L, param2);
