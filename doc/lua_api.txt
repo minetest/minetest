@@ -2036,9 +2036,10 @@ Call these functions only at load time!
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
     * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
-        * `"moved_too_fast"`
-        * `"interacted_too_far"`
-        * `"finished_unknown_dig"`
+        * `moved_too_fast`
+        * `interacted_too_far`
+        * `interacted_while_dead`
+        * `finished_unknown_dig`
         * `dug_unbreakable`
         * `dug_too_fast`
 * `minetest.register_on_chat_message(func(name, message))`
