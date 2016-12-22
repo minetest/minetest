@@ -397,13 +397,16 @@ void fillRadiusBlock(v3s16 p0, s16 r, std::set<v3s16> &list)
 	for(p.Y=p0.Y-r; p.Y<=p0.Y+r; p.Y++)
 	for(p.Z=p0.Z-r; p.Z<=p0.Z+r; p.Z++)
 	{
-		// Set in list
-		list.insert(p);
+		// limit to a sphere
+		if ((p-p0).getLength() <= r) {
+			// Set in list
+			list.insert(p);
+		}
 	}
 }
 
-void ActiveBlockList::update(std::vector<v3s16> &active_positions,
-		s16 radius,
+void ActiveBlockList::update(const std::vector<v3s16> &active_positions,
+		const std::vector<s16> &ranges,
 		std::set<v3s16> &blocks_removed,
 		std::set<v3s16> &blocks_added)
 {
@@ -411,10 +414,11 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 		Create the new list
 	*/
 	std::set<v3s16> newlist = m_forceloaded_list;
-	for(std::vector<v3s16>::iterator i = active_positions.begin();
-			i != active_positions.end(); ++i)
+	std::vector<s16>::const_iterator j = ranges.begin();
+	for(std::vector<v3s16>::const_iterator i = active_positions.begin();
+	    i != active_positions.end(); ++i, ++j)
 	{
-		fillRadiusBlock(*i, radius, newlist);
+		fillRadiusBlock(*i, *j, newlist);
 	}
 
 	/*
@@ -1269,6 +1273,9 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<v3s16> players_blockpos;
+		std::vector<s16> players_range;
+		const s16 active_block_range = g_settings->getS16("active_block_range");
+
 		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
 				i != m_players.end(); ++i) {
 			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
@@ -1284,15 +1291,18 @@ void ServerEnvironment::step(float dtime)
 			v3s16 blockpos = getNodeBlockPos(
 					floatToInt(playersao->getBasePosition(), BS));
 			players_blockpos.push_back(blockpos);
+			s16 range = MYMIN(playersao->getWantedRange(), active_block_range);
+			if (range <= 0)
+				range = active_block_range;
+			players_range.push_back(range);
 		}
 
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		static const s16 active_block_range = g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
-		m_active_blocks.update(players_blockpos, active_block_range,
+		m_active_blocks.update(players_blockpos, players_range,
 				blocks_removed, blocks_added);
 
 		/*
