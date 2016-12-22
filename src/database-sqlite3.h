@@ -36,11 +36,13 @@ public:
 	void beginSave();
 	void endSave();
 
-	bool saveBlock(const v3s16 &pos, const std::string &data);
-	void loadBlock(const v3s16 &pos, std::string *block);
-	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 	bool initialized() const { return m_initialized; }
+
+protected:
+	bool saveBlockToDatabase(const v3s16 &pos, const std::string &data);
+	void loadBlockFromDatabase(const v3s16 &pos, std::string *block);
+	bool deleteBlockFromDatabase(const v3s16 &pos);
 
 private:
 	// Open the database

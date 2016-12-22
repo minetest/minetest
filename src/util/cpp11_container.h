@@ -31,8 +31,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef USE_UNORDERED_CONTAINERS
 	#include <unordered_map>
 	#include <unordered_set>
+	#include <functional>
+	#include <irr_v3d.h>
 	#define UNORDERED_MAP std::unordered_map
 	#define UNORDERED_SET std::unordered_set
+
+// Avoid some circular dependencies; declare hash function here
+u64 murmur_hash_64_ua(const void *key, int len, unsigned int seed);
+
+// A hash class is required for c++11 unordered containers
+
+namespace std {
+	template<>
+	struct hash<v3s16> {
+		u64 operator()(const v3s16 &pos) const
+		{
+			s16 data[3] = { pos.X, pos.Y, pos.Z };
+			return murmur_hash_64_ua(data, sizeof(data), 0x6543210f);
+		}
+	};
+}
+
 #else
 	#include <map>
 	#include <set>

@@ -77,21 +77,21 @@ void Database_Redis::endSave() {
 	freeReplyObject(reply);
 }
 
-bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
+bool Database_Redis::saveBlockToDatabase(const v3s16 &pos, const std::string &data)
 {
 	std::string tmp = i64tos(getBlockAsInteger(pos));
 
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "HSET %s %s %b",
 			hash.c_str(), tmp.c_str(), data.c_str(), data.size()));
 	if (!reply) {
-		warningstream << "saveBlock: redis command 'HSET' failed on "
+		warningstream << "saveBlockToDatabase: redis command 'HSET' failed on "
 			"block " << PP(pos) << ": " << ctx->errstr << std::endl;
 		freeReplyObject(reply);
 		return false;
 	}
 
 	if (reply->type == REDIS_REPLY_ERROR) {
-		warningstream << "saveBlock: saving block " << PP(pos)
+		warningstream << "saveBlockToDatabase: saving block " << PP(pos)
 			<< " failed: " << std::string(reply->str, reply->len) << std::endl;
 		freeReplyObject(reply);
 		return false;
@@ -101,7 +101,7 @@ bool Database_Redis::saveBlock(const v3s16 &pos, const std::string &data)
 	return true;
 }
 
-void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
+void Database_Redis::loadBlockFromDatabase(const v3s16 &pos, std::string *block)
 {
 	std::string tmp = i64tos(getBlockAsInteger(pos));
 	redisReply *reply = static_cast<redisReply *>(redisCommand(ctx,
@@ -122,7 +122,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 	case REDIS_REPLY_ERROR: {
 		std::string errstr(reply->str, reply->len);
 		freeReplyObject(reply);
-		errorstream << "loadBlock: loading block " << PP(pos)
+		errorstream << "loadBlockFromDatabase: loading block " << PP(pos)
 			<< " failed: " << errstr << std::endl;
 		throw DatabaseException(std::string(
 			"Redis command 'HGET %s %s' errored: ") + errstr);
@@ -135,7 +135,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 	}
 	}
 
-	errorstream << "loadBlock: loading block " << PP(pos)
+	errorstream << "loadBlockFromDatabase: loading block " << PP(pos)
 		<< " returned invalid reply type " << reply->type
 		<< ": " << std::string(reply->str, reply->len) << std::endl;
 	freeReplyObject(reply);
@@ -143,7 +143,7 @@ void Database_Redis::loadBlock(const v3s16 &pos, std::string *block)
 		"Redis command 'HGET %s %s' gave invalid reply."));
 }
 
-bool Database_Redis::deleteBlock(const v3s16 &pos)
+bool Database_Redis::deleteBlockFromDatabase(const v3s16 &pos)
 {
 	std::string tmp = i64tos(getBlockAsInteger(pos));
 
@@ -153,7 +153,7 @@ bool Database_Redis::deleteBlock(const v3s16 &pos)
 		throw DatabaseException(std::string(
 			"Redis command 'HDEL %s %s' failed: ") + ctx->errstr);
 	} else if (reply->type == REDIS_REPLY_ERROR) {
-		warningstream << "deleteBlock: deleting block " << PP(pos)
+		warningstream << "deleteBlockFromDatabase: deleting block " << PP(pos)
 			<< " failed: " << std::string(reply->str, reply->len) << std::endl;
 		freeReplyObject(reply);
 		return false;

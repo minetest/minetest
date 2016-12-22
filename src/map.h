@@ -34,10 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/cpp11_container.h"
 #include "nodetimer.h"
+#include "database.h"
 #include "map_settings_manager.h"
 
 class Settings;
-class Database;
 class ClientMap;
 class MapSector;
 class ServerMapSector;
@@ -188,6 +188,13 @@ public:
 	MapBlock * getBlockNoCreate(v3s16 p);
 	// Returns NULL if not found
 	MapBlock * getBlockNoCreateNoEx(v3s16 p);
+
+	// Overridden by server
+	virtual bool blockNotInDatabase(const v3s16 &pos)
+	{
+		assert(!"Map::blockNotInDatabase: this method should not ever be invoked");
+		return false;
+	}
 
 	/* Server overrides */
 	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
@@ -478,6 +485,9 @@ public:
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+	// Check whether block is *known* to not be in the database.
+	// If true, the block is not in the database, if false, then the block may or may not be in the database.
+	bool blockNotInDatabase(const v3s16 &pos) { return dbase->blockNotFound(pos); }
 
 	bool deleteBlock(v3s16 blockpos);
 
