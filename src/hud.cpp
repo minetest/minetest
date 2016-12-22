@@ -285,8 +285,10 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 {
 	u32 text_height = g_fontengine->getTextHeight();
 	irr::gui::IGUIFont* font = g_fontengine->getFont();
-	for (size_t i = 0; i != player->maxHudId(); i++) {
-		HudElement *e = player->getHud(i);
+	std::list<u32> hud_stack = player->getHudStack();
+	for (std::list<u32>::iterator it = hud_stack.begin();
+			it != hud_stack.end(); ++it) {
+		HudElement *e = player->getHud(*it);
 		if (!e)
 			continue;
 
@@ -366,7 +368,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				break; }
 			default:
 				infostream << "Hud::drawLuaElements: ignoring drawform " << e->type <<
-					" of hud element ID " << i << " due to unrecognized type" << std::endl;
+					" of hud element ID " << *it << " due to unrecognized type" << std::endl;
 		}
 	}
 }

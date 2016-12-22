@@ -1783,6 +1783,13 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 	Send(&pkt);
 }
 
+void Server::SendHUDSetAbove(u16 peer_id, u32 bottom, u32 top)
+{
+	NetworkPacket pkt(TOCLIENT_HUD_SET_ABOVE, 8, peer_id);
+	pkt << bottom << top;
+	Send(&pkt);
+}
+
 void Server::SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask)
 {
 	NetworkPacket pkt(TOCLIENT_HUD_SET_FLAGS, 4 + 4, peer_id);
@@ -3046,6 +3053,20 @@ bool Server::hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *
 		return false;
 
 	SendHUDChange(player->peer_id, id, stat, data);
+	return true;
+}
+
+bool Server::hudSetAbove(RemotePlayer *player, u32 bottom, u32 top) {
+	if (!player)
+		return false;
+
+	HudElement *e_bottom = player->getHud(bottom);
+	HudElement *e_top = player->getHud(top);
+
+	if (e_bottom == NULL || e_top == NULL)
+		return false;
+
+	SendHUDSetAbove(player->peer_id, bottom, top);
 	return true;
 }
 

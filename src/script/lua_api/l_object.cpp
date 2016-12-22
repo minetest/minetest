@@ -1412,6 +1412,27 @@ int ObjectRef::l_hud_change(lua_State *L)
 	return 1;
 }
 
+// hud_set_above(self, bottom, top)
+int ObjectRef::l_hud_set_above(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+
+	u32 bottom = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : -1;
+	u32 top = lua_isnumber(L, 3) ? lua_tonumber(L, 3) : -1;
+	if (bottom == top)
+		return 0;
+
+	if (!getServer(L)->hudSetAbove(player, bottom, top))
+		return 0;
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // hud_get(self, id)
 int ObjectRef::l_hud_get(lua_State *L)
 {
@@ -1842,6 +1863,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_add),
 	luamethod(ObjectRef, hud_remove),
 	luamethod(ObjectRef, hud_change),
+	luamethod(ObjectRef, hud_set_above),
 	luamethod(ObjectRef, hud_get),
 	luamethod(ObjectRef, hud_set_flags),
 	luamethod(ObjectRef, hud_get_flags),

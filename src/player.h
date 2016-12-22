@@ -140,6 +140,7 @@ public:
 		}
 		return size;
 	}
+	void setHudAbove(u32 bottom, u32 top);
 
 	v3f eye_offset_first;
 	v3f eye_offset_third;
@@ -175,6 +176,7 @@ public:
 	u32         addHud(HudElement* hud);
 	HudElement* removeHud(u32 id);
 	void        clearHud();
+	std::list<u32> getHudStack() const { return hud_stack; }
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
@@ -183,6 +185,8 @@ protected:
 	v3f m_speed;
 
 	std::vector<HudElement *> hud;
+	// Hud stack to determine the draw order
+	std::list<u32> hud_stack;
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread

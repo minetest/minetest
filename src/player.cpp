@@ -95,6 +95,7 @@ u32 Player::addHud(HudElement *toadd)
 	else
 		hud.push_back(toadd);
 
+	hud_stack.push_back(id);
 	return id;
 }
 
@@ -117,7 +118,37 @@ HudElement* Player::removeHud(u32 id)
 		retval = hud[id];
 		hud[id] = NULL;
 	}
+	for (std::list<u32>::iterator it = hud_stack.begin();
+			it != hud_stack.end(); ++it) {
+		if (*it == id) {
+			hud_stack.erase(it);
+			// there should never be multiple entries, so we can skip
+			break;
+		}
+	}
 	return retval;
+}
+
+void Player::setHudAbove(u32 bottom, u32 top)
+{
+	if (bottom == top || getHud(bottom) == NULL || getHud(top) == NULL)
+		return;
+
+	bool found = false;
+	for (std::list<u32>::iterator it = hud_stack.begin();
+			it != hud_stack.end(); ) {
+		if (*it == bottom) {
+			if (found) {
+				hud_stack.insert(++it, top);
+			}
+			break;
+		} else if (*it == top) {
+			found = true;
+			it = hud_stack.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 void Player::clearHud()

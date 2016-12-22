@@ -317,6 +317,7 @@ public:
 	u32 hudAdd(RemotePlayer *player, HudElement *element);
 	bool hudRemove(RemotePlayer *player, u32 id);
 	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
+	bool hudSetAbove(RemotePlayer *player, u32 bottom, u32 top);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
 	s32 hudGetHotbarItemcount(RemotePlayer *player) const
@@ -400,6 +401,7 @@ private:
 	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);
+	void SendHUDSetAbove(u16 peer_id, u32 bottom, u32 top);
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,

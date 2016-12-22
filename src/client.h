@@ -146,6 +146,7 @@ enum ClientEventType
 	CE_HUDADD,
 	CE_HUDRM,
 	CE_HUDCHANGE,
+        CE_HUD_SET_ABOVE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
 };
@@ -236,6 +237,10 @@ struct ClientEvent
 			v3f *v3fdata;
 			v2s32 * v2s32data;
 		} hudchange;
+		struct {
+			u32 bottom;
+			u32 top;
+		} hud_set_above;
 		struct{
 			video::SColor *bgcolor;
 			std::string *type;
@@ -392,6 +397,7 @@ public:
 	void handleCommand_HudAdd(NetworkPacket* pkt);
 	void handleCommand_HudRemove(NetworkPacket* pkt);
 	void handleCommand_HudChange(NetworkPacket* pkt);
+	void handleCommand_HudSetAbove(NetworkPacket* pkt);
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
