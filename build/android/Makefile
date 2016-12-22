@@ -220,6 +220,8 @@ $(OPENAL_LIB): $(OPENAL_TIMESTAMP)
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_MODULE_PATH=${NDK_MODULE_PATH} APP_ABI=${TARGET_ABI}               \
 		TARGET_ARCH_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}             \
+		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
+		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
 		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
 		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
 		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
@@ -266,6 +268,8 @@ $(OGG_LIB): $(OGG_TIMESTAMP)
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
 		APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                     \
+		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
+		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
 		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
 		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
 		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
@@ -313,6 +317,7 @@ $(OPENSSL_LIB): $(OPENSSL_TIMESTAMP) $(GMP_LIB)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-openssl;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=android-9                                                   \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	CC=${CROSS_PREFIX}gcc ./Configure enable-gmp -DL_ENDIAN -I${GMP_DIR} -L${GMP_DIR}/usr/lib android-${TARGET_ARCH};\
@@ -363,6 +368,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-leveldb;                          \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=android-9                                                   \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -416,6 +422,8 @@ $(FREETYPE_LIB) : $(FREETYPE_TIMESTAMP)
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
 		APP_PLATFORM=${APP_PLATFORM} APP_ABI=${TARGET_ABI}                     \
+		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
+		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
 		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
 		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
 		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
@@ -469,6 +477,7 @@ $(ICONV_LIB) : $(ICONV_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-iconv;                            \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=android-9                                                   \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -531,6 +540,8 @@ $(IRRLICHT_LIB): $(IRRLICHT_TIMESTAMP) $(FREETYPE_LIB)
 	${ANDROID_NDK}/ndk-build NDEBUG=${NDEBUG}                                  \
 		NDK_MODULE_PATH=${NDK_MODULE_PATH}                                     \
 		APP_ABI=${TARGET_ABI} APP_PLATFORM=${APP_PLATFORM}                     \
+		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
+		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
 		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
 		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
 		TARGET_CXXFLAGS+="${TARGET_CXXFLAGS_ADDON}" || exit 1;                 \
@@ -581,6 +592,7 @@ $(CURL_LIB): $(CURL_TIMESTAMP) $(OPENSSL_LIB)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-curl;                             \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=android-9                                                   \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -640,6 +652,7 @@ $(GMP_LIB): $(GMP_TIMESTAMP)
 	export TOOLCHAIN=/tmp/ndk-${TARGET_HOST}-gmp;                              \
 	${ANDROID_NDK}/build/tools/make-standalone-toolchain.sh                    \
 		--toolchain=${TARGET_TOOLCHAIN}${COMPILER_VERSION}                     \
+		--platform=android-9                                                   \
 		--install-dir=$${TOOLCHAIN};                                           \
 	export PATH="$${TOOLCHAIN}/bin:$${PATH}";                                  \
 	export CC=${CROSS_PREFIX}gcc;                                              \
@@ -757,6 +770,8 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	+ @${ANDROID_NDK}/ndk-build NDK_MODULE_PATH=${NDK_MODULE_PATH}             \
 		GPROF=${GPROF} APP_ABI=${TARGET_ABI} HAVE_LEVELDB=${HAVE_LEVELDB}      \
 		APP_PLATFORM=${APP_PLATFORM}                                           \
+		PRIVATE_CC=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}gcc \
+		PRIVATE_CXX=${NDK_MODULE_PATH}/${TARGET_TOOLCHAIN}${COMPILER_VERSION}/prebuilt/linux-x86_64/bin/${TARGET_TOOLCHAIN}g++ \
 		TARGET_LIBDIR=${TARGET_LIBDIR}                                         \
 		TARGET_CFLAGS+="${TARGET_CFLAGS_ADDON}"                                \
 		TARGET_LDFLAGS+="${TARGET_LDFLAGS_ADDON}"                              \
