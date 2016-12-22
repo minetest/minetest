@@ -1313,6 +1313,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		2: digging completed
 		3: place block or item (to abovesurface)
 		4: use item
+		5: rightclick air ("activate")
 	*/
 	u8 action;
 	u16 item_i;
@@ -1345,8 +1346,16 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	if (playersao->isDead()) {
-		verbosestream << "TOSERVER_INTERACT: " << player->getName()
-				<< " is dead. Ignoring packet";
+		actionstream << "Server: NoCheat: " << player->getName()
+				<< " tried to interact while dead; ignoring." << std::endl;
+		if (pointed.type == POINTEDTHING_NODE) {
+			// Re-send block to revert change on client-side
+			RemoteClient *client = getClient(pkt->getPeerId());
+			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+			client->SetBlockNotSent(blockpos);
+		}
+		// Call callbacks
+		m_script->on_cheat(playersao, "interacted_while_dead");
 		return;
 	}
 
@@ -1450,11 +1459,6 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	*/
 	if (action == 0) {
 		if (pointed.type == POINTEDTHING_NODE) {
-			/*
-				NOTE: This can be used in the future to check if
-				somebody is cheating, by checking the timing.
-			*/
-
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
 
