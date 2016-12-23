@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 enum TileAnimationType {
 	TAT_NONE = 0,
 	TAT_VERTICAL_FRAMES = 1,
+	TAT_SHEET_2D = 2,
 };
 
 struct TileAnimationParams {
@@ -38,6 +39,11 @@ struct TileAnimationParams {
 			int aspect_h; // height for aspect ratio
 			float length; // seconds
 		} vertical_frames;
+		struct {
+			int frames_w; // number of frames left-to-right
+			int frames_h; // number of frames top-to-bottom
+			float frame_length; // seconds
+		} sheet_2d;
 	};
 
 	void serialize(std::ostream &os, u16 protocol_version) const;

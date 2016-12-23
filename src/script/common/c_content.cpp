@@ -39,6 +39,7 @@ struct EnumString es_TileAnimationType[] =
 {
 	{TAT_NONE, "none"},
 	{TAT_VERTICAL_FRAMES, "vertical_frames"},
+	{TAT_SHEET_2D, "sheet_2d"},
 	{0, NULL},
 };
 
@@ -334,16 +335,26 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 		// animation = {}
 		lua_getfield(L, index, "animation");
 		if(lua_istable(L, -1)){
-			// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
 			tiledef.animation.type = (TileAnimationType)
 				getenumfield(L, -1, "type", es_TileAnimationType,
 				TAT_NONE);
-			tiledef.animation.vertical_frames.aspect_w =
-				getintfield_default(L, -1, "aspect_w", 16);
-			tiledef.animation.vertical_frames.aspect_h =
-				getintfield_default(L, -1, "aspect_h", 16);
-			tiledef.animation.vertical_frames.length =
-				getfloatfield_default(L, -1, "length", 1.0);
+			if (tiledef.animation.type == TAT_VERTICAL_FRAMES) {
+				// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
+				tiledef.animation.vertical_frames.aspect_w =
+					getintfield_default(L, -1, "aspect_w", 16);
+				tiledef.animation.vertical_frames.aspect_h =
+					getintfield_default(L, -1, "aspect_h", 16);
+				tiledef.animation.vertical_frames.length =
+					getfloatfield_default(L, -1, "length", 1.0);
+			} else if (tiledef.animation.type == TAT_SHEET_2D) {
+				// {type="sheet_2d", frames_w=5, frames_h=3, frame_length=0.5}
+				getintfield(L, -1, "frames_w",
+					tiledef.animation.sheet_2d.frames_w);
+				getintfield(L, -1, "frames_h",
+					tiledef.animation.sheet_2d.frames_h);
+				getfloatfield(L, -1, "frame_length",
+					tiledef.animation.sheet_2d.frame_length);
+			}
 		}
 		lua_pop(L, 1);
 	}
