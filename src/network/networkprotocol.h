@@ -140,6 +140,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		CPT2_MESHOPTIONS
 	PROTOCOL_VERSION 29:
 		Server doesn't accept TOSERVER_BREATH anymore
+		serialization of TileAnimation params changed
+		TAT_SHEET_2D
 */
 
 #define LATEST_PROTOCOL_VERSION 29

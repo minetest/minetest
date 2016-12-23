@@ -567,19 +567,20 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 {
 	// Texture
 	u8 texid = myrand_range(0, 5);
-	video::ITexture *texture = tiles[texid].texture;
+	video::ITexture *texture;
 
 	// Only use first frame of animated texture
-	f32 ymax = 1;
-	if(tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-		ymax /= tiles[texid].animation_frame_count;
+	if(tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION)
+		texture = tiles[texid].frames[0].texture;
+	else
+		texture = tiles[texid].texture;
 
 	float size = rand() % 64 / 512.;
 	float visual_size = BS * size;
-	v2f texsize(size * 2, ymax * size * 2);
+	v2f texsize(size * 2, size * 2);
 	v2f texpos;
 	texpos.X = ((rand() % 64) / 64. - texsize.X);
-	texpos.Y = ymax * ((rand() % 64) / 64. - texsize.Y);
+	texpos.Y = ((rand() % 64) / 64. - texsize.Y);
 
 	// Physics
 	v3f velocity((rand() % 100 / 50. - 1) / 1.5,

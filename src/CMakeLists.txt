@@ -459,6 +459,7 @@ set(common_SRCS
 	staticobject.cpp
 	subgame.cpp
 	terminal_chat_console.cpp
+	tileanimation.cpp
 	tool.cpp
 	treegen.cpp
 	version.cpp
