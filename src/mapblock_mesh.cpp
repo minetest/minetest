@@ -1131,8 +1131,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					&p.tile.texture_id);
 		}
 		// - Texture animation
-		if(p.tile.material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES)
-		{
+		if (p.tile.material_flags & MATERIAL_FLAG_ANIMATION) {
 			// Add to MapBlockMesh in order to animate these tiles
 			m_animation_tiles[i] = p.tile;
 			m_animation_frames[i] = 0;

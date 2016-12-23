@@ -161,9 +161,7 @@ enum MaterialType{
 // Should the crack be drawn on transparent pixels (unset) or not (set)?
 // Ignored if MATERIAL_FLAG_CRACK is not set.
 #define MATERIAL_FLAG_CRACK_OVERLAY 0x04
-// Animation made up by splitting the texture to vertical frames, as
-// defined by extra parameters
-#define MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES 0x08
+#define MATERIAL_FLAG_ANIMATION 0x08
 #define MATERIAL_FLAG_HIGHLIGHTED 0x10
 #define MATERIAL_FLAG_TILEABLE_HORIZONTAL 0x20
 #define MATERIAL_FLAG_TILEABLE_VERTICAL 0x40

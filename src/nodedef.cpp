@@ -188,17 +188,16 @@ void NodeBox::deSerialize(std::istream &is)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if (protocol_version >= 26)
+	if (protocol_version >= 29)
+		writeU8(os, 3);
+	else if (protocol_version >= 26)
 		writeU8(os, 2);
 	else if (protocol_version >= 17)
 		writeU8(os, 1);
 	else
 		writeU8(os, 0);
 	os<<serializeString(name);
-	writeU8(os, animation.type);
-	writeU16(os, animation.aspect_w);
-	writeU16(os, animation.aspect_h);
-	writeF1000(os, animation.length);
+	animation.serialize(os, protocol_version);
 	if (protocol_version >= 17)
 		writeU8(os, backface_culling);
 	if (protocol_version >= 26) {
@@ -211,10 +210,7 @@ void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, con
 {
 	int version = readU8(is);
 	name = deSerializeString(is);
-	animation.type = (TileAnimationType)readU8(is);
-	animation.aspect_w = readU16(is);
-	animation.aspect_h = readU16(is);
-	animation.length = readF1000(is);
+	animation.deSerialize(is, version >= 3 ? 29 : 26);
 	if (version >= 1)
 		backface_culling = readU8(is);
 	if (version >= 2) {
@@ -533,7 +529,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	if (backface_culling)
 		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
-		tile->material_flags |= MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+		tile->material_flags |= MATERIAL_FLAG_ANIMATION;
 	if (tiledef->tileable_horizontal)
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 	if (tiledef->tileable_vertical)
@@ -541,20 +537,16 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 
 	// Animation parameters
 	int frame_count = 1;
-	if (tile->material_flags & MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES) {
-		// Get texture size to determine frame count by aspect ratio
-		v2u32 size = tile->texture->getOriginalSize();
-		int frame_height = (float)size.X /
-				(float)tiledef->animation.aspect_w *
-				(float)tiledef->animation.aspect_h;
-		frame_count = size.Y / frame_height;
-		int frame_length_ms = 1000.0 * tiledef->animation.length / frame_count;
+	if (tile->material_flags & MATERIAL_FLAG_ANIMATION) {
+		int frame_length_ms;
+		tiledef->animation.determineParams(tile->texture->getOriginalSize(),
+				&frame_count, &frame_length_ms);
 		tile->animation_frame_count = frame_count;
 		tile->animation_frame_length_ms = frame_length_ms;
 	}
 
 	if (frame_count == 1) {
-		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION_VERTICAL_FRAMES;
+		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION;
 	} else {
 		std::ostringstream os(std::ios::binary);
 		tile->frames.resize(frame_count);
@@ -564,8 +556,9 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 			FrameSpec frame;
 
 			os.str("");
-			os << tiledef->name << "^[verticalframe:"
-				<< frame_count << ":" << i;
+			os << tiledef->name;
+			tiledef->animation.getTextureModifer(os,
+					tile->texture->getOriginalSize(), i);
 
 			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
 			if (tile->normal_texture)

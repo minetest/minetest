@@ -338,11 +338,11 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			tiledef.animation.type = (TileAnimationType)
 				getenumfield(L, -1, "type", es_TileAnimationType,
 				TAT_NONE);
-			tiledef.animation.aspect_w =
+			tiledef.animation.vertical_frames.aspect_w =
 				getintfield_default(L, -1, "aspect_w", 16);
-			tiledef.animation.aspect_h =
+			tiledef.animation.vertical_frames.aspect_h =
 				getintfield_default(L, -1, "aspect_h", 16);
-			tiledef.animation.length =
+			tiledef.animation.vertical_frames.length =
 				getfloatfield_default(L, -1, "length", 1.0);
 		}
 		lua_pop(L, 1);
