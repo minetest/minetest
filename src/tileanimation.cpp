@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void TileAnimationParams::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if(protocol_version < 29 /* TODO bump */) {
+	if (protocol_version < 29) {
 		if (type == TAT_VERTICAL_FRAMES) {
 			writeU8(os, type);
 			writeU16(os, vertical_frames.aspect_w);
@@ -41,47 +41,69 @@ void TileAnimationParams::serialize(std::ostream &os, u16 protocol_version) cons
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
 		writeF1000(os, vertical_frames.length);
+	} else if (type == TAT_SHEET_2D) {
+		writeU8(os, sheet_2d.frames_w);
+		writeU8(os, sheet_2d.frames_h);
+		writeF1000(os, sheet_2d.frame_length);
 	}
 }
 
 void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_version)
 {
 	type = (TileAnimationType) readU8(is);
-	if(protocol_version < 29 /* TODO bump */) {
+	if (protocol_version < 29) {
 		vertical_frames.aspect_w = readU16(is);
 		vertical_frames.aspect_h = readU16(is);
 		vertical_frames.length = readF1000(is);
 		return;
 	}
 
-	if(type == TAT_VERTICAL_FRAMES) {
+	if (type == TAT_VERTICAL_FRAMES) {
 		vertical_frames.aspect_w = readU16(is);
 		vertical_frames.aspect_h = readU16(is);
 		vertical_frames.length = readF1000(is);
+	} else if (type == TAT_SHEET_2D) {
+		sheet_2d.frames_w = readU8(is);
+		sheet_2d.frames_h = readU8(is);
+		sheet_2d.frame_length = readF1000(is);
 	}
 }
 
 void TileAnimationParams::determineParams(v2u32 texture_size, int *frame_count, int *frame_length_ms) const
 {
-	if (type == TAT_NONE) {
+	if (type == TAT_VERTICAL_FRAMES) {
+		int frame_height = (float)texture_size.X /
+				(float)vertical_frames.aspect_w *
+				(float)vertical_frames.aspect_h;
+		int _frame_count = texture_size.Y / frame_height;
+		if (frame_count)
+			*frame_count = _frame_count;
+		if (frame_length_ms)
+			*frame_length_ms = 1000.0 * vertical_frames.length / _frame_count;
+	} else if (type == TAT_SHEET_2D) {
+		if (frame_count)
+			*frame_count = sheet_2d.frames_w * sheet_2d.frames_h;
+		if (frame_length_ms)
+			*frame_length_ms = 1000 * sheet_2d.frame_length;
+	} else { // TAT_NONE
 		*frame_count = 1;
 		*frame_length_ms = 1000;
-		return;
 	}
-	int frame_height = (float)texture_size.X /
-			(float)vertical_frames.aspect_w *
-			(float)vertical_frames.aspect_h;
-	if (frame_count)
-		*frame_count = texture_size.Y / frame_height;
-	if (frame_length_ms)
-		*frame_length_ms = 1000.0 * vertical_frames.length / (texture_size.Y / frame_height);
 }
 
 void TileAnimationParams::getTextureModifer(std::ostream &os, v2u32 texture_size, int frame) const
 {
 	if (type == TAT_NONE)
 		return;
-	int frame_count;
-	determineParams(texture_size, &frame_count, NULL);
-	os << "^[verticalframe:" << frame_count << ":" << frame;
+	if (type == TAT_VERTICAL_FRAMES) {
+		int frame_count;
+		determineParams(texture_size, &frame_count, NULL);
+		os << "^[verticalframe:" << frame_count << ":" << frame;
+	} else if (type == TAT_SHEET_2D) {
+		int q, r;
+		q = frame / sheet_2d.frames_w;
+		r = frame % sheet_2d.frames_w;
+		os << "^[sheet:" << sheet_2d.frames_w << "x" << sheet_2d.frames_h
+			<< ":" << r << "," << q;
+	}
 }

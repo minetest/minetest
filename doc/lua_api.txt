@@ -3702,7 +3702,26 @@ Definition tables
     * `image` (name)
 
 ### Tile animation definition
-* `{type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}`
+
+	{
+		type = "vertical_frames",
+		aspect_w = 16,
+		-- ^ specify width of a frame in pixels
+		aspect_h = 16,
+		-- ^ specify height of a frame in pixels
+		length = 3.0,
+		-- ^ specify full loop length
+	}
+
+	{
+		type = "sheet_2d",
+		frames_w = 5,
+		-- ^ specify width in number of frames
+		frames_h = 3,
+		-- ^ specify height in number of frames
+		frame_length = 0.5,
+		-- ^ specify length of a single frame
+	}
 
 ### Node definition (`register_node`)
 

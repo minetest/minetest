@@ -570,7 +570,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 	video::ITexture *texture;
 
 	// Only use first frame of animated texture
-	if(tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION)
+	if (tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION)
 		texture = tiles[texid].frames[0].texture;
 	else
 		texture = tiles[texid].texture;

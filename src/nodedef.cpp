@@ -528,7 +528,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	tile->material_flags = 0;
 	if (backface_culling)
 		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	if (tiledef->animation.type == TAT_VERTICAL_FRAMES)
+	if (tiledef->animation.type != TAT_NONE)
 		tile->material_flags |= MATERIAL_FLAG_ANIMATION;
 	if (tiledef->tileable_horizontal)
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;

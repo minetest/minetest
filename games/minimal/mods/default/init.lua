@@ -1044,8 +1044,11 @@ minetest.register_node("default:lava_source", {
 	inventory_image = minetest.inventorycube("default_lava.png"),
 	drawtype = "liquid",
 	--tiles ={"default_lava.png"},
-	tiles ={
-		{name="default_lava_source_animated.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}}
+	tiles = {
+		{
+			name = "default_lava_source_animated.png",
+			animation = {type="sheet_2d", frames_w=3, frames_h=2, frame_length=0.5}
+		}
 	},
 	special_tiles = {
 		-- New-style lava source material (mostly unused)
