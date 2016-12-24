@@ -10,8 +10,8 @@ buildscript {
 apply plugin: "com.android.application"
 
 android {
-	compileSdkVersion 23
-	buildToolsVersion "23.0.3"
+	compileSdkVersion 25
+	buildToolsVersion "25.0.1"
 
 	defaultConfig {
 		versionCode 16
@@ -46,4 +46,3 @@ android {
 		}
 	}
 }
-
