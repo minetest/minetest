@@ -477,6 +477,9 @@ fall_bobbing_amount (Fall bobbing) float 0.0
 #    -    pageflip: quadbuffer based 3d.
 3d_mode (3D mode) enum none none,anaglyph,interlaced,topbottom,sidebyside,pageflip
 
+#    Distance where the eyes converge in 3D mode.
+3d_convergence_distance (3D convergence distance) float 1.95
+
 #    In-game chat console background color (R,G,B).
 console_color (Console color) string (0,0,0)
 

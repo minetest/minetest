@@ -70,6 +70,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_build_where_you_stand", "false" );
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
+	settings->setDefault("3d_convergence_distance", "1.95");
 	settings->setDefault("aux1_descends", "false");
 	settings->setDefault("doubletap_jump", "false");
 	settings->setDefault("always_fly_fast", "true");
