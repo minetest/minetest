@@ -186,17 +186,14 @@ void shadeMeshFaces(scene::IMesh *mesh)
 		for (u32 i = 0; i < vertex_count; i++) {
 			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
 			video::SColor &vc = vertex->Color;
-			if (vertex->Normal.Y < -0.5) {
-				applyFacesShading (vc, 0.447213);
-			} else if (vertex->Normal.Z > 0.5) {
-				applyFacesShading (vc, 0.670820);
-			} else if (vertex->Normal.Z < -0.5) {
-				applyFacesShading (vc, 0.670820);
-			} else if (vertex->Normal.X > 0.5) {
-				applyFacesShading (vc, 0.836660);
-			} else if (vertex->Normal.X < -0.5) {
-				applyFacesShading (vc, 0.836660);
-			}
+			// Many special drawtypes have normals set to 0,0,0 and this
+			// must result in maximum brightness (no face shadng).
+			if (vertex->Normal.Y < -0.5f)
+				applyFacesShading (vc, 0.447213f);
+			else if (vertex->Normal.X > 0.5f || vertex->Normal.X < -0.5f)
+				applyFacesShading (vc, 0.670820f);
+			else if (vertex->Normal.Z > 0.5f || vertex->Normal.Z < -0.5f)
+				applyFacesShading (vc, 0.836660f);
 		}
 	}
 }
