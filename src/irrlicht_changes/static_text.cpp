@@ -20,6 +20,10 @@
 #if USE_FREETYPE
 	#include "cguittfont/xCGUITTFont.h"
 #endif
+#ifndef _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
+	// newer Irrlicht versions no longer have this
+	#define _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
+#endif
 
 #include "util/string.h"
 
