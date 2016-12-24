@@ -781,7 +781,7 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	fi;                                                                        \
 	export VERSION_STR="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" && \
 	export BUILD_TYPE_C=$$(echo "$${BUILD_TYPE}" | sed 's/./\U&/') &&          \
-	gradle assemble$$BUILD_TYPE_C &&                                           \
+	./gradlew assemble$$BUILD_TYPE_C &&                                           \
 	echo "APK stored at: build/outputs/apk/Minetest-$$BUILD_TYPE.apk" &&       \
 	echo "You can install it with \`make install_$$BUILD_TYPE\`"
 
@@ -799,7 +799,7 @@ prep_srcdir :
 	fi
 
 clean_apk :
-	gradle clean
+	./gradlew clean
 
 clean_all :
 	@$(MAKE) clean_apk;                                                        \
