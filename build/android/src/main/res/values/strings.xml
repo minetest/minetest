@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="preparing_media">Preparing media...</string>
+	<string name="unpacking_assets">Unpacking assets, please wait…</string>
+	<string name="preparing_media">Preparing media…</string>
+	<string name="scanning">Scanning %s…</string>
+	<string name="copying">Copying %s…</string>
+	<string name="checking">Checking %s…</string>
+	<string name="app_name" translatable="false">Minetest</string>
 </resources>
 

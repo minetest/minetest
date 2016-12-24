@@ -1730,7 +1730,7 @@ protected:
 	}
 
 #ifdef __ANDROID__
-	void handleAndroidChatInput();
+	static void handleAndroidChatInput(void *data, const std::string &text);
 #endif
 
 private:
@@ -1830,7 +1830,6 @@ private:
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
-	bool m_android_chat_open;
 #endif
 };
 
@@ -2822,13 +2821,6 @@ void Game::processUserInput(VolatileRunFlags *flags,
 	// Input handler step() (used by the random input generator)
 	input->step(dtime);
 
-#ifdef __ANDROID__
-	if (current_formspec != NULL)
-		current_formspec->getAndroidUIInput();
-	else
-		handleAndroidChatInput();
-#endif
-
 	// Increase timer for double tap of "keymap_jump"
 	if (m_cache_doubletap_jump && runData->jump_timer <= 0.2)
 		runData->jump_timer += dtime;
@@ -3028,8 +3020,8 @@ void Game::openInventory()
 void Game::openConsole(float height, const wchar_t *line)
 {
 #ifdef __ANDROID__
-	porting::showInputDialog(gettext("ok"), "", "", 2);
-	m_android_chat_open = true;
+	porting::showInputDialog(gettext("OK"), "", "", porting::AET_SINGLELINE,
+			handleAndroidChatInput, this);
 #else
 	if (gui_chat_console->isOpenInhibited())
 		return;
@@ -3042,12 +3034,10 @@ void Game::openConsole(float height, const wchar_t *line)
 }
 
 #ifdef __ANDROID__
-void Game::handleAndroidChatInput()
+void Game::handleAndroidChatInput(void *data, const std::string &text)
 {
-	if (m_android_chat_open && porting::getInputDialogState() == 0) {
-		std::string text = porting::getInputDialogValue();
-		client->typeChatMessage(utf8_to_wide(text));
-	}
+	Game *game = static_cast<Game *>(data);
+	game->client->typeChatMessage(utf8_to_wide(text));
 }
 #endif
 

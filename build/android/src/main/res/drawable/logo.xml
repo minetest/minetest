@@ -1,0 +1,49 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+	android:height="48dp" android:width="48dp"
+	android:viewportHeight="48" android:viewportWidth="48">
+	<path android:name="block background" android:fillColor="#e9b96e"
+		android:pathData="M3.46,22 l0,12 21.04,12.15 21,-12.41 0,-11.46 -21.25,-12.28z"
+		android:strokeColor="#573a0d" android:strokeWidth="1" />
+	<path android:name="cave" android:fillColor="#2e3436"
+		android:pathData="M8.5,30.91 l-2,-1.15 0,6 10.82,6.24 0,-2 -1.73,-1.0 0,-2 -2.09,-1.21 0,-4 -5,-2.89z"
+		android:strokeColor="#2e3436" android:strokeWidth="1" />
+	<path android:name="cave floor" android:fillColor="#555753"
+		android:pathData="M6.8,35.4 l2.7,-1.6 5.7,3.5 0,2 1.7,1 0,1z" />
+	<path android:name="sand" android:fillColor="#fce94f"
+		android:pathData="M25.98,19 l5.52,3.19 0,2 6.59,3.81 7.41,-4.27 0,2.54 0,-4 -12.6,-7.27z"
+		android:strokeColor="#625802" android:strokeWidth="1" />
+	<path android:name="grass side" android:fillColor="#e9b96e"
+		android:pathData="M24.84,18.34 l8.66,-5 0,2 -8.66,5z"
+		android:strokeColor="#573a0d" android:strokeLineCap="round"
+		android:strokeLineJoin="round" android:strokeWidth="1" />
+	<path android:name="grass" android:fillColor="#73d216"
+		android:pathData="M25.98,9 l-22.5,13 14,8.1 14,-7.91 -6.66,-3.85 8.66,-5z"
+		android:strokeColor="#325b09" android:strokeLineCap="square"
+		android:strokeLineJoin="round" android:strokeWidth="1" />
+	<path android:name="water" android:fillColor="#729fcf"
+		android:pathData="M17.5,32.1 l0,2 1.55,0.9 0,2 5.45,3.15 12,-7.07 0,-2.15 2,-1.15 0,-1.54 -7,-4.04z"
+		android:strokeColor="#19314b" android:strokeLineCap="round"
+		android:strokeLineJoin="miter" android:strokeWidth="1" />
+	<path android:name="tree shadow" android:fillAlpha=".4" android:fillColor="#2e3436"
+		android:pathData="M14,19.5 l6.93,4 -6.93,4 -6.93,-4z" />
+	<path android:name="trunk" android:fillColor="#c17d11"
+		android:pathData="M12.12,23 l1.73,1 1.73,-1 0,-6 -1.73,-1 -1.73,1z"
+		android:strokeColor="#8f5902" android:strokeLineCap="round"
+		android:strokeLineJoin="miter" android:strokeWidth="1" />
+	<path android:name="leaves" android:fillColor="#4e9a06"
+		android:pathData="M6.5,15.75 l7.36,4.25 6.64,-3.84 0,-8.33 -6.64,-3.83 -7.36,4.25z"
+		android:strokeColor="#316004" android:strokeLineCap="round"
+		android:strokeLineJoin="miter" android:strokeWidth="1" />
+	<path android:name="cactus shadow" android:fillAlpha=".4" android:fillColor="#2e3436"
+		android:pathData="M38.11,20 l5.2,3 -5.2,3 -5.2,-3z" />
+	<path android:name="cactus" android:fillColor="#4e9a06"
+		android:pathData="M36.5,23.07 l1.61,0.93 1.39,-0.81 0,-8.39 -1.39,-0.8 -1.61,1.07z"
+		android:strokeColor="#316004" android:strokeWidth="1" />
+	<path android:name="left eye" android:pathData="M11.2,32.6 l-0.2,0.5"
+		android:strokeColor="#ef2929" android:strokeWidth="0.25" />
+	<path android:name="right eye" android:pathData="M12,33 l-0.2,0.5"
+		android:strokeColor="#ef2929" android:strokeWidth="0.25" />
+	<path android:name="stone" android:fillColor="#888a85"
+		android:pathData="M45.5,26.73 l-4,2.4 0,1 -2,1.17 0,2 -2,1.17 0,4 8,-4.7z"
+		android:strokeColor="#2e3436" android:strokeWidth="1" />
+</vector>

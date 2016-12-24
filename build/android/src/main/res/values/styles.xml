@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.Transparent" parent="android:Theme">
+	<style name="LatestTheme" parent="@android:style/Theme.NoTitleBar" />
+	<style name="LatestHorizontalProgressBar"
+		parent="@android:style/Widget.ProgressBar.Horizontal" />
+	<style name="TransparentTheme" parent="@style/LatestTheme">
 		<item name="android:windowIsTranslucent">true</item>
 		<item name="android:windowBackground">@android:color/transparent</item>
 		<item name="android:windowContentOverlay">@null</item>

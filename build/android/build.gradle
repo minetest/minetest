@@ -17,9 +17,8 @@ android {
 		versionCode 16
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 9
-		targetSdkVersion 9
+		targetSdkVersion 22
 		applicationId "net.minetest.minetest"
-		manifestPlaceholders = [ package: "net.minetest.minetest", project: project.name ]
 	}
 
 	lintOptions {

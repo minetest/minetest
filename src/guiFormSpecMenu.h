@@ -366,13 +366,13 @@ public:
 	std::vector<std::string>* getDropDownValues(const std::string &name);
 
 #ifdef __ANDROID__
-	bool getAndroidUIInput();
+	static void handleAndroidInput(void *data, const std::string &text);
 #endif
 
 protected:
 	v2s32 getBasePos() const
 	{
-			return padding + offset + AbsoluteRect.UpperLeftCorner;
+		return padding + offset + AbsoluteRect.UpperLeftCorner;
 	}
 
 	v2s32 padding;

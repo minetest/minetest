@@ -419,21 +419,12 @@ static void setup_log_params(const Settings &cmd_args)
 
 static bool create_userdata_path()
 {
-	bool success;
-
 #ifdef __ANDROID__
-	if (!fs::PathExists(porting::path_user)) {
-		success = fs::CreateDir(porting::path_user);
-	} else {
-		success = true;
-	}
-	porting::copyAssets();
-#else
-	// Create user data directory
-	success = fs::CreateDir(porting::path_user);
+	if (fs::PathExists(porting::path_user))
+		return true;
 #endif
-
-	return success;
+	// Create user data directory
+	return fs::CreateDir(porting::path_user);
 }
 
 static bool init_common(const Settings &cmd_args, int argc, char *argv[])

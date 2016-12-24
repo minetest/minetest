@@ -295,10 +295,6 @@ void GUIEngine::run()
 			sleep_ms(25);
 
 		m_script->step();
-
-#ifdef __ANDROID__
-		m_menu->getAndroidUIInput();
-#endif
 	}
 }
 
