@@ -383,6 +383,10 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
 		video::SColor skycolor)
 {
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+	errorstream << "Pageflip 3D mode is not supported"
+		<< " with your Irrlicht version!" << std::endl;
+#else
 	/* preserve old setup*/
 	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
 	irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
@@ -451,6 +455,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 
 	camera.getCameraNode()->setPosition(oldPosition);
 	camera.getCameraNode()->setTarget(oldTarget);
+#endif
 }
 
 void draw_plain(Camera &camera, bool show_hud, Hud &hud,
