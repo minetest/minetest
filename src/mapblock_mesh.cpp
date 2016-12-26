@@ -1161,19 +1161,38 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				Normal = &p.vertices[j].Normal;
 			}
 			// Note applyFacesShading second parameter is precalculated sqrt
-			// value for speed improvement
-			// Skip it for lightsources and top faces.
+			// value for speed improvement.
+			// Skip shading for lightsources and top faces.
+			// Note many special drawtypes have normals set to 0,0,0 and this
+			// must result in maximum brightness.
 			if (!vc->getBlue()) {
-				if (Normal->Y < -0.5) {
-					applyFacesShading(*vc, 0.447213);
-				} else if (Normal->X > 0.5) {
-					applyFacesShading(*vc, 0.670820);
-				} else if (Normal->X < -0.5) {
-					applyFacesShading(*vc, 0.670820);
-				} else if (Normal->Z > 0.5) {
-					applyFacesShading(*vc, 0.836660);
-				} else if (Normal->Z < -0.5) {
-					applyFacesShading(*vc, 0.836660);
+				if (Normal->Y > 0.924f) {
+					// Top faces, pitch > 67.5 deg, max brightness, no shading
+				} else if (fabs(Normal->Y) < 0.383f) {
+					// Mid faces, pitch -22.5 to 22.5 deg
+					if (fabs(Normal->Z) > 0.5f) {
+						applyFacesShading(*vc, 0.836660f);
+					// Check X to keep a normal of 0,0,0 max brightness
+					} else if (Normal->X != 0.0f) {
+						applyFacesShading(*vc, 0.670820f);
+					}
+				} else if (Normal->Y < -0.924f) {
+					// Base faces, pitch < -67.5 deg
+					applyFacesShading(*vc, 0.447213f);
+				} else if (Normal->Y > 0.0f) {
+					// Upper-mid faces, pitch 22.5 to 67.5 deg
+					if (fabs(Normal->Z) > 0.5f) {
+						applyFacesShading(*vc, 0.921954f);
+					} else {
+						applyFacesShading(*vc, 0.836660f);
+					}
+				} else {
+					// Lower-mid faces, pitch -22.5 to -67.5 deg
+					if (fabs(Normal->X) > 0.5f) {
+						applyFacesShading(*vc, 0.570088f);
+					} else {
+						applyFacesShading(*vc, 0.670820f);
+					}
 				}
 			}
 			if (!m_enable_shaders) {
