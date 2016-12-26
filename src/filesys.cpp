@@ -27,12 +27,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "config.h"
 #include "porting.h"
+#include <algorithm> 
 
 namespace fs
 {
 
 #ifdef _WIN32 // WINDOWS
-
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include <shlwapi.h>
@@ -205,6 +205,7 @@ std::string TempPath()
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
 
 std::vector<DirListNode> GetDirListing(const std::string &pathstring)
 {
@@ -738,6 +739,38 @@ bool safeWriteToFile(const std::string &path, const std::string &content)
 bool Rename(const std::string &from, const std::string &to)
 {
 	return rename(from.c_str(), to.c_str()) == 0;
+}
+
+inline bool bad_char(char c)
+{
+	return !(isalnum(c) || c == '-' || c == '_' || isspace(c));
+}
+
+std::string SanitizeFilename(std::string input)
+{
+	// Remove charcters that could cause issues
+	input.erase(remove_if(input.begin(), input.end(), bad_char), input.end());
+	input = trim(input);
+	// Filenames that don't work on windows because of DOS backwards compatibilty 
+#ifdef _WIN32
+	static const char* bad_names[] = { 
+		"CON",  "PRN",  "AUX",  "NUL",  "COM1",
+		"COM2", "COM3", "COM4", "COM5", "COM6",
+		"COM7", "COM8", "COM9", "LPT1", "LPT2",
+		"LPT3", "LPT4", "LPT5", "LPT6", "LPT7", 
+		"LPT8", "LPT9" 
+	};
+	for (int a = 0; a < ARRLEN(bad_names); a++) {
+		if (input == bad_names[a]) {
+			input = input + "_";
+			break;
+		}
+	}
+#endif
+	// Make sure the name isn't an empty string after removing all the charcters that break stuff
+	if (input.empty())
+		input = "unnamed";
+	return input;
 }
 
 } // namespace fs

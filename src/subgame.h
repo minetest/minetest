@@ -71,6 +71,8 @@ std::vector<SubgameSpec> getAvailableGames();
 bool getWorldExists(const std::string &world_path);
 std::string getWorldGameId(const std::string &world_path,
 		bool can_be_legacy=false);
+std::string getWorldName(const std::string &world_path, 
+		const std::string &dir_name);
 
 struct WorldSpec
 {
@@ -98,7 +100,7 @@ std::vector<WorldSpec> getAvailableWorlds();
 
 // loads the subgame's config and creates world directory
 // and world.mt if they don't exist
-bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec);
+bool loadGameConfAndInitWorld(const std::string &path, const std::string &name, const SubgameSpec &gamespec);
 
 #endif
 

@@ -117,6 +117,8 @@ bool safeWriteToFile(const std::string &path, const std::string &content);
 
 bool Rename(const std::string &from, const std::string &to);
 
+std::string SanitizeFilename(std::string input);
+
 } // namespace fs
 
 #endif
