@@ -18,7 +18,7 @@
 --------------------------------------------------------------------------------
 function get_mods(path,retval,modpack)
 	local mods = core.get_dir_list(path, true)
-	
+
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
 			local prefix = path .. DIR_DELIM .. name .. DIR_DELIM
@@ -237,49 +237,45 @@ function modmgr.render_modlist(render_list)
 
 	local list = render_list:get_list()
 	local last_modpack = nil
-
-	for i,v in ipairs(list) do
-		if retval ~= "" then
-			retval = retval ..","
+	local retval = {}
+	local in_game_mods = false
+	for i, v in ipairs(list) do
+		if v.typ == "game_mod" and not in_game_mods then
+			in_game_mods = true
+			retval[#retval + 1] = mt_color_blue
+			retval[#retval + 1] = "0"
+			retval[#retval + 1] = fgettext("Subgame Mods")
 		end
 
 		local color = ""
-
 		if v.is_modpack then
 			local rawlist = render_list:get_raw_list()
+			color = mt_color_dark_green
 
-			local all_enabled = true
-			for j=1,#rawlist,1 do
+			for j = 1, #rawlist, 1 do
 				if rawlist[j].modpack == list[i].name and
-					rawlist[j].enabled ~= true then
-						all_enabled = false
-						break
+						rawlist[j].enabled ~= true then
+					-- Modpack not entirely enabled so showing as grey
+					color = mt_color_grey
+					break
 				end
 			end
-
-			if all_enabled == false then
-				color = mt_color_grey
-			else
-				color = mt_color_dark_green
-			end
-		end
-
-		if v.typ == "game_mod" then
+		elseif v.typ == "game_mod" then
 			color = mt_color_blue
-		else
-			if v.enabled then
-				color = mt_color_green
-			end
+		elseif v.enabled then
+			color = mt_color_green
 		end
 
-		retval = retval .. color
-		if v.modpack  ~= nil then
-			retval = retval .. "    "
+		retval[#retval + 1] = color
+		if v.modpack ~= nil or v.typ == "game_mod" then
+			retval[#retval + 1] = "1"
+		else
+			retval[#retval + 1] = "0"
 		end
-		retval = retval .. v.name
+		retval[#retval + 1] = core.formspec_escape(v.name)
 	end
 
-	return retval
+	return table.concat(retval, ",")
 end
 
 --------------------------------------------------------------------------------

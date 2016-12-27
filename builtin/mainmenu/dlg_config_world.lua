@@ -17,14 +17,13 @@
 
 --------------------------------------------------------------------------------
 
-local enabled_all = false 
+local enabled_all = false
 
 local function modname_valid(name)
 	return not name:find("[^a-z0-9_]")
 end
 
 local function get_formspec(data)
-
 	local mod = data.list:get_list()[data.selected_mod]
 
 	local retval =
@@ -32,24 +31,12 @@ local function get_formspec(data)
 		"label[0.5,0;" .. fgettext("World:") .. "]" ..
 		"label[1.75,0;" .. data.worldspec.name .. "]"
 
-	if data.hide_gamemods then
-		retval = retval .. "checkbox[1,6;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";true]"
-	else
-		retval = retval .. "checkbox[1,6;cb_hide_gamemods;" .. fgettext("Hide Game") .. ";false]"
-	end
-
-	if data.hide_modpackcontents then
-		retval = retval .. "checkbox[6,6;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";true]"
-	else
-		retval = retval .. "checkbox[6,6;cb_hide_mpcontent;" .. fgettext("Hide mp content") .. ";false]"
-	end
-
 	if mod == nil then
 		mod = {name=""}
 	end
 
 	local hard_deps, soft_deps = modmgr.get_dependencies(mod.path)
-	
+
 	retval = retval ..
 		"label[0,0.7;" .. fgettext("Mod:") .. "]" ..
 		"label[0.75,0.7;" .. mod.name .. "]" ..
@@ -62,41 +49,45 @@ local function get_formspec(data)
 		"button[3.25,7;2.5,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
-	if mod ~= nil and mod.name ~= "" and mod.typ ~= "game_mod" then
+	if mod and mod.name ~= "" and mod.typ ~= "game_mod" then
 		if mod.is_modpack then
 			local rawlist = data.list:get_raw_list()
 
 			local all_enabled = true
-			for j=1,#rawlist,1 do
-				if rawlist[j].modpack == mod.name and
-					rawlist[j].enabled ~= true then
-						all_enabled = false
-						break
+			for j = 1, #rawlist, 1 do
+				if rawlist[j].modpack == mod.name and not rawlist[j].enabled then
+					all_enabled = false
+					break
 				end
 			end
 
-			if all_enabled == false then
-				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_enable;" .. fgettext("Enable MP") .. "]"
+			if all_enabled then
+				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_disable;" ..
+					fgettext("Disable MP") .. "]"
 			else
-				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_disable;" .. fgettext("Disable MP") .. "]"
+				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_enable;" ..
+					fgettext("Enable MP") .. "]"
 			end
 		else
 			if mod.enabled then
-				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" .. fgettext("enabled") .. ";true]"
+				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" ..
+					fgettext("enabled") .. ";true]"
 			else
-				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" .. fgettext("enabled") .. ";false]"
+				retval = retval .. "checkbox[5.5,-0.125;cb_mod_enable;" ..
+					fgettext("enabled") .. ";false]"
 			end
 		end
 	end
-	if enabled_all then 
+	if enabled_all then
 		retval = retval ..
-			"button[8.75,0.125;2.5,0.5;btn_disable_all_mods;" .. fgettext("Disable all") .. "]" ..
-			"textlist[5.5,0.75;5.75,5.4;world_config_modlist;"
+			"button[8.75,0.125;2.5,0.5;btn_disable_all_mods;" .. fgettext("Disable all") .. "]"
 	else
 		retval = retval ..
-			"button[8.75,0.125;2.5,0.5;btn_enable_all_mods;" .. fgettext("Enable all") .. "]" ..
-			"textlist[5.5,0.75;5.75,5.4;world_config_modlist;"
+			"button[8.75,0.125;2.5,0.5;btn_enable_all_mods;" .. fgettext("Enable all") .. "]"
 	end
+	retval = retval ..
+		"tablecolumns[color;tree;text]" ..
+		"table[5.5,0.75;5.75,6;world_config_modlist;"
 	retval = retval .. modmgr.render_modlist(data.list)
 	retval = retval .. ";" .. data.selected_mod .."]"
 
@@ -129,16 +120,15 @@ end
 
 
 local function handle_buttons(this, fields)
-
 	if fields["world_config_modlist"] ~= nil then
-		local event = core.explode_textlist_event(fields["world_config_modlist"])
-		this.data.selected_mod = event.index
-		core.setting_set("world_config_selected_mod", event.index)
+		local event = core.explode_table_event(fields["world_config_modlist"])
+		this.data.selected_mod = event.row
+		core.setting_set("world_config_selected_mod", event.row)
 
 		if event.type == "DCL" then
 			enable_mod(this)
 		end
-		
+
 		return true
 	end
 
@@ -160,44 +150,7 @@ local function handle_buttons(this, fields)
 		return true
 	end
 
-	if fields["cb_hide_gamemods"] ~= nil or
-		fields["cb_hide_mpcontent"] ~= nil then
-		local current = this.data.list:get_filtercriteria()
-
-		if current == nil then
-			current = {}
-		end
-		
-		if fields["cb_hide_gamemods"] ~= nil then
-			if core.is_yes(fields["cb_hide_gamemods"]) then
-				current.hide_game = true
-				this.data.hide_gamemods = true
-				core.setting_set("world_config_hide_gamemods", "true")
-			else
-				current.hide_game = false
-				this.data.hide_gamemods = false
-				core.setting_set("world_config_hide_gamemods", "false")
-			end
-		end
-
-		if fields["cb_hide_mpcontent"] ~= nil then
-			if core.is_yes(fields["cb_hide_mpcontent"]) then
-				current.hide_modpackcontents = true
-				this.data.hide_modpackcontents = true
-				core.setting_set("world_config_hide_modpackcontents", "true")
-			else
-				current.hide_modpackcontents = false
-				this.data.hide_modpackcontents = false
-				core.setting_set("world_config_hide_modpackcontents", "false")
-			end
-		end
-
-		this.data.list:set_filtercriteria(current)
-		return true
-	end
-
 	if fields["btn_config_world_save"] then
-
 		local filename = this.data.worldspec.path ..
 				DIR_DELIM .. "world.mt"
 
@@ -231,7 +184,7 @@ local function handle_buttons(this, fields)
 		if not worldfile:write() then
 			core.log("error", "Failed to write world config file")
 		end
-	
+
 		this:delete()
 		return true
 	end
@@ -252,7 +205,7 @@ local function handle_buttons(this, fields)
 		enabled_all = true
 		return true
 	end
-	
+
 	if fields.btn_disable_all_mods then
 		local list = this.data.list:get_raw_list()
 
@@ -269,14 +222,11 @@ local function handle_buttons(this, fields)
 end
 
 function create_configure_world_dlg(worldidx)
-
 	local dlg = dialog_create("sp_config_world",
 					get_formspec,
 					handle_buttons,
 					nil)
 
-	dlg.data.hide_gamemods = core.setting_getbool("world_config_hide_gamemods")
-	dlg.data.hide_modpackcontents = core.setting_getbool("world_config_hide_modpackcontents")
 	dlg.data.selected_mod = tonumber(core.setting_get("world_config_selected_mod"))
 	if dlg.data.selected_mod == nil then
 		dlg.data.selected_mod = 0
@@ -286,14 +236,14 @@ function create_configure_world_dlg(worldidx)
 	if dlg.data.worldspec == nil then dlg:delete() return nil end
 
 	dlg.data.worldconfig = modmgr.get_worldconfig(dlg.data.worldspec.path)
-	
+
 	if dlg.data.worldconfig == nil or dlg.data.worldconfig.id == nil or
 			dlg.data.worldconfig.id == "" then
 
 		dlg:delete()
 		return nil
 	end
-	
+
 	dlg.data.list = filterlist.create(
 			modmgr.preparemodlist, --refresh
 			modmgr.comparemod, --compare
