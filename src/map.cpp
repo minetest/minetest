@@ -2064,15 +2064,26 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 		return sector;
 	}
 #endif
+
 	/*
-		Do not create over-limit
+		Do not create over-limit.
+		We are checking for any nodes of the mapblocks of the sector being beyond the limit.
+		A sector is a vertical column of mapblocks, so sectorpos is like a 2D blockpos.
+
+		At the negative limit we are checking for
+			block minimum nodepos < -mapgenlimit.
+		At the positive limit we are checking for
+			block maximum nodepos > mapgenlimit.
+
+		Block minimum nodepos = blockpos * mapblocksize.
+		Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
 	*/
 	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit"));
-	if(p2d.X < -map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.X >  map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.Y < -map_gen_limit / MAP_BLOCKSIZE
-			|| p2d.Y >  map_gen_limit / MAP_BLOCKSIZE)
+	if (p2d.X * MAP_BLOCKSIZE < -map_gen_limit
+			|| (p2d.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
+			|| p2d.Y * MAP_BLOCKSIZE < -map_gen_limit
+			|| (p2d.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit)
 		throw InvalidPositionException("createSector(): pos. over limit");
 
 	/*
