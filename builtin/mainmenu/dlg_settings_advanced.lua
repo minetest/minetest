@@ -666,9 +666,19 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields.search or fields.key_enter_field == "search_string" then
-		search_string = fields.search_string
-		settings, selected_setting = filter_settings(full_settings, search_string)
-		core.update_formspec(this:get_formspec())
+		if search_string == fields.search_string then
+			for i = selected_setting + 1, #settings do
+				if settings[i].type ~= "category" then
+					selected_setting = i
+					core.update_formspec(this:get_formspec())
+					return true
+				end
+			end
+		else
+			search_string = fields.search_string
+			settings, selected_setting = filter_settings(full_settings, search_string)
+			core.update_formspec(this:get_formspec())
+		end
 		return true
 	end
 
