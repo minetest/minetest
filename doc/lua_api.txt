@@ -23,53 +23,66 @@ Programming in Lua
 If you have any difficulty in understanding this, please read
 [Programming in Lua](http://www.lua.org/pil/).
 
-Startup
--------
-Mods are loaded during server startup from the mod load paths by running
-the `init.lua` scripts in a shared environment.
-
 Paths
 -----
-* `RUN_IN_PLACE=1` (Windows release, local build)
+* `$HOME`: user home directory, eg: `/home/username/`
+* `RUN_IN_PLACE=1`: (Windows release, local build)
     *  `$path_user`:
         * Linux: `<build directory>`
         * Windows: `<build directory>`
     * `$path_share`
         * Linux: `<build directory>`
         * Windows:  `<build directory>`
-* `RUN_IN_PLACE=0`: (Linux release)
+* `RUN_IN_PLACE=0`: (Linux only currently)
     * `$path_share`
         * Linux: `/usr/share/minetest`
-        * Windows: `<install directory>/minetest-0.4.x`
     * `$path_user`:
-        * Linux: `$HOME/.minetest`
-        * Windows: `C:/users/<user>/AppData/minetest` (maybe)
+        * Linux: `$HOME/.minetest` (note: this is a hidden dir)
 
 Games
 -----
-Games are looked up from:
+A game is a collection of mods.
 
-* `$path_share/games/gameid/`
-* `$path_user/games/gameid/`
+### Game load paths
 
-where `gameid` is unique to each game.
+Games are discovered in:
 
+* `$path_share/games/`
+* `$path_user/games/`
+
+### Game directory structure
+
+    games
+    |-- gameid
+    |   |-- game.conf
+    |   |-- minetest.conf
+    |   |-- mods
+    |   |   |-- mod1
+    |   |   `-- <more mods>
+    |   `-- menu
+    |       |-- overlay.png
+    |       |-- background.png
+    |       |-- footer.png
+    |       `-- header.png
+    `-- another
+
+#### game.conf
 The game directory contains the file `game.conf`, which contains these fields:
 
     name = <Human-readable full name of the game>
 
 e.g.
 
-    name = Minetest
+    name = Minetest Game
 
+#### minetest.conf
 The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
 It can also contain a settingtypes.txt in the same format as the one in builtin.
 This settingtypes.txt will be parsed by the menu and the settings will be displayed
 in the "Games" category in the settings tab.
 
-### Menu images
-
+#### Menu images
 Games can provide custom main menu images. They are put inside a `menu` directory
 inside the game directory.
 
@@ -79,9 +92,15 @@ If you want to specify multiple images for one identifier, add additional images
 like `$identifier.$n.png`, with an ascending number $n starting with 1, and a random
 image will be chosen from the provided ones.
 
+Mods
+----
 
-Mod load path
--------------
+The `init.lua` of all enabled mods are executed during server start up.
+The mods share an environment so any globals declared will be accessible from
+other mods.
+
+### Mod load path
+
 Generic:
 
 * `$path_share/games/gameid/mods/`
@@ -102,8 +121,8 @@ On an installed version on Linux:
 * `$HOME/.minetest/mods/` (User-installed mods)
 * `$HOME/.minetest/worlds/worldname/worldmods`
 
-Mod load path for world-specific games
---------------------------------------
+### Mod load path for world-specific games
+
 It is possible to include a game in a world; in this case, no mods or
 games are loaded or checked from anywhere else.
 
@@ -117,14 +136,7 @@ Mods should be then be placed in:
 
     $world/game/mods/
 
-Modpack support
-----------------
-Mods can be put in a subdirectory, if the parent directory, which otherwise
-should be a mod, contains a file named `modpack.txt`. This file shall be
-empty, except for lines starting with `#`, which are comments.
-
-Mod directory structure
-------------------------
+### Mod directory structure
 
     mods
     |-- modname
@@ -140,14 +152,13 @@ Mod directory structure
     |   |-- sounds
     |   |-- media
     |   `-- <custom data>
-    `-- another
+    `-- another`
 
-
-### modname
+#### modname
 The location of this directory can be fetched by using
 `minetest.get_modpath(modname)`.
 
-### `depends.txt`
+#### depends.txt
 List of mods that have to be loaded before loading this mod.
 
 A single line contains a single modname.
@@ -156,18 +167,18 @@ Optional dependencies can be defined by appending a question mark
 to a single modname. Their meaning is that if the specified mod
 is missing, that does not prevent this mod from being loaded.
 
-### `screenshot.png`
+#### screenshot.png
 A screenshot shown in the mod manager within the main menu. It should
 have an aspect ratio of 3:2 and a minimum size of 300×200 pixels.
 
-### `description.txt`
+#### description.txt
 A File containing description to be shown within mainmenu.
 
-### `settingtypes.txt`
+#### settingtypes.txt
 A file in the same format as the one in builtin. It will be parsed by the
 settings menu and the settings will be displayed in the "Mods" category.
 
-### `init.lua`
+#### init.lua
 The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
@@ -175,12 +186,18 @@ registered callbacks.
 `minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
 to read custom or existing settings at load time, if necessary.
 
-### `models`
+#### models
 Models for entities or meshnodes.
 
-### `textures`, `sounds`, `media`
+#### textures, sounds, media
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod.
+
+Modpacks
+--------
+Mods can be put in a subdirectory, if the parent directory, which otherwise
+should be a mod, contains a file named `modpack.txt`. This file shall be
+empty, except for lines starting with `#`, which are comments.
 
 Naming convention for registered textual names
 ----------------------------------------------
