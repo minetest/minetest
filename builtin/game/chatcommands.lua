@@ -12,29 +12,34 @@ function core.register_chatcommand(cmd, def)
 	def.description = def.description or ""
 	def.privs = def.privs or {}
 	def.mod_origin = core.get_current_modname() or "??"
+	def.run = function(self, name, param)
+		if not param then
+			param = ""
+		end
+		local has_privs, missing_privs = core.check_player_privs(name, self.privs)
+		if has_privs then
+			core.set_last_run_mod(self.mod_origin)
+			return self.func(name, param)
+		else
+			return false, "You don't have permission"
+					.. " to run this command (missing privileges: "
+					.. table.concat(missing_privs, ", ") .. ")"
+		end
+	end
+
 	core.registered_chatcommands[cmd] = def
 end
 
 core.register_on_chat_message(function(name, message)
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
-	if not param then
-		param = ""
-	end
 	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
 		return false
 	end
-	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
-	if has_privs then
-		core.set_last_run_mod(cmd_def.mod_origin)
-		local success, message = cmd_def.func(name, param)
-		if message then
-			core.chat_send_player(name, message)
-		end
-	else
-		core.chat_send_player(name, "You don't have permission"
-				.. " to run this command (missing privileges: "
-				.. table.concat(missing_privs, ", ") .. ")")
+
+	local success, message = cmd_def:run(name, param)
+	if message then
+		core.chat_send_player(name, message)
 	end
 	return true  -- Handled chat message
 end)
