@@ -17,7 +17,7 @@ irrlicht_version=1.8.4
 ogg_version=1.3.2
 vorbis_version=1.3.5
 curl_version=7.50.3
-gettext_version=0.18.2
+gettext_version=0.19.8.1
 freetype_version=2.7
 sqlite3_version=3.14.2
 luajit_version=2.1.0-beta2
@@ -131,7 +131,6 @@ cmake .. \
 	-DCURL_INCLUDE_DIR=$libdir/libcurl/include \
 	-DCURL_LIBRARY=$libdir/libcurl/lib/libcurl.dll.a \
 	\
-	-DCUSTOM_GETTEXT_PATH=$libdir/gettext \
 	-DGETTEXT_MSGFMT=`which msgfmt` \
 	-DGETTEXT_DLL=$libdir/gettext/bin/libintl-8.dll \
 	-DGETTEXT_ICONV_DLL=$libdir/gettext/bin/libiconv-2.dll \
