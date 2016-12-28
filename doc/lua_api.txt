@@ -294,154 +294,89 @@ on top of `cobble.png`.
 
 ### Advanced texture modifiers
 
-#### `[crack:<n>:<p>`
-* `<n>` = animation frame count
-* `<p>` = current animation frame
-
-Draw a step of the crack animation on the texture.
-
-Example:
-
-    default_cobble.png^[crack:10:1
-
-#### `[combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>:...`
-* `<w>` = width
-* `<h>` = height
-* `<x>` = x position
-* `<y>` = y position
-* `<file>` = texture to combine
-
-Creates a texture of size `<w>` times `<h>` and blits the listed files to their
-specified coordinates.
-
-Example:
-
-    [combine:16x32:0,0=default_cobble.png:0,16=default_wood.png
-
-#### `[resize:<w>x<h>`
-Resizes the texture to the given dimensions.
-
-Example:
-
-    default_sandstone.png^[resize:16x16
-
-#### `[opacity:<r>`
-    Makes the base image transparent according to the given ratio.
-    r must be between 0 and 255.
-    0 means totally transparent.
-    255 means totally opaque.
-
-Example:
-
-    default_sandstone.png^[opacity:127
-
-#### `[invert:<mode>`
-Inverts the given channels of the base image.
-Mode may contain the characters "r", "g", "b", "a".
-Only the channels that are mentioned in the mode string will be inverted.
-
-Example:
-
-	default_apple.png^[invert:rgb
-
-#### `[brighten`
-Brightens the texture.
-
-Example:
-
-    tnt_tnt_side.png^[brighten
-
-#### `[noalpha`
-Makes the texture completely opaque.
-
-Example:
-
-    default_leaves.png^[noalpha
-
-#### `[makealpha:<r>,<g>,<b>`
-Convert one color to transparency.
-
-Example:
-
-    default_cobble.png^[makealpha:128,128,128
-
-#### `[transform<t>`
-* `<t>` = transformation(s) to apply
-
-Rotates and/or flips the image.
-
-`<t>` can be a number (between 0 and 7) or a transform name.
-Rotations are counter-clockwise.
-
-    0  I      identity
-    1  R90    rotate by 90 degrees
-    2  R180   rotate by 180 degrees
-    3  R270   rotate by 270 degrees
-    4  FX     flip X
-    5  FXR90  flip X then rotate by 90 degrees
-    6  FY     flip Y
-    7  FYR90  flip Y then rotate by 90 degrees
-
-Example:
-
-    default_stone.png^[transformFXR90
-
-#### `[inventorycube{<top>{<left>{<right>`
-Escaping does not apply here and `^` is replaced by `&` in texture names instead.
-
-Create an inventory cube texture using the side textures.
-
-Example:
-
-    [inventorycube{grass.png{dirt.png&grass_side.png{dirt.png&grass_side.png
-
-Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
-`dirt.png^grass_side.png` textures
-
-#### `[lowpart:<percent>:<file>`
-Blit the lower `<percent>`% part of `<file>` on the texture.
-
-Example:
-
-    base.png^[lowpart:25:overlay.png
-
-#### `[verticalframe:<t>:<n>`
-* `<t>` = animation frame count
-* `<n>` = current animation frame
-
-Crops the texture to a frame of a vertical animation.
-
-Example:
-
-    default_torch_animated.png^[verticalframe:16:8
-
-#### `[mask:<file>`
-Apply a mask to the base image.
-
-The mask is applied using binary AND.
-
-#### `[sheet:<w>x<h>:<x>,<y>`
-Retrieves a tile at position x,y from the base image
-which it assumes to be a tilesheet with dimensions w,h.
-
-
-#### `[colorize:<color>:<ratio>`
-Colorize the textures with the given color.
-`<color>` is specified as a `ColorString`.
-`<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".  If
-it is an int, then it specifies how far to interpolate between the
-colors where 0 is only the texture color and 255 is only `<color>`. If
-omitted, the alpha of `<color>` will be used as the ratio.  If it is
-the word "`alpha`", then each texture pixel will contain the RGB of
-`<color>` and the alpha of `<color>` multiplied by the alpha of the
-texture pixel.
-
-#### `[multiply:<color>`
-Multiplies texture colors with the given color.
-`<color>` is specified as a `ColorString`.
-Result is more like what you'd expect if you put a color on top of another
-color. Meaning white surfaces get a lot of your new color while black parts don't
-change very much.
+* `[crack:<n>:<p>`
+    * Draw a step of the crack animation on the texture
+    * `<n>` = animation frame count
+    * `<p>` = current animation frame
+    * Example: `default_cobble.png^[crack:10:1`
+* `[combine:<w>x<h>:<x1>,<y1>=<file1>:<x2>,<y2>=<file2>:...`
+    * Creates a texture of size `<w>` times `<h>` and blits the listed files
+      to their specified coordinates.
+    * `<w>` = width
+    * `<h>` = height
+    * `<x>` = x position
+    * `<y>` = y position
+    * `<file>` = texture to combine
+    * Example: `[combine:16x32:0,0=default_cobble.png:0,16=default_wood.png`
+* `[resize:<w>x<h>`
+    * Resizes the texture to the given dimensions.
+    * Example: `default_sandstone.png^[resize:16x16`
+* `[opacity:<ratio>`
+    * Makes the base image transparent according to the given ratio.
+    * `ratio` - between 0 and 255, where 0 is transparent and 255 is opaque
+    * Example: `default_sandstone.png^[opacity:127`
+* `[invert:<mode>`
+    * Inverts the given channels of the base image.
+    * Mode may contain the characters "r", "g", "b", "a".
+    * Only the channels that are mentioned in the mode string will be inverted.
+    * Example: `default_apple.png^[invert:rgb`
+* `[brighten`
+    * Brightens the texture.
+    * Example: `tnt_tnt_side.png^[brighten`
+* `[noalpha`
+    * Makes the texture completely opaque.
+    * Example: `default_leaves.png^[noalpha`
+* `[makealpha:<r>,<g>,<b>`
+    * Convert one color to transparency.
+    * Example: `default_cobble.png^[makealpha:128,128,128`
+* `[transform<t>`
+    * Rotates and/or flips the image.
+    * `<t>` = transformation(s) to apply
+      `<t>` can be a number (between 0 and 7) or a transform name.
+        * Rotations are counter-clockwise.
+        * 0  I      identity
+        * 1  R90    rotate by 90 degrees
+        * 2  R180   rotate by 180 degrees
+        * 3  R270   rotate by 270 degrees
+        * 4  FX     flip X
+        * 5  FXR90  flip X then rotate by 90 degrees
+        * 6  FY     flip Y
+        * 7  FYR90  flip Y then rotate by 90 degrees
+    * Example: `default_stone.png^[transformFXR90`
+* `[inventorycube{<top>{<left>{<right>`
+    * Create an inventory cube texture using the side textures.
+    * Escaping does not apply here and `^` is replaced by `&` in texture names
+      instead.
+    * Example: `[inventorycube{grass.png{dirt.png&grass_side.png{dirt.png&grass_side.png`
+      Creates an inventorycube with `grass.png`, `dirt.png^grass_side.png` and
+      `dirt.png^grass_side.png` textures
+* `[lowpart:<percent>:<file>`
+    * Blit the lower `<percent>`% part of `<file>` on the texture.
+    * Example: `base.png^[lowpart:25:overlay.png`
+* `[verticalframe:<t>:<n>`
+    * Crops the texture to a frame of a vertical animation.
+    * `<t>` = animation frame count
+    * `<n>` = current animation frame
+    * Example: `default_torch_animated.png^[verticalframe:16:8`
+* `[mask:<file>`
+    * Apply a mask to the base image.
+    * The mask is applied using binary AND.
+* `[colorize:<color>:<ratio>`
+    * Colorize the textures with the given color.
+    * `<color>` is specified as a `ColorString`.
+    * `<ratio>` is an int ranging from 0 to 255 or the word "`alpha`".
+        * If it is an int, then it specifies how far to interpolate between the
+          colors where 0 is only the texture color and 255 is only `<color>`.
+        * If it is the word "`alpha`", then each texture pixel will contain the
+          RGB of `<color>` and the alpha of `<color>` multiplied by the alpha
+          of the texture pixel.
+        * If omitted, the alpha of `<color>` will be used as the ratio.
+* `[multiply:<color>`
+    * Multiplies texture colors with the given color.
+    * `<color>` is specified as a `ColorString`.
+    * Result is more like what you'd expect if you put a color on top of another
+      color. Meaning white surfaces get a lot of your new color while black parts don't
+      change very much.
 
 Sounds
 ------
