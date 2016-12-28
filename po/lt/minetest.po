@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-10 20:29+0000\n"
-"Last-Translator: Zygi Mantus <zygimantus@gmail.com>\n"
-"Language-Team: Lithuanian <https://hosted.weblate.org/projects/minetest/"
-"minetest/lt/>\n"
+"PO-Revision-Date: 2016-12-28 12:00+0000\n"
+"Last-Translator: ignaloidas <ignaskiela@super.lt>\n"
+"Language-Team: Lithuanian "
+"<https://hosted.weblate.org/projects/minetest/minetest/lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n"
-"%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.10-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.11-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -58,7 +58,7 @@ msgstr "Serveris reikalauja naudoti versijos $1 protokolą. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "Serveris palaiko protokolo versijas nuo $1 iki $2 "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
@@ -72,7 +72,7 @@ msgstr "Mes palaikome tik $1 protokolo versiją."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Mes palaikome protokolo versijas nuo $1 iki $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -211,11 +211,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Nėra nustatymo aprašymo)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Atgal į Nustatymus"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -228,7 +228,7 @@ msgstr "Išjungti papildinį"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr ""
+msgstr "Keisti"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -263,15 +263,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Prašome įvesti sveikąjį skaičių."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Prašome įvesti skaičių."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Tinkamos reikšmės yra: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
