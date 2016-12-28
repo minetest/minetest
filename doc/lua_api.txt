@@ -2076,6 +2076,7 @@ Call these functions only at load time!
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
+    * Adds definition to minetest.registered_chatcommands
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
