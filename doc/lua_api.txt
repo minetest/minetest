@@ -199,8 +199,11 @@ Mods can be put in a subdirectory, if the parent directory, which otherwise
 should be a mod, contains a file named `modpack.txt`. This file shall be
 empty, except for lines starting with `#`, which are comments.
 
-Naming convention for registered textual names
-----------------------------------------------
+Registered identifiers / textual names
+--------------------------------------
+
+### Naming convention for registered textual names
+
 Registered names should generally be in this format:
 
     "modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
@@ -208,38 +211,37 @@ Registered names should generally be in this format:
 This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
 
-### Example
-In the mod `experimental`, there is the ideal item/node/entity name `tnt`.
+For example, in the mod `experimental`, there is the ideal item/node/entity name `tnt`.
 So the name should be `experimental:tnt`.
 
-Enforcement can be overridden by prefixing the name with `:`. This can
-be used for overriding the registrations of some other mod.
+If you try to register a name which doesn't match `modname:<whatever>`, Minetest
+will throw an error. It is possible to disable this enforcement by using the
+override character `:`. This can be used for overriding the registrations of some
+other mod.
 
-Example: Any mod can redefine `experimental:tnt` by using the name
+For example: Any mod can redefine `experimental:tnt` by using the name
 
     :experimental:tnt
 
-when registering it.
+when registering it. Note that the first `:` is not part of the name, but is
+just used to disable the enforcement.
 (also that mod is required to have `experimental` as a dependency)
 
 The `:` prefix can also be used for maintaining backwards compatibility.
 
 ### Aliases
 Aliases can be added by using `minetest.register_alias(name, convert_to)` or
-`minetest.register_alias_force(name, convert_to).
+`minetest.register_alias_force(name, convert_to)`.
+Items called `name` will be converted to an item called `convert_to`.
 
-This will make Minetest to convert things called name to things called
-`convert_to`.
+If `name` is a valid registered item, then `minetest.register_alias` won't
+register the alias, whereas `minetest.register_alias_force` will
+delete `name` and register the alias. The force version should be avoided and
+not used unless required.
 
-The only difference between `minetest.register_alias` and
-`minetest.register_alias_force` is that if an item called `name` exists,
-`minetest.register_alias` will do nothing while
-`minetest.register_alias_force` will unregister it.
-
-This can be used for maintaining backwards compatibility.
-
-This can be also used for setting quick access names for things, e.g. if
-you have an item called `epiclylongmodname:stuff`, you could do
+Aliases can be used for maintaining backwards compatibility, or for setting
+quick access names for things with long names,
+e.g. if you have an item called `epiclylongmodname:stuff`, you could do
 
     minetest.register_alias("stuff", "epiclylongmodname:stuff")
 
