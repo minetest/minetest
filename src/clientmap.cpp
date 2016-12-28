@@ -313,9 +313,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
 			float step = BS * 1;
 			float stepfac = 1.1;
-			// BS * 4 avoids sharp angles close to the camera
-			// for better accuracy
-			float startoff = BS * 4;
+			float startoff = BS * 1;
 			// The occlusion search of 'isOccluded()' must stop short of the target
 			// point by distance 'endoff' (end offset) to not enter the target mapblock.
 			// For the 8 mapblock corners 'endoff' must therefore be the maximum diagonal
@@ -323,7 +321,10 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			// sqrt(1^2 + 1^2 + 1^2) = 1.732
 			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
 			v3s16 spn = cam_pos_nodes;
-			u32 needed_count = 1;
+			// to reduce the likelihood of falsely occluded blocks
+			// require at least two solid blocks
+			// this is a HACK, we should think of a more precise algorithm
+			u32 needed_count = 2;
 			if (occlusion_culling_enabled &&
 					// First see if the block's center is occluded
 					// (for the central point of the mapblock 'endoff' can be halved)
