@@ -422,6 +422,7 @@ set(common_SRCS
 	mapgen_flat.cpp
 	mapgen_fractal.cpp
 	mapgen_singlenode.cpp
+	mapgen_rec.cpp
 	mapgen_v5.cpp
 	mapgen_v6.cpp
 	mapgen_v7.cpp

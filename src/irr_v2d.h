@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 typedef core::vector2d<f32> v2f;
 typedef core::vector2d<s16> v2s16;
+typedef core::vector2d<u16> v2u16;
 typedef core::vector2d<s32> v2s32;
 typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;

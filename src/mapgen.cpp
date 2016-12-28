@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapgen_v7.h"
 #include "mapgen_valleys.h"
 #include "mapgen_singlenode.h"
+#include "mapgen_rec.h"
 #include "cavegen.h"
 #include "dungeongen.h"
 
@@ -85,6 +86,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"fractal",    true},
 	{"valleys",    true},
 	{"singlenode", false},
+	{"rr_demo",    true}
 };
 
 STATIC_ASSERT(
@@ -187,6 +189,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 		return new MapgenV7(mgid, (MapgenV7Params *)params, emerge);
 	case MAPGEN_VALLEYS:
 		return new MapgenValleys(mgid, (MapgenValleysParams *)params, emerge);
+	case MAPGEN_RR_DEMO:
+		return new Mapgen_Test(mgid, (MapgenParams *)params, emerge);
 	default:
 		return NULL;
 	}
@@ -210,6 +214,8 @@ MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 		return new MapgenV7Params;
 	case MAPGEN_VALLEYS:
 		return new MapgenValleysParams;
+	case MAPGEN_RR_DEMO:
+		return new MapgenParams;
 	default:
 		return NULL;
 	}
