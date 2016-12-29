@@ -1440,7 +1440,8 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			max_d = max_d_hand;
 		else if (max_d < 0)
 			max_d = BS * 4.0;
-		if (d > max_d * 1.5) {
+		// cube diagonal: sqrt(3) = 1.73
+		if (d > max_d * 1.73) {
 			actionstream << "Player " << player->getName()
 					<< " tried to access " << pointed.dump()
 					<< " from too far: "
