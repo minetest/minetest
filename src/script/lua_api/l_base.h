@@ -30,6 +30,7 @@ extern "C" {
 
 class ScriptApiBase;
 class Server;
+class Client;
 class Environment;
 class GUIEngine;
 
@@ -38,6 +39,7 @@ class ModApiBase {
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
+	static Client*          getClient(lua_State *L);
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
 	// When we are not loading the mod, this function returns "."

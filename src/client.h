@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <set>
 #include <vector>
 #include "clientobject.h"
+#include "script/scripting_client.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
 #include "localplayer.h"
@@ -547,10 +548,17 @@ public:
 	void request_media(const std::vector<std::string> &file_requests);
 	// Send a notification that no conventional media transfer is needed
 	void received_media();
+	
+	// Initialize the mods
+	void loadMods();
 
 	LocalClientState getState() { return m_state; }
+	ClientScripting* getScripting() { return &m_script_iface; }
 
 	void makeScreenshot(IrrlichtDevice *device);
+	
+	inline const std::string getPlayerName()
+	{ return m_env.getLocalPlayer()->getName(); }
 
 private:
 
@@ -579,10 +587,6 @@ private:
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
 	void sendGotBlocks(v3s16 block);
 	void sendRemovedSounds(std::vector<s32> &soundList);
-
-	// Helper function
-	inline std::string getPlayerName()
-	{ return m_env.getLocalPlayer()->getName(); }
 
 	float m_packetcounter_timer;
 	float m_connection_reinit_timer;
@@ -689,6 +693,9 @@ private:
 	Database *m_localdb;
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
+
+	// Processor for client-side scripting.
+	ClientScripting m_script_iface;
 
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_smooth_lighting;

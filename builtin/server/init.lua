@@ -2,6 +2,7 @@
 local scriptpath = core.get_builtin_path()..DIR_DELIM
 local commonpath = scriptpath.."common"..DIR_DELIM
 local gamepath = scriptpath.."game"..DIR_DELIM
+local serverpath = scriptpath.."server"..DIR_DELIM
 
 -- Shared between builtin files, but
 -- not exposed to outer context
@@ -11,24 +12,24 @@ dofile(commonpath.."vector.lua")
 
 dofile(gamepath.."constants.lua")
 assert(loadfile(gamepath.."item.lua"))(builtin_shared)
-dofile(gamepath.."register.lua")
+dofile(serverpath.."register.lua")
 
 if core.setting_getbool("profiler.load") then
 	profiler = dofile(scriptpath.."profiler"..DIR_DELIM.."init.lua")
 end
 
-dofile(gamepath.."item_entity.lua")
-dofile(gamepath.."deprecated.lua")
-dofile(gamepath.."misc.lua")
-dofile(gamepath.."privileges.lua")
-dofile(gamepath.."auth.lua")
-dofile(gamepath.."chatcommands.lua")
-dofile(gamepath.."static_spawn.lua")
+dofile(serverpath.."item_entity.lua")
+dofile(serverpath.."deprecated.lua")
+dofile(serverpath.."misc.lua")
+dofile(serverpath.."privileges.lua")
+dofile(serverpath.."auth.lua")
+dofile(serverpath.."chatcommands.lua")
+dofile(serverpath.."static_spawn.lua")
 dofile(gamepath.."detached_inventory.lua")
-assert(loadfile(gamepath.."falling.lua"))(builtin_shared)
+assert(loadfile(serverpath.."falling.lua"))(builtin_shared)
 dofile(gamepath.."features.lua")
 dofile(gamepath.."voxelarea.lua")
-dofile(gamepath.."forceloading.lua")
-dofile(gamepath.."statbars.lua")
+dofile(serverpath.."forceloading.lua")
+dofile(serverpath.."statbars.lua")
 
 profiler = nil

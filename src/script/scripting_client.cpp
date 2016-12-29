@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scripting_game.h"
-#include "server.h"
+#include "scripting_client.h"
+#include "client.h"
 #include "log.h"
 #include "settings.h"
 #include "cpp_api/s_internal.h"
@@ -35,7 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_object.h"
 #include "lua_api/l_particles.h"
 #include "lua_api/l_rollback.h"
-#include "lua_api/l_server.h"
+#include "lua_api/l_client.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_settings.h"
@@ -45,19 +45,17 @@ extern "C" {
 #include "lualib.h"
 }
 
-GameScripting::GameScripting(Server* server)
+ClientScripting::ClientScripting(Client* client)
 {
-	setServer(server);
-	setClient(NULL);
+	setClient(client);
+	setServer(NULL);
 
 	// setEnv(env) is called by ScriptApiEnv::initializeEnvironment()
 	// once the environment has been created
 
 	SCRIPTAPI_PRECHECKHEADER
 
-	if (g_settings->getBool("secure.enable_security")) {
-		initializeSecurity();
-	}
+	initializeSecurity();
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
@@ -73,14 +71,15 @@ GameScripting::GameScripting(Server* server)
 	lua_pop(L, 1);
 
 	// Push builtin initialization type
-	lua_pushstring(L, "game");
+	lua_pushstring(L, "client");
 	lua_setglobal(L, "INIT");
 
-	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
+	infostream << "SCRIPTAPI: Initialized client modules" << std::endl;
 }
 
-void GameScripting::InitializeModApi(lua_State *L, int top)
+void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
+	
 	// Initialize mod api modules
 	ModApiCraft::Initialize(L, top);
 	ModApiEnvMod::Initialize(L, top);
@@ -89,7 +88,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	ModApiMapgen::Initialize(L, top);
 	ModApiParticles::Initialize(L, top);
 	ModApiRollback::Initialize(L, top);
-	ModApiServer::Initialize(L, top);
+	ModApiClient::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
 
@@ -109,7 +108,63 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	LuaSettings::Register(L);
 }
 
-void log_deprecated(const std::string &message)
+int ClientScripting::count(const std::string filename)
 {
-	log_deprecated(NULL, message);
+	return m_files.count(filename);
+}
+
+std::string& ClientScripting::operator[] (const std::string filename)
+{
+	std::string modname = filename.substr(0, filename.find(MEDIA_MOD_SEPERATOR));
+	// Add modname if it is not already in m_mods
+	if (std::find(m_mods.begin(), m_mods.end(), modname) == m_mods.end()) {
+		m_mods.push_back(modname);
+	}
+	return m_files[filename];
+}
+
+bool ClientScripting::contains(const std::string filename)
+{
+	return m_files.count(filename);
+}
+
+void ClientScripting::getModNames(std::vector<std::string> &modlist)
+{
+	std::vector<std::string>::iterator it;
+	for (it = m_mods.begin(); it != m_mods.end(); ++it)
+		modlist.push_back(*it);
+}
+
+void ClientScripting::loadScript(const std::string &path)
+{	
+	verbosestream << "Running script from " << path << std::endl;
+
+	lua_State *L = getStack();
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	bool ok;
+	if (contains(path)) {
+		std::string fileContents = m_files[path];
+		ok = !luaL_loadbuffer(L, fileContents.c_str(), fileContents.length(), NULL);
+	} else {
+		ok = ScriptApiSecurity::safeLoadFile(L, path.c_str());
+	}
+	ok = ok && !lua_pcall(L, 0, 0, error_handler);
+	if (!ok) {
+		std::string error_msg = lua_tostring(L, -1);
+		lua_pop(L, 2); // Pop error message and error handler
+		throw ModError("Failed to load and run script from " +
+				path + ":\n" + error_msg);
+	}
+	lua_pop(L, 1); // Pop error handler
+}
+
+void ClientScripting::loadMods()
+{
+	for(std::vector<std::string>::iterator it = m_mods.begin(); it != m_mods.end(); ++it) {
+		std::string mod_name = *it;
+		std::string mod_path = mod_name + MEDIA_MOD_SEPERATOR"init.lua";
+		if (contains(mod_path)) loadScript(mod_path);
+	}
 }
