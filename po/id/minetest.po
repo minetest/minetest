@@ -7,16 +7,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-10 10:03+0000\n"
-"Last-Translator: Alvin Hikmawan <alvin.hikmawan@gmail.com>\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/minetest/"
-"minetest/id/>\n"
+"PO-Revision-Date: 2016-12-30 02:37+0000\n"
+"Last-Translator: Muhammad Rifqi Priyo Susanto "
+"<muhammadrifqipriyosusanto@gmail.com>\n"
+"Language-Team: Indonesian "
+"<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.10-dev\n"
+"X-Generator: Weblate 2.11-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1841,8 +1842,8 @@ msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
-"Menentukan tahap sampling atas tekstur\n"
-"Nilai yg lebih tinggi menghasilkan peta yg lebih halus"
+"Menentukan tahap sampling tekstur.\n"
+"Nilai lebih tinggi menghasilkan peta lebih halus."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2451,7 +2452,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr "Warna latar belakang konsol obrolan dalam permainan (R,G,B)"
+msgstr "Warna latar belakang konsol obrolan dalam permainan (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3571,7 +3572,7 @@ msgstr "Sensitivitas mouse"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr "Pengali sensitivitas mouse"
+msgstr "Pengali sensitivitas mouse."
 
 #: src/settings_translation_file.cpp
 msgid ""
