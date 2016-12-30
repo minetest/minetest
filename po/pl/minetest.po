@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-11-08 17:20+0000\n"
-"Last-Translator: Jakub Mendel <jimikuba@o2.pl>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
-"pl/>\n"
+"PO-Revision-Date: 2016-12-30 15:48+0000\n"
+"Last-Translator: Andrzej Redlarski <andrzej.redlarski2@gmail.com>\n"
+"Language-Team: Polish "
+"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.9\n"
+"X-Generator: Weblate 2.11-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -256,7 +256,7 @@ msgstr "Mody"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Opcjonalnie można dołączyć lakunarność poprzedzoną przecinkiem."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -567,7 +567,7 @@ msgstr "Mip-Mappowanie wyłączone"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Podświetlanie bloku"
+msgstr "Podświetlanie bloków"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
@@ -853,7 +853,7 @@ msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr "Definicje nod..."
+msgstr "Definicje bloków..."
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -1475,8 +1475,9 @@ msgid "Automaticaly report to the serverlist."
 msgstr "Automatycznie zgłoś do listy serwerów."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Autorun key"
-msgstr ""
+msgstr "Tryb szybki"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1503,9 +1504,8 @@ msgid "Bind address"
 msgstr "Sprawdzanie adresu"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr "Bity na pixel (głębia koloru) w trybie pełnoekranowym."
+msgstr "Bity na piksel (głębia koloru) w trybie pełnoekranowym."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1703,9 +1703,8 @@ msgid "Continuous forward movement (only used for testing)."
 msgstr "Ciągłe poruszanie się na przód (tylko do testowania)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Controls"
-msgstr "Control"
+msgstr "Sterowanie"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1849,7 +1848,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Opóźnienie w przesyłaniu bloków, kiedy gracz buduje"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2067,7 +2066,7 @@ msgstr "FPS podczas pauzy w menu"
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
@@ -2142,8 +2141,9 @@ msgstr ""
 "wyświetlane w zakładce Multiplayer."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Filler Depth"
-msgstr ""
+msgstr "Głębokość wypełnienia"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -2241,6 +2241,8 @@ msgstr ""
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"Odległość, z jakiej klient dowiaduje się o obiektach, wyrażona w blokach "
+"mapy (16 bloków)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2280,7 +2282,7 @@ msgstr "Generuj mapy normalnych"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "Globalne wywołania zwrotne"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2382,7 +2384,7 @@ msgstr "Jak szerokie są rzeki"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
-msgstr ""
+msgstr "IPv6"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
@@ -2539,9 +2541,8 @@ msgid "Invert mouse"
 msgstr "Odwróć mysz"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Invert vertical mouse movement."
-msgstr "Odwróć ruch pionowy ruchu myszy."
+msgstr "Odwróć pionowy ruch myszy."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2567,50 +2568,46 @@ msgid "Joystick frustum sensitivity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Julia set only: W component of hypercomplex constant determining julia "
 "shape.\n"
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Zbiór Julii tylko: W komponent stałej liczby hiperzespolonej determinującej "
-"kształt Julii.\n"
-"Nie ma efektu dla fraktali 3D.\n"
-"Zakres w przybliżeniu -2 do 2."
+"Wyłącznie dla Zbioru Julii: komponent W stałej hiperzespolonej, która "
+"determinuje kształt Julii.\n"
+"Nie ma wpływu na fraktale trójwymiarowe.\n"
+"Zakres to w przybliżeniu -2 do 2."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Julia set only: X component of hypercomplex constant determining julia "
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Zbiór Julii tylko: X komponent stałej hiperzespolonej liczby determinującej "
-"kształt Julii.\n"
-"Zakres w przybliżeniu -2 do 2."
+"Wyłącznie dla Zbioru Julii: komponent X stałej hiperzespolonej, która "
+"determinuje kształt Julii.\n"
+"Zakres to w przybliżeniu -2 do 2."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Julia set only: Y component of hypercomplex constant determining julia "
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Zbiór Julii tylko: Y komponent stałej hiperzespolonej liczby determinującej "
-"kształt Julii.\n"
-"Zakres w przybliżeniu -2 do 2."
+"Wyłącznie dla Zbioru Julii: komponent Y stałej hiperzespolonej, która "
+"determinuje kształt Julii.\n"
+"Zakres to w przybliżeniu -2 do 2."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Julia set only: Z component of hypercomplex constant determining julia "
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
-"Zbiór Julii tylko: Z komponent stałej hiperzespolonej liczby determinującej "
-"kształt Julii.\n"
-"Zakres w przybliżeniu -2 do 2."
+"Wyłącznie dla Zbioru Julii: komponent Z stałej hiperzespolonej, która "
+"determinuje kształt Julii.\n"
+"Zakres to w przybliżeniu -2 do 2."
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -3825,7 +3822,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr ""
+msgstr "Ścieżka, pod którą zapisywane są zrzuty ekranu."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -3849,7 +3846,7 @@ msgstr "Nazwa gracza"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Odległość przesyłania graczy"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
