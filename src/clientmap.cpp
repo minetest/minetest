@@ -213,6 +213,16 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	// Distance to farthest drawn block
 	float farthest_drawn = 0;
 
+	// No occlusion culling when free_move is on and camera is
+	// inside ground
+	bool occlusion_culling_enabled = true;
+	if (g_settings->getBool("free_move")) {
+		MapNode n = getNodeNoEx(cam_pos_nodes);
+		if (n.getContent() == CONTENT_IGNORE ||
+				nodemgr->get(n).solidness == 2)
+			occlusion_culling_enabled = false;
+	}
+
 	for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
 			si != m_sectors.end(); ++si) {
 		MapSector *sector = si->second;
@@ -254,39 +264,19 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 					camera_direction, camera_fov, range, &d))
 				continue;
 
-			// This is ugly (spherical distance limit?)
-			/*if(m_control.range_all == false &&
-					d - 0.5*BS*MAP_BLOCKSIZE > range)
-				continue;*/
-
 			blocks_in_range++;
 
 			/*
 				Ignore if mesh doesn't exist
 			*/
-			{
-				//MutexAutoLock lock(block->mesh_mutex);
-
-				if (block->mesh == NULL) {
-					blocks_in_range_without_mesh++;
-					continue;
-				}
+			if (block->mesh == NULL) {
+				blocks_in_range_without_mesh++;
+				continue;
 			}
 
 			/*
 				Occlusion culling
 			*/
-
-			// No occlusion culling when free_move is on and camera is
-			// inside ground
-			bool occlusion_culling_enabled = true;
-			if (g_settings->getBool("free_move")) {
-				MapNode n = getNodeNoEx(cam_pos_nodes);
-				if (n.getContent() == CONTENT_IGNORE ||
-						nodemgr->get(n).solidness == 2)
-					occlusion_culling_enabled = false;
-			}
-
 			v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
 			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
 			float step = BS * 1;
@@ -446,11 +436,6 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	/*
 		Get all blocks and draw all visible ones
 	*/
-
-	v3s16 cam_pos_nodes = floatToInt(camera_position, BS);
-	v3s16 p_blocks_min;
-	v3s16 p_blocks_max;
-	getBlocksInViewRange(cam_pos_nodes, &p_blocks_min, &p_blocks_max);
 
 	u32 vertex_count = 0;
 	u32 meshbuffer_count = 0;
