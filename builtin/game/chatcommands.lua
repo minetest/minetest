@@ -162,7 +162,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		return false, "Your privileges are insufficient."
 	end
 	
-	if not core.auth_table[grantname] then
+	if not core.get_auth_handler().get_auth(grantname) then
 		return false, "Player " .. grantname .. " does not exist."
 	end
 	local grantprivs = core.string_to_privs(grantprivstr)
@@ -232,7 +232,7 @@ core.register_chatcommand("revoke", {
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
-		elseif not core.auth_table[revoke_name] then
+		elseif not core.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
