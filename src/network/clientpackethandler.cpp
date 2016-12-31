@@ -72,6 +72,13 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 	m_server_ser_ver = serialization_ver;
 	m_proto_ver = proto_ver;
 
+	// Protocol version 29 and up can receive larger packet sizes
+	if (proto_ver >= 29) {
+		Address address = m_con.GetPeerAddress(pkt->getPeerId());
+		if (!INTERNET_SIMULATOR && address.isLoopback())
+			m_con.setMaxPacketSize(pkt->getPeerId(), MAX_SEND_PACKET_SIZE_LOCAL);
+	}
+
 	//TODO verify that username_legacy matches sent username, only
 	// differs in casing (make both uppercase and compare)
 	// This is only neccessary though when we actually want to add casing support

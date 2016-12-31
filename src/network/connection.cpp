@@ -1019,6 +1019,10 @@ UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
 	resend_timeout(0.5),
 	m_legacy_peer(true)
 {
+	if (a_address.isIPv6() && !a_address.isIPv4MappedIPv6())
+		setMaxPacketSize(MAX_SEND_PACKET_SIZE_IPV6);
+	else
+		setMaxPacketSize(MAX_SEND_PACKET_SIZE_IPV4);
 }
 
 bool UDPPeer::getAddress(MTProtocols type,Address& toset)
@@ -1072,8 +1076,7 @@ bool UDPPeer::Ping(float dtime,SharedBuffer<u8>& data)
 	return false;
 }
 
-void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
-		unsigned int max_packet_size)
+void UDPPeer::PutReliableSendCommand(ConnectionCommand &c)
 {
 	if (m_pending_disconnect)
 		return;
@@ -1085,7 +1088,7 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 		LOG(dout_con<<m_connection->getDesc()
 				<<" processing reliable command for peer id: " << c.peer_id
 				<<" data size: " << c.data.getSize() << std::endl);
-		if (!processReliableSendCommand(c,max_packet_size)) {
+		if (!processReliableSendCommand(c)) {
 			channels[c.channelnum].queued_commands.push_back(c);
 		}
 	}
@@ -1097,16 +1100,14 @@ void UDPPeer::PutReliableSendCommand(ConnectionCommand &c,
 	}
 }
 
-bool UDPPeer::processReliableSendCommand(
-				ConnectionCommand &c,
-				unsigned int max_packet_size)
+bool UDPPeer::processReliableSendCommand(ConnectionCommand &c)
 {
 	if (m_pending_disconnect)
 		return true;
 
-	u32 chunksize_max = max_packet_size
-							- BASE_HEADER_SIZE
-							- RELIABLE_HEADER_SIZE;
+	u32 chunksize_max = getMaxPacketSize()
+			    - BASE_HEADER_SIZE
+			    - RELIABLE_HEADER_SIZE;
 
 	sanity_check(c.data.getSize() < MAX_RELIABLE_WINDOW_SIZE*512);
 
@@ -1199,10 +1200,8 @@ bool UDPPeer::processReliableSendCommand(
 	}
 }
 
-void UDPPeer::RunCommandQueues(
-							unsigned int max_packet_size,
-							unsigned int maxcommands,
-							unsigned int maxtransfer)
+void UDPPeer::RunCommandQueues(unsigned int maxcommands,
+				unsigned int maxtransfer)
 {
 
 	for (unsigned int i = 0; i < CHANNEL_COUNT; i++) {
@@ -1218,7 +1217,7 @@ void UDPPeer::RunCommandQueues(
 						<< " processing queued reliable command " << std::endl);
 
 				// Packet is processed, remove it from queue
-				if (processReliableSendCommand(c,max_packet_size)) {
+				if (processReliableSendCommand(c)) {
 					channels[i].queued_commands.pop_front();
 				} else {
 					LOG(dout_con << m_connection->getDesc()
@@ -1258,11 +1257,9 @@ SharedBuffer<u8> UDPPeer::addSpiltPacket(u8 channel,
 /* Connection Threads                                                         */
 /******************************************************************************/
 
-ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
-		float timeout) :
+ConnectionSendThread::ConnectionSendThread(float timeout) :
 	Thread("ConnectionSend"),
 	m_connection(NULL),
-	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
 	m_max_commands_per_iteration(1),
 	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration")),
@@ -1488,8 +1485,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			}
 		}
 
-		dynamic_cast<UDPPeer*>(&peer)->RunCommandQueues(m_max_packet_size,
-								m_max_commands_per_iteration,
+		dynamic_cast<UDPPeer*>(&peer)->RunCommandQueues(m_max_commands_per_iteration,
 								m_max_packets_requeued);
 	}
 
@@ -1661,6 +1657,7 @@ void ConnectionSendThread::processReliableCommand(ConnectionCommand &c)
 	case CONNCMD_CONNECT:
 	case CONNCMD_DISCONNECT:
 	case CONCMD_ACK:
+	case CONCMD_SET_MAX_PACKET_SIZE:
 		FATAL_ERROR("Got command that shouldn't be reliable as reliable command");
 	default:
 		LOG(dout_con<<m_connection->getDesc()
@@ -1713,6 +1710,12 @@ void ConnectionSendThread::processNonReliableCommand(ConnectionCommand &c)
 		LOG(dout_con<<m_connection->getDesc()
 				<<" UDP processing CONCMD_ACK"<<std::endl);
 		sendAsPacket(c.peer_id,c.channelnum,c.data,true);
+		return;
+	case CONCMD_SET_MAX_PACKET_SIZE:
+		LOG(dout_con << m_connection->getDesc()
+				<< " UDP processing CONCMD_SET_MAX_PACKET_SIZE: "
+				<< c.param << std::endl);
+		m_connection->setMaxPacketSizeCommand(c.peer_id, c.param);
 		return;
 	case CONCMD_CREATE_PEER:
 		FATAL_ERROR("Got command that should be reliable as unreliable command");
@@ -1830,7 +1833,7 @@ void ConnectionSendThread::send(u16 peer_id, u8 channelnum,
 
 	u16 split_sequence_number = peer->getNextSplitSequenceNumber(channelnum);
 
-	u32 chunksize_max = m_max_packet_size - BASE_HEADER_SIZE;
+	u32 chunksize_max = peer->getMaxPacketSize() - BASE_HEADER_SIZE;
 	std::list<SharedBuffer<u8> > originals;
 
 	originals = makeAutoSplitPacket(data, chunksize_max,split_sequence_number);
@@ -1851,7 +1854,7 @@ void ConnectionSendThread::sendReliable(ConnectionCommand &c)
 	if (!peer)
 		return;
 
-	peer->PutReliableSendCommand(c,m_max_packet_size);
+	peer->PutReliableSendCommand(c);
 }
 
 void ConnectionSendThread::sendToAll(u8 channelnum, SharedBuffer<u8> data)
@@ -1879,7 +1882,7 @@ void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
 		if (!peer)
 			continue;
 
-		peer->PutReliableSendCommand(c,m_max_packet_size);
+		peer->PutReliableSendCommand(c);
 	}
 }
 
@@ -2030,7 +2033,7 @@ void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
 	m_outgoing_queue.push(packet);
 }
 
-ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
+ConnectionReceiveThread::ConnectionReceiveThread() :
 	Thread("ConnectionReceive"),
 	m_connection(NULL)
 {
@@ -2127,10 +2130,7 @@ void * ConnectionReceiveThread::run()
 // Receive packets from the network and buffers and create ConnectionEvents
 void ConnectionReceiveThread::receive()
 {
-	// use IPv6 minimum allowed MTU as receive buffer size as this is
-	// theoretical reliable upper boundary of a udp packet for all IPv6 enabled
-	// infrastructure
-	unsigned int packet_maxsize = 1500;
+	unsigned int packet_maxsize = MAX_RECV_PACKET_SIZE;
 	SharedBuffer<u8> packetdata(packet_maxsize);
 
 	bool packet_queued = true;
@@ -2673,15 +2673,15 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 	Connection
 */
 
-Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
+Connection::Connection(u32 protocol_id, float timeout,
 		bool ipv6, PeerHandler *peerhandler) :
 	m_udpSocket(ipv6),
 	m_command_queue(),
 	m_event_queue(),
 	m_peer_id(0),
 	m_protocol_id(protocol_id),
-	m_sendThread(max_packet_size, timeout),
-	m_receiveThread(max_packet_size),
+	m_sendThread(timeout),
+	m_receiveThread(),
 	m_info_mutex(),
 	m_bc_peerhandler(peerhandler),
 	m_bc_receive_timeout(0),
@@ -3107,6 +3107,20 @@ UDPPeer* Connection::createServerPeer(Address& address)
 	}
 
 	return peer;
+}
+
+void Connection::setMaxPacketSize(u16 peer_id, u32 max_packet_size)
+{
+	ConnectionCommand c;
+	c.setMaxPacketSize(peer_id, max_packet_size);
+	putCommand(c);
+}
+
+void Connection::setMaxPacketSizeCommand(u16 peer_id, u32 max_packet_size)
+{
+	PeerHelper peer = getPeerNoEx(peer_id);
+	if (!peer) return;
+	peer->setMaxPacketSize(max_packet_size);
 }
 
 } // namespace

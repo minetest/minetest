@@ -138,9 +138,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add nodedef v3 - connected nodeboxes
 	PROTOCOL_VERSION 28:
 		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Increase max receivable packet size to 65536 (was 1500).
 */
 
-#define LATEST_PROTOCOL_VERSION 28
+#define LATEST_PROTOCOL_VERSION 29
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13

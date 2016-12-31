@@ -157,7 +157,6 @@ Server::Server(
 	m_async_fatal_error(""),
 	m_env(NULL),
 	m_con(PROTOCOL_ID,
-			512,
 			CONNECTION_TIMEOUT,
 			ipv6,
 			this),
