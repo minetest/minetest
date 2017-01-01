@@ -143,14 +143,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define LATEST_PROTOCOL_VERSION 28
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 13
+#define SERVER_PROTOCOL_VERSION_MIN 23
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
 #define CLIENT_PROTOCOL_VERSION_MIN 25
-#define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 13
+#define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 23
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
