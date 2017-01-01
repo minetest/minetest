@@ -414,6 +414,100 @@ the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
 
+Particle blend
+--------------
+The blend function is defined by an integer number and there are
+a huge number of acceptable blend modificators.
+The color channels (RGB) of resulting pixel are calculated using this formula:
+
+	red = source_red * source_factor + destination_red * destination_factor
+
+
+Some examples:
+
+Disabled blend (default):
+
+	blend_type = minetest.blend_type.none,
+
+Use this value to disable blending. The texture will be applied to existing pixels
+using their alpha channel. It's recomended to use 1-bit alpha.
+
+Additive blend:
+
+	blend_type = minetest.blend_type.additive,
+
+source_factor is taken from the textures alpha channel,
+destination_factor is fixed at 1.
+For example with a source color (0,192,255,63) and already rendered
+pixel color (40,192,0) the calculation looks like this:
+
+R = 0 (source_red) * 63/255 (source_factor) +
+    40 (destination_red) * 1 (destination_factor)
+  = 0 * 63/255 + 40 * 1 = 40
+G = 192 * 63/255 + 192 * 1 = 239
+B = 255 * 63/255 + 0 * 1 = 63
+
+Additive blend can e.g. be used to make nice-looking fire particles
+using the color (102,34,17) which will change color from red to yellow the more
+particles are stacked ontop of eachother.
+
+Subtractive blend:
+	
+	blend_type = minetest.blend_type.subtractive,
+
+source_factor is fixed at 0, destination_factor is taken from the texture.
+Texture darkness acts like an alpha channel.
+
+Inverted blend:
+
+	blend_type = minetest.blend_type.inverted,
+
+source_factor is the inverted color of existing pixels, destination_factor is
+the inverted color of the texture.
+Resulting pixels have inverted color if the source color value is big enough,
+otherwise they appear black.
+
+
+It is possible combine the primitives below to design a custom blending mode
+'minetest.pack_texture_blend_func' will take take these and return an integer
+to be used as 'blend_type' in particle definitions.
+
+A values in a brackets specify multiplicators of red, green, blue
+and alpha channels respectively.
+
+* Blend types (for srcFact & dstFact):
+    *  "zero"                -- src & dest (0, 0, 0, 0)
+    *  "one"                 -- src & dest (1, 1, 1, 1)
+    *  "dst_color"           -- src (destR, destG, destB, destA)
+    *  "dst_color_inv"       -- src (1-destR, 1-destG, 1-destB, 1-destA)
+    *  "src_color"           -- dest (srcR, srcG, srcB, srcA)
+    *  "src_color_inv"       -- dest (1-srcR, 1-srcG, 1-srcB, 1-srcA)
+    *  "src_alpha"           -- src & dest (srcA, srcA, srcA, srcA)
+    *  "src_alpha_inv"       -- src & dest (1-srcA, 1-srcA, 1-srcA, 1-srcA)
+    *  "dst_alpha"           -- src & dest (destA, destA, destA, destA)
+    *  "dst_alpha_inv"       -- src & dest (1-destA, 1-destA, 1-destA, 1-destA)
+    *  "src_alpha_saturate"  -- src (min(srcA, 1-destA), ...)
+
+* Modulate values (for modulate):
+    *  "1x" -- multiply components by 1 (no shift)
+    *  "2x" -- multiply components by 2 (x << 1)
+    *  "4x" -- multiply components by 4 (x << 2)
+
+* Alpha sources (for alphaSource):
+    * "none"         -- no alpha
+    * "vertex"       -- use alpha from vertex color
+    * "texture"      -- use alpha from texture
+    * "both"         -- use both
+
+* `minetest.pack_texture_blend_func(srcFact, dstFact, modulate, alphaSource)`
+  Returns integer for use as 'blend_type', see above
+
+* `minetest.blend_type`: Contains pre-defined commonly used blend types
+    *  none        = 0
+    *  additive    = 12641
+    *  subtractive = 12548
+    *  inverted    = 12597
+
 Sounds
 ------
 Only Ogg Vorbis files are supported.
@@ -3685,7 +3779,7 @@ Definition tables
 
 ### Tile definition
 * `"image.png"`
-* `{name="image.png", animation={Tile Animation definition}}`
+* `{name="image.png", animation={Animation definition}}`
 * `{name="image.png", backface_culling=bool, tileable_vertical=bool,
     tileable_horizontal=bool}`
     * backface culling enabled by default for most nodes
@@ -3696,8 +3790,22 @@ Definition tables
 * deprecated, yet still supported field names:
     * `image` (name)
 
-### Tile animation definition
-* `{type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}`
+### Animation definition
+
+	{
+		type="vertical_frames",
+		aspect_w = 16,
+		-- ^ specify width of a frame in pixels
+		aspect_h = 16,
+		-- ^ specify height of a frame in pixels
+		length = 3.0,
+		-- ^ specify full loop length
+		first_frame = 0, -- particles only
+		min_first_frame = 0, -- particle spawners only
+		max_first_frame = 0, -- particle spawners only
+		loop_animation = true, -- particles and particle spawners only
+		-- ^ specify if animation should start from beginning after last frame
+	}
 
 ### Node definition (`register_node`)
 
@@ -4154,6 +4262,14 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ optional, if specified spawns particle only on the player's client
+        blend_type = minetest.blend_type.none,
+    --  ^ optional, if specified spawns particle with
+    --  specified material type param, refer to "Particle blend" section
+        animation = {Animation definition},
+    --  ^ optional, note that particle and particle spawners have differences
+        glow = 0,
+    --  ^ optional, specify particle self-luminescence in darkness
+    --  value range: 0 (no glow) to 15 (bright glow)
     }
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
@@ -4189,6 +4305,14 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer"
     --  ^ Playername is optional, if specified spawns particle only on the player's client
+        blend_type = minetest.blend_type.none,
+    --  ^ optional, if specified spawns particle with
+    --  specified material type param, refer to "Particle blend" section
+        animation = {Animation definition},
+    --  ^ optional, note that particle and particle spawners have differences
+        glow = 0,
+    --  ^ optional, specify particle self-luminescence in darkness
+    --  value range: 0 (no glow) to 15 (bright glow)
     }
 
 ### `HTTPRequest` definition (`HTTPApiTable.fetch_async`, `HTTPApiTable.fetch_async`)

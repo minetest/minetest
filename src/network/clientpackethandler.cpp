@@ -896,23 +896,46 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::string texture     = deSerializeLongString(is);
 	bool vertical           = false;
 	bool collision_removal  = false;
+	u32 material_type_param = 0;
+	AnimationType animation_type = AT_NONE;
+	u16 vertical_frame_num = 1;
+	u16 horizontal_frame_num = 1;
+	u16 first_frame = 0;
+	float frame_length = -1;
+	bool loop_animation = true;
+	u8 glow = 0;
 	try {
 		vertical = readU8(is);
 		collision_removal = readU8(is);
+		material_type_param = readU32(is);
+		animation_type = (AnimationType)readU8(is);
+		vertical_frame_num = readU16(is);
+		horizontal_frame_num = readU16(is);
+		first_frame = readU16(is);
+		frame_length = readF1000(is);
+		loop_animation = readU8(is);
+		glow = readU8(is);
 	} catch (...) {}
 
 	ClientEvent event;
-	event.type                              = CE_SPAWN_PARTICLE;
-	event.spawn_particle.pos                = new v3f (pos);
-	event.spawn_particle.vel                = new v3f (vel);
-	event.spawn_particle.acc                = new v3f (acc);
-	event.spawn_particle.expirationtime     = expirationtime;
-	event.spawn_particle.size               = size;
-	event.spawn_particle.collisiondetection = collisiondetection;
-	event.spawn_particle.collision_removal  = collision_removal;
-	event.spawn_particle.vertical           = vertical;
-	event.spawn_particle.texture            = new std::string(texture);
-
+	event.type                                 = CE_SPAWN_PARTICLE;
+	event.spawn_particle.pos                   = new v3f (pos);
+	event.spawn_particle.vel                   = new v3f (vel);
+	event.spawn_particle.acc                   = new v3f (acc);
+	event.spawn_particle.expirationtime        = expirationtime;
+	event.spawn_particle.size                  = size;
+	event.spawn_particle.collisiondetection	   = collisiondetection;
+	event.spawn_particle.collision_removal     = collision_removal;
+	event.spawn_particle.vertical              = vertical;
+	event.spawn_particle.texture               = new std::string(texture);
+	event.spawn_particle.material_type_param   = material_type_param;
+	event.spawn_particle.animation_type        = animation_type;
+	event.spawn_particle.vertical_frame_num    = vertical_frame_num;
+	event.spawn_particle.horizontal_frame_num  = horizontal_frame_num;
+	event.spawn_particle.first_frame           = first_frame;
+	event.spawn_particle.frame_length          = frame_length;
+	event.spawn_particle.loop_animation        = loop_animation;
+	event.spawn_particle.glow                  = glow;
 	m_client_event_queue.push(event);
 }
 
@@ -932,6 +955,15 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	float maxsize;
 	bool collisiondetection;
 	u32 id;
+	u32 material_type_param = 0;
+	u8 animation_type = (u8)AT_NONE;
+	u16 vertical_frame_num = 1;
+	u16 horizontal_frame_num = 1;
+	u16 min_first_frame = 0;
+	u16 max_first_frame = 0;
+	float frame_length = -1;
+	bool loop_animation = true;
+	u8 glow = 0;
 
 	*pkt >> amount >> spawntime >> minpos >> maxpos >> minvel >> maxvel
 		>> minacc >> maxacc >> minexptime >> maxexptime >> minsize
@@ -948,29 +980,46 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 		*pkt >> vertical;
 		*pkt >> collision_removal;
 		*pkt >> attached_id;
-
+		*pkt >> material_type_param;
+		*pkt >> animation_type;
+		*pkt >> vertical_frame_num;
+		*pkt >> horizontal_frame_num;
+		*pkt >> min_first_frame;
+		*pkt >> max_first_frame;
+		*pkt >> frame_length;
+		*pkt >> loop_animation;
+		*pkt >> glow;
 	} catch (...) {}
 
 	ClientEvent event;
-	event.type                                   = CE_ADD_PARTICLESPAWNER;
-	event.add_particlespawner.amount             = amount;
-	event.add_particlespawner.spawntime          = spawntime;
-	event.add_particlespawner.minpos             = new v3f (minpos);
-	event.add_particlespawner.maxpos             = new v3f (maxpos);
-	event.add_particlespawner.minvel             = new v3f (minvel);
-	event.add_particlespawner.maxvel             = new v3f (maxvel);
-	event.add_particlespawner.minacc             = new v3f (minacc);
-	event.add_particlespawner.maxacc             = new v3f (maxacc);
-	event.add_particlespawner.minexptime         = minexptime;
-	event.add_particlespawner.maxexptime         = maxexptime;
-	event.add_particlespawner.minsize            = minsize;
-	event.add_particlespawner.maxsize            = maxsize;
-	event.add_particlespawner.collisiondetection = collisiondetection;
-	event.add_particlespawner.collision_removal  = collision_removal;
-	event.add_particlespawner.attached_id        = attached_id;
-	event.add_particlespawner.vertical           = vertical;
-	event.add_particlespawner.texture            = new std::string(texture);
-	event.add_particlespawner.id                 = id;
+	event.type                                     = CE_ADD_PARTICLESPAWNER;
+	event.add_particlespawner.amount               = amount;
+	event.add_particlespawner.spawntime            = spawntime;
+	event.add_particlespawner.minpos               = new v3f (minpos);
+	event.add_particlespawner.maxpos               = new v3f (maxpos);
+	event.add_particlespawner.minvel               = new v3f (minvel);
+	event.add_particlespawner.maxvel               = new v3f (maxvel);
+	event.add_particlespawner.minacc               = new v3f (minacc);
+	event.add_particlespawner.maxacc               = new v3f (maxacc);
+	event.add_particlespawner.minexptime           = minexptime;
+	event.add_particlespawner.maxexptime           = maxexptime;
+	event.add_particlespawner.minsize              = minsize;
+	event.add_particlespawner.maxsize              = maxsize;
+	event.add_particlespawner.collisiondetection   = collisiondetection;
+	event.add_particlespawner.collision_removal    = collision_removal;
+	event.add_particlespawner.attached_id          = attached_id;
+	event.add_particlespawner.vertical             = vertical;
+	event.add_particlespawner.texture              = new std::string(texture);
+	event.add_particlespawner.id                   = id;
+	event.add_particlespawner.material_type_param  = material_type_param;
+	event.add_particlespawner.animation_type       = (AnimationType)animation_type;
+	event.add_particlespawner.vertical_frame_num   = vertical_frame_num;
+	event.add_particlespawner.horizontal_frame_num = horizontal_frame_num;
+	event.add_particlespawner.min_first_frame      = min_first_frame;
+	event.add_particlespawner.max_first_frame      = max_first_frame;
+	event.add_particlespawner.frame_length	       = frame_length;
+	event.add_particlespawner.loop_animation       = loop_animation;
+	event.add_particlespawner.glow                 = glow;
 
 	m_client_event_queue.push(event);
 }

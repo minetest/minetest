@@ -50,7 +50,14 @@ class Particle : public scene::ISceneNode
 		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
-		v2f texsize
+		v2f texsize,
+		u32 material_type_param,
+		u16 vertical_frame_num,
+		u16 horizontal_frame_num,
+		u16 first_frame,
+		float frame_length,
+		bool loop_animation,
+		u8 glow
 	);
 	~Particle();
 
@@ -102,6 +109,12 @@ private:
 	bool m_collision_removal;
 	bool m_vertical;
 	v3s16 m_camera_offset;
+	u16 m_vertical_frame_num;
+	u16 m_horizontal_frame_num;
+	u16 m_first_frame;
+	float m_frame_length;
+	bool m_loop_animation;
+	u8 m_glow;
 };
 
 class ParticleSpawner
@@ -123,8 +136,15 @@ class ParticleSpawner
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
+		u32 material_type_param,
+		u16 vertical_frame_num,
+		u16 horizontal_frame_num,
+		u16 min_first_frame,
+		u16 max_first_frame,
+		float frame_length,
+		bool loop_animation,
+		u8 glow,
 		ParticleManager* p_manager);
-
 	~ParticleSpawner();
 
 	void step(float dtime, ClientEnvironment *env);
@@ -156,6 +176,14 @@ class ParticleSpawner
 	bool m_collision_removal;
 	bool m_vertical;
 	u16 m_attached_id;
+	u32 m_material_type_param;
+	u16 m_vertical_frame_num;
+	u16 m_horizontal_frame_num;
+	u16 m_min_first_frame;
+	u16 m_max_first_frame;
+	float m_frame_length;
+	bool m_loop_animation;
+	u8 m_glow;
 };
 
 /**
