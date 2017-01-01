@@ -1136,46 +1136,6 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 }
 
-void Server::handleCommand_Breath(NetworkPacket* pkt)
-{
-	u16 breath;
-
-	*pkt >> breath;
-
-	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-
-	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-
-	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player object for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-	/*
-	 * If player is dead, we don't need to update the breath
-	 * He is dead !
-	 */
-	if (playersao->isDead()) {
-		verbosestream << "TOSERVER_BREATH: " << player->getName()
-				<< " is dead. Ignoring packet";
-		return;
-	}
-
-	playersao->setBreath(breath);
-	SendPlayerBreath(pkt->getPeerId());
-}
-
 void Server::handleCommand_Password(NetworkPacket* pkt)
 {
 	if (pkt->getSize() != PASSWORD_SIZE * 2)

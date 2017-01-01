@@ -499,9 +499,10 @@ void Client::step(float dtime)
 				m_client_event_queue.push(event);
 			}
 		}
-		else if(event.type == CEE_PLAYER_BREATH) {
-				u16 breath = event.player_breath.amount;
-				sendBreath(breath);
+		// Protocol v29 or greater obsoleted this event
+		else if (event.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
+			u16 breath = event.player_breath.amount;
+			sendBreath(breath);
 		}
 	}
 
@@ -1269,6 +1270,10 @@ void Client::sendDamage(u8 damage)
 void Client::sendBreath(u16 breath)
 {
 	DSTACK(FUNCTION_NAME);
+
+	// Protocol v29 make this obsolete
+	if (m_proto_ver >= 29)
+		return;
 
 	NetworkPacket pkt(TOSERVER_BREATH, sizeof(u16));
 	pkt << breath;

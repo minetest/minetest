@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTENT_SAO_HEADER
 #define CONTENT_SAO_HEADER
 
+#include <util/numeric.h>
 #include "serverobject.h"
 #include "itemgroup.h"
 #include "object_properties.h"
@@ -232,7 +233,7 @@ public:
 	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
-	void setBreath(const u16 breath);
+	void setBreath(const u16 breath, bool send = true);
 	void setArmorGroups(const ItemGroupList &armor_groups);
 	ItemGroupList getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
@@ -338,6 +339,10 @@ private:
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;
+
+	// Timers
+	IntervalLimiter m_breathing_interval;
+	IntervalLimiter m_drowning_interval;
 
 	int m_wield_index;
 	bool m_position_not_sent;

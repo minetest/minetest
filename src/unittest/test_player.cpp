@@ -49,7 +49,7 @@ void TestPlayer::testSave(IGameDef *gamedef)
 	PlayerSAO sao(NULL, 1, false);
 	sao.initialize(&rplayer, std::set<std::string>());
 	rplayer.setPlayerSAO(&sao);
-	sao.setBreath(10);
+	sao.setBreath(10, false);
 	sao.setHPRaw(8);
 	sao.setYaw(0.1f);
 	sao.setPitch(0.6f);
@@ -64,7 +64,7 @@ void TestPlayer::testLoad(IGameDef *gamedef)
 	PlayerSAO sao(NULL, 1, false);
 	sao.initialize(&rplayer, std::set<std::string>());
 	rplayer.setPlayerSAO(&sao);
-	sao.setBreath(10);
+	sao.setBreath(10, false);
 	sao.setHPRaw(8);
 	sao.setYaw(0.1f);
 	sao.setPitch(0.6f);

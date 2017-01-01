@@ -148,7 +148,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 
 		try {
-			sao->setBreath(args.getS32("breath"));
+			sao->setBreath(args.getS32("breath"), false);
 		} catch (SettingNotFoundException &e) {}
 	}
 

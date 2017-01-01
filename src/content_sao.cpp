@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
+#include "nodedef.h"
 #include "remoteplayer.h"
 #include "server.h"
 #include "scripting_game.h"
@@ -940,8 +941,35 @@ bool PlayerSAO::isAttached()
 
 void PlayerSAO::step(float dtime, bool send_recommended)
 {
-	if(!m_properties_sent)
-	{
+	if (m_drowning_interval.step(dtime, 2.0)) {
+		// get head position
+		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
+		MapNode n = m_env->getMap().getNodeNoEx(p);
+		const ContentFeatures &c = ((Server*) m_env->getGameDef())->ndef()->get(n);
+		// If node generates drown
+		if (c.drowning > 0) {
+			if (m_hp > 0 && m_breath > 0)
+				setBreath(m_breath - 1);
+
+			// No more breath, damage player
+			if (m_breath == 0) {
+				setHP(m_hp - c.drowning);
+				((Server*) m_env->getGameDef())->SendPlayerHPOrDie(this);
+			}
+		}
+	}
+
+	if (m_breathing_interval.step(dtime, 0.5)) {
+		// get head position
+		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
+		MapNode n = m_env->getMap().getNodeNoEx(p);
+		const ContentFeatures &c = ((Server*) m_env->getGameDef())->ndef()->get(n);
+		// If player is alive & no drowning, breath
+		if (m_hp > 0 && c.drowning == 0)
+			setBreath(m_breath + 1);
+	}
+
+	if (!m_properties_sent) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();
 		// create message and add to list
@@ -1237,12 +1265,15 @@ void PlayerSAO::setHP(s16 hp)
 		m_properties_sent = false;
 }
 
-void PlayerSAO::setBreath(const u16 breath)
+void PlayerSAO::setBreath(const u16 breath, bool send)
 {
 	if (m_player && breath != m_breath)
 		m_player->setDirty(true);
 
-	m_breath = breath;
+	m_breath = MYMIN(breath, PLAYER_MAX_BREATH);
+
+	if (send)
+		((Server *) m_env->getGameDef())->SendPlayerBreath(this);
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)

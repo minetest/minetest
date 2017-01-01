@@ -138,9 +138,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add nodedef v3 - connected nodeboxes
 	PROTOCOL_VERSION 28:
 		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Server doesn't accept TOSERVER_BREATH anymore
 */
 
-#define LATEST_PROTOCOL_VERSION 28
+#define LATEST_PROTOCOL_VERSION 29
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -833,7 +835,7 @@ enum ToServerCommand
 		<no payload data>
 	*/
 
-	TOSERVER_BREATH = 0x42,
+	TOSERVER_BREATH = 0x42, // Obsolete
 	/*
 		u16 breath
 	*/
