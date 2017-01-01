@@ -86,6 +86,7 @@ class EmergeManager;
 +-----------------------------+   ---------------------                                |
 |OUT:                         |                                                        |
 | TOCLIENT_MOVEMENT           |                                                        |
+| TOCLIENT_SETTINGS           |                                                        |
 | TOCLIENT_ITEMDEF            |                                                        |
 | TOCLIENT_NODEDEF            |                                                        |
 | TOCLIENT_ANNOUNCE_MEDIA     |                                                        |
@@ -459,7 +460,8 @@ public:
 	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* send to all clients */
-	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);
+	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable,
+		int min_protocol_version = 0, int max_protocol_version = INT_MAX);
 
 	/* delete a client */
 	void DeleteClient(u16 peer_id);

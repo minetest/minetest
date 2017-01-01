@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
+#include "util/serialize.h"
 #include "threading/mutex.h"
 #include <string>
 #include "util/cpp11_container.h"
@@ -34,6 +35,10 @@ struct NoiseParams;
 // Global objects
 extern Settings *g_settings;
 extern std::string g_settings_path;
+
+// This is used to avoid the client setting override-type settings
+// when the server is using the same settings object.
+extern bool g_settings_managed_by_server;
 
 // Type for a settings changed callback function
 typedef void (*SettingsChangedCallback)(const std::string &name, void *data);
@@ -102,6 +107,14 @@ typedef UNORDERED_MAP<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
+	enum Flags
+	{
+		FLAGS_NONE        = 0x00,
+		SUGGEST_TO_CLIENT = 0x01,
+		ENFORCE_ON_CLIENT = 0x02,
+	};
+	typedef UNORDERED_MAP<std::string, Flags> SettingFlags;
+
 	Settings() {}
 	~Settings();
 
@@ -140,6 +153,8 @@ public:
 	 ***********/
 
 	const SettingsEntry &getEntry(const std::string &name) const;
+	Flags getEntryFlags(const std::string &name) const
+		{ return m_flags.count(name) ? m_flags.at(name) : FLAGS_NONE; }
 	Settings *getGroup(const std::string &name) const;
 	std::string get(const std::string &name) const;
 	bool getBool(const std::string &name) const;
@@ -192,12 +207,15 @@ public:
 
 	// N.B. Groups not allocated with new must be set to NULL in the settings
 	// tree before object destruction.
+	bool setEntry(const std::string &name, const SettingsEntry &entry, bool set_default);
 	bool setEntry(const std::string &name, const void *entry,
 		bool set_group, bool set_default);
+	Flags setEntryFlags(const std::string &name, Flags flags, Flags mask = static_cast<Flags>(~0x00))
+		{ return (m_flags[name] = static_cast<Flags>((m_flags[name] & ~mask) | flags)); }
 	bool set(const std::string &name, const std::string &value);
-	bool setDefault(const std::string &name, const std::string &value);
+	bool setDefault(const std::string &name, const std::string &value, Flags flags = FLAGS_NONE);
 	bool setGroup(const std::string &name, Settings *group);
-	bool setGroupDefault(const std::string &name, Settings *group);
+	bool setGroupDefault(const std::string &name, Settings *group, Flags flags = FLAGS_NONE);
 	bool setBool(const std::string &name, bool value);
 	bool setS16(const std::string &name, s16 value);
 	bool setU16(const std::string &name, u16 value);
@@ -218,22 +236,45 @@ public:
 	bool remove(const std::string &name);
 	void clear();
 	void clearDefaults();
+	void clearServerProvided();
 	void updateValue(const Settings &other, const std::string &name);
 	void update(const Settings &other);
 
+	void registerSendToClientCallbacks(
+		SettingsChangedCallback cbf, void *userdata = NULL);
+	void deregisterSendToClientCallbacks(
+		SettingsChangedCallback cbf, void *userdata = NULL);
 	void registerChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
 	void deregisterChangedCallback(const std::string &name,
 		SettingsChangedCallback cbf, void *userdata = NULL);
 
+	// Returns true if anything was (de)serialized
+	bool serialize(std::ostream &os) const;
+	bool serializeGroup(std::ostream &os, Flags flags) const;
+	bool serializeForClient(std::ostream &os) const;
+	void deSerialize(std::istream &is, bool replace);
+
 private:
 	void updateNoLock(const Settings &other);
+	void clearNoLock(SettingEntries *settings);
 	void clearNoLock();
-	void clearDefaultsNoLock();
+	void clearDefaultsNoLock() { clearNoLock(&m_defaults); }
+	void clearServerProvidedNoLock() { clearNoLock(&m_server_suggested); clearNoLock(&m_server_enforced); }
 
 	void doCallbacks(const std::string &name) const;
 
+	// Returns true if anything was (de)serialized
+	void serializeSentinel(std::ostream &os, const std::string &tag) const;
+	bool serializeSettings(const SettingEntries &settings, std::ostream &os, Flags flags) const;
+	bool serializeCategory(std::ostream &os, SettingsCategoryType category, Flags flags) const;
+	void deSerializeGroupSentinel(std::istream &is) const;
+	void deSerializeSettings(std::istream &is, SettingEntries *settings);
+
+	SettingFlags m_flags;
+	SettingEntries m_server_enforced;
 	SettingEntries m_settings;
+	SettingEntries m_server_suggested;
 	SettingEntries m_defaults;
 
 	SettingsCallbackMap m_callbacks;

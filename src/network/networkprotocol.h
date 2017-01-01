@@ -138,9 +138,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add nodedef v3 - connected nodeboxes
 	PROTOCOL_VERSION 28:
 		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Add TOCLIENT_SETTINGS
 */
 
-#define LATEST_PROTOCOL_VERSION 28
+#define LATEST_PROTOCOL_VERSION 29
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -399,6 +401,14 @@ enum ToClientCommand
 	/*
 		u32 length of next item
 		serialized ItemDefManager
+	*/
+
+	TOCLIENT_SETTINGS = 0x3e,
+	/*
+		u8 type (0)
+		u8 flags (0x01=complete-set)
+		u32 length of next item
+		serialized Settings
 	*/
 
 	TOCLIENT_PLAY_SOUND = 0x3f,

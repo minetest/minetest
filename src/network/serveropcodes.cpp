@@ -175,7 +175,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CRAFTITEMDEF",             0, false }, // 0x3b obsolete
 	{ "TOCLIENT_ANNOUNCE_MEDIA",           0, true }, // 0x3c
 	{ "TOCLIENT_ITEMDEF",                  0, true }, // 0x3d
-	null_command_factory,
+	{ "TOCLIENT_SETTINGS",                 0, true }, // 0x3e
 	{ "TOCLIENT_PLAY_SOUND",               0, true }, // 0x3f
 	{ "TOCLIENT_STOP_SOUND",               0, true }, // 0x40
 	{ "TOCLIENT_PRIVILEGES",               0, true }, // 0x41

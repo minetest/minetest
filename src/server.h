@@ -160,6 +160,8 @@ public:
 	void Receive();
 	PlayerSAO* StageTwoClientInit(u16 peer_id);
 
+	static void ClientSettingChangedCallback(const std::string &name, void *data);
+
 	/*
 	 * Command Handlers
 	 */
@@ -195,6 +197,8 @@ public:
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket* pkt);
+	void Broadcast(NetworkPacket* pkt,
+		int min_protocol_version = 0, int max_protocol_version = INT_MAX);
 
 	// Helper for handleCommand_PlayerPos and handleCommand_Interact
 	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -380,6 +384,8 @@ private:
 		const std::string &custom_reason, bool reconnect = false);
 	void SendAccessDenied_Legacy(u16 peer_id, const std::wstring &reason);
 	void SendDeathscreen(u16 peer_id,bool set_camera_point_target, v3f camera_point_target);
+	void SendClientSettings(u16 peer_id, u16 protocol_version);
+	void BroadcastSingleClientSetting(const std::string &name, const SettingsEntry &entry);
 	void SendItemDef(u16 peer_id,IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(u16 peer_id,INodeDefManager *nodedef, u16 protocol_version);
 

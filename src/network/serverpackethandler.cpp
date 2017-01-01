@@ -643,6 +643,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	// Send node definitions
 	SendNodeDef(pkt->getPeerId(), m_nodedef, protocol_version);
 
+	// Send client settings
+	SendClientSettings(pkt->getPeerId(), protocol_version);
+
 	m_clients.event(pkt->getPeerId(), CSE_SetDefinitionsSent);
 
 	// Send media announcement

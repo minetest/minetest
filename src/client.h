@@ -380,6 +380,7 @@ public:
 	void handleCommand_NodeDef(NetworkPacket* pkt);
 	void handleCommand_CraftItemDef(NetworkPacket* pkt);
 	void handleCommand_ItemDef(NetworkPacket* pkt);
+	void handleCommand_Settings(NetworkPacket* pkt);
 	void handleCommand_PlaySound(NetworkPacket* pkt);
 	void handleCommand_StopSound(NetworkPacket* pkt);
 	void handleCommand_Privileges(NetworkPacket* pkt);
@@ -651,6 +652,7 @@ private:
 	bool m_access_denied_reconnect;
 	std::string m_access_denied_reason;
 	std::queue<ClientEvent> m_client_event_queue;
+	bool m_settings_received;
 	bool m_itemdef_received;
 	bool m_nodedef_received;
 	ClientMediaDownloader *m_media_downloader;
