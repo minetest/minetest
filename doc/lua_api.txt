@@ -2781,8 +2781,9 @@ Can be gotten via `minetest.get_meta(pos)`.
 * `get_inventory()`: returns `InvRef`
 * `to_table()`: returns `nil` or `{fields = {...}, inventory = {list1 = {}, ...}}`
 * `from_table(nil or {})`
-    * to clear metadata, use from_table(nil)
+    * Any non-table value will clear the metadata
     * See "Node Metadata"
+    * returns `true` on success
 
 ### `NodeTimerRef`
 Node Timers: a high resolution persistent per-node timer.

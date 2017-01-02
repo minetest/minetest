@@ -250,7 +250,7 @@ int NodeMetaRef::l_from_table(lua_State *L)
 	// clear old metadata first
 	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
 
-	if(lua_isnil(L, base)){
+	if (!lua_istable(L, base)) {
 		// No metadata
 		lua_pushboolean(L, true);
 		return 1;
@@ -258,34 +258,42 @@ int NodeMetaRef::l_from_table(lua_State *L)
 
 	// Create new metadata
 	NodeMetadata *meta = getmeta(ref, true);
-	if(meta == NULL){
+	if (meta == NULL) {
 		lua_pushboolean(L, false);
 		return 1;
 	}
+
 	// Set fields
 	lua_getfield(L, base, "fields");
-	int fieldstable = lua_gettop(L);
-	lua_pushnil(L);
-	while(lua_next(L, fieldstable) != 0){
-		// key at index -2 and value at index -1
-		std::string name = lua_tostring(L, -2);
-		size_t cl;
-		const char *cs = lua_tolstring(L, -1, &cl);
-		std::string value(cs, cl);
-		meta->setString(name, value);
-		lua_pop(L, 1); // removes value, keeps key for next iteration
+	if (lua_istable(L, -1)) {
+		int fieldstable = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, fieldstable) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = lua_tostring(L, -2);
+			size_t cl;
+			const char *cs = lua_tolstring(L, -1, &cl);
+			meta->setString(name, std::string(cs, cl));
+			lua_pop(L, 1); // Remove value, keep key for next iteration
+		}
+		lua_pop(L, 1);
 	}
+
 	// Set inventory
 	Inventory *inv = meta->getInventory();
 	lua_getfield(L, base, "inventory");
-	int inventorytable = lua_gettop(L);
-	lua_pushnil(L);
-	while(lua_next(L, inventorytable) != 0){
-		// key at index -2 and value at index -1
-		std::string name = lua_tostring(L, -2);
-		read_inventory_list(L, -1, inv, name.c_str(), getServer(L));
-		lua_pop(L, 1); // removes value, keeps key for next iteration
+	if (lua_istable(L, -1)) {
+		int inventorytable = lua_gettop(L);
+		lua_pushnil(L);
+		while (lua_next(L, inventorytable) != 0) {
+			// key at index -2 and value at index -1
+			std::string name = lua_tostring(L, -2);
+			read_inventory_list(L, -1, inv, name.c_str(), getServer(L));
+			lua_pop(L, 1); // Remove value, keep key for next iteration
+		}
+		lua_pop(L, 1);
 	}
+
 	reportMetadataChange(ref);
 	lua_pushboolean(L, true);
 	return 1;
