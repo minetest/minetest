@@ -42,6 +42,7 @@ class BiomeManager;
 class OreManager;
 class DecorationManager;
 class SchematicManager;
+class Server;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
@@ -115,7 +116,7 @@ public:
 	SchematicManager *schemmgr;
 
 	// Methods
-	EmergeManager(IGameDef *gamedef);
+	EmergeManager(Server *server);
 	~EmergeManager();
 
 	bool initMapgens(MapgenParams *mgparams);

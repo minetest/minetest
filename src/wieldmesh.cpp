@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "wieldmesh.h"
 #include "inventory.h"
-#include "gamedef.h"
+#include "client.h"
 #include "itemdef.h"
 #include "nodedef.h"
 #include "mesh.h"
@@ -283,7 +283,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	video::SMaterial &material = m_meshnode->getMaterial(0);
 	material.setTexture(0, tsrc->getTextureForMesh(imagename));
 	material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE; 
+	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	material.MaterialType = m_material_type;
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	// Enable bi/trilinear filtering only for high resolution textures
@@ -304,12 +304,12 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
+void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 {
-	ITextureSource *tsrc = gamedef->getTextureSource();
-	IItemDefManager *idef = gamedef->getItemDefManager();
-	IShaderSource *shdrsrc = gamedef->getShaderSource();
-	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	ITextureSource *tsrc = client->getTextureSource();
+	IItemDefManager *idef = client->getItemDefManager();
+	IShaderSource *shdrsrc = client->getShaderSource();
+	INodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -341,7 +341,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
 			setCube(f.tiles, def.wield_scale, tsrc);
 		} else {
-			MeshMakeData mesh_make_data(gamedef, false);
+			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
@@ -435,11 +435,11 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setVisible(true);
 }
 
-scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
+scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 {
-	ITextureSource *tsrc = gamedef->getTextureSource();
-	IItemDefManager *idef = gamedef->getItemDefManager();
-	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	ITextureSource *tsrc = client->getTextureSource();
+	IItemDefManager *idef = client->getItemDefManager();
+	INodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -470,7 +470,7 @@ scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
 			mesh = cloneMesh(g_extrusion_mesh_cache->createCube());
 			scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 		} else {
-			MeshMakeData mesh_make_data(gamedef, false);
+			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));

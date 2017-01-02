@@ -42,13 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
 
-class ITextureSource;
-class IGameDef;
-class Map;
-class GameScripting;
-class Player;
-class PointedThing;
-
 class Environment
 {
 public:

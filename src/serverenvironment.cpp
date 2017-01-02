@@ -352,11 +352,11 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	GameScripting *scriptIface, IGameDef *gamedef,
+	GameScripting *scriptIface, Server *server,
 	const std::string &path_world) :
 	m_map(map),
 	m_script(scriptIface),
-	m_gamedef(gamedef),
+	m_server(server),
 	m_path_world(path_world),
 	m_send_recommended_timer(0),
 	m_active_block_interval_overload_skip(0),
@@ -487,7 +487,7 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
 		it != m_players.end(); ++it) {
 		RemotePlayer *player = dynamic_cast<RemotePlayer *>(*it);
-		((Server*)m_gamedef)->DenyAccessVerCompliant(player->peer_id,
+		m_server->DenyAccessVerCompliant(player->peer_id,
 			player->protocol_version, reason, str_reason, reconnect);
 	}
 }
@@ -501,7 +501,7 @@ void ServerEnvironment::saveLoadedPlayers()
 		it != m_players.end();
 		++it) {
 		if ((*it)->checkModified()) {
-			(*it)->save(players_path, m_gamedef);
+			(*it)->save(players_path, m_server);
 		}
 	}
 }
@@ -511,7 +511,7 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 	std::string players_path = m_path_world + DIR_DELIM "players";
 	fs::CreateDir(players_path);
 
-	player->save(players_path, m_gamedef);
+	player->save(players_path, m_server);
 }
 
 RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername, PlayerSAO *sao)
@@ -523,7 +523,7 @@ RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername, Playe
 
 	RemotePlayer *player = getPlayer(playername.c_str());
 	if (!player) {
-		player = new RemotePlayer("", m_gamedef->idef());
+		player = new RemotePlayer("", m_server->idef());
 		newplayer = true;
 	}
 
@@ -632,7 +632,7 @@ void ServerEnvironment::loadMeta()
 	} catch (SettingNotFoundException &e) {
 		// No problem, this is expected. Just continue with an empty string
 	}
-	m_lbm_mgr.loadIntroductionTimes(lbm_introduction_times, m_gamedef, m_game_time);
+	m_lbm_mgr.loadIntroductionTimes(lbm_introduction_times, m_server, m_game_time);
 
 	m_day_count = args.exists("day_count") ?
 		args.getU64("day_count") : 0;
@@ -640,7 +640,7 @@ void ServerEnvironment::loadMeta()
 
 void ServerEnvironment::loadDefaultMeta()
 {
-	m_lbm_mgr.loadIntroductionTimes("", m_gamedef, m_game_time);
+	m_lbm_mgr.loadIntroductionTimes("", m_server, m_game_time);
 }
 
 struct ActiveABM
@@ -902,7 +902,7 @@ void ServerEnvironment::addLoadingBlockModifierDef(LoadingBlockModifierDef *lbm)
 
 bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 {
-	INodeDefManager *ndef = m_gamedef->ndef();
+	INodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	// Call destructor
@@ -929,7 +929,7 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 bool ServerEnvironment::removeNode(v3s16 p)
 {
-	INodeDefManager *ndef = m_gamedef->ndef();
+	INodeDefManager *ndef = m_server->ndef();
 	MapNode n_old = m_map->getNodeNoEx(p);
 
 	// Call destructor

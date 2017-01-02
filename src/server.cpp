@@ -50,7 +50,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "mods.h"
-#include "sound.h" // dummySoundManager
 #include "event_manager.h"
 #include "serverlist.h"
 #include "util/string.h"
@@ -3310,27 +3309,10 @@ ICraftDefManager *Server::getCraftDefManager()
 {
 	return m_craftdef;
 }
-ITextureSource *Server::getTextureSource()
-{
-	return NULL;
-}
-IShaderSource *Server::getShaderSource()
-{
-	return NULL;
-}
-scene::ISceneManager *Server::getSceneManager()
-{
-	return NULL;
-}
 
 u16 Server::allocateUnknownNodeId(const std::string &name)
 {
 	return m_nodedef->allocateDummy(name);
-}
-
-ISoundManager *Server::getSoundManager()
-{
-	return &dummySoundManager;
 }
 
 MtEventManager *Server::getEventManager()

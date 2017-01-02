@@ -24,12 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "pathfinder.h"
 #include "serverenvironment.h"
-#include "gamedef.h"
+#include "server.h"
 #include "nodedef.h"
-#include "map.h"
-#include "log.h"
-#include "irr_aabb3d.h"
-#include "util/basic_macros.h"
 
 //#define PATHFINDER_DEBUG
 //#define PATHFINDER_CALC_TIME

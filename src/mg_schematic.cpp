@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include <typeinfo>
 #include "mg_schematic.h"
-#include "gamedef.h"
+#include "server.h"
 #include "mapgen.h"
 #include "emerge.h"
 #include "map.h"
@@ -34,16 +34,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-SchematicManager::SchematicManager(IGameDef *gamedef) :
-	ObjDefManager(gamedef, OBJDEF_SCHEMATIC)
+SchematicManager::SchematicManager(Server *server) :
+	ObjDefManager(server, OBJDEF_SCHEMATIC)
 {
-	m_gamedef = gamedef;
+	m_server = server;
 }
 
 
 void SchematicManager::clear()
 {
-	EmergeManager *emerge = m_gamedef->getEmergeManager();
+	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
 	DecorationManager *decomgr = emerge->decomgr;

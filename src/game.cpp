@@ -916,16 +916,14 @@ bool nodePlacementPrediction(Client &client,
 }
 
 static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
-		InventoryManager *invmgr, IGameDef *gamedef,
-		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		JoystickController *joystick,
-		IFormSource *fs_src, TextDest *txt_dest, Client *client)
+		Client *client, IrrlichtDevice *device, JoystickController *joystick,
+		IFormSource *fs_src, TextDest *txt_dest)
 {
 
 	if (*cur_formspec == 0) {
 		*cur_formspec = new GUIFormSpecMenu(device, joystick,
-			guiroot, -1, &g_menumgr, invmgr, gamedef, tsrc,
-			fs_src, txt_dest, client);
+			guiroot, -1, &g_menumgr, client, client->getTextureSource(),
+			fs_src, txt_dest);
 		(*cur_formspec)->doPause = false;
 
 		/*
@@ -950,9 +948,9 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #endif
 
 static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
-		InventoryManager *invmgr, IGameDef *gamedef,
+		Client *client,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		JoystickController *joystick, Client *client)
+		JoystickController *joystick)
 {
 	std::string formspec =
 		std::string(FORMSPEC_VERSION_STRING) +
@@ -968,13 +966,12 @@ static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,
-		joystick, fs_src, txt_dst, NULL);
+	create_formspec_menu(cur_formspec, client, device, joystick, fs_src, txt_dst);
 }
 
 /******************************************************************************/
 static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
-		InventoryManager *invmgr, IGameDef *gamedef,
+		Client *client,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
 		JoystickController *joystick, bool singleplayermode)
 {
@@ -1041,8 +1038,7 @@ static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	create_formspec_menu(cur_formspec, invmgr, gamedef, tsrc, device,
-		joystick, fs_src, txt_dst, NULL);
+	create_formspec_menu(cur_formspec, client, device, joystick, fs_src, txt_dst);
 	std::string con("btn_continue");
 	(*cur_formspec)->setFocus(con);
 	(*cur_formspec)->doPause = true;
@@ -1534,7 +1530,6 @@ private:
 	bool *kill;
 	std::string *error_message;
 	bool *reconnect_requested;
-	IGameDef *gamedef;                     // Convenience (same as *client)
 	scene::ISceneNode *skybox;
 
 	bool random_input;
@@ -2011,7 +2006,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Camera
 	 */
-	camera = new Camera(smgr, *draw_control, gamedef);
+	camera = new Camera(smgr, *draw_control, client);
 	if (!camera || !camera->successfullyCreated(*error_message))
 		return false;
 	client->setCamera(camera);
@@ -2068,7 +2063,7 @@ bool Game::createClient(const std::string &playername,
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
-	hud = new Hud(driver, smgr, guienv, gamedef, player, local_inventory);
+	hud = new Hud(driver, smgr, guienv, client, player, local_inventory);
 
 	if (!hud) {
 		*error_message = "Memory error: could not create HUD";
@@ -2197,8 +2192,6 @@ bool Game::connectToServer(const std::string &playername,
 
 	if (!client)
 		return false;
-
-	gamedef = client;	// Client acts as our GameDef
 
 	infostream << "Connecting to server at ";
 	connect_address.print(&infostream);
@@ -2445,7 +2438,7 @@ inline bool Game::handleCallbacks()
 void Game::processQueues()
 {
 	texture_src->processQueue();
-	itemdef_manager->processQueue(gamedef);
+	itemdef_manager->processQueue(client);
 	shader_src->processQueue();
 }
 
@@ -2617,7 +2610,7 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 		openInventory();
 	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
 		if (!gui_chat_console->isOpenInhibited()) {
-			show_pause_menu(&current_formspec, client, gamedef,
+			show_pause_menu(&current_formspec, client,
 				texture_src, device, &input->joystick,
 				simple_singleplayer_mode);
 		}
@@ -2769,8 +2762,7 @@ void Game::openInventory()
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 	TextDest *txt_dst = new TextDestPlayerInventory(client);
 
-	create_formspec_menu(&current_formspec, client, gamedef, texture_src,
-			device, &input->joystick, fs_src, txt_dst, client);
+	create_formspec_menu(&current_formspec, client, device, &input->joystick, fs_src, txt_dst);
 	cur_formname = "";
 
 	InventoryLocation inventoryloc;
@@ -3245,13 +3237,13 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 				rangelim(event.player_damage.amount / 4, 1.0, 4.0);
 
 			MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
-			gamedef->event()->put(e);
+			client->event()->put(e);
 		} else if (event.type == CE_PLAYER_FORCE_MOVE) {
 			cam->camera_yaw = event.player_force_move.yaw;
 			cam->camera_pitch = event.player_force_move.pitch;
 		} else if (event.type == CE_DEATHSCREEN) {
-			show_deathscreen(&current_formspec, client, gamedef, texture_src,
-				device, &input->joystick, client);
+			show_deathscreen(&current_formspec, client, texture_src,
+				device, &input->joystick);
 
 			chat_backend->addMessage(L"", L"You died.");
 
@@ -3271,9 +3263,8 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 				TextDestPlayerInventory *txt_dst =
 					new TextDestPlayerInventory(client, *(event.show_formspec.formname));
 
-				create_formspec_menu(&current_formspec, client, gamedef,
-					texture_src, device, &input->joystick,
-					fs_src, txt_dst, client);
+				create_formspec_menu(&current_formspec, client, device, &input->joystick,
+					fs_src, txt_dst);
 				cur_formname = *(event.show_formspec.formname);
 			}
 
@@ -3282,7 +3273,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 		} else if ((event.type == CE_SPAWN_PARTICLE) ||
 				(event.type == CE_ADD_PARTICLESPAWNER) ||
 				(event.type == CE_DELETE_PARTICLESPAWNER)) {
-			client->getParticleManager()->handleParticleEvent(&event, gamedef,
+			client->getParticleManager()->handleParticleEvent(&event, client,
 					smgr, player);
 		} else if (event.type == CE_HUDADD) {
 			u32 id = event.hudadd.id;
@@ -3840,8 +3831,8 @@ void Game::handlePointingAtNode(GameRunData *runData,
 				&client->getEnv().getClientMap(), nodepos);
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
-			create_formspec_menu(&current_formspec, client, gamedef,
-				texture_src, device, &input->joystick, fs_src, txt_dst, client);
+			create_formspec_menu(&current_formspec, client,
+					device, &input->joystick, fs_src, txt_dst);
 			cur_formname = "";
 
 			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
@@ -3972,7 +3963,7 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 					client->getNodeDefManager()->get(n);
-			client->getParticleManager()->addPunchingParticles(gamedef, smgr,
+			client->getParticleManager()->addPunchingParticles(client, smgr,
 					player, nodepos, features.tiles);
 		}
 	}
@@ -4019,7 +4010,7 @@ void Game::handleDigging(GameRunData *runData,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
-			client->getParticleManager()->addDiggingParticles(gamedef, smgr,
+			client->getParticleManager()->addDiggingParticles(client, smgr,
 					player, nodepos, features.tiles);
 		}
 
@@ -4043,7 +4034,7 @@ void Game::handleDigging(GameRunData *runData,
 
 		// Send event to trigger sound
 		MtEvent *e = new NodeDugEvent(nodepos, wasnode);
-		gamedef->event()->put(e);
+		client->event()->put(e);
 	}
 
 	if (runData->dig_time_complete < 100000.0) {

@@ -140,7 +140,7 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 	return false;
 }
 
-void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes, 
+void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max)
 {
 	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1, 1, 1);
@@ -766,7 +766,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
-			m_gamedef->checkLocalPrivilege("noclip")) &&
+			((Client *) m_gamedef)->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);

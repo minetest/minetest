@@ -273,7 +273,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			v3f p_pos = m_base_position;
 			v3f p_velocity = m_velocity;
 			v3f p_acceleration = m_acceleration;
-			moveresult = collisionMoveSimple(m_env,m_env->getGameDef(),
+			moveresult = collisionMoveSimple(m_env, m_env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
 					&p_pos, &p_velocity, p_acceleration,
 					this, m_prop.collideWithObjects);
@@ -945,7 +945,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// get head position
 		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = ((Server*) m_env->getGameDef())->ndef()->get(n);
+		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If node generates drown
 		if (c.drowning > 0) {
 			if (m_hp > 0 && m_breath > 0)
@@ -954,7 +954,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			// No more breath, damage player
 			if (m_breath == 0) {
 				setHP(m_hp - c.drowning);
-				((Server*) m_env->getGameDef())->SendPlayerHPOrDie(this);
+				m_env->getGameDef()->SendPlayerHPOrDie(this);
 			}
 		}
 	}
@@ -963,7 +963,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		// get head position
 		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
 		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = ((Server*) m_env->getGameDef())->ndef()->get(n);
+		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & no drowning, breath
 		if (m_hp > 0 && c.drowning == 0)
 			setBreath(m_breath + 1);
@@ -985,7 +985,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_attachment_position = v3f(0,0,0);
 		m_attachment_rotation = v3f(0,0,0);
 		setBasePosition(m_last_good_position);
-		((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
+		m_env->getGameDef()->SendMovePlayer(m_peer_id);
 	}
 
 	//dstream<<"PlayerSAO::step: dtime: "<<dtime<<std::endl;
@@ -1107,7 +1107,7 @@ void PlayerSAO::setPos(const v3f &pos)
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
 void PlayerSAO::moveTo(v3f pos, bool continuous)
@@ -1118,7 +1118,7 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
-	((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
 void PlayerSAO::setYaw(const float yaw)
@@ -1148,7 +1148,7 @@ void PlayerSAO::setWantedRange(const s16 range)
 void PlayerSAO::setYawAndSend(const float yaw)
 {
 	setYaw(yaw);
-	((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
 void PlayerSAO::setPitch(const float pitch)
@@ -1162,7 +1162,7 @@ void PlayerSAO::setPitch(const float pitch)
 void PlayerSAO::setPitchAndSend(const float pitch)
 {
 	setPitch(pitch);
-	((Server*)m_env->getGameDef())->SendMovePlayer(m_peer_id);
+	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
 int PlayerSAO::punch(v3f dir,
@@ -1273,7 +1273,7 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 	m_breath = MYMIN(breath, PLAYER_MAX_BREATH);
 
 	if (send)
-		((Server *) m_env->getGameDef())->SendPlayerBreath(this);
+		m_env->getGameDef()->SendPlayerBreath(this);
 }
 
 void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)

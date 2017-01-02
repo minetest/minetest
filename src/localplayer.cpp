@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "event.h"
 #include "collision.h"
-#include "gamedef.h"
 #include "nodedef.h"
 #include "settings.h"
 #include "environment.h"
@@ -32,8 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
-	Player(name, gamedef->idef()),
+LocalPlayer::LocalPlayer(Client *client, const char *name):
+	Player(name, client->idef()),
 	parent(0),
 	hp(PLAYER_MAX_HP),
 	got_teleported(false),
@@ -79,7 +78,7 @@ LocalPlayer::LocalPlayer(Client *gamedef, const char *name):
 	camera_barely_in_ceiling(false),
 	m_collisionbox(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30),
 	m_cao(NULL),
-	m_gamedef(gamedef)
+	m_client(client)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -96,7 +95,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
-	INodeDefManager *nodemgr = m_gamedef->ndef();
+	INodeDefManager *nodemgr = m_client->ndef();
 
 	v3f position = getPosition();
 
@@ -109,8 +108,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Skip collision detection if noclip mode is used
-	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool noclip = m_gamedef->checkLocalPrivilege("noclip") &&
+	bool fly_allowed = m_client->checkLocalPrivilege("fly");
+	bool noclip = m_client->checkLocalPrivilege("noclip") &&
 		g_settings->getBool("noclip");
 	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
 	if (free_move) {
@@ -241,7 +240,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	v3f accel_f = v3f(0,0,0);
 
-	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
+	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
@@ -376,7 +375,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	if(!result.standing_on_object && !touching_ground_was && touching_ground) {
 		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
-		m_gamedef->event()->put(e);
+		m_client->event()->put(e);
 
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1;
@@ -448,8 +447,8 @@ void LocalPlayer::applyControl(float dtime)
 	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
 	v3f speedV = v3f(0,0,0); // Vertical (Y)
 
-	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
+	bool fly_allowed = m_client->checkLocalPrivilege("fly");
+	bool fast_allowed = m_client->checkLocalPrivilege("fast");
 
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
@@ -599,7 +598,7 @@ void LocalPlayer::applyControl(float dtime)
 				setSpeed(speedJ);
 
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			}
 		}
 		else if(in_liquid)

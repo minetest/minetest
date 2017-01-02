@@ -35,7 +35,7 @@ enum LocalPlayerAnimations {NO_ANIM, WALK_ANIM, DIG_ANIM, WD_ANIM};  // no local
 class LocalPlayer : public Player
 {
 public:
-	LocalPlayer(Client *gamedef, const char *name);
+	LocalPlayer(Client *client, const char *name);
 	virtual ~LocalPlayer();
 
 	ClientActiveObject *parent;
@@ -162,7 +162,7 @@ private:
 	aabb3f m_collisionbox;
 
 	GenericCAO* m_cao;
-	Client *m_gamedef;
+	Client *m_client;
 };
 
 #endif

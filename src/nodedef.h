@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "client/tile.h"
 #include "shader.h"
+class Client;
 #endif
 #include "itemgroup.h"
 #include "sound.h" // SimpleSoundSpec
@@ -322,8 +323,7 @@ struct ContentFeatures
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
 		u8 alpha, u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
-		scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip,
-		IGameDef *gamedef, const TextureSettings &tsettings);
+		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif
 };
 

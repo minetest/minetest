@@ -117,6 +117,7 @@ LOCAL_SRC_FILES := \
 		jni/src/cavegen.cpp                       \
 		jni/src/chat.cpp                          \
 		jni/src/client.cpp                        \
+		jni/src/clientenvironment.cpp             \
 		jni/src/clientiface.cpp                   \
 		jni/src/clientmap.cpp                     \
 		jni/src/clientmedia.cpp                   \
@@ -210,6 +211,7 @@ LOCAL_SRC_FILES := \
 		jni/src/rollback_interface.cpp            \
 		jni/src/serialization.cpp                 \
 		jni/src/server.cpp                        \
+		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \

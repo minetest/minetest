@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/cpp11_container.h"
 #include <map>
 
-class IGameDef;
+class Client;
 class IShaderSource;
 
 /*
@@ -45,11 +45,11 @@ struct MeshMakeData
 	bool m_smooth_lighting;
 	bool m_show_hud;
 
-	IGameDef *m_gamedef;
+	Client *m_client;
 	bool m_use_shaders;
 	bool m_use_tangent_vertices;
 
-	MeshMakeData(IGameDef *gamedef, bool use_shaders,
+	MeshMakeData(Client *client, bool use_shaders,
 			bool use_tangent_vertices = false);
 
 	/*
@@ -128,7 +128,7 @@ public:
 private:
 	scene::IMesh *m_mesh;
 	MinimapMapblock *m_minimap_mapblock;
-	IGameDef *m_gamedef;
+	Client *m_client;
 	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;

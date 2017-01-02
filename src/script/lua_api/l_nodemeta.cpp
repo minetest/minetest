@@ -20,14 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_internal.h"
 #include "lua_api/l_inventory.h"
-#include "common/c_converter.h"
 #include "common/c_content.h"
 #include "serverenvironment.h"
 #include "map.h"
-#include "gamedef.h"
-#include "nodemetadata.h"
-
-
+#include "server.h"
 
 /*
 	NodeMetaRef
