@@ -563,7 +563,7 @@ void Client::step(float dtime)
 		if(event.type == CEE_NONE) {
 			break;
 		}
-		else if(event.type == CEE_PLAYER_DAMAGE) {
+		else if(event.type == CEE_PLAYER_DAMAGE && m_proto_ver < 29) {
 			if(m_ignore_damage_timer <= 0) {
 				u8 damage = event.player_damage.amount;
 
@@ -1351,6 +1351,10 @@ void Client::sendChangePassword(const std::string &oldpassword,
 void Client::sendDamage(u8 damage)
 {
 	DSTACK(FUNCTION_NAME);
+
+	// Protocol v29 make this obsolete
+	if (m_proto_ver >= 29)
+		return;
 
 	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u8));
 	pkt << damage;
