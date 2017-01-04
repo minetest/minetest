@@ -1053,79 +1053,75 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 	aabb3f *box_union)
 {
 	switch(nodebox.type) {
-	case NODEBOX_FIXED:
-	case NODEBOX_LEVELED:
-	{
-		// Raw union
-		aabb3f half_processed(0, 0, 0, 0, 0, 0);
-		boxVectorUnion(nodebox.fixed, &half_processed);
-		// Set leveled boxes to maximal
-		if (nodebox.type == NODEBOX_LEVELED) {
-			half_processed.MaxEdge.Y = +BS / 2;
+		case NODEBOX_FIXED:
+		case NODEBOX_LEVELED: {
+			// Raw union
+			aabb3f half_processed(0, 0, 0, 0, 0, 0);
+			boxVectorUnion(nodebox.fixed, &half_processed);
+			// Set leveled boxes to maximal
+			if (nodebox.type == NODEBOX_LEVELED) {
+				half_processed.MaxEdge.Y = +BS / 2;
+			}
+			if (features.param_type_2 == CPT2_FACEDIR) {
+				// Get maximal coordinate
+				f32 coords[] = {
+					fabsf(half_processed.MinEdge.X),
+					fabsf(half_processed.MinEdge.Y),
+					fabsf(half_processed.MinEdge.Z),
+					fabsf(half_processed.MaxEdge.X),
+					fabsf(half_processed.MaxEdge.Y),
+					fabsf(half_processed.MaxEdge.Z) };
+				f32 max = 0;
+				for (int i = 0; i < 6; i++) {
+					if (max < coords[i]) {
+						max = coords[i];
+					}
+				}
+				// Add the union of all possible rotated boxes
+				box_union->addInternalPoint(-max, -max, -max);
+				box_union->addInternalPoint(+max, +max, +max);
+			} else {
+				box_union->addInternalBox(half_processed);
+			}
+			break;
 		}
-		if (features.param_type_2 == CPT2_FACEDIR) {
-			// Get maximal coordinate
+		case NODEBOX_WALLMOUNTED: {
+			// Add fix boxes
+			box_union->addInternalBox(nodebox.wall_top);
+			box_union->addInternalBox(nodebox.wall_bottom);
+			// Find maximal coordinate in the X-Z plane
 			f32 coords[] = {
-				fabsf(half_processed.MinEdge.X),
-				fabsf(half_processed.MinEdge.Y),
-				fabsf(half_processed.MinEdge.Z),
-				fabsf(half_processed.MaxEdge.X),
-				fabsf(half_processed.MaxEdge.Y),
-				fabsf(half_processed.MaxEdge.Z) };
+				fabsf(nodebox.wall_side.MinEdge.X),
+				fabsf(nodebox.wall_side.MinEdge.Z),
+				fabsf(nodebox.wall_side.MaxEdge.X),
+				fabsf(nodebox.wall_side.MaxEdge.Z) };
 			f32 max = 0;
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i < 4; i++) {
 				if (max < coords[i]) {
 					max = coords[i];
 				}
 			}
 			// Add the union of all possible rotated boxes
-			box_union->addInternalPoint(-max, -max, -max);
-			box_union->addInternalPoint(+max, +max, +max);
-		} else {
-			box_union->addInternalBox(half_processed);
+			box_union->addInternalPoint(-max, nodebox.wall_side.MinEdge.Y, -max);
+			box_union->addInternalPoint(max, nodebox.wall_side.MaxEdge.Y, max);
+			break;
 		}
-	}
-	break;
-	case NODEBOX_WALLMOUNTED:
-	{
-		// Add fix boxes
-		box_union->addInternalBox(nodebox.wall_top);
-		box_union->addInternalBox(nodebox.wall_bottom);
-		// Find maximal coordinate in the X-Z plane
-		f32 coords[] = {
-			fabsf(nodebox.wall_side.MinEdge.X),
-			fabsf(nodebox.wall_side.MinEdge.Z),
-			fabsf(nodebox.wall_side.MaxEdge.X),
-			fabsf(nodebox.wall_side.MaxEdge.Z) };
-		f32 max = 0;
-		for (int i = 0; i < 4; i++) {
-			if (max < coords[i]) {
-				max = coords[i];
-			}
+		case NODEBOX_CONNECTED: {
+			// Add all possible connected boxes
+			boxVectorUnion(nodebox.fixed,          box_union);
+			boxVectorUnion(nodebox.connect_top,    box_union);
+			boxVectorUnion(nodebox.connect_bottom, box_union);
+			boxVectorUnion(nodebox.connect_front,  box_union);
+			boxVectorUnion(nodebox.connect_left,   box_union);
+			boxVectorUnion(nodebox.connect_back,   box_union);
+			boxVectorUnion(nodebox.connect_right,  box_union);
+			break;
 		}
-		// Add the union of all possible rotated boxes
-		box_union->addInternalPoint(-max, nodebox.wall_side.MinEdge.Y, -max);
-		box_union->addInternalPoint(max, nodebox.wall_side.MaxEdge.Y, max);
-	}
-	break;
-	case NODEBOX_CONNECTED:
-	{
-		// Add all possible connected boxes
-		boxVectorUnion(nodebox.fixed,          box_union);
-		boxVectorUnion(nodebox.connect_top,    box_union);
-		boxVectorUnion(nodebox.connect_bottom, box_union);
-		boxVectorUnion(nodebox.connect_front,  box_union);
-		boxVectorUnion(nodebox.connect_left,   box_union);
-		boxVectorUnion(nodebox.connect_back,   box_union);
-		boxVectorUnion(nodebox.connect_right,  box_union);
-	}
-	break;
-	default:
-	{
-		// NODEBOX_REGULAR
-		box_union->addInternalPoint(-BS / 2, -BS / 2, -BS / 2);
-		box_union->addInternalPoint(+BS / 2, +BS / 2, +BS / 2);
-	}
+		default: {
+			// NODEBOX_REGULAR
+			box_union->addInternalPoint(-BS / 2, -BS / 2, -BS / 2);
+			box_union->addInternalPoint(+BS / 2, +BS / 2, +BS / 2);
+		}
 	}
 }
 

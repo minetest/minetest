@@ -445,27 +445,6 @@ public:
 	Inventory* getInventory(const InventoryLocation &loc);
 	void inventoryAction(InventoryAction *a);
 
-	/*!
-	 * Gets closest object pointed by the shootline.
-	 * Returns NULL if not found.
-	 * @param[in]  shootline_on_map    the shootline for
-	 * the test in world coordinates
-	 *
-	 * @param[out] intersection_point  the first point where
-	 * the shootline meets the object. Valid only if
-	 * not NULL is returned.
-	 *
-	 * @param[out] intersection_normal the normal vector of
-	 * the intersection, pointing outwards. Zero vector if
-	 * the shootline starts in an active object.
-	 * Valid only if not NULL is returned.
-	 */
-	ClientActiveObject * getSelectedActiveObject(
-		const core::line3d<f32> &shootline_on_map,
-		v3f *intersection_point,
-		v3s16 *intersection_normal
-	);
-
 	const std::list<std::string> &getConnectedPlayerNames()
 	{
 		return m_env.getPlayerNames();

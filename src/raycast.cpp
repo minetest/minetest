@@ -28,13 +28,14 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 		return true;
 	}
 	float m = 0;
-	//Test X collision
+
+	// Test X collision
 	if (dir.X != 0) {
-		if (dir.X > 0) {
+		if (dir.X > 0)
 			m = (box.MinEdge.X - start.X) / dir.X;
-		} else {
+		else
 			m = (box.MaxEdge.X - start.X) / dir.X;
-		}
+
 		if (m >= 0 && m <= 1) {
 			*collision_point = start + dir * m;
 			if ((collision_point->Y >= box.MinEdge.Y)
@@ -46,13 +47,14 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 			}
 		}
 	}
-	//Test Y collision
+
+	// Test Y collision
 	if (dir.Y != 0) {
-		if (dir.Y > 0) {
+		if (dir.Y > 0)
 			m = (box.MinEdge.Y - start.Y) / dir.Y;
-		} else {
+		else
 			m = (box.MaxEdge.Y - start.Y) / dir.Y;
-		}
+
 		if (m >= 0 && m <= 1) {
 			*collision_point = start + dir * m;
 			if ((collision_point->X >= box.MinEdge.X)
@@ -64,13 +66,14 @@ bool boxLineCollision(const aabb3f &box, const v3f &start,
 			}
 		}
 	}
-	//Test Z collision
+
+	// Test Z collision
 	if (dir.Z != 0) {
-		if (dir.Z > 0) {
+		if (dir.Z > 0)
 			m = (box.MinEdge.Z - start.Z) / dir.Z;
-		} else {
+		else
 			m = (box.MaxEdge.Z - start.Z) / dir.Z;
-		}
+
 		if (m >= 0 && m <= 1) {
 			*collision_point = start + dir * m;
 			if ((collision_point->X >= box.MinEdge.X)
