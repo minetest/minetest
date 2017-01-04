@@ -319,6 +319,90 @@ static inline u8 getNeighbors(v3s16 p, INodeDefManager *nodedef, ClientMap *map,
 	return neighbors;
 }
 
+namespace {
+
+/*
+This class is used to get node positions that sit in between a start and end position
+It returns batches of positions, starting near the start position and ending at the
+end position. At each step, there is a bit of overlap, so the same position can be
+reported multiple times. In addition, it returns positions within a 1 node radius.
+To get the next batch of positions, Step should be called. If IsDone returns true
+the end position has been reached, and Step will no longer return positions.
+*/
+class Interpolator
+{
+public:
+	Interpolator(const v3f& start, const v3f& end) :
+		m_start(start),
+		m_end(end),
+		m_current(start),
+		m_done(false) {
+
+		m_step_amount = end - start;
+
+		double largest_increase_amount = fabs(m_step_amount.X);
+
+		if (fabs(m_step_amount.Y) > largest_increase_amount) {
+			largest_increase_amount = fabs(m_step_amount.Y);
+		}
+
+		if (fabs(m_step_amount.Z) > largest_increase_amount) {
+			largest_increase_amount = fabs(m_step_amount.Z);
+		}
+
+		if (largest_increase_amount == 0) {
+			m_done = true;
+			return;
+		}
+
+		m_step_amount /= largest_increase_amount;
+	}
+
+	void Step(std::vector<v3s16>* nodes)
+	{
+		nodes->reserve(16);
+		v3s16 old_current = floatToInt(m_current, 1.);
+
+		v3s16 start = old_current;
+		m_current += m_step_amount;
+
+		v3s16 end = floatToInt(m_current, 1.);
+
+		if ((m_current - m_start).getLength() > (m_end - m_start).getLength())
+			m_done = true;
+
+		if (start.X > end.X)
+			std::swap(start.X, end.X);
+
+		if (start.Y > end.Y)
+			std::swap(start.Y, end.Y);
+
+		if (start.Z > end.Z)
+			std::swap(start.Z, end.Z);
+
+		for (int x = start.X - 1; x <= end.X + 1; ++x)
+		for (int y = start.Y - 1; y <= end.Y + 1; ++y)
+		for (int z = start.Z - 1; z <= end.Z + 1; ++z) {
+			v3s16 pos(x, y, z);
+			if (pos != old_current)
+				nodes->push_back(pos);
+		}
+	}
+
+	bool IsDone()
+	{
+		return m_done;
+	}
+
+private:
+	v3f m_start;
+	v3f m_end;
+	v3f m_current;
+	v3f m_step_amount;
+	bool m_done;
+};
+}
+
 /*
 	Find what the player is pointing at
 */
@@ -370,70 +454,54 @@ PointedThing getPointedThing(Client *client, Hud *hud, const v3f &player_positio
 
 	// That didn't work, try to find a pointed at node
 
-	v3s16 pos_i = floatToInt(player_position, BS);
-
-	/*infostream<<"pos_i=("<<pos_i.X<<","<<pos_i.Y<<","<<pos_i.Z<<")"
-			<<std::endl;*/
-
-	s16 a = d;
-	s16 ystart = pos_i.Y - (camera_direction.Y < 0 ? a : 1);
-	s16 zstart = pos_i.Z - (camera_direction.Z < 0 ? a : 1);
-	s16 xstart = pos_i.X - (camera_direction.X < 0 ? a : 1);
-	s16 yend = pos_i.Y + 1 + (camera_direction.Y > 0 ? a : 1);
-	s16 zend = pos_i.Z + (camera_direction.Z > 0 ? a : 1);
-	s16 xend = pos_i.X + (camera_direction.X > 0 ? a : 1);
-
-	// Prevent signed number overflow
-	if (yend == 32767)
-		yend = 32766;
-
-	if (zend == 32767)
-		zend = 32766;
-
-	if (xend == 32767)
-		xend = 32766;
-
 	v3s16 pointed_pos(0, 0, 0);
 
-	for (s16 y = ystart; y <= yend; y++) {
-		for (s16 z = zstart; z <= zend; z++) {
-			for (s16 x = xstart; x <= xend; x++) {
-				MapNode n;
-				bool is_valid_position;
-				v3s16 p(x, y, z);
+	v3f start = camera_position / BS;
+	v3f end = start + (camera_direction * d);
 
-				n = map.getNodeNoEx(p, &is_valid_position);
-				if (!is_valid_position) {
+	Interpolator interpolator(start, end);
+
+	std::vector<v3s16> nodes;
+	std::vector<aabb3f> boxes;
+	bool hit = false;
+
+	while (!interpolator.IsDone() && !hit) {
+		nodes.clear();
+		interpolator.Step(&nodes);
+		
+		for (std::vector<v3s16>::iterator iter = nodes.begin(); iter != nodes.end(); ++iter) {
+			v3s16 pos = *iter;
+
+			bool is_valid_position;
+			MapNode n = map.getNodeNoEx(pos, &is_valid_position);
+			if (!is_valid_position) {
+				continue;
+			}
+			if (!isPointableNode(n, client, liquids_pointable)) {
+				continue;
+			}
+
+			boxes.clear();
+			n.getSelectionBoxes(nodedef, &boxes, getNeighbors(pos, nodedef, &map, n));
+
+			v3f pos_f = intToFloat(pos, BS);
+			for (std::vector<aabb3f>::const_iterator i = boxes.begin(); i != boxes.end(); ++i) {
+				aabb3f box = *i;
+				box.MinEdge += pos_f;
+				box.MaxEdge += pos_f;
+
+				v3f centerpoint = box.getCenter();
+				f32 distance = (centerpoint - camera_position).getLength();
+				if (distance >= min_distance) {
 					continue;
 				}
-				if (!isPointableNode(n, client, liquids_pointable)) {
+				if (!box.intersectsWithLine(shootline)) {
 					continue;
 				}
-
-				std::vector<aabb3f> boxes;
-				n.getSelectionBoxes(nodedef, &boxes, getNeighbors(p, nodedef, &map, n));
-
-				v3s16 np(x, y, z);
-				v3f npf = intToFloat(np, BS);
-				for (std::vector<aabb3f>::const_iterator
-						i = boxes.begin();
-						i != boxes.end(); ++i) {
-					aabb3f box = *i;
-					box.MinEdge += npf;
-					box.MaxEdge += npf;
-
-					v3f centerpoint = box.getCenter();
-					f32 distance = (centerpoint - camera_position).getLength();
-					if (distance >= min_distance) {
-						continue;
-					}
-					if (!box.intersectsWithLine(shootline)) {
-						continue;
-					}
-					result.type = POINTEDTHING_NODE;
-					min_distance = distance;
-					pointed_pos = np;
-				}
+				result.type = POINTEDTHING_NODE;
+				min_distance = distance;
+				pointed_pos = pos;
+				hit = true;
 			}
 		}
 	}
