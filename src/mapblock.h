@@ -305,8 +305,7 @@ public:
 	inline MapNode getNodeNoEx(v3s16 p)
 	{
 		bool is_valid;
-		MapNode node = getNode(p.X, p.Y, p.Z, &is_valid);
-		return is_valid ? node : MapNode(CONTENT_IGNORE);
+		return getNode(p.X, p.Y, p.Z, &is_valid);
 	}
 
 	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
@@ -339,6 +338,22 @@ public:
 	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
+	}
+
+	////
+	//// Non-checking, unsafe variants of the above
+	//// MapBlock must be loaded by another function in the same scope/function
+	//// Caller must ensure that this is not a dummy block (by calling isDummy())
+	////
+
+	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z)
+	{
+		return data[z * zstride + y * ystride + x];
+	}
+
+	inline const MapNode &getNodeUnsafe(v3s16 &p)
+	{
+		return getNodeUnsafe(p.X, p.Y, p.Z);
 	}
 
 	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
@@ -512,7 +527,6 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
 	void deSerializeNetworkSpecific(std::istream &is);
-
 private:
 	/*
 		Private methods
