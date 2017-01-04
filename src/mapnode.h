@@ -143,11 +143,6 @@ struct MapNode
 	MapNode()
 	{ }
 
-	MapNode(const MapNode & n)
-	{
-		*this = n;
-	}
-
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),
 		  param1(a_param1),

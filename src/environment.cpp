@@ -827,7 +827,7 @@ public:
 				{
 					content_t c = *k;
 					if (c >= m_aabms.size())
-						m_aabms.resize(c + 256, (std::vector<ActiveABM> *) NULL);
+						m_aabms.resize(c + 256, NULL);
 					if (!m_aabms[c])
 						m_aabms[c] = new std::vector<ActiveABM>;
 					m_aabms[c]->push_back(aabm);
@@ -872,7 +872,7 @@ public:
 	}
 	void apply(MapBlock *block)
 	{
-		if(m_aabms.empty())
+		if(m_aabms.empty() || block->isDummy())
 			return;
 
 		ServerMap *map = &m_env->getServerMap();
@@ -886,13 +886,13 @@ public:
 		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
 		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
 		{
-			MapNode n = block->getNodeNoEx(p0);
+			const MapNode &n = block->getNodeUnsafe(p0);
 			content_t c = n.getContent();
-			v3s16 p = p0 + block->getPosRelative();
 
-			if (!m_aabms[c])
+			if (c >= m_aabms.size() || !m_aabms[c])
 				continue;
 
+			v3s16 p = p0 + block->getPosRelative();
 			for(std::vector<ActiveABM>::iterator
 					i = m_aabms[c]->begin(); i != m_aabms[c]->end(); ++i) {
 				if(myrand() % i->chance != 0)
