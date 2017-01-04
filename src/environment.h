@@ -55,6 +55,7 @@ class GameScripting;
 class Player;
 class RemotePlayer;
 class PlayerSAO;
+class PointedThing;
 
 class Environment
 {
@@ -626,6 +627,41 @@ public:
 
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
+
+	/*!
+	 * Gets closest object pointed by the shootline.
+	 * Returns NULL if not found.
+	 *
+	 * \param[in]  shootline_on_map    the shootline for
+	 * the test in world coordinates
+	 * \param[out] intersection_point  the first point where
+	 * the shootline meets the object. Valid only if
+	 * not NULL is returned.
+	 * \param[out] intersection_normal the normal vector of
+	 * the intersection, pointing outwards. Zero vector if
+	 * the shootline starts in an active object.
+	 * Valid only if not NULL is returned.
+	 */
+	ClientActiveObject * getSelectedActiveObject(
+		const core::line3d<f32> &shootline_on_map,
+		v3f *intersection_point,
+		v3s16 *intersection_normal
+	);
+
+	/*!
+	 * Performs a raycast on the world.
+	 * Returns the first thing the shootline meets.
+	 *
+	 * @param[in]  shootline         the shootline, starting from
+	 * the camera position. This also gives the maximal distance
+	 * of the search.
+	 * @param[in]  liquids_pointable if false, liquids are ignored
+	 * @param[in]  look_for_object   if false, objects are ignored
+	 */
+	PointedThing getPointedThing(
+		core::line3d<f32> shootline,
+		bool liquids_pointable,
+		bool look_for_object);
 
 	u16 attachement_parent_ids[USHRT_MAX + 1];
 

@@ -349,6 +349,11 @@ public:
 	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face)=0;
+	/*!
+	 * Returns the smallest box in node coordinates that
+	 * contains all nodes' selection boxes.
+	 */
+	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
 };
 
 class IWritableNodeDefManager : public INodeDefManager {
@@ -406,6 +411,7 @@ public:
 	virtual void runNodeResolveCallbacks()=0;
 	virtual void resetNodeResolveState()=0;
 	virtual void mapNodeboxConnections()=0;
+	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const=0;
 };
 
 IWritableNodeDefManager *createNodeDefManager();

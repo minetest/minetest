@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "porting.h"
 #include "nodedef.h"
+#include "map.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
@@ -451,6 +452,51 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	{
 		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
 	}
+}
+
+static inline void getNeighborConnectingFace(
+	v3s16 p, INodeDefManager *nodedef,
+	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
+{
+	MapNode n2 = map->getNodeNoEx(p);
+	if (nodedef->nodeboxConnects(n, n2, bitmask))
+		*neighbors |= bitmask;
+}
+
+u8 MapNode::getNeighbors(v3s16 p, Map *map)
+{
+	INodeDefManager *nodedef=map->getNodeDefManager();
+	u8 neighbors = 0;
+	const ContentFeatures &f = nodedef->get(*this);
+	// locate possible neighboring nodes to connect to
+	if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+		v3s16 p2 = p;
+
+		p2.Y++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 1, &neighbors);
+
+		p2 = p;
+		p2.Y--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 2, &neighbors);
+
+		p2 = p;
+		p2.Z--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 4, &neighbors);
+
+		p2 = p;
+		p2.X--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 8, &neighbors);
+
+		p2 = p;
+		p2.Z++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 16, &neighbors);
+
+		p2 = p;
+		p2.X++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 32, &neighbors);
+	}
+
+	return neighbors;
 }
 
 void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)

@@ -53,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
+#include "raycast.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1498,44 +1499,6 @@ void Client::inventoryAction(InventoryAction *a)
 
 	// Remove it
 	delete a;
-}
-
-ClientActiveObject * Client::getSelectedActiveObject(
-		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
-	)
-{
-	std::vector<DistanceSortedActiveObject> objects;
-
-	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
-
-	// Sort them.
-	// After this, the closest object is the first in the array.
-	std::sort(objects.begin(), objects.end());
-
-	for(unsigned int i=0; i<objects.size(); i++)
-	{
-		ClientActiveObject *obj = objects[i].obj;
-
-		aabb3f *selection_box = obj->getSelectionBox();
-		if(selection_box == NULL)
-			continue;
-
-		v3f pos = obj->getPosition();
-
-		aabb3f offsetted_box(
-				selection_box->MinEdge + pos,
-				selection_box->MaxEdge + pos
-		);
-
-		if(offsetted_box.intersectsWithLine(shootline_on_map))
-		{
-			return obj;
-		}
-	}
-
-	return NULL;
 }
 
 float Client::getAnimationTime()

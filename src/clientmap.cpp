@@ -172,8 +172,6 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 	g_profiler->add("CM::updateDrawList() count", 1);
 
-	INodeDefManager *nodemgr = m_gamedef->ndef();
-
 	for (std::map<v3s16, MapBlock*>::iterator i = m_drawlist.begin();
 			i != m_drawlist.end(); ++i) {
 		MapBlock *block = i->second;
@@ -219,7 +217,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 	if (g_settings->getBool("free_move")) {
 		MapNode n = getNodeNoEx(cam_pos_nodes);
 		if (n.getContent() == CONTENT_IGNORE ||
-				nodemgr->get(n).solidness == 2)
+				m_nodedef->get(n).solidness == 2)
 			occlusion_culling_enabled = false;
 	}
 
@@ -297,23 +295,23 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			if (occlusion_culling_enabled &&
 					// For the central point of the mapblock 'endoff' can be halved
 					isOccluded(this, spn, cpn,
-						step, stepfac, startoff, endoff / 2.0f, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff / 2.0f, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr) &&
+						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
 					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, nodemgr)) {
+						step, stepfac, startoff, endoff, needed_count, m_nodedef)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
@@ -656,7 +654,6 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		int oldvalue, bool *sunlight_seen_result)
 {
 	const bool debugprint = false;
-	INodeDefManager *ndef = m_gamedef->ndef();
 	static v3f z_directions[50] = {
 		v3f(-100, 0, 0)
 	};
@@ -694,7 +691,7 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		float off = step * z_offsets[i];
 		bool sunlight_seen_now = false;
 		bool ok = getVisibleBrightness(this, m_camera_position, dir,
-				step, 1.0, max_d*0.6+off, max_d, ndef, daylight_factor,
+				step, 1.0, max_d*0.6+off, max_d, m_nodedef, daylight_factor,
 				sunlight_min_d,
 				&br, &sunlight_seen_now);
 		if(sunlight_seen_now)
@@ -734,8 +731,8 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	int ret = 0;
 	if(brightness_count == 0){
 		MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
-		if(ndef->get(n).param_type == CPT_LIGHT){
-			ret = decode_light(n.getLightBlend(daylight_factor, ndef));
+		if(m_nodedef->get(n).param_type == CPT_LIGHT){
+			ret = decode_light(n.getLightBlend(daylight_factor, m_nodedef));
 		} else {
 			ret = oldvalue;
 		}
@@ -758,8 +755,6 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 
 void ClientMap::renderPostFx(CameraMode cam_mode)
 {
-	INodeDefManager *nodemgr = m_gamedef->ndef();
-
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
@@ -768,7 +763,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
 	// - Do not if player is in third person mode
-	const ContentFeatures& features = nodemgr->get(n);
+	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
 			m_gamedef->checkLocalPrivilege("noclip")) &&

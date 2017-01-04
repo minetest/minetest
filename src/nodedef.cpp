@@ -790,9 +790,18 @@ public:
 	virtual void resetNodeResolveState();
 	virtual void mapNodeboxConnections();
 	virtual bool nodeboxConnects(MapNode from, MapNode to, u8 connect_face);
+	virtual core::aabbox3d<s16> getSelectionBoxIntUnion() const
+	{
+		return m_selection_box_int_union;
+	}
 
 private:
 	void addNameIdMapping(content_t i, std::string name);
+	/*!
+	 * Recalculates m_selection_box_int_union based on
+	 * m_selection_box_union.
+	 */
+	void fixSelectionBoxIntUnion();
 
 	// Features indexed by id
 	std::vector<ContentFeatures> m_content_features;
@@ -819,6 +828,14 @@ private:
 
 	// True when all nodes have been registered
 	bool m_node_registration_complete;
+
+	//! The union of all nodes' selection boxes.
+	aabb3f m_selection_box_union;
+	/*!
+	 * The smallest box in node coordinates that
+	 * contains all nodes' selection boxes.
+	 */
+	core::aabbox3d<s16> m_selection_box_int_union;
 };
 
 
@@ -849,6 +866,8 @@ void CNodeDefManager::clear()
 	m_name_id_mapping_with_aliases.clear();
 	m_group_to_items.clear();
 	m_next_id = 0;
+	m_selection_box_union.reset(0,0,0);
+	m_selection_box_int_union.reset(0,0,0);
 
 	resetNodeResolveState();
 
@@ -1007,6 +1026,123 @@ content_t CNodeDefManager::allocateId()
 }
 
 
+/*!
+ * Returns the smallest box that contains all boxes
+ * in the vector. Box_union is expanded.
+ * @param[in]      boxes     the vector containing the boxes
+ * @param[in, out] box_union the union of the arguments
+ */
+void boxVectorUnion(const std::vector<aabb3f> &boxes, aabb3f *box_union)
+{
+	for (std::vector<aabb3f>::const_iterator it = boxes.begin();
+			it != boxes.end(); ++it) {
+		box_union->addInternalBox(*it);
+	}
+}
+
+
+/*!
+ * Returns a box that contains the nodebox in every case.
+ * The argument node_union is expanded.
+ * @param[in]      nodebox  the nodebox to be measured
+ * @param[in]      features  used to decide whether the nodebox
+ * can be rotated
+ * @param[in, out] box_union the union of the arguments
+ */
+void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
+	aabb3f *box_union)
+{
+	switch(nodebox.type) {
+		case NODEBOX_FIXED:
+		case NODEBOX_LEVELED: {
+			// Raw union
+			aabb3f half_processed(0, 0, 0, 0, 0, 0);
+			boxVectorUnion(nodebox.fixed, &half_processed);
+			// Set leveled boxes to maximal
+			if (nodebox.type == NODEBOX_LEVELED) {
+				half_processed.MaxEdge.Y = +BS / 2;
+			}
+			if (features.param_type_2 == CPT2_FACEDIR) {
+				// Get maximal coordinate
+				f32 coords[] = {
+					fabsf(half_processed.MinEdge.X),
+					fabsf(half_processed.MinEdge.Y),
+					fabsf(half_processed.MinEdge.Z),
+					fabsf(half_processed.MaxEdge.X),
+					fabsf(half_processed.MaxEdge.Y),
+					fabsf(half_processed.MaxEdge.Z) };
+				f32 max = 0;
+				for (int i = 0; i < 6; i++) {
+					if (max < coords[i]) {
+						max = coords[i];
+					}
+				}
+				// Add the union of all possible rotated boxes
+				box_union->addInternalPoint(-max, -max, -max);
+				box_union->addInternalPoint(+max, +max, +max);
+			} else {
+				box_union->addInternalBox(half_processed);
+			}
+			break;
+		}
+		case NODEBOX_WALLMOUNTED: {
+			// Add fix boxes
+			box_union->addInternalBox(nodebox.wall_top);
+			box_union->addInternalBox(nodebox.wall_bottom);
+			// Find maximal coordinate in the X-Z plane
+			f32 coords[] = {
+				fabsf(nodebox.wall_side.MinEdge.X),
+				fabsf(nodebox.wall_side.MinEdge.Z),
+				fabsf(nodebox.wall_side.MaxEdge.X),
+				fabsf(nodebox.wall_side.MaxEdge.Z) };
+			f32 max = 0;
+			for (int i = 0; i < 4; i++) {
+				if (max < coords[i]) {
+					max = coords[i];
+				}
+			}
+			// Add the union of all possible rotated boxes
+			box_union->addInternalPoint(-max, nodebox.wall_side.MinEdge.Y, -max);
+			box_union->addInternalPoint(max, nodebox.wall_side.MaxEdge.Y, max);
+			break;
+		}
+		case NODEBOX_CONNECTED: {
+			// Add all possible connected boxes
+			boxVectorUnion(nodebox.fixed,          box_union);
+			boxVectorUnion(nodebox.connect_top,    box_union);
+			boxVectorUnion(nodebox.connect_bottom, box_union);
+			boxVectorUnion(nodebox.connect_front,  box_union);
+			boxVectorUnion(nodebox.connect_left,   box_union);
+			boxVectorUnion(nodebox.connect_back,   box_union);
+			boxVectorUnion(nodebox.connect_right,  box_union);
+			break;
+		}
+		default: {
+			// NODEBOX_REGULAR
+			box_union->addInternalPoint(-BS / 2, -BS / 2, -BS / 2);
+			box_union->addInternalPoint(+BS / 2, +BS / 2, +BS / 2);
+		}
+	}
+}
+
+
+inline void CNodeDefManager::fixSelectionBoxIntUnion()
+{
+	m_selection_box_int_union.MinEdge.X = floorf(
+		m_selection_box_union.MinEdge.X / BS + 0.5f);
+	m_selection_box_int_union.MinEdge.Y = floorf(
+		m_selection_box_union.MinEdge.Y / BS + 0.5f);
+	m_selection_box_int_union.MinEdge.Z = floorf(
+		m_selection_box_union.MinEdge.Z / BS + 0.5f);
+	m_selection_box_int_union.MaxEdge.X = ceilf(
+		m_selection_box_union.MaxEdge.X / BS - 0.5f);
+	m_selection_box_int_union.MaxEdge.Y = ceilf(
+		m_selection_box_union.MaxEdge.Y / BS - 0.5f);
+	m_selection_box_int_union.MaxEdge.Z = ceilf(
+		m_selection_box_union.MaxEdge.Z / BS - 0.5f);
+}
+
+
 // IWritableNodeDefManager
 content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &def)
 {
@@ -1037,6 +1173,8 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 	verbosestream << "NodeDefManager: registering content id \"" << id
 		<< "\": name=\"" << def.name << "\""<<std::endl;
 
+	getNodeBoxUnion(def.selection_box, def, &m_selection_box_union);
+	fixSelectionBoxIntUnion();
 	// Add this content to the list of all groups it belongs to
 	// FIXME: This should remove a node from groups it no longer
 	// belongs to when a node is re-registered
@@ -1266,6 +1404,9 @@ void CNodeDefManager::deSerialize(std::istream &is)
 		m_content_features[i] = f;
 		addNameIdMapping(i, f.name);
 		verbosestream << "deserialized " << f.name << std::endl;
+
+		getNodeBoxUnion(f.selection_box, f, &m_selection_box_union);
+		fixSelectionBoxIntUnion();
 	}
 }
 

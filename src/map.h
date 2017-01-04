@@ -193,6 +193,8 @@ public:
 	virtual MapBlock * emergeBlock(v3s16 p, bool create_blank=true)
 	{ return getBlockNoCreateNoEx(p); }
 
+	inline INodeDefManager * getNodeDefManager() { return m_nodedef; }
+
 	// Returns InvalidPositionException if not found
 	bool isNodeUnderground(v3s16 p);
 
@@ -345,6 +347,9 @@ protected:
 
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;
+
+	// This stores the properties of the nodes on the map.
+	INodeDefManager *m_nodedef;
 
 private:
 	f32 m_transforming_liquid_loop_count_multiplier;
