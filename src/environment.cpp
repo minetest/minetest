@@ -767,7 +767,7 @@ class ABMHandler
 {
 private:
 	ServerEnvironment *m_env;
-	std::map<content_t, std::vector<ActiveABM> > m_aabms;
+	std::vector<std::vector<ActiveABM> *> m_aabms;
 public:
 	ABMHandler(std::vector<ABMWithState> &abms,
 			float dtime_s, ServerEnvironment *env,
@@ -826,18 +826,22 @@ public:
 						k != ids.end(); ++k)
 				{
 					content_t c = *k;
-					std::map<content_t, std::vector<ActiveABM> >::iterator j;
-					j = m_aabms.find(c);
-					if(j == m_aabms.end()){
-						std::vector<ActiveABM> aabmlist;
-						m_aabms[c] = aabmlist;
-						j = m_aabms.find(c);
-					}
-					j->second.push_back(aabm);
+					if (c >= m_aabms.size())
+						m_aabms.resize(c + 256, (std::vector<ActiveABM> *) NULL);
+					if (!m_aabms[c])
+						m_aabms[c] = new std::vector<ActiveABM>;
+					m_aabms[c]->push_back(aabm);
 				}
 			}
 		}
 	}
+
+	~ABMHandler()
+	{
+		for (size_t i = 0; i < m_aabms.size(); i++)
+			delete m_aabms[i];
+	}
+
 	// Find out how many objects the given block and its neighbours contain.
 	// Returns the number of objects in the block, and also in 'wider' the
 	// number of objects in the block and all its neighbours. The latter
@@ -886,13 +890,11 @@ public:
 			content_t c = n.getContent();
 			v3s16 p = p0 + block->getPosRelative();
 
-			std::map<content_t, std::vector<ActiveABM> >::iterator j;
-			j = m_aabms.find(c);
-			if(j == m_aabms.end())
+			if (!m_aabms[c])
 				continue;
 
 			for(std::vector<ActiveABM>::iterator
-					i = j->second.begin(); i != j->second.end(); ++i) {
+					i = m_aabms[c]->begin(); i != m_aabms[c]->end(); ++i) {
 				if(myrand() % i->chance != 0)
 					continue;
 
