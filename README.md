@@ -71,6 +71,7 @@ Most controls are settable in the configuration file, see the section below.
 
 Paths
 ------
+```
 $bin   - Compiled binaries
 $share - Distributed read-only data
 $user  - User-created modifiable data
@@ -89,66 +90,67 @@ OS X:
 $bin   = Contents/MacOS
 $share = Contents/Resources
 $user  = Contents/User OR ~/Library/Application Support/minetest
+```
 
 World directory
 ----------------
 - Worlds can be found as separate folders in:
-    $user/worlds/
+    `$user/worlds/`
 
 Configuration file:
 -------------------
 - Default location:
-    $user/minetest.conf
+    `$user/minetest.conf`
 - It is created by Minetest when it is ran the first time.
 - A specific file can be specified on the command line:
-	--config <path-to-file>
+	`--config <path-to-file>`
 
 Command-line options:
 ---------------------
-- Use --help
+- Use `--help`
 
 Compiling on GNU/Linux:
 -----------------------
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+`$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev`
 
 For Fedora users:
-$ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+`$ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel`
 
 You can install git for easily keeping your copy up to date.
 If you dont want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
-$ sudo apt-get install git
+`$ sudo apt-get install git`
 
 For Fedora users:
-$ sudo dnf install git
+`$ sudo dnf install git`
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
-$ git clone --depth 1 https://github.com/minetest/minetest.git
-$ cd minetest
+`$ git clone --depth 1 https://github.com/minetest/minetest.git`
+`$ cd minetest`
 
 Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
-$ git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+`$ git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game`
 
 Download source, without using git:
-$ wget https://github.com/minetest/minetest/archive/master.tar.gz
-$ tar xf master.tar.gz
-$ cd minetest-master
+`$ wget https://github.com/minetest/minetest/archive/master.tar.gz`
+`$ tar xf master.tar.gz`
+`$ cd minetest-master`
 
 Download minetest_game, without using git:
-$ cd games/
-$ wget https://github.com/minetest/minetest_game/archive/master.tar.gz
-$ tar xf master.tar.gz
-$ mv minetest_game-master minetest_game
-$ cd ..
+`$ cd games/`
+`$ wget https://github.com/minetest/minetest_game/archive/master.tar.gz`
+`$ tar xf master.tar.gz`
+`$ mv minetest_game-master minetest_game`
+`$ cd ..`
 
 Build a version that runs directly from the source directory:
-$ cmake . -DRUN_IN_PLACE=TRUE
-$ make -j <number of processors>
+`$ cmake . -DRUN_IN_PLACE=TRUE`
+`$ make -j <number of processors>`
 
 Run it:
-$ ./bin/minetest
+`$ ./bin/minetest`
 
 - Use cmake . -LH to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package),
@@ -372,7 +374,7 @@ Compiling on Windows:
 
 Windows releases of minetest are built using a bat script like this:
 --------------------------------------------------------------------
-
+```bat
 set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
@@ -396,6 +398,7 @@ exit /b 0
 popd
 echo Failed.
 exit /b 1
+```
 
 License of Minetest textures and sounds
 ---------------------------------------
