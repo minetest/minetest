@@ -203,6 +203,7 @@ LOCAL_SRC_FILES := \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
 		jni/src/quicktune.cpp                     \
+		jni/src/raycast.cpp                       \
 		jni/src/reflowscan.cpp                    \
 		jni/src/remoteplayer.cpp                  \
 		jni/src/rollback.cpp                      \
@@ -218,6 +219,7 @@ LOCAL_SRC_FILES := \
 		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
+		jni/src/tileanimation.cpp                 \
 		jni/src/tool.cpp                          \
 		jni/src/treegen.cpp                       \
 		jni/src/version.cpp                       \
