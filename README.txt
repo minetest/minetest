@@ -3,7 +3,7 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2017 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
@@ -427,7 +427,7 @@ License of Minetest source code
 -------------------------------
 
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
