@@ -902,14 +902,23 @@ public:
 				if(!i->required_neighbors.empty())
 				{
 					v3s16 p1;
-					for(p1.X = p.X-1; p1.X <= p.X+1; p1.X++)
-					for(p1.Y = p.Y-1; p1.Y <= p.Y+1; p1.Y++)
-					for(p1.Z = p.Z-1; p1.Z <= p.Z+1; p1.Z++)
+					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
+					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
+					for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
 					{
-						if(p1 == p)
+						if(p1 == p0)
 							continue;
-						MapNode n = map->getNodeNoEx(p1);
-						content_t c = n.getContent();
+						content_t c;
+						if (block->isValidPosition(p1)) {
+							// if the neighbor is found on the same map block
+							// get it straight from there
+							const MapNode &n = block->getNodeUnsafe(p1);
+							c = n.getContent();
+						} else {
+							// otherwise consult the map
+							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
+							c = n.getContent();
+						}
 						std::set<content_t>::const_iterator k;
 						k = i->required_neighbors.find(c);
 						if(k != i->required_neighbors.end()){
