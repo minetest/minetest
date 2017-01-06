@@ -70,9 +70,9 @@ local function get_formspec(tabview, name, tabdata)
 				end
 			end
 		end
-		retval = retval .. render_favorite(menudata.favorites[1], (#favs > 0))
+		retval = retval .. render_serverlist_row(menudata.favorites[1], (#favs > 0))
 		for i = 2, #menudata.favorites do
-			retval = retval .. "," .. render_favorite(menudata.favorites[i], (i <= #favs))
+			retval = retval .. "," .. render_serverlist_row(menudata.favorites[i], (i <= #favs))
 		end
 	end
 
