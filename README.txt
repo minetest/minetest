@@ -178,7 +178,7 @@ ENABLE_FREETYPE     - Build with FreeType2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
 ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend
-ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater required)
+ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
