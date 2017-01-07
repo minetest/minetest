@@ -653,7 +653,7 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const static float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
+	const float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit")) * BS;
 	return (p.X < -map_gen_limit_bs
 		|| p.X > map_gen_limit_bs
@@ -676,7 +676,7 @@ inline bool objectpos_over_limit(v3f p)
 */
 inline bool blockpos_over_limit(v3s16 p)
 {
-	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit"));
 	return (p.X * MAP_BLOCKSIZE < -map_gen_limit 
 		|| (p.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit

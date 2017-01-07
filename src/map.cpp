@@ -2078,7 +2078,7 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 		Block minimum nodepos = blockpos * mapblocksize.
 		Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
 	*/
-	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit"));
 	if (p2d.X * MAP_BLOCKSIZE < -map_gen_limit
 			|| (p2d.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
