@@ -147,8 +147,6 @@ void TestUtilities::testIsYes()
 	UASSERT(is_yes("0") == false);
 	UASSERT(is_yes("1") == true);
 	UASSERT(is_yes("2") == true);
-	UASSERT(is_yes("on") == true);
-	UASSERT(is_yes("off") == false);
 }
 
 
