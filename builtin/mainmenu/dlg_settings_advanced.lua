@@ -544,7 +544,7 @@ end
 
 local function create_settings_formspec(tabview, name, tabdata)
 	local formspec = "size[12,6.5;true]" ..
-			"tablecolumns[color;tree;text;text]" ..
+			"tablecolumns[color;tree;text,width=32;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
 			"table[0,0;12,5.5;list_settings;"
 
