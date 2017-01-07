@@ -126,14 +126,14 @@ void Database_PostgreSQL::initStatements()
 			"posZ = $3::int4");
 
 	if (m_pgversion < 90500) {
-		prepareStatement("write_block1",
+		prepareStatement("write_block_insert",
 			"INSERT INTO blocks (posX, posY, posZ, data) SELECT "
 			"$1::int4, $2::int4, $3::int4, $4::bytea "
 			"WHERE NOT EXISTS (SELECT true FROM blocks "
 			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
 			"posZ = $3::int4)");
 
-		prepareStatement("write_block2",
+		prepareStatement("write_block_update",
 			"UPDATE blocks SET data = $4::bytea "
 			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
 			"posZ = $3::int4");
@@ -233,8 +233,8 @@ bool Database_PostgreSQL::saveBlock(const v3s16 &pos,
 	const int argFmt[] = { 1, 1, 1, 1 };
 
 	if (m_pgversion < 90500) {
-		execPrepared("write_block1", ARRLEN(args), args, argLen, argFmt);
-		execPrepared("write_block2", ARRLEN(args), args, argLen, argFmt);
+		execPrepared("write_block_update", ARRLEN(args), args, argLen, argFmt);
+		execPrepared("write_block_insert", ARRLEN(args), args, argLen, argFmt);
 	} else {
 		execPrepared("write_block", ARRLEN(args), args, argLen, argFmt);
 	}
