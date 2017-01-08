@@ -451,7 +451,7 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	// content
 	const char *name = luaL_checkstring(L, 2);
 	// staticdata
-	const char *staticdata = lua_isstring(L, 3) ? lua_tostring(L, 3) : "";
+	const char *staticdata = luaL_optstring(L, 3, "");
 	// Do it
 	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
