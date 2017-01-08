@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_ENV_H_
 
 #include "lua_api/l_base.h"
-#include "environment.h"
+#include "serverenvironment.h"
 
 class ModApiEnvMod : public ModApiBase {
 private:

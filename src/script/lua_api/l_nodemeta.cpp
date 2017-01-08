@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_inventory.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "map.h"
 #include "gamedef.h"
 #include "nodemetadata.h"

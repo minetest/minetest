@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "chat_interface.h"
 #include "clientiface.h"
 #include "remoteplayer.h"
