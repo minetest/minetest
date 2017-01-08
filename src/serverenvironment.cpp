@@ -770,65 +770,65 @@ public:
 
 		v3s16 p0;
 		for(p0.X=0; p0.X<MAP_BLOCKSIZE; p0.X++)
-			for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
-				for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+		for(p0.Y=0; p0.Y<MAP_BLOCKSIZE; p0.Y++)
+		for(p0.Z=0; p0.Z<MAP_BLOCKSIZE; p0.Z++)
+		{
+			const MapNode &n = block->getNodeUnsafe(p0);
+			content_t c = n.getContent();
+
+			if (c >= m_aabms.size() || !m_aabms[c])
+				continue;
+
+			v3s16 p = p0 + block->getPosRelative();
+			for(std::vector<ActiveABM>::iterator
+				i = m_aabms[c]->begin(); i != m_aabms[c]->end(); ++i) {
+				if(myrand() % i->chance != 0)
+					continue;
+
+				// Check neighbors
+				if(!i->required_neighbors.empty())
 				{
-					const MapNode &n = block->getNodeUnsafe(p0);
-					content_t c = n.getContent();
-
-					if (c >= m_aabms.size() || !m_aabms[c])
-						continue;
-
-					v3s16 p = p0 + block->getPosRelative();
-					for(std::vector<ActiveABM>::iterator
-						i = m_aabms[c]->begin(); i != m_aabms[c]->end(); ++i) {
-						if(myrand() % i->chance != 0)
+					v3s16 p1;
+					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
+					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
+					for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
+					{
+						if(p1 == p0)
 							continue;
-
-						// Check neighbors
-						if(!i->required_neighbors.empty())
-						{
-							v3s16 p1;
-							for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
-								for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
-									for(p1.Z = p0.Z-1; p1.Z <= p0.Z+1; p1.Z++)
-									{
-										if(p1 == p0)
-											continue;
-										content_t c;
-										if (block->isValidPosition(p1)) {
-											// if the neighbor is found on the same map block
-											// get it straight from there
-											const MapNode &n = block->getNodeUnsafe(p1);
-											c = n.getContent();
-										} else {
-											// otherwise consult the map
-											MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
-											c = n.getContent();
-										}
-										std::set<content_t>::const_iterator k;
-										k = i->required_neighbors.find(c);
-										if(k != i->required_neighbors.end()){
-											goto neighbor_found;
-										}
-									}
-							// No required neighbor found
-							continue;
+						content_t c;
+						if (block->isValidPosition(p1)) {
+							// if the neighbor is found on the same map block
+							// get it straight from there
+							const MapNode &n = block->getNodeUnsafe(p1);
+							c = n.getContent();
+						} else {
+							// otherwise consult the map
+							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
+							c = n.getContent();
 						}
-						neighbor_found:
-
-						// Call all the trigger variations
-						i->abm->trigger(m_env, p, n);
-						i->abm->trigger(m_env, p, n,
-							active_object_count, active_object_count_wider);
-
-						// Count surrounding objects again if the abms added any
-						if(m_env->m_added_objects > 0) {
-							active_object_count = countObjects(block, map, active_object_count_wider);
-							m_env->m_added_objects = 0;
+						std::set<content_t>::const_iterator k;
+						k = i->required_neighbors.find(c);
+						if(k != i->required_neighbors.end()){
+							goto neighbor_found;
 						}
 					}
+					// No required neighbor found
+					continue;
 				}
+				neighbor_found:
+
+				// Call all the trigger variations
+				i->abm->trigger(m_env, p, n);
+				i->abm->trigger(m_env, p, n,
+					active_object_count, active_object_count_wider);
+
+				// Count surrounding objects again if the abms added any
+				if(m_env->m_added_objects > 0) {
+					active_object_count = countObjects(block, map, active_object_count_wider);
+					m_env->m_added_objects = 0;
+				}
+			}
+		}
 	}
 };
 
