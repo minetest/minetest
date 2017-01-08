@@ -61,6 +61,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
+//for FORMSPEC_VERSION_STRING
+#include "network/networkprotocol.h"
 
 #include "sound.h"
 
@@ -921,24 +923,31 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 		JoystickController *joystick,
 		IFormSource *fs_src, TextDest *txt_dest, Client *client)
 {
-
-	if (*cur_formspec == 0) {
-		*cur_formspec = new GUIFormSpecMenu(device, joystick,
-			guiroot, -1, &g_menumgr, invmgr, gamedef, tsrc,
-			fs_src, txt_dest, client);
-		(*cur_formspec)->doPause = false;
-
-		/*
-			Caution: do not call (*cur_formspec)->drop() here --
-			the reference might outlive the menu, so we will
-			periodically check if *cur_formspec is the only
-			remaining reference (i.e. the menu was removed)
-			and delete it in that case.
-		*/
-
+	verbosestream << "Init GuiFormSpec:" << fs_src->getForm() << std::endl;
+	if (fs_src->getForm() == FORMSPEC_VERSION_STRING && *cur_formspec != 0) {
+		infostream << "Formspec QuitMenu" << std::endl;
+		(*cur_formspec)->quitMenu();
 	} else {
-		(*cur_formspec)->setFormSource(fs_src);
-		(*cur_formspec)->setTextDest(txt_dest);
+		if (*cur_formspec == 0) {
+			infostream << "GuiFormSpecMenu: creating new instance" << std::endl;
+			*cur_formspec = new GUIFormSpecMenu(device, joystick,
+				guiroot, -1, &g_menumgr, invmgr, gamedef, tsrc,
+				fs_src, txt_dest, client);
+			(*cur_formspec)->doPause = false;
+
+			/*
+				Caution: do not call (*cur_formspec)->drop() here --
+				the reference might outlive the menu, so we will
+				periodically check if *cur_formspec is the only
+				remaining reference (i.e. the menu was removed)
+				and delete it in that case.
+			*/
+
+		} else {
+			infostream << "GuiFormSpecMenu: updating existing instance" << std::endl;
+			(*cur_formspec)->setFormSource(fs_src);
+			(*cur_formspec)->setTextDest(txt_dest);
+		}
 	}
 
 }
