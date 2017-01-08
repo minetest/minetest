@@ -508,6 +508,7 @@ set(client_SRCS
 	${client_irrlicht_changes_SRCS}
 	camera.cpp
 	client.cpp
+	clientenvironment.cpp
 	clientmap.cpp
 	clientmedia.cpp
 	clientobject.cpp

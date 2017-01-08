@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_HEADER
 
 #include "network/connection.h"
-#include "environment.h"
+#include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
 #include "threading/mutex.h"
 #include <ostream>
