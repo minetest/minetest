@@ -749,7 +749,10 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	if(debugprint)
 		std::cerr<<"Result: "<<ret<<" sunlight_seen_count="
 				<<sunlight_seen_count<<std::endl;
-	*sunlight_seen_result = (sunlight_seen_count > 0);
+	// Don't darken sky when above water_level
+	const s16 water_level = g_settings->getS16("water_level");
+	s16 cam_pos_y = m_camera_position.Y / BS;
+	*sunlight_seen_result = sunlight_seen_count > 0 || cam_pos_y > water_level;
 	return ret;
 }
 
