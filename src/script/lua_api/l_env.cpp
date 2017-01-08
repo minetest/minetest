@@ -440,7 +440,7 @@ int ModApiEnvMod::l_get_node_timer(lua_State *L)
 	return 1;
 }
 
-// add_entity(pos, entityname) -> ObjectRef or nil
+// add_entity(pos, entityname, [staticdata]) -> ObjectRef or nil
 // pos = {x=num, y=num, z=num}
 int ModApiEnvMod::l_add_entity(lua_State *L)
 {
@@ -450,8 +450,10 @@ int ModApiEnvMod::l_add_entity(lua_State *L)
 	v3f pos = checkFloatPos(L, 1);
 	// content
 	const char *name = luaL_checkstring(L, 2);
+	// staticdata
+	const char *staticdata = luaL_optstring(L, 3, "");
 	// Do it
-	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, "");
+	ServerActiveObject *obj = new LuaEntitySAO(env, pos, name, staticdata);
 	int objectid = env->addActiveObject(obj);
 	// If failed to add, return nothing (reads as nil)
 	if(objectid == 0)
