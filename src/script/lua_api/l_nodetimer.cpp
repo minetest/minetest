@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_internal.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "map.h"
 
 

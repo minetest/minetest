@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "mapblock.h"
 #include "network/connection.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
 #include "content_sao.h"              // TODO this is used for cleanup of only

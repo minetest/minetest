@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "clientenvironment.h"
+#include "serverenvironment.h"
 #include "serverobject.h"
 #include "profiler.h"
 

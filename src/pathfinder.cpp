@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 
 #include "pathfinder.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "gamedef.h"
 #include "nodedef.h"
 #include "map.h"

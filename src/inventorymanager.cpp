@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "inventorymanager.h"
 #include "log.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "scripting_game.h"
 #include "serverobject.h"
 #include "settings.h"

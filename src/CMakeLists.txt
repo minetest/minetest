@@ -452,6 +452,7 @@ set(common_SRCS
 	rollback_interface.cpp
 	serialization.cpp
 	server.cpp
+	serverenvironment.cpp
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
