@@ -170,7 +170,7 @@ public:
 
 	void step (float dtime);
 
-	void handleParticleEvent(ClientEvent *event,IGameDef *gamedef,
+	void handleParticleEvent(ClientEvent *event, Client *client,
 			scene::ISceneManager* smgr, LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,

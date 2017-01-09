@@ -18,11 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
-#include "constants.h"
-#include "debug.h"
-#include "settings.h"
-#include "client/tile.h"
-#include "gamedef.h"
+#include "client.h"
 #include "collision.h"
 #include <stdlib.h>
 #include "util/numeric.h"
@@ -452,7 +448,7 @@ void ParticleManager::clearAll ()
 	}
 }
 
-void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
+void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 		scene::ISceneManager* smgr, LocalPlayer *player)
 {
 	switch (event->type) {
@@ -477,9 +473,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 			}
 
 			video::ITexture *texture =
-				gamedef->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
+				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
-			ParticleSpawner* toadd = new ParticleSpawner(gamedef, smgr, player,
+			ParticleSpawner* toadd = new ParticleSpawner(client, smgr, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
 					*event->add_particlespawner.minpos,
@@ -520,9 +516,9 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, IGameDef *gamedef,
 		}
 		case CE_SPAWN_PARTICLE: {
 			video::ITexture *texture =
-				gamedef->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
+				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
-			Particle* toadd = new Particle(gamedef, smgr, player, m_env,
+			Particle* toadd = new Particle(client, smgr, player, m_env,
 					*event->spawn_particle.pos,
 					*event->spawn_particle.vel,
 					*event->spawn_particle.acc,

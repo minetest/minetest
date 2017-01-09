@@ -89,13 +89,13 @@ private:
 //// EmergeManager
 ////
 
-EmergeManager::EmergeManager(IGameDef *gamedef)
+EmergeManager::EmergeManager(Server *server)
 {
-	this->ndef      = gamedef->getNodeDefManager();
-	this->biomemgr  = new BiomeManager(gamedef);
-	this->oremgr    = new OreManager(gamedef);
-	this->decomgr   = new DecorationManager(gamedef);
-	this->schemmgr  = new SchematicManager(gamedef);
+	this->ndef      = server->getNodeDefManager();
+	this->biomemgr  = new BiomeManager(server);
+	this->oremgr    = new OreManager(server);
+	this->decomgr   = new DecorationManager(server);
+	this->schemmgr  = new SchematicManager(server);
 	this->gen_notify_on = 0;
 
 	// Note that accesses to this variable are not synchronized.
@@ -128,7 +128,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef)
 		m_qlimit_generate = 1;
 
 	for (s16 i = 0; i < nthreads; i++)
-		m_threads.push_back(new EmergeThread((Server *)gamedef, i));
+		m_threads.push_back(new EmergeThread(server, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }

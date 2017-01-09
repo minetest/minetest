@@ -221,7 +221,7 @@ Client::Client(
 	m_event(event),
 	m_mesh_update_thread(),
 	m_env(
-		new ClientMap(this, this, control,
+		new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 		device->getSceneManager(),

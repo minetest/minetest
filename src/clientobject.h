@@ -25,20 +25,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include "util/cpp11_container.h"
 
-/*
-
-Some planning
--------------
-
-* Client receives a network packet with information of added objects
-  in it
-* Client supplies the information to its ClientEnvironment
-* The environment adds the specified objects to itself
-
-*/
-
 class ClientEnvironment;
 class ITextureSource;
+class Client;
 class IGameDef;
 class LocalPlayer;
 struct ItemStack;
@@ -47,7 +36,7 @@ class WieldMeshSceneNode;
 class ClientActiveObject : public ActiveObject
 {
 public:
-	ClientActiveObject(u16 id, IGameDef *gamedef, ClientEnvironment *env);
+	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
 	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -89,7 +78,7 @@ public:
 	virtual void initialize(const std::string &data){}
 
 	// Create a certain type of ClientActiveObject
-	static ClientActiveObject* create(ActiveObjectType type, IGameDef *gamedef,
+	static ClientActiveObject* create(ActiveObjectType type, Client *client,
 			ClientEnvironment *env);
 
 	// If returns true, punch will not be sent to the server
@@ -99,9 +88,9 @@ public:
 
 protected:
 	// Used for creating objects based on type
-	typedef ClientActiveObject* (*Factory)(IGameDef *gamedef, ClientEnvironment *env);
+	typedef ClientActiveObject* (*Factory)(Client *client, ClientEnvironment *env);
 	static void registerType(u16 type, Factory f);
-	IGameDef *m_gamedef;
+	Client *m_client;
 	ClientEnvironment *m_env;
 private:
 	// Used for creating objects based on type

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 struct ItemStack;
-class IGameDef;
+class Client;
 class ITextureSource;
 struct TileSpec;
 
@@ -42,7 +42,7 @@ public:
 			v3f wield_scale, ITextureSource *tsrc);
 	void setExtruded(const std::string &imagename,
 			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
-	void setItem(const ItemStack &item, IGameDef *gamedef);
+	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false
@@ -77,7 +77,7 @@ private:
 	aabb3f m_bounding_box;
 };
 
-scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item);
+scene::IMesh *getItemMesh(Client *client, const ItemStack &item);
 
 scene::IMesh *getExtrudedMesh(ITextureSource *tsrc,
 		const std::string &imagename);

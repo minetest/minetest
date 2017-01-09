@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "noise.h"
 
+class Server;
 class Settings;
 class BiomeManager;
 
@@ -186,7 +187,7 @@ private:
 
 class BiomeManager : public ObjDefManager {
 public:
-	BiomeManager(IGameDef *gamedef);
+	BiomeManager(Server *server);
 	virtual ~BiomeManager();
 
 	const char *getObjectTitle() const
@@ -223,7 +224,7 @@ public:
 	virtual void clear();
 
 private:
-	IGameDef *m_gamedef;
+	Server *m_server;
 
 };
 

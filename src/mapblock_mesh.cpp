@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "profiler.h"
 #include "nodedef.h"
-#include "gamedef.h"
 #include "mesh.h"
 #include "minimap.h"
 #include "content_mapblock.h"
@@ -43,14 +42,14 @@ static void applyFacesShading(video::SColor &color, const float factor)
 	MeshMakeData
 */
 
-MeshMakeData::MeshMakeData(IGameDef *gamedef, bool use_shaders,
+MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
 		bool use_tangent_vertices):
 	m_vmanip(),
 	m_blockpos(-1337,-1337,-1337),
 	m_crack_pos_relative(-1337, -1337, -1337),
 	m_smooth_lighting(false),
 	m_show_hud(false),
-	m_gamedef(gamedef),
+	m_client(client),
 	m_use_shaders(use_shaders),
 	m_use_tangent_vertices(use_tangent_vertices)
 {}
@@ -233,7 +232,7 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 		v3s16(1,1,1),
 	};
 
-	INodeDefManager *ndef = data->m_gamedef->ndef();
+	INodeDefManager *ndef = data->m_client->ndef();
 
 	u16 ambient_occlusion = 0;
 	u16 light_count = 0;
@@ -664,7 +663,7 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 */
 TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
+	INodeDefManager *ndef = data->m_client->ndef();
 	TileSpec spec = ndef->get(mn).tiles[tileindex];
 	// Apply temporary crack
 	if (p == data->m_crack_pos_relative)
@@ -677,7 +676,7 @@ TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 */
 TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 {
-	INodeDefManager *ndef = data->m_gamedef->ndef();
+	INodeDefManager *ndef = data->m_client->ndef();
 
 	// Direction must be (1,0,0), (-1,0,0), (0,1,0), (0,-1,0),
 	// (0,0,1), (0,0,-1) or (0,0,0)
@@ -734,7 +733,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 	u16 tile_index=facedir*16 + dir_i;
 	TileSpec spec = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
 	spec.rotation=dir_to_tile[tile_index + 1];
-	spec.texture = data->m_gamedef->tsrc()->getTexture(spec.texture_id);
+	spec.texture = data->m_client->tsrc()->getTexture(spec.texture_id);
 	return spec;
 }
 
@@ -753,7 +752,7 @@ static void getTileInfo(
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
-	INodeDefManager *ndef = data->m_gamedef->ndef();
+	INodeDefManager *ndef = data->m_client->ndef();
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
 	MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
@@ -1020,10 +1019,10 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_mesh(new scene::SMesh()),
 	m_minimap_mapblock(NULL),
-	m_gamedef(data->m_gamedef),
-	m_driver(m_gamedef->tsrc()->getDevice()->getVideoDriver()),
-	m_tsrc(m_gamedef->getTextureSource()),
-	m_shdrsrc(m_gamedef->getShaderSource()),
+	m_client(data->m_client),
+	m_driver(m_client->tsrc()->getDevice()->getVideoDriver()),
+	m_tsrc(m_client->getTextureSource()),
+	m_shdrsrc(m_client->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
 	m_last_crack(-1),
 	m_crack_materials(),
@@ -1243,7 +1242,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 	if (m_use_tangent_vertices) {
 		scene::IMeshManipulator* meshmanip =
-			m_gamedef->getSceneManager()->getMeshManipulator();
+			m_client->getSceneManager()->getMeshManipulator();
 		meshmanip->recalculateTangents(m_mesh, true, false, false);
 	}
 

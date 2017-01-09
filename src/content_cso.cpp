@@ -21,19 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IBillboardSceneNode.h>
 #include "client/tile.h"
 #include "clientenvironment.h"
-#include "gamedef.h"
+#include "client.h"
 #include "map.h"
-
-/*
-static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
-		float txs, float tys, int col, int row)
-{
-	video::SMaterial& material = bill->getMaterial(0);
-	core::matrix4& matrix = material.getTextureMatrix(0);
-	matrix.setTextureTranslate(txs*col, tys*row);
-	matrix.setTextureScale(txs, tys);
-}
-*/
 
 class SmokePuffCSO: public ClientSimpleObject
 {

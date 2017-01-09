@@ -34,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/enriched_string.h"
 
-class IGameDef;
 class InventoryManager;
 class ISimpleTextureSource;
 class Client;
@@ -289,12 +288,10 @@ public:
 			JoystickController *joystick,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
-			InventoryManager *invmgr,
-			IGameDef *gamedef,
+			Client *client,
 			ISimpleTextureSource *tsrc,
 			IFormSource* fs_src,
 			TextDest* txt_dst,
-			Client* client,
 			bool remap_dbl_click = true);
 
 	~GUIFormSpecMenu();
@@ -384,7 +381,6 @@ protected:
 
 	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
-	IGameDef *m_gamedef;
 	ISimpleTextureSource *m_tsrc;
 	Client *m_client;
 

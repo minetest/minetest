@@ -22,10 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "settings.h"
 #include "util/numeric.h"
-#include "util/string.h"
 #include "log.h"
-#include "gamedef.h"
-#include "itemdef.h"
+#include "client.h"
 #include "inventory.h"
 #include "client/tile.h"
 #include "localplayer.h"
@@ -41,13 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
+		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
 	this->driver      = driver;
 	this->smgr        = smgr;
 	this->guienv      = guienv;
-	this->gamedef     = gamedef;
+	this->client      = client;
 	this->player      = player;
 	this->inventory   = inventory;
 
@@ -61,7 +59,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	for (unsigned int i = 0; i < 4; i++)
 		hbar_colors[i] = video::SColor(255, 255, 255, 255);
 
-	tsrc = gamedef->getTextureSource();
+	tsrc = client->getTextureSource();
 
 	v3f crosshair_color = g_settings->getV3F("crosshair_color");
 	u32 cross_r = rangelim(myround(crosshair_color.X), 0, 255);
@@ -92,7 +90,7 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
-		IShaderSource *shdrsrc = gamedef->getShaderSource();
+		IShaderSource *shdrsrc = client->getShaderSource();
 		u16 shader_id = shdrsrc->getShader(
 			mode == "halo" ? "selection_shader" : "default_shader", 1, 1);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
@@ -193,7 +191,7 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		if (!use_hotbar_image)
 			driver->draw2DRectangle(bgcolor2, rect, NULL);
 		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
-			gamedef, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
+			client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 	}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
@@ -629,7 +627,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef,
+		Client *client,
 		ItemRotationKind rotation_kind)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
@@ -643,8 +641,8 @@ void drawItemStack(video::IVideoDriver *driver,
 		return;
 	}
 
-	const ItemDefinition &def = item.getDefinition(gamedef->idef());
-	scene::IMesh* mesh = gamedef->idef()->getWieldMesh(def.name, gamedef);
+	const ItemDefinition &def = item.getDefinition(client->idef());
+	scene::IMesh* mesh = client->idef()->getWieldMesh(def.name, client);
 
 	if (mesh) {
 		driver->clearZBuffer();

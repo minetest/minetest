@@ -81,13 +81,12 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		JoystickController *joystick,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
-		InventoryManager *invmgr, IGameDef *gamedef,
+		Client *client,
 		ISimpleTextureSource *tsrc, IFormSource* fsrc, TextDest* tdst,
-		Client* client, bool remap_dbl_click) :
+		bool remap_dbl_click) :
 	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
 	m_device(dev),
-	m_invmgr(invmgr),
-	m_gamedef(gamedef),
+	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_client(client),
 	m_selected_item(NULL),
@@ -307,8 +306,8 @@ void GUIFormSpecMenu::parseContainerEnd(parserData* data)
 
 void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 {
-	if (m_gamedef == 0) {
-		warningstream<<"invalid use of 'list' with m_gamedef==0"<<std::endl;
+	if (m_client == 0) {
+		warningstream<<"invalid use of 'list' with m_client==0"<<std::endl;
 		return;
 	}
 
@@ -362,8 +361,8 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 
 void GUIFormSpecMenu::parseListRing(parserData* data, std::string element)
 {
-	if (m_gamedef == 0) {
-		errorstream << "WARNING: invalid use of 'listring' with m_gamedef==0" << std::endl;
+	if (m_client == 0) {
+		errorstream << "WARNING: invalid use of 'listring' with m_client==0" << std::endl;
 		return;
 	}
 
@@ -1486,8 +1485,8 @@ void GUIFormSpecMenu::parseTabHeader(parserData* data,std::string element)
 void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 {
 
-	if (m_gamedef == 0) {
-		warningstream << "invalid use of item_image_button with m_gamedef==0"
+	if (m_client == 0) {
+		warningstream << "invalid use of item_image_button with m_client==0"
 			<< std::endl;
 		return;
 	}
@@ -1521,7 +1520,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 		if(!data->explicit_size)
 			warningstream<<"invalid use of item_image_button without a size[] element"<<std::endl;
 
-		IItemDefManager *idef = m_gamedef->idef();
+		IItemDefManager *idef = m_client->idef();
 		ItemStack item;
 		item.deSerialize(item_name, idef);
 
@@ -2297,14 +2296,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			if(!item.empty())
 			{
 				drawItemStack(driver, m_font, item,
-					rect, &AbsoluteClippingRect, m_gamedef,
+					rect, &AbsoluteClippingRect, m_client,
 					rotation_kind);
 			}
 
 			// Draw tooltip
 			std::wstring tooltip_text = L"";
 			if (hovering && !m_selected_item) {
-				tooltip_text = utf8_to_wide(item.getDefinition(m_gamedef->idef()).description);
+				tooltip_text = utf8_to_wide(item.getDefinition(m_client->idef()).description);
 			}
 			if (tooltip_text != L"") {
 				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');
@@ -2349,7 +2348,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	if (!m_selected_item) {
 		drawItemStack(driver, m_font, ItemStack(),
 			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
-			NULL, m_gamedef, IT_ROT_DRAGGED);
+			NULL, m_client, IT_ROT_DRAGGED);
 		return;
 	}
 
@@ -2363,7 +2362,7 @@ void GUIFormSpecMenu::drawSelectedItem()
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 	core::rect<s32> rect = imgrect + (m_pointer - imgrect.getCenter());
 	rect.constrainTo(driver->getViewPort());
-	drawItemStack(driver, m_font, stack, rect, NULL, m_gamedef, IT_ROT_DRAGGED);
+	drawItemStack(driver, m_font, stack, rect, NULL, m_client, IT_ROT_DRAGGED);
 }
 
 void GUIFormSpecMenu::drawMenu()
@@ -2488,11 +2487,11 @@ void GUIFormSpecMenu::drawMenu()
 	*/
 	for(u32 i=0; i<m_itemimages.size(); i++)
 	{
-		if (m_gamedef == 0)
+		if (m_client == 0)
 			break;
 
 		const ImageDrawSpec &spec = m_itemimages[i];
-		IItemDefManager *idef = m_gamedef->idef();
+		IItemDefManager *idef = m_client->idef();
 		ItemStack item;
 		item.deSerialize(spec.item_name, idef);
 		core::rect<s32> imgrect(0, 0, spec.geom.X, spec.geom.Y);
@@ -2509,7 +2508,7 @@ void GUIFormSpecMenu::drawMenu()
 #endif
 		}
 		drawItemStack(driver, m_font, item, rect, &AbsoluteClippingRect,
-				m_gamedef, IT_ROT_NONE);
+				m_client, IT_ROT_NONE);
 	}
 
 	/*
@@ -2527,7 +2526,7 @@ void GUIFormSpecMenu::drawMenu()
 	if (!item_hovered) {
 		drawItemStack(driver, m_font, ItemStack(),
 			core::rect<s32>(v2s32(0, 0), v2s32(0, 0)),
-			NULL, m_gamedef, IT_ROT_HOVERED);
+			NULL, m_client, IT_ROT_HOVERED);
 	}
 
 /* TODO find way to show tooltips on touchscreen */
@@ -3470,7 +3469,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 			// Check how many items can be moved
 			move_amount = stack_from.count = MYMIN(move_amount, stack_from.count);
-			ItemStack leftover = stack_to.addItem(stack_from, m_gamedef->idef());
+			ItemStack leftover = stack_to.addItem(stack_from, m_client->idef());
 			// If source stack cannot be added to destination stack at all,
 			// they are swapped
 			if ((leftover.count == stack_from.count) &&

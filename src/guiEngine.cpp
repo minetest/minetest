@@ -194,11 +194,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			-1,
 			m_menumanager,
 			NULL /* &client */,
-			NULL /* gamedef */,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
-			NULL,
 			false);
 
 	m_menu->allowClose(false);

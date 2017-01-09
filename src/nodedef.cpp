@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "client/tile.h"
 #include "mesh.h"
+#include "client.h"
 #include <IMeshManipulator.h>
 #endif
 #include "log.h"
@@ -572,8 +573,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 
 #ifndef SERVER
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
-	scene::ISceneManager *smgr, scene::IMeshManipulator *meshmanip,
-	IGameDef *gamedef, const TextureSettings &tsettings)
+	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings)
 {
 	// minimap pixel color - the average color of a texture
 	if (tsettings.enable_minimap && tiledef[0].name != "")
@@ -709,7 +709,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	if ((drawtype == NDT_MESH) && (mesh != "")) {
 		// Meshnode drawtype
 		// Read the mesh and apply scale
-		mesh_ptr[0] = gamedef->getMesh(mesh);
+		mesh_ptr[0] = client->getMesh(mesh);
 		if (mesh_ptr[0]){
 			v3f scale = v3f(1.0, 1.0, 1.0) * BS * visual_scale;
 			scaleMesh(mesh_ptr[0], scale);
@@ -1316,9 +1316,11 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 #ifndef SERVER
 	infostream << "CNodeDefManager::updateTextures(): Updating "
 		"textures in node definitions" << std::endl;
-	ITextureSource *tsrc = gamedef->tsrc();
-	IShaderSource *shdsrc = gamedef->getShaderSource();
-	scene::ISceneManager* smgr = gamedef->getSceneManager();
+
+	Client *client = (Client *)gamedef;
+	ITextureSource *tsrc = client->tsrc();
+	IShaderSource *shdsrc = client->getShaderSource();
+	scene::ISceneManager* smgr = client->getSceneManager();
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 	TextureSettings tsettings;
 	tsettings.readSettings();
@@ -1326,7 +1328,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	u32 size = m_content_features.size();
 
 	for (u32 i = 0; i < size; i++) {
-		m_content_features[i].updateTextures(tsrc, shdsrc, smgr, meshmanip, gamedef, tsettings);
+		m_content_features[i].updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
 		progress_callback(progress_callback_args, i, size);
 	}
 #endif

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 
 class Camera;
+class Client;
 struct Nametag;
 
 /*
@@ -68,7 +69,7 @@ private:
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
-	IGameDef *m_gamedef;
+	Client *m_client;
 	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
@@ -109,13 +110,13 @@ private:
 	std::vector<u16> m_children;
 
 public:
-	GenericCAO(IGameDef *gamedef, ClientEnvironment *env);
+	GenericCAO(Client *client, ClientEnvironment *env);
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)
+	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
 	{
-		return new GenericCAO(gamedef, env);
+		return new GenericCAO(client, env);
 	}
 
 	inline ActiveObjectType getType() const

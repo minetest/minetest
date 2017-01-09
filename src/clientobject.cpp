@@ -20,16 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "debug.h"
 #include "porting.h"
-#include "constants.h"
 
 /*
 	ClientActiveObject
 */
 
-ClientActiveObject::ClientActiveObject(u16 id, IGameDef *gamedef,
+ClientActiveObject::ClientActiveObject(u16 id, Client *client,
 		ClientEnvironment *env):
 	ActiveObject(id),
-	m_gamedef(gamedef),
+	m_client(client),
 	m_env(env)
 {
 }
@@ -40,7 +39,7 @@ ClientActiveObject::~ClientActiveObject()
 }
 
 ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
-		IGameDef *gamedef, ClientEnvironment *env)
+		Client *client, ClientEnvironment *env)
 {
 	// Find factory function
 	UNORDERED_MAP<u16, Factory>::iterator n = m_types.find(type);
@@ -52,7 +51,7 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 	}
 
 	Factory f = n->second;
-	ClientActiveObject *object = (*f)(gamedef, env);
+	ClientActiveObject *object = (*f)(client, env);
 	return object;
 }
 

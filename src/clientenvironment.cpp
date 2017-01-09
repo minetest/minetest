@@ -34,13 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-	ITextureSource *texturesource, IGameDef *gamedef,
+	ITextureSource *texturesource, Client *client,
 	IrrlichtDevice *irr):
 	m_map(map),
 	m_local_player(NULL),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
-	m_gamedef(gamedef),
+	m_client(client),
 	m_irr(irr)
 {
 	char zero = 0;
@@ -94,7 +94,7 @@ void ClientEnvironment::step(float dtime)
 	stepTimeOfDay(dtime);
 
 	// Get some settings
-	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
+	bool fly_allowed = m_client->checkLocalPrivilege("fly");
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 
 	// Get local player
@@ -223,7 +223,7 @@ void ClientEnvironment::step(float dtime)
 		f32 post_factor = 1; // 1 hp per node/s
 		if(info.type == COLLISION_NODE)
 		{
-			const ContentFeatures &f = m_gamedef->ndef()->
+			const ContentFeatures &f = m_client->ndef()->
 				get(m_map->getNodeNoEx(info.node_p));
 			// Determine fall damage multiplier
 			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
@@ -237,7 +237,7 @@ void ClientEnvironment::step(float dtime)
 			if(damage != 0){
 				damageLocalPlayer(damage, true);
 				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			}
 		}
 	}
@@ -259,11 +259,11 @@ void ClientEnvironment::step(float dtime)
 
 		u32 damage_per_second = 0;
 		damage_per_second = MYMAX(damage_per_second,
-			m_gamedef->ndef()->get(n1).damage_per_second);
+			m_client->ndef()->get(n1).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-			m_gamedef->ndef()->get(n2).damage_per_second);
+			m_client->ndef()->get(n2).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-			m_gamedef->ndef()->get(n3).damage_per_second);
+			m_client->ndef()->get(n3).damage_per_second);
 
 		if(damage_per_second != 0)
 		{
@@ -272,7 +272,7 @@ void ClientEnvironment::step(float dtime)
 	}
 
 	// Protocol v29 make this behaviour obsolete
-	if (((Client*) getGameDef())->getProtoVersion() < 29) {
+	if (getGameDef()->getProtoVersion() < 29) {
 		/*
 			Drowning
 		*/
@@ -282,7 +282,7 @@ void ClientEnvironment::step(float dtime)
 			// head
 			v3s16 p = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
 			MapNode n = m_map->getNodeNoEx(p);
-			ContentFeatures c = m_gamedef->ndef()->get(n);
+			ContentFeatures c = m_client->ndef()->get(n);
 			u8 drowning_damage = c.drowning;
 			if (drowning_damage > 0 && lplayer->hp > 0) {
 				u16 breath = lplayer->getBreath();
@@ -306,7 +306,7 @@ void ClientEnvironment::step(float dtime)
 			// head
 			v3s16 p = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
 			MapNode n = m_map->getNodeNoEx(p);
-			ContentFeatures c = m_gamedef->ndef()->get(n);
+			ContentFeatures c = m_client->ndef()->get(n);
 			if (!lplayer->hp) {
 				lplayer->setBreath(11);
 			} else if (c.drowning == 0) {
@@ -332,7 +332,7 @@ void ClientEnvironment::step(float dtime)
 		v3s16 p = lplayer->getLightPosition();
 		node_at_lplayer = m_map->getNodeNoEx(p);
 
-		u16 light = getInteriorLight(node_at_lplayer, 0, m_gamedef->ndef());
+		u16 light = getInteriorLight(node_at_lplayer, 0, m_client->ndef());
 		u8 day = light & 0xff;
 		u8 night = (light >> 8) & 0xff;
 		finalColorBlend(lplayer->light_color, day, night, day_night_ratio);
@@ -360,7 +360,7 @@ void ClientEnvironment::step(float dtime)
 			v3s16 p = obj->getLightPosition();
 			MapNode n = m_map->getNodeNoEx(p, &pos_ok);
 			if (pos_ok)
-				light = n.getLightBlend(day_night_ratio, m_gamedef->ndef());
+				light = n.getLightBlend(day_night_ratio, m_client->ndef());
 			else
 				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
@@ -467,7 +467,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 		v3s16 p = object->getLightPosition();
 		MapNode n = m_map->getNodeNoEx(p, &pos_ok);
 		if (pos_ok)
-			light = n.getLightBlend(getDayNightRatio(), m_gamedef->ndef());
+			light = n.getLightBlend(getDayNightRatio(), m_client->ndef());
 		else
 			light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
 
@@ -480,7 +480,7 @@ void ClientEnvironment::addActiveObject(u16 id, u8 type,
 	const std::string &init_data)
 {
 	ClientActiveObject* obj =
-		ClientActiveObject::create((ActiveObjectType) type, m_gamedef, this);
+		ClientActiveObject::create((ActiveObjectType) type, m_client, this);
 	if(obj == NULL)
 	{
 		infostream<<"ClientEnvironment::addActiveObject(): "

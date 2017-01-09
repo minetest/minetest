@@ -30,6 +30,7 @@ class ClientMap;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
+struct PointedThing;
 
 /*
 	The client-side environment.
@@ -66,15 +67,14 @@ class ClientEnvironment : public Environment
 {
 public:
 	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, IGameDef *gamedef,
+		ITextureSource *texturesource, Client *client,
 		IrrlichtDevice *device);
 	~ClientEnvironment();
 
 	Map & getMap();
 	ClientMap & getClientMap();
 
-	IGameDef *getGameDef()
-	{ return m_gamedef; }
+	Client *getGameDef() { return m_client; }
 
 	void step(f32 dtime);
 
@@ -175,7 +175,7 @@ private:
 	LocalPlayer *m_local_player;
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
-	IGameDef *m_gamedef;
+	Client *m_client;
 	IrrlichtDevice *m_irr;
 	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;

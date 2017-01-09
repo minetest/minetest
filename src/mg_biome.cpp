@@ -20,10 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_biome.h"
 #include "mg_decoration.h"
 #include "emerge.h"
-#include "gamedef.h"
+#include "server.h"
 #include "nodedef.h"
 #include "map.h" //for MMVManip
-#include "log.h"
 #include "util/numeric.h"
 #include "util/mathconstants.h"
 #include "porting.h"
@@ -33,10 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ///////////////////////////////////////////////////////////////////////////////
 
 
-BiomeManager::BiomeManager(IGameDef *gamedef) :
-	ObjDefManager(gamedef, OBJDEF_BIOME)
+BiomeManager::BiomeManager(Server *server) :
+	ObjDefManager(server, OBJDEF_BIOME)
 {
-	m_gamedef = gamedef;
+	m_server = server;
 
 	// Create default biome to be used in case none exist
 	Biome *b = new Biome;
@@ -73,7 +72,7 @@ BiomeManager::~BiomeManager()
 
 void BiomeManager::clear()
 {
-	EmergeManager *emerge = m_gamedef->getEmergeManager();
+	EmergeManager *emerge = m_server->getEmergeManager();
 
 	// Remove all dangling references in Decorations
 	DecorationManager *decomgr = emerge->decomgr;

@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "collision.h"
 #include "settings.h"
 #include "serialization.h" // For decompressZlib
-#include "gamedef.h"
 #include "clientobject.h"
 #include "mesh.h"
 #include "itemdef.h"
@@ -139,7 +138,7 @@ static void setBillboardTextureMatrix(scene::IBillboardSceneNode *bill,
 class TestCAO : public ClientActiveObject
 {
 public:
-	TestCAO(IGameDef *gamedef, ClientEnvironment *env);
+	TestCAO(Client *client, ClientEnvironment *env);
 	virtual ~TestCAO();
 
 	ActiveObjectType getType() const
@@ -147,7 +146,7 @@ public:
 		return ACTIVEOBJECT_TYPE_TEST;
 	}
 
-	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
@@ -169,8 +168,8 @@ private:
 // Prototype
 TestCAO proto_TestCAO(NULL, NULL);
 
-TestCAO::TestCAO(IGameDef *gamedef, ClientEnvironment *env):
-	ClientActiveObject(0, gamedef, env),
+TestCAO::TestCAO(Client *client, ClientEnvironment *env):
+	ClientActiveObject(0, client, env),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
@@ -181,9 +180,9 @@ TestCAO::~TestCAO()
 {
 }
 
-ClientActiveObject* TestCAO::create(IGameDef *gamedef, ClientEnvironment *env)
+ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 {
-	return new TestCAO(gamedef, env);
+	return new TestCAO(client, env);
 }
 
 void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -283,7 +282,7 @@ void TestCAO::processMessage(const std::string &data)
 class ItemCAO : public ClientActiveObject
 {
 public:
-	ItemCAO(IGameDef *gamedef, ClientEnvironment *env);
+	ItemCAO(Client *client, ClientEnvironment *env);
 	virtual ~ItemCAO();
 
 	ActiveObjectType getType() const
@@ -291,7 +290,7 @@ public:
 		return ACTIVEOBJECT_TYPE_ITEM;
 	}
 
-	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env);
+	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
 	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 			IrrlichtDevice *irr);
@@ -331,13 +330,13 @@ private:
 // Prototype
 ItemCAO proto_ItemCAO(NULL, NULL);
 
-ItemCAO::ItemCAO(IGameDef *gamedef, ClientEnvironment *env):
-	ClientActiveObject(0, gamedef, env),
+ItemCAO::ItemCAO(Client *client, ClientEnvironment *env):
+	ClientActiveObject(0, client, env),
 	m_selection_box(-BS/3.,0.0,-BS/3., BS/3.,BS*2./3.,BS/3.),
 	m_node(NULL),
 	m_position(v3f(0,10*BS,0))
 {
-	if(!gamedef && !env)
+	if(!client && !env)
 	{
 		ClientActiveObject::registerType(getType(), create);
 	}
@@ -347,9 +346,9 @@ ItemCAO::~ItemCAO()
 {
 }
 
-ClientActiveObject* ItemCAO::create(IGameDef *gamedef, ClientEnvironment *env)
+ClientActiveObject* ItemCAO::create(Client *client, ClientEnvironment *env)
 {
-	return new ItemCAO(gamedef, env);
+	return new ItemCAO(client, env);
 }
 
 void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
@@ -433,7 +432,7 @@ void ItemCAO::updateNodePos()
 void ItemCAO::updateInfoText()
 {
 	try{
-		IItemDefManager *idef = m_gamedef->idef();
+		IItemDefManager *idef = m_client->idef();
 		ItemStack item;
 		item.deSerialize(m_itemstring, idef);
 		if(item.isKnown(idef))
@@ -458,10 +457,10 @@ void ItemCAO::updateTexture()
 	std::istringstream is(m_itemstring, std::ios_base::binary);
 	video::ITexture *texture = NULL;
 	try{
-		IItemDefManager *idef = m_gamedef->idef();
+		IItemDefManager *idef = m_client->idef();
 		ItemStack item;
 		item.deSerialize(is, idef);
-		texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_gamedef);
+		texture = idef->getInventoryTexture(item.getDefinition(idef).name, m_client);
 	}
 	catch(SerializationError &e)
 	{
@@ -538,15 +537,15 @@ void ItemCAO::initialize(const std::string &data)
 
 #include "genericobject.h"
 
-GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
-		ClientActiveObject(0, gamedef, env),
+GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
+		ClientActiveObject(0, client, env),
 		//
 		m_is_player(false),
 		m_is_local_player(false),
 		//
 		m_smgr(NULL),
 		m_irr(NULL),
-		m_gamedef(NULL),
+		m_client(NULL),
 		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
 		m_meshnode(NULL),
 		m_animated_meshnode(NULL),
@@ -581,10 +580,10 @@ GenericCAO::GenericCAO(IGameDef *gamedef, ClientEnvironment *env):
 		m_last_light(255),
 		m_is_visible(false)
 {
-	if (gamedef == NULL) {
+	if (client == NULL) {
 		ClientActiveObject::registerType(getType(), create);
 	} else {
-		m_gamedef = gamedef;
+		m_client = client;
 	}
 }
 
@@ -793,7 +792,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 
 	if (m_nametag) {
-		m_gamedef->getCamera()->removeNametag(m_nametag);
+		m_client->getCamera()->removeNametag(m_nametag);
 		m_nametag = NULL;
 	}
 }
@@ -906,7 +905,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 	}
 	else if(m_prop.visual == "mesh") {
 		infostream<<"GenericCAO::addToScene(): mesh"<<std::endl;
-		scene::IAnimatedMesh *mesh = m_gamedef->getMesh(m_prop.mesh);
+		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh);
 		if(mesh)
 		{
 			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
@@ -937,12 +936,12 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
 		if(m_prop.textures.size() >= 1){
 			infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
-			IItemDefManager *idef = m_gamedef->idef();
+			IItemDefManager *idef = m_client->idef();
 			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
 
 			m_wield_meshnode = new WieldMeshSceneNode(
 					smgr->getRootSceneNode(), smgr, -1);
-			m_wield_meshnode->setItem(item, m_gamedef);
+			m_wield_meshnode->setItem(item, m_client);
 
 			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
 					m_prop.visual_size.Y/2,
@@ -959,7 +958,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 	scene::ISceneNode *node = getSceneNode();
 	if (node && m_prop.nametag != "" && !m_is_local_player) {
 		// Add nametag
-		m_nametag = m_gamedef->getCamera()->addNametag(node,
+		m_nametag = m_client->getCamera()->addNametag(node,
 			m_prop.nametag, m_prop.nametag_color);
 	}
 
@@ -1058,11 +1057,11 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// increase speed if using fast or flying fast
 			if((g_settings->getBool("fast_move") &&
-					m_gamedef->checkLocalPrivilege("fast")) &&
+					m_client->checkLocalPrivilege("fast")) &&
 					(controls.aux1 ||
 					(!player->touching_ground &&
 					g_settings->getBool("free_move") &&
-					m_gamedef->checkLocalPrivilege("fly"))))
+					m_client->checkLocalPrivilege("fly"))))
 					new_speed *= 1.5;
 			// slowdown speed if sneeking
 			if(controls.sneak && walking)
@@ -1129,7 +1128,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 
 		removeFromScene(false);
-		addToScene(m_smgr, m_gamedef->tsrc(), m_irr);
+		addToScene(m_smgr, m_client->tsrc(), m_irr);
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
@@ -1199,12 +1198,12 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_step_distance_counter = 0;
 			if(!m_is_local_player && m_prop.makes_footstep_sound)
 			{
-				INodeDefManager *ndef = m_gamedef->ndef();
+				INodeDefManager *ndef = m_client->ndef();
 				v3s16 p = floatToInt(getPosition() + v3f(0,
 						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
 				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
-				m_gamedef->sound()->playSoundAt(spec, false, getPosition());
+				m_client->sound()->playSoundAt(spec, false, getPosition());
 			}
 		}
 	}
@@ -1305,7 +1304,7 @@ void GenericCAO::updateTexturePos()
 
 void GenericCAO::updateTextures(const std::string &mod)
 {
-	ITextureSource *tsrc = m_gamedef->tsrc();
+	ITextureSource *tsrc = m_client->tsrc();
 
 	bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
 	bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
@@ -1778,7 +1777,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 {
 	assert(punchitem);	// pre-condition
 	const ToolCapabilities *toolcap =
-			&punchitem->getToolCapabilities(m_gamedef->idef());
+			&punchitem->getToolCapabilities(m_client->idef());
 	PunchDamageResult result = getPunchDamage(
 			m_armor_groups,
 			toolcap,

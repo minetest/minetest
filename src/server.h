@@ -283,13 +283,9 @@ public:
 	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ITextureSource* getTextureSource();
-	virtual IShaderSource* getShaderSource();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
-	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
-	virtual scene::ISceneManager* getSceneManager();
-	virtual IRollbackManager *getRollbackManager() { return m_rollback; }
+	IRollbackManager *getRollbackManager() { return m_rollback; }
 	virtual EmergeManager *getEmergeManager() { return m_emerge; }
 
 	IWritableItemDefManager* getWritableItemDefManager();

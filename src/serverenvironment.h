@@ -29,6 +29,8 @@ class PlayerSAO;
 class ServerEnvironment;
 class ActiveBlockModifier;
 class ServerActiveObject;
+class Server;
+class GameScripting;
 
 /*
 	{Active, Loading} block modifier interface.
@@ -190,7 +192,7 @@ class ServerEnvironment : public Environment
 {
 public:
 	ServerEnvironment(ServerMap *map, GameScripting *scriptIface,
-		IGameDef *gamedef, const std::string &path_world);
+		Server *server, const std::string &path_world);
 	~ServerEnvironment();
 
 	Map & getMap();
@@ -201,8 +203,8 @@ public:
 	GameScripting* getScriptIface()
 	{ return m_script; }
 
-	IGameDef *getGameDef()
-	{ return m_gamedef; }
+	Server *getGameDef()
+	{ return m_server; }
 
 	float getSendRecommendedInterval()
 	{ return m_recommended_send_interval; }
@@ -377,8 +379,8 @@ private:
 	ServerMap *m_map;
 	// Lua state
 	GameScripting* m_script;
-	// Game definition
-	IGameDef *m_gamedef;
+	// Server definition
+	Server *m_server;
 	// World path
 	const std::string m_path_world;
 	// Active object list

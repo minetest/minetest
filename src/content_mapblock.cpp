@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "mesh.h"
 #include <IMeshManipulator.h>
-#include "gamedef.h"
+#include "client.h"
 #include "log.h"
 #include "noise.h"
 
@@ -188,8 +188,8 @@ static inline int NeighborToIndex(const v3s16 &pos)
 void mapblock_mesh_generate_special(MeshMakeData *data,
 		MeshCollector &collector)
 {
-	INodeDefManager *nodedef = data->m_gamedef->ndef();
-	scene::ISceneManager* smgr = data->m_gamedef->getSceneManager();
+	INodeDefManager *nodedef = data->m_client->ndef();
+	scene::ISceneManager* smgr = data->m_client->getSceneManager();
 	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
 
 	// 0ms

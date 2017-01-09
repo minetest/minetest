@@ -34,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/networkpacket.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -51,6 +50,7 @@ class Database;
 class Mapper;
 struct MinimapMapblock;
 class Camera;
+class NetworkPacket;
 
 struct QueuedMeshUpdate
 {
@@ -402,9 +402,6 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
-	// Returns true if something was received
-	bool AsyncProcessPacket();
-	bool AsyncProcessData();
 	void Send(NetworkPacket* pkt);
 
 	void interact(u8 action, const PointedThing& pointed);
@@ -422,8 +419,9 @@ public:
 	void sendRespawn();
 	void sendReady();
 
-	ClientEnvironment& getEnv()
-	{ return m_env; }
+	ClientEnvironment& getEnv() { return m_env; }
+	ITextureSource *tsrc() { return getTextureSource(); }
+	ISoundManager *sound() { return getSoundManager(); }
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -521,14 +519,15 @@ public:
 	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ITextureSource* getTextureSource();
+	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	virtual scene::ISceneManager* getSceneManager();
+	IShaderSource *shsrc() { return getShaderSource(); }
+	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
 	virtual ParticleManager* getParticleManager();
-	virtual bool checkLocalPrivilege(const std::string &priv)
+	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
 

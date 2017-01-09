@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 class IGameDef;
+class Client;
 struct ToolCapabilities;
 
 /*
@@ -107,10 +108,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+		Client *client) const=0;
 #endif
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
@@ -133,10 +134,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+		Client *client) const=0;
 #endif
 
 	// Remove all registered item and node definitions and aliases

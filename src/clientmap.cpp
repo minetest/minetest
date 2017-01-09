@@ -35,13 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ClientMap::ClientMap(
 		Client *client,
-		IGameDef *gamedef,
 		MapDrawControl &control,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
 ):
-	Map(dout_client, gamedef),
+	Map(dout_client, client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
 	m_control(control),
@@ -140,7 +139,7 @@ static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
 	return false;
 }
 
-void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes, 
+void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max)
 {
 	v3s16 box_nodes_d = m_control.wanted_range * v3s16(1, 1, 1);
@@ -766,7 +765,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
-			m_gamedef->checkLocalPrivilege("noclip")) &&
+			m_client->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);
