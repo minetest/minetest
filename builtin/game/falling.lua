@@ -83,7 +83,7 @@ core.register_entity(":__builtin:falling_node", {
 			-- it's drops
 			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
 				core.remove_node(np)
-				if nd.buildable_to == false then
+				if nd and nd.buildable_to == false then
 					-- Add dropped items
 					local drops = core.get_node_drops(n2.name, "")
 					for _, dropped_item in pairs(drops) do
