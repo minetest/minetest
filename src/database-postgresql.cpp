@@ -80,12 +80,12 @@ void Database_PostgreSQL::connectToDatabase()
 
 	/*
 	* We are using UPSERT feature from PostgreSQL 9.5
-	* to have the better performance,
-	* set the minimum version to 90500
+	* to have the better performance where possible.
 	*/
 	if (m_pgversion < 90500) {
-		throw DatabaseException("PostgreSQL database error: "
-			"Server version 9.5 or greater required.");
+		warningstream << "Your PostgreSQL server lacks UPSERT "
+			<< "support. Use version 9.5 or better if possible."
+			<< std::endl;
 	}
 
 	infostream << "PostgreSQL Database: Version " << m_pgversion
@@ -125,11 +125,25 @@ void Database_PostgreSQL::initStatements()
 			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
 			"posZ = $3::int4");
 
-	prepareStatement("write_block",
+	if (m_pgversion < 90500) {
+		prepareStatement("write_block_insert",
+			"INSERT INTO blocks (posX, posY, posZ, data) SELECT "
+			"$1::int4, $2::int4, $3::int4, $4::bytea "
+			"WHERE NOT EXISTS (SELECT true FROM blocks "
+			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
+			"posZ = $3::int4)");
+
+		prepareStatement("write_block_update",
+			"UPDATE blocks SET data = $4::bytea "
+			"WHERE posX = $1::int4 AND posY = $2::int4 AND "
+			"posZ = $3::int4");
+	} else {
+		prepareStatement("write_block",
 			"INSERT INTO blocks (posX, posY, posZ, data) VALUES "
 			"($1::int4, $2::int4, $3::int4, $4::bytea) "
 			"ON CONFLICT ON CONSTRAINT blocks_pkey DO "
 			"UPDATE SET data = $4::bytea");
+	}
 
 	prepareStatement("delete_block", "DELETE FROM blocks WHERE "
 			"posX = $1::int4 AND posY = $2::int4 AND posZ = $3::int4");
@@ -218,7 +232,12 @@ bool Database_PostgreSQL::saveBlock(const v3s16 &pos,
 	};
 	const int argFmt[] = { 1, 1, 1, 1 };
 
-	execPrepared("write_block", ARRLEN(args), args, argLen, argFmt);
+	if (m_pgversion < 90500) {
+		execPrepared("write_block_update", ARRLEN(args), args, argLen, argFmt);
+		execPrepared("write_block_insert", ARRLEN(args), args, argLen, argFmt);
+	} else {
+		execPrepared("write_block", ARRLEN(args), args, argLen, argFmt);
+	}
 	return true;
 }
 
