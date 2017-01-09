@@ -94,9 +94,9 @@ public:
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
-	void setVelocity(v3f velocity);
+	void setVelocity(v3f velocity, float application_time, v3f reset_value);
 	v3f getVelocity();
-	void setAcceleration(v3f acceleration);
+	void setAcceleration(v3f acceleration, float application_time, v3f reset_value);
 	v3f getAcceleration();
 
 	void setTextureMod(const std::string &mod);
@@ -126,6 +126,11 @@ private:
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
 	bool m_armor_groups_sent;
+
+	float m_accel_time_left;
+	v3f m_accel_reset_value;
+	float m_vel_time_left;
+	v3f m_vel_reset_value;
 
 	v2f m_animation_range;
 	float m_animation_speed;

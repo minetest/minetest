@@ -43,7 +43,11 @@ std::string gob_cmd_update_position(
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
-	f32 update_interval
+	f32 update_interval,
+	float accel_time_left,
+	v3f accel_reset_value,
+	float m_vel_time_left,
+	v3f vel_reset_value
 ){
 	std::ostringstream os(std::ios::binary);
 	// command
@@ -62,6 +66,12 @@ std::string gob_cmd_update_position(
 	writeU8(os, is_movement_end);
 	// update_interval (for interpolation)
 	writeF1000(os, update_interval);
+	// update automatic acceleration disable values
+	writeF1000(os, accel_time_left);
+	writeV3F1000(os, accel_reset_value);
+	// update automatic velocity disable values
+	writeF1000(os, m_vel_time_left);
+	writeV3F1000(os, vel_reset_value);
 	return os.str();
 }
 

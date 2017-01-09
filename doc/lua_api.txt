@@ -2836,9 +2836,9 @@ This is basically a reference to a C++ `ServerActiveObject`
       }
 
 ##### LuaEntitySAO-only (no-op for other objects)
-* `setvelocity({x=num, y=num, z=num})`
+* `setvelocity({x=num, y=num, z=num}, time, {x=num, y=num, z=num})` : set a velocity as well as a time till when to change to second velocity, time and second velocity are optional
 * `getvelocity()`: returns `{x=num, y=num, z=num}`
-* `setacceleration({x=num, y=num, z=num})`
+* `setacceleration({x=num, y=num, z=num}, time, {x=num, y=num, z=num})` : set a acceleration as well as a time till when to change to second acceleration, time and second acceleration are optional
 * `getacceleration()`: returns `{x=num, y=num, z=num}`
 * `setyaw(radians)`
 * `getyaw()`: returns number in radians

@@ -50,7 +50,11 @@ std::string gob_cmd_update_position(
 	f32 yaw,
 	bool do_interpolate,
 	bool is_movement_end,
-	f32 update_interval
+	f32 update_interval,
+	float accel_time_left = -1,
+	v3f accel_reset_value = v3f(0,0,0),
+	float m_vel_time_left = -1,
+	v3f vel_reset_value = v3f(0,0,0)
 );
 
 std::string gob_cmd_set_texture_mod(const std::string &mod);

@@ -1162,6 +1162,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	} else {
 		v3f lastpos = pos_translator.vect_show;
 
+		if ((m_vel_time_left > 0) && ((m_vel_time_left - dtime) < 0)) {
+			m_velocity = m_vel_reset_value;
+		}
+
+		if ((m_accel_time_left > 0) && ((m_accel_time_left - dtime) < 0)) {
+			m_acceleration = m_accel_reset_value;
+		}
+
 		if(m_prop.physical)
 		{
 			aabb3f box = m_prop.collisionbox;
@@ -1216,6 +1224,14 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		m_anim_frame++;
 		if(m_anim_frame >= m_anim_num_frames)
 			m_anim_frame = 0;
+	}
+
+	if ((m_vel_time_left > 0) && ((m_vel_time_left - dtime) < 0)) {
+		m_velocity = m_vel_reset_value;
+	}
+
+	if ((m_accel_time_left > 0) && ((m_accel_time_left - dtime) < 0)) {
+		m_acceleration = m_accel_reset_value;
 	}
 
 	updateTexturePos();
@@ -1610,6 +1626,16 @@ void GenericCAO::processMessage(const std::string &data)
 		} else {
 			pos_translator.init(m_position);
 		}
+
+		// read more detailed movement information available from new servers only
+		try {
+			m_accel_time_left = readF1000(is);
+			m_accel_reset_value = readV3F1000(is);
+			m_vel_time_left = readF1000(is);
+			m_vel_reset_value = readV3F1000(is);
+		}
+		catch(SerializationError &e) {}
+
 		updateNodePos();
 	} else if (cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
