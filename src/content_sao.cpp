@@ -19,11 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "content_sao.h"
 #include "util/serialize.h"
-#include "util/mathconstants.h"
 #include "collision.h"
 #include "environment.h"
-#include "settings.h"
-#include "serialization.h" // For compressZlib
 #include "tool.h" // For ToolCapabilities
 #include "gamedef.h"
 #include "nodedef.h"
@@ -31,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "scripting_game.h"
 #include "genericobject.h"
-#include "log.h"
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 
@@ -94,13 +90,8 @@ public:
 		}
 	}
 
-	bool getCollisionBox(aabb3f *toset) {
-		return false;
-	}
-
-	bool collideWithObjects() {
-		return false;
-	}
+	bool getCollisionBox(aabb3f *toset) const { return false; }
+	bool collideWithObjects() const { return false; }
 
 private:
 	float m_timer1;
@@ -110,6 +101,28 @@ private:
 // Prototype (registers item for deserialization)
 TestSAO proto_TestSAO(NULL, v3f(0,0,0));
 
+/*
+	UnitSAO
+ */
+
+UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
+	ServerActiveObject(env, pos),
+	m_hp(-1),
+	m_yaw(0),
+	m_properties_sent(true),
+	m_armor_groups_sent(false),
+	m_animation_range(0,0),
+	m_animation_speed(0),
+	m_animation_blend(0),
+	m_animation_loop(true),
+	m_animation_sent(false),
+	m_bone_position_sent(false),
+	m_attachment_parent_id(0),
+	m_attachment_sent(false)
+{
+	// Initialize something to armor groups
+	m_armor_groups["fleshy"] = 100;
+}
 /*
 	LuaEntitySAO
 */
@@ -125,29 +138,17 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_registered(false),
 	m_velocity(0,0,0),
 	m_acceleration(0,0,0),
-	m_properties_sent(true),
 	m_last_sent_yaw(0),
 	m_last_sent_position(0,0,0),
 	m_last_sent_velocity(0,0,0),
 	m_last_sent_position_timer(0),
-	m_last_sent_move_precision(0),
-	m_armor_groups_sent(false),
-	m_animation_speed(0),
-	m_animation_blend(0),
-	m_animation_loop(true),
-	m_animation_sent(false),
-	m_bone_position_sent(false),
-	m_attachment_parent_id(0),
-	m_attachment_sent(false)
+	m_last_sent_move_precision(0)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
 		ServerActiveObject::registerType(getType(), create);
 		return;
 	}
-
-	// Initialize something to armor groups
-	m_armor_groups["fleshy"] = 100;
 }
 
 LuaEntitySAO::~LuaEntitySAO()
@@ -565,7 +566,7 @@ void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-ItemGroupList LuaEntitySAO::getArmorGroups()
+const ItemGroupList &LuaEntitySAO::getArmorGroups()
 {
 	return m_armor_groups;
 }
@@ -635,7 +636,7 @@ void LuaEntitySAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-UNORDERED_SET<int> LuaEntitySAO::getAttachmentChildIds()
+const UNORDERED_SET<int> &LuaEntitySAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }
@@ -732,7 +733,8 @@ void LuaEntitySAO::sendPosition(bool do_interpolate, bool is_movement_end)
 	m_messages_out.push(aom);
 }
 
-bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
+bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
+{
 	if (m_prop.physical)
 	{
 		//update collision box
@@ -748,7 +750,8 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) {
 	return false;
 }
 
-bool LuaEntitySAO::collideWithObjects(){
+bool LuaEntitySAO::collideWithObjects() const
+{
 	return m_prop.collideWithObjects;
 }
 
@@ -770,16 +773,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_nocheat_dig_time(0),
 	m_wield_index(0),
 	m_position_not_sent(false),
-	m_armor_groups_sent(false),
-	m_properties_sent(true),
 	m_is_singleplayer(is_singleplayer),
-	m_animation_speed(0),
-	m_animation_blend(0),
-	m_animation_loop(true),
-	m_animation_sent(false),
-	m_bone_position_sent(false),
-	m_attachment_parent_id(0),
-	m_attachment_sent(false),
 	m_breath(PLAYER_MAX_BREATH),
 	m_pitch(0),
 	m_fov(0),
@@ -793,7 +787,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_physics_override_sent(false)
 {
 	assert(m_peer_id != 0);	// pre-condition
-	m_armor_groups["fleshy"] = 100;
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
@@ -826,6 +819,11 @@ void PlayerSAO::initialize(RemotePlayer *player, const std::set<std::string> &pr
 	m_player = player;
 	m_privs = privs;
 	m_inventory = &m_player->inventory;
+}
+
+v3f PlayerSAO::getEyeOffset() const
+{
+	return v3f(0, BS * 1.625f, 0);
 }
 
 std::string PlayerSAO::getDescription()
@@ -1282,7 +1280,7 @@ void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
 	m_armor_groups_sent = false;
 }
 
-ItemGroupList PlayerSAO::getArmorGroups()
+const ItemGroupList &PlayerSAO::getArmorGroups()
 {
 	return m_armor_groups;
 }
@@ -1354,7 +1352,7 @@ void PlayerSAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-UNORDERED_SET<int> PlayerSAO::getAttachmentChildIds()
+const UNORDERED_SET<int> &PlayerSAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }
@@ -1512,15 +1510,10 @@ bool PlayerSAO::checkMovementCheat()
 	return cheated;
 }
 
-bool PlayerSAO::getCollisionBox(aabb3f *toset)
+bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 {
 	*toset = aabb3f(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30);
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
-	return true;
-}
-
-bool PlayerSAO::collideWithObjects()
-{
 	return true;
 }
