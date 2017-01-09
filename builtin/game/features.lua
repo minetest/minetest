@@ -9,6 +9,7 @@ core.features = {
 	no_legacy_abms = true,
 	texture_names_parens = true,
 	area_store_custom_ids = true,
+	add_entity_with_staticdata = true,
 }
 
 function core.has_feature(arg)

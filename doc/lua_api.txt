@@ -2173,7 +2173,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.get_node_timer(pos)`
     * Get `NodeTimerRef`
 
-* `minetest.add_entity(pos, name)`: Spawn Lua-defined entity at position
+* `minetest.add_entity(pos, name, [staticdata])`: Spawn Lua-defined entity at position
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
