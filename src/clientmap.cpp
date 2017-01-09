@@ -35,13 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ClientMap::ClientMap(
 		Client *client,
-		IGameDef *gamedef,
 		MapDrawControl &control,
 		scene::ISceneNode* parent,
 		scene::ISceneManager* mgr,
 		s32 id
 ):
-	Map(dout_client, gamedef),
+	Map(dout_client, client),
 	scene::ISceneNode(parent, mgr, id),
 	m_client(client),
 	m_control(control),
@@ -766,7 +765,7 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	const ContentFeatures& features = m_nodedef->get(n);
 	video::SColor post_effect_color = features.post_effect_color;
 	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
-			((Client *) m_gamedef)->checkLocalPrivilege("noclip")) &&
+			m_client->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{
 		post_effect_color = video::SColor(255, 0, 0, 0);

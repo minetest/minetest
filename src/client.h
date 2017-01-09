@@ -34,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/networkpacket.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -51,6 +50,7 @@ class Database;
 class Mapper;
 struct MinimapMapblock;
 class Camera;
+class NetworkPacket;
 
 struct QueuedMeshUpdate
 {
@@ -420,8 +420,8 @@ public:
 	void sendReady();
 
 	ClientEnvironment& getEnv() { return m_env; }
-	ITextureSource   *tsrc()     { return getTextureSource(); }
-	ISoundManager    *sound()    { return getSoundManager(); }
+	ITextureSource *tsrc() { return getTextureSource(); }
+	ISoundManager *sound() { return getSoundManager(); }
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -521,7 +521,7 @@ public:
 	virtual ICraftDefManager* getCraftDefManager();
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	IShaderSource    *shsrc()    { return getShaderSource(); }
+	IShaderSource *shsrc() { return getShaderSource(); }
 	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();

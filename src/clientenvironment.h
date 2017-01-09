@@ -30,7 +30,7 @@ class ClientMap;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
-class PointedThing;
+struct PointedThing;
 
 /*
 	The client-side environment.
