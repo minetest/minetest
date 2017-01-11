@@ -119,10 +119,10 @@ public:
 		when it is created (converted from static to active - actually
 		the data is the static form)
 	*/
-	virtual std::string getStaticData()
+	virtual void getStaticData(std::string *result)
 	{
 		assert(isStaticAllowed());
-		return "";
+		*result = "";
 	}
 	/*
 		Return false in here to never save and instead remove object

@@ -521,7 +521,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-std::string LuaEntitySAO::getStaticData() const
+void LuaEntitySAO::getStaticData(std::string *result) const
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
@@ -543,7 +543,7 @@ std::string LuaEntitySAO::getStaticData() const
 	writeV3F1000(os, m_velocity);
 	// yaw
 	writeF1000(os, m_yaw);
-	return os.str();
+	*result = os.str();
 }
 
 int LuaEntitySAO::punch(v3f dir,
@@ -918,10 +918,9 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-std::string PlayerSAO::getStaticData() const
+void PlayerSAO::getStaticData(std::string *result) const
 {
-	FATAL_ERROR("Deprecated function (?)");
-	return "";
+	FATAL_ERROR("Deprecated function");
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)
