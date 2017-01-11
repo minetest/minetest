@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
-#include "constants.h" // BS
 #include "threading/mutex.h"
 #include <list>
 

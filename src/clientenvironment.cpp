@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "raycast.h"
 #include "voxelalgorithms.h"
+#include "settings.h"
 
 /*
 	ClientEnvironment

@@ -21,6 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SERVER_ENVIRONMENT_HEADER
 
 #include "environment.h"
+#include "mapnode.h"
+#include "mapblock.h"
+#include <set>
 
 class IGameDef;
 class ServerMap;

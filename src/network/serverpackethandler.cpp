@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "emerge.h"
+#include "mapblock.h"
 #include "nodedef.h"
 #include "player.h"
 #include "rollback_interface.h"
