@@ -1694,7 +1694,8 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	{
 		// Add static object to active static list of the block
 		v3f objectpos = object->getBasePosition();
-		std::string staticdata = object->getStaticData();
+		std::string staticdata = "";
+		object->getStaticData(&staticdata);
 		StaticObject s_obj(object->getType(), objectpos, staticdata);
 		// Add to the block where the object is located in
 		v3s16 blockpos = getNodeBlockPos(floatToInt(objectpos, BS));
@@ -1980,7 +1981,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 					<<std::endl;
 				continue;
 			}
-			std::string staticdata_new = obj->getStaticData();
+			std::string staticdata_new = "";
+			obj->getStaticData(&staticdata_new);
 			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
 			block->m_static_objects.insert(id, s_obj);
 			obj->m_static_block = blockpos_o;
@@ -2020,7 +2022,8 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		if(obj->isStaticAllowed())
 		{
 			// Create new static object
-			std::string staticdata_new = obj->getStaticData();
+			std::string staticdata_new = "";
+			obj->getStaticData(&staticdata_new);
 			StaticObject s_obj(obj->getType(), objectpos, staticdata_new);
 
 			bool stays_in_same_block = false;

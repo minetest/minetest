@@ -102,7 +102,7 @@ public:
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData() const;
+	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
 			ServerActiveObject *puncher=NULL,
@@ -199,7 +199,7 @@ public:
 	void removingFromEnvironment();
 	bool isStaticAllowed() const { return false; }
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData() const;
+	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
