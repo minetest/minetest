@@ -40,6 +40,21 @@ public:
 	s16 getHP() const { return m_hp; }
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() const { return m_hp == 0; }
+
+	bool isAttached() const;
+	void setArmorGroups(const ItemGroupList &armor_groups);
+	const ItemGroupList &getArmorGroups();
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void addAttachmentChild(int child_id);
+	void removeAttachmentChild(int child_id);
+	const UNORDERED_SET<int> &getAttachmentChildIds();
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
 protected:
 	s16 m_hp;
 	float m_yaw;
@@ -85,10 +100,9 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
-	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData();
+	std::string getStaticData() const;
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
 			ServerActiveObject *puncher=NULL,
@@ -100,19 +114,6 @@ public:
 	std::string getDescription();
 	void setHP(s16 hp);
 	s16 getHP() const;
-	void setArmorGroups(const ItemGroupList &armor_groups);
-	const ItemGroupList &getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
-	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	const UNORDERED_SET<int> &getAttachmentChildIds();
-	ObjectProperties* accessObjectProperties();
-	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -196,10 +197,9 @@ public:
 
 	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
-	bool isStaticAllowed() const;
+	bool isStaticAllowed() const { return false; }
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData();
-	bool isAttached();
+	std::string getStaticData() const;
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
@@ -227,25 +227,12 @@ public:
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
-	void rightClick(ServerActiveObject *clicker);
+	void rightClick(ServerActiveObject *clicker) {}
 	void setHP(s16 hp);
 	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
-	void setArmorGroups(const ItemGroupList &armor_groups);
-	const ItemGroupList &getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
-	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	const UNORDERED_SET<int> &getAttachmentChildIds();
-	ObjectProperties* accessObjectProperties();
-	void notifyObjectPropertiesModified();
 
 	/*
 		Inventory interface
