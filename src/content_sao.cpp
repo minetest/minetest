@@ -123,6 +123,111 @@ UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	// Initialize something to armor groups
 	m_armor_groups["fleshy"] = 100;
 }
+
+bool UnitSAO::isAttached() const
+{
+	if (!m_attachment_parent_id)
+		return false;
+	// Check if the parent still exists
+	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
+	if (obj)
+		return true;
+	return false;
+}
+
+void UnitSAO::setArmorGroups(const ItemGroupList &armor_groups)
+{
+	m_armor_groups = armor_groups;
+	m_armor_groups_sent = false;
+}
+
+const ItemGroupList &UnitSAO::getArmorGroups()
+{
+	return m_armor_groups;
+}
+
+void UnitSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
+{
+	// store these so they can be updated to clients
+	m_animation_range = frame_range;
+	m_animation_speed = frame_speed;
+	m_animation_blend = frame_blend;
+	m_animation_loop = frame_loop;
+	m_animation_sent = false;
+}
+
+void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
+{
+	*frame_range = m_animation_range;
+	*frame_speed = m_animation_speed;
+	*frame_blend = m_animation_blend;
+	*frame_loop = m_animation_loop;
+}
+
+void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
+{
+	// store these so they can be updated to clients
+	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
+	m_bone_position_sent = false;
+}
+
+void UnitSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
+{
+	*position = m_bone_position[bone].X;
+	*rotation = m_bone_position[bone].Y;
+}
+
+void UnitSAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
+{
+	// Attachments need to be handled on both the server and client.
+	// If we just attach on the server, we can only copy the position of the parent. Attachments
+	// are still sent to clients at an interval so players might see them lagging, plus we can't
+	// read and attach to skeletal bones.
+	// If we just attach on the client, the server still sees the child at its original location.
+	// This breaks some things so we also give the server the most accurate representation
+	// even if players only see the client changes.
+
+	m_attachment_parent_id = parent_id;
+	m_attachment_bone = bone;
+	m_attachment_position = position;
+	m_attachment_rotation = rotation;
+	m_attachment_sent = false;
+}
+
+void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
+	v3f *rotation)
+{
+	*parent_id = m_attachment_parent_id;
+	*bone = m_attachment_bone;
+	*position = m_attachment_position;
+	*rotation = m_attachment_rotation;
+}
+
+void UnitSAO::addAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.insert(child_id);
+}
+
+void UnitSAO::removeAttachmentChild(int child_id)
+{
+	m_attachment_child_ids.erase(child_id);
+}
+
+const UNORDERED_SET<int> &UnitSAO::getAttachmentChildIds()
+{
+	return m_attachment_child_ids;
+}
+
+ObjectProperties* UnitSAO::accessObjectProperties()
+{
+	return &m_prop;
+}
+
+void UnitSAO::notifyObjectPropertiesModified()
+{
+	m_properties_sent = false;
+}
+
 /*
 	LuaEntitySAO
 */
@@ -218,17 +323,6 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	sao->m_velocity = velocity;
 	sao->m_yaw = yaw;
 	return sao;
-}
-
-bool LuaEntitySAO::isAttached()
-{
-	if(!m_attachment_parent_id)
-		return false;
-	// Check if the parent still exists
-	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if(obj)
-		return true;
-	return false;
 }
 
 void LuaEntitySAO::step(float dtime, bool send_recommended)
@@ -427,7 +521,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-std::string LuaEntitySAO::getStaticData()
+std::string LuaEntitySAO::getStaticData() const
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 	std::ostringstream os(std::ios::binary);
@@ -558,97 +652,6 @@ void LuaEntitySAO::setHP(s16 hp)
 s16 LuaEntitySAO::getHP() const
 {
 	return m_hp;
-}
-
-void LuaEntitySAO::setArmorGroups(const ItemGroupList &armor_groups)
-{
-	m_armor_groups = armor_groups;
-	m_armor_groups_sent = false;
-}
-
-const ItemGroupList &LuaEntitySAO::getArmorGroups()
-{
-	return m_armor_groups;
-}
-
-void LuaEntitySAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
-{
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
-	m_animation_loop = frame_loop;
-	m_animation_sent = false;
-}
-
-void LuaEntitySAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
-{
-	*frame_range = m_animation_range;
-	*frame_speed = m_animation_speed;
-	*frame_blend = m_animation_blend;
-	*frame_loop = m_animation_loop;
-}
-
-void LuaEntitySAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
-{
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
-}
-
-void LuaEntitySAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
-{
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
-}
-
-void LuaEntitySAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-{
-	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players might see them lagging, plus we can't
-	// read and attach to skeletal bones.
-	// If we just attach on the client, the server still sees the child at its original location.
-	// This breaks some things so we also give the server the most accurate representation
-	// even if players only see the client changes.
-
-	m_attachment_parent_id = parent_id;
-	m_attachment_bone = bone;
-	m_attachment_position = position;
-	m_attachment_rotation = rotation;
-	m_attachment_sent = false;
-}
-
-void LuaEntitySAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
-{
-	*parent_id = m_attachment_parent_id;
-	*bone = m_attachment_bone;
-	*position = m_attachment_position;
-	*rotation = m_attachment_rotation;
-}
-
-void LuaEntitySAO::addAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.insert(child_id);
-}
-
-void LuaEntitySAO::removeAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.erase(child_id);
-}
-
-const UNORDERED_SET<int> &LuaEntitySAO::getAttachmentChildIds()
-{
-	return m_attachment_child_ids;
-}
-
-ObjectProperties* LuaEntitySAO::accessObjectProperties()
-{
-	return &m_prop;
-}
-
-void LuaEntitySAO::notifyObjectPropertiesModified()
-{
-	m_properties_sent = false;
 }
 
 void LuaEntitySAO::setVelocity(v3f velocity)
@@ -854,11 +857,6 @@ void PlayerSAO::removingFromEnvironment()
 	}
 }
 
-bool PlayerSAO::isStaticAllowed() const
-{
-	return false;
-}
-
 std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 {
 	std::ostringstream os(std::ios::binary);
@@ -920,21 +918,10 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-std::string PlayerSAO::getStaticData()
+std::string PlayerSAO::getStaticData() const
 {
 	FATAL_ERROR("Deprecated function (?)");
 	return "";
-}
-
-bool PlayerSAO::isAttached()
-{
-	if(!m_attachment_parent_id)
-		return false;
-	// Check if the parent still exists
-	ServerActiveObject *obj = m_env->getActiveObject(m_attachment_parent_id);
-	if(obj)
-		return true;
-	return false;
 }
 
 void PlayerSAO::step(float dtime, bool send_recommended)
@@ -1224,10 +1211,6 @@ int PlayerSAO::punch(v3f dir,
 	return hitparams.wear;
 }
 
-void PlayerSAO::rightClick(ServerActiveObject *)
-{
-}
-
 s16 PlayerSAO::readDamage()
 {
 	s16 damage = m_damage;
@@ -1272,99 +1255,6 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
-}
-
-void PlayerSAO::setArmorGroups(const ItemGroupList &armor_groups)
-{
-	m_armor_groups = armor_groups;
-	m_armor_groups_sent = false;
-}
-
-const ItemGroupList &PlayerSAO::getArmorGroups()
-{
-	return m_armor_groups;
-}
-
-void PlayerSAO::setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop)
-{
-	// store these so they can be updated to clients
-	m_animation_range = frame_range;
-	m_animation_speed = frame_speed;
-	m_animation_blend = frame_blend;
-	m_animation_loop = frame_loop;
-	m_animation_sent = false;
-}
-
-void PlayerSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop)
-{
-	*frame_range = m_animation_range;
-	*frame_speed = m_animation_speed;
-	*frame_blend = m_animation_blend;
-	*frame_loop = m_animation_loop;
-}
-
-void PlayerSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
-{
-	// store these so they can be updated to clients
-	m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
-	m_bone_position_sent = false;
-}
-
-void PlayerSAO::getBonePosition(const std::string &bone, v3f *position, v3f *rotation)
-{
-	*position = m_bone_position[bone].X;
-	*rotation = m_bone_position[bone].Y;
-}
-
-void PlayerSAO::setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation)
-{
-	// Attachments need to be handled on both the server and client.
-	// If we just attach on the server, we can only copy the position of the parent. Attachments
-	// are still sent to clients at an interval so players might see them lagging, plus we can't
-	// read and attach to skeletal bones.
-	// If we just attach on the client, the server still sees the child at its original location.
-	// This breaks some things so we also give the server the most accurate representation
-	// even if players only see the client changes.
-
-	m_attachment_parent_id = parent_id;
-	m_attachment_bone = bone;
-	m_attachment_position = position;
-	m_attachment_rotation = rotation;
-	m_attachment_sent = false;
-}
-
-void PlayerSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
-	v3f *rotation)
-{
-	*parent_id = m_attachment_parent_id;
-	*bone = m_attachment_bone;
-	*position = m_attachment_position;
-	*rotation = m_attachment_rotation;
-}
-
-void PlayerSAO::addAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.insert(child_id);
-}
-
-void PlayerSAO::removeAttachmentChild(int child_id)
-{
-	m_attachment_child_ids.erase(child_id);
-}
-
-const UNORDERED_SET<int> &PlayerSAO::getAttachmentChildIds()
-{
-	return m_attachment_child_ids;
-}
-
-ObjectProperties* PlayerSAO::accessObjectProperties()
-{
-	return &m_prop;
-}
-
-void PlayerSAO::notifyObjectPropertiesModified()
-{
-	m_properties_sent = false;
 }
 
 Inventory* PlayerSAO::getInventory()
