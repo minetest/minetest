@@ -304,6 +304,11 @@ public:
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
 
+	void setAsyncFatalProcessedLuaError(const std::string &error);
+	void setAsyncFatalLuaError(const std::string &error);
+	// Environment (Lua) must be locked when calling this
+	void setAsyncFatalLuaErrorFromEnvironment(const std::string &error);
+
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }

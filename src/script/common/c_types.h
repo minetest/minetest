@@ -52,10 +52,20 @@ public:
 	}
 };
 
+// A regular Lua error contains only the original error message from the
+// original error's location
 class LuaError : public ModError
 {
 public:
 	LuaError(const std::string &s) : ModError(s) {}
+};
+
+// A processed Lua error contains a backtrace and other information in addition
+// to the original error message
+class ProcessedLuaError : public LuaError
+{
+public:
+	ProcessedLuaError(const std::string &s) : LuaError(s) {}
 };
 
 

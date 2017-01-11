@@ -121,7 +121,9 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 			+ itos(lua_gc(L, LUA_GCCOUNT, 0) >> 10) + " MB";
 	}
 
-	throw LuaError(err_msg);
+	// This is now a processed Lua error as it contains the backtrace and other
+	// information.
+	throw ProcessedLuaError(err_msg);
 }
 
 // Push the list of callbacks (a lua table).
