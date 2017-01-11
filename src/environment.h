@@ -36,11 +36,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "activeobject.h"
 #include "util/numeric.h"
-#include "mapnode.h"
-#include "mapblock.h"
 #include "threading/mutex.h"
 #include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
+
+class Map;
 
 class Environment
 {

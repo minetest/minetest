@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 
 #include "irrlichttypes_extrabloated.h"
-#include "inventory.h"
 #include "inventorymanager.h"
 #include "modalMenu.h"
 #include "guiTable.h"

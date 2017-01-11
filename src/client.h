@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
+#include "mapnode.h"
 
 struct MeshMakeData;
 class MapBlockMesh;

@@ -655,6 +655,17 @@ v3s16 LocalPlayer::getStandingNodePos()
 	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
 
+v3s16 LocalPlayer::getLightPosition() const
+{
+	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+}
+
+v3f LocalPlayer::getEyeOffset() const
+{
+	float eye_height = camera_barely_in_ceiling ? 1.5f : 1.625f;
+	return v3f(0, BS * eye_height, 0);
+}
+
 // Horizontal acceleration (X and Z), Y direction is ignored
 void LocalPlayer::accelerateHorizontal(const v3f &target_speed, const f32 max_increase)
 {

@@ -105,10 +105,7 @@ public:
 	u16 getBreath() const { return m_breath; }
 	void setBreath(u16 breath) { m_breath = breath; }
 
-	v3s16 getLightPosition() const
-	{
-		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
-	}
+	v3s16 getLightPosition() const;
 
 	void setYaw(f32 yaw)
 	{
@@ -131,11 +128,7 @@ public:
 
 	v3f getPosition() const { return m_position; }
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
-	v3f getEyeOffset() const
-	{
-		float eye_height = camera_barely_in_ceiling ? 1.5f : 1.625f;
-		return v3f(0, BS * eye_height, 0);
-	}
+	v3f getEyeOffset() const;
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
