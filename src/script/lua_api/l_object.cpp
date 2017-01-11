@@ -789,8 +789,7 @@ int ObjectRef::l_set_nametag_attributes(lua_State *L)
 	lua_pop(L, 1);
 
 	std::string nametag = getstringfield_default(L, 2, "text", "");
-	if (nametag != "")
-		prop->nametag = nametag;
+	prop->nametag = nametag;
 
 	co->notifyObjectPropertiesModified();
 	lua_pushboolean(L, true);
