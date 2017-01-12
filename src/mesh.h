@@ -23,6 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "nodedef.h"
 
+/*!
+ * Applies shading to a color based on the surface's
+ * normal vector.
+ */
+void applyFacesShading(video::SColor &color, const v3f &normal);
+
 /*
 	Create a new cube mesh.
 	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).
@@ -48,11 +54,7 @@ void translateMesh(scene::IMesh *mesh, v3f vec);
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
-/*
-	Shade mesh faces according to their normals
-*/
-
-void shadeMeshFaces(scene::IMesh *mesh);
+void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
 
 /*
 	Set the color of all vertices in the mesh.

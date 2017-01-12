@@ -563,11 +563,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 #ifndef SERVER
 void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
-		bool backface_culling, u8 alpha, u8 material_type)
+		bool backface_culling, u8 material_type)
 {
 	tile->shader_id     = shader_id;
 	tile->texture       = tsrc->getTextureForMesh(tiledef->name, &tile->texture_id);
-	tile->alpha         = alpha;
 	tile->material_type = material_type;
 
 	// Normal texture and shader flags texture
@@ -754,14 +753,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < 6; j++) {
 		fillTileAttribs(tsrc, &tiles[j], &tdef[j], tile_shader[j],
 			tsettings.use_normal_texture,
-			tiledef[j].backface_culling, alpha, material_type);
+			tiledef[j].backface_culling, material_type);
 	}
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		fillTileAttribs(tsrc, &special_tiles[j], &tiledef_special[j],
 			tile_shader[j], tsettings.use_normal_texture,
-			tiledef_special[j].backface_culling, alpha, material_type);
+			tiledef_special[j].backface_culling, material_type);
 	}
 
 	if ((drawtype == NDT_MESH) && (mesh != "")) {

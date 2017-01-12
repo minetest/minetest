@@ -318,6 +318,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
+	m_colors.clear();
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
@@ -358,28 +359,30 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			material_count = 6;
 		}
 		for (u32 i = 0; i < material_count; ++i) {
+			const TileSpec *tile = &(f.tiles[i]);
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-			bool animated = (f.tiles[i].animation_frame_count > 1);
+			bool animated = (tile->animation_frame_count > 1);
 			if (animated) {
-				FrameSpec animation_frame = f.tiles[i].frames[0];
+				FrameSpec animation_frame = tile->frames[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
-				material.setTexture(0, f.tiles[i].texture);
+				material.setTexture(0, tile->texture);
 			}
+			m_colors.push_back(tile->color);
 			material.MaterialType = m_material_type;
 			if (m_enable_shaders) {
-				if (f.tiles[i].normal_texture) {
+				if (tile->normal_texture) {
 					if (animated) {
-						FrameSpec animation_frame = f.tiles[i].frames[0];
+						FrameSpec animation_frame = tile->frames[0];
 						material.setTexture(1, animation_frame.normal_texture);
 					} else {
-						material.setTexture(1, f.tiles[i].normal_texture);
+						material.setTexture(1, tile->normal_texture);
 					}
 				}
-				material.setTexture(2, f.tiles[i].flags_texture);
+				material.setTexture(2, tile->flags_texture);
 			}
 		}
 		return;
@@ -393,11 +396,28 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	changeToMesh(NULL);
 }
 
-void WieldMeshSceneNode::setColor(video::SColor color)
+void WieldMeshSceneNode::setColor(video::SColor c)
 {
 	assert(!m_lighting);
-	setMeshColor(m_meshnode->getMesh(), color);
-	shadeMeshFaces(m_meshnode->getMesh());
+	scene::IMesh *mesh=m_meshnode->getMesh();
+	if (mesh == NULL)
+		return;
+
+	u8 red = c.getRed();
+	u8 green = c.getGreen();
+	u8 blue = c.getBlue();
+	u32 mc = mesh->getMeshBufferCount();
+	for (u32 j = 0; j < mc; j++) {
+		video::SColor bc(0xFFFFFFFF);
+		if (m_colors.size() > j)
+			bc = m_colors[j];
+		video::SColor buffercolor(255,
+			bc.getRed() * red / 255,
+			bc.getGreen() * green / 255,
+			bc.getBlue() * blue / 255);
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		colorizeMeshBuffer(buf, &buffercolor);
+	}
 }
 
 void WieldMeshSceneNode::render()
@@ -464,7 +484,6 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 		} else if (f.drawtype == NDT_PLANTLIKE) {
 			mesh = getExtrudedMesh(tsrc,
 				tsrc->getTextureName(f.tiles[0].texture_id));
-			return mesh;
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES
 			|| f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
 			mesh = cloneMesh(g_extrusion_mesh_cache->createCube());
@@ -477,8 +496,6 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 			mesh = cloneMesh(mapblock_mesh.getMesh());
 			translateMesh(mesh, v3f(-BS, -BS, -BS));
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-			rotateMeshXZby(mesh, -45);
-			rotateMeshYZby(mesh, -30);
 
 			u32 mc = mesh->getMeshBufferCount();
 			for (u32 i = 0; i < mc; ++i) {
@@ -492,28 +509,29 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 				material1.setTexture(3, material2.getTexture(3));
 				material1.MaterialType = material2.MaterialType;
 			}
-			return mesh;
 		}
-
-		shadeMeshFaces(mesh);
-		rotateMeshXZby(mesh, -45);
-		rotateMeshYZby(mesh, -30);
 
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; ++i) {
-			video::SMaterial &material = mesh->getMeshBuffer(i)->getMaterial();
+			const TileSpec *tile = &(f.tiles[i]);
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			colorizeMeshBuffer(buf, &tile->color);
+			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_LIGHTING, false);
-			if (f.tiles[i].animation_frame_count > 1) {
-				FrameSpec animation_frame = f.tiles[i].frames[0];
+			if (tile->animation_frame_count > 1) {
+				FrameSpec animation_frame = tile->frames[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
-				material.setTexture(0, f.tiles[i].texture);
+				material.setTexture(0, tile->texture);
 			}
 		}
+
+		rotateMeshXZby(mesh, -45);
+		rotateMeshYZby(mesh, -30);
 		return mesh;
 	}
 	return NULL;

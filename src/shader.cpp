@@ -543,7 +543,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			shaderinfo.base_material = video::EMT_SOLID;

@@ -353,7 +353,7 @@ struct ContentFeatures
 #ifndef SERVER
 	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 alpha, u8 material_type);
+		u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif

@@ -198,7 +198,6 @@ struct TileSpec
 		texture(NULL),
 		normal_texture(NULL),
 		flags_texture(NULL),
-		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
@@ -213,18 +212,23 @@ struct TileSpec
 	{
 	}
 
+	/*!
+	 * Two tiles are equal if they can be appended to
+	 * the same mesh buffer.
+	 */
 	bool operator==(const TileSpec &other) const
 	{
 		return (
 			texture_id == other.texture_id &&
-			/* texture == other.texture && */
-			alpha == other.alpha &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
 			rotation == other.rotation
 		);
 	}
 
+	/*!
+	 * Two tiles are not equal if they must be in different mesh buffers.
+	 */
 	bool operator!=(const TileSpec &other) const
 	{
 		return !(*this == other);
@@ -241,7 +245,7 @@ struct TileSpec
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
@@ -282,8 +286,6 @@ struct TileSpec
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
 	
-	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
-	u8 alpha;
 	// Material parameters
 	u8 material_type;
 	u8 material_flags;
