@@ -459,10 +459,13 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 #endif
 }
 
-void draw_plain(Camera &camera, bool show_hud, Hud &hud,
-		video::IVideoDriver *driver, bool draw_wield_tool,
-		Client &client, gui::IGUIEnvironment *guienv)
+void draw_plain(Camera& camera, bool show_hud,
+		Hud& hud, video::IVideoDriver* driver,
+		scene::ISceneManager* smgr, const v2u32& screensize,
+		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
+		video::SColor skycolor)
 {
+	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
 		hud.drawSelectionMesh();
@@ -470,6 +473,55 @@ void draw_plain(Camera &camera, bool show_hud, Hud &hud,
 			camera.drawWieldedTool();
 		}
 	}
+}
+
+inline int undersample(int coef, int size)
+{
+	return (size + coef - 1) / coef;
+}
+
+static const video::S3DVertex rect_vs[4] = {
+	video::S3DVertex(-1.0, -1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 0.0, 1.0),
+	video::S3DVertex(-1.0, 1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 0.0, 0.0),
+	video::S3DVertex(1.0, -1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 1.0, 1.0),
+	video::S3DVertex(1.0, 1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 1.0, 0.0),
+};
+
+static const u16 rect_is[6] = {
+	0, 1, 3,
+	0, 3, 2,
+};
+
+void draw_undersampled(Camera& camera, bool show_hud,
+		Hud& hud, video::IVideoDriver* driver,
+		scene::ISceneManager* smgr, const v2u32& screensize,
+		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
+		video::SColor skycolor)
+{
+#define US 4
+	static video::ITexture* image = NULL;
+	static v2u32 last_pixelated_size = v2u32(0, 0);
+	v2u32 pixelated_size = v2u32(undersample(US, screensize.X), undersample(US, screensize.Y));
+	v2u32 dest_size = v2u32(US * pixelated_size.X, US * pixelated_size.Y);
+	if (pixelated_size != last_pixelated_size) {
+		init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
+		last_pixelated_size = pixelated_size;
+	}
+	driver->setRenderTarget(image, true, true,
+			irr::video::SColor(255,
+					skycolor.getRed(), skycolor.getGreen(), skycolor.getBlue()));
+	smgr->drawAll();
+	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+	if (show_hud) {
+		hud.drawSelectionMesh();
+		if (draw_wield_tool) {
+			camera.drawWieldedTool();
+		}
+	}
+	driver->setRenderTarget(0, true, true, irr::video::SColor(255, 255, 0, 0));
+	driver->draw2DImage(image,
+			irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+			irr::core::rect<s32>(0, 0, pixelated_size.X, pixelated_size.Y));
 }
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
@@ -495,8 +547,6 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 #endif
 
 	const std::string &draw_mode = g_settings->get("3d_mode");
-
-	smgr->drawAll();
 
 	if (draw_mode == "anaglyph")
 	{
@@ -530,8 +580,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		show_hud = false;
 	}
 	else {
-		draw_plain(camera, show_hud, hud, driver,
-				draw_wield_tool, client, guienv);
+		draw_undersampled(camera, show_hud, hud, driver,
+				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
 	}
 
 	/*
