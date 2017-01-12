@@ -152,6 +152,8 @@ fake_function() {
 	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels.  This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory.  Powers of 2 are recommended.  Setting this higher than 1 may not\nhave a visible effect unless bilinear/trilinear/anisotropic filtering is\nenabled.");
 	gettext("FSAA");
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
+	gettext("Undersampling");
+	gettext("Undersampling is similar to using lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give significant performance boost at the cost of less detailed image.");
 	gettext("Shaders");
 	gettext("Shaders");
 	gettext("Shaders allow advanced visual effects and may increase performance on some video cards.\nThy only work with the OpenGL video backend.");

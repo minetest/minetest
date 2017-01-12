@@ -108,6 +108,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");
+	settings->setDefault("undersampling", "0");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
