@@ -189,7 +189,9 @@ void NodeBox::deSerialize(std::istream &is)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if (protocol_version >= 29)
+	if (protocol_version >= 30)
+		writeU8(os, 4);
+	else if (protocol_version >= 29)
 		writeU8(os, 3);
 	else if (protocol_version >= 26)
 		writeU8(os, 2);
@@ -205,6 +207,14 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 		writeU8(os, tileable_horizontal);
 		writeU8(os, tileable_vertical);
 	}
+	if (protocol_version >= 30) {
+		writeU8(os, has_color);
+		if (has_color) {
+			writeU8(os, color.getRed());
+			writeU8(os, color.getGreen());
+			writeU8(os, color.getBlue());
+		}
+	}
 }
 
 void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, const NodeDrawType drawtype)
@@ -217,6 +227,14 @@ void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, con
 	if (version >= 2) {
 		tileable_horizontal = readU8(is);
 		tileable_vertical = readU8(is);
+	}
+	if (version >= 4) {
+		has_color = readU8(is);
+		if (has_color) {
+			color.setRed(readU8(is));
+			color.setGreen(readU8(is));
+			color.setBlue(readU8(is));
+		}
 	}
 
 	if ((contenfeatures_version < 8) &&
@@ -351,6 +369,7 @@ void ContentFeatures::reset()
 	connects_to.clear();
 	connects_to_ids.clear();
 	connect_sides = 0;
+	color = video::SColor(0xFFFFFFFF);
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -386,6 +405,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 		tiledef_special[i].serialize(os, protocol_version);
 	}
 	writeU8(os, alpha);
+	writeU8(os, color.getRed());
+	writeU8(os, color.getGreen());
+	writeU8(os, color.getBlue());
 	writeU8(os, waving);
 	writeU8(os, connect_sides);
 	writeU16(os, connects_to_ids.size());
@@ -476,6 +498,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 		tiledef_special[i].deSerialize(is, version, drawtype);
 	alpha = readU8(is);
+	color.setRed(readU8(is));
+	color.setGreen(readU8(is));
+	color.setBlue(readU8(is));
 	waving = readU8(is);
 	connect_sides = readU8(is);
 	u16 connects_to_size = readU16(is);
@@ -557,6 +582,13 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
 	if (tiledef->tileable_vertical)
 		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+
+	// Color
+	tile->has_color = tiledef->has_color;
+	if (tiledef->has_color)
+		tile->color = tiledef->color;
+	else
+		tile->color = color;
 
 	// Animation parameters
 	int frame_count = 1;

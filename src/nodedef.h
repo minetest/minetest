@@ -170,6 +170,11 @@ struct TileDef
 	bool backface_culling; // Takes effect only in special cases
 	bool tileable_horizontal;
 	bool tileable_vertical;
+	//! If true, the tile has its own color.
+	bool has_color;
+	//! The color of the tile.
+	video::SColor color;
+
 	struct TileAnimationParams animation;
 
 	TileDef()
@@ -178,6 +183,8 @@ struct TileDef
 		backface_culling = true;
 		tileable_horizontal = true;
 		tileable_vertical = true;
+		has_color = false;
+		color = video::SColor(0xFFFFFFFF);
 		animation.type = TAT_NONE;
 	}
 
@@ -236,6 +243,8 @@ struct ContentFeatures
 	// If 255, the node is opaque.
 	// Otherwise it uses texture alpha.
 	u8 alpha;
+	// The color of the node.
+	video::SColor color;
 	// Used for waving leaves/plants
 	u8 waving;
 	// for NDT_CONNECTED pairing

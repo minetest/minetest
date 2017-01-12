@@ -20,9 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPNODE_HEADER
 #define MAPNODE_HEADER
 
-#include "irrlichttypes.h"
-#include "irr_v3d.h"
-#include "irr_aabb3d.h"
+#include "irrlichttypes_bloated.h"
 #include "light.h"
 #include <string>
 #include <vector>
@@ -186,6 +184,14 @@ struct MapNode
 	{
 		param2 = p;
 	}
+
+	/*!
+	 * Returns the color of the node.
+	 *
+	 * \param f content features of this node
+	 * \param color output, contains the node's color.
+	 */
+	void getColor(const ContentFeatures &f, video::SColor *color) const;
 
 	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
 

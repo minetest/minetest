@@ -201,7 +201,9 @@ struct TileSpec
 		shader_id(0),
 		animation_frame_count(1),
 		animation_frame_length_ms(0),
-		rotation(0)
+		rotation(0),
+		has_color(false),
+		color()
 	{
 	}
 
@@ -286,5 +288,12 @@ struct TileSpec
 	std::vector<FrameSpec> frames;
 
 	u8 rotation;
+	//! If true, the tile has its own color.
+	bool has_color;
+	/*!
+	 * The color of the tile, or if the tile does not own
+	 * a color then the color of the node owning this tile.
+	 */
+	video::SColor color;
 };
 #endif

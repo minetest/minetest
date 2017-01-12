@@ -332,6 +332,10 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		// color = ...
+		lua_getfield(L, index, "color");
+		tiledef.has_color = read_color(L, -1, &tiledef.color);
+		lua_pop(L, 1);
 		// animation = {}
 		lua_getfield(L, index, "animation");
 		tiledef.animation = read_animation_definition(L, -1);
@@ -449,6 +453,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			"use_texture_alpha", false);
 	if (usealpha)
 		f.alpha = 0;
+
+	// Read node color.
+	lua_getfield(L, index, "color");
+	read_color(L, -1, &f.color);
+	lua_pop(L, 1);
 
 	/* Other stuff */
 

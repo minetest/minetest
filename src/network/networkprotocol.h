@@ -145,6 +145,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Removed client-sided chat perdiction
 	PROTOCOL VERSION 30:
 		New ContentFeatures serialization version
+		Add node and tile color
 */
 
 #define LATEST_PROTOCOL_VERSION 30
