@@ -1,7 +1,8 @@
 uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
 
-uniform float dayNightRatio;
+// Color of the light emitted by the sun.
+uniform vec3 dayLight;
 uniform vec3 eyePosition;
 uniform float animationTimer;
 
@@ -14,6 +15,8 @@ varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 varying float area_enable_parallax;
 
+// Color of the light emitted by the light sources.
+const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
 
@@ -119,31 +122,23 @@ float disp_z;
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
 
+	// Calculate color.
+	// Red, green and blue components are pre-multiplied with
+	// the brightness, so now we have to multiply these
+	// colors with the color of the incoming light.
+	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
-	float day = gl_Color.r;
-	float night = gl_Color.g;
-	float light_source = gl_Color.b;
-
-	float rg = mix(night, day, dayNightRatio);
-	rg += light_source * 2.5; // Make light sources brighter
-	float b = rg;
-
-	// Moonlight is blue
-	b += (day - night) / 13.0;
-	rg -= (day - night) / 23.0;
-
+	// The alpha gives the ratio of sunlight in the incoming light.
+	float nightRatio = 1 - gl_Color.a;
+	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
+		nightRatio * artificialLight.rgb) * 2;
+	color.a = 1;
+	
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-	b += max(0.0, (1.0 - abs(b - 0.13) / 0.17) * 0.025);
-
-	// Artificial light is yellow-ish
-	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-	rg += max(0.0, (1.0 - abs(rg - 0.85) / 0.15) * 0.065);
-
-	color.r = rg;
-	color.g = rg;
-	color.b = b;
-
-	color.a = gl_Color.a;
+	float brightness = (color.r + color.g + color.b) / 3;
+	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+		0.07 * brightness);
+	
 	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }

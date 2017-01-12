@@ -638,6 +638,19 @@ node definition:
         bit 4 (0x10) - Makes the plant mesh 1.4x larger
         bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
         bits 6-7 are reserved for future use.
+    paramtype2 == "color"
+    ^ `param2` tells which color is picked from the palette.
+      The palette should have 256 pixels.
+    paramtype2 == "colorfacedir"
+    ^ Same as `facedir`, but with colors.
+      The first three bits of `param2` tells which color
+      is picked from the palette.
+      The palette should have 8 pixels.
+    paramtype2 == "colorwallmounted"
+    ^ Same as `wallmounted`, but with colors.
+      The first five bits of `param2` tells which color
+      is picked from the palette.
+      The palette should have 32 pixels.
     collision_box = {
       type = "fixed",
       fixed = {
@@ -3707,6 +3720,9 @@ Definition tables
 	  when displacement mapping is used
 	  Directions are from the point of view of the tile texture,
 	  not the node it's on
+* `{name="image.png", color=ColorSpec}`
+    * the texture's color will be multiplied with this color.
+    * the tile's color overrides the owning node's color in all cases.
 * deprecated, yet still supported field names:
     * `image` (name)
 
@@ -3749,8 +3765,17 @@ Definition tables
         special_tiles = {tile definition 1, Tile definition 2}, --[[
         ^ Special textures of node; used rarely (old field name: special_materials)
         ^ List can be shortened to needed length ]]
-        alpha = 255,
+        color = ColorSpec, --[[
+        ^ The node's original color will be multiplied with this color.
+        ^ If the node has a palette, then this setting only has an effect
+        ^ in the inventory and on the wield item. ]]
         use_texture_alpha = false, -- Use texture's alpha channel
+        palette = "palette.png", --[[
+        ^ The node's `param2` is used to select a pixel from the image
+        ^ (pixels are arranged from left to right and from top to bottom).
+        ^ The node's color will be multiplied with the selected pixel's
+        ^ color. Tiles can override this behavior.
+        ^ Only when `paramtype2` supports palettes. ]]
         post_effect_color = "green#0F", -- If player is inside node, see "ColorSpec"
         paramtype = "none", -- See "Nodes" --[[
         ^ paramtype = "light" allows light to propagate from or through the node with light value

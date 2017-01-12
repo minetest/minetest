@@ -144,7 +144,7 @@ MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos,
 		if (it != m_blocks_cache.end()) {
 			MinimapMapblock *mmblock = it->second;
 			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
-			if (pixel->id != CONTENT_AIR) {
+			if (pixel->n.param0 != CONTENT_AIR) {
 				*pixel_height = height + pixel->height;
 				return pixel;
 			}
@@ -187,7 +187,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
 
 	for (s16 x = 0; x < size; x++)
 	for (s16 z = 0; z < size; z++) {
-		u16 id = CONTENT_AIR;
+		MapNode n(CONTENT_AIR);
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * size];
 
 		if (!is_radar) {
@@ -195,14 +195,14 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
 			MinimapPixel *cached_pixel =
 				getMinimapPixel(v3s16(p.X + x, p.Y, p.Z + z), height, &pixel_height);
 			if (cached_pixel) {
-				id = cached_pixel->id;
+				n = cached_pixel->n;
 				mmpixel->height = pixel_height;
 			}
 		} else {
 			mmpixel->air_count = getAirCount(v3s16(p.X + x, p.Y, p.Z + z), height);
 		}
 
-		mmpixel->id = id;
+		mmpixel->n = n;
 	}
 }
 
@@ -372,10 +372,21 @@ void Mapper::blitMinimapPixelsToImageSurface(
 	for (s16 z = 0; z < data->map_size; z++) {
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
 
-		video::SColor c = m_ndef->get(mmpixel->id).minimap_color;
-		c.setAlpha(240);
+		const ContentFeatures &f = m_ndef->get(mmpixel->n);
+		const TileDef *tile = &f.tiledef[0];
+		// Color of the 0th tile (mostly this is the topmost)
+		video::SColor tilecolor;
+		if(tile->has_color)
+			tilecolor = tile->color;
+		else
+			mmpixel->n.getColor(f, &tilecolor);
+		tilecolor.setRed(tilecolor.getRed() * f.minimap_color.getRed() / 255);
+		tilecolor.setGreen(tilecolor.getGreen() * f.minimap_color.getGreen()
+			/ 255);
+		tilecolor.setBlue(tilecolor.getBlue() * f.minimap_color.getBlue() / 255);
+		tilecolor.setAlpha(240);
 
-		map_image->setPixel(x, data->map_size - z - 1, c);
+		map_image->setPixel(x, data->map_size - z - 1, tilecolor);
 
 		u32 h = mmpixel->height;
 		heightmap_image->setPixel(x,data->map_size - z - 1,
@@ -617,7 +628,7 @@ void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
 			MapNode n = vmanip->getNodeNoEx(pos + p);
 			if (!surface_found && n.getContent() != CONTENT_AIR) {
 				mmpixel->height = y;
-				mmpixel->id = n.getContent();
+				mmpixel->n = n;
 				surface_found = true;
 			} else if (n.getContent() == CONTENT_AIR) {
 				air_count++;
@@ -625,7 +636,7 @@ void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
 		}
 
 		if (!surface_found)
-			mmpixel->id = CONTENT_AIR;
+			mmpixel->n = MapNode(CONTENT_AIR);
 
 		mmpixel->air_count = air_count;
 	}

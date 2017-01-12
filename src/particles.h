@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ClientEvent;
 class ParticleManager;
 class ClientEnvironment;
+class MapNode;
+class ContentFeatures;
 
 class Particle : public scene::ISceneNode
 {
@@ -53,7 +55,8 @@ class Particle : public scene::ISceneNode
 		v2f texpos,
 		v2f texsize,
 		const struct TileAnimationParams &anim,
-		u8 glow
+		u8 glow,
+		video::SColor color = video::SColor(0xFFFFFFFF)
 	);
 	~Particle();
 
@@ -100,7 +103,10 @@ private:
 	v3f m_acceleration;
 	LocalPlayer *m_player;
 	float m_size;
-	u8 m_light;
+	//! Color without lighting
+	video::SColor m_base_color;
+	//! Final rendered color
+	video::SColor m_color;
 	bool m_collisiondetection;
 	bool m_collision_removal;
 	bool m_vertical;
@@ -184,13 +190,16 @@ public:
 			scene::ISceneManager* smgr, LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 	void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 protected:
 	void addParticle(Particle* toadd);

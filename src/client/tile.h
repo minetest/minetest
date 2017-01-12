@@ -108,6 +108,12 @@ public:
 			const std::string &name, u32 *id = NULL) = 0;
 	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	/*! Generates an image from a full string like
+	 * "stone.png^mineral_coal.png^[crack:1:0".
+	 * Shall be called from the main thread.
+	 * The returned Image should be dropped.
+	 */
+	virtual video::IImage* generateImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
@@ -192,7 +198,6 @@ struct TileSpec
 		texture(NULL),
 		normal_texture(NULL),
 		flags_texture(NULL),
-		alpha(255),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
@@ -201,22 +206,30 @@ struct TileSpec
 		shader_id(0),
 		animation_frame_count(1),
 		animation_frame_length_ms(0),
-		rotation(0)
+		rotation(0),
+		has_color(false),
+		color(),
+		emissive_light(0)
 	{
 	}
 
+	/*!
+	 * Two tiles are equal if they can be appended to
+	 * the same mesh buffer.
+	 */
 	bool operator==(const TileSpec &other) const
 	{
 		return (
 			texture_id == other.texture_id &&
-			/* texture == other.texture && */
-			alpha == other.alpha &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
 			rotation == other.rotation
 		);
 	}
 
+	/*!
+	 * Two tiles are not equal if they must be in different mesh buffers.
+	 */
 	bool operator!=(const TileSpec &other) const
 	{
 		return !(*this == other);
@@ -233,7 +246,7 @@ struct TileSpec
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
@@ -274,8 +287,6 @@ struct TileSpec
 	video::ITexture *normal_texture;
 	video::ITexture *flags_texture;
 	
-	// Vertex alpha (when MATERIAL_ALPHA_VERTEX is used)
-	u8 alpha;
 	// Material parameters
 	u8 material_type;
 	u8 material_flags;
@@ -286,5 +297,14 @@ struct TileSpec
 	std::vector<FrameSpec> frames;
 
 	u8 rotation;
+	//! If true, the tile has its own color.
+	bool has_color;
+	/*!
+	 * The color of the tile, or if the tile does not own
+	 * a color then the color of the node owning this tile.
+	 */
+	video::SColor color;
+	//! This much light does the tile emit.
+	u8 emissive_light;
 };
 #endif
