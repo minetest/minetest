@@ -108,6 +108,12 @@ public:
 			const std::string &name, u32 *id = NULL) = 0;
 	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
+	/*! Generates an image from a full string like
+	 * "stone.png^mineral_coal.png^[crack:1:0".
+	 * Shall be called from the main thread.
+	 * The returned Image should be dropped.
+	 */
+	virtual video::IImage* generateImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;

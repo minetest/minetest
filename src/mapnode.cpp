@@ -57,6 +57,10 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 
 void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
 {
+	if (f.palette) {
+		*color = (*f.palette)[param2];
+		return;
+	}
 	*color = f.color;
 }
 

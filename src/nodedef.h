@@ -245,6 +245,8 @@ struct ContentFeatures
 	u8 alpha;
 	// The color of the node.
 	video::SColor color;
+	std::string palette_name;
+	std::vector<video::SColor> *palette;
 	// Used for waving leaves/plants
 	u8 waving;
 	// for NDT_CONNECTED pairing

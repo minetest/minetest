@@ -459,6 +459,8 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	read_color(L, -1, &f.color);
 	lua_pop(L, 1);
 
+	getstringfield(L, index, "palette", f.palette_name);
+
 	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");

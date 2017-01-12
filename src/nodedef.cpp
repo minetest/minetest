@@ -370,6 +370,8 @@ void ContentFeatures::reset()
 	connects_to_ids.clear();
 	connect_sides = 0;
 	color = video::SColor(0xFFFFFFFF);
+	palette_name = "";
+	palette = NULL;
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -408,6 +410,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, color.getRed());
 	writeU8(os, color.getGreen());
 	writeU8(os, color.getBlue());
+	os << serializeString(palette_name);
 	writeU8(os, waving);
 	writeU8(os, connect_sides);
 	writeU16(os, connects_to_ids.size());
@@ -501,6 +504,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	color.setRed(readU8(is));
 	color.setGreen(readU8(is));
 	color.setBlue(readU8(is));
+	palette_name = deSerializeString(is);
 	waving = readU8(is);
 	connect_sides = readU8(is);
 	u16 connects_to_size = readU16(is);
@@ -829,6 +833,9 @@ public:
 	virtual void removeNode(const std::string &name);
 	virtual void updateAliases(IItemDefManager *idef);
 	virtual void applyTextureOverrides(const std::string &override_filepath);
+	//! Returns a palette or NULL if not found. Only on client.
+	std::vector<video::SColor> *getPalette(const std::string &name,
+		const IGameDef *gamedef);
 	virtual void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
 		void *progress_cbk_args);
@@ -876,6 +883,9 @@ private:
 
 	// Next possibly free id
 	content_t m_next_id;
+
+	// Maps image file names to loaded palettes.
+	UNORDERED_MAP<std::string, std::vector<video::SColor> > m_palettes;
 
 	// NodeResolvers to callback once node registration has ended
 	std::vector<NodeResolver *> m_pending_resolve_callbacks;
@@ -1363,6 +1373,51 @@ void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath
 	}
 }
 
+std::vector<video::SColor> *CNodeDefManager::getPalette(
+	const std::string &name, const IGameDef *gamedef)
+{
+#ifndef SERVER
+	if (name == "")
+		return NULL;
+	Client *client = (Client *) gamedef;
+	ITextureSource *tsrc = client->tsrc();
+
+	UNORDERED_MAP<std::string, std::vector<video::SColor> >::iterator it =
+	m_palettes.find(name);
+	if (it == m_palettes.end()) {
+		// Create palette
+		if (!tsrc->isKnownSourceImage(name)) {
+			warningstream << "CNodeDefManager::getPalette(): palette \"" << name
+				<< "\" could not be loaded." << std::endl;
+			return NULL;
+		}
+		video::IImage *img = tsrc->generateImage(name);
+		std::vector<video::SColor> new_palette;
+		u32 w = img->getDimension().Width;
+		u32 h = img->getDimension().Height;
+		u32 area = h * w;
+		if (area != 256)
+			warningstream << "CNodeDefManager::getPalette(): the "
+				<< "specified palette image \"" << name << "\" does not "
+				<< "contain exactly 256 pixels." << std::endl;
+		if (area > 256)
+			area = 256;
+		for (u32 i = 0; i < area; i++)
+			new_palette.push_back(img->getPixel(i % w, i / w));
+		img->drop();
+		// Fill in remaining elements
+		for (u32 i = area; i < 256; i++)
+			new_palette.push_back(video::SColor(0xFFFFFFFF));
+		m_palettes[name] = new_palette;
+		it = m_palettes.find(name);
+	}
+	if (it != m_palettes.end())
+		return &((*it).second);
+
+#endif
+	return NULL;
+}
+
 void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
 	void *progress_callback_args)
@@ -1379,10 +1434,13 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
+	m_palettes.clear();
 	u32 size = m_content_features.size();
 
 	for (u32 i = 0; i < size; i++) {
-		m_content_features[i].updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
+		ContentFeatures *f = &(m_content_features[i]);
+		f->palette = getPalette(f->palette_name, gamedef);
+		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
 		progress_callback(progress_callback_args, i, size);
 	}
 #endif
