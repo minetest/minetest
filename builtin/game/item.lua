@@ -147,6 +147,14 @@ function core.wallmounted_to_dir(wallmounted)
 	return wallmounted_to_dir[wallmounted]
 end
 
+function core.dir_to_yaw(dir)
+	return -math.atan2(dir.x, dir.z)
+end
+
+function core.yaw_to_dir(yaw)
+	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
+end
+
 function core.get_node_drops(nodename, toolname)
 	local drop = ItemStack({name=nodename}):get_definition().drop
 	if drop == nil then
