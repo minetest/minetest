@@ -465,6 +465,24 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 }
 
+void ContentFeatures::correctAlpha()
+{
+	if (alpha == 0 || alpha == 255)
+		return;
+
+	for (u32 i = 0; i < 6; i++) {
+		std::stringstream s;
+		s << tiledef[i].name << "^[noalpha^[opacity:" << ((int)alpha);
+		tiledef[i].name = s.str();
+	}
+
+	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++) {
+		std::stringstream s;
+		s << tiledef_special[i].name << "^[noalpha^[opacity:" << ((int)alpha);
+		tiledef_special[i].name = s.str();
+	}
+}
+
 void ContentFeatures::deSerialize(std::istream &is)
 {
 	// version detection
@@ -558,6 +576,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+
+	// Vertex alpha is no longer supported, correct if necessary.
+	correctAlpha();
 }
 
 #ifndef SERVER
@@ -1737,6 +1758,8 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
+		// Vertex alpha is no longer supported, correct if necessary.
+		correctAlpha();
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
 		post_effect_color.setGreen(readU8(is));
@@ -1841,6 +1864,8 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
+		// Vertex alpha is no longer supported, correct if necessary.
+		correctAlpha();
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
 		post_effect_color.setGreen(readU8(is));

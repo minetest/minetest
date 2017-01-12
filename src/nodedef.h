@@ -338,6 +338,14 @@ struct ContentFeatures
 	void deSerialize(std::istream &is);
 	void serializeOld(std::ostream &os, u16 protocol_version) const;
 	void deSerializeOld(std::istream &is, int version);
+	/*!
+	 * Since vertex alpha is no lnger supported, this method
+	 * adds instructions to the texture names to blend alpha there.
+	 *
+	 * tiledef, tiledef_special and alpha must be initialized
+	 * before calling this.
+	 */
+	void correctAlpha();
 
 	/*
 		Some handy methods
