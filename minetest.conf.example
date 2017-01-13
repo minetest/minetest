@@ -1254,9 +1254,14 @@
 #    type: int
 # mgv7_floatland_level = 1280
 
-#    Y-level to which floatland shadows extend.
+#    Y-level of floatland biome and lighting transition.
+#    Set this to the Y of the lowest possible floatland stone, typically
+#    2 * float_mount_height below floatland_level.
+#    Above this level floatland biomes take effect.
+#    Between this and floatland_level shadow propagation is disabled to
+#    illuminate the floatland underside.
 #    type: int
-# mgv7_shadow_limit = 1024
+# mgv7_floatland_limit = 1024
 
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0

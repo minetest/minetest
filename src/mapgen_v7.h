@@ -39,7 +39,7 @@ struct MapgenV7Params : public MapgenParams {
 	float float_mount_density;
 	float float_mount_height;
 	s16 floatland_level;
-	s16 shadow_limit;
+	s16 floatland_limit;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
@@ -86,7 +86,7 @@ private:
 	float float_mount_density;
 	float float_mount_height;
 	s16 floatland_level;
-	s16 shadow_limit;
+	s16 floatland_limit;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_alt;

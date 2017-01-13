@@ -59,7 +59,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	this->float_mount_density = params->float_mount_density;
 	this->float_mount_height  = params->float_mount_height;
 	this->floatland_level     = params->floatland_level;
-	this->shadow_limit        = params->shadow_limit;
+	this->floatland_limit     = params->floatland_limit;
 
 	//// Terrain noise
 	noise_terrain_base      = new Noise(&params->np_terrain_base,      seed, csize.X, csize.Z);
@@ -105,7 +105,7 @@ MapgenV7Params::MapgenV7Params()
 	float_mount_density = 0.6;
 	float_mount_height  = 128.0;
 	floatland_level     = 1280;
-	shadow_limit        = 1024;
+	floatland_limit     = 1024;
 
 	np_terrain_base      = NoiseParams(4,    70,   v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
 	np_terrain_alt       = NoiseParams(4,    25,   v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
@@ -130,7 +130,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getFloatNoEx("mgv7_float_mount_density", float_mount_density);
 	settings->getFloatNoEx("mgv7_float_mount_height",  float_mount_height);
 	settings->getS16NoEx("mgv7_floatland_level",       floatland_level);
-	settings->getS16NoEx("mgv7_shadow_limit",          shadow_limit);
+	settings->getS16NoEx("mgv7_floatland_limit",       floatland_limit);
 
 	settings->getNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->getNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -155,7 +155,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setFloat("mgv7_float_mount_density", float_mount_density);
 	settings->setFloat("mgv7_float_mount_height",  float_mount_height);
 	settings->setS16("mgv7_floatland_level",       floatland_level);
-	settings->setS16("mgv7_shadow_limit",          shadow_limit);
+	settings->setS16("mgv7_floatland_limit",       floatland_limit);
 
 	settings->setNoiseParams("mgv7_np_terrain_base",      np_terrain_base);
 	settings->setNoiseParams("mgv7_np_terrain_alt",       np_terrain_alt);
@@ -278,7 +278,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Limit floatland shadow
 	bool propagate_shadow = !((spflags & MGV7_FLOATLANDS) &&
-		node_min.Y <= shadow_limit && node_max.Y >= shadow_limit);
+		node_max.Y >= floatland_limit && node_max.Y <= floatland_level);
 
 	if (flags & MG_LIGHT)
 		calcLighting(node_min - v3s16(0, 1, 0), node_max + v3s16(0, 1, 0),
@@ -469,7 +469,7 @@ int MapgenV7::generateTerrain()
 
 void MapgenV7::generateRidgeTerrain()
 {
-	if ((node_max.Y < water_level - 16) || (node_max.Y > shadow_limit))
+	if ((node_max.Y < water_level - 16) || (node_max.Y > floatland_limit))
 		return;
 
 	noise_ridge->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
