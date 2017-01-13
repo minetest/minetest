@@ -339,9 +339,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("main_menu_mod_mgr", "1");
 	settings->setDefault("main_menu_game_mgr", "0");
-	settings->setDefault("modstore_download_url", "https://forum.minetest.net/media/");
-	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");
-	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
+	settings->setDefault("modstore_download_url", "http://app-mtmm.rubenwardy.com/");
+	settings->setDefault("modstore_listmods_url", "http://app-mtmm.rubenwardy.com/mods/");
+	settings->setDefault("modstore_details_url", "http://app-mtmm.rubenwardy.com/mod/*/");
 
 	settings->setDefault("high_precision_fpu", "true");
 
