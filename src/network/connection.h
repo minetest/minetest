@@ -21,10 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONNECTION_HEADER
 
 #include "irrlichttypes_bloated.h"
-#include "socket.h"
 #include "exceptions.h"
 #include "constants.h"
 #include "network/networkpacket.h"
+#include "network/socket.h"
 #include "util/pointer.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -396,7 +396,6 @@ struct OutgoingPacket
 
 enum ConnectionCommandType{
 	CONNCMD_NONE,
-	CONNCMD_SERVE,
 	CONNCMD_CONNECT,
 	CONNCMD_DISCONNECT,
 	CONNCMD_DISCONNECT_PEER,
@@ -419,12 +418,7 @@ struct ConnectionCommand
 
 	ConnectionCommand(): type(CONNCMD_NONE), peer_id(PEER_ID_INEXISTENT), reliable(false), raw(false) {}
 
-	void serve(Address address_)
-	{
-		type = CONNCMD_SERVE;
-		address = address_;
-	}
-	void connect(Address address_)
+	void connect(const Address &address_)
 	{
 		type = CONNCMD_CONNECT;
 		address = address_;
@@ -592,22 +586,16 @@ class PeerHandler
 {
 public:
 
-	PeerHandler()
-	{
-	}
-	virtual ~PeerHandler()
-	{
-	}
+	PeerHandler() {}
+	virtual ~PeerHandler() {}
 
-	/*
-		This is called after the Peer has been inserted into the
-		Connection's peer container.
-	*/
+	/** Called after the Peer has been inserted into the
+	 * Connection's peer container.
+	 */
 	virtual void peerAdded(Peer *peer) = 0;
-	/*
-		This is called before the Peer has been removed from the
-		Connection's peer container.
-	*/
+	/** Called before the Peer has been removed from the
+	 * Connection's peer container.
+	 */
 	virtual void deletingPeer(Peer *peer, bool timeout) = 0;
 };
 
@@ -618,14 +606,15 @@ public:
 	PeerHelper(Peer* peer);
 	~PeerHelper();
 
-	PeerHelper&   operator=(Peer* peer);
-	Peer*         operator->() const;
-	bool          operator!();
-	Peer*         operator&() const;
-	bool          operator!=(void* ptr);
+	PeerHelper &operator = (Peer *peer);
+	Peer *operator -> () const { return m_peer; }
+	Peer *operator & () const { return m_peer; }
+	operator bool () const { return m_peer; }
+	bool operator == (Peer *other) { return m_peer == other; }
+	bool operator != (Peer *other) { return !(*this == other); }
 
 private:
-	Peer* m_peer;
+	Peer *m_peer;
 };
 
 class Connection;
@@ -649,158 +638,149 @@ typedef enum {
 } rate_stat_type;
 
 class Peer {
-	public:
-		friend class PeerHelper;
+public:
+	friend class PeerHelper;
 
-		Peer(Address address_,u16 id_,Connection* connection) :
-			id(id_),
-			m_increment_packets_remaining(9),
-			m_increment_bytes_remaining(0),
-			m_pending_deletion(false),
-			m_connection(connection),
-			address(address_),
-			m_ping_timer(0.0),
-			m_last_rtt(-1.0),
-			m_usage(0),
-			m_timeout_counter(0.0),
-			m_last_timeout_check(porting::getTimeMs())
-		{
-			m_rtt.avg_rtt = -1.0;
-			m_rtt.jitter_avg = -1.0;
-			m_rtt.jitter_max = 0.0;
-			m_rtt.max_rtt = 0.0;
-			m_rtt.jitter_min = FLT_MAX;
-			m_rtt.min_rtt = FLT_MAX;
-		};
+	Peer(const Address &address, u16 id, Connection *connection) :
+		id(id),
+		m_increment_packets_remaining(9),
+		m_increment_bytes_remaining(0),
+		m_pending_deletion(false),
+		m_connection(connection),
+		address(address),
+		m_ping_timer(0.0),
+		m_last_rtt(-1.0),
+		m_usage(0),
+		m_timeout_counter(0.0),
+		m_last_timeout_check(porting::getTimeMs())
+	{
+		m_rtt.avg_rtt = -1.0;
+		m_rtt.jitter_avg = -1.0;
+		m_rtt.jitter_max = 0.0;
+		m_rtt.max_rtt = 0.0;
+		m_rtt.jitter_min = FLT_MAX;
+		m_rtt.min_rtt = FLT_MAX;
+	};
 
-		virtual ~Peer() {
-			MutexAutoLock usage_lock(m_exclusive_access_mutex);
-			FATAL_ERROR_IF(m_usage != 0, "Reference counting failure");
-		};
+	virtual ~Peer() {
+		MutexAutoLock usage_lock(m_exclusive_access_mutex);
+		FATAL_ERROR_IF(m_usage != 0, "Reference counting failure");
+	};
 
-		// Unique id of the peer
-		u16 id;
+	// Unique id of the peer
+	u16 id;
 
-		void Drop();
+	void Drop();
 
-		virtual void PutReliableSendCommand(ConnectionCommand &c,
-						unsigned int max_packet_size) {};
+	virtual void PutReliableSendCommand(ConnectionCommand &c,
+					unsigned int max_packet_size) {};
 
-		virtual bool getAddress(MTProtocols type, Address& toset) = 0;
+	virtual bool getAddress(MTProtocols type, Address& toset) = 0;
 
-		bool isPendingDeletion()
-		{ MutexAutoLock lock(m_exclusive_access_mutex); return m_pending_deletion; };
+	bool isPendingDeletion()
+	{ MutexAutoLock lock(m_exclusive_access_mutex); return m_pending_deletion; };
 
-		void ResetTimeout()
-			{MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter=0.0; };
+	void ResetTimeout()
+		{ MutexAutoLock lock(m_exclusive_access_mutex); m_timeout_counter=0.0; };
 
-		bool isTimedOut(float timeout);
+	bool isTimedOut(float timeout);
 
-		unsigned int m_increment_packets_remaining;
-		unsigned int m_increment_bytes_remaining;
+	unsigned int m_increment_packets_remaining;
+	unsigned int m_increment_bytes_remaining;
 
-		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
-		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
-		virtual SharedBuffer<u8> addSpiltPacket(u8 channel,
-												BufferedPacket toadd,
-												bool reliable)
-				{
-					fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
-					return SharedBuffer<u8>(0);
-				};
+	virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
+	virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
+	virtual SharedBuffer<u8> addSpiltPacket(u8 channel,
+			BufferedPacket toadd,
+			bool reliable) = 0;
 
-		virtual bool Ping(float dtime, SharedBuffer<u8>& data) { return false; };
+	virtual bool Ping(float dtime, SharedBuffer<u8>& data) { return false; };
 
-		virtual float getStat(rtt_stat_type type) const {
-			switch (type) {
-				case MIN_RTT:
-					return m_rtt.min_rtt;
-				case MAX_RTT:
-					return m_rtt.max_rtt;
-				case AVG_RTT:
-					return m_rtt.avg_rtt;
-				case MIN_JITTER:
-					return m_rtt.jitter_min;
-				case MAX_JITTER:
-					return m_rtt.jitter_max;
-				case AVG_JITTER:
-					return m_rtt.jitter_avg;
-			}
-			return -1;
+	virtual float getStat(rtt_stat_type type) const {
+		switch (type) {
+			case MIN_RTT:
+				return m_rtt.min_rtt;
+			case MAX_RTT:
+				return m_rtt.max_rtt;
+			case AVG_RTT:
+				return m_rtt.avg_rtt;
+			case MIN_JITTER:
+				return m_rtt.jitter_min;
+			case MAX_JITTER:
+				return m_rtt.jitter_max;
+			case AVG_JITTER:
+				return m_rtt.jitter_avg;
 		}
-	protected:
-		virtual void reportRTT(float rtt) {};
+		return -1;
+	}
+protected:
+	virtual void reportRTT(float rtt) {};
 
-		void RTTStatistics(float rtt,
-							std::string profiler_id="",
-							unsigned int num_samples=1000);
+	void RTTStatistics(float rtt, std::string profiler_id="",
+			unsigned int num_samples=1000);
 
-		bool IncUseCount();
-		void DecUseCount();
+	bool IncUseCount();
+	void DecUseCount();
 
-		Mutex m_exclusive_access_mutex;
+	Mutex m_exclusive_access_mutex;
 
-		bool m_pending_deletion;
+	bool m_pending_deletion;
 
-		Connection* m_connection;
+	Connection* m_connection;
 
-		// Address of the peer
-		Address address;
+	// Address of the peer
+	Address address;
 
-		// Ping timer
-		float m_ping_timer;
-	private:
+	// Ping timer
+	float m_ping_timer;
+private:
 
-		struct rttstats {
-			float jitter_min;
-			float jitter_max;
-			float jitter_avg;
-			float min_rtt;
-			float max_rtt;
-			float avg_rtt;
-		};
+	struct rttstats {
+		float jitter_min;
+		float jitter_max;
+		float jitter_avg;
+		float min_rtt;
+		float max_rtt;
+		float avg_rtt;
+	};
 
-		rttstats m_rtt;
-		float    m_last_rtt;
+	rttstats m_rtt;
+	float    m_last_rtt;
 
-		// current usage count
-		unsigned int m_usage;
+	// current usage count
+	unsigned int m_usage;
 
-		// Seconds from last receive
-		float m_timeout_counter;
+	// Seconds from last receive
+	float m_timeout_counter;
 
-		u32 m_last_timeout_check;
+
+	u32 m_last_timeout_check;
 };
 
 class UDPPeer : public Peer
 {
 public:
-
 	friend class PeerHelper;
 	friend class ConnectionReceiveThread;
 	friend class ConnectionSendThread;
 	friend class Connection;
 
-	UDPPeer(u16 a_id, Address a_address, Connection* connection);
+	UDPPeer(u16 a_id, const Address &a_address, size_t sock_id, Connection *connection);
 	virtual ~UDPPeer() {};
 
 	void PutReliableSendCommand(ConnectionCommand &c,
-							unsigned int max_packet_size);
-
-	bool getAddress(MTProtocols type, Address& toset);
+			unsigned int max_packet_size);
 
 	void setNonLegacyPeer();
-
-	bool getLegacyPeer()
-	{ return m_legacy_peer; }
-
-	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
 
-	SharedBuffer<u8> addSpiltPacket(u8 channel,
-									BufferedPacket toadd,
-									bool reliable);
+	bool getAddress(MTProtocols type, Address &toset);
+	size_t getSocketId() const { return m_sock_id; }
+	bool getLegacyPeer() { return m_legacy_peer; }
+	u16 getNextSplitSequenceNumber(u8 channel);
 
+	SharedBuffer<u8> addSpiltPacket(u8 channel, BufferedPacket toadd,
+			bool reliable);
 
 protected:
 	/*
@@ -809,29 +789,26 @@ protected:
 	*/
 	void reportRTT(float rtt);
 
-	void RunCommandQueues(
-					unsigned int max_packet_size,
-					unsigned int maxcommands,
-					unsigned int maxtransfer);
+	void RunCommandQueues(unsigned int max_packet_size,
+			unsigned int maxcommands, unsigned int maxtransfer);
 
 	float getResendTimeout()
 		{ MutexAutoLock lock(m_exclusive_access_mutex); return resend_timeout; }
 
 	void setResendTimeout(float timeout)
 		{ MutexAutoLock lock(m_exclusive_access_mutex); resend_timeout = timeout; }
-	bool Ping(float dtime,SharedBuffer<u8>& data);
+	bool Ping(float dtime, SharedBuffer<u8> &data);
 
 	Channel channels[CHANNEL_COUNT];
 	bool m_pending_disconnect;
+
 private:
-	// This is changed dynamically
-	float resend_timeout;
+	bool processReliableSendCommand(ConnectionCommand &c,
+			unsigned int max_packet_size);
 
-	bool processReliableSendCommand(
-					ConnectionCommand &c,
-					unsigned int max_packet_size);
-
+	float resend_timeout; // This is changed dynamically
 	bool m_legacy_peer;
+	size_t m_sock_id;
 };
 
 /*
@@ -843,7 +820,6 @@ enum ConnectionEventType{
 	CONNEVENT_DATA_RECEIVED,
 	CONNEVENT_PEER_ADDED,
 	CONNEVENT_PEER_REMOVED,
-	CONNEVENT_BIND_FAILED,
 };
 
 struct ConnectionEvent
@@ -868,8 +844,6 @@ struct ConnectionEvent
 			return "CONNEVENT_PEER_ADDED";
 		case CONNEVENT_PEER_REMOVED:
 			return "CONNEVENT_PEER_REMOVED";
-		case CONNEVENT_BIND_FAILED:
-			return "CONNEVENT_BIND_FAILED";
 		}
 		return "Invalid ConnectionEvent";
 	}
@@ -892,10 +866,6 @@ struct ConnectionEvent
 		peer_id = peer_id_;
 		timeout = timeout_;
 		address = address_;
-	}
-	void bindFailed()
-	{
-		type = CONNEVENT_BIND_FAILED;
 	}
 };
 
@@ -920,29 +890,29 @@ public:
 
 private:
 	void runTimeouts    (float dtime);
-	void rawSend        (const BufferedPacket &packet);
+	void rawSend        (const UDPPeer*, const BufferedPacket&);
 	bool rawSendAsPacket(u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data, bool reliable);
+			SharedBuffer<u8> data, bool reliable);
 
 	void processReliableCommand (ConnectionCommand &c);
 	void processNonReliableCommand (ConnectionCommand &c);
-	void serve          (Address bind_address);
-	void connect        (Address address);
+	void serve          (const Address &address);
+	void connect        (const Address &address);
 	void disconnect     ();
 	void disconnect_peer(u16 peer_id);
 	void send           (u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data);
+			SharedBuffer<u8> data);
 	void sendReliable   (ConnectionCommand &c);
 	void sendToAll      (u8 channelnum,
-							SharedBuffer<u8> data);
+			SharedBuffer<u8> data);
 	void sendToAllReliable(ConnectionCommand &c);
 
 	void sendPackets    (float dtime);
 
 	void sendAsPacket   (u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data,bool ack=false);
+			SharedBuffer<u8> data, bool ack=false);
 
-	void sendAsPacketReliable(BufferedPacket& p, Channel* channel);
+	void sendAsPacketReliable(const UDPPeer*, BufferedPacket&, Channel*);
 
 	bool packetsQueued();
 
@@ -971,6 +941,10 @@ public:
 
 private:
 	void receive();
+	void handleReceive(UDPSocket *sock, size_t sock_id,
+		SharedBuffer<u8> &packetdata, unsigned packet_maxsize,
+		bool &packet_queued);
+	bool wait_fds(int timeout_ms, fd_set *readset);
 
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.
@@ -978,7 +952,7 @@ private:
 	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
 
 	bool checkIncomingBuffers(Channel *channel, u16 &peer_id,
-							SharedBuffer<u8> &dst);
+			SharedBuffer<u8> &dst);
 
 	/*
 		Processes a packet with the basic header stripped out.
@@ -989,11 +963,11 @@ private:
 			reliable: true if recursing into a reliable packet
 	*/
 	SharedBuffer<u8> processPacket(Channel *channel,
-							SharedBuffer<u8> packetdata, u16 peer_id,
-							u8 channelnum, bool reliable);
+			SharedBuffer<u8> packetdata, u16 peer_id,
+			u8 channelnum, bool reliable);
 
 
-	Connection*           m_connection;
+	Connection *m_connection;
 };
 
 class Connection
@@ -1002,7 +976,7 @@ public:
 	friend class ConnectionSendThread;
 	friend class ConnectionReceiveThread;
 
-	Connection(u32 protocol_id, u32 max_packet_size, float timeout, bool ipv6,
+	Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 			PeerHandler *peerhandler);
 	~Connection();
 
@@ -1010,9 +984,14 @@ public:
 	ConnectionEvent waitEvent(u32 timeout_ms);
 	void putCommand(ConnectionCommand &c);
 
+	// Start send and receive threads
+	void start();
+
+	// May only be called before start()!
+	void Serve(const Address &address);
+	void Connect(const Address &address);
+
 	void SetTimeoutMs(int timeout) { m_bc_receive_timeout = timeout; }
-	void Serve(Address bind_addr);
-	void Connect(Address address);
 	bool Connected();
 	void Disconnect();
 	void Receive(NetworkPacket* pkt);
@@ -1024,14 +1003,15 @@ public:
 	const u32 GetProtocolID() const { return m_protocol_id; };
 	const std::string getDesc();
 	void DisconnectPeer(u16 peer_id);
+	const Address &getFirstListenAddress() const;
 
 protected:
 	PeerHelper getPeer(u16 peer_id);
 	PeerHelper getPeerNoEx(u16 peer_id);
-	u16   lookupPeer(Address& sender);
+	u16   lookupPeer(const Address &sender);
 
-	u16 createPeer(Address& sender, MTProtocols protocol, int fd);
-	UDPPeer*  createServerPeer(Address& sender);
+	u16 createPeer(const Address &sender, size_t sock_id, MTProtocols protocol, int fd);
+	UDPPeer *createServerPeer(const Address &sender);
 	bool deletePeer(u16 peer_id, bool timeout);
 
 	void SetPeerID(u16 id) { m_peer_id = id; }
@@ -1047,7 +1027,7 @@ protected:
 		return m_peer_ids;
 	}
 
-	UDPSocket m_udpSocket;
+	std::vector<UDPSocket *> m_sockets;
 	MutexedQueue<ConnectionCommand> m_command_queue;
 
 	void putEvent(ConnectionEvent &e);

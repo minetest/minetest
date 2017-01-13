@@ -255,6 +255,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 				current_password,
 				current_address,
 				current_port,
+				game_params.listen,
 				error_message,
 				chat_backend,
 				&reconnect_requested,
@@ -343,10 +344,11 @@ bool ClientLauncher::launch_game(std::string &error_message,
 {
 	// Initialize menu data
 	MainMenuData menudata;
-	menudata.address                         = address;
-	menudata.name                            = playername;
-	menudata.password                        = password;
-	menudata.port                            = itos(game_params.socket_port);
+	menudata.address  = address;
+	menudata.name     = playername;
+	menudata.password = password;
+	menudata.port     = game_params.port;
+	menudata.listen   = game_params.listen;
 	menudata.script_data.errormessage        = error_message;
 	menudata.script_data.reconnect_requested = reconnect_requested;
 
@@ -358,7 +360,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	menudata.enable_public = g_settings->getBool("server_announce");
 
 	// If a world was commanded, append and select it
-	if (game_params.world_path != "") {
+	if (!game_params.world_path.empty()) {
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);
 		worldspec.name = _("[--world parameter]");
 
@@ -379,9 +381,13 @@ bool ClientLauncher::launch_game(std::string &error_message,
 			return false;
 
 		address = menudata.address;
-		int newport = stoi(menudata.port);
-		if (newport != 0)
-			game_params.socket_port = newport;
+		std::string listen = menudata.listen;
+		if (!listen.empty())
+			game_params.listen = listen;
+
+		u16 port = stoi(menudata.port);
+		if (port != 0)
+			game_params.port = port;
 
 		simple_singleplayer_mode = menudata.simple_singleplayer_mode;
 
@@ -403,7 +409,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
-	if (menudata.name == "")
+	if (menudata.name.empty())
 		menudata.name = std::string("Guest") + itos(myrand_range(1000, 9999));
 	else
 		playername = menudata.name;
@@ -415,16 +421,16 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	current_playername = playername;
 	current_password   = password;
 	current_address    = address;
-	current_port       = game_params.socket_port;
+	current_port       = game_params.port;
 
 	// If using simple singleplayer mode, override
 	if (simple_singleplayer_mode) {
 		assert(skip_main_menu == false);
 		current_playername = "singleplayer";
-		current_password = "";
-		current_address = "";
-		current_port = myrand_range(49152, 65535);
-	} else if (address != "") {
+		current_password.clear();
+		current_address.clear();
+		current_port = 0;
+	} else if (!address.empty()) {
 		ServerListSpec server;
 		server["name"] = menudata.servername;
 		server["address"] = menudata.address;
@@ -436,8 +442,8 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	infostream << "Selected world: " << worldspec.name
 	           << " [" << worldspec.path << "]" << std::endl;
 
-	if (current_address == "") { // If local game
-		if (worldspec.path == "") {
+	if (current_address.empty()) { // If local game
+		if (worldspec.path.empty()) {
 			error_message = gettext("No world selected and no address "
 					"provided. Nothing to do.");
 			errorstream << error_message << std::endl;

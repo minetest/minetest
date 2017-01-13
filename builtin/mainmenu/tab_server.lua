@@ -39,18 +39,9 @@ local function get_formspec(tabview, name, tabdata)
 		core.formspec_escape(core.setting_get("name")) .. "]" ..
 		"pwdfield[0.55,4;3.5,0.5;te_passwd;]"
 
-	local bind_addr = core.setting_get("bind_address")
-	if bind_addr ~= nil and bind_addr ~= "" then
-		retval = retval ..
-			"field[0.55,5.2;2.25,0.5;te_serveraddr;" .. fgettext("Bind Address") .. ";" ..
-			core.formspec_escape(core.setting_get("bind_address")) .. "]" ..
-			"field[2.8,5.2;1.25,0.5;te_serverport;" .. fgettext("Port") .. ";" ..
-			core.formspec_escape(core.setting_get("port")) .. "]"
-	else
-		retval = retval ..
-			"field[0.55,5.2;3.5,0.5;te_serverport;" .. fgettext("Server Port") .. ";" ..
-			core.formspec_escape(core.setting_get("port")) .. "]"
-	end
+	retval = retval ..
+		"field[0.55,5.2;3.5,0.5;te_listen;" .. fgettext("Server Listen") .. ";" ..
+		core.formspec_escape(core.setting_get("listen")) .. "]"
 	
 	retval = retval ..
 		"textlist[4,0.25;7.5,3.7;srv_worlds;" ..
@@ -117,13 +108,10 @@ local function main_button_handler(this, fields, name, tabdata)
 		if selected ~= nil and gamedata.selected_world ~= 0 then
 			gamedata.playername     = fields["te_playername"]
 			gamedata.password       = fields["te_passwd"]
-			gamedata.port           = fields["te_serverport"]
+			gamedata.listen         = fields["te_listen"]
 			gamedata.address        = ""
 
-			core.setting_set("port",gamedata.port)
-			if fields["te_serveraddr"] ~= nil then
-				core.setting_set("bind_address",fields["te_serveraddr"])
-			end
+			core.setting_set("listen", gamedata.listen)
 
 			--update last game
 			local world = menudata.worldlist:get_raw_element(gamedata.selected_world)

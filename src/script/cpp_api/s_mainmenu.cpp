@@ -26,16 +26,16 @@ void ScriptApiMainMenu::setMainMenuData(MainMenuDataForScript *data)
 	SCRIPTAPI_PRECHECKHEADER
 
 	lua_getglobal(L, "gamedata");
-	int gamedata_idx = lua_gettop(L);
-	lua_pushstring(L, "errormessage");
+
 	if (!data->errormessage.empty()) {
 		lua_pushstring(L, data->errormessage.c_str());
 	} else {
 		lua_pushnil(L);
 	}
-	lua_settable(L, gamedata_idx);
-	setboolfield(L, gamedata_idx, "reconnect_requested",
-		data->reconnect_requested);
+	lua_setfield(L, -2, "errormessage");
+
+	setboolfield(L, -1, "reconnect_requested", data->reconnect_requested);
+
 	lua_pop(L, 1);
 }
 

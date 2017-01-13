@@ -216,7 +216,6 @@ LOCAL_SRC_FILES := \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
 		jni/src/sky.cpp                           \
-		jni/src/socket.cpp                        \
 		jni/src/sound.cpp                         \
 		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
@@ -279,6 +278,7 @@ LOCAL_SRC_FILES += \
 		jni/src/network/clientpackethandler.cpp   \
 		jni/src/network/serveropcodes.cpp         \
 		jni/src/network/serverpackethandler.cpp   \
+		jni/src/network/socket.cpp
 
 # lua api
 LOCAL_SRC_FILES += \

@@ -142,15 +142,13 @@ public:
 		NOTE: Every public method should be thread-safe
 	*/
 
-	Server(
-		const std::string &path_world,
+	Server(const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6,
 		ChatInterface *iface = NULL
 	);
 	~Server();
-	void start(Address bind_addr);
+	void start(const std::string *listen=NULL);
 	void stop();
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in an another thread.
@@ -301,6 +299,8 @@ public:
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
 
+	const Address &getConnectAddress() const;
+
 	inline void setAsyncFatalError(const std::string &error)
 			{ m_async_fatal_error.set(error); }
 
@@ -357,9 +357,6 @@ public:
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);
 
-	// Bind address
-	Address m_bind_addr;
-
 	// Environment mutex (envlock)
 	Mutex m_env_mutex;
 
@@ -367,6 +364,8 @@ private:
 
 	friend class EmergeThread;
 	friend class RemoteClient;
+
+	void initConnection(const std::string *listen);
 
 	void SendMovement(u16 peer_id);
 	void SendHP(u16 peer_id, u8 hp);
@@ -656,4 +655,3 @@ private:
 void dedicated_server_loop(Server &server, bool &kill);
 
 #endif
-

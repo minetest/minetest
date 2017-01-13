@@ -767,12 +767,14 @@
 
 ## Network
 
-#    Network port to listen (UDP).
-#    This value will be overridden when starting from the main menu.
-#    type: int
-# port = 30000
+#    Network addresses and ports to listen on.
+#    IPV6_V6ONLY is set on all IPv6 addresses.
+#    type: string
+# listen = 0.0.0.0:30000 [::]:30000
 
-#    The network interface that the server listens on.
+#    Network address to bind to when making outgoing connections.
+#    If you're running a server and have announcing enabled the
+#    server should also listen on this address.
 #    type: string
 # bind_address =
 
@@ -788,12 +790,6 @@
 #    Files that are not present will be fetched the usual way.
 #    type: string
 # remote_media =
-
-#    Enable/disable running an IPv6 server.  An IPv6 server may be restricted
-#    to IPv6 clients, depending on system configuration.
-#    Ignored if bind_address is set.
-#    type: bool
-# ipv6_server = false
 
 ### Advanced
 

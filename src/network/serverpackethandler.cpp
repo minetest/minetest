@@ -56,7 +56,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	std::string addr_s;
 	try {
 		Address address = getPeerAddress(pkt->getPeerId());
-		addr_s = address.serializeString();
+		addr_s = address.serializeHost();
 	}
 	catch (con::PeerNotFoundException &e) {
 		/*
@@ -305,7 +305,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	std::string addr_s;
 	try {
 		Address address = getPeerAddress(pkt->getPeerId());
-		addr_s = address.serializeString();
+		addr_s = address.serializeHost();
 	}
 	catch (con::PeerNotFoundException &e) {
 		/*
@@ -1810,7 +1810,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 	std::string salt;
 	std::string verification_key;
 
-	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeString();
+	std::string addr_s = getPeerAddress(pkt->getPeerId()).serializeHost();
 	u8 is_empty;
 
 	*pkt >> salt >> verification_key >> is_empty;
@@ -1874,7 +1874,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _A packet in wrong state "
 			<< cstate << " from "
-			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< getPeerAddress(pkt->getPeerId()).serializeHost()
 			<< ". Ignoring." << std::endl;
 		return;
 	}
@@ -1882,7 +1882,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (client->chosen_mech != AUTH_MECHANISM_NONE) {
 		actionstream << "Server: got SRP _A packet, while auth"
 			<< "is already going on with mech " << client->chosen_mech
-			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " from " << getPeerAddress(pkt->getPeerId()).serializeHost()
 			<< " (wantSudo=" << wantSudo << "). Ignoring." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
@@ -1907,7 +1907,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	if (wantSudo) {
 		if (!client->isSudoMechAllowed(chosen)) {
 			actionstream << "Server: Player \"" << client->getName()
-				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< "\" at " << getPeerAddress(pkt->getPeerId()).serializeHost()
 				<< " tried to change password using unallowed mech "
 				<< chosen << "." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
@@ -1916,7 +1916,7 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 	} else {
 		if (!client->isMechAllowed(chosen)) {
 			actionstream << "Server: Client tried to authenticate from "
-				<< getPeerAddress(pkt->getPeerId()).serializeString()
+				<< getPeerAddress(pkt->getPeerId()).serializeHost()
 				<< " using unallowed mech " << chosen << "." << std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 			return;
@@ -1982,7 +1982,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (!((cstate == CS_HelloSent) || (cstate == CS_Active))) {
 		actionstream << "Server: got SRP _M packet in wrong state "
 			<< cstate << " from "
-			<< getPeerAddress(pkt->getPeerId()).serializeString()
+			<< getPeerAddress(pkt->getPeerId()).serializeHost()
 			<< ". Ignoring." << std::endl;
 		return;
 	}
@@ -1991,7 +1991,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		&& (client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD)) {
 		actionstream << "Server: got SRP _M packet, while auth"
 			<< "is going on with mech " << client->chosen_mech
-			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " from " << getPeerAddress(pkt->getPeerId()).serializeHost()
 			<< " (wantSudo=" << wantSudo << "). Denying." << std::endl;
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
@@ -2008,7 +2008,7 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (srp_verifier_get_session_key_length((SRPVerifier *) client->auth_data)
 			!= bytes_M.size()) {
 		actionstream << "Server: User " << client->getName()
-			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " at " << getPeerAddress(pkt->getPeerId()).serializeHost()
 			<< " sent bytes_M with invalid length " << bytes_M.size() << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
 		return;
@@ -2022,14 +2022,14 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 	if (!bytes_HAMK) {
 		if (wantSudo) {
 			actionstream << "Server: User " << client->getName()
-				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " at " << getPeerAddress(pkt->getPeerId()).serializeHost()
 				<< " tried to change their password, but supplied wrong"
 				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
 			return;
 		} else {
 			actionstream << "Server: User " << client->getName()
-				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+				<< " at " << getPeerAddress(pkt->getPeerId()).serializeHost()
 				<< " supplied wrong password (auth mechanism: SRP)."
 				<< std::endl;
 			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);

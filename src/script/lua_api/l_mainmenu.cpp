@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_mainmenu.h"
 #include "lua_api/l_internal.h"
 #include "common/c_content.h"
+#include "common/c_converter.h"
 #include "cpp_api/s_async.h"
 #include "guiEngine.h"
 #include "guiMainMenu.h"
@@ -40,52 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileArchive.h>
 #include <IFileSystem.h>
 
-/******************************************************************************/
-std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
-{
-	lua_getglobal(L, "gamedata");
 
-	lua_getfield(L, -1, name.c_str());
-
-	if(lua_isnil(L, -1))
-		return "";
-
-	return luaL_checkstring(L, -1);
-}
-
-/******************************************************************************/
-int ModApiMainMenu::getIntegerData(lua_State *L, std::string name,bool& valid)
-{
-	lua_getglobal(L, "gamedata");
-
-	lua_getfield(L, -1, name.c_str());
-
-	if(lua_isnil(L, -1)) {
-		valid = false;
-		return -1;
-		}
-
-	valid = true;
-	return luaL_checkinteger(L, -1);
-}
-
-/******************************************************************************/
-int ModApiMainMenu::getBoolData(lua_State *L, std::string name,bool& valid)
-{
-	lua_getglobal(L, "gamedata");
-
-	lua_getfield(L, -1, name.c_str());
-
-	if(lua_isnil(L, -1)) {
-		valid = false;
-		return false;
-		}
-
-	valid = true;
-	return lua_toboolean(L, -1);
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_update_formspec(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
@@ -110,25 +66,29 @@ int ModApiMainMenu::l_start(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	//update c++ gamedata from lua table
+	// Update C++ MainMenuData from Lua table
 
-	bool valid = false;
+	lua_getglobal(L, "gamedata");
 
 	MainMenuData *data = engine->m_data;
 
-	data->selected_world = getIntegerData(L, "selected_world",valid) -1;
-	data->simple_singleplayer_mode = getBoolData(L,"singleplayer",valid);
-	data->do_reconnect = getBoolData(L, "do_reconnect", valid);
+	getintfield( L, -1, "selected_world", data->selected_world);
+	data->selected_world--;
+	getboolfield(L, -1, "singleplayer",   data->simple_singleplayer_mode);
+	getboolfield(L, -1, "do_reconnect",   data->do_reconnect);
 	if (!data->do_reconnect) {
-		data->name     = getTextData(L,"playername");
-		data->password = getTextData(L,"password");
-		data->address  = getTextData(L,"address");
-		data->port     = getTextData(L,"port");
+		getstringfield(L, -1, "playername", data->name);
+		getstringfield(L, -1, "password",   data->password);
+		getstringfield(L, -1, "address",    data->address);
+		getstringfield(L, -1, "listen",     data->listen);
+		getstringfield(L, -1, "port",       data->port);
 	}
-	data->serverdescription = getTextData(L,"serverdescription");
-	data->servername        = getTextData(L,"servername");
+	getstringfield(L, -1, "servername", data->servername);
+	getstringfield(L, -1, "serverdescription", data->serverdescription);
 
-	//close menu next time
+	lua_pop(L, 1); // Pop gamedata
+
+	// Close menu next time
 	engine->m_startgame = true;
 	return 0;
 }

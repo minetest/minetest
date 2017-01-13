@@ -47,7 +47,7 @@ class TestFailedException : public std::exception {
 	}                                                                         \
 	num_tests_run++;                                                          \
 	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                       \
-	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
+	rawstream << #fxn << '(' << #__VA_ARGS__ << ") - " << tdiff << "ms" << std::endl; \
 } while (0)
 
 // Asserts the specified condition is true, or fails the current unit test

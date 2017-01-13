@@ -63,7 +63,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #define DEBUGFILE "debug.txt"
-#define DEFAULT_SERVER_PORT 30000
 
 typedef std::map<std::string, ValueSpec> OptionList;
 
@@ -91,7 +90,7 @@ static bool read_config_file(const Settings &cmd_args);
 static void init_log_streams(const Settings &cmd_args);
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args);
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args);
+static void game_configure_listen(GameParams *game_params, const Settings &cmd_args);
 
 static bool game_configure_world(GameParams *game_params, const Settings &cmd_args);
 static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_args);
@@ -142,8 +141,7 @@ int main(int argc, char *argv[])
 
 	Settings cmd_args;
 	bool cmd_args_ok = get_cmdline_opts(argc, argv, &cmd_args);
-	if (!cmd_args_ok
-			|| cmd_args.getFlag("help")
+	if (!cmd_args_ok || cmd_args.getFlag("help")
 			|| cmd_args.exists("nonopt1")) {
 		print_help(allowed_options);
 		return cmd_args_ok ? 0 : 1;
@@ -213,9 +211,8 @@ int main(int argc, char *argv[])
 	infostream << "Using commanded world path ["
 	           << game_params.world_path << "]" << std::endl;
 
-	//Run dedicated server if asked to or no other option
-	g_settings->set("server_dedicated",
-			game_params.is_dedicated_server ? "true" : "false");
+	// Run dedicated server if asked to or no other option
+	g_settings->setBool("server_dedicated", game_params.is_dedicated_server);
 
 	if (game_params.is_dedicated_server)
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
@@ -228,7 +225,7 @@ int main(int argc, char *argv[])
 #endif
 
 	// Update configuration file
-	if (g_settings_path != "")
+	if (!g_settings_path.empty())
 		g_settings->updateConfigFile(g_settings_path.c_str());
 
 	print_modified_quicktune_values();
@@ -266,6 +263,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Load configuration from specified file"))));
 	allowed_options->insert(std::make_pair("port", ValueSpec(VALUETYPE_STRING,
 			_("Set network port (UDP)"))));
+	allowed_options->insert(std::make_pair("listen", ValueSpec(VALUETYPE_STRING,
+			_("Set network listen addresses (UDP)"))));
 	allowed_options->insert(std::make_pair("run-unittests", ValueSpec(VALUETYPE_FLAG,
 			_("Run the unit tests and exit"))));
 	allowed_options->insert(std::make_pair("map-dir", ValueSpec(VALUETYPE_STRING,
@@ -441,10 +440,6 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	startup_message();
 	set_default_settings(g_settings);
 
-	// Initialize sockets
-	sockets_init();
-	atexit(sockets_cleanup);
-
 	if (!read_config_file(cmd_args))
 		return false;
 
@@ -559,7 +554,7 @@ static void init_log_streams(const Settings &cmd_args)
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 {
-	game_configure_port(game_params, cmd_args);
+	game_configure_listen(game_params, cmd_args);
 
 	if (!game_configure_world(game_params, cmd_args)) {
 		errorstream << "No world path specified or found." << std::endl;
@@ -571,15 +566,19 @@ static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 	return true;
 }
 
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args)
+static void game_configure_listen(GameParams *game_params, const Settings &cmd_args)
 {
-	if (cmd_args.exists("port"))
-		game_params->socket_port = cmd_args.getU16("port");
-	else
-		game_params->socket_port = g_settings->getU16("port");
-
-	if (game_params->socket_port == 0)
-		game_params->socket_port = DEFAULT_SERVER_PORT;
+	if (cmd_args.exists("listen")) {
+		game_params->listen = cmd_args.get("listen");
+	} else if (cmd_args.exists("port")) {
+		std::string port = cmd_args.get("port");
+		game_params->listen = std::string("0.0.0.0:") + port;
+		if (g_settings->getBool("enable_ipv6")) {
+			game_params->listen += " [::]:" + port;
+		}
+	} else {
+		game_params->listen = g_settings->get("listen");
+	}
 }
 
 static bool game_configure_world(GameParams *game_params, const Settings &cmd_args)
@@ -799,27 +798,6 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
-	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes*) NULL);
-	}
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-		           << "\" failed: " << e.what()
-		           << " -- Listening on all addresses." << std::endl;
-	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		errorstream << "Unable to listen on "
-		            << bind_addr.serializeString()
-		            << L" because IPv6 is disabled" << std::endl;
-		return false;
-	}
-
 	// Database migration
 	if (cmd_args.exists("migrate"))
 		return migrate_database(game_params, cmd_args);
@@ -853,13 +831,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path,
-				game_params.game_spec, false, bind_addr.isIPv6(), &iface);
+				game_params.game_spec, false, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
 			g_term_console.start();
 
-			server.start(bind_addr);
+			server.start(&game_params.listen);
 			// Run server
 			dedicated_server_loop(server, kill);
 		} catch (const ModError &e) {
@@ -886,9 +864,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 #endif
 		try {
 			// Create server
-			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr.isIPv6());
-			server.start(bind_addr);
+			Server server(game_params.world_path, game_params.game_spec, false);
+			server.start(&game_params.listen);
 
 			// Run server
 			bool &kill = *porting::signal_handler_killstatus();

@@ -143,11 +143,9 @@ v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
 	Server
 */
 
-Server::Server(
-		const std::string &path_world,
+Server::Server(const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6,
 		ChatInterface *iface
 	):
 	m_path_world(path_world),
@@ -155,11 +153,7 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_async_fatal_error(""),
 	m_env(NULL),
-	m_con(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			ipv6,
-			this),
+	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_banmanager(NULL),
 	m_rollback(NULL),
 	m_enable_rollback_recording(false),
@@ -421,52 +415,82 @@ Server::~Server()
 	}
 }
 
-void Server::start(Address bind_addr)
+void Server::initConnection(const std::string *listen) {
+	// Listen addresses
+	if (m_simple_singleplayer_mode) {
+		Address addr;
+		try {
+			addr.resolve("localhost");
+		} catch (ResolveError &e) {
+			infostream << "Failed to resolve localhost "
+				"(ResolveError is " << e.what()
+				<< "), using loopback address." << std::endl;
+			bool ipv6 = g_settings->getBool("enable_ipv6");
+			addr.setLoopback(ipv6 ? AF_INET6 : AF_INET);
+		}
+		m_con.Serve(addr);
+	} else {
+		std::vector<std::string> addr_strs = str_split(*listen, ' ');
+		for (std::vector<std::string>::const_iterator it = addr_strs.begin();
+				it != addr_strs.end(); ++it) {
+			Address addr;
+			addr.deserialize(*it);
+
+			if (addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+				throw SocketException(("Unable to listen on " + *it
+					+ " because IPv6 is disabled by the "
+					"configuration!").c_str());
+			}
+			m_con.Serve(addr);
+		}
+	}
+
+	m_con.SetTimeoutMs(30);
+	m_con.start();
+}
+
+const Address &Server::getConnectAddress() const
+{
+	return m_con.getFirstListenAddress();
+}
+
+void Server::start(const std::string *listen)
 {
 	DSTACK(FUNCTION_NAME);
 
-	m_bind_addr = bind_addr;
-
-	infostream<<"Starting server on "
-			<< bind_addr.serializeString() <<"..."<<std::endl;
+	initConnection(listen);
 
 	// Stop thread if already running
 	m_thread->stop();
-
-	// Initialize connection
-	m_con.SetTimeoutMs(30);
-	m_con.Serve(bind_addr);
 
 	// Start thread
 	m_thread->start();
 
 	// ASCII art for the win!
 	actionstream
-	<<"        .__               __                   __   "<<std::endl
-	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
-	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
-	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
-	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
-	actionstream<<"World at ["<<m_path_world<<"]"<<std::endl;
-	actionstream<<"Server for gameid=\""<<m_gamespec.id
-			<<"\" listening on "<<bind_addr.serializeString()<<":"
-			<<bind_addr.getPort() << "."<<std::endl;
+		<< "        .__               __                   __   " << std::endl
+		<< "  _____ |__| ____   _____/  |_  ____   _______/  |_ " << std::endl
+		<< " /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\" << std::endl
+		<< "|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  " << std::endl
+		<< "|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  " << std::endl
+		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
+	actionstream << "World at [" << m_path_world << "]" << std::endl;
+	actionstream << "Server for gameid=\"" << m_gamespec.id
+			<< "\" listening on "
+			<< (m_simple_singleplayer_mode ? "localhost" : *listen)
+			<< "." << std::endl;
 }
 
 void Server::stop()
 {
 	DSTACK(FUNCTION_NAME);
 
-	infostream<<"Server: Stopping and waiting threads"<<std::endl;
+	infostream<<"Server: Stopping and waiting thread"<<std::endl;
 
-	// Stop threads (set run=false first so both start stopping)
 	m_thread->stop();
-	//m_emergethread.setRun(false);
 	m_thread->wait();
-	//m_emergethread.stop();
 
-	infostream<<"Server: Threads stopped"<<std::endl;
+	infostream<<"Server: Thread stopped"<<std::endl;
 }
 
 void Server::step(float dtime)
@@ -637,14 +661,13 @@ void Server::AsyncRunStep(bool initial_step)
 
 	m_lag += (m_lag > dtime ? -1 : 1) * dtime/100;
 #if USE_CURL
-	// send masterserver announce
+	// Send master-server announcement
 	{
 		float &counter = m_masterserver_timer;
-		if(!isSingleplayer() && (!counter || counter >= 300.0) &&
-				g_settings->getBool("server_announce"))
-		{
+		if (!isSingleplayer() && (!counter || counter >= 300.0) &&
+				g_settings->getBool("server_announce")) {
 			ServerList::sendAnnounce(counter ? "update" : "start",
-					m_bind_addr.getPort(),
+					getConnectAddress().getPort(),
 					m_clients.getPlayerNames(),
 					m_uptime.get(),
 					m_env->getGameTime(),
@@ -1118,27 +1141,25 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 
 	// Note things in chat if not in simple singleplayer mode
-	if(!m_simple_singleplayer_mode) {
+	if (!m_simple_singleplayer_mode) {
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, getStatusString());
 	}
-	Address addr = getPeerAddress(player->peer_id);
-	std::string ip_str = addr.serializeString();
-	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
-	/*
-		Print out action
-	*/
+	actionstream << player->getName() << " ["
+		<< getPeerAddress(player->peer_id).serializeHost()
+		<< "] joins game. " << std::endl;
+	// Print out player list
 	{
 		const std::vector<std::string> &names = m_clients.getPlayerNames();
 
-		actionstream << player->getName() << " joins game. List of players: ";
+		actionstream << "List of players: ";
 
 		for (std::vector<std::string>::const_iterator i = names.begin();
 				i != names.end(); ++i) {
 			actionstream << *i << " ";
 		}
 
-		actionstream << player->getName() <<std::endl;
+		actionstream << player->getName() << std::endl;
 	}
 	return playersao;
 }
@@ -1160,7 +1181,7 @@ void Server::ProcessData(NetworkPacket *pkt)
 
 	try {
 		Address address = getPeerAddress(peer_id);
-		std::string addr_s = address.serializeString();
+		std::string addr_s = address.serializeHost();
 
 		if(m_banmanager->isIpBanned(addr_s)) {
 			std::string ban_name = m_banmanager->getBanName(addr_s);
@@ -3483,7 +3504,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 {
 	DSTACK(FUNCTION_NAME);
 
-	verbosestream<<"dedicated_server_loop()"<<std::endl;
+	verbosestream << "dedicated_server_loop()" << std::endl;
 
 	IntervalLimiter m_profiler_interval;
 
@@ -3491,24 +3512,14 @@ void dedicated_server_loop(Server &server, bool &kill)
 	static const float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
 
-	for(;;) {
+	while (!server.getShutdownRequested() && !kill) {
 		// This is kind of a hack but can be done like this
 		// because server.step() is very light
 		{
 			ScopeProfiler sp(g_profiler, "dedicated server sleep");
-			sleep_ms((int)(steplen*1000.0));
+			sleep_ms((int)(steplen * 1000.0));
 		}
 		server.step(steplen);
-
-		if(server.getShutdownRequested() || kill)
-		{
-			infostream<<"Dedicated server quitting"<<std::endl;
-#if USE_CURL
-			if(g_settings->getBool("server_announce"))
-				ServerList::sendAnnounce("delete", server.m_bind_addr.getPort());
-#endif
-			break;
-		}
 
 		/*
 			Profiler
@@ -3522,4 +3533,10 @@ void dedicated_server_loop(Server &server, bool &kill)
 			}
 		}
 	}
+	infostream << "Dedicated server quitting" << std::endl;
+#if USE_CURL
+	if (g_settings->getBool("server_announce"))
+		ServerList::sendAnnounce("delete",
+			server.getConnectAddress().getPort());
+#endif
 }

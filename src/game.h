@@ -152,6 +152,7 @@ void the_game(bool *kill,
 		const std::string &password,
 		const std::string &address, // If "", local server is used
 		u16 port,
+		const std::string &listen,
 		std::string &error_message,
 		ChatBackend &chat_backend,
 		bool *reconnect_requested,

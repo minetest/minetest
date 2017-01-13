@@ -205,9 +205,7 @@ Client::Client(
 		IWritableItemDefManager *itemdef,
 		IWritableNodeDefManager *nodedef,
 		ISoundManager *sound,
-		MtEventManager *event,
-		bool ipv6
-):
+		MtEventManager *event) :
 	m_packetcounter_timer(0.0),
 	m_connection_reinit_timer(0.1),
 	m_avg_rtt_timer(0.0),
@@ -228,7 +226,7 @@ Client::Client(
 		tsrc, this, device
 	),
 	m_particle_manager(&m_env),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
@@ -333,6 +331,7 @@ void Client::connect(Address address,
 
 	m_con.SetTimeoutMs(0);
 	m_con.Connect(address);
+	m_con.start();
 }
 
 void Client::step(float dtime)
