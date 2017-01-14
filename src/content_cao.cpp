@@ -574,6 +574,8 @@ GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		m_anim_framelength(0.2),
 		m_anim_timer(0),
 		m_reset_textures_timer(-1),
+		m_previous_texture_modifier(""),
+		m_current_texture_modifier(""),
 		m_visuals_expired(false),
 		m_step_distance_counter(0),
 		m_last_light(255),
@@ -952,7 +954,10 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
 	}
-	updateTextures("");
+
+	/* don't update while punch texture modifier is active */
+	if (m_reset_textures_timer < 0)
+		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
 	if (node && m_prop.nametag != "" && !m_is_local_player) {
@@ -1221,9 +1226,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	if(m_reset_textures_timer >= 0)
 	{
 		m_reset_textures_timer -= dtime;
-		if(m_reset_textures_timer <= 0){
+		if(m_reset_textures_timer <= 0) {
 			m_reset_textures_timer = -1;
-			updateTextures("");
+			updateTextures(m_previous_texture_modifier);
 		}
 	}
 	if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001)
@@ -1301,13 +1306,16 @@ void GenericCAO::updateTexturePos()
 	}
 }
 
-void GenericCAO::updateTextures(const std::string &mod)
+void GenericCAO::updateTextures(const std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
 	bool use_trilinear_filter = g_settings->getBool("trilinear_filter");
 	bool use_bilinear_filter = g_settings->getBool("bilinear_filter");
 	bool use_anisotropic_filter = g_settings->getBool("anisotropic_filter");
+
+	m_previous_texture_modifier = m_current_texture_modifier;
+	m_current_texture_modifier = mod;
 
 	if(m_spritenode)
 	{
@@ -1611,6 +1619,12 @@ void GenericCAO::processMessage(const std::string &data)
 		updateNodePos();
 	} else if (cmd == GENERIC_CMD_SET_TEXTURE_MOD) {
 		std::string mod = deSerializeString(is);
+
+		// immediatly reset a engine issued texture modifier if a mod sends a different one
+		if (m_reset_textures_timer > 0) {
+			m_reset_textures_timer = -1;
+			updateTextures(m_previous_texture_modifier);
+		}
 		updateTextures(mod);
 	} else if (cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
@@ -1734,7 +1748,7 @@ void GenericCAO::processMessage(const std::string &data)
 				m_reset_textures_timer = 0.05;
 				if(damage >= 2)
 					m_reset_textures_timer += 0.05 * damage;
-				updateTextures("^[brighten");
+				updateTextures(m_current_texture_modifier + "^[brighten");
 			}
 		}
 	} else if (cmd == GENERIC_CMD_UPDATE_ARMOR_GROUPS) {
@@ -1802,7 +1816,7 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 		m_reset_textures_timer = 0.05;
 		if(result.damage >= 2)
 			m_reset_textures_timer += 0.05 * result.damage;
-		updateTextures("^[brighten");
+		updateTextures(m_current_texture_modifier + "^[brighten");
 	}
 
 	return false;

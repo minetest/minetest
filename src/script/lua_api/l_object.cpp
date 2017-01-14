@@ -900,6 +900,19 @@ int ObjectRef::l_set_texture_mod(lua_State *L)
 	return 0;
 }
 
+// get_texture_mod(self)
+int ObjectRef::l_get_texture_mod(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	LuaEntitySAO *co = getluaobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	std::string mod = co->getTextureMod();
+	lua_pushstring(L, mod.c_str());
+	return 1;
+}
+
 // set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
 //           select_horiz_by_yawpitch=false)
 int ObjectRef::l_set_sprite(lua_State *L)

@@ -257,7 +257,8 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 	m_last_sent_position(0,0,0),
 	m_last_sent_velocity(0,0,0),
 	m_last_sent_position_timer(0),
-	m_last_sent_move_precision(0)
+	m_last_sent_move_precision(0),
+	m_current_texture_modifier("")
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -511,6 +512,9 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 			}
 		}
 
+		msg_os << serializeLongString(gob_cmd_set_texture_mod(m_current_texture_modifier));
+		message_count++;
+
 		writeU8(os, message_count);
 		os.write(msg_os.str().c_str(), msg_os.str().size());
 	}
@@ -687,9 +691,15 @@ v3f LuaEntitySAO::getAcceleration()
 void LuaEntitySAO::setTextureMod(const std::string &mod)
 {
 	std::string str = gob_cmd_set_texture_mod(mod);
+	m_current_texture_modifier = mod;
 	// create message and add to list
 	ActiveObjectMessage aom(getId(), true, str);
 	m_messages_out.push(aom);
+}
+
+std::string LuaEntitySAO::getTextureMod() const
+{
+	return m_current_texture_modifier;
 }
 
 void LuaEntitySAO::setSprite(v2s16 p, int num_frames, float framelength,
