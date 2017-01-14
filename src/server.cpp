@@ -1669,6 +1669,20 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 				const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
+	if (peer_id == PEER_ID_INEXISTENT) {
+		// This sucks and should be replaced by a better solution in a refactor:
+		std::vector<u16> clients = m_clients.getClientIDs();
+		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
+			RemotePlayer *player = m_env->getPlayer(*i);
+			if (!player)
+				continue;
+			SendSpawnParticle(*i, player->protocol_version,
+					pos, velocity, acceleration,
+					expirationtime, size, collisiondetection,
+					collision_removal, vertical, texture, animation, glow);
+		}
+		return;
+	}
 
 	NetworkPacket pkt(TOCLIENT_SPAWN_PARTICLE, 0, peer_id);
 
@@ -1683,21 +1697,7 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 	pkt.putRawString(os.str());
 	pkt << glow;
 
-	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(&pkt);
-	} else {
-		// This sucks and should be replaced by a better solution in a refactor:
-		std::vector<u16> clients = m_clients.getClientIDs();
-		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
-			RemotePlayer *player = m_env->getPlayer(*i);
-			if (!player)
-				continue;
-			SendSpawnParticle(*i, player->protocol_version,
-					pos, velocity, acceleration,
-					expirationtime, size, collisiondetection,
-					collision_removal, vertical, texture, animation, glow);
-		}
-	}
+	Send(&pkt);
 }
 
 // Adds a ParticleSpawner on peer with peer_id
@@ -1709,6 +1709,21 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 	const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
+	if (peer_id == PEER_ID_INEXISTENT) {
+		// This sucks and should be replaced:
+		std::vector<u16> clients = m_clients.getClientIDs();
+		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
+			RemotePlayer *player = m_env->getPlayer(*i);
+			if (!player)
+				continue;
+			SendAddParticleSpawner(*i, player->protocol_version,
+					amount, spawntime, minpos, maxpos,
+					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
+					minsize, maxsize, collisiondetection, collision_removal,
+					attached_id, vertical, texture, id, animation, glow);
+		}
+		return;
+	}
 
 	NetworkPacket pkt(TOCLIENT_ADD_PARTICLESPAWNER, 0, peer_id);
 
@@ -1727,22 +1742,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 	pkt.putRawString(os.str());
 	pkt << glow;
 
-	if (peer_id != PEER_ID_INEXISTENT) {
-		Send(&pkt);
-	} else {
-		// This sucks and should be replaced:
-		std::vector<u16> clients = m_clients.getClientIDs();
-		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
-			RemotePlayer *player = m_env->getPlayer(*i);
-			if (!player)
-				continue;
-			SendAddParticleSpawner(*i, player->protocol_version,
-					amount, spawntime, minpos, maxpos,
-					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
-					minsize, maxsize, collisiondetection, collision_removal,
-					attached_id, vertical, texture, id, animation, glow);
-		}
-	}
+	Send(&pkt);
 }
 
 void Server::SendDeleteParticleSpawner(u16 peer_id, u32 id)
