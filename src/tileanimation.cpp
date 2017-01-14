@@ -111,21 +111,23 @@ void TileAnimationParams::getTextureModifer(std::ostream &os, v2u32 texture_size
 	}
 }
 
-v2u32 TileAnimationParams::getTextureCoords(v2u32 texture_size, int frame) const
+v2f TileAnimationParams::getTextureCoords(v2u32 texture_size, int frame) const
 {
+	v2u32 ret;
 	if (type == TAT_VERTICAL_FRAMES) {
 		int frame_height = (float)texture_size.X /
 				(float)vertical_frames.aspect_w *
 				(float)vertical_frames.aspect_h;
-		return v2u32(0, frame_height * frame);
+		ret = v2u32(0, frame_height * frame);
 	} else if (type == TAT_SHEET_2D) {
 		v2u32 frame_size;
 		determineParams(texture_size, NULL, NULL, &frame_size);
 		int q, r;
 		q = frame / sheet_2d.frames_w;
 		r = frame % sheet_2d.frames_w;
-		return v2u32(r * frame_size.X, q * frame_size.Y);
+		ret = v2u32(r * frame_size.X, q * frame_size.Y);
 	} else { // TAT_NONE
-		return v2u32(0, 0);
+		ret = v2u32(0, 0);
 	}
+	return v2f(ret.X / (float) texture_size.X, ret.Y / (float) texture_size.Y);
 }

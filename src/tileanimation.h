@@ -51,7 +51,7 @@ struct TileAnimationParams {
 	void determineParams(v2u32 texture_size, int *frame_count,
 			int *frame_length_ms, v2u32 *frame_size) const;
 	void getTextureModifer(std::ostream &os, v2u32 texture_size, int frame) const;
-	v2u32 getTextureCoords(v2u32 texture_size, int frame) const;
+	v2f getTextureCoords(v2u32 texture_size, int frame) const;
 };
 
 #endif
