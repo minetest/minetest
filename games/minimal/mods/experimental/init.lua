@@ -547,6 +547,7 @@ minetest.register_craftitem("experimental:tester_tool_2", {
 		    texture = tex,
 		    animation = anim,
 		    size = 4,
+		    glow = math.random(0, 5),
         })
 	end,
 })

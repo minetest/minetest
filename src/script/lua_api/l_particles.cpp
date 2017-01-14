@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // vertical = bool
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
+// glow = num
 int ModApiParticles::l_add_particle(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
@@ -53,6 +54,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 
 	std::string texture = "";
 	std::string playername = "";
+
+	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) // deprecated
 	{
@@ -111,9 +114,11 @@ int ModApiParticles::l_add_particle(lua_State *L)
 
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
+
+		glow = getintfield_default(L, 1, "glow", 0);
 	}
 	getServer(L)->spawnParticle(playername, pos, vel, acc, expirationtime, size,
-			collisiondetection, collision_removal, vertical, texture, animation);
+			collisiondetection, collision_removal, vertical, texture, animation, glow);
 	return 1;
 }
 
@@ -136,6 +141,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // vertical = bool
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
+// glow = num
 int ModApiParticles::l_add_particlespawner(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
@@ -152,6 +158,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	ServerActiveObject *attached = NULL;
 	std::string texture = "";
 	std::string playername = "";
+	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
@@ -225,6 +232,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 		vertical = getboolfield_default(L, 1, "vertical", vertical);
 		texture = getstringfield_default(L, 1, "texture", "");
 		playername = getstringfield_default(L, 1, "playername", "");
+		glow = getintfield_default(L, 1, "glow", 0);
 	}
 
 	u32 id = getServer(L)->addParticleSpawner(amount, time,
@@ -238,7 +246,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 			attached,
 			vertical,
 			texture, playername,
-			animation);
+			animation, glow);
 	lua_pushnumber(L, id);
 
 	return 1;

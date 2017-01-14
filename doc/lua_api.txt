@@ -4181,9 +4181,12 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Uses texture (string)
         playername = "singleplayer",
     --  ^ optional, if specified spawns particle only on the player's client
-        animation = {Tile Animation definition}
-    --  ^ optional, specified how to animate the particle texture
+        animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+		glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
     }
+
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 

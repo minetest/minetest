@@ -188,6 +188,7 @@ struct ClientEvent
 			bool vertical;
 			std::string *texture;
 			struct TileAnimationParams animation;
+			u8 glow;
 		} spawn_particle;
 		struct{
 			u16 amount;
@@ -209,6 +210,7 @@ struct ClientEvent
 			std::string *texture;
 			u32 id;
 			struct TileAnimationParams animation;
+			u8 glow;
 		} add_particlespawner;
 		struct{
 			u32 id;

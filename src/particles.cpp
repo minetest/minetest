@@ -55,7 +55,8 @@ Particle::Particle(
 	video::ITexture *texture,
 	v2f texpos,
 	v2f texsize,
-	const struct TileAnimationParams &anim
+	const struct TileAnimationParams &anim,
+	u8 glow
 ):
 	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
 {
@@ -87,6 +88,7 @@ Particle::Particle(
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
 	m_vertical = vertical;
+	m_glow = glow;
 
 	// Irrlicht stuff
 	m_collisionbox = aabb3f
@@ -181,7 +183,7 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	m_light = decode_light(light);
+	m_light = decode_light(light + m_glow);
 }
 
 void Particle::updateVertices()
@@ -242,6 +244,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
 	video::ITexture *texture, u32 id, const struct TileAnimationParams &anim,
+	u8 glow,
 	ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
@@ -267,6 +270,7 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_texture = texture;
 	m_time = 0;
 	m_animation = anim;
+	m_glow = glow;
 
 	for (u16 i = 0; i<=m_amount; i++)
 	{
@@ -343,7 +347,8 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						m_texture,
 						v2f(0.0, 0.0),
 						v2f(1.0, 1.0),
-						m_animation);
+						m_animation,
+						m_glow);
 					m_particlemanager->addParticle(toadd);
 				}
 				i = m_spawntimes.erase(i);
@@ -398,7 +403,8 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					m_texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0),
-					m_animation);
+					m_animation,
+					m_glow);
 				m_particlemanager->addParticle(toadd);
 			}
 		}
@@ -530,6 +536,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					texture,
 					event->add_particlespawner.id,
 					event->add_particlespawner.animation,
+					event->add_particlespawner.glow,
 					this);
 
 			/* delete allocated content of event */
@@ -566,7 +573,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					texture,
 					v2f(0.0, 0.0),
 					v2f(1.0, 1.0),
-					event->spawn_particle.animation);
+					event->spawn_particle.animation,
+					event->spawn_particle.glow);
 
 			addParticle(toadd);
 
@@ -645,7 +653,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		texture,
 		texpos,
 		texsize,
-		anim);
+		anim,
+		0);
 
 	addParticle(toadd);
 }

@@ -52,7 +52,8 @@ class Particle : public scene::ISceneNode
 		video::ITexture *texture,
 		v2f texpos,
 		v2f texsize,
-		const struct TileAnimationParams &anim
+		const struct TileAnimationParams &anim,
+		u8 glow
 	);
 	~Particle();
 
@@ -107,6 +108,7 @@ private:
 	struct TileAnimationParams m_animation;
 	float m_animation_time;
 	int m_animation_frame;
+	u8 m_glow;
 };
 
 class ParticleSpawner
@@ -128,7 +130,7 @@ class ParticleSpawner
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
-		const struct TileAnimationParams &anim,
+		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
 	~ParticleSpawner();
@@ -163,6 +165,7 @@ class ParticleSpawner
 	bool m_vertical;
 	u16 m_attached_id;
 	struct TileAnimationParams m_animation;
+	u8 m_glow;
 };
 
 /**

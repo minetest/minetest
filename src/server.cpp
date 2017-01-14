@@ -1666,7 +1666,7 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 				float expirationtime, float size, bool collisiondetection,
 				bool collision_removal,
 				bool vertical, const std::string &texture,
-				const struct TileAnimationParams &animation)
+				const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -1681,6 +1681,7 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 	std::ostringstream os(std::ios_base::binary);
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
+	pkt << glow;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
 		Send(&pkt);
@@ -1694,7 +1695,7 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 			SendSpawnParticle(*i, player->protocol_version,
 					pos, velocity, acceleration,
 					expirationtime, size, collisiondetection,
-					collision_removal, vertical, texture, animation);
+					collision_removal, vertical, texture, animation, glow);
 		}
 	}
 }
@@ -1705,7 +1706,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 	v3f minvel, v3f maxvel, v3f minacc, v3f maxacc, float minexptime, float maxexptime,
 	float minsize, float maxsize, bool collisiondetection, bool collision_removal,
 	u16 attached_id, bool vertical, const std::string &texture, u32 id,
-	const struct TileAnimationParams &animation)
+	const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -1724,6 +1725,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 	std::ostringstream os(std::ios_base::binary);
 	animation.serialize(os, protocol_version);
 	pkt.putRawString(os.str());
+	pkt << glow;
 
 	if (peer_id != PEER_ID_INEXISTENT) {
 		Send(&pkt);
@@ -1738,7 +1740,7 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 					amount, spawntime, minpos, maxpos,
 					minvel, maxvel, minacc, maxacc, minexptime, maxexptime,
 					minsize, maxsize, collisiondetection, collision_removal,
-					attached_id, vertical, texture, id, animation);
+					attached_id, vertical, texture, id, animation, glow);
 		}
 	}
 }
@@ -3188,7 +3190,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 	float expirationtime, float size, bool
 	collisiondetection, bool collision_removal,
 	bool vertical, const std::string &texture,
-	const struct TileAnimationParams &animation)
+	const struct TileAnimationParams &animation, u8 glow)
 {
 	// m_env will be NULL if the server is initializing
 	if (!m_env)
@@ -3205,7 +3207,7 @@ void Server::spawnParticle(const std::string &playername, v3f pos,
 
 	SendSpawnParticle(peer_id, proto_ver, pos, velocity, acceleration,
 			expirationtime, size, collisiondetection,
-			collision_removal, vertical, texture, animation);
+			collision_removal, vertical, texture, animation, glow);
 }
 
 u32 Server::addParticleSpawner(u16 amount, float spawntime,
@@ -3213,7 +3215,8 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal,
 	ServerActiveObject *attached, bool vertical, const std::string &texture,
-	const std::string &playername, const struct TileAnimationParams &animation)
+	const std::string &playername, const struct TileAnimationParams &animation,
+	u8 glow)
 {
 	// m_env will be NULL if the server is initializing
 	if (!m_env)
@@ -3240,7 +3243,7 @@ u32 Server::addParticleSpawner(u16 amount, float spawntime,
 		minpos, maxpos, minvel, maxvel, minacc, maxacc,
 		minexptime, maxexptime, minsize, maxsize,
 		collisiondetection, collision_removal, attached_id, vertical,
-		texture, id, animation);
+		texture, id, animation, glow);
 
 	return id;
 }
