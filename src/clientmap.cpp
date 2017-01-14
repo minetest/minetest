@@ -371,10 +371,10 @@ struct MeshBufListList
 
 	void add(scene::IMeshBuffer *buf)
 	{
+		const video::SMaterial &m = buf->getMaterial();
 		for(std::vector<MeshBufList>::iterator i = lists.begin();
 				i != lists.end(); ++i){
 			MeshBufList &l = *i;
-			video::SMaterial &m = buf->getMaterial();
 
 			// comparing a full material is quite expensive so we don't do it if
 			// not even first texture is equal
@@ -387,7 +387,7 @@ struct MeshBufListList
 			}
 		}
 		MeshBufList l;
-		l.m = buf->getMaterial();
+		l.m = m;
 		l.bufs.push_back(buf);
 		lists.push_back(l);
 	}
@@ -508,12 +508,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			{
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 
-				buf->getMaterial().setFlag(video::EMF_TRILINEAR_FILTER, m_cache_trilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, m_cache_bilinear_filter);
-				buf->getMaterial().setFlag(video::EMF_ANISOTROPIC_FILTER, m_cache_anistropic_filter);
-				buf->getMaterial().setFlag(video::EMF_WIREFRAME, m_control.show_wireframe);
-
-				const video::SMaterial& material = buf->getMaterial();
+				video::SMaterial& material = buf->getMaterial();
 				video::IMaterialRenderer* rnd =
 						driver->getMaterialRenderer(material.MaterialType);
 				bool transparent = (rnd && rnd->isTransparent());
@@ -521,6 +516,12 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 					if (buf->getVertexCount() == 0)
 						errorstream << "Block [" << analyze_block(block)
 							 << "] contains an empty meshbuf" << std::endl;
+
+					material.setFlag(video::EMF_TRILINEAR_FILTER, m_cache_trilinear_filter);
+					material.setFlag(video::EMF_BILINEAR_FILTER, m_cache_bilinear_filter);
+					material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_cache_anistropic_filter);
+					material.setFlag(video::EMF_WIREFRAME, m_control.show_wireframe);
+
 					drawbufs.add(buf);
 				}
 			}
