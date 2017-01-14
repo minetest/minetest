@@ -41,12 +41,15 @@ public:
 		u16 getPeerId() { return m_peer_id; }
 		u16 getCommand() { return m_command; }
 		const u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
+		const char* getRemainingString() { return getString(m_read_offset); }
 
 		// Returns a c-string without copying.
 		// A better name for this would be getRawString()
-		char* getString(u32 from_offset);
+		const char* getString(u32 from_offset);
 		// major difference to putCString(): doesn't write len into the buffer
 		void putRawString(const char* src, u32 len);
+		void putRawString(const std::string &src)
+			{ putRawString(src.c_str(), src.size()); }
 
 		NetworkPacket& operator>>(std::string& dst);
 		NetworkPacket& operator<<(std::string src);

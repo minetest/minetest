@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "particles.h"
 #include "mapnode.h"
+#include "tileanimation.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -186,6 +187,8 @@ struct ClientEvent
 			bool collision_removal;
 			bool vertical;
 			std::string *texture;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} spawn_particle;
 		struct{
 			u16 amount;
@@ -206,6 +209,8 @@ struct ClientEvent
 			bool vertical;
 			std::string *texture;
 			u32 id;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} add_particlespawner;
 		struct{
 			u32 id;

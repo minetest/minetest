@@ -4180,9 +4180,14 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
     --  ^ Uses texture (string)
-        playername = "singleplayer"
+        playername = "singleplayer",
     --  ^ optional, if specified spawns particle only on the player's client
+        animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+        glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
     }
+
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 

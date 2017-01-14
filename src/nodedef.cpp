@@ -541,7 +541,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileSpec *tile,
 	if (tile->material_flags & MATERIAL_FLAG_ANIMATION) {
 		int frame_length_ms;
 		tiledef->animation.determineParams(tile->texture->getOriginalSize(),
-				&frame_count, &frame_length_ms);
+				&frame_count, &frame_length_ms, NULL);
 		tile->animation_frame_count = frame_count;
 		tile->animation_frame_length_ms = frame_length_ms;
 	}
