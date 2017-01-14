@@ -164,6 +164,9 @@ private:
 	// set_texture_mod(self, mod)
 	static int l_set_texture_mod(lua_State *L);
 
+	// l_get_texture_mod(self)
+	static int l_get_texture_mod(lua_State *L);
+
 	// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
 	//           select_horiz_by_yawpitch=false)
 	static int l_set_sprite(lua_State *L);
