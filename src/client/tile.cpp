@@ -555,7 +555,11 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 // color alpha with the destination alpha.
 // Otherwise, any pixels that are not fully transparent get the color alpha.
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		video::SColor color, int ratio, bool keep_alpha);
+		const video::SColor &color, int ratio, bool keep_alpha);
+
+// paint a texture using the given color
+static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color);
 
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
@@ -1657,6 +1661,30 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
+		[multiply:color
+			multiplys a given color to any pixel of an image
+			color = color as ColorString
+		*/
+		else if (str_starts_with(part_of_name, "[multiply:")) {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string color_str = sf.next(":");
+
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			video::SColor color;
+
+			if (!parseColorString(color_str, color, false))
+				return false;
+
+			apply_multiplication(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
+		}
+		/*
 			[colorize:color
 			Overlays image with given color
 			color = color as ColorString
@@ -1960,7 +1988,7 @@ static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst
 	Apply color to destination
 */
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		video::SColor color, int ratio, bool keep_alpha)
+		const video::SColor &color, int ratio, bool keep_alpha)
 {
 	u32 alpha = color.getAlpha();
 	video::SColor dst_c;
@@ -1991,6 +2019,27 @@ static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				dst->setPixel(x, y, dst_c);
 			}
 		}
+	}
+}
+
+/*
+	Apply color to destination
+*/
+static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color)
+{
+	video::SColor dst_c;
+
+	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+	for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+		dst_c = dst->getPixel(x, y);
+		dst_c.set(
+				dst_c.getAlpha(),
+				(dst_c.getRed() * color.getRed()) / 255,
+				(dst_c.getGreen() * color.getGreen()) / 255,
+				(dst_c.getBlue() * color.getBlue()) / 255
+				);
+		dst->setPixel(x, y, dst_c);
 	}
 }
 
