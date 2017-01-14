@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "localplayer.h"
 #include "environment.h"
+#include "tileanimation.h"
 
 struct ClientEvent;
 class ParticleManager;
@@ -50,7 +51,8 @@ class Particle : public scene::ISceneNode
 		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
-		v2f texsize
+		v2f texsize,
+		const struct TileAnimationParams &anim
 	);
 	~Particle();
 
@@ -102,6 +104,9 @@ private:
 	bool m_collision_removal;
 	bool m_vertical;
 	v3s16 m_camera_offset;
+	struct TileAnimationParams m_animation;
+	float m_animation_time;
+	int m_animation_frame;
 };
 
 class ParticleSpawner
@@ -123,6 +128,7 @@ class ParticleSpawner
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
+		const struct TileAnimationParams &anim,
 		ParticleManager* p_manager);
 
 	~ParticleSpawner();
@@ -156,6 +162,7 @@ class ParticleSpawner
 	bool m_collision_removal;
 	bool m_vertical;
 	u16 m_attached_id;
+	struct TileAnimationParams m_animation;
 };
 
 /**
