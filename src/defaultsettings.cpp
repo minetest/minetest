@@ -230,7 +230,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "lucida_sans"));
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
 
-	std::string font_size_str = to_string(DEFAULT_FONT_SIZE);
+	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
 #endif
 	settings->setDefault("font_size", font_size_str);
 	settings->setDefault("mono_font_size", font_size_str);
