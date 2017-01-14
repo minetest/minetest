@@ -526,7 +526,7 @@ minetest.register_craft({
 minetest.register_craftitem("experimental:tester_tool_2", {
 	description = "Tester Tool 2",
 	inventory_image = "experimental_tester_tool_1.png^[invert:g",
-    on_use = function(itemstack, user, pointed_thing)
+	on_use = function(itemstack, user, pointed_thing)
 		local pos = minetest.get_pointed_thing_position(pointed_thing, true)
 		if pos == nil then return end
 		pos = vector.add(pos, {x=0, y=0.5, z=0})
@@ -538,17 +538,18 @@ minetest.register_craftitem("experimental:tester_tool_2", {
 			tex = "default_lava_flowing_animated.png"
 			anim = {type="vertical_frames", aspect_w=16, aspect_h=16, length=3.3}
 		end
+
 		minetest.add_particle({
 			pos = pos,
-		    velocity = {x=0, y=0, z=0},
-		    acceleration = {x=0, y=0.04, z=0},
-		    expirationtime = 6,
-		    collisiondetection = true,
-		    texture = tex,
-		    animation = anim,
-		    size = 4,
-		    glow = math.random(0, 5),
-        })
+			velocity = {x=0, y=0, z=0},
+			acceleration = {x=0, y=0.04, z=0},
+			expirationtime = 6,
+			collisiondetection = true,
+			texture = tex,
+			animation = anim,
+			size = 4,
+			glow = math.random(0, 5),
+		})
 	end,
 })
 
