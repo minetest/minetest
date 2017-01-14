@@ -119,7 +119,7 @@ public:
 		when it is created (converted from static to active - actually
 		the data is the static form)
 	*/
-	virtual void getStaticData(std::string *result)
+	virtual void getStaticData(std::string *result) const
 	{
 		assert(isStaticAllowed());
 		*result = "";
