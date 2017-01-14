@@ -419,6 +419,13 @@ the word "`alpha`", then each texture pixel will contain the RGB of
 `<color>` and the alpha of `<color>` multiplied by the alpha of the
 texture pixel.
 
+#### `[multiply:<color>`
+Multiplies texture colors with the given color.
+`<color>` is specified as a `ColorString`.
+Result is more like what you'd expect if you put a color on top of another
+color. Meaning white surfaces get a lot of your new color while black parts don't
+change very much.
+
 Sounds
 ------
 Only Ogg Vorbis files are supported.
