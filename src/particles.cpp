@@ -610,7 +610,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 	// Texture
 	u8 texid = myrand_range(0, 5);
 	video::ITexture *texture;
-	const struct TileAnimationParams anim = { .type = TAT_NONE };
+	struct TileAnimationParams anim;
+	anim.type = TAT_NONE;
 
 	// Only use first frame of animated texture
 	if (tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION)

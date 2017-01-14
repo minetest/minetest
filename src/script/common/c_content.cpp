@@ -910,7 +910,8 @@ struct TileAnimationParams read_animation_definition(lua_State *L, int index)
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	struct TileAnimationParams anim = { .type = TAT_NONE };
+	struct TileAnimationParams anim;
+	anim.type = TAT_NONE;
 	if (!lua_istable(L, index))
 		return anim;
 

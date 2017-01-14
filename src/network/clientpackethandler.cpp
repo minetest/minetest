@@ -897,7 +897,8 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::string texture     = deSerializeLongString(is);
 	bool vertical           = false;
 	bool collision_removal  = false;
-	struct TileAnimationParams animation = { .type = TAT_NONE };
+	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
 	u8 glow = 0;
 	try {
 		vertical = readU8(is);
@@ -950,7 +951,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	bool vertical = false;
 	bool collision_removal = false;
-	struct TileAnimationParams animation = { .type = TAT_NONE };
+	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
 	u8 glow = 0;
 	u16 attached_id = 0;
 	try {
