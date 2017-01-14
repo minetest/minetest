@@ -544,7 +544,6 @@ minetest.register_craftitem("experimental:tester_tool_2", {
 		    acceleration = {x=0, y=0.04, z=0},
 		    expirationtime = 6,
 		    collisiondetection = true,
-		    vertical = true,
 		    texture = tex,
 		    animation = anim,
 		    size = 4,
