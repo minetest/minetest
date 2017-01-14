@@ -604,7 +604,7 @@ bool GenericCAO::getCollisionBox(aabb3f *toset) const
 	return false;
 }
 
-bool GenericCAO::collideWithObjects()
+bool GenericCAO::collideWithObjects() const
 {
 	return m_prop.collideWithObjects;
 }
