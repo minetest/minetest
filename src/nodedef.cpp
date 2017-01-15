@@ -809,15 +809,19 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	}
 
 	//Cache 6dfacedir and wallmounted rotated clones of meshes
-	if (tsettings.enable_mesh_cache && mesh_ptr[0] && (param_type_2 == CPT2_FACEDIR)) {
+	if (tsettings.enable_mesh_cache && mesh_ptr[0] &&
+			(param_type_2 == CPT2_FACEDIR
+			|| param_type_2 == CPT2_COLORED_FACEDIR)) {
 		for (u16 j = 1; j < 24; j++) {
 			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
 			rotateMeshBy6dFacedir(mesh_ptr[j], j);
 			recalculateBoundingBox(mesh_ptr[j]);
 			meshmanip->recalculateNormals(mesh_ptr[j], true, false);
 		}
-	} else if (tsettings.enable_mesh_cache && mesh_ptr[0] && (param_type_2 == CPT2_WALLMOUNTED)) {
-		static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
+	} else if (tsettings.enable_mesh_cache && mesh_ptr[0]
+			&& (param_type_2 == CPT2_WALLMOUNTED ||
+			param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
+		static const u8 wm_to_6d[6] = { 20, 0, 16 + 1, 12 + 3, 8, 4 + 2 };
 		for (u16 j = 1; j < 6; j++) {
 			mesh_ptr[j] = cloneMesh(mesh_ptr[0]);
 			rotateMeshBy6dFacedir(mesh_ptr[j], wm_to_6d[j]);
@@ -854,7 +858,7 @@ public:
 	virtual void updateAliases(IItemDefManager *idef);
 	virtual void applyTextureOverrides(const std::string &override_filepath);
 	//! Returns a palette or NULL if not found. Only on client.
-	std::vector<video::SColor> *getPalette(const std::string &name,
+	std::vector<video::SColor> *getPalette(const ContentFeatures &f,
 		const IGameDef *gamedef);
 	virtual void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
@@ -1146,7 +1150,8 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 			if (nodebox.type == NODEBOX_LEVELED) {
 				half_processed.MaxEdge.Y = +BS / 2;
 			}
-			if (features.param_type_2 == CPT2_FACEDIR) {
+			if (features.param_type_2 == CPT2_FACEDIR ||
+					features.param_type_2 == CPT2_COLORED_FACEDIR) {
 				// Get maximal coordinate
 				f32 coords[] = {
 					fabsf(half_processed.MinEdge.X),
@@ -1394,9 +1399,29 @@ void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath
 }
 
 std::vector<video::SColor> *CNodeDefManager::getPalette(
-	const std::string &name, const IGameDef *gamedef)
+	const ContentFeatures &f, const IGameDef *gamedef)
 {
 #ifndef SERVER
+	// This works because colors always use the most significant bits
+	// of param2. If you add a new colored type which uses param2
+	// in a more advanced way, you should change this code, too.
+	u32 palette_pixels = 0;
+	switch (f.param_type_2) {
+		case CPT2_COLOR:
+			palette_pixels = 256;
+			break;
+		case CPT2_COLORED_FACEDIR:
+			palette_pixels = 8;
+			break;
+		case CPT2_COLORED_WALLMOUNTED:
+			palette_pixels = 32;
+			break;
+		default:
+			return NULL;
+	}
+	// This many param2 values will have the same color
+	u32 step = 256 / palette_pixels;
+	const std::string &name = f.palette_name;
 	if (name == "")
 		return NULL;
 	Client *client = (Client *) gamedef;
@@ -1415,18 +1440,25 @@ std::vector<video::SColor> *CNodeDefManager::getPalette(
 		std::vector<video::SColor> new_palette;
 		u32 w = img->getDimension().Width;
 		u32 h = img->getDimension().Height;
+		// Real area of the image
 		u32 area = h * w;
-		if (area != 256)
+		if (area != palette_pixels)
 			warningstream << "CNodeDefManager::getPalette(): the "
 				<< "specified palette image \"" << name << "\" does not "
-				<< "contain exactly 256 pixels." << std::endl;
-		if (area > 256)
-			area = 256;
-		for (u32 i = 0; i < area; i++)
-			new_palette.push_back(img->getPixel(i % w, i / w));
+				<< "contain exactly " << palette_pixels
+				<< " pixels." << std::endl;
+		if (area > palette_pixels)
+			area = palette_pixels;
+		// For each pixel in the image
+		for (u32 i = 0; i < area; i++) {
+			video::SColor c = img->getPixel(i % w, i / w);
+			// Fill in palette with 'step' colors
+			for (u32 j = 0; j < step; j++)
+				new_palette.push_back(c);
+		}
 		img->drop();
 		// Fill in remaining elements
-		for (u32 i = area; i < 256; i++)
+		while (new_palette.size() < 256)
 			new_palette.push_back(video::SColor(0xFFFFFFFF));
 		m_palettes[name] = new_palette;
 		it = m_palettes.find(name);
@@ -1459,7 +1491,7 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
-		f->palette = getPalette(f->palette_name, gamedef);
+		f->palette = getPalette(*f, gamedef);
 		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
 		progress_callback(progress_callback_args, i, size);
 	}
@@ -1564,6 +1596,11 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 	u8 compatible_param_type_2 = param_type_2;
 	if ((protocol_version < 28)
 			&& (compatible_param_type_2 == CPT2_MESHOPTIONS))
+		compatible_param_type_2 = CPT2_NONE;
+	else if ((protocol_version < 30) &&
+			((compatible_param_type_2 == CPT2_COLOR)
+			|| (compatible_param_type_2 == CPT2_COLORED_FACEDIR)
+			|| (compatible_param_type_2 == CPT2_COLORED_WALLMOUNTED)))
 		compatible_param_type_2 = CPT2_NONE;
 
 	if (protocol_version == 13)
@@ -2005,19 +2042,23 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
-		if ((f2.param_type_2 == CPT2_FACEDIR) && (connect_face >= 4)) {
-			static const u8 rot[33 * 4] = {
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4 - back
-				8, 4, 32, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 8 - right
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				16, 8, 4, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 16 - front
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				32, 16, 8, 4 // 32 - left
-			};
-			return (f2.connect_sides & rot[(connect_face * 4) + to.param2]);
+		if ((f2.param_type_2 == CPT2_FACEDIR ||
+				f2.param_type_2 == CPT2_COLORED_FACEDIR)
+				&& (connect_face >= 4)) {
+			static const u8 rot[33 * 4] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 4, 32, 16, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, // 4 - back
+				8, 4, 32, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, // 8 - right
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 8, 4, 32, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, // 16 - front
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 32, 16, 8, 4 // 32 - left
+				};
+			return (f2.connect_sides
+				& rot[(connect_face * 4) + (to.param2 & 0x1F)]);
 		}
 		return (f2.connect_sides & connect_face);
 	}

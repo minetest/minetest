@@ -1835,9 +1835,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			video::SColor c = encode_light_and_color(
 				getInteriorLight(n, 1, nodedef), basecolor);
 			u8 facedir = 0;
-			if (f.param_type_2 == CPT2_FACEDIR) {
+			if (f.param_type_2 == CPT2_FACEDIR ||
+					f.param_type_2 == CPT2_COLORED_FACEDIR) {
 				facedir = n.getFaceDir(nodedef);
-			} else if (f.param_type_2 == CPT2_WALLMOUNTED) {
+			} else if (f.param_type_2 == CPT2_WALLMOUNTED ||
+					f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 				//convert wallmounted to 6dfacedir.
 				//when cache enabled, it is already converted
 				facedir = n.getWallMounted(nodedef);

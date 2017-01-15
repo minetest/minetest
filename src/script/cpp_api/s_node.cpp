@@ -59,6 +59,9 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_LEVELED, "leveled"},
 		{CPT2_DEGROTATE, "degrotate"},
 		{CPT2_MESHOPTIONS, "meshoptions"},
+		{CPT2_COLOR, "color"},
+		{CPT2_COLORED_FACEDIR, "colored facedir"},
+		{CPT2_COLORED_WALLMOUNTED, "colored wallmounted"},
 		{0, NULL},
 	};
 

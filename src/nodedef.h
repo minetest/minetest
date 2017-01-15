@@ -68,7 +68,13 @@ enum ContentParamType2
 	// 2D rotation for things like plants
 	CPT2_DEGROTATE,
 	// Mesh options for plants
-	CPT2_MESHOPTIONS
+	CPT2_MESHOPTIONS,
+	// Index for palette
+	CPT2_COLOR,
+	// 3 bits of palette index, then facedir
+	CPT2_COLORED_FACEDIR,
+	// 5 bits of palette index, then wallmounted
+	CPT2_COLORED_WALLMOUNTED
 };
 
 enum LiquidType
