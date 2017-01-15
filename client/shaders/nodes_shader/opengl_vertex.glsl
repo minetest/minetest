@@ -16,7 +16,7 @@ varying vec3 tsLightVec;
 varying float area_enable_parallax;
 
 // Color of the light emitted by the light sources.
-const vec3 artificalLight = vec3(1.0, 1.0, 0.9);
+const vec3 artificalLight = vec3(1.05, 1.05, 1.02);
 const float e = 2.718281828459;
 const float BS = 10.0;
 

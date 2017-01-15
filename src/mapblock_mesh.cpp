@@ -350,17 +350,15 @@ void final_color_blend(video::SColor *result,
 void final_color_blend(video::SColor *result,
 		const video::SColor &data, const video::SColor &dayLight)
 {
-	const video::SColor artificalLight(255,255,255,230);
-
 	u8 d = data.getAlpha();
 	u8 n = 255 - d;
 
 	u16 r = data.getRed() * (d * dayLight.getRed() +
-		n * artificalLight.getRed()) / (255 * 255) * 2;
+		n * 268) / (255 * 255) * 2;
 	u16 g = data.getGreen() * (d * dayLight.getGreen() +
-		n * artificalLight.getGreen()) / (255 * 255) * 2;
+		n * 268) / (255 * 255) * 2;
 	u16 b = data.getBlue() * (d * dayLight.getBlue() +
-		n * artificalLight.getBlue()) / (255 * 255) * 2;
+		n * 255) / (255 * 255) * 2;
 
 	result->setRed(core::clamp(r, (u16) 0, (u16) 255));
 	result->setGreen(core::clamp(g, (u16) 0, (u16) 255));
