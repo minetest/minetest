@@ -1131,13 +1131,13 @@
 
 #    Noise parameters for biome API temperature, humidity and biome blend.
 #    type: noise_params
-# mg_biome_np_heat = 50, 50, (750, 750, 750), 5349, 3, 0.5, 2.0
+# mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
 
 #    type: noise_params
 # mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
 
 #    type: noise_params
-# mg_biome_np_humidity = 50, 50, (750, 750, 750), 842, 3, 0.5, 2.0
+# mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
 
 #    type: noise_params
 # mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
