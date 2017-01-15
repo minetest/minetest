@@ -2096,6 +2096,7 @@ Call these functions only at load time!
 * `minetest.setting_getbool(name)`: returns boolean or `nil`
 * `minetest.setting_get_pos(name)`: returns position or nil
 * `minetest.setting_save()`, returns `nil`, save all settings to config file
+* `minetest.get_world_limits()`: returns the min and max coordinate of the world (pos, pos)
 
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
@@ -2790,7 +2791,11 @@ This is basically a reference to a C++ `ServerActiveObject`
     * Note: Doesn't work on players, use minetest.kick_player instead
 * `getpos()`: returns `{x=num, y=num, z=num}`
 * `setpos(pos)`; `pos`=`{x=num, y=num, z=num}`
+    * positions that are outside of the map are not accepted.
+      The world limits can be obtained using minetest.get_world_limits()
 * `moveto(pos, continuous=false)`: interpolated move
+    * positions that are outside of the map are not accepted.
+      The world limits can be obtained using minetest.get_world_limits()
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
@@ -2809,14 +2814,25 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_animation()`: returns range, frame_speed, frame_blend and frame_loop
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+    * `position`: `{x=num, y=num, z=num}` (relative, multiplied by 10)
+    * `rotation`: `{x=pitch, y=yaw, z=roll}`
+	* Angles are in degrees, and should be between -360 and 360
+	* Angles between -720 and 720 are silently accepted and adjusted
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't attached
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
     * `bone`: string
-    * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+	E.g. (for player model):
+        * Head
+        * Arm_Left
+        * Arm_Right
+        * Leg_Left
+        * Leg_Right
+        * Body
+    * `position`: `{x=num, y=num, z=num}` (relative, multiplied by 10)
+    * `rotation`: `{x=pitch, y=yaw, z=roll}`
+	* Angles are in degrees, and should be between -360 and 360
+	* Angles between -720 and 720 are silently accepted and adjusted
 * `get_bone_position(bone)`: returns position and rotation of the bone
 * `set_properties(object property table)`
 * `get_properties()`: returns object property table
@@ -2837,10 +2853,15 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ##### LuaEntitySAO-only (no-op for other objects)
 * `setvelocity({x=num, y=num, z=num})`
+    * The maximum velocity is approximately 210000, however, due to
+      a bug, the core currently limits the velocity to 500 in each direction.
 * `getvelocity()`: returns `{x=num, y=num, z=num}`
 * `setacceleration({x=num, y=num, z=num})`
+    * The maximum acceleration is approximately 210000.
 * `getacceleration()`: returns `{x=num, y=num, z=num}`
 * `setyaw(radians)`
+    * The yaw should be between 0 and 2*pi.
+    * Angles between -4*pi and 4*pi are silently accepted and adjusted
 * `getyaw()`: returns number in radians
 * `settexturemod(mod)`
 * `setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
@@ -2861,14 +2882,20 @@ This is basically a reference to a C++ `ServerActiveObject`
      * Angle is counter-clockwise from the +z direction.
 * `set_look_vertical(radians)`: sets look pitch
      * radians - Angle from looking forward, where positive is downwards.
+     * The angle should be between -pi/2 and pi/2
 * `set_look_horizontal(radians)`: sets look yaw
      * radians - Angle from the +z direction, where positive is counter-clockwise.
+     * The angle should be between 0 and 2*pi.
+     * Angles between -4*pi and 4*pi are silently accepted and adjusted
 * `get_look_pitch()`: pitch in radians - Deprecated as broken. Use get_look_vertical.
      * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
 * `get_look_yaw()`: yaw in radians - Deprecated as broken. Use get_look_horizontal.
      * Angle is counter-clockwise from the +x direction.
 * `set_look_pitch(radians)`: sets look pitch - Deprecated. Use set_look_vertical.
+     * The angle should be between -pi/2 and pi/2
 * `set_look_yaw(radians)`: sets look yaw - Deprecated. Use set_look_horizontal.
+     * The angle should be between 0 and 2*pi.
+     * Angles between -4*pi and 4*pi are silently accepted and adjusted
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
      * values:

@@ -22,6 +22,7 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+#include "log.h"
 #include "util/numeric.h"
 #include "util/serialize.h"
 #include "util/string.h"
@@ -40,16 +41,19 @@ extern "C" {
 		} \
 	} while(0)
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
-#define CHECK_FLOAT_RANGE(value, name) \
-if (value < F1000_MIN || value > F1000_MAX) { \
-	std::ostringstream error_text; \
-	error_text << "Invalid float vector dimension range '" name "' " << \
-	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
-	" got " << value << ")." << std::endl; \
-	throw LuaError(error_text.str()); \
-}
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
+void check_range_f(lua_State *L, float f,
+		float min, float max, float rmin, float rmax,
+		const char *what)
+{
+	if (isnan(f))
+		luaL_error(L, "invalid value: %s = %f",
+			(what ? what : "value"), f);
+	if (f < min || f > max)
+		luaL_error(L, "range error: %s = %f; must be between %f and %f",
+			(what ? what : "value"), f, rmin, rmax);
+}
 
 void push_v3f(lua_State *L, v3f p)
 {
@@ -143,7 +147,7 @@ v2f read_v2f(lua_State *L, int index)
 	return p;
 }
 
-v2f check_v2f(lua_State *L, int index)
+v2f check_v2f(lua_State *L, int index, float range_factor)
 {
 	v2f p;
 	CHECK_POS_TAB(index);
@@ -154,6 +158,7 @@ v2f check_v2f(lua_State *L, int index)
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	p.Y = lua_tonumber(L, -1);
+	check_range_v2f(L, p / range_factor, F1000_MIN / range_factor, F1000_MAX / range_factor);
 	lua_pop(L, 1);
 	return p;
 }
@@ -174,24 +179,22 @@ v3f read_v3f(lua_State *L, int index)
 	return pos;
 }
 
-v3f check_v3f(lua_State *L, int index)
+v3f check_v3f(lua_State *L, int index, float range_factor)
 {
 	v3f pos;
 	CHECK_POS_TAB(index);
 	lua_getfield(L, index, "x");
 	CHECK_POS_COORD("x");
 	pos.X = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.X, "x")
 	lua_pop(L, 1);
 	lua_getfield(L, index, "y");
 	CHECK_POS_COORD("y");
 	pos.Y = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Y, "y")
 	lua_pop(L, 1);
 	lua_getfield(L, index, "z");
 	CHECK_POS_COORD("z");
 	pos.Z = lua_tonumber(L, -1);
-	CHECK_FLOAT_RANGE(pos.Z, "z")
+	check_range_v3f(L, pos / range_factor, F1000_MIN / range_factor, F1000_MAX / range_factor);
 	lua_pop(L, 1);
 	return pos;
 }
@@ -217,7 +220,7 @@ void pushFloatPos(lua_State *L, v3f p)
 
 v3f checkFloatPos(lua_State *L, int index)
 {
-	return check_v3f(L, index) * BS;
+	return check_v3f(L, index, BS) * BS;
 }
 
 void push_v3s16(lua_State *L, v3s16 p)

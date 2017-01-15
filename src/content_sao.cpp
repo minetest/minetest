@@ -378,9 +378,16 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			m_velocity = p_velocity;
 			m_acceleration = p_acceleration;
 		} else {
+			v3f new_velocity = m_velocity + dtime * m_acceleration;
+			// Limit speed. A value higher than F1000_MAX will cause a crash.
+			// (due to serialization error)
+			new_velocity = rangelim_v3f(new_velocity, v3f(-1,-1,-1) * OBJECT_MAX_SPEED * BS,
+				v3f(1,1,1) * OBJECT_MAX_SPEED * BS);
+			v3f real_acceleration = (new_velocity - m_velocity) / dtime;
+
 			m_base_position += dtime * m_velocity + 0.5 * dtime
-					* dtime * m_acceleration;
-			m_velocity += dtime * m_acceleration;
+					* dtime * real_acceleration;
+			m_velocity = new_velocity;
 		}
 
 		if((m_prop.automatic_face_movement_dir) &&

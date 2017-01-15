@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONSTANTS_HEADER
 #define CONSTANTS_HEADER
 
+#include "util/serialize.h"
+
 /*
 	All kinds of constants.
 
@@ -103,6 +105,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // This is the maximum number of attempts to try and add a serial to the end of
 // the file attempting to ensure a unique filename
 #define SCREENSHOT_MAX_SERIAL_TRIES 1000
+
+// Currently, the max speed is limited. Setting it 'too high' will cause
+// excessive CPU and memory consumption in the collision detection code.
+#define OBJECT_MAX_SPEED 500
 
 /*
     GUI related things

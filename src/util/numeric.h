@@ -131,6 +131,28 @@ inline bool isInArea(v3s16 p, v3s16 d)
 }
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d)>(max)?(max):(d)))
+#define rangelim_v2f(d, min, max)                     \
+	v2f(rangelim((d).X, (min).X, (max).X),        \
+		rangelim((d).Y, (min).Y, (max).Y))
+#define rangelim_v3f(d, min, max)                     \
+	v3f(rangelim((d).X, (min).X, (max).X),        \
+		rangelim((d).Y, (min).Y, (max).Y),    \
+		rangelim((d).Z, (min).Z, (max).Z))
+// Set to 0 if abs. value is larger than 1e5, to avoid floating point
+// precision issues:
+//    (float(9876543210) - 360 * trunc(float(9876543210) / 360)
+// is not equal to:
+//    (double(9876543210) - 360 * trunc(double(9876543210) / 360)
+// Result for float(9876543210):	-352
+// Result for double(9876543210):	90
+// Mathematical result:			90
+// (and anybody using an angle much larger than 360 should fix their code anyway...)
+#define anglelim(d, limit)                            \
+	((d) > 1e5 ? 0 : (d) - (limit) * trunc((d) / (limit)))
+#define anglelim_v3f(d, limit)                        \
+	v3f(anglelim((d).X, (limit).X),               \
+		anglelim((d).Y, (limit).Y),           \
+		anglelim((d).Z, (limit).Z))
 #define myfloor(x) ((x) > 0.0 ? (int)(x) : (int)(x) - 1)
 
 // The naive swap performs better than the xor version
