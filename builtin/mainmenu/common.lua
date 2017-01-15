@@ -77,7 +77,7 @@ function order_favorite_list(list)
 end
 
 --------------------------------------------------------------------------------
-function render_favorite(spec, is_favorite)
+function render_serverlist_row(spec, is_favorite)
 	local text = ""
 	if spec.name then
 		text = text .. core.formspec_escape(spec.name:trim())

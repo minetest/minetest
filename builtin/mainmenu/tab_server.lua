@@ -26,7 +26,7 @@ local function get_formspec(tabview, name, tabdata)
 		"button[4,4.15;2.6,0.5;world_delete;" .. fgettext("Delete") .. "]" ..
 		"button[6.5,4.15;2.8,0.5;world_create;" .. fgettext("New") .. "]" ..
 		"button[9.2,4.15;2.55,0.5;world_configure;" .. fgettext("Configure") .. "]" ..
-		"button[8.5,4.95;3.25,0.5;start_server;" .. fgettext("Start Game") .. "]" ..
+		"button[8.5,5;3.25,0.5;start_server;" .. fgettext("Start Game") .. "]" ..
 		"label[4,-0.25;" .. fgettext("Select World:") .. "]" ..
 		"checkbox[0.25,0.25;cb_creative_mode;" .. fgettext("Creative Mode") .. ";" ..
 		dump(core.setting_getbool("creative_mode")) .. "]" ..
