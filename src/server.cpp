@@ -107,7 +107,8 @@ void *ServerThread::run()
 		} catch (con::ConnectionBindFailed &e) {
 			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
-			m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
+			m_server->setAsyncFatalError(
+					"ServerThread::run Lua: " + std::string(e.what()));
 		}
 	}
 
@@ -487,7 +488,7 @@ void Server::step(float dtime)
 				g_settings->get("kick_msg_crash"),
 				g_settings->getBool("ask_reconnect_on_crash"));
 		}
-		throw ServerError(async_err);
+		throw ServerError("AsyncErr: " + async_err);
 	}
 }
 
