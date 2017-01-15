@@ -71,7 +71,8 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "chat action (eg. /me orders a pizza)",
+	description = "Display chat action (e.g., '/me orders a pizza' displays"
+			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
@@ -147,7 +148,7 @@ core.register_chatcommand("help", {
 
 core.register_chatcommand("privs", {
 	params = "<name>",
-	description = "print out privileges of player",
+	description = "Print privileges of player",
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
@@ -270,7 +271,7 @@ core.register_chatcommand("revoke", {
 
 core.register_chatcommand("setpassword", {
 	params = "<name> <password>",
-	description = "set given password",
+	description = "Set player's password",
 	privs = {password=true},
 	func = function(name, param)
 		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
@@ -308,7 +309,7 @@ core.register_chatcommand("setpassword", {
 
 core.register_chatcommand("clearpassword", {
 	params = "<name>",
-	description = "set empty password",
+	description = "Set empty password",
 	privs = {password=true},
 	func = function(name, param)
 		local toname = param
@@ -325,7 +326,7 @@ core.register_chatcommand("clearpassword", {
 
 core.register_chatcommand("auth_reload", {
 	params = "",
-	description = "reload authentication data",
+	description = "Reload authentication data",
 	privs = {server=true},
 	func = function(name, param)
 		local done = core.auth_reload()
@@ -335,7 +336,7 @@ core.register_chatcommand("auth_reload", {
 
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
-	description = "teleport to given position",
+	description = "Teleport to player or position",
 	privs = {teleport=true},
 	func = function(name, param)
 		-- Returns (pos, true) if found, otherwise (pos, false)
@@ -443,7 +444,7 @@ core.register_chatcommand("teleport", {
 
 core.register_chatcommand("set", {
 	params = "[-n] <name> <value> | <name>",
-	description = "set or read server configuration setting",
+	description = "Set or read server configuration setting",
 	privs = {server=true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
@@ -498,7 +499,7 @@ end
 
 core.register_chatcommand("emergeblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "starts loading (or generating, if inexistent) map blocks "
+	description = "Load (or, if nonexistent, generate) map blocks "
 		.. "contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
@@ -524,7 +525,7 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "delete map blocks contained in area pos1 to pos2",
+	description = "Delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -588,7 +589,7 @@ end
 
 core.register_chatcommand("give", {
 	params = "<name> <ItemString>",
-	description = "give item to player",
+	description = "Give item to player",
 	privs = {give=true},
 	func = function(name, param)
 		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
@@ -601,7 +602,7 @@ core.register_chatcommand("give", {
 
 core.register_chatcommand("giveme", {
 	params = "<ItemString>",
-	description = "give item to yourself",
+	description = "Give item to yourself",
 	privs = {give=true},
 	func = function(name, param)
 		local itemstring = string.match(param, "(.+)$")
@@ -672,9 +673,9 @@ end)
 
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [limit]",
-	description = "Check who has last touched a node or near it,"
-			.. " max. <seconds> ago (default range=0,"
-			.. " seconds=86400=24h, limit=5)",
+	description = "Check who last touched a node or a node near it"
+			.. " within the time specified by <seconds>. Default: range = 0,"
+			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.setting_getbool("enable_rollback_recording") then
@@ -725,7 +726,7 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "<player name> [<seconds>] | :<actor> [<seconds>]",
-	description = "revert actions of a player; default for <seconds> is 60",
+	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
 		if not core.setting_getbool("enable_rollback_recording") then
@@ -770,7 +771,7 @@ core.register_chatcommand("status", {
 
 core.register_chatcommand("time", {
 	params = "<0..23>:<0..59> | <0..24000>",
-	description = "set time of day",
+	description = "Set time of day",
 	privs = {},
 	func = function(name, param)
 		if param == "" then
@@ -816,7 +817,7 @@ core.register_chatcommand("days", {
 })
 
 core.register_chatcommand("shutdown", {
-	description = "shutdown server",
+	description = "Shutdown server",
 	privs = {server=true},
 	func = function(name, param)
 		core.log("action", name .. " shuts down server")
@@ -847,7 +848,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name/ip>",
-	description = "remove IP ban",
+	description = "Remove IP ban",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
@@ -860,7 +861,7 @@ core.register_chatcommand("unban", {
 
 core.register_chatcommand("kick", {
 	params = "<name> [reason]",
-	description = "kick a player",
+	description = "Kick a player",
 	privs = {kick=true},
 	func = function(name, param)
 		local tokick, reason = param:match("([^ ]+) (.+)")
@@ -879,7 +880,7 @@ core.register_chatcommand("kick", {
 
 core.register_chatcommand("clearobjects", {
 	params = "[full|quick]",
-	description = "clear all objects in world",
+	description = "Clear all objects in world",
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
