@@ -2788,9 +2788,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 #### Methods
 * `remove()`: remove object (after returning from Lua)
     * Note: Doesn't work on players, use minetest.kick_player instead
-* `getpos()`: returns `{x=num, y=num, z=num}`
-* `setpos(pos)`; `pos`=`{x=num, y=num, z=num}`
-* `moveto(pos, continuous=false)`: interpolated move
+* `get_pos()`: returns `{x=num, y=num, z=num}`
+* `set_pos(pos)`; `pos`=`{x=num, y=num, z=num}`
+* `move_to(pos, continuous=false)`: interpolated move
 * `punch(puncher, time_from_last_punch, tool_capabilities, direction)`
     * `puncher` = another `ObjectRef`,
     * `time_from_last_punch` = time since last punch action of the puncher
@@ -2836,14 +2836,14 @@ This is basically a reference to a C++ `ServerActiveObject`
       }
 
 ##### LuaEntitySAO-only (no-op for other objects)
-* `setvelocity({x=num, y=num, z=num})`
-* `getvelocity()`: returns `{x=num, y=num, z=num}`
-* `setacceleration({x=num, y=num, z=num})`
-* `getacceleration()`: returns `{x=num, y=num, z=num}`
-* `setyaw(radians)`
-* `getyaw()`: returns number in radians
-* `settexturemod(mod)`
-* `setsprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
+* `set_velocity({x=num, y=num, z=num})`
+* `get_velocity()`: returns `{x=num, y=num, z=num}`
+* `set_acceleration({x=num, y=num, z=num})`
+* `get_acceleration()`: returns `{x=num, y=num, z=num}`
+* `set_yaw(radians)`
+* `get_yaw()`: returns number in radians
+* `set_texture_mod(mod)`
+* `set_sprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
   select_horiz_by_yawpitch=false)`
     * Select sprite from spritesheet with optional animation and DM-style
       texture selection based on yaw relative to camera

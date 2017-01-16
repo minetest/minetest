@@ -57,15 +57,15 @@ private:
 	// remove(self)
 	static int l_remove(lua_State *L);
 
-	// getpos(self)
+	// get_pos(self)
 	// returns: {x=num, y=num, z=num}
-	static int l_getpos(lua_State *L);
+	static int l_get_pos(lua_State *L);
 
-	// setpos(self, pos)
-	static int l_setpos(lua_State *L);
+	// set_pos(self, pos)
+	static int l_set_pos(lua_State *L);
 
-	// moveto(self, pos, continuous=false)
-	static int l_moveto(lua_State *L);
+	// move_to(self, pos, continuous=false)
+	static int l_move_to(lua_State *L);
 
 	// punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 	static int l_punch(lua_State *L);
@@ -143,30 +143,30 @@ private:
 
 	/* LuaEntitySAO-only */
 
-	// setvelocity(self, {x=num, y=num, z=num})
-	static int l_setvelocity(lua_State *L);
+	// set_velocity(self, {x=num, y=num, z=num})
+	static int l_set_velocity(lua_State *L);
 
-	// getvelocity(self)
-	static int l_getvelocity(lua_State *L);
+	// get_velocity(self)
+	static int l_get_velocity(lua_State *L);
 
-	// setacceleration(self, {x=num, y=num, z=num})
-	static int l_setacceleration(lua_State *L);
+	// set_acceleration(self, {x=num, y=num, z=num})
+	static int l_set_acceleration(lua_State *L);
 
-	// getacceleration(self)
-	static int l_getacceleration(lua_State *L);
+	// get_acceleration(self)
+	static int l_get_acceleration(lua_State *L);
 
-	// setyaw(self, radians)
-	static int l_setyaw(lua_State *L);
+	// set_yaw(self, radians)
+	static int l_set_yaw(lua_State *L);
 
-	// getyaw(self)
-	static int l_getyaw(lua_State *L);
+	// get_yaw(self)
+	static int l_get_yaw(lua_State *L);
 
-	// settexturemod(self, mod)
-	static int l_settexturemod(lua_State *L);
+	// set_texture_mod(self, mod)
+	static int l_set_texture_mod(lua_State *L);
 
-	// setsprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
+	// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
 	//           select_horiz_by_yawpitch=false)
-	static int l_setsprite(lua_State *L);
+	static int l_set_sprite(lua_State *L);
 
 	// DEPRECATED
 	// get_entity_name(self)
