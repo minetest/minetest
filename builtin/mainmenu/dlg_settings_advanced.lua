@@ -349,7 +349,12 @@ local function filter_settings(settings, searchstring)
 		return settings, -1
 	end
 
-	searchstring = searchstring:lower()
+	-- Setup the keyword list
+	local keywords = {}
+	for word in searchstring:lower():gmatch("%S+") do
+		table.insert(keywords, word)
+	end
+
 	local result = {}
 	local category_stack = {}
 	local current_level = 0
@@ -369,22 +374,43 @@ local function filter_settings(settings, searchstring)
 			-- Push category onto stack
 			category_stack[#category_stack + 1] = entry
 			current_level = entry.level
-		elseif string.find(entry.name:lower(), searchstring, 1, true) or
-				(entry.readable_name and
-					string.find(fgettext(entry.readable_name):lower(), searchstring, 1, true)) or
-				(entry.comment and
-					string.find(fgettext_ne(entry.comment):lower(), searchstring, 1, true)) then
-			-- Add parent categories
-			for _, category in pairs(category_stack) do
-				result[#result + 1] = category
+		else
+			-- See if setting matches keywords
+			local setting_score = 0
+			for k = 1, #keywords do
+				local keyword = keywords[k]
+
+				if string.find(entry.name:lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.readable_name and
+						string.find(fgettext(entry.readable_name):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.comment and
+						string.find(fgettext_ne(entry.comment):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
 			end
-			category_stack = {}
 
-			-- Add setting
-			result[#result + 1] = entry
+			-- Add setting to results if match
+			if setting_score > 0 then
+				-- Add parent categories
+				for _, category in pairs(category_stack) do
+					result[#result + 1] = category
+				end
+				category_stack = {}
 
-			if not best_setting then
-				best_setting = #result
+				-- Add setting
+				result[#result + 1] = entry
+				entry.score = setting_score
+
+				if not best_setting or
+						setting_score > result[best_setting].score then
+					best_setting = #result
+				end
 			end
 		end
 	end
@@ -649,7 +675,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local list_enter = false
 	if fields["list_settings"] then
 		selected_setting = core.get_table_index("list_settings")
-		if  core.explode_table_event(fields["list_settings"]).type == "DCL" then
+		if core.explode_table_event(fields["list_settings"]).type == "DCL" then
 			-- Directly toggle booleans
 			local setting = settings[selected_setting]
 			if setting and setting.type == "bool" then
@@ -667,14 +693,27 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	if fields.search or fields.key_enter_field == "search_string" then
 		if search_string == fields.search_string then
-			for i = selected_setting + 1, #settings do
-				if settings[i].type ~= "category" then
-					selected_setting = i
-					core.update_formspec(this:get_formspec())
-					return true
+			if selected_setting > 0 then
+				-- Go to next result on enter press
+				local i = selected_setting + 1
+				local looped = false
+				while i > #settings or settings[i].type == "category" do
+					i = i + 1
+					if i > #settings then
+						-- Stop infinte looping
+						if looped then
+							return false
+						end
+						i = 1
+						looped = true
+					end
 				end
+				selected_setting = i
+				core.update_formspec(this:get_formspec())
+				return true
 			end
 		else
+			-- Search for setting
 			search_string = fields.search_string
 			settings, selected_setting = filter_settings(full_settings, search_string)
 			core.update_formspec(this:get_formspec())
