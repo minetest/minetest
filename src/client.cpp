@@ -113,9 +113,9 @@ void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_se
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	for(std::vector<QueuedMeshUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i)
+	for(std::vector<QueuedMeshUpdate*>::reverse_iterator
+			i = m_queue.rbegin();
+			i != m_queue.rend(); ++i)
 	{
 		QueuedMeshUpdate *q = *i;
 		if(q->p == p)
@@ -174,8 +174,9 @@ void MeshUpdateThread::enqueueUpdate(v3s16 p, MeshMakeData *data,
 void MeshUpdateThread::doUpdate()
 {
 	QueuedMeshUpdate *q;
-	while ((q = m_queue_in.pop())) {
-
+	int i=0;
+	while (i < 40 && (q = m_queue_in.pop())) {
+		i++;
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
