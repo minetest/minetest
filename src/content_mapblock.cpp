@@ -1830,10 +1830,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		case NDT_MESH:
 		{
 			v3f pos = intToFloat(p, BS);
-			video::SColor basecolor;
-			n.getColor(f, &basecolor);
-			video::SColor c = encode_light_and_color(
-				getInteriorLight(n, 1, nodedef), basecolor);
+			u16 l = getInteriorLight(n, 1, nodedef);
 			u8 facedir = 0;
 			if (f.param_type_2 == CPT2_FACEDIR ||
 					f.param_type_2 == CPT2_COLORED_FACEDIR) {
@@ -1852,10 +1849,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if (f.mesh_ptr[facedir]) {
 				// use cached meshes
 				for(u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
+					const TileSpec &tile = getNodeTileN(n, p, j, data);
 					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
-					collector.append(getNodeTileN(n, p, j, data),
-						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
-						buf->getIndices(), buf->getIndexCount(), pos, c, f.light_source);
+					collector.append(tile, (video::S3DVertex *)
+						buf->getVertices(), buf->getVertexCount(),
+						buf->getIndices(), buf->getIndexCount(), pos,
+						encode_light_and_color(l, tile.color), f.light_source);
 				}
 			} else if (f.mesh_ptr[0]) {
 				// no cache, clone and rotate mesh
@@ -1864,10 +1863,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
 				for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+					const TileSpec &tile = getNodeTileN(n, p, j, data);
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-					collector.append(getNodeTileN(n, p, j, data),
-						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
-						buf->getIndices(), buf->getIndexCount(), pos, c, f.light_source);
+					collector.append(tile, (video::S3DVertex *)
+						buf->getVertices(), buf->getVertexCount(),
+						buf->getIndices(), buf->getIndexCount(), pos,
+						encode_light_and_color(l, tile.color), f.light_source);
 				}
 				mesh->drop();
 			}

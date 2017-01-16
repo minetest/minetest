@@ -89,7 +89,7 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
 scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
-	Convert nodeboxes to mesh.
+	Convert nodeboxes to mesh. Each tile goes into a different buffer.
 	boxes - set of nodeboxes to be converted into cuboids
 	uv_coords[24] - table of texture uv coords for each cuboid face
 	expand - factor by which cuboids will be resized
