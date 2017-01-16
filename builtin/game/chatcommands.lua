@@ -45,21 +45,58 @@ if core.setting_getbool("profiler.load") then
 	profiler.init_chatcommand()
 end
 
--- Parses a "range" string in the format of "here (number)" or
+-- Parses a "range" string in the format of "here (number [nodes|blocks|chunks])" or
 -- "(x1, y1, z1) (x2, y2, z2)", returning two position vectors
 local function parse_range_str(player_name, str)
 	local p1, p2
 	local args = str:split(" ")
+	local blocksize = core.MAP_BLOCKSIZE
+	local chunksize = core.get_mapgen_setting("chunksize")
 
 	if args[1] == "here" then
-		p1, p2 = core.get_player_radius_area(player_name, tonumber(args[2]))
+		local distance = tonumber(args[2])
+		if args[2] == nil or args[2] == "" then
+			distance = 0
+		elseif distance == nil then
+			return false, "Invalid distance. Must be a number."
+		elseif args[3] == "node" or args[3] == "nodes" then
+			-- use distance as is
+		elseif args[3] == "block" or args[3] == "blocks" then
+			distance = distance * blocksize
+		elseif args[3] == "chunk" or args[3] == "chunks" then
+			-- distance will be approx. 8 (blocksize/2) nodes from the block edge
+			distance = (distance * chunksize + (chunksize - 1) / 2) * blocksize
+		elseif args[3] ~= nil then
+			return false, "Invalid unit. Expected nothing, 'nodes', 'blocks' or 'chunks'"
+		end
+
+		local player = minetest.get_player_by_name(player_name)
+		p1 = player and player:getpos()
 		if p1 == nil then
 			return false, "Unable to get player " .. player_name .. " position"
 		end
+
+		if args[3] == "chunk" or args[3] == "chunks" then
+			-- Compute approximate central point in the chunk.
+			for _,c in pairs({"x", "y", "z"}) do
+				local block = math.floor(p1[c] / blocksize)
+				local chunk = math.floor((block + math.floor(chunksize / 2)) / chunksize)
+				p1[c] = chunk * chunksize * blocksize + (chunksize % 2) * blocksize / 2
+			end
+		end
+
+		p2 = vector.add(p1, distance)
+		p1 = vector.add(p1, -distance)
 	else
 		p1, p2 = core.string_to_area(str)
 		if p1 == nil then
-			return false, "Incorrect area format. Expected: (x1,y1,z1) (x2,y2,z2)"
+			p1 = core.string_to_pos(str)
+			if p1 ~= nil then
+				p2 = {x=p1.x, y=p1.y, z=p1.z}
+			end
+		end
+		if p1 == nil then
+			return false, "Incorrect area format. Expected: (x1,y1,z1) [(x2,y2,z2)]"
 		end
 	end
 
@@ -471,59 +508,169 @@ core.register_chatcommand("set", {
 	end,
 })
 
-local function emergeblocks_callback(pos, action, num_calls_remaining, ctx)
-	if ctx.total_blocks == 0 then
-		ctx.total_blocks   = num_calls_remaining + 1
-		ctx.current_blocks = 0
+local function emerge_callback(pos, action, num_calls_remaining, ctx)
+	if ctx.total_count == 0 then
+		ctx.total_count   = num_calls_remaining + 1
+		ctx.current_count = 0
 	end
-	ctx.current_blocks = ctx.current_blocks + 1
-
-	if ctx.current_blocks == ctx.total_blocks then
+	ctx.current_count = ctx.current_count + 1
+	if core.get_us_time() < ctx.cur_time then
+		-- core.get_us_time() loops after 2^32 microseconds.
+		-- The possibility of two loops having occurred (at least
+		-- 72 minutes have elapsed) is ignored deliberately as
+		-- it's unlikely, and non-critical anyway.
+		ctx.start_time = ctx.start_time - 2^32
+	end
+	ctx.cur_time = core.get_us_time()
+	if ctx.current_count == ctx.total_count then
 		core.chat_send_player(ctx.requestor_name,
-			string.format("Finished emerging %d blocks in %.2fms.",
-			ctx.total_blocks, (os.clock() - ctx.start_time) * 1000))
+			string.format("Finished emerging %d %ss in %.3fs - %.2f %ss/s)",
+			ctx.total_count, ctx.unit,
+			(ctx.cur_time - ctx.start_time) / 1000000,
+			ctx.total_count / ((ctx.cur_time - ctx.start_time) / 1000000),
+			ctx.unit))
 	end
 end
 
-local function emergeblocks_progress_update(ctx)
-	if ctx.current_blocks ~= ctx.total_blocks then
+local function emerge_progress_update(ctx)
+	if ctx.current_count ~= ctx.total_count then
+		if core.get_us_time() < ctx.cur_time then
+			-- core.get_us_time() loops after 2^32 microseconds.
+			-- The possibility of two loops having occurred (at least
+			-- 72 minutes have elapsed) is ignored deliberately as
+			-- it's unlikely, and non-critical anyway.
+			ctx.start_time = ctx.start_time - 2^32
+		end
+		ctx.cur_time = core.get_us_time()
 		core.chat_send_player(ctx.requestor_name,
-			string.format("emergeblocks update: %d/%d blocks emerged (%.1f%%)",
-			ctx.current_blocks, ctx.total_blocks,
-			(ctx.current_blocks / ctx.total_blocks) * 100))
+			string.format("emerge%ss update: %d/%d %ss emerged (%.1f%%; %.2f %ss/s)",
+			ctx.unit, ctx.current_count, ctx.total_count, ctx.unit,
+			(ctx.current_count / ctx.total_count) * 100,
+			ctx.current_count / ((ctx.cur_time - ctx.start_time) / 1000000),
+			ctx.unit))
 
-		core.after(2, emergeblocks_progress_update, ctx)
+		core.after(10, emerge_progress_update, ctx)
 	end
+end
+
+-- Sanitize and adjust boundaries p1 and p2 to an entire multiple of unit.
+-- Returns adjusted p1 and p2, min and max position in 'unit's, and
+-- total number of 'unit's.
+-- unit is "block" or "chunk"
+local function sanitize_area(p1, p2, unit)
+	local min = {}
+	local max = {}
+	p1 = {x=p1.x, y=p1.y, z=p1.z}
+	p2 = {x=p2.x, y=p2.y, z=p2.z}
+	local total_count = 1
+	local blocksize = core.MAP_BLOCKSIZE
+	local chunksize = core.get_mapgen_setting("chunksize")
+	local chunk_offset = -math.floor(chunksize / 2)
+	for _,c in pairs({"x", "y", "z"}) do
+		if p1[c] > p2[c] then
+			local tmp = p1[c]
+			p1[c] = p2[c]
+			p2[c] = tmp
+		end
+		if unit == "chunk" then
+			min[c] = math.floor((p1[c] / blocksize - chunk_offset) / chunksize)
+			max[c] = math.floor((p2[c] / blocksize - chunk_offset) / chunksize)
+			p1[c] = (min[c] * chunksize + chunk_offset) * blocksize
+			p2[c] = ((max[c] + 1) * chunksize + chunk_offset) * blocksize - 1
+		else
+			min[c] = math.floor(p1[c] / blocksize)
+			max[c] = math.floor(p2[c] / blocksize)
+			p1[c] = min[c] * blocksize
+			p2[c] = (max[c] + 1) * blocksize - 1
+		end
+		total_count = total_count * (max[c] - min[c] + 1)
+	end
+	return p1, p2, min, max, total_count
+end
+
+local function emerge(name, p1, p2, unit)
+	local us_time = core.get_us_time()
+	local context = {
+		current_count  = 0,
+		total_count    = 0,
+		start_time     = us_time - 1,			-- Avoid (unlikely) division by zero
+		cur_time       = us_time,
+		requestor_name = name,
+		unit           = unit,
+	}
+
+	-- Sanitize and adjust boundaries
+	-- This is *not* needed for core.emerge_area; it just improves the
+	-- user feedback by reporting the exact area that will be emerged.
+	local min, max
+	local total_count					-- total_count is not saved, in case we got it wrong...
+	p1, p2, min, max, total_count = sanitize_area(p1, p2, unit)
+
+	core.emerge_area(p1, p2, emerge_callback, context, context.unit)
+	core.after(10, emerge_progress_update, context)
+
+	return true, string.format("Started emerge of area ranging from %s to %s (%d x %d x %d = %d %ss)",
+		core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
+		max.x - min.x + 1,
+		max.y - min.y + 1,
+		max.z - min.z + 1,
+		total_count, context.unit)
 end
 
 core.register_chatcommand("emergeblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "starts loading (or generating, if inexistent) map blocks "
-		.. "contained in area pos1 to pos2",
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
+	description = "start loading/generating map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
 		if p1 == false then
 			return false, p2
 		end
-
-		local context = {
-			current_blocks = 0,
-			total_blocks   = 0,
-			start_time     = os.clock(),
-			requestor_name = name
-		}
-
-		core.emerge_area(p1, p2, emergeblocks_callback, context)
-		core.after(2, emergeblocks_progress_update, context)
-
-		return true, "Started emerge of area ranging from " ..
-			core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+		return emerge(name, p1, p2, "block")
 	end,
 })
 
+core.register_chatcommand("emergechunks", {
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
+	description = "start loading/generating map chunks contained in area pos1 to pos2",
+	privs = {server=true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
+		end
+		return emerge(name, p1, p2, "chunk")
+	end,
+})
+
+local function delete_area(name, p1, p2, unit)
+	-- Sanitize and adjust boundaries
+	-- This is not required when unit is 'block'. It *is* required
+	-- when unit is 'chunk', as core.delete_area() is block-oriented.
+	-- In any case, thus improves user feedback by reporting the exact
+	-- area that has been deleted.
+	local min, max
+	local total_count
+	p1, p2, min, max, total_count = sanitize_area(p1, p2, unit)
+
+	local msg_detail = string.format("area ranging from %s to %s (%d x %d x %d = %d %ss)",
+		core.pos_to_string(p1, 0), core.pos_to_string(p2, 0),
+		max.x - min.x + 1,
+		max.y - min.y + 1,
+		max.z - min.z + 1,
+		total_count, unit)
+	local success, total_count, failed_count = core.delete_area(p1, p2)
+	if success then
+		return true, string.format("Successfully cleared %d/%d blocks in %s",
+			total_count - failed_count, total_count, msg_detail)
+	else
+		return false, string.format("Failed to clear %d/%d blocks in %s",
+			failed_count, total_count, msg_detail)
+	end
+end
+
 core.register_chatcommand("deleteblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
 	description = "delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
@@ -531,13 +678,20 @@ core.register_chatcommand("deleteblocks", {
 		if p1 == false then
 			return false, p2
 		end
+		return delete_area(name, p1, p2, "block")
+	end,
+})
 
-		if core.delete_area(p1, p2) then
-			return true, "Successfully cleared area ranging from " ..
-				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
-		else
-			return false, "Failed to clear one or more blocks in area"
+core.register_chatcommand("deletechunks", {
+	params = "(here [distance [nodes|blocks|chunks]]) | (<pos1> [<pos2>])",
+	description = "delete map chunks contained in area pos1 to pos2",
+	privs = {server=true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
 		end
+		return delete_area(name, p1, p2, "chunk")
 	end,
 })
 
