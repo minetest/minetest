@@ -32,27 +32,36 @@ local function get_formspec(tabview, name, tabdata)
 	end
 
 	local retval =
-		"label[7.75,-0.15;" .. fgettext("Address / Port") .. "]" ..
-		"label[7.75,1.05;" .. fgettext("Name / Password") .. "]" ..
-		"field[8,0.75;3.3,0.5;te_address;;" ..
+		-- Search
+		"field[0.15,0.35;6.05,0.27;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
+		"button[5.8,0.1;2,0.1;btn_mp_search;" .. fgettext("Search") .. "]" ..
+
+		-- Address / Port
+		"label[7.75,-0.25;" .. fgettext("Address / Port") .. "]" ..
+		"field[8,0.65;3.25,0.5;te_address;;" ..
 			core.formspec_escape(core.setting_get("address")) .. "]" ..
-		"field[11.15,0.75;1.4,0.5;te_port;;" ..
+		"field[11.1,0.65;1.4,0.5;te_port;;" ..
 			core.formspec_escape(core.setting_get("remote_port")) .. "]" ..
-		"button[10.1,4.9;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]" ..
-		"field[8,1.95;2.95,0.5;te_name;;" ..
+
+		-- Name / Password
+		"label[7.75,0.95;" .. fgettext("Name / Password") .. "]" ..
+		"field[8,1.85;2.9,0.5;te_name;;" ..
 			core.formspec_escape(core.setting_get("name")) .. "]" ..
-		"pwdfield[10.78,1.95;1.77,0.5;te_pwd;]" ..
-		"box[7.73,2.35;4.3,2.28;#999999]"..
-		"field[0.15,0.25;4.5,0.27;te_search;;"..core.formspec_escape(tabdata.search_for).."]"..
-		"button[4.8,0;2.7,0.1;btn_mp_search;" .. fgettext("Search") .. "]"
+		"pwdfield[10.73,1.85;1.77,0.5;te_pwd;]" ..
+
+		-- Description Background
+		"box[7.73,2.25;4.25,2.6;#999999]"..
+
+		-- Connect
+		"button[10.1,5.15;2,0.5;btn_mp_connect;" .. fgettext("Connect") .. "]"
 
 	if tabdata.fav_selected and fav_selected then
 		if gamedata.fav then
-			retval = retval .. "button[7.85,4.9;2.3,0.5;btn_delete_favorite;" ..
+			retval = retval .. "button[7.75,5.15;2.3,0.5;btn_delete_favorite;" ..
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.4;4.26,2.6;;" ..
+			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;" ..
 				core.formspec_escape((gamedata.serverdescription or ""), true) .. ";]"
 		end
 	end
@@ -69,7 +78,7 @@ local function get_formspec(tabview, name, tabdata)
 		image_column(fgettext("PvP enabled"), "pvp") .. ",padding=0.25;" ..
 		"color,span=1;" ..
 		"text,padding=1]" ..
-		"table[-0.15,0.4;7.75,5.35;favourites;"
+		"table[-0.15,0.6;7.75,5.15;favourites;"
 
 	if menudata.search_result then
 		for i = 1, #menudata.search_result do
