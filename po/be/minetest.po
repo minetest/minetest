@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-01-15 19:41+0300\n"
+"PO-Revision-Date: 2017-01-18 22:39+0000\n"
 "Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
-"Language-Team: Belarusian <>\n"
+"Language-Team: Belarusian "
+"<https://hosted.weblate.org/projects/minetest/minetest/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Weblate 2.11-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -906,7 +907,7 @@ msgstr "Кансоль"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Двайны націск «скачка» пераключае рэжым палёту"
+msgstr "Двайны «скачок» = палёт"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
@@ -1909,7 +1910,7 @@ msgstr "Даменнае імя сервера, якое будзе паказв
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr "Двайны «скачок» = палёт"
+msgstr "Двайны націск «скачка» пераключае рэжым палёту"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
@@ -3762,7 +3763,7 @@ msgid ""
 "speed greatly\n"
 "at the cost of slightly buggy caves."
 msgstr ""
-"Колькасць патокаў, якія выкарыстоўваюцца для вытворчасць.\n"
+"Колькасць патокаў, якія выкарыстоўваюцца для вытворчасці.\n"
 "Пакіньце пустым або павялічце гэта значэнне для выкарыстання некалькіх "
 "патокаў.\n"
 "На мультыпрацэсарных сістэмах гэта значна палепшыць хуткасць генерацыі мапы,"
