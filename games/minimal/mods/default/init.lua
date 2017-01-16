@@ -82,7 +82,8 @@ minetest.register_tool("default:pick_mese", {
 		groupcaps={
 			cracky={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 			crumbly={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
-			snappy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3}
+			snappy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
+			fleshy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 		}
 	},
 })
