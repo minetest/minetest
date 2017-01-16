@@ -475,34 +475,21 @@ void draw_plain(Camera& camera, bool show_hud,
 	}
 }
 
-inline int undersample(int coef, int size)
+inline int scaledown(int coef, int size)
 {
 	return (size + coef - 1) / coef;
 }
-
-static const video::S3DVertex rect_vs[4] = {
-	video::S3DVertex(-1.0, -1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 0.0, 1.0),
-	video::S3DVertex(-1.0, 1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 0.0, 0.0),
-	video::S3DVertex(1.0, -1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 1.0, 1.0),
-	video::S3DVertex(1.0, 1.0, 1.0, 0.0, 0.0, -1.0, 0xFFFFFFFF, 1.0, 0.0),
-};
-
-static const u16 rect_is[6] = {
-	0, 1, 3,
-	0, 3, 2,
-};
 
 void draw_undersampled(Camera& camera, bool show_hud,
 		Hud& hud, video::IVideoDriver* driver,
 		scene::ISceneManager* smgr, const v2u32& screensize,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
-		video::SColor skycolor)
+		video::SColor skycolor, int undersampling = 2)
 {
-#define US 4
 	static video::ITexture* image = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
-	v2u32 pixelated_size = v2u32(undersample(US, screensize.X), undersample(US, screensize.Y));
-	v2u32 dest_size = v2u32(US * pixelated_size.X, US * pixelated_size.Y);
+	v2u32 pixelated_size = v2u32(scaledown(undersampling, screensize.X), scaledown(undersampling, screensize.Y));
+	v2u32 dest_size = v2u32(undersampling * pixelated_size.X, undersampling * pixelated_size.Y);
 	if (pixelated_size != last_pixelated_size) {
 		init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
 		last_pixelated_size = pixelated_size;
@@ -580,8 +567,13 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		show_hud = false;
 	}
 	else {
-		draw_undersampled(camera, show_hud, hud, driver,
-				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
+		int us = g_settings->getU16("undersampling");
+		if(us)
+			draw_undersampled(camera, show_hud, hud, driver,
+					smgr, screensize, draw_wield_tool, client, guienv, skycolor, us);
+		else
+			draw_plain(camera, show_hud, hud, driver,
+					smgr, screensize, draw_wield_tool, client, guienv, skycolor);
 	}
 
 	/*
