@@ -2826,7 +2826,15 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 
 		std::vector<u16> clients = m_clients.getClientIDs();
 
+		/*
+			Send the message back to the inital sender
+			if they are using protocol version >= 29
+		*/
+
 		u16 peer_id_to_avoid_sending = (player ? player->peer_id : PEER_ID_INEXISTENT);
+		if (player->protocol_version >= 29)
+			peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
+
 		for (u16 i = 0; i < clients.size(); i++) {
 			u16 cid = clients[i];
 			if (cid != peer_id_to_avoid_sending)

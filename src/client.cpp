@@ -1563,10 +1563,13 @@ void Client::typeChatMessage(const std::wstring &message)
 	}
 	else
 	{
-		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		// compatibility code
+		if (m_proto_ver < 29) {
+			LocalPlayer *player = m_env.getLocalPlayer();
+			assert(player != NULL);
+			std::wstring name = narrow_to_wide(player->getName());
+			m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		}
 	}
 }
 

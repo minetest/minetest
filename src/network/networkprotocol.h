@@ -142,6 +142,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Server doesn't accept TOSERVER_BREATH anymore
 		serialization of TileAnimation params changed
 		TAT_SHEET_2D
+		Removed client-sided chat perdiction
 */
 
 #define LATEST_PROTOCOL_VERSION 29

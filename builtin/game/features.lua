@@ -10,6 +10,7 @@ core.features = {
 	texture_names_parens = true,
 	area_store_custom_ids = true,
 	add_entity_with_staticdata = true,
+	no_chat_message_prediction = true,
 }
 
 function core.has_feature(arg)
