@@ -82,7 +82,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(EXAMPLE_CONF_DIR ".")
 		set(MANDIR "unix/man")
 		set(XDG_APPS_DIR "unix/applications")
-		set(APPDATADIR "unix/appdata")
+		set(APPDATADIR "unix/metainfo")
 		set(ICONDIR "unix/icons")
 		set(LOCALEDIR "locale")
 	else()
@@ -92,7 +92,7 @@ elseif(UNIX) # Linux, BSD etc
 		set(MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
 		set(EXAMPLE_CONF_DIR ${DOCDIR})
 		set(XDG_APPS_DIR "${CMAKE_INSTALL_PREFIX}/share/applications")
-		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/appdata")
+		set(APPDATADIR "${CMAKE_INSTALL_PREFIX}/share/metainfo")
 		set(ICONDIR "${CMAKE_INSTALL_PREFIX}/share/icons")
 		set(LOCALEDIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/locale")
 	endif()
@@ -173,8 +173,8 @@ install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
 if(UNIX AND NOT APPLE)
 	install(FILES "doc/minetest.6" "doc/minetestserver.6" DESTINATION "${MANDIR}/man6")
-	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
-	install(FILES "misc/minetest.appdata.xml" DESTINATION "${APPDATADIR}")
+	install(FILES "misc/net.minetest.minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
+	install(FILES "misc/net.minetest.minetest.appdata.xml" DESTINATION "${APPDATADIR}")
 	install(FILES "misc/minetest.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
 	install(FILES "misc/minetest-xorg-icon-128.png"
 		DESTINATION "${ICONDIR}/hicolor/128x128/apps"

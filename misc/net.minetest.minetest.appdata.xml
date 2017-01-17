@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application>
-	<id type="desktop">minetest.desktop</id>
+<component type="desktop-application">
+	<id>net.minetest.minetest.desktop</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>LGPL-2.1+ and CC-BY-SA-3.0 and MIT and Apache-2.0</project_license>
 	<name>Minetest</name>
@@ -28,9 +28,15 @@
 		</ul>
 	</description>
 	<screenshots>
-		<screenshot type="default" width="1920" height="1080">http://www.minetest.net/media/gallery/1.jpg</screenshot>
-		<screenshot width="1920" height="1080">http://www.minetest.net/media/gallery/3.jpg</screenshot>
-		<screenshot width="1920" height="1080">http://www.minetest.net/media/gallery/5.jpg</screenshot>
+		<screenshot type="default">
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/1.jpg</image>
+		</screenshot>
+		<screenshot>
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/3.jpg</image>
+		</screenshot>
+		<screenshot>
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/5.jpg</image>
+		</screenshot>
 	</screenshots>
 	<keywords>
 		<keyword>sandbox</keyword>
@@ -42,5 +48,11 @@
 	<url type="bugtracker">http://www.minetest.net/development/#reporting-issues</url>
 	<url type="translate">http://dev.minetest.net/Translation</url>
 	<url type="donation">http://www.minetest.net/development/#donate</url>
-	<updatecontact>sfan5@live.de</updatecontact>
-</application>
+	<url type="faq">http://wiki.minetest.net/FAQ</url>
+	<url type="help">http://wiki.minetest.net</url>
+	<provides>
+		<binary>minetest</binary>
+	</provides>
+	<translation type="gettext">minetest</translation>
+	<update_contact>sfan5@live.de</update_contact>
+</component>
