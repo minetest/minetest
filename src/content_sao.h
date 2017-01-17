@@ -121,7 +121,7 @@ public:
 	v3f getAcceleration();
 
 	void setTextureMod(const std::string &mod);
-	std::string getTextureMod();
+	std::string getTextureMod() const;
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();

@@ -687,7 +687,7 @@ void LuaEntitySAO::setTextureMod(const std::string &mod)
 	m_messages_out.push(aom);
 }
 
-std::string LuaEntitySAO::getTextureMod()
+std::string LuaEntitySAO::getTextureMod() const
 {
 	return m_current_texture_modifier;
 }
