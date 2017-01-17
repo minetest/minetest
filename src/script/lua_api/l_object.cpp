@@ -1806,7 +1806,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod_aliased(ObjectRef, get_acceleration, getacceleration),
 	luamethod_aliased(ObjectRef, set_yaw, setyaw),
 	luamethod_aliased(ObjectRef, get_yaw, getyaw),
-	luamethod_aliased(ObjectRef, set_texture_mod, set_texturemod),
+	luamethod_aliased(ObjectRef, set_texture_mod, settexturemod),
 	luamethod_aliased(ObjectRef, set_sprite, setsprite),
 	luamethod(ObjectRef, get_entity_name),
 	luamethod(ObjectRef, get_luaentity),
