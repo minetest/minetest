@@ -56,11 +56,11 @@ function core.check_player_privs(name, ...)
 	elseif arg_type ~= "string" then
 		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -76,11 +76,11 @@ function core.check_player_privs(name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
@@ -112,6 +112,10 @@ function core.get_connected_players()
 		end
 	end
 	return temp_table
+end
+
+function minetest.player_exists(name)
+	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
 
 -- Returns two position vectors representing a box of `radius` in each
@@ -244,4 +248,3 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
-
