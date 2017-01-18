@@ -147,6 +147,16 @@ std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_
 	return os.str();
 }
 
+std::string gob_cmd_update_animation_speed(float frame_speed)
+{
+	std::ostringstream os(std::ios::binary);
+	// command
+	writeU8(os, GENERIC_CMD_SET_ANIMATION_SPEED);
+	// parameters
+	writeF1000(os, frame_speed);
+	return os.str();
+}
+
 std::string gob_cmd_update_bone_position(const std::string &bone, v3f position,
 		v3f rotation)
 {

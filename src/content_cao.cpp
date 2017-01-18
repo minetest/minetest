@@ -1150,6 +1150,13 @@ void GenericCAO::updateAnimation()
 #endif
 }
 
+void GenericCAO::updateAnimationSpeed()
+{
+	if(m_animated_meshnode == NULL)
+		return;
+	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+}
+
 void GenericCAO::updateBonePosition()
 {
 	if(m_bone_position.empty() || !m_animated_meshnode)
@@ -1351,6 +1358,9 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
+		m_animation_speed = readF1000(is);
+		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
