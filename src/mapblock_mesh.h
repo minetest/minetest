@@ -203,8 +203,11 @@ struct MeshCollector
  * \param light the first 8 bits are day light,
  * the last 8 bits are night light
  * \param color the node's color
+ * \param emissive_light amount of light the surface emits,
+ * from 0 to LIGHT_SUN.
  */
-video::SColor encode_light_and_color(u16 light, const video::SColor &color);
+video::SColor encode_light_and_color(u16 light, const video::SColor &color,
+	u8 emissive_light);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);
@@ -215,7 +218,7 @@ u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data);
  * Returns the sunlight's color from the current
  * day-night ratio.
  */
-void get_sunlight_color(video::SColor *sunlight, u32 daynight_ratio);
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
 
 /*!
  * Gives the final  SColor shown on screen.
@@ -235,7 +238,7 @@ void final_color_blend(video::SColor *result,
  * \param dayLight color of the sunlight
  */
 void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColor &dayLight);
+		const video::SColor &data, const video::SColorf &dayLight);
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

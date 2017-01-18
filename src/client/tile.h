@@ -208,7 +208,8 @@ struct TileSpec
 		animation_frame_length_ms(0),
 		rotation(0),
 		has_color(false),
-		color()
+		color(),
+		emissive_light(0)
 	{
 	}
 
@@ -303,5 +304,7 @@ struct TileSpec
 	 * a color then the color of the node owning this tile.
 	 */
 	video::SColor color;
+	//! This much light does the tile emit.
+	u8 emissive_light;
 };
 #endif

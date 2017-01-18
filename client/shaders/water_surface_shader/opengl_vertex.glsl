@@ -15,7 +15,7 @@ varying vec3 tsEyeVec;
 varying vec3 tsLightVec;
 
 // Color of the light emitted by the light sources.
-const vec3 artificalLight = vec3(1.05, 1.05, 1.02);
+const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
 
@@ -124,7 +124,14 @@ void main(void)
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float nightRatio = 1 - gl_Color.a;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
-		nightRatio * artificalLight.rgb) * 2;
+		nightRatio * artificialLight.rgb) * 2;
 	color.a = 1;
+	
+	// Emphase blue a bit in darker places
+	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
+	float brightness = (color.r + color.g + color.b) / 3;
+	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
+		0.07 * brightness);
+	
 	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }

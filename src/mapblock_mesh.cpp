@@ -315,13 +315,34 @@ u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
 	return getSmoothLightCombined(p, data);
 }
 
-void get_sunlight_color(video::SColor *sunlight, u32 daynight_ratio){
-	s32 rg = (255 * daynight_ratio) / 1000;
-	s32 b = rg;
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
+	f32 rg = daynight_ratio / 1000.0f - 0.04f;
+	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
+	sunlight->r = rg;
+	sunlight->g = rg;
+	sunlight->b = b;
+}
 
-	// Moonlight is blue
-	b += (255) / 13;
-	rg -= (255) / 23;
+void final_color_blend(video::SColor *result,
+		u16 light, u32 daynight_ratio)
+{
+	video::SColorf dayLight;
+	get_sunlight_color(&dayLight, daynight_ratio);
+	final_color_blend(result,
+		encode_light_and_color(light, video::SColor(0xFFFFFFFF), 0), dayLight);
+}
+
+void final_color_blend(video::SColor *result,
+		const video::SColor &data, const video::SColorf &dayLight)
+{
+	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
+
+	video::SColorf c(data);
+	f32 n = 1 - c.a;
+
+	f32 r = c.r * (c.a * dayLight.r + n * artificialColor.r) * 2.0f;
+	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
+	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
@@ -330,39 +351,12 @@ void get_sunlight_color(video::SColor *sunlight, u32 daynight_ratio){
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
 
-	b += emphase_blue_when_dark[irr::core::clamp(b, 0, 255) / 8];
-	b = irr::core::clamp(b, 0, 255);
-	rg = irr::core::clamp(rg, 0, 255);
-	sunlight->setRed(rg);
-	sunlight->setGreen(rg);
-	sunlight->setBlue(b);
-}
+	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
+		0, 255) / 8] / 255.0f;
 
-void final_color_blend(video::SColor *result,
-		u16 light, u32 daynight_ratio)
-{
-	video::SColor dayLight;
-	get_sunlight_color(&dayLight, daynight_ratio);
-	final_color_blend(result,
-		encode_light_and_color(light, video::SColor(0xFFFFFFFF)), dayLight);
-}
-
-void final_color_blend(video::SColor *result,
-		const video::SColor &data, const video::SColor &dayLight)
-{
-	u8 d = data.getAlpha();
-	u8 n = 255 - d;
-
-	u16 r = data.getRed() * (d * dayLight.getRed() +
-		n * 268) / (255 * 255) * 2;
-	u16 g = data.getGreen() * (d * dayLight.getGreen() +
-		n * 268) / (255 * 255) * 2;
-	u16 b = data.getBlue() * (d * dayLight.getBlue() +
-		n * 255) / (255 * 255) * 2;
-
-	result->setRed(core::clamp(r, (u16) 0, (u16) 255));
-	result->setGreen(core::clamp(g, (u16) 0, (u16) 255));
-	result->setBlue(core::clamp(b, (u16) 0, (u16) 255));
+	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
+	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
+	result->setBlue(core::clamp((s32) (b * 255.0f), 0, 255));
 }
 
 /*
@@ -439,8 +433,7 @@ struct FastFace
 };
 
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
-		v3f p, v3s16 dir, v3f scale, u8 light_source,
-		std::vector<FastFace> &dest)
+		v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -602,8 +595,9 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		core::vector2d<f32>(x0 + w * abs_scale, y0) };
 
 	for (u8 i = 0; i < 4; i++) {
-		video::SColor c = encode_light_and_color(li[i], tile.color);
-		if(!light_source)
+		video::SColor c = encode_light_and_color(li[i], tile.color,
+			tile.emissive_light);
+		if (!tile.emissive_light)
 			applyFacesShading(c, normal);
 
 		face.vertices[i] = video::S3DVertex(vertex_pos[i], normal, c, f[i]);
@@ -760,8 +754,7 @@ static void getTileInfo(
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
-		TileSpec &tile,
-		u8 &light_source
+		TileSpec &tile
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
@@ -809,7 +802,7 @@ static void getTileInfo(
 	}
 	tile = getNodeTile(n, p_corrected, face_dir_corrected, data);
 	const ContentFeatures &f = ndef->get(n);
-	light_source = f.light_source;
+	tile.emissive_light = f.light_source;
 
 	// eg. water and glass
 	if (equivalent)
@@ -858,10 +851,9 @@ static void updateFastFaceRow(
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0,0,0,0};
 	TileSpec tile;
-	u8 light_source = 0;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
-			lights, tile, light_source);
+			lights, tile);
 
 	for(u16 j=0; j<MAP_BLOCKSIZE; j++)
 	{
@@ -875,7 +867,6 @@ static void updateFastFaceRow(
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0,0,0,0};
 		TileSpec next_tile;
-		u8 next_light_source = 0;
 
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
@@ -886,7 +877,7 @@ static void updateFastFaceRow(
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
-					next_tile, next_light_source);
+					next_tile);
 
 			if(next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
@@ -897,10 +888,10 @@ static void updateFastFaceRow(
 					&& next_lights[3] == lights[3]
 					&& next_tile == tile
 					&& tile.rotation == 0
-					&& next_light_source == light_source
 					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
 					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)
-					&& tile.color == next_tile.color) {
+					&& tile.color == next_tile.color
+					&& tile.emissive_light == next_tile.emissive_light) {
 				next_is_different = false;
 				continuous_tiles_count++;
 			} else {
@@ -952,7 +943,7 @@ static void updateFastFaceRow(
 				}
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
-						sp, face_dir_corrected, scale, light_source, dest);
+						sp, face_dir_corrected, scale, dest);
 
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
 				for(int i = 1; i < continuous_tiles_count; i++){
@@ -971,7 +962,6 @@ static void updateFastFaceRow(
 		lights[2] = next_lights[2];
 		lights[3] = next_lights[3];
 		tile = next_tile;
-		light_source = next_light_source;
 		p = p_next;
 	}
 }
@@ -1166,7 +1156,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		if (!m_enable_shaders) {
 			// Extract colors for day-night animation
 			// Dummy sunlight to handle non-sunlit areas
-			video::SColor sunlight;
+			video::SColorf sunlight;
 			get_sunlight_color(&sunlight, 0);
 			u32 vertex_count =
 				m_use_tangent_vertices ?
@@ -1360,7 +1350,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		if (m_enable_vbo) {
 			m_mesh->setDirty();
 		}
-		video::SColor day_color;
+		video::SColorf day_color;
 		get_sunlight_color(&day_color, daynight_ratio);
 		for(std::map<u32, std::map<u32, video::SColor > >::iterator
 				i = m_daynight_diffs.begin();
@@ -1512,11 +1502,16 @@ void MeshCollector::append(const TileSpec &tile,
 	}
 }
 
-video::SColor encode_light_and_color(u16 light, const video::SColor &color)
+video::SColor encode_light_and_color(u16 light, const video::SColor &color,
+	u8 emissive_light)
 {
 	// Get components
-	u8 day = (light & 0xff);
-	u8 night = (light >> 8);
+	f32 day = (light & 0xff) / 255.0f;
+	f32 night = (light >> 8) / 255.0f;
+	// Add emissive light
+	night += emissive_light * 0.01f;
+	if (night > 255)
+		night = 255;
 	// Since we don't know if the day light is sunlight or
 	// artificial light, assume it is artificial when the night
 	// light bank is also lit.
@@ -1524,7 +1519,7 @@ video::SColor encode_light_and_color(u16 light, const video::SColor &color)
 		day = 0;
 	else
 		day = day - night;
-	float sum = day + night;
+	f32 sum = day + night;
 	// Ratio of sunlight:
 	float r;
 	if (sum > 0)
@@ -1532,7 +1527,7 @@ video::SColor encode_light_and_color(u16 light, const video::SColor &color)
 	else
 		r = 0;
 	// Average light:
-	float b = (day + night) / (2 * 255.0f);
-	return video::SColor(r * 255, b * color.getRed(),
-		b * color.getGreen(), b * color.getBlue());
+	float b = (day + night) / 2;
+	return video::SColor(r * 255, b * color.getRed(), b * color.getGreen(),
+		b * color.getBlue());
 }

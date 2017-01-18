@@ -718,12 +718,12 @@ public:
 		m_fog_distance.set(&fog_distance, services);
 
 		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
-		video::SColor sunlight;
+		video::SColorf sunlight;
 		get_sunlight_color(&sunlight, daynight_ratio);
 		float dnc[3] = {
-			sunlight.getRed() / 255.0f,
-			sunlight.getGreen() / 255.0f,
-			sunlight.getBlue() / 255.0f };
+			sunlight.r,
+			sunlight.g,
+			sunlight.b };
 		m_day_light.set(dnc, services);
 
 		u32 animation_timer = porting::getTimeMs() % 100000;
