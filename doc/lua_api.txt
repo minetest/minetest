@@ -641,12 +641,12 @@ node definition:
     paramtype2 == "color"
     ^ `param2` tells which color is picked from the palette.
       The palette should have 256 pixels.
-    paramtype2 == "colored facedir"
+    paramtype2 == "colorfacedir"
     ^ Same as `facedir`, but with colors.
       The first three bits of `param2` tells which color
       is picked from the palette.
       The palette should have 8 pixels.
-    paramtype2 == "colored wallmounted"
+    paramtype2 == "colorwallmounted"
     ^ Same as `wallmounted`, but with colors.
       The first five bits of `param2` tells which color
       is picked from the palette.

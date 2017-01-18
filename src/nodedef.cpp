@@ -1597,11 +1597,14 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 	if ((protocol_version < 28)
 			&& (compatible_param_type_2 == CPT2_MESHOPTIONS))
 		compatible_param_type_2 = CPT2_NONE;
-	else if ((protocol_version < 30) &&
-			((compatible_param_type_2 == CPT2_COLOR)
-			|| (compatible_param_type_2 == CPT2_COLORED_FACEDIR)
-			|| (compatible_param_type_2 == CPT2_COLORED_WALLMOUNTED)))
-		compatible_param_type_2 = CPT2_NONE;
+	else if (protocol_version < 30) {
+		if (compatible_param_type_2 == CPT2_COLOR)
+			compatible_param_type_2 = CPT2_NONE;
+		else if (compatible_param_type_2 == CPT2_COLORED_FACEDIR)
+			compatible_param_type_2 = CPT2_FACEDIR;
+		else if (compatible_param_type_2 == CPT2_COLORED_WALLMOUNTED)
+			compatible_param_type_2 = CPT2_WALLMOUNTED;
+	}
 
 	if (protocol_version == 13)
 	{
