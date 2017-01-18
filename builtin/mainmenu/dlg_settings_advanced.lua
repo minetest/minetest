@@ -344,7 +344,82 @@ local function parse_config_file(read_all, parse_mods)
 	return settings
 end
 
-local settings = parse_config_file(false, true)
+local function filter_settings(settings, searchstring)
+	if not searchstring or searchstring == "" then
+		return settings, -1
+	end
+
+	-- Setup the keyword list
+	local keywords = {}
+	for word in searchstring:lower():gmatch("%S+") do
+		table.insert(keywords, word)
+	end
+
+	local result = {}
+	local category_stack = {}
+	local current_level = 0
+	local best_setting = nil
+	for _, entry in pairs(settings) do
+		if entry.type == "category" then
+			-- Remove all settingless categories
+			while #category_stack > 0 and entry.level <= current_level do
+				table.remove(category_stack, #category_stack)
+				if #category_stack > 0 then
+					current_level = category_stack[#category_stack].level
+				else
+					current_level = 0
+				end
+			end
+
+			-- Push category onto stack
+			category_stack[#category_stack + 1] = entry
+			current_level = entry.level
+		else
+			-- See if setting matches keywords
+			local setting_score = 0
+			for k = 1, #keywords do
+				local keyword = keywords[k]
+
+				if string.find(entry.name:lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.readable_name and
+						string.find(fgettext(entry.readable_name):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.comment and
+						string.find(fgettext_ne(entry.comment):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+			end
+
+			-- Add setting to results if match
+			if setting_score > 0 then
+				-- Add parent categories
+				for _, category in pairs(category_stack) do
+					result[#result + 1] = category
+				end
+				category_stack = {}
+
+				-- Add setting
+				result[#result + 1] = entry
+				entry.score = setting_score
+
+				if not best_setting or
+						setting_score > result[best_setting].score then
+					best_setting = #result
+				end
+			end
+		end
+	end
+	return result, best_setting or -1
+end
+
+local full_settings = parse_config_file(false, true)
+local search_string = ""
+local settings = full_settings
 local selected_setting = 1
 
 local function get_current_value(setting)
@@ -546,7 +621,10 @@ local function create_settings_formspec(tabview, name, tabdata)
 	local formspec = "size[12,6.5;true]" ..
 			"tablecolumns[color;tree;text,width=32;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
-			"table[0,0;12,5.5;list_settings;"
+			"field[0.3,0.1;10.2,1;search_string;;" .. core.formspec_escape(search_string) .. "]" ..
+			"field_close_on_enter[search_string;false]" ..
+			"button[10.2,-0.2;2,1;search;" .. fgettext("Search") .. "]" ..
+			"table[0,0.8;12,4.5;list_settings;"
 
 	local current_level = 0
 	for _, entry in ipairs(settings) do
@@ -597,10 +675,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local list_enter = false
 	if fields["list_settings"] then
 		selected_setting = core.get_table_index("list_settings")
-		if  core.explode_table_event(fields["list_settings"]).type == "DCL" then
+		if core.explode_table_event(fields["list_settings"]).type == "DCL" then
 			-- Directly toggle booleans
 			local setting = settings[selected_setting]
-			if setting.type == "bool" then
+			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
 				core.setting_setbool(setting.name, not core.is_yes(current_value))
 				core.setting_save()
@@ -613,9 +691,39 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		end
 	end
 
+	if fields.search or fields.key_enter_field == "search_string" then
+		if search_string == fields.search_string then
+			if selected_setting > 0 then
+				-- Go to next result on enter press
+				local i = selected_setting + 1
+				local looped = false
+				while i > #settings or settings[i].type == "category" do
+					i = i + 1
+					if i > #settings then
+						-- Stop infinte looping
+						if looped then
+							return false
+						end
+						i = 1
+						looped = true
+					end
+				end
+				selected_setting = i
+				core.update_formspec(this:get_formspec())
+				return true
+			end
+		else
+			-- Search for setting
+			search_string = fields.search_string
+			settings, selected_setting = filter_settings(full_settings, search_string)
+			core.update_formspec(this:get_formspec())
+		end
+		return true
+	end
+
 	if fields["btn_edit"] or list_enter then
 		local setting = settings[selected_setting]
-		if setting.type ~= "category" then
+		if setting and setting.type ~= "category" then
 			local edit_dialog = dialog_create("change_setting", create_change_setting_formspec,
 					handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
@@ -627,7 +735,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
-		if setting.type ~= "category" then
+		if setting and setting.type ~= "category" then
 			core.setting_set(setting.name, setting.default)
 			core.setting_save()
 			core.update_formspec(this:get_formspec())
