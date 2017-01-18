@@ -88,8 +88,8 @@ private:
 	bool m_initial_tx_basepos_set;
 	bool m_tx_select_horiz_by_yawpitch;
 	v2s32 m_animation_range;
-	int m_animation_speed;
-	int m_animation_blend;
+	float m_animation_speed;
+	float m_animation_blend;
 	bool m_animation_loop;
 	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
 	std::string m_attachment_bone;
@@ -201,6 +201,8 @@ public:
 	void updateTextures(const std::string &mod);
 
 	void updateAnimation();
+
+	void updateAnimationSpeed();
 
 	void updateBonePosition();
 
