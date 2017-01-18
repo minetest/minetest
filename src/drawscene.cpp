@@ -464,21 +464,21 @@ inline int scaledown(int coef, int size)
 	return (size + coef - 1) / coef;
 }
 
-void draw_plain(Camera& camera, bool show_hud,
-		Hud& hud, video::IVideoDriver* driver,
-		scene::ISceneManager* smgr, const v2u32& screensize,
-		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
+void draw_plain(Camera &camera, bool show_hud,
+		Hud &hud, video::IVideoDriver *driver,
+		scene::ISceneManager *smgr, const v2u32 &screensize,
+		bool draw_wield_tool, Client &client, gui::IGUIEnvironment *guienv,
 		video::SColor skycolor)
 {
 // Undersampling-specific stuff
-	static video::ITexture* image = NULL;
+	static video::ITexture *image = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
 	int undersampling = g_settings->getU16("undersampling");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
-	if(undersampling)
-	{
-		pixelated_size = v2u32(scaledown(undersampling, screensize.X), scaledown(undersampling, screensize.Y));
+	if (undersampling) {
+		pixelated_size = v2u32(scaledown(undersampling, screensize.X),
+				scaledown(undersampling, screensize.Y));
 		dest_size = v2u32(undersampling * pixelated_size.X, undersampling * pixelated_size.Y);
 		if (pixelated_size != last_pixelated_size) {
 			init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
@@ -498,8 +498,7 @@ void draw_plain(Camera& camera, bool show_hud,
 	}
 
 // Upscale lowres render
-	if(undersampling)
-	{
+	if (undersampling) {
 		driver->setRenderTarget(0, true, true);
 		driver->draw2DImage(image,
 				irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
@@ -508,7 +507,7 @@ void draw_plain(Camera& camera, bool show_hud,
 }
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
-		Camera &camera, Client& client, LocalPlayer *player, Hud &hud,
+		Camera &camera, Client &client, LocalPlayer *player, Hud &hud,
 		Minimap &mapper, gui::IGUIEnvironment *guienv,
 		const v2u32 &screensize, const video::SColor &skycolor,
 		bool show_hud, bool show_minimap)
