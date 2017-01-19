@@ -2077,6 +2077,10 @@ Call these functions only at load time!
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
+* `minetest.override_chatcommand(name, redefinition)`
+    * Overrides fields of a chatcommand registered with register_chatcommand.
+* `minetest.unregister_chatcommand(name)`
+    * Unregisters a chatcommands registered with register_chatcommand.
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
