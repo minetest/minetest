@@ -940,3 +940,12 @@ core.register_chatcommand("last-login", {
 		return false, "Last login time is unknown"
 	end,
 })
+
+core.register_chatcommand("clear_chat", {
+	description = "Clear the recent chat",
+	func = function(name, param)
+		for _ = 1, 10 do
+			core.chat_send_player(name, " ")
+		end
+	end,
+})
