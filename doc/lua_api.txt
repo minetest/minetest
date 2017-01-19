@@ -145,7 +145,7 @@ Mod directory structure
 
 ### modname
 The location of this directory can be fetched by using
-`minetest.get_modpath(modname)`.
+`minetest.get_mod_path(modname)`.
 
 ### `depends.txt`
 List of mods that have to be loaded before loading this mod.
@@ -172,7 +172,7 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
+`minetest.setting_get(name)` and `minetest.setting_get_bool(name)` can be used
 to read custom or existing settings at load time, if necessary.
 
 ### `models`
@@ -1885,12 +1885,12 @@ Helper functions
 
 ### Utilities
 
-* `minetest.get_current_modname()`: returns the currently loading mod's name, when we are loading a mod
-* `minetest.get_modpath(modname)`: returns e.g. `"/home/user/.minetest/usermods/modname"`
+* `minetest.get_current_mod_name()`: returns the currently loading mod's name, when we are loading a mod
+* `minetest.get_mod_path(modname)`: returns e.g. `"/home/user/.minetest/usermods/modname"`
     * Useful for loading additional `.lua` modules or static data from mod
-* `minetest.get_modnames()`: returns a list of installed mods
+* `minetest.get_mod_names()`: returns a list of installed mods
     * Return a list of installed mods, sorted alphabetically
-* `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
+* `minetest.get_world_path()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
 * `minetest.is_singleplayer()`
 * `minetest.features`
@@ -2091,9 +2091,9 @@ Call these functions only at load time!
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set.
 * `minetest.setting_get(name)`: returns string or `nil`
-* `minetest.setting_setbool(name, value)`
+* `minetest.setting_set_bool(name, value)`
     * See documentation on `setting_set` for restrictions.
-* `minetest.setting_getbool(name)`: returns boolean or `nil`
+* `minetest.setting_get_bool(name)`: returns boolean or `nil`
 * `minetest.setting_get_pos(name)`: returns position or nil
 * `minetest.setting_save()`, returns `nil`, save all settings to config file
 
@@ -2180,10 +2180,10 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
 * `minetest.get_objects_inside_radius(pos, radius)`
     * `radius`: using an euclidean metric
-* `minetest.set_timeofday(val)`
+* `minetest.set_time_of_day(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
-* `minetest.get_timeofday()`
-* `minetest.get_gametime()`: returns the time, in seconds, since the world was created
+* `minetest.get_time_of_day()`
+* `minetest.get_game_time()`: returns the time, in seconds, since the world was created
 * `minetest.get_day_count()`: returns number days elapsed since world was created,
     * accounting for time changes.
 * `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
@@ -2244,11 +2244,11 @@ and `minetest.auth_reload` call the authetification handler.
    * Note: to set the seed, use "seed", not "fixed_map_seed"
 * `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
    * Same as above, except value is a NoiseParams table.
-* `minetest.set_noiseparams(name, noiseparams, set_default)`
+* `minetest.set_noise_params(name, noiseparams, set_default)`
     * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
     * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
       should be applied to the default config or current active config
-* `minetest.get_noiseparams(name)`: returns a table of the noiseparams for name
+* `minetest.get_noise_params(name)`: returns a table of the noiseparams for name
 * `minetest.generate_ores(vm, pos1, pos2)`
     * Generate all registered ores within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
@@ -2499,10 +2499,10 @@ These functions return the leftover itemstack.
     * Deprecated: `minetest.add_particle(pos, velocity, acceleration, expirationtime,
       size, collisiondetection, texture, playername)`
 
-* `minetest.add_particlespawner(particlespawner definition)`
+* `minetest.add_particle_spawner(particlespawner definition)`
     * Add a `ParticleSpawner`, an object that spawns an amount of particles over `time` seconds
     * Returns an `id`, and -1 if adding didn't succeed
-    * `Deprecated: minetest.add_particlespawner(amount, time,
+    * `Deprecated: minetest.add_particle_spawner(amount, time,
       minpos, maxpos,
       minvel, maxvel,
       minacc, maxacc,
@@ -2510,8 +2510,8 @@ These functions return the leftover itemstack.
       minsize, maxsize,
       collisiondetection, texture, playername)`
 
-* `minetest.delete_particlespawner(id, player)``
-    * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
+* `minetest.delete_particle_spawner(id, player)``
+    * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particle_spawner`)
     * If playername is specified, only deletes on the player's client,
     * otherwise on all clients
 
@@ -2686,14 +2686,14 @@ These functions return the leftover itemstack.
        the creative mode setting, and checks for "sneak" to set the `invert_wall`
        parameter.
 
-* `minetest.forceload_block(pos[, transient])`
+* `minetest.force_load_block(pos[, transient])`
     * forceloads the position `pos`.
     * returns `true` if area could be forceloaded
     * If `transient` is `false` or absent, the forceload will be persistent
       (saved between server runs). If `true`, the forceload will be transient
       (not saved between server runs).
 
-* `minetest.forceload_free_block(pos[, transient])`
+* `minetest.force_load_free_block(pos[, transient])`
     * stops forceloading the position `pos`
     * If `transient` is `false` or absent, frees a persistent forceload.
       If `true`, frees a transient forceload.
@@ -4189,7 +4189,7 @@ The Biome API is still in an experimental phase and subject to change.
     }
 
 
-### `ParticleSpawner` definition (`add_particlespawner`)
+### `ParticleSpawner` definition (`add_particle_spawner`)
 
     {
         amount = 1,

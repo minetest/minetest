@@ -60,7 +60,7 @@ local function check_modname_prefix(name)
 		return name:sub(2)
 	else
 		-- Enforce that the name starts with the correct mod name.
-		local expected_prefix = core.get_current_modname() .. ":"
+		local expected_prefix = core.get_current_mod_name() .. ":"
 		if name:sub(1, #expected_prefix) ~= expected_prefix then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
@@ -80,14 +80,14 @@ end
 function core.register_abm(spec)
 	-- Add to core.registered_abms
 	core.registered_abms[#core.registered_abms + 1] = spec
-	spec.mod_origin = core.get_current_modname() or "??"
+	spec.mod_origin = core.get_current_mod_name() or "??"
 end
 
 function core.register_lbm(spec)
 	-- Add to core.registered_lbms
 	check_modname_prefix(spec.name)
 	core.registered_lbms[#core.registered_lbms + 1] = spec
-	spec.mod_origin = core.get_current_modname() or "??"
+	spec.mod_origin = core.get_current_mod_name() or "??"
 end
 
 function core.register_entity(name, prototype)
@@ -102,7 +102,7 @@ function core.register_entity(name, prototype)
 
 	-- Add to core.registered_entities
 	core.registered_entities[name] = prototype
-	prototype.mod_origin = core.get_current_modname() or "??"
+	prototype.mod_origin = core.get_current_mod_name() or "??"
 end
 
 function core.register_item(name, itemdef)
@@ -169,7 +169,7 @@ function core.register_item(name, itemdef)
 	end
 	-- END Legacy stuff
 
-	itemdef.mod_origin = core.get_current_modname() or "??"
+	itemdef.mod_origin = core.get_current_mod_name() or "??"
 
 	-- Disable all further modifications
 	getmetatable(itemdef).__newindex = {}
@@ -444,7 +444,7 @@ local function make_registration()
 	local registerfunc = function(func)
 		t[#t + 1] = func
 		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
+			mod = core.get_current_mod_name() or "??",
 			name = debug.getinfo(1, "n").name or "??"
 		}
 		--local origin = core.callback_origins[func]
@@ -458,7 +458,7 @@ local function make_registration_reverse()
 	local registerfunc = function(func)
 		table.insert(t, 1, func)
 		core.callback_origins[func] = {
-			mod = core.get_current_modname() or "??",
+			mod = core.get_current_mod_name() or "??",
 			name = debug.getinfo(1, "n").name or "??"
 		}
 		--local origin = core.callback_origins[func]
@@ -523,7 +523,7 @@ function core.register_on_player_hpchange(func, modifier)
 		core.registered_on_player_hpchanges.loggers[#core.registered_on_player_hpchanges.loggers + 1] = func
 	end
 	core.callback_origins[func] = {
-		mod = core.get_current_modname() or "??",
+		mod = core.get_current_mod_name() or "??",
 		name = debug.getinfo(1, "n").name or "??"
 	}
 end

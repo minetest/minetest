@@ -763,9 +763,9 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 }
 
 
-// set_noiseparams(name, noiseparams, set_default)
+// set_noise_params(name, noiseparams, set_default)
 // set global config values for noise parameters
-int ModApiMapgen::l_set_noiseparams(lua_State *L)
+int ModApiMapgen::l_set_noise_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -773,7 +773,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 	NoiseParams np;
 	if (!read_noiseparams(L, 2, &np)) {
-		errorstream << "set_noiseparams: cannot set '" << name
+		errorstream << "set_noise_params: cannot set '" << name
 			<< "'; invalid noiseparams table" << std::endl;
 		return 0;
 	}
@@ -786,8 +786,8 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 }
 
 
-// get_noiseparams(name)
-int ModApiMapgen::l_get_noiseparams(lua_State *L)
+// get_noise_params(name)
+int ModApiMapgen::l_get_noise_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -1497,8 +1497,8 @@ void ModApiMapgen::Initialize(lua_State *L, int top)
 	API_FCT(set_mapgen_setting);
 	API_FCT(get_mapgen_setting_noiseparams);
 	API_FCT(set_mapgen_setting_noiseparams);
-	API_FCT(set_noiseparams);
-	API_FCT(get_noiseparams);
+	API_FCT(set_noise_params);
+	API_FCT(get_noise_params);
 	API_FCT(set_gen_notify);
 	API_FCT(get_gen_notify);
 

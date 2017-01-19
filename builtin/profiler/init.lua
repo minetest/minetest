@@ -27,7 +27,7 @@ profiler.instrument = instrumentation.instrument
 -- Is called later, after `core.register_chatcommand` was set up.
 --
 function profiler.init_chatcommand()
-	local instrument_profiler = core.setting_getbool("instrument.profiler") or false
+	local instrument_profiler = core.setting_get_bool("instrument.profiler") or false
 	if instrument_profiler then
 		instrumentation.init_chatcommand()
 	end

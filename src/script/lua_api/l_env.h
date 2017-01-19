@@ -103,15 +103,15 @@ private:
 	// get_objects_inside_radius(pos, radius)
 	static int l_get_objects_inside_radius(lua_State *L);
 
-	// set_timeofday(val)
+	// set_time_of_day(val)
 	// val = 0...1
-	static int l_set_timeofday(lua_State *L);
+	static int l_set_time_of_day(lua_State *L);
 
-	// get_timeofday() -> 0...1
-	static int l_get_timeofday(lua_State *L);
+	// get_time_of_day() -> 0...1
+	static int l_get_time_of_day(lua_State *L);
 
-	// get_gametime()
-	static int l_get_gametime(lua_State *L);
+	// get_game_time()
+	static int l_get_game_time(lua_State *L);
 
 	// get_day_count() -> int
 	static int l_get_day_count(lua_State *L);
@@ -163,13 +163,13 @@ private:
 	// transforming_liquid_add(pos)
 	static int l_transforming_liquid_add(lua_State *L);
 
-	// forceload_block(blockpos)
+	// force_load_block(blockpos)
 	// forceloads a block
-	static int l_forceload_block(lua_State *L);
+	static int l_force_load_block(lua_State *L);
 
-	// forceload_free_block(blockpos)
+	// force_load_free_block(blockpos)
 	// stops forceloading a position
-	static int l_forceload_free_block(lua_State *L);
+	static int l_force_load_free_block(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

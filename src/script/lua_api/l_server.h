@@ -33,21 +33,21 @@ private:
 	// get_server_uptime()
 	static int l_get_server_uptime(lua_State *L);
 
-	// get_worldpath()
-	static int l_get_worldpath(lua_State *L);
+	// get_world_path()
+	static int l_get_world_path(lua_State *L);
 
 	// is_singleplayer()
 	static int l_is_singleplayer(lua_State *L);
 
-	// get_current_modname()
-	static int l_get_current_modname(lua_State *L);
+	// get_current_mod_name()
+	static int l_get_current_mod_name(lua_State *L);
 
-	// get_modpath(modname)
-	static int l_get_modpath(lua_State *L);
+	// get_mod_path(modname)
+	static int l_get_mod_path(lua_State *L);
 
-	// get_modnames()
+	// get_mod_names()
 	// the returned list is sorted alphabetically for you
-	static int l_get_modnames(lua_State *L);
+	static int l_get_mod_names(lua_State *L);
 
 	// print(text)
 	static int l_print(lua_State *L);

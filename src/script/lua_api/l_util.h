@@ -50,11 +50,11 @@ private:
 	// setting_get(name)
 	static int l_setting_get(lua_State *L);
 
-	// setting_setbool(name, value)
-	static int l_setting_setbool(lua_State *L);
+	// setting_set_bool(name, value)
+	static int l_setting_set_bool(lua_State *L);
 
-	// setting_getbool(name)
-	static int l_setting_getbool(lua_State *L);
+	// setting_get_bool(name)
+	static int l_setting_get_bool(lua_State *L);
 
 	// setting_save()
 	static int l_setting_save(lua_State *L);

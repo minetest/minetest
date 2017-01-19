@@ -275,8 +275,8 @@ function create_configure_world_dlg(worldidx)
 					handle_buttons,
 					nil)
 
-	dlg.data.hide_gamemods = core.setting_getbool("world_config_hide_gamemods")
-	dlg.data.hide_modpackcontents = core.setting_getbool("world_config_hide_modpackcontents")
+	dlg.data.hide_gamemods = core.setting_get_bool("world_config_hide_gamemods")
+	dlg.data.hide_modpackcontents = core.setting_get_bool("world_config_hide_modpackcontents")
 	dlg.data.selected_mod = tonumber(core.setting_get("world_config_selected_mod"))
 	if dlg.data.selected_mod == nil then
 		dlg.data.selected_mod = 0

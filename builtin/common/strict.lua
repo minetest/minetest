@@ -33,7 +33,7 @@ function meta:__newindex(name, value)
 		declared[name] = true
 	end
 	-- Ignore mod namespaces
-	if WARN_INIT and name ~= core.get_current_modname() then
+	if WARN_INIT and name ~= core.get_current_mod_name() then
 		core.log("warning", ("Global variable %q created at %s.")
 			:format(name, desc))
 	end

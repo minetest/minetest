@@ -142,7 +142,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 // texture = e.g."default_wood.png"
 // animation = TileAnimation definition
 // glow = num
-int ModApiParticles::l_add_particlespawner(lua_State *L)
+int ModApiParticles::l_add_particle_spawner(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -162,7 +162,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 	if (lua_gettop(L) > 1) //deprecated
 	{
-		log_deprecated(L,"Deprecated add_particlespawner call with individual parameters instead of definition");
+		log_deprecated(L,"Deprecated add_particle_spawner call with individual parameters instead of definition");
 		amount = luaL_checknumber(L, 1);
 		time = luaL_checknumber(L, 2);
 		minpos = check_v3f(L, 3);
@@ -254,7 +254,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 
 // delete_particlespawner(id, player)
 // player (string) is optional
-int ModApiParticles::l_delete_particlespawner(lua_State *L)
+int ModApiParticles::l_delete_particle_spawner(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
@@ -272,7 +272,7 @@ int ModApiParticles::l_delete_particlespawner(lua_State *L)
 void ModApiParticles::Initialize(lua_State *L, int top)
 {
 	API_FCT(add_particle);
-	API_FCT(add_particlespawner);
-	API_FCT(delete_particlespawner);
+	API_FCT(add_particle_spawner);
+	API_FCT(delete_particle_spawner);
 }
 

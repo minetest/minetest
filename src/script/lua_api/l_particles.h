@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ModApiParticles : public ModApiBase {
 private:
 	static int l_add_particle(lua_State *L);
-	static int l_add_particlespawner(lua_State *L);
-	static int l_delete_particlespawner(lua_State *L);
+	static int l_add_particle_spawner(lua_State *L);
+	static int l_delete_particle_spawner(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

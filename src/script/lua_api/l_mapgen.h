@@ -53,10 +53,10 @@ private:
 	static int l_set_mapgen_setting_noiseparams(lua_State *L);
 
 	// set_noiseparam_defaults(name, noiseparams, set_default)
-	static int l_set_noiseparams(lua_State *L);
+	static int l_set_noise_params(lua_State *L);
 
 	// get_noiseparam_defaults(name)
-	static int l_get_noiseparams(lua_State *L);
+	static int l_get_noise_params(lua_State *L);
 
 	// set_gen_notify(flagstring)
 	static int l_set_gen_notify(lua_State *L);

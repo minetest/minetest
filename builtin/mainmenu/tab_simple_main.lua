@@ -88,9 +88,9 @@ local function get_formspec(tabview, name, tabdata)
 	-- checkboxes
 	retval = retval ..
 		"checkbox[8.0,3.9;cb_creative;".. fgettext("Creative Mode") .. ";" ..
-			dump(core.setting_getbool("creative_mode")) .. "]"..
+			dump(core.setting_get_bool("creative_mode")) .. "]"..
 		"checkbox[8.0,4.4;cb_damage;".. fgettext("Enable Damage") .. ";" ..
-			dump(core.setting_getbool("enable_damage")) .. "]"
+			dump(core.setting_get_bool("enable_damage")) .. "]"
 	-- buttons
 	retval = retval ..
 		"button[0,3.7;8,1.5;btn_start_singleplayer;" .. fgettext("Start Singleplayer") .. "]" ..

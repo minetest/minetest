@@ -227,7 +227,7 @@ local function serialize_profile(profile, format, filter)
 	return format_statistics(profile, format, filter)
 end
 
-local worldpath = core.get_worldpath()
+local worldpath = core.get_world_path()
 local function get_save_path(format, filter)
 	local report_path = setting_get("profiler.report_path") or ""
 	if report_path ~= "" then

@@ -214,7 +214,7 @@ function core.http_add_fetch(httpenv)
 	return httpenv
 end
 
-if minetest.setting_getbool("disable_escape_sequences") then
+if minetest.setting_get_bool("disable_escape_sequences") then
 
 	function core.get_color_escape_sequence(color)
 		return ""

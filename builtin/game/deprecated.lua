@@ -49,3 +49,28 @@ setmetatable(core.env, {
 function core.rollback_get_last_node_actor(pos, range, seconds)
 	return core.rollback_get_node_actions(pos, range, seconds, 1)[1]
 end
+
+local function create_alias(old_name,new_name, warn)
+	core[old_name] = function(...)
+		if warn then
+			core.log("deprecated", old_name .. " is deprecated and has been replaced by " .. new_name)
+		end
+		return core[new_name](...)
+	end
+end
+
+create_alias("add_particlespawner", "add_particle_spawner")
+create_alias("delete_particlespawner", "delete_particle_spawner")
+create_alias("forceload_block", "force_load_block")
+create_alias("forceload_free_block", "force_load_free_block")
+create_alias("get_current_modname", "get_current_mod_name")
+create_alias("get_worldpath", "get_world_path")
+create_alias("get_modpath", "get_mod_path")
+create_alias("set_timeofday", "set_time_of_day")
+create_alias("get_timeofday", "get_time_of_day")
+create_alias("get_gametime", "get_game_time")
+create_alias("set_noiseparams", "set_noise_params")
+create_alias("get_noiseparams", "get_noise_params")
+create_alias("get_modnames", "get_mod_names")
+create_alias("setting_setbool", "setting_set_bool")
+create_alias("setting_getbool", "setting_get_bool")

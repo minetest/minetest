@@ -61,7 +61,7 @@ function mm_texture.reset()
 	mm_texture.set_generic("header")
 	
 	if not have_bg then
-		if core.setting_getbool("menu_clouds") then
+		if core.setting_get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
 			mm_texture.set_dirt_bg()
@@ -88,7 +88,7 @@ function mm_texture.update_game(gamedetails)
 	
 	if not have_bg then
 		
-		if core.setting_getbool("menu_clouds") then
+		if core.setting_get_bool("menu_clouds") then
 			core.set_clouds(true)
 		else
 			mm_texture.set_dirt_bg()

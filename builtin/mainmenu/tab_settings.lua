@@ -177,15 +177,15 @@ local function formspec(tabview, name, tabdata)
 	local tab_string =
 		"box[0,0;3.5,4.5;#999999]" ..
 		"checkbox[0.25,0;cb_smooth_lighting;" .. fgettext("Smooth Lighting") .. ";"
-				.. dump(core.setting_getbool("smooth_lighting")) .. "]" ..
+				.. dump(core.setting_get_bool("smooth_lighting")) .. "]" ..
 		"checkbox[0.25,0.5;cb_particles;" .. fgettext("Particles") .. ";"
-				.. dump(core.setting_getbool("enable_particles")) .. "]" ..
+				.. dump(core.setting_get_bool("enable_particles")) .. "]" ..
 		"checkbox[0.25,1;cb_3d_clouds;" .. fgettext("3D Clouds") .. ";"
-				.. dump(core.setting_getbool("enable_3d_clouds")) .. "]" ..
+				.. dump(core.setting_get_bool("enable_3d_clouds")) .. "]" ..
 		"checkbox[0.25,1.5;cb_opaque_water;" .. fgettext("Opaque Water") .. ";"
-				.. dump(core.setting_getbool("opaque_water")) .. "]" ..
+				.. dump(core.setting_get_bool("opaque_water")) .. "]" ..
 		"checkbox[0.25,2.0;cb_connected_glass;" .. fgettext("Connected Glass") .. ";"
-				.. dump(core.setting_getbool("connected_glass")) .. "]" ..
+				.. dump(core.setting_get_bool("connected_glass")) .. "]" ..
 		"dropdown[0.25,2.8;3.3;dd_node_highlighting;" .. dd_options.node_highlighting[1] .. ";"
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
 		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
@@ -201,7 +201,7 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.Antialiasing() .. "]" ..
 		"box[7.75,0;4,4.4;#999999]" ..
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
-				.. dump(core.setting_getbool("enable_shaders")) .. "]"
+				.. dump(core.setting_get_bool("enable_shaders")) .. "]"
 
 	if PLATFORM == "Android" then
 		tab_string = tab_string ..
@@ -225,22 +225,22 @@ local function formspec(tabview, name, tabdata)
 			((tonumber(core.setting_get("touchscreen_threshold")) / 10) + 1) .. "]"
 	end
 
-	if core.setting_getbool("enable_shaders") then
+	if core.setting_get_bool("enable_shaders") then
 		tab_string = tab_string ..
 			"checkbox[8,0.5;cb_bumpmapping;" .. fgettext("Bump Mapping") .. ";"
-					.. dump(core.setting_getbool("enable_bumpmapping")) .. "]" ..
+					.. dump(core.setting_get_bool("enable_bumpmapping")) .. "]" ..
 			"checkbox[8,1;cb_tonemapping;" .. fgettext("Tone Mapping") .. ";"
-					.. dump(core.setting_getbool("tone_mapping")) .. "]" ..
+					.. dump(core.setting_get_bool("tone_mapping")) .. "]" ..
 			"checkbox[8,1.5;cb_generate_normalmaps;" .. fgettext("Normal Mapping") .. ";"
-					.. dump(core.setting_getbool("generate_normalmaps")) .. "]" ..
+					.. dump(core.setting_get_bool("generate_normalmaps")) .. "]" ..
 			"checkbox[8,2;cb_parallax;" .. fgettext("Parallax Occlusion") .. ";"
-					.. dump(core.setting_getbool("enable_parallax_occlusion")) .. "]" ..
+					.. dump(core.setting_get_bool("enable_parallax_occlusion")) .. "]" ..
 			"checkbox[8,2.5;cb_waving_water;" .. fgettext("Waving Water") .. ";"
-					.. dump(core.setting_getbool("enable_waving_water")) .. "]" ..
+					.. dump(core.setting_get_bool("enable_waving_water")) .. "]" ..
 			"checkbox[8,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
-					.. dump(core.setting_getbool("enable_waving_leaves")) .. "]" ..
+					.. dump(core.setting_get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.setting_getbool("enable_waving_plants")) .. "]"
+					.. dump(core.setting_get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
 			"tablecolumns[color;text]" ..
