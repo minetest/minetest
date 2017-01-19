@@ -32,7 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "gamedef.h"
 #include "util/directiontables.h"
-#include "util/mathconstants.h"
 #include "util/basic_macros.h"
 #include "rollback_interface.h"
 #include "environment.h"

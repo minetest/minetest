@@ -31,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "event.h"
 #include "profiler.h"
 #include "util/numeric.h"
-#include "util/mathconstants.h"
 #include "constants.h"
 #include "fontengine.h"
 

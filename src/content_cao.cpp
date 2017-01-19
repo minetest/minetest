@@ -26,7 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_cao.h"
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
-#include "util/mathconstants.h"
 #include "util/basic_macros.h"
 #include "client/tile.h"
 #include "environment.h"

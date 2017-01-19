@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "map.h" //for MMVManip
 #include "util/numeric.h"
-#include "util/mathconstants.h"
 #include "porting.h"
 #include "settings.h"
 

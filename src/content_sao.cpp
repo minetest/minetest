@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_sao.h"
-#include "util/mathconstants.h"
 #include "util/serialize.h"
 #include "collision.h"
 #include "environment.h"
