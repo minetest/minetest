@@ -166,6 +166,8 @@ public:
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
+	virtual void detachFromParent()
+	{}
 	virtual const UNORDERED_SET<int> &getAttachmentChildIds()
 	{ static const UNORDERED_SET<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()

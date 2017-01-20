@@ -710,20 +710,7 @@ int ObjectRef::l_set_detach(lua_State *L)
 	ServerActiveObject *co = getobject(ref);
 	if (co == NULL)
 		return 0;
-
-	int parent_id = 0;
-	std::string bone = "";
-	v3f position;
-	v3f rotation;
-	co->getAttachment(&parent_id, &bone, &position, &rotation);
-	ServerActiveObject *parent = NULL;
-	if (parent_id)
-		parent = env->getActiveObject(parent_id);
-
-	// Do it
-	co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
-	if (parent != NULL)
-		parent->removeAttachmentChild(co->getId());
+	co->detachFromParent();
 	return 0;
 }
 
