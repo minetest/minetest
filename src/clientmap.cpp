@@ -29,7 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "settings.h"
 #include "camera.h"               // CameraModes
-#include "util/mathconstants.h"
 #include "util/basic_macros.h"
 #include <algorithm>
 

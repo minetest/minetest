@@ -284,6 +284,8 @@ if(WIN32)
 		set(PLATFORM_LIBS dbghelp.lib ${PLATFORM_LIBS})
 		# Surpress some useless warnings
 		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
+		# Get M_PI to work
+		add_definitions(/D "_USE_MATH_DEFINES")
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()

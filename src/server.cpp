@@ -53,7 +53,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "event_manager.h"
 #include "serverlist.h"
 #include "util/string.h"
-#include "util/mathconstants.h"
 #include "rollback.h"
 #include "util/serialize.h"
 #include "util/thread.h"
