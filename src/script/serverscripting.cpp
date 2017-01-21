@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "server.h"
 #include "log.h"
 #include "settings.h"
@@ -45,7 +45,7 @@ extern "C" {
 #include "lualib.h"
 }
 
-GameScripting::GameScripting(Server* server)
+ServerScripting::ServerScripting(Server* server)
 {
 	setServer(server);
 
@@ -78,7 +78,7 @@ GameScripting::GameScripting(Server* server)
 	infostream << "SCRIPTAPI: Initialized game modules" << std::endl;
 }
 
-void GameScripting::InitializeModApi(lua_State *L, int top)
+void ServerScripting::InitializeModApi(lua_State *L, int top)
 {
 	// Initialize mod api modules
 	ModApiCraft::Initialize(L, top);

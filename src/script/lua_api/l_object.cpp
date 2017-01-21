@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "server.h"
 #include "hud.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 
 struct EnumString es_HudElementType[] =
 {

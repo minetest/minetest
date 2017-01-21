@@ -53,7 +53,7 @@ class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
 class EmergeManager;
-class GameScripting;
+class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
@@ -274,7 +274,7 @@ public:
 	Inventory* createDetachedInventory(const std::string &name, const std::string &player="");
 
 	// Envlock and conlock should be locked when using scriptapi
-	GameScripting *getScriptIface(){ return m_script; }
+	ServerScripting *getScriptIface(){ return m_script; }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -536,7 +536,7 @@ private:
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	GameScripting *m_script;
+	ServerScripting *m_script;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
