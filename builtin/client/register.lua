@@ -58,5 +58,6 @@ end
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
 core.registered_on_receiving_chat_messages, core.register_on_receiving_chat_messages = make_registration()
 core.registered_on_sending_chat_messages, core.register_on_sending_chat_messages = make_registration()
+core.registered_on_death, core.register_on_death = make_registration()
 
 

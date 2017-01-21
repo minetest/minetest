@@ -4,6 +4,10 @@ local clientpath = scriptpath.."client"..DIR_DELIM
 
 dofile(clientpath .. "register.lua")
 
+core.register_on_death(function()
+	core.display_chat_message("You died.")
+end)
+
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_shutdown(function()
 	print("shutdown client")
