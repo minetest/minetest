@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "environment.h"
 #include "server.h"
 #include "nodedef.h"
@@ -49,7 +49,7 @@ struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 		u32 active_object_count, u32 active_object_count_wider)
 {
-	GameScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getScriptIface();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();
@@ -92,7 +92,7 @@ void LuaABM::trigger(ServerEnvironment *env, v3s16 p, MapNode n,
 
 void LuaLBM::trigger(ServerEnvironment *env, v3s16 p, MapNode n)
 {
-	GameScripting *scriptIface = env->getScriptIface();
+	ServerScripting *scriptIface = env->getScriptIface();
 	scriptIface->realityCheck();
 
 	lua_State *L = scriptIface->getStack();

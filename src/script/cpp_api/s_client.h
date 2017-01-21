@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,18 +18,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_abm.h"
+#ifndef S_CLIENT_H_
+#define S_CLIENT_H_
 
-#include "environment.h"
-#include "gamedef.h"
-#include "nodedef.h"
-#include "content_sao.h"
-#include "settings.h"
-#include "mapblock.h" // For getNodeBlockPos
-#include "map.h"
-#include "serverscripting.h"
-#include "log.h"
+#include "cpp_api/s_base.h"
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
+class ScriptApiClient: virtual public ScriptApiBase
+{
+public:
+	// Calls on_shutdown handlers
+	void on_shutdown();
 
-}
+	// Chat message handlers
+	bool on_sending_message(const std::string &message);
+	bool on_receiving_message(const std::string &message);
+};
+#endif

@@ -39,6 +39,7 @@ namespace irr { namespace scene {
 	class ISceneManager;
 }}
 
+struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
 	mapnode properties
@@ -68,7 +69,11 @@ public:
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
 
 	MtEventManager   *event()    { return getEventManager(); }
-	IRollbackManager *rollback() { return getRollbackManager();}
+	IRollbackManager *rollback() { return getRollbackManager(); }
+
+	virtual const std::vector<ModSpec> &getMods() const = 0;
+	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
+	virtual std::string getWorldPath() const { return ""; }
 };
 
 #endif
