@@ -1584,7 +1584,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	// Show locally
 	if (message[0] == L'/')
 	{
-		m_chat_queue.push((std::wstring)L"issued command: " + message);
+		pushToChatQueue((std::wstring)L"issued command: " + message);
 	}
 	else
 	{
@@ -1593,7 +1593,7 @@ void Client::typeChatMessage(const std::wstring &message)
 			LocalPlayer *player = m_env.getLocalPlayer();
 			assert(player != NULL);
 			std::wstring name = narrow_to_wide(player->getName());
-			m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+			pushToChatQueue((std::wstring)L"<" + name + L"> " + message);
 		}
 	}
 }
@@ -1867,7 +1867,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
-			m_chat_queue.push(narrow_to_wide(sstr.str()));
+			pushToChatQueue(narrow_to_wide(sstr.str()));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}

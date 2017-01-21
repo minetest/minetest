@@ -557,6 +557,11 @@ public:
 
 	void makeScreenshot(IrrlichtDevice *device);
 
+	inline void pushToChatQueue(const std::wstring &input)
+	{
+		m_chat_queue.push(input);
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler
