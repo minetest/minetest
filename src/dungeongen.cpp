@@ -437,14 +437,22 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 					// rotate face 180 deg if
 					// making stairs backwards
 					int facedir = dir_to_facedir(dir * make_stairs);
+					v3s16 ps = p;
+					u16 stair_width = (dir.Z != 0) ? dp.holesize.X : dp.holesize.Z;
+					// Stair width direction vector
+					v3s16 swv = (dir.Z != 0) ? v3s16(1, 0, 0) : v3s16(0, 0, 1);
 
-					u32 vi = vm->m_area.index(p.X - dir.X, p.Y - 1, p.Z - dir.Z);
-					if (vm->m_data[vi].getContent() == dp.c_wall)
-						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+					for (u16 st = 0; st < stair_width; st++) {
+						u32 vi = vm->m_area.index(ps.X - dir.X, ps.Y - 1, ps.Z - dir.Z);
+						if (vm->m_data[vi].getContent() == dp.c_wall)
+							vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
 
-					vi = vm->m_area.index(p.X, p.Y, p.Z);
-					if (vm->m_data[vi].getContent() == dp.c_wall)
-						vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+						vi = vm->m_area.index(ps.X, ps.Y, ps.Z);
+						if (vm->m_data[vi].getContent() == dp.c_wall)
+							vm->m_data[vi] = MapNode(dp.c_stair, 0, facedir);
+
+						ps += swv;
+					}
 				}
 			} else {
 				makeFill(p + v3s16(-1, -1, -1),
