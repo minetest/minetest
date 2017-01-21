@@ -1,37 +1,10 @@
--- Minetest: builtin/chatcommands.lua
+-- Minetest: builtin/game/chatcommands.lua
 
 --
 -- Chat command handler
 --
 
-core.registered_chatcommands = {}
 core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
-function core.register_chatcommand(cmd, def)
-	def = def or {}
-	def.params = def.params or ""
-	def.description = def.description or ""
-	def.privs = def.privs or {}
-	def.mod_origin = core.get_current_modname() or "??"
-	core.registered_chatcommands[cmd] = def
-end
-
-function core.unregister_chatcommand(name)
-	if core.registered_chatcommands[name] then
-		core.registered_chatcommands[name] = nil
-	else
-		core.log("warning", "Not unregistering chatcommand " ..name..
-			" because it doesn't exist.")
-	end
-end
-
-function core.override_chatcommand(name, redefinition)
-	local chatcommand = core.registered_chatcommands[name]
-	assert(chatcommand, "Attempt to override non-existent chatcommand "..name)
-	for k, v in pairs(redefinition) do
-		rawset(chatcommand, k, v)
-	end
-	core.registered_chatcommands[name] = chatcommand
-end
 
 core.register_on_chat_message(function(name, message)
 	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
