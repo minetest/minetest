@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_client.h"
 #include "l_internal.h"
+#include "util/string.h"
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -27,7 +28,18 @@ int ModApiClient::l_get_current_modname(lua_State *L)
 	return 1;
 }
 
+// display_chat_message(message)
+int ModApiClient::l_display_chat_message(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	std::string message = luaL_checkstring(L, 1);
+	getClient(L)->pushToChatQueue(utf8_to_wide(message));
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
+	API_FCT(display_chat_message);
 }
