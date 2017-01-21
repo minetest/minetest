@@ -1793,7 +1793,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if(data->m_smooth_lighting)
 			{
 				for (int j = 0; j != 8; ++j)
-					lights[j] = getSmoothLight(p, light_dirs[j], data); // CRASHES: requires blocks to be loaded
+					lights[j] = getSmoothLight(blockpos_nodes + p, light_dirs[j], data); // CRASHES: requires blocks to be loaded
 			}
 			else
 			{
