@@ -1562,6 +1562,11 @@ void Client::typeChatMessage(const std::wstring &message)
 	if(message == L"")
 		return;
 
+	// If message was ate by script API, don't send it to server
+	if (m_script->on_sending_message(wide_to_utf8(message))) {
+		return;
+	}
+
 	// Send to others
 	sendChatMessage(message);
 

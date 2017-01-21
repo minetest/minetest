@@ -31,3 +31,31 @@ void ScriptApiClient::on_shutdown()
 	// Call callbacks
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
 }
+
+bool ScriptApiClient::on_sending_message(const std::string &message)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_sending_chat_messages");
+	// Call callbacks
+	lua_pushstring(L, message.c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	bool ate = lua_toboolean(L, -1);
+	return ate;
+}
+
+bool ScriptApiClient::on_receiving_message(const std::string &message)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_receiving_chat_messages");
+	// Call callbacks
+	lua_pushstring(L, message.c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+	bool ate = lua_toboolean(L, -1);
+	return ate;
+}

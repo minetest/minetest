@@ -15,9 +15,7 @@ function core.run_callbacks(callbacks, mode, ...)
 	for i = 1, cb_len do
 		local cb_ret = callbacks[i](...)
 
-		if mode == 0 and i == 1 then
-			ret = cb_ret
-		elseif mode == 1 and i == cb_len then
+		if mode == 0 and i == 1 or mode == 1 and i == cb_len then
 			ret = cb_ret
 		elseif mode == 2 then
 			if not cb_ret or i == 1 then
@@ -58,5 +56,7 @@ local function make_registration()
 end
 
 core.registered_on_shutdown, core.register_on_shutdown = make_registration()
+core.registered_on_receiving_chat_messages, core.register_on_receiving_chat_messages = make_registration()
+core.registered_on_sending_chat_messages, core.register_on_sending_chat_messages = make_registration()
 
 
