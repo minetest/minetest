@@ -1118,7 +1118,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 
 	// Note things in chat if not in simple singleplayer mode
-	if(!m_simple_singleplayer_mode) {
+	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, getStatusString());
 	}

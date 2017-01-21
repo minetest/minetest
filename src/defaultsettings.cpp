@@ -255,6 +255,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("motd", "");
 	settings->setDefault("max_users", "15");
 	settings->setDefault("creative_mode", "false");
+	settings->setDefault("show_statusline_on_connect", "true");
 	settings->setDefault("enable_damage", "true");
 	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
