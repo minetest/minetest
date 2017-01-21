@@ -59,3 +59,38 @@ bool ScriptApiClient::on_receiving_message(const std::string &message)
 	bool ate = lua_toboolean(L, -1);
 	return ate;
 }
+
+void ScriptApiClient::on_damage_taken(int32_t damage_amount)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_damage_taken");
+	// Call callbacks
+	lua_pushinteger(L, damage_amount);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+void ScriptApiClient::on_hp_modification(int32_t newhp)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_hp_modification");
+	// Call callbacks
+	lua_pushinteger(L, newhp);
+	runCallbacks(1, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+void ScriptApiClient::on_death()
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get registered shutdown hooks
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_death");
+	// Call callbacks
+	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
