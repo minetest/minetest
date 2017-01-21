@@ -30,6 +30,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "noise.h"
 
+#define SMOOTH_LIGHTING_OVERSIZE 0.0f
+
+static const v3s16 light_dirs[8] = {
+	v3s16(-1, -1, -1),
+	v3s16(-1, -1,  1),
+	v3s16(-1,  1, -1),
+	v3s16(-1,  1,  1),
+	v3s16( 1, -1, -1),
+	v3s16( 1, -1,  1),
+	v3s16( 1,  1, -1),
+	v3s16( 1,  1,  1),
+};
 
 // Create a cuboid.
 //  collector - the MeshCollector for the resulting polygons
@@ -1773,16 +1785,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, 1),
 				v3s16(0, 0, -1)
 			};
-			static const v3s16 light_dirs[8] = {
-				v3s16(-1, -1, -1),
-				v3s16(-1, -1,  1),
-				v3s16(-1,  1, -1),
-				v3s16(-1,  1,  1),
-				v3s16( 1, -1, -1),
-				v3s16( 1, -1,  1),
-				v3s16( 1,  1, -1),
-				v3s16( 1,  1,  1),
-			};
 			TileSpec tiles[6];
 
 			u16 lights[8];
@@ -1932,9 +1934,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 			}
 
-			if (f.mesh_ptr[facedir]) {
+			if (!data->m_smooth_lighting && f.mesh_ptr[facedir]) {
 				// use cached meshes
-				for(u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
 					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
 					collector.append(getNodeTileN(n, p, j, data),
 						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
@@ -1946,11 +1948,45 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
-				for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-					collector.append(getNodeTileN(n, p, j, data),
-						(video::S3DVertex *)buf->getVertices(), buf->getVertexCount(),
-						buf->getIndices(), buf->getIndexCount(), pos, c);
+					video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+					u32 vertex_count = buf->getVertexCount();
+					if (data->m_smooth_lighting) {
+						u16 lights[8];
+						for (int k = 0; k != 8; ++k)
+							lights[k] = getSmoothLight(blockpos_nodes + p, light_dirs[k], data); // CRASHES: requires blocks to be loaded
+						for (u16 m = 0; m != vertex_count; ++m) {
+							video::S3DVertex &vertex = vertices[m];
+							f32 x = core::clamp(vertex.Pos.X, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
+							f32 y = core::clamp(vertex.Pos.Y, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
+							f32 z = core::clamp(vertex.Pos.Z, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
+							f32 lightA = 0.0;
+							f32 lightB = 0.0;
+							for (int k = 0; k != 8; ++k)
+							{
+								u32 light1A = lights[k] & 0xff;
+								u32 light1B = lights[k] >> 8;
+								f32 dx = k & 4 ? x : 1 - x;
+								f32 dy = k & 2 ? y : 1 - y;
+								f32 dz = k & 1 ? z : 1 - z;
+								lightA += dx * dy * dz * light1A;
+								lightB += dx * dy * dz * light1B;
+							}
+							u16 light =
+								core::clamp(core::round32(lightA), 0, 255) |
+								core::clamp(core::round32(lightB), 0, 255) << 8;
+							vertex.Color = MapBlock_LightColor(255, light, f.light_source);
+							vertex.Pos += pos;
+						}
+						collector.append(getNodeTileN(n, p, j, data),
+							vertices, vertex_count,
+							buf->getIndices(), buf->getIndexCount());
+					} else {
+						collector.append(getNodeTileN(n, p, j, data),
+							vertices, vertex_count,
+							buf->getIndices(), buf->getIndexCount(), pos, c);
+					}
 				}
 				mesh->drop();
 			}

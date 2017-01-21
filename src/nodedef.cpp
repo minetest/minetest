@@ -716,7 +716,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
-	}/* else if ((drawtype == NDT_NODEBOX) &&
+	} else if ((drawtype == NDT_NODEBOX) &&
 			((node_box.type == NODEBOX_REGULAR) ||
 			(node_box.type == NODEBOX_FIXED)) &&
 			(!node_box.fixed.empty())) {
@@ -728,7 +728,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		scaleMesh(mesh_ptr[0], scale);
 		recalculateBoundingBox(mesh_ptr[0]);
 		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
-	}*/
+	}
 
 	//Cache 6dfacedir and wallmounted rotated clones of meshes
 	if (tsettings.enable_mesh_cache && mesh_ptr[0] && (param_type_2 == CPT2_FACEDIR)) {
