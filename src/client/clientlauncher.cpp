@@ -403,11 +403,12 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
-	if (menudata.name == "")
-		menudata.name = std::string("Guest") + itos(myrand_range(1000, 9999));
-	else
-		playername = menudata.name;
+	if (menudata.name == "" && !simple_singleplayer_mode) {
+		error_message = gettext("Please choose a name!");
+		return false;
+	}
 
+	playername = menudata.name;
 	password = menudata.password;
 
 	g_settings->set("name", playername);
