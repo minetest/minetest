@@ -1779,7 +1779,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""
-			<< cmd << std::endl;
+			<< +cmd << "\"" << std::endl;
 	}
 }
 
