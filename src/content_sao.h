@@ -49,7 +49,6 @@ public:
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void detachFromParent();
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);

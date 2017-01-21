@@ -203,16 +203,6 @@ void UnitSAO::getAttachment(int *parent_id, std::string *bone, v3f *position,
 	*rotation = m_attachment_rotation;
 }
 
-void UnitSAO::detachFromParent()
-{
-	ServerActiveObject *parent = NULL;
-	if (m_attachment_parent_id)
-		parent = m_env->getActiveObject(m_attachment_parent_id);
-	setAttachment(NULL, "", v3f(0, 0, 0), v3f(0, 0, 0));
-	if (parent != NULL)
-		parent->removeAttachmentChild(m_id);
-}
-
 void UnitSAO::addAttachmentChild(int child_id)
 {
 	m_attachment_child_ids.insert(child_id);
