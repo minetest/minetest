@@ -382,9 +382,9 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
-	const Server *server = script->getServer();
-
-	if (!server) return false;
+	const IGameDef *gamedef = script->getGameDef();
+	if (!gamedef)
+		return false;
 
 	// Get mod name
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
@@ -400,7 +400,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		// Allow paths in mod path
 		// Don't bother if write access isn't important, since it will be handled later
 		if (write_required || write_allowed != NULL) {
-			const ModSpec *mod = server->getModSpec(mod_name);
+			const ModSpec *mod = gamedef->getModSpec(mod_name);
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
 				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
@@ -414,7 +414,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	// Allow read-only access to all mod directories
 	if (!write_required) {
-		const std::vector<ModSpec> mods = server->getMods();
+		const std::vector<ModSpec> mods = gamedef->getMods();
 		for (size_t i = 0; i < mods.size(); ++i) {
 			str = fs::AbsolutePath(mods[i].path);
 			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
@@ -423,7 +423,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
-	str = fs::AbsolutePath(server->getWorldPath());
+	str = fs::AbsolutePath(gamedef->getWorldPath());
 	if (!str.empty()) {
 		// Don't allow access to other paths in the world mod/game path.
 		// These have to be blocked so you can't override a trusted mod

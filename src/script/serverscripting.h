@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SCRIPTING_GAME_H_
-#define SCRIPTING_GAME_H_
+#ifndef SERVER_SCRIPTING_H_
+#define SERVER_SCRIPTING_H_
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_entity.h"
@@ -30,10 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 
 /*****************************************************************************/
-/* Scripting <-> Game Interface                                              */
+/* Scripting <-> Server Game Interface                                       */
 /*****************************************************************************/
 
-class GameScripting :
+class ServerScripting:
 		virtual public ScriptApiBase,
 		public ScriptApiDetached,
 		public ScriptApiEntity,
@@ -44,7 +44,7 @@ class GameScripting :
 		public ScriptApiSecurity
 {
 public:
-	GameScripting(Server* server);
+	ServerScripting(Server* server);
 
 	// use ScriptApiBase::loadMod() to load mods
 
