@@ -2146,6 +2146,12 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 			continue;
 		}
 
+		// If it's a forced delete, there are too many objects in mapblock
+		// Ignore players, they should not be removed on force delete
+		if (force_delete && obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+			continue;
+		}
+
 		verbosestream<<"ServerEnvironment::deactivateFarObjects(): "
 			<<"object id="<<id<<" is not known by clients"
 			<<"; deleting"<<std::endl;
