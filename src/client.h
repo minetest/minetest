@@ -562,6 +562,8 @@ public:
 		m_chat_queue.push(input);
 	}
 
+	ClientScripting *getScript() { return m_script; }
+
 private:
 
 	// Virtual methods from con::PeerHandler
