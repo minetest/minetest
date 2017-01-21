@@ -27,6 +27,7 @@ minetest = core
 -- Load other files
 local scriptdir = core.get_builtin_path() .. DIR_DELIM
 local gamepath = scriptdir .. "game" .. DIR_DELIM
+local clientpath = scriptdir .. "client" .. DIR_DELIM
 local commonpath = scriptdir .. "common" .. DIR_DELIM
 local asyncpath = scriptdir .. "async" .. DIR_DELIM
 
@@ -45,6 +46,8 @@ elseif INIT == "mainmenu" then
 	end
 elseif INIT == "async" then
 	dofile(asyncpath .. "init.lua")
+elseif INIT == "client" then
+	dofile(clientpath .. "init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end
