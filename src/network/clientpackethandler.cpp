@@ -142,7 +142,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 }
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
-	m_chat_queue.push(L"Password change denied. Password NOT changed.");
+	pushToChatQueue(L"Password change denied. Password NOT changed.");
 	// reset everything and be sad
 	deleteAuthData();
 }
@@ -414,7 +414,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 
 	// If chat message not consummed by client lua API
 	if (!m_script->on_receiving_message(wide_to_utf8(message))) {
-		m_chat_queue.push(message);
+		pushToChatQueue(message);
 	}
 }
 
