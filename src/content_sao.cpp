@@ -578,28 +578,32 @@ int LuaEntitySAO::punch(v3f dir,
 			punchitem,
 			time_from_last_punch);
 
-	if (result.did_punch) {
-		setHP(getHP() - result.damage);
+	bool damage_handled = m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
+			time_from_last_punch, toolcap, dir, result.did_punch ? result.damage : 0);
 
-		if (result.damage > 0) {
-			std::string punchername = puncher ? puncher->getDescription() : "nil";
+	if (!damage_handled) {
+		if (result.did_punch) {
+			setHP(getHP() - result.damage);
 
-			actionstream << getDescription() << " punched by "
-					<< punchername << ", damage " << result.damage
-					<< " hp, health now " << getHP() << " hp" << std::endl;
+			if (result.damage > 0) {
+				std::string punchername = puncher ? puncher->getDescription() : "nil";
+
+				actionstream << getDescription() << " punched by "
+						<< punchername << ", damage " << result.damage
+						<< " hp, health now " << getHP() << " hp" << std::endl;
+			}
+
+			std::string str = gob_cmd_punched(result.damage, getHP());
+			// create message and add to list
+			ActiveObjectMessage aom(getId(), true, str);
+			m_messages_out.push(aom);
 		}
-
-		std::string str = gob_cmd_punched(result.damage, getHP());
-		// create message and add to list
-		ActiveObjectMessage aom(getId(), true, str);
-		m_messages_out.push(aom);
 	}
 
 	if (getHP() == 0)
 		m_removed = true;
 
-	m_env->getScriptIface()->luaentity_Punch(m_id, puncher,
-			time_from_last_punch, toolcap, dir);
+
 
 	return result.wear;
 }

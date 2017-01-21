@@ -1392,7 +1392,7 @@ a non-tool item, so that it can do something else than take damage.
 
 On the Lua side, every punch calls:
 
-    entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction)
+    entity:on_punch(puncher, time_from_last_punch, tool_capabilities, direction, damage)
 
 This should never be called directly, because damage is usually not handled by
 the entity itself.
@@ -1403,6 +1403,9 @@ the entity itself.
 * `tool_capabilities` can be `nil`.
 * `direction` is a unit vector, pointing from the source of the punch to
    the punched object.
+* `damage` damage that will be done to entity
+Return value of this function will determin if damage is done by this function 
+(retval true) or shall be done by engine (retval false)
 
 To punch an entity/object in Lua, call:
 
