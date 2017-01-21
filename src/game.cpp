@@ -41,7 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiKeyChangeMenu.h"
 #include "guiPasswordChange.h"
 #include "guiVolumeChange.h"
-#include "hud.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
@@ -61,6 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
+#include "script/clientscripting.h"
 
 #include "sound.h"
 
@@ -3240,8 +3240,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 		if (event.type == CE_PLAYER_DAMAGE &&
 				client->getHP() != 0) {
-			//u16 damage = event.player_damage.amount;
-			//infostream<<"Player damage: "<<damage<<std::endl;
+			client->getScript()->on_damage_taken(event.player_damage.amount);
 
 			*damage_flash += 95.0 + 3.2 * event.player_damage.amount;
 			*damage_flash = MYMIN(*damage_flash, 127.0);
@@ -3259,7 +3258,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			show_deathscreen(&current_formspec, client, texture_src,
 				device, &input->joystick);
 
-			chat_backend->addMessage(L"", L"You died.");
+			client->getScript()->on_death();
 
 			/* Handle visualization */
 			*damage_flash = 0;
