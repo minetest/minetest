@@ -1684,7 +1684,7 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
-	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
 		m_animation_speed = readF1000(is);
 		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
@@ -1776,7 +1776,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else {
 		warningstream << FUNCTION_NAME
 			<< ": unknown command or outdated client \""
-			<< cmd << std::endl;
+			<< +cmd << "\"" << std::endl;
 	}
 }
 
