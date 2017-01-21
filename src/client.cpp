@@ -32,10 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "network/clientopcodes.h"
 #include "filesys.h"
-#include "porting.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
+#include "mods.h"
 #include "profiler.h"
 #include "gettext.h"
 #include "clientmap.h"
@@ -275,6 +275,17 @@ void Client::initMods()
 const std::string Client::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+const std::vector<ModSpec>& Client::getMods() const
+{
+	static std::vector<ModSpec> client_modspec_temp;
+	return client_modspec_temp;
+}
+
+const ModSpec* Client::getModSpec(const std::string &modname) const
+{
+	return NULL;
 }
 
 void Client::Stop()

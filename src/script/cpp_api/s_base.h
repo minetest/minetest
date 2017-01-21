@@ -79,6 +79,7 @@ public:
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
 
+	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
 #ifndef SERVER
 	Client* getClient();

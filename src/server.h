@@ -295,11 +295,11 @@ public:
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
-	const std::vector<ModSpec> &getMods() const { return m_mods; }
-	const ModSpec* getModSpec(const std::string &modname) const;
+	virtual const std::vector<ModSpec> &getMods() const { return m_mods; }
+	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	static const std::string getBuiltinLuaPath();
-	inline std::string getWorldPath() const { return m_path_world; }
+	std::string getWorldPath() const { return m_path_world; }
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
