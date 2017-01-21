@@ -13,6 +13,7 @@ set(common_SCRIPT_SRCS
 # Used by client only
 set(client_SCRIPT_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/scripting_mainmenu.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/clientscripting.cpp
 	${client_SCRIPT_COMMON_SRCS}
 	${client_SCRIPT_CPP_API_SRCS}
 	${client_SCRIPT_LUA_API_SRCS}

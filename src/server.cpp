@@ -3398,7 +3398,7 @@ void Server::getModNames(std::vector<std::string> &modlist)
 		modlist.push_back(it->name);
 }
 
-std::string Server::getBuiltinLuaPath()
+const std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
 }

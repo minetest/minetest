@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 
 /*****************************************************************************/
-/* Scripting <-> Game Interface                                              */
+/* Scripting <-> Server Game Interface                                       */
 /*****************************************************************************/
 
 class ServerScripting:
