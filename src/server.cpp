@@ -2560,6 +2560,8 @@ void Server::DiePlayer(u16 peer_id)
 	if (!playersao)
 		return;
 
+	playersao->detachFromParent();
+
 	infostream << "Server::DiePlayer(): Player "
 			<< playersao->getPlayer()->getName()
 			<< " dies" << std::endl;
