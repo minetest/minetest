@@ -841,6 +841,10 @@
 #    type: int
 # item_entity_ttl = 900
 
+#    If enabled, show the server status message on player connection.
+#    type: bool
+# show_statusline_on_connect = true
+
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false
@@ -1558,7 +1562,7 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#    
+#
 #    type: string
 # profiler.report_path = ""
 
