@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "server.h"
 #include "voxelalgorithms.h"
 #include "util/serialize.h"
@@ -352,7 +352,7 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	GameScripting *scriptIface, Server *server,
+	ServerScripting *scriptIface, Server *server,
 	const std::string &path_world) :
 	m_map(map),
 	m_script(scriptIface),

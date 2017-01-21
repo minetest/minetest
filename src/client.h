@@ -305,6 +305,8 @@ private:
 	std::map<u16, u16> m_packets;
 };
 
+class ClientScripting;
+
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
 public:
@@ -327,6 +329,8 @@ public:
 	);
 
 	~Client();
+
+	void initMods();
 
 	/*
 	 request all threads managed by client to be stopped
@@ -428,6 +432,10 @@ public:
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
 	ISoundManager *sound() { return getSoundManager(); }
+	static const std::string getBuiltinLuaPath();
+
+	virtual const std::vector<ModSpec> &getMods() const;
+	virtual const ModSpec* getModSpec(const std::string &modname) const;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -691,6 +699,8 @@ private:
 	bool m_cache_smooth_lighting;
 	bool m_cache_enable_shaders;
 	bool m_cache_use_tangent_vertices;
+
+	ClientScripting *m_script;
 
 	DISABLE_CLASS_COPY(Client);
 };
