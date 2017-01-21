@@ -32,28 +32,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "network/clientopcodes.h"
 #include "filesys.h"
-#include "porting.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
-#include "settings.h"
+#include "mods.h"
 #include "profiler.h"
 #include "gettext.h"
-#include "log.h"
-#include "nodemetadata.h"
-#include "itemdef.h"
-#include "shader.h"
 #include "clientmap.h"
 #include "clientmedia.h"
-#include "sound.h"
-#include "IMeshCache.h"
-#include "config.h"
 #include "version.h"
 #include "drawscene.h"
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
-#include "raycast.h"
+#include "script/clientscripting.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -269,10 +261,36 @@ Client::Client(
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
 		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
+
+	m_script = new ClientScripting(this);
+}
+
+void Client::initMods()
+{
+	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
+
+	m_script->loadMod(script_path, BUILTIN_MOD_NAME);
+}
+
+const std::string Client::getBuiltinLuaPath()
+{
+	return porting::path_share + DIR_DELIM + "builtin";
+}
+
+const std::vector<ModSpec>& Client::getMods() const
+{
+	static std::vector<ModSpec> client_modspec_temp;
+	return client_modspec_temp;
+}
+
+const ModSpec* Client::getModSpec(const std::string &modname) const
+{
+	return NULL;
 }
 
 void Client::Stop()
 {
+	m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();
 	// Save local server map
@@ -280,6 +298,8 @@ void Client::Stop()
 		infostream << "Local map saving ended." << std::endl;
 		m_localdb->endSave();
 	}
+
+	delete m_script;
 }
 
 bool Client::isShutdown()
@@ -1552,6 +1572,11 @@ void Client::typeChatMessage(const std::wstring &message)
 	// Discard empty line
 	if(message == L"")
 		return;
+
+	// If message was ate by script API, don't send it to server
+	if (m_script->on_sending_message(wide_to_utf8(message))) {
+		return;
+	}
 
 	// Send to others
 	sendChatMessage(message);

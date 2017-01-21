@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "craftdef.h"
@@ -269,7 +269,7 @@ Server::Server(
 	// Initialize scripting
 	infostream<<"Server: Initializing Lua"<<std::endl;
 
-	m_script = new GameScripting(this);
+	m_script = new ServerScripting(this);
 
 	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
 
@@ -3411,7 +3411,7 @@ void Server::getModNames(std::vector<std::string> &modlist)
 		modlist.push_back(it->name);
 }
 
-std::string Server::getBuiltinLuaPath()
+const std::string Server::getBuiltinLuaPath()
 {
 	return porting::path_share + DIR_DELIM + "builtin";
 }

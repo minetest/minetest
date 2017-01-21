@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "remoteplayer.h"
 #include "server.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "genericobject.h"
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;

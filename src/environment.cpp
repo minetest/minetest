@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "collision.h"
 #include "serverobject.h"
-#include "scripting_game.h"
+#include "serverscripting.h"
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"

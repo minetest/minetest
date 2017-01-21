@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "network/clientopcodes.h"
+#include "script/clientscripting.h"
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "tileanimation.h"
@@ -411,7 +412,10 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 		message += (wchar_t)read_wchar;
 	}
 
-	m_chat_queue.push(message);
+	// If chat message not consummed by client lua API
+	if (!m_script->on_receiving_message(wide_to_utf8(message))) {
+		m_chat_queue.push(message);
+	}
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
