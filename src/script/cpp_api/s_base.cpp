@@ -23,12 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_object.h"
 #include "common/c_converter.h"
 #include "serverobject.h"
-#include "debug.h"
 #include "filesys.h"
-#include "log.h"
 #include "mods.h"
 #include "porting.h"
 #include "util/string.h"
+#include "server.h"
+#ifndef SERVER
+#include "client.h"
+#endif
 
 
 extern "C" {
@@ -69,7 +71,8 @@ public:
 */
 
 ScriptApiBase::ScriptApiBase() :
-	m_luastackmutex()
+	m_luastackmutex(),
+	m_gamedef(NULL)
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	m_lock_recursion_count = 0;
@@ -113,7 +116,6 @@ ScriptApiBase::ScriptApiBase() :
 	// Default to false otherwise
 	m_secure = false;
 
-	m_server = NULL;
 	m_environment = NULL;
 	m_guiengine = NULL;
 }
@@ -333,3 +335,14 @@ void ScriptApiBase::objectrefGet(lua_State *L, u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
+
+Server* ScriptApiBase::getServer()
+{
+	return dynamic_cast<Server *>(m_gamedef);
+}
+#ifndef SERVER
+Client* ScriptApiBase::getClient()
+{
+	return dynamic_cast<Client *>(m_gamedef);
+}
+#endif

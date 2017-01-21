@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,18 +18,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_abm.h"
+#include "clientscripting.h"
+#include "client.h"
+#include "cpp_api/s_internal.h"
+#include "lua_api/l_client.h"
+#include "lua_api/l_util.h"
 
-#include "environment.h"
-#include "gamedef.h"
-#include "nodedef.h"
-#include "content_sao.h"
-#include "settings.h"
-#include "mapblock.h" // For getNodeBlockPos
-#include "map.h"
-#include "serverscripting.h"
-#include "log.h"
+ClientScripting::ClientScripting(Client *client):
+	ScriptApiBase()
+{
+	setGameDef(client);
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
+	SCRIPTAPI_PRECHECKHEADER
 
+	// Security is mandatory client side
+	initializeSecurity();
+
+	lua_getglobal(L, "core");
+	int top = lua_gettop(L);
+
+	InitializeModApi(L, top);
+	lua_pop(L, 1);
+
+	// Push builtin initialization type
+	lua_pushstring(L, "client");
+	lua_setglobal(L, "INIT");
+
+	infostream << "SCRIPTAPI: Initialized client game modules" << std::endl;
+}
+
+void ClientScripting::InitializeModApi(lua_State *L, int top)
+{
+	ModApiUtil::Initialize(L, top);
+	ModApiClient::Initialize(L, top);
 }

@@ -242,7 +242,7 @@ public:
 };
 
 struct ScriptCallbackState {
-	GameScripting *script;
+	ServerScripting *script;
 	int callback_ref;
 	int args_ref;
 	unsigned int refcount;
