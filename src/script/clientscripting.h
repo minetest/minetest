@@ -36,6 +36,5 @@ public:
 
 private:
 	virtual void InitializeModApi(lua_State *L, int top);
-	Client *m_client;
 };
 #endif

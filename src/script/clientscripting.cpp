@@ -25,9 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_util.h"
 
 ClientScripting::ClientScripting(Client *client):
-	ScriptApiBase(),
-	m_client(client)
+	ScriptApiBase()
 {
+	setGameDef(client);
+
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Security is mandatory client side
