@@ -33,6 +33,8 @@ public:
 	bool on_sending_message(const std::string &message);
 	bool on_receiving_message(const std::string &message);
 
+	void on_damage_taken(int32_t damage_amount);
+	void on_hp_modification(int32_t newhp);
 	void on_death();
 };
 #endif

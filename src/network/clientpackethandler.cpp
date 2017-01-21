@@ -526,6 +526,8 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 
 	player->hp = hp;
 
+	m_script->on_hp_modification(hp);
+
 	if (hp < oldhp) {
 		// Add to ClientEvent queue
 		ClientEvent event;

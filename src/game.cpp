@@ -3228,8 +3228,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 		if (event.type == CE_PLAYER_DAMAGE &&
 				client->getHP() != 0) {
-			//u16 damage = event.player_damage.amount;
-			//infostream<<"Player damage: "<<damage<<std::endl;
+			client->getScript()->on_damage_taken(event.player_damage.amount);
 
 			*damage_flash += 95.0 + 3.2 * event.player_damage.amount;
 			*damage_flash = MYMIN(*damage_flash, 127.0);
