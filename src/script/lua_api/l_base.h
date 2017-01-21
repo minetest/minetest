@@ -28,6 +28,10 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#ifndef SERVER
+#include "client.h"
+#endif
+
 class ScriptApiBase;
 class Server;
 class Environment;
@@ -38,6 +42,10 @@ class ModApiBase {
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
+	#ifndef SERVER
+	static Client*          getClient(lua_State *L);
+	#endif // !SERVER
+
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
 	// When we are not loading the mod, this function returns "."

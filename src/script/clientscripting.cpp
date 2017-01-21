@@ -49,6 +49,6 @@ ClientScripting::ClientScripting(Client *client):
 
 void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
-	ModApiUtil::Initialize(L, top);
+	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);
 }
