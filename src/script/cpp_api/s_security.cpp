@@ -99,7 +99,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"clock",
 		"date",
 		"difftime",
-		"exit",
 		"getenv",
 		"setlocale",
 		"time",
