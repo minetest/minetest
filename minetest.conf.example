@@ -502,7 +502,7 @@
 
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
-#    type: int min: 15 max: 160
+#    type: int min: 7 max: 160
 # zoom_fov = 15
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.

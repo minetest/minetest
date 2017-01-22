@@ -393,8 +393,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	} else {
 		fov_degrees = m_cache_fov;
 	}
-	fov_degrees = MYMAX(fov_degrees, 10.0);
-	fov_degrees = MYMIN(fov_degrees, 170.0);
+	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
 
 	// FOV and aspect ratio
 	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
