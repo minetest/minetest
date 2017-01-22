@@ -2864,7 +2864,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		*/
 
 		u16 peer_id_to_avoid_sending = (player ? player->peer_id : PEER_ID_INEXISTENT);
-		if (player->protocol_version >= 29)
+		if (player && player->protocol_version >= 29)
 			peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
 
 		for (u16 i = 0; i < clients.size(); i++) {
