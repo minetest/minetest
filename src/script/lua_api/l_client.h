@@ -28,7 +28,15 @@ class ModApiClient : public ModApiBase
 private:
 	// get_current_modname()
 	static int l_get_current_modname(lua_State *L);
+
+	// display_chat_message(message)
 	static int l_display_chat_message(lua_State *L);
+
+	// get_last_run_mod(n)
+	static int l_get_last_run_mod(lua_State *L);
+
+	// set_last_run_mod(modname)
+	static int l_set_last_run_mod(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);

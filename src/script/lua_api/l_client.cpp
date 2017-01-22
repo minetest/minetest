@@ -21,11 +21,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_client.h"
 #include "l_internal.h"
 #include "util/string.h"
+#include "cpp_api/s_base.h"
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	return 1;
+}
+
+// get_last_run_mod()
+int ModApiClient::l_get_last_run_mod(lua_State *L)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
+	const char *current_mod = lua_tostring(L, -1);
+	if (current_mod == NULL || current_mod[0] == '\0') {
+		lua_pop(L, 1);
+		lua_pushstring(L, getScriptApiBase(L)->getOrigin().c_str());
+	}
+	return 1;
+}
+
+// set_last_run_mod(modname)
+int ModApiClient::l_set_last_run_mod(lua_State *L)
+{
+	const char *mod = lua_tostring(L, 1);
+	getScriptApiBase(L)->setOriginDirect(mod);
+	return 0;
 }
 
 // display_chat_message(message)
@@ -42,4 +63,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
 	API_FCT(display_chat_message);
+	API_FCT(set_last_run_mod);
+	API_FCT(get_last_run_mod);
 }
