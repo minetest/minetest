@@ -542,7 +542,7 @@ private:
 class FormspecFormSource: public IFormSource
 {
 public:
-	FormspecFormSource(std::string formspec)
+	FormspecFormSource(const std::string &formspec)
 	{
 		m_formspec = formspec;
 	}
@@ -550,7 +550,7 @@ public:
 	~FormspecFormSource()
 	{}
 
-	void setForm(std::string formspec) {
+	void setForm(const std::string &formspec) {
 		m_formspec = FORMSPEC_VERSION_STRING + formspec;
 	}
 
