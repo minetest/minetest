@@ -576,9 +576,6 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
-
-	// Vertex alpha is no longer supported, correct if necessary.
-	correctAlpha();
 }
 
 #ifndef SERVER
@@ -758,6 +755,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		if (name == "default:water_source")
 			is_water_surface = true;
 	}
+
+	// Vertex alpha is no longer supported, correct if necessary.
+	correctAlpha();
 
 	u32 tile_shader[6];
 	for (u16 j = 0; j < 6; j++) {
@@ -1798,8 +1798,6 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
-		// Vertex alpha is no longer supported, correct if necessary.
-		correctAlpha();
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
 		post_effect_color.setGreen(readU8(is));
@@ -1904,8 +1902,6 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		for (u32 i = 0; i < CF_SPECIAL_COUNT; i++)
 			tiledef_special[i].deSerialize(is, version, drawtype);
 		alpha = readU8(is);
-		// Vertex alpha is no longer supported, correct if necessary.
-		correctAlpha();
 		post_effect_color.setAlpha(readU8(is));
 		post_effect_color.setRed(readU8(is));
 		post_effect_color.setGreen(readU8(is));
