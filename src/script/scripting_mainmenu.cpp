@@ -19,11 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "scripting_mainmenu.h"
 #include "mods.h"
-#include "porting.h"
-#include "log.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_mainmenu.h"
+#include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
 
@@ -63,6 +62,7 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
+	ModApiSound::Initialize(L, top);
 
 	// Register reference classes (userdata)
 	LuaSettings::Register(L);

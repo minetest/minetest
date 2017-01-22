@@ -18,27 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_CLIENT_H_
-#define L_CLIENT_H_
+#ifndef L_SOUND_H_
+#define L_SOUND_H_
 
 #include "lua_api/l_base.h"
 
-class ModApiClient:
-	public ModApiBase
+
+class ModApiSound: public ModApiBase
 {
 private:
-	// get_current_modname()
-	static int l_get_current_modname(lua_State *L);
-
-	// display_chat_message(message)
-	static int l_display_chat_message(lua_State *L);
-
-	// get_last_run_mod(n)
-	static int l_get_last_run_mod(lua_State *L);
-
-	// set_last_run_mod(modname)
-	static int l_set_last_run_mod(lua_State *L);
-
+	static int l_sound_play(lua_State *L);
+	static int l_sound_stop(lua_State *L);
 public:
 	static void Initialize(lua_State *L, int top);
 };
