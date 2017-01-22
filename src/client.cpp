@@ -1582,11 +1582,7 @@ void Client::typeChatMessage(const std::wstring &message)
 	sendChatMessage(message);
 
 	// Show locally
-	if (message[0] == L'/')
-	{
-		pushToChatQueue((std::wstring)L"issued command: " + message);
-	}
-	else
+	if (message[0] != L'/')
 	{
 		// compatibility code
 		if (m_proto_ver < 29) {
