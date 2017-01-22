@@ -37,3 +37,6 @@ core.register_chatcommand("dump", {
 	end,
 })
 
+core.after(2, function()
+	print("After 2")
+end)
