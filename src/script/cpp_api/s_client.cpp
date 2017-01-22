@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "s_client.h"
 #include "s_internal.h"
+#include "client.h"
 
 void ScriptApiClient::on_shutdown()
 {
@@ -93,4 +94,21 @@ void ScriptApiClient::on_death()
 	lua_getfield(L, -1, "registered_on_death");
 	// Call callbacks
 	runCallbacks(0, RUN_CALLBACKS_MODE_FIRST);
+}
+
+void ScriptApiClient::environment_step(float dtime)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_globalsteps
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_globalsteps");
+	// Call callbacks
+	lua_pushnumber(L, dtime);
+	try {
+		runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	} catch (LuaError &e) {
+		getClient()->setFatalError(std::string("Client environment_step: ") + e.what() + "\n"
+				+ script_get_backtrace(L));
+	}
 }

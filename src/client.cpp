@@ -263,6 +263,7 @@ Client::Client(
 		g_settings->getBool("enable_parallax_occlusion"));
 
 	m_script = new ClientScripting(this);
+	m_env.setScript(m_script);
 }
 
 void Client::initMods()

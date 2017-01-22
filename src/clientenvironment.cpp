@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
+#include "clientscripting.h"
 #include "mapblock_mesh.h"
 #include "event.h"
 #include "collision.h"
@@ -42,6 +43,7 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_client(client),
+	m_script(NULL),
 	m_irr(irr)
 {
 	char zero = 0;
@@ -242,6 +244,8 @@ void ClientEnvironment::step(float dtime)
 			}
 		}
 	}
+
+	m_script->environment_step(dtime);
 
 	/*
 		A quick draft of lava damage
