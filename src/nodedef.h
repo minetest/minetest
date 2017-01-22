@@ -123,6 +123,7 @@ struct MapNode;
 class NodeMetadata;
 
 enum LeavesStyle {
+	LEAVES_PLANTLIKE,
 	LEAVES_FANCY,
 	LEAVES_SIMPLE,
 	LEAVES_OPAQUE,

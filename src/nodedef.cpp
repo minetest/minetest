@@ -275,7 +275,9 @@ void TextureSettings::readSettings()
 
 	use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
-	if (leaves_style_str == "fancy") {
+	if (leaves_style_str == "plantlike") {
+		leaves_style = LEAVES_PLANTLIKE;
+	} else if (leaves_style_str == "fancy") {
 		leaves_style = LEAVES_FANCY;
 	} else if (leaves_style_str == "simple") {
 		leaves_style = LEAVES_SIMPLE;
@@ -708,7 +710,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		visual_solidness = 1;
 		break;
 	case NDT_ALLFACES_OPTIONAL:
-		if (tsettings.leaves_style == LEAVES_FANCY) {
+		if (tsettings.leaves_style == LEAVES_PLANTLIKE) {
+			drawtype = NDT_PLANTLIKE;
+			solidness = 0;
+			visual_scale = 1.2;
+			for (u32 j = 0; j < 6; j++) {
+				tdef[j].backface_culling = false;
+			}
+		} else if (tsettings.leaves_style == LEAVES_FANCY) {
 			drawtype = NDT_ALLFACES;
 			solidness = 0;
 			visual_solidness = 1;
@@ -726,8 +735,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			for (u32 i = 0; i < 6; i++)
 				tdef[i].name += std::string("^[noalpha");
 		}
-		if (waving == 1)
-			material_type = TILE_MATERIAL_WAVING_LEAVES;
+		if (waving == 1) {
+			if (tsettings.leaves_style == LEAVES_PLANTLIKE)
+				material_type = TILE_MATERIAL_WAVING_PLANTS;
+			else
+				material_type = TILE_MATERIAL_WAVING_LEAVES;
+		}
 		break;
 	case NDT_PLANTLIKE:
 		solidness = 0;
@@ -774,7 +787,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < 6; j++) {
 		fillTileAttribs(tsrc, &tiles[j], &tdef[j], tile_shader[j],
 			tsettings.use_normal_texture,
-			tiledef[j].backface_culling, material_type);
+			tdef[j].backface_culling, material_type);
 	}
 
 	// Special tiles (fill in f->special_tiles[])

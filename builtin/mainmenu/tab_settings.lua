@@ -21,7 +21,8 @@ local labels = {
 	leaves = {
 		fgettext("Opaque Leaves"),
 		fgettext("Simple Leaves"),
-		fgettext("Fancy Leaves")
+		fgettext("Fancy Leaves"),
+		fgettext("Plantlike Leaves")
 	},
 	node_highlighting = {
 		fgettext("Node Outlining"),
@@ -48,7 +49,7 @@ local labels = {
 local dd_options = {
 	leaves = {
 		table.concat(labels.leaves, ","),
-		{"opaque", "simple", "fancy"}
+		{"opaque", "simple", "fancy", "plantlike"}
 	},
 	node_highlighting = {
 		table.concat(labels.node_highlighting, ","),
