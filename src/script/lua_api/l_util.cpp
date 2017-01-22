@@ -530,6 +530,8 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 {
 	API_FCT(log);
 
+	API_FCT(get_us_time);
+
 	API_FCT(setting_set);
 	API_FCT(setting_get);
 	API_FCT(setting_setbool);

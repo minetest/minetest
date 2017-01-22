@@ -488,13 +488,19 @@ public:
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
 
-	bool accessDenied()
-	{ return m_access_denied; }
+	bool accessDenied() const { return m_access_denied; }
 
-	bool reconnectRequested() { return m_access_denied_reconnect; }
+	bool reconnectRequested() const { return m_access_denied_reconnect; }
 
-	std::string accessDeniedReason()
-	{ return m_access_denied_reason; }
+	void setFatalError(const std::string &reason)
+	{
+		m_access_denied = true;
+		m_access_denied_reason = reason;
+	}
+
+	// Renaming accessDeniedReason to better name could be good as it's used to
+	// disconnect client when CSM failed.
+	const std::string &accessDeniedReason() const { return m_access_denied_reason; }
 
 	bool itemdefReceived()
 	{ return m_itemdef_received; }
