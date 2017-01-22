@@ -1,6 +1,9 @@
 
 core.callback_origins = {}
 
+local getinfo = debug.getinfo
+debug.getinfo = nil
+
 function core.run_callbacks(callbacks, mode, ...)
 	assert(type(callbacks) == "table")
 	local cb_len = #callbacks
@@ -47,7 +50,7 @@ local function make_registration()
 		t[#t + 1] = func
 		core.callback_origins[func] = {
 			mod = core.get_current_modname() or "??",
-			name = debug.getinfo(1, "n").name or "??"
+			name = getinfo(1, "n").name or "??"
 		}
 		--local origin = core.callback_origins[func]
 		--print(origin.name .. ": " .. origin.mod .. " registering cbk " .. tostring(func))

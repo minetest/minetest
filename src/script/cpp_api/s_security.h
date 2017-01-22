@@ -41,8 +41,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:
+	int backupGlobals(lua_State *L);
 	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
+	void initializeSecurityClient();
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
