@@ -32,9 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "serverlist.h"
 #include "mapgen.h"
-#include "sound.h"
 #include "settings.h"
-#include "log.h"
 #include "EDriverTypes.h"
 
 #include <IFileArchive.h>
@@ -963,33 +961,6 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_sound_play(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-	bool looped = lua_toboolean(L, 2);
-
-	u32 handle = engine->playSound(spec, looped);
-
-	lua_pushinteger(L, handle);
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_sound_stop(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	u32 handle = luaL_checkinteger(L, 1);
-	engine->stopSound(handle);
-
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_download_file(lua_State *L)
 {
 	const char *url    = luaL_checkstring(L, 1);
@@ -1160,8 +1131,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(download_file);
 	API_FCT(get_modstore_details);
 	API_FCT(get_modstore_list);
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_video_modes);

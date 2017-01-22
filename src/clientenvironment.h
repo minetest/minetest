@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ClientSimpleObject;
 class ClientMap;
+class ClientScripting;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
@@ -75,6 +76,7 @@ public:
 	ClientMap & getClientMap();
 
 	Client *getGameDef() { return m_client; }
+	void setScript(ClientScripting *script) { m_script = script; }
 
 	void step(f32 dtime);
 
@@ -176,6 +178,7 @@ private:
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
+	ClientScripting *m_script;
 	IrrlichtDevice *m_irr;
 	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
