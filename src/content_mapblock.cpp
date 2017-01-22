@@ -1717,17 +1717,14 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			LightFrame lights;
 			video::SColor colors[8];
-			u16 l;
-			video::SColor c;
 
-			if(data->m_smooth_lighting)
-			{
+			if(data->m_smooth_lighting) {
 				getSmoothLightFrame(lights, blockpos_nodes + p, data);
-			}
-			else
-			{
-				l = getInteriorLight(n, 1, nodedef);
-				c = MapBlock_LightColor(255, l, f.light_source);
+			} else {
+				u16 l = getInteriorLight(n, 1, nodedef);
+				video::SColor c = MapBlock_LightColor(255, l, f.light_source);
+				for (int j = 0; j != 8; ++j)
+					colors[j] = c;
 			}
 
 			v3f pos = intToFloat(p, BS);
@@ -1766,8 +1763,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			n.getNodeBoxes(nodedef, &boxes, neighbors);
 			for(std::vector<aabb3f>::iterator
 					i = boxes.begin();
-					i != boxes.end(); ++i)
-			{
+					i != boxes.end(); ++i) {
 				for(int j = 0; j < 6; j++) {
 					// Handles facedir rotation for textures
 					tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
@@ -1813,19 +1809,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					// front
 					tx1, 1-ty2, tx2, 1-ty1,
 				};
-				if (data->m_smooth_lighting)
-				{
-					for (int j = 0; j != 8; ++j)
-					{
+				if (data->m_smooth_lighting) {
+					for (int j = 0; j != 8; ++j) {
 						f32 x = j & 4 ? dx2 : dx1;
 						f32 y = j & 2 ? dy2 : dy1;
 						f32 z = j & 1 ? dz2 : dz1;
 						colors[j] = blendLight(lights, core::vector3df(x, y, z), f.light_source);
 					}
-					makeSmoothLightedCuboid(&collector, box, tiles, 6, colors, txc);
 				}
-				else
-					makeCuboid(&collector, box, tiles, 6, c, txc);
+				makeSmoothLightedCuboid(&collector, box, tiles, 6, colors, txc);
 			}
 		break;}
 		case NDT_MESH:
