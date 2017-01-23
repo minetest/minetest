@@ -30,9 +30,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "noise.h"
 
-#define SMOOTH_LIGHTING_OVERSIZE 0.0f
+// Distance of light extrapolation (for oversized nodes)
+// After this distance, it gives up and considers light level constant
+#define SMOOTH_LIGHTING_OVERSIZE 1.0
 
-typedef u16 LightFrame[8];
+struct LightFrame
+{
+	u16 lights[8];
+	u8 light_source;
+};
 
 static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
@@ -59,7 +65,7 @@ static const v3s16 light_dirs[8] = {
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
 static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
-	TileSpec *tiles, int tilecount, video::SColor *c, const f32* txc)
+	TileSpec *tiles, int tilecount, const video::SColor c[8], const f32* txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -181,7 +187,7 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 // Create a cuboid. Arguments are the same as of makeSmoothLightedCuboid,
 // except of c which is used for all vertices
 static void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	TileSpec *tiles, int tilecount, video::SColor &c, const f32* txc)
+	TileSpec *tiles, int tilecount, const video::SColor &c, const f32* txc)
 {
 	video::SColor colors[8] = { c, c, c, c, c, c, c, c };
 	makeSmoothLightedCuboid(collector, box, tiles, tilecount, colors, txc);
@@ -191,37 +197,37 @@ static void makeCuboid(MeshCollector *collector, const aabb3f &box,
 //  p      - node position (absolute)
 //  data   - ...
 //  lights - resulting (opaque) data
-static void getSmoothLightFrame(LightFrame &lights, const v3s16 &p, MeshMakeData *data)
+static void getSmoothLightFrame(LightFrame *frame, const v3s16 &p, MeshMakeData *data, u8 light_source)
 {
-		for (int k = 0; k != 8; ++k)
-			lights[k] = getSmoothLight(p, light_dirs[k], data);
+	for (int k = 0; k < 8; ++k)
+		frame->lights[k] = getSmoothLight(p, light_dirs[k], data);
+	frame->light_source = light_source;
 }
 
 // Calculates vertex color to be used in mapblock mesh
 //  lights       - light values from getSmoothLightFrame()
 //  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
 //  light_source - node's light source property
-static video::SColor blendLight(const LightFrame &lights, const core::vector3df& vertex_pos, u8 light_source)
+static video::SColor blendLight(const LightFrame &frame, const core::vector3df& vertex_pos)
 {
-	f32 x = core::clamp(vertex_pos.X, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
-	f32 y = core::clamp(vertex_pos.Y, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
-	f32 z = core::clamp(vertex_pos.Z, 0.0f - SMOOTH_LIGHTING_OVERSIZE, 1.0f + SMOOTH_LIGHTING_OVERSIZE);
+	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
+	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
+	f32 z = core::clamp(vertex_pos.Z / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 lightA = 0.0;
 	f32 lightB = 0.0;
-	for (int k = 0; k != 8; ++k)
-	{
-		u32 light1A = lights[k] & 0xff;
-		u32 light1B = lights[k] >> 8;
-		f32 dx = k & 4 ? x : 1 - x;
-		f32 dy = k & 2 ? y : 1 - y;
-		f32 dz = k & 1 ? z : 1 - z;
+	for (int k = 0; k < 8; ++k) {
+		u32 light1A = frame.lights[k] & 0xff;
+		u32 light1B = frame.lights[k] >> 8;
+		f32 dx = (k & 4) ? x : 1 - x;
+		f32 dy = (k & 2) ? y : 1 - y;
+		f32 dz = (k & 1) ? z : 1 - z;
 		lightA += dx * dy * dz * light1A;
 		lightB += dx * dy * dz * light1B;
 	}
 	u16 light =
 		core::clamp(core::round32(lightA), 0, 255) |
 		core::clamp(core::round32(lightB), 0, 255) << 8;
-	return MapBlock_LightColor(255, light, light_source);
+	return MapBlock_LightColor(255, light, frame.light_source);
 }
 
 static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
@@ -1715,15 +1721,15 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			};
 			TileSpec tiles[6];
 
-			LightFrame lights;
+			LightFrame frame;
 			video::SColor colors[8];
 
 			if(data->m_smooth_lighting) {
-				getSmoothLightFrame(lights, blockpos_nodes + p, data);
+				getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
 			} else {
 				u16 l = getInteriorLight(n, 1, nodedef);
 				video::SColor c = MapBlock_LightColor(255, l, f.light_source);
-				for (int j = 0; j != 8; ++j)
+				for (int j = 0; j < 8; ++j)
 					colors[j] = c;
 			}
 
@@ -1770,12 +1776,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 				aabb3f box = *i;
 
-				f32 dx1 = (box.MinEdge.X/BS)+0.5;
-				f32 dy1 = (box.MinEdge.Y/BS)+0.5;
-				f32 dz1 = (box.MinEdge.Z/BS)+0.5;
-				f32 dx2 = (box.MaxEdge.X/BS)+0.5;
-				f32 dy2 = (box.MaxEdge.Y/BS)+0.5;
-				f32 dz2 = (box.MaxEdge.Z/BS)+0.5;
+				f32 dx1 = box.MinEdge.X;
+				f32 dy1 = box.MinEdge.Y;
+				f32 dz1 = box.MinEdge.Z;
+				f32 dx2 = box.MaxEdge.X;
+				f32 dy2 = box.MaxEdge.Y;
+				f32 dz2 = box.MaxEdge.Z;
 
 				box.MinEdge += pos;
 				box.MaxEdge += pos;
@@ -1810,11 +1816,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					tx1, 1-ty2, tx2, 1-ty1,
 				};
 				if (data->m_smooth_lighting) {
-					for (int j = 0; j != 8; ++j) {
-						f32 x = j & 4 ? dx2 : dx1;
-						f32 y = j & 2 ? dy2 : dy1;
-						f32 z = j & 1 ? dz2 : dz1;
-						colors[j] = blendLight(lights, core::vector3df(x, y, z), f.light_source);
+					for (int j = 0; j < 8; ++j) {
+						f32 x = (j & 4) ? dx2 : dx1;
+						f32 y = (j & 2) ? dy2 : dy1;
+						f32 z = (j & 1) ? dz2 : dz1;
+						colors[j] = blendLight(frame, core::vector3df(x, y, z));
 					}
 				}
 				makeSmoothLightedCuboid(&collector, box, tiles, 6, colors, txc);
@@ -1849,9 +1855,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			} else if (f.mesh_ptr[0]) {
 				// no cache, clone and rotate mesh
 				scene::IMesh* mesh = cloneMesh(f.mesh_ptr[0]);
-				LightFrame lights;
+				LightFrame frame;
 				if (data->m_smooth_lighting)
-					getSmoothLightFrame(lights, blockpos_nodes + p, data);
+					getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
@@ -1860,9 +1866,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 					u32 vertex_count = buf->getVertexCount();
 					if (data->m_smooth_lighting) {
-						for (u16 m = 0; m != vertex_count; ++m) {
+						for (u16 m = 0; m < vertex_count; ++m) {
 							video::S3DVertex &vertex = vertices[m];
-							vertex.Color = blendLight(lights, vertex.Pos, f.light_source);
+							vertex.Color = blendLight(frame, vertex.Pos);
 							vertex.Pos += pos;
 						}
 						collector.append(getNodeTileN(n, p, j, data),
