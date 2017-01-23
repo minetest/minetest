@@ -36,7 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct LightFrame
 {
-	u16 lights[8];
+	f32 lightsA[8];
+	f32 lightsB[8];
 	u8 light_source;
 };
 
@@ -199,8 +200,11 @@ static void makeCuboid(MeshCollector *collector, const aabb3f &box,
 //  lights - resulting (opaque) data
 static void getSmoothLightFrame(LightFrame *frame, const v3s16 &p, MeshMakeData *data, u8 light_source)
 {
-	for (int k = 0; k < 8; ++k)
-		frame->lights[k] = getSmoothLight(p, light_dirs[k], data);
+	for (int k = 0; k < 8; ++k) {
+		u16 light = getSmoothLight(p, light_dirs[k], data);
+		frame->lightsA[k] = light & 0xff;
+		frame->lightsB[k] = light >> 8;
+	}
 	frame->light_source = light_source;
 }
 
@@ -216,13 +220,11 @@ static video::SColor blendLight(const LightFrame &frame, const core::vector3df& 
 	f32 lightA = 0.0;
 	f32 lightB = 0.0;
 	for (int k = 0; k < 8; ++k) {
-		u32 light1A = frame.lights[k] & 0xff;
-		u32 light1B = frame.lights[k] >> 8;
 		f32 dx = (k & 4) ? x : 1 - x;
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
-		lightA += dx * dy * dz * light1A;
-		lightB += dx * dy * dz * light1B;
+		lightA += dx * dy * dz * frame.lightsA[k];
+		lightB += dx * dy * dz * frame.lightsB[k];
 	}
 	u16 light =
 		core::clamp(core::round32(lightA), 0, 255) |
