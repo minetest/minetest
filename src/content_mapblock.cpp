@@ -332,11 +332,14 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 	}
 	u16 indices[] = {0,1,2,2,3,0};
 	// Add to mesh collector
-	for (s32 j = 0; j < 24; j += 4) {
+	for (s32 j = 0; j < 24; ++j) {
 		int tileindex = MYMIN(j / 4, tilecount - 1);
 		vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
 			tiles[tileindex].color, light_source);
-		collector->append(tiles[tileindex], vertices + j, 4, indices, 6);
+	}
+	for (s32 k = 0; k < 6; ++k) {
+		int tileindex = MYMIN(k, tilecount - 1);
+		collector->append(tiles[tileindex], vertices + 4 * k, 4, indices, 6);
 	}
 }
 
