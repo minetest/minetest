@@ -331,12 +331,14 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 		}
 	}
 	u16 indices[] = {0,1,2,2,3,0};
-	// Add to mesh collector
 	for (s32 j = 0; j < 24; ++j) {
 		int tileindex = MYMIN(j / 4, tilecount - 1);
 		vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
 			tiles[tileindex].color, light_source);
+		if (!light_source)
+			applyFacesShading(vertices[j].Color, vertices[j].Normal);
 	}
+	// Add to mesh collector
 	for (s32 k = 0; k < 6; ++k) {
 		int tileindex = MYMIN(k, tilecount - 1);
 		collector->append(tiles[tileindex], vertices + 4 * k, 4, indices, 6);
@@ -409,10 +411,21 @@ static u16 blendLight(const LightFrame &frame, const core::vector3df& vertex_pos
 //  frame        - light values from getSmoothLightFrame()
 //  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
 //  tile_color   - node's tile color
-static video::SColor blendLight(const LightFrame &frame, const core::vector3df& vertex_pos, video::SColor tile_color)
+static video::SColor blendLight(const LightFrame &frame,
+	const core::vector3df& vertex_pos, video::SColor tile_color)
 {
 	u16 light = blendLight(frame, vertex_pos);
 	return encode_light_and_color(light, tile_color, frame.light_source);
+}
+
+static video::SColor blendLight(const LightFrame &frame,
+	const core::vector3df& vertex_pos, const core::vector3df& vertex_normal,
+	video::SColor tile_color)
+{
+	video::SColor color = blendLight(frame, vertex_pos, tile_color);
+	if (!frame.light_source)
+			applyFacesShading(color, vertex_normal);
+	return color;
 }
 
 static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
@@ -2110,7 +2123,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					if (data->m_smooth_lighting) {
 						for (u16 m = 0; m < vertex_count; ++m) {
 							video::S3DVertex &vertex = vertices[m];
-							vertex.Color = blendLight(frame, vertex.Pos, tile.color);
+							vertex.Color = blendLight(frame, vertex.Pos, vertex.Normal, tile.color);
 							vertex.Pos += pos;
 						}
 						collector.append(tile, vertices, vertex_count,
