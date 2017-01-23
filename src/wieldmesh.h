@@ -70,6 +70,11 @@ private:
 	bool m_anisotropic_filter;
 	bool m_bilinear_filter;
 	bool m_trilinear_filter;
+	/*!
+	 * Stores the colors of the mesh's mesh buffers.
+	 * This does not include lighting.
+	 */
+	std::vector<video::SColor> m_colors;
 
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement

@@ -2086,7 +2086,9 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
+				// Force delete object if mapblock is full, but ignore players
+				if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER &&
+					block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
 					warningstream << "ServerEnv: Trying to store id = " << obj->getId()
 						<< " statically but block " << PP(blockpos)
 						<< " already contains "

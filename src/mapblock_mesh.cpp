@@ -32,12 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/directiontables.h"
 #include <IMeshManipulator.h>
 
-static void applyFacesShading(video::SColor &color, const float factor)
-{
-	color.setRed(core::clamp(core::round32(color.getRed() * factor), 0, 255));
-	color.setGreen(core::clamp(core::round32(color.getGreen() * factor), 0, 255));
-}
-
 /*
 	MeshMakeData
 */
@@ -321,19 +315,34 @@ u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
 	return getSmoothLightCombined(p, data);
 }
 
-/*
-	Converts from day + night color values (0..255)
-	and a given daynight_ratio to the final SColor shown on screen.
-*/
-void finalColorBlend(video::SColor& result,
-		u8 day, u8 night, u32 daynight_ratio)
-{
-	s32 rg = (day * daynight_ratio + night * (1000-daynight_ratio)) / 1000;
-	s32 b = rg;
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
+	f32 rg = daynight_ratio / 1000.0f - 0.04f;
+	f32 b = (0.98f * daynight_ratio) / 1000.0f + 0.078f;
+	sunlight->r = rg;
+	sunlight->g = rg;
+	sunlight->b = b;
+}
 
-	// Moonlight is blue
-	b += (day - night) / 13;
-	rg -= (day - night) / 23;
+void final_color_blend(video::SColor *result,
+		u16 light, u32 daynight_ratio)
+{
+	video::SColorf dayLight;
+	get_sunlight_color(&dayLight, daynight_ratio);
+	final_color_blend(result,
+		encode_light_and_color(light, video::SColor(0xFFFFFFFF), 0), dayLight);
+}
+
+void final_color_blend(video::SColor *result,
+		const video::SColor &data, const video::SColorf &dayLight)
+{
+	static const video::SColorf artificialColor(1.04f, 1.04f, 1.04f);
+
+	video::SColorf c(data);
+	f32 n = 1 - c.a;
+
+	f32 r = c.r * (c.a * dayLight.r + n * artificialColor.r) * 2.0f;
+	f32 g = c.g * (c.a * dayLight.g + n * artificialColor.g) * 2.0f;
+	f32 b = c.b * (c.a * dayLight.b + n * artificialColor.b) * 2.0f;
 
 	// Emphase blue a bit in darker places
 	// Each entry of this array represents a range of 8 blue levels
@@ -341,19 +350,13 @@ void finalColorBlend(video::SColor& result,
 		1, 4, 6, 6, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	};
-	b += emphase_blue_when_dark[irr::core::clamp(b, 0, 255) / 8];
-	b = irr::core::clamp(b, 0, 255);
 
-	// Artificial light is yellow-ish
-	static const u8 emphase_yellow_when_artificial[16] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 15
-	};
-	rg += emphase_yellow_when_artificial[night/16];
-	rg = irr::core::clamp(rg, 0, 255);
+	b += emphase_blue_when_dark[irr::core::clamp((s32) ((r + g + b) / 3 * 255),
+		0, 255) / 8] / 255.0f;
 
-	result.setRed(rg);
-	result.setGreen(rg);
-	result.setBlue(b);
+	result->setRed(core::clamp((s32) (r * 255.0f), 0, 255));
+	result->setGreen(core::clamp((s32) (g * 255.0f), 0, 255));
+	result->setBlue(core::clamp((s32) (b * 255.0f), 0, 255));
 }
 
 /*
@@ -430,7 +433,7 @@ struct FastFace
 };
 
 static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
-		v3f p, v3s16 dir, v3f scale, u8 light_source, std::vector<FastFace> &dest)
+		v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -580,24 +583,25 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 
 	v3f normal(dir.X, dir.Y, dir.Z);
 
-	u8 alpha = tile.alpha;
-
 	dest.push_back(FastFace());
 
 	FastFace& face = *dest.rbegin();
 
-	face.vertices[0] = video::S3DVertex(vertex_pos[0], normal,
-			MapBlock_LightColor(alpha, li0, light_source),
-			core::vector2d<f32>(x0+w*abs_scale, y0+h));
-	face.vertices[1] = video::S3DVertex(vertex_pos[1], normal,
-			MapBlock_LightColor(alpha, li1, light_source),
-			core::vector2d<f32>(x0, y0+h));
-	face.vertices[2] = video::S3DVertex(vertex_pos[2], normal,
-			MapBlock_LightColor(alpha, li2, light_source),
-			core::vector2d<f32>(x0, y0));
-	face.vertices[3] = video::S3DVertex(vertex_pos[3], normal,
-			MapBlock_LightColor(alpha, li3, light_source),
-			core::vector2d<f32>(x0+w*abs_scale, y0));
+	u16 li[4] = { li0, li1, li2, li3 };
+	v2f32 f[4] = {
+		core::vector2d<f32>(x0 + w * abs_scale, y0 + h),
+		core::vector2d<f32>(x0, y0 + h),
+		core::vector2d<f32>(x0, y0),
+		core::vector2d<f32>(x0 + w * abs_scale, y0) };
+
+	for (u8 i = 0; i < 4; i++) {
+		video::SColor c = encode_light_and_color(li[i], tile.color,
+			tile.emissive_light);
+		if (!tile.emissive_light)
+			applyFacesShading(c, normal);
+
+		face.vertices[i] = video::S3DVertex(vertex_pos[i], normal, c, f[i]);
+	}
 
 	face.tile = tile;
 }
@@ -664,7 +668,10 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
-	TileSpec spec = ndef->get(mn).tiles[tileindex];
+	const ContentFeatures &f = ndef->get(mn);
+	TileSpec spec = f.tiles[tileindex];
+	if (!spec.has_color)
+		mn.getColor(f, &spec.color);
 	// Apply temporary crack
 	if (p == data->m_crack_pos_relative)
 		spec.material_flags |= MATERIAL_FLAG_CRACK;
@@ -747,8 +754,7 @@ static void getTileInfo(
 		v3s16 &p_corrected,
 		v3s16 &face_dir_corrected,
 		u16 *lights,
-		TileSpec &tile,
-		u8 &light_source
+		TileSpec &tile
 	)
 {
 	VoxelManipulator &vmanip = data->m_vmanip;
@@ -763,7 +769,8 @@ static void getTileInfo(
 		return;
 	}
 
-	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(blockpos_nodes + p + face_dir);
+	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(
+		blockpos_nodes + p + face_dir);
 
 	if (n1.getContent() == CONTENT_IGNORE) {
 		makes_face = false;
@@ -783,26 +790,25 @@ static void getTileInfo(
 
 	makes_face = true;
 
-	if(mf == 1)
-	{
-		tile = getNodeTile(n0, p, face_dir, data);
+	MapNode n = n0;
+
+	if (mf == 1) {
 		p_corrected = p;
 		face_dir_corrected = face_dir;
-		light_source = ndef->get(n0).light_source;
-	}
-	else
-	{
-		tile = getNodeTile(n1, p + face_dir, -face_dir, data);
+	} else {
+		n = n1;
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
-		light_source = ndef->get(n1).light_source;
 	}
+	tile = getNodeTile(n, p_corrected, face_dir_corrected, data);
+	const ContentFeatures &f = ndef->get(n);
+	tile.emissive_light = f.light_source;
 
 	// eg. water and glass
-	if(equivalent)
+	if (equivalent)
 		tile.material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
 
-	if(data->m_smooth_lighting == false)
+	if (data->m_smooth_lighting == false)
 	{
 		lights[0] = lights[1] = lights[2] = lights[3] =
 				getFaceLight(n0, n1, face_dir, ndef);
@@ -845,10 +851,9 @@ static void updateFastFaceRow(
 	v3s16 face_dir_corrected;
 	u16 lights[4] = {0,0,0,0};
 	TileSpec tile;
-	u8 light_source = 0;
 	getTileInfo(data, p, face_dir,
 			makes_face, p_corrected, face_dir_corrected,
-			lights, tile, light_source);
+			lights, tile);
 
 	for(u16 j=0; j<MAP_BLOCKSIZE; j++)
 	{
@@ -862,7 +867,6 @@ static void updateFastFaceRow(
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0,0,0,0};
 		TileSpec next_tile;
-		u8 next_light_source = 0;
 
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
@@ -873,7 +877,7 @@ static void updateFastFaceRow(
 			getTileInfo(data, p_next, face_dir,
 					next_makes_face, next_p_corrected,
 					next_face_dir_corrected, next_lights,
-					next_tile, next_light_source);
+					next_tile);
 
 			if(next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
@@ -884,9 +888,10 @@ static void updateFastFaceRow(
 					&& next_lights[3] == lights[3]
 					&& next_tile == tile
 					&& tile.rotation == 0
-					&& next_light_source == light_source
 					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
-					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)) {
+					&& (tile.material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL)
+					&& tile.color == next_tile.color
+					&& tile.emissive_light == next_tile.emissive_light) {
 				next_is_different = false;
 				continuous_tiles_count++;
 			} else {
@@ -938,8 +943,7 @@ static void updateFastFaceRow(
 				}
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
-						sp, face_dir_corrected, scale, light_source,
-						dest);
+						sp, face_dir_corrected, scale, dest);
 
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
 				for(int i = 1; i < continuous_tiles_count; i++){
@@ -958,7 +962,6 @@ static void updateFastFaceRow(
 		lights[2] = next_lights[2];
 		lights[3] = next_lights[3];
 		tile = next_tile;
-		light_source = next_light_source;
 		p = p_next;
 	}
 }
@@ -1083,12 +1086,14 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			const u16 *indices_p = indices;
 
 			/*
-				Revert triangles for nicer looking gradient if vertices
-				1 and 3 have same color or 0 and 2 have different color.
-				getRed() is the day color.
+				Revert triangles for nicer looking gradient if the
+				brightness of vertices 1 and 3 differ less than
+				the brightness of vertices 0 and 2.
 			*/
-			if(f.vertices[0].Color.getRed() != f.vertices[2].Color.getRed()
-					|| f.vertices[1].Color.getRed() == f.vertices[3].Color.getRed())
+			if (abs(f.vertices[0].Color.getAverage()
+					- f.vertices[2].Color.getAverage())
+					> abs(f.vertices[1].Color.getAverage()
+					- f.vertices[3].Color.getAverage()))
 				indices_p = indices_alternate;
 
 			collector.append(f.tile, f.vertices, 4, indices_p, 6);
@@ -1148,43 +1153,30 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			p.tile.texture = animation_frame.texture;
 		}
 
-		u32 vertex_count = m_use_tangent_vertices ?
-			p.tangent_vertices.size() : p.vertices.size();
-		for (u32 j = 0; j < vertex_count; j++) {
-			v3f *Normal;
-			video::SColor *vc;
-			if (m_use_tangent_vertices) {
-				vc = &p.tangent_vertices[j].Color;
-				Normal = &p.tangent_vertices[j].Normal;
-			} else {
-				vc = &p.vertices[j].Color;
-				Normal = &p.vertices[j].Normal;
-			}
-			// Note applyFacesShading second parameter is precalculated sqrt
-			// value for speed improvement
-			// Skip it for lightsources and top faces.
-			if (!vc->getBlue()) {
-				if (Normal->Y < -0.5) {
-					applyFacesShading(*vc, 0.447213);
-				} else if (Normal->X > 0.5) {
-					applyFacesShading(*vc, 0.670820);
-				} else if (Normal->X < -0.5) {
-					applyFacesShading(*vc, 0.670820);
-				} else if (Normal->Z > 0.5) {
-					applyFacesShading(*vc, 0.836660);
-				} else if (Normal->Z < -0.5) {
-					applyFacesShading(*vc, 0.836660);
+		if (!m_enable_shaders) {
+			// Extract colors for day-night animation
+			// Dummy sunlight to handle non-sunlit areas
+			video::SColorf sunlight;
+			get_sunlight_color(&sunlight, 0);
+			u32 vertex_count =
+				m_use_tangent_vertices ?
+					p.tangent_vertices.size() : p.vertices.size();
+			for (u32 j = 0; j < vertex_count; j++) {
+				video::SColor *vc;
+				if (m_use_tangent_vertices) {
+					vc = &p.tangent_vertices[j].Color;
+				} else {
+					vc = &p.vertices[j].Color;
 				}
-			}
-			if (!m_enable_shaders) {
-				// - Classic lighting (shaders handle this by themselves)
-				// Set initial real color and store for later updates
-				u8 day = vc->getRed();
-				u8 night = vc->getGreen();
-				finalColorBlend(*vc, day, night, 1000);
-				if (day != night) {
-					m_daynight_diffs[i][j] = std::make_pair(day, night);
-				}
+				video::SColor copy(*vc);
+				if (vc->getAlpha() == 0) // No sunlight - no need to animate
+					final_color_blend(vc, copy, sunlight); // Finalize color
+				else // Record color to animate
+					m_daynight_diffs[i][j] = copy;
+
+				// The sunlight ratio has been stored,
+				// delete alpha (for the final rendering).
+				vc->setAlpha(255);
 			}
 		}
 
@@ -1358,19 +1350,19 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		if (m_enable_vbo) {
 			m_mesh->setDirty();
 		}
-		for(std::map<u32, std::map<u32, std::pair<u8, u8> > >::iterator
+		video::SColorf day_color;
+		get_sunlight_color(&day_color, daynight_ratio);
+		for(std::map<u32, std::map<u32, video::SColor > >::iterator
 				i = m_daynight_diffs.begin();
 				i != m_daynight_diffs.end(); ++i)
 		{
 			scene::IMeshBuffer *buf = m_mesh->getMeshBuffer(i->first);
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
-			for(std::map<u32, std::pair<u8, u8 > >::iterator
+			for(std::map<u32, video::SColor >::iterator
 					j = i->second.begin();
 					j != i->second.end(); ++j)
 			{
-				u8 day = j->second.first;
-				u8 night = j->second.second;
-				finalColorBlend(vertices[j->first].Color, day, night, daynight_ratio);
+				final_color_blend(&(vertices[j->first].Color), j->second, day_color);
 			}
 		}
 		m_last_daynight_ratio = daynight_ratio;
@@ -1452,7 +1444,7 @@ void MeshCollector::append(const TileSpec &tile,
 void MeshCollector::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c)
+		v3f pos, video::SColor c, u8 light_source)
 {
 	if (numIndices > 65535) {
 		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
@@ -1478,10 +1470,15 @@ void MeshCollector::append(const TileSpec &tile,
 		p = &prebuffers[prebuffers.size() - 1];
 	}
 
+	video::SColor original_c = c;
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
+			if (!light_source) {
+				c = original_c;
+				applyFacesShading(c, vertices[i].Normal);
+			}
 			video::S3DVertexTangents vert(vertices[i].Pos + pos,
 				vertices[i].Normal, c, vertices[i].TCoords);
 			p->tangent_vertices.push_back(vert);
@@ -1489,8 +1486,12 @@ void MeshCollector::append(const TileSpec &tile,
 	} else {
 		vertex_count = p->vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
-			video::S3DVertex vert(vertices[i].Pos + pos,
-				vertices[i].Normal, c, vertices[i].TCoords);
+			if (!light_source) {
+				c = original_c;
+				applyFacesShading(c, vertices[i].Normal);
+			}
+			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
+				vertices[i].TCoords);
 			p->vertices.push_back(vert);
 		}
 	}
@@ -1499,4 +1500,34 @@ void MeshCollector::append(const TileSpec &tile,
 		u32 j = indices[i] + vertex_count;
 		p->indices.push_back(j);
 	}
+}
+
+video::SColor encode_light_and_color(u16 light, const video::SColor &color,
+	u8 emissive_light)
+{
+	// Get components
+	f32 day = (light & 0xff) / 255.0f;
+	f32 night = (light >> 8) / 255.0f;
+	// Add emissive light
+	night += emissive_light * 0.01f;
+	if (night > 255)
+		night = 255;
+	// Since we don't know if the day light is sunlight or
+	// artificial light, assume it is artificial when the night
+	// light bank is also lit.
+	if (day < night)
+		day = 0;
+	else
+		day = day - night;
+	f32 sum = day + night;
+	// Ratio of sunlight:
+	float r;
+	if (sum > 0)
+		r = day / sum;
+	else
+		r = 0;
+	// Average light:
+	float b = (day + night) / 2;
+	return video::SColor(r * 255, b * color.getRed(), b * color.getGreen(),
+		b * color.getBlue());
 }

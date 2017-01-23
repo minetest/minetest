@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientiface.h"
 #include "util/numeric.h"
-#include "util/mathconstants.h"
 #include "remoteplayer.h"
 #include "settings.h"
 #include "mapblock.h"

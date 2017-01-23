@@ -143,9 +143,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		serialization of TileAnimation params changed
 		TAT_SHEET_2D
 		Removed client-sided chat perdiction
+	PROTOCOL VERSION 30:
+		New ContentFeatures serialization version
+		Add node and tile color and palette
 */
 
-#define LATEST_PROTOCOL_VERSION 29
+#define LATEST_PROTOCOL_VERSION 30
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13

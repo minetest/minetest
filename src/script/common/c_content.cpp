@@ -322,7 +322,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	}
 	else if(lua_istable(L, index))
 	{
-		// {name="default_lava.png", animation={}}
+		// name="default_lava.png"
 		tiledef.name = "";
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
@@ -332,30 +332,13 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		// color = ...
+		lua_getfield(L, index, "color");
+		tiledef.has_color = read_color(L, -1, &tiledef.color);
+		lua_pop(L, 1);
 		// animation = {}
 		lua_getfield(L, index, "animation");
-		if(lua_istable(L, -1)){
-			tiledef.animation.type = (TileAnimationType)
-				getenumfield(L, -1, "type", es_TileAnimationType,
-				TAT_NONE);
-			if (tiledef.animation.type == TAT_VERTICAL_FRAMES) {
-				// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
-				tiledef.animation.vertical_frames.aspect_w =
-					getintfield_default(L, -1, "aspect_w", 16);
-				tiledef.animation.vertical_frames.aspect_h =
-					getintfield_default(L, -1, "aspect_h", 16);
-				tiledef.animation.vertical_frames.length =
-					getfloatfield_default(L, -1, "length", 1.0);
-			} else if (tiledef.animation.type == TAT_SHEET_2D) {
-				// {type="sheet_2d", frames_w=5, frames_h=3, frame_length=0.5}
-				getintfield(L, -1, "frames_w",
-					tiledef.animation.sheet_2d.frames_w);
-				getintfield(L, -1, "frames_h",
-					tiledef.animation.sheet_2d.frames_h);
-				getfloatfield(L, -1, "frame_length",
-					tiledef.animation.sheet_2d.frame_length);
-			}
-		}
+		tiledef.animation = read_animation_definition(L, -1);
 		lua_pop(L, 1);
 	}
 
@@ -471,6 +454,13 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	if (usealpha)
 		f.alpha = 0;
 
+	// Read node color.
+	lua_getfield(L, index, "color");
+	read_color(L, -1, &f.color);
+	lua_pop(L, 1);
+
+	getstringfield(L, index, "palette", f.palette_name);
+
 	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
@@ -481,6 +471,13 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			ScriptApiNode::es_ContentParamType, CPT_NONE);
 	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
 			ScriptApiNode::es_ContentParamType2, CPT2_NONE);
+
+	if (f.palette_name != "" &&
+			!(f.param_type_2 == CPT2_COLOR ||
+			f.param_type_2 == CPT2_COLORED_FACEDIR ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+		warningstream << "Node " << f.name.c_str()
+			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
 	// Warn about some deprecated fields
 	warn_if_field_exists(L, index, "wall_mounted",
@@ -923,6 +920,41 @@ void read_inventory_list(lua_State *L, int tableindex,
 		invlist->deleteItem(index);
 		index++;
 	}
+}
+
+/******************************************************************************/
+struct TileAnimationParams read_animation_definition(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	struct TileAnimationParams anim;
+	anim.type = TAT_NONE;
+	if (!lua_istable(L, index))
+		return anim;
+
+	anim.type = (TileAnimationType)
+		getenumfield(L, index, "type", es_TileAnimationType,
+		TAT_NONE);
+	if (anim.type == TAT_VERTICAL_FRAMES) {
+		// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
+		anim.vertical_frames.aspect_w =
+			getintfield_default(L, index, "aspect_w", 16);
+		anim.vertical_frames.aspect_h =
+			getintfield_default(L, index, "aspect_h", 16);
+		anim.vertical_frames.length =
+			getfloatfield_default(L, index, "length", 1.0);
+	} else if (anim.type == TAT_SHEET_2D) {
+		// {type="sheet_2d", frames_w=5, frames_h=3, frame_length=0.5}
+		getintfield(L, index, "frames_w",
+			anim.sheet_2d.frames_w);
+		getintfield(L, index, "frames_h",
+			anim.sheet_2d.frames_h);
+		getfloatfield(L, index, "frame_length",
+			anim.sheet_2d.frame_length);
+	}
+
+	return anim;
 }
 
 /******************************************************************************/

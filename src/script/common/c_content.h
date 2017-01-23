@@ -79,6 +79,7 @@ void               push_hit_params           (lua_State *L,
 
 ItemStack          read_item                 (lua_State *L, int index, Server *srv);
 
+struct TileAnimationParams read_animation_definition(lua_State *L, int index);
 
 ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,

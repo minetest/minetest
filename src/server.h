@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include "inventorymanager.h"
 #include "subgame.h"
+#include "tileanimation.h" // struct TileAnimationParams
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -252,7 +253,8 @@ public:
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, const std::string &texture);
+		bool vertical, const std::string &texture,
+		const struct TileAnimationParams &animation, u8 glow);
 
 	u32 addParticleSpawner(u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
@@ -263,7 +265,8 @@ public:
 		bool collisiondetection, bool collision_removal,
 		ServerActiveObject *attached,
 		bool vertical, const std::string &texture,
-		const std::string &playername);
+		const std::string &playername, const struct TileAnimationParams &animation,
+		u8 glow);
 
 	void deleteParticleSpawner(const std::string &playername, u32 id);
 
@@ -428,7 +431,8 @@ private:
 	void sendDetachedInventories(u16 peer_id);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
-	void SendAddParticleSpawner(u16 peer_id, u16 amount, float spawntime,
+	void SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
+		u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
 		v3f minvel, v3f maxvel,
 		v3f minacc, v3f maxacc,
@@ -436,16 +440,18 @@ private:
 		float minsize, float maxsize,
 		bool collisiondetection, bool collision_removal,
 		u16 attached_id,
-		bool vertical, const std::string &texture, u32 id);
+		bool vertical, const std::string &texture, u32 id,
+		const struct TileAnimationParams &animation, u8 glow);
 
 	void SendDeleteParticleSpawner(u16 peer_id, u32 id);
 
 	// Spawns particle on peer with peer_id (PEER_ID_INEXISTENT == all)
-	void SendSpawnParticle(u16 peer_id,
+	void SendSpawnParticle(u16 peer_id, u16 protocol_version,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
-		bool vertical, const std::string &texture);
+		bool vertical, const std::string &texture,
+		const struct TileAnimationParams &animation, u8 glow);
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);

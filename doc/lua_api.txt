@@ -638,6 +638,19 @@ node definition:
         bit 4 (0x10) - Makes the plant mesh 1.4x larger
         bit 5 (0x20) - Moves each face randomly a small bit down (1/8 max)
         bits 6-7 are reserved for future use.
+    paramtype2 == "color"
+    ^ `param2` tells which color is picked from the palette.
+      The palette should have 256 pixels.
+    paramtype2 == "colorfacedir"
+    ^ Same as `facedir`, but with colors.
+      The first three bits of `param2` tells which color
+      is picked from the palette.
+      The palette should have 8 pixels.
+    paramtype2 == "colorwallmounted"
+    ^ Same as `wallmounted`, but with colors.
+      The first five bits of `param2` tells which color
+      is picked from the palette.
+      The palette should have 32 pixels.
     collision_box = {
       type = "fixed",
       fixed = {
@@ -1837,6 +1850,7 @@ Spatial Vectors
 * `vector.round(v)`: returns a vector, each dimension rounded to nearest int
 * `vector.apply(v, func)`: returns a vector
 * `vector.equals(v1, v2)`: returns a boolean
+* `vector.sort(v1, v2)`: returns minp, maxp vectors of the cuboid defined by v1 and v2
 
 For the following functions `x` can be either a vector or a number:
 
@@ -2077,6 +2091,10 @@ Call these functions only at load time!
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
+* `minetest.override_chatcommand(name, redefinition)`
+    * Overrides fields of a chatcommand registered with register_chatcommand.
+* `minetest.unregister_chatcommand(name)`
+    * Unregisters a chatcommands registered with register_chatcommand.
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
@@ -2385,6 +2403,10 @@ and `minetest.auth_reload` call the authetification handler.
     * Convert a vector to a wallmounted value, used for `paramtype2="wallmounted"`
 * `minetest.wallmounted_to_dir(wallmounted)`
     * Convert a wallmounted value back into a vector aimed directly out the "back" of a node
+* `minetest.dir_to_yaw(dir)`
+    * Convert a vector into a yaw (angle)
+* `minetest.yaw_to_dir(yaw)`
+    * Convert yaw (angle) to a vector
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
@@ -2583,6 +2605,7 @@ These functions return the leftover itemstack.
 
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
+* `minetest.player_exists(name)`: boolean, whether player exists (regardless of online status)
 * `minetest.hud_replace_builtin(name, hud_definition)`
     * Replaces definition of a builtin hud element
     * `name`: `"breath"` or `"health"`
@@ -2843,6 +2866,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_yaw(radians)`
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
+* `get_texture_mod()` returns current texture modifier
 * `set_sprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
   select_horiz_by_yawpitch=false)`
     * Select sprite from spritesheet with optional animation and DM-style
@@ -3701,6 +3725,9 @@ Definition tables
 	  when displacement mapping is used
 	  Directions are from the point of view of the tile texture,
 	  not the node it's on
+* `{name="image.png", color=ColorSpec}`
+    * the texture's color will be multiplied with this color.
+    * the tile's color overrides the owning node's color in all cases.
 * deprecated, yet still supported field names:
     * `image` (name)
 
@@ -3743,8 +3770,17 @@ Definition tables
         special_tiles = {tile definition 1, Tile definition 2}, --[[
         ^ Special textures of node; used rarely (old field name: special_materials)
         ^ List can be shortened to needed length ]]
-        alpha = 255,
+        color = ColorSpec, --[[
+        ^ The node's original color will be multiplied with this color.
+        ^ If the node has a palette, then this setting only has an effect
+        ^ in the inventory and on the wield item. ]]
         use_texture_alpha = false, -- Use texture's alpha channel
+        palette = "palette.png", --[[
+        ^ The node's `param2` is used to select a pixel from the image
+        ^ (pixels are arranged from left to right and from top to bottom).
+        ^ The node's color will be multiplied with the selected pixel's
+        ^ color. Tiles can override this behavior.
+        ^ Only when `paramtype2` supports palettes. ]]
         post_effect_color = "green#0F", -- If player is inside node, see "ColorSpec"
         paramtype = "none", -- See "Nodes" --[[
         ^ paramtype = "light" allows light to propagate from or through the node with light value
@@ -4179,9 +4215,14 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ vertical: if true faces player using y axis only
         texture = "image.png",
     --  ^ Uses texture (string)
-        playername = "singleplayer"
+        playername = "singleplayer",
     --  ^ optional, if specified spawns particle only on the player's client
+        animation = {Tile Animation definition},
+    --  ^ optional, specifies how to animate the particle texture
+        glow = 0
+    --  ^ optional, specify particle self-luminescence in darkness
     }
+
 
 ### `ParticleSpawner` definition (`add_particlespawner`)
 

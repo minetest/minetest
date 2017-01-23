@@ -642,7 +642,7 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedPixelShaderSetting<float> m_fog_distance;
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
-	CachedPixelShaderSetting<float> m_day_night_ratio;
+	CachedPixelShaderSetting<float, 3> m_day_light;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
@@ -674,7 +674,7 @@ public:
 		m_fog_distance("fogDistance"),
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
-		m_day_night_ratio("dayNightRatio"),
+		m_day_light("dayLight"),
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
 		m_minimap_yaw("yawVec"),
@@ -717,8 +717,14 @@ public:
 
 		m_fog_distance.set(&fog_distance, services);
 
-		float daynight_ratio = (float)m_client->getEnv().getDayNightRatio() / 1000.f;
-		m_day_night_ratio.set(&daynight_ratio, services);
+		u32 daynight_ratio = (float)m_client->getEnv().getDayNightRatio();
+		video::SColorf sunlight;
+		get_sunlight_color(&sunlight, daynight_ratio);
+		float dnc[3] = {
+			sunlight.r,
+			sunlight.g,
+			sunlight.b };
+		m_day_light.set(dnc, services);
 
 		u32 animation_timer = porting::getTimeMs() % 100000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
@@ -840,7 +846,8 @@ bool nodePlacementPrediction(Client &client,
 		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
 
-		if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED) {
+		if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED ||
+				nodedef->get(id).param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 			v3s16 dir = nodepos - neighbourpos;
 
 			if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
@@ -852,7 +859,8 @@ bool nodePlacementPrediction(Client &client,
 			}
 		}
 
-		if (nodedef->get(id).param_type_2 == CPT2_FACEDIR) {
+		if (nodedef->get(id).param_type_2 == CPT2_FACEDIR ||
+				nodedef->get(id).param_type_2 == CPT2_COLORED_FACEDIR) {
 			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
 
 			if (abs(dir.X) > abs(dir.Z)) {
@@ -3749,11 +3757,9 @@ PointedThing Game::updatePointedThing(
 				light_level = node_light;
 		}
 
-		video::SColor c = MapBlock_LightColor(255, light_level, 0);
-		u8 day = c.getRed();
-		u8 night = c.getGreen();
 		u32 daynight_ratio = client->getEnv().getDayNightRatio();
-		finalColorBlend(c, day, night, daynight_ratio);
+		video::SColor c;
+		final_color_blend(&c, light_level, daynight_ratio);
 
 		// Modify final color a bit with time
 		u32 timer = porting::getTimeMs() % 5000;
@@ -3964,7 +3970,7 @@ void Game::handleDigging(GameRunData *runData,
 			const ContentFeatures &features =
 					client->getNodeDefManager()->get(n);
 			client->getParticleManager()->addPunchingParticles(client, smgr,
-					player, nodepos, features.tiles);
+					player, nodepos, n, features);
 		}
 	}
 
@@ -4011,7 +4017,7 @@ void Game::handleDigging(GameRunData *runData,
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
 			client->getParticleManager()->addDiggingParticles(client, smgr,
-					player, nodepos, features.tiles);
+					player, nodepos, wasnode, features);
 		}
 
 		runData->dig_time = 0;

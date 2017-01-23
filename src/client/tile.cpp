@@ -378,9 +378,6 @@ public:
 	video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params);
 
-	// Generates an image from a full string like
-	// "stone.png^mineral_coal.png^[crack:1:0".
-	// Shall be called from the main thread.
 	video::IImage* generateImage(const std::string &name);
 
 	video::ITexture* getNormalTexture(const std::string &name);

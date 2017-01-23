@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/clientopcodes.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include "tileanimation.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -896,9 +897,14 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::string texture     = deSerializeLongString(is);
 	bool vertical           = false;
 	bool collision_removal  = false;
+	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
+	u8 glow = 0;
 	try {
 		vertical = readU8(is);
 		collision_removal = readU8(is);
+		animation.deSerialize(is, m_proto_ver);
+		glow = readU8(is);
 	} catch (...) {}
 
 	ClientEvent event;
@@ -912,6 +918,8 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	event.spawn_particle.collision_removal  = collision_removal;
 	event.spawn_particle.vertical           = vertical;
 	event.spawn_particle.texture            = new std::string(texture);
+	event.spawn_particle.animation          = animation;
+	event.spawn_particle.glow               = glow;
 
 	m_client_event_queue.push(event);
 }
@@ -943,12 +951,20 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	bool vertical = false;
 	bool collision_removal = false;
+	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
+	u8 glow = 0;
 	u16 attached_id = 0;
 	try {
 		*pkt >> vertical;
 		*pkt >> collision_removal;
 		*pkt >> attached_id;
 
+		// This is horrible but required (why are there two ways to deserialize pkts?)
+		std::string datastring(pkt->getRemainingString(), pkt->getRemainingBytes());
+		std::istringstream is(datastring, std::ios_base::binary);
+		animation.deSerialize(is, m_proto_ver);
+		glow = readU8(is);
 	} catch (...) {}
 
 	ClientEvent event;
@@ -971,6 +987,8 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 	event.add_particlespawner.vertical           = vertical;
 	event.add_particlespawner.texture            = new std::string(texture);
 	event.add_particlespawner.id                 = id;
+	event.add_particlespawner.animation          = animation;
+	event.add_particlespawner.glow               = glow;
 
 	m_client_event_queue.push(event);
 }

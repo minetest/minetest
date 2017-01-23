@@ -55,6 +55,15 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 	param2 = a_param2;
 }
 
+void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
+{
+	if (f.palette) {
+		*color = (*f.palette)[param2];
+		return;
+	}
+	*color = f.color;
+}
+
 void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f)
 {
 	// If node doesn't contain light data, ignore this
@@ -146,7 +155,8 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodem
 u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type_2 == CPT2_FACEDIR)
+	if (f.param_type_2 == CPT2_FACEDIR ||
+			f.param_type_2 == CPT2_COLORED_FACEDIR)
 		return (getParam2() & 0x1F) % 24;
 	return 0;
 }
@@ -154,7 +164,8 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 u8 MapNode::getWallMounted(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type_2 == CPT2_WALLMOUNTED)
+	if (f.param_type_2 == CPT2_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
 		return getParam2() & 0x07;
 	return 0;
 }
@@ -176,7 +187,7 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
-	if (cpt2 == CPT2_FACEDIR) {
+	if (cpt2 == CPT2_FACEDIR || cpt2 == CPT2_COLORED_FACEDIR) {
 		static const u8 rotate_facedir[24 * 4] = {
 			// Table value = rotated facedir
 			// Columns: 0, 90, 180, 270 degrees rotation around vertical axis
@@ -216,7 +227,8 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 		u8 index = facedir * 4 + rot;
 		param2 &= ~31;
 		param2 |= rotate_facedir[index];
-	} else if (cpt2 == CPT2_WALLMOUNTED) {
+	} else if (cpt2 == CPT2_WALLMOUNTED ||
+			cpt2 == CPT2_COLORED_WALLMOUNTED) {
 		u8 wmountface = (param2 & 7);
 		if (wmountface <= 1)
 			return;

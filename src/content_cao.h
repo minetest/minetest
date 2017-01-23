@@ -102,6 +102,8 @@ private:
 	float m_anim_timer;
 	ItemGroupList m_armor_groups;
 	float m_reset_textures_timer;
+	std::string m_previous_texture_modifier; // stores texture modifier before punch update
+	std::string m_current_texture_modifier;  // last applied texture modifier
 	bool m_visuals_expired;
 	float m_step_distance_counter;
 	u8 m_last_light;
@@ -198,7 +200,7 @@ public:
 
 	void updateTexturePos();
 
-	void updateTextures(const std::string &mod);
+	void updateTextures(const std::string mod);
 
 	void updateAnimation();
 

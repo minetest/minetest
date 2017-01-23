@@ -68,7 +68,13 @@ enum ContentParamType2
 	// 2D rotation for things like plants
 	CPT2_DEGROTATE,
 	// Mesh options for plants
-	CPT2_MESHOPTIONS
+	CPT2_MESHOPTIONS,
+	// Index for palette
+	CPT2_COLOR,
+	// 3 bits of palette index, then facedir
+	CPT2_COLORED_FACEDIR,
+	// 5 bits of palette index, then wallmounted
+	CPT2_COLORED_WALLMOUNTED
 };
 
 enum LiquidType
@@ -170,6 +176,11 @@ struct TileDef
 	bool backface_culling; // Takes effect only in special cases
 	bool tileable_horizontal;
 	bool tileable_vertical;
+	//! If true, the tile has its own color.
+	bool has_color;
+	//! The color of the tile.
+	video::SColor color;
+
 	struct TileAnimationParams animation;
 
 	TileDef()
@@ -178,6 +189,8 @@ struct TileDef
 		backface_culling = true;
 		tileable_horizontal = true;
 		tileable_vertical = true;
+		has_color = false;
+		color = video::SColor(0xFFFFFFFF);
 		animation.type = TAT_NONE;
 	}
 
@@ -191,7 +204,7 @@ struct ContentFeatures
 {
 	/*
 		Cached stuff
-	*/
+	 */
 #ifndef SERVER
 	// 0     1     2     3     4     5
 	// up    down  right left  back  front
@@ -211,12 +224,19 @@ struct ContentFeatures
 
 	/*
 		Actual data
-	*/
+	 */
+
+	// --- GENERAL PROPERTIES ---
 
 	std::string name; // "" = undefined node
 	ItemGroupList groups; // Same as in itemdef
+	// Type of MapNode::param1
+	ContentParamType param_type;
+	// Type of MapNode::param2
+	ContentParamType2 param_type_2;
 
-	// Visual definition
+	// --- VISUAL PROPERTIES ---
+
 	enum NodeDrawType drawtype;
 	std::string mesh;
 #ifndef SERVER
@@ -226,19 +246,38 @@ struct ContentFeatures
 	float visual_scale; // Misc. scale parameter
 	TileDef tiledef[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
+	// If 255, the node is opaque.
+	// Otherwise it uses texture alpha.
 	u8 alpha;
-
+	// The color of the node.
+	video::SColor color;
+	std::string palette_name;
+	std::vector<video::SColor> *palette;
+	// Used for waving leaves/plants
+	u8 waving;
+	// for NDT_CONNECTED pairing
+	u8 connect_sides;
+	std::vector<std::string> connects_to;
+	std::set<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
+	// Flowing liquid or snow, value = default level
+	u8 leveled;
 
-	// Type of MapNode::param1
-	ContentParamType param_type;
-	// Type of MapNode::param2
-	ContentParamType2 param_type_2;
-	// True for all ground-like things like stone and mud, false for eg. trees
-	bool is_ground_content;
+	// --- LIGHTING-RELATED ---
+
 	bool light_propagates;
 	bool sunlight_propagates;
+	// Amount of light the node emits
+	u8 light_source;
+
+	// --- MAP GENERATION ---
+
+	// True for all ground-like things like stone and mud, false for eg. trees
+	bool is_ground_content;
+
+	// --- INTERACTION PROPERTIES ---
+
 	// This is used for collision detection.
 	// Also for general solidness queries.
 	bool walkable;
@@ -250,12 +289,12 @@ struct ContentFeatures
 	bool climbable;
 	// Player can build on these
 	bool buildable_to;
-	// Liquids flow into and replace node
-	bool floodable;
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
-	// Flowing liquid or snow, value = default level
-	u8 leveled;
+	u32 damage_per_second;
+
+	// --- LIQUID PROPERTIES ---
+
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	enum LiquidType liquid_type;
 	// If the content is liquid, this is the flowing version of the liquid.
@@ -271,29 +310,28 @@ struct ContentFeatures
 	// Number of flowing liquids surrounding source
 	u8 liquid_range;
 	u8 drowning;
-	// Amount of light the node emits
-	u8 light_source;
-	u32 damage_per_second;
+	// Liquids flow into and replace node
+	bool floodable;
+
+	// --- NODEBOXES ---
+
 	NodeBox node_box;
 	NodeBox selection_box;
 	NodeBox collision_box;
-	// Used for waving leaves/plants
-	u8 waving;
+
+	// --- SOUND PROPERTIES ---
+
+	SimpleSoundSpec sound_footstep;
+	SimpleSoundSpec sound_dig;
+	SimpleSoundSpec sound_dug;
+
+	// --- LEGACY ---
+
 	// Compatibility with old maps
 	// Set to true if paramtype used to be 'facedir_simple'
 	bool legacy_facedir_simple;
 	// Set to true if wall_mounted used to be set to true
 	bool legacy_wallmounted;
-	// for NDT_CONNECTED pairing
-	u8 connect_sides;
-
-	// Sound properties
-	SimpleSoundSpec sound_footstep;
-	SimpleSoundSpec sound_dig;
-	SimpleSoundSpec sound_dug;
-
-	std::vector<std::string> connects_to;
-	std::set<content_t> connects_to_ids;
 
 	/*
 		Methods
@@ -306,6 +344,14 @@ struct ContentFeatures
 	void deSerialize(std::istream &is);
 	void serializeOld(std::ostream &os, u16 protocol_version) const;
 	void deSerializeOld(std::istream &is, int version);
+	/*!
+	 * Since vertex alpha is no lnger supported, this method
+	 * adds instructions to the texture names to blend alpha there.
+	 *
+	 * tiledef, tiledef_special and alpha must be initialized
+	 * before calling this.
+	 */
+	void correctAlpha();
 
 	/*
 		Some handy methods
@@ -321,7 +367,7 @@ struct ContentFeatures
 #ifndef SERVER
 	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 alpha, u8 material_type);
+		u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif

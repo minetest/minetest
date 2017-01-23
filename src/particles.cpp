@@ -54,7 +54,10 @@ Particle::Particle(
 	bool vertical,
 	video::ITexture *texture,
 	v2f texpos,
-	v2f texsize
+	v2f texsize,
+	const struct TileAnimationParams &anim,
+	u8 glow,
+	video::SColor color
 ):
 	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
 {
@@ -71,7 +74,13 @@ Particle::Particle(
 	m_material.setTexture(0, texture);
 	m_texpos = texpos;
 	m_texsize = texsize;
+	m_animation = anim;
+	m_animation_frame = 0;
+	m_animation_time = 0.0;
 
+	// Color
+	m_base_color = color;
+	m_color = color;
 
 	// Particle related
 	m_pos = pos;
@@ -84,6 +93,7 @@ Particle::Particle(
 	m_collisiondetection = collisiondetection;
 	m_collision_removal = collision_removal;
 	m_vertical = vertical;
+	m_glow = glow;
 
 	// Irrlicht stuff
 	m_collisionbox = aabb3f
@@ -142,6 +152,18 @@ void Particle::step(float dtime)
 		m_velocity += m_acceleration * dtime;
 		m_pos += m_velocity * dtime;
 	}
+	if (m_animation.type != TAT_NONE) {
+		m_animation_time += dtime;
+		int frame_length_i, frame_count;
+		m_animation.determineParams(
+				m_material.getTexture(0)->getSize(),
+				&frame_count, &frame_length_i, NULL);
+		float frame_length = frame_length_i / 1000.0;
+		while (m_animation_time > frame_length) {
+			m_animation_frame++;
+			m_animation_time -= frame_length;
+		}
+	}
 
 	// Update lighting
 	updateLight();
@@ -166,25 +188,44 @@ void Particle::updateLight()
 	else
 		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	m_light = decode_light(light);
+	u8 m_light = decode_light(light + m_glow);
+	m_color.set(255,
+		m_light * m_base_color.getRed() / 255,
+		m_light * m_base_color.getGreen() / 255,
+		m_light * m_base_color.getBlue() / 255);
 }
 
 void Particle::updateVertices()
 {
-	video::SColor c(255, m_light, m_light, m_light);
-	f32 tx0 = m_texpos.X;
-	f32 tx1 = m_texpos.X + m_texsize.X;
-	f32 ty0 = m_texpos.Y;
-	f32 ty1 = m_texpos.Y + m_texsize.Y;
+	f32 tx0, tx1, ty0, ty1;
 
-	m_vertices[0] = video::S3DVertex(-m_size/2,-m_size/2,0, 0,0,0,
-			c, tx0, ty1);
-	m_vertices[1] = video::S3DVertex(m_size/2,-m_size/2,0, 0,0,0,
-			c, tx1, ty1);
-	m_vertices[2] = video::S3DVertex(m_size/2,m_size/2,0, 0,0,0,
-			c, tx1, ty0);
-	m_vertices[3] = video::S3DVertex(-m_size/2,m_size/2,0, 0,0,0,
-			c, tx0, ty0);
+	if (m_animation.type != TAT_NONE) {
+		const v2u32 texsize = m_material.getTexture(0)->getSize();
+		v2f texcoord, framesize_f;
+		v2u32 framesize;
+		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
+		m_animation.determineParams(texsize, NULL, NULL, &framesize);
+		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
+
+		tx0 = m_texpos.X + texcoord.X;
+		tx1 = m_texpos.X + texcoord.X + framesize_f.X * m_texsize.X;
+		ty0 = m_texpos.Y + texcoord.Y;
+		ty1 = m_texpos.Y + texcoord.Y + framesize_f.Y * m_texsize.Y;
+	} else {
+		tx0 = m_texpos.X;
+		tx1 = m_texpos.X + m_texsize.X;
+		ty0 = m_texpos.Y;
+		ty1 = m_texpos.Y + m_texsize.Y;
+	}
+
+	m_vertices[0] = video::S3DVertex(-m_size / 2, -m_size / 2,
+		0, 0, 0, 0, m_color, tx0, ty1);
+	m_vertices[1] = video::S3DVertex(m_size / 2, -m_size / 2,
+		0, 0, 0, 0, m_color, tx1, ty1);
+	m_vertices[2] = video::S3DVertex(m_size / 2, m_size / 2,
+		0, 0, 0, 0, m_color, tx1, ty0);
+	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
+		0, 0, 0, 0, m_color, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
 	for(u16 i=0; i<4; i++)
@@ -210,7 +251,9 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
 	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
-	video::ITexture *texture, u32 id, ParticleManager *p_manager) :
+	video::ITexture *texture, u32 id, const struct TileAnimationParams &anim,
+	u8 glow,
+	ParticleManager *p_manager) :
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
@@ -234,6 +277,8 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_vertical = vertical;
 	m_texture = texture;
 	m_time = 0;
+	m_animation = anim;
+	m_glow = glow;
 
 	for (u16 i = 0; i<=m_amount; i++)
 	{
@@ -309,7 +354,9 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						m_vertical,
 						m_texture,
 						v2f(0.0, 0.0),
-						v2f(1.0, 1.0));
+						v2f(1.0, 1.0),
+						m_animation,
+						m_glow);
 					m_particlemanager->addParticle(toadd);
 				}
 				i = m_spawntimes.erase(i);
@@ -363,7 +410,9 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					m_vertical,
 					m_texture,
 					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					v2f(1.0, 1.0),
+					m_animation,
+					m_glow);
 				m_particlemanager->addParticle(toadd);
 			}
 		}
@@ -494,6 +543,8 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->add_particlespawner.vertical,
 					texture,
 					event->add_particlespawner.id,
+					event->add_particlespawner.animation,
+					event->add_particlespawner.glow,
 					this);
 
 			/* delete allocated content of event */
@@ -529,13 +580,16 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 					event->spawn_particle.vertical,
 					texture,
 					v2f(0.0, 0.0),
-					v2f(1.0, 1.0));
+					v2f(1.0, 1.0),
+					event->spawn_particle.animation,
+					event->spawn_particle.glow);
 
 			addParticle(toadd);
 
 			delete event->spawn_particle.pos;
 			delete event->spawn_particle.vel;
 			delete event->spawn_particle.acc;
+			delete event->spawn_particle.texture;
 
 			break;
 		}
@@ -543,33 +597,39 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 	}
 }
 
-void ParticleManager::addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[])
+void ParticleManager::addDiggingParticles(IGameDef* gamedef,
+	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
+	const MapNode &n, const ContentFeatures &f)
 {
 	for (u16 j = 0; j < 32; j++) // set the amount of particles here
 	{
-		addNodeParticle(gamedef, smgr, player, pos, tiles);
+		addNodeParticle(gamedef, smgr, player, pos, n, f);
 	}
 }
 
-void ParticleManager::addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[])
+void ParticleManager::addPunchingParticles(IGameDef* gamedef,
+	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
+	const MapNode &n, const ContentFeatures &f)
 {
-	addNodeParticle(gamedef, smgr, player, pos, tiles);
+	addNodeParticle(gamedef, smgr, player, pos, n, f);
 }
 
-void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[])
+void ParticleManager::addNodeParticle(IGameDef* gamedef,
+	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
+	const MapNode &n, const ContentFeatures &f)
 {
 	// Texture
 	u8 texid = myrand_range(0, 5);
+	const TileSpec &tile = f.tiles[texid];
 	video::ITexture *texture;
+	struct TileAnimationParams anim;
+	anim.type = TAT_NONE;
 
 	// Only use first frame of animated texture
-	if (tiles[texid].material_flags & MATERIAL_FLAG_ANIMATION)
-		texture = tiles[texid].frames[0].texture;
+	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
+		texture = tile.frames[0].texture;
 	else
-		texture = tiles[texid].texture;
+		texture = tile.texture;
 
 	float size = rand() % 64 / 512.;
 	float visual_size = BS * size;
@@ -590,6 +650,12 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		(f32) pos.Z + rand() %100 /200. - 0.25
 	);
 
+	video::SColor color;
+	if (tile.has_color)
+		color = tile.color;
+	else
+		n.getColor(f, &color);
+
 	Particle* toadd = new Particle(
 		gamedef,
 		smgr,
@@ -605,7 +671,10 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef, scene::ISceneManager* s
 		false,
 		texture,
 		texpos,
-		texsize);
+		texsize,
+		anim,
+		0,
+		color);
 
 	addParticle(toadd);
 }

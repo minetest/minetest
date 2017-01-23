@@ -502,7 +502,7 @@
 
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
-#    type: int min: 15 max: 160
+#    type: int min: 7 max: 160
 # zoom_fov = 15
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
@@ -840,6 +840,10 @@
 #    Setting it to -1 disables the feature.
 #    type: int
 # item_entity_ttl = 900
+
+#    If enabled, show the server status message on player connection.
+#    type: bool
+# show_statusline_on_connect = true
 
 #    Enable players getting damage and dying.
 #    type: bool
@@ -1558,7 +1562,7 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#    
+#
 #    type: string
 # profiler.report_path = ""
 

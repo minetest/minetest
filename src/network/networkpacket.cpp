@@ -63,7 +63,7 @@ void NetworkPacket::putRawPacket(u8 *data, u32 datasize, u16 peer_id)
 	m_data = std::vector<u8>(&data[2], &data[2 + m_datasize]);
 }
 
-char* NetworkPacket::getString(u32 from_offset)
+const char* NetworkPacket::getString(u32 from_offset)
 {
 	checkReadOffset(from_offset, 0);
 
