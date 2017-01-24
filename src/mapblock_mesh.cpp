@@ -236,7 +236,7 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	for (u32 i = 0; i < 8; i++)
 	{
-		const MapNode &n = data->m_vmanip.getNodeRefUnsafeCheckFlags(p - dirs8[i]);
+		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p - dirs8[i]);
 
 		// if it's CONTENT_IGNORE we can't do any light calculations
 		if (n.getContent() == CONTENT_IGNORE) {

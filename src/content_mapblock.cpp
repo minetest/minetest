@@ -30,6 +30,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "noise.h"
 
+// Distance of light extrapolation (for oversized nodes)
+// After this distance, it gives up and considers light level constant
+#define SMOOTH_LIGHTING_OVERSIZE 1.0
+
+struct LightFrame
+{
+	f32 lightsA[8];
+	f32 lightsB[8];
+	u8 light_source;
+};
+
+static const v3s16 light_dirs[8] = {
+	v3s16(-1, -1, -1),
+	v3s16(-1, -1,  1),
+	v3s16(-1,  1, -1),
+	v3s16(-1,  1,  1),
+	v3s16( 1, -1, -1),
+	v3s16( 1, -1,  1),
+	v3s16( 1,  1, -1),
+	v3s16( 1,  1,  1),
+};
 
 // Create a cuboid.
 //  collector     - the MeshCollector for the resulting polygons
@@ -181,6 +202,150 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 }
 
 // Create a cuboid.
+//  collector - the MeshCollector for the resulting polygons
+//  box       - the position and size of the box
+//  tiles     - the tiles (materials) to use (for all 6 faces)
+//  tilecount - number of entries in tiles, 1<=tilecount<=6
+//  lights    - vertex light levels. The order is the same as in light_dirs
+//  txc       - texture coordinates - this is a list of texture coordinates
+//              for the opposite corners of each face - therefore, there
+//              should be (2+2)*6=24 values in the list. Alternatively, pass
+//              NULL to use the entire texture for each face. The order of
+//              the faces in the list is up-down-right-left-back-front
+//              (compatible with ContentFeatures). If you specified 0,0,1,1
+//              for each face, that would be the same as passing NULL.
+//  light_source - node light emission
+static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
+	TileSpec *tiles, int tilecount, const u16 *lights , const f32 *txc,
+	const u8 light_source)
+{
+	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
+
+	v3f min = box.MinEdge;
+	v3f max = box.MaxEdge;
+
+	if (txc == NULL) {
+		static const f32 txc_default[24] = {
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1,
+			0,0,1,1
+		};
+		txc = txc_default;
+	}
+	static const u8 light_indices[24] = {
+		3, 7, 6, 2,
+		0, 4, 5, 1,
+		6, 7, 5, 4,
+		3, 2, 0, 1,
+		7, 3, 1, 5,
+		2, 6, 4, 0
+	};
+	video::S3DVertex vertices[24] = {
+		// up
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, video::SColor(), txc[0], txc[1]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, video::SColor(), txc[2], txc[1]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, video::SColor(), txc[2], txc[3]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, video::SColor(), txc[0], txc[3]),
+		// down
+		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, video::SColor(), txc[4], txc[5]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, video::SColor(), txc[6], txc[5]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, video::SColor(), txc[6], txc[7]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, video::SColor(), txc[4], txc[7]),
+		// right
+		video::S3DVertex(max.X, max.Y, min.Z, 1, 0, 0, video::SColor(), txc[ 8], txc[9]),
+		video::S3DVertex(max.X, max.Y, max.Z, 1, 0, 0, video::SColor(), txc[10], txc[9]),
+		video::S3DVertex(max.X, min.Y, max.Z, 1, 0, 0, video::SColor(), txc[10], txc[11]),
+		video::S3DVertex(max.X, min.Y, min.Z, 1, 0, 0, video::SColor(), txc[ 8], txc[11]),
+		// left
+		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, video::SColor(), txc[12], txc[13]),
+		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, video::SColor(), txc[14], txc[13]),
+		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, video::SColor(), txc[14], txc[15]),
+		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, video::SColor(), txc[12], txc[15]),
+		// back
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, video::SColor(), txc[16], txc[17]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, video::SColor(), txc[18], txc[17]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, video::SColor(), txc[18], txc[19]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, video::SColor(), txc[16], txc[19]),
+		// front
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, video::SColor(), txc[20], txc[21]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, video::SColor(), txc[22], txc[21]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, video::SColor(), txc[22], txc[23]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, video::SColor(), txc[20], txc[23]),
+	};
+
+	for(int i = 0; i < 6; i++) {
+		switch (tiles[MYMIN(i, tilecount-1)].rotation) {
+		case 0:
+			break;
+		case 1: //R90
+			for (int x = 0; x < 4; x++)
+				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+			break;
+		case 2: //R180
+			for (int x = 0; x < 4; x++)
+				vertices[i*4+x].TCoords.rotateBy(180,irr::core::vector2df(0, 0));
+			break;
+		case 3: //R270
+			for (int x = 0; x < 4; x++)
+				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+			break;
+		case 4: //FXR90
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
+				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+			}
+			break;
+		case 5: //FXR270
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
+				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+			}
+			break;
+		case 6: //FYR90
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
+				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+			}
+			break;
+		case 7: //FYR270
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
+				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
+			}
+			break;
+		case 8: //FX
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
+			}
+			break;
+		case 9: //FY
+			for (int x = 0; x < 4; x++) {
+				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	u16 indices[] = {0,1,2,2,3,0};
+	for (s32 j = 0; j < 24; ++j) {
+		int tileindex = MYMIN(j / 4, tilecount - 1);
+		vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
+			tiles[tileindex].color, light_source);
+		if (!light_source)
+			applyFacesShading(vertices[j].Color, vertices[j].Normal);
+	}
+	// Add to mesh collector
+	for (s32 k = 0; k < 6; ++k) {
+		int tileindex = MYMIN(k, tilecount - 1);
+		collector->append(tiles[tileindex], vertices + 4 * k, 4, indices, 6);
+	}
+}
+
+// Create a cuboid.
 //  collector     - the MeshCollector for the resulting polygons
 //  box           - the position and size of the box
 //  tiles         - the tiles (materials) to use (for all 6 faces)
@@ -205,12 +370,138 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box, TileSpec *tiles,
 	makeCuboid(collector, box, tiles, tilecount, color, txc, light_source);
 }
 
+// Gets the base lighting values for a node
+//  frame  - resulting (opaque) data
+//  p      - node position (absolute)
+//  data   - ...
+//  light_source - node light emission level
+static void getSmoothLightFrame(LightFrame *frame, const v3s16 &p, MeshMakeData *data, u8 light_source)
+{
+	for (int k = 0; k < 8; ++k) {
+		u16 light = getSmoothLight(p, light_dirs[k], data);
+		frame->lightsA[k] = light & 0xff;
+		frame->lightsB[k] = light >> 8;
+	}
+	frame->light_source = light_source;
+}
+
+// Calculates vertex light level
+//  frame        - light values from getSmoothLightFrame()
+//  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
+static u16 blendLight(const LightFrame &frame, const core::vector3df& vertex_pos)
+{
+	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
+	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
+	f32 z = core::clamp(vertex_pos.Z / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
+	f32 lightA = 0.0;
+	f32 lightB = 0.0;
+	for (int k = 0; k < 8; ++k) {
+		f32 dx = (k & 4) ? x : 1 - x;
+		f32 dy = (k & 2) ? y : 1 - y;
+		f32 dz = (k & 1) ? z : 1 - z;
+		lightA += dx * dy * dz * frame.lightsA[k];
+		lightB += dx * dy * dz * frame.lightsB[k];
+	}
+	return
+		core::clamp(core::round32(lightA), 0, 255) |
+		core::clamp(core::round32(lightB), 0, 255) << 8;
+}
+
+// Calculates vertex color to be used in mapblock mesh
+//  frame        - light values from getSmoothLightFrame()
+//  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
+//  tile_color   - node's tile color
+static video::SColor blendLight(const LightFrame &frame,
+	const core::vector3df& vertex_pos, video::SColor tile_color)
+{
+	u16 light = blendLight(frame, vertex_pos);
+	return encode_light_and_color(light, tile_color, frame.light_source);
+}
+
+static video::SColor blendLight(const LightFrame &frame,
+	const core::vector3df& vertex_pos, const core::vector3df& vertex_normal,
+	video::SColor tile_color)
+{
+	video::SColor color = blendLight(frame, vertex_pos, tile_color);
+	if (!frame.light_source)
+			applyFacesShading(color, vertex_normal);
+	return color;
+}
+
 static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
 		MeshMakeData *data, MapNode n, int v, int *neighbors)
 {
 	MapNode n2 = data->m_vmanip.getNodeNoEx(p);
 	if (nodedef->nodeboxConnects(n, n2, v))
 		*neighbors |= v;
+}
+
+static void makeAutoLightedCuboid(MeshCollector *collector, MeshMakeData *data,
+	const v3f &pos, aabb3f box, TileSpec &tile,
+	/* pre-computed, for non-smooth lighting only */ const video::SColor color,
+	/* for smooth lighting only */ const LightFrame &frame)
+{
+	f32 dx1 = box.MinEdge.X;
+	f32 dy1 = box.MinEdge.Y;
+	f32 dz1 = box.MinEdge.Z;
+	f32 dx2 = box.MaxEdge.X;
+	f32 dy2 = box.MaxEdge.Y;
+	f32 dz2 = box.MaxEdge.Z;
+	box.MinEdge += pos;
+	box.MaxEdge += pos;
+	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
+	f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
+	f32 tz1 = (box.MinEdge.Z / BS) + 0.5;
+	f32 tx2 = (box.MaxEdge.X / BS) + 0.5;
+	f32 ty2 = (box.MaxEdge.Y / BS) + 0.5;
+	f32 tz2 = (box.MaxEdge.Z / BS) + 0.5;
+	f32 txc[24] = {
+		  tx1, 1-tz2,   tx2, 1-tz1, // up
+		  tx1,   tz1,   tx2,   tz2, // down
+		  tz1, 1-ty2,   tz2, 1-ty1, // right
+		1-tz2, 1-ty2, 1-tz1, 1-ty1, // left
+		1-tx2, 1-ty2, 1-tx1, 1-ty1, // back
+		  tx1, 1-ty2,   tx2, 1-ty1, // front
+	};
+	if (data->m_smooth_lighting) {
+		u16 lights[8];
+		for (int j = 0; j < 8; ++j) {
+			f32 x = (j & 4) ? dx2 : dx1;
+			f32 y = (j & 2) ? dy2 : dy1;
+			f32 z = (j & 1) ? dz2 : dz1;
+			lights[j] = blendLight(frame, core::vector3df(x, y, z));
+		}
+		makeSmoothLightedCuboid(collector, box, &tile, 1, lights, txc, frame.light_source);
+	} else {
+		makeCuboid(collector, box, &tile, 1, color, txc, frame.light_source);
+	}
+}
+
+static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data,
+	const v3f &pos, aabb3f box, TileSpec &tile, f32 *txc,
+	/* pre-computed, for non-smooth lighting only */ const video::SColor color,
+	/* for smooth lighting only */ const LightFrame &frame)
+{
+	f32 dx1 = box.MinEdge.X;
+	f32 dy1 = box.MinEdge.Y;
+	f32 dz1 = box.MinEdge.Z;
+	f32 dx2 = box.MaxEdge.X;
+	f32 dy2 = box.MaxEdge.Y;
+	f32 dz2 = box.MaxEdge.Z;
+	box.MinEdge += pos;
+	box.MaxEdge += pos;
+	if (data->m_smooth_lighting) {
+		u16 lights[8];
+		for (int j = 0; j < 8; ++j) {
+			f32 x = (j & 4) ? dx2 : dx1;
+			f32 y = (j & 2) ? dy2 : dy1;
+			f32 z = (j & 1) ? dz2 : dz1;
+			lights[j] = blendLight(frame, core::vector3df(x, y, z));
+		}
+		makeSmoothLightedCuboid(collector, box, &tile, 1, lights, txc, frame.light_source);
+	} else {
+		makeCuboid(collector, box, &tile, 1, color, txc, frame.light_source);
+	}
 }
 
 // For use in mapblock_mesh_generate_special
@@ -251,7 +542,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	/*
 		Some settings
 	*/
-	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache");
+	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache") &&
+		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
 
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
 
@@ -268,12 +560,19 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		if(f.solidness != 0)
 			continue;
 
-		switch(f.drawtype){
+		if (f.drawtype == NDT_AIRLIKE)
+			continue;
+
+		LightFrame frame;
+		if (data->m_smooth_lighting)
+			getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
+		else
+			frame.light_source = f.light_source;
+
+		switch(f.drawtype) {
 		default:
 			infostream << "Got " << f.drawtype << std::endl;
 			FATAL_ERROR("Unknown drawtype");
-			break;
-		case NDT_AIRLIKE:
 			break;
 		case NDT_LIQUID:
 		{
@@ -383,8 +682,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					vertices[1].Pos.Y = -0.5 * BS;
 				}
 
-				for(s32 j=0; j<4; j++)
-				{
+				for (s32 j = 0; j < 4; j++) {
 					if(dir == v3s16(0,0,1))
 						vertices[j].Pos.rotateXZBy(0);
 					if(dir == v3s16(0,0,-1))
@@ -401,6 +699,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.Z *= 0.98;
 					}*/
 
+					if (data->m_smooth_lighting)
+						vertices[j].Color = blendLight(frame, vertices[j].Pos, current_tile->color);
 					vertices[j].Pos += intToFloat(p, BS);
 				}
 
@@ -423,10 +723,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c1, 0,0),
 			};
 
-			v3f offset(p.X * BS, (p.Y + 0.5) * BS, p.Z * BS);
-			for(s32 i=0; i<4; i++)
-			{
-				vertices[i].Pos += offset;
+			for (s32 i = 0; i < 4; i++) {
+				vertices[i].Pos.Y += 0.5 * BS;
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
+				vertices[i].Pos += intToFloat(p, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
@@ -704,6 +1005,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.Z *= 0.98;
 					}*/
 
+					if (data->m_smooth_lighting)
+						vertices[j].Color = blendLight(frame, vertices[j].Pos, current_tile->color);
 					vertices[j].Pos += intToFloat(p, BS);
 				}
 
@@ -737,6 +1040,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -828,7 +1133,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(90);
 
-				for(u16 i=0; i<4; i++){
+				for (u16 i = 0; i < 4; i++) {
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, vertices[i].Normal, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -860,9 +1167,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			video::SColor tile0color = encode_light_and_color(l,
 				tiles[0].color, f.light_source);
-			video::SColor tile0colors[6];
-			for (i = 0; i < 6; i++)
-				tile0colors[i] = tile0color;
 
 			TileSpec glass_tiles[6];
 			video::SColor glasscolor[6];
@@ -995,7 +1299,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				0,1, 8,  0,4,16,  3,4,17,  3,1, 9
 			};
 
-			f32 tx1, ty1, tz1, tx2, ty2, tz2;
 			aabb3f box;
 
 			for(i = 0; i < 12; i++)
@@ -1008,24 +1311,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if (edge_invisible)
 					continue;
 				box = frame_edges[i];
-				box.MinEdge += pos;
-				box.MaxEdge += pos;
-				tx1 = (box.MinEdge.X / BS) + 0.5;
-				ty1 = (box.MinEdge.Y / BS) + 0.5;
-				tz1 = (box.MinEdge.Z / BS) + 0.5;
-				tx2 = (box.MaxEdge.X / BS) + 0.5;
-				ty2 = (box.MaxEdge.Y / BS) + 0.5;
-				tz2 = (box.MaxEdge.Z / BS) + 0.5;
-				f32 txc1[24] = {
-					tx1,   1-tz2,   tx2, 1-tz1,
-					tx1,     tz1,   tx2,   tz2,
-					tz1,   1-ty2,   tz2, 1-ty1,
-					1-tz2, 1-ty2, 1-tz1, 1-ty1,
-					1-tx2, 1-ty2, 1-tx1, 1-ty1,
-					tx1,   1-ty2,   tx2, 1-ty1,
-				};
-				makeCuboid(&collector, box, &tiles[0], 1, tile0colors,
-					txc1, f.light_source);
+				makeAutoLightedCuboid(&collector, data, pos, box, tiles[0], tile0color, frame);
 			}
 
 			for(i = 0; i < 6; i++)
@@ -1033,37 +1319,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if (!visible_faces[i])
 					continue;
 				box = glass_faces[i];
-				box.MinEdge += pos;
-				box.MaxEdge += pos;
-				tx1 = (box.MinEdge.X / BS) + 0.5;
-				ty1 = (box.MinEdge.Y / BS) + 0.5;
-				tz1 = (box.MinEdge.Z / BS) + 0.5;
-				tx2 = (box.MaxEdge.X / BS) + 0.5;
-				ty2 = (box.MaxEdge.Y / BS) + 0.5;
-				tz2 = (box.MaxEdge.Z / BS) + 0.5;
-				f32 txc2[24] = {
-					tx1,   1-tz2,   tx2, 1-tz1,
-					tx1,     tz1,   tx2,   tz2,
-					tz1,   1-ty2,   tz2, 1-ty1,
-					1-tz2, 1-ty2, 1-tz1, 1-ty1,
-					1-tx2, 1-ty2, 1-tx1, 1-ty1,
-					tx1,   1-ty2,   tx2, 1-ty1,
-				};
-				makeCuboid(&collector, box, &glass_tiles[i], 1, glasscolor,
-					txc2, f.light_source);
+				makeAutoLightedCuboid(&collector, data, pos, box, glass_tiles[i], glasscolor[i], frame);
 			}
 
 			if (param2 > 0 && f.special_tiles[0].texture) {
 				// Interior volume level is in range 0 .. 63,
 				// convert it to -0.5 .. 0.5
 				float vlev = (((float)param2 / 63.0 ) * 2.0 - 1.0);
-				TileSpec tile=getSpecialTile(f, n, 0);
+				TileSpec tile = getSpecialTile(f, n, 0);
 				video::SColor special_color = encode_light_and_color(l,
 					tile.color, f.light_source);
-				TileSpec interior_tiles[6];
-				for (i = 0; i < 6; i++)
-					interior_tiles[i] = tile;
-
 				float offset = 0.003;
 				box = aabb3f(visible_faces[3] ? -b : -a + offset,
 							 visible_faces[1] ? -b : -a + offset,
@@ -1071,24 +1336,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							 visible_faces[2] ? b : a - offset,
 							 visible_faces[0] ? b * vlev : a * vlev - offset,
 							 visible_faces[4] ? b : a - offset);
-				box.MinEdge += pos;
-				box.MaxEdge += pos;
-				tx1 = (box.MinEdge.X / BS) + 0.5;
-				ty1 = (box.MinEdge.Y / BS) + 0.5;
-				tz1 = (box.MinEdge.Z / BS) + 0.5;
-				tx2 = (box.MaxEdge.X / BS) + 0.5;
-				ty2 = (box.MaxEdge.Y / BS) + 0.5;
-				tz2 = (box.MaxEdge.Z / BS) + 0.5;
-				f32 txc3[24] = {
-					tx1,   1-tz2,   tx2, 1-tz1,
-					tx1,     tz1,   tx2,   tz2,
-					tz1,   1-ty2,   tz2, 1-ty1,
-					1-tz2, 1-ty2, 1-tz1, 1-ty1,
-					1-tx2, 1-ty2, 1-tx1, 1-ty1,
-					tx1,   1-ty2,   tx2, 1-ty1,
-				};
-				makeCuboid(&collector, box, interior_tiles, 6, special_color,
-					txc3, f.light_source);
+				makeAutoLightedCuboid(&collector, data, pos, box, tile, special_color, frame);
 			}
 		break;}
 		case NDT_ALLFACES:
@@ -1101,10 +1349,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			v3f pos = intToFloat(p, BS);
 			aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
-			box.MinEdge += pos;
-			box.MaxEdge += pos;
-			makeCuboid(&collector, box, &tile_leaves, 1, c, NULL,
-				f.light_source);
+			makeAutoLightedCuboid(&collector, data, pos, box, tile_leaves, c, frame);
 		break;}
 		case NDT_ALLFACES_OPTIONAL:
 			// This is always pre-converted to something else
@@ -1144,7 +1389,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
-			for(s32 i=0; i<4; i++)
+			for (s32 i = 0; i < 4; i++)
 			{
 				if(dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
@@ -1159,6 +1404,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1189,7 +1436,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
 
-			for(s32 i=0; i<4; i++)
+			for (s32 i = 0; i < 4; i++)
 			{
 				if(dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
@@ -1204,6 +1451,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXYBy(90);
 
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1355,6 +1604,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for (int i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos.Y += BS/2 * (f.visual_scale - 1);
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 					// move to a random spot to avoid moire
 					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
@@ -1507,6 +1758,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				for (int i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -1537,8 +1790,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			// The post - always present
 			aabb3f post(-post_rad,-BS/2,-post_rad,post_rad,BS/2,post_rad);
-			post.MinEdge += pos;
-			post.MaxEdge += pos;
 			f32 postuv[24]={
 					6/16.,6/16.,10/16.,10/16.,
 					6/16.,6/16.,10/16.,10/16.,
@@ -1546,8 +1797,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					4/16.,0,8/16.,1,
 					8/16.,0,12/16.,1,
 					12/16.,0,16/16.,1};
-			makeCuboid(&collector, post, &tile_rot, 1, c, postuv,
-				f.light_source);
+			makeAutoLightedCuboidEx(&collector, data, pos, post, tile_rot, postuv, c, frame);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -1558,8 +1808,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				aabb3f bar(-bar_len+BS/2,-bar_rad+BS/4,-bar_rad,
 						bar_len+BS/2,bar_rad+BS/4,bar_rad);
-				bar.MinEdge += pos;
-				bar.MaxEdge += pos;
 				f32 xrailuv[24]={
 					0/16.,2/16.,16/16.,4/16.,
 					0/16.,4/16.,16/16.,6/16.,
@@ -1567,12 +1815,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					10/16.,10/16.,12/16.,12/16.,
 					0/16.,8/16.,16/16.,10/16.,
 					0/16.,14/16.,16/16.,16/16.};
-				makeCuboid(&collector, bar, &tile_nocrack, 1,
-						c, xrailuv, f.light_source);
+				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeCuboid(&collector, bar, &tile_nocrack, 1,
-						c, xrailuv, f.light_source);
+				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -1584,8 +1830,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				aabb3f bar(-bar_rad,-bar_rad+BS/4,-bar_len+BS/2,
 						bar_rad,bar_rad+BS/4,bar_len+BS/2);
-				bar.MinEdge += pos;
-				bar.MaxEdge += pos;
 				f32 zrailuv[24]={
 					3/16.,1/16.,5/16.,5/16., // cannot rotate; stretch
 					4/16.,1/16.,6/16.,5/16., // for wood texture instead
@@ -1593,12 +1837,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					0/16.,6/16.,16/16.,8/16.,
 					6/16.,6/16.,8/16.,8/16.,
 					10/16.,10/16.,12/16.,12/16.};
-				makeCuboid(&collector, bar, &tile_nocrack, 1,
-						c, zrailuv, f.light_source);
+				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeCuboid(&collector, bar, &tile_nocrack, 1,
-						c, zrailuv, f.light_source);
+				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
 			}
 		break;}
 		case NDT_RAILLIKE:
@@ -1729,6 +1971,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				if(angle != 0)
 					vertices[i].Pos.rotateXZBy(angle);
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1746,14 +1990,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, -1)
 			};
 
-			u16 l = getInteriorLight(n, 1, nodedef);
 			TileSpec tiles[6];
 			video::SColor colors[6];
-			for(int j = 0; j < 6; j++) {
+			for (int j = 0; j < 6; j++) {
 				// Handles facedir rotation for textures
 				tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
-				colors[j]= encode_light_and_color(l, tiles[j].color,
-					f.light_source);
+			}
+			if (!data->m_smooth_lighting) {
+				u16 l = getInteriorLight(n, 1, nodedef);
+				for (int j = 0; j < 6; j++)
+					colors[j] = encode_light_and_color(l, tiles[j].color, f.light_source);
 			}
 
 			v3f pos = intToFloat(p, BS);
@@ -1790,33 +2036,27 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			std::vector<aabb3f> boxes;
 			n.getNodeBoxes(nodedef, &boxes, neighbors);
-			for(std::vector<aabb3f>::iterator
+			for (std::vector<aabb3f>::iterator
 					i = boxes.begin();
-					i != boxes.end(); ++i)
-			{
+					i != boxes.end(); ++i) {
 				aabb3f box = *i;
+
+				f32 dx1 = box.MinEdge.X;
+				f32 dy1 = box.MinEdge.Y;
+				f32 dz1 = box.MinEdge.Z;
+				f32 dx2 = box.MaxEdge.X;
+				f32 dy2 = box.MaxEdge.Y;
+				f32 dz2 = box.MaxEdge.Z;
+
 				box.MinEdge += pos;
 				box.MaxEdge += pos;
 
-				f32 temp;
 				if (box.MinEdge.X > box.MaxEdge.X)
-				{
-					temp=box.MinEdge.X;
-					box.MinEdge.X=box.MaxEdge.X;
-					box.MaxEdge.X=temp;
-				}
+					std::swap(box.MinEdge.X, box.MaxEdge.X);
 				if (box.MinEdge.Y > box.MaxEdge.Y)
-				{
-					temp=box.MinEdge.Y;
-					box.MinEdge.Y=box.MaxEdge.Y;
-					box.MaxEdge.Y=temp;
-				}
+					std::swap(box.MinEdge.Y, box.MaxEdge.Y);
 				if (box.MinEdge.Z > box.MaxEdge.Z)
-				{
-					temp=box.MinEdge.Z;
-					box.MinEdge.Z=box.MaxEdge.Z;
-					box.MaxEdge.Z=temp;
-				}
+					std::swap(box.MinEdge.Z, box.MaxEdge.Z);
 
 				//
 				// Compute texture coords
@@ -1840,7 +2080,18 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					// front
 					tx1, 1-ty2, tx2, 1-ty1,
 				};
-				makeCuboid(&collector, box, tiles, 6, colors, txc, f.light_source);
+				if (data->m_smooth_lighting) {
+					u16 lights[8];
+					for (int j = 0; j < 8; ++j) {
+						f32 x = (j & 4) ? dx2 : dx1;
+						f32 y = (j & 2) ? dy2 : dy1;
+						f32 z = (j & 1) ? dz2 : dz1;
+						lights[j] = blendLight(frame, core::vector3df(x, y, z));
+					}
+					makeSmoothLightedCuboid(&collector, box, tiles, 6, lights, txc, f.light_source);
+				} else {
+					makeCuboid(&collector, box, tiles, 6, colors, txc, f.light_source);
+				}
 			}
 		break;}
 		case NDT_MESH:
@@ -1862,9 +2113,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 			}
 
-			if (f.mesh_ptr[facedir]) {
+			if (!data->m_smooth_lighting && f.mesh_ptr[facedir]) {
 				// use cached meshes
-				for(u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
 					const TileSpec &tile = getNodeTileN(n, p, j, data);
 					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
 					collector.append(tile, (video::S3DVertex *)
@@ -1879,14 +2130,25 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
-				for(u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
 					const TileSpec &tile = getNodeTileN(n, p, j, data);
 					scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-					collector.append(tile, (video::S3DVertex *)
-						buf->getVertices(), buf->getVertexCount(),
-						buf->getIndices(), buf->getIndexCount(), pos,
-						encode_light_and_color(l, tile.color, f.light_source),
-						f.light_source);
+					video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+					u32 vertex_count = buf->getVertexCount();
+					if (data->m_smooth_lighting) {
+						for (u16 m = 0; m < vertex_count; ++m) {
+							video::S3DVertex &vertex = vertices[m];
+							vertex.Color = blendLight(frame, vertex.Pos, vertex.Normal, tile.color);
+							vertex.Pos += pos;
+						}
+						collector.append(tile, vertices, vertex_count,
+							buf->getIndices(), buf->getIndexCount());
+					} else {
+						collector.append(tile, vertices, vertex_count,
+							buf->getIndices(), buf->getIndexCount(), pos,
+							encode_light_and_color(l, tile.color, f.light_source),
+							f.light_source);
+					}
 				}
 				mesh->drop();
 			}
