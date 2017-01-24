@@ -474,7 +474,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	/*
 		Some settings
 	*/
-	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache");
+	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache") &&
+		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
 
 	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
 

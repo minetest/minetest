@@ -269,9 +269,14 @@ void TextureSettings::readSettings()
 	bool enable_shaders            = g_settings->getBool("enable_shaders");
 	bool enable_bumpmapping        = g_settings->getBool("enable_bumpmapping");
 	bool enable_parallax_occlusion = g_settings->getBool("enable_parallax_occlusion");
+	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
 	std::string leaves_style_str   = g_settings->get("leaves_style");
+
+	// Mesh cache is not supported in combination with smooth lighting
+	if (smooth_lighting)
+		enable_mesh_cache = false;
 
 	use_normal_texture = enable_shaders &&
 		(enable_bumpmapping || enable_parallax_occlusion);
