@@ -51,6 +51,7 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	bool collisiondetection, vertical, collision_removal;
 	collisiondetection = vertical = collision_removal = false;
 	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
 
 	std::string texture = "";
 	std::string playername = "";
@@ -155,6 +156,7 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	bool collisiondetection, vertical, collision_removal;
 	     collisiondetection = vertical = collision_removal = false;
 	struct TileAnimationParams animation;
+	animation.type = TAT_NONE;
 	ServerActiveObject *attached = NULL;
 	std::string texture = "";
 	std::string playername = "";
