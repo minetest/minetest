@@ -294,7 +294,10 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_max_rotation_per_sec = luaL_checknumber(L, -1);
 	}
 	lua_pop(L, 1);
+
 	getstringfield(L, -1, "infotext", prop->infotext);
+	getboolfield(L, -1, "no_static_save", prop->no_static_save);
+
 	lua_getfield(L, -1, "wield_item");
 	if (!lua_isnil(L, -1))
 		prop->wield_item = read_item(L, -1, idef).getItemString();

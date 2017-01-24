@@ -58,6 +58,7 @@ struct ObjectProperties
 	std::string infotext;
 	//! For dropped items, this contains item information.
 	std::string wield_item;
+	bool no_static_save = false;
 
 	ObjectProperties();
 	std::string dump();
