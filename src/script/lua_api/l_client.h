@@ -33,6 +33,15 @@ private:
 	// display_chat_message(message)
 	static int l_display_chat_message(lua_State *L);
 
+	// show_formspec(name, fornspec)
+	static int l_show_formspec(lua_State *L);
+
+	// send_respawn()
+	static int l_send_respawn(lua_State *L);
+
+	// gettext(text)
+	static int l_gettext(lua_State *L);
+
 	// get_last_run_mod(n)
 	static int l_get_last_run_mod(lua_State *L);
 

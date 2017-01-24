@@ -142,6 +142,7 @@ enum ClientEventType
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
 	CE_SHOW_FORMSPEC,
+	CE_SHOW_LOCAL_FORMSPEC,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
 	CE_DELETE_PARTICLESPAWNER,
@@ -569,6 +570,11 @@ public:
 	}
 
 	ClientScripting *getScript() { return m_script; }
+
+	inline void pushToEventQueue(const ClientEvent &event)
+	{
+		m_client_event_queue.push(event);
+	}
 
 private:
 
