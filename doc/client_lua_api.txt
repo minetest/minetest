@@ -699,7 +699,10 @@ Call these functions only at load time!
     * Called when server modified player's HP
 * `minetest.register_on_damage_taken(func(hp))`
     * Called when player take damages
-
+* `minetest.register_on_formspec_input(func(formname, fields))`
+    * Called when a button is pressed in player's inventory form
+    * Newest functions are called first
+    * If function returns `true`, remaining functions are not called
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
@@ -754,7 +757,15 @@ Call these functions only at load time!
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
-
+* `core.gettext(string) : returns string
+    * look up the translation of a string in the gettext message catalog
+* `fgettext_ne(string, ...)`
+    * call core.gettext(string), replace "$1"..."$9" with the given
+      extra arguments and return the result
+* `fgettext(string, ...)` : returns string
+    * same as fgettext_ne(), but calls core.formspec_escape before returning result
+* `show_formspec(formname, formspec)` : returns true on success
+	* Shows a formspec to the player
 Class reference
 ---------------
 

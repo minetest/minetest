@@ -22,6 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define S_CLIENT_H_
 
 #include "cpp_api/s_base.h"
+#include "util/string.h"
+
+#ifdef _CRT_MSVCP_CURRENT
+#include <cstdint>
+#endif
 
 class ScriptApiClient: virtual public ScriptApiBase
 {
@@ -36,7 +41,7 @@ public:
 	void on_damage_taken(int32_t damage_amount);
 	void on_hp_modification(int32_t newhp);
 	void on_death();
-
 	void environment_step(float dtime);
+	void on_formspec_input(const std::string &formname, const StringMap &fields);
 };
 #endif
