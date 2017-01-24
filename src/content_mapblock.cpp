@@ -492,12 +492,17 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 		if(f.solidness != 0)
 			continue;
 
-		switch(f.drawtype){
+		if (f.drawtype == NDT_AIRLIKE)
+			continue;
+
+		LightFrame frame;
+		if (data->m_smooth_lighting)
+			getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
+
+		switch(f.drawtype) {
 		default:
 			infostream << "Got " << f.drawtype << std::endl;
 			FATAL_ERROR("Unknown drawtype");
-			break;
-		case NDT_AIRLIKE:
 			break;
 		case NDT_LIQUID:
 		{
@@ -607,8 +612,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					vertices[1].Pos.Y = -0.5 * BS;
 				}
 
-				for(s32 j=0; j<4; j++)
-				{
+				for (s32 j = 0; j < 4; j++) {
 					if(dir == v3s16(0,0,1))
 						vertices[j].Pos.rotateXZBy(0);
 					if(dir == v3s16(0,0,-1))
@@ -625,6 +629,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.Z *= 0.98;
 					}*/
 
+					if (data->m_smooth_lighting)
+						vertices[j].Color = blendLight(frame, vertices[j].Pos, current_tile->color);
 					vertices[j].Pos += intToFloat(p, BS);
 				}
 
@@ -647,10 +653,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, c1, 0,0),
 			};
 
-			v3f offset(p.X * BS, (p.Y + 0.5) * BS, p.Z * BS);
-			for(s32 i=0; i<4; i++)
-			{
-				vertices[i].Pos += offset;
+			for (s32 i = 0; i < 4; i++) {
+				vertices[i].Pos.Y += 0.5 * BS;
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
+				vertices[i].Pos += intToFloat(p, BS);
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
@@ -928,6 +935,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[j].Pos.Z *= 0.98;
 					}*/
 
+					if (data->m_smooth_lighting)
+						vertices[j].Color = blendLight(frame, vertices[j].Pos, current_tile->color);
 					vertices[j].Pos += intToFloat(p, BS);
 				}
 
@@ -961,6 +970,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
 					s32 j = corner_resolve[i];
 					vertices[i].Pos.Y += corner_levels[j];
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -1052,7 +1063,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					for(u16 i=0; i<4; i++)
 						vertices[i].Pos.rotateXZBy(90);
 
-				for(u16 i=0; i<4; i++){
+				for (u16 i = 0; i < 4; i++) {
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -1368,7 +1381,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
 			};
 
-			for(s32 i=0; i<4; i++)
+			for (s32 i = 0; i < 4; i++)
 			{
 				if(dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
@@ -1383,6 +1396,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXZBy(-45);
 
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1413,7 +1428,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			v3s16 dir = n.getWallMountedDir(nodedef);
 
-			for(s32 i=0; i<4; i++)
+			for (s32 i = 0; i < 4; i++)
 			{
 				if(dir == v3s16(1,0,0))
 					vertices[i].Pos.rotateXZBy(0);
@@ -1428,6 +1443,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(dir == v3s16(0,1,0))
 					vertices[i].Pos.rotateXYBy(90);
 
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1579,6 +1596,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				for (int i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
 					vertices[i].Pos.Y += BS/2 * (f.visual_scale - 1);
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 					// move to a random spot to avoid moire
 					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
@@ -1731,6 +1750,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				for (int i = 0; i < 4; i++) {
 					vertices[i].Pos *= f.visual_scale;
+					if (data->m_smooth_lighting)
+						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 				}
 
@@ -1953,6 +1974,8 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			{
 				if(angle != 0)
 					vertices[i].Pos.rotateXZBy(angle);
+				if (data->m_smooth_lighting)
+					vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 				vertices[i].Pos += intToFloat(p, BS);
 			}
 
@@ -1970,16 +1993,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				v3s16(0, 0, -1)
 			};
 
-			LightFrame frame;
 			TileSpec tiles[6];
 			video::SColor colors[6];
 			for (int j = 0; j < 6; j++) {
 				// Handles facedir rotation for textures
 				tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
 			}
-			if (data->m_smooth_lighting) {
-				getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
-			} else {
+			if (!data->m_smooth_lighting) {
 				u16 l = getInteriorLight(n, 1, nodedef);
 				for (int j = 0; j < 6; j++)
 					colors[j] = encode_light_and_color(l, tiles[j].color, f.light_source);
@@ -2110,9 +2130,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			} else if (f.mesh_ptr[0]) {
 				// no cache, clone and rotate mesh
 				scene::IMesh* mesh = cloneMesh(f.mesh_ptr[0]);
-				LightFrame frame;
-				if (data->m_smooth_lighting)
-					getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
