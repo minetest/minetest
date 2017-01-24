@@ -32,7 +32,7 @@ end)
 
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_chatcommand("dump", {
-	func = function(name, param)
+	func = function(param)
 		return true, dump(_G)
 	end,
 })

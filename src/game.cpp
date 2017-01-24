@@ -125,6 +125,7 @@ struct TextDestPlayerInventory : public TextDest {
 
 struct LocalFormspecHandler : public TextDest {
 	LocalFormspecHandler();
+
 	LocalFormspecHandler(std::string formname) :
 		m_client(0)
 	{
@@ -178,39 +179,7 @@ struct LocalFormspecHandler : public TextDest {
 				return;
 			}
 		}
-
-		if (m_formname == "MT_DEATH_SCREEN") {
-			assert(m_client != 0);
-
-			if ((fields.find("btn_respawn") != fields.end())) {
-				m_client->sendRespawn();
-				return;
-			}
-
-			if (fields.find("quit") != fields.end()) {
-				m_client->sendRespawn();
-				return;
-			}
-		}
-
-		// don't show error message for unhandled cursor keys
-		if ((fields.find("key_up") != fields.end()) ||
-				(fields.find("key_down") != fields.end()) ||
-				(fields.find("key_left") != fields.end()) ||
-				(fields.find("key_right") != fields.end())) {
-			return;
-		}
-
-		errorstream << "LocalFormspecHandler::gotText unhandled >"
-			<< m_formname << "< event" << std::endl;
-
-		int i = 0;
-		StringMap::const_iterator it;
-		for (it = fields.begin(); it != fields.end(); ++it) {
-			errorstream << "\t" << i << ": " << it->first
-				<< "=" << it->second << std::endl;
-			i++;
-		}
+		m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
 	Client *m_client;
@@ -955,28 +924,6 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #else
 #define SIZE_TAG "size[11,5.5,true]" // Fixed size on desktop
 #endif
-
-static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
-		Client *client,
-		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		JoystickController *joystick)
-{
-	std::string formspec =
-		std::string(FORMSPEC_VERSION_STRING) +
-		SIZE_TAG
-		"bgcolor[#320000b4;true]"
-		"label[4.85,1.35;" + gettext("You died.") + "]"
-		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
-		;
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(formspec);
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_DEATH_SCREEN", client);
-
-	create_formspec_menu(cur_formspec, client, device, joystick, fs_src, txt_dst);
-}
 
 /******************************************************************************/
 static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
@@ -3255,9 +3202,6 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			cam->camera_yaw = event.player_force_move.yaw;
 			cam->camera_pitch = event.player_force_move.pitch;
 		} else if (event.type == CE_DEATHSCREEN) {
-			show_deathscreen(&current_formspec, client, texture_src,
-				device, &input->joystick);
-
 			client->getScript()->on_death();
 
 			/* Handle visualization */
@@ -3283,6 +3227,13 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 			delete(event.show_formspec.formspec);
 			delete(event.show_formspec.formname);
+		} else if (event.type == CE_SHOW_LOCAL_FORMSPEC) {
+			FormspecFormSource *fs_src = new FormspecFormSource(*event.show_formspec.formspec);
+			LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event.show_formspec.formname, client);
+			create_formspec_menu(&current_formspec, client, device, &input->joystick,
+				fs_src, txt_dst);
+			delete event.show_formspec.formspec;
+			delete event.show_formspec.formname;
 		} else if ((event.type == CE_SPAWN_PARTICLE) ||
 				(event.type == CE_ADD_PARTICLESPAWNER) ||
 				(event.type == CE_DELETE_PARTICLESPAWNER)) {

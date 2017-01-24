@@ -112,3 +112,27 @@ void ScriptApiClient::environment_step(float dtime)
 				+ script_get_backtrace(L));
 	}
 }
+
+void ScriptApiClient::on_formspec_input(const std::string &formname,
+	const StringMap &fields)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_chat_messages
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_formspec_input");
+	// Call callbacks
+	// param 1
+	lua_pushstring(L, formname.c_str());
+	// param 2
+	lua_newtable(L);
+	StringMap::const_iterator it;
+	for (it = fields.begin(); it != fields.end(); ++it) {
+		const std::string &name = it->first;
+		const std::string &value = it->second;
+		lua_pushstring(L, name.c_str());
+		lua_pushlstring(L, value.c_str(), value.size());
+		lua_settable(L, -3);
+	}
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
+}
