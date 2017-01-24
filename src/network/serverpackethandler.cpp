@@ -811,7 +811,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
 
 	pitch = modulo360f(pitch);
-	yaw = modulo360f(yaw);
+	yaw = wrapDegrees_0_360(yaw);
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
