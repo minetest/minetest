@@ -32,8 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ClientEvent;
 class ParticleManager;
 class ClientEnvironment;
-class MapNode;
-class ContentFeatures;
+struct MapNode;
+struct ContentFeatures;
 
 class Particle : public scene::ISceneNode
 {
