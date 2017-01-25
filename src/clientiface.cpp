@@ -693,6 +693,28 @@ void ClientInterface::sendToAll(NetworkPacket *pkt)
 	}
 }
 
+void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
+		u16 min_proto_ver)
+{
+	MutexAutoLock clientslock(m_clients_mutex);
+	for (std::unordered_map<u16, RemoteClient*>::iterator i = m_clients.begin();
+			i != m_clients.end(); ++i) {
+		RemoteClient *client = i->second;
+
+		if (client->net_proto_version >= min_proto_ver) {
+			m_con->Send(client->peer_id,
+						clientCommandFactoryTable[pkt->getCommand()].channel,
+						pkt,
+						clientCommandFactoryTable[pkt->getCommand()].reliable);
+		} else if (client->net_proto_version != 0) {
+			m_con->Send(client->peer_id,
+						clientCommandFactoryTable[legacypkt->getCommand()].channel,
+						legacypkt,
+						clientCommandFactoryTable[legacypkt->getCommand()].reliable);
+		}
+	}
+}
+
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 {
 	MutexAutoLock clientslock(m_clients_mutex);

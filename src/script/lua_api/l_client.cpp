@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_client.h"
+#include "chatmessage.h"
 #include "clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -80,7 +81,7 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 		return 0;
 
 	std::string message = luaL_checkstring(L, 1);
-	getClient(L)->pushToChatQueue(utf8_to_wide(message));
+	getClient(L)->pushToChatQueue(new ChatMessage(utf8_to_wide(message)));
 	lua_pushboolean(L, true);
 	return 1;
 }
