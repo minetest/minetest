@@ -2790,39 +2790,40 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	RollbackScopeActor rollback_scope(m_rollback,
 		std::string("player:") + name);
 
-	// Line to send
-	std::wstring line;
-	// Whether to send line to the player that sent the message, or to all players
-	bool broadcast_line = true;
-
-	// Run script hook
-	bool ate = m_script->on_chat_message(name,
-		wide_to_utf8(wmessage));
-	// If script ate the message, don't proceed
-	if (ate)
-		return L"";
-
 	if (player) {
 		switch (player->canSendChatMessage()) {
 			case RPLAYER_CHATRESULT_FLOODING: {
 				std::wstringstream ws;
 				ws << L"You cannot send more messages. You are limited to "
-				<< g_settings->getFloat("chat_message_limit_per_10sec")
-				<< L" messages per 10 seconds.";
+				   << g_settings->getFloat("chat_message_limit_per_10sec")
+				   << L" messages per 10 seconds.";
 				return ws.str();
 			}
 			case RPLAYER_CHATRESULT_KICK:
-				DenyAccess_Legacy(player->peer_id, L"You have been kicked due to message flooding.");
+				DenyAccess_Legacy(player->peer_id,
+						L"You have been kicked due to message flooding.");
 				return L"";
-			case RPLAYER_CHATRESULT_OK: break;
-			default: FATAL_ERROR("Unhandled chat filtering result found.");
+			case RPLAYER_CHATRESULT_OK:
+				break;
+			default:
+				FATAL_ERROR("Unhandled chat filtering result found.");
 		}
 	}
 
-	if (m_max_chatmessage_length > 0 && wmessage.length() > m_max_chatmessage_length) {
+	if (m_max_chatmessage_length > 0
+			&& wmessage.length() > m_max_chatmessage_length) {
 		return L"Your message exceed the maximum chat message limit set on the server. "
-			L"It was refused. Send a shorter message";
+				L"It was refused. Send a shorter message";
 	}
+
+	// Run script hook, exit if script ate the chat message
+	if (m_script->on_chat_message(name, wide_to_utf8(wmessage)))
+		return L"";
+
+	// Line to send
+	std::wstring line;
+	// Whether to send line to the player that sent the message, or to all players
+	bool broadcast_line = true;
 
 	// Commands are implemented in Lua, so only catch invalid
 	// commands that were not "eaten" and send an error back
