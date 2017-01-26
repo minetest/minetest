@@ -622,7 +622,7 @@ v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 			dir.Z = random.next() % 3 - 1;
 			dir.Y = 0;
 			dir.X = random.next() % 3 - 1;
-		} while ((dir.X == 0 && dir.Z == 0) && trycount < 10);
+		} while ((dir.X == 0 || dir.Z == 0) && trycount < 10);
 
 		return dir;
 	} else {
