@@ -7,7 +7,6 @@ dofile(clientpath .. "register.lua")
 dofile(commonpath .. "after.lua")
 dofile(commonpath .. "chatcommands.lua")
 dofile(clientpath .. "chatcommands.lua")
-dofile(clientpath .. "preview.lua")
 
 core.register_on_death(function()
 	core.display_chat_message("You died.")

@@ -218,20 +218,12 @@ Server::Server(
 	std::string ban_path = m_path_world + DIR_DELIM "ipban.txt";
 	m_banmanager = new BanManager(ban_path);
 
-	ModConfiguration modconf(m_path_world);
+	ServerModConfiguration modconf(m_path_world);
 	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
-	if(!modconf.isConsistent()) {
-		for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
-			it != unsatisfied_mods.end(); ++it) {
-			ModSpec mod = *it;
-			errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
-			for(std::set<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
-				dep_it != mod.unsatisfied_depends.end(); ++dep_it)
-				errorstream << " \"" << *dep_it << "\"";
-			errorstream << std::endl;
-		}
+	if (!modconf.isConsistent()) {
+		modconf.printUnsatisfiedModsError();
 	}
 
 	Settings worldmt_settings;
@@ -271,20 +263,17 @@ Server::Server(
 
 	m_script = new ServerScripting(this);
 
-	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
-
-	m_script->loadMod(script_path, BUILTIN_MOD_NAME);
+	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
 	// Print mods
 	infostream << "Server: Loading mods: ";
-	for(std::vector<ModSpec>::iterator i = m_mods.begin();
+	for (std::vector<ModSpec>::const_iterator i = m_mods.begin();
 			i != m_mods.end(); ++i) {
-		const ModSpec &mod = *i;
-		infostream << mod.name << " ";
+		infostream << (*i).name << " ";
 	}
 	infostream << std::endl;
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::iterator it = m_mods.begin();
+	for (std::vector<ModSpec>::const_iterator it = m_mods.begin();
 			it != m_mods.end(); ++it) {
 		const ModSpec &mod = *it;
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
