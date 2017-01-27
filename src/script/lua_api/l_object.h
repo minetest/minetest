@@ -226,6 +226,12 @@ private:
 	// get_breath(self, breath)
 	static int l_get_breath(lua_State *L);
 
+	// set_attribute(self, attribute, value)
+	static int l_set_attribute(lua_State *L);
+
+	// get_attribute(self, attribute)
+	static int l_get_attribute(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 

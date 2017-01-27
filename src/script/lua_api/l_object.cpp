@@ -1181,6 +1181,45 @@ int ObjectRef::l_get_breath(lua_State *L)
 	return 1;
 }
 
+// set_attribute(self, attribute, value)
+int ObjectRef::l_set_attribute(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL) {
+		return 0;
+	}
+
+	std::string attr = luaL_checkstring(L, 2);
+	std::string value = luaL_checkstring(L, 3);
+
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+		co->setExtendedAttribute(attr, value);
+	}
+	return 1;
+}
+
+// get_attribute(self, attribute)
+int ObjectRef::l_get_attribute(lua_State *L)
+{
+	ObjectRef *ref = checkobject(L, 1);
+	PlayerSAO* co = getplayersao(ref);
+	if (co == NULL) {
+		return 0;
+	}
+
+	std::string attr = luaL_checkstring(L, 2);
+
+	std::string value = "";
+	if (co->getExtendedAttribute(attr, &value)) {
+		lua_pushstring(L, value.c_str());
+		return 1;
+	}
+
+	return 0;
+}
+
+
 // set_inventory_formspec(self, formspec)
 int ObjectRef::l_set_inventory_formspec(lua_State *L)
 {
@@ -1839,6 +1878,8 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, set_look_pitch),
 	luamethod(ObjectRef, get_breath),
 	luamethod(ObjectRef, set_breath),
+	luamethod(ObjectRef, get_attribute),
+	luamethod(ObjectRef, set_attribute),
 	luamethod(ObjectRef, set_inventory_formspec),
 	luamethod(ObjectRef, get_inventory_formspec),
 	luamethod(ObjectRef, get_player_control),

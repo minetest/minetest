@@ -576,7 +576,6 @@ private:
 	float m_time_of_day_send_timer;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
-
 	/*
 	 Client interface
 	 */

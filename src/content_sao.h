@@ -180,6 +180,7 @@ public:
 	}
 };
 
+typedef UNORDERED_MAP<std::string, std::string> PlayerAttributes;
 class RemotePlayer;
 
 class PlayerSAO : public UnitSAO
@@ -248,6 +249,39 @@ public:
 	bool setWieldedItem(const ItemStack &item);
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
+
+	/*
+		Modding interface
+	*/
+	inline void setExtendedAttribute(const std::string &attr, const std::string &value)
+	{
+		m_extra_attributes[attr] = value;
+		m_extended_attributes_modified = true;
+	}
+
+	inline bool getExtendedAttribute(const std::string &attr, std::string *value)
+	{
+		if (m_extra_attributes.find(attr) == m_extra_attributes.end())
+			return false;
+
+		*value = m_extra_attributes[attr];
+		return true;
+	}
+
+	inline const PlayerAttributes &getExtendedAttributes()
+	{
+		return m_extra_attributes;
+	}
+
+	inline bool extendedAttributesModified() const
+	{
+		return m_extended_attributes_modified;
+	}
+
+	inline void setExtendedAttributeModified(bool v)
+	{
+		m_extended_attributes_modified = v;
+	}
 
 	/*
 		PlayerSAO-specific
@@ -343,6 +377,9 @@ private:
 	f32 m_pitch;
 	f32 m_fov;
 	s16 m_wanted_range;
+
+	PlayerAttributes m_extra_attributes;
+	bool m_extended_attributes_modified;
 public:
 	float m_physics_override_speed;
 	float m_physics_override_jump;
