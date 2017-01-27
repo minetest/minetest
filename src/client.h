@@ -433,7 +433,8 @@ public:
 	ClientEnvironment& getEnv() { return m_env; }
 	ITextureSource *tsrc() { return getTextureSource(); }
 	ISoundManager *sound() { return getSoundManager(); }
-	static const std::string getBuiltinLuaPath();
+	static const std::string &getBuiltinLuaPath();
+	static const std::string &getClientModsLuaPath();
 
 	virtual const std::vector<ModSpec> &getMods() const;
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
