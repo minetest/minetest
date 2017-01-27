@@ -268,14 +268,50 @@ Client::Client(
 
 void Client::initMods()
 {
-	std::string script_path = getBuiltinLuaPath() + DIR_DELIM "init.lua";
+	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
 
-	m_script->loadMod(script_path, BUILTIN_MOD_NAME);
+	ClientModConfiguration modconf(getClientModsLuaPath());
+	std::vector<ModSpec> mods = modconf.getMods();
+	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
+	// complain about mods with unsatisfied dependencies
+	if (!modconf.isConsistent()) {
+		modconf.printUnsatisfiedModsError();
+	}
+
+	// Print mods
+	infostream << "Client Loading mods: ";
+	for (std::vector<ModSpec>::const_iterator i = mods.begin();
+		i != mods.end(); ++i) {
+		infostream << (*i).name << " ";
+	}
+
+	infostream << std::endl;
+	// Load and run "mod" scripts
+	for (std::vector<ModSpec>::const_iterator it = mods.begin();
+		it != mods.end(); ++it) {
+		const ModSpec &mod = *it;
+		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
+			throw ModError("Error loading mod \"" + mod.name +
+				"\": Mod name does not follow naming conventions: "
+					"Only chararacters [a-z0-9_] are allowed.");
+		}
+		std::string script_path = mod.path + DIR_DELIM + "init.lua";
+		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
+			<< script_path << "\"]" << std::endl;
+		m_script->loadMod(script_path, mod.name);
+	}
 }
 
-const std::string Client::getBuiltinLuaPath()
+const std::string &Client::getBuiltinLuaPath()
 {
-	return porting::path_share + DIR_DELIM + "builtin";
+	static const std::string builtin_dir = porting::path_share + DIR_DELIM + "builtin";
+	return builtin_dir;
+}
+
+const std::string &Client::getClientModsLuaPath()
+{
+	static const std::string clientmods_dir = porting::path_share + DIR_DELIM + "clientmods";
+	return clientmods_dir;
 }
 
 const std::vector<ModSpec>& Client::getMods() const
