@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "settings.h"
 #include "convert_json.h"
+#include "exceptions.h"
+#include "porting.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -107,28 +109,6 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 	return result;
 }
 
-std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods)
-{
-	std::map<std::string, ModSpec> result;
-	for(std::map<std::string,ModSpec>::iterator it = mods.begin();
-		it != mods.end(); ++it)
-	{
-		ModSpec mod = (*it).second;
-		if(mod.is_modpack)
-		{
-			std::map<std::string, ModSpec> content =
-				flattenModTree(mod.modpack_content);
-			result.insert(content.begin(),content.end());
-			result.insert(std::make_pair(mod.name,mod));
-		}
-		else //not a modpack
-		{
-			result.insert(std::make_pair(mod.name,mod));
-		}
-	}
-	return result;
-}
-
 std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 {
 	std::vector<ModSpec> result;
@@ -151,78 +131,32 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 	return result;
 }
 
-ModConfiguration::ModConfiguration(std::string worldpath)
+ModConfiguration::ModConfiguration(const std::string &worldpath):
+	m_unsatisfied_mods(),
+	m_sorted_mods(),
+	m_name_conflicts()
 {
-	SubgameSpec gamespec = findWorldSubgame(worldpath);
-
-	// Add all game mods and all world mods
-	addModsInPath(gamespec.gamemods_path);
-	addModsInPath(worldpath + DIR_DELIM + "worldmods");
-
-	// check world.mt file for mods explicitely declared to be
-	// loaded or not by a load_mod_<modname> = ... line.
-	std::string worldmt = worldpath+DIR_DELIM+"world.mt";
-	Settings worldmt_settings;
-	worldmt_settings.readConfigFile(worldmt.c_str());
-	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> include_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin();
-		it != names.end(); ++it)
-	{
-		std::string name = *it;
-		// for backwards compatibility: exclude only mods which are
-		// explicitely excluded. if mod is not mentioned at all, it is
-		// enabled. So by default, all installed mods are enabled.
-		if (name.compare(0,9,"load_mod_") == 0 &&
-			worldmt_settings.getBool(name))
-		{
-			include_mod_names.insert(name.substr(9));
-		}
-	}
-
-	// Collect all mods that are also in include_mod_names
-	std::vector<ModSpec> addon_mods;
-	for(std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
-			it_path != gamespec.addon_mods_paths.end(); ++it_path)
-	{
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
-		for(std::vector<ModSpec>::iterator it = addon_mods_in_path.begin();
-			it != addon_mods_in_path.end(); ++it)
-		{
-			ModSpec& mod = *it;
-			if(include_mod_names.count(mod.name) != 0)
-				addon_mods.push_back(mod);
-			else
-				worldmt_settings.setBool("load_mod_" + mod.name, false);
-		}
-	}
-	worldmt_settings.updateConfigFile(worldmt.c_str());
-
-	addMods(addon_mods);
-
-	// report on name conflicts
-	if(!m_name_conflicts.empty()){
-		std::string s = "Unresolved name conflicts for mods ";
-		for(std::set<std::string>::const_iterator it = m_name_conflicts.begin();
-				it != m_name_conflicts.end(); ++it)
-		{
-			if(it != m_name_conflicts.begin()) s += ", ";
-			s += std::string("\"") + (*it) + "\"";
-		}
-		s += ".";
-		throw ModError(s);
-	}
-
-	// get the mods in order
-	resolveDependencies();
 }
 
-void ModConfiguration::addModsInPath(std::string path)
+void ModConfiguration::printUnsatisfiedModsError() const
+{
+	for (std::vector<ModSpec>::const_iterator it = m_unsatisfied_mods.begin();
+		it != m_unsatisfied_mods.end(); ++it) {
+		ModSpec mod = *it;
+		errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
+		for (UNORDERED_SET<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
+			dep_it != mod.unsatisfied_depends.end(); ++dep_it)
+			errorstream << " \"" << *dep_it << "\"";
+		errorstream << std::endl;
+	}
+}
+
+void ModConfiguration::addModsInPath(const std::string &path)
 {
 	addMods(flattenMods(getModsInPath(path)));
 }
 
-void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
+void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 {
 	// Maintain a map of all existing m_unsatisfied_mods.
 	// Keys are mod names and values are indices into m_unsatisfied_mods.
@@ -240,8 +174,8 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 
 		std::set<std::string> seen_this_iteration;
 
-		for(std::vector<ModSpec>::const_iterator it = new_mods.begin();
-				it != new_mods.end(); ++it){
+		for (std::vector<ModSpec>::const_iterator it = new_mods.begin();
+				it != new_mods.end(); ++it) {
 			const ModSpec &mod = *it;
 			if(mod.part_of_modpack != (bool)want_from_modpack)
 				continue;
@@ -280,6 +214,24 @@ void ModConfiguration::addMods(std::vector<ModSpec> new_mods)
 	}
 }
 
+void ModConfiguration::checkConflictsAndDeps()
+{
+	// report on name conflicts
+	if (!m_name_conflicts.empty()) {
+		std::string s = "Unresolved name conflicts for mods ";
+		for (UNORDERED_SET<std::string>::const_iterator it = m_name_conflicts.begin();
+			it != m_name_conflicts.end(); ++it) {
+			if (it != m_name_conflicts.begin()) s += ", ";
+			s += std::string("\"") + (*it) + "\"";
+		}
+		s += ".";
+		throw ModError(s);
+	}
+
+	// get the mods in order
+	resolveDependencies();
+}
+
 void ModConfiguration::resolveDependencies()
 {
 	// Step 1: Compile a list of the mod names we're working with
@@ -293,19 +245,19 @@ void ModConfiguration::resolveDependencies()
 	// of each mod, split mods into satisfied and unsatisfied
 	std::list<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-			it != m_unsatisfied_mods.end(); ++it){
+	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
+			it != m_unsatisfied_mods.end(); ++it) {
 		ModSpec mod = *it;
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
-		for(std::set<std::string>::iterator it_optdep = mod.optdepends.begin();
-				it_optdep != mod.optdepends.end(); ++it_optdep){
+		for (UNORDERED_SET<std::string>::iterator it_optdep = mod.optdepends.begin();
+				it_optdep != mod.optdepends.end(); ++it_optdep) {
 			std::string optdep = *it_optdep;
-			if(modnames.count(optdep) != 0)
+			if (modnames.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
 		// if a mod has no depends it is initially satisfied
-		if(mod.unsatisfied_depends.empty())
+		if (mod.unsatisfied_depends.empty())
 			satisfied.push_back(mod);
 		else
 			unsatisfied.push_back(mod);
@@ -334,6 +286,65 @@ void ModConfiguration::resolveDependencies()
 	// Step 4: write back list of unsatisfied mods
 	m_unsatisfied_mods.assign(unsatisfied.begin(), unsatisfied.end());
 }
+
+ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
+	ModConfiguration(worldpath)
+{
+	SubgameSpec gamespec = findWorldSubgame(worldpath);
+
+	// Add all game mods and all world mods
+	addModsInPath(gamespec.gamemods_path);
+	addModsInPath(worldpath + DIR_DELIM + "worldmods");
+
+	// check world.mt file for mods explicitely declared to be
+	// loaded or not by a load_mod_<modname> = ... line.
+	std::string worldmt = worldpath+DIR_DELIM+"world.mt";
+	Settings worldmt_settings;
+	worldmt_settings.readConfigFile(worldmt.c_str());
+	std::vector<std::string> names = worldmt_settings.getNames();
+	std::set<std::string> include_mod_names;
+	for (std::vector<std::string>::const_iterator it = names.begin();
+		it != names.end(); ++it) {
+		std::string name = *it;
+		// for backwards compatibility: exclude only mods which are
+		// explicitely excluded. if mod is not mentioned at all, it is
+		// enabled. So by default, all installed mods are enabled.
+		if (name.compare(0,9,"load_mod_") == 0 &&
+			worldmt_settings.getBool(name)) {
+			include_mod_names.insert(name.substr(9));
+		}
+	}
+
+	// Collect all mods that are also in include_mod_names
+	std::vector<ModSpec> addon_mods;
+	for (std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
+		it_path != gamespec.addon_mods_paths.end(); ++it_path) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
+		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
+			it != addon_mods_in_path.end(); ++it) {
+			const ModSpec& mod = *it;
+			if (include_mod_names.count(mod.name) != 0)
+				addon_mods.push_back(mod);
+			else
+				worldmt_settings.setBool("load_mod_" + mod.name, false);
+		}
+	}
+	worldmt_settings.updateConfigFile(worldmt.c_str());
+
+	addMods(addon_mods);
+
+	checkConflictsAndDeps();
+}
+
+#ifndef SERVER
+ClientModConfiguration::ClientModConfiguration(const std::string &path):
+	ModConfiguration(path)
+{
+	addModsInPath(path);
+	addModsInPath(porting::path_user + DIR_DELIM + "clientmods");
+	checkConflictsAndDeps();
+}
+#endif
 
 #if USE_CURL
 Json::Value getModstoreUrl(std::string url)
