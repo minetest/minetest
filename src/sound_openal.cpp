@@ -444,7 +444,6 @@ public:
 	void deleteSound(int id)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		std::cout  << "DELETE SOUND" << i->second << "HOLA" << std::endl;
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -458,7 +457,6 @@ public:
 	void pauseSnd(int id)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		std::cout  << "PAUSE SOUND"<< i->second << "HOLA" << std::endl;
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -467,7 +465,6 @@ public:
 	void resumeSnd(int id)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		std::cout << "RESUME SOUND" << i->second << "HOLA" << std::endl;
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
