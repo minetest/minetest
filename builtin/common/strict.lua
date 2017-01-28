@@ -3,6 +3,7 @@
 -- This ignores mod namespaces (variables with the same name as the current mod).
 local WARN_INIT = false
 
+local getinfo = debug.getinfo
 
 function core.global_exists(name)
 	if type(name) ~= "string" then
@@ -18,7 +19,7 @@ local declared = {}
 local warned = {}
 
 function meta:__newindex(name, value)
-	local info = debug.getinfo(2, "Sl")
+	local info = getinfo(2, "Sl")
 	local desc = ("%s:%d"):format(info.short_src, info.currentline)
 	if not declared[name] then
 		local warn_key = ("%s\0%d\0%s"):format(info.source,
@@ -42,7 +43,7 @@ end
 
 
 function meta:__index(name)
-	local info = debug.getinfo(2, "Sl")
+	local info = getinfo(2, "Sl")
 	local warn_key = ("%s\0%d\0%s"):format(info.source, info.currentline, name)
 	if not declared[name] and not warned[warn_key] and info.what ~= "C" then
 		core.log("warning", ("Undeclared global variable %q accessed at %s:%s")
