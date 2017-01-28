@@ -299,7 +299,7 @@ public:
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	inline const std::string &getWorldPath() const { return m_path_world; }
+	std::string getWorldPath() const { return m_path_world; }
 	std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()

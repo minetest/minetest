@@ -1,3 +1,5 @@
+local modname = core.get_current_modname() or "??"
+
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
@@ -38,5 +40,5 @@ core.register_chatcommand("dump", {
 })
 
 core.after(2, function()
-	print("After 2")
+	print("[PREVIEW] loaded " .. modname .. " mod")
 end)
