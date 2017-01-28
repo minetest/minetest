@@ -33,7 +33,7 @@ ClientScripting::ClientScripting(Client *client):
 	SCRIPTAPI_PRECHECKHEADER
 
 	// Security is mandatory client side
-	initializeSecurity();
+	initializeSecurityClient();
 
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
