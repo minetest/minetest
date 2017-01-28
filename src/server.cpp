@@ -2080,6 +2080,44 @@ void Server::stopSound(s32 handle)
 	m_playing_sounds.erase(i);
 }
 
+
+void Server::pauseSound(s32 handle)
+{
+	// Get sound reference
+	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	if (i == m_playing_sounds.end())
+		return;
+	ServerPlayingSound &psound = i->second;
+
+	NetworkPacket pkt(TOCLIENT_PAUSE_SOUND, 4);
+	pkt << handle;
+
+	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
+			i != psound.clients.end(); ++i) {
+		// Send as reliable
+		m_clients.send(*i, 0, &pkt, true);
+	}
+}
+
+
+void Server::resumeSound(s32 handle)
+{
+	// Get sound reference
+	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	if (i == m_playing_sounds.end())
+		return;
+	ServerPlayingSound &psound = i->second;
+
+	NetworkPacket pkt(TOCLIENT_RESUME_SOUND, 4);
+	pkt << handle;
+
+	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
+			i != psound.clients.end(); ++i) {
+		// Send as reliable
+		m_clients.send(*i, 0, &pkt, true);
+	}
+}
+
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	std::vector<u16> *far_players, float far_d_nodes)
 {
