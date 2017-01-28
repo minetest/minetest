@@ -983,6 +983,29 @@ int ModApiMainMenu::l_sound_stop(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_sound_pause(lua_State *L)
+{
+	GUIEngine* engine = getGuiEngine(L);
+
+	u32 handle = luaL_checkinteger(L, 1);
+	engine->pauseSound(handle);
+
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_sound_resume(lua_State *L)
+{
+	GUIEngine* engine = getGuiEngine(L);
+
+	u32 handle = luaL_checkinteger(L, 1);
+	engine->resumeSound(handle);
+
+	return 1;
+}
+
+
+/******************************************************************************/
 int ModApiMainMenu::l_download_file(lua_State *L)
 {
 	const char *url    = luaL_checkstring(L, 1);
