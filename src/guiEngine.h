@@ -308,8 +308,8 @@ private:
 	s32 playSound(SimpleSoundSpec spec, bool looped);
 	/** stop playing a sound started with playSound() */
 	void stopSound(s32 handle);
-
-
+    void pauseSound(s32 handle);
+    void resumeSound(s32 handle);
 };
 
 
