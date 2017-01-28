@@ -47,6 +47,7 @@ elseif INIT == "mainmenu" then
 elseif INIT == "async" then
 	dofile(asyncpath .. "init.lua")
 elseif INIT == "client" then
+	os.setlocale = nil
 	dofile(clientpath .. "init.lua")
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
