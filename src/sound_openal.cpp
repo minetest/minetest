@@ -444,6 +444,7 @@ public:
 	void deleteSound(int id)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::cout  << "DELETE SOUND" << i->second << "HOLA" << std::endl;
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -452,6 +453,25 @@ public:
 
 		delete sound;
 		m_sounds_playing.erase(id);
+	}
+
+	void pauseSnd(int id)
+	{
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::cout  << "PAUSE SOUND"<< i->second << "HOLA" << std::endl;
+		if(i == m_sounds_playing.end())
+			return;
+		PlayingSound *sound = i->second;
+		alSourcePause(sound->source_id);
+	}
+	void resumeSnd(int id)
+	{
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::cout << "RESUME SOUND" << i->second << "HOLA" << std::endl;
+		if(i == m_sounds_playing.end())
+			return;
+		PlayingSound *sound = i->second;
+		alSourcePlay(sound->source_id);
 	}
 
 	/* If buffer does not exist, consult the fetcher */
@@ -484,15 +504,17 @@ public:
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
 		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i) {
+				i != m_sounds_playing.end(); ++i) 
+        {
 			int id = i->first;
 			PlayingSound *sound = i->second;
 			// If not playing, remove it
 			{
 				ALint state;
 				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
-				if(state != AL_PLAYING){
-					del_list.insert(id);
+				if(state != AL_PLAYING && state != AL_PAUSED)
+                {
+                    del_list.insert(id);
 				}
 			}
 		}
@@ -573,6 +595,16 @@ public:
 		maintain();
 		deleteSound(sound);
 	}
+	void pauseSound(int sound)
+	{
+		maintain();
+		pauseSnd(sound);
+	}
+	void resumeSound(int sound)
+	{
+		maintain();
+		resumeSnd(sound);
+	}
 	bool soundExists(int sound)
 	{
 		maintain();
@@ -600,4 +632,3 @@ ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 	delete m;
 	return NULL;
 };
-
