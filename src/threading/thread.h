@@ -153,6 +153,7 @@ private:
 	Atomic<bool> m_request_stop;
 	Atomic<bool> m_running;
 	Mutex m_mutex;
+	Mutex m_start_finished_mutex;
 
 #if USE_CPP11_THREADS
 	std::thread *m_thread_obj;

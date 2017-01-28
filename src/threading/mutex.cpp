@@ -88,6 +88,15 @@ void Mutex::lock()
 #endif
 }
 
+bool Mutex::try_lock()
+{
+#if USE_WIN_MUTEX
+	return TryEnterCriticalSection(&mutex) != 0;
+#else
+	return pthread_mutex_trylock(&mutex) == 0;
+#endif
+}
+
 void Mutex::unlock()
 {
 #if USE_WIN_MUTEX

@@ -101,6 +101,11 @@ Thread::Thread(const std::string &name) :
 Thread::~Thread()
 {
 	kill();
+
+	// Make sure start finished mutex is unlocked before it's destroyed
+	m_start_finished_mutex.try_lock();
+	m_start_finished_mutex.unlock();
+
 }
 
 
@@ -112,6 +117,9 @@ bool Thread::start()
 		return false;
 
 	m_request_stop = false;
+
+	// The mutex may already be locked if the thread is being restarted
+	m_start_finished_mutex.try_lock();
 
 #if USE_CPP11_THREADS
 
@@ -134,6 +142,9 @@ bool Thread::start()
 		return false;
 
 #endif
+
+	// Allow spawned thread to continue
+	m_start_finished_mutex.unlock();
 
 	while (!m_running)
 		sleep_ms(1);
@@ -248,6 +259,10 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 
 	g_logger.registerThread(thr->m_name);
 	thr->m_running = true;
+
+	// Wait for the thread that started this one to finish initializing the
+	// thread handle so that getThreadId/getThreadHandle will work.
+	thr->m_start_finished_mutex.lock();
 
 	thr->m_retval = thr->run();
 
