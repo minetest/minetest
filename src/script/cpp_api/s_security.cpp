@@ -123,6 +123,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"path",
 		"searchpath",
 	};
+#if USE_LUAJIT
 	static const char *jit_whitelist[] = {
 		"arch",
 		"flush",
@@ -134,7 +135,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"version",
 		"version_num",
 	};
-
+#endif
 	m_secure = true;
 
 	lua_State *L = getStack();
@@ -245,13 +246,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"table",
 		"math",
 	};
-	static const char *io_whitelist[] = {
-		"close",
-		"flush",
-		"read",
-		"type",
-		"write",
-	};
 	static const char *os_whitelist[] = {
 		"clock",
 		"date",
@@ -263,6 +257,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"getinfo",
 	};
 
+#if USE_LUAJIT
 	static const char *jit_whitelist[] = {
 		"arch",
 		"flush",
@@ -274,6 +269,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 		"version",
 		"version_num",
 	};
+#endif
 
 	m_secure = true;
 
@@ -294,20 +290,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 	lua_pop(L, 1);
 
 
-	// Copy safe IO functions
-	lua_getfield(L, old_globals, "io");
-	lua_newtable(L);
-	copy_safe(L, io_whitelist, sizeof(io_whitelist));
-
-	// And replace unsafe ones
-	SECURE_API(io, open);
-	SECURE_API(io, input);
-	SECURE_API(io, output);
-	SECURE_API(io, lines);
-
-	lua_setglobal(L, "io");
-	lua_pop(L, 1);  // Pop old IO
-
 
 	// Copy safe OS functions
 	lua_getfield(L, old_globals, "os");
@@ -323,10 +305,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 	copy_safe(L, debug_whitelist, sizeof(debug_whitelist));
 	lua_setglobal(L, "debug");
 	lua_pop(L, 1);  // Pop old debug
-
-	// Remove all of package
-	lua_newtable(L);
-	lua_setglobal(L, "package");
 
 #if USE_LUAJIT
 	// Copy safe jit functions, if they exist
