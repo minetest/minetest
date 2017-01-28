@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
+#include "lua_api/l_storage.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
 
@@ -53,4 +54,5 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);
 	ModApiSound::Initialize(L, top);
+	ModApiStorage::Initialize(L, top);
 }
