@@ -252,7 +252,7 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 	Thread *thr = (Thread *)param;
 
 #ifdef _AIX
-	m_kernel_thread_id = thread_self();
+	thr->m_kernel_thread_id = thread_self();
 #endif
 
 	thr->setName(thr->m_name);
