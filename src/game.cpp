@@ -3694,6 +3694,7 @@ PointedThing Game::updatePointedThing(
 {
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
+	hud->setSelectedFaceNormal(v3f(0.0, 0.0, 0.0));
 	static const bool show_entity_selectionbox = g_settings->getBool(
 		"show_entity_selectionbox");
 
@@ -3738,6 +3739,10 @@ PointedThing Game::updatePointedThing(
 		}
 		hud->setSelectionPos(intToFloat(result.node_undersurface, BS),
 			camera_offset);
+		hud->setSelectedFaceNormal(v3f(
+			result.intersection_normal.X,
+			result.intersection_normal.Y,
+			result.intersection_normal.Z));
 	}
 
 	// Update selection mesh light level and vertex colors
