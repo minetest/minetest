@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_settings.h"
 #include "lua_api/l_http.h"
+#include "lua_api/l_storage.h"
 
 extern "C" {
 #include "lualib.h"
@@ -92,6 +93,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	ModApiServer::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
+	ModApiStorage::Initialize(L, top);
 
 	// Register reference classes (userdata)
 	InvRef::Register(L);
@@ -108,6 +110,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	NodeTimerRef::Register(L);
 	ObjectRef::Register(L);
 	LuaSettings::Register(L);
+	StorageRef::Register(L);
 }
 
 void log_deprecated(const std::string &message)

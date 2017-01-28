@@ -76,13 +76,27 @@ const std::string &Metadata::getString(const std::string &name,
 	return resolveString(it->second, recursion);
 }
 
-void Metadata::setString(const std::string &name, const std::string &var)
+/**
+ * Sets var to name key in the metadata storage
+ *
+ * @param name
+ * @param var
+ * @return true if key-value pair is created or changed
+ */
+bool Metadata::setString(const std::string &name, const std::string &var)
 {
 	if (var.empty()) {
 		m_stringvars.erase(name);
-	} else {
-		m_stringvars[name] = var;
+		return true;
 	}
+
+	StringMap::iterator it = m_stringvars.find(name);
+	if (it != m_stringvars.end() && it->second == var) {
+		return false;
+	}
+
+	m_stringvars[name] = var;
+	return true;
 }
 
 const std::string &Metadata::resolveString(const std::string &str,

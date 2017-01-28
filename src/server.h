@@ -299,7 +299,8 @@ public:
 	const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	inline std::string getWorldPath() const { return m_path_world; }
+	inline const std::string &getWorldPath() const { return m_path_world; }
+	std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
@@ -359,6 +360,9 @@ public:
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);
+
+	bool registerModStorage(ModMetadata *storage);
+	void unregisterModStorage(const std::string &name);
 
 	// Bind address
 	Address m_bind_addr;
@@ -649,6 +653,9 @@ private:
 	std::map<std::string, Inventory*> m_detached_inventories;
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
+
+	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer;
 
 	DISABLE_CLASS_COPY(Server);
 };
