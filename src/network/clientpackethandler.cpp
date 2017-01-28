@@ -819,6 +819,36 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 	}
 }
 
+
+
+void Client::handleCommand_PauseSound(NetworkPacket* pkt)
+{
+	s32 server_id;
+
+	*pkt >> server_id;
+
+	UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.find(server_id);
+	if (i != m_sounds_server_to_client.end()) {
+		int client_id = i->second;
+		m_sound->pauseSound(client_id);
+	}
+}
+
+void Client::handleCommand_ResumeSound(NetworkPacket* pkt)
+{
+	s32 server_id;
+
+	*pkt >> server_id;
+
+	UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.find(server_id);
+	if (i != m_sounds_server_to_client.end()) {
+		int client_id = i->second;
+		m_sound->resumeSound(client_id);
+	}
+}
+
+
+
 void Client::handleCommand_Privileges(NetworkPacket* pkt)
 {
 	m_privileges.clear();
