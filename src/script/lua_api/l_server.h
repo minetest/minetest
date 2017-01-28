@@ -67,6 +67,12 @@ private:
 	// sound_stop(handle)
 	static int l_sound_stop(lua_State *L);
 
+	// sound_resume(handle)
+	static int l_sound_resume(lua_State *L);
+
+	// sound_pause(handle)
+	static int l_sound_pause(lua_State *L);
+
 	// get_player_privs(name, text)
 	static int l_get_player_privs(lua_State *L);
 
