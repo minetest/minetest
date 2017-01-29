@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "s_client.h"
 #include "s_internal.h"
 #include "client.h"
+#include "common/c_converter.h"
+#include "common/c_content.h"
 
 void ScriptApiClient::on_shutdown()
 {
@@ -135,4 +137,24 @@ void ScriptApiClient::on_formspec_input(const std::string &formname,
 		lua_settable(L, -3);
 	}
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+bool ScriptApiClient::on_dignode(v3s16 p, MapNode node)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	INodeDefManager *ndef = getClient()->ndef();
+
+	// Get core.registered_on_dignode
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_dignode");
+
+	// Push data
+	push_v3s16(L, p);
+	pushnode(L, node, ndef);
+
+	// Call functions
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	bool blocked = lua_toboolean(L, -1);
+	return blocked;
 }

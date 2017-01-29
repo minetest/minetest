@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "cpp_api/s_base.h"
 #include "util/string.h"
+#include "mapnode.h"
 
 #ifdef _CRT_MSVCP_CURRENT
 #include <cstdint>
@@ -43,5 +44,7 @@ public:
 	void on_death();
 	void environment_step(float dtime);
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
+
+	bool on_dignode(v3s16 p, MapNode node);
 };
 #endif
