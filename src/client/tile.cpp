@@ -2035,9 +2035,9 @@ static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 		dst_c = dst->getPixel(x, y);
 		dst_c.set(
 				dst_c.getAlpha(),
-				(dst_c.getRed() * color.getRed())/255,
-				(dst_c.getGreen() * color.getGreen())/255,
-				(dst_c.getBlue() * color.getBlue())/255
+				(dst_c.getRed() * color.getRed()) / 255,
+				(dst_c.getGreen() * color.getGreen()) / 255,
+				(dst_c.getBlue() * color.getBlue()) / 255
 				);
 		dst->setPixel(x, y, dst_c);
 	}
