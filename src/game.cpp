@@ -3894,16 +3894,19 @@ void Game::handleDigging(GameRunData *runData,
 		const PointedThing &pointed, const v3s16 &nodepos,
 		const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
-	if (!runData->digging) {
-		infostream << "Started digging" << std::endl;
-		client->interact(0, pointed);
-		runData->digging = true;
-		runData->ldown_for_dig = true;
-	}
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
+
+	if (!runData->digging) {
+		infostream << "Started digging" << std::endl;
+		if (client->getScript()->on_punchnode(nodepos, n))
+			return;
+		client->interact(0, pointed);
+		runData->digging = true;
+		runData->ldown_for_dig = true;
+	}
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
@@ -3966,20 +3969,8 @@ void Game::handleDigging(GameRunData *runData,
 		client->setCrack(runData->dig_index, nodepos);
 	} else {
 		infostream << "Digging completed" << std::endl;
-		client->interact(2, pointed);
 		client->setCrack(-1, v3s16(0, 0, 0));
-		bool is_valid_position;
-		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
-		if (is_valid_position)
-			client->removeNode(nodepos);
-
-		if (m_cache_enable_particles) {
-			const ContentFeatures &features =
-				client->getNodeDefManager()->get(wasnode);
-			client->getParticleManager()->addDiggingParticles(client, smgr,
-					player, nodepos, wasnode, features);
-		}
-
+	
 		runData->dig_time = 0;
 		runData->digging = false;
 
@@ -3997,6 +3988,26 @@ void Game::handleDigging(GameRunData *runData,
 
 		if (runData->nodig_delay_timer < mindelay)
 			runData->nodig_delay_timer = mindelay;
+
+		bool is_valid_position;
+		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
+		if (is_valid_position) {
+			bool block = client->getScript()->on_dignode(nodepos, wasnode);
+			if (block) {
+				return;
+			}
+			client->removeNode(nodepos);
+		}
+
+		client->interact(2, pointed);
+
+		if (m_cache_enable_particles) {
+			const ContentFeatures &features =
+				client->getNodeDefManager()->get(wasnode);
+			client->getParticleManager()->addDiggingParticles(client, smgr,
+				player, nodepos, wasnode, features);
+		}
+
 
 		// Send event to trigger sound
 		MtEvent *e = new NodeDugEvent(nodepos, wasnode);

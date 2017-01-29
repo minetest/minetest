@@ -47,6 +47,14 @@ private:
 	// set_last_run_mod(modname)
 	static int l_set_last_run_mod(lua_State *L);
 
+	// get_node(pos)
+	static int l_get_node(lua_State *L);
+
+	// get_node_or_nil(pos)
+	static int l_get_node_or_nil(lua_State *L);
+
+
+
 public:
 	static void Initialize(lua_State *L, int top);
 };
