@@ -3895,16 +3895,19 @@ void Game::handleDigging(GameRunData *runData,
 		const PointedThing &pointed, const v3s16 &nodepos,
 		const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
-	if (!runData->digging) {
-		infostream << "Started digging" << std::endl;
-		client->interact(0, pointed);
-		runData->digging = true;
-		runData->ldown_for_dig = true;
-	}
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
+
+	if (!runData->digging) {
+		infostream << "Started digging" << std::endl;
+		if (client->getScript()->on_punchnode(nodepos, n))
+			return;
+		client->interact(0, pointed);
+		runData->digging = true;
+		runData->ldown_for_dig = true;
+	}
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
