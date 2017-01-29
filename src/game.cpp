@@ -2627,7 +2627,8 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
-		openConsole(1);
+		openConsole(core::clamp(
+			g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove(statustext_time);
 	} else if (wasKeyDown(KeyType::JUMP)) {
