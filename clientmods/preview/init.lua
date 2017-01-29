@@ -42,3 +42,9 @@ core.register_chatcommand("dump", {
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 end)
+
+core.register_on_dignode(function(pos, node)
+	print("pos:" .. dump(pos))
+	print("node:" .. dump(node))
+	return false
+end)
