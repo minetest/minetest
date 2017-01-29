@@ -548,6 +548,10 @@
 #    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, pageflip
 # 3d_mode = none
 
+#    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
+#    type: float
+# console_height = 1.0
+
 #    In-game chat console background color (R,G,B).
 #    type: string
 # console_color = (0,0,0)
