@@ -40,3 +40,9 @@ core.register_chatcommand("dump", {
 core.after(2, function()
 	print("After 2")
 end)
+
+core.register_on_dignode(function(pos, node)
+	print("pos:" .. dump(pos))
+	print("node:" .. dump(node))
+	return false
+end)
