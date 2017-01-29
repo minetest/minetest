@@ -703,6 +703,10 @@ Call these functions only at load time!
     * Called when a button is pressed in player's inventory form
     * Newest functions are called first
     * If function returns `true`, remaining functions are not called
+* `minetest.register_on_dignode(func(pos, node))`
+    * Called when a player digs a node
+    * Newest functions are called first
+    * If any function returns true, the node isn't dug
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
