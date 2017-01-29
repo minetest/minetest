@@ -116,11 +116,13 @@ GUIChatConsole::~GUIChatConsole()
 		m_font->drop();
 }
 
-void GUIChatConsole::openConsole(f32 height)
+void GUIChatConsole::openConsole(f32 scale)
 {
+	assert(scale > 0.0f && scale <= 1.0f);
+
 	m_open = true;
-	m_desired_height_fraction = height;
-	m_desired_height = height * m_screensize.Y;
+	m_desired_height_fraction = scale;
+	m_desired_height = scale * m_screensize.Y;
 	reformatConsole();
 	m_animate_time_old = getTimeMs();
 	IGUIElement::setVisible(true);
