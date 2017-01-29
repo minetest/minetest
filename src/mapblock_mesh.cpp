@@ -1090,9 +1090,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				brightness of vertices 1 and 3 differ less than
 				the brightness of vertices 0 and 2.
 			*/
-			if (abs(f.vertices[0].Color.getLuminance()
+			if (fabs(f.vertices[0].Color.getLuminance()
 					- f.vertices[2].Color.getLuminance())
-					> abs(f.vertices[1].Color.getLuminance()
+					> fabs(f.vertices[1].Color.getLuminance()
 					- f.vertices[3].Color.getLuminance()))
 				indices_p = indices_alternate;
 
