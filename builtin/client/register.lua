@@ -67,5 +67,4 @@ core.registered_on_hp_modification, core.register_on_hp_modification = make_regi
 core.registered_on_damage_taken, core.register_on_damage_taken = make_registration()
 core.registered_on_formspec_input, core.register_on_formspec_input = make_registration()
 core.registered_on_dignode, core.register_on_dignode = make_registration()
-
-
+core.registered_on_punchnode, core.register_on_punchnode = make_registration()
