@@ -46,5 +46,6 @@ public:
 	void on_formspec_input(const std::string &formname, const StringMap &fields);
 
 	bool on_dignode(v3s16 p, MapNode node);
+	bool on_punchnode(v3s16 p, MapNode node);
 };
 #endif

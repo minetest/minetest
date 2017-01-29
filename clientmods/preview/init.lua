@@ -52,6 +52,14 @@ core.after(2, function()
 end)
 
 core.register_on_dignode(function(pos, node)
+	print("The local player dug a node!")
+	print("pos:" .. dump(pos))
+	print("node:" .. dump(node))
+	return false
+end)
+
+core.register_on_punchnode(function(pos, node)
+	print("The local player punched a node!")
 	print("pos:" .. dump(pos))
 	print("node:" .. dump(node))
 	return false
