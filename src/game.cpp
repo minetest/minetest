@@ -1372,7 +1372,7 @@ protected:
 
 	void dropSelectedItem();
 	void openInventory();
-	void openConsole(float height, const wchar_t *line=NULL);
+	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove(float *statustext_time);
 	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
 	void toggleFast(float *statustext_time);
@@ -2779,15 +2779,17 @@ void Game::openInventory()
 }
 
 
-void Game::openConsole(float height, const wchar_t *line)
+void Game::openConsole(float scale, const wchar_t *line)
 {
+	assert(scale > 0.0f && scale <= 1.0f);
+
 #ifdef __ANDROID__
 	porting::showInputDialog(gettext("ok"), "", "", 2);
 	m_android_chat_open = true;
 #else
 	if (gui_chat_console->isOpenInhibited())
 		return;
-	gui_chat_console->openConsole(height);
+	gui_chat_console->openConsole(scale);
 	if (line) {
 		gui_chat_console->setCloseOnEnter(true);
 		gui_chat_console->replaceAndAddToHistory(line);
