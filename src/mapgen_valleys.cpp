@@ -238,16 +238,20 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Generate noise maps and base terrain height.
-	calculateNoise();
-
 	// Generate biome noises.  Note this must be executed strictly before
 	// generateTerrain, because generateTerrain depends on intermediate
 	// biome-related noises.
 	m_bgen->calcBiomeNoise(node_min);
 
+	// Generate noise maps and base terrain height.
+	// Modify heat and humidity maps.
+	calculateNoise();
+
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
+
+	// Recalculate heightmap
+	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
 	MgStoneType stone_type = generateBiomes();
@@ -549,10 +553,6 @@ int MapgenValleys::generateTerrain()
 			index_3d += ystride;
 		}
 
-		// This happens if we're generating a chunk that doesn't
-		// contain the terrain surface, in which case, we need
-		// to set heightmap to a value outside of the chunk,
-		// to avoid confusing lua mods that use heightmap.
 		if (heightmap[index_2d] == -MAX_MAP_GENERATION_LIMIT) {
 			s16 surface_y_int = myround(surface_y);
 			if (surface_y_int > node_max.Y + 1 || surface_y_int < node_min.Y - 1) {
