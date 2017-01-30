@@ -39,6 +39,14 @@ core.register_chatcommand("dump", {
 	end,
 })
 
+core.register_chatcommand("test_node", {
+	func = function(param)
+		core.display_chat_message(dump(core.get_node({x=0, y=0, z=0})))
+		core.display_chat_message(dump(core.get_node_or_nil({x=0, y=0, z=0})))
+	end,
+})
+
+
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 end)
