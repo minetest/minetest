@@ -1101,6 +1101,7 @@ void PlayerSAO::setPos(const v3f &pos)
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
+	m_move_pool.empty();
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 

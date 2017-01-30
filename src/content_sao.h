@@ -169,6 +169,10 @@ public:
 		if(m_pool < 0)
 			m_pool = 0;
 	}
+	void empty()
+	{
+		m_pool = m_max;
+	}
 	bool grab(float dtime)
 	{
 		if(dtime <= 0)
