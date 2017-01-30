@@ -197,16 +197,17 @@ assert(table.indexof({"foo", "bar"}, "foo") == 1)
 assert(table.indexof({"foo", "bar"}, "baz") == -1)
 
 --------------------------------------------------------------------------------
-function file_exists(filename)
-	local f = io.open(filename, "r")
-	if f == nil then
-		return false
-	else
-		f:close()
-		return true
+if INIT ~= "client" then
+	function file_exists(filename)
+		local f = io.open(filename, "r")
+		if f == nil then
+			return false
+		else
+			f:close()
+			return true
+		end
 	end
 end
-
 --------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
