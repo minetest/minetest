@@ -37,7 +37,7 @@ const float fogShadingParameter = 1 / ( 1 - fogStart);
 
 vec3 uncharted2Tonemap(vec3 x)
 {
-	return ((x * (0.22 * x + 0.03) + 0.002) / (x * (0.22 * x + 0.3) + 0.06)) - 0.03334;
+	return ((x * (0.22 * x + 0.03) + 0.002) / (x * (0.22 * x + 0.3) + 0.06)) - 0.03333;
 }
 
 vec4 applyToneMapping(vec4 color)
