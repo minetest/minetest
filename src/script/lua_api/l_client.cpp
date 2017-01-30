@@ -23,6 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "cpp_api/s_base.h"
 #include "gettext.h"
+#include "common/c_converter.h"
+#include "common/c_content.h"
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -97,6 +99,39 @@ int ModApiClient::l_gettext(lua_State *L)
 	return 1;
 }
 
+// get_node(pos)
+// pos = {x=num, y=num, z=num}
+int ModApiClient::l_get_node(lua_State *L)
+{
+	// pos
+	v3s16 pos = read_v3s16(L, 1);
+	// Do it
+	bool pos_ok;
+	MapNode n = getClient(L)->getNode(pos, &pos_ok);
+	// Return node
+	pushnode(L, n, getClient(L)->ndef());
+	return 1;
+}
+
+// get_node_or_nil(pos)
+// pos = {x=num, y=num, z=num}
+int ModApiClient::l_get_node_or_nil(lua_State *L)
+{
+	// pos
+	v3s16 pos = read_v3s16(L, 1);
+	// Do it
+	bool pos_ok;
+	MapNode n = getClient(L)->getNode(pos, &pos_ok);
+	if (pos_ok) {
+		// Return node
+		pushnode(L, n, getClient(L)->ndef());
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -106,4 +141,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(show_formspec);
 	API_FCT(send_respawn);
 	API_FCT(gettext);
+	API_FCT(get_node);
+	API_FCT(get_node_or_nil);
 }

@@ -717,7 +717,13 @@ Call these functions only at load time!
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
-
+### Map
+* `minetest.get_node(pos)`
+    * Returns the node at the given position as table in the format
+      `{name="node_name", param1=0, param2=0}`, returns `{name="ignore", param1=0, param2=0}`
+      for unloaded areas.
+* `minetest.get_node_or_nil(pos)`
+    * Same as `get_node` but returns `nil` for unloaded areas.
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
