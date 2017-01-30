@@ -157,18 +157,26 @@ class LagPool
 public:
 	LagPool(): m_pool(15), m_max(15)
 	{}
+
 	void setMax(float new_max)
 	{
 		m_max = new_max;
 		if(m_pool > new_max)
 			m_pool = new_max;
 	}
+
 	void add(float dtime)
 	{
 		m_pool -= dtime;
 		if(m_pool < 0)
 			m_pool = 0;
 	}
+
+	void empty()
+	{
+		m_pool = m_max;
+	}
+
 	bool grab(float dtime)
 	{
 		if(dtime <= 0)
@@ -358,6 +366,7 @@ private:
 	LagPool m_dig_pool;
 	LagPool m_move_pool;
 	v3f m_last_good_position;
+	float m_time_from_last_teleport;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;
