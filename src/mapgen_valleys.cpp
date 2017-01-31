@@ -249,6 +249,9 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 
+	// Create heightmap
+	updateHeightmap(node_min, node_max);
+
 	// Place biome-specific nodes and build biomemap
 	MgStoneType stone_type = generateBiomes();
 
@@ -547,22 +550,6 @@ int MapgenValleys::generateTerrain()
 
 			vm->m_area.add_y(em, index_data, 1);
 			index_3d += ystride;
-		}
-
-		// This happens if we're generating a chunk that doesn't
-		// contain the terrain surface, in which case, we need
-		// to set heightmap to a value outside of the chunk,
-		// to avoid confusing lua mods that use heightmap.
-		if (heightmap[index_2d] == -MAX_MAP_GENERATION_LIMIT) {
-			s16 surface_y_int = myround(surface_y);
-			if (surface_y_int > node_max.Y + 1 || surface_y_int < node_min.Y - 1) {
-				// If surface_y is outside the chunk, it's good enough.
-				heightmap[index_2d] = surface_y_int;
-			} else {
-				// If the ground is outside of this chunk, but surface_y
-				// is within the chunk, give a value outside.
-				heightmap[index_2d] = node_min.Y - 2;
-			}
 		}
 
 		if (humid_rivers) {
