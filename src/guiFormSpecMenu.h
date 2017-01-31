@@ -203,7 +203,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 				const std::wstring &default_text, int id) :
 			fname(name),
 			flabel(label),
-			fdefault(unescape_enriched(default_text)),
+			fdefault(unescape_enriched(translate_string(default_text))),
 			fid(id),
 			send(false),
 			ftype(f_Unknown),
@@ -237,10 +237,9 @@ class GUIFormSpecMenu : public GUIModalMenu
 	struct TooltipSpec
 	{
 		TooltipSpec() = default;
-
-		TooltipSpec(const std::string &a_tooltip, irr::video::SColor a_bgcolor,
+		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
-			tooltip(utf8_to_wide(a_tooltip)),
+			tooltip(translate_string(a_tooltip)),
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{

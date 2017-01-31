@@ -325,6 +325,7 @@ src/tileanimation.cpp
 src/tool.cpp
 src/tool.h
 src/touchscreengui.cpp
+src/translation.cpp
 src/treegen.cpp
 src/treegen.h
 src/unittest/test_areastore.cpp

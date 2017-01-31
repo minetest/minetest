@@ -2293,6 +2293,7 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "sounds");
 		paths.push_back(mod.path + DIR_DELIM + "media");
 		paths.push_back(mod.path + DIR_DELIM + "models");
+		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
 	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
@@ -2315,6 +2316,8 @@ void Server::fillMediaCache()
 				".pcx", ".ppm", ".psd", ".wal", ".rgb",
 				".ogg",
 				".x", ".b3d", ".md2", ".obj",
+				// Custom translation file format
+				".tr",
 				NULL
 			};
 			if (removeStringEnd(filename, supported_ext).empty()){
@@ -2374,7 +2377,7 @@ void Server::fillMediaCache()
 	}
 }
 
-void Server::sendMediaAnnouncement(u16 peer_id)
+void Server::sendMediaAnnouncement(u16 peer_id, const std::string &lang_code)
 {
 	DSTACK(FUNCTION_NAME);
 
@@ -2382,12 +2385,22 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 		<< std::endl;
 
 	// Make packet
-	std::ostringstream os(std::ios_base::binary);
-
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
-	pkt << (u16) m_media.size();
+
+	u16 media_sent = 0;
+	std::string lang_suffix;
+	lang_suffix.append(".").append(lang_code).append(".tr");
+	for (const auto &i : m_media) {
+		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+			continue;
+		media_sent++;
+	}
+
+	pkt << media_sent;
 
 	for (const auto &i : m_media) {
+		if (str_ends_with(i.first, ".tr") && !str_ends_with(i.first, lang_suffix))
+			continue;
 		pkt << i.first << i.second.sha1_digest;
 	}
 

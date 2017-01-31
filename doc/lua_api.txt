@@ -139,6 +139,7 @@ Mod directory structure
     |   |   `-- modname_something_else.png
     |   |-- sounds
     |   |-- media
+    |   |-- locale
     |   `-- <custom data>
     `-- another
 
@@ -181,6 +182,9 @@ Models for entities or meshnodes.
 ### `textures`, `sounds`, `media`
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod.
+
+### `locale`
+Translation files for the clients. (See `Translations`)
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -2151,6 +2155,68 @@ Helper functions
     * returns a deep copy of `table`
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
     * returns the exact position on the surface of a pointed node
+
+Translations
+------------
+
+Texts can be translated client-side with the help of `minetest.translate` and translation files.
+
+### Translating a string
+Two functions are provided to translate strings: `minetest.translate` and `minetest.get_translator`.
+
+* `minetest.get_translator(textdomain)` is a simple wrapper around `minetest.translate`, and
+  `minetest.get_translator(textdomain)(str, ...)` is equivalent to `minetest.translate(textdomain, str, ...)`.
+  It is intended to be used in the following way, so that it avoids verbose repetitions of `minetest.translate`:
+
+    local S = minetest.get_translator(textdomain)
+    S(str, ...)
+
+  As an extra commodity, if `textdomain` is nil, it is assumed to be "" instead.
+
+* `minetest.translate(textdomain, str, ...)` translates the string `str` with the given `textdomain`
+  for disambiguation. The textdomain must match the textdomain specified in the translation file in order
+  to get the string translated. This can be used so that a string is translated differently in different contexts.
+  It is advised to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
+  This function must be given a number of arguments equal to the number of arguments the translated string expects.
+  Arguments are literal strings -- they will not be translated, so if you want them to be, they need to come as
+  outputs of `minetest.translate` as well.
+
+  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced by the translation of "Red".
+  We can do the following:
+
+    local S = minetest.get_translator()
+    S("@1 Wool", S("Red"))
+
+  This will be displayed as "Red Wool" on old clients and on clients that do not have localization enabled.
+  However, if we have for instance a translation file named `wool.fr.tr` containing the following:
+
+    @1 Wool=Laine @1
+    Red=Rouge
+
+  this will be displayed as "Laine Rouge" on clients with a French locale.
+
+### Translation file format
+A translation file has the suffix `.[lang].tr`, where `[lang]` is the language it corresponds to.
+The file should be a text file, with the following format:
+
+* Lines beginning with `# textdomain:` (the space is significant) can be used to specify the text
+  domain of all following translations in the file.
+* All other empty lines or lines beginning with `#` are ignored.
+* Other lines should be in the format `original=translated`. Both `original` and `translated` can
+  contain escape sequences beginning with `@` to insert arguments, literal `@`, `=` or newline
+  (See ### Escapes below). There must be no extraneous whitespace around the `=` or at the beginning
+  or the end of the line.
+
+### Escapes
+Strings that need to be translated can contain several escapes, preceded by `@`.
+* `@@` acts as a literal `@`.
+* `@n`, where `n` is a digit between 1 and 9, is an argument for the translated string that will be inlined
+  when translation. Due to how translations are implemented, the original translation string **must** have
+  its arguments in increasing order, without gaps or repetitions, starting from 1.
+* `@=` acts as a literal `=`. It is not required in strings given to `minetest.translate`, but is in translation
+  files to avoid begin confused with the `=` separating the original from the translation.
+* `@\n` (where the `\n` is a literal newline) acts as a literal newline. As with `@=`, this escape is not required
+  in strings given to `minetest.translate`, but is in translation files.
 
 `minetest` namespace reference
 ------------------------------

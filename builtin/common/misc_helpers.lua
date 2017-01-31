@@ -680,6 +680,44 @@ function core.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
 
+function core.translate(textdomain, str, ...)
+	local start_seq
+	if textdomain == "" then
+		start_seq = ESCAPE_CHAR .. "T"
+	else
+		start_seq = ESCAPE_CHAR .. "(T@" .. textdomain .. ")"
+	end
+	local arg = {n=select('#', ...), ...}
+	local end_seq = ESCAPE_CHAR .. "E"
+	local arg_index = 1
+	local translated = str:gsub("@(.)", function(matched)
+		local c = string.byte(matched)
+		if string.byte("1") <= c and c <= string.byte("9") then
+			local a = c - string.byte("0")
+			if a ~= arg_index then
+				error("Escape sequences in string given to core.translate " ..
+					"are not in the correct order: got @" .. matched ..
+					"but expected @" .. tostring(arg_index))
+			end
+			if a > arg.n then
+				error("Not enough arguments provided to core.translate")
+			end
+			arg_index = arg_index + 1
+			return ESCAPE_CHAR .. "F" .. arg[a] .. ESCAPE_CHAR .. "E"
+		else
+			return matched
+		end
+	end)
+	if arg_index < arg.n + 1 then
+		error("Too many arguments provided to core.translate")
+	end
+	return start_seq .. translated .. end_seq
+end
+
+function core.get_translator(textdomain)
+	return function(str, ...) return core.translate(textdomain or "", str, ...) end
+end
+
 --------------------------------------------------------------------------------
 -- Returns the exact coordinate of a pointed surface
 --------------------------------------------------------------------------------

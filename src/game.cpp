@@ -58,6 +58,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
+#include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -242,7 +243,7 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 
 		std::ostringstream os(std::ios_base::binary);
 		g_profiler->printPage(os, show_profiler, show_profiler_max);
-		std::wstring text = utf8_to_wide(os.str());
+		std::wstring text = translate_string(utf8_to_wide(os.str()));
 		setStaticText(guitext_profiler, text.c_str());
 		guitext_profiler->setVisible(true);
 
@@ -1618,6 +1619,8 @@ bool Game::startup(bool *kill,
 	flags.show_debug = g_settings->getBool("show_debug");
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
+
+	g_translations->clear();
 
 	if (!init(map_dir, address, port, gamespec))
 		return false;
@@ -3781,7 +3784,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = unescape_enriched(utf8_to_wide(meta->getString("infotext")));
+		infotext = unescape_translate(utf8_to_wide(meta->getString("infotext")));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
@@ -3858,15 +3861,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 		const v3f &player_position, bool show_debug)
 {
-	infotext = unescape_enriched(
+	infotext = unescape_translate(
 		utf8_to_wide(runData.selected_object->infoText()));
 
 	if (show_debug) {
 		if (!infotext.empty()) {
 			infotext += L"\n";
 		}
-		infotext += unescape_enriched(utf8_to_wide(
-			runData.selected_object->debugInfoText()));
+		infotext += utf8_to_wide(runData.selected_object->debugInfoText());
 	}
 
 	if (isLeftPressed()) {
@@ -4399,7 +4401,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		guitext3->setRelativePosition(rect);
 	}
 
-	setStaticText(guitext_info, infotext.c_str());
+	setStaticText(guitext_info, translate_string(infotext).c_str());
 	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
 
 	float statustext_time_max = 1.5;
@@ -4413,7 +4415,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		}
 	}
 
-	setStaticText(guitext_status, m_statustext.c_str());
+	setStaticText(guitext_status, translate_string(m_statustext).c_str());
 	guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {

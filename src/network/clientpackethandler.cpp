@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "tileanimation.h"
+#include "gettext.h"
 
 void Client::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -123,7 +124,12 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 					<< m_recommended_send_interval<<std::endl;
 
 	// Reply to server
-	NetworkPacket resp_pkt(TOSERVER_INIT2, 0);
+	std::string lang = gettext("LANG_CODE");
+	if (lang == "LANG_CODE")
+		lang = "";
+
+	NetworkPacket resp_pkt(TOSERVER_INIT2, sizeof(u16) + lang.size());
+	resp_pkt << lang;
 	Send(&resp_pkt);
 
 	m_state = LC_Init;
