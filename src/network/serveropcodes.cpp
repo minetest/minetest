@@ -197,8 +197,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  0, true }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
-	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_PAUSE_SOUND",              0, true }, // 0x54
+	{ "TOCLIENT_RESUME_SOUND",             0, true }, // 0x55
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
