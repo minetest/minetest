@@ -184,6 +184,7 @@ LOCAL_SRC_FILES := \
 		jni/src/mapnode.cpp                       \
 		jni/src/mapsector.cpp                     \
 		jni/src/mesh.cpp                          \
+		jni/src/metadata.cpp                      \
 		jni/src/mg_biome.cpp                      \
 		jni/src/mg_decoration.cpp                 \
 		jni/src/mg_ore.cpp                        \
@@ -384,4 +385,3 @@ ifdef GPROF
 $(call import-module,android-ndk-profiler)
 endif
 $(call import-module,android/native_app_glue)
-

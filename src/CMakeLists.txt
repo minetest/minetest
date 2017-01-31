@@ -430,6 +430,7 @@ set(common_SRCS
 	mapgen_valleys.cpp
 	mapnode.cpp
 	mapsector.cpp
+	metadata.cpp
 	mg_biome.cpp
 	mg_decoration.cpp
 	mg_ore.cpp
@@ -893,4 +894,3 @@ endif()
 if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)
 endif()
-

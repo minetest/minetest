@@ -31,10 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr):
-	m_stringvars(),
 	m_inventory(new Inventory(item_def_mgr))
-{
-}
+{}
 
 NodeMetadata::~NodeMetadata()
 {
@@ -70,13 +68,13 @@ void NodeMetadata::deSerialize(std::istream &is)
 
 void NodeMetadata::clear()
 {
-	m_stringvars.clear();
+	Metadata::clear();
 	m_inventory->clear();
 }
 
 bool NodeMetadata::empty() const
 {
-	return m_stringvars.size() == 0 && m_inventory->getLists().size() == 0;
+	return Metadata::empty() && m_inventory->getLists().size() == 0;
 }
 
 /*
@@ -216,35 +214,3 @@ int NodeMetadataList::countNonEmpty() const
 	}
 	return n;
 }
-
-std::string NodeMetadata::getString(const std::string &name,
-	unsigned short recursion) const
-{
-	StringMap::const_iterator it = m_stringvars.find(name);
-	if (it == m_stringvars.end())
-		return "";
-
-	return resolveString(it->second, recursion);
-}
-
-void NodeMetadata::setString(const std::string &name, const std::string &var)
-{
-	if (var.empty()) {
-		m_stringvars.erase(name);
-	} else {
-		m_stringvars[name] = var;
-	}
-}
-
-std::string NodeMetadata::resolveString(const std::string &str,
-	unsigned short recursion) const
-{
-	if (recursion > 1) {
-		return str;
-	}
-	if (str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
-		return getString(str.substr(2, str.length() - 3), recursion + 1);
-	}
-	return str;
-}
-

@@ -17,10 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODEMETADATA_HEADER
-#define NODEMETADATA_HEADER
+#ifndef METADATA_HEADER
+#define METADATA_HEADER
 
-#include "metadata.h"
+#include "irr_v3d.h"
+#include <iostream>
+#include <vector>
+#include "util/string.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -34,56 +37,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class NodeMetadata : public Metadata
+class Metadata
 {
 public:
-	NodeMetadata(IItemDefManager *item_def_mgr);
-	~NodeMetadata();
-
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
-
 	void clear();
 	bool empty() const;
 
-	// The inventory
-	Inventory *getInventory()
+	// Generic key/value store
+	std::string getString(const std::string &name, u16 recursion = 0) const;
+	void setString(const std::string &name, const std::string &var);
+	// Support variable names in values
+	std::string resolveString(const std::string &str, u16 recursion = 0) const;
+	const StringMap &getStrings() const
 	{
-		return m_inventory;
+		return m_stringvars;
 	}
-
 private:
-	Inventory *m_inventory;
-};
-
-
-/*
-	List of metadata of all the nodes of a block
-*/
-
-class NodeMetadataList
-{
-public:
-	~NodeMetadataList();
-
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
-
-	// Add all keys in this list to the vector keys
-	std::vector<v3s16> getAllKeys();
-	// Get pointer to data
-	NodeMetadata *get(v3s16 p);
-	// Deletes data
-	void remove(v3s16 p);
-	// Deletes old data and sets a new one
-	void set(v3s16 p, NodeMetadata *d);
-	// Deletes all
-	void clear();
-
-private:
-	int countNonEmpty() const;
-
-	std::map<v3s16, NodeMetadata *> m_data;
+	StringMap m_stringvars;
 };
 
 #endif
