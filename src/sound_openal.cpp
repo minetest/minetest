@@ -511,8 +511,7 @@ public:
 			{
 				ALint state;
 				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
-				if(state != AL_PLAYING && state != AL_PAUSED)
-				{
+				if(state != AL_PLAYING && state != AL_PAUSED) {
 					del_list.insert(id);
 				}
 			}
