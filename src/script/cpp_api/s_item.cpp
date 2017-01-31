@@ -47,7 +47,7 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L,-1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
@@ -74,7 +74,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L,-1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
@@ -101,7 +101,7 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if(!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L,-1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
@@ -127,7 +127,7 @@ bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item, ServerActiveObject *use
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L, -1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
@@ -159,7 +159,7 @@ bool ScriptApiItem::item_OnCraft(ItemStack &item, ServerActiveObject *user,
 	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L,-1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}
@@ -191,7 +191,7 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 	PCALL_RES(lua_pcall(L, 4, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
 		try {
-			item = read_item(L,-1, getServer());
+			item = read_item(L, -1, getServer()->idef());
 		} catch (LuaError &e) {
 			throw LuaError(std::string(e.what()) + ". item=" + item.name);
 		}

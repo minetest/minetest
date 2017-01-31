@@ -190,7 +190,7 @@ int LuaItemStack::l_replace(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
-	o->m_stack = read_item(L,2,getServer(L));
+	o->m_stack = read_item(L, 2, getGameDef(L)->idef());
 	lua_pushboolean(L, true);
 	return 1;
 }
@@ -250,7 +250,7 @@ int LuaItemStack::l_get_stack_max(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	lua_pushinteger(L, item.getStackMax(getServer(L)->idef()));
+	lua_pushinteger(L, item.getStackMax(getGameDef(L)->idef()));
 	return 1;
 }
 
@@ -260,7 +260,7 @@ int LuaItemStack::l_get_free_space(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	lua_pushinteger(L, item.freeSpace(getServer(L)->idef()));
+	lua_pushinteger(L, item.freeSpace(getGameDef(L)->idef()));
 	return 1;
 }
 
@@ -271,7 +271,7 @@ int LuaItemStack::l_is_known(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	bool is_known = item.isKnown(getServer(L)->idef());
+	bool is_known = item.isKnown(getGameDef(L)->idef());
 	lua_pushboolean(L, is_known);
 	return 1;
 }
@@ -307,7 +307,7 @@ int LuaItemStack::l_get_tool_capabilities(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 	const ToolCapabilities &prop =
-		item.getToolCapabilities(getServer(L)->idef());
+		item.getToolCapabilities(getGameDef(L)->idef());
 	push_tool_capabilities(L, prop);
 	return 1;
 }
@@ -322,7 +322,7 @@ int LuaItemStack::l_add_wear(lua_State *L)
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
 	int amount = lua_tointeger(L, 2);
-	bool result = item.addWear(amount, getServer(L)->idef());
+	bool result = item.addWear(amount, getGameDef(L)->idef());
 	lua_pushboolean(L, result);
 	return 1;
 }
@@ -334,8 +334,8 @@ int LuaItemStack::l_add_item(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	ItemStack newitem = read_item(L,-1, getServer(L));
-	ItemStack leftover = item.addItem(newitem, getServer(L)->idef());
+	ItemStack newitem = read_item(L, -1, getGameDef(L)->idef());
+	ItemStack leftover = item.addItem(newitem, getGameDef(L)->idef());
 	create(L, leftover);
 	return 1;
 }
@@ -348,9 +348,9 @@ int LuaItemStack::l_item_fits(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	ItemStack newitem = read_item(L, 2, getServer(L));
+	ItemStack newitem = read_item(L, 2, getGameDef(L)->idef());
 	ItemStack restitem;
-	bool fits = item.itemFits(newitem, &restitem, getServer(L)->idef());
+	bool fits = item.itemFits(newitem, &restitem, getGameDef(L)->idef());
 	lua_pushboolean(L, fits);  // first return value
 	create(L, restitem);       // second return value
 	return 2;
@@ -407,7 +407,7 @@ ItemStack& LuaItemStack::getItem()
 int LuaItemStack::create_object(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	ItemStack item = read_item(L, 1, getServer(L));
+	ItemStack item = read_item(L, 1, getGameDef(L)->idef());
 	LuaItemStack *o = new LuaItemStack(item);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
@@ -596,7 +596,7 @@ int ModApiItemMod::l_get_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	INodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
 	content_t c = ndef->getId(name);
 
 	lua_pushinteger(L, c);
@@ -609,7 +609,7 @@ int ModApiItemMod::l_get_name_from_content_id(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	content_t c = luaL_checkint(L, 1);
 
-	INodeDefManager *ndef = getServer(L)->getNodeDefManager();
+	INodeDefManager *ndef = getGameDef(L)->getNodeDefManager();
 	const char *name = ndef->get(c).name.c_str();
 
 	lua_pushstring(L, name);

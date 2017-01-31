@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_types.h"
 #include "common/c_internal.h"
+#include "gamedef.h"
 
 extern "C" {
 #include <lua.h>
@@ -45,6 +46,8 @@ public:
 	#ifndef SERVER
 	static Client*          getClient(lua_State *L);
 	#endif // !SERVER
+
+	static IGameDef*        getGameDef(lua_State *L);
 
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);

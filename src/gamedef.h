@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 #include <string>
+#include <vector>
 #include "irrlichttypes.h"
 
 class IItemDefManager;

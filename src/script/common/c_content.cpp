@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_types.h"
 #include "nodedef.h"
-#include "itemdef.h"
 #include "object_properties.h"
 #include "cpp_api/s_node.h"
 #include "lua_api/l_object.h"
@@ -784,7 +783,7 @@ bool string_to_enum(const EnumString *spec, int &result,
 }
 
 /******************************************************************************/
-ItemStack read_item(lua_State* L, int index,Server* srv)
+ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -803,7 +802,6 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	{
 		// Convert from itemstring
 		std::string itemstring = lua_tostring(L, index);
-		IItemDefManager *idef = srv->idef();
 		try
 		{
 			ItemStack item;
@@ -820,7 +818,6 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 	else if(lua_istable(L, index))
 	{
 		// Convert from table
-		IItemDefManager *idef = srv->idef();
 		std::string name = getstringfield_default(L, index, "name", "");
 		int count = getintfield_default(L, index, "count", 1);
 		int wear = getintfield_default(L, index, "wear", 0);
@@ -1187,7 +1184,7 @@ std::vector<ItemStack> read_items(lua_State *L, int index, Server *srv)
 		if (items.size() < (u32) key) {
 			items.resize(key);
 		}
-		items[key - 1] = read_item(L, -1, srv);
+		items[key - 1] = read_item(L, -1, srv->idef());
 		lua_pop(L, 1);
 	}
 	return items;
