@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "lua_api/l_item.h"
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -132,6 +133,23 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_get_wielded_item(lua_State *L)
+{
+	Client *client = getClient(L);
+
+	Inventory local_inventory(client->idef());
+	client->getLocalInventory(local_inventory);
+
+	InventoryList *mlist = local_inventory.getList("main");
+
+	if (mlist && client->getPlayerItem() < mlist->getSize()) {
+		LuaItemStack::create(L, mlist->getItem(client->getPlayerItem()));
+	} else {
+		LuaItemStack::create(L, ItemStack());
+	}
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -143,4 +161,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(gettext);
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
+	API_FCT(get_wielded_item);
 }
