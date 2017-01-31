@@ -460,14 +460,17 @@ public:
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
+		
 		alSourcePause(sound->source_id);
 	}
+	
 	void resumeSnd(int id)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
+		
 		alSourcePlay(sound->source_id);
 	}
 
@@ -501,8 +504,7 @@ public:
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
 		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i) 
-        {
+				i != m_sounds_playing.end(); ++i) {
 			int id = i->first;
 			PlayingSound *sound = i->second;
 			// If not playing, remove it
@@ -510,8 +512,8 @@ public:
 				ALint state;
 				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
 				if(state != AL_PLAYING && state != AL_PAUSED)
-                {
-                    del_list.insert(id);
+				{
+					del_list.insert(id);
 				}
 			}
 		}
@@ -535,6 +537,7 @@ public:
 			addBuffer(name, buf);
 		return false;
 	}
+	
 	bool loadSoundData(const std::string &name,
 			const std::string &filedata)
 	{
@@ -574,6 +577,7 @@ public:
 		}
 		return playSoundRaw(buf, loop, volume);
 	}
+	
 	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
 	{
 		maintain();
@@ -587,26 +591,31 @@ public:
 		}
 		return playSoundRawAt(buf, loop, volume, pos);
 	}
+	
 	void stopSound(int sound)
 	{
 		maintain();
 		deleteSound(sound);
 	}
+	
 	void pauseSound(int sound)
 	{
 		maintain();
 		pauseSnd(sound);
 	}
+	
 	void resumeSound(int sound)
 	{
 		maintain();
 		resumeSnd(sound);
 	}
+	
 	bool soundExists(int sound)
 	{
 		maintain();
 		return (m_sounds_playing.count(sound) != 0);
 	}
+	
 	void updateSoundPosition(int id, v3f pos)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
