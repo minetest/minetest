@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_env.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_mapgen.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_nodetimer.h"
@@ -94,6 +95,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 
 	// Register reference classes (userdata)
 	InvRef::Register(L);
+	ItemStackMetaRef::Register(L);
 	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);

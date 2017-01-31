@@ -56,9 +56,14 @@ private:
 	// set_wear(self, number)
 	static int l_set_wear(lua_State *L);
 
+	// get_meta(self) -> string
+	static int l_get_meta(lua_State *L);
+
+	// DEPRECATED
 	// get_metadata(self) -> string
 	static int l_get_metadata(lua_State *L);
 
+	// DEPRECATED
 	// set_metadata(self, string)
 	static int l_set_metadata(lua_State *L);
 

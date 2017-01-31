@@ -284,7 +284,7 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 		return 1;
 	}
 	// Create item to place
-	ItemStack item(ndef->get(n).name, 1, 0, "", idef);
+	ItemStack item(ndef->get(n).name, 1, 0, idef);
 	// Make pointed position
 	PointedThing pointed;
 	pointed.type = POINTEDTHING_NODE;

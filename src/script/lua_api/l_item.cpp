@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "lua_api/l_item.h"
+#include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
@@ -137,16 +138,28 @@ int LuaItemStack::l_set_wear(lua_State *L)
 	return 1;
 }
 
+// get_meta(self) -> string
+int LuaItemStack::l_get_meta(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaItemStack *o = checkobject(L, 1);
+	ItemStackMetaRef::create(L, &o->m_stack);
+	return 1;
+}
+
+// DEPRECATED
 // get_metadata(self) -> string
 int LuaItemStack::l_get_metadata(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
+	const std::string &value = item.metadata.getString("");
+	lua_pushlstring(L, value.c_str(), value.size());
 	return 1;
 }
 
+// DEPRECATED
 // set_metadata(self, string)
 int LuaItemStack::l_set_metadata(lua_State *L)
 {
@@ -156,7 +169,7 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 
 	size_t len = 0;
 	const char *ptr = luaL_checklstring(L, 2, &len);
-	item.metadata.assign(ptr, len);
+	item.metadata.setString("", std::string(ptr, len));
 
 	lua_pushboolean(L, true);
 	return 1;
@@ -211,8 +224,24 @@ int LuaItemStack::l_to_table(lua_State *L)
 		lua_setfield(L, -2, "count");
 		lua_pushinteger(L, item.wear);
 		lua_setfield(L, -2, "wear");
-		lua_pushlstring(L, item.metadata.c_str(), item.metadata.size());
-		lua_setfield(L, -2, "metadata");
+
+		if (item.metadata.size() == 1 && item.metadata.contains("")) {
+			const std::string &value = item.metadata.getString("");
+			lua_pushlstring(L, value.c_str(), value.size());
+			lua_setfield(L, -2, "metadata");
+		} else {
+			lua_newtable(L);
+			const StringMap &fields = item.metadata.getStrings();
+			for (StringMap::const_iterator it = fields.begin();
+					it != fields.end(); ++it) {
+				const std::string &name = it->first;
+				const std::string &value = it->second;
+				lua_pushlstring(L, name.c_str(), name.size());
+				lua_pushlstring(L, value.c_str(), value.size());
+				lua_settable(L, -3);
+			}
+			lua_setfield(L, -2, "metadata");
+		}
 	}
 	return 1;
 }
@@ -443,6 +472,7 @@ const luaL_reg LuaItemStack::methods[] = {
 	luamethod(LuaItemStack, set_count),
 	luamethod(LuaItemStack, get_wear),
 	luamethod(LuaItemStack, set_wear),
+	luamethod(LuaItemStack, get_meta),
 	luamethod(LuaItemStack, get_metadata),
 	luamethod(LuaItemStack, set_metadata),
 	luamethod(LuaItemStack, clear),

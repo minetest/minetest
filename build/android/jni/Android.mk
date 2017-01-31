@@ -164,6 +164,7 @@ LOCAL_SRC_FILES := \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
 		jni/src/itemdef.cpp                       \
+		jni/src/itemstackmetadata.cpp             \
 		jni/src/keycode.cpp                       \
 		jni/src/light.cpp                         \
 		jni/src/localplayer.cpp                   \
@@ -305,6 +306,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_env.cpp          \
 		jni/src/script/lua_api/l_inventory.cpp    \
 		jni/src/script/lua_api/l_item.cpp         \
+		jni/src/script/lua_api/l_itemstackmeta.cpp\
 		jni/src/script/lua_api/l_mainmenu.cpp     \
 		jni/src/script/lua_api/l_mapgen.cpp       \
 		jni/src/script/lua_api/l_metadata.cpp     \

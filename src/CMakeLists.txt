@@ -415,6 +415,7 @@ set(common_SRCS
 	inventory.cpp
 	inventorymanager.cpp
 	itemdef.cpp
+	itemstackmetadata.cpp
 	light.cpp
 	log.cpp
 	map.cpp

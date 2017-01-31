@@ -1411,7 +1411,7 @@ the entity itself.
 * `direction` is a unit vector, pointing from the source of the punch to
    the punched object.
 * `damage` damage that will be done to entity
-Return value of this function will determin if damage is done by this function 
+Return value of this function will determin if damage is done by this function
 (retval true) or shall be done by engine (retval false)
 
 To punch an entity/object in Lua, call:
@@ -1427,9 +1427,9 @@ Node Metadata
 -------------
 The instance of a node in the world normally only contains the three values
 mentioned in "Nodes". However, it is possible to insert extra data into a
-node. It is called "node metadata"; See "`NodeMetaRef`".
+node. It is called "node metadata"; See `NodeMetaRef`.
 
-Metadata contains two things:
+Node metadata contains two things:
 
 * A key-value store
 * An inventory
@@ -1466,6 +1466,18 @@ Example stuff:
             infotext = "Chest"
         }
     })
+
+Item Metadata
+-------------
+Item stacks can store metadata too. See `ItemStackMetaRef`.
+
+Item metadata only contains a key-value store.
+
+Example stuff:
+
+    local meta = stack:get_meta()
+    meta:set_string("key", "value")
+    print(dump(meta:to_table()))
 
 Formspec
 --------
@@ -2774,9 +2786,8 @@ These functions return the leftover itemstack.
 Class reference
 ---------------
 
-### `NodeMetaRef`
-Node metadata: reference extra data and functionality stored in a node.
-Can be gotten via `minetest.get_meta(pos)`.
+### `MetaDataRef`
+See `NodeMetaRef` and `ItemStackMetaRef`.
 
 #### Methods
 * `set_string(name, value)`
@@ -2785,12 +2796,28 @@ Can be gotten via `minetest.get_meta(pos)`.
 * `get_int(name)`
 * `set_float(name, value)`
 * `get_float(name)`
-* `get_inventory()`: returns `InvRef`
-* `to_table()`: returns `nil` or `{fields = {...}, inventory = {list1 = {}, ...}}`
+* `to_table()`: returns `nil` or a table with keys:
+    * `fields`: key-value storage
+    * `inventory`: `{list1 = {}, ...}}` (NodeMetaRef only)
 * `from_table(nil or {})`
     * Any non-table value will clear the metadata
-    * See "Node Metadata"
+    * See "Node Metadata" for an example
     * returns `true` on success
+
+### `NodeMetaRef`
+Node metadata: reference extra data and functionality stored in a node.
+Can be gotten via `minetest.get_meta(pos)`.
+
+#### Methods
+* All methods in MetaDataRef
+* `get_inventory()`: returns `InvRef`
+
+### `ItemStackMetaRef`
+ItemStack metadata: reference extra data and functionality stored in a stack.
+Can be gotten via `item:get_meta()`.
+
+#### Methods
+* All methods in MetaDataRef
 
 ### `NodeTimerRef`
 Node Timers: a high resolution persistent per-node timer.

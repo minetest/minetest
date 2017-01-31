@@ -824,11 +824,32 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 		std::string name = getstringfield_default(L, index, "name", "");
 		int count = getintfield_default(L, index, "count", 1);
 		int wear = getintfield_default(L, index, "wear", 0);
-		std::string metadata = getstringfield_default(L, index, "metadata", "");
-		return ItemStack(name, count, wear, metadata, idef);
-	}
-	else
-	{
+
+		ItemStack istack(name, count, wear, idef);
+
+		lua_getfield(L, index, "metadata");
+
+		// Support old metadata format by checking type
+		int fieldstable = lua_gettop(L);
+		if (lua_istable(L, fieldstable)) {
+			lua_pushnil(L);
+			while (lua_next(L, fieldstable) != 0) {
+				// key at index -2 and value at index -1
+				std::string key = lua_tostring(L, -2);
+				size_t value_len;
+				const char *value_cs = lua_tolstring(L, -1, &value_len);
+				std::string value(value_cs, value_len);
+				istack.metadata.setString(name, value);
+				lua_pop(L, 1); // removes value, keeps key for next iteration
+			}
+		} else {
+			// BACKWARDS COMPATIBLITY
+			std::string value = getstringfield_default(L, index, "metadata", "");
+			istack.metadata.setString("", value);
+		}
+
+		return istack;
+	} else {
 		throw LuaError("Expecting itemstack, itemstring, table or nil");
 	}
 }

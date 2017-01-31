@@ -938,7 +938,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 		if(m_prop.textures.size() >= 1){
 			infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
 			IItemDefManager *idef = m_client->idef();
-			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
+			ItemStack item(m_prop.textures[0], 1, 0, idef);
 
 			m_wield_meshnode = new WieldMeshSceneNode(
 					smgr->getRootSceneNode(), smgr, -1);

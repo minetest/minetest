@@ -25,35 +25,37 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <vector>
 #include "util/string.h"
 
-/*
-	NodeMetadata stores arbitary amounts of data for special blocks.
-	Used for furnaces, chests and signs.
-
-	There are two interaction methods: inventory menu and text input.
-	Only one can be used for a single metadata, thus only inventory OR
-	text input should exist in a metadata.
-*/
-
-class Inventory;
-class IItemDefManager;
-
 class Metadata
 {
 public:
-	void clear();
-	bool empty() const;
+	virtual ~Metadata() {}
 
-	// Generic key/value store
+	virtual void clear();
+	virtual bool empty() const;
+
+	bool operator==(const Metadata &other) const;
+	inline bool operator!=(const Metadata &other) const
+	{
+		return !(*this == other);
+	}
+
+	//
+	// Key-value related
+	//
+
+	size_t size() const;
+	bool contains(const std::string &name) const;
 	const std::string &getString(const std::string &name, u16 recursion = 0) const;
 	void setString(const std::string &name, const std::string &var);
-	// Support variable names in values
-	const std::string &resolveString(const std::string &str, u16 recursion = 0) const;
 	const StringMap &getStrings() const
 	{
 		return m_stringvars;
 	}
-private:
+	// Add support for variable names in values
+	const std::string &resolveString(const std::string &str, u16 recursion = 0) const;
+protected:
 	StringMap m_stringvars;
+
 };
 
 #endif
