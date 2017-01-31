@@ -389,7 +389,7 @@ public:
 	void handleCommand_PlaySound(NetworkPacket* pkt);
 	void handleCommand_StopSound(NetworkPacket* pkt);
 	void handleCommand_PauseSound(NetworkPacket* pkt);
-    void handleCommand_ResumeSound(NetworkPacket* pkt);
+	void handleCommand_ResumeSound(NetworkPacket* pkt);
 	void handleCommand_Privileges(NetworkPacket* pkt);
 	void handleCommand_InventoryFormSpec(NetworkPacket* pkt);
 	void handleCommand_DetachedInventory(NetworkPacket* pkt);
