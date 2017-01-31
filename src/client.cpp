@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "game.h"
 #include "chatmessage.h"
+#include "translation.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -684,8 +685,19 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		return true;
 	}
 
-	errorstream<<"Client: Don't know how to load file \""
-			<<filename<<"\""<<std::endl;
+	const char *translate_ext[] = {
+		".tr", NULL
+	};
+	name = removeStringEnd(filename, translate_ext);
+	if (!name.empty()) {
+		verbosestream << "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl;
+		g_translations->loadTranslation(data);
+		return true;
+	}
+
+	errorstream << "Client: Don't know how to load file \""
+		<< filename << "\"" << std::endl;
 	return false;
 }
 

@@ -650,6 +650,7 @@ ChatBackend::ChatBackend():
 void ChatBackend::addMessage(std::wstring name, std::wstring text)
 {
 	// Note: A message may consist of multiple lines, for example the MOTD.
+	text = translate_string(text);
 	WStrfnd fnd(text);
 	while (!fnd.at_end())
 	{

@@ -612,6 +612,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_GotInit2);
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
+	std::string lang;
+	if (pkt->getSize() > 0)
+		*pkt >> lang;
 
 	/*
 		Send some initialization data
@@ -632,7 +635,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_SetDefinitionsSent);
 
 	// Send media announcement
-	sendMediaAnnouncement(pkt->getPeerId());
+	sendMediaAnnouncement(pkt->getPeerId(), lang);
 
 	// Send detached inventories
 	sendDetachedInventories(pkt->getPeerId());

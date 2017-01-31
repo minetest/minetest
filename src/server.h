@@ -405,7 +405,7 @@ private:
 	void SendBlocks(float dtime);
 
 	void fillMediaCache();
-	void sendMediaAnnouncement(u16 peer_id);
+	void sendMediaAnnouncement(u16 peer_id, const std::string &lang_code);
 	void sendRequestedMedia(u16 peer_id,
 			const std::vector<std::string> &tosend);
 
