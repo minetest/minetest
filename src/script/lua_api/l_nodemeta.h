@@ -52,7 +52,7 @@ private:
 	 * @param auto_create when true, try to create metadata information for the node if it has none.
 	 * @return pointer to a @c NodeMetadata object or @c NULL in case of error.
 	 */
-	static NodeMetadata* getmeta(NodeMetaRef *ref, bool auto_create);
+	virtual NodeMetadata* getmeta(bool auto_create);
 
 	static void reportMetadataChange(NodeMetaRef *ref);
 

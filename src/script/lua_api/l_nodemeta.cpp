@@ -36,12 +36,12 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 	return *(NodeMetaRef**)ud;  // unbox pointer
 }
 
-NodeMetadata* NodeMetaRef::getmeta(NodeMetaRef *ref, bool auto_create)
+NodeMetadata* NodeMetaRef::getmeta(bool auto_create)
 {
-	NodeMetadata *meta = ref->m_env->getMap().getNodeMetadata(ref->m_p);
-	if(meta == NULL && auto_create)	{
-		meta = new NodeMetadata(ref->m_env->getGameDef()->idef());
-		if(!ref->m_env->getMap().setNodeMetadata(ref->m_p, meta)) {
+	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
+	if (meta == NULL && auto_create) {
+		meta = new NodeMetadata(m_env->getGameDef()->idef());
+		if (!m_env->getMap().setNodeMetadata(m_p, meta)) {
 			delete meta;
 			return NULL;
 		}
@@ -83,7 +83,7 @@ int NodeMetaRef::l_get_string(lua_State *L)
 	NodeMetaRef *ref = checkobject(L, 1);
 	std::string name = luaL_checkstring(L, 2);
 
-	NodeMetadata *meta = getmeta(ref, false);
+	NodeMetadata *meta = ref->getmeta(false);
 	if(meta == NULL){
 		lua_pushlstring(L, "", 0);
 		return 1;
@@ -104,7 +104,7 @@ int NodeMetaRef::l_set_string(lua_State *L)
 	const char *s = lua_tolstring(L, 3, &len);
 	std::string str(s, len);
 
-	NodeMetadata *meta = getmeta(ref, !str.empty());
+	NodeMetadata *meta = ref->getmeta(!str.empty());
 	if(meta == NULL || str == meta->getString(name))
 		return 0;
 	meta->setString(name, str);
@@ -120,7 +120,7 @@ int NodeMetaRef::l_get_int(lua_State *L)
 	NodeMetaRef *ref = checkobject(L, 1);
 	std::string name = lua_tostring(L, 2);
 
-	NodeMetadata *meta = getmeta(ref, false);
+	NodeMetadata *meta = ref->getmeta(false);
 	if(meta == NULL){
 		lua_pushnumber(L, 0);
 		return 1;
@@ -140,7 +140,7 @@ int NodeMetaRef::l_set_int(lua_State *L)
 	int a = lua_tointeger(L, 3);
 	std::string str = itos(a);
 
-	NodeMetadata *meta = getmeta(ref, true);
+	NodeMetadata *meta = ref->getmeta(true);
 	if(meta == NULL || str == meta->getString(name))
 		return 0;
 	meta->setString(name, str);
@@ -156,7 +156,7 @@ int NodeMetaRef::l_get_float(lua_State *L)
 	NodeMetaRef *ref = checkobject(L, 1);
 	std::string name = lua_tostring(L, 2);
 
-	NodeMetadata *meta = getmeta(ref, false);
+	NodeMetadata *meta = ref->getmeta(false);
 	if(meta == NULL){
 		lua_pushnumber(L, 0);
 		return 1;
@@ -176,7 +176,7 @@ int NodeMetaRef::l_set_float(lua_State *L)
 	float a = lua_tonumber(L, 3);
 	std::string str = ftos(a);
 
-	NodeMetadata *meta = getmeta(ref, true);
+	NodeMetadata *meta = ref->getmeta(true);
 	if(meta == NULL || str == meta->getString(name))
 		return 0;
 	meta->setString(name, str);
@@ -190,7 +190,7 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkobject(L, 1);
-	getmeta(ref, true);  // try to ensure the metadata exists
+	ref->getmeta(true);  // try to ensure the metadata exists
 	InvRef::createNodeMeta(L, ref->m_p);
 	return 1;
 }
@@ -202,7 +202,7 @@ int NodeMetaRef::l_to_table(lua_State *L)
 
 	NodeMetaRef *ref = checkobject(L, 1);
 
-	NodeMetadata *meta = getmeta(ref, true);
+	NodeMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
 		lua_pushnil(L);
 		return 1;
@@ -257,7 +257,7 @@ int NodeMetaRef::l_from_table(lua_State *L)
 	}
 
 	// Create new metadata
-	NodeMetadata *meta = getmeta(ref, true);
+	NodeMetadata *meta = ref->getmeta(true);
 	if (meta == NULL) {
 		lua_pushboolean(L, false);
 		return 1;
