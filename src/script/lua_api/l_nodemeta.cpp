@@ -36,7 +36,7 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 	return *(NodeMetaRef**)ud;  // unbox pointer
 }
 
-NodeMetadata* NodeMetaRef::getmeta(bool auto_create)
+Metadata* NodeMetaRef::getmeta(bool auto_create)
 {
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
 	if (meta == NULL && auto_create) {
@@ -49,17 +49,22 @@ NodeMetadata* NodeMetaRef::getmeta(bool auto_create)
 	return meta;
 }
 
-void NodeMetaRef::reportMetadataChange(NodeMetaRef *ref)
+void NodeMetaRef::clearMeta()
+{
+	m_env->getMap().removeNodeMetadata(m_p);
+}
+
+void NodeMetaRef::reportMetadataChange()
 {
 	// NOTE: This same code is in rollback_interface.cpp
 	// Inform other things that the metadata has changed
-	v3s16 blockpos = getNodeBlockPos(ref->m_p);
+	v3s16 blockpos = getNodeBlockPos(m_p);
 	MapEditEvent event;
 	event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
 	event.p = blockpos;
-	ref->m_env->getMap().dispatchEvent(&event);
+	m_env->getMap().dispatchEvent(&event);
 	// Set the block to be saved
-	MapBlock *block = ref->m_env->getMap().getBlockNoCreateNoEx(blockpos);
+	MapBlock *block = m_env->getMap().getBlockNoCreateNoEx(blockpos);
 	if (block) {
 		block->raiseModified(MOD_STATE_WRITE_NEEDED,
 			MOD_REASON_REPORT_META_CHANGE);
@@ -75,115 +80,6 @@ int NodeMetaRef::gc_object(lua_State *L) {
 	return 0;
 }
 
-// get_string(self, name)
-int NodeMetaRef::l_get_string(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = luaL_checkstring(L, 2);
-
-	NodeMetadata *meta = ref->getmeta(false);
-	if(meta == NULL){
-		lua_pushlstring(L, "", 0);
-		return 1;
-	}
-	std::string str = meta->getString(name);
-	lua_pushlstring(L, str.c_str(), str.size());
-	return 1;
-}
-
-// set_string(self, name, var)
-int NodeMetaRef::l_set_string(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = luaL_checkstring(L, 2);
-	size_t len = 0;
-	const char *s = lua_tolstring(L, 3, &len);
-	std::string str(s, len);
-
-	NodeMetadata *meta = ref->getmeta(!str.empty());
-	if(meta == NULL || str == meta->getString(name))
-		return 0;
-	meta->setString(name, str);
-	reportMetadataChange(ref);
-	return 0;
-}
-
-// get_int(self, name)
-int NodeMetaRef::l_get_int(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-
-	NodeMetadata *meta = ref->getmeta(false);
-	if(meta == NULL){
-		lua_pushnumber(L, 0);
-		return 1;
-	}
-	std::string str = meta->getString(name);
-	lua_pushnumber(L, stoi(str));
-	return 1;
-}
-
-// set_int(self, name, var)
-int NodeMetaRef::l_set_int(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-	int a = lua_tointeger(L, 3);
-	std::string str = itos(a);
-
-	NodeMetadata *meta = ref->getmeta(true);
-	if(meta == NULL || str == meta->getString(name))
-		return 0;
-	meta->setString(name, str);
-	reportMetadataChange(ref);
-	return 0;
-}
-
-// get_float(self, name)
-int NodeMetaRef::l_get_float(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-
-	NodeMetadata *meta = ref->getmeta(false);
-	if(meta == NULL){
-		lua_pushnumber(L, 0);
-		return 1;
-	}
-	std::string str = meta->getString(name);
-	lua_pushnumber(L, stof(str));
-	return 1;
-}
-
-// set_float(self, name, var)
-int NodeMetaRef::l_set_float(lua_State *L)
-{
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-	std::string name = lua_tostring(L, 2);
-	float a = lua_tonumber(L, 3);
-	std::string str = ftos(a);
-
-	NodeMetadata *meta = ref->getmeta(true);
-	if(meta == NULL || str == meta->getString(name))
-		return 0;
-	meta->setString(name, str);
-	reportMetadataChange(ref);
-	return 0;
-}
-
 // get_inventory(self)
 int NodeMetaRef::l_get_inventory(lua_State *L)
 {
@@ -195,34 +91,12 @@ int NodeMetaRef::l_get_inventory(lua_State *L)
 	return 1;
 }
 
-// to_table(self)
-int NodeMetaRef::l_to_table(lua_State *L)
+void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 {
-	MAP_LOCK_REQUIRED;
-
-	NodeMetaRef *ref = checkobject(L, 1);
-
-	NodeMetadata *meta = ref->getmeta(true);
-	if (meta == NULL) {
-		lua_pushnil(L);
-		return 1;
-	}
-	lua_newtable(L);
-
 	// fields
-	lua_newtable(L);
-	{
-		StringMap fields = meta->getStrings();
-		for (StringMap::const_iterator
-				it = fields.begin(); it != fields.end(); ++it) {
-			const std::string &name = it->first;
-			const std::string &value = it->second;
-			lua_pushlstring(L, name.c_str(), name.size());
-			lua_pushlstring(L, value.c_str(), value.size());
-			lua_settable(L, -3);
-		}
-	}
-	lua_setfield(L, -2, "fields");
+	MetaDataRef::handleToTable(L, _meta);
+
+	NodeMetadata *meta = (NodeMetadata*) _meta;
 
 	// inventory
 	lua_newtable(L);
@@ -236,52 +110,20 @@ int NodeMetaRef::l_to_table(lua_State *L)
 		}
 	}
 	lua_setfield(L, -2, "inventory");
-	return 1;
 }
 
 // from_table(self, table)
-int NodeMetaRef::l_from_table(lua_State *L)
+bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 {
-	MAP_LOCK_REQUIRED;
+	// fields
+	if (!MetaDataRef::handleFromTable(L, table, _meta))
+		return false;
 
-	NodeMetaRef *ref = checkobject(L, 1);
-	int base = 2;
+	NodeMetadata *meta = (NodeMetadata*) _meta;
 
-	// clear old metadata first
-	ref->m_env->getMap().removeNodeMetadata(ref->m_p);
-
-	if (!lua_istable(L, base)) {
-		// No metadata
-		lua_pushboolean(L, true);
-		return 1;
-	}
-
-	// Create new metadata
-	NodeMetadata *meta = ref->getmeta(true);
-	if (meta == NULL) {
-		lua_pushboolean(L, false);
-		return 1;
-	}
-
-	// Set fields
-	lua_getfield(L, base, "fields");
-	if (lua_istable(L, -1)) {
-		int fieldstable = lua_gettop(L);
-		lua_pushnil(L);
-		while (lua_next(L, fieldstable) != 0) {
-			// key at index -2 and value at index -1
-			std::string name = lua_tostring(L, -2);
-			size_t cl;
-			const char *cs = lua_tolstring(L, -1, &cl);
-			meta->setString(name, std::string(cs, cl));
-			lua_pop(L, 1); // Remove value, keep key for next iteration
-		}
-		lua_pop(L, 1);
-	}
-
-	// Set inventory
+	// inventory
 	Inventory *inv = meta->getInventory();
-	lua_getfield(L, base, "inventory");
+	lua_getfield(L, table, "inventory");
 	if (lua_istable(L, -1)) {
 		int inventorytable = lua_gettop(L);
 		lua_pushnil(L);
@@ -294,9 +136,7 @@ int NodeMetaRef::l_from_table(lua_State *L)
 		lua_pop(L, 1);
 	}
 
-	reportMetadataChange(ref);
-	lua_pushboolean(L, true);
-	return 1;
+	return true;
 }
 
 
@@ -332,6 +172,10 @@ void NodeMetaRef::Register(lua_State *L)
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);  // hide metatable from Lua getmetatable()
 
+	lua_pushliteral(L, "metadata_class");
+	lua_pushlstring(L, className, strlen(className));
+	lua_settable(L, metatable);
+
 	lua_pushliteral(L, "__index");
 	lua_pushvalue(L, methodtable);
 	lua_settable(L, metatable);
@@ -351,14 +195,14 @@ void NodeMetaRef::Register(lua_State *L)
 
 const char NodeMetaRef::className[] = "NodeMetaRef";
 const luaL_reg NodeMetaRef::methods[] = {
-	luamethod(NodeMetaRef, get_string),
-	luamethod(NodeMetaRef, set_string),
-	luamethod(NodeMetaRef, get_int),
-	luamethod(NodeMetaRef, set_int),
-	luamethod(NodeMetaRef, get_float),
-	luamethod(NodeMetaRef, set_float),
+	luamethod(MetaDataRef, get_string),
+	luamethod(MetaDataRef, set_string),
+	luamethod(MetaDataRef, get_int),
+	luamethod(MetaDataRef, set_int),
+	luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, set_float),
+	luamethod(MetaDataRef, to_table),
+	luamethod(MetaDataRef, from_table),
 	luamethod(NodeMetaRef, get_inventory),
-	luamethod(NodeMetaRef, to_table),
-	luamethod(NodeMetaRef, from_table),
 	{0,0}
 };

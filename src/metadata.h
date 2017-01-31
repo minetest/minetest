@@ -44,10 +44,10 @@ public:
 	bool empty() const;
 
 	// Generic key/value store
-	std::string getString(const std::string &name, u16 recursion = 0) const;
+	const std::string &getString(const std::string &name, u16 recursion = 0) const;
 	void setString(const std::string &name, const std::string &var);
 	// Support variable names in values
-	std::string resolveString(const std::string &str, u16 recursion = 0) const;
+	const std::string &resolveString(const std::string &str, u16 recursion = 0) const;
 	const StringMap &getStrings() const
 	{
 		return m_stringvars;

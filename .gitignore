@@ -74,6 +74,7 @@ locale/
 *.a
 *.ninja
 .ninja*
+*.gch
 
 ## Android build files
 build/android/src/main/assets
@@ -86,4 +87,3 @@ build/android/obj
 build/android/local.properties
 build/android/.gradle
 timestamp
-

@@ -37,12 +37,39 @@ bool Metadata::empty() const
 	return m_stringvars.size() == 0;
 }
 
-std::string Metadata::getString(const std::string &name,
-	u16 recursion) const
+size_t Metadata::size() const
+{
+	return m_stringvars.size();
+}
+
+bool Metadata::contains(const std::string &name) const
+{
+	return m_stringvars.find(name) != m_stringvars.end();
+}
+
+bool Metadata::operator==(const Metadata &other) const
+{
+	if (size() != other.size())
+		return false;
+
+	for (StringMap::const_iterator it = m_stringvars.begin();
+			it != m_stringvars.end(); ++it) {
+		if (!other.contains(it->first) ||
+				other.getString(it->first) != it->second)
+			return false;
+	}
+
+	return true;
+}
+
+const std::string &Metadata::getString(const std::string &name,
+		u16 recursion) const
 {
 	StringMap::const_iterator it = m_stringvars.find(name);
-	if (it == m_stringvars.end())
-		return "";
+	if (it == m_stringvars.end()) {
+		static const std::string empty_string = std::string("");
+		return empty_string;
+	}
 
 	return resolveString(it->second, recursion);
 }
@@ -56,14 +83,13 @@ void Metadata::setString(const std::string &name, const std::string &var)
 	}
 }
 
-std::string Metadata::resolveString(const std::string &str,
-	u16 recursion) const
+const std::string &Metadata::resolveString(const std::string &str,
+		u16 recursion) const
 {
-	if (recursion > 1) {
+	if (recursion <= 1 &&
+			str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
+		return getString(str.substr(2, str.length() - 3), recursion + 1);
+	} else {
 		return str;
 	}
-	if (str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
-		return getString(str.substr(2, str.length() - 3), recursion + 1);
-	}
-	return str;
 }

@@ -307,6 +307,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_item.cpp         \
 		jni/src/script/lua_api/l_mainmenu.cpp     \
 		jni/src/script/lua_api/l_mapgen.cpp       \
+		jni/src/script/lua_api/l_metadata.cpp     \
 		jni/src/script/lua_api/l_nodemeta.cpp     \
 		jni/src/script/lua_api/l_nodetimer.cpp    \
 		jni/src/script/lua_api/l_noise.cpp        \

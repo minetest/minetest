@@ -6,6 +6,7 @@ set(common_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_inventory.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_item.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_mapgen.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_metadata.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_nodemeta.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_nodetimer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_noise.cpp
@@ -22,4 +23,3 @@ set(common_SCRIPT_LUA_API_SRCS
 set(client_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_mainmenu.cpp
 	PARENT_SCOPE)
-
