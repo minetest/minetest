@@ -781,6 +781,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_inventory(NULL),
 	m_damage(0),
 	m_last_good_position(0,0,0),
+	m_time_from_last_teleport(0),
 	m_time_from_last_punch(0),
 	m_nocheat_dig_pos(32767, 32767, 32767),
 	m_nocheat_dig_time(0),
@@ -995,6 +996,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	// Increment cheat prevention timers
 	m_dig_pool.add(dtime);
 	m_move_pool.add(dtime);
+	m_time_from_last_teleport += dtime;
 	m_time_from_last_punch += dtime;
 	m_nocheat_dig_time += dtime;
 
@@ -1102,6 +1104,7 @@ void PlayerSAO::setPos(const v3f &pos)
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
 	m_move_pool.empty();
+	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
@@ -1113,6 +1116,8 @@ void PlayerSAO::moveTo(v3f pos, bool continuous)
 	setBasePosition(pos);
 	// Movement caused by this command is always valid
 	m_last_good_position = pos;
+	m_move_pool.empty();
+	m_time_from_last_teleport = 0.0;
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
@@ -1401,11 +1406,17 @@ bool PlayerSAO::checkMovementCheat()
 	if (m_move_pool.grab(required_time)) {
 		m_last_good_position = m_base_position;
 	} else {
-		actionstream << "Player " << m_player->getName()
-				<< " moved too fast; resetting position"
-				<< std::endl;
+		const float LAG_POOL_MIN = 5.0;
+		float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
+		if(lag_pool_max < LAG_POOL_MIN)
+			lag_pool_max = LAG_POOL_MIN;
+		if (m_time_from_last_teleport > lag_pool_max) {
+			actionstream << "Player " << m_player->getName()
+					<< " moved too fast; resetting position"
+					<< std::endl;
+			cheated = true;
+		}
 		setBasePosition(m_last_good_position);
-		cheated = true;
 	}
 	return cheated;
 }
