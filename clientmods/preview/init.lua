@@ -60,6 +60,28 @@ end)
 
 core.register_on_punchnode(function(pos, node)
 	print("The local player punched a node!")
+	local itemstack = core.get_wielded_item()
+	--[[
+	-- getters
+	print(dump(itemstack:is_empty()))
+	print(dump(itemstack:get_name()))
+	print(dump(itemstack:get_count()))
+	print(dump(itemstack:get_wear()))
+	print(dump(itemstack:get_meta()))
+	print(dump(itemstack:get_metadata()))
+	print(dump(itemstack:is_known()))
+	--print(dump(itemstack:get_definition()))
+	print(dump(itemstack:get_tool_capabilities()))
+	print(dump(itemstack:to_string()))
+	print(dump(itemstack:to_table()))
+	-- setters
+	print(dump(itemstack:set_name("default:dirt")))
+	print(dump(itemstack:set_count("95")))
+	print(dump(itemstack:set_wear(934)))
+	print(dump(itemstack:get_meta()))
+	print(dump(itemstack:get_metadata()))
+	--]]
+	print(dump(itemstack:to_table()))
 	print("pos:" .. dump(pos))
 	print("node:" .. dump(node))
 	return false

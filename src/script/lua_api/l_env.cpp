@@ -472,7 +472,7 @@ int ModApiEnvMod::l_add_item(lua_State *L)
 	// pos
 	//v3f pos = checkFloatPos(L, 1);
 	// item
-	ItemStack item = read_item(L, 2,getServer(L));
+	ItemStack item = read_item(L, 2,getServer(L)->idef());
 	if(item.empty() || !item.isKnown(getServer(L)->idef()))
 		return 0;
 
