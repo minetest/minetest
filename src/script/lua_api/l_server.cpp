@@ -429,7 +429,6 @@ int ModApiServer::l_sound_play(lua_State *L)
 	return 1;
 }
 
-
 // sound_stop(handle)
 int ModApiServer::l_sound_stop(lua_State *L)
 {
