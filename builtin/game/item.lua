@@ -109,7 +109,7 @@ local facedir_to_dir_map = {
 	1, 4, 3, 2,
 }
 function core.facedir_to_dir(facedir)
-	return facedir_to_dir[facedir_to_dir_map[facedir]]
+	return facedir_to_dir[facedir_to_dir_map[facedir % 32]]
 end
 
 function core.dir_to_wallmounted(dir)
@@ -144,7 +144,7 @@ local wallmounted_to_dir = {
 	{x =  0, y =  0, z = -1},
 }
 function core.wallmounted_to_dir(wallmounted)
-	return wallmounted_to_dir[wallmounted]
+	return wallmounted_to_dir[wallmounted % 8]
 end
 
 function core.dir_to_yaw(dir)
