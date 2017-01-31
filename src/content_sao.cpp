@@ -1408,8 +1408,7 @@ bool PlayerSAO::checkMovementCheat()
 	} else {
 		const float LAG_POOL_MIN = 5.0;
 		float lag_pool_max = m_env->getMaxLagEstimate() * 2.0;
-		if(lag_pool_max < LAG_POOL_MIN)
-			lag_pool_max = LAG_POOL_MIN;
+		lag_pool_max = MYMAX(lag_pool_max, LAG_POOL_MIN);
 		if (m_time_from_last_teleport > lag_pool_max) {
 			actionstream << "Player " << m_player->getName()
 					<< " moved too fast; resetting position"
