@@ -242,8 +242,8 @@ if geometry_string is not None:
             usage()
             sys.exit(2)
     else:
-        print("ERROR: Incorrect value '" + geometry_string +
-              "' for geometry (must be in the form: x:z+width+height)")
+        print("ERROR: Incorrect geometry syntax '" + geometry_string +
+              "' (must be in the form: x:z+width+height)")
         usage()
         sys.exit(2)
 elif region_string is not None:
