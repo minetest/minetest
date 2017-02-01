@@ -97,8 +97,7 @@ class MapblockMeshGenerator
 	void drawLiquidTop(bool flowing);
 
 // drawtypes
-	void drawLiquidNode();
-	void drawFlowingLiquidNode();
+	void drawLiquidNode(bool flowing);
 	void drawGlasslikeNode();
 	void drawGlasslikeFramedNode();
 	void drawAllfacesNode();
@@ -737,8 +736,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 		{ 1, 0 },
 		{ 0, 0 }
 	};
-	for (u32 i = 0; i < 4; i++)
-	{
+	for (u32 i = 0; i < 4; i++) {
 		const LiquidFaceDesc &face = base_faces[i];
 		NeighborData &neighbor = liquid_neighbors[face.dir.Z + 1][face.dir.X + 1];
 
@@ -838,24 +836,17 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 	collector->append(tile_liquid, vertices, 4, indices, 6);
 }
 
-void MapblockMeshGenerator::drawLiquidNode()
+void MapblockMeshGenerator::drawLiquidNode(bool flowing)
 {
 	prepareLiquidNodeDrawing();
-	getLiquidNeighborhood(false);
-	resetCornerLevels();
-	drawLiquidSides(false);
+	getLiquidNeighborhood(flowing);
+	if (flowing)
+		calculateCornerLevels();
+	else
+		resetCornerLevels();
+	drawLiquidSides(flowing);
 	if (!top_is_same_liquid)
-		drawLiquidTop(false);
-}
-
-void MapblockMeshGenerator::drawFlowingLiquidNode()
-{
-	prepareLiquidNodeDrawing();
-	getLiquidNeighborhood(true);
-	calculateCornerLevels();
-	drawLiquidSides(true);
-	if (!top_is_same_liquid)
-		drawLiquidTop(true);
+		drawLiquidTop(flowing);
 }
 
 void MapblockMeshGenerator::drawGlasslikeNode()
@@ -1961,10 +1952,10 @@ void MapblockMeshGenerator::generate()
 			FATAL_ERROR("Unknown drawtype");
 			break;
 		case NDT_LIQUID:
-			drawLiquidNode();
+			drawLiquidNode(false);
 			break;
 		case NDT_FLOWINGLIQUID:
-			drawFlowingLiquidNode();
+			drawLiquidNode(true);
 			break;
 		case NDT_GLASSLIKE:
 			drawGlasslikeNode();
