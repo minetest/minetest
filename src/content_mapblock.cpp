@@ -76,9 +76,11 @@ class MapblockMeshGenerator
 // liquid-specific
 	bool top_is_same_liquid;
 	TileSpec tile_liquid;
+	TileSpec tile_liquid_top;
 	content_t c_flowing;
 	content_t c_source;
 	video::SColor color;
+	video::SColor color_liquid_top;
 	struct NeighborData {
 		f32 level;
 		content_t content;
@@ -88,7 +90,7 @@ class MapblockMeshGenerator
 	NeighborData liquid_neighbors[3][3];
 	f32 corner_levels[2][2];
 
-	void prepareLiquidNodeDrawing();
+	void prepareLiquidNodeDrawing(bool flowing);
 	void getLiquidNeighborhood(bool flowing);
 	void resetCornerLevels();
 	void calculateCornerLevels();
@@ -596,9 +598,10 @@ static TileSpec getSpecialTile(const ContentFeatures &f,
 	return copy;
 }
 
-void MapblockMeshGenerator::prepareLiquidNodeDrawing()
+void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 {
-	tile_liquid = getSpecialTile(*f, n, 0);
+	tile_liquid_top = getSpecialTile(*f, n, 0);
+	tile_liquid = getSpecialTile(*f, n, flowing ? 1 : 0);
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X,p.Y+1,p.Z));
 	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
@@ -618,6 +621,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	else if (nodedef->get(ntop).param_type == CPT_LIGHT)
 		light = getInteriorLight(ntop, 0, nodedef);
 
+	color_liquid_top = encode_light_and_color(light, tile_liquid_top.color, f->light_source);
 	color = encode_light_and_color(light, tile_liquid.color, f->light_source);
 }
 
@@ -634,7 +638,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 
 		NeighborData &neighbor = liquid_neighbors[w + 1][u + 1];
 		v3s16 p2 = p + v3s16(u, 0, w);
-		MapNode n2 = data->m_vmanip.getNodeNoExNoEmerge(blockpos_nodes + p2);
+		MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		neighbor.content = n2.getContent();
 		neighbor.level = -0.5 * BS;
 		neighbor.is_same_liquid = false;
@@ -660,7 +664,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 		// NOTE: This doesn't get executed if neighbor
 		//       doesn't exist
 		p2.Y += 1;
-		n2 = data->m_vmanip.getNodeNoExNoEmerge(blockpos_nodes + p2);
+		n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		if (n2.getContent() == c_source || n2.getContent() == c_flowing)
 			neighbor.top_is_same_liquid = true;
 	}
@@ -752,11 +756,10 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 				continue;
 		}
 
-		content_t neighbor_content = neighbor.content;
-		if (!flowing && (neighbor_content == CONTENT_IGNORE))
+		if (!flowing && (neighbor.content == CONTENT_IGNORE))
 			continue;
 
-		const ContentFeatures &neighbor_features = nodedef->get(neighbor_content);
+		const ContentFeatures &neighbor_features = nodedef->get(neighbor.content);
 		// Don't draw face if neighbor is blocking the view
 		if (neighbor_features.solidness == 2)
 			continue;
@@ -790,10 +793,10 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 	s32 corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 
 	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS/2, 0,  BS/2, 0,0,0, color, 0,1),
-		video::S3DVertex( BS/2, 0,  BS/2, 0,0,0, color, 1,1),
-		video::S3DVertex( BS/2, 0, -BS/2, 0,0,0, color, 1,0),
-		video::S3DVertex(-BS/2, 0, -BS/2, 0,0,0, color, 0,0),
+		video::S3DVertex(-BS/2, 0,  BS/2, 0,0,0, color_liquid_top, 0,1),
+		video::S3DVertex( BS/2, 0,  BS/2, 0,0,0, color_liquid_top, 1,1),
+		video::S3DVertex( BS/2, 0, -BS/2, 0,0,0, color_liquid_top, 1,0),
+		video::S3DVertex(-BS/2, 0, -BS/2, 0,0,0, color_liquid_top, 0,0),
 	};
 
 	for (s32 i = 0; i < 4; i++) {
@@ -801,7 +804,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		s32 w = corner_resolve[i][1];
 		vertices[i].Pos.Y += corner_levels[w][u];
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
+			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid_top.color);
 		vertices[i].Pos += origin;
 	}
 
@@ -833,12 +836,12 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 	}
 
 	u16 indices[] = {0,1,2,2,3,0};
-	collector->append(tile_liquid, vertices, 4, indices, 6);
+	collector->append(tile_liquid_top, vertices, 4, indices, 6);
 }
 
 void MapblockMeshGenerator::drawLiquidNode(bool flowing)
 {
-	prepareLiquidNodeDrawing();
+	prepareLiquidNodeDrawing(flowing);
 	getLiquidNeighborhood(flowing);
 	if (flowing)
 		calculateCornerLevels();
