@@ -1118,53 +1118,40 @@ void MapblockMeshGenerator::drawAllfacesNode()
 
 void MapblockMeshGenerator::drawTorchlikeNode()
 {
-	v3s16 dir = n.getWallMountedDir(nodedef);
-
+	u8 wall = n.getWallMounted(nodedef);
 	u8 tileindex = 0;
-	if(dir == v3s16(0,-1,0)){
-		tileindex = 0; // floor
-	} else if(dir == v3s16(0,1,0)){
-		tileindex = 1; // ceiling
-	// For backwards compatibility
-	} else if(dir == v3s16(0,0,0)){
-		tileindex = 0; // floor
-	} else {
-		tileindex = 2; // side
+	switch(wall) {
+		case 0:  tileindex = 1; break; // ceiling
+		case 1:  tileindex = 0; break; // floor
+		default: tileindex = 2; // side (or invalid—should we care?)
 	}
 
 	TileSpec tile = getNodeTileN(n, p, tileindex, data);
 	tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
+	video::SColor color;
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	float s = BS/2*f->visual_scale;
+	float size = BS / 2 * f->visual_scale;
 	// Wall at X+ of node
-	video::S3DVertex vertices[4] =
-	{
-		video::S3DVertex(-s,-s,0, 0,0,0, c, 0,1),
-		video::S3DVertex( s,-s,0, 0,0,0, c, 1,1),
-		video::S3DVertex( s, s,0, 0,0,0, c, 1,0),
-		video::S3DVertex(-s, s,0, 0,0,0, c, 0,0),
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(-size,-size,0, 0,0,0, color, 0,1),
+		video::S3DVertex( size,-size,0, 0,0,0, color, 1,1),
+		video::S3DVertex( size, size,0, 0,0,0, color, 1,0),
+		video::S3DVertex(-size, size,0, 0,0,0, color, 0,0),
 	};
 
-	for (s32 i = 0; i < 4; i++)
-	{
-		if(dir == v3s16(1,0,0))
-			vertices[i].Pos.rotateXZBy(0);
-		if(dir == v3s16(-1,0,0))
-			vertices[i].Pos.rotateXZBy(180);
-		if(dir == v3s16(0,0,1))
-			vertices[i].Pos.rotateXZBy(90);
-		if(dir == v3s16(0,0,-1))
-			vertices[i].Pos.rotateXZBy(-90);
-		if(dir == v3s16(0,-1,0))
-			vertices[i].Pos.rotateXZBy(45);
-		if(dir == v3s16(0,1,0))
-			vertices[i].Pos.rotateXZBy(-45);
-
+	for (s32 i = 0; i < 4; i++) {
+		switch(wall) {
+			case 0: vertices[i].Pos.rotateXZBy(-45); break;
+			case 1: vertices[i].Pos.rotateXZBy( 45); break;
+			case 2: vertices[i].Pos.rotateXZBy(  0); break;
+			case 3: vertices[i].Pos.rotateXZBy(180); break;
+			case 4: vertices[i].Pos.rotateXZBy( 90); break;
+			case 5: vertices[i].Pos.rotateXZBy(-90); break;
+		}
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
