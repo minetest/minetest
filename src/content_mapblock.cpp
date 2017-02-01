@@ -94,6 +94,7 @@ class MapblockMeshGenerator
 	void calculateCornerLevels();
 	f32 getCornerLevel(u32 i, u32 k);
 	void drawLiquidSides(bool flowing);
+	void drawLiquidTop(bool flowing);
 
 // drawtypes
 	void drawLiquidNode();
@@ -584,15 +585,6 @@ static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data
 	}
 }
 
-// For use in mapblock_mesh_generate_special
-// X,Y,Z of position must be -1,0,1
-// This expression is a simplification of
-// 3 * 3 * (pos.X + 1) + 3 * (pos.Y + 1) + (pos.Z + 1)
-static inline int NeighborToIndex(const v3s16 &pos)
-{
-	return 9 * pos.X + 3 * pos.Y + pos.Z + 13;
-}
-
 /*!
  * Returns the i-th special tile for a map node.
  */
@@ -614,6 +606,9 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	c_source = nodedef->getId(f->liquid_alternative_source);
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
 
+	if (data->m_smooth_lighting)
+		return; // don't need to pre-compute anything in this case
+
 	// If this liquid emits light and doesn't contain light, draw
 	// it at what it emits, for an increased effect
 	if (f->light_source != 0) {
@@ -623,9 +618,6 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 	// Use the light of the node on top if possible
 	else if (nodedef->get(ntop).param_type == CPT_LIGHT)
 		light = getInteriorLight(ntop, 0, nodedef);
-	// Otherwise use the light of this node (the liquid)
-	else
-		light = getInteriorLight(n, 0, nodedef);
 
 	color = encode_light_and_color(light, tile_liquid.color, f->light_source);
 }
@@ -634,15 +626,15 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 {
 	u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
-	for (s32 w = 0; w < 3; w++)
-	for (s32 u = 0; u < 3; u++)
+	for (s32 w = -1; w <= 1; w++)
+	for (s32 u = -1; u <= 1; u++)
 	{
 		// Skip getting unneeded data
-		if (!flowing && (u != 1) && (w != 1))
+		if (!flowing && u && w)
 			continue;
 
-		NeighborData &neighbor = liquid_neighbors[w][u];
-		v3s16 p2 = p + v3s16(u - 1, 0, w - 1);
+		NeighborData &neighbor = liquid_neighbors[w + 1][u + 1];
+		v3s16 p2 = p + v3s16(u, 0, w);
 		MapNode n2 = data->m_vmanip.getNodeNoExNoEmerge(blockpos_nodes + p2);
 		neighbor.content = n2.getContent();
 		neighbor.level = -0.5 * BS;
@@ -726,21 +718,28 @@ f32 MapblockMeshGenerator::getCornerLevel(u32 i, u32 k)
 
 void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 {
-	struct LiquidFaceDesc
-	{
+	struct LiquidFaceDesc {
 		v3s16 dir; // XZ
-		v3s16 p1; // XZ only; 1 means +, 0 means -
-		v3s16 p2; // the same here
+		v3s16 p[2]; // XZ only; 1 means +, 0 means -
 	};
-	static const LiquidFaceDesc faces[4] = {
-		{ v3s16( 1, 0,  0), v3s16(1, 0, 1), v3s16(1, 0, 0) },
-		{ v3s16(-1, 0,  0), v3s16(0, 0, 0), v3s16(0, 0, 1) },
-		{ v3s16( 0, 0,  1), v3s16(0, 0, 1), v3s16(1, 0, 1) },
-		{ v3s16( 0, 0, -1), v3s16(1, 0, 0), v3s16(0, 0, 0) },
+	struct UV {
+		s32 u, v;
+	};
+	static const LiquidFaceDesc base_faces[4] = {
+		{ v3s16( 1, 0,  0), { v3s16(1, 0, 1), v3s16(1, 0, 0) }},
+		{ v3s16(-1, 0,  0), { v3s16(0, 0, 0), v3s16(0, 0, 1) }},
+		{ v3s16( 0, 0,  1), { v3s16(0, 0, 1), v3s16(1, 0, 1) }},
+		{ v3s16( 0, 0, -1), { v3s16(1, 0, 0), v3s16(0, 0, 0) }},
+	};
+	static const UV base_vertices[4] = {
+		{ 0, 1 },
+		{ 1, 1 },
+		{ 1, 0 },
+		{ 0, 0 }
 	};
 	for (u32 i = 0; i < 4; i++)
 	{
-		const LiquidFaceDesc &face = faces[i];
+		const LiquidFaceDesc &face = base_faces[i];
 		NeighborData &neighbor = liquid_neighbors[face.dir.Z + 1][face.dir.X + 1];
 
 		// No face between nodes of the same liquid, unless there is node
@@ -760,51 +759,83 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			continue;
 
 		const ContentFeatures &neighbor_features = nodedef->get(neighbor_content);
-
 		// Don't draw face if neighbor is blocking the view
 		if (neighbor_features.solidness == 2)
 			continue;
 
-		video::S3DVertex vertices[4] = {
-			video::S3DVertex((face.p1.X - 0.5) * BS, 0, (face.p1.Z - 0.5) * BS, 0,0,0, color, 0,1),
-			video::S3DVertex((face.p2.X - 0.5) * BS, 0, (face.p2.Z - 0.5) * BS, 0,0,0, color, 1,1),
-			video::S3DVertex((face.p2.X - 0.5) * BS, 0, (face.p2.Z - 0.5) * BS, 0,0,0, color, 1,0),
-			video::S3DVertex((face.p1.X - 0.5) * BS, 0, (face.p1.Z - 0.5) * BS, 0,0,0, color, 0,0),
-		};
-
-		/*
-			If neighbor is liquid, lower border of face is corner
-			liquid levels. Otherwise, it is lower border of node.
-		*/
-		if (neighbor.is_same_liquid) {
-			vertices[0].Pos.Y = corner_levels[face.p1.Z][face.p1.X];
-			vertices[1].Pos.Y = corner_levels[face.p2.Z][face.p2.X];
-		} else {
-			vertices[0].Pos.Y = -0.5 * BS;
-			vertices[1].Pos.Y = -0.5 * BS;
-		}
-
-		/*
-			If our topside is liquid, set upper border of face at upper border
-			of node. Otherwise upper position of face is corner levels.
-		*/
-		if (top_is_same_liquid) {
-			vertices[2].Pos.Y = 0.5*BS;
-			vertices[3].Pos.Y = 0.5*BS;
-		} else {
-			vertices[2].Pos.Y = corner_levels[face.p2.Z][face.p2.X];
-			vertices[3].Pos.Y = corner_levels[face.p1.Z][face.p1.X];
-		}
-
+		video::S3DVertex vertices[4];
 		for (s32 j = 0; j < 4; j++) {
+			const UV &vertex = base_vertices[j];
+			const v3s16 &base = face.p[vertex.u];
+			v3f pos;
+			pos.X = (base.X - 0.5) * BS;
+			pos.Z = (base.Z - 0.5) * BS;
+			if (vertex.v)
+				pos.Y = neighbor.is_same_liquid ? corner_levels[base.Z][base.X] : -0.5 * BS;
+			else
+				pos.Y =     !top_is_same_liquid ? corner_levels[base.Z][base.X] :  0.5 * BS;
 			if (data->m_smooth_lighting)
-				vertices[j].Color = blendLight(frame, vertices[j].Pos, tile_liquid.color);
-			vertices[j].Pos += origin;
-		}
-
+				color = blendLight(frame, pos, tile_liquid.color);
+			pos += origin;
+			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, color, vertex.u, vertex.v);
+		};
 		u16 indices[] = {0,1,2,2,3,0};
 		collector->append(tile_liquid, vertices, 4, indices, 6);
 	}
+}
+
+void MapblockMeshGenerator::drawLiquidTop(bool flowing)
+{
+	// To get backface culling right, the vertices need to go
+	// clockwise around the front of the face. And we happened to
+	// calculate corner levels in exact reverse order.
+	s32 corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
+
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(-BS/2, 0,  BS/2, 0,0,0, color, 0,1),
+		video::S3DVertex( BS/2, 0,  BS/2, 0,0,0, color, 1,1),
+		video::S3DVertex( BS/2, 0, -BS/2, 0,0,0, color, 1,0),
+		video::S3DVertex(-BS/2, 0, -BS/2, 0,0,0, color, 0,0),
+	};
+
+	for (s32 i = 0; i < 4; i++) {
+		s32 u = corner_resolve[i][0];
+		s32 w = corner_resolve[i][1];
+		vertices[i].Pos.Y += corner_levels[w][u];
+		if (data->m_smooth_lighting)
+			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
+		vertices[i].Pos += origin;
+	}
+
+	if (flowing) {
+		// Default downwards-flowing texture animation goes from
+		// -Z towards +Z, thus the direction is +Z.
+		// Rotate texture to make animation go in flow direction
+		// Positive if liquid moves towards +Z
+		f32 dz = (corner_levels[0][0] + corner_levels[0][1]) -
+				 (corner_levels[1][0] + corner_levels[1][1]);
+		// Positive if liquid moves towards +X
+		f32 dx = (corner_levels[0][0] + corner_levels[1][0]) -
+				 (corner_levels[0][1] + corner_levels[1][1]);
+		f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG;
+		v2f tcoord_center(0.5, 0.5);
+		v2f tcoord_translate(
+				blockpos_nodes.Z + p.Z,
+				blockpos_nodes.X + p.X);
+		tcoord_translate.rotateBy(tcoord_angle);
+		tcoord_translate.X -= floor(tcoord_translate.X);
+		tcoord_translate.Y -= floor(tcoord_translate.Y);
+
+		for (s32 i = 0; i < 4; i++) {
+			vertices[i].TCoords.rotateBy(tcoord_angle, tcoord_center);
+			vertices[i].TCoords += tcoord_translate;
+		}
+
+		std::swap(vertices[0].TCoords, vertices[2].TCoords);
+	}
+
+	u16 indices[] = {0,1,2,2,3,0};
+	collector->append(tile_liquid, vertices, 4, indices, 6);
 }
 
 void MapblockMeshGenerator::drawLiquidNode()
@@ -813,31 +844,8 @@ void MapblockMeshGenerator::drawLiquidNode()
 	getLiquidNeighborhood(false);
 	resetCornerLevels();
 	drawLiquidSides(false);
-
-	/*
-		Generate top
-		*/
-	if(top_is_same_liquid)
-		return;
-
-	video::S3DVertex vertices[4] =
-	{
-		video::S3DVertex(-BS/2,0,BS/2, 0,0,0, color, 0,1),
-		video::S3DVertex(BS/2,0,BS/2, 0,0,0, color, 1,1),
-		video::S3DVertex(BS/2,0,-BS/2, 0,0,0, color, 1,0),
-		video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, color, 0,0),
-	};
-
-	for (s32 i = 0; i < 4; i++) {
-		vertices[i].Pos.Y += 0.5 * BS;
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
-		vertices[i].Pos += origin;
-	}
-
-	u16 indices[] = {0,1,2,2,3,0};
-	// Add to mesh collector
-	collector->append(tile_liquid, vertices, 4, indices, 6);
+	if (!top_is_same_liquid)
+		drawLiquidTop(false);
 }
 
 void MapblockMeshGenerator::drawFlowingLiquidNode()
@@ -846,75 +854,8 @@ void MapblockMeshGenerator::drawFlowingLiquidNode()
 	getLiquidNeighborhood(true);
 	calculateCornerLevels();
 	drawLiquidSides(true);
-
-	/*
-		Generate top side, if appropriate
-	*/
-
-	if(top_is_same_liquid)
-		return;
-
-	// To get backface culling right, the vertices need to go
-	// clockwise around the front of the face. And we happened to
-	// calculate corner levels in exact reverse order.
-	s32 corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
-
-	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS/2,0,BS/2, 0,0,0, color, 0,1),
-		video::S3DVertex(BS/2,0,BS/2, 0,0,0, color, 1,1),
-		video::S3DVertex(BS/2,0,-BS/2, 0,0,0, color, 1,0),
-		video::S3DVertex(-BS/2,0,-BS/2, 0,0,0, color, 0,0),
-	};
-
-	for(s32 i=0; i<4; i++)
-	{
-		//vertices[i].Pos.Y += liquid_level;
-		//vertices[i].Pos.Y += neighbor_levels[v3s16(0,0,0)];
-		s32 u = corner_resolve[i][0];
-		s32 w = corner_resolve[i][1];
-		vertices[i].Pos.Y += corner_levels[w][u];
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid.color);
-		vertices[i].Pos += origin;
-	}
-/*
-	// Default downwards-flowing texture animation goes from
-	// -Z towards +Z, thus the direction is +Z.
-	// Rotate texture to make animation go in flow direction
-	// Positive if liquid moves towards +Z
-	f32 dz = (corner_levels[side_corners[3][0]] +
-			corner_levels[side_corners[3][1]]) -
-			(corner_levels[side_corners[2][0]] +
-			corner_levels[side_corners[2][1]]);
-	// Positive if liquid moves towards +X
-	f32 dx = (corner_levels[side_corners[1][0]] +
-			corner_levels[side_corners[1][1]]) -
-			(corner_levels[side_corners[0][0]] +
-			corner_levels[side_corners[0][1]]);
-	f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG ;
-	v2f tcoord_center(0.5, 0.5);
-	v2f tcoord_translate(
-			blockpos_nodes.Z + p.Z,
-			blockpos_nodes.X + p.X);
-	tcoord_translate.rotateBy(tcoord_angle);
-	tcoord_translate.X -= floor(tcoord_translate.X);
-	tcoord_translate.Y -= floor(tcoord_translate.Y);
-
-	for(s32 i=0; i<4; i++)
-	{
-		vertices[i].TCoords.rotateBy(
-				tcoord_angle,
-				tcoord_center);
-		vertices[i].TCoords += tcoord_translate;
-	}
-
-	v2f t = vertices[0].TCoords;
-	vertices[0].TCoords = vertices[2].TCoords;
-	vertices[2].TCoords = t;
-*/
-	u16 indices[] = {0,1,2,2,3,0};
-	// Add to mesh collector
-	collector->append(tile_liquid, vertices, 4, indices, 6);
+	if (!top_is_same_liquid)
+		drawLiquidTop(true);
 }
 
 void MapblockMeshGenerator::drawGlasslikeNode()
