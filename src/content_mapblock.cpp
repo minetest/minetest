@@ -525,72 +525,92 @@ static TileSpec getSpecialTile(const ContentFeatures &f,
 	return copy;
 }
 
+class MapblockMeshGenerator
+{
+	MeshMakeData *data;
+	MeshCollector *collector;
+
+	INodeDefManager *nodedef;
+	scene::ISceneManager *smgr;
+	scene::IMeshManipulator *meshmanip;
+
+	bool enable_mesh_cache;
+
+	v3s16 blockpos_nodes;
+	v3s16 p;
+	MapNode n;
+	const ContentFeatures *f;
+
+public:
+	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
+	void generate();
+};
+
+MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
+{
+	data      = input;
+	collector = output;
+
+	nodedef   = data->m_client->ndef();
+	smgr      = data->m_client->getSceneManager();
+	meshmanip = smgr->getMeshManipulator();
+
+	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
+		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
+
+	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
+}
+
 /*
 	TODO: Fix alpha blending for special nodes
 	Currently only the last element rendered is blended correct
 */
-void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector)
+void MapblockMeshGenerator::generate()
 {
-	INodeDefManager *nodedef = data->m_client->ndef();
-	scene::ISceneManager* smgr = data->m_client->getSceneManager();
-	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
-
-	// 0ms
-	//TimeTaker timer("mapblock_mesh_generate_special()");
-
-	/*
-		Some settings
-	*/
-	bool enable_mesh_cache	= g_settings->getBool("enable_mesh_cache") &&
-		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
-
-	v3s16 blockpos_nodes = data->m_blockpos*MAP_BLOCKSIZE;
-
-	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
-	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
-	for(s16 x = 0; x < MAP_BLOCKSIZE; x++)
+    for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+    for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+    for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
 	{
-		v3s16 p(x,y,z);
-
-		MapNode n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
-		const ContentFeatures &f = nodedef->get(n);
+		p = v3s16(x, y, z);
+		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+		f = &nodedef->get(n);
 
 		// Only solidness=0 stuff is drawn here
-		if(f.solidness != 0)
+		if(f->solidness != 0)
 			continue;
 
-		if (f.drawtype == NDT_AIRLIKE)
+		if (f->drawtype == NDT_AIRLIKE)
 			continue;
 
 		LightFrame frame;
 		if (data->m_smooth_lighting)
-			getSmoothLightFrame(&frame, blockpos_nodes + p, data, f.light_source);
+			getSmoothLightFrame(&frame, blockpos_nodes + p, data, f->light_source);
 		else
-			frame.light_source = f.light_source;
+			frame.light_source = f->light_source;
 
-		switch(f.drawtype) {
+		switch(f->drawtype) {
 		default:
-			infostream << "Got " << f.drawtype << std::endl;
+			infostream << "Got " << f->drawtype << std::endl;
 			FATAL_ERROR("Unknown drawtype");
 			break;
+
 		case NDT_LIQUID:
 		{
 			/*
 				Add water sources to mesh if using new style
 			*/
-			TileSpec tile_liquid = getSpecialTile(f, n, 0);
+			TileSpec tile_liquid = getSpecialTile(*f, n, 0);
 			TileSpec tile_liquid_bfculled = getNodeTile(n, p, v3s16(0,0,0), data);
 			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c1 = encode_light_and_color(l,
-				tile_liquid.color, f.light_source);
+				tile_liquid.color, f->light_source);
 			video::SColor c2 = encode_light_and_color(l,
-				tile_liquid_bfculled.color, f.light_source);
+				tile_liquid_bfculled.color, f->light_source);
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
-			content_t c_source = nodedef->getId(f.liquid_alternative_source);
+			content_t c_flowing = nodedef->getId(f->liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(f->liquid_alternative_source);
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 
@@ -706,7 +726,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(*current_tile, vertices, 4, indices, 6);
+				collector->append(*current_tile, vertices, 4, indices, 6);
 			}
 
 			/*
@@ -732,20 +752,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(tile_liquid, vertices, 4, indices, 6);
+			collector->append(tile_liquid, vertices, 4, indices, 6);
 		break;}
 		case NDT_FLOWINGLIQUID:
 		{
 			/*
 				Add flowing liquid to mesh
 			*/
-			TileSpec tile_liquid = getSpecialTile(f, n, 0);
-			TileSpec tile_liquid_bfculled = getSpecialTile(f, n, 1);
+			TileSpec tile_liquid = getSpecialTile(*f, n, 0);
+			TileSpec tile_liquid_bfculled = getSpecialTile(*f, n, 1);
 
 			bool top_is_same_liquid = false;
 			MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(x,y+1,z));
-			content_t c_flowing = nodedef->getId(f.liquid_alternative_flowing);
-			content_t c_source = nodedef->getId(f.liquid_alternative_source);
+			content_t c_flowing = nodedef->getId(f->liquid_alternative_flowing);
+			content_t c_source = nodedef->getId(f->liquid_alternative_source);
 			if(ntop.getContent() == c_flowing || ntop.getContent() == c_source)
 				top_is_same_liquid = true;
 
@@ -764,9 +784,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			else
 				l = getInteriorLight(n, 0, nodedef);
 			video::SColor c1 = encode_light_and_color(l,
-				tile_liquid.color, f.light_source);
+				tile_liquid.color, f->light_source);
 			video::SColor c2 = encode_light_and_color(l,
-				tile_liquid_bfculled.color, f.light_source);
+				tile_liquid_bfculled.color, f->light_source);
 
 			u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
@@ -1012,7 +1032,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(*current_tile, vertices, 4, indices, 6);
+				collector->append(*current_tile, vertices, 4, indices, 6);
 			}
 
 			/*
@@ -1081,7 +1101,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(tile_liquid, vertices, 4, indices, 6);
+				collector->append(tile_liquid, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_GLASSLIKE:
@@ -1090,7 +1110,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 			for(u32 j=0; j<6; j++)
 			{
 				// Check this neighbor
@@ -1101,7 +1121,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if(n2.getContent() == n.getContent())
 					continue;
 				video::SColor c2=c;
-				if(!f.light_source)
+				if(!f->light_source)
 					applyFacesShading(c2, v3f(dir.X, dir.Y, dir.Z));
 
 
@@ -1141,7 +1161,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0,1,2,2,3,0};
 				// Add to mesh collector
-				collector.append(tile, vertices, 4, indices, 6);
+				collector->append(tile, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_GLASSLIKE_FRAMED_OPTIONAL:
@@ -1166,7 +1186,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				tiles[i] = getNodeTile(n, p, dirs[i], data);
 
 			video::SColor tile0color = encode_light_and_color(l,
-				tiles[0].color, f.light_source);
+				tiles[0].color, f->light_source);
 
 			TileSpec glass_tiles[6];
 			video::SColor glasscolor[6];
@@ -1183,7 +1203,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 			for (i = 0; i < 6; i++)
 				glasscolor[i] = encode_light_and_color(l, glass_tiles[i].color,
-					f.light_source);
+					f->light_source);
 
 			u8 param2 = n.getParam2();
 			bool H_merge = ! bool(param2 & 128);
@@ -1311,7 +1331,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if (edge_invisible)
 					continue;
 				box = frame_edges[i];
-				makeAutoLightedCuboid(&collector, data, pos, box, tiles[0], tile0color, frame);
+				makeAutoLightedCuboid(collector, data, pos, box, tiles[0], tile0color, frame);
 			}
 
 			for(i = 0; i < 6; i++)
@@ -1319,16 +1339,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				if (!visible_faces[i])
 					continue;
 				box = glass_faces[i];
-				makeAutoLightedCuboid(&collector, data, pos, box, glass_tiles[i], glasscolor[i], frame);
+				makeAutoLightedCuboid(collector, data, pos, box, glass_tiles[i], glasscolor[i], frame);
 			}
 
-			if (param2 > 0 && f.special_tiles[0].texture) {
+			if (param2 > 0 && f->special_tiles[0].texture) {
 				// Interior volume level is in range 0 .. 63,
 				// convert it to -0.5 .. 0.5
 				float vlev = (((float)param2 / 63.0 ) * 2.0 - 1.0);
-				TileSpec tile = getSpecialTile(f, n, 0);
+				TileSpec tile = getSpecialTile(*f, n, 0);
 				video::SColor special_color = encode_light_and_color(l,
-					tile.color, f.light_source);
+					tile.color, f->light_source);
 				float offset = 0.003;
 				box = aabb3f(visible_faces[3] ? -b : -a + offset,
 							 visible_faces[1] ? -b : -a + offset,
@@ -1336,7 +1356,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							 visible_faces[2] ? b : a - offset,
 							 visible_faces[0] ? b * vlev : a * vlev - offset,
 							 visible_faces[4] ? b : a - offset);
-				makeAutoLightedCuboid(&collector, data, pos, box, tile, special_color, frame);
+				makeAutoLightedCuboid(collector, data, pos, box, tile, special_color, frame);
 			}
 		break;}
 		case NDT_ALLFACES:
@@ -1345,11 +1365,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					v3s16(0,0,0), data);
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l,
-				tile_leaves.color, f.light_source);
+				tile_leaves.color, f->light_source);
 
 			v3f pos = intToFloat(p, BS);
 			aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
-			makeAutoLightedCuboid(&collector, data, pos, box, tile_leaves, c, frame);
+			makeAutoLightedCuboid(collector, data, pos, box, tile_leaves, c, frame);
 		break;}
 		case NDT_ALLFACES_OPTIONAL:
 			// This is always pre-converted to something else
@@ -1377,9 +1397,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
-			float s = BS/2*f.visual_scale;
+			float s = BS/2*f->visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
@@ -1411,7 +1431,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(tile, vertices, 4, indices, 6);
+			collector->append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_SIGNLIKE:
 		{
@@ -1421,10 +1441,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
 			float d = (float)BS/16;
-			float s = BS/2*f.visual_scale;
+			float s = BS/2*f->visual_scale;
 			// Wall at X+ of node
 			video::S3DVertex vertices[4] =
 			{
@@ -1458,7 +1478,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 indices[] = {0,1,2,2,3,0};
 			// Add to mesh collector
-			collector.append(tile, vertices, 4, indices, 6);
+			collector->append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_PLANTLIKE:
 		{
@@ -1469,16 +1489,16 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
-			float s = BS / 2 * f.visual_scale;
+			float s = BS / 2 * f->visual_scale;
 			// add sqrt(2) visual scale
-			if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x10) != 0))
+			if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x10) != 0))
 				s *= 1.41421;
 
 			float random_offset_X = .0;
 			float random_offset_Z = .0;
-			if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
+			if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
 				random_offset_X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
 				random_offset_Z = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
 			}
@@ -1494,9 +1514,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				float rotate_degree = 0;
 				u8 p2mesh = 0;
-				if (f.param_type_2 == CPT2_DEGROTATE)
+				if (f->param_type_2 == CPT2_DEGROTATE)
 					rotate_degree = n.param2 * 2;
-				if (f.param_type_2 != CPT2_MESHOPTIONS) {
+				if (f->param_type_2 != CPT2_MESHOPTIONS) {
 					if (j == 0) {
 						for (u16 i = 0; i < 4; i++)
 							vertices[i].Pos.rotateXZBy(46 + rotate_degree);
@@ -1606,12 +1626,12 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
 					// move to a random spot to avoid moire
-					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
+					if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
 						vertices[i].Pos.X += random_offset_X;
 						vertices[i].Pos.Z += random_offset_Z;
 					}
 					// randomly move each face up/down
-					if ((f.param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x20) != 0)) {
+					if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x20) != 0)) {
 						PseudoRandom yrng(j | x<<16 | z<<8 | y<<24 );
 						vertices[i].Pos.Y -= BS * ((yrng.next() % 16 / 16.0) * 0.125);
 					}
@@ -1619,10 +1639,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0, 1, 2, 2, 3, 0};
 				// Add to mesh collector
-				collector.append(tile, vertices, 4, indices, 6);
+				collector->append(tile, vertices, 4, indices, 6);
 
 				// stop adding faces for meshes with less than 4 faces
-				if (f.param_type_2 == CPT2_MESHOPTIONS) {
+				if (f->param_type_2 == CPT2_MESHOPTIONS) {
 					if (((p2mesh == 0) || (p2mesh == 1)) && (j == 1))
 						break;
 					else if ((p2mesh == 2) && (j == 2))
@@ -1640,9 +1660,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
-			float s = BS / 2 * f.visual_scale;
+			float s = BS / 2 * f->visual_scale;
 
 			content_t current = n.getContent();
 			content_t n2c;
@@ -1755,7 +1775,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				for (int i = 0; i < 4; i++) {
-					vertices[i].Pos *= f.visual_scale;
+					vertices[i].Pos *= f->visual_scale;
 					if (data->m_smooth_lighting)
 						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
@@ -1763,7 +1783,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 				u16 indices[] = {0, 1, 2, 2, 3, 0};
 				// Add to mesh collector
-				collector.append(tile, vertices, 4, indices, 6);
+				collector->append(tile, vertices, 4, indices, 6);
 			}
 		break;}
 		case NDT_FENCELIKE:
@@ -1778,7 +1798,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 1, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
 			const f32 post_rad=(f32)BS/8;
 			const f32 bar_rad=(f32)BS/16;
@@ -1795,7 +1815,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					4/16.,0,8/16.,1,
 					8/16.,0,12/16.,1,
 					12/16.,0,16/16.,1};
-			makeAutoLightedCuboidEx(&collector, data, pos, post, tile_rot, postuv, c, frame);
+			makeAutoLightedCuboidEx(collector, data, pos, post, tile_rot, postuv, c, frame);
 
 			// Now a section of fence, +X, if there's a post there
 			v3s16 p2 = p;
@@ -1813,10 +1833,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					10/16.,10/16.,12/16.,12/16.,
 					0/16.,8/16.,16/16.,10/16.,
 					0/16.,14/16.,16/16.,16/16.};
-				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
+				makeAutoLightedCuboidEx(collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
+				makeAutoLightedCuboidEx(collector, data, pos, bar, tile_nocrack, xrailuv, c, frame);
 			}
 
 			// Now a section of fence, +Z, if there's a post there
@@ -1835,10 +1855,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 					0/16.,6/16.,16/16.,8/16.,
 					6/16.,6/16.,8/16.,8/16.,
 					10/16.,10/16.,12/16.,12/16.};
-				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
+				makeAutoLightedCuboidEx(collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
 				bar.MinEdge.Y -= BS/2;
 				bar.MaxEdge.Y -= BS/2;
-				makeAutoLightedCuboidEx(&collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
+				makeAutoLightedCuboidEx(collector, data, pos, bar, tile_nocrack, zrailuv, c, frame);
 			}
 		break;}
 		case NDT_RAILLIKE:
@@ -1948,7 +1968,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 
 			u16 l = getInteriorLight(n, 0, nodedef);
 			video::SColor c = encode_light_and_color(l, tile.color,
-				f.light_source);
+				f->light_source);
 
 			float d = (float)BS/64;
 			float s = BS/2;
@@ -1975,7 +1995,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			}
 
 			u16 indices[] = {0,1,2,2,3,0};
-			collector.append(tile, vertices, 4, indices, 6);
+			collector->append(tile, vertices, 4, indices, 6);
 		break;}
 		case NDT_NODEBOX:
 		{
@@ -1997,7 +2017,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			if (!data->m_smooth_lighting) {
 				u16 l = getInteriorLight(n, 1, nodedef);
 				for (int j = 0; j < 6; j++)
-					colors[j] = encode_light_and_color(l, tiles[j].color, f.light_source);
+					colors[j] = encode_light_and_color(l, tiles[j].color, f->light_source);
 			}
 
 			v3f pos = intToFloat(p, BS);
@@ -2005,7 +2025,7 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			int neighbors = 0;
 
 			// locate possible neighboring nodes to connect to
-			if (f.node_box.type == NODEBOX_CONNECTED) {
+			if (f->node_box.type == NODEBOX_CONNECTED) {
 				v3s16 p2 = p;
 
 				p2.Y++;
@@ -2086,9 +2106,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 						f32 z = (j & 1) ? dz2 : dz1;
 						lights[j] = blendLight(frame, core::vector3df(x, y, z));
 					}
-					makeSmoothLightedCuboid(&collector, box, tiles, 6, lights, txc, f.light_source);
+					makeSmoothLightedCuboid(collector, box, tiles, 6, lights, txc, f->light_source);
 				} else {
-					makeCuboid(&collector, box, tiles, 6, colors, txc, f.light_source);
+					makeCuboid(collector, box, tiles, 6, colors, txc, f->light_source);
 				}
 			}
 		break;}
@@ -2097,11 +2117,11 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			v3f pos = intToFloat(p, BS);
 			u16 l = getInteriorLight(n, 1, nodedef);
 			u8 facedir = 0;
-			if (f.param_type_2 == CPT2_FACEDIR ||
-					f.param_type_2 == CPT2_COLORED_FACEDIR) {
+			if (f->param_type_2 == CPT2_FACEDIR ||
+					f->param_type_2 == CPT2_COLORED_FACEDIR) {
 				facedir = n.getFaceDir(nodedef);
-			} else if (f.param_type_2 == CPT2_WALLMOUNTED ||
-					f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+			} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
+					f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 				//convert wallmounted to 6dfacedir.
 				//when cache enabled, it is already converted
 				facedir = n.getWallMounted(nodedef);
@@ -2111,20 +2131,20 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 			}
 
-			if (!data->m_smooth_lighting && f.mesh_ptr[facedir]) {
+			if (!data->m_smooth_lighting && f->mesh_ptr[facedir]) {
 				// use cached meshes
-				for (u16 j = 0; j < f.mesh_ptr[0]->getMeshBufferCount(); j++) {
+				for (u16 j = 0; j < f->mesh_ptr[0]->getMeshBufferCount(); j++) {
 					const TileSpec &tile = getNodeTileN(n, p, j, data);
-					scene::IMeshBuffer *buf = f.mesh_ptr[facedir]->getMeshBuffer(j);
-					collector.append(tile, (video::S3DVertex *)
+					scene::IMeshBuffer *buf = f->mesh_ptr[facedir]->getMeshBuffer(j);
+					collector->append(tile, (video::S3DVertex *)
 						buf->getVertices(), buf->getVertexCount(),
 						buf->getIndices(), buf->getIndexCount(), pos,
-						encode_light_and_color(l, tile.color, f.light_source),
-						f.light_source);
+						encode_light_and_color(l, tile.color, f->light_source),
+						f->light_source);
 				}
-			} else if (f.mesh_ptr[0]) {
+			} else if (f->mesh_ptr[0]) {
 				// no cache, clone and rotate mesh
-				scene::IMesh* mesh = cloneMesh(f.mesh_ptr[0]);
+				scene::IMesh* mesh = cloneMesh(f->mesh_ptr[0]);
 				rotateMeshBy6dFacedir(mesh, facedir);
 				recalculateBoundingBox(mesh);
 				meshmanip->recalculateNormals(mesh, true, false);
@@ -2139,13 +2159,13 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 							vertex.Color = blendLight(frame, vertex.Pos, vertex.Normal, tile.color);
 							vertex.Pos += pos;
 						}
-						collector.append(tile, vertices, vertex_count,
+						collector->append(tile, vertices, vertex_count,
 							buf->getIndices(), buf->getIndexCount());
 					} else {
-						collector.append(tile, vertices, vertex_count,
+						collector->append(tile, vertices, vertex_count,
 							buf->getIndices(), buf->getIndexCount(), pos,
-							encode_light_and_color(l, tile.color, f.light_source),
-							f.light_source);
+							encode_light_and_color(l, tile.color, f->light_source),
+							f->light_source);
 					}
 				}
 				mesh->drop();
@@ -2155,3 +2175,9 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 	}
 }
 
+void mapblock_mesh_generate_special(MeshMakeData *data,
+		MeshCollector &collector)
+{
+	MapblockMeshGenerator generator(data, &collector);
+	generator.generate();
+}
