@@ -620,7 +620,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 {
 	// Texture
 	u8 texid = myrand_range(0, 5);
-	const TileSpec &tile = f.tiles[texid];
+	const TileLayer &tile = f.tiles[texid].layers[0];
 	video::ITexture *texture;
 	struct TileAnimationParams anim;
 	anim.type = TAT_NONE;

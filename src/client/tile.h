@@ -194,19 +194,22 @@ struct FrameSpec
 	video::ITexture *flags_texture;
 };
 
-struct TileSpec
+#define MAX_TILE_LAYERS 2
+
+//! Defines a layer of a tile.
+struct TileLayer
 {
-	TileSpec():
+	TileLayer():
 		texture(NULL),
 		texture_id(0),
 		color(),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
-			MATERIAL_FLAG_BACKFACE_CULLING
+			MATERIAL_FLAG_BACKFACE_CULLING |
+			MATERIAL_FLAG_TILEABLE_HORIZONTAL|
+			MATERIAL_FLAG_TILEABLE_VERTICAL
 		),
-		rotation(0),
-		emissive_light(0),
 		shader_id(0),
 		normal_texture(NULL),
 		flags_texture(NULL),
@@ -217,48 +220,40 @@ struct TileSpec
 	}
 
 	/*!
-	 * Two tiles are equal if they can be appended to
-	 * the same mesh buffer.
+	 * Two layers are equal if they can be merged.
 	 */
-	bool operator==(const TileSpec &other) const
+	bool operator==(const TileLayer &other) const
 	{
-		return (
+		return
 			texture_id == other.texture_id &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
-			rotation == other.rotation
-		);
+			color == other.color;
 	}
 
 	/*!
-	 * Two tiles are not equal if they must be in different mesh buffers.
+	 * Two tiles are not equal if they must have different vertices.
 	 */
-	bool operator!=(const TileSpec &other) const
+	bool operator!=(const TileLayer &other) const
 	{
 		return !(*this == other);
 	}
-	
+
 	// Sets everything else except the texture in the material
 	void applyMaterialOptions(video::SMaterial &material) const
 	{
 		switch (material_type) {
 		case TILE_MATERIAL_BASIC:
+		case TILE_MATERIAL_WAVING_LEAVES:
+		case TILE_MATERIAL_WAVING_PLANTS:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		case TILE_MATERIAL_ALPHA:
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			material.MaterialType = video::EMT_SOLID;
-			break;
-		case TILE_MATERIAL_WAVING_LEAVES:
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			break;
-		case TILE_MATERIAL_WAVING_PLANTS:
-			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
@@ -285,26 +280,26 @@ struct TileSpec
 		}
 	}
 
-	// ordered for performance! please do not reorder unless you pahole it first.
+	bool isTileable() const
+	{
+		return (material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)
+			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
+	}
+
 	video::ITexture *texture;
 	u32 texture_id;
-	// The color of the tile, or if the tile does not own
-	// a color then the color of the node owning this tile.
+	/*!
+	 * The color of the tile, or if the tile does not own
+	 * a color then the color of the node owning this tile.
+	 */
 	video::SColor color;
 	// Material parameters
 	u8 material_type;
 	u8 material_flags;
-
-	u8 rotation;
-	//! This much light does the tile emit.
-	u8 emissive_light;
-
 	u32 shader_id;
-
 	video::ITexture *normal_texture;
-	// cacheline (64)
-
 	video::ITexture *flags_texture;
+
 	// Animation parameters
 	u16 animation_frame_length_ms;
 	u8 animation_frame_count;
@@ -312,5 +307,40 @@ struct TileSpec
 	bool has_color;
 
 	std::vector<FrameSpec> frames;
+};
+
+/*!
+ * Defines a face of a node. May have up to two layers.
+ */
+struct TileSpec
+{
+	TileSpec():
+		rotation(0),
+		emissive_light(0)
+	{
+		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
+			layers[layer] = TileLayer();
+	}
+	
+	/*!
+	 * Returns true if this tile can be merged with the other tile.
+	 */
+	bool isTileable(const TileSpec &other) const {
+		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+			if (layers[layer] != other.layers[layer])
+				return false;
+			if (!layers[layer].isTileable())
+				return false;
+		}
+		return rotation == 0
+			&& rotation == other.rotation
+			&& emissive_light == other.emissive_light;
+	}
+
+	u8 rotation;
+	//! This much light does the tile emit.
+	u8 emissive_light;
+	//! The first is base texture, the second is overlay.
+	TileLayer layers[MAX_TILE_LAYERS];
 };
 #endif

@@ -82,11 +82,16 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
+
+/*
+ *  Clone the mesh buffer.
+ */
+scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
  
 /*
 	Clone the mesh.
 */
-scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
+scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
 	Convert nodeboxes to mesh. Each tile goes into a different buffer.

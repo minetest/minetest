@@ -108,7 +108,12 @@ public:
 
 	scene::IMesh *getMesh()
 	{
-		return m_mesh;
+		return m_mesh[0];
+	}
+
+	scene::IMesh *getMesh(u8 layer)
+	{
+		return m_mesh[layer];
 	}
 
 	MinimapMapblock *moveMinimapMapblock()
@@ -132,7 +137,7 @@ public:
 	void updateCameraOffset(v3s16 camera_offset);
 
 private:
-	scene::IMesh *m_mesh;
+	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
 	Client *m_client;
 	video::IVideoDriver *m_driver;
@@ -150,20 +155,23 @@ private:
 	// Animation info: cracks
 	// Last crack value passed to animate()
 	int m_last_crack;
-	// Maps mesh buffer (i.e. material) indices to base texture names
-	UNORDERED_MAP<u32, std::string> m_crack_materials;
+	// Maps mesh and mesh buffer (i.e. material) indices to base texture names
+	std::map<std::pair<u8, u32>, std::string> m_crack_materials;
 
 	// Animation info: texture animationi
-	// Maps meshbuffers to TileSpecs
-	UNORDERED_MAP<u32, TileSpec> m_animation_tiles;
-	UNORDERED_MAP<u32, int> m_animation_frames; // last animation frame
-	UNORDERED_MAP<u32, int> m_animation_frame_offsets;
+	// Maps mesh and mesh buffer indices to TileSpecs
+	// Keys are pairs of (mesh index, buffer index in the mesh)
+	std::map<std::pair<u8, u32>, TileLayer> m_animation_tiles;
+	std::map<std::pair<u8, u32>, int> m_animation_frames; // last animation frame
+	std::map<std::pair<u8, u32>, int> m_animation_frame_offsets;
 
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
-	// For each meshbuffer, stores pre-baked colors of sunlit vertices
-	std::map<u32, std::map<u32, video::SColor > > m_daynight_diffs;
+	// For each mesh and mesh buffer, stores pre-baked colors
+	// of sunlit vertices
+	// Keys are pairs of (mesh index, buffer index in the mesh)
+	std::map<std::pair<u8, u32>, std::map<u32, video::SColor > > m_daynight_diffs;
 
 	// Camera offset info -> do we have to translate the mesh?
 	v3s16 m_camera_offset;
@@ -176,7 +184,7 @@ private:
 */
 struct PreMeshBuffer
 {
-	TileSpec tile;
+	TileLayer layer;
 	std::vector<u16> indices;
 	std::vector<video::S3DVertex> vertices;
 	std::vector<video::S3DVertexTangents> tangent_vertices;
@@ -184,7 +192,7 @@ struct PreMeshBuffer
 
 struct MeshCollector
 {
-	std::vector<PreMeshBuffer> prebuffers;
+	std::vector<PreMeshBuffer> prebuffers[MAX_TILE_LAYERS];
 	bool m_use_tangent_vertices;
 
 	MeshCollector(bool use_tangent_vertices):
@@ -193,27 +201,38 @@ struct MeshCollector
 	}
 
 	void append(const TileSpec &material,
+				const video::S3DVertex *vertices, u32 numVertices,
+				const u16 *indices, u32 numIndices);
+	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices);
+			const u16 *indices, u32 numIndices, u8 layernum);
 	void append(const TileSpec &material,
+				const video::S3DVertex *vertices, u32 numVertices,
+				const u16 *indices, u32 numIndices, v3f pos,
+				video::SColor c, u8 light_source);
+	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
-			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c, u8 light_source);
+			const u16 *indices, u32 numIndices, v3f pos,
+			video::SColor c, u8 light_source, u8 layernum);
+	/*!
+	 * Colorizes all vertices in the collector.
+	 */
+	void applyTileColors();
 };
 
 /*!
- * Encodes light and color of a node.
+ * Encodes light of a node.
  * The result is not the final color, but a
  * half-baked vertex color.
+ * You have to multiply the resulting color
+ * with the node's color.
  *
  * \param light the first 8 bits are day light,
  * the last 8 bits are night light
- * \param color the node's color
  * \param emissive_light amount of light the surface emits,
  * from 0 to LIGHT_SUN.
  */
-video::SColor encode_light_and_color(u16 light, const video::SColor &color,
-	u8 emissive_light);
+video::SColor encode_light(u16 light, u8 emissive_light);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);

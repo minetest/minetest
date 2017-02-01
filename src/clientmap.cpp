@@ -290,6 +290,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 struct MeshBufList
 {
+	/*!
+	 * Specifies in which layer the list is.
+	 * All lists which are in a lower layer are rendered before this list.
+	 */
+	u8 layer;
 	video::SMaterial m;
 	std::vector<scene::IMeshBuffer*> bufs;
 };
@@ -303,7 +308,7 @@ struct MeshBufListList
 		lists.clear();
 	}
 
-	void add(scene::IMeshBuffer *buf)
+	void add(scene::IMeshBuffer *buf, u8 layer)
 	{
 		const video::SMaterial &m = buf->getMaterial();
 		for(std::vector<MeshBufList>::iterator i = lists.begin();
@@ -315,12 +320,16 @@ struct MeshBufListList
 			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
 				continue;
 
+			if(l.layer != layer)
+				continue;
+
 			if (l.m == m) {
 				l.bufs.push_back(buf);
 				return;
 			}
 		}
 		MeshBufList l;
+		l.layer = layer;
 		l.m = m;
 		l.bufs.push_back(buf);
 		lists.push_back(l);
@@ -434,29 +443,34 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
-			scene::IMesh *mesh = mapBlockMesh->getMesh();
-			assert(mesh);
+			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+				assert(mesh);
 
-			u32 c = mesh->getMeshBufferCount();
-			for (u32 i = 0; i < c; i++)
-			{
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+				u32 c = mesh->getMeshBufferCount();
+				for (u32 i = 0; i < c; i++) {
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 
-				video::SMaterial& material = buf->getMaterial();
-				video::IMaterialRenderer* rnd =
+					video::SMaterial& material = buf->getMaterial();
+					video::IMaterialRenderer* rnd =
 						driver->getMaterialRenderer(material.MaterialType);
-				bool transparent = (rnd && rnd->isTransparent());
-				if (transparent == is_transparent_pass) {
-					if (buf->getVertexCount() == 0)
-						errorstream << "Block [" << analyze_block(block)
-							 << "] contains an empty meshbuf" << std::endl;
+					bool transparent = (rnd && rnd->isTransparent());
+					if (transparent == is_transparent_pass) {
+						if (buf->getVertexCount() == 0)
+							errorstream << "Block [" << analyze_block(block)
+								<< "] contains an empty meshbuf" << std::endl;
 
-					material.setFlag(video::EMF_TRILINEAR_FILTER, m_cache_trilinear_filter);
-					material.setFlag(video::EMF_BILINEAR_FILTER, m_cache_bilinear_filter);
-					material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_cache_anistropic_filter);
-					material.setFlag(video::EMF_WIREFRAME, m_control.show_wireframe);
+						material.setFlag(video::EMF_TRILINEAR_FILTER,
+							m_cache_trilinear_filter);
+						material.setFlag(video::EMF_BILINEAR_FILTER,
+							m_cache_bilinear_filter);
+						material.setFlag(video::EMF_ANISOTROPIC_FILTER,
+							m_cache_anistropic_filter);
+						material.setFlag(video::EMF_WIREFRAME,
+							m_control.show_wireframe);
 
-					drawbufs.add(buf);
+						drawbufs.add(buf, layer);
+					}
 				}
 			}
 		}
