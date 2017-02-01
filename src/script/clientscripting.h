@@ -1,6 +1,7 @@
 /*
 Minetest
 Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,18 +18,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "content_abm.h"
+#ifndef CLIENT_SCRIPTING_H_
+#define CLIENT_SCRIPTING_H_
 
-#include "environment.h"
-#include "gamedef.h"
-#include "nodedef.h"
-#include "content_sao.h"
-#include "settings.h"
-#include "mapblock.h" // For getNodeBlockPos
-#include "map.h"
-#include "serverscripting.h"
-#include "log.h"
+#include "cpp_api/s_base.h"
+#include "cpp_api/s_client.h"
+#include "cpp_api/s_security.h"
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
+class Client;
+class ClientScripting:
+	virtual public ScriptApiBase,
+	public ScriptApiSecurity,
+	public ScriptApiClient
+{
+public:
+	ClientScripting(Client *client);
 
-}
+private:
+	virtual void InitializeModApi(lua_State *L, int top);
+};
+#endif
