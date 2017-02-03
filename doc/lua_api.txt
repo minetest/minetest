@@ -1473,6 +1473,10 @@ Item stacks can store metadata too. See `ItemStackMetaRef`.
 
 Item metadata only contains a key-value store.
 
+Some of the values in the key-value store are handled specially:
+
+* `description`: Set the itemstack's description. Defaults to idef.description
+
 Example stuff:
 
     local meta = stack:get_meta()

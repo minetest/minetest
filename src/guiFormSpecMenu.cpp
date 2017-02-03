@@ -2303,7 +2303,12 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 			// Draw tooltip
 			std::wstring tooltip_text = L"";
 			if (hovering && !m_selected_item) {
-				tooltip_text = utf8_to_wide(item.getDefinition(m_client->idef()).description);
+				const std::string &desc = item.metadata.getString("description");
+				if (desc.empty())
+					tooltip_text =
+						utf8_to_wide(item.getDefinition(m_client->idef()).description);
+				else
+					tooltip_text = utf8_to_wide(desc);
 			}
 			if (tooltip_text != L"") {
 				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');
