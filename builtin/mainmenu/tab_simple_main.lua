@@ -43,6 +43,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval .. "tablecolumns[" ..
 		image_column(fgettext("Favorite"), "favorite") .. ";" ..
+		image_column(fgettext("Ping"), "") .. ",padding=0.25;" ..
 		"color,span=3;" ..
 		"text,align=right;" ..                -- clients
 		"text,align=center,padding=0.25;" ..  -- "/"

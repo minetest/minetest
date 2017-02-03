@@ -577,6 +577,13 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_settable(L, top_lvl2);
 		}
 
+		if (servers[i].isMember("ping")) {
+			float ping = servers[i]["ping"].asFloat();
+			lua_pushstring(L, "ping");
+			lua_pushnumber(L, ping);
+			lua_settable(L, top_lvl2);
+		}
+
 		lua_settable(L, top);
 		index++;
 	}
