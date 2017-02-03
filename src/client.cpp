@@ -1447,6 +1447,11 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
+MapNode Client::getNode(v3s16 p, bool *is_valid_position)
+{
+	return m_env.getMap().getNodeNoEx(p, is_valid_position);
+}
+
 void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 {
 	//TimeTaker timer1("Client::addNode()");
