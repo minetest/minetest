@@ -404,9 +404,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
+	float wieldmesh_offset_Y = -35 + player->getPitch() * 0.05;
+	wieldmesh_offset_Y = rangelim(wieldmesh_offset_Y, -52, -32);
+
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(55, -35, 65);
+	v3f wield_position = v3f(55, wieldmesh_offset_Y, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
