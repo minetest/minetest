@@ -99,18 +99,10 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 	c_snowblock       = ndef->getId("mapgen_snowblock");
 	c_ice             = ndef->getId("mapgen_ice");
 
-	c_cobble          = ndef->getId("mapgen_cobble");
-	c_stair_cobble    = ndef->getId("mapgen_stair_cobble");
-	c_mossycobble     = ndef->getId("mapgen_mossycobble");
-
-	if (c_desert_sand == CONTENT_IGNORE)
-		c_desert_sand = c_sand;
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
-	if (c_mossycobble == CONTENT_IGNORE)
-		c_mossycobble = c_cobble;
-	if (c_stair_cobble == CONTENT_IGNORE)
-		c_stair_cobble = c_cobble;
+	if (c_desert_sand == CONTENT_IGNORE)
+		c_desert_sand = c_sand;
 	if (c_dirt_with_snow == CONTENT_IGNORE)
 		c_dirt_with_snow = c_dirt_with_grass;
 	if (c_snow == CONTENT_IGNORE)
@@ -119,6 +111,18 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 		c_snowblock = c_dirt_with_grass;
 	if (c_ice == CONTENT_IGNORE)
 		c_ice = c_water_source;
+
+	c_cobble             = ndef->getId("mapgen_cobble");
+	c_mossycobble        = ndef->getId("mapgen_mossycobble");
+	c_stair_cobble       = ndef->getId("mapgen_stair_cobble");
+	c_stair_desert_stone = ndef->getId("mapgen_stair_desert_stone");
+
+	if (c_mossycobble == CONTENT_IGNORE)
+		c_mossycobble = c_cobble;
+	if (c_stair_cobble == CONTENT_IGNORE)
+		c_stair_cobble = c_cobble;
+	if (c_stair_desert_stone == CONTENT_IGNORE)
+		c_stair_desert_stone = c_desert_stone;
 }
 
 
@@ -571,7 +575,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		if (getBiome(0, v2s16(node_min.X, node_min.Z)) == BT_DESERT) {
 			dp.c_wall     = c_desert_stone;
 			dp.c_alt_wall = CONTENT_IGNORE;
-			dp.c_stair    = c_desert_stone;
+			dp.c_stair    = c_stair_desert_stone;
 
 			dp.diagonal_dirs = true;
 			dp.holesize      = v3s16(2, 3, 2);
