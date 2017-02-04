@@ -99,6 +99,8 @@ MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 	c_snowblock       = ndef->getId("mapgen_snowblock");
 	c_ice             = ndef->getId("mapgen_ice");
 
+	if (c_gravel == CONTENT_IGNORE)
+		c_gravel = c_stone;
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
 	if (c_desert_sand == CONTENT_IGNORE)
