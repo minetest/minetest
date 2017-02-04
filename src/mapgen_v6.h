@@ -123,6 +123,7 @@ public:
 	content_t c_cobble;
 	content_t c_mossycobble;
 	content_t c_stair_cobble;
+	content_t c_stair_desert_stone;
 
 	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
 	~MapgenV6();
