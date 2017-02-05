@@ -44,12 +44,13 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 {
 	// Many special drawtypes have normals set to 0,0,0 and this
 	// must result in maximum brightness (no face shadng).
-	if (normal.Y < -0.5f)
-		applyShadeFactor (color, 0.447213f);
-	else if (normal.X > 0.5f || normal.X < -0.5f)
-		applyShadeFactor (color, 0.670820f);
-	else if (normal.Z > 0.5f || normal.Z < -0.5f)
-		applyShadeFactor (color, 0.836660f);
+	float x2 = normal.X * normal.X;
+	float y2 = normal.Y * normal.Y;
+	float z2 = normal.Z * normal.Z;
+	if (normal.Y < 0)
+		applyShadeFactor(color, 0.670820f * x2 + 0.447213f * y2 + 0.836660f * z2);
+	else if ((x2 > 1e-3) || (z2 > 1e-3))
+		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
 scene::IAnimatedMesh* createCubeMesh(v3f scale)
