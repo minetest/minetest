@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-01-22 20:37+0000\n"
-"Last-Translator: Guo Yunhe <guoyunhebrave@gmail.com>\n"
+"PO-Revision-Date: 2017-02-05 14:54+0000\n"
+"Last-Translator: zaoqi <zaomir@outlook.com>\n"
 "Language-Team: Chinese (China) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.11-dev\n"
+"X-Generator: Weblate 2.11\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Lua 脚本发生错误，如一个 mod："
+msgstr "Lua 脚本发生错误，如一个模组："
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -435,7 +435,7 @@ msgstr "用户名/密码"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "启用 PvP"
+msgstr "启用玩家互相攻击"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -4287,7 +4287,7 @@ msgstr "初始化窗口尺寸之宽度组件。"
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "方块周围选择框线的宽度。"
 
 #: src/settings_translation_file.cpp
 msgid ""
