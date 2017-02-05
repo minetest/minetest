@@ -225,23 +225,21 @@ int LuaItemStack::l_to_table(lua_State *L)
 		lua_pushinteger(L, item.wear);
 		lua_setfield(L, -2, "wear");
 
-		if (item.metadata.size() == 1 && item.metadata.contains("")) {
-			const std::string &value = item.metadata.getString("");
+		const std::string &metadata_str = item.metadata.getString("");
+		lua_pushlstring(L, metadata_str.c_str(), metadata_str.size());
+		lua_setfield(L, -2, "metadata");
+
+		lua_newtable(L);
+		const StringMap &fields = item.metadata.getStrings();
+		for (StringMap::const_iterator it = fields.begin();
+				it != fields.end(); ++it) {
+			const std::string &name = it->first;
+			const std::string &value = it->second;
+			lua_pushlstring(L, name.c_str(), name.size());
 			lua_pushlstring(L, value.c_str(), value.size());
-			lua_setfield(L, -2, "metadata");
-		} else {
-			lua_newtable(L);
-			const StringMap &fields = item.metadata.getStrings();
-			for (StringMap::const_iterator it = fields.begin();
-					it != fields.end(); ++it) {
-				const std::string &name = it->first;
-				const std::string &value = it->second;
-				lua_pushlstring(L, name.c_str(), name.size());
-				lua_pushlstring(L, value.c_str(), value.size());
-				lua_settable(L, -3);
-			}
-			lua_setfield(L, -2, "metadata");
+			lua_settable(L, -3);
 		}
+		lua_setfield(L, -2, "meta");
 	}
 	return 1;
 }

@@ -848,6 +848,21 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 			istack.metadata.setString("", value);
 		}
 
+		lua_getfield(L, index, "meta");
+		fieldstable = lua_gettop(L);
+		if (lua_istable(L, fieldstable)) {
+			lua_pushnil(L);
+			while (lua_next(L, fieldstable) != 0) {
+				// key at index -2 and value at index -1
+				std::string key = lua_tostring(L, -2);
+				size_t value_len;
+				const char *value_cs = lua_tolstring(L, -1, &value_len);
+				std::string value(value_cs, value_len);
+				istack.metadata.setString(name, value);
+				lua_pop(L, 1); // removes value, keeps key for next iteration
+			}
+		}
+
 		return istack;
 	} else {
 		throw LuaError("Expecting itemstack, itemstring, table or nil");
