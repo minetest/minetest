@@ -8,7 +8,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
 "PO-Revision-Date: 2017-02-05 14:54+0000\n"
-"Last-Translator: zaoqi <zaomir@outlook.com>\n"
+"Last-Translator: susan <2033905535@qq.com>\n"
 "Language-Team: Chinese (China) "
 "<https://hosted.weblate.org/projects/minetest/minetest/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -4287,7 +4287,7 @@ msgstr "初始化窗口尺寸之宽度组件。"
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr "方块周围选择框线的宽度。"
+msgstr "节点周围选择的盒子的线宽"
 
 #: src/settings_translation_file.cpp
 msgid ""
