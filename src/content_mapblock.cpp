@@ -1016,48 +1016,40 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 
 void MapblockMeshGenerator::drawSignlikeNode()
 {
+	u8 wall = n.getWallMounted(nodedef);
+
 	TileSpec tile = getNodeTileN(n, p, 0, data);
 	tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-	u16 l = getInteriorLight(n, 0, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	float d = (float)BS/16;
-	float s = BS/2*f->visual_scale;
+	float offset = BS/16;
+	float size = BS/2 * f->visual_scale;
 	// Wall at X+ of node
-	video::S3DVertex vertices[4] =
-	{
-		video::S3DVertex(BS/2-d,  s,  s, 0,0,0, c, 0,0),
-		video::S3DVertex(BS/2-d,  s, -s, 0,0,0, c, 1,0),
-		video::S3DVertex(BS/2-d, -s, -s, 0,0,0, c, 1,1),
-		video::S3DVertex(BS/2-d, -s,  s, 0,0,0, c, 0,1),
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(BS/2 - offset,  size,  size, 0,0,0, color, 0,0),
+		video::S3DVertex(BS/2 - offset,  size, -size, 0,0,0, color, 1,0),
+		video::S3DVertex(BS/2 - offset, -size, -size, 0,0,0, color, 1,1),
+		video::S3DVertex(BS/2 - offset, -size,  size, 0,0,0, color, 0,1),
 	};
 
-	v3s16 dir = n.getWallMountedDir(nodedef);
-
-	for (s32 i = 0; i < 4; i++)
-	{
-		if(dir == v3s16(1,0,0))
-			vertices[i].Pos.rotateXZBy(0);
-		if(dir == v3s16(-1,0,0))
-			vertices[i].Pos.rotateXZBy(180);
-		if(dir == v3s16(0,0,1))
-			vertices[i].Pos.rotateXZBy(90);
-		if(dir == v3s16(0,0,-1))
-			vertices[i].Pos.rotateXZBy(-90);
-		if(dir == v3s16(0,-1,0))
-			vertices[i].Pos.rotateXYBy(-90);
-		if(dir == v3s16(0,1,0))
-			vertices[i].Pos.rotateXYBy(90);
-
+	for (int i = 0; i < 4; i++) {
+		switch(wall) {
+			case 0: vertices[i].Pos.rotateXYBy( 90); break; // +Y
+			case 1: vertices[i].Pos.rotateXYBy(-90); break; // -Y
+			case 2: vertices[i].Pos.rotateXZBy(  0); break; // +X
+			case 3: vertices[i].Pos.rotateXZBy(180); break; // -X
+			case 4: vertices[i].Pos.rotateXZBy( 90); break; // +Z
+			case 5: vertices[i].Pos.rotateXZBy(-90); break; // -Z
+		}
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 
-	u16 indices[] = {0,1,2,2,3,0};
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	// Add to mesh collector
 	collector->append(tile, vertices, 4, indices, 6);
 }
