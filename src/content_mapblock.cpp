@@ -838,14 +838,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		v3s16( 0, 0,-1)
 	};
 
-	u16 l = getInteriorLight(n, 1, nodedef);
-	u8 i;
 	TileSpec tiles[6];
-	for (i = 0; i < 6; i++)
-		tiles[i] = getNodeTile(n, p, dirs[i], data);
+	for (u32 face = 0; face < 6; face++)
+		tiles[face] = getNodeTile(n, p, dirs[face], data);
 
-	video::SColor tile0color = encode_light_and_color(l,
-		tiles[0].color, f->light_source);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tiles[0].color, f->light_source);
 
 	TileSpec glass_tiles[6];
 	video::SColor glasscolor[6];
@@ -857,12 +855,13 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		glass_tiles[4] = tiles[1];
 		glass_tiles[5] = tiles[1];
 	} else {
-		for (i = 0; i < 6; i++)
-			glass_tiles[i] = tiles[1];
+		for (u32 face = 0; face < 6; face++)
+			glass_tiles[face] = tiles[1];
 	}
-	for (i = 0; i < 6; i++)
-		glasscolor[i] = encode_light_and_color(l, glass_tiles[i].color,
-			f->light_source);
+
+	if (!data->m_smooth_lighting)
+		for (u32 face = 0; face < 6; face++)
+			glasscolor[face] = encode_light_and_color(light, glass_tiles[face].color, f->light_source);
 
 	u8 param2 = n.getParam2();
 	bool H_merge = ! bool(param2 & 128);
@@ -897,79 +896,45 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	};
 
 	// table of node visible faces, 0 = invisible
-	int visible_faces[6] = {0,0,0,0,0,0};
+	bool visible_faces[6] = {0,0,0,0,0,0};
 
-	// table of neighbours, 1 = same type, checked with g_26dirs
-	int nb[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	// tables of neighbour (connect if same type and merge allowed),
+	// checked with g_26dirs
 
-	// g_26dirs to check when only horizontal merge is allowed
-	int nb_H_dirs[8] = {0,2,3,5,10,11,12,13};
+	// 1 = connect
+	bool nb[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-	content_t current = n.getContent();
-	content_t n2c;
-	MapNode n2;
-	v3s16 n2p;
+	// 1 = check
+	static const bool check_nb_vertical   [18] = { 0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
+	static const bool check_nb_horizontal [18] = { 1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0 };
+	static const bool check_nb_all        [18] = { 1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
+	const bool *check_nb = check_nb_all;
 
 	// neighbours checks for frames visibility
-
-	if (!H_merge && V_merge) {
-		n2p = blockpos_nodes + p + g_26dirs[1];
-		n2 = data->m_vmanip.getNodeNoEx(n2p);
-		n2c = n2.getContent();
-		if (n2c == current || n2c == CONTENT_IGNORE)
-			nb[1] = 1;
-		n2p = blockpos_nodes + p + g_26dirs[4];
-		n2 = data->m_vmanip.getNodeNoEx(n2p);
-		n2c = n2.getContent();
-		if (n2c == current || n2c == CONTENT_IGNORE)
-			nb[4] = 1;
-	} else if (H_merge && !V_merge) {
-		for(i = 0; i < 8; i++) {
-			n2p = blockpos_nodes + p + g_26dirs[nb_H_dirs[i]];
-			n2 = data->m_vmanip.getNodeNoEx(n2p);
-			n2c = n2.getContent();
-			if (n2c == current || n2c == CONTENT_IGNORE)
-				nb[nb_H_dirs[i]] = 1;
-		}
-	} else if (H_merge && V_merge) {
-		for(i = 0; i < 18; i++)	{
-			n2p = blockpos_nodes + p + g_26dirs[i];
-			n2 = data->m_vmanip.getNodeNoEx(n2p);
-			n2c = n2.getContent();
+	if (H_merge || V_merge) {
+		if (!H_merge)
+			check_nb = check_nb_vertical; // vertical-only merge
+		if (!V_merge)
+			check_nb = check_nb_horizontal; // horizontal-only merge
+		content_t current = n.getContent();
+		for (u32 i = 0; i < 18; i++) {
+			if (!check_nb[i])
+				continue;
+			v3s16 n2p = blockpos_nodes + p + g_26dirs[i];
+			MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
+			content_t n2c = n2.getContent();
 			if (n2c == current || n2c == CONTENT_IGNORE)
 				nb[i] = 1;
 		}
 	}
 
-	// faces visibility checks
-
-	if (!V_merge) {
-		visible_faces[0] = 1;
-		visible_faces[1] = 1;
-	} else {
-		for(i = 0; i < 2; i++) {
-			n2p = blockpos_nodes + p + dirs[i];
-			n2 = data->m_vmanip.getNodeNoEx(n2p);
-			n2c = n2.getContent();
-			if (n2c != current)
-				visible_faces[i] = 1;
-		}
-	}
-
-	if (!H_merge) {
-		visible_faces[2] = 1;
-		visible_faces[3] = 1;
-		visible_faces[4] = 1;
-		visible_faces[5] = 1;
-	} else {
-		for(i = 2; i < 6; i++) {
-			n2p = blockpos_nodes + p + dirs[i];
-			n2 = data->m_vmanip.getNodeNoEx(n2p);
-			n2c = n2.getContent();
-			if (n2c != current)
-				visible_faces[i] = 1;
-		}
-	}
+	// faces visibility
+	visible_faces[0] = !nb[1]; // +Y
+	visible_faces[1] = !nb[4]; // -Y
+	visible_faces[2] = !nb[0]; // +X
+	visible_faces[3] = !nb[3]; // -X
+	visible_faces[4] = !nb[2]; // +Z
+	visible_faces[5] = !nb[5]; // -Z
 
 	static const u8 nb_triplet[12*3] = {
 		1,2, 7,  1,5, 6,  4,2,15,  4,5,14,
@@ -979,34 +944,31 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 	aabb3f box;
 
-	for(i = 0; i < 12; i++)
-	{
-		int edge_invisible;
-		if (nb[nb_triplet[i*3+2]])
-			edge_invisible = nb[nb_triplet[i*3]] & nb[nb_triplet[i*3+1]];
+	for (u32 edge = 0; edge < 12; edge++) {
+		bool edge_invisible;
+		if (nb[nb_triplet[edge * 3 + 2]])
+			edge_invisible = nb[nb_triplet[edge * 3]] & nb[nb_triplet[edge * 3 + 1]];
 		else
-			edge_invisible = nb[nb_triplet[i*3]] ^ nb[nb_triplet[i*3+1]];
+			edge_invisible = nb[nb_triplet[edge * 3]] ^ nb[nb_triplet[edge * 3 + 1]];
 		if (edge_invisible)
 			continue;
-		box = frame_edges[i];
-		makeAutoLightedCuboid(collector, data, origin, box, tiles[0], tile0color, frame);
+		box = frame_edges[edge];
+		makeAutoLightedCuboid(collector, data, origin, box, tiles[0], color, frame);
 	}
 
-	for(i = 0; i < 6; i++)
-	{
-		if (!visible_faces[i])
+	for (u32 face = 0; face < 6; face++) {
+		if (!visible_faces[face])
 			continue;
-		box = glass_faces[i];
-		makeAutoLightedCuboid(collector, data, origin, box, glass_tiles[i], glasscolor[i], frame);
+		box = glass_faces[face];
+		makeAutoLightedCuboid(collector, data, origin, box, glass_tiles[face], glasscolor[face], frame);
 	}
 
 	if (param2 > 0 && f->special_tiles[0].texture) {
 		// Interior volume level is in range 0 .. 63,
 		// convert it to -0.5 .. 0.5
-		float vlev = (((float)param2 / 63.0 ) * 2.0 - 1.0);
+		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		TileSpec tile = getSpecialTile(*f, n, 0);
-		video::SColor special_color = encode_light_and_color(l,
-			tile.color, f->light_source);
+		video::SColor special_color = encode_light_and_color(light, tile.color, f->light_source);
 		float offset = 0.003;
 		box = aabb3f(visible_faces[3] ? -b : -a + offset,
 						visible_faces[1] ? -b : -a + offset,
