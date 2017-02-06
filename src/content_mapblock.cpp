@@ -556,8 +556,8 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 {
 	u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
-	for (s32 w = -1; w <= 1; w++)
-	for (s32 u = -1; u <= 1; u++)
+	for (int w = -1; w <= 1; w++)
+	for (int u = -1; u <= 1; u++)
 	{
 		// Skip getting unneeded data
 		if (!flowing && u && w)
@@ -599,25 +599,25 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 
 void MapblockMeshGenerator::resetCornerLevels()
 {
-	for (u32 k = 0; k < 2; k++)
-	for (u32 i = 0; i < 2; i++)
+	for (int k = 0; k < 2; k++)
+	for (int i = 0; i < 2; i++)
 		corner_levels[k][i] = 0.5 * BS;
 }
 
 void MapblockMeshGenerator::calculateCornerLevels()
 {
-	for (u32 k = 0; k < 2; k++)
-	for (u32 i = 0; i < 2; i++)
+	for (int k = 0; k < 2; k++)
+	for (int i = 0; i < 2; i++)
 		corner_levels[k][i] = getCornerLevel(i, k);
 }
 
-f32 MapblockMeshGenerator::getCornerLevel(u32 i, u32 k)
+f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 {
 	float sum = 0;
-	u32 count = 0;
-	u32 air_count = 0;
-	for (u32 dk = 0; dk < 2; dk++)
-	for (u32 di = 0; di < 2; di++)
+	int count = 0;
+	int air_count = 0;
+	for (int dk = 0; dk < 2; dk++)
+	for (int di = 0; di < 2; di++)
 	{
 		NeighborData &neighbor_data = liquid_neighbors[k + dk][i + di];
 		content_t content = neighbor_data.content;
@@ -653,7 +653,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 		v3s16 p[2]; // XZ only; 1 means +, 0 means -
 	};
 	struct UV {
-		s32 u, v;
+		int u, v;
 	};
 	static const LiquidFaceDesc base_faces[4] = {
 		{ v3s16( 1, 0,  0), { v3s16(1, 0, 1), v3s16(1, 0, 0) }},
@@ -667,9 +667,9 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 		{ 1, 0 },
 		{ 0, 0 }
 	};
-	for (u32 i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		const LiquidFaceDesc &face = base_faces[i];
-		NeighborData &neighbor = liquid_neighbors[face.dir.Z + 1][face.dir.X + 1];
+		const NeighborData &neighbor = liquid_neighbors[face.dir.Z + 1][face.dir.X + 1];
 
 		// No face between nodes of the same liquid, unless there is node
 		// at the top to which it should be connected. Again, unless the face
@@ -692,7 +692,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			continue;
 
 		video::S3DVertex vertices[4];
-		for (s32 j = 0; j < 4; j++) {
+		for (int j = 0; j < 4; j++) {
 			const UV &vertex = base_vertices[j];
 			const v3s16 &base = face.p[vertex.u];
 			v3f pos;
@@ -707,7 +707,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			pos += origin;
 			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, color, vertex.u, vertex.v);
 		};
-		u16 indices[] = {0,1,2,2,3,0};
+		static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 		collector->append(tile_liquid, vertices, 4, indices, 6);
 	}
 }
@@ -717,7 +717,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 	// To get backface culling right, the vertices need to go
 	// clockwise around the front of the face. And we happened to
 	// calculate corner levels in exact reverse order.
-	s32 corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
+	static const int corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 
 	video::S3DVertex vertices[4] = {
 		video::S3DVertex(-BS/2, 0,  BS/2, 0,0,0, color_liquid_top, 0,1),
@@ -726,9 +726,9 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		video::S3DVertex(-BS/2, 0, -BS/2, 0,0,0, color_liquid_top, 0,0),
 	};
 
-	for (s32 i = 0; i < 4; i++) {
-		s32 u = corner_resolve[i][0];
-		s32 w = corner_resolve[i][1];
+	for (int i = 0; i < 4; i++) {
+		int u = corner_resolve[i][0];
+		int w = corner_resolve[i][1];
 		vertices[i].Pos.Y += corner_levels[w][u];
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid_top.color);
@@ -754,7 +754,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		tcoord_translate.X -= floor(tcoord_translate.X);
 		tcoord_translate.Y -= floor(tcoord_translate.Y);
 
-		for (s32 i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			vertices[i].TCoords.rotateBy(tcoord_angle, tcoord_center);
 			vertices[i].TCoords += tcoord_translate;
 		}
@@ -762,7 +762,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		std::swap(vertices[0].TCoords, vertices[2].TCoords);
 	}
 
-	u16 indices[] = {0,1,2,2,3,0};
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	collector->append(tile_liquid_top, vertices, 4, indices, 6);
 }
 
@@ -785,7 +785,7 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 	if (!data->m_smooth_lighting)
 		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	for (u32 face = 0; face < 6; face++) {
+	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
 		v3s16 dir = g_6dirs[face];
 		v3s16 neighbor_pos = blockpos_nodes + p + dir;
@@ -806,8 +806,8 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 			video::S3DVertex(-BS/2,  BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 1,0),
 		};
 
-		for (u16 i = 0; i < 4; i++) {
-		// Rotations in the g_6dirs format
+		for (int i = 0; i < 4; i++) {
+			// Rotations in the g_6dirs format
 			switch(face) {
 				case 0: vertices[i].Pos.rotateXZBy(  0); break; // Z+
 				case 1: vertices[i].Pos.rotateYZBy(-90); break; // Y+
@@ -821,7 +821,7 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 			vertices[i].Pos += origin;
 		}
 
-		u16 indices[] = { 0, 1, 2, 2, 3, 0 };
+		static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 		// Add to mesh collector
 		collector->append(tile, vertices, 4, indices, 6);
 	}
@@ -830,7 +830,7 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
 	TileSpec tiles[6];
-	for (u32 face = 0; face < 6; face++)
+	for (int face = 0; face < 6; face++)
 		tiles[face] = getNodeTile(n, p, g_6dirs[face], data);
 
 	if (!data->m_smooth_lighting)
@@ -846,12 +846,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		glass_tiles[4] = tiles[3];
 		glass_tiles[5] = tiles[4];
 	} else {
-		for (u32 face = 0; face < 6; face++)
+		for (int face = 0; face < 6; face++)
 			glass_tiles[face] = tiles[4];
 	}
 
 	if (!data->m_smooth_lighting)
-		for (u32 face = 0; face < 6; face++)
+		for (int face = 0; face < 6; face++)
 			glasscolor[face] = encode_light_and_color(light, glass_tiles[face].color, f->light_source);
 
 	u8 param2 = n.getParam2();
@@ -905,7 +905,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		if (!V_merge)
 			check_nb = check_nb_horizontal; // horizontal-only merge
 		content_t current = n.getContent();
-		for (u32 i = 0; i < 18; i++) {
+		for (int i = 0; i < 18; i++) {
 			if (!check_nb[i])
 				continue;
 			v3s16 n2p = blockpos_nodes + p + g_26dirs[i];
@@ -924,7 +924,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		0,1, 8,  0,4,16,  3,4,17,  3,1, 9
 	};
 
-	for (u32 edge = 0; edge < 12; edge++) {
+	for (int edge = 0; edge < 12; edge++) {
 		bool edge_invisible;
 		if (nb[nb_triplet[edge * 3 + 2]])
 			edge_invisible = nb[nb_triplet[edge * 3]] & nb[nb_triplet[edge * 3 + 1]];
@@ -932,15 +932,15 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			edge_invisible = nb[nb_triplet[edge * 3]] ^ nb[nb_triplet[edge * 3 + 1]];
 		if (edge_invisible)
 			continue;
-		aabb3f box = frame_edges[edge];
-		makeAutoLightedCuboid(collector, data, origin, box, tiles[1], color, frame);
+		makeAutoLightedCuboid(collector, data, origin, frame_edges[edge],
+		                      tiles[1], color, frame);
 	}
 
-	for (u32 face = 0; face < 6; face++) {
+	for (int face = 0; face < 6; face++) {
 		if (nb[face])
 			continue;
-		aabb3f box = glass_faces[face];
-		makeAutoLightedCuboid(collector, data, origin, box, glass_tiles[face], glasscolor[face], frame);
+		makeAutoLightedCuboid(collector, data, origin, glass_faces[face],
+		                      glass_tiles[face], glasscolor[face], frame);
 	}
 
 	if (param2 > 0 && f->special_tiles[0].texture) {
@@ -961,8 +961,8 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 void MapblockMeshGenerator::drawAllfacesNode()
 {
+	static const aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
 	TileSpec tile_leaves = getNodeTile(n, p, v3s16(0,0,0), data);
-	aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
 	if (!data->m_smooth_lighting)
 		color = encode_light_and_color(light, tile_leaves.color, f->light_source);
 	makeAutoLightedCuboid(collector, data, origin, box, tile_leaves, color, frame);
@@ -995,21 +995,21 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		video::S3DVertex(-size, size,0, 0,0,0, color, 0,0),
 	};
 
-	for (s32 i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		switch(wall) {
-			case 0: vertices[i].Pos.rotateXZBy(-45); break;
-			case 1: vertices[i].Pos.rotateXZBy( 45); break;
-			case 2: vertices[i].Pos.rotateXZBy(  0); break;
-			case 3: vertices[i].Pos.rotateXZBy(180); break;
-			case 4: vertices[i].Pos.rotateXZBy( 90); break;
-			case 5: vertices[i].Pos.rotateXZBy(-90); break;
+			case 0: vertices[i].Pos.rotateXZBy(-45); break; // +Y
+			case 1: vertices[i].Pos.rotateXZBy( 45); break; // -Y
+			case 2: vertices[i].Pos.rotateXZBy(  0); break; // +X
+			case 3: vertices[i].Pos.rotateXZBy(180); break; // -X
+			case 4: vertices[i].Pos.rotateXZBy( 90); break; // +Z
+			case 5: vertices[i].Pos.rotateXZBy(-90); break; // -Z
 		}
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 
-	u16 indices[] = {0,1,2,2,3,0};
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	// Add to mesh collector
 	collector->append(tile, vertices, 4, indices, 6);
 }

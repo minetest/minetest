@@ -50,7 +50,7 @@ public:
 	void getLiquidNeighborhood(bool flowing);
 	void resetCornerLevels();
 	void calculateCornerLevels();
-	f32 getCornerLevel(u32 i, u32 k);
+	f32 getCornerLevel(int i, int k);
 	void drawLiquidSides(bool flowing);
 	void drawLiquidTop(bool flowing);
 
