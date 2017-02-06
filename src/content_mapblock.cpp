@@ -829,34 +829,25 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 
 void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
-	static const v3s16 dirs[6] = {
-		v3s16( 0, 1, 0),
-		v3s16( 0,-1, 0),
-		v3s16( 1, 0, 0),
-		v3s16(-1, 0, 0),
-		v3s16( 0, 0, 1),
-		v3s16( 0, 0,-1)
-	};
-
 	TileSpec tiles[6];
 	for (u32 face = 0; face < 6; face++)
-		tiles[face] = getNodeTile(n, p, dirs[face], data);
+		tiles[face] = getNodeTile(n, p, g_6dirs[face], data);
 
 	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tiles[0].color, f->light_source);
+		color = encode_light_and_color(light, tiles[1].color, f->light_source);
 
 	TileSpec glass_tiles[6];
 	video::SColor glasscolor[6];
-	if (tiles[1].texture && tiles[2].texture && tiles[3].texture) {
-		glass_tiles[0] = tiles[2];
-		glass_tiles[1] = tiles[3];
-		glass_tiles[2] = tiles[1];
-		glass_tiles[3] = tiles[1];
-		glass_tiles[4] = tiles[1];
-		glass_tiles[5] = tiles[1];
+	if (tiles[0].texture && tiles[3].texture && tiles[4].texture) {
+		glass_tiles[0] = tiles[4];
+		glass_tiles[1] = tiles[0];
+		glass_tiles[2] = tiles[4];
+		glass_tiles[3] = tiles[4];
+		glass_tiles[4] = tiles[3];
+		glass_tiles[5] = tiles[4];
 	} else {
 		for (u32 face = 0; face < 6; face++)
-			glass_tiles[face] = tiles[1];
+			glass_tiles[face] = tiles[4];
 	}
 
 	if (!data->m_smooth_lighting)
@@ -864,9 +855,9 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			glasscolor[face] = encode_light_and_color(light, glass_tiles[face].color, f->light_source);
 
 	u8 param2 = n.getParam2();
-	bool H_merge = ! bool(param2 & 128);
-	bool V_merge = ! bool(param2 & 64);
-	param2  = param2 & 63;
+	bool H_merge = !(param2 & 128);
+	bool V_merge = !(param2 & 64);
+	param2 &= 63;
 
 	static const float a = BS / 2;
 	static const float g = a - 0.003;
@@ -884,25 +875,22 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		aabb3f(-a, b, b, a, a, a), // z+
 		aabb3f(-a,-a, b, a,-b, a), // z+
 		aabb3f(-a,-a,-a, a,-b,-b), // z-
-		aabb3f(-a, b,-a, a, a,-b)  // z-
+		aabb3f(-a, b,-a, a, a,-b), // z-
 	};
 	static const aabb3f glass_faces[6] = {
-		aabb3f(-g, g,-g, g, g, g), // y+
-		aabb3f(-g,-g,-g, g,-g, g), // y-
-		aabb3f( g,-g,-g, g, g, g), // x+
-		aabb3f(-g,-g,-g,-g, g, g), // x-
 		aabb3f(-g,-g, g, g, g, g), // z+
-		aabb3f(-g,-g,-g, g, g,-g)  // z-
+		aabb3f(-g, g,-g, g, g, g), // y+
+		aabb3f( g,-g,-g, g, g, g), // x+
+		aabb3f(-g,-g,-g, g, g,-g), // z-
+		aabb3f(-g,-g,-g, g,-g, g), // y-
+		aabb3f(-g,-g,-g,-g, g, g), // x-
 	};
-
-	// table of node visible faces, 0 = invisible
-	bool visible_faces[6] = {0,0,0,0,0,0};
 
 	// tables of neighbour (connect if same type and merge allowed),
 	// checked with g_26dirs
 
-	// 1 = connect
-	bool nb[18] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	// 1 = connect, 0 = face visible
+	bool nb[18] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 	// 1 = check
 	static const bool check_nb_vertical   [18] = { 0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
@@ -928,21 +916,13 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		}
 	}
 
-	// faces visibility
-	visible_faces[0] = !nb[1]; // +Y
-	visible_faces[1] = !nb[4]; // -Y
-	visible_faces[2] = !nb[0]; // +X
-	visible_faces[3] = !nb[3]; // -X
-	visible_faces[4] = !nb[2]; // +Z
-	visible_faces[5] = !nb[5]; // -Z
+	// edge visibility
 
 	static const u8 nb_triplet[12*3] = {
 		1,2, 7,  1,5, 6,  4,2,15,  4,5,14,
 		2,0,11,  2,3,13,  5,0,10,  5,3,12,
 		0,1, 8,  0,4,16,  3,4,17,  3,1, 9
 	};
-
-	aabb3f box;
 
 	for (u32 edge = 0; edge < 12; edge++) {
 		bool edge_invisible;
@@ -952,14 +932,14 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			edge_invisible = nb[nb_triplet[edge * 3]] ^ nb[nb_triplet[edge * 3 + 1]];
 		if (edge_invisible)
 			continue;
-		box = frame_edges[edge];
-		makeAutoLightedCuboid(collector, data, origin, box, tiles[0], color, frame);
+		aabb3f box = frame_edges[edge];
+		makeAutoLightedCuboid(collector, data, origin, box, tiles[1], color, frame);
 	}
 
 	for (u32 face = 0; face < 6; face++) {
-		if (!visible_faces[face])
+		if (nb[face])
 			continue;
-		box = glass_faces[face];
+		aabb3f box = glass_faces[face];
 		makeAutoLightedCuboid(collector, data, origin, box, glass_tiles[face], glasscolor[face], frame);
 	}
 
@@ -969,13 +949,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		TileSpec tile = getSpecialTile(*f, n, 0);
 		video::SColor special_color = encode_light_and_color(light, tile.color, f->light_source);
-		float offset = 0.003;
-		box = aabb3f(visible_faces[3] ? -b : -a + offset,
-						visible_faces[1] ? -b : -a + offset,
-						visible_faces[5] ? -b : -a + offset,
-						visible_faces[2] ? b : a - offset,
-						visible_faces[0] ? b * vlev : a * vlev - offset,
-						visible_faces[4] ? b : a - offset);
+		aabb3f box(-(nb[5] ? g : b),
+		           -(nb[4] ? g : b),
+		           -(nb[3] ? g : b),
+		            (nb[2] ? g : b),
+		            (nb[1] ? g : b) * vlev,
+		            (nb[0] ? g : b));
 		makeAutoLightedCuboid(collector, data, origin, box, tile, special_color, frame);
 	}
 }
