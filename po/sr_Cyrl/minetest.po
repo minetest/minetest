@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-07-13 09:50+0000\n"
+"PO-Revision-Date: 2017-02-06 16:24+0000\n"
 "Last-Translator: lisacvuk <lisacvukhome@gmail.com>\n"
-"Language-Team: Serbian (cyrillic) <https://hosted.weblate.org/projects/"
-"minetest/minetest/sr_Cyrl/>\n"
+"Language-Team: Serbian (cyrillic) "
+"<https://hosted.weblate.org/projects/minetest/minetest/sr_Cyrl/>\n"
 "Language: sr_Cyrl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.8-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.11\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -255,7 +255,7 @@ msgstr "Модови"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
+msgstr "Опоцијоно, лацунарност се може додати са зарезом."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -740,7 +740,7 @@ msgstr "Дата локација света не постоји: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "Потребан резервни фонт"
 
 #: src/game.cpp
 msgid ""
@@ -1060,7 +1060,7 @@ msgstr "Крај"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
-msgstr ""
+msgstr "Брисање искључено"
 
 #: src/keycode.cpp
 msgid "Escape"
@@ -1068,7 +1068,7 @@ msgstr "Побегни"
 
 #: src/keycode.cpp
 msgid "ExSel"
-msgstr ""
+msgstr "ЕхСел"
 
 #: src/keycode.cpp
 msgid "Execute"
@@ -1276,7 +1276,7 @@ msgstr "Спавај"
 
 #: src/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Сачувана слика"
 
 #: src/keycode.cpp
 msgid "Space"
@@ -1318,14 +1318,16 @@ msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 =  parallax occlusion са информацијама о нагибима (брже)\n"
+"1 = мапирање рељефа (спорије, прецизније)."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "Тродимензионални облаци"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "Тродимензионални мод"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1338,48 +1340,58 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"3D подршка.\n"
+"Тренутно подржано:\n"
+"-   none: Никакав тродимензионални излаз\n"
+"-   anaglyph: Цијан/Магента боја 3D\n"
+"-   interlaced: Парна/Непарна линија базирана поларизација\n"
+"-   topbottom: Подели екран горе/доле.\n"
+"-   sidebyside: Лево/Десно подела екрана.\n"
+"-   pageflip: Четвородупли буфер 3D."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Изабрано семе за нову мапу, оставите празно за насумично.\n"
+"Биће преписано када се прави нови свет у менију."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Порука приказана свим играчима када се сервер обори."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "Порука приказана свим играчима када се сервер искључи."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr ""
+msgstr "Абсолутни лимит emerge токова."
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Убрзање у ваздуху"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
-msgstr ""
+msgstr "Интервал менаџмента активног блока"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
-msgstr ""
+msgstr "Интервал модификатора активног блока"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr ""
+msgstr "Модификатори активног блока"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Даљина активног блока"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Даљина слања активног блока"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1387,6 +1399,9 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Адреса за конекцију.\n"
+"Оставите ово празно за локални сервер.\n"
+"Пазите да поље за адресу у менију преписује ово подешавање."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1528,9 +1543,8 @@ msgid "Chat toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Chatcommands"
-msgstr "Команда"
+msgstr "Чат команде"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2022,13 +2036,12 @@ msgid "Field of view in degrees."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Играч је у могућности д лети без утицаја гравитације.\n"
-"Ово захтева \"fly\" привилегију на серверима."
+"Видно поље за време увеличавања.\n"
+"Ово захрева \"zoom\" привилегију на серверу."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3570,9 +3583,8 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Report path"
-msgstr "Одабери локацију"
+msgstr "Одабери локацију за пријаве"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
