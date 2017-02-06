@@ -961,14 +961,11 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 void MapblockMeshGenerator::drawAllfacesNode()
 {
-	TileSpec tile_leaves = getNodeTile(n, p,
-			v3s16(0,0,0), data);
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l,
-		tile_leaves.color, f->light_source);
-
-	aabb3f box(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
-	makeAutoLightedCuboid(collector, data, origin, box, tile_leaves, c, frame);
+	TileSpec tile_leaves = getNodeTile(n, p, v3s16(0,0,0), data);
+	aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile_leaves.color, f->light_source);
+	makeAutoLightedCuboid(collector, data, origin, box, tile_leaves, color, frame);
 }
 
 void MapblockMeshGenerator::drawTorchlikeNode()
