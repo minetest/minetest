@@ -42,8 +42,15 @@ inline static void applyShadeFactor(video::SColor& color, float factor)
 
 void applyFacesShading(video::SColor &color, const v3f &normal)
 {
-	// Many special drawtypes have normals set to 0,0,0 and this
-	// must result in maximum brightness (no face shadng).
+	/*
+		Some drawtypes have normals set to (0, 0, 0), this must result in
+		maximum brightness: shade factor 1.0.
+		Shade factors for aligned cube faces are:
+		+Y 1.000000 sqrt(1.0)
+		-Y 0.447213 sqrt(0.2)
+		+-X 0.670820 sqrt(0.45)
+		+-Z 0.836660 sqrt(0.7)
+	*/
 	float x2 = normal.X * normal.X;
 	float y2 = normal.Y * normal.Y;
 	float z2 = normal.Z * normal.Z;
