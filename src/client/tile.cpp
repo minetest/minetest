@@ -1741,6 +1741,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				 * equal to the target minimum.  If e.g. this is a vertical frames
 				 * animation, the short dimension will be the real size.
 				 */
+				if ((dim.Width == 0) || (dim.Height == 0)) {
+					errorstream << "generateImagePart(): Illegal 0 dimension "
+						<< "for part_of_name=\""<< part_of_name
+						<< "\", cancelling." << std::endl;
+					return false;
+				}
 				u32 xscale = scaleto / dim.Width;
 				u32 yscale = scaleto / dim.Height;
 				u32 scale = (xscale > yscale) ? xscale : yscale;
