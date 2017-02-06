@@ -44,7 +44,8 @@ Database_Redis::Database_Redis(Settings &conf)
 	}
 	const char *addr = tmp.c_str();
 	int port = conf.exists("redis_port") ? conf.getU16("redis_port") : 6379;
-	ctx = redisConnect(addr, port);
+	// if redis_address contains '/' assume unix socket, else hostname/ip
+	ctx = tmp.find('/') != std::string::npos ? redisConnectUnix(addr) : redisConnect(addr, port);
 	if (!ctx) {
 		throw DatabaseException("Cannot allocate redis context");
 	} else if (ctx->err) {
