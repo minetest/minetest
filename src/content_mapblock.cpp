@@ -782,59 +782,46 @@ void MapblockMeshGenerator::drawLiquidNode(bool flowing)
 void MapblockMeshGenerator::drawGlasslikeNode()
 {
 	TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
-	for(u32 j=0; j<6; j++)
-	{
+	for (u32 face = 0; face < 6; face++) {
 		// Check this neighbor
-		v3s16 dir = g_6dirs[j];
-		v3s16 n2p = blockpos_nodes + p + dir;
-		MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
+		v3s16 dir = g_6dirs[face];
+		v3s16 neighbor_pos = blockpos_nodes + p + dir;
+		MapNode neighbor = data->m_vmanip.getNodeNoExNoEmerge(neighbor_pos);
 		// Don't make face if neighbor is of same type
-		if(n2.getContent() == n.getContent())
+		if (neighbor.getContent() == n.getContent())
 			continue;
-		video::SColor c2=c;
-		if(!f->light_source)
-			applyFacesShading(c2, v3f(dir.X, dir.Y, dir.Z));
 
+		video::SColor face_color = color;
+		if (!data->m_smooth_lighting && !f->light_source)
+			applyFacesShading(face_color, v3f(dir.X, dir.Y, dir.Z));
 
 		// The face at Z+
 		video::S3DVertex vertices[4] = {
-			video::S3DVertex(-BS/2,-BS/2,BS/2, dir.X,dir.Y,dir.Z, c2, 1,1),
-			video::S3DVertex(BS/2,-BS/2,BS/2, dir.X,dir.Y,dir.Z, c2, 0,1),
-			video::S3DVertex(BS/2,BS/2,BS/2, dir.X,dir.Y,dir.Z, c2, 0,0),
-			video::S3DVertex(-BS/2,BS/2,BS/2, dir.X,dir.Y,dir.Z, c2, 1,0),
+			video::S3DVertex(-BS/2, -BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 1,1),
+			video::S3DVertex( BS/2, -BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 0,1),
+			video::S3DVertex( BS/2,  BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 0,0),
+			video::S3DVertex(-BS/2,  BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 1,0),
 		};
 
-		// Rotations in the g_6dirs format
-		if(j == 0) // Z+
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateXZBy(0);
-		else if(j == 1) // Y+
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateYZBy(-90);
-		else if(j == 2) // X+
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateXZBy(-90);
-		else if(j == 3) // Z-
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateXZBy(180);
-		else if(j == 4) // Y-
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateYZBy(90);
-		else if(j == 5) // X-
-			for(u16 i=0; i<4; i++)
-				vertices[i].Pos.rotateXZBy(90);
-
 		for (u16 i = 0; i < 4; i++) {
+		// Rotations in the g_6dirs format
+			switch(face) {
+				case 0: vertices[i].Pos.rotateXZBy(  0); break; // Z+
+				case 1: vertices[i].Pos.rotateYZBy(-90); break; // Y+
+				case 2: vertices[i].Pos.rotateXZBy(-90); break; // X+
+				case 3: vertices[i].Pos.rotateXZBy(180); break; // Z-
+				case 4: vertices[i].Pos.rotateYZBy( 90); break; // Y-
+				case 5: vertices[i].Pos.rotateXZBy( 90); break; // X-
+			};
 			if (data->m_smooth_lighting)
 				vertices[i].Color = blendLight(frame, vertices[i].Pos, vertices[i].Normal, tile.color);
 			vertices[i].Pos += origin;
 		}
 
-		u16 indices[] = {0,1,2,2,3,0};
+		u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 		// Add to mesh collector
 		collector->append(tile, vertices, 4, indices, 6);
 	}

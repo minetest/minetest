@@ -23,11 +23,12 @@ public:
 // current node
 	v3s16 blockpos_nodes;
 	v3s16 p;
-	core::vector3df origin;
+	v3f origin;
 	MapNode n;
 	const ContentFeatures *f;
 	u16 light;
 	LightFrame frame;
+	video::SColor color;
 
 // liquid-specific
 	bool top_is_same_liquid;
@@ -35,7 +36,6 @@ public:
 	TileSpec tile_liquid_top;
 	content_t c_flowing;
 	content_t c_source;
-	video::SColor color;
 	video::SColor color_liquid_top;
 	struct NeighborData {
 		f32 level;
