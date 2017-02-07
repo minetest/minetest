@@ -364,6 +364,10 @@ struct ContentFeatures
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
 
+	int getGroup(const std::string &group) const {
+		return itemgroup_get(groups, group);
+	}
+
 #ifndef SERVER
 	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
@@ -484,3 +488,5 @@ public:
 };
 
 #endif
+
+// kate: space-indent off; indent-mode cstyle;

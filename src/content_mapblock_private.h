@@ -54,6 +54,12 @@ public:
 	void drawLiquidSides(bool flowing);
 	void drawLiquidTop(bool flowing);
 
+// raillike-specific
+	// name of the group that enables connecting to raillike nodes of different kind
+	static const std::string raillike_groupname;
+    int raillike_group;
+    bool isSameRail(v3s16 dir);
+
 // drawtypes
 	void drawLiquidNode(bool flowing);
 	void drawGlasslikeNode();

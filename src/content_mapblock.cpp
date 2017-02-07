@@ -46,6 +46,8 @@ static const v3s16 light_dirs[8] = {
 	v3s16( 1,  1,  1),
 };
 
+const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
+
 MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
 {
 	data      = input;
@@ -1437,140 +1439,112 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	}
 }
 
+bool MapblockMeshGenerator::isSameRail(v3s16 dir)
+{
+	MapNode node2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p + dir);
+	if (node2.getContent() == n.getContent())
+		return true;
+	const ContentFeatures &def2 = nodedef->get(node2);
+	return (def2.drawtype == NDT_RAILLIKE) &&
+	       (def2.getGroup(raillike_groupname) == raillike_group);
+}
+
 void MapblockMeshGenerator::drawRaillikeNode()
 {
-	bool is_rail_x[6]; /* (-1,-1,0) X (1,-1,0) (-1,0,0) X (1,0,0) (-1,1,0) X (1,1,0) */
-	bool is_rail_z[6];
+	static const v3s16 direction[4] = {
+		v3s16( 0, 0,  1),
+		v3s16( 0, 0, -1),
+		v3s16(-1, 0,  0),
+		v3s16( 1, 0,  0),
+	};
 
-	content_t thiscontent = n.getContent();
-	std::string groupname = "connect_to_raillike"; // name of the group that enables connecting to raillike nodes of different kind
-	int self_group = ((ItemGroupList) nodedef->get(n).groups)[groupname];
+	static const int slope_angle[4] = { 0, 180, 90, -90 };
 
-	u8 index = 0;
-	for (s8 y0 = -1; y0 <= 1; y0++) {
-		// Prevent from indexing never used coordinates
-		for (s8 xz = -1; xz <= 1; xz++) {
-			if (xz == 0)
-				continue;
-			MapNode n_xy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X + xz, p.Y + y0, p.Z));
-			MapNode n_zy = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + y0, p.Z + xz));
-			const ContentFeatures &def_xy = nodedef->get(n_xy);
-			const ContentFeatures &def_zy = nodedef->get(n_zy);
+	enum RailTile {
+		straight,
+		curved,
+		junction,
+		cross,
+	};
+	struct RailDesc {
+		int tile_index;
+		int angle;
+	};
+	static const RailDesc rail_kinds[16] = {
+		                   // +x -x -z +z
+		                   //-------------
+		{ straight,   0 }, //  .  .  .  .
+		{ straight,   0 }, //  .  .  . +Z
+		{ straight,   0 }, //  .  . -Z  .
+		{ straight,   0 }, //  .  . -Z +Z
+		{ straight,  90 }, //  . -X  .  .
+		{   curved, 180 }, //  . -X  . +Z
+		{   curved, 270 }, //  . -X -Z  .
+		{ junction, 180 }, //  . -X -Z +Z
+		{ straight,  90 }, // +X  .  .  .
+		{   curved,  90 }, // +X  .  . +Z
+		{   curved,   0 }, // +X  . -Z  .
+		{ junction,   0 }, // +X  . -Z +Z
+		{ straight,  90 }, // +X -X  .  .
+		{ junction,  90 }, // +X -X  . +Z
+		{ junction, 270 }, // +X -X -Z  .
+		{    cross,   0 }, // +X -X -Z +Z
+	};
 
-			// Check if current node would connect with the rail
-			is_rail_x[index] = ((def_xy.drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) def_xy.groups)[groupname] == self_group)
-					|| n_xy.getContent() == thiscontent);
+	raillike_group = nodedef->get(n).getGroup(raillike_groupname);
 
-			is_rail_z[index] = ((def_zy.drawtype == NDT_RAILLIKE
-					&& ((ItemGroupList) def_zy.groups)[groupname] == self_group)
-					|| n_zy.getContent() == thiscontent);
-			index++;
+	int code = 0;
+	int angle;
+	int tile_index;
+	bool sloped = false;
+	bool rail_around[4];
+	bool rail_above[4];
+	for (int dir = 0; dir < 4; dir++) {
+		rail_above[dir] = isSameRail(direction[dir] + v3s16(0, 1, 0));
+		if (rail_above[dir]) {
+			sloped = true;
+			angle = slope_angle[dir];
 		}
+		rail_around[dir] = rail_above[dir] ||
+		isSameRail(direction[dir]) ||
+			isSameRail(direction[dir] + v3s16(0, -1, 0));
+		if (rail_around[dir])
+			code |= 1 << dir;
 	}
 
-	bool is_rail_x_all[2]; // [0] = negative p.X, [1] = positive p.X coordinate from the current node position
-	bool is_rail_z_all[2];
-	is_rail_x_all[0] = is_rail_x[0] || is_rail_x[2] || is_rail_x[4];
-	is_rail_x_all[1] = is_rail_x[1] || is_rail_x[3] || is_rail_x[5];
-	is_rail_z_all[0] = is_rail_z[0] || is_rail_z[2] || is_rail_z[4];
-	is_rail_z_all[1] = is_rail_z[1] || is_rail_z[3] || is_rail_z[5];
-
-	// reasonable default, flat straight unrotated rail
-	bool is_straight = true;
-	int adjacencies = 0;
-	int angle = 0;
-	u8 tileindex = 0;
-
-	// check for sloped rail
-	if (is_rail_x[4] || is_rail_x[5] || is_rail_z[4] || is_rail_z[5]) {
-		adjacencies = 5; // 5 means sloped
-		is_straight = true; // sloped is always straight
+	if (sloped) {
+		tile_index = straight;
 	} else {
-		// is really straight, rails on both sides
-		is_straight = (is_rail_x_all[0] && is_rail_x_all[1]) || (is_rail_z_all[0] && is_rail_z_all[1]);
-		adjacencies = is_rail_x_all[0] + is_rail_x_all[1] + is_rail_z_all[0] + is_rail_z_all[1];
+		tile_index = rail_kinds[code].tile_index;
+		angle = rail_kinds[code].angle;
 	}
 
-	switch (adjacencies) {
-	case 1:
-		if (is_rail_x_all[0] || is_rail_x_all[1])
-			angle = 90;
-		break;
-	case 2:
-		if (!is_straight)
-			tileindex = 1; // curved
-		if (is_rail_x_all[0] && is_rail_x_all[1])
-			angle = 90;
-		if (is_rail_z_all[0] && is_rail_z_all[1]) {
-			if (is_rail_z[4])
-				angle = 180;
-		}
-		else if (is_rail_x_all[0] && is_rail_z_all[0])
-			angle = 270;
-		else if (is_rail_x_all[0] && is_rail_z_all[1])
-			angle = 180;
-		else if (is_rail_x_all[1] && is_rail_z_all[1])
-			angle = 90;
-		break;
-	case 3:
-		// here is where the potential to 'switch' a junction is, but not implemented at present
-		tileindex = 2; // t-junction
-		if(!is_rail_x_all[1])
-			angle = 180;
-		if(!is_rail_z_all[0])
-			angle = 90;
-		if(!is_rail_z_all[1])
-			angle = 270;
-		break;
-	case 4:
-		tileindex = 3; // crossing
-		break;
-	case 5: //sloped
-		if (is_rail_z[4])
-			angle = 180;
-		if (is_rail_x[4])
-			angle = 90;
-		if (is_rail_x[5])
-			angle = -90;
-		break;
-	default:
-		break;
-	}
-
-	TileSpec tile = getNodeTileN(n, p, tileindex, data);
+	TileSpec tile = getNodeTileN(n, p, tile_index, data);
 	tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-	u16 l = getInteriorLight(n, 0, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	float d = (float)BS/64;
-	float s = BS/2;
+	float offset = BS/64;
+	float size   = BS/2;
+	float y2     = sloped ? size : -size;
 
-	short g = -1;
-	if (is_rail_x[4] || is_rail_x[5] || is_rail_z[4] || is_rail_z[5])
-		g = 1; //Object is at a slope
-
-	video::S3DVertex vertices[4] =
-	{
-			video::S3DVertex(-s,  -s+d, -s, 0, 0, 0, c, 0, 1),
-			video::S3DVertex( s,  -s+d, -s, 0, 0, 0, c, 1, 1),
-			video::S3DVertex( s, g*s+d,  s, 0, 0, 0, c, 1, 0),
-			video::S3DVertex(-s, g*s+d,  s, 0, 0, 0, c, 0, 0),
+	video::S3DVertex vertices[4] = {
+			video::S3DVertex(-size, -size + offset, -size, 0, 0, 0, color, 0, 1),
+			video::S3DVertex( size, -size + offset, -size, 0, 0, 0, color, 1, 1),
+			video::S3DVertex( size,    y2 + offset,  size, 0, 0, 0, color, 1, 0),
+			video::S3DVertex(-size,    y2 + offset,  size, 0, 0, 0, color, 0, 0),
 	};
 
-	for(s32 i=0; i<4; i++)
-	{
-		if(angle != 0)
+	for (int i = 0; i < 4; i++) {
+		if (angle)
 			vertices[i].Pos.rotateXZBy(angle);
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
-
-	u16 indices[] = {0,1,2,2,3,0};
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	collector->append(tile, vertices, 4, indices, 6);
 }
 
