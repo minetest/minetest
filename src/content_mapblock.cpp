@@ -487,7 +487,7 @@ static void makeAutoLightedCuboid(MeshCollector *collector, MeshMakeData *data,
 }
 
 static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data,
-	const v3f &pos, aabb3f box, TileSpec &tile, f32 *txc,
+	const v3f &pos, aabb3f box, TileSpec &tile, const f32 *txc,
 	/* pre-computed, for non-smooth lighting only */ const video::SColor color,
 	/* for smooth lighting only */ const LightFrame &frame)
 {
@@ -1372,45 +1372,46 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	TileSpec tile_rot = tile;
 	tile_rot.rotation = 1;
 
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	const f32 post_rad=(f32)BS/8;
-	const f32 bar_rad=(f32)BS/16;
-	const f32 bar_len=(f32)(BS/2)-post_rad;
+	static const f32 post_rad = BS/8;
+	static const f32 bar_rad  = BS/16;
+	static const f32 bar_len  = BS/2 - post_rad;
 
 	// The post - always present
-	aabb3f post(-post_rad,-BS/2,-post_rad,post_rad,BS/2,post_rad);
-	f32 postuv[24]={
-			6/16.,6/16.,10/16.,10/16.,
-			6/16.,6/16.,10/16.,10/16.,
-			0/16.,0,4/16.,1,
-			4/16.,0,8/16.,1,
-			8/16.,0,12/16.,1,
-			12/16.,0,16/16.,1};
-	makeAutoLightedCuboidEx(collector, data, origin, post, tile_rot, postuv, c, frame);
+	static const aabb3f post(-post_rad, -BS/2, -post_rad,
+	                          post_rad,  BS/2,  post_rad);
+	static const f32 postuv[24] = {
+		0.375, 0.375, 0.625, 0.625,
+		0.375, 0.375, 0.625, 0.625,
+		0.000, 0.000, 0.250, 1.000,
+		0.250, 0.000, 0.500, 1.000,
+		0.500, 0.000, 0.750, 1.000,
+		0.750, 0.000, 1.000, 1.000,
+	};
+	makeAutoLightedCuboidEx(collector, data, origin, post, tile_rot, postuv, color, frame);
 
 	// Now a section of fence, +X, if there's a post there
 	v3s16 p2 = p;
 	p2.X++;
 	MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	const ContentFeatures *f2 = &nodedef->get(n2);
-	if(f2->drawtype == NDT_FENCELIKE)
-	{
-		aabb3f bar(-bar_len+BS/2,-bar_rad+BS/4,-bar_rad,
-				bar_len+BS/2,bar_rad+BS/4,bar_rad);
-		f32 xrailuv[24]={
-			0/16.,2/16.,16/16.,4/16.,
-			0/16.,4/16.,16/16.,6/16.,
-			6/16.,6/16.,8/16.,8/16.,
-			10/16.,10/16.,12/16.,12/16.,
-			0/16.,8/16.,16/16.,10/16.,
-			0/16.,14/16.,16/16.,16/16.};
-		makeAutoLightedCuboidEx(collector, data, origin, bar, tile_nocrack, xrailuv, c, frame);
-		bar.MinEdge.Y -= BS/2;
-		bar.MaxEdge.Y -= BS/2;
-		makeAutoLightedCuboidEx(collector, data, origin, bar, tile_nocrack, xrailuv, c, frame);
+	if (f2->drawtype == NDT_FENCELIKE) {
+		static const aabb3f bar_x1(BS/2 - bar_len,  BS/4 - bar_rad, -bar_rad,
+		                           BS/2 + bar_len,  BS/4 + bar_rad,  bar_rad);
+		static const aabb3f bar_x2(BS/2 - bar_len, -BS/4 - bar_rad, -bar_rad,
+		                           BS/2 + bar_len, -BS/4 + bar_rad,  bar_rad);
+		static const f32 xrailuv[24] = {
+			0.000, 0.125, 1.000, 0.250,
+			0.000, 0.250, 1.000, 0.375,
+			0.375, 0.375, 0.500, 0.500,
+			0.625, 0.625, 0.750, 0.750,
+			0.000, 0.500, 1.000, 0.625,
+			0.000, 0.875, 1.000, 1.000,
+		};
+		makeAutoLightedCuboidEx(collector, data, origin, bar_x1, tile_nocrack, xrailuv, color, frame);
+		makeAutoLightedCuboidEx(collector, data, origin, bar_x2, tile_nocrack, xrailuv, color, frame);
 	}
 
 	// Now a section of fence, +Z, if there's a post there
@@ -1418,21 +1419,21 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	p2.Z++;
 	n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	f2 = &nodedef->get(n2);
-	if(f2->drawtype == NDT_FENCELIKE)
-	{
-		aabb3f bar(-bar_rad,-bar_rad+BS/4,-bar_len+BS/2,
-				bar_rad,bar_rad+BS/4,bar_len+BS/2);
-		f32 zrailuv[24]={
-			3/16.,1/16.,5/16.,5/16., // cannot rotate; stretch
-			4/16.,1/16.,6/16.,5/16., // for wood texture instead
-			0/16.,9/16.,16/16.,11/16.,
-			0/16.,6/16.,16/16.,8/16.,
-			6/16.,6/16.,8/16.,8/16.,
-			10/16.,10/16.,12/16.,12/16.};
-		makeAutoLightedCuboidEx(collector, data, origin, bar, tile_nocrack, zrailuv, c, frame);
-		bar.MinEdge.Y -= BS/2;
-		bar.MaxEdge.Y -= BS/2;
-		makeAutoLightedCuboidEx(collector, data, origin, bar, tile_nocrack, zrailuv, c, frame);
+	if(f2->drawtype == NDT_FENCELIKE) {
+		static const aabb3f bar_z1(-bar_rad,  BS/4 - bar_rad, BS/2 - bar_len,
+		                            bar_rad,  BS/4 + bar_rad, BS/2 + bar_len);
+		static const aabb3f bar_z2(-bar_rad, -BS/4 - bar_rad, BS/2 - bar_len,
+		                            bar_rad, -BS/4 + bar_rad, BS/2 + bar_len);
+		static const f32 zrailuv[24] = {
+			0.1875, 0.0625, 0.3125, 0.3125, // cannot rotate; stretch
+			0.2500, 0.0625, 0.3750, 0.3125, // for wood texture instead
+			0.0000, 0.5625, 1.0000, 0.6875,
+			0.0000, 0.3750, 1.0000, 0.5000,
+			0.3750, 0.3750, 0.5000, 0.5000,
+			0.6250, 0.6250, 0.7500, 0.7500,
+		};
+		makeAutoLightedCuboidEx(collector, data, origin, bar_z1, tile_nocrack, zrailuv, color, frame);
+		makeAutoLightedCuboidEx(collector, data, origin, bar_z2, tile_nocrack, zrailuv, color, frame);
 	}
 }
 
