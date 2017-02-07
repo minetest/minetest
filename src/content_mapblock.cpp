@@ -1457,7 +1457,6 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		v3s16(-1, 0,  0),
 		v3s16( 1, 0,  0),
 	};
-
 	static const int slope_angle[4] = { 0, 180, 90, -90 };
 
 	enum RailTile {
@@ -1497,18 +1496,15 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	int angle;
 	int tile_index;
 	bool sloped = false;
-	bool rail_around[4];
-	bool rail_above[4];
 	for (int dir = 0; dir < 4; dir++) {
-		rail_above[dir] = isSameRail(direction[dir] + v3s16(0, 1, 0));
-		if (rail_above[dir]) {
+		bool rail_above = isSameRail(direction[dir] + v3s16(0, 1, 0));
+		if (rail_above) {
 			sloped = true;
 			angle = slope_angle[dir];
 		}
-		rail_around[dir] = rail_above[dir] ||
-		isSameRail(direction[dir]) ||
-			isSameRail(direction[dir] + v3s16(0, -1, 0));
-		if (rail_around[dir])
+		if (rail_above ||
+				isSameRail(direction[dir]) ||
+				isSameRail(direction[dir] + v3s16(0, -1, 0)))
 			code |= 1 << dir;
 	}
 
