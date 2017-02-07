@@ -2629,6 +2629,11 @@ These functions return the leftover itemstack.
 * `HTTPApiTable.fetch_async_get(handle)`: returns HTTPRequestResult
     * Return response data for given asynchronous HTTP request
 
+### Storage API:
+* `minetest.get_mod_storage()`:
+    * returns reference to mod private `StorageRef`
+    * must be called during mod load time
+
 ### Misc.
 * `minetest.get_connected_players()`: returns list of `ObjectRefs`
 * `minetest.player_exists(name)`: boolean, whether player exists (regardless of online status)
@@ -2791,7 +2796,7 @@ Class reference
 ---------------
 
 ### `MetaDataRef`
-See `NodeMetaRef` and `ItemStackMetaRef`.
+See `StorageRef`, `NodeMetaRef` and `ItemStackMetaRef`.
 
 #### Methods
 * `set_string(name, value)`
@@ -2844,6 +2849,9 @@ Can be gotten via `minetest.get_node_timer(pos)`.
     * the node's `on_timer` function will be called after `timeout`-elapsed seconds
 * `is_started()`: returns boolean state of timer
     * returns `true` if timer is started, otherwise `false`
+
+### `StorageRef`
+This is basically a reference to a C++ `ModMetadata`
 
 ### `ObjectRef`
 Moving things in the game are generally these.

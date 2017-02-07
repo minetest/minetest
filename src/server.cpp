@@ -178,8 +178,8 @@ Server::Server(
 	m_admin_chat(iface),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0),
-	m_next_sound_id(0)
-
+	m_next_sound_id(0),
+	m_mod_storage_save_timer(10.0f)
 {
 	m_liquid_transform_timer = 0.0;
 	m_liquid_transform_every = 1.0;
@@ -788,6 +788,18 @@ void Server::AsyncRunStep(bool initial_step)
 					<< "packet size is " << pktSize << std::endl;
 		}
 		m_clients.unlock();
+
+		m_mod_storage_save_timer -= dtime;
+		if (m_mod_storage_save_timer <= 0.0f) {
+			infostream << "Saving registered mod storages." << std::endl;
+			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+			for (UNORDERED_MAP<std::string, ModMetadata *>::const_iterator
+				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
+				if (it->second->isModified()) {
+					it->second->save(getModStoragePath());
+				}
+			}
+		}
 	}
 
 	/*
@@ -3404,6 +3416,11 @@ std::string Server::getBuiltinLuaPath()
 	return porting::path_share + DIR_DELIM + "builtin";
 }
 
+std::string Server::getModStoragePath() const
+{
+	return m_path_world + DIR_DELIM + "mod_storage";
+}
+
 v3f Server::findSpawnPos()
 {
 	ServerMap &map = m_env->getServerMap();
@@ -3523,6 +3540,28 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version
 	}
 
 	return playersao;
+}
+
+bool Server::registerModStorage(ModMetadata *storage)
+{
+	if (m_mod_storages.find(storage->getModName()) != m_mod_storages.end()) {
+		errorstream << "Unable to register same mod storage twice. Storage name: "
+				<< storage->getModName() << std::endl;
+		return false;
+	}
+
+	m_mod_storages[storage->getModName()] = storage;
+	return true;
+}
+
+void Server::unregisterModStorage(const std::string &name)
+{
+	UNORDERED_MAP<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
+	if (it != m_mod_storages.end()) {
+		// Save unconditionaly on unregistration
+		it->second->save(getModStoragePath());
+		m_mod_storages.erase(name);
+	}
 }
 
 void dedicated_server_loop(Server &server, bool &kill)

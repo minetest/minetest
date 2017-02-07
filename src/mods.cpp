@@ -21,13 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "mods.h"
 #include "filesys.h"
-#include "util/strfnd.h"
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
-#include "util/strfnd.h"
 #include "convert_json.h"
-#include "exceptions.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -356,3 +353,80 @@ Json::Value getModstoreUrl(std::string url)
 }
 
 #endif
+
+ModMetadata::ModMetadata(const std::string &mod_name):
+	m_mod_name(mod_name),
+	m_modified(false)
+{
+	m_stringvars.clear();
+}
+
+void ModMetadata::clear()
+{
+	Metadata::clear();
+	m_modified = true;
+}
+
+bool ModMetadata::save(const std::string &root_path)
+{
+	Json::Value json;
+	for (StringMap::const_iterator it = m_stringvars.begin();
+			it != m_stringvars.end(); ++it) {
+		json[it->first] = it->second;
+	}
+
+	if (!fs::PathExists(root_path)) {
+		if (!fs::CreateAllDirs(root_path)) {
+			errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
+				<< root_path << "' tree cannot be created." << std::endl;
+			return false;
+		}
+	} else if (!fs::IsDir(root_path)) {
+		errorstream << "ModMetadata[" << m_mod_name << "]: Unable to save. '"
+			<< root_path << "' is not a directory." << std::endl;
+		return false;
+	}
+
+	bool w_ok = fs::safeWriteToFile(root_path + DIR_DELIM + m_mod_name,
+		Json::FastWriter().write(json));
+
+	if (w_ok) {
+		m_modified = false;
+	} else {
+		errorstream << "ModMetadata[" << m_mod_name << "]: failed write file." << std::endl;
+	}
+	return w_ok;
+}
+
+bool ModMetadata::load(const std::string &root_path)
+{
+	m_stringvars.clear();
+
+	std::ifstream is((root_path + DIR_DELIM + m_mod_name).c_str(), std::ios_base::binary);
+	if (!is.good()) {
+		return false;
+	}
+
+	Json::Reader reader;
+	Json::Value root;
+	if (!reader.parse(is, root)) {
+		errorstream << "ModMetadata[" << m_mod_name << "]: failed read data "
+			"(Json decoding failure)." << std::endl;
+		return false;
+	}
+
+	const Json::Value::Members attr_list = root.getMemberNames();
+	for (Json::Value::Members::const_iterator it = attr_list.begin();
+			it != attr_list.end(); ++it) {
+		Json::Value attr_value = root[*it];
+		m_stringvars[*it] = attr_value.asString();
+	}
+
+	return true;
+}
+
+bool ModMetadata::setString(const std::string &name, const std::string &var)
+{
+	m_modified = Metadata::setString(name, var);
+	return m_modified;
+}

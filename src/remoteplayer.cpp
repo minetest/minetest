@@ -174,7 +174,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
 			for (Json::Value::Members::const_iterator it = attr_list.begin();
-				 it != attr_list.end(); ++it) {
+					it != attr_list.end(); ++it) {
 				Json::Value attr_value = attr_root[*it];
 				sao->setExtendedAttribute(*it, attr_value.asString());
 			}

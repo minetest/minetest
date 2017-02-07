@@ -46,7 +46,7 @@ public:
 	size_t size() const;
 	bool contains(const std::string &name) const;
 	const std::string &getString(const std::string &name, u16 recursion = 0) const;
-	void setString(const std::string &name, const std::string &var);
+	virtual bool setString(const std::string &name, const std::string &var);
 	const StringMap &getStrings() const
 	{
 		return m_stringvars;

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <json/json.h>
 #include "config.h"
+#include "metadata.h"
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -203,6 +204,26 @@ struct ModStoreModDetails {
 	std::string screenshot_url;
 	std::vector<ModStoreVersionEntry> versions;
 	bool valid;
+};
+
+class ModMetadata: public Metadata
+{
+public:
+	ModMetadata(const std::string &mod_name);
+	~ModMetadata() {}
+
+	virtual void clear();
+
+	bool save(const std::string &root_path);
+	bool load(const std::string &root_path);
+
+	bool isModified() const { return m_modified; }
+	const std::string &getModName() const { return m_mod_name; }
+
+	virtual bool setString(const std::string &name, const std::string &var);
+private:
+	std::string m_mod_name;
+	bool m_modified;
 };
 
 #endif
