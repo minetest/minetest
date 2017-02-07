@@ -973,9 +973,9 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	u8 wall = n.getWallMounted(nodedef);
 	u8 tileindex = 0;
 	switch(wall) {
-		case 0:  tileindex = 1; break; // ceiling
-		case 1:  tileindex = 0; break; // floor
-		default: tileindex = 2; // side (or invalid—should we care?)
+		case DWM_YP: tileindex = 1; break; // ceiling
+		case DWM_YN: tileindex = 0; break; // floor
+		default:     tileindex = 2; // side (or invalid—should we care?)
 	}
 
 	TileSpec tile = getNodeTileN(n, p, tileindex, data);
@@ -997,12 +997,12 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 
 	for (int i = 0; i < 4; i++) {
 		switch(wall) {
-			case 0: vertices[i].Pos.rotateXZBy(-45); break; // +Y
-			case 1: vertices[i].Pos.rotateXZBy( 45); break; // -Y
-			case 2: vertices[i].Pos.rotateXZBy(  0); break; // +X
-			case 3: vertices[i].Pos.rotateXZBy(180); break; // -X
-			case 4: vertices[i].Pos.rotateXZBy( 90); break; // +Z
-			case 5: vertices[i].Pos.rotateXZBy(-90); break; // -Z
+			case DWM_YP: vertices[i].Pos.rotateXZBy(-45); break;
+			case DWM_YN: vertices[i].Pos.rotateXZBy( 45); break;
+			case DWM_XP: vertices[i].Pos.rotateXZBy(  0); break;
+			case DWM_XN: vertices[i].Pos.rotateXZBy(180); break;
+			case DWM_ZP: vertices[i].Pos.rotateXZBy( 90); break;
+			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
 		}
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
@@ -1037,12 +1037,12 @@ void MapblockMeshGenerator::drawSignlikeNode()
 
 	for (int i = 0; i < 4; i++) {
 		switch(wall) {
-			case 0: vertices[i].Pos.rotateXYBy( 90); break; // +Y
-			case 1: vertices[i].Pos.rotateXYBy(-90); break; // -Y
-			case 2: vertices[i].Pos.rotateXZBy(  0); break; // +X
-			case 3: vertices[i].Pos.rotateXZBy(180); break; // -X
-			case 4: vertices[i].Pos.rotateXZBy( 90); break; // +Z
-			case 5: vertices[i].Pos.rotateXZBy(-90); break; // -Z
+			case DWM_YP: vertices[i].Pos.rotateXYBy( 90); break;
+			case DWM_YN: vertices[i].Pos.rotateXYBy(-90); break;
+			case DWM_XP: vertices[i].Pos.rotateXZBy(  0); break;
+			case DWM_XN: vertices[i].Pos.rotateXZBy(180); break;
+			case DWM_ZP: vertices[i].Pos.rotateXZBy( 90); break;
+			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
 		}
 		if (data->m_smooth_lighting)
 			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
