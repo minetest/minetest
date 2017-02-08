@@ -1,5 +1,18 @@
 #include "nodedef.h"
 
+// Mesh options
+static const u8 MO_MASK_STYLE          = 0x07;
+static const u8 MO_BIT_RANDOM_OFFSET   = 0x08;
+static const u8 MO_BIT_SCALE_SQRT2     = 0x10;
+static const u8 MO_BIT_RANDOM_OFFSET_Y = 0x20;
+enum PlantlikeStyle {
+	PLANT_STYLE_CROSS,
+	PLANT_STYLE_CROSS2,
+	PLANT_STYLE_STAR,
+	PLANT_STYLE_HASH,
+	PLANT_STYLE_HASH2,
+};
+
 struct LightFrame
 {
 	f32 lightsA[8];
@@ -29,6 +42,7 @@ public:
 	u16 light;
 	LightFrame frame;
 	video::SColor color;
+	TileSpec tile;
 
 // liquid-specific
 	bool top_is_same_liquid;
@@ -59,6 +73,17 @@ public:
 	static const std::string raillike_groupname;
     int raillike_group;
     bool isSameRail(v3s16 dir);
+
+// plantlike-specific
+	PlantlikeStyle draw_style;
+	float scale;
+	v3f offset;
+	int rotate_degree;
+	bool random_offset_Y;
+	int face_num;
+
+	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
+		bool offset_top_only = false);
 
 // drawtypes
 	void drawLiquidNode(bool flowing);

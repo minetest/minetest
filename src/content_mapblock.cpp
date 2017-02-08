@@ -1056,177 +1056,99 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	collector->append(tile, vertices, 4, indices, 6);
 }
 
+void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
+	bool offset_top_only)
+{
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(-scale, -BS/2, 0, 0,0,0, color, 0, 1),
+		video::S3DVertex( scale, -BS/2, 0, 0,0,0, color, 1, 1),
+		video::S3DVertex( scale, -BS/2 + scale * 2, 0, 0,0,0, color, 1, 0),
+		video::S3DVertex(-scale, -BS/2 + scale * 2, 0, 0,0,0, color, 0, 0),
+	};
+	if (random_offset_Y) {
+		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
+		offset.Y = BS * ((yrng.next() % 16 / 16.0) * 0.125);
+	}
+	int offset_first_index = offset_top_only ? 2 : 0;
+	for (int i = 0; i < 4; i++) {
+		if (i >= offset_first_index)
+			vertices[i].Pos.Z += quad_offset;
+		vertices[i].Pos.rotateXZBy(rotation + rotate_degree);
+		vertices[i].Pos += offset;
+		if (data->m_smooth_lighting)
+			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+		vertices[i].Pos += origin;
+	}
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
+	collector->append(tile, vertices, 4, indices, 6);
+}
+
 void MapblockMeshGenerator::drawPlantlikeNode()
 {
-	PseudoRandom rng(p.X<<8 | p.Z | p.Y<<16);
-
-	TileSpec tile = getNodeTileN(n, p, 0, data);
+	tile = getNodeTileN(n, p, 0, data);
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
 
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
+	draw_style = PLANT_STYLE_CROSS;
+	scale = BS / 2 * f->visual_scale;
+	offset = v3f(0, 0, 0);
+	rotate_degree = 0;
+	random_offset_Y = false;
+	face_num = 0;
 
-	float s = BS / 2 * f->visual_scale;
-	// add sqrt(2) visual scale
-	if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x10) != 0))
-		s *= 1.41421;
+	switch (f->param_type_2) {
+	case CPT2_MESHOPTIONS:
+		draw_style = PlantlikeStyle(n.param2 & MO_MASK_STYLE);
+		if (n.param2 & MO_BIT_SCALE_SQRT2)
+			scale *= 1.41421;
+		if (n.param2 & MO_BIT_RANDOM_OFFSET) {
+			PseudoRandom rng(p.X << 8 | p.Z | p.Y << 16);
+			offset.X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+			offset.Z = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+		}
+		if (n.param2 & MO_BIT_RANDOM_OFFSET_Y)
+			random_offset_Y = true;
+		break;
 
-	float random_offset_X = .0;
-	float random_offset_Z = .0;
-	if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
-		random_offset_X = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
-		random_offset_Z = BS * ((rng.next() % 16 / 16.0) * 0.29 - 0.145);
+	case CPT2_DEGROTATE:
+		rotate_degree = n.param2 * 2;
+		break;
+
+	default:
+		break;
 	}
 
-	for (int j = 0; j < 4; j++) {
-		video::S3DVertex vertices[4] =
-		{
-			video::S3DVertex(-s,-BS/2, 0, 0,0,0, c, 0,1),
-			video::S3DVertex( s,-BS/2, 0, 0,0,0, c, 1,1),
-			video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
-			video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
-		};
+	switch (draw_style) {
+	case PLANT_STYLE_CROSS:
+		drawPlantlikeQuad(46);
+		drawPlantlikeQuad(-44);
+		break;
 
-		float rotate_degree = 0;
-		u8 p2mesh = 0;
-		if (f->param_type_2 == CPT2_DEGROTATE)
-			rotate_degree = n.param2 * 2;
-		if (f->param_type_2 != CPT2_MESHOPTIONS) {
-			if (j == 0) {
-				for (u16 i = 0; i < 4; i++)
-					vertices[i].Pos.rotateXZBy(46 + rotate_degree);
-			} else if (j == 1) {
-				for (u16 i = 0; i < 4; i++)
-					vertices[i].Pos.rotateXZBy(-44 + rotate_degree);
-			}
-		} else {
-			p2mesh = n.param2 & 0x7;
-			switch (p2mesh) {
-			case 0:
-				// p.X
-				if (j == 0) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(46);
-				} else if (j == 1) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(-44);
-				}
-				break;
-			case 1:
-				// +
-				if (j == 0) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(91);
-				} else if (j == 1) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(1);
-				}
-				break;
-			case 2:
-				// *
-				if (j == 0) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(121);
-				} else if (j == 1) {
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(241);
-				} else { // (j == 2)
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(1);
-				}
-				break;
-			case 3:
-				// #
-				switch (j) {
-				case 0:
-					for (u16 i = 0; i < 4; i++) {
-						vertices[i].Pos.rotateXZBy(1);
-						vertices[i].Pos.Z += BS / 4;
-					}
-					break;
-				case 1:
-					for (u16 i = 0; i < 4; i++) {
-						vertices[i].Pos.rotateXZBy(91);
-						vertices[i].Pos.X += BS / 4;
-					}
-					break;
-				case 2:
-					for (u16 i = 0; i < 4; i++) {
-						vertices[i].Pos.rotateXZBy(181);
-						vertices[i].Pos.Z -= BS / 4;
-					}
-					break;
-				case 3:
-					for (u16 i = 0; i < 4; i++) {
-						vertices[i].Pos.rotateXZBy(271);
-						vertices[i].Pos.X -= BS / 4;
-					}
-					break;
-				}
-				break;
-			case 4:
-				// outward leaning #-like
-				switch (j) {
-				case 0:
-					for (u16 i = 2; i < 4; i++)
-						vertices[i].Pos.Z -= BS / 2;
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(1);
-					break;
-				case 1:
-					for (u16 i = 2; i < 4; i++)
-						vertices[i].Pos.Z -= BS / 2;
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(91);
-					break;
-				case 2:
-					for (u16 i = 2; i < 4; i++)
-						vertices[i].Pos.Z -= BS / 2;
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(181);
-					break;
-				case 3:
-					for (u16 i = 2; i < 4; i++)
-						vertices[i].Pos.Z -= BS / 2;
-					for (u16 i = 0; i < 4; i++)
-						vertices[i].Pos.rotateXZBy(271);
-					break;
-				}
-				break;
-			}
-		}
+	case PLANT_STYLE_CROSS2:
+		drawPlantlikeQuad(91);
+		drawPlantlikeQuad(1);
+		break;
 
-		for (int i = 0; i < 4; i++) {
-			if (data->m_smooth_lighting)
-				vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
-			vertices[i].Pos += origin;
-			// move to a random spot to avoid moire
-			if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x8) != 0)) {
-				vertices[i].Pos.X += random_offset_X;
-				vertices[i].Pos.Z += random_offset_Z;
-			}
-			// randomly move each face up/down
-			if ((f->param_type_2 == CPT2_MESHOPTIONS) && ((n.param2 & 0x20) != 0)) {
-				PseudoRandom yrng(j | p.X<<16 | p.Z<<8 | p.Y<<24 );
-				vertices[i].Pos.Y -= BS * ((yrng.next() % 16 / 16.0) * 0.125);
-			}
-		}
+	case PLANT_STYLE_STAR:
+		drawPlantlikeQuad(121);
+		drawPlantlikeQuad(241);
+		drawPlantlikeQuad(1);
+		break;
 
-		u16 indices[] = {0, 1, 2, 2, 3, 0};
-		// Add to mesh collector
-		collector->append(tile, vertices, 4, indices, 6);
+	case PLANT_STYLE_HASH:
+		drawPlantlikeQuad(  1, BS/4);
+		drawPlantlikeQuad( 91, BS/4);
+		drawPlantlikeQuad(181, BS/4);
+		drawPlantlikeQuad(271, BS/4);
+		break;
 
-		// stop adding faces for meshes with less than 4 faces
-		if (f->param_type_2 == CPT2_MESHOPTIONS) {
-			if (((p2mesh == 0) || (p2mesh == 1)) && (j == 1))
-				break;
-			else if ((p2mesh == 2) && (j == 2))
-				break;
-		} else if (j == 1) {
-			break;
-		}
-
+	case PLANT_STYLE_HASH2:
+		drawPlantlikeQuad(  1, -BS/2, true);
+		drawPlantlikeQuad( 91, -BS/2, true);
+		drawPlantlikeQuad(181, -BS/2, true);
+		drawPlantlikeQuad(271, -BS/2, true);
+		break;
 	}
 }
 
