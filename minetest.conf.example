@@ -1027,7 +1027,7 @@
 
 #    Length of time between NodeTimer execution cycles
 #    type: float
-# nodetimer_interval = 1.0
+# nodetimer_interval = 0.2
 
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
