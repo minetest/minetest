@@ -3530,7 +3530,7 @@ void Game::updateSound(f32 dtime)
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	ClientMap &map = client->getEnv().getClientMap();
-	MapNode n = map.getNodeNoEx(player->getStandingNodePos());
+	MapNode n = map.getNodeNoEx(player->getFootstepNodePos());
 	soundmaker->m_player_step_sound = nodedef_manager->get(n).sound_footstep;
 }
 
