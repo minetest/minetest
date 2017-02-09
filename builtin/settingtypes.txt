@@ -840,7 +840,7 @@ active_block_mgmt_interval (Active Block Management interval) float 2.0
 abm_interval (Active Block Modifier interval) float 1.0
 
 #    Length of time between NodeTimer execution cycles
-nodetimer_interval (NodeTimer interval) float 1.0
+nodetimer_interval (NodeTimer interval) float 0.2
 
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
