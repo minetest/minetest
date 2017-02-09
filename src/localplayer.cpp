@@ -655,6 +655,18 @@ v3s16 LocalPlayer::getStandingNodePos()
 	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
 
+v3s16 LocalPlayer::getFootstepNodePos()
+{
+	if (touching_ground)
+		// BS * 0.05 below the player's feet ensures a 1/16th height
+		// nodebox is detected instead of the node below it.
+		return floatToInt(getPosition() - v3f(0, BS * 0.05f, 0), BS);
+	// A larger distance below is necessary for a footstep sound
+	// when landing after a jump or fall. BS * 0.5 ensures water
+	// sounds when swimming in 1 node deep water.
+	return floatToInt(getPosition() - v3f(0, BS * 0.5f, 0), BS);
+}
+
 v3s16 LocalPlayer::getLightPosition() const
 {
 	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);

@@ -68,6 +68,7 @@ public:
 	void applyControl(float dtime);
 
 	v3s16 getStandingNodePos();
+	v3s16 getFootstepNodePos();
 
 	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
