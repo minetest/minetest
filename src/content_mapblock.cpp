@@ -1152,137 +1152,75 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 	}
 }
 
+void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
+	float offset_h, float offset_v)
+{
+	video::S3DVertex vertices[4] = {
+		video::S3DVertex(-scale, -BS/2, 0, 0,0,0, color, 0, 1),
+		video::S3DVertex( scale, -BS/2, 0, 0,0,0, color, 1, 1),
+		video::S3DVertex( scale, -BS/2 + scale * 2, 0, 0,0,0, color, 1, 0),
+		video::S3DVertex(-scale, -BS/2 + scale * 2, 0, 0,0,0, color, 0, 0),
+	};
+	for (int i = 0; i < 4; i++) {
+		vertices[i].Pos.rotateYZBy(opening_angle);;
+		vertices[i].Pos.Z += offset_h;
+		vertices[i].Pos.rotateXZBy(rotation);
+		vertices[i].Pos.Y += offset_v;
+		if (data->m_smooth_lighting)
+			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+		vertices[i].Pos += origin;
+	}
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
+	collector->append(tile, vertices, 4, indices, 6);
+}
+
 void MapblockMeshGenerator::drawFirelikeNode()
 {
-	TileSpec tile = getNodeTileN(n, p, 0, data);
+	tile = getNodeTileN(n, p, 0, data);
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
-
-	u16 l = getInteriorLight(n, 1, nodedef);
-	video::SColor c = encode_light_and_color(l, tile.color,
-		f->light_source);
-
-	float s = BS / 2 * f->visual_scale;
-
-	content_t current = n.getContent();
-	content_t n2c;
-	MapNode n2;
-	v3s16 n2p;
-
-	static const v3s16 dirs[6] = {
-		v3s16( 0,  1,  0),
-		v3s16( 0, -1,  0),
-		v3s16( 1,  0,  0),
-		v3s16(-1,  0,  0),
-		v3s16( 0,  0,  1),
-		v3s16( 0,  0, -1)
-	};
-
-	int doDraw[6] = {0, 0, 0, 0, 0, 0};
-
-	bool drawAllFaces = true;
+	if (!data->m_smooth_lighting)
+		color = encode_light_and_color(light, tile.color, f->light_source);
+	scale = BS / 2 * f->visual_scale;
 
 	// Check for adjacent nodes
+	bool neighbors = false;
+	bool neighbor[6] = { 0, 0, 0, 0, 0, 0 };
+	content_t current = n.getContent();
 	for (int i = 0; i < 6; i++) {
-		n2p = blockpos_nodes + p + dirs[i];
-		n2 = data->m_vmanip.getNodeNoEx(n2p);
-		n2c = n2.getContent();
+		v3s16 n2p = blockpos_nodes + p + g_6dirs[i];
+		MapNode n2 = data->m_vmanip.getNodeNoEx(n2p);
+		content_t n2c = n2.getContent();
 		if (n2c != CONTENT_IGNORE && n2c != CONTENT_AIR && n2c != current) {
-			doDraw[i] = 1;
-			if (drawAllFaces)
-				drawAllFaces = false;
-
+			neighbor[i] = true;
+			neighbors = true;
 		}
 	}
+	bool drawBasicFire = neighbor[D6D_YN] || !neighbors;
+	bool drawBottomFire = neighbor[D6D_YP];
 
-	for (int j = 0; j < 6; j++) {
+	if (drawBasicFire || neighbor[D6D_ZP])
+		drawFirelikeQuad(  0, -10, 0.4 * BS);
+	else if (drawBottomFire)
+		drawFirelikeQuad(  0, 70, 0.47 * BS, 0.484 * BS);
 
-		video::S3DVertex vertices[4] = {
-			video::S3DVertex(-s, -BS / 2,         0, 0, 0, 0, c, 0, 1),
-			video::S3DVertex( s, -BS / 2,         0, 0, 0, 0, c, 1, 1),
-			video::S3DVertex( s, -BS / 2 + s * 2, 0, 0, 0, 0, c, 1, 0),
-			video::S3DVertex(-s, -BS / 2 + s * 2, 0, 0, 0, 0, c, 0, 0),
-		};
+	if (drawBasicFire || neighbor[D6D_XN])
+		drawFirelikeQuad( 90, -10, 0.4 * BS);
+	else if (drawBottomFire)
+		drawFirelikeQuad( 90, 70, 0.47 * BS, 0.484 * BS);
 
-		// Calculate which faces should be drawn, (top or sides)
-		if (j == 0 && (drawAllFaces ||
-				(doDraw[3] == 1 || doDraw[1] == 1))) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateXZBy(90);
-				vertices[i].Pos.rotateXYBy(-10);
-				vertices[i].Pos.X -= 4.0;
-			}
-		} else if (j == 1 && (drawAllFaces ||
-				(doDraw[5] == 1 || doDraw[1] == 1))) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateXZBy(180);
-				vertices[i].Pos.rotateYZBy(10);
-				vertices[i].Pos.Z -= 4.0;
-			}
-		} else if (j == 2 && (drawAllFaces ||
-				(doDraw[2] == 1 || doDraw[1] == 1))) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateXZBy(270);
-				vertices[i].Pos.rotateXYBy(10);
-				vertices[i].Pos.X += 4.0;
-			}
-		} else if (j == 3 && (drawAllFaces ||
-				(doDraw[4] == 1 || doDraw[1] == 1))) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateYZBy(-10);
-				vertices[i].Pos.Z += 4.0;
-			}
-		// Center cross-flames
-		} else if (j == 4 && (drawAllFaces || doDraw[1] == 1)) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateXZBy(45);
-			}
-		} else if (j == 5 && (drawAllFaces || doDraw[1] == 1)) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateXZBy(-45);
-			}
-		// Render flames on bottom of node above
-		} else if (j == 0 && doDraw[0] == 1 && doDraw[1] == 0) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateYZBy(70);
-				vertices[i].Pos.rotateXZBy(90);
-				vertices[i].Pos.Y += 4.84;
-				vertices[i].Pos.X -= 4.7;
-			}
-		} else if (j == 1 && doDraw[0] == 1 && doDraw[1] == 0) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateYZBy(70);
-				vertices[i].Pos.rotateXZBy(180);
-				vertices[i].Pos.Y += 4.84;
-				vertices[i].Pos.Z -= 4.7;
-			}
-		} else if (j == 2 && doDraw[0] == 1 && doDraw[1] == 0) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateYZBy(70);
-				vertices[i].Pos.rotateXZBy(270);
-				vertices[i].Pos.Y += 4.84;
-				vertices[i].Pos.X += 4.7;
-			}
-		} else if (j == 3 && doDraw[0] == 1 && doDraw[1] == 0) {
-			for (int i = 0; i < 4; i++) {
-				vertices[i].Pos.rotateYZBy(70);
-				vertices[i].Pos.Y += 4.84;
-				vertices[i].Pos.Z += 4.7;
-			}
-		} else {
-			// Skip faces that aren't adjacent to a node
-			continue;
-		}
+	if (drawBasicFire || neighbor[D6D_ZN])
+		drawFirelikeQuad(180, -10, 0.4 * BS);
+	else if (drawBottomFire)
+		drawFirelikeQuad(180, 70, 0.47 * BS, 0.484 * BS);
 
-		for (int i = 0; i < 4; i++) {
-			vertices[i].Pos *= f->visual_scale;
-			if (data->m_smooth_lighting)
-				vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
-			vertices[i].Pos += origin;
-		}
+	if (drawBasicFire || neighbor[D6D_XP])
+		drawFirelikeQuad(270, -10, 0.4 * BS);
+	else if (drawBottomFire)
+		drawFirelikeQuad(270, 70, 0.47 * BS, 0.484 * BS);
 
-		u16 indices[] = {0, 1, 2, 2, 3, 0};
-		// Add to mesh collector
-		collector->append(tile, vertices, 4, indices, 6);
+	if (drawBasicFire) {
+		drawFirelikeQuad(45, 0, 0.0);
+		drawFirelikeQuad(-45, 0, 0.0);
 	}
 }
 

@@ -43,6 +43,7 @@ public:
 	LightFrame frame;
 	video::SColor color;
 	TileSpec tile;
+	float scale;
 
 // liquid-specific
 	bool top_is_same_liquid;
@@ -71,12 +72,11 @@ public:
 // raillike-specific
 	// name of the group that enables connecting to raillike nodes of different kind
 	static const std::string raillike_groupname;
-    int raillike_group;
-    bool isSameRail(v3s16 dir);
+	int raillike_group;
+	bool isSameRail(v3s16 dir);
 
 // plantlike-specific
 	PlantlikeStyle draw_style;
-	float scale;
 	v3f offset;
 	int rotate_degree;
 	bool random_offset_Y;
@@ -84,6 +84,10 @@ public:
 
 	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
 		bool offset_top_only = false);
+
+// firelike-specific
+	void drawFirelikeQuad(float rotation, float opening_angle,
+		float offset_h, float offset_v = 0.0);
 
 // drawtypes
 	void drawLiquidNode(bool flowing);
@@ -160,5 +164,3 @@ enum DirectionWallmounted {
 	DWM_ZP,
 	DWM_ZN,
 };
-
-// kate: space-indent off; mixedindent on; indent-mode cstyle;
