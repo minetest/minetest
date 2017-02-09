@@ -172,11 +172,11 @@ local function handle_buttons(this, fields)
 			if core.is_yes(fields["cb_hide_gamemods"]) then
 				current.hide_game = true
 				this.data.hide_gamemods = true
-				core.setting_set("world_config_hide_gamemods", "true")
+				core.setting_set("world_config_show_gamemods", "false")
 			else
 				current.hide_game = false
 				this.data.hide_gamemods = false
-				core.setting_set("world_config_hide_gamemods", "false")
+				core.setting_set("world_config_show_gamemods", "true")
 			end
 		end
 
@@ -275,7 +275,7 @@ function create_configure_world_dlg(worldidx)
 					handle_buttons,
 					nil)
 
-	dlg.data.hide_gamemods = core.setting_getbool("world_config_hide_gamemods")
+	dlg.data.hide_gamemods = not core.setting_getbool("world_config_show_gamemods")
 	dlg.data.hide_modpackcontents = core.setting_getbool("world_config_hide_modpackcontents")
 	dlg.data.selected_mod = tonumber(core.setting_get("world_config_selected_mod"))
 	if dlg.data.selected_mod == nil then
