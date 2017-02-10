@@ -1985,7 +1985,9 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	
 	//preserve editboxes
 	for (u32 i=0; i<m_fields.size(); i++) {
-		if(getElementFromId(m_fields[i].fid)->getTypeName() != std::string("editBox")) continue;
+		if (getElementFromId(m_fields[i].fid)->getTypeName() != std::string("editBox")) {
+			continue;
+		}
 		mydata.editbox_dyndata[m_fields[i].fname] = getElementFromId(m_fields[i].fid)->getText();
 	}
 
@@ -2480,12 +2482,14 @@ void GUIFormSpecMenu::drawMenu()
 			m_formspec_string = newform;
 			regenerate = true;
 		}
-		}
+	}
 	if(m_dirty) {
 		regenerate = true;
 		m_dirty = false;
 	}
-	if(regenerate) regenerateGui(m_screensize_old);
+	if (regenerate) {
+		regenerateGui(m_screensize_old);
+	}
 
 	gui::IGUISkin* skin = Environment->getSkin();
 	sanity_check(skin != NULL);
@@ -2999,11 +3003,11 @@ static bool isChild(gui::IGUIElement * tocheck, gui::IGUIElement * parent)
 
 bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 {
-	if(event.EventType==EET_KEY_INPUT_EVENT && (event.KeyInput.PressedDown)) {
+	if (event.EventType == EET_KEY_INPUT_EVENT && (event.KeyInput.PressedDown)) {
 		KeyPress kp(event.KeyInput);
 		gui::IGUIElement *focused = Environment->getFocus();
-		if(focused && isMyChild(focused)) {
-			if(getTypeByID(focused->getID()) == f_KeyEventBox) {
+		if (focused && isMyChild(focused)) {
+			if (getTypeByID(focused->getID()) == f_KeyEventBox) {
 				std::ostringstream os;
 				os << event.KeyInput.Key << ":" << (event.KeyInput.Control?1:0) << ":" << (event.KeyInput.Shift?1:0);
 				focused->setText(irr::core::stringw(os.str().c_str()).c_str());
@@ -3012,18 +3016,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 			}
 		}
 	}
-/*
-	if (event.EventType == EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-		gui::IGUIElement *focused = Environment->getFocus();
-		if(focused && isMyChild(focused)) {
-			if(getTypeByID(focused->getID()) == f_KeyEventBox) {
-				std::string empty;
-				this->setFocus(empty);
-				//return true;
-			}
-		}
-	}*/
-	
+
 	// The IGUITabControl renders visually using the skin's selected
 	// font, which we override for the duration of form drawing,
 	// but computes tab hotspots based on how it would have rendered
