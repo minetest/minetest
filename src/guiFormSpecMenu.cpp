@@ -152,7 +152,7 @@ void GUIFormSpecMenu::removeChildren()
 		(*children.getLast())->remove();
 	}
 
-	if(m_tooltip_element) {
+	if (m_tooltip_element) {
 		m_tooltip_element->remove();
 		m_tooltip_element->drop();
 		m_tooltip_element = NULL;
@@ -330,7 +330,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 
 		InventoryLocation loc;
 
-		if(location == "context" || location == "current_name")
+		if (location == "context" || location == "current_name")
 			loc = m_current_inventory_location;
 		else
 			loc.deSerialize(location);
@@ -344,7 +344,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 		geom.Y = stoi(v_geom[1]);
 
 		s32 start_i = 0;
-		if(startindex != "")
+		if (startindex != "")
 			start_i = stoi(startindex);
 
 		if (geom.X < 0 || geom.Y < 0 || start_i < 0) {
@@ -352,7 +352,7 @@ void GUIFormSpecMenu::parseList(parserData* data,std::string element)
 			return;
 		}
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of list without a size[] element"<<std::endl;
 		m_inventorylists.push_back(ListDrawSpec(loc, listname, pos, geom, start_i));
 		return;
@@ -576,7 +576,7 @@ void GUIFormSpecMenu::parseItemImage(parserData* data,std::string element)
 		geom.X = stof(v_geom[0]) * (float)imgsize.X;
 		geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of item_image without a size[] element"<<std::endl;
 		m_itemimages.push_back(ImageDrawSpec("", name, pos, geom));
 		return;
@@ -612,7 +612,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 				core::rect<s32>(pos.X, pos.Y - m_btn_height,
 						pos.X + geom.X, pos.Y + m_btn_height);
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of button without a size[] element"<<std::endl;
 
 		std::wstring wlabel = utf8_to_wide(unescape_string(label));
@@ -624,7 +624,7 @@ void GUIFormSpecMenu::parseButton(parserData* data,std::string element,
 			258+m_fields.size()
 		);
 		spec.ftype = f_Button;
-		if(type == "button_exit")
+		if (type == "button_exit")
 			spec.is_exit = true;
 		gui::IGUIButton* e = Environment->addButton(rect, this, spec.fid,
 				spec.flabel.c_str());
@@ -1009,7 +1009,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 
 	core::rect<s32> rect;
 
-	if(data->explicit_size)
+	if (data->explicit_size)
 		warningstream<<"invalid use of unpositioned \"field\" in inventory"<<std::endl;
 
 	v2s32 pos = padding + AbsoluteRect.UpperLeftCorner + pos_offset * spacing;
@@ -1124,10 +1124,10 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-	if(!data->explicit_size)
+	if (!data->explicit_size)
 		warningstream<<"invalid use of positioned "<<type<<" without a size[] element"<<std::endl;
 
-	if(m_form_src)
+	if (m_form_src)
 		default_val = m_form_src->resolveText(default_val);
 
 
@@ -1135,7 +1135,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	label = unescape_string(label);
 
 	std::wstring wtext = utf8_to_wide(default_val);
-	if(!data->editbox_dyndata[name].empty()) 
+	if (!data->editbox_dyndata[name].empty()) 
 		wtext = data->editbox_dyndata[name];
 	std::wstring wlabel = utf8_to_wide(label);
 
@@ -1251,7 +1251,7 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 	core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y+(m_btn_height/2));
 	//core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X, pos.Y);
 
-//	if(data->bp_set != 2)
+//	if (data->bp_set != 2)
 //		errorstream<<"WARNING: invalid use of positioned keyeventbox without a size[] element"<<std::endl;
 
 	active_image_name = unescape_string(active_image_name);
@@ -1294,7 +1294,7 @@ void GUIFormSpecMenu::parseKeyEventBox(parserData* data,std::string element)
 	geom.Y = stof(v_geom[1]) * (float)imgsize.Y;
 
 	// paint a little picture
-	if(spec.fname == data->focused_fieldname) {
+	if (spec.fname == data->focused_fieldname) {
 		m_images.push_back(ImageDrawSpec(active_image_name, pos,geom));
 		Environment->setFocus(env);
 	} else {
@@ -1321,7 +1321,7 @@ void GUIFormSpecMenu::parseLabel(parserData* data,std::string element)
 		pos.X += stof(v_pos[0]) * (float)spacing.X;
 		pos.Y += (stof(v_pos[1]) + 7.0/30.0) * (float)spacing.Y;
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
 		std::vector<std::string> lines = split(text, '\n');
@@ -1386,7 +1386,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 					+((imgsize.Y/2)- m_btn_height));
 		//actually text.length() would be correct but adding +1 avoids to break all mods
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of label without a size[] element"<<std::endl;
 
 		std::wstring label = L"";
@@ -1452,7 +1452,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of image_button without a size[] element"<<std::endl;
 
 		image_name = unescape_string(image_name);
@@ -1467,7 +1467,7 @@ void GUIFormSpecMenu::parseImageButton(parserData* data,std::string element,
 			258+m_fields.size()
 		);
 		spec.ftype = f_Button;
-		if(type == "image_button_exit")
+		if (type == "image_button_exit")
 			spec.is_exit = true;
 
 		video::ITexture *texture = 0;
@@ -1607,7 +1607,7 @@ void GUIFormSpecMenu::parseItemImageButton(parserData* data,std::string element)
 
 		core::rect<s32> rect = core::rect<s32>(pos.X, pos.Y, pos.X+geom.X, pos.Y+geom.Y);
 
-		if(!data->explicit_size)
+		if (!data->explicit_size)
 			warningstream<<"invalid use of item_image_button without a size[] element"<<std::endl;
 
 		IItemDefManager *idef = m_client->idef();
@@ -2304,7 +2304,7 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 			s32 y = (i/s.geom.X) * spacing.Y;
 			v2s32 p0(x,y);
 			core::rect<s32> rect = imgrect + s.pos + p0;
-			if(rect.isPointInside(p))
+			if (rect.isPointInside(p))
 			{
 				return ItemSpec(s.inventoryloc, s.listname, item_i);
 			}
@@ -2320,7 +2320,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
-	if(!inv){
+	if (!inv){
 		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory location "
 				<<"\""<<s.inventoryloc.dump()<<"\" doesn't exist"
@@ -2328,7 +2328,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 		return;
 	}
 	InventoryList *ilist = inv->getList(s.listname);
-	if(!ilist){
+	if (!ilist){
 		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory list \""<<s.listname<<"\" @ \""
 				<<s.inventoryloc.dump()<<"\" doesn't exist"
@@ -2341,14 +2341,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
 	{
 		s32 item_i = i + s.start_item_i;
-		if(item_i >= (s32) ilist->getSize())
+		if (item_i >= (s32) ilist->getSize())
 			break;
 		s32 x = (i%s.geom.X) * spacing.X;
 		s32 y = (i/s.geom.X) * spacing.Y;
 		v2s32 p(x,y);
 		core::rect<s32> rect = imgrect + s.pos + p;
 		ItemStack item;
-		if(ilist)
+		if (ilist)
 			item = ilist->getItem(item_i);
 
 		bool selected = m_selected_item
@@ -2389,14 +2389,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 								v2s32(x2 + border, y2)), NULL);
 		}
 
-		if(phase == 1)
+		if (phase == 1)
 		{
 			// Draw item stack
-			if(selected)
+			if (selected)
 			{
 				item.takeItem(m_selected_amount);
 			}
-			if(!item.empty())
+			if (!item.empty())
 			{
 				drawItemStack(driver, m_font, item,
 					rect, &AbsoluteClippingRect, m_client,
@@ -2476,14 +2476,14 @@ void GUIFormSpecMenu::drawSelectedItem()
 void GUIFormSpecMenu::drawMenu()
 {
 	bool regenerate = false;
-	if(m_form_src) {
+	if (m_form_src) {
 		std::string newform = m_form_src->getForm();
-		if(newform != m_formspec_string){
+		if (newform != m_formspec_string){
 			m_formspec_string = newform;
 			regenerate = true;
 		}
 	}
-	if(m_dirty) {
+	if (m_dirty) {
 		regenerate = true;
 		m_dirty = false;
 	}
@@ -2752,27 +2752,27 @@ void GUIFormSpecMenu::updateSelectedItem()
 	// WARNING: BLACK MAGIC
 	// See if there is a stack suited for our current guess.
 	// If such stack does not exist, clear the guess.
-	if(m_selected_content_guess.name != "" &&
+	if (m_selected_content_guess.name != "" &&
 			selected.name == m_selected_content_guess.name &&
 			selected.count == m_selected_content_guess.count){
 		// Selected item fits the guess. Skip the black magic.
 	}
-	else if(m_selected_content_guess.name != ""){
+	else if (m_selected_content_guess.name != ""){
 		bool found = false;
 		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
 			const ListDrawSpec &s = m_inventorylists[i];
 			Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
-			if(!inv)
+			if (!inv)
 				continue;
 			InventoryList *list = inv->getList(s.listname);
-			if(!list)
+			if (!list)
 				continue;
 			for(s32 i=0; i<s.geom.X*s.geom.Y && !found; i++){
 				u32 item_i = i + s.start_item_i;
-				if(item_i >= list->getSize())
+				if (item_i >= list->getSize())
 					continue;
 				ItemStack stack = list->getItem(item_i);
-				if(stack.name == m_selected_content_guess.name &&
+				if (stack.name == m_selected_content_guess.name &&
 						stack.count == m_selected_content_guess.count){
 					found = true;
 					infostream<<"Client: Changing selected content guess to "
@@ -2784,7 +2784,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 				}
 			}
 		}
-		if(!found){
+		if (!found){
 			infostream<<"Client: Discarding selected content guess: "
 					<<m_selected_content_guess.getItemString()<<std::endl;
 			m_selected_content_guess.name = "";
@@ -2792,16 +2792,16 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 
 	// If craftresult is nonempty and nothing else is selected, select it now.
-	if(!m_selected_item)
+	if (!m_selected_item)
 	{
 		for(u32 i=0; i<m_inventorylists.size(); i++)
 		{
 			const ListDrawSpec &s = m_inventorylists[i];
-			if(s.listname == "craftpreview")
+			if (s.listname == "craftpreview")
 			{
 				Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 				InventoryList *list = inv->getList("craftresult");
-				if(list && list->getSize() >= 1 && !list->getItem(0).empty())
+				if (list && list->getSize() >= 1 && !list->getItem(0).empty())
 				{
 					m_selected_item = new ItemSpec;
 					m_selected_item->inventoryloc = s.inventoryloc;
@@ -2816,7 +2816,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 
 	// If craftresult is selected, keep the whole stack selected
-	if(m_selected_item && m_selected_item->listname == "craftresult")
+	if (m_selected_item && m_selected_item->listname == "craftresult")
 	{
 		m_selected_amount = verifySelectedItem().count;
 	}
@@ -2829,20 +2829,20 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	// If the selected stack has become smaller, adjust m_selected_amount.
 	// Return the selected stack.
 
-	if(m_selected_item)
+	if (m_selected_item)
 	{
-		if(m_selected_item->isValid())
+		if (m_selected_item->isValid())
 		{
 			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-			if(inv)
+			if (inv)
 			{
 				InventoryList *list = inv->getList(m_selected_item->listname);
-				if(list && (u32) m_selected_item->i < list->getSize())
+				if (list && (u32) m_selected_item->i < list->getSize())
 				{
 					ItemStack stack = list->getItem(m_selected_item->i);
-					if(m_selected_amount > stack.count)
+					if (m_selected_amount > stack.count)
 						m_selected_amount = stack.count;
-					if(!stack.empty())
+					if (!stack.empty())
 						return stack;
 				}
 			}
@@ -2859,7 +2859,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 
 void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 {
-	if(m_text_dst)
+	if (m_text_dst)
 	{
 		StringMap fields;
 
@@ -2900,7 +2900,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 
 		for(unsigned int i=0; i<m_fields.size(); i++) {
 			const FieldSpec &s = m_fields[i];
-			if(s.send) {
+			if (s.send) {
 				std::string name = s.fname;
 				if (s.ftype == f_Button) {
 					fields[name] = wide_to_utf8(s.flabel);
@@ -2910,7 +2910,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 						fields[name] = table->checkEvent();
 					}
 				}
-				else if(s.ftype == f_DropDown) {
+				else if (s.ftype == f_DropDown) {
 					// no dynamic cast possible due to some distributions shipped
 					// without rtti support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
@@ -2979,7 +2979,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 				else
 				{
 					IGUIElement* e = getElementFromId(s.fid);
-					if(e != NULL) {
+					if (e != NULL) {
 						fields[name] = wide_to_utf8(e->getText());
 					}
 				}
@@ -3767,8 +3767,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
-		if(event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED && isVisible()) {
-			if(event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID() 
+		if (event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED && isVisible()) {
+			if (event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID() 
 			&& event.GUIEvent.Caller->getTypeName() == std::string("editBox")) {
 				// regenerate on focus change to update decorations
 				m_dirty = true;
