@@ -55,8 +55,6 @@ public:
 	video::SColor blendLight(const v3f &vertex_pos, const v3f &vertex_normal, video::SColor tile_color);
 
 // cuboid drawing!
-	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const video::SColor *colors, const f32 *txc);
 	void drawSmoothLightedCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
 		const u16 *lights , const f32 *txc);
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount, const f32 *txc);

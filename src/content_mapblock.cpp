@@ -66,7 +66,6 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 // Create a cuboid.
 //  tiles         - the tiles (materials) to use (for all 6 faces)
 //  tilecount     - number of entries in tiles, 1<=tilecount<=6
-//  colors        - colors of the cuboid's six sides
 //  txc           - texture coordinates - this is a list of texture coordinates
 //                  for the opposite corners of each face - therefore, there
 //                  should be (2+2)*6=24 values in the list. Alternatively,
@@ -76,7 +75,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 //                  0,0,1,1 for each face, that would be the same as
 //                  passing NULL.
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const video::SColor *colors, const f32 *txc)
+	TileSpec *tiles, int tilecount, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -95,53 +94,52 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		txc = txc_default;
 	}
 
-	video::SColor c1 = colors[0];
-	video::SColor c2 = colors[1];
-	video::SColor c3 = colors[2];
-	video::SColor c4 = colors[3];
-	video::SColor c5 = colors[4];
-	video::SColor c6 = colors[5];
+	video::SColor colors[6];
+	for (int face = 0; face != 6; ++face) {
+		int tileindex = MYMIN(face, tilecount - 1);
+		colors[face] = encode_light_and_color(light, tiles[tileindex].color, frame.light_source);
+	}
 	if (!frame.light_source) {
-		applyFacesShading(c1, v3f(0, 1, 0));
-		applyFacesShading(c2, v3f(0, -1, 0));
-		applyFacesShading(c3, v3f(1, 0, 0));
-		applyFacesShading(c4, v3f(-1, 0, 0));
-		applyFacesShading(c5, v3f(0, 0, 1));
-		applyFacesShading(c6, v3f(0, 0, -1));
+		applyFacesShading(colors[0], v3f(0, 1, 0));
+		applyFacesShading(colors[1], v3f(0, -1, 0));
+		applyFacesShading(colors[2], v3f(1, 0, 0));
+		applyFacesShading(colors[3], v3f(-1, 0, 0));
+		applyFacesShading(colors[4], v3f(0, 0, 1));
+		applyFacesShading(colors[5], v3f(0, 0, -1));
 	}
 
 	video::S3DVertex vertices[24] =
 	{
 		// up
-		video::S3DVertex(min.X,max.Y,max.Z, 0,1,0, c1, txc[0],txc[1]),
-		video::S3DVertex(max.X,max.Y,max.Z, 0,1,0, c1, txc[2],txc[1]),
-		video::S3DVertex(max.X,max.Y,min.Z, 0,1,0, c1, txc[2],txc[3]),
-		video::S3DVertex(min.X,max.Y,min.Z, 0,1,0, c1, txc[0],txc[3]),
+		video::S3DVertex(min.X,max.Y,max.Z, 0,1,0, colors[0], txc[0],txc[1]),
+		video::S3DVertex(max.X,max.Y,max.Z, 0,1,0, colors[0], txc[2],txc[1]),
+		video::S3DVertex(max.X,max.Y,min.Z, 0,1,0, colors[0], txc[2],txc[3]),
+		video::S3DVertex(min.X,max.Y,min.Z, 0,1,0, colors[0], txc[0],txc[3]),
 		// down
-		video::S3DVertex(min.X,min.Y,min.Z, 0,-1,0, c2, txc[4],txc[5]),
-		video::S3DVertex(max.X,min.Y,min.Z, 0,-1,0, c2, txc[6],txc[5]),
-		video::S3DVertex(max.X,min.Y,max.Z, 0,-1,0, c2, txc[6],txc[7]),
-		video::S3DVertex(min.X,min.Y,max.Z, 0,-1,0, c2, txc[4],txc[7]),
+		video::S3DVertex(min.X,min.Y,min.Z, 0,-1,0, colors[1], txc[4],txc[5]),
+		video::S3DVertex(max.X,min.Y,min.Z, 0,-1,0, colors[1], txc[6],txc[5]),
+		video::S3DVertex(max.X,min.Y,max.Z, 0,-1,0, colors[1], txc[6],txc[7]),
+		video::S3DVertex(min.X,min.Y,max.Z, 0,-1,0, colors[1], txc[4],txc[7]),
 		// right
-		video::S3DVertex(max.X,max.Y,min.Z, 1,0,0, c3, txc[ 8],txc[9]),
-		video::S3DVertex(max.X,max.Y,max.Z, 1,0,0, c3, txc[10],txc[9]),
-		video::S3DVertex(max.X,min.Y,max.Z, 1,0,0, c3, txc[10],txc[11]),
-		video::S3DVertex(max.X,min.Y,min.Z, 1,0,0, c3, txc[ 8],txc[11]),
+		video::S3DVertex(max.X,max.Y,min.Z, 1,0,0, colors[2], txc[ 8],txc[9]),
+		video::S3DVertex(max.X,max.Y,max.Z, 1,0,0, colors[2], txc[10],txc[9]),
+		video::S3DVertex(max.X,min.Y,max.Z, 1,0,0, colors[2], txc[10],txc[11]),
+		video::S3DVertex(max.X,min.Y,min.Z, 1,0,0, colors[2], txc[ 8],txc[11]),
 		// left
-		video::S3DVertex(min.X,max.Y,max.Z, -1,0,0, c4, txc[12],txc[13]),
-		video::S3DVertex(min.X,max.Y,min.Z, -1,0,0, c4, txc[14],txc[13]),
-		video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, c4, txc[14],txc[15]),
-		video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, c4, txc[12],txc[15]),
+		video::S3DVertex(min.X,max.Y,max.Z, -1,0,0, colors[3], txc[12],txc[13]),
+		video::S3DVertex(min.X,max.Y,min.Z, -1,0,0, colors[3], txc[14],txc[13]),
+		video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, colors[3], txc[14],txc[15]),
+		video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, colors[3], txc[12],txc[15]),
 		// back
-		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, c5, txc[16],txc[17]),
-		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, c5, txc[18],txc[17]),
-		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, c5, txc[18],txc[19]),
-		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, c5, txc[16],txc[19]),
+		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, colors[4], txc[16],txc[17]),
+		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, colors[4], txc[18],txc[17]),
+		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, colors[4], txc[18],txc[19]),
+		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, colors[4], txc[16],txc[19]),
 		// front
-		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, c6, txc[20],txc[21]),
-		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, c6, txc[22],txc[21]),
-		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, c6, txc[22],txc[23]),
-		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, c6, txc[20],txc[23]),
+		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, colors[5], txc[20],txc[21]),
+		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, colors[5], txc[22],txc[21]),
+		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, colors[5], txc[22],txc[23]),
+		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, colors[5], txc[20],txc[23]),
 	};
 
 	for(int i = 0; i < 6; i++)
@@ -346,26 +344,6 @@ void MapblockMeshGenerator::drawSmoothLightedCuboid(const aabb3f &box,
 		int tileindex = MYMIN(k, tilecount - 1);
 		collector->append(tiles[tileindex], vertices + 4 * k, 4, indices, 6);
 	}
-}
-
-// Create a cuboid.
-//  tiles         - the tiles (materials) to use (for all 6 faces)
-//  tilecount     - number of entries in tiles, 1<=tilecount<=6
-//  txc           - texture coordinates - this is a list of texture coordinates
-//                  for the opposite corners of each face - therefore, there
-//                  should be (2+2)*6=24 values in the list. Alternatively,
-//                  pass NULL to use the entire texture for each face. The
-//                  order of the faces in the list is up-down-right-left-back-
-//                  front (compatible with ContentFeatures). If you specified
-//                  0,0,1,1 for each face, that would be the same as
-//                  passing NULL.
-void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const f32 *txc)
-{
-	video::SColor colors[6];
-	for (u8 i = 0; i < 6; i++)
-		colors[i] = color;
-	drawCuboid(box, tiles, tilecount, colors, txc);
 }
 
 // Gets the base lighting values for a node
@@ -810,11 +788,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	for (int face = 0; face < 6; face++)
 		tiles[face] = getNodeTile(n, p, g_6dirs[face], data);
 
-	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tiles[1].color, f->light_source);
-
 	TileSpec glass_tiles[6];
-	video::SColor glasscolor[6];
 	if (tiles[0].texture && tiles[3].texture && tiles[4].texture) {
 		glass_tiles[0] = tiles[4];
 		glass_tiles[1] = tiles[0];
@@ -826,10 +800,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		for (int face = 0; face < 6; face++)
 			glass_tiles[face] = tiles[4];
 	}
-
-	if (!data->m_smooth_lighting)
-		for (int face = 0; face < 6; face++)
-			glasscolor[face] = encode_light_and_color(light, glass_tiles[face].color, f->light_source);
 
 	u8 param2 = n.getParam2();
 	bool H_merge = !(param2 & 128);
@@ -917,7 +887,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		if (nb[face])
 			continue;
 		tile = glass_tiles[face];
-		color = glasscolor[face];
 		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
@@ -926,8 +895,6 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		tile = getSpecialTile(*f, n, 0);
-		if (!data->m_smooth_lighting)
-			color = encode_light_and_color(light, tile.color, f->light_source);
 		aabb3f box(-(nb[5] ? g : b),
 		           -(nb[4] ? g : b),
 		           -(nb[3] ? g : b),
@@ -942,8 +909,6 @@ void MapblockMeshGenerator::drawAllfacesNode()
 {
 	static const aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
 	tile = getNodeTile(n, p, v3s16(0,0,0), data);
-	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tile.color, f->light_source);
 	drawAutoLightedCuboid(box);
 }
 
@@ -961,7 +926,6 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
 	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 
-	video::SColor color;
 	if (!data->m_smooth_lighting)
 		color = encode_light_and_color(light, tile.color, f->light_source);
 
@@ -1211,9 +1175,6 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	TileSpec tile_rot = tile;
 	tile_rot.rotation = 1;
 
-	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tile.color, f->light_source);
-
 	static const f32 post_rad = BS/8;
 	static const f32 bar_rad  = BS/16;
 	static const f32 bar_len  = BS/2 - post_rad;
@@ -1396,15 +1357,9 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	};
 
 	TileSpec tiles[6];
-	video::SColor colors[6];
 	for (int j = 0; j < 6; j++) {
 		// Handles facedir rotation for textures
 		tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
-	}
-	if (!data->m_smooth_lighting) {
-		u16 l = getInteriorLight(n, 1, nodedef);
-		for (int j = 0; j < 6; j++)
-			colors[j] = encode_light_and_color(l, tiles[j].color, f->light_source);
 	}
 
 	int neighbors = 0;
@@ -1494,7 +1449,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 			}
 			drawSmoothLightedCuboid(box, tiles, 6, lights, txc);
 		} else {
-			drawCuboid(box, tiles, 6, colors, txc);
+			drawCuboid(box, tiles, 6, txc);
 		}
 	}
 }
