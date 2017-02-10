@@ -1020,14 +1020,14 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 			(size.X / 2 - 150) + 300, pos.Y + (m_btn_height*2));
 
 
-	if(m_form_src)
+	if (m_form_src) {
 		default_val = m_form_src->resolveText(default_val);
-
+	}
 
 	std::wstring wtext = utf8_to_wide(unescape_string(default_val));
-	if(!data->editbox_dyndata[name].empty()) 
+	if (!data->editbox_dyndata[name].empty()) {
 		wtext = data->editbox_dyndata[name];
-
+	}
 	std::wstring wlabel = utf8_to_wide(unescape_string(label));
 
 	FieldSpec spec(
@@ -3043,7 +3043,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 
 	// Fix Esc/Return key being eaten by checkboxen and tables
-	if(event.EventType==EET_KEY_INPUT_EVENT) {
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
 		if (kp == EscapeKey || kp == CancelKey
 				|| kp == getKeySetting("keymap_inventory")
@@ -3059,7 +3059,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 	}
 	
 	// Mouse wheel events: send to hovered element instead of focused
-	if(event.EventType==EET_MOUSE_INPUT_EVENT
+	if (event.EventType == EET_MOUSE_INPUT_EVENT
 			&& event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
 		s32 x = event.MouseInput.X;
 		s32 y = event.MouseInput.Y;
