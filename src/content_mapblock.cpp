@@ -64,11 +64,9 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 }
 
 // Create a cuboid.
-//  collector     - the MeshCollector for the resulting polygons
-//  box           - the position and size of the box
 //  tiles         - the tiles (materials) to use (for all 6 faces)
 //  tilecount     - number of entries in tiles, 1<=tilecount<=6
-//  c             - colors of the cuboid's six sides
+//  colors        - colors of the cuboid's six sides
 //  txc           - texture coordinates - this is a list of texture coordinates
 //                  for the opposite corners of each face - therefore, there
 //                  should be (2+2)*6=24 values in the list. Alternatively,
@@ -77,10 +75,8 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 //                  front (compatible with ContentFeatures). If you specified
 //                  0,0,1,1 for each face, that would be the same as
 //                  passing NULL.
-//  light source  - if greater than zero, the box's faces will not be shaded
-void makeCuboid(MeshCollector *collector, const aabb3f &box,
-	TileSpec *tiles, int tilecount, const video::SColor *c,
-	const f32* txc, const u8 light_source)
+void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const video::SColor *colors, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -99,13 +95,13 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 		txc = txc_default;
 	}
 
-	video::SColor c1 = c[0];
-	video::SColor c2 = c[1];
-	video::SColor c3 = c[2];
-	video::SColor c4 = c[3];
-	video::SColor c5 = c[4];
-	video::SColor c6 = c[5];
-	if (!light_source) {
+	video::SColor c1 = colors[0];
+	video::SColor c2 = colors[1];
+	video::SColor c3 = colors[2];
+	video::SColor c4 = colors[3];
+	video::SColor c5 = colors[4];
+	video::SColor c6 = colors[5];
+	if (!frame.light_source) {
 		applyFacesShading(c1, v3f(0, 1, 0));
 		applyFacesShading(c2, v3f(0, -1, 0));
 		applyFacesShading(c3, v3f(1, 0, 0));
@@ -213,8 +209,6 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 }
 
 // Create a cuboid.
-//  collector - the MeshCollector for the resulting polygons
-//  box       - the position and size of the box
 //  tiles     - the tiles (materials) to use (for all 6 faces)
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
 //  lights    - vertex light levels. The order is the same as in light_dirs
@@ -225,10 +219,8 @@ void makeCuboid(MeshCollector *collector, const aabb3f &box,
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures). If you specified 0,0,1,1
 //              for each face, that would be the same as passing NULL.
-//  light_source - node light emission
-static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
-	TileSpec *tiles, int tilecount, const u16 *lights , const f32 *txc,
-	const u8 light_source)
+void MapblockMeshGenerator::drawSmoothLightedCuboid(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const u16 *lights, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -345,8 +337,8 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 	for (s32 j = 0; j < 24; ++j) {
 		int tileindex = MYMIN(j / 4, tilecount - 1);
 		vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
-			tiles[tileindex].color, light_source);
-		if (!light_source)
+			tiles[tileindex].color, frame.light_source);
+		if (!frame.light_source)
 			applyFacesShading(vertices[j].Color, vertices[j].Normal);
 	}
 	// Add to mesh collector
@@ -357,11 +349,8 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 }
 
 // Create a cuboid.
-//  collector     - the MeshCollector for the resulting polygons
-//  box           - the position and size of the box
 //  tiles         - the tiles (materials) to use (for all 6 faces)
 //  tilecount     - number of entries in tiles, 1<=tilecount<=6
-//  c             - color of the cuboid
 //  txc           - texture coordinates - this is a list of texture coordinates
 //                  for the opposite corners of each face - therefore, there
 //                  should be (2+2)*6=24 values in the list. Alternatively,
@@ -370,15 +359,13 @@ static void makeSmoothLightedCuboid(MeshCollector *collector, const aabb3f &box,
 //                  front (compatible with ContentFeatures). If you specified
 //                  0,0,1,1 for each face, that would be the same as
 //                  passing NULL.
-//  light source  - if greater than zero, the box's faces will not be shaded
-void makeCuboid(MeshCollector *collector, const aabb3f &box, TileSpec *tiles,
-	int tilecount, const video::SColor &c, const f32* txc,
-	const u8 light_source)
+void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
+	TileSpec *tiles, int tilecount, const f32 *txc)
 {
-	video::SColor color[6];
+	video::SColor colors[6];
 	for (u8 i = 0; i < 6; i++)
-		color[i] = c;
-	makeCuboid(collector, box, tiles, tilecount, color, txc, light_source);
+		colors[i] = color;
+	drawCuboid(box, tiles, tilecount, colors, txc);
 }
 
 // Gets the base lighting values for a node
@@ -447,10 +434,7 @@ static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
 		*neighbors |= v;
 }
 
-static void makeAutoLightedCuboid(MeshCollector *collector, MeshMakeData *data,
-	const v3f &pos, aabb3f box, TileSpec &tile,
-	/* pre-computed, for non-smooth lighting only */ const video::SColor color,
-	/* for smooth lighting only */ const LightFrame &frame)
+void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box)
 {
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -458,8 +442,8 @@ static void makeAutoLightedCuboid(MeshCollector *collector, MeshMakeData *data,
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
-	box.MinEdge += pos;
-	box.MaxEdge += pos;
+	box.MinEdge += origin;
+	box.MaxEdge += origin;
 	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
 	f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
 	f32 tz1 = (box.MinEdge.Z / BS) + 0.5;
@@ -482,16 +466,13 @@ static void makeAutoLightedCuboid(MeshCollector *collector, MeshMakeData *data,
 			f32 z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(frame, core::vector3df(x, y, z));
 		}
-		makeSmoothLightedCuboid(collector, box, &tile, 1, lights, txc, frame.light_source);
+		drawSmoothLightedCuboid(box, &tile, 1, lights, txc);
 	} else {
-		makeCuboid(collector, box, &tile, 1, color, txc, frame.light_source);
+		drawCuboid(box, &tile, 1, txc);
 	}
 }
 
-static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data,
-	const v3f &pos, aabb3f box, TileSpec &tile, const f32 *txc,
-	/* pre-computed, for non-smooth lighting only */ const video::SColor color,
-	/* for smooth lighting only */ const LightFrame &frame)
+void MapblockMeshGenerator::drawAutoLightedCuboidEx(aabb3f box, const f32 *txc)
 {
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
@@ -499,8 +480,8 @@ static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data
 	f32 dx2 = box.MaxEdge.X;
 	f32 dy2 = box.MaxEdge.Y;
 	f32 dz2 = box.MaxEdge.Z;
-	box.MinEdge += pos;
-	box.MaxEdge += pos;
+	box.MinEdge += origin;
+	box.MaxEdge += origin;
 	if (data->m_smooth_lighting) {
 		u16 lights[8];
 		for (int j = 0; j < 8; ++j) {
@@ -509,9 +490,9 @@ static void makeAutoLightedCuboidEx(MeshCollector *collector, MeshMakeData *data
 			f32 z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(frame, core::vector3df(x, y, z));
 		}
-		makeSmoothLightedCuboid(collector, box, &tile, 1, lights, txc, frame.light_source);
+		drawSmoothLightedCuboid(box, &tile, 1, lights, txc);
 	} else {
-		makeCuboid(collector, box, &tile, 1, color, txc, frame.light_source);
+		drawCuboid(box, &tile, 1, txc);
 	}
 }
 
@@ -926,6 +907,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		0,1, 8,  0,4,16,  3,4,17,  3,1, 9
 	};
 
+	tile = tiles[1];
 	for (int edge = 0; edge < 12; edge++) {
 		bool edge_invisible;
 		if (nb[nb_triplet[edge * 3 + 2]])
@@ -934,40 +916,41 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 			edge_invisible = nb[nb_triplet[edge * 3]] ^ nb[nb_triplet[edge * 3 + 1]];
 		if (edge_invisible)
 			continue;
-		makeAutoLightedCuboid(collector, data, origin, frame_edges[edge],
-		                      tiles[1], color, frame);
+		drawAutoLightedCuboid(frame_edges[edge]);
 	}
 
 	for (int face = 0; face < 6; face++) {
 		if (nb[face])
 			continue;
-		makeAutoLightedCuboid(collector, data, origin, glass_faces[face],
-		                      glass_tiles[face], glasscolor[face], frame);
+		tile = glass_tiles[face];
+		color = glasscolor[face];
+		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
 	if (param2 > 0 && f->special_tiles[0].texture) {
 		// Interior volume level is in range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
-		TileSpec tile = getSpecialTile(*f, n, 0);
-		video::SColor special_color = encode_light_and_color(light, tile.color, f->light_source);
+		tile = getSpecialTile(*f, n, 0);
+		if (!data->m_smooth_lighting)
+			color = encode_light_and_color(light, tile.color, f->light_source);
 		aabb3f box(-(nb[5] ? g : b),
 		           -(nb[4] ? g : b),
 		           -(nb[3] ? g : b),
 		            (nb[2] ? g : b),
 		            (nb[1] ? g : b) * vlev,
 		            (nb[0] ? g : b));
-		makeAutoLightedCuboid(collector, data, origin, box, tile, special_color, frame);
+		drawAutoLightedCuboid(box);
 	}
 }
 
 void MapblockMeshGenerator::drawAllfacesNode()
 {
 	static const aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
-	TileSpec tile_leaves = getNodeTile(n, p, v3s16(0,0,0), data);
+	tile = getNodeTile(n, p, v3s16(0,0,0), data);
 	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tile_leaves.color, f->light_source);
-	makeAutoLightedCuboid(collector, data, origin, box, tile_leaves, color, frame);
+		color = encode_light_and_color(light, tile.color, f->light_source);
+	drawAutoLightedCuboid(box);
 }
 
 void MapblockMeshGenerator::drawTorchlikeNode()
@@ -1226,7 +1209,7 @@ void MapblockMeshGenerator::drawFirelikeNode()
 
 void MapblockMeshGenerator::drawFencelikeNode()
 {
-	TileSpec tile = getNodeTile(n, p, v3s16(0,0,0), data);
+	tile = getNodeTile(n, p, v3s16(0,0,0), data);
 	TileSpec tile_nocrack = tile;
 	tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
 
@@ -1252,7 +1235,10 @@ void MapblockMeshGenerator::drawFencelikeNode()
 		0.500, 0.000, 0.750, 1.000,
 		0.750, 0.000, 1.000, 1.000,
 	};
-	makeAutoLightedCuboidEx(collector, data, origin, post, tile_rot, postuv, color, frame);
+	tile = tile_rot;
+	drawAutoLightedCuboidEx(post, postuv);
+
+	tile = tile_nocrack;
 
 	// Now a section of fence, +X, if there's a post there
 	v3s16 p2 = p;
@@ -1272,8 +1258,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 			0.000, 0.500, 1.000, 0.625,
 			0.000, 0.875, 1.000, 1.000,
 		};
-		makeAutoLightedCuboidEx(collector, data, origin, bar_x1, tile_nocrack, xrailuv, color, frame);
-		makeAutoLightedCuboidEx(collector, data, origin, bar_x2, tile_nocrack, xrailuv, color, frame);
+		drawAutoLightedCuboidEx(bar_x1, xrailuv);
+		drawAutoLightedCuboidEx(bar_x2, xrailuv);
 	}
 
 	// Now a section of fence, +Z, if there's a post there
@@ -1294,8 +1280,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 			0.3750, 0.3750, 0.5000, 0.5000,
 			0.6250, 0.6250, 0.7500, 0.7500,
 		};
-		makeAutoLightedCuboidEx(collector, data, origin, bar_z1, tile_nocrack, zrailuv, color, frame);
-		makeAutoLightedCuboidEx(collector, data, origin, bar_z2, tile_nocrack, zrailuv, color, frame);
+		drawAutoLightedCuboidEx(bar_z1, zrailuv);
+		drawAutoLightedCuboidEx(bar_z2, zrailuv);
 	}
 }
 
@@ -1511,9 +1497,9 @@ void MapblockMeshGenerator::drawNodeboxNode()
 				f32 z = (j & 1) ? dz2 : dz1;
 				lights[j] = blendLight(frame, core::vector3df(x, y, z));
 			}
-			makeSmoothLightedCuboid(collector, box, tiles, 6, lights, txc, f->light_source);
+			drawSmoothLightedCuboid(box, tiles, 6, lights, txc);
 		} else {
-			makeCuboid(collector, box, tiles, 6, colors, txc, f->light_source);
+			drawCuboid(box, tiles, 6, colors, txc);
 		}
 	}
 }

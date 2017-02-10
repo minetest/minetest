@@ -1,4 +1,7 @@
+#pragma once
+#include "util/numeric.h"
 #include "nodedef.h"
+#include <IMeshManipulator.h>
 
 // Mesh options
 static const u8 MO_MASK_STYLE          = 0x07;
@@ -44,6 +47,15 @@ public:
 	video::SColor color;
 	TileSpec tile;
 	float scale;
+
+// cuboid drawing!
+	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
+		const video::SColor *colors, const f32 *txc);
+	void drawSmoothLightedCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
+		const u16 *lights , const f32 *txc);
+	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount, const f32 *txc);
+	void drawAutoLightedCuboid(aabb3f box);
+	void drawAutoLightedCuboidEx(aabb3f box, const f32 *txc);
 
 // liquid-specific
 	bool top_is_same_liquid;
