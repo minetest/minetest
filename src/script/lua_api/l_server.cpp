@@ -360,16 +360,16 @@ int ModApiServer::l_show_formspec(lua_State *L)
 	return 1;
 }
 
-// get_current_modname()
-int ModApiServer::l_get_current_modname(lua_State *L)
+// get_current_mod_name()
+int ModApiServer::l_get_current_mod_name(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
 	return 1;
 }
 
-// get_modpath(modname)
-int ModApiServer::l_get_modpath(lua_State *L)
+// get_mod_path(modname)
+int ModApiServer::l_get_mod_path(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string modname = luaL_checkstring(L, 1);
@@ -382,9 +382,9 @@ int ModApiServer::l_get_modpath(lua_State *L)
 	return 1;
 }
 
-// get_modnames()
+// get_mod_names()
 // the returned list is sorted alphabetically for you
-int ModApiServer::l_get_modnames(lua_State *L)
+int ModApiServer::l_get_mod_names(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
@@ -407,8 +407,8 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	return 1;
 }
 
-// get_worldpath()
-int ModApiServer::l_get_worldpath(lua_State *L)
+// get_world_path()
+int ModApiServer::l_get_world_path(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string worldpath = getServer(L)->getWorldPath();
@@ -517,12 +517,12 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(request_shutdown);
 	API_FCT(get_server_status);
 	API_FCT(get_server_uptime);
-	API_FCT(get_worldpath);
+	API_FCT(get_world_path);
 	API_FCT(is_singleplayer);
 
-	API_FCT(get_current_modname);
-	API_FCT(get_modpath);
-	API_FCT(get_modnames);
+	API_FCT(get_current_mod_name);
+	API_FCT(get_mod_path);
+	API_FCT(get_mod_names);
 
 	API_FCT(print);
 

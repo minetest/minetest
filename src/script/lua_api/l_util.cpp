@@ -108,8 +108,8 @@ int ModApiUtil::l_setting_get(lua_State *L)
 	return 1;
 }
 
-// setting_setbool(name)
-int ModApiUtil::l_setting_setbool(lua_State *L)
+// setting_set_bool(name)
+int ModApiUtil::l_setting_set_bool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	std::string name = luaL_checkstring(L, 1);
@@ -119,8 +119,8 @@ int ModApiUtil::l_setting_setbool(lua_State *L)
 	return 0;
 }
 
-// setting_getbool(name)
-int ModApiUtil::l_setting_getbool(lua_State *L)
+// setting_get_bool(name)
+int ModApiUtil::l_setting_get_bool(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 	const char *name = luaL_checkstring(L, 1);
@@ -495,8 +495,8 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(setting_set);
 	API_FCT(setting_get);
-	API_FCT(setting_setbool);
-	API_FCT(setting_getbool);
+	API_FCT(setting_set_bool);
+	API_FCT(setting_get_bool);
 	API_FCT(setting_save);
 
 	API_FCT(parse_json);
@@ -534,8 +534,8 @@ void ModApiUtil::InitializeAsync(AsyncEngine& engine)
 
 	//ASYNC_API_FCT(setting_set);
 	ASYNC_API_FCT(setting_get);
-	//ASYNC_API_FCT(setting_setbool);
-	ASYNC_API_FCT(setting_getbool);
+	//ASYNC_API_FCT(setting_set_bool);
+	ASYNC_API_FCT(setting_get_bool);
 	//ASYNC_API_FCT(setting_save);
 
 	ASYNC_API_FCT(parse_json);

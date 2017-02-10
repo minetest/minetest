@@ -16,9 +16,9 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 local format, pairs, type = string.format, pairs, type
-local core, get_current_modname = core, core.get_current_modname
+local core, get_current_mod_name = core, core.get_current_mod_name
 local profiler, sampler = ...
-local instrument_builtin = core.setting_getbool("instrument.builtin") or false
+local instrument_builtin = core.setting_get_bool("instrument.builtin") or false
 
 local register_functions = {
 	register_globalstep = 0,
@@ -87,7 +87,7 @@ local function instrument(def)
 	if not def or not def.func then
 		return
 	end
-	def.mod = def.mod or get_current_modname()
+	def.mod = def.mod or get_current_mod_name()
 	local modname = def.mod
 	local instrument_name = generate_name(def)
 	local func = def.func
@@ -137,7 +137,7 @@ local function instrument_register(func, func_name)
 end
 
 local function init_chatcommand()
-	if core.setting_getbool("instrument.chatcommand") or true then
+	if core.setting_get_bool("instrument.chatcommand") or true then
 		local orig_register_chatcommand = core.register_chatcommand
 		core.register_chatcommand = function(cmd, def)
 			def.func = instrument {
@@ -153,7 +153,7 @@ end
 -- Start instrumenting selected functions
 --
 local function init()
-	local is_set = core.setting_getbool
+	local is_set = core.setting_get_bool
 	if is_set("instrument.entity") or true then
 		-- Explicitly declare entity api-methods.
 		-- Simple iteration would ignore lookup via __index.
@@ -167,7 +167,7 @@ local function init()
 		-- Wrap register_entity() to instrument them on registration.
 		local orig_register_entity = core.register_entity
 		core.register_entity = function(name, prototype)
-			local modname = get_current_modname()
+			local modname = get_current_mod_name()
 			for _, func_name in pairs(entity_instrumentation) do
 				prototype[func_name] = instrument {
 					func = prototype[func_name],

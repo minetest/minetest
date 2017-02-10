@@ -29,7 +29,7 @@ end
 assert(core.string_to_privs("a,b").b == true)
 assert(core.privs_to_string({a=true,b=true}) == "a,b")
 
-core.auth_file_path = core.get_worldpath().."/auth.txt"
+core.auth_file_path = core.get_world_path().."/auth.txt"
 core.auth_table = {}
 
 local function read_auth_file()
@@ -170,7 +170,7 @@ function core.register_authentication_handler(handler)
 		error("Add-on authentication handler already registered by "..core.registered_auth_handler_modname)
 	end
 	core.registered_auth_handler = handler
-	core.registered_auth_handler_modname = core.get_current_modname()
+	core.registered_auth_handler_modname = core.get_current_mod_name()
 	handler.mod_origin = core.registered_auth_handler_modname
 end
 

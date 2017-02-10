@@ -29,11 +29,11 @@ local function get_formspec(tabview, name, tabdata)
 		"button[8.5,5;3.25,0.5;start_server;" .. fgettext("Start Game") .. "]" ..
 		"label[4,-0.25;" .. fgettext("Select World:") .. "]" ..
 		"checkbox[0.25,0.25;cb_creative_mode;" .. fgettext("Creative Mode") .. ";" ..
-		dump(core.setting_getbool("creative_mode")) .. "]" ..
+		dump(core.setting_get_bool("creative_mode")) .. "]" ..
 		"checkbox[0.25,0.7;cb_enable_damage;" .. fgettext("Enable Damage") .. ";" ..
-		dump(core.setting_getbool("enable_damage")) .. "]" ..
+		dump(core.setting_get_bool("enable_damage")) .. "]" ..
 		"checkbox[0.25,1.15;cb_server_announce;" .. fgettext("Public") .. ";" ..
-		dump(core.setting_getbool("server_announce")) .. "]" ..
+		dump(core.setting_get_bool("server_announce")) .. "]" ..
 		"label[0.25,2.2;" .. fgettext("Name/Password") .. "]" ..
 		"field[0.55,3.2;3.5,0.5;te_playername;;" ..
 		core.formspec_escape(core.setting_get("name")) .. "]" ..

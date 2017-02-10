@@ -174,8 +174,8 @@ core.log(loglevel, line) (possible in async calls)
 Settings:
 core.setting_set(name, value)
 core.setting_get(name) -> string or nil (possible in async calls)
-core.setting_setbool(name, value)
-core.setting_getbool(name) -> bool or nil (possible in async calls)
+core.setting_set_bool(name, value)
+core.setting_get_bool(name) -> bool or nil (possible in async calls)
 core.setting_save() -> nil, save all settings to config file
 
 Worlds:

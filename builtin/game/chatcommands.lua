@@ -11,7 +11,7 @@ function core.register_chatcommand(cmd, def)
 	def.params = def.params or ""
 	def.description = def.description or ""
 	def.privs = def.privs or {}
-	def.mod_origin = core.get_current_modname() or "??"
+	def.mod_origin = core.get_current_mod_name() or "??"
 	core.registered_chatcommands[cmd] = def
 end
 
@@ -57,7 +57,7 @@ core.register_on_chat_message(function(name, message)
 	return true  -- Handled chat message
 end)
 
-if core.setting_getbool("profiler.load") then
+if core.setting_get_bool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
 	-- Before any chattcommands that should be profiled
 	profiler.init_chatcommand()
@@ -565,7 +565,7 @@ core.register_chatcommand("mods", {
 	description = "List mods installed on the server",
 	privs = {},
 	func = function(name, param)
-		return true, table.concat(core.get_modnames(), ", ")
+		return true, table.concat(core.get_mod_names(), ", ")
 	end,
 })
 
@@ -696,7 +696,7 @@ core.register_chatcommand("rollback_check", {
 			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.setting_get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local range, seconds, limit =
@@ -747,7 +747,7 @@ core.register_chatcommand("rollback", {
 	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.setting_get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
@@ -793,7 +793,7 @@ core.register_chatcommand("time", {
 	privs = {},
 	func = function(name, param)
 		if param == "" then
-			local current_time = math.floor(core.get_timeofday() * 1440)
+			local current_time = math.floor(core.get_time_of_day() * 1440)
 			local minutes = current_time % 60
 			local hour = (current_time - minutes) / 60
 			return true, ("Current time is %d:%02d"):format(hour, minutes)
@@ -810,7 +810,7 @@ core.register_chatcommand("time", {
 				return false, "Invalid time."
 			end
 			-- Backward compatibility.
-			core.set_timeofday((new_time % 24000) / 24000)
+			core.set_time_of_day((new_time % 24000) / 24000)
 			core.log("action", name .. " sets time to " .. new_time)
 			return true, "Time of day changed."
 		end
@@ -821,7 +821,7 @@ core.register_chatcommand("time", {
 		elseif minute < 0 or minute > 59 then
 			return false, "Invalid minute (must be between 0 and 59 inclusive)."
 		end
-		core.set_timeofday((hour * 60 + minute) / 1440)
+		core.set_time_of_day((hour * 60 + minute) / 1440)
 		core.log("action", ("%s sets time to %d:%02d"):format(name, hour, minute))
 		return true, "Time of day changed."
 	end,

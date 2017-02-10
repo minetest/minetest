@@ -537,9 +537,9 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	return 1;
 }
 
-// set_timeofday(val)
+// set_time_of_day(val)
 // val = 0...1
-int ModApiEnvMod::l_set_timeofday(lua_State *L)
+int ModApiEnvMod::l_set_time_of_day(lua_State *L)
 {
 	GET_ENV_PTR;
 
@@ -555,8 +555,8 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 	return 0;
 }
 
-// get_timeofday() -> 0...1
-int ModApiEnvMod::l_get_timeofday(lua_State *L)
+// get_time_of_day() -> 0...1
+int ModApiEnvMod::l_get_time_of_day(lua_State *L)
 {
 	GET_ENV_PTR;
 
@@ -576,8 +576,8 @@ int ModApiEnvMod::l_get_day_count(lua_State *L)
 	return 1;
 }
 
-// get_gametime()
-int ModApiEnvMod::l_get_gametime(lua_State *L)
+// get_game_time()
+int ModApiEnvMod::l_get_game_time(lua_State *L)
 {
 	GET_ENV_PTR;
 
@@ -1022,9 +1022,9 @@ int ModApiEnvMod::l_transforming_liquid_add(lua_State *L)
 	return 1;
 }
 
-// forceload_block(blockpos)
+// force_load_block(blockpos)
 // blockpos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_forceload_block(lua_State *L)
+int ModApiEnvMod::l_force_load_block(lua_State *L)
 {
 	GET_ENV_PTR;
 
@@ -1033,9 +1033,9 @@ int ModApiEnvMod::l_forceload_block(lua_State *L)
 	return 0;
 }
 
-// forceload_free_block(blockpos)
+// force_load_free_block(blockpos)
 // blockpos = {x=num, y=num, z=num}
-int ModApiEnvMod::l_forceload_free_block(lua_State *L)
+int ModApiEnvMod::l_force_load_free_block(lua_State *L)
 {
 	GET_ENV_PTR;
 
@@ -1067,9 +1067,9 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(get_node_timer);
 	API_FCT(get_player_by_name);
 	API_FCT(get_objects_inside_radius);
-	API_FCT(set_timeofday);
-	API_FCT(get_timeofday);
-	API_FCT(get_gametime);
+	API_FCT(set_time_of_day);
+	API_FCT(get_time_of_day);
+	API_FCT(get_game_time);
 	API_FCT(get_day_count);
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
@@ -1084,6 +1084,6 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_path);
 	API_FCT(line_of_sight);
 	API_FCT(transforming_liquid_add);
-	API_FCT(forceload_block);
-	API_FCT(forceload_free_block);
+	API_FCT(force_load_block);
+	API_FCT(force_load_free_block);
 }
