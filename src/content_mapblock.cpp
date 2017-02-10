@@ -85,9 +85,9 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	if (!data->m_smooth_lighting) {
 		for (int face = 0; face != 6; ++face) {
 			int tileindex = MYMIN(face, tilecount - 1);
-			colors[face] = encode_light_and_color(light, tiles[tileindex].color, frame.light_source);
+			colors[face] = encode_light_and_color(light, tiles[tileindex].color, f->light_source);
 		}
-		if (!frame.light_source) {
+		if (!f->light_source) {
 			applyFacesShading(colors[0], v3f(0, 1, 0));
 			applyFacesShading(colors[1], v3f(0, -1, 0));
 			applyFacesShading(colors[2], v3f(1, 0, 0));
@@ -198,8 +198,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		for (int j = 0; j < 24; ++j) {
 			int tileindex = MYMIN(j / 4, tilecount - 1);
 			vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
-				tiles[tileindex].color, frame.light_source);
-			if (!frame.light_source)
+				tiles[tileindex].color, f->light_source);
+			if (!f->light_source)
 				applyFacesShading(vertices[j].Color, vertices[j].Normal);
 		}
 	}
@@ -220,7 +220,6 @@ void MapblockMeshGenerator::getSmoothLightFrame()
 		frame.lightsA[k] = light & 0xff;
 		frame.lightsB[k] = light >> 8;
 	}
-	frame.light_source = f->light_source;
 }
 
 // Calculates vertex light level
@@ -251,14 +250,14 @@ video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
 	video::SColor tile_color)
 {
 	u16 light = blendLight(vertex_pos);
-	return encode_light_and_color(light, tile_color, frame.light_source);
+	return encode_light_and_color(light, tile_color, f->light_source);
 }
 
 video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
 	const v3f &vertex_normal, video::SColor tile_color)
 {
 	video::SColor color = blendLight(vertex_pos, tile_color);
-	if (!frame.light_source)
+	if (!f->light_source)
 			applyFacesShading(color, vertex_normal);
 	return color;
 }
@@ -1305,12 +1304,10 @@ void MapblockMeshGenerator::drawMeshNode()
 
 void MapblockMeshGenerator::drawNode()
 {
-	if (data->m_smooth_lighting) {
+	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
-	} else {
-		frame.light_source = f->light_source;
+	else
 		light = getInteriorLight(n, 1, nodedef);
-	}
 }
 
 /*

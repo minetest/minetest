@@ -20,7 +20,6 @@ struct LightFrame
 {
 	f32 lightsA[8];
 	f32 lightsB[8];
-	u8 light_source;
 };
 
 class MapblockMeshGenerator
