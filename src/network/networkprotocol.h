@@ -146,6 +146,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 30:
 		New ContentFeatures serialization version
 		Add node and tile color and palette
+		Fix plantlike visual_scale being applied squared and add compatibility
+			with pre-30 clients by sending sqrt(visual_scale)
 */
 
 #define LATEST_PROTOCOL_VERSION 30
