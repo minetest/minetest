@@ -271,16 +271,8 @@ static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
 		*neighbors |= v;
 }
 
-void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box)
+void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *coords)
 {
-	f32 dx1 = box.MinEdge.X;
-	f32 dy1 = box.MinEdge.Y;
-	f32 dz1 = box.MinEdge.Z;
-	f32 dx2 = box.MaxEdge.X;
-	f32 dy2 = box.MaxEdge.Y;
-	f32 dz2 = box.MaxEdge.Z;
-	box.MinEdge += origin;
-	box.MaxEdge += origin;
 	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
 	f32 ty1 = (box.MinEdge.Y / BS) + 0.5;
 	f32 tz1 = (box.MinEdge.Z / BS) + 0.5;
@@ -295,22 +287,13 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box)
 		1-tx2, 1-ty2, 1-tx1, 1-ty1, // back
 		  tx1, 1-ty2,   tx2, 1-ty1, // front
 	};
-	if (data->m_smooth_lighting) {
-		u16 lights[8];
-		for (int j = 0; j < 8; ++j) {
-			f32 x = (j & 4) ? dx2 : dx1;
-			f32 y = (j & 2) ? dy2 : dy1;
-			f32 z = (j & 1) ? dz2 : dz1;
-			lights[j] = blendLight(v3f(x, y, z));
-		}
-		drawCuboid(box, &tile, 1, lights, txc);
-	} else {
-		drawCuboid(box, &tile, 1, NULL, txc);
-	}
+	for (int i = 0; i != 24; ++i)
+		coords[i] = txc[i];
 }
 
-void MapblockMeshGenerator::drawAutoLightedCuboidEx(aabb3f box, const f32 *txc)
+void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc)
 {
+	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
 	f32 dy1 = box.MinEdge.Y;
 	f32 dz1 = box.MinEdge.Z;
@@ -319,6 +302,10 @@ void MapblockMeshGenerator::drawAutoLightedCuboidEx(aabb3f box, const f32 *txc)
 	f32 dz2 = box.MaxEdge.Z;
 	box.MinEdge += origin;
 	box.MaxEdge += origin;
+	if (!txc) {
+		generateCuboidTextureCoords(box, texture_coord_buf);
+		txc = texture_coord_buf;
+	}
 	if (data->m_smooth_lighting) {
 		u16 lights[8];
 		for (int j = 0; j < 8; ++j) {
@@ -1057,7 +1044,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 		0.750, 0.000, 1.000, 1.000,
 	};
 	tile = tile_rot;
-	drawAutoLightedCuboidEx(post, postuv);
+	drawAutoLightedCuboid(post, postuv);
 
 	tile = tile_nocrack;
 
@@ -1079,8 +1066,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 			0.000, 0.500, 1.000, 0.625,
 			0.000, 0.875, 1.000, 1.000,
 		};
-		drawAutoLightedCuboidEx(bar_x1, xrailuv);
-		drawAutoLightedCuboidEx(bar_x2, xrailuv);
+		drawAutoLightedCuboid(bar_x1, xrailuv);
+		drawAutoLightedCuboid(bar_x2, xrailuv);
 	}
 
 	// Now a section of fence, +Z, if there's a post there
@@ -1101,8 +1088,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 			0.3750, 0.3750, 0.5000, 0.5000,
 			0.6250, 0.6250, 0.7500, 0.7500,
 		};
-		drawAutoLightedCuboidEx(bar_z1, zrailuv);
-		drawAutoLightedCuboidEx(bar_z2, zrailuv);
+		drawAutoLightedCuboid(bar_z1, zrailuv);
+		drawAutoLightedCuboid(bar_z2, zrailuv);
 	}
 }
 
