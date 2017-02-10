@@ -26,10 +26,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct MeshMakeData;
 struct MeshCollector;
 
+struct LightingPair
+{
+	f32 sunlight;
+	f32 artificial;
+};
+
+struct LightingSpec
+{
+	u16 average_light; // 0..256
+	u8 sunlight_ratio;
+};
+
 struct LightFrame
 {
-	f32 lightsA[8];
-	f32 lightsB[8];
+	LightingPair lights[8];
 };
 
 class MapblockMeshGenerator
@@ -59,7 +70,7 @@ public:
 
 // lighting
 	void getSmoothLightFrame();
-	u16 blendLight(const v3f &vertex_pos);
+	LightingSpec blendLight(const v3f &vertex_pos);
 	video::SColor blendLight(const v3f &vertex_pos, video::SColor tile_color);
 	video::SColor blendLight(const v3f &vertex_pos, const v3f &vertex_normal, video::SColor tile_color);
 
@@ -72,7 +83,7 @@ public:
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
-		const u16 *lights , const f32 *txc);
+		const LightingSpec *lights, const f32 *txc);
 	void generateCuboidTextureCoords(aabb3f const &box, f32 *coords);
 	void drawAutoLightedCuboid(aabb3f box, const f32 *txc = NULL,
 		TileSpec *tiles = NULL, int tile_count = 0);
@@ -143,5 +154,8 @@ public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
 	void generate();
 };
+
+LightingPair convert_lighting(u16 light, u8 emissive_light);
+video::SColor encode_light_and_color(const LightingSpec &light, video::SColor color);
 
 #endif

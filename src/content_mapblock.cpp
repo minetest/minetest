@@ -126,7 +126,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 //              the faces in the list is up-down-right-left-back-front
 //              (compatible with ContentFeatures).
 void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
-	TileSpec *tiles, int tilecount, const u16 *lights, const f32 *txc)
+	TileSpec *tiles, int tilecount, const LightingSpec *lights, const f32 *txc)
 {
 	assert(tilecount >= 1 && tilecount <= 6); // pre-condition
 
@@ -241,7 +241,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		for (int j = 0; j < 24; ++j) {
 			int tileindex = MYMIN(j / 4, tilecount - 1);
 			vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
-				tiles[tileindex].color, f->light_source);
+				tiles[tileindex].color);
 			if (!f->light_source)
 				applyFacesShading(vertices[j].Color, vertices[j].Normal);
 		}
@@ -254,35 +254,57 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	}
 }
 
+LightingPair convert_lighting(u16 light, u8 emissive_light)
+{
+	LightingPair result;
+	f32 day = (light & 0xff) / 255.0f;
+	f32 night = (light >> 8) / 255.0f;
+	result.artificial = std::min(1.0f, night + emissive_light * 0.01f);
+	// Since we don't know if the day light is sunlight or
+	// artificial light, assume it is artificial when the night
+	// light bank is also lit.
+	result.sunlight = std::max(0.0f, day - result.artificial);
+	return result;
+}
+
+video::SColor encode_light_and_color(const LightingSpec &light, video::SColor color)
+{
+	return video::SColor(light.sunlight_ratio,
+		light.average_light * color.getRed() / 256,
+		light.average_light * color.getGreen() / 256,
+		light.average_light * color.getBlue() / 256);
+}
+
 // Gets the base lighting values for a node
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
 	for (int k = 0; k < 8; ++k) {
 		u16 light = getSmoothLight(blockpos_nodes + p, light_dirs[k], data);
-		frame.lightsA[k] = light & 0xff;
-		frame.lightsB[k] = light >> 8;
+		frame.lights[k] = convert_lighting(light, f->light_source);
 	}
 }
 
 // Calculates vertex light level
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
+LightingSpec MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 {
 	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 z = core::clamp(vertex_pos.Z / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
-	f32 lightA = 0.0;
-	f32 lightB = 0.0;
+	f32 sunlight = 0.0;
+	f32 artificial = 0.0;
 	for (int k = 0; k < 8; ++k) {
 		f32 dx = (k & 4) ? x : 1 - x;
 		f32 dy = (k & 2) ? y : 1 - y;
 		f32 dz = (k & 1) ? z : 1 - z;
-		lightA += dx * dy * dz * frame.lightsA[k];
-		lightB += dx * dy * dz * frame.lightsB[k];
+		sunlight   += dx * dy * dz * frame.lights[k].sunlight;
+		artificial += dx * dy * dz * frame.lights[k].artificial;
 	}
-	return
-		core::clamp(core::round32(lightA), 0, 255) |
-		core::clamp(core::round32(lightB), 0, 255) << 8;
+	f32 sum = sunlight + artificial;
+	LightingSpec result;
+	result.sunlight_ratio = (sum > 1e-3) ? (core::clamp<u32>(255 * sunlight / sum, 0, 255)) : 0; // sum can be zero
+	result.average_light = core::clamp<u32>((128.0 * sum), 0, 256);
+	return result;
 }
 
 // Calculates vertex color to be used in mapblock mesh
@@ -291,8 +313,8 @@ u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
 	video::SColor tile_color)
 {
-	u16 light = blendLight(vertex_pos);
-	return encode_light_and_color(light, tile_color, f->light_source);
+	LightingSpec light = blendLight(vertex_pos);
+	return encode_light_and_color(light, tile_color);
 }
 
 video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
@@ -345,7 +367,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 		tile_count = 1;
 	}
 	if (data->m_smooth_lighting) {
-		u16 lights[8];
+		LightingSpec lights[8];
 		for (int j = 0; j < 8; ++j) {
 			v3f d;
 			d.X = (j & 4) ? dx2 : dx1;
