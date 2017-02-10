@@ -1611,10 +1611,6 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 			compatible_param_type_2 = CPT2_WALLMOUNTED;
 	}
 
-	float compatible_visual_scale = visual_scale;
-	if (protocol_version < 30 && drawtype == NDT_PLANTLIKE)
-		compatible_visual_scale = sqrt(visual_scale);
-
 	if (protocol_version == 13)
 	{
 		writeU8(os, 5); // version
@@ -1626,7 +1622,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 			writeS16(os, i->second);
 		}
 		writeU8(os, drawtype);
-		writeF1000(os, compatible_visual_scale);
+		writeF1000(os, visual_scale);
 		writeU8(os, 6);
 		for (u32 i = 0; i < 6; i++)
 			tiledef[i].serialize(os, protocol_version);
@@ -1674,7 +1670,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 			writeS16(os, i->second);
 		}
 		writeU8(os, drawtype);
-		writeF1000(os, compatible_visual_scale);
+		writeF1000(os, visual_scale);
 		writeU8(os, 6);
 		for (u32 i = 0; i < 6; i++)
 			tiledef[i].serialize(os, protocol_version);
@@ -1728,7 +1724,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 			writeS16(os, i->second);
 		}
 		writeU8(os, drawtype);
-		writeF1000(os, compatible_visual_scale);
+		writeF1000(os, visual_scale);
 		writeU8(os, 6);
 		for (u32 i = 0; i < 6; i++)
 			tiledef[i].serialize(os, protocol_version);
