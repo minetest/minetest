@@ -53,6 +53,10 @@ public:
 	video::SColor blendLight(const v3f &vertex_pos, video::SColor tile_color);
 	video::SColor blendLight(const v3f &vertex_pos, const v3f &vertex_normal, video::SColor tile_color);
 
+	void useTile(int index, bool disable_backface_culling);
+	void useDefaultTile(bool set_color = true);
+	TileSpec getTile(const v3s16 &direction);
+
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
 		const u16 *lights , const f32 *txc);
