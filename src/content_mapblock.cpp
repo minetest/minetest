@@ -85,6 +85,27 @@ TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
 	return getNodeTile(n, p, direction, data);
 }
 
+void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
+{
+	static const v2f tcoords[4] = { v2f(0, 1), v2f(1, 1), v2f(1, 0), v2f(0, 0) };
+	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
+	video::S3DVertex vertices[4];
+	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
+	v3f normal2(normal.X, normal.Y, normal.Z);
+	for (int j = 0; j < 4; j++) {
+		vertices[j].Pos = coords[j] + origin;
+		vertices[j].Normal = normal2;
+		if (data->m_smooth_lighting)
+			vertices[j].Color = blendLight(coords[j], tile.color);
+		else
+			vertices[j].Color = color;
+		if (shade_face)
+			applyFacesShading(vertices[j].Color, normal2);
+		vertices[j].TCoords = tcoords[j];
+	}
+	collector->append(tile, vertices, 4, indices, 6);
+}
+
 // Create a cuboid.
 //  tiles     - the tiles (materials) to use (for all 6 faces)
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
@@ -617,37 +638,24 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		// Don't make face if neighbor is of same type
 		if (neighbor.getContent() == n.getContent())
 			continue;
-
-		video::SColor face_color = color;
-		if (!data->m_smooth_lighting && !f->light_source)
-			applyFacesShading(face_color, v3f(dir.X, dir.Y, dir.Z));
-
-		// The face at Z+
-		video::S3DVertex vertices[4] = {
-			video::S3DVertex(-BS/2, -BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 1,1),
-			video::S3DVertex( BS/2, -BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 0,1),
-			video::S3DVertex( BS/2,  BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 0,0),
-			video::S3DVertex(-BS/2,  BS/2, BS/2, dir.X, dir.Y, dir.Z, face_color, 1,0),
+		v3f vertices[4] = {
+			v3f(-BS/2, -BS/2, BS/2),
+			v3f( BS/2, -BS/2, BS/2),
+			v3f( BS/2,  BS/2, BS/2),
+			v3f(-BS/2,  BS/2, BS/2),
 		};
-
 		for (int i = 0; i < 4; i++) {
 			// Rotations in the g_6dirs format
 			switch(face) {
-				case 0: vertices[i].Pos.rotateXZBy(  0); break; // Z+
-				case 1: vertices[i].Pos.rotateYZBy(-90); break; // Y+
-				case 2: vertices[i].Pos.rotateXZBy(-90); break; // X+
-				case 3: vertices[i].Pos.rotateXZBy(180); break; // Z-
-				case 4: vertices[i].Pos.rotateYZBy( 90); break; // Y-
-				case 5: vertices[i].Pos.rotateXZBy( 90); break; // X-
+				case 0: vertices[i].rotateXZBy(  0); break; // Z+
+				case 1: vertices[i].rotateYZBy(-90); break; // Y+
+				case 2: vertices[i].rotateXZBy(-90); break; // X+
+				case 3: vertices[i].rotateXZBy(180); break; // Z-
+				case 4: vertices[i].rotateYZBy( 90); break; // Y-
+				case 5: vertices[i].rotateXZBy( 90); break; // X-
 			};
-			if (data->m_smooth_lighting)
-				vertices[i].Color = blendLight(vertices[i].Pos, vertices[i].Normal, tile.color);
-			vertices[i].Pos += origin;
 		}
-
-		static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-		// Add to mesh collector
-		collector->append(tile, vertices, 4, indices, 6);
+		drawQuad(vertices, dir);
 	}
 }
 
@@ -793,31 +801,23 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 	useTile(tileindex, true);
 
 	float size = BS / 2 * f->visual_scale;
-	// Wall at X+ of node
-	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-size,-size,0, 0,0,0, color, 0,1),
-		video::S3DVertex( size,-size,0, 0,0,0, color, 1,1),
-		video::S3DVertex( size, size,0, 0,0,0, color, 1,0),
-		video::S3DVertex(-size, size,0, 0,0,0, color, 0,0),
+	v3f vertices[4] = {
+		v3f(-size, -size, 0),
+		v3f( size, -size, 0),
+		v3f( size,  size, 0),
+		v3f(-size,  size, 0),
 	};
-
 	for (int i = 0; i < 4; i++) {
 		switch(wall) {
-			case DWM_YP: vertices[i].Pos.rotateXZBy(-45); break;
-			case DWM_YN: vertices[i].Pos.rotateXZBy( 45); break;
-			case DWM_XP: vertices[i].Pos.rotateXZBy(  0); break;
-			case DWM_XN: vertices[i].Pos.rotateXZBy(180); break;
-			case DWM_ZP: vertices[i].Pos.rotateXZBy( 90); break;
-			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
+			case DWM_YP: vertices[i].rotateXZBy(-45); break;
+			case DWM_YN: vertices[i].rotateXZBy( 45); break;
+			case DWM_XP: vertices[i].rotateXZBy(  0); break;
+			case DWM_XN: vertices[i].rotateXZBy(180); break;
+			case DWM_ZP: vertices[i].rotateXZBy( 90); break;
+			case DWM_ZN: vertices[i].rotateXZBy(-90); break;
 		}
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
-		vertices[i].Pos += origin;
 	}
-
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	// Add to mesh collector
-	collector->append(tile, vertices, 4, indices, 6);
+	drawQuad(vertices);
 }
 
 void MapblockMeshGenerator::drawSignlikeNode()
@@ -827,40 +827,33 @@ void MapblockMeshGenerator::drawSignlikeNode()
 	float offset = BS/16;
 	float size = BS/2 * f->visual_scale;
 	// Wall at X+ of node
-	video::S3DVertex vertices[4] = {
-		video::S3DVertex(BS/2 - offset,  size,  size, 0,0,0, color, 0,0),
-		video::S3DVertex(BS/2 - offset,  size, -size, 0,0,0, color, 1,0),
-		video::S3DVertex(BS/2 - offset, -size, -size, 0,0,0, color, 1,1),
-		video::S3DVertex(BS/2 - offset, -size,  size, 0,0,0, color, 0,1),
+	v3f vertices[4] = {
+		v3f(BS/2 - offset,  size,  size),
+		v3f(BS/2 - offset,  size, -size),
+		v3f(BS/2 - offset, -size, -size),
+		v3f(BS/2 - offset, -size,  size),
 	};
-
 	for (int i = 0; i < 4; i++) {
 		switch(wall) {
-			case DWM_YP: vertices[i].Pos.rotateXYBy( 90); break;
-			case DWM_YN: vertices[i].Pos.rotateXYBy(-90); break;
-			case DWM_XP: vertices[i].Pos.rotateXZBy(  0); break;
-			case DWM_XN: vertices[i].Pos.rotateXZBy(180); break;
-			case DWM_ZP: vertices[i].Pos.rotateXZBy( 90); break;
-			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
+			case DWM_YP: vertices[i].rotateXYBy( 90); break;
+			case DWM_YN: vertices[i].rotateXYBy(-90); break;
+			case DWM_XP: vertices[i].rotateXZBy(  0); break;
+			case DWM_XN: vertices[i].rotateXZBy(180); break;
+			case DWM_ZP: vertices[i].rotateXZBy( 90); break;
+			case DWM_ZN: vertices[i].rotateXZBy(-90); break;
 		}
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
-		vertices[i].Pos += origin;
 	}
-
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	// Add to mesh collector
-	collector->append(tile, vertices, 4, indices, 6);
+	drawQuad(vertices);
 }
 
 void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
-	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-scale, -BS/2, 0, 0,0,0, color, 0, 1),
-		video::S3DVertex( scale, -BS/2, 0, 0,0,0, color, 1, 1),
-		video::S3DVertex( scale, -BS/2 + scale * 2, 0, 0,0,0, color, 1, 0),
-		video::S3DVertex(-scale, -BS/2 + scale * 2, 0, 0,0,0, color, 0, 0),
+	v3f vertices[4] = {
+		v3f(-scale, -BS/2, 0),
+		v3f( scale, -BS/2, 0),
+		v3f( scale, -BS/2 + scale * 2, 0),
+		v3f(-scale, -BS/2 + scale * 2, 0),
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
@@ -869,15 +862,11 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	int offset_first_index = offset_top_only ? 2 : 0;
 	for (int i = 0; i < 4; i++) {
 		if (i >= offset_first_index)
-			vertices[i].Pos.Z += quad_offset;
-		vertices[i].Pos.rotateXZBy(rotation + rotate_degree);
-		vertices[i].Pos += offset;
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
-		vertices[i].Pos += origin;
+			vertices[i].Z += quad_offset;
+		vertices[i].rotateXZBy(rotation + rotate_degree);
+		vertices[i] += offset;
 	}
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	collector->append(tile, vertices, 4, indices, 6);
+	drawQuad(vertices);
 }
 
 void MapblockMeshGenerator::drawPlantlikeNode()
@@ -948,23 +937,19 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
 	float offset_h, float offset_v)
 {
-	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-scale, -BS/2, 0, 0,0,0, color, 0, 1),
-		video::S3DVertex( scale, -BS/2, 0, 0,0,0, color, 1, 1),
-		video::S3DVertex( scale, -BS/2 + scale * 2, 0, 0,0,0, color, 1, 0),
-		video::S3DVertex(-scale, -BS/2 + scale * 2, 0, 0,0,0, color, 0, 0),
+	v3f vertices[4] = {
+		v3f(-scale, -BS/2, 0),
+		v3f( scale, -BS/2, 0),
+		v3f( scale, -BS/2 + scale * 2, 0),
+		v3f(-scale, -BS/2 + scale * 2, 0),
 	};
 	for (int i = 0; i < 4; i++) {
-		vertices[i].Pos.rotateYZBy(opening_angle);;
-		vertices[i].Pos.Z += offset_h;
-		vertices[i].Pos.rotateXZBy(rotation);
-		vertices[i].Pos.Y += offset_v;
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
-		vertices[i].Pos += origin;
+		vertices[i].rotateYZBy(opening_angle);;
+		vertices[i].Z += offset_h;
+		vertices[i].rotateXZBy(rotation);
+		vertices[i].Y += offset_v;
 	}
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	collector->append(tile, vertices, 4, indices, 6);
+	drawQuad(vertices);
 }
 
 void MapblockMeshGenerator::drawFirelikeNode()
@@ -1170,23 +1155,16 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	float offset = BS/64;
 	float size   = BS/2;
 	float y2     = sloped ? size : -size;
-
-	video::S3DVertex vertices[4] = {
-			video::S3DVertex(-size, -size + offset, -size, 0, 0, 0, color, 0, 1),
-			video::S3DVertex( size, -size + offset, -size, 0, 0, 0, color, 1, 1),
-			video::S3DVertex( size,    y2 + offset,  size, 0, 0, 0, color, 1, 0),
-			video::S3DVertex(-size,    y2 + offset,  size, 0, 0, 0, color, 0, 0),
+	v3f vertices[4] = {
+		v3f(-size, -size + offset, -size),
+		v3f( size, -size + offset, -size),
+		v3f( size,    y2 + offset,  size),
+		v3f(-size,    y2 + offset,  size),
 	};
-
-	for (int i = 0; i < 4; i++) {
-		if (angle)
-			vertices[i].Pos.rotateXZBy(angle);
-		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
-		vertices[i].Pos += origin;
-	}
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	collector->append(tile, vertices, 4, indices, 6);
+	if (angle)
+		for (int i = 0; i < 4; i++)
+			vertices[i].rotateXZBy(angle);
+	drawQuad(vertices);
 }
 
 void MapblockMeshGenerator::drawNodeboxNode()

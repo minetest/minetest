@@ -57,6 +57,9 @@ public:
 	void useDefaultTile(bool set_color = true);
 	TileSpec getTile(const v3s16 &direction);
 
+// face drawing
+	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
+
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
 		const u16 *lights , const f32 *txc);
