@@ -125,6 +125,8 @@ public:
 	void drawNodeboxNode();
 	void drawMeshNode();
 
+// common
+	void errorUnknownDrawtype();
 	void drawNode();
 
 public:

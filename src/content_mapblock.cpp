@@ -1274,12 +1274,35 @@ void MapblockMeshGenerator::drawMeshNode()
 		mesh->drop();
 }
 
+// also called when the drawtype is known but should have been pre-converted
+void MapblockMeshGenerator::errorUnknownDrawtype()
+{
+	infostream << "Got drawtype " << f->drawtype << std::endl;
+	FATAL_ERROR("Unknown drawtype");
+}
+
 void MapblockMeshGenerator::drawNode()
 {
 	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else
 		light = getInteriorLight(n, 1, nodedef);
+	switch(f->drawtype) {
+		case NDT_LIQUID:            drawLiquidNode(false); break;
+		case NDT_FLOWINGLIQUID:     drawLiquidNode(true); break;
+		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
+		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;
+		case NDT_ALLFACES:          drawAllfacesNode(); break;
+		case NDT_TORCHLIKE:         drawTorchlikeNode(); break;
+		case NDT_SIGNLIKE:          drawSignlikeNode(); break;
+		case NDT_PLANTLIKE:         drawPlantlikeNode(); break;
+		case NDT_FIRELIKE:          drawFirelikeNode(); break;
+		case NDT_FENCELIKE:         drawFencelikeNode(); break;
+		case NDT_RAILLIKE:          drawRaillikeNode(); break;
+		case NDT_NODEBOX:           drawNodeboxNode(); break;
+		case NDT_MESH:              drawMeshNode(); break;
+		default:                    errorUnknownDrawtype(); break;
+	}
 }
 
 /*
@@ -1288,74 +1311,24 @@ void MapblockMeshGenerator::drawNode()
 */
 void MapblockMeshGenerator::generate()
 {
-    for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
-    for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)
-    for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++)
+	for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
+	for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)
+	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++)
 	{
 		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		f = &nodedef->get(n);
-
-		// Only solidness=0 stuff is drawn here
+		// Solid nodes are drawn by MapBlockMesh
 		if (f->solidness != 0)
 			continue;
-
 		if (f->drawtype == NDT_AIRLIKE)
 			continue;
-
 		origin = intToFloat(p, BS);
-
 		drawNode();
-
-		switch(f->drawtype) {
-		default: // pre-converted drawtypes go here too, if appear
-			infostream << "Got drawtype " << f->drawtype << std::endl;
-			FATAL_ERROR("Unknown drawtype");
-			break;
-		case NDT_LIQUID:
-			drawLiquidNode(false);
-			break;
-		case NDT_FLOWINGLIQUID:
-			drawLiquidNode(true);
-			break;
-		case NDT_GLASSLIKE:
-			drawGlasslikeNode();
-			break;
-		case NDT_GLASSLIKE_FRAMED:
-			drawGlasslikeFramedNode();
-			break;
-		case NDT_ALLFACES:
-			drawAllfacesNode();
-			break;
-		case NDT_TORCHLIKE:
-			drawTorchlikeNode();
-			break;
-		case NDT_SIGNLIKE:
-			drawSignlikeNode();
-			break;
-		case NDT_PLANTLIKE:
-			drawPlantlikeNode();
-			break;
-		case NDT_FIRELIKE:
-			drawFirelikeNode();
-			break;
-		case NDT_FENCELIKE:
-			drawFencelikeNode();
-			break;
-		case NDT_RAILLIKE:
-			drawRaillikeNode();
-			break;
-		case NDT_NODEBOX:
-			drawNodeboxNode();
-			break;
-		case NDT_MESH:
-			drawMeshNode();
-			break;
-		}
 	}
 }
 
 void mapblock_mesh_generate_special(MeshMakeData *data,
-		MeshCollector &collector)
+	MeshCollector &collector)
 {
 	MapblockMeshGenerator generator(data, &collector);
 	generator.generate();
