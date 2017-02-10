@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "chat.h"
 #include "debug.h"
+#include "config.h"
 #include "util/strfnd.h"
 #include <cctype>
 #include <sstream>
@@ -251,8 +252,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 	u32 hanging_indentation = 0;
 
 	// Format the sender name and produce fragments
-	if (!line.name.empty())
-	{
+	if (!line.name.empty()) {
 		temp_frag.text = L"<";
 		temp_frag.column = 0;
 		//temp_frag.bold = 0;
@@ -267,22 +267,20 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 		next_frags.push_back(temp_frag);
 	}
 
+	std::wstring name_sanitized = line.name.c_str();
+
 	// Choose an indentation level
-	if (line.name.empty())
-	{
+	if (line.name.empty()) {
 		// Server messages
 		hanging_indentation = 0;
-	}
-	else if (line.name.size() + 3 <= cols/2)
-	{
+	} else if (name_sanitized.size() + 3 <= cols/2) {
 		// Names shorter than about half the console width
 		hanging_indentation = line.name.size() + 3;
-	}
-	else
-	{
+	} else {
 		// Very long names
 		hanging_indentation = 2;
 	}
+	//EnrichedString line_text(line.text);
 
 	next_line.first = true;
 	bool text_processing = false;
@@ -338,7 +336,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			while (frag_length < remaining_in_input &&
 					frag_length < remaining_in_output)
 			{
-				if (isspace(line.text[in_pos + frag_length]))
+				if (isspace(line.text.getString()[in_pos + frag_length]))
 					space_pos = frag_length;
 				++frag_length;
 			}
@@ -686,9 +684,6 @@ ChatBackend::~ChatBackend()
 
 void ChatBackend::addMessage(std::wstring name, std::wstring text)
 {
-	name = unescape_enriched(name);
-	text = unescape_enriched(text);
-
 	// Note: A message may consist of multiple lines, for example the MOTD.
 	WStrfnd fnd(text);
 	while (!fnd.at_end())
@@ -732,19 +727,22 @@ ChatBuffer& ChatBackend::getRecentBuffer()
 	return m_recent_buffer;
 }
 
-std::wstring ChatBackend::getRecentChat()
+EnrichedString ChatBackend::getRecentChat()
 {
-	std::wostringstream stream;
+	EnrichedString result;
 	for (u32 i = 0; i < m_recent_buffer.getLineCount(); ++i)
 	{
 		const ChatLine& line = m_recent_buffer.getLine(i);
 		if (i != 0)
-			stream << L"\n";
-		if (!line.name.empty())
-			stream << L"<" << line.name << L"> ";
-		stream << line.text;
+			result += L"\n";
+		if (!line.name.empty()) {
+			result += L"<";
+			result += line.name;
+			result += L"> ";
+		}
+		result += line.text;
 	}
-	return stream.str();
+	return result;
 }
 
 ChatPrompt& ChatBackend::getPrompt()

@@ -26,18 +26,46 @@ function core.register_privilege(name, param)
 end
 
 core.register_privilege("interact", "Can interact with things and modify the world")
-core.register_privilege("teleport", "Can use /teleport command")
-core.register_privilege("bring", "Can teleport other players")
-core.register_privilege("settime", "Can use /time")
-core.register_privilege("privs", "Can modify privileges")
-core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
-core.register_privilege("server", "Can do server maintenance stuff")
-core.register_privilege("protection_bypass", "Can bypass node protection in the world")
 core.register_privilege("shout", "Can speak in chat")
-core.register_privilege("ban", "Can ban and unban players")
-core.register_privilege("kick", "Can kick players")
-core.register_privilege("give", "Can use /give and /giveme")
-core.register_privilege("password", "Can use /setpassword and /clearpassword")
+core.register_privilege("basic_privs", "Can modify 'shout' and 'interact' privileges")
+core.register_privilege("privs", "Can modify privileges")
+
+core.register_privilege("teleport", {
+	description = "Can use /teleport command",
+	give_to_singleplayer = false,
+})
+core.register_privilege("bring", {
+	description = "Can teleport other players",
+	give_to_singleplayer = false,
+})
+core.register_privilege("settime", {
+	description = "Can use /time",
+	give_to_singleplayer = false,
+})
+core.register_privilege("server", {
+	description = "Can do server maintenance stuff",
+	give_to_singleplayer = false,
+})
+core.register_privilege("protection_bypass", {
+	description = "Can bypass node protection in the world",
+	give_to_singleplayer = false,
+})
+core.register_privilege("ban", {
+	description = "Can ban and unban players",
+	give_to_singleplayer = false,
+})
+core.register_privilege("kick", {
+	description = "Can kick players",
+	give_to_singleplayer = false,
+})
+core.register_privilege("give", {
+	description = "Can use /give and /giveme",
+	give_to_singleplayer = false,
+})
+core.register_privilege("password", {
+	description = "Can use /setpassword and /clearpassword",
+	give_to_singleplayer = false,
+})
 core.register_privilege("fly", {
 	description = "Can fly using the free_move mode",
 	give_to_singleplayer = false,
@@ -50,5 +78,15 @@ core.register_privilege("noclip", {
 	description = "Can fly through walls",
 	give_to_singleplayer = false,
 })
-core.register_privilege("rollback", "Can use the rollback functionality")
-
+core.register_privilege("rollback", {
+	description = "Can use the rollback functionality",
+	give_to_singleplayer = false,
+})
+core.register_privilege("zoom", {
+	description = "Can zoom the camera",
+	give_to_singleplayer = false,
+})
+core.register_privilege("debug", {
+	description = "Allows enabling various debug options that may affect gameplay",
+	give_to_singleplayer = false,
+})

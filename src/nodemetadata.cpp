@@ -31,10 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 NodeMetadata::NodeMetadata(IItemDefManager *item_def_mgr):
-	m_stringvars(),
 	m_inventory(new Inventory(item_def_mgr))
-{
-}
+{}
 
 NodeMetadata::~NodeMetadata()
 {
@@ -70,8 +68,13 @@ void NodeMetadata::deSerialize(std::istream &is)
 
 void NodeMetadata::clear()
 {
-	m_stringvars.clear();
+	Metadata::clear();
 	m_inventory->clear();
+}
+
+bool NodeMetadata::empty() const
+{
+	return Metadata::empty() && m_inventory->getLists().size() == 0;
 }
 
 /*
@@ -84,14 +87,13 @@ void NodeMetadataList::serialize(std::ostream &os) const
 		Version 0 is a placeholder for "nothing to see here; go away."
 	*/
 
-	if(m_data.empty()){
+	u16 count = countNonEmpty();
+	if (count == 0) {
 		writeU8(os, 0); // version
 		return;
 	}
 
 	writeU8(os, 1); // version
-
-	u16 count = m_data.size();
 	writeU16(os, count);
 
 	for(std::map<v3s16, NodeMetadata*>::const_iterator
@@ -100,6 +102,8 @@ void NodeMetadataList::serialize(std::ostream &os) const
 	{
 		v3s16 p = i->first;
 		NodeMetadata *data = i->second;
+		if (data->empty())
+			continue;
 
 		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
 		writeU16(os, p16);
@@ -200,34 +204,13 @@ void NodeMetadataList::clear()
 	m_data.clear();
 }
 
-std::string NodeMetadata::getString(const std::string &name,
-	unsigned short recursion) const
+int NodeMetadataList::countNonEmpty() const
 {
-	StringMap::const_iterator it = m_stringvars.find(name);
-	if (it == m_stringvars.end())
-		return "";
-
-	return resolveString(it->second, recursion);
-}
-
-void NodeMetadata::setString(const std::string &name, const std::string &var)
-{
-	if (var.empty()) {
-		m_stringvars.erase(name);
-	} else {
-		m_stringvars[name] = var;
+	int n = 0;
+	std::map<v3s16, NodeMetadata*>::const_iterator it;
+	for (it = m_data.begin(); it != m_data.end(); ++it) {
+		if (!it->second->empty())
+			n++;
 	}
+	return n;
 }
-
-std::string NodeMetadata::resolveString(const std::string &str,
-	unsigned short recursion) const
-{
-	if (recursion > 1) {
-		return str;
-	}
-	if (str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
-		return getString(str.substr(2, str.length() - 3), recursion + 1);
-	}
-	return str;
-}
-

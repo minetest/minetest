@@ -118,6 +118,11 @@ int LuaSettings::l_write(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
+	if (!o->m_write_allowed) {
+		throw LuaError("Settings: writing " + o->m_filename +
+				" not allowed with mod security on.");
+	}
+
 	bool success = o->m_settings->updateConfigFile(o->m_filename.c_str());
 	lua_pushboolean(L, success);
 
@@ -142,8 +147,9 @@ int LuaSettings::l_to_table(lua_State* L)
 	return 1;
 }
 
-LuaSettings::LuaSettings(const char* filename)
+LuaSettings::LuaSettings(const char* filename, bool write_allowed)
 {
+	m_write_allowed = write_allowed;
 	m_filename = std::string(filename);
 
 	m_settings = new Settings();
@@ -188,9 +194,10 @@ void LuaSettings::Register(lua_State* L)
 int LuaSettings::create_object(lua_State* L)
 {
 	NO_MAP_LOCK_REQUIRED;
+	bool write_allowed = true;
 	const char* filename = luaL_checkstring(L, 1);
-	CHECK_SECURE_PATH_OPTIONAL(L, filename);
-	LuaSettings* o = new LuaSettings(filename);
+	CHECK_SECURE_PATH_POSSIBLE_WRITE(L, filename, &write_allowed);
+	LuaSettings* o = new LuaSettings(filename, write_allowed);
 	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
 	luaL_getmetatable(L, className);
 	lua_setmetatable(L, -2);

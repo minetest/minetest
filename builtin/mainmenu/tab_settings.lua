@@ -209,12 +209,12 @@ local function formspec(tabview, name, tabdata)
 			.. fgettext("Reset singleplayer world") .. "]"
 	else
 		tab_string = tab_string ..
-			"button[8,4.75;3.75,0.5;btn_change_keys;"
+			"button[8,4.85;3.75,0.5;btn_change_keys;"
 			.. fgettext("Change keys") .. "]"
 	end
 
 	tab_string = tab_string ..
-		"button[0,4.75;3.75,0.5;btn_advanced_settings;"
+		"button[0,4.85;3.75,0.5;btn_advanced_settings;"
 		.. fgettext("Advanced Settings") .. "]"
 
 

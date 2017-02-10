@@ -32,6 +32,7 @@ struct MapDrawControl
 		range_all(false),
 		wanted_range(0),
 		wanted_max_blocks(0),
+		show_wireframe(false),
 		blocks_drawn(0),
 		blocks_would_have_drawn(0),
 		farthest_drawn(0)
@@ -43,6 +44,8 @@ struct MapDrawControl
 	float wanted_range;
 	// Maximum number of blocks to draw
 	u32 wanted_max_blocks;
+	// show a wire frame for debugging
+	bool show_wireframe;
 	// Number of blocks rendered is written here by the renderer
 	u32 blocks_drawn;
 	// Number of blocks that would have been drawn in wanted_range
@@ -56,7 +59,7 @@ class ITextureSource;
 
 /*
 	ClientMap
-	
+
 	This is the only map class that is able to render itself on screen.
 */
 
@@ -65,7 +68,6 @@ class ClientMap : public Map, public scene::ISceneNode
 public:
 	ClientMap(
 			Client *client,
-			IGameDef *gamedef,
 			MapDrawControl &control,
 			scene::ISceneNode* parent,
 			scene::ISceneManager* mgr,
@@ -111,13 +113,13 @@ public:
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		renderMap(driver, SceneManager->getSceneNodeRenderPass());
 	}
-	
+
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
 	}
-	
-	void getBlocksInViewRange(v3s16 cam_pos_nodes, 
+
+	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
 	void updateDrawList(video::IVideoDriver* driver);
 	void renderMap(video::IVideoDriver* driver, s32 pass);
@@ -129,18 +131,14 @@ public:
 
 	// For debug printing
 	virtual void PrintInfo(std::ostream &out);
-	
-	// Check if sector was drawn on last render()
-	bool sectorWasDrawn(v2s16 p)
-	{
-		return (m_last_drawn_sectors.find(p) != m_last_drawn_sectors.end());
-	}
-	
+
+	const MapDrawControl & getControl() const { return m_control; }
+	f32 getCameraFov() const { return m_camera_fov; }
 private:
 	Client *m_client;
-	
+
 	aabb3f m_box;
-	
+
 	MapDrawControl &m_control;
 
 	v3f m_camera_position;
@@ -149,7 +147,7 @@ private:
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
-	
+
 	std::set<v2s16> m_last_drawn_sectors;
 
 	bool m_cache_trilinear_filter;

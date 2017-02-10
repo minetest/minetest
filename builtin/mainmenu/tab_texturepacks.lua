@@ -73,7 +73,7 @@ local function get_formspec(tabview, name, tabdata)
 	if not file_exists(infofile) then
 		infofile = current_texture_path .. DIR_DELIM .. "info.txt"
 		if file_exists(infofile) then
-			core.log("info.txt is depreciated. description.txt should be used instead.")
+			core.log("deprecated", "info.txt is deprecated. description.txt should be used instead.")
 		end
 	end
 
@@ -96,8 +96,8 @@ local function get_formspec(tabview, name, tabdata)
 	return	retval ..
 			render_texture_pack_list(list) ..
 			";" .. index .. "]" ..
-			"image[0.25,0.25;4.0,3.7;" .. core.formspec_escape(screenfile or no_screenshot) .. "]" ..
-			"textarea[0.6,3.5;3.7,1.5;;" .. core.formspec_escape(infotext or "") .. ";]"
+			"image[0.25,0.25;4.05,2.7;" .. core.formspec_escape(screenfile or no_screenshot) .. "]" ..
+			"textarea[0.6,2.85;3.7,1.5;;" .. core.formspec_escape(infotext or "") .. ";]"
 end
 
 --------------------------------------------------------------------------------

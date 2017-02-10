@@ -32,9 +32,6 @@ DEALINGS IN THE SOFTWARE.
 #include "threads.h"
 
 #include <string>
-#if USE_CPP11_THREADS
-	#include <thread> // for std::thread
-#endif
 #ifdef _AIX
 	#include <sys/thread.h> // for tid_t
 #endif
@@ -156,10 +153,13 @@ private:
 	Atomic<bool> m_request_stop;
 	Atomic<bool> m_running;
 	Mutex m_mutex;
+	Mutex m_start_finished_mutex;
 
-#ifndef USE_CPP11_THREADS
+#if USE_CPP11_THREADS
+	std::thread *m_thread_obj;
+#else
 	threadhandle_t m_thread_handle;
-#   if _WIN32
+#   if USE_WIN_THREADS
         threadid_t m_thread_id;
 #   endif
 #endif
@@ -170,10 +170,6 @@ private:
 	// For AIX, there does not exist any mapping from pthread_t to tid_t
 	// available to us, so we maintain one ourselves.  This is set on thread start.
 	tid_t m_kernel_thread_id;
-#endif
-
-#if USE_CPP11_THREADS
-	std::thread *m_thread_obj;
 #endif
 
 	DISABLE_CLASS_COPY(Thread);

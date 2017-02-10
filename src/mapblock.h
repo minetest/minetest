@@ -305,8 +305,7 @@ public:
 	inline MapNode getNodeNoEx(v3s16 p)
 	{
 		bool is_valid;
-		MapNode node = getNode(p.X, p.Y, p.Z, &is_valid);
-		return is_valid ? node : MapNode(CONTENT_IGNORE);
+		return getNode(p.X, p.Y, p.Z, &is_valid);
 	}
 
 	inline void setNode(s16 x, s16 y, s16 z, MapNode & n)
@@ -339,6 +338,22 @@ public:
 	inline MapNode getNodeNoCheck(v3s16 p, bool *valid_position)
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z, valid_position);
+	}
+
+	////
+	//// Non-checking, unsafe variants of the above
+	//// MapBlock must be loaded by another function in the same scope/function
+	//// Caller must ensure that this is not a dummy block (by calling isDummy())
+	////
+
+	inline const MapNode &getNodeUnsafe(s16 x, s16 y, s16 z)
+	{
+		return data[z * zstride + y * ystride + x];
+	}
+
+	inline const MapNode &getNodeUnsafe(v3s16 &p)
+	{
+		return getNodeUnsafe(p.X, p.Y, p.Z);
 	}
 
 	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
@@ -488,9 +503,9 @@ public:
 		m_node_timers.remove(p);
 	}
 
-	inline void setNodeTimer(v3s16 p, NodeTimer t)
+	inline void setNodeTimer(const NodeTimer &t)
 	{
-		m_node_timers.set(p,t);
+		m_node_timers.set(t);
 	}
 
 	inline void clearNodeTimers()
@@ -512,7 +527,6 @@ public:
 
 	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
 	void deSerializeNetworkSpecific(std::istream &is);
-
 private:
 	/*
 		Private methods
@@ -639,26 +653,37 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const static float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
+	const float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit")) * BS;
 	return (p.X < -map_gen_limit_bs
-		|| p.X >  map_gen_limit_bs
+		|| p.X > map_gen_limit_bs
 		|| p.Y < -map_gen_limit_bs
-		|| p.Y >  map_gen_limit_bs
+		|| p.Y > map_gen_limit_bs
 		|| p.Z < -map_gen_limit_bs
-		|| p.Z >  map_gen_limit_bs);
+		|| p.Z > map_gen_limit_bs);
 }
 
+/*
+	We are checking for any node of the mapblock being beyond the limit.
+
+	At the negative limit we are checking for
+		block minimum nodepos < -mapgenlimit.
+	At the positive limit we are checking for
+		block maximum nodepos > mapgenlimit.
+
+	Block minimum nodepos = blockpos * mapblocksize.
+	Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
+*/
 inline bool blockpos_over_limit(v3s16 p)
 {
-	const static u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
+	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit"));
-	return (p.X < -map_gen_limit / MAP_BLOCKSIZE
-			|| p.X >  map_gen_limit / MAP_BLOCKSIZE
-			|| p.Y < -map_gen_limit / MAP_BLOCKSIZE
-			|| p.Y >  map_gen_limit / MAP_BLOCKSIZE
-			|| p.Z < -map_gen_limit / MAP_BLOCKSIZE
-			|| p.Z >  map_gen_limit / MAP_BLOCKSIZE);
+	return (p.X * MAP_BLOCKSIZE < -map_gen_limit 
+		|| (p.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
+		|| p.Y * MAP_BLOCKSIZE < -map_gen_limit 
+		|| (p.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
+		|| p.Z * MAP_BLOCKSIZE < -map_gen_limit 
+		|| (p.Z + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit);
 }
 
 /*

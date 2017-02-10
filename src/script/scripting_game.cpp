@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_env.h"
 #include "lua_api/l_inventory.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_mapgen.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_nodetimer.h"
@@ -40,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "lua_api/l_settings.h"
 #include "lua_api/l_http.h"
+#include "lua_api/l_storage.h"
 
 extern "C" {
 #include "lualib.h"
@@ -91,9 +93,11 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	ModApiServer::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
+	ModApiStorage::Initialize(L, top);
 
 	// Register reference classes (userdata)
 	InvRef::Register(L);
+	ItemStackMetaRef::Register(L);
 	LuaAreaStore::Register(L);
 	LuaItemStack::Register(L);
 	LuaPerlinNoise::Register(L);
@@ -106,6 +110,7 @@ void GameScripting::InitializeModApi(lua_State *L, int top)
 	NodeTimerRef::Register(L);
 	ObjectRef::Register(L);
 	LuaSettings::Register(L);
+	StorageRef::Register(L);
 }
 
 void log_deprecated(const std::string &message)

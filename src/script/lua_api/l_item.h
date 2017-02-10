@@ -56,9 +56,14 @@ private:
 	// set_wear(self, number)
 	static int l_set_wear(lua_State *L);
 
+	// get_meta(self) -> string
+	static int l_get_meta(lua_State *L);
+
+	// DEPRECATED
 	// get_metadata(self) -> string
 	static int l_get_metadata(lua_State *L);
 
+	// DEPRECATED
 	// set_metadata(self, string)
 	static int l_set_metadata(lua_State *L);
 
@@ -135,6 +140,7 @@ public:
 class ModApiItemMod : public ModApiBase {
 private:
 	static int l_register_item_raw(lua_State *L);
+	static int l_unregister_item_raw(lua_State *L);
 	static int l_register_alias_raw(lua_State *L);
 	static int l_get_content_id(lua_State *L);
 	static int l_get_name_from_content_id(lua_State *L);

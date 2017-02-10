@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef __CONVERT_JSON_H__
 #define __CONVERT_JSON_H__
 
-#include "json/json.h"
+#include <json/json.h>
 
 struct ModStoreMod;
 struct ModStoreModDetails;

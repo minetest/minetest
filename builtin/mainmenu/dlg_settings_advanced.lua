@@ -344,7 +344,82 @@ local function parse_config_file(read_all, parse_mods)
 	return settings
 end
 
-local settings = parse_config_file(false, true)
+local function filter_settings(settings, searchstring)
+	if not searchstring or searchstring == "" then
+		return settings, -1
+	end
+
+	-- Setup the keyword list
+	local keywords = {}
+	for word in searchstring:lower():gmatch("%S+") do
+		table.insert(keywords, word)
+	end
+
+	local result = {}
+	local category_stack = {}
+	local current_level = 0
+	local best_setting = nil
+	for _, entry in pairs(settings) do
+		if entry.type == "category" then
+			-- Remove all settingless categories
+			while #category_stack > 0 and entry.level <= current_level do
+				table.remove(category_stack, #category_stack)
+				if #category_stack > 0 then
+					current_level = category_stack[#category_stack].level
+				else
+					current_level = 0
+				end
+			end
+
+			-- Push category onto stack
+			category_stack[#category_stack + 1] = entry
+			current_level = entry.level
+		else
+			-- See if setting matches keywords
+			local setting_score = 0
+			for k = 1, #keywords do
+				local keyword = keywords[k]
+
+				if string.find(entry.name:lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.readable_name and
+						string.find(fgettext(entry.readable_name):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+
+				if entry.comment and
+						string.find(fgettext_ne(entry.comment):lower(), keyword, 1, true) then
+					setting_score = setting_score + 1
+				end
+			end
+
+			-- Add setting to results if match
+			if setting_score > 0 then
+				-- Add parent categories
+				for _, category in pairs(category_stack) do
+					result[#result + 1] = category
+				end
+				category_stack = {}
+
+				-- Add setting
+				result[#result + 1] = entry
+				entry.score = setting_score
+
+				if not best_setting or
+						setting_score > result[best_setting].score then
+					best_setting = #result
+				end
+			end
+		end
+	end
+	return result, best_setting or -1
+end
+
+local full_settings = parse_config_file(false, true)
+local search_string = ""
+local settings = full_settings
 local selected_setting = 1
 
 local function get_current_value(setting)
@@ -479,13 +554,13 @@ local function handle_change_setting_buttons(this, fields)
 				return true
 			end
 			if setting.min and new_value < setting.min then
-				this.data.error_message = fgettext_ne("The value must be greater than $1.", setting.min)
+				this.data.error_message = fgettext_ne("The value must be at least $1.", setting.min)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
 			end
 			if setting.max and new_value > setting.max then
-				this.data.error_message = fgettext_ne("The value must be lower than $1.", setting.max)
+				this.data.error_message = fgettext_ne("The value must not be larger than $1.", setting.max)
 				this.data.entered_text = fields["te_setting_value"]
 				core.update_formspec(this:get_formspec())
 				return true
@@ -544,9 +619,12 @@ end
 
 local function create_settings_formspec(tabview, name, tabdata)
 	local formspec = "size[12,6.5;true]" ..
-			"tablecolumns[color;tree;text;text]" ..
+			"tablecolumns[color;tree;text,width=32;text]" ..
 			"tableoptions[background=#00000000;border=false]" ..
-			"table[0,0;12,5.5;list_settings;"
+			"field[0.3,0.1;10.2,1;search_string;;" .. core.formspec_escape(search_string) .. "]" ..
+			"field_close_on_enter[search_string;false]" ..
+			"button[10.2,-0.2;2,1;search;" .. fgettext("Search") .. "]" ..
+			"table[0,0.8;12,4.5;list_settings;"
 
 	local current_level = 0
 	for _, entry in ipairs(settings) do
@@ -597,10 +675,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	local list_enter = false
 	if fields["list_settings"] then
 		selected_setting = core.get_table_index("list_settings")
-		if  core.explode_table_event(fields["list_settings"]).type == "DCL" then
+		if core.explode_table_event(fields["list_settings"]).type == "DCL" then
 			-- Directly toggle booleans
 			local setting = settings[selected_setting]
-			if setting.type == "bool" then
+			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
 				core.setting_setbool(setting.name, not core.is_yes(current_value))
 				core.setting_save()
@@ -613,9 +691,39 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 		end
 	end
 
+	if fields.search or fields.key_enter_field == "search_string" then
+		if search_string == fields.search_string then
+			if selected_setting > 0 then
+				-- Go to next result on enter press
+				local i = selected_setting + 1
+				local looped = false
+				while i > #settings or settings[i].type == "category" do
+					i = i + 1
+					if i > #settings then
+						-- Stop infinte looping
+						if looped then
+							return false
+						end
+						i = 1
+						looped = true
+					end
+				end
+				selected_setting = i
+				core.update_formspec(this:get_formspec())
+				return true
+			end
+		else
+			-- Search for setting
+			search_string = fields.search_string
+			settings, selected_setting = filter_settings(full_settings, search_string)
+			core.update_formspec(this:get_formspec())
+		end
+		return true
+	end
+
 	if fields["btn_edit"] or list_enter then
 		local setting = settings[selected_setting]
-		if setting.type ~= "category" then
+		if setting and setting.type ~= "category" then
 			local edit_dialog = dialog_create("change_setting", create_change_setting_formspec,
 					handle_change_setting_buttons)
 			edit_dialog:set_parent(this)
@@ -627,7 +735,7 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
-		if setting.type ~= "category" then
+		if setting and setting.type ~= "category" then
 			core.setting_set(setting.name, setting.default)
 			core.setting_save()
 			core.update_formspec(this:get_formspec())
@@ -659,102 +767,12 @@ function create_adv_settings_dlg()
 				return dlg
 end
 
-local function create_minetest_conf_example()
-	local result = "#    This file contains a list of all available settings and their default value for minetest.conf\n" ..
-			"\n" ..
-			"#    By default, all the settings are commented and not functional.\n" ..
-			"#    Uncomment settings by removing the preceding #.\n" ..
-			"\n" ..
-			"#    minetest.conf is read by default from:\n" ..
-			"#    ../minetest.conf\n" ..
-			"#    ../../minetest.conf\n" ..
-			"#    Any other path can be chosen by passing the path as a parameter\n" ..
-			"#    to the program, eg. \"minetest.exe --config ../minetest.conf.example\".\n" ..
-			"\n" ..
-			"#    Further documentation:\n" ..
-			"#    http://wiki.minetest.net/\n" ..
-			"\n"
+-- Generate minetest.conf.example and settings_translation_file.cpp
 
-	local settings = parse_config_file(true, false)
-	for _, entry in ipairs(settings) do
-		if entry.type == "category" then
-			if entry.level == 0 then
-				result = result .. "#\n# " .. entry.name .. "\n#\n\n"
-			else
-				for i = 1, entry.level do
-					result = result .. "#"
-				end
-				result = result .. "# " .. entry.name .. "\n\n"
-			end
-		else
-			if entry.comment ~= "" then
-				for _, comment_line in ipairs(entry.comment:split("\n", true)) do
-					result = result .."#    " .. comment_line .. "\n"
-				end
-			end
-			result = result .. "#    type: " .. entry.type
-			if entry.min then
-				result = result .. " min: " .. entry.min
-			end
-			if entry.max then
-				result = result .. " max: " .. entry.max
-			end
-			if entry.values then
-				result = result .. " values: " .. table.concat(entry.values, ", ")
-			end
-			if entry.possible then
-				result = result .. " possible values: " .. entry.possible:gsub(",", ", ")
-			end
-			result = result .. "\n"
-			local append = ""
-			if entry.default ~= "" then
-				append = " " .. entry.default
-			end
-			result = result .. "# " .. entry.name .. " =" .. append .. "\n\n"
-		end
-	end
-	return result
-end
+-- *** Please note ***
+-- There is text in minetest.conf.example that will not be generated from
+-- settingtypes.txt but must be preserved:
+-- The documentation of mapgen noise parameter formats (title plus 16 lines)
+-- Noise parameter 'mgv5_np_ground' in group format (13 lines)
 
-local function create_translation_file()
-	local result = "// This file is automatically generated\n" ..
-			"// It conatins a bunch of fake gettext calls, to tell xgettext about the strings in config files\n" ..
-			"// To update it, refer to the bottom of builtin/mainmenu/tab_settings.lua\n\n" ..
-			"fake_function() {\n"
-
-	local settings = parse_config_file(true, false)
-	for _, entry in ipairs(settings) do
-		if entry.type == "category" then
-			local name_escaped = entry.name:gsub("\"", "\\\"")
-			result = result .. "\tgettext(\"" .. name_escaped .. "\");\n"
-		else
-			if entry.readable_name then
-				local readable_name_escaped = entry.readable_name:gsub("\"", "\\\"")
-				result = result .. "\tgettext(\"" .. readable_name_escaped .. "\");\n"
-			end
-			if entry.comment ~= "" then
-				local comment_escaped = entry.comment:gsub("\n", "\\n")
-				comment_escaped = comment_escaped:gsub("\"", "\\\"")
-				result = result .. "\tgettext(\"" .. comment_escaped .. "\");\n"
-			end
-		end
-	end
-	result = result .. "}\n"
-	return result
-end
-
-if false then
-	local file = io.open("minetest.conf.example", "w")
-	if file then
-		file:write(create_minetest_conf_example())
-		file:close()
-	end
-end
-
-if false then
-	local file = io.open("src/settings_translation_file.cpp", "w")
-	if file then
-		file:write(create_translation_file())
-		file:close()
-	end
-end
+--assert(loadfile(core.get_builtin_path()..DIR_DELIM.."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))

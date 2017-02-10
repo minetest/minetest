@@ -39,27 +39,33 @@ int dir_to_facedir(v3s16 d);
 
 
 struct DungeonParams {
+	s32 seed;
+
 	content_t c_water;
 	content_t c_river_water;
-	content_t c_cobble;
-	content_t c_moss;
+	content_t c_wall;
+	content_t c_alt_wall;
 	content_t c_stair;
 
-	GenNotifyType notifytype;
 	bool diagonal_dirs;
-	float mossratio;
 	v3s16 holesize;
 	v3s16 roomsize;
+	u16 rooms_min;
+	u16 rooms_max;
+	s16 y_min;
+	s16 y_max;
+	GenNotifyType notifytype;
 
-	NoiseParams np_rarity;
-	NoiseParams np_wetness;
 	NoiseParams np_density;
+	NoiseParams np_alt_wall;
 };
 
 class DungeonGen {
 public:
 	MMVManip *vm;
-	Mapgen *mg;
+	INodeDefManager *ndef;
+	GenerateNotifier *gennotify;
+
 	u32 blockseed;
 	PseudoRandom random;
 	v3s16 csize;
@@ -67,17 +73,20 @@ public:
 	content_t c_torch;
 	DungeonParams dp;
 
-	//RoomWalker
+	// RoomWalker
 	v3s16 m_pos;
 	v3s16 m_dir;
 
-	DungeonGen(Mapgen *mg, DungeonParams *dparams);
-	void generate(u32 bseed, v3s16 full_node_min, v3s16 full_node_max);
+	DungeonGen(INodeDefManager *ndef,
+		GenerateNotifier *gennotify, DungeonParams *dparams);
+
+	void generate(MMVManip *vm, u32 bseed,
+		v3s16 full_node_min, v3s16 full_node_max);
 
 	void makeDungeon(v3s16 start_padding);
 	void makeRoom(v3s16 roomsize, v3s16 roomplace);
 	void makeCorridor(v3s16 doorplace, v3s16 doordir,
-					  v3s16 &result_place, v3s16 &result_dir);
+		v3s16 &result_place, v3s16 &result_dir);
 	void makeDoor(v3s16 doorplace, v3s16 doordir);
 	void makeFill(v3s16 place, v3s16 size, u8 avoid_flags, MapNode n, u8 or_flags);
 	void makeHole(v3s16 place);
@@ -86,14 +95,13 @@ public:
 	bool findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 			v3s16 &result_doordir, v3s16 &result_roomplace);
 
-	void randomizeDir()
+	inline void randomizeDir()
 	{
 		m_dir = rand_ortho_dir(random, dp.diagonal_dirs);
 	}
 };
 
-extern NoiseParams nparams_dungeon_rarity;
-extern NoiseParams nparams_dungeon_wetness;
 extern NoiseParams nparams_dungeon_density;
+extern NoiseParams nparams_dungeon_alt_wall;
 
 #endif

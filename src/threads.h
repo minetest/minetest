@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define THREADS_HEADER
 
 //
-// Determine which threading API we will use
+// Determine which threading APIs we will use
 //
 #if __cplusplus >= 201103L
 	#define USE_CPP11_THREADS 1
@@ -31,11 +31,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define USE_POSIX_THREADS 1
 #endif
 
+#if defined(_WIN32)
+	// Prefer critical section API because std::mutex is much slower on Windows
+	#define USE_WIN_MUTEX 1
+#elif __cplusplus >= 201103L
+	#define USE_CPP11_MUTEX 1
+#else
+	#define USE_POSIX_MUTEX 1
+#endif
+
 ///////////////
 
 
 #if USE_CPP11_THREADS
 	#include <thread>
+#elif USE_POSIX_THREADS
+	#include <pthread.h>
+#else
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <windows.h>
 #endif
 
 #include "threading/mutex.h"

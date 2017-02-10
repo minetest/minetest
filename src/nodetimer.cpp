@@ -47,36 +47,38 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 {
 	if (map_format_version == 24) {
 		// Version 0 is a placeholder for "nothing to see here; go away."
-		if (m_data.empty()) {
+		if (m_timers.empty()) {
 			writeU8(os, 0); // version
 			return;
 		}
 		writeU8(os, 1); // version
-		writeU16(os, m_data.size());
+		writeU16(os, m_timers.size());
 	}
 
 	if (map_format_version >= 25) {
 		writeU8(os, 2 + 4 + 4); // length of the data for a single timer
-		writeU16(os, m_data.size());
+		writeU16(os, m_timers.size());
 	}
 
-	for (std::map<v3s16, NodeTimer>::const_iterator
-			i = m_data.begin();
-			i != m_data.end(); ++i) {
-		v3s16 p = i->first;
+	for (std::multimap<double, NodeTimer>::const_iterator
+			i = m_timers.begin();
+			i != m_timers.end(); ++i) {
 		NodeTimer t = i->second;
+		NodeTimer nt = NodeTimer(t.timeout,
+			t.timeout - (f32)(i->first - m_time), t.position);
+		v3s16 p = t.position;
 
 		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
 		writeU16(os, p16);
-		t.serialize(os);
+		nt.serialize(os);
 	}
 }
 
 void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 {
-	m_data.clear();
+	clear();
 
-	if(map_format_version == 24){
+	if (map_format_version == 24) {
 		u8 timer_version = readU8(is);
 		if(timer_version == 0)
 			return;
@@ -84,7 +86,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 			throw SerializationError("unsupported NodeTimerList version");
 	}
 
-	if(map_format_version >= 25){
+	if (map_format_version >= 25) {
 		u8 timer_data_len = readU8(is);
 		if(timer_data_len != 2+4+4)
 			throw SerializationError("unsupported NodeTimer data length");
@@ -92,8 +94,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 
 	u16 count = readU16(is);
 
-	for(u16 i=0; i<count; i++)
-	{
+	for (u16 i = 0; i < count; i++) {
 		u16 p16 = readU16(is);
 
 		v3s16 p;
@@ -103,11 +104,10 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 		p16 &= MAP_BLOCKSIZE - 1;
 		p.X = p16;
 
-		NodeTimer t;
+		NodeTimer t(p);
 		t.deSerialize(is);
 
-		if(t.timeout <= 0)
-		{
+		if (t.timeout <= 0) {
 			warningstream<<"NodeTimerList::deSerialize(): "
 					<<"invalid data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
@@ -115,8 +115,7 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 			continue;
 		}
 
-		if(m_data.find(p) != m_data.end())
-		{
+		if (m_iterators.find(p) != m_iterators.end()) {
 			warningstream<<"NodeTimerList::deSerialize(): "
 					<<"already set data at position"
 					<<"("<<p.X<<","<<p.Y<<","<<p.Z<<"): Ignoring."
@@ -124,31 +123,30 @@ void NodeTimerList::deSerialize(std::istream &is, u8 map_format_version)
 			continue;
 		}
 
-		m_data.insert(std::make_pair(p, t));
+		insert(t);
 	}
 }
 
-std::map<v3s16, NodeTimer> NodeTimerList::step(float dtime)
+std::vector<NodeTimer> NodeTimerList::step(float dtime)
 {
-	std::map<v3s16, NodeTimer> elapsed_timers;
-	// Increment timers
-	for(std::map<v3s16, NodeTimer>::iterator
-			i = m_data.begin();
-			i != m_data.end(); ++i){
-		v3s16 p = i->first;
+	std::vector<NodeTimer> elapsed_timers;
+	m_time += dtime;
+	if (m_next_trigger_time == -1. || m_time < m_next_trigger_time) {
+		return elapsed_timers;
+	}
+	std::multimap<double, NodeTimer>::iterator i = m_timers.begin();
+	// Process timers
+	for (; i != m_timers.end() && i->first <= m_time; ++i) {
 		NodeTimer t = i->second;
-		t.elapsed += dtime;
-		if(t.elapsed >= t.timeout)
-			elapsed_timers.insert(std::make_pair(p, t));
-		else
-			i->second = t;
+		t.elapsed = t.timeout + (f32)(m_time - i->first);
+		elapsed_timers.push_back(t);
+		m_iterators.erase(t.position);
 	}
 	// Delete elapsed timers
-	for(std::map<v3s16, NodeTimer>::const_iterator
-			i = elapsed_timers.begin();
-			i != elapsed_timers.end(); ++i){
-		v3s16 p = i->first;
-		m_data.erase(p);
-	}
+	m_timers.erase(m_timers.begin(), i);
+	if (m_timers.empty())
+		m_next_trigger_time = -1.;
+	else
+		m_next_trigger_time = m_timers.begin()->first;
 	return elapsed_timers;
 }

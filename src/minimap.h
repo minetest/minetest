@@ -52,10 +52,10 @@ struct MinimapModeDef {
 };
 
 struct MinimapPixel {
-	u16 id;
+	//! The topmost node that the minimap displays.
+	MapNode n;
 	u16 height;
 	u16 air_count;
-	u16 light;
 };
 
 struct MinimapMapblock {

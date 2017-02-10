@@ -23,9 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "voxel.h"
+#include "util/cpp11_container.h"
 #include <map>
 
-class IGameDef;
+class Client;
 class IShaderSource;
 
 /*
@@ -44,11 +45,11 @@ struct MeshMakeData
 	bool m_smooth_lighting;
 	bool m_show_hud;
 
-	IGameDef *m_gamedef;
+	Client *m_client;
 	bool m_use_shaders;
 	bool m_use_tangent_vertices;
 
-	MeshMakeData(IGameDef *gamedef, bool use_shaders,
+	MeshMakeData(Client *client, bool use_shaders,
 			bool use_tangent_vertices = false);
 
 	/*
@@ -121,13 +122,13 @@ public:
 		if(m_animation_force_timer > 0)
 			m_animation_force_timer--;
 	}
-	
+
 	void updateCameraOffset(v3s16 camera_offset);
 
 private:
 	scene::IMesh *m_mesh;
 	MinimapMapblock *m_minimap_mapblock;
-	IGameDef *m_gamedef;
+	Client *m_client;
 	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
@@ -144,20 +145,20 @@ private:
 	// Last crack value passed to animate()
 	int m_last_crack;
 	// Maps mesh buffer (i.e. material) indices to base texture names
-	std::map<u32, std::string> m_crack_materials;
+	UNORDERED_MAP<u32, std::string> m_crack_materials;
 
 	// Animation info: texture animationi
 	// Maps meshbuffers to TileSpecs
-	std::map<u32, TileSpec> m_animation_tiles;
-	std::map<u32, int> m_animation_frames; // last animation frame
-	std::map<u32, int> m_animation_frame_offsets;
-	
+	UNORDERED_MAP<u32, TileSpec> m_animation_tiles;
+	UNORDERED_MAP<u32, int> m_animation_frames; // last animation frame
+	UNORDERED_MAP<u32, int> m_animation_frame_offsets;
+
 	// Animation info: day/night transitions
 	// Last daynight_ratio value passed to animate()
 	u32 m_last_daynight_ratio;
-	// For each meshbuffer, maps vertex indices to (day,night) pairs
-	std::map<u32, std::map<u32, std::pair<u8, u8> > > m_daynight_diffs;
-	
+	// For each meshbuffer, stores pre-baked colors of sunlit vertices
+	std::map<u32, std::map<u32, video::SColor > > m_daynight_diffs;
+
 	// Camera offset info -> do we have to translate the mesh?
 	v3s16 m_camera_offset;
 };
@@ -191,28 +192,53 @@ struct MeshCollector
 	void append(const TileSpec &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices,
-			v3f pos, video::SColor c);
+			v3f pos, video::SColor c, u8 light_source);
 };
 
-// This encodes
-//   alpha in the A channel of the returned SColor
-//   day light (0-255) in the R channel of the returned SColor
-//   night light (0-255) in the G channel of the returned SColor
-//   light source (0-255) in the B channel of the returned SColor
-inline video::SColor MapBlock_LightColor(u8 alpha, u16 light, u8 light_source=0)
-{
-	return video::SColor(alpha, (light & 0xff), (light >> 8), light_source);
-}
+/*!
+ * Encodes light and color of a node.
+ * The result is not the final color, but a
+ * half-baked vertex color.
+ *
+ * \param light the first 8 bits are day light,
+ * the last 8 bits are night light
+ * \param color the node's color
+ * \param emissive_light amount of light the surface emits,
+ * from 0 to LIGHT_SUN.
+ */
+video::SColor encode_light_and_color(u16 light, const video::SColor &color,
+	u8 emissive_light);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);
 u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef);
 u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data);
 
-// Converts from day + night color values (0..255)
-// and a given daynight_ratio to the final SColor shown on screen.
-void finalColorBlend(video::SColor& result,
-		u8 day, u8 night, u32 daynight_ratio);
+/*!
+ * Returns the sunlight's color from the current
+ * day-night ratio.
+ */
+void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio);
+
+/*!
+ * Gives the final  SColor shown on screen.
+ *
+ * \param result output color
+ * \param light first 8 bits are day light, second 8 bits are
+ * night light
+ */
+void final_color_blend(video::SColor *result,
+		u16 light, u32 daynight_ratio);
+
+/*!
+ * Gives the final  SColor shown on screen.
+ *
+ * \param result output color
+ * \param data the half-baked vertex color
+ * \param dayLight color of the sunlight
+ */
+void final_color_blend(video::SColor *result,
+		const video::SColor &data, const video::SColorf &dayLight);
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked

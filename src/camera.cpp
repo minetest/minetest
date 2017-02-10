@@ -27,12 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
-#include "gamedef.h"
 #include "sound.h"
 #include "event.h"
 #include "profiler.h"
 #include "util/numeric.h"
-#include "util/mathconstants.h"
 #include "constants.h"
 #include "fontengine.h"
 
@@ -41,7 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-		IGameDef *gamedef):
+		Client *client):
 	m_playernode(NULL),
 	m_headnode(NULL),
 	m_cameranode(NULL),
@@ -50,7 +48,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_wieldnode(NULL),
 
 	m_draw_control(draw_control),
-	m_gamedef(gamedef),
+	m_client(client),
 
 	m_camera_position(0,0,0),
 	m_camera_direction(0,0,0),
@@ -88,7 +86,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
 	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, false);
-	m_wieldnode->setItem(ItemStack(), m_gamedef);
+	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
 	/* TODO: Add a callback function so these can be updated when a setting
@@ -103,6 +101,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_fall_bobbing_amount = g_settings->getFloat("fall_bobbing_amount");
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
+	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
 	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
 	m_nametags.clear();
 }
@@ -150,7 +149,7 @@ void Camera::step(f32 dtime)
 	m_wield_change_timer = MYMIN(m_wield_change_timer + dtime, 0.125);
 
 	if (m_wield_change_timer >= 0 && was_under_zero)
-		m_wieldnode->setItem(m_wield_item_next, m_gamedef);
+		m_wieldnode->setItem(m_wield_item_next, m_client);
 
 	if (m_view_bobbing_state != 0)
 	{
@@ -188,7 +187,7 @@ void Camera::step(f32 dtime)
 					(was > 0.5f && m_view_bobbing_anim <= 0.5f));
 			if(step) {
 				MtEvent *e = new SimpleTriggerEvent("ViewBobbingStep");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			}
 		}
 	}
@@ -209,10 +208,10 @@ void Camera::step(f32 dtime)
 			if(m_digging_button == 0)
 			{
 				MtEvent *e = new SimpleTriggerEvent("CameraPunchLeft");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			} else if(m_digging_button == 1) {
 				MtEvent *e = new SimpleTriggerEvent("CameraPunchRight");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			}
 		}
 	}
@@ -351,7 +350,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y*-i);
 
 			// Prevent camera positioned inside nodes
-			INodeDefManager *nodemgr = m_gamedef->ndef();
+			INodeDefManager *nodemgr = m_client->ndef();
 			MapNode n = c_env.getClientMap().getNodeNoEx(floatToInt(my_cp, BS));
 			const ContentFeatures& features = nodemgr->get(n);
 			if(features.walkable)
@@ -387,10 +386,14 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
 		m_camera_position = my_cp;
 
-	// Get FOV setting
-	f32 fov_degrees = m_cache_fov;
-	fov_degrees = MYMAX(fov_degrees, 10.0);
-	fov_degrees = MYMIN(fov_degrees, 170.0);
+	// Get FOV
+	f32 fov_degrees;
+	if (player->getPlayerControl().zoom && m_client->checkLocalPrivilege("zoom")) {
+		fov_degrees = m_cache_zoom_fov;
+	} else {
+		fov_degrees = m_cache_fov;
+	}
+	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
 
 	// FOV and aspect ratio
 	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
@@ -462,11 +465,11 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&
 			m_cache_view_bobbing &&
-			(!g_settings->getBool("free_move") || !m_gamedef->checkLocalPrivilege("fly")))
+			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly")))
 	{
 		// Start animation
 		m_view_bobbing_state = 1;
-		m_view_bobbing_speed = MYMIN(speed.getLength(), 40);
+		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);
 	}
 	else if (m_view_bobbing_state == 1)
 	{
@@ -478,13 +481,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 void Camera::updateViewingRange()
 {
+	f32 viewing_range = g_settings->getFloat("viewing_range");
+	m_draw_control.wanted_range = viewing_range;
 	if (m_draw_control.range_all) {
 		m_cameranode->setFarValue(100000.0);
 		return;
 	}
-
-	f32 viewing_range = g_settings->getFloat("viewing_range");
-	m_draw_control.wanted_range = viewing_range;
 	m_cameranode->setFarValue((viewing_range < 2000) ? 2000 * BS : viewing_range * BS);
 }
 
@@ -546,7 +548,7 @@ void Camera::drawNametags()
 			// shadow can remain.
 			continue;
 		}
-		v3f pos = nametag->parent_node->getPosition() + v3f(0.0, 1.1 * BS, 0.0);
+		v3f pos = nametag->parent_node->getAbsolutePosition() + v3f(0.0, 1.1 * BS, 0.0);
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {

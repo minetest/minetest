@@ -7,6 +7,9 @@
 local register_item_raw = core.register_item_raw
 core.register_item_raw = nil
 
+local unregister_item_raw = core.unregister_item_raw
+core.unregister_item_raw = nil
+
 local register_alias_raw = core.register_alias_raw
 core.register_alias_raw = nil
 
@@ -124,6 +127,11 @@ function core.register_item(name, itemdef)
 				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
 			}
 		end
+		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
+			itemdef.light_source = core.LIGHT_MAX
+			core.log("warning", "Node 'light_source' value exceeds maximum," ..
+				" limiting to maximum: " ..name)
+		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
@@ -170,6 +178,27 @@ function core.register_item(name, itemdef)
 	core.registered_items[itemdef.name] = itemdef
 	core.registered_aliases[itemdef.name] = nil
 	register_item_raw(itemdef)
+end
+
+function core.unregister_item(name)
+	if not core.registered_items[name] then
+		core.log("warning", "Not unregistering item " ..name..
+			" because it doesn't exist.")
+		return
+	end
+	-- Erase from registered_* table
+	local type = core.registered_items[name].type
+	if type == "node" then
+		core.registered_nodes[name] = nil
+	elseif type == "craft" then
+		core.registered_craftitems[name] = nil
+	elseif type == "tool" then
+		core.registered_tools[name] = nil
+	end
+	core.registered_items[name] = nil
+
+
+	unregister_item_raw(name)
 end
 
 function core.register_node(name, nodedef)
@@ -242,6 +271,20 @@ function core.register_alias(name, convert_to)
 	end
 end
 
+function core.register_alias_force(name, convert_to)
+	if forbidden_item_names[name] then
+		error("Unable to register alias: Name is forbidden: " .. name)
+	end
+	if core.registered_items[name] ~= nil then
+		core.unregister_item(name)
+		core.log("info", "Removed item " ..name..
+			" while attempting to force add an alias")
+	end
+	--core.log("Registering alias: " .. name .. " -> " .. convert_to)
+	core.registered_aliases[name] = convert_to
+	register_alias_raw(name, convert_to)
+end
+
 function core.on_craft(itemstack, player, old_craft_list, craft_inv)
 	for _, func in ipairs(core.registered_on_crafts) do
 		itemstack = func(itemstack, player, old_craft_list, craft_inv) or itemstack
@@ -288,8 +331,8 @@ core.register_item(":unknown", {
 
 core.register_node(":air", {
 	description = "Air (you hacker you!)",
-	inventory_image = "unknown_node.png",
-	wield_image = "unknown_node.png",
+	inventory_image = "air.png",
+	wield_image = "air.png",
 	drawtype = "airlike",
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -305,8 +348,8 @@ core.register_node(":air", {
 
 core.register_node(":ignore", {
 	description = "Ignore (you hacker you!)",
-	inventory_image = "unknown_node.png",
-	wield_image = "unknown_node.png",
+	inventory_image = "ignore.png",
+	wield_image = "ignore.png",
 	drawtype = "airlike",
 	paramtype = "none",
 	sunlight_propagates = false,

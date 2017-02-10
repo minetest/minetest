@@ -26,7 +26,9 @@ DEALINGS IN THE SOFTWARE.
 #ifndef THREADING_MUTEX_AUTO_LOCK_H
 #define THREADING_MUTEX_AUTO_LOCK_H
 
-#if __cplusplus >= 201103L
+#include "threads.h"
+
+#if USE_CPP11_MUTEX
 	#include <mutex>
 	using MutexAutoLock = std::unique_lock<std::mutex>;
 	using RecursiveMutexAutoLock = std::unique_lock<std::recursive_mutex>;

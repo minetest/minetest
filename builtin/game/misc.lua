@@ -38,7 +38,7 @@ core.register_globalstep(function(dtime)
 end)
 
 function core.after(after, func, ...)
-	assert(tonumber(time) and type(func) == "function",
+	assert(tonumber(after) and type(func) == "function",
 			"Invalid core.after invocation")
 	jobs[#jobs + 1] = {
 		func = func,
@@ -48,17 +48,19 @@ function core.after(after, func, ...)
 	}
 end
 
-function core.check_player_privs(player_or_name, ...)
-	local name = player_or_name
-	-- Check if we have been provided with a Player object.
-	if type(name) ~= "string" then
+function core.check_player_privs(name, ...)
+	local arg_type = type(name)
+	if (arg_type == "userdata" or arg_type == "table") and
+			name.get_player_name then -- If it quacks like a Player...
 		name = name:get_player_name()
+	elseif arg_type ~= "string" then
+		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -74,22 +76,32 @@ function core.check_player_privs(player_or_name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
 local player_list = {}
 
 core.register_on_joinplayer(function(player)
-	player_list[player:get_player_name()] = player
+	local player_name = player:get_player_name()
+	player_list[player_name] = player
+	if not minetest.is_singleplayer() then
+		core.chat_send_all("*** " .. player_name .. " joined the game.")
+	end
 end)
 
-core.register_on_leaveplayer(function(player)
-	player_list[player:get_player_name()] = nil
+core.register_on_leaveplayer(function(player, timed_out)
+	local player_name = player:get_player_name()
+	player_list[player_name] = nil
+	local announcement = "*** " ..  player_name .. " left the game."
+	if timed_out then
+		announcement = announcement .. " (timed out)"
+	end
+	core.chat_send_all(announcement)
 end)
 
 function core.get_connected_players()
@@ -100,6 +112,10 @@ function core.get_connected_players()
 		end
 	end
 	return temp_table
+end
+
+function minetest.player_exists(name)
+	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
 
 -- Returns two position vectors representing a box of `radius` in each
@@ -196,4 +212,39 @@ function core.http_add_fetch(httpenv)
 	end
 
 	return httpenv
+end
+
+if minetest.setting_getbool("disable_escape_sequences") then
+
+	function core.get_color_escape_sequence(color)
+		return ""
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ""
+	end
+
+	function core.colorize(color, message)
+		return message
+	end
+
+else
+
+	local ESCAPE_CHAR = string.char(0x1b)
+	function core.get_color_escape_sequence(color)
+		return ESCAPE_CHAR .. "(c@" .. color .. ")"
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ESCAPE_CHAR .. "(b@" .. color .. ")"
+	end
+
+	function core.colorize(color, message)
+		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+	end
+
+end
+
+function core.close_formspec(player_name, formname)
+	return minetest.show_formspec(player_name, formname, "")
 end

@@ -21,32 +21,50 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "event.h"
 #include "collision.h"
-#include "gamedef.h"
 #include "nodedef.h"
 #include "settings.h"
 #include "environment.h"
 #include "map.h"
-#include "util/numeric.h"
+#include "client.h"
 
 /*
 	LocalPlayer
 */
 
-LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
-	Player(gamedef, name),
+LocalPlayer::LocalPlayer(Client *client, const char *name):
+	Player(name, client->idef()),
 	parent(0),
+	hp(PLAYER_MAX_HP),
+	got_teleported(false),
 	isAttached(false),
+	touching_ground(false),
+	in_liquid(false),
+	in_liquid_stable(false),
+	liquid_viscosity(0),
+	is_climbing(false),
+	swimming_vertical(false),
+	// Movement overrides are multipliers and must be 1 by default
+	physics_override_speed(1.0f),
+	physics_override_jump(1.0f),
+	physics_override_gravity(1.0f),
+	physics_override_sneak(true),
+	physics_override_sneak_glitch(true),
 	overridePosition(v3f(0,0,0)),
 	last_position(v3f(0,0,0)),
 	last_speed(v3f(0,0,0)),
 	last_pitch(0),
 	last_yaw(0),
 	last_keyPressed(0),
+	last_camera_fov(0),
+	last_wanted_range(0),
 	camera_impact(0.f),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
 	light_color(255,255,255,255),
+	hurt_tilt_timer(0.0f),
+	hurt_tilt_strength(0.0f),
+	m_position(0,0,0),
 	m_sneak_node(32767,32767,32767),
 	m_sneak_node_exists(false),
 	m_need_to_get_new_sneak_node(true),
@@ -54,7 +72,13 @@ LocalPlayer::LocalPlayer(IGameDef *gamedef, const char *name):
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_can_jump(false),
-	m_cao(NULL)
+	m_breath(PLAYER_MAX_BREATH),
+	m_yaw(0),
+	m_pitch(0),
+	camera_barely_in_ceiling(false),
+	m_collisionbox(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30),
+	m_cao(NULL),
+	m_client(client)
 {
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
@@ -71,7 +95,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		std::vector<CollisionInfo> *collision_info)
 {
 	Map *map = &env->getMap();
-	INodeDefManager *nodemgr = m_gamedef->ndef();
+	INodeDefManager *nodemgr = m_client->ndef();
 
 	v3f position = getPosition();
 
@@ -84,8 +108,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Skip collision detection if noclip mode is used
-	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool noclip = m_gamedef->checkLocalPrivilege("noclip") &&
+	bool fly_allowed = m_client->checkLocalPrivilege("fly");
+	bool noclip = m_client->checkLocalPrivilege("noclip") &&
 		g_settings->getBool("noclip");
 	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
 	if (free_move) {
@@ -216,7 +240,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	v3f accel_f = v3f(0,0,0);
 
-	collisionMoveResult result = collisionMoveSimple(env, m_gamedef,
+	collisionMoveResult result = collisionMoveSimple(env, m_client,
 		pos_max_d, m_collisionbox, player_stepheight, dtime,
 		&position, &m_speed, accel_f);
 
@@ -351,7 +375,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	if(!result.standing_on_object && !touching_ground_was && touching_ground) {
 		MtEvent *e = new SimpleTriggerEvent("PlayerRegainGround");
-		m_gamedef->event()->put(e);
+		m_client->event()->put(e);
 
 		// Set camera impact value to be used for view bobbing
 		camera_impact = getSpeed().Y * -1;
@@ -423,8 +447,8 @@ void LocalPlayer::applyControl(float dtime)
 	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
 	v3f speedV = v3f(0,0,0); // Vertical (Y)
 
-	bool fly_allowed = m_gamedef->checkLocalPrivilege("fly");
-	bool fast_allowed = m_gamedef->checkLocalPrivilege("fast");
+	bool fly_allowed = m_client->checkLocalPrivilege("fly");
+	bool fast_allowed = m_client->checkLocalPrivilege("fast");
 
 	bool free_move = fly_allowed && g_settings->getBool("free_move");
 	bool fast_move = fast_allowed && g_settings->getBool("fast_move");
@@ -528,17 +552,22 @@ void LocalPlayer::applyControl(float dtime)
 			speedH += move_direction;
 		}
 	}
-	if(control.down)
-	{
+	if (control.down) {
 		speedH -= move_direction;
 	}
-	if(control.left)
-	{
+	if (!control.up && !control.down) {
+		speedH -= move_direction *
+			(control.forw_move_joystick_axis / 32767.f);
+	}
+	if (control.left) {
 		speedH += move_direction.crossProduct(v3f(0,1,0));
 	}
-	if(control.right)
-	{
+	if (control.right) {
 		speedH += move_direction.crossProduct(v3f(0,-1,0));
+	}
+	if (!control.left && !control.right) {
+		speedH -= move_direction.crossProduct(v3f(0,1,0)) *
+			(control.sidew_move_joystick_axis / 32767.f);
 	}
 	if(control.jump)
 	{
@@ -569,7 +598,7 @@ void LocalPlayer::applyControl(float dtime)
 				setSpeed(speedJ);
 
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
-				m_gamedef->event()->put(e);
+				m_client->event()->put(e);
 			}
 		}
 		else if(in_liquid)
@@ -624,6 +653,17 @@ v3s16 LocalPlayer::getStandingNodePos()
 	if(m_sneak_node_exists)
 		return m_sneak_node;
 	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
+}
+
+v3s16 LocalPlayer::getLightPosition() const
+{
+	return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+}
+
+v3f LocalPlayer::getEyeOffset() const
+{
+	float eye_height = camera_barely_in_ceiling ? 1.5f : 1.625f;
+	return v3f(0, BS * eye_height, 0);
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored

@@ -99,7 +99,7 @@ LOCAL_C_INCLUDES := \
 		jni/src                                   \
 		jni/src/script                            \
 		jni/src/lua/src                           \
-		jni/src/json                              \
+		jni/src/jsoncpp                           \
 		jni/src/cguittfont                        \
 		deps/irrlicht/include                     \
 		deps/libiconv/include                     \
@@ -117,6 +117,7 @@ LOCAL_SRC_FILES := \
 		jni/src/cavegen.cpp                       \
 		jni/src/chat.cpp                          \
 		jni/src/client.cpp                        \
+		jni/src/clientenvironment.cpp             \
 		jni/src/clientiface.cpp                   \
 		jni/src/clientmap.cpp                     \
 		jni/src/clientmedia.cpp                   \
@@ -163,12 +164,14 @@ LOCAL_SRC_FILES := \
 		jni/src/inventory.cpp                     \
 		jni/src/inventorymanager.cpp              \
 		jni/src/itemdef.cpp                       \
+		jni/src/itemstackmetadata.cpp             \
 		jni/src/keycode.cpp                       \
 		jni/src/light.cpp                         \
 		jni/src/localplayer.cpp                   \
 		jni/src/log.cpp                           \
 		jni/src/main.cpp                          \
 		jni/src/map.cpp                           \
+		jni/src/map_settings_manager.cpp          \
 		jni/src/mapblock.cpp                      \
 		jni/src/mapblock_mesh.cpp                 \
 		jni/src/mapgen.cpp                        \
@@ -182,6 +185,7 @@ LOCAL_SRC_FILES := \
 		jni/src/mapnode.cpp                       \
 		jni/src/mapsector.cpp                     \
 		jni/src/mesh.cpp                          \
+		jni/src/metadata.cpp                      \
 		jni/src/mg_biome.cpp                      \
 		jni/src/mg_decoration.cpp                 \
 		jni/src/mg_ore.cpp                        \
@@ -202,10 +206,14 @@ LOCAL_SRC_FILES := \
 		jni/src/porting.cpp                       \
 		jni/src/profiler.cpp                      \
 		jni/src/quicktune.cpp                     \
+		jni/src/raycast.cpp                       \
+		jni/src/reflowscan.cpp                    \
+		jni/src/remoteplayer.cpp                  \
 		jni/src/rollback.cpp                      \
 		jni/src/rollback_interface.cpp            \
 		jni/src/serialization.cpp                 \
 		jni/src/server.cpp                        \
+		jni/src/serverenvironment.cpp             \
 		jni/src/serverlist.cpp                    \
 		jni/src/serverobject.cpp                  \
 		jni/src/shader.cpp                        \
@@ -215,6 +223,7 @@ LOCAL_SRC_FILES := \
 		jni/src/sound_openal.cpp                  \
 		jni/src/staticobject.cpp                  \
 		jni/src/subgame.cpp                       \
+		jni/src/tileanimation.cpp                 \
 		jni/src/tool.cpp                          \
 		jni/src/treegen.cpp                       \
 		jni/src/version.cpp                       \
@@ -224,6 +233,7 @@ LOCAL_SRC_FILES := \
 		jni/src/util/auth.cpp                     \
 		jni/src/util/base64.cpp                   \
 		jni/src/util/directiontables.cpp          \
+		jni/src/util/enriched_string.cpp          \
 		jni/src/util/numeric.cpp                  \
 		jni/src/util/pointedthing.cpp             \
 		jni/src/util/serialize.cpp                \
@@ -237,6 +247,7 @@ LOCAL_SRC_FILES := \
 		jni/src/unittest/test_connection.cpp      \
 		jni/src/unittest/test_filepath.cpp        \
 		jni/src/unittest/test_inventory.cpp       \
+		jni/src/unittest/test_map_settings_manager.cpp \
 		jni/src/unittest/test_mapnode.cpp         \
 		jni/src/unittest/test_nodedef.cpp         \
 		jni/src/unittest/test_noderesolver.cpp    \
@@ -256,7 +267,9 @@ LOCAL_SRC_FILES := \
 		jni/src/settings.cpp                      \
 		jni/src/wieldmesh.cpp                     \
 		jni/src/client/clientlauncher.cpp         \
-		jni/src/client/tile.cpp
+		jni/src/client/tile.cpp                   \
+		jni/src/client/joystick_controller.cpp    \
+		jni/src/irrlicht_changes/static_text.cpp
 
 # intentionally kept out (we already build openssl itself): jni/src/util/sha256.c
 
@@ -293,8 +306,10 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_env.cpp          \
 		jni/src/script/lua_api/l_inventory.cpp    \
 		jni/src/script/lua_api/l_item.cpp         \
+		jni/src/script/lua_api/l_itemstackmeta.cpp\
 		jni/src/script/lua_api/l_mainmenu.cpp     \
 		jni/src/script/lua_api/l_mapgen.cpp       \
+		jni/src/script/lua_api/l_metadata.cpp     \
 		jni/src/script/lua_api/l_nodemeta.cpp     \
 		jni/src/script/lua_api/l_nodetimer.cpp    \
 		jni/src/script/lua_api/l_noise.cpp        \
@@ -304,6 +319,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_server.cpp       \
 		jni/src/script/lua_api/l_settings.cpp     \
 		jni/src/script/lua_api/l_http.cpp         \
+		jni/src/script/lua_api/l_storage.cpp      \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
 		jni/src/script/scripting_game.cpp         \
@@ -356,7 +372,7 @@ LOCAL_SRC_FILES += \
 		jni/src/threading/thread.cpp
 
 # JSONCPP
-LOCAL_SRC_FILES += jni/src/json/jsoncpp.cpp
+LOCAL_SRC_FILES += jni/src/jsoncpp/json/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis gmp
 LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl ssl crypto android_native_app_glue $(PROFILER_LIBS)
@@ -373,4 +389,3 @@ ifdef GPROF
 $(call import-module,android-ndk-profiler)
 endif
 $(call import-module,android/native_app_glue)
-

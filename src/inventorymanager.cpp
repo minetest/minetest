@@ -19,15 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "inventorymanager.h"
 #include "log.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "scripting_game.h"
 #include "serverobject.h"
 #include "settings.h"
 #include "craftdef.h"
 #include "rollback_interface.h"
 #include "util/strfnd.h"
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+#include "util/basic_macros.h"
 
 #define PLAYER_TO_SA(p)   p->getEnv()->getScriptIface()
 

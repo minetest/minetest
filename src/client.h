@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_HEADER
 
 #include "network/connection.h"
-#include "environment.h"
+#include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
 #include "threading/mutex.h"
 #include <ostream>
@@ -34,7 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/networkpacket.h"
+#include "mapnode.h"
+#include "tileanimation.h"
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -51,6 +52,7 @@ class Database;
 class Mapper;
 struct MinimapMapblock;
 class Camera;
+class NetworkPacket;
 
 struct QueuedMeshUpdate
 {
@@ -182,8 +184,11 @@ struct ClientEvent
 			f32 expirationtime;
 			f32 size;
 			bool collisiondetection;
+			bool collision_removal;
 			bool vertical;
 			std::string *texture;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} spawn_particle;
 		struct{
 			u16 amount;
@@ -199,9 +204,13 @@ struct ClientEvent
 			f32 minsize;
 			f32 maxsize;
 			bool collisiondetection;
+			bool collision_removal;
+			u16 attached_id;
 			bool vertical;
 			std::string *texture;
 			u32 id;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} add_particlespawner;
 		struct{
 			u32 id;
@@ -399,9 +408,6 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
-	// Returns true if something was received
-	bool AsyncProcessPacket();
-	bool AsyncProcessData();
 	void Send(NetworkPacket* pkt);
 
 	void interact(u8 action, const PointedThing& pointed);
@@ -419,8 +425,9 @@ public:
 	void sendRespawn();
 	void sendReady();
 
-	ClientEnvironment& getEnv()
-	{ return m_env; }
+	ClientEnvironment& getEnv() { return m_env; }
+	ITextureSource *tsrc() { return getTextureSource(); }
+	ISoundManager *sound() { return getSoundManager(); }
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
@@ -442,15 +449,10 @@ public:
 	Inventory* getInventory(const InventoryLocation &loc);
 	void inventoryAction(InventoryAction *a);
 
-	// Gets closest object pointed by the shootline
-	// Returns NULL if not found
-	ClientActiveObject * getSelectedActiveObject(
-			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
-	);
-
-	std::list<std::string> getConnectedPlayerNames();
+	const std::list<std::string> &getConnectedPlayerNames()
+	{
+		return m_env.getPlayerNames();
+	}
 
 	float getAnimationTime();
 
@@ -458,9 +460,8 @@ public:
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
-	u16 getBreath();
 
-	bool checkPrivilege(const std::string &priv)
+	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
 
 	bool getChatMessage(std::wstring &message);
@@ -497,6 +498,9 @@ public:
 	u8 getProtoVersion()
 	{ return m_proto_ver; }
 
+	bool connectedToServer()
+	{ return m_con.Connected(); }
+
 	float mediaReceiveProgress();
 
 	void afterContentReceived(IrrlichtDevice *device);
@@ -521,14 +525,15 @@ public:
 	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ITextureSource* getTextureSource();
+	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	virtual scene::ISceneManager* getSceneManager();
+	IShaderSource *shsrc() { return getShaderSource(); }
+	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
 	virtual ParticleManager* getParticleManager();
-	virtual bool checkLocalPrivilege(const std::string &priv)
+	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
 
@@ -658,18 +663,18 @@ private:
 	// Sounds
 	float m_removed_sounds_check_timer;
 	// Mapping from server sound ids to our sound ids
-	std::map<s32, int> m_sounds_server_to_client;
+	UNORDERED_MAP<s32, int> m_sounds_server_to_client;
 	// And the other way!
-	std::map<int, s32> m_sounds_client_to_server;
+	UNORDERED_MAP<int, s32> m_sounds_client_to_server;
 	// And relations to objects
-	std::map<int, u16> m_sounds_to_objects;
+	UNORDERED_MAP<int, u16> m_sounds_to_objects;
 
 	// Privileges
-	std::set<std::string> m_privileges;
+	UNORDERED_SET<std::string> m_privileges;
 
 	// Detached inventories
 	// key = name
-	std::map<std::string, Inventory*> m_detached_inventories;
+	UNORDERED_MAP<std::string, Inventory*> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;

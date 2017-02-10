@@ -20,14 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MAPNODE_HEADER
 #define MAPNODE_HEADER
 
-#include "irrlichttypes.h"
-#include "irr_v3d.h"
-#include "irr_aabb3d.h"
+#include "irrlichttypes_bloated.h"
 #include "light.h"
 #include <string>
 #include <vector>
 
 class INodeDefManager;
+class Map;
 
 /*
 	Naming scheme:
@@ -142,11 +141,6 @@ struct MapNode
 	MapNode()
 	{ }
 
-	MapNode(const MapNode & n)
-	{
-		*this = n;
-	}
-
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),
 		  param1(a_param1),
@@ -191,6 +185,16 @@ struct MapNode
 		param2 = p;
 	}
 
+	/*!
+	 * Returns the color of the node.
+	 *
+	 * \param f content features of this node
+	 * \param color output, contains the node's color.
+	 */
+	void getColor(const ContentFeatures &f, video::SColor *color) const;
+
+	void setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f);
+
 	void setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr);
 
 	/**
@@ -201,6 +205,13 @@ struct MapNode
 	bool isLightDayNightEq(INodeDefManager *nodemgr) const;
 
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
+
+	/*!
+	 * Returns the node's light level from param1.
+	 * If the node emits light, it is ignored.
+	 * \param f the ContentFeatures of this node.
+	 */
+	u8 getLightRaw(enum LightBank bank, const ContentFeatures &f) const;
 
 	/**
 	 * This function differs from getLight(enum LightBank bank, INodeDefManager *nodemgr)
@@ -236,6 +247,13 @@ struct MapNode
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
 
 	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
+
+	/*!
+	 * Checks which neighbors does this node connect to.
+	 *
+	 * \param p coordinates of the node
+	 */
+	u8 getNeighbors(v3s16 p, Map *map);
 
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))

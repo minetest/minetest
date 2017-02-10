@@ -23,14 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 
 
-#define CHECK_SECURE_PATH(L, path) \
-	if (!ScriptApiSecurity::checkPath(L, path)) { \
-		throw LuaError(std::string("Attempt to access external file ") + \
-					path + " with mod security on."); \
+#define CHECK_SECURE_PATH_INTERNAL(L, path, write_required, ptr) \
+	if (!ScriptApiSecurity::checkPath(L, path, write_required, ptr)) { \
+		throw LuaError(std::string("Mod security: Blocked attempted ") + \
+				(write_required ? "write to " : "read from ") + path); \
 	}
-#define CHECK_SECURE_PATH_OPTIONAL(L, path) \
+#define CHECK_SECURE_PATH(L, path, write_required) \
 	if (ScriptApiSecurity::isSecure(L)) { \
-		CHECK_SECURE_PATH(L, path); \
+		CHECK_SECURE_PATH_INTERNAL(L, path, write_required, NULL); \
+	}
+#define CHECK_SECURE_PATH_POSSIBLE_WRITE(L, path, ptr) \
+	if (ScriptApiSecurity::isSecure(L)) { \
+		CHECK_SECURE_PATH_INTERNAL(L, path, false, ptr); \
 	}
 
 
@@ -43,8 +47,9 @@ public:
 	static bool isSecure(lua_State *L);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
 	static bool safeLoadFile(lua_State *L, const char *path);
-	// Checks if mods are allowed to read and write to the path
-	static bool checkPath(lua_State *L, const char *path);
+	// Checks if mods are allowed to read (and optionally write) to the path
+	static bool checkPath(lua_State *L, const char *path, bool write_required,
+			bool *write_allowed=NULL);
 
 private:
 	// Syntax: "sl_" <Library name or 'g' (global)> '_' <Function name>

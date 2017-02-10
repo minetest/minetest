@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <algorithm>
 #include <sstream>
+#include <cmath>
 #include <IFileSystem.h>
 #include "threading/mutex_auto_lock.h"
 #include "util/auth.h"
@@ -52,6 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
+#include "raycast.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -219,7 +221,7 @@ Client::Client(
 	m_event(event),
 	m_mesh_update_thread(),
 	m_env(
-		new ClientMap(this, this, control,
+		new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 		device->getSceneManager(),
@@ -257,7 +259,7 @@ Client::Client(
 	m_localdb(NULL)
 {
 	// Add local player
-	m_env.addPlayer(new LocalPlayer(this, playername));
+	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
 	m_mapper = new Mapper(device, this);
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
@@ -303,7 +305,7 @@ Client::~Client()
 	delete m_inventory_from_server;
 
 	// Delete detached inventories
-	for (std::map<std::string, Inventory*>::iterator
+	for (UNORDERED_MAP<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
 			i != m_detached_inventories.end(); ++i) {
 		delete i->second;
@@ -383,7 +385,7 @@ void Client::step(float dtime)
 		if(counter <= 0.0) {
 			counter = 2.0;
 
-			Player *myplayer = m_env.getLocalPlayer();
+			LocalPlayer *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
 			u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
@@ -498,9 +500,10 @@ void Client::step(float dtime)
 				m_client_event_queue.push(event);
 			}
 		}
-		else if(event.type == CEE_PLAYER_BREATH) {
-				u16 breath = event.player_breath.amount;
-				sendBreath(breath);
+		// Protocol v29 or greater obsoleted this event
+		else if (event.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
+			u16 breath = event.player_breath.amount;
+			sendBreath(breath);
 		}
 	}
 
@@ -613,7 +616,7 @@ void Client::step(float dtime)
 		{
 			// Do this every <interval> seconds after TOCLIENT_INVENTORY
 			// Reset the locally changed inventory to the authoritative inventory
-			Player *player = m_env.getLocalPlayer();
+			LocalPlayer *player = m_env.getLocalPlayer();
 			player->inventory = *m_inventory_from_server;
 			m_inventory_updated = true;
 		}
@@ -623,10 +626,8 @@ void Client::step(float dtime)
 		Update positions of sounds attached to objects
 	*/
 	{
-		for(std::map<int, u16>::iterator
-				i = m_sounds_to_objects.begin();
-				i != m_sounds_to_objects.end(); ++i)
-		{
+		for(UNORDERED_MAP<int, u16>::iterator i = m_sounds_to_objects.begin();
+				i != m_sounds_to_objects.end(); ++i) {
 			int client_id = i->first;
 			u16 object_id = i->second;
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
@@ -645,8 +646,7 @@ void Client::step(float dtime)
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
 		std::vector<s32> removed_server_ids;
-		for(std::map<s32, int>::iterator
-				i = m_sounds_server_to_client.begin();
+		for(UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();) {
 			s32 server_id = i->first;
 			int client_id = i->second;
@@ -820,7 +820,7 @@ void Client::initLocalMapSaving(const Address &address,
 	const std::string world_path = porting::path_user
 		+ DIR_DELIM + "worlds"
 		+ DIR_DELIM + "server_"
-		+ hostname + "_" + to_string(address.getPort());
+		+ hostname + "_" + std::to_string(address.getPort());
 
 	fs::CreateAllDirs(world_path);
 
@@ -932,6 +932,36 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
+// Will fill up 12 + 12 + 4 + 4 + 4 bytes
+void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
+{
+	v3f pf           = myplayer->getPosition() * 100;
+	v3f sf           = myplayer->getSpeed() * 100;
+	s32 pitch        = myplayer->getPitch() * 100;
+	s32 yaw          = myplayer->getYaw() * 100;
+	u32 keyPressed   = myplayer->keyPressed;
+	// scaled by 80, so that pi can fit into a u8
+	u8 fov           = clientMap->getCameraFov() * 80;
+	u8 wanted_range  = MYMIN(255,
+			std::ceil(clientMap->getControl().wanted_range / MAP_BLOCKSIZE));
+
+	v3s32 position(pf.X, pf.Y, pf.Z);
+	v3s32 speed(sf.X, sf.Y, sf.Z);
+
+	/*
+		Format:
+		[0] v3s32 position*100
+		[12] v3s32 speed*100
+		[12+12] s32 pitch*100
+		[12+12+4] s32 yaw*100
+		[12+12+4+4] u32 keyPressed
+		[12+12+4+4+4] u8 fov*80
+		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
+	*/
+	*pkt << position << speed << pitch << yaw << keyPressed;
+	*pkt << fov << wanted_range;
+}
+
 void Client::interact(u8 action, const PointedThing& pointed)
 {
 	if(m_state != LC_Ready) {
@@ -941,12 +971,17 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		return;
 	}
 
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
+	if (myplayer == NULL)
+		return;
+
 	/*
 		[0] u16 command
 		[2] u8 action
 		[3] u16 item
-		[5] u32 length of the next item
+		[5] u32 length of the next item (plen)
 		[9] serialized PointedThing
+		[9 + plen] player position information
 		actions:
 		0: start digging (from undersurface) or use
 		1: stop digging (all parameters ignored)
@@ -965,6 +1000,8 @@ void Client::interact(u8 action, const PointedThing& pointed)
 	pointed.serialize(tmp_os);
 
 	pkt.putLongString(tmp_os.str());
+
+	writePlayerPos(myplayer, &m_env.getClientMap(), &pkt);
 
 	Send(&pkt);
 }
@@ -1194,7 +1231,7 @@ void Client::sendChatMessage(const std::wstring &message)
 void Client::sendChangePassword(const std::string &oldpassword,
         const std::string &newpassword)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	if (player == NULL)
 		return;
 
@@ -1235,6 +1272,10 @@ void Client::sendBreath(u16 breath)
 {
 	DSTACK(FUNCTION_NAME);
 
+	// Protocol v29 make this obsolete
+	if (m_proto_ver >= 29)
+		return;
+
 	NetworkPacket pkt(TOSERVER_BREATH, sizeof(u16));
 	pkt << breath;
 	Send(&pkt);
@@ -1268,19 +1309,30 @@ void Client::sendPlayerPos()
 	if(myplayer == NULL)
 		return;
 
+	ClientMap &map = m_env.getClientMap();
+
+	u8 camera_fov    = map.getCameraFov();
+	u8 wanted_range  = map.getControl().wanted_range;
+
 	// Save bandwidth by only updating position when something changed
 	if(myplayer->last_position        == myplayer->getPosition() &&
-			myplayer->last_speed      == myplayer->getSpeed()    &&
-			myplayer->last_pitch      == myplayer->getPitch()    &&
-			myplayer->last_yaw        == myplayer->getYaw()      &&
-			myplayer->last_keyPressed == myplayer->keyPressed)
+			myplayer->last_speed        == myplayer->getSpeed()    &&
+			myplayer->last_pitch        == myplayer->getPitch()    &&
+			myplayer->last_yaw          == myplayer->getYaw()      &&
+			myplayer->last_keyPressed   == myplayer->keyPressed    &&
+			myplayer->last_camera_fov   == camera_fov              &&
+			myplayer->last_wanted_range == wanted_range)
 		return;
 
-	myplayer->last_position   = myplayer->getPosition();
-	myplayer->last_speed      = myplayer->getSpeed();
-	myplayer->last_pitch      = myplayer->getPitch();
-	myplayer->last_yaw        = myplayer->getYaw();
-	myplayer->last_keyPressed = myplayer->keyPressed;
+	myplayer->last_position     = myplayer->getPosition();
+	myplayer->last_speed        = myplayer->getSpeed();
+	myplayer->last_pitch        = myplayer->getPitch();
+	myplayer->last_yaw          = myplayer->getYaw();
+	myplayer->last_keyPressed   = myplayer->keyPressed;
+	myplayer->last_camera_fov   = camera_fov;
+	myplayer->last_wanted_range = wanted_range;
+
+	//infostream << "Sending Player Position information" << std::endl;
 
 	u16 our_peer_id;
 	{
@@ -1294,33 +1346,16 @@ void Client::sendPlayerPos()
 
 	assert(myplayer->peer_id == our_peer_id);
 
-	v3f pf         = myplayer->getPosition();
-	v3f sf         = myplayer->getSpeed();
-	s32 pitch      = myplayer->getPitch() * 100;
-	s32 yaw        = myplayer->getYaw() * 100;
-	u32 keyPressed = myplayer->keyPressed;
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
-	v3s32 position(pf.X*100, pf.Y*100, pf.Z*100);
-	v3s32 speed(sf.X*100, sf.Y*100, sf.Z*100);
-	/*
-		Format:
-		[0] v3s32 position*100
-		[12] v3s32 speed*100
-		[12+12] s32 pitch*100
-		[12+12+4] s32 yaw*100
-		[12+12+4+4] u32 keyPressed
-	*/
-
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4);
-
-	pkt << position << speed << pitch << yaw << keyPressed;
+	writePlayerPos(myplayer, &map, &pkt);
 
 	Send(&pkt);
 }
 
 void Client::sendPlayerItem(u16 item)
 {
-	Player *myplayer = m_env.getLocalPlayer();
+	LocalPlayer *myplayer = m_env.getLocalPlayer();
 	if(myplayer == NULL)
 		return;
 
@@ -1401,7 +1436,7 @@ bool Client::getLocalInventoryUpdated()
 // Copies the inventory of the local player to parameter
 void Client::getLocalInventory(Inventory &dst)
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	dst = player->inventory;
 }
@@ -1414,15 +1449,16 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::CURRENT_PLAYER:
 	{
-		Player *player = m_env.getLocalPlayer();
+		LocalPlayer *player = m_env.getLocalPlayer();
 		assert(player != NULL);
 		return &player->inventory;
 	}
 	break;
 	case InventoryLocation::PLAYER:
 	{
-		Player *player = m_env.getPlayer(loc.name.c_str());
-		if(!player)
+		// Check if we are working with local player inventory
+		LocalPlayer *player = m_env.getLocalPlayer();
+		if (!player || strcmp(player->getName(), loc.name.c_str()) != 0)
 			return NULL;
 		return &player->inventory;
 	}
@@ -1437,7 +1473,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	break;
 	case InventoryLocation::DETACHED:
 	{
-		if(m_detached_inventories.count(loc.name) == 0)
+		if (m_detached_inventories.count(loc.name) == 0)
 			return NULL;
 		return m_detached_inventories[loc.name];
 	}
@@ -1463,49 +1499,6 @@ void Client::inventoryAction(InventoryAction *a)
 
 	// Remove it
 	delete a;
-}
-
-ClientActiveObject * Client::getSelectedActiveObject(
-		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
-	)
-{
-	std::vector<DistanceSortedActiveObject> objects;
-
-	m_env.getActiveObjects(from_pos_f_on_map, max_d, objects);
-
-	// Sort them.
-	// After this, the closest object is the first in the array.
-	std::sort(objects.begin(), objects.end());
-
-	for(unsigned int i=0; i<objects.size(); i++)
-	{
-		ClientActiveObject *obj = objects[i].obj;
-
-		aabb3f *selection_box = obj->getSelectionBox();
-		if(selection_box == NULL)
-			continue;
-
-		v3f pos = obj->getPosition();
-
-		aabb3f offsetted_box(
-				selection_box->MinEdge + pos,
-				selection_box->MaxEdge + pos
-		);
-
-		if(offsetted_box.intersectsWithLine(shootline_on_map))
-		{
-			return obj;
-		}
-	}
-
-	return NULL;
-}
-
-std::list<std::string> Client::getConnectedPlayerNames()
-{
-	return m_env.getPlayerNames();
 }
 
 float Client::getAnimationTime()
@@ -1540,16 +1533,9 @@ void Client::setCrack(int level, v3s16 pos)
 
 u16 Client::getHP()
 {
-	Player *player = m_env.getLocalPlayer();
+	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
-}
-
-u16 Client::getBreath()
-{
-	Player *player = m_env.getLocalPlayer();
-	assert(player != NULL);
-	return player->getBreath();
 }
 
 bool Client::getChatMessage(std::wstring &message)
@@ -1577,10 +1563,13 @@ void Client::typeChatMessage(const std::wstring &message)
 	}
 	else
 	{
-		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player != NULL);
-		std::wstring name = narrow_to_wide(player->getName());
-		m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		// compatibility code
+		if (m_proto_ver < 29) {
+			LocalPlayer *player = m_env.getLocalPlayer();
+			assert(player != NULL);
+			std::wstring name = narrow_to_wide(player->getName());
+			m_chat_queue.push((std::wstring)L"<" + name + L"> " + message);
+		}
 	}
 }
 
@@ -1674,7 +1663,7 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 ClientEvent Client::getClientEvent()
 {
 	ClientEvent event;
-	if(m_client_event_queue.size() == 0) {
+	if (m_client_event_queue.empty()) {
 		event.type = CE_NONE;
 	}
 	else {

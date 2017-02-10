@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 class IGameDef;
+class Client;
 struct ToolCapabilities;
 
 /*
@@ -61,7 +62,7 @@ struct ItemDefinition
 	/*
 		Item stack and interaction properties
 	*/
-	s16 stack_max;
+	u16 stack_max;
 	bool usable;
 	bool liquids_pointable;
 	// May be NULL. If non-NULL, deleted by destructor
@@ -107,10 +108,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+		Client *client) const=0;
 #endif
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
@@ -133,10 +134,10 @@ public:
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+		Client *client) const=0;
 #endif
 
 	// Remove all registered item and node definitions and aliases
@@ -144,6 +145,7 @@ public:
 	virtual void clear()=0;
 	// Register item definition
 	virtual void registerItem(const ItemDefinition &def)=0;
+	virtual void unregisterItem(const std::string &name)=0;
 	// Set an alias so that items named <name> will load as <convert_to>.
 	// Alias is not set if <name> has already been defined.
 	// Alias will be removed if <name> is defined at a later point of time.

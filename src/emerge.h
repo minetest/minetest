@@ -42,6 +42,7 @@ class BiomeManager;
 class OreManager;
 class DecorationManager;
 class SchematicManager;
+class Server;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
@@ -97,8 +98,16 @@ public:
 	u32 gen_notify_on;
 	std::set<u32> gen_notify_on_deco_ids;
 
-	// Map generation parameters
-	MapgenParams params;
+	// Parameters passed to mapgens owned by ServerMap
+	// TODO(hmmmm): Remove this after mapgen helper methods using them
+	// are moved to ServerMap
+	MapgenParams *mgparams;
+
+	// Hackish workaround:
+	// For now, EmergeManager must hold onto a ptr to the Map's setting manager
+	// since the Map can only be accessed through the Environment, and the
+	// Environment is not created until after script initialization.
+	MapSettingsManager *map_settings_mgr;
 
 	// Managers of various map generation-related components
 	BiomeManager *biomemgr;
@@ -107,11 +116,10 @@ public:
 	SchematicManager *schemmgr;
 
 	// Methods
-	EmergeManager(IGameDef *gamedef);
+	EmergeManager(Server *server);
 	~EmergeManager();
 
-	void loadMapgenParams();
-	void initMapgens();
+	bool initMapgens(MapgenParams *mgparams);
 
 	void startThreads();
 	void stopThreads();
@@ -140,9 +148,6 @@ public:
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
 
-	static MapgenFactory *getMapgenFactory(const std::string &mgname);
-	static void getMapgenNames(
-		std::vector<const char *> *mgnames, bool include_hidden);
 	static v3s16 getContainingChunk(v3s16 blockpos, s16 chunksize);
 
 private:
@@ -152,7 +157,7 @@ private:
 
 	Mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	std::map<u16, u16> m_peer_queue_count;
+	UNORDERED_MAP<u16, u16> m_peer_queue_count;
 
 	u16 m_qlimit_total;
 	u16 m_qlimit_diskonly;

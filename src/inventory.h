@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
+#include "itemstackmetadata.h"
 #include <istream>
 #include <ostream>
 #include <string>
@@ -32,10 +33,10 @@ struct ToolCapabilities;
 
 struct ItemStack
 {
-	ItemStack(): name(""), count(0), wear(0), metadata("") {}
-	ItemStack(std::string name_, u16 count_,
-			u16 wear, std::string metadata_,
-			IItemDefManager *itemdef);
+	ItemStack(): name(""), count(0), wear(0) {}
+	ItemStack(const std::string &name_, u16 count_,
+			u16 wear, IItemDefManager *itemdef);
+
 	~ItemStack() {}
 
 	// Serialization
@@ -61,7 +62,7 @@ struct ItemStack
 		name = "";
 		count = 0;
 		wear = 0;
-		metadata = "";
+		metadata.clear();
 	}
 
 	void add(u16 n)
@@ -80,15 +81,14 @@ struct ItemStack
 	// Maximum size of a stack
 	u16 getStackMax(IItemDefManager *itemdef) const
 	{
-		s16 max = itemdef->get(name).stack_max;
-		return (max >= 0) ? max : 0;
+		return itemdef->get(name).stack_max;
 	}
 
 	// Number of items that can be added to this stack
 	u16 freeSpace(IItemDefManager *itemdef) const
 	{
 		u16 max = getStackMax(itemdef);
-		if(count > max)
+		if (count >= max)
 			return 0;
 		return max - count;
 	}
@@ -167,7 +167,7 @@ struct ItemStack
 	std::string name;
 	u16 count;
 	u16 wear;
-	std::string metadata;
+	ItemStackMetadata metadata;
 };
 
 class InventoryList
@@ -314,4 +314,3 @@ private:
 };
 
 #endif
-

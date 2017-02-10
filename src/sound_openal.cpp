@@ -41,9 +41,9 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h" // myrand()
 #include "porting.h"
-#include <map>
 #include <vector>
 #include <fstream>
+#include "util/cpp11_container.h"
 
 #define BUFFER_SIZE 30000
 
@@ -144,6 +144,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 			ov_clear(oggFile);
 			infostream << "Audio: Error decoding "
 				<< filename_for_logging << std::endl;
+			delete snd;
 			return NULL;
 		}
 
@@ -270,8 +271,8 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	std::map<std::string, std::vector<SoundBuffer*> > m_buffers;
-	std::map<int, PlayingSound*> m_sounds_playing;
+	UNORDERED_MAP<std::string, std::vector<SoundBuffer*> > m_buffers;
+	UNORDERED_MAP<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
 public:
 	bool m_is_initialized;
@@ -316,7 +317,7 @@ public:
 			return;
 		}
 
-		alDistanceModel(AL_EXPONENT_DISTANCE);
+		alDistanceModel(AL_INVERSE_DISTANCE);
 
 		infostream<<"Audio: Initialized: OpenAL "<<alGetString(AL_VERSION)
 				<<", using "<<alcGetString(m_device, ALC_DEVICE_SPECIFIER)
@@ -336,7 +337,7 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 
-		for (std::map<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
+		for (UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
 				i != m_buffers.end(); ++i) {
 			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
 					iter != (*i).second.end(); ++iter) {
@@ -350,7 +351,7 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
+		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
 				m_buffers.find(name);
 		if(i != m_buffers.end()){
 			i->second.push_back(buf);
@@ -364,7 +365,7 @@ public:
 
 	SoundBuffer* getBuffer(const std::string &name)
 	{
-		std::map<std::string, std::vector<SoundBuffer*> >::iterator i =
+		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
 			return NULL;
@@ -408,7 +409,6 @@ public:
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		//alSourcef(sound->source_id, AL_ROLLOFF_FACTOR, 0.7);
 		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 		volume = MYMAX(0.0, volume);
@@ -442,8 +442,7 @@ public:
 
 	void deleteSound(int id)
 	{
-		std::map<int, PlayingSound*>::iterator i =
-				m_sounds_playing.find(id);
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -483,10 +482,8 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(std::map<int, PlayingSound*>::iterator
-				i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i)
-		{
+		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
+				i != m_sounds_playing.end(); ++i) {
 			int id = i->first;
 			PlayingSound *sound = i->second;
 			// If not playing, remove it
@@ -582,9 +579,8 @@ public:
 	}
 	void updateSoundPosition(int id, v3f pos)
 	{
-		std::map<int, PlayingSound*>::iterator i =
-				m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
 

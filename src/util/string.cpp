@@ -314,7 +314,7 @@ std::string wide_to_narrow(const std::wstring &wcs)
 
 #endif
 
-std::string urlencode(std::string str)
+std::string urlencode(const std::string &str)
 {
 	// Encodes non-unreserved URI characters by a percent sign
 	// followed by two hex digits. See RFC 3986, section 2.3.
@@ -322,17 +322,18 @@ std::string urlencode(std::string str)
 	std::ostringstream oss(std::ios::binary);
 	for (u32 i = 0; i < str.size(); i++) {
 		unsigned char c = str[i];
-		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~')
+		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~') {
 			oss << c;
-		else
+		} else {
 			oss << "%"
 				<< url_hex_chars[(c & 0xf0) >> 4]
 				<< url_hex_chars[c & 0x0f];
+		}
 	}
 	return oss.str();
 }
 
-std::string urldecode(std::string str)
+std::string urldecode(const std::string &str)
 {
 	// Inverse of urlencode
 	std::ostringstream oss(std::ios::binary);
@@ -343,18 +344,20 @@ std::string urldecode(std::string str)
 				hex_digit_decode(str[i+2], lowvalue)) {
 			oss << (char) ((highvalue << 4) | lowvalue);
 			i += 2;
-		}
-		else
+		} else {
 			oss << str[i];
+		}
 	}
 	return oss.str();
 }
 
 u32 readFlagString(std::string str, const FlagDesc *flagdesc, u32 *flagmask)
 {
-	u32 result = 0, mask = 0;
+	u32 result = 0;
+	u32 mask = 0;
 	char *s = &str[0];
-	char *flagstr, *strpos = NULL;
+	char *flagstr;
+	char *strpos = NULL;
 
 	while ((flagstr = strtok_r(s, ",", &strpos))) {
 		s = NULL;
@@ -558,6 +561,7 @@ ColorContainer::ColorContainer()
 	colors["darkgoldenrod"]          = 0xb8860b;
 	colors["darkgray"]               = 0xa9a9a9;
 	colors["darkgreen"]              = 0x006400;
+	colors["darkgrey"]               = 0xa9a9a9;
 	colors["darkkhaki"]              = 0xbdb76b;
 	colors["darkmagenta"]            = 0x8b008b;
 	colors["darkolivegreen"]         = 0x556b2f;
@@ -568,11 +572,13 @@ ColorContainer::ColorContainer()
 	colors["darkseagreen"]           = 0x8fbc8f;
 	colors["darkslateblue"]          = 0x483d8b;
 	colors["darkslategray"]          = 0x2f4f4f;
+	colors["darkslategrey"]          = 0x2f4f4f;
 	colors["darkturquoise"]          = 0x00ced1;
 	colors["darkviolet"]             = 0x9400d3;
 	colors["deeppink"]               = 0xff1493;
 	colors["deepskyblue"]            = 0x00bfff;
 	colors["dimgray"]                = 0x696969;
+	colors["dimgrey"]                = 0x696969;
 	colors["dodgerblue"]             = 0x1e90ff;
 	colors["firebrick"]              = 0xb22222;
 	colors["floralwhite"]            = 0xfffaf0;
@@ -585,6 +591,7 @@ ColorContainer::ColorContainer()
 	colors["gray"]                   = 0x808080;
 	colors["green"]                  = 0x008000;
 	colors["greenyellow"]            = 0xadff2f;
+	colors["grey"]                   = 0x808080;
 	colors["honeydew"]               = 0xf0fff0;
 	colors["hotpink"]                = 0xff69b4;
 	colors["indianred"]              = 0xcd5c5c;
@@ -601,11 +608,13 @@ ColorContainer::ColorContainer()
 	colors["lightgoldenrodyellow"]   = 0xfafad2;
 	colors["lightgray"]              = 0xd3d3d3;
 	colors["lightgreen"]             = 0x90ee90;
+	colors["lightgrey"]              = 0xd3d3d3;
 	colors["lightpink"]              = 0xffb6c1;
 	colors["lightsalmon"]            = 0xffa07a;
 	colors["lightseagreen"]          = 0x20b2aa;
 	colors["lightskyblue"]           = 0x87cefa;
 	colors["lightslategray"]         = 0x778899;
+	colors["lightslategrey"]         = 0x778899;
 	colors["lightsteelblue"]         = 0xb0c4de;
 	colors["lightyellow"]            = 0xffffe0;
 	colors["lime"]                   = 0x00ff00;
@@ -658,6 +667,7 @@ ColorContainer::ColorContainer()
 	colors["skyblue"]                = 0x87ceeb;
 	colors["slateblue"]              = 0x6a5acd;
 	colors["slategray"]              = 0x708090;
+	colors["slategrey"]              = 0x708090;
 	colors["snow"]                   = 0xfffafa;
 	colors["springgreen"]            = 0x00ff7f;
 	colors["steelblue"]              = 0x4682b4;

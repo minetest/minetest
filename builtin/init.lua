@@ -37,9 +37,9 @@ dofile(commonpath .. "misc_helpers.lua")
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
 elseif INIT == "mainmenu" then
-	local mainmenuscript = core.setting_get("main_menu_script")
-	if mainmenuscript ~= nil and mainmenuscript ~= "" then
-		dofile(mainmenuscript)
+	local mm_script = core.setting_get("main_menu_script")
+	if mm_script and mm_script ~= "" then
+		dofile(mm_script)
 	else
 		dofile(core.get_mainmenu_path() .. DIR_DELIM .. "init.lua")
 	end
@@ -48,4 +48,3 @@ elseif INIT == "async" then
 else
 	error(("Unrecognized builtin initialization type %s!"):format(tostring(INIT)))
 end
-

@@ -81,6 +81,7 @@ bool AsyncEngine::registerFunction(const char* name, lua_CFunction func)
 	if (initDone) {
 		return false;
 	}
+
 	functionList[name] = func;
 	return true;
 }
@@ -203,7 +204,7 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 /******************************************************************************/
 void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
-	for (std::map<std::string, lua_CFunction>::iterator it = functionList.begin();
+	for (UNORDERED_MAP<std::string, lua_CFunction>::iterator it = functionList.begin();
 			it != functionList.end(); it++) {
 		lua_pushstring(L, it->first.c_str());
 		lua_pushcfunction(L, it->second);

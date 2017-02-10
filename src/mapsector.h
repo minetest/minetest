@@ -63,7 +63,7 @@ public:
 
 	void getBlocks(MapBlockVect &dest);
 
-	bool empty();
+	bool empty() const { return m_blocks.empty(); }
 
 	// Always false at the moment, because sector contains no metadata.
 	bool differs_from_disk;
@@ -71,7 +71,7 @@ public:
 protected:
 
 	// The pile of MapBlocks
-	std::map<s16, MapBlock*> m_blocks;
+	UNORDERED_MAP<s16, MapBlock*> m_blocks;
 
 	Map *m_parent;
 	// Position on parent (in MapBlock widths)

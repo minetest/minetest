@@ -313,8 +313,8 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		Settings conf;
 		MapgenParams params;
 
-		params.load(*g_settings);
-		params.save(conf);
+		params.readParams(g_settings);
+		params.writeParams(&conf);
 		conf.writeLines(oss);
 		oss << "[end_of_params]\n";
 

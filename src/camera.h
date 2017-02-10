@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class LocalPlayer;
 struct MapDrawControl;
-class IGameDef;
+class Client;
 class WieldMeshSceneNode;
 
 struct Nametag {
@@ -61,7 +61,7 @@ class Camera
 {
 public:
 	Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-			IGameDef *gamedef);
+			Client *client);
 	~Camera();
 
 	// Get player scene node.
@@ -189,7 +189,7 @@ private:
 	// draw control
 	MapDrawControl& m_draw_control;
 
-	IGameDef *m_gamedef;
+	Client *m_client;
 	video::IVideoDriver *m_driver;
 
 	// Absolute camera position
@@ -231,6 +231,7 @@ private:
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
+	f32 m_cache_zoom_fov;
 	bool m_cache_view_bobbing;
 
 	std::list<Nametag *> m_nametags;

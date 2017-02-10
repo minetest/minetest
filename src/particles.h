@@ -27,9 +27,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "localplayer.h"
 #include "environment.h"
+#include "tileanimation.h"
 
 struct ClientEvent;
 class ParticleManager;
+class ClientEnvironment;
+struct MapNode;
+struct ContentFeatures;
 
 class Particle : public scene::ISceneNode
 {
@@ -45,10 +49,14 @@ class Particle : public scene::ISceneNode
 		float expirationtime,
 		float size,
 		bool collisiondetection,
+		bool collision_removal,
 		bool vertical,
 		video::ITexture *texture,
 		v2f texpos,
-		v2f texsize
+		v2f texsize,
+		const struct TileAnimationParams &anim,
+		u8 glow,
+		video::SColor color = video::SColor(0xFFFFFFFF)
 	);
 	~Particle();
 
@@ -95,10 +103,18 @@ private:
 	v3f m_acceleration;
 	LocalPlayer *m_player;
 	float m_size;
-	u8 m_light;
+	//! Color without lighting
+	video::SColor m_base_color;
+	//! Final rendered color
+	video::SColor m_color;
 	bool m_collisiondetection;
+	bool m_collision_removal;
 	bool m_vertical;
 	v3s16 m_camera_offset;
+	struct TileAnimationParams m_animation;
+	float m_animation_time;
+	int m_animation_frame;
+	u8 m_glow;
 };
 
 class ParticleSpawner
@@ -115,9 +131,12 @@ class ParticleSpawner
 		float minexptime, float maxexptime,
 		float minsize, float maxsize,
 		bool collisiondetection,
+		bool collision_removal,
+		u16 attached_id,
 		bool vertical,
 		video::ITexture *texture,
 		u32 id,
+		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
 	~ParticleSpawner();
@@ -148,8 +167,11 @@ class ParticleSpawner
 	video::ITexture *m_texture;
 	std::vector<float> m_spawntimes;
 	bool m_collisiondetection;
+	bool m_collision_removal;
 	bool m_vertical;
-
+	u16 m_attached_id;
+	struct TileAnimationParams m_animation;
+	u8 m_glow;
 };
 
 /**
@@ -164,17 +186,20 @@ public:
 
 	void step (float dtime);
 
-	void handleParticleEvent(ClientEvent *event,IGameDef *gamedef,
+	void handleParticleEvent(ClientEvent *event, Client *client,
 			scene::ISceneManager* smgr, LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 	void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const TileSpec tiles[]);
+		LocalPlayer *player, v3s16 pos, const MapNode &n,
+		const ContentFeatures &f);
 
 protected:
 	void addParticle(Particle* toadd);

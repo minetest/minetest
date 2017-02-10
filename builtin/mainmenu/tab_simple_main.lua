@@ -43,6 +43,7 @@ local function get_formspec(tabview, name, tabdata)
 
 	retval = retval .. "tablecolumns[" ..
 		image_column(fgettext("Favorite"), "favorite") .. ";" ..
+		image_column(fgettext("Ping"), "") .. ",padding=0.25;" ..
 		"color,span=3;" ..
 		"text,align=right;" ..                -- clients
 		"text,align=center,padding=0.25;" ..  -- "/"
@@ -70,9 +71,9 @@ local function get_formspec(tabview, name, tabdata)
 				end
 			end
 		end
-		retval = retval .. render_favorite(menudata.favorites[1], (#favs > 0))
+		retval = retval .. render_serverlist_row(menudata.favorites[1], (#favs > 0))
 		for i = 2, #menudata.favorites do
-			retval = retval .. "," .. render_favorite(menudata.favorites[i], (i <= #favs))
+			retval = retval .. "," .. render_serverlist_row(menudata.favorites[i], (i <= #favs))
 		end
 	end
 

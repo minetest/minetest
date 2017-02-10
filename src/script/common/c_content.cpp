@@ -33,12 +33,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mg_schematic.h"
 #include "noise.h"
-#include "json/json.h"
+#include <json/json.h>
 
 struct EnumString es_TileAnimationType[] =
 {
 	{TAT_NONE, "none"},
 	{TAT_VERTICAL_FRAMES, "vertical_frames"},
+	{TAT_SHEET_2D, "sheet_2d"},
 	{0, NULL},
 };
 
@@ -65,9 +66,8 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	}
 	lua_pop(L, 1);
 
-	def.stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
-	if(def.stack_max == 0)
-		def.stack_max = 1;
+	int stack_max = getintfield_default(L, index, "stack_max", def.stack_max);
+	def.stack_max = rangelim(stack_max, 1, U16_MAX);
 
 	lua_getfield(L, index, "on_use");
 	def.usable = lua_isfunction(L, -1);
@@ -322,7 +322,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	}
 	else if(lua_istable(L, index))
 	{
-		// {name="default_lava.png", animation={}}
+		// name="default_lava.png"
 		tiledef.name = "";
 		getstringfield(L, index, "name", tiledef.name);
 		getstringfield(L, index, "image", tiledef.name); // MaterialSpec compat.
@@ -332,20 +332,13 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		// color = ...
+		lua_getfield(L, index, "color");
+		tiledef.has_color = read_color(L, -1, &tiledef.color);
+		lua_pop(L, 1);
 		// animation = {}
 		lua_getfield(L, index, "animation");
-		if(lua_istable(L, -1)){
-			// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
-			tiledef.animation.type = (TileAnimationType)
-				getenumfield(L, -1, "type", es_TileAnimationType,
-				TAT_NONE);
-			tiledef.animation.aspect_w =
-				getintfield_default(L, -1, "aspect_w", 16);
-			tiledef.animation.aspect_h =
-				getintfield_default(L, -1, "aspect_h", 16);
-			tiledef.animation.length =
-				getfloatfield_default(L, -1, "length", 1.0);
-		}
+		tiledef.animation = read_animation_definition(L, -1);
 		lua_pop(L, 1);
 	}
 
@@ -461,6 +454,13 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	if (usealpha)
 		f.alpha = 0;
 
+	// Read node color.
+	lua_getfield(L, index, "color");
+	read_color(L, -1, &f.color);
+	lua_pop(L, 1);
+
+	getstringfield(L, index, "palette", f.palette_name);
+
 	/* Other stuff */
 
 	lua_getfield(L, index, "post_effect_color");
@@ -471,6 +471,13 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			ScriptApiNode::es_ContentParamType, CPT_NONE);
 	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
 			ScriptApiNode::es_ContentParamType2, CPT2_NONE);
+
+	if (f.palette_name != "" &&
+			!(f.param_type_2 == CPT2_COLOR ||
+			f.param_type_2 == CPT2_COLORED_FACEDIR ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
+		warningstream << "Node " << f.name.c_str()
+			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
 	// Warn about some deprecated fields
 	warn_if_field_exists(L, index, "wall_mounted",
@@ -527,6 +534,12 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// Amount of light the node emits
 	f.light_source = getintfield_default(L, index,
 			"light_source", f.light_source);
+	if (f.light_source > LIGHT_MAX) {
+		warningstream << "Node " << f.name.c_str()
+			<< " had greater light_source than " << LIGHT_MAX
+			<< ", it was reduced." << std::endl;
+		f.light_source = LIGHT_MAX;
+	}
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
 
@@ -811,11 +824,47 @@ ItemStack read_item(lua_State* L, int index,Server* srv)
 		std::string name = getstringfield_default(L, index, "name", "");
 		int count = getintfield_default(L, index, "count", 1);
 		int wear = getintfield_default(L, index, "wear", 0);
-		std::string metadata = getstringfield_default(L, index, "metadata", "");
-		return ItemStack(name, count, wear, metadata, idef);
-	}
-	else
-	{
+
+		ItemStack istack(name, count, wear, idef);
+
+		lua_getfield(L, index, "metadata");
+
+		// Support old metadata format by checking type
+		int fieldstable = lua_gettop(L);
+		if (lua_istable(L, fieldstable)) {
+			lua_pushnil(L);
+			while (lua_next(L, fieldstable) != 0) {
+				// key at index -2 and value at index -1
+				std::string key = lua_tostring(L, -2);
+				size_t value_len;
+				const char *value_cs = lua_tolstring(L, -1, &value_len);
+				std::string value(value_cs, value_len);
+				istack.metadata.setString(name, value);
+				lua_pop(L, 1); // removes value, keeps key for next iteration
+			}
+		} else {
+			// BACKWARDS COMPATIBLITY
+			std::string value = getstringfield_default(L, index, "metadata", "");
+			istack.metadata.setString("", value);
+		}
+
+		lua_getfield(L, index, "meta");
+		fieldstable = lua_gettop(L);
+		if (lua_istable(L, fieldstable)) {
+			lua_pushnil(L);
+			while (lua_next(L, fieldstable) != 0) {
+				// key at index -2 and value at index -1
+				std::string key = lua_tostring(L, -2);
+				size_t value_len;
+				const char *value_cs = lua_tolstring(L, -1, &value_len);
+				std::string value(value_cs, value_len);
+				istack.metadata.setString(name, value);
+				lua_pop(L, 1); // removes value, keeps key for next iteration
+			}
+		}
+
+		return istack;
+	} else {
 		throw LuaError("Expecting itemstack, itemstring, table or nil");
 	}
 }
@@ -830,20 +879,18 @@ void push_tool_capabilities(lua_State *L,
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
-		for(std::map<std::string, ToolGroupCap>::const_iterator
-				i = toolcap.groupcaps.begin(); i != toolcap.groupcaps.end(); i++){
+		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
+			i != toolcap.groupcaps.end(); i++) {
 			// Create groupcap table
 			lua_newtable(L);
 			const std::string &name = i->first;
 			const ToolGroupCap &groupcap = i->second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for(std::map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); i++){
-				int rating = i->first;
-				float time = i->second;
-				lua_pushinteger(L, rating);
-				lua_pushnumber(L, time);
+			for (UNORDERED_MAP<int, float>::const_iterator
+					i = groupcap.times.begin(); i != groupcap.times.end(); i++) {
+				lua_pushinteger(L, i->first);
+				lua_pushnumber(L, i->second);
 				lua_settable(L, -3);
 			}
 			// Set subtable "times"
@@ -859,8 +906,8 @@ void push_tool_capabilities(lua_State *L,
 		//Create damage_groups table
 		lua_newtable(L);
 		// For each damage group
-		for(std::map<std::string, s16>::const_iterator
-				i = toolcap.damageGroups.begin(); i != toolcap.damageGroups.end(); i++){
+		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
+			i != toolcap.damageGroups.end(); i++) {
 			// Create damage group table
 			lua_pushinteger(L, i->second);
 			lua_setfield(L, -2, i->first.c_str());
@@ -909,6 +956,41 @@ void read_inventory_list(lua_State *L, int tableindex,
 		invlist->deleteItem(index);
 		index++;
 	}
+}
+
+/******************************************************************************/
+struct TileAnimationParams read_animation_definition(lua_State *L, int index)
+{
+	if(index < 0)
+		index = lua_gettop(L) + 1 + index;
+
+	struct TileAnimationParams anim;
+	anim.type = TAT_NONE;
+	if (!lua_istable(L, index))
+		return anim;
+
+	anim.type = (TileAnimationType)
+		getenumfield(L, index, "type", es_TileAnimationType,
+		TAT_NONE);
+	if (anim.type == TAT_VERTICAL_FRAMES) {
+		// {type="vertical_frames", aspect_w=16, aspect_h=16, length=2.0}
+		anim.vertical_frames.aspect_w =
+			getintfield_default(L, index, "aspect_w", 16);
+		anim.vertical_frames.aspect_h =
+			getintfield_default(L, index, "aspect_h", 16);
+		anim.vertical_frames.length =
+			getfloatfield_default(L, index, "length", 1.0);
+	} else if (anim.type == TAT_SHEET_2D) {
+		// {type="sheet_2d", frames_w=5, frames_h=3, frame_length=0.5}
+		getintfield(L, index, "frames_w",
+			anim.sheet_2d.frames_w);
+		getintfield(L, index, "frames_h",
+			anim.sheet_2d.frames_h);
+		getfloatfield(L, index, "frame_length",
+			anim.sheet_2d.frame_length);
+	}
+
+	return anim;
 }
 
 /******************************************************************************/
@@ -1066,8 +1148,7 @@ void push_flags_string(lua_State *L, FlagDesc *flagdesc, u32 flags, u32 flagmask
 /******************************************************************************/
 
 /******************************************************************************/
-void read_groups(lua_State *L, int index,
-		std::map<std::string, int> &result)
+void read_groups(lua_State *L, int index, ItemGroupList &result)
 {
 	if (!lua_istable(L,index))
 		return;
@@ -1086,11 +1167,10 @@ void read_groups(lua_State *L, int index,
 }
 
 /******************************************************************************/
-void push_groups(lua_State *L, const std::map<std::string, int> &groups)
+void push_groups(lua_State *L, const ItemGroupList &groups)
 {
 	lua_newtable(L);
-	std::map<std::string, int>::const_iterator it;
-	for (it = groups.begin(); it != groups.end(); ++it) {
+	for (ItemGroupList::const_iterator it = groups.begin(); it != groups.end(); ++it) {
 		lua_pushnumber(L, it->second);
 		lua_setfield(L, -2, it->first.c_str());
 	}
@@ -1250,8 +1330,13 @@ static bool push_json_value_helper(lua_State *L, const Json::Value &value,
 			lua_newtable(L);
 			for (Json::Value::const_iterator it = value.begin();
 					it != value.end(); ++it) {
+#ifndef JSONCPP_STRING
 				const char *str = it.memberName();
 				lua_pushstring(L, str ? str : "");
+#else
+				std::string str = it.name();
+				lua_pushstring(L, str.c_str());
+#endif
 				push_json_value_helper(L, *it, nullindex);
 				lua_rawset(L, -3);
 			}

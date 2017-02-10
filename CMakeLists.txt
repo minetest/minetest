@@ -13,7 +13,7 @@ set(PROJECT_NAME_CAPITALIZED "Minetest")
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 4)
-set(VERSION_PATCH 14)
+set(VERSION_PATCH 15)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
@@ -167,6 +167,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 install(FILES "README.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
+install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/world_format.txt" DESTINATION "${DOCDIR}")
 install(FILES "minetest.conf.example" DESTINATION "${EXAMPLE_CONF_DIR}")
 
@@ -175,6 +176,9 @@ if(UNIX AND NOT APPLE)
 	install(FILES "misc/minetest.desktop" DESTINATION "${XDG_APPS_DIR}")
 	install(FILES "misc/minetest.appdata.xml" DESTINATION "${APPDATADIR}")
 	install(FILES "misc/minetest.svg" DESTINATION "${ICONDIR}/hicolor/scalable/apps")
+	install(FILES "misc/minetest-xorg-icon-128.png"
+		DESTINATION "${ICONDIR}/hicolor/128x128/apps"
+		RENAME "minetest.png")
 endif()
 
 if(APPLE)

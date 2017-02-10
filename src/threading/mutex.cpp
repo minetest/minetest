@@ -23,14 +23,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-// Windows std::mutex is much slower than the critical section API
-#if __cplusplus < 201103L || defined(_WIN32)
+#include "threads.h"
+
+#ifndef USE_CPP11_MUTEX
 
 #include "threading/mutex.h"
 
-#ifndef _WIN32
-	#include <cassert>
-#endif
+#include <cassert>
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
@@ -47,7 +46,7 @@ Mutex::Mutex(bool recursive)
 
 void Mutex::init_mutex(bool recursive)
 {
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	// Windows critical sections are recursive by default
 	UNUSED(recursive);
 
@@ -69,7 +68,7 @@ void Mutex::init_mutex(bool recursive)
 
 Mutex::~Mutex()
 {
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	DeleteCriticalSection(&mutex);
 #else
 	int ret = pthread_mutex_destroy(&mutex);
@@ -80,7 +79,7 @@ Mutex::~Mutex()
 
 void Mutex::lock()
 {
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	EnterCriticalSection(&mutex);
 #else
 	int ret = pthread_mutex_lock(&mutex);
@@ -89,9 +88,18 @@ void Mutex::lock()
 #endif
 }
 
+bool Mutex::try_lock()
+{
+#if USE_WIN_MUTEX
+	return TryEnterCriticalSection(&mutex) != 0;
+#else
+	return pthread_mutex_trylock(&mutex) == 0;
+#endif
+}
+
 void Mutex::unlock()
 {
-#ifdef _WIN32
+#if USE_WIN_MUTEX
 	LeaveCriticalSection(&mutex);
 #else
 	int ret = pthread_mutex_unlock(&mutex);
@@ -104,5 +112,5 @@ RecursiveMutex::RecursiveMutex()
 	: Mutex(true)
 {}
 
-#endif
+#endif // C++11
 

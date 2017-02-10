@@ -193,7 +193,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
 	{ "TOSERVER_RECEIVED_MEDIA",     1, true }, // 0x41
-	{ "TOSERVER_BREATH",             0, true }, // 0x42
+	{ "TOSERVER_BREATH",             0, true }, // 0x42 old TOSERVER_BREATH. Ignored by servers
 	{ "TOSERVER_CLIENT_READY",       0, true }, // 0x43
 	null_command_factory, // 0x44
 	null_command_factory, // 0x45

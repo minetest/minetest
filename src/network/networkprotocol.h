@@ -136,9 +136,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		backface_culling: backwards compatibility for playing with
 		newer client on pre-27 servers.
 		Add nodedef v3 - connected nodeboxes
+	PROTOCOL_VERSION 28:
+		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Server doesn't accept TOSERVER_BREATH anymore
+		serialization of TileAnimation params changed
+		TAT_SHEET_2D
+		Removed client-sided chat perdiction
+	PROTOCOL VERSION 30:
+		New ContentFeatures serialization version
+		Add node and tile color and palette
+		Fix plantlike visual_scale being applied squared and add compatibility
+			with pre-30 clients by sending sqrt(visual_scale)
 */
 
-#define LATEST_PROTOCOL_VERSION 27
+#define LATEST_PROTOCOL_VERSION 30
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 13
@@ -474,6 +486,7 @@ enum ToClientCommand
 		u8 bool vertical
 		u32 len
 		u8[len] texture
+		u8 collision_removal
 	*/
 
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
@@ -495,6 +508,7 @@ enum ToClientCommand
 		u32 len
 		u8[len] texture
 		u32 id
+		u8 collision_removal
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,
@@ -647,6 +661,8 @@ enum ToServerCommand
 		[2+12+12] s32 pitch*100
 		[2+12+12+4] s32 yaw*100
 		[2+12+12+4+4] u32 keyPressed
+		[2+12+12+4+4+1] u8 fov*80
+		[2+12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
 	*/
 
 	TOSERVER_GOTBLOCKS = 0x24,
@@ -827,7 +843,7 @@ enum ToServerCommand
 		<no payload data>
 	*/
 
-	TOSERVER_BREATH = 0x42,
+	TOSERVER_BREATH = 0x42, // Obsolete
 	/*
 		u16 breath
 	*/

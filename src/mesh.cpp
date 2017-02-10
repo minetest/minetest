@@ -33,11 +33,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MY_ETLM_READ_ONLY video::ETLM_READ_ONLY
 #endif
 
-static void applyFacesShading(video::SColor& color, float factor)
+inline static void applyShadeFactor(video::SColor& color, float factor)
 {
 	color.setRed(core::clamp(core::round32(color.getRed()*factor), 0, 255));
 	color.setGreen(core::clamp(core::round32(color.getGreen()*factor), 0, 255));
 	color.setBlue(core::clamp(core::round32(color.getBlue()*factor), 0, 255));
+}
+
+void applyFacesShading(video::SColor &color, const v3f &normal)
+{
+	/*
+		Some drawtypes have normals set to (0, 0, 0), this must result in
+		maximum brightness: shade factor 1.0.
+		Shade factors for aligned cube faces are:
+		+Y 1.000000 sqrt(1.0)
+		-Y 0.447213 sqrt(0.2)
+		+-X 0.670820 sqrt(0.45)
+		+-Z 0.836660 sqrt(0.7)
+	*/
+	float x2 = normal.X * normal.X;
+	float y2 = normal.Y * normal.Y;
+	float z2 = normal.Z * normal.Z;
+	if (normal.Y < 0)
+		applyShadeFactor(color, 0.670820f * x2 + 0.447213f * y2 + 0.836660f * z2);
+	else if ((x2 > 1e-3) || (z2 > 1e-3))
+		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
 scene::IAnimatedMesh* createCubeMesh(v3f scale)
@@ -172,32 +192,18 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 	}
 }
 
-void shadeMeshFaces(scene::IMesh *mesh)
+void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor)
 {
-	if (mesh == NULL)
-		return;
-
-	u32 mc = mesh->getMeshBufferCount();
-	for (u32 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++) {
-			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
-			video::SColor &vc = vertex->Color;
-			if (vertex->Normal.Y < -0.5) {
-				applyFacesShading (vc, 0.447213);
-			} else if (vertex->Normal.Z > 0.5) {
-				applyFacesShading (vc, 0.670820);
-			} else if (vertex->Normal.Z < -0.5) {
-				applyFacesShading (vc, 0.670820);
-			} else if (vertex->Normal.X > 0.5) {
-				applyFacesShading (vc, 0.836660);
-			} else if (vertex->Normal.X < -0.5) {
-				applyFacesShading (vc, 0.836660);
-			}
-		}
+	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	u32 vertex_count = buf->getVertexCount();
+	u8 *vertices = (u8 *) buf->getVertices();
+	for (u32 i = 0; i < vertex_count; i++) {
+		video::S3DVertex *vertex = (video::S3DVertex *) (vertices + i * stride);
+		video::SColor *vc = &(vertex->Color);
+		// Reset color
+		*vc = *buffercolor;
+		// Apply shading
+		applyFacesShading(*vc, vertex->Normal);
 	}
 }
 
@@ -226,7 +232,27 @@ void setMeshColorByNormalXYZ(scene::IMesh *mesh,
 				vertex->Color = colorY;
 			else
 				vertex->Color = colorZ;
+		}
+	}
+}
 
+void setMeshColorByNormal(scene::IMesh *mesh, const v3f &normal,
+		const video::SColor &color)
+{
+	if (!mesh)
+		return;
+
+	u16 mc = mesh->getMeshBufferCount();
+	for (u16 j = 0; j < mc; j++) {
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		const u32 stride = getVertexPitchFromType(buf->getVertexType());
+		u32 vertex_count = buf->getVertexCount();
+		u8 *vertices = (u8 *)buf->getVertices();
+		for (u32 i = 0; i < vertex_count; i++) {
+			video::S3DVertex *vertex = (video::S3DVertex *)(vertices + i * stride);
+			if (normal == vertex->Normal) {
+				vertex->Color = color;
+			}
 		}
 	}
 }

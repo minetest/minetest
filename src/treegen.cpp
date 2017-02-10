@@ -21,9 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include "util/pointer.h"
 #include "util/numeric.h"
-#include "util/mathconstants.h"
 #include "map.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
 
@@ -31,7 +30,7 @@ namespace treegen
 {
 
 void make_tree(MMVManip &vmanip, v3s16 p0,
-		bool is_apple_tree, INodeDefManager *ndef, int seed)
+		bool is_apple_tree, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -149,7 +148,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 		INodeDefManager *ndef, TreeDef tree_definition)
 {
 	MapNode dirtnode(ndef->getId("mapgen_dirt"));
-	int seed;
+	s32 seed;
 	if (tree_definition.explicit_seed)
 		seed = tree_definition.seed + 14002;
 	else
@@ -649,7 +648,7 @@ v3f transposeMatrix(irr::core::matrix4 M, v3f v)
 }
 
 
-void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
+void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -748,7 +747,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed
 }
 
 
-void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
+void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 {
 	/*
 		NOTE: Tree-placing code is currently duplicated in the engine
@@ -770,9 +769,9 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
 	MapNode snownode(c_snow);
 
 	PseudoRandom pr(seed);
-	s16 trunk_h = pr.range(9, 13);
+	u16 trunk_h = pr.range(9, 13);
 	v3s16 p1 = p0;
-	for (s16 ii = 0; ii < trunk_h; ii++) {
+	for (u16 ii = 0; ii < trunk_h; ii++) {
 		if (vmanip.m_area.contains(p1)) {
 			u32 vi = vmanip.m_area.index(p1);
 			vmanip.m_data[vi] = treenode;
@@ -790,7 +789,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, int seed)
 		leaves_d[i] = 0;
 
 	// Upper branches
-	s16 dev = 3;
+	u16 dev = 3;
 	for (s16 yy = -1; yy <= 1; yy++) {
 		for (s16 zz = -dev; zz <= dev; zz++) {
 			u32 i = leaves_a.index(v3s16(-dev, yy, zz));

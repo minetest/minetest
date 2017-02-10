@@ -31,6 +31,14 @@ function vector.normalize(v)
 	end
 end
 
+function vector.floor(v)
+	return {
+		x = math.floor(v.x),
+		y = math.floor(v.y),
+		z = math.floor(v.z)
+	}
+end
+
 function vector.round(v)
 	return {
 		x = math.floor(v.x + 0.5),
@@ -131,3 +139,7 @@ function vector.divide(a, b)
 	end
 end
 
+function vector.sort(a, b)
+	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
+		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
+end

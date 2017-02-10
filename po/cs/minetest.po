@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-05 16:13+0200\n"
-"PO-Revision-Date: 2016-03-04 04:45+0000\n"
+"POT-Creation-Date: 2016-08-30 06:18+0200\n"
+"PO-Revision-Date: 2016-10-25 11:59+0000\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
 "cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2.5-dev\n"
+"X-Generator: Weblate 2.9-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -214,7 +214,7 @@ msgstr "(Nebyl zadán popis nastavení)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Zpět do Nastavení"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -406,9 +406,8 @@ msgid "Uninstall selected modpack"
 msgstr "Odinstalovat označený balíček"
 
 #: builtin/mainmenu/tab_multiplayer.lua
-#, fuzzy
 msgid "Address / Port"
-msgstr "Adresa / Port :"
+msgstr "Adresa / Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -432,14 +431,12 @@ msgid "Del. Favorite"
 msgstr "Oblíbené:"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Favorite"
-msgstr "Oblíbené:"
+msgstr "Oblíbené"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
-#, fuzzy
 msgid "Name / Password"
-msgstr "Jméno / Heslo :"
+msgstr "Jméno / Heslo"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -485,7 +482,7 @@ msgstr "Veřejný"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr "Vyber svět:"
+msgstr "Vyberte svět:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
@@ -501,20 +498,19 @@ msgstr "Spustit hru"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "3D Clouds"
 msgstr "3D mraky"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
@@ -522,14 +518,13 @@ msgstr "Pokročilá nastavení"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Antialiasing:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Jste si jisti, že chcete resetovat místní svět?"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Bilinear Filter"
 msgstr "Bilineární filtrování"
 
@@ -565,7 +560,7 @@ msgstr "Ne"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
-msgstr "Žádné filtr"
+msgstr "Žádné filtrování"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
@@ -573,12 +568,11 @@ msgstr "Žádné Mipmapy"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Zvýraznění bloků"
+msgstr "Osvícení bloku"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Zvýraznění bloků"
+msgstr "Obrys bloku"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -599,12 +593,15 @@ msgstr "Neprůhledná voda"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
+msgstr "Paralaxní okluze"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Particles"
-msgstr "Povolit částice"
+msgstr "Částice"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Reset singleplayer world"
+msgstr "Reset místního světa"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -619,7 +616,6 @@ msgid "Simple Leaves"
 msgstr "Jednoduché listí"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Smooth Lighting"
 msgstr "Plynulé osvětlení"
 
@@ -640,22 +636,18 @@ msgid "Touchthreshold (px)"
 msgstr "Dosah dotyku (px)"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Trilinear Filter"
 msgstr "Trilineární filtrování"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Leaves"
 msgstr "Vlnění listů"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Plants"
 msgstr "Vlnění rostlin"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Waving Water"
 msgstr "Vlnění vody"
 
@@ -988,6 +980,10 @@ msgstr "Duch"
 msgid "Use"
 msgstr "Použít"
 
+#: src/guiKeyChangeMenu.cpp src/keycode.cpp
+msgid "Zoom"
+msgstr "Přiblížení"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
 msgstr "stiskni klávesu"
@@ -1304,10 +1300,6 @@ msgstr "X Tlačítko 1"
 msgid "X Button 2"
 msgstr "X Tlačítko 2"
 
-#: src/keycode.cpp
-msgid "Zoom"
-msgstr "Přiblížení"
-
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1386,6 +1378,10 @@ msgid "Active Block Modifier interval"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Active Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Active block range"
 msgstr ""
 
@@ -1443,7 +1439,7 @@ msgstr "Anizotropní filtrování"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Zveřejnit server"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1451,6 +1447,9 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Zveřejnit do tohoto seznamu serverů.\n"
+"Jestliže chcete zveřejnit vaši ipv6 adresu, použijte  serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1465,6 +1464,10 @@ msgid "Automaticaly report to the serverlist."
 msgstr "Automaticky hlásit seznamu serverů."
 
 #: src/settings_translation_file.cpp
+msgid "Autorun key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Backward key"
 msgstr "Vzad"
 
@@ -1477,9 +1480,8 @@ msgid "Basic"
 msgstr "Základní"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
-msgstr "Výchozí práva"
+msgstr "Základní práva"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1498,16 +1500,20 @@ msgid "Build inside player"
 msgstr "Stavění uvnitř hráče"
 
 #: src/settings_translation_file.cpp
+msgid "Builtin"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Bumpmapping"
 msgstr "Bump mapování"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Plynulost pohybu kamery"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Plynulost pohybu kamery ve filmovém režimu"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
@@ -1522,9 +1528,8 @@ msgid "Cave noise #2"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Šířka obrazovky"
+msgstr "Šířka jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1537,6 +1542,10 @@ msgstr "Klávesa chatu"
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
 msgstr "Klávesa zobrazení chatu"
+
+#: src/settings_translation_file.cpp
+msgid "Chatcommands"
+msgstr "Příkazy"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1611,19 +1620,20 @@ msgstr "Barevná mlha"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-separated list of trusted mods that are allowed to access insecure\n"
-"functions even when mod security is on (via request_insecure_environment())."
+"Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
+"allow them to upload and download data to/from the internet."
 msgstr ""
-"Seznam důvěryhodných modů oddělených čárkami, které mohou používat "
-"potenciálně nebezpečné\n"
-"funkce ve chvílích, kdy je zapnuto zabezpečení modů (pomocí "
-"request_insecure_environment())."
+"Seznam modů, oddělených čárkami, které mohou přistupovat k HTTP API,\n"
+"které jim dovoluje nahrávat a stahovat data na/z internetu."
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Comma-seperated list of mods that are allowed to access HTTP APIs, which\n"
-"allow them to upload and download data to/from the internet."
+"Comma-separated list of trusted mods that are allowed to access insecure\n"
+"functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Seznam důvěryhodných modů, oddělených čárkami, které mohou používat\n"
+"nebezpečné funkce i když je zapnuto zabezpečení modů (pomocí "
+"request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1655,11 +1665,11 @@ msgstr "Klávesa konzole"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Neustálý pohyb vpřed"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Neustálý pohyb vpřed (jen pro testování)."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1691,7 +1701,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "Ovládá šířku tunelů, menší hodnota vytváří širší tunely."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1711,23 +1721,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Průhlednost zaměřovače"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Průhlednost zaměřovače (mezi 0 a 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Barva zaměřovače"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Barva zaměřovače (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Rychlost při plížení"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
@@ -1774,6 +1784,10 @@ msgid "Default privileges"
 msgstr "Výchozí práva"
 
 #: src/settings_translation_file.cpp
+msgid "Default report format"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
@@ -1790,6 +1804,10 @@ msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr "Definuje maximální posun hráče v blocích (0 = bez limitu)."
 
 #: src/settings_translation_file.cpp
+msgid "Delay in sending blocks after building"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
 msgstr "Prodleva před zobrazením bublinové nápovědy, uvádějte v milisekundách."
 
@@ -1799,11 +1817,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Hloubka pod kterou najdete velké jeskyně."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Hloubka pod kterou najdete obrovské jeskyně."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -1822,14 +1840,6 @@ msgid "Desynchronize block animation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Detailed mod profile data. Useful for mod developers."
-msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
-
-#: src/settings_translation_file.cpp
-msgid "Detailed mod profiling"
-msgstr "Detailní profilování modů"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Determines terrain shape.\n"
 "The 3 numbers in brackets control the scale of the\n"
@@ -1839,6 +1849,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Zakázat anticheat"
+
+#: src/settings_translation_file.cpp
+msgid "Disable escape sequences"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Disable escape sequences, e.g. chat coloring.\n"
+"Use this if you want to run a server with pre-0.4.14 clients and you want to "
+"disable\n"
+"the escape sequences generated by mods."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -1862,6 +1884,10 @@ msgstr "Klávesa pro vyhození předmětu"
 
 #: src/settings_translation_file.cpp
 msgid "Dump the mapgen debug infos."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable Joysticks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1954,6 +1980,14 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Engine profiling data print interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Entity methods"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
@@ -2016,8 +2050,20 @@ msgid "Field of view"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Field of view for zoom"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
 msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Field of view while zooming in degrees.\n"
+"This requires the \"zoom\" privilege on the server."
+msgstr ""
+"Zorné pole při postupném přibližování.\n"
+"Vyžaduje na serveru přidělené právo \"zoom\"."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2091,7 +2137,7 @@ msgstr "Velikost písma"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Formát snímků obrazovky."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
@@ -2147,19 +2193,21 @@ msgstr "Gamma"
 
 #: src/settings_translation_file.cpp
 msgid "General"
-msgstr ""
+msgstr "Hlavní"
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
 msgstr "Generovat normálové mapy"
 
 #: src/settings_translation_file.cpp
+msgid "Global callbacks"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Global map generation attributes.\n"
 "In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
 "and junglegrass, in all other mapgens this flag controls all decorations.\n"
-"The default flags set in the engine are: caves, light, decorations\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2190,6 +2238,15 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr ""
 
@@ -2207,7 +2264,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
-msgstr ""
+msgstr "Jak hluboké dělat řeky"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2218,22 +2275,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"How many blocks are flying in the wire simultaneously for the whole server."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "How many blocks are flying in the wire simultaneously per client."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
-msgstr ""
+msgstr "Jak široké dělat řeky"
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2301,7 +2349,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "Jestliže je toto nastaveno, hráči se budou oživovat na uvedeném místě."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
@@ -2317,6 +2365,40 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument chatcommands on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Active Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Instrument the action function of Loading Block Modifiers on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrument the methods of entities on registration."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Instrumentation"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2337,7 +2419,7 @@ msgstr "Klávesa inventáře"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Invertovat myš"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -2351,6 +2433,14 @@ msgstr ""
 msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick button repetition interval"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick frustum sensitivity"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2388,7 +2478,7 @@ msgstr "Skok"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Rychlost skákání"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2513,6 +2603,13 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Key for toggling autorun.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "Key for toggling cinematic mode.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
@@ -2548,7 +2645,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling the camrea update. Only used for development\n"
+"Key for toggling the camera update. Only used for development\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2597,7 +2694,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "Klávesa Použít pro šplhání/slézání"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2605,15 +2702,15 @@ msgstr "Jazyk"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
-msgstr ""
+msgstr "Hloubka velké jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Vlastnosti lávy"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Styl listí"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2699,6 +2796,21 @@ msgid "Liquid update tick"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Load the game profiler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Load the game profiler to collect game profiling data.\n"
+"Provides a /profiler command to access the compiled profile.\n"
+"Useful for mod developers and server operators."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Loading Block Modifiers"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Main menu game manager"
 msgstr ""
 
@@ -2731,8 +2843,6 @@ msgid ""
 "'humid_rivers' modifies the humidity around rivers and in areas where water "
 "would tend to pool,\n"
 "it may interfere with delicately adjusted biomes.\n"
-"The default flags set in the engine are: altitude_chill, humid_rivers\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2742,8 +2852,6 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world.\n"
-"The default flags set in the engine are: none\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2754,8 +2862,6 @@ msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
 "flag is ignored.\n"
-"The default flags set in the engine are: biomeblend, mudflow\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2765,8 +2871,6 @@ msgstr ""
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "The 'ridges' flag controls the rivers.\n"
-"The default flags set in the engine are: mountains, ridges\n"
-"The flags string modifies the engine defaults.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -2778,7 +2882,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Interval ukládání mapy"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -3082,7 +3186,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
-msgstr ""
+msgstr "Hloubka obrovské jeskyně"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave noise"
@@ -3114,7 +3218,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Maximální FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
@@ -3126,6 +3230,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent in total."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Maximum number of blocks that are simultaneously sent per client."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3170,17 +3282,21 @@ msgid "Maximum number of statically stored objects in a block."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum objects per block"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously blocks send per client"
+msgid "Maximum simultaneous block sends per client"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Maximum simultaneously bocks send total"
+msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3189,10 +3305,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Maxmimum objects per block"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3205,7 +3317,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Zpráva dne"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
@@ -3217,7 +3329,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Minimapa"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
@@ -3229,15 +3341,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
-msgstr ""
+msgstr "Minimální velikost textury k filtrování"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mip-mapování"
-
-#: src/settings_translation_file.cpp
-msgid "Mod profiling"
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
@@ -3253,15 +3361,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Cesta k neproporcionálnímu písmu"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "Velikost neproporcionálního písma"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Citlivost myši"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
@@ -3299,7 +3407,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Síť"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3445,11 +3553,17 @@ msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Print the engine's profiling data in regular intervals (in seconds). 0 = "
+"disable. Useful for developers."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiler data print interval. 0 = disable. Useful for developers."
+msgid "Profiler"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3457,7 +3571,7 @@ msgid "Profiler toggle key"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Profiling print interval"
+msgid "Profiling"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3492,24 +3606,29 @@ msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Report path"
+msgstr "Cesta k písmu"
+
+#: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Klávesa doprava"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Interval opakování pravého kliknutí"
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
-msgstr ""
+msgstr "Hloubka řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River Noise"
-msgstr ""
+msgstr "Hlučnost řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River Size"
-msgstr ""
+msgstr "Velikost řeky"
 
 #: src/settings_translation_file.cpp
 msgid "River noise -- rivers occur close to zero"
@@ -3557,14 +3676,12 @@ msgid "Screenshot folder"
 msgstr "Složka se snímky obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "Složka se snímky obrazovky"
+msgstr "Formát snímků obrazovky"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "Snímek obrazovky"
+msgstr "Kvalita snímků obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3572,6 +3689,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Kvalita snímků obrazovky. Použito jen na formát JPEG.\n"
+"1 znamená nejhorší kvalita; 100 znamená nejlepší kvalita.\n"
+"Použijte 0 pro výchozí kvalitu."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3587,11 +3707,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "Barva obrysu bloku"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "Šířka obrysu bloku"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -3651,7 +3771,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Shaders allow advanced visul effects and may increase performance on some "
+"Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
@@ -3670,7 +3790,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Zpráva o vypnutí"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3688,7 +3808,7 @@ msgstr "Plynulé osvětlení"
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Smooths camera when moving and looking around.\n"
+"Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
 
@@ -3718,7 +3838,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Stálé místo oživení"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -3734,7 +3854,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Podpora starších serverů"
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
@@ -3767,7 +3887,19 @@ msgid "The altitude at which temperature drops by 20C"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"The default format in which profiles are being saved,\n"
+"when calling `/profiler save [format]` without format."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The file path relative to your worldpath in which profiles will be saved "
+"to.\n"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3786,6 +3918,12 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
+"The sensitivity of the joystick axes for moving the\n"
+"ingame view frustum around."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "The strength (darkness) of node ambient-occlusion shading.\n"
 "Lower is darker, Higher is lighter. The valid range of values for this\n"
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
@@ -3797,6 +3935,12 @@ msgid ""
 "The time (in seconds) that the liquids queue may grow beyond processing\n"
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"The time in seconds it takes between repeated events\n"
+"when holding down a joystick button combination."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3825,7 +3969,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Rychlost času"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -3845,7 +3989,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Zpoždění nápovědy"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
@@ -3860,7 +4004,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "Důvěryhodné mody"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -3901,10 +4045,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Useful for mod developers."
-msgstr "Užitečné pro vývojáře modů."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
@@ -3986,7 +4126,7 @@ msgstr "Vlastnosti vody"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Hladina vody"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
@@ -4032,7 +4172,7 @@ msgid ""
 "When gui_scaling_filter_txr2img is true, copy those images\n"
 "from hardware to software for scaling.  When false, fall back\n"
 "to the old scaling method, for video drivers that don't\n"
-"propery support downloading textures back from hardware."
+"properly support downloading textures back from hardware."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4132,114 +4272,120 @@ msgstr "cURL limit paralelních stahování"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid "Preload inventory textures"
-#~ msgstr "Přednačíst inventářové textury"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
 
-#~ msgid "Reset singleplayer world"
-#~ msgstr "Reset místního světa"
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Detailní profilování modů"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Měřítko aplikované na prvky menu: "
+#~ msgid "Useful for mod developers."
+#~ msgstr "Užitečné pro vývojáře modů."
 
-#~ msgid "Touch free target"
-#~ msgstr "Středový kurzor"
+#~ msgid "No of course not!"
+#~ msgstr "Jistě že ne!"
 
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
+#~ msgid "Public Serverlist"
+#~ msgstr "Seznam veřejných serverů"
 
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generovat normálové mapy"
 
-#~ msgid "Downloading"
-#~ msgstr "Stahuji"
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
 
-#~ msgid "Game Name"
-#~ msgstr "Název hry"
+#~ msgid "\""
+#~ msgstr "\""
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
+#~ msgid "If disabled "
+#~ msgstr "Je-li zakázáno "
 
-#~ msgid "GAMES"
-#~ msgstr "HRY"
+#~ msgid "If enabled, "
+#~ msgstr "Je-li povoleno, "
 
-#~ msgid "Mods:"
-#~ msgstr "Mody:"
+#~ msgid "Rendering:"
+#~ msgstr "Renderování:"
 
-#~ msgid "new game"
-#~ msgstr "nová hra"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "UPRAVIT HRU"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Odstranit vybraný mod"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Přidat mod"
-
-#~ msgid "CLIENT"
-#~ msgstr "KLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "MÍSTNÍ SERVER"
-
-#~ msgid "Name"
-#~ msgstr "Jméno"
-
-#~ msgid "Password"
-#~ msgstr "Heslo"
-
-#~ msgid "SETTINGS"
-#~ msgstr "NASTAVENÍ"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Přednačíst textury předmětů"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Konečná voda"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "HRA JEDNOHO HRÁČE"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "BALÍČKY TEXTUR"
-
-#~ msgid "MODS"
-#~ msgstr "MODY"
-
-#~ msgid "Add mod:"
-#~ msgstr "Přidat mod:"
-
-#~ msgid "Local install"
-#~ msgstr "Místní instalace"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
 #~ "Levý klik: Přesunout všechny předměty, Pravý klik: Přesunout jeden předmět"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
+#~ msgid "Local install"
+#~ msgstr "Místní instalace"
 
-#~ msgid "Rendering:"
-#~ msgstr "Renderování:"
+#~ msgid "Add mod:"
+#~ msgstr "Přidat mod:"
 
-#~ msgid "If enabled, "
-#~ msgstr "Je-li povoleno, "
+#~ msgid "MODS"
+#~ msgstr "MODY"
 
-#~ msgid "If disabled "
-#~ msgstr "Je-li zakázáno "
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "BALÍČKY TEXTUR"
 
-#~ msgid "\""
-#~ msgstr "\""
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "HRA JEDNOHO HRÁČE"
 
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
+#~ msgid "Finite Liquid"
+#~ msgstr "Konečná voda"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generovat normálové mapy"
+#~ msgid "Preload item visuals"
+#~ msgstr "Přednačíst textury předmětů"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Seznam veřejných serverů"
+#~ msgid "SETTINGS"
+#~ msgstr "NASTAVENÍ"
 
-#~ msgid "No of course not!"
-#~ msgstr "Jistě že ne!"
+#~ msgid "Password"
+#~ msgstr "Heslo"
+
+#~ msgid "Name"
+#~ msgstr "Jméno"
+
+#~ msgid "START SERVER"
+#~ msgstr "MÍSTNÍ SERVER"
+
+#~ msgid "CLIENT"
+#~ msgstr "KLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Přidat mod"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Odstranit vybraný mod"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "UPRAVIT HRU"
+
+#~ msgid "new game"
+#~ msgstr "nová hra"
+
+#~ msgid "Mods:"
+#~ msgstr "Mody:"
+
+#~ msgid "GAMES"
+#~ msgstr "HRY"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
+
+#~ msgid "Game Name"
+#~ msgstr "Název hry"
+
+#~ msgid "Downloading"
+#~ msgstr "Stahuji"
+
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
+
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
+
+#~ msgid "Touch free target"
+#~ msgstr "Středový kurzor"
+
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Měřítko aplikované na prvky menu: "
+
+#~ msgid "Preload inventory textures"
+#~ msgstr "Přednačíst inventářové textury"

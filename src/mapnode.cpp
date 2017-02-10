@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "porting.h"
 #include "nodedef.h"
+#include "map.h"
 #include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
@@ -54,10 +55,19 @@ MapNode::MapNode(INodeDefManager *ndef, const std::string &name,
 	param2 = a_param2;
 }
 
-void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
+void MapNode::getColor(const ContentFeatures &f, video::SColor *color) const
+{
+	if (f.palette) {
+		*color = (*f.palette)[param2];
+		return;
+	}
+	*color = f.color;
+}
+
+void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f)
 {
 	// If node doesn't contain light data, ignore this
-	if(nodemgr->get(*this).param_type != CPT_LIGHT)
+	if(f.param_type != CPT_LIGHT)
 		return;
 	if(bank == LIGHTBANK_DAY)
 	{
@@ -71,6 +81,11 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 	}
 	else
 		assert("Invalid light bank" == NULL);
+}
+
+void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr)
+{
+	setLight(bank, a_light, nodemgr->get(*this));
 }
 
 bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
@@ -103,6 +118,13 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 	return MYMAX(f.light_source, light);
 }
 
+u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
+{
+	if(f.param_type == CPT_LIGHT)
+		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+	return 0;
+}
+
 u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
 {
 	return MYMAX(f->light_source,
@@ -133,7 +155,8 @@ bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodem
 u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type_2 == CPT2_FACEDIR)
+	if (f.param_type_2 == CPT2_FACEDIR ||
+			f.param_type_2 == CPT2_COLORED_FACEDIR)
 		return (getParam2() & 0x1F) % 24;
 	return 0;
 }
@@ -141,7 +164,8 @@ u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
 u8 MapNode::getWallMounted(INodeDefManager *nodemgr) const
 {
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type_2 == CPT2_WALLMOUNTED)
+	if (f.param_type_2 == CPT2_WALLMOUNTED ||
+			f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
 		return getParam2() & 0x07;
 	return 0;
 }
@@ -163,7 +187,7 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 {
 	ContentParamType2 cpt2 = nodemgr->get(*this).param_type_2;
 
-	if (cpt2 == CPT2_FACEDIR) {
+	if (cpt2 == CPT2_FACEDIR || cpt2 == CPT2_COLORED_FACEDIR) {
 		static const u8 rotate_facedir[24 * 4] = {
 			// Table value = rotated facedir
 			// Columns: 0, 90, 180, 270 degrees rotation around vertical axis
@@ -203,7 +227,8 @@ void MapNode::rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot)
 		u8 index = facedir * 4 + rot;
 		param2 &= ~31;
 		param2 |= rotate_facedir[index];
-	} else if (cpt2 == CPT2_WALLMOUNTED) {
+	} else if (cpt2 == CPT2_WALLMOUNTED ||
+			cpt2 == CPT2_COLORED_WALLMOUNTED) {
 		u8 wmountface = (param2 & 7);
 		if (wmountface <= 1)
 			return;
@@ -439,6 +464,51 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	{
 		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
 	}
+}
+
+static inline void getNeighborConnectingFace(
+	v3s16 p, INodeDefManager *nodedef,
+	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
+{
+	MapNode n2 = map->getNodeNoEx(p);
+	if (nodedef->nodeboxConnects(n, n2, bitmask))
+		*neighbors |= bitmask;
+}
+
+u8 MapNode::getNeighbors(v3s16 p, Map *map)
+{
+	INodeDefManager *nodedef=map->getNodeDefManager();
+	u8 neighbors = 0;
+	const ContentFeatures &f = nodedef->get(*this);
+	// locate possible neighboring nodes to connect to
+	if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+		v3s16 p2 = p;
+
+		p2.Y++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 1, &neighbors);
+
+		p2 = p;
+		p2.Y--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 2, &neighbors);
+
+		p2 = p;
+		p2.Z--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 4, &neighbors);
+
+		p2 = p;
+		p2.X--;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 8, &neighbors);
+
+		p2 = p;
+		p2.Z++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 16, &neighbors);
+
+		p2 = p;
+		p2.X++;
+		getNeighborConnectingFace(p2, nodedef, map, *this, 32, &neighbors);
+	}
+
+	return neighbors;
 }
 
 void MapNode::getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors)

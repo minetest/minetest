@@ -40,6 +40,18 @@ private:
 	// set mapgen parameters
 	static int l_set_mapgen_params(lua_State *L);
 
+	// get_mapgen_setting(name)
+	static int l_get_mapgen_setting(lua_State *L);
+
+	// set_mapgen_setting(name, value, override_meta)
+	static int l_set_mapgen_setting(lua_State *L);
+
+	// get_mapgen_setting_noiseparams(name)
+	static int l_get_mapgen_setting_noiseparams(lua_State *L);
+
+	// set_mapgen_setting_noiseparams(name, value, override_meta)
+	static int l_set_mapgen_setting_noiseparams(lua_State *L);
+
 	// set_noiseparam_defaults(name, noiseparams, set_default)
 	static int l_set_noiseparams(lua_State *L);
 

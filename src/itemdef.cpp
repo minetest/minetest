@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 
-#include "gamedef.h"
 #include "nodedef.h"
 #include "tool.h"
 #include "inventory.h"
@@ -29,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "wieldmesh.h"
 #include "client/tile.h"
+#include "client.h"
 #endif
 #include "log.h"
 #include "settings.h"
@@ -146,9 +146,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os<<serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for(std::map<std::string, int>::const_iterator
+	for (ItemGroupList::const_iterator
 			i = groups.begin(); i != groups.end(); ++i){
-		os<<serializeString(i->first);
+		os << serializeString(i->first);
 		writeS16(os, i->second);
 	}
 	os<<serializeString(node_placement_prediction);
@@ -317,7 +317,7 @@ public:
 #ifndef SERVER
 public:
 	ClientCached* createClientCachedDirect(const std::string &name,
-			IGameDef *gamedef) const
+			Client *client) const
 	{
 		infostream<<"Lazily creating item texture and mesh for \""
 				<<name<<"\""<<std::endl;
@@ -331,7 +331,7 @@ public:
 		if(cc)
 			return cc;
 
-		ITextureSource *tsrc = gamedef->getTextureSource();
+		ITextureSource *tsrc = client->getTextureSource();
 		const ItemDefinition &def = get(name);
 
 		// Create new ClientCached
@@ -345,7 +345,7 @@ public:
 		ItemStack item = ItemStack();
 		item.name = def.name;
 
-		scene::IMesh *mesh = getItemMesh(gamedef, item);
+		scene::IMesh *mesh = getItemMesh(client, item);
 		cc->wield_mesh = mesh;
 
 		// Put in cache
@@ -354,7 +354,7 @@ public:
 		return cc;
 	}
 	ClientCached* getClientCached(const std::string &name,
-			IGameDef *gamedef) const
+			Client *client) const
 	{
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
@@ -363,7 +363,7 @@ public:
 
 		if(thr_is_current_thread(m_main_thread))
 		{
-			return createClientCachedDirect(name, gamedef);
+			return createClientCachedDirect(name, client);
 		}
 		else
 		{
@@ -392,18 +392,18 @@ public:
 	}
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const
+			Client *client) const
 	{
-		ClientCached *cc = getClientCached(name, gamedef);
+		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
 			return NULL;
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
-			IGameDef *gamedef) const
+			Client *client) const
 	{
-		ClientCached *cc = getClientCached(name, gamedef);
+		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
 			return NULL;
 		return cc->wield_mesh;
@@ -466,11 +466,17 @@ public:
 			infostream<<"ItemDefManager: erased alias "<<def.name
 					<<" because item was defined"<<std::endl;
 	}
+	virtual void unregisterItem(const std::string &name)
+	{
+		verbosestream<<"ItemDefManager: unregistering \""<<name<<"\""<<std::endl;
+
+		delete m_item_definitions[name];
+		m_item_definitions.erase(name);
+	}
 	virtual void registerAlias(const std::string &name,
 			const std::string &convert_to)
 	{
-		if(m_item_definitions.find(name) == m_item_definitions.end())
-		{
+		if (m_item_definitions.find(name) == m_item_definitions.end()) {
 			verbosestream<<"ItemDefManager: setting alias "<<name
 				<<" -> "<<convert_to<<std::endl;
 			m_aliases[name] = convert_to;
@@ -537,7 +543,7 @@ public:
 					request = m_get_clientcached_queue.pop();
 
 			m_get_clientcached_queue.pushResult(request,
-					createClientCachedDirect(request.key, gamedef));
+					createClientCachedDirect(request.key, (Client *)gamedef));
 		}
 #endif
 	}
