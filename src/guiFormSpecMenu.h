@@ -455,6 +455,7 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+		UNORDERED_MAP<std::string,std::wstring> editbox_dyndata;
 		// used to restore table selection/scroll/treeview state
 		UNORDERED_MAP<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
