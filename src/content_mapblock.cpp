@@ -291,7 +291,8 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 		coords[i] = txc[i];
 }
 
-void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc)
+void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
+	TileSpec *tiles, int tile_count)
 {
 	f32 texture_coord_buf[24];
 	f32 dx1 = box.MinEdge.X;
@@ -306,6 +307,10 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc)
 		generateCuboidTextureCoords(box, texture_coord_buf);
 		txc = texture_coord_buf;
 	}
+	if (!tiles) {
+		tiles = &tile;
+		tile_count = 1;
+	}
 	if (data->m_smooth_lighting) {
 		u16 lights[8];
 		for (int j = 0; j < 8; ++j) {
@@ -315,9 +320,9 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc)
 			d.Z = (j & 1) ? dz2 : dz1;
 			lights[j] = blendLight(d);
 		}
-		drawCuboid(box, &tile, 1, lights, txc);
+		drawCuboid(box, tiles, tile_count, lights, txc);
 	} else {
-		drawCuboid(box, &tile, 1, NULL, txc);
+		drawCuboid(box, tiles, tile_count, NULL, txc);
 	}
 }
 
@@ -1252,16 +1257,6 @@ void MapblockMeshGenerator::drawNodeboxNode()
 			i != boxes.end(); ++i) {
 		aabb3f box = *i;
 
-		f32 dx1 = box.MinEdge.X;
-		f32 dy1 = box.MinEdge.Y;
-		f32 dz1 = box.MinEdge.Z;
-		f32 dx2 = box.MaxEdge.X;
-		f32 dy2 = box.MaxEdge.Y;
-		f32 dz2 = box.MaxEdge.Z;
-
-		box.MinEdge += origin;
-		box.MaxEdge += origin;
-
 		if (box.MinEdge.X > box.MaxEdge.X)
 			std::swap(box.MinEdge.X, box.MaxEdge.X);
 		if (box.MinEdge.Y > box.MaxEdge.Y)
@@ -1269,41 +1264,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		if (box.MinEdge.Z > box.MaxEdge.Z)
 			std::swap(box.MinEdge.Z, box.MaxEdge.Z);
 
-		//
-		// Compute texture coords
-		f32 tx1 = (box.MinEdge.X/BS)+0.5;
-		f32 ty1 = (box.MinEdge.Y/BS)+0.5;
-		f32 tz1 = (box.MinEdge.Z/BS)+0.5;
-		f32 tx2 = (box.MaxEdge.X/BS)+0.5;
-		f32 ty2 = (box.MaxEdge.Y/BS)+0.5;
-		f32 tz2 = (box.MaxEdge.Z/BS)+0.5;
-		f32 txc[24] = {
-			// up
-			tx1, 1-tz2, tx2, 1-tz1,
-			// down
-			tx1, tz1, tx2, tz2,
-			// right
-			tz1, 1-ty2, tz2, 1-ty1,
-			// left
-			1-tz2, 1-ty2, 1-tz1, 1-ty1,
-			// back
-			1-tx2, 1-ty2, 1-tx1, 1-ty1,
-			// front
-			tx1, 1-ty2, tx2, 1-ty1,
-		};
-		if (data->m_smooth_lighting) {
-			u16 lights[8];
-			for (int j = 0; j < 8; ++j) {
-				v3f d;
-				d.X = (j & 4) ? dx2 : dx1;
-				d.Y = (j & 2) ? dy2 : dy1;
-				d.Z = (j & 1) ? dz2 : dz1;
-				lights[j] = blendLight(d);
-			}
-			drawCuboid(box, tiles, 6, lights, txc);
-		} else {
-			drawCuboid(box, tiles, 6, NULL, txc);
-		}
+		drawAutoLightedCuboid(box, NULL, tiles, 6);
 	}
 }
 
