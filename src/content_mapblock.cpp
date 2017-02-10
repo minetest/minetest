@@ -1241,15 +1241,17 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 void MapblockMeshGenerator::drawMeshNode()
 {
-	u16 l = getInteriorLight(n, 1, nodedef);
 	u8 facedir = 0;
+	scene::IMesh* mesh;
+	bool private_mesh; // as a grab/drop pair is not thread-safe
+
 	if (f->param_type_2 == CPT2_FACEDIR ||
 			f->param_type_2 == CPT2_COLORED_FACEDIR) {
 		facedir = n.getFaceDir(nodedef);
 	} else if (f->param_type_2 == CPT2_WALLMOUNTED ||
 			f->param_type_2 == CPT2_COLORED_WALLMOUNTED) {
-		//convert wallmounted to 6dfacedir.
-		//when cache enabled, it is already converted
+		// Convert wallmounted to 6dfacedir.
+		// When cache enabled, it is already converted.
 		facedir = n.getWallMounted(nodedef);
 		if (!enable_mesh_cache) {
 			static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
@@ -1259,43 +1261,46 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	if (!data->m_smooth_lighting && f->mesh_ptr[facedir]) {
 		// use cached meshes
-		for (u16 j = 0; j < f->mesh_ptr[0]->getMeshBufferCount(); j++) {
-			const TileSpec &tile = getNodeTileN(n, p, j, data);
-			scene::IMeshBuffer *buf = f->mesh_ptr[facedir]->getMeshBuffer(j);
-			collector->append(tile, (video::S3DVertex *)
-				buf->getVertices(), buf->getVertexCount(),
-				buf->getIndices(), buf->getIndexCount(), origin,
-				encode_light_and_color(l, tile.color, f->light_source),
-				f->light_source);
-		}
+		private_mesh = false;
+		mesh = f->mesh_ptr[facedir];
 	} else if (f->mesh_ptr[0]) {
 		// no cache, clone and rotate mesh
-		scene::IMesh* mesh = cloneMesh(f->mesh_ptr[0]);
+		private_mesh = true;
+		mesh = cloneMesh(f->mesh_ptr[0]);
 		rotateMeshBy6dFacedir(mesh, facedir);
 		recalculateBoundingBox(mesh);
 		meshmanip->recalculateNormals(mesh, true, false);
-		for (u16 j = 0; j < mesh->getMeshBufferCount(); j++) {
-			const TileSpec &tile = getNodeTileN(n, p, j, data);
-			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
-			u32 vertex_count = buf->getVertexCount();
-			if (data->m_smooth_lighting) {
-				for (u16 m = 0; m < vertex_count; ++m) {
-					video::S3DVertex &vertex = vertices[m];
-					vertex.Color = blendLight(vertex.Pos, vertex.Normal, tile.color);
-					vertex.Pos += origin;
-				}
-				collector->append(tile, vertices, vertex_count,
-					buf->getIndices(), buf->getIndexCount());
-			} else {
-				collector->append(tile, vertices, vertex_count,
-					buf->getIndices(), buf->getIndexCount(), origin,
-					encode_light_and_color(l, tile.color, f->light_source),
-					f->light_source);
+	} else
+		return;
+
+	int mesh_buffer_count = mesh->getMeshBufferCount();
+	for (int j = 0; j < mesh_buffer_count; j++) {
+		const TileSpec &tile = getNodeTileN(n, p, j, data);
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
+		int vertex_count = buf->getVertexCount();
+
+		if (data->m_smooth_lighting) {
+			// Mesh is always private here. So the lighting is applied to each
+			// vertex right here.
+			for (int k = 0; k < vertex_count; k++) {
+				video::S3DVertex &vertex = vertices[k];
+				vertex.Color = blendLight(vertex.Pos, vertex.Normal, tile.color);
+				vertex.Pos += origin;
 			}
+			collector->append(tile, vertices, vertex_count,
+				buf->getIndices(), buf->getIndexCount());
+		} else {
+			// Don't modify the mesh, it may not be private here.
+			// Instead, let the collector process colors, etc.
+			collector->append(tile, vertices, vertex_count,
+				buf->getIndices(), buf->getIndexCount(), origin,
+				encode_light_and_color(light, tile.color, f->light_source),
+				f->light_source);
 		}
-		mesh->drop();
 	}
+	if (private_mesh)
+		mesh->drop();
 }
 
 void MapblockMeshGenerator::drawNode()
