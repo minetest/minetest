@@ -263,14 +263,6 @@ video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
 	return color;
 }
 
-static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
-		MeshMakeData *data, MapNode n, int v, int *neighbors)
-{
-	MapNode n2 = data->m_vmanip.getNodeNoEx(p);
-	if (nodedef->nodeboxConnects(n, n2, v))
-		*neighbors |= v;
-}
-
 void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *coords)
 {
 	f32 tx1 = (box.MinEdge.X / BS) + 0.5;
@@ -1214,58 +1206,37 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		v3s16(0, 0, -1)
 	};
 
+	// we have this order for some reason...
+	static const v3s16 connection_dirs[6] = {
+		v3s16( 0,  1,  0), // top
+		v3s16( 0, -1,  0), // bottom
+		v3s16( 0,  0, -1), // front
+		v3s16(-1,  0,  0), // left
+		v3s16( 0,  0,  1), // back
+		v3s16( 1,  0,  0), // right
+	};
+
 	TileSpec tiles[6];
-	for (int j = 0; j < 6; j++) {
+	for (int face = 0; face < 6; face++) {
 		// Handles facedir rotation for textures
-		tiles[j] = getNodeTile(n, p, tile_dirs[j], data);
+		tiles[face] = getNodeTile(n, p, tile_dirs[face], data);
 	}
 
-	int neighbors = 0;
-
 	// locate possible neighboring nodes to connect to
+	int neighbors_set = 0;
 	if (f->node_box.type == NODEBOX_CONNECTED) {
-		v3s16 p2 = p;
-
-		p2.Y++;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 1, &neighbors);
-
-		p2 = p;
-		p2.Y--;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 2, &neighbors);
-
-		p2 = p;
-		p2.Z--;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 4, &neighbors);
-
-		p2 = p;
-		p2.X--;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 8, &neighbors);
-
-		p2 = p;
-		p2.Z++;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 16, &neighbors);
-
-		p2 = p;
-		p2.X++;
-		getNeighborConnectingFace(blockpos_nodes + p2, nodedef, data, n, 32, &neighbors);
+		for (int dir = 0; dir != 6; dir++) {
+			v3s16 p2 = blockpos_nodes + p + connection_dirs[dir];
+			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
+			if (nodedef->nodeboxConnects(n, n2, dir))
+				neighbors_set |= 1 << dir;
+		}
 	}
 
 	std::vector<aabb3f> boxes;
-	n.getNodeBoxes(nodedef, &boxes, neighbors);
-	for (std::vector<aabb3f>::iterator
-			i = boxes.begin();
-			i != boxes.end(); ++i) {
-		aabb3f box = *i;
-
-		if (box.MinEdge.X > box.MaxEdge.X)
-			std::swap(box.MinEdge.X, box.MaxEdge.X);
-		if (box.MinEdge.Y > box.MaxEdge.Y)
-			std::swap(box.MinEdge.Y, box.MaxEdge.Y);
-		if (box.MinEdge.Z > box.MaxEdge.Z)
-			std::swap(box.MinEdge.Z, box.MaxEdge.Z);
-
-		drawAutoLightedCuboid(box, NULL, tiles, 6);
-	}
+	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
+	for (std::vector<aabb3f>::iterator i = boxes.begin(); i != boxes.end(); ++i)
+		drawAutoLightedCuboid(*i, NULL, tiles, 6);
 }
 
 void MapblockMeshGenerator::drawMeshNode()
