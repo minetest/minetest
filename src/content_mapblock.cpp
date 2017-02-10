@@ -369,24 +369,19 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 }
 
 // Gets the base lighting values for a node
-//  frame  - resulting (opaque) data
-//  p      - node position (absolute)
-//  data   - ...
-//  light_source - node light emission level
-static void getSmoothLightFrame(LightFrame *frame, const v3s16 &p, MeshMakeData *data, u8 light_source)
+void MapblockMeshGenerator::getSmoothLightFrame()
 {
 	for (int k = 0; k < 8; ++k) {
-		u16 light = getSmoothLight(p, light_dirs[k], data);
-		frame->lightsA[k] = light & 0xff;
-		frame->lightsB[k] = light >> 8;
+		u16 light = getSmoothLight(blockpos_nodes + p, light_dirs[k], data);
+		frame.lightsA[k] = light & 0xff;
+		frame.lightsB[k] = light >> 8;
 	}
-	frame->light_source = light_source;
+	frame.light_source = f->light_source;
 }
 
 // Calculates vertex light level
-//  frame        - light values from getSmoothLightFrame()
-//  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-static u16 blendLight(const LightFrame &frame, const core::vector3df& vertex_pos)
+//  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
+u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 {
 	f32 x = core::clamp(vertex_pos.X / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
 	f32 y = core::clamp(vertex_pos.Y / BS + 0.5, 0.0 - SMOOTH_LIGHTING_OVERSIZE, 1.0 + SMOOTH_LIGHTING_OVERSIZE);
@@ -406,21 +401,19 @@ static u16 blendLight(const LightFrame &frame, const core::vector3df& vertex_pos
 }
 
 // Calculates vertex color to be used in mapblock mesh
-//  frame        - light values from getSmoothLightFrame()
-//  vertex_pos   - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
-//  tile_color   - node's tile color
-static video::SColor blendLight(const LightFrame &frame,
-	const core::vector3df& vertex_pos, video::SColor tile_color)
+//  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
+//  tile_color - node's tile color
+video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
+	video::SColor tile_color)
 {
-	u16 light = blendLight(frame, vertex_pos);
+	u16 light = blendLight(vertex_pos);
 	return encode_light_and_color(light, tile_color, frame.light_source);
 }
 
-static video::SColor blendLight(const LightFrame &frame,
-	const core::vector3df& vertex_pos, const core::vector3df& vertex_normal,
-	video::SColor tile_color)
+video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
+	const v3f &vertex_normal, video::SColor tile_color)
 {
-	video::SColor color = blendLight(frame, vertex_pos, tile_color);
+	video::SColor color = blendLight(vertex_pos, tile_color);
 	if (!frame.light_source)
 			applyFacesShading(color, vertex_normal);
 	return color;
@@ -464,7 +457,7 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box)
 			f32 x = (j & 4) ? dx2 : dx1;
 			f32 y = (j & 2) ? dy2 : dy1;
 			f32 z = (j & 1) ? dz2 : dz1;
-			lights[j] = blendLight(frame, core::vector3df(x, y, z));
+			lights[j] = blendLight(v3f(x, y, z));
 		}
 		drawSmoothLightedCuboid(box, &tile, 1, lights, txc);
 	} else {
@@ -485,10 +478,11 @@ void MapblockMeshGenerator::drawAutoLightedCuboidEx(aabb3f box, const f32 *txc)
 	if (data->m_smooth_lighting) {
 		u16 lights[8];
 		for (int j = 0; j < 8; ++j) {
-			f32 x = (j & 4) ? dx2 : dx1;
-			f32 y = (j & 2) ? dy2 : dy1;
-			f32 z = (j & 1) ? dz2 : dz1;
-			lights[j] = blendLight(frame, core::vector3df(x, y, z));
+			v3f d;
+			d.X = (j & 4) ? dx2 : dx1;
+			d.Y = (j & 2) ? dy2 : dy1;
+			d.Z = (j & 1) ? dz2 : dz1;
+			lights[j] = blendLight(d);
 		}
 		drawSmoothLightedCuboid(box, &tile, 1, lights, txc);
 	} else {
@@ -686,7 +680,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			else
 				pos.Y =     !top_is_same_liquid ? corner_levels[base.Z][base.X] :  0.5 * BS;
 			if (data->m_smooth_lighting)
-				color = blendLight(frame, pos, tile_liquid.color);
+				color = blendLight(pos, tile_liquid.color);
 			pos += origin;
 			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, color, vertex.u, vertex.v);
 		};
@@ -714,7 +708,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		int w = corner_resolve[i][1];
 		vertices[i].Pos.Y += corner_levels[w][u];
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile_liquid_top.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile_liquid_top.color);
 		vertices[i].Pos += origin;
 	}
 
@@ -800,7 +794,7 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 				case 5: vertices[i].Pos.rotateXZBy( 90); break; // X-
 			};
 			if (data->m_smooth_lighting)
-				vertices[i].Color = blendLight(frame, vertices[i].Pos, vertices[i].Normal, tile.color);
+				vertices[i].Color = blendLight(vertices[i].Pos, vertices[i].Normal, tile.color);
 			vertices[i].Pos += origin;
 		}
 
@@ -990,7 +984,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
 		}
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 
@@ -1030,7 +1024,7 @@ void MapblockMeshGenerator::drawSignlikeNode()
 			case DWM_ZN: vertices[i].Pos.rotateXZBy(-90); break;
 		}
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 
@@ -1059,7 +1053,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertices[i].Pos.rotateXZBy(rotation + rotate_degree);
 		vertices[i].Pos += offset;
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -1150,7 +1144,7 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		vertices[i].Pos.rotateXZBy(rotation);
 		vertices[i].Pos.Y += offset_v;
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -1383,7 +1377,7 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		if (angle)
 			vertices[i].Pos.rotateXZBy(angle);
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
+			vertices[i].Color = blendLight(vertices[i].Pos, tile.color);
 		vertices[i].Pos += origin;
 	}
 	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -1492,10 +1486,11 @@ void MapblockMeshGenerator::drawNodeboxNode()
 		if (data->m_smooth_lighting) {
 			u16 lights[8];
 			for (int j = 0; j < 8; ++j) {
-				f32 x = (j & 4) ? dx2 : dx1;
-				f32 y = (j & 2) ? dy2 : dy1;
-				f32 z = (j & 1) ? dz2 : dz1;
-				lights[j] = blendLight(frame, core::vector3df(x, y, z));
+				v3f d;
+				d.X = (j & 4) ? dx2 : dx1;
+				d.Y = (j & 2) ? dy2 : dy1;
+				d.Z = (j & 1) ? dz2 : dz1;
+				lights[j] = blendLight(d);
 			}
 			drawSmoothLightedCuboid(box, tiles, 6, lights, txc);
 		} else {
@@ -1547,7 +1542,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			if (data->m_smooth_lighting) {
 				for (u16 m = 0; m < vertex_count; ++m) {
 					video::S3DVertex &vertex = vertices[m];
-					vertex.Color = blendLight(frame, vertex.Pos, vertex.Normal, tile.color);
+					vertex.Color = blendLight(vertex.Pos, vertex.Normal, tile.color);
 					vertex.Pos += origin;
 				}
 				collector->append(tile, vertices, vertex_count,
@@ -1566,7 +1561,7 @@ void MapblockMeshGenerator::drawMeshNode()
 void MapblockMeshGenerator::drawNode()
 {
 	if (data->m_smooth_lighting) {
-		getSmoothLightFrame(&frame, blockpos_nodes + p, data, f->light_source);
+		getSmoothLightFrame();
 	} else {
 		frame.light_source = f->light_source;
 		light = getInteriorLight(n, 1, nodedef);

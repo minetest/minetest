@@ -48,6 +48,12 @@ public:
 	TileSpec tile;
 	float scale;
 
+// lighting
+	void getSmoothLightFrame();
+	u16 blendLight(const v3f &vertex_pos);
+	video::SColor blendLight(const v3f &vertex_pos, video::SColor tile_color);
+	video::SColor blendLight(const v3f &vertex_pos, const v3f &vertex_normal, video::SColor tile_color);
+
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
 		const video::SColor *colors, const f32 *txc);
