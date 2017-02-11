@@ -16,9 +16,9 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 mt_color_grey  = "#AAAAAA"
-mt_color_blue  = "#0000DD"
-mt_color_green = "#00DD00"
-mt_color_dark_green = "#003300"
+mt_color_blue  = "#6389FF"
+mt_color_green = "#72FF63"
+mt_color_dark_green = "#25C191"
 
 --for all other colors ask sfan5 to complete his work!
 
