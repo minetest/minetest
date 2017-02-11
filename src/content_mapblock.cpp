@@ -181,7 +181,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
-	for(int i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) {
 		switch (tiles[MYMIN(i, tilecount-1)].rotation) {
 		case 0:
 			break;
@@ -300,7 +300,7 @@ video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
 {
 	video::SColor color = blendLight(vertex_pos, tile_color);
 	if (!f->light_source)
-			applyFacesShading(color, vertex_normal);
+		applyFacesShading(color, vertex_normal);
 	return color;
 }
 
@@ -384,15 +384,15 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 	if (data->m_smooth_lighting)
 		return; // don't need to pre-compute anything in this case
 
-	// If this liquid emits light and doesn't contain light, draw
-	// it at what it emits, for an increased effect
 	if (f->light_source != 0) {
+		// If this liquid emits light and doesn't contain light, draw
+		// it at what it emits, for an increased effect
 		light = decode_light(f->light_source);
 		light = light | (light << 8);
-	}
-	// Use the light of the node on top if possible
-	else if (nodedef->get(ntop).param_type == CPT_LIGHT)
+	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
+		// Otherwise, use the light of the node on top if possible
 		light = getInteriorLight(ntop, 0, nodedef);
+	}
 
 	color_liquid_top = encode_light_and_color(light, tile_liquid_top.color, f->light_source);
 	color = encode_light_and_color(light, tile_liquid.color, f->light_source);
@@ -473,21 +473,20 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 			return 0.5 * BS;
 
 		// Source always has the full height
-		if(content == c_source)
+		if (content == c_source)
 			return sum = 0.5 * BS;
 
 		// Flowing liquid has level information
-		if(content == c_flowing) {
+		if (content == c_flowing) {
 			sum += neighbor_data.level;
 			count++;
-		}
-		else if(content == CONTENT_AIR) {
+		} else if (content == CONTENT_AIR) {
 			air_count++;
-			if(air_count >= 2)
+			if (air_count >= 2)
 				return -0.5 * BS + 0.2;
 		}
 	}
-	if(count > 0)
+	if (count > 0)
 		return sum / count;
 	return 0;
 }
@@ -587,15 +586,13 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		// Rotate texture to make animation go in flow direction
 		// Positive if liquid moves towards +Z
 		f32 dz = (corner_levels[0][0] + corner_levels[0][1]) -
-				 (corner_levels[1][0] + corner_levels[1][1]);
+		         (corner_levels[1][0] + corner_levels[1][1]);
 		// Positive if liquid moves towards +X
 		f32 dx = (corner_levels[0][0] + corner_levels[1][0]) -
-				 (corner_levels[0][1] + corner_levels[1][1]);
+		         (corner_levels[0][1] + corner_levels[1][1]);
 		f32 tcoord_angle = atan2(dz, dx) * core::RADTODEG;
 		v2f tcoord_center(0.5, 0.5);
-		v2f tcoord_translate(
-				blockpos_nodes.Z + p.Z,
-				blockpos_nodes.X + p.X);
+		v2f tcoord_translate(blockpos_nodes.Z + p.Z, blockpos_nodes.X + p.X);
 		tcoord_translate.rotateBy(tcoord_angle);
 		tcoord_translate.X -= floor(tcoord_translate.X);
 		tcoord_translate.Y -= floor(tcoord_translate.Y);
@@ -645,7 +642,7 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		};
 		for (int i = 0; i < 4; i++) {
 			// Rotations in the g_6dirs format
-			switch(face) {
+			switch (face) {
 				case 0: vertices[i].rotateXZBy(  0); break; // Z+
 				case 1: vertices[i].rotateYZBy(-90); break; // Y+
 				case 2: vertices[i].rotateXZBy(-90); break; // X+
@@ -792,7 +789,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	u8 tileindex = 0;
-	switch(wall) {
+	switch (wall) {
 		case DWM_YP: tileindex = 1; break; // ceiling
 		case DWM_YN: tileindex = 0; break; // floor
 		default:     tileindex = 2; // side (or invalid—should we care?)
@@ -807,7 +804,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		v3f(-size,  size, 0),
 	};
 	for (int i = 0; i < 4; i++) {
-		switch(wall) {
+		switch (wall) {
 			case DWM_YP: vertices[i].rotateXZBy(-45); break;
 			case DWM_YN: vertices[i].rotateXZBy( 45); break;
 			case DWM_XP: vertices[i].rotateXZBy(  0); break;
@@ -833,7 +830,7 @@ void MapblockMeshGenerator::drawSignlikeNode()
 		v3f(BS/2 - offset, -size,  size),
 	};
 	for (int i = 0; i < 4; i++) {
-		switch(wall) {
+		switch (wall) {
 			case DWM_YP: vertices[i].rotateXYBy( 90); break;
 			case DWM_YN: vertices[i].rotateXYBy(-90); break;
 			case DWM_XP: vertices[i].rotateXZBy(  0); break;
@@ -943,7 +940,7 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		v3f(-scale, -BS/2 + scale * 2, 0),
 	};
 	for (int i = 0; i < 4; i++) {
-		vertices[i].rotateYZBy(opening_angle);;
+		vertices[i].rotateYZBy(opening_angle);
 		vertices[i].Z += offset_h;
 		vertices[i].rotateXZBy(rotation);
 		vertices[i].Y += offset_v;
@@ -1055,7 +1052,7 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	p2.Z++;
 	n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	f2 = &nodedef->get(n2);
-	if(f2->drawtype == NDT_FENCELIKE) {
+	if (f2->drawtype == NDT_FENCELIKE) {
 		static const aabb3f bar_z1(-bar_rad,  BS/4 - bar_rad, BS/2 - bar_len,
 		                            bar_rad,  BS/4 + bar_rad, BS/2 + bar_len);
 		static const aabb3f bar_z2(-bar_rad, -BS/4 - bar_rad, BS/2 - bar_len,
@@ -1080,7 +1077,7 @@ bool MapblockMeshGenerator::isSameRail(v3s16 dir)
 		return true;
 	const ContentFeatures &def2 = nodedef->get(node2);
 	return (def2.drawtype == NDT_RAILLIKE) &&
-	       (def2.getGroup(raillike_groupname) == raillike_group);
+		(def2.getGroup(raillike_groupname) == raillike_group);
 }
 
 void MapblockMeshGenerator::drawRaillikeNode()
@@ -1286,7 +1283,7 @@ void MapblockMeshGenerator::drawNode()
 		getSmoothLightFrame();
 	else
 		light = getInteriorLight(n, 1, nodedef);
-	switch(f->drawtype) {
+	switch (f->drawtype) {
 		case NDT_LIQUID:            drawLiquidNode(false); break;
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(true); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
