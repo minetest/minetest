@@ -18,10 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "content_mapblock.h"
-#include "content_mapblock_private.h"
 #include "util/numeric.h"
 #include "util/directiontables.h"
-#include "mapblock_mesh.h" // For MapBlock_LightColor() and MeshCollector
+#include "mapblock_mesh.h"
 #include "settings.h"
 #include "nodedef.h"
 #include "client/tile.h"
@@ -1325,11 +1324,4 @@ void MapblockMeshGenerator::generate()
 		origin = intToFloat(p, BS);
 		drawNode();
 	}
-}
-
-void mapblock_mesh_generate_special(MeshMakeData *data,
-	MeshCollector &collector)
-{
-	MapblockMeshGenerator generator(data, &collector);
-	generator.generate();
 }
