@@ -191,58 +191,49 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		2, 6, 4, 0
 	};
 
-	for (int i = 0; i < 6; i++) {
-		switch (tiles[MYMIN(i, tilecount-1)].rotation) {
-		case 0:
-			break;
-		case 1: //R90
-			for (int x = 0; x < 4; x++)
-				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
-			break;
-		case 2: //R180
-			for (int x = 0; x < 4; x++)
-				vertices[i*4+x].TCoords.rotateBy(180,irr::core::vector2df(0, 0));
-			break;
-		case 3: //R270
-			for (int x = 0; x < 4; x++)
-				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
-			break;
-		case 4: //FXR90
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
-				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
+	for (int face = 0; face < 6; face++) {
+		int tileindex = MYMIN(face, tilecount - 1);
+		const TileSpec &tile = tiles[tileindex];
+		for (int j = 0; j < 4; j++) {
+			video::S3DVertex &vertex = vertices[face * 4 + j];
+			v2f &tcoords = vertex.TCoords;
+			switch (tile.rotation) {
+			case 0:
+				break;
+			case 1: // R90
+				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				break;
+			case 2: // R180
+				tcoords.rotateBy(180, irr::core::vector2df(0, 0));
+				break;
+			case 3: // R270
+				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				break;
+			case 4: // FXR90
+				tcoords.X = 1.0 - tcoords.X;
+				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				break;
+			case 5: // FXR270
+				tcoords.X = 1.0 - tcoords.X;
+				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				break;
+			case 6: // FYR90
+				tcoords.Y = 1.0 - tcoords.Y;
+				tcoords.rotateBy(90, irr::core::vector2df(0, 0));
+				break;
+			case 7: // FYR270
+				tcoords.Y = 1.0 - tcoords.Y;
+				tcoords.rotateBy(270, irr::core::vector2df(0, 0));
+				break;
+			case 8: // FX
+				tcoords.X = 1.0 - tcoords.X;
+				break;
+			case 9: // FY
+				tcoords.Y = 1.0 - tcoords.Y;
+				break;
+			default:
+				break;
 			}
-			break;
-		case 5: //FXR270
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
-				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
-			}
-			break;
-		case 6: //FYR90
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
-				vertices[i*4+x].TCoords.rotateBy(90,irr::core::vector2df(0, 0));
-			}
-			break;
-		case 7: //FYR270
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
-				vertices[i*4+x].TCoords.rotateBy(270,irr::core::vector2df(0, 0));
-			}
-			break;
-		case 8: //FX
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.X = 1.0 - vertices[i*4+x].TCoords.X;
-			}
-			break;
-		case 9: //FY
-			for (int x = 0; x < 4; x++) {
-				vertices[i*4+x].TCoords.Y = 1.0 - vertices[i*4+x].TCoords.Y;
-			}
-			break;
-		default:
-			break;
 		}
 	}
 
