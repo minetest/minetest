@@ -1755,7 +1755,6 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 				}
 
 				for (int i = 0; i < 4; i++) {
-					vertices[i].Pos *= f.visual_scale;
 					if (data->m_smooth_lighting)
 						vertices[i].Color = blendLight(frame, vertices[i].Pos, tile.color);
 					vertices[i].Pos += intToFloat(p, BS);
