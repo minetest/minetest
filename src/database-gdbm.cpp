@@ -61,7 +61,7 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	}
 }
 
-// Candidate for inlining?
+// XXX Candidate for inlining?
 void Database_Gdbm::v3s16_to_key(const v3s16 &pos, gdbm_entry &entry)
 {
 	assert(entry != NULL);
@@ -116,8 +116,7 @@ void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 	*block = (entry.value.dptr) ? std::string(entry.value.dptr, entry.value.dsize) : "";
 }
 
-// not entirelly sure about this one.. 
-// backend migration does work well..
+// I am not entirelly sure about this one, but backend migrations do work well.
 void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
 	gdbm_entry entry;
@@ -126,36 +125,20 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 
 	while (entry.key.dptr) {
 		if (entry.key.dsize != 6) {
-			// XXX HOUSTON we have problem
+			throw DatabaseException(std::string("Unexpected key size, database corrupted?");
 		}
 
 		memcpy(entry.dkey.dblob,entry.key.dptr,6);
 
 		dst.push_back(v3s16(ntohs(entry.dkey.dpos.x),ntohs(entry.dkey.dpos.y),ntohs(entry.dkey.dpos.z)));
 
-		/* Obtain the next key */
 		entry.value = gdbm_nextkey (m_database, entry.key);
 
-		//dst.push_back(pg_to_v3s16(results, 0, 0));
-
-		/* Reclaim the memory used by the key */
 		free (entry.key.dptr);
-		/* Use nextkey in the next iteration. */
+
 		entry.key = entry.value;
 	}
 	free(entry.key.dptr);
-
-	// XXX shall we?
-	// FIXME yes
-	/*
-	int numrows = PQntuples(results);
-
-	for (int row = 0; row < numrows; ++row) {
-		dst.push_back(pg_to_v3s16(results, 0, 0));
-	}
-
-	PQclear(results);
-	*/
 }
 
 Database_Gdbm::~Database_Gdbm()
