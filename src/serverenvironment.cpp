@@ -1667,7 +1667,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 
 	if (objectpos_over_limit(object->getBasePosition())) {
 		v3f p = object->getBasePosition();
-		errorstream << "ServerEnvironment::addActiveObjectRaw(): "
+		warningstream << "ServerEnvironment::addActiveObjectRaw(): "
 			<< "object position (" << p.X << "," << p.Y << "," << p.Z
 			<< ") outside maximum range" << std::endl;
 		if (object->environmentDeletes())

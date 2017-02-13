@@ -669,14 +669,18 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit")) * BS;
-	return (p.X < -map_gen_limit_bs
-		|| p.X > map_gen_limit_bs
-		|| p.Y < -map_gen_limit_bs
-		|| p.Y > map_gen_limit_bs
-		|| p.Z < -map_gen_limit_bs
-		|| p.Z > map_gen_limit_bs);
+	// MAP_BLOCKSIZE must be subtracted to avoid an object being spawned just
+	// within the map generation limit but in a block and sector that extend
+	// beyond the map generation limit.
+	// This avoids crashes caused by sector over limit in createSector().
+	const float object_limit = (MYMIN(MAX_MAP_GENERATION_LIMIT,
+		g_settings->getU16("map_generation_limit")) - MAP_BLOCKSIZE) * BS;
+	return (p.X < -object_limit
+		|| p.X > object_limit
+		|| p.Y < -object_limit
+		|| p.Y > object_limit
+		|| p.Z < -object_limit
+		|| p.Z > object_limit);
 }
 
 /*
