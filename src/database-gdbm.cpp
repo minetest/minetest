@@ -124,13 +124,10 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	entry.key = gdbm_firstkey (m_database);
 
 	while (entry.key.dptr) {
-		if (entry.key.dsize != 6) {
-			throw DatabaseException(std::string("Unexpected key size, database corrupted?");
-		}
+		if (entry.key.dsize != 6)
+			throw DatabaseException(std::string("Unexpected key size, database corrupted?"));
 
-		memcpy(entry.dkey.dblob,entry.key.dptr,6);
-
-		dst.push_back(v3s16(ntohs(entry.dkey.dpos.x),ntohs(entry.dkey.dpos.y),ntohs(entry.dkey.dpos.z)));
+		dst.push_back(key_to_v3s16(entry.key));
 
 		entry.value = gdbm_nextkey (m_database, entry.key);
 
@@ -144,7 +141,7 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 Database_Gdbm::~Database_Gdbm()
 {
 	gdbm_close(m_database);
-	m_database = false;
+	m_database = NULL;
 }
 
 #endif
