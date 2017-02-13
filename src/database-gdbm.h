@@ -35,7 +35,7 @@ typedef struct {
 	union {
 		char dblob[6];
 		struct {
-			short int x,y,z;
+			s16 x,y,z;
 		} dpos;
 	} dkey;
 
@@ -61,7 +61,7 @@ private:
 		union {
 			char dblob[6];
 			struct {
-				short int x,y,z;
+				s16 x,y,z;
 			} dpos;
 		} dkey;
 
