@@ -166,6 +166,19 @@ enum NodeDrawType
 	NDT_MESH, // Uses static meshes
 };
 
+// Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
+static const u8 MO_MASK_STYLE          = 0x07;
+static const u8 MO_BIT_RANDOM_OFFSET   = 0x08;
+static const u8 MO_BIT_SCALE_SQRT2     = 0x10;
+static const u8 MO_BIT_RANDOM_OFFSET_Y = 0x20;
+enum PlantlikeStyle {
+	PLANT_STYLE_CROSS,
+	PLANT_STYLE_CROSS2,
+	PLANT_STYLE_STAR,
+	PLANT_STYLE_HASH,
+	PLANT_STYLE_HASH2,
+};
+
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
@@ -362,6 +375,11 @@ struct ContentFeatures
 	bool sameLiquid(const ContentFeatures &f) const{
 		if(!isLiquid() || !f.isLiquid()) return false;
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
+	}
+
+	int getGroup(const std::string &group) const
+	{
+		return itemgroup_get(groups, group);
 	}
 
 #ifndef SERVER

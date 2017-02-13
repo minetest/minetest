@@ -1108,7 +1108,10 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		- whatever
 	*/
 
-	mapblock_mesh_generate_special(data, collector);
+	{
+		MapblockMeshGenerator generator(data, &collector);
+		generator.generate();
+	}
 
 	/*
 		Convert MeshCollector to SMesh
