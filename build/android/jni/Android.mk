@@ -72,7 +72,6 @@ LOCAL_CFLAGS := -D_IRR_ANDROID_PLATFORM_      \
 		-DHAVE_TOUCHSCREENGUI         \
 		-DUSE_CURL=1                  \
 		-DUSE_SOUND=1                 \
-		-DUSE_FREETYPE=1              \
 		-DUSE_LEVELDB=$(HAVE_LEVELDB) \
 		$(GPROF_DEF)                  \
 		-pipe -fstrict-aliasing

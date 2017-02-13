@@ -324,8 +324,6 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 
 	list_video_modes = cmd_args.getFlag("videomodes");
 
-	use_freetype = g_settings->getBool("freetype");
-
 	random_input = g_settings->getBool("random_input")
 			|| cmd_args.getFlag("random-input");
 }

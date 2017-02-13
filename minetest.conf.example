@@ -653,10 +653,6 @@
 #    type: int
 # tooltip_show_delay = 400
 
-#    Whether freetype fonts are used, requires freetype support to be compiled in.
-#    type: bool
-# freetype = true
-
 #    Path to TrueTypeFont or bitmap.
 #    type: path
 # font_path = fonts/liberationsans.ttf

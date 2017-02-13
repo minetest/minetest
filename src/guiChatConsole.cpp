@@ -31,9 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include <string>
 
-#if USE_FREETYPE
-	#include "xCGUITTFont.h"
-#endif
+#include "xCGUITTFont.h"
 
 inline u32 clamp_u8(s32 value)
 {
@@ -343,27 +341,15 @@ void GUIChatConsole::drawText()
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
 
-
-			#if USE_FREETYPE
 			// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
-				tmp->draw(
-					fragment.text,
-					destrect,
-					video::SColor(255, 255, 255, 255),
-					false,
-					false,
-					&AbsoluteClippingRect);
-			#else
-			// Otherwise use standard text
-				m_font->draw(
-					fragment.text.c_str(),
-					destrect,
-					video::SColor(255, 255, 255, 255),
-					false,
-					false,
-					&AbsoluteClippingRect);
-			#endif
+			irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
+			tmp->draw(
+				fragment.text,
+				destrect,
+				video::SColor(255, 255, 255, 255),
+				false,
+				false,
+				&AbsoluteClippingRect);
 		}
 	}
 }

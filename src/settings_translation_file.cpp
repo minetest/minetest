@@ -270,8 +270,6 @@ fake_function() {
 	gettext("When gui_scaling_filter_txr2img is true, copy those images\nfrom hardware to software for scaling.  When false, fall back\nto the old scaling method, for video drivers that don't\nproperly support downloading textures back from hardware.");
 	gettext("Tooltip delay");
 	gettext("Delay showing tooltips, stated in milliseconds.");
-	gettext("Freetype fonts");
-	gettext("Whether freetype fonts are used, requires freetype support to be compiled in.");
 	gettext("Font path");
 	gettext("Path to TrueTypeFont or bitmap.");
 	gettext("Font size");

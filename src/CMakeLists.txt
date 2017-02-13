@@ -122,10 +122,7 @@ if(ENABLE_GLES)
 endif()
 
 
-option(ENABLE_FREETYPE "Enable FreeType2 (TrueType fonts and basic unicode support)" TRUE)
-set(USE_FREETYPE FALSE)
 
-if(ENABLE_FREETYPE)
 ##
 ## Note: FindFreetype.cmake seems to have been fixed in recent versions of
 ## CMake. If issues persist, re-enable this workaround specificially for the
@@ -147,14 +144,12 @@ if(ENABLE_FREETYPE)
 #	if(NOT FREETYPE_FOUND)
 #		find_package(Freetype)
 #	endif()
-	find_package(Freetype)
-	if(FREETYPE_FOUND)
-		message(STATUS "Freetype enabled.")
-		set(USE_FREETYPE TRUE)
-		set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
-		set(CGUITTFONT_LIBRARY cguittfont)
-	endif()
-endif(ENABLE_FREETYPE)
+find_package(Freetype REQUIRED)
+if(FREETYPE_FOUND)
+	message(STATUS "Freetype enabled.")
+	set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
+	set(CGUITTFONT_LIBRARY cguittfont)
+endif()
 
 # LuaJIT
 option(ENABLE_LUAJIT "Enable LuaJIT support" TRUE)
@@ -301,14 +296,12 @@ if(WIN32)
 	set(ZLIBWAPI_DLL "" CACHE FILEPATH "Path to zlibwapi DLL")
 	set(IRRLICHT_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../../irrlicht-1.7.2"
 			CACHE PATH "irrlicht dir")
-	if(USE_FREETYPE)
-		set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_INCLUDE_DIR_freetype2 "${PROJECT_SOURCE_DIR}/../../freetype2/include/freetype"
-				CACHE PATH "freetype include dir")
-		set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
-				CACHE FILEPATH "Path to freetype247.lib")
-	endif()
+	set(FREETYPE_INCLUDE_DIR_ft2build "${PROJECT_SOURCE_DIR}/../../freetype2/include/"
+			CACHE PATH "freetype include dir")
+	set(FREETYPE_INCLUDE_DIR_freetype2 "${PROJECT_SOURCE_DIR}/../../freetype2/include/freetype"
+			CACHE PATH "freetype include dir")
+	set(FREETYPE_LIBRARY "${PROJECT_SOURCE_DIR}/../../freetype2/objs/win32/vc2005/freetype247.lib"
+			CACHE FILEPATH "Path to freetype247.lib")
 	if(ENABLE_SOUND)
 		set(OPENAL_DLL "" CACHE FILEPATH "Path to OpenAL32.dll for installation (optional)")
 		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
@@ -578,9 +571,7 @@ include_directories(
 )
 
 
-if(USE_FREETYPE)
-	include_directories(${FREETYPE_INCLUDE_DIRS} ${CGUITTFONT_INCLUDE_DIR})
-endif()
+include_directories(${FREETYPE_INCLUDE_DIRS} ${CGUITTFONT_INCLUDE_DIR})
 
 if(USE_CURL)
 	include_directories(${CURL_INCLUDE_DIR})
@@ -628,19 +619,17 @@ if(BUILD_CLIENT)
 			${CURL_LIBRARY}
 		)
 	endif()
-	if(USE_FREETYPE)
-		if(FREETYPE_PKGCONFIG_FOUND)
-			set_target_properties(${PROJECT_NAME}
-				PROPERTIES
-				COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
-			)
-		endif()
-		target_link_libraries(
-			${PROJECT_NAME}
-			${FREETYPE_LIBRARY}
-			${CGUITTFONT_LIBRARY}
+	if(FREETYPE_PKGCONFIG_FOUND)
+		set_target_properties(${PROJECT_NAME}
+			PROPERTIES
+			COMPILE_FLAGS "${FREETYPE_CFLAGS_STR}"
 		)
 	endif()
+	target_link_libraries(
+		${PROJECT_NAME}
+		${FREETYPE_LIBRARY}
+		${CGUITTFONT_LIBRARY}
+	)
 	if (USE_CURSES)
 		target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
 	endif()
@@ -892,6 +881,6 @@ endif()
 
 # Subdirectories
 
-if (BUILD_CLIENT AND USE_FREETYPE)
+if (BUILD_CLIENT)
 	add_subdirectory(cguittfont)
 endif()

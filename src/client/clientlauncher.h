@@ -67,7 +67,6 @@ public:
 	ClientLauncher() :
 		list_video_modes(false),
 		skip_main_menu(false),
-		use_freetype(false),
 		random_input(false),
 		address(""),
 		playername(""),
@@ -103,7 +102,6 @@ protected:
 
 	bool list_video_modes;
 	bool skip_main_menu;
-	bool use_freetype;
 	bool random_input;
 	std::string address;
 	std::string playername;
