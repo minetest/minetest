@@ -554,12 +554,9 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	}
 
 	f32 abs_scale = 1.0;
-	if     (scale.X < 0.999 || scale.X > 1.001)
-		abs_scale = scale.X;
-	else if(scale.Y < 0.999 || scale.Y > 1.001)
-		abs_scale = scale.Y;
-	else if(scale.Z < 0.999 || scale.Z > 1.001)
-		abs_scale = scale.Z;
+	if      (scale.X < 0.999 || scale.X > 1.001) abs_scale = scale.X;
+	else if (scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
+	else if (scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
 
 	v3f normal(dir.X, dir.Y, dir.Z);
 
