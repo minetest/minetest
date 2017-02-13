@@ -17,9 +17,7 @@
 #include <rect.h>
 #include <SColor.h>
 
-#if USE_FREETYPE
-	#include "cguittfont/xCGUITTFont.h"
-#endif
+#include "cguittfont/xCGUITTFont.h"
 #ifndef _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
 	// newer Irrlicht versions no longer have this
 	#define _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
@@ -30,7 +28,6 @@
 namespace irr
 {
 
-#if USE_FREETYPE
 
 namespace gui
 {
@@ -675,7 +672,6 @@ void StaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 
 } // end namespace gui
 
-#endif // USE_FREETYPE
 
 } // end namespace irr
 

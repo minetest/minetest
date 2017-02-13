@@ -53,7 +53,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
 
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
 #endif
 
@@ -1041,17 +1041,13 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	{
 		spec.send = true;
 		gui::IGUIElement *e;
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
-			e->drop();
-		} else {
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect);
+		e->drop();
 #else
-		{
+		e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 #endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		}
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
@@ -1145,18 +1141,13 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		spec.send = true;
 
 		gui::IGUIEditBox *e;
-#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
-		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
-			e->drop();
-		} else {
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect);
+		e->drop();
 #else
-		{
+		e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
 #endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
-		}
-
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
@@ -2318,11 +2309,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				this->bringToFront(m_tooltip_element);
 				setStaticText(m_tooltip_element, tooltip_text.c_str());
 				s32 tooltip_width = m_tooltip_element->getTextWidth() + m_btn_height;
-#if (IRRLICHT_VERSION_MAJOR <= 1 && IRRLICHT_VERSION_MINOR <= 8 && IRRLICHT_VERSION_REVISION < 2) || USE_FREETYPE == 1
 				s32 tooltip_height = m_tooltip_element->getTextHeight() * tt_rows.size() + 5;
-#else
-				s32 tooltip_height = m_tooltip_element->getTextHeight() + 5;
-#endif
 				v2u32 screenSize = driver->getScreenSize();
 				int tooltip_offset_x = m_btn_height;
 				int tooltip_offset_y = m_btn_height;

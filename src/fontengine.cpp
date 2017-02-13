@@ -23,10 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "filesys.h"
 
-#if USE_FREETYPE
 #include "gettext.h"
 #include "xCGUITTFont.h"
-#endif
 
 /** maximum size distance for getting a "similar" font size */
 #define MAX_FONT_SIZE_OFFSET 10
@@ -61,18 +59,15 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 
 	m_currentMode = FM_Simple;
 
-#if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
-		m_default_size[FM_Standard] = m_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
+	m_default_size[FM_Standard] = m_settings->getU16("font_size");
+	m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
+	m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
 
-		if (is_yes(gettext("needs_fallback_font"))) {
-			m_currentMode = FM_Fallback;
-		}
-		else {
-			m_currentMode = FM_Standard;
-		}
+	if (is_yes(gettext("needs_fallback_font"))) {
+		m_currentMode = FM_Fallback;
+	}
+	else {
+		m_currentMode = FM_Standard;
 	}
 
 	// having freetype but not using it is quite a strange case so we need to do
@@ -83,7 +78,6 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 		m_settings->setDefault("font_size", fontsize.str());
 		m_settings->setDefault("mono_font_size", fontsize.str());
 	}
-#endif
 
 	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
 	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
@@ -217,20 +211,17 @@ unsigned int FontEngine::getDefaultFontSize()
 /******************************************************************************/
 void FontEngine::readSettings()
 {
-#if USE_FREETYPE
-	if (g_settings->getBool("freetype")) {
-		m_default_size[FM_Standard] = m_settings->getU16("font_size");
-		m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
-		m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
+	m_default_size[FM_Standard] = m_settings->getU16("font_size");
+	m_default_size[FM_Fallback] = m_settings->getU16("fallback_font_size");
+	m_default_size[FM_Mono]     = m_settings->getU16("mono_font_size");
 
-		if (is_yes(gettext("needs_fallback_font"))) {
-			m_currentMode = FM_Fallback;
-		}
-		else {
-			m_currentMode = FM_Standard;
-		}
+	if (is_yes(gettext("needs_fallback_font"))) {
+		m_currentMode = FM_Fallback;
 	}
-#endif
+	else {
+		m_currentMode = FM_Standard;
+	}
+
 	m_default_size[FM_Simple]       = m_settings->getU16("font_size");
 	m_default_size[FM_SimpleMono]   = m_settings->getU16("mono_font_size");
 
@@ -313,12 +304,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 	if ((mode == FM_Simple) || (mode == FM_SimpleMono)) {
 		initSimpleFont(basesize, mode);
 		return;
-	}
-#if USE_FREETYPE
-	else {
-		if (! is_yes(m_settings->get("freetype"))) {
-			return;
-		}
+	} else {
 		unsigned int size = floor(
 				porting::getDisplayDensity() *
 				m_settings->getFloat("gui_scaling") *
@@ -349,7 +335,6 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 					<< font_path << std::endl;
 		}
 	}
-#endif
 }
 
 /** initialize a font without freetype */
