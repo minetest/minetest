@@ -270,6 +270,21 @@ if(ENABLE_SPATIAL)
 	endif(SPATIAL_LIBRARY AND SPATIAL_INCLUDE_DIR)
 endif(ENABLE_SPATIAL)
 
+OPTION(ENABLE_GDBM "Enable GDBM backend" TRUE)
+set(USE_GDBM FALSE)
+
+if(ENABLE_GDBM)
+	find_library(GDBM_LIBRARY gdbm)
+	find_path(GDBM_INCLUDE_DIR gdbm.h)
+	if(GDBM_LIBRARY AND GDBM_INCLUDE_DIR)
+		set(USE_GDBM TRUE)
+		message(STATUS "Gdbm backend enabled.")
+		include_directories(${GDBM_INCLUDE_DIR})
+	else(GDBM_LIBRARY AND GDBM_INCLUDE_DIR)
+		message(STATUS "Gdbm disabled.")
+	endif(GDBM_LIBRARY AND GDBM_INCLUDE_DIR)
+endif(ENABLE_GDBM)
+
 
 if(NOT MSVC)
 	set(USE_GPROF FALSE CACHE BOOL "Use -pg flag for g++")
@@ -402,6 +417,7 @@ set(common_SRCS
 	database-postgresql.cpp
 	database-redis.cpp
 	database-sqlite3.cpp
+	database-gdbm.cpp
 	database.cpp
 	debug.cpp
 	defaultsettings.cpp
@@ -656,6 +672,9 @@ if(BUILD_CLIENT)
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
+	if (USE_GDBM)
+		target_link_libraries(${PROJECT_NAME} ${GDBM_LIBRARY})
+	endif()
 endif(BUILD_CLIENT)
 
 
@@ -666,6 +685,7 @@ if(BUILD_SERVER)
 		${PROJECT_NAME}server
 		${ZLIB_LIBRARIES}
 		${SQLITE3_LIBRARY}
+		${GDBM_LIBRARY}
 		${JSON_LIBRARY}
 		${GETTEXT_LIBRARY}
 		${LUA_LIBRARY}
@@ -695,6 +715,10 @@ if(BUILD_SERVER)
 			${CURL_LIBRARY}
 		)
 	endif()
+	if (USE_GDBM)
+		target_link_libraries(${PROJECT_NAME}server ${GDBM_LIBRARY})
+	endif()
+
 endif(BUILD_SERVER)
 
 # Blacklisted locales that don't work.

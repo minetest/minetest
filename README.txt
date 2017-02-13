@@ -184,6 +184,7 @@ ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
 ENABLE_LUAJIT       - Build with LuaJIT (much faster than non-JIT Lua)
 ENABLE_SYSTEM_GMP   - Use GMP from system (much faster than bundled mini-gmp)
+ENABLE_GDBM         - Build with GDBM; Enables use of GDBM map backend
 RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
 USE_GPROF           - Enable profiling using GProf
 VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
@@ -218,6 +219,8 @@ REDIS_INCLUDE_DIR               - Only when building with Redis; directory that 
 REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
 SPATIAL_INCLUDE_DIR             - Only when building with LibSpatial; directory that contains spatialindex/SpatialIndex.h
 SPATIAL_LIBRARY                 - Only when building with LibSpatial; path to libspatialindex_c.so/spatialindex-32.lib
+GDBM_INCLUDE_DIR                - Only when building with GDBM; directory that contains gdbm.h
+GDBM_LIBRARY                    - Only when building with GDBM; path to libgdbm.so
 LUA_INCLUDE_DIR                 - Only if you want to use LuaJIT; directory where luajit.h is located
 LUA_LIBRARY                     - Only if you want to use LuaJIT; path to libluajit.a/libluajit.so
 MINGWM10_DLL                    - Only if compiling with MinGW; path to mingwm10.dll
