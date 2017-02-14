@@ -32,8 +32,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <netinet/in.h>
 
-#include <cassert>
-
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	m_savedir(savedir),
 	m_database(NULL)
@@ -43,18 +41,17 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	if (!fs::CreateAllDirs(m_savedir)) {
 		infostream << "Database_GDBM: Failed to create directory \""
 			<< m_savedir << "\"" << std::endl;
-		throw FileNotGoodException("Failed to create database "
-				"save directory");
+		throw FileNotGoodException("Failed to create database save "
+				"directory \"" + m_savedir + "\"");
 	}
 
-	char *name = (char *)malloc(dbfile.length()+1);
+	char *name = new char[dbfile.length()+1];
 	memcpy(name, dbfile.c_str(), dbfile.length());
 	name[dbfile.length()] = '\0';
 
 	m_database = gdbm_open(name, 4096, GDBM_WRCREAT, 0644, NULL); // add fatal func someday?
 
-	free(name);
-	name = NULL;
+	delete name;
 
 	if (m_database == NULL) {
 		throw DatabaseException(std::string("Failed to open GDBM database file ") + dbfile + ": " ); // use gdbm errno?
@@ -63,65 +60,72 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 
 bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 {
-	gdbm_entry entry;
+	datum key;
 
-	v3s16_to_key(pos, entry);
+	v3s16_to_key(pos, key);
 
-	if (gdbm_delete(m_database, entry.key) != 0) {
-		warningstream << "Database_GDBM: Delete failed (" << pos.X << "," << pos.Y << "," << pos.Z << ")\"" << std::endl;
+	if (gdbm_delete(m_database, key) != 0) {
+		warningstream << "Database_GDBM: deleteBlock failed for " << PP(pos) << std::endl;
 	}
+	delete key.dptr; // got new'ed inside v3s16_to_key
 	
 	return true;
 }
 
 bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 {
-	gdbm_entry entry;
+	datum key, value;
 
-	v3s16_to_key(pos, entry);
+	v3s16_to_key(pos, key);
 
-	entry.value.dptr = const_cast<char*>(data.c_str());
-	entry.value.dsize = data.length();
+	value.dptr = const_cast<char*>(data.c_str());
+	value.dsize = data.length();
 
-	if (gdbm_store(m_database, entry.key, entry.value, GDBM_REPLACE) != 0) {
-		// FIXME Do we need to log POS too?
+	if (gdbm_store(m_database, key, value, GDBM_REPLACE) != 0) {
+		warningstream << "Database_GDBM: saveBlock failed for " << PP(pos) << std::endl;
 		throw DatabaseException(std::string("Failed to save record in GDBM database.")); 
 	}
+
+	delete key.dptr; // got new'ed inside v3s16_to_key
 
 	return true;
 }
 
 void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 {
-	gdbm_entry entry;
+	datum key,value;
 
-	v3s16_to_key(pos, entry);
+	v3s16_to_key(pos, key);
 
-	entry.value = gdbm_fetch(m_database, entry.key);
+	value = gdbm_fetch(m_database, key);
 
-	*block = (entry.value.dptr) ? std::string(entry.value.dptr, entry.value.dsize) : "";
+	*block = (value.dptr) ? std::string(value.dptr, value.dsize) : "";
+
+	delete key.dptr; // got new'ed inside v3s16_to_key
 }
 
 // I am not entirelly sure about this one, but backend migrations do work well.
 void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 {
-	gdbm_entry entry;
+	datum key;
 	
-	entry.key = gdbm_firstkey (m_database);
+	key = gdbm_firstkey (m_database);
 
-	while (entry.key.dptr) {
-		if (entry.key.dsize != 6)
+	while (key.dptr) {
+		datum value;
+
+		if (key.dsize != 6)
 			throw DatabaseException(std::string("Unexpected key size, database corrupted?"));
 
-		dst.push_back(key_to_v3s16(entry.key));
+		dst.push_back(key_to_v3s16(key));
 
-		entry.value = gdbm_nextkey (m_database, entry.key);
+		value = gdbm_nextkey (m_database, key);
 
-		free (entry.key.dptr);
+		free (key.dptr);
 
-		entry.key = entry.value;
+		key = value;
 	}
-	free(entry.key.dptr);
+	free(key.dptr);
 }
 
 Database_Gdbm::~Database_Gdbm()

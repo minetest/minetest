@@ -31,17 +31,6 @@ extern "C" {
 	#include "gdbm.h"
 }
 
-typedef struct {
-	union {
-		char dblob[6];
-		struct {
-			s16 x,y,z;
-		} dpos;
-	} dkey;
-
-	datum key, value;
-} gdbm_entry;
-
 class Database_Gdbm : public Database
 {
 public:
@@ -54,15 +43,22 @@ public:
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
-	inline void v3s16_to_key(const v3s16 &pos, gdbm_entry &entry) {
+	inline void v3s16_to_key(const v3s16 &pos, datum &key) {
+		union {
+			char dblob[6];
+			struct {
+				s16 x,y,z;
+			} dpos;
+		} dkey;
 
-		entry.dkey.dpos.x = htons(pos.X);
-		entry.dkey.dpos.y = htons(pos.Y);
-		entry.dkey.dpos.z = htons(pos.Z);
-		entry.key.dptr = entry.dkey.dblob;
-		entry.key.dsize = 6;
-		entry.value.dptr = NULL;
-		entry.value.dsize = 0;
+		dkey.dpos.x = htons(pos.X);
+		dkey.dpos.y = htons(pos.Y);
+		dkey.dpos.z = htons(pos.Z);
+
+		key.dptr = new char[7];
+		memcpy(key.dptr, dkey.dblob, 6);
+		key.dptr[6] = '\0';
+		key.dsize = 6;
 	}
 
 	inline v3s16 key_to_v3s16(datum key) {
