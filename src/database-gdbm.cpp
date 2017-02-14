@@ -61,20 +61,6 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	}
 }
 
-// XXX Candidate for inlining?
-void Database_Gdbm::v3s16_to_key(const v3s16 &pos, gdbm_entry &entry)
-{
-	assert(entry != NULL);
-
-	entry.dkey.dpos.x = htons(pos.X);
-	entry.dkey.dpos.y = htons(pos.Y);
-	entry.dkey.dpos.z = htons(pos.Z);
-	entry.key.dptr = entry.dkey.dblob;
-	entry.key.dsize = 6;
-	entry.value.dptr = NULL;
-	entry.value.dsize = 0;
-}
-
 bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 {
 	gdbm_entry entry;

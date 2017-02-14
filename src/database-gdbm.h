@@ -54,8 +54,16 @@ public:
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
-	void v3s16_to_key(const v3s16 &pos, gdbm_entry &entry);
+	inline void v3s16_to_key(const v3s16 &pos, gdbm_entry &entry) {
 
+		entry.dkey.dpos.x = htons(pos.X);
+		entry.dkey.dpos.y = htons(pos.Y);
+		entry.dkey.dpos.z = htons(pos.Z);
+		entry.key.dptr = entry.dkey.dblob;
+		entry.key.dsize = 6;
+		entry.value.dptr = NULL;
+		entry.value.dsize = 0;
+	}
 
 	inline v3s16 key_to_v3s16(datum key) {
 		union {
