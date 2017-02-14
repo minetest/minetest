@@ -30,8 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/string.h"
 
-#include <netinet/in.h>
-
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	m_database(NULL)
 {
@@ -61,12 +59,14 @@ bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 {
 	datum key;
 
-	v3s16_to_key(pos, key);
+	key.dsize = 6;
+	key.dptr = new char[key.dsize];
+	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 
 	if (gdbm_delete(m_database, key) != 0) {
 		warningstream << "Database_GDBM: deleteBlock failed for " << PP(pos) << std::endl;
 	}
-	delete key.dptr; // got new'ed inside v3s16_to_key
+	delete key.dptr;
 	
 	return true;
 }
@@ -75,7 +75,9 @@ bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 {
 	datum key, value;
 
-	v3s16_to_key(pos, key);
+	key.dsize = 6;
+	key.dptr = new char[key.dsize];
+	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 
 	value.dptr = const_cast<char*>(data.c_str());
 	value.dsize = data.length();
@@ -85,7 +87,7 @@ bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 		throw DatabaseException(std::string("Failed to save record in GDBM database.")); 
 	}
 
-	delete key.dptr; // got new'ed inside v3s16_to_key
+	delete key.dptr;
 
 	return true;
 }
@@ -94,10 +96,12 @@ void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 {
 	datum key,value;
 
-	v3s16_to_key(pos, key);
+	key.dsize = 6;
+	key.dptr = new char[key.dsize];
+	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 	value = gdbm_fetch(m_database, key);
 	*block = (value.dptr) ? std::string(value.dptr, value.dsize) : "";
-	delete key.dptr; // got new'ed inside v3s16_to_key
+	delete key.dptr;
 }
 
 // I am not entirelly sure about this one, but backend migrations do work well.
@@ -112,7 +116,7 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 		if (key.dsize != 6)
 			throw DatabaseException(std::string("Unexpected key size, database corrupted?"));
 
-		dst.push_back(key_to_v3s16(key));
+		dst.push_back(readV3S16(reinterpret_cast<unsigned char*>(key.dptr)));
 		value = gdbm_nextkey (m_database, key);
 		free (key.dptr);
 		key = value;

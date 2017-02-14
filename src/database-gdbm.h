@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include <string>
 #include "util/string.h"
-
-#include <netinet/in.h>
+#include "util/serialize.h"
 
 extern "C" {
 	#include "gdbm.h"
@@ -43,35 +42,6 @@ public:
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
-	inline void v3s16_to_key(const v3s16 &pos, datum &key) {
-		union {
-			char dblob[6];
-			struct {
-				s16 x,y,z;
-			} dpos;
-		} dkey;
-
-		dkey.dpos.x = htons(pos.X);
-		dkey.dpos.y = htons(pos.Y);
-		dkey.dpos.z = htons(pos.Z);
-
-		key.dptr = new char[7];
-		memcpy(key.dptr, dkey.dblob, 6);
-		key.dptr[6] = '\0';
-		key.dsize = 6;
-	}
-
-	inline v3s16 key_to_v3s16(datum key) {
-		union {
-			char dblob[6];
-			struct {
-				s16 x,y,z;
-			} dpos;
-		} dkey;
-
-		memcpy(dkey.dblob,key.dptr,6);
-		return v3s16(ntohs(dkey.dpos.x),ntohs(dkey.dpos.y),ntohs(dkey.dpos.z));
-	}
 
 	GDBM_FILE m_database;
 };
