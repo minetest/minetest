@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	m_database(NULL)
 {
-	char buffer[512]; // or MAXPATH?
 	std::string dbfile = savedir + DIR_DELIM + "map.gdbm";
 
 	if (!fs::CreateAllDirs(savedir)) {
@@ -43,11 +42,12 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 				"directory \"" + savedir + "\"");
 	}
 
-	char *name = &buffer[0];
-	memcpy(name, dbfile.c_str(), dbfile.length());
-	name[dbfile.length()] = '\0';
+	char *name = new char[dbfile.length()+1];
+	memcpy(name, dbfile.c_str(), dbfile.length()+1);
 
 	m_database = gdbm_open(name, 4096, GDBM_WRCREAT, 0644, NULL); // add fatal func someday?
+
+	delete name;
 
 	if (m_database == NULL) {
 		throw DatabaseException(std::string("Failed to open GDBM database file ") + dbfile + ": " ); // use gdbm errno?
@@ -65,6 +65,7 @@ bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 
 	if (gdbm_delete(m_database, key) != 0) {
 		warningstream << "Database_GDBM: deleteBlock failed for " << PP(pos) << std::endl;
+		return false;
 	}
 	
 	return true;
@@ -83,7 +84,6 @@ bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 	value.dsize = data.length();
 
 	if (gdbm_store(m_database, key, value, GDBM_REPLACE) != 0) {
-		warningstream << "Database_GDBM: saveBlock failed for " << PP(pos) << std::endl;
 		throw DatabaseException(std::string("Failed to save record in GDBM database.")); 
 	}
 
