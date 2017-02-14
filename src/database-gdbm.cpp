@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	m_database(NULL)
 {
+	char buffer[512]; // or MAXPATH?
 	std::string dbfile = savedir + DIR_DELIM + "map.gdbm";
 
 	if (!fs::CreateAllDirs(savedir)) {
@@ -42,13 +43,11 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 				"directory \"" + savedir + "\"");
 	}
 
-	char *name = new char[dbfile.length()+1];
+	char *name = &buffer[0];
 	memcpy(name, dbfile.c_str(), dbfile.length());
 	name[dbfile.length()] = '\0';
 
 	m_database = gdbm_open(name, 4096, GDBM_WRCREAT, 0644, NULL); // add fatal func someday?
-
-	delete name;
 
 	if (m_database == NULL) {
 		throw DatabaseException(std::string("Failed to open GDBM database file ") + dbfile + ": " ); // use gdbm errno?
@@ -58,15 +57,15 @@ Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 {
 	datum key;
+	char buffer[6];
 
 	key.dsize = 6;
-	key.dptr = new char[key.dsize];
+	key.dptr = &buffer[0];
 	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 
 	if (gdbm_delete(m_database, key) != 0) {
 		warningstream << "Database_GDBM: deleteBlock failed for " << PP(pos) << std::endl;
 	}
-	delete key.dptr;
 	
 	return true;
 }
@@ -74,9 +73,10 @@ bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 {
 	datum key, value;
+	char buffer[6];
 
 	key.dsize = 6;
-	key.dptr = new char[key.dsize];
+	key.dptr = &buffer[0];
 	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 
 	value.dptr = const_cast<char*>(data.c_str());
@@ -87,17 +87,16 @@ bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 		throw DatabaseException(std::string("Failed to save record in GDBM database.")); 
 	}
 
-	delete key.dptr;
-
 	return true;
 }
 
 void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 {
 	datum key,value;
+	char buffer[6];
 
 	key.dsize = 6;
-	key.dptr = new char[key.dsize];
+	key.dptr = &buffer[0];
 	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 	value = gdbm_fetch(m_database, key);
 	*block = (value.dptr) ? std::string(value.dptr, value.dsize) : "";
