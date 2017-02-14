@@ -33,16 +33,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <netinet/in.h>
 
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
-	m_savedir(savedir),
 	m_database(NULL)
 {
-	std::string dbfile = m_savedir + DIR_DELIM + "map.gdbm";
+	std::string dbfile = savedir + DIR_DELIM + "map.gdbm";
 
-	if (!fs::CreateAllDirs(m_savedir)) {
+	if (!fs::CreateAllDirs(savedir)) {
 		infostream << "Database_GDBM: Failed to create directory \""
-			<< m_savedir << "\"" << std::endl;
+			<< savedir << "\"" << std::endl;
 		throw FileNotGoodException("Failed to create database save "
-				"directory \"" + m_savedir + "\"");
+				"directory \"" + savedir + "\"");
 	}
 
 	char *name = new char[dbfile.length()+1];
@@ -96,11 +95,8 @@ void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 	datum key,value;
 
 	v3s16_to_key(pos, key);
-
 	value = gdbm_fetch(m_database, key);
-
 	*block = (value.dptr) ? std::string(value.dptr, value.dsize) : "";
-
 	delete key.dptr; // got new'ed inside v3s16_to_key
 }
 
@@ -110,7 +106,6 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	datum key;
 	
 	key = gdbm_firstkey (m_database);
-
 	while (key.dptr) {
 		datum value;
 
@@ -118,11 +113,8 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 			throw DatabaseException(std::string("Unexpected key size, database corrupted?"));
 
 		dst.push_back(key_to_v3s16(key));
-
 		value = gdbm_nextkey (m_database, key);
-
 		free (key.dptr);
-
 		key = value;
 	}
 	free(key.dptr);

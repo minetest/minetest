@@ -73,8 +73,6 @@ private:
 		return v3s16(ntohs(dkey.dpos.x),ntohs(dkey.dpos.y),ntohs(dkey.dpos.z));
 	}
 
-	std::string m_savedir;
-
 	GDBM_FILE m_database;
 };
 
