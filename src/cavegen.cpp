@@ -74,19 +74,23 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
 	v3s16 em = vm->m_area.getExtent();
-	u32 index2d = 0;
+	u32 index2d = 0;  // Biomemap index
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
 	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
 		bool is_under_river = false;  // Is column under river water
-		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		bool is_under_tunnel = false;  // Is tunnel or is under tunnel
+		// Indexes at column top
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
-			(x - nmin.X);
+			(x - nmin.X);  // 3D noise index
 		// Biome of column
 		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index2d]);
-
+		u16 depth_top = biome->depth_top;
+		u16 base_filler = depth_top + biome->depth_filler;
+		u16 depth_riverbed = biome->depth_riverbed;
+		u16 nplaced = 0;
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
 		// tunnels at mapchunk borders when generating mapchunks upwards.
@@ -112,20 +116,34 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 			if (d1 * d2 > m_cave_width && m_ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
-				is_tunnel = true;
-			} else {
-				// Not in tunnel or not ground content
-				if (is_tunnel && column_is_open &&
-						(c == biome->c_filler || c == biome->c_stone)) {
-					// Tunnel entrance floor
-					if (is_under_river)
+				is_under_tunnel = true;
+			} else if (column_is_open && is_under_tunnel &&
+					(c == biome->c_stone || c == biome->c_filler)) {
+				// Tunnel entrance floor, place biome surface nodes
+				if (is_under_river) {
+					if (nplaced < depth_riverbed) {
 						vm->m_data[vi] = MapNode(biome->c_riverbed);
-					else
-						vm->m_data[vi] = MapNode(biome->c_top);
+						nplaced++;
+					} else {
+						// Disable top/filler placement
+						column_is_open = false;
+						is_under_river = false;
+						is_under_tunnel = false;
+					}
+				} else if (nplaced < depth_top) {
+					vm->m_data[vi] = MapNode(biome->c_top);
+					nplaced++;
+				} else if (nplaced < base_filler) {
+					vm->m_data[vi] = MapNode(biome->c_filler);
+					nplaced++;
+				} else {
+					// Disable top/filler placement
+					column_is_open = false;
+					is_under_tunnel = false;
 				}
-
+			} else {
+				// Not tunnel or tunnel entrance floor
 				column_is_open = false;
-				is_tunnel = false;
 			}
 		}
 	}
