@@ -1941,11 +1941,14 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 
 	If block wasn't generated (not in memory or on disk),
 */
-void ServerEnvironment::deactivateFarObjects(bool force_delete)
+void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
 	std::vector<u16> objects_to_remove;
 	for(ActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
+		// force_delete might be overriden per object
+		bool force_delete = _force_delete;
+
 		ServerActiveObject* obj = i->second;
 		assert(obj);
 
@@ -2144,13 +2147,6 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 				<<"; not deleting yet"<<std::endl;
 
 			obj->m_pending_deactivation = true;
-			continue;
-		}
-
-		if (!force_delete && obj->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-			warningstream << "ServerEnvironment::deactivateFarObjects(): "
-				<< "Trying to delete player object, THIS SHOULD NEVER HAPPEN!"
-				<< std::endl;
 			continue;
 		}
 
