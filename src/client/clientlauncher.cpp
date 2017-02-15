@@ -411,8 +411,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	playername = menudata.name;
 	password = menudata.password;
 
-	g_settings->set("name", playername);
-
 	current_playername = playername;
 	current_password   = password;
 	current_address    = address;
@@ -425,13 +423,16 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		current_password = "";
 		current_address = "";
 		current_port = myrand_range(49152, 65535);
-	} else if (address != "") {
-		ServerListSpec server;
-		server["name"] = menudata.servername;
-		server["address"] = menudata.address;
-		server["port"] = menudata.port;
-		server["description"] = menudata.serverdescription;
-		ServerList::insert(server);
+	} else {
+		g_settings->set("name", playername);
+		if (address != "") {
+			ServerListSpec server;
+			server["name"] = menudata.servername;
+			server["address"] = menudata.address;
+			server["port"] = menudata.port;
+			server["description"] = menudata.serverdescription;
+			ServerList::insert(server);
+		}
 	}
 
 	infostream << "Selected world: " << worldspec.name
