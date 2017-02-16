@@ -101,7 +101,9 @@ Configuration file:
     $user/minetest.conf
 - It is created by Minetest when it is ran the first time.
 - A specific file can be specified on the command line:
-	--config <path-to-file>
+    --config <path-to-file>
+- A run-in-place build will look for the configuration file in
+    $location_of_exe/../minetest.conf and also $location_of_exe/../../minetest.conf
 
 Command-line options:
 ---------------------
