@@ -1194,10 +1194,11 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	int neighbors_set = 0;
 	if (f->node_box.type == NODEBOX_CONNECTED) {
 		for (int dir = 0; dir != 6; dir++) {
+			int flag = 1 << dir;
 			v3s16 p2 = blockpos_nodes + p + connection_dirs[dir];
 			MapNode n2 = data->m_vmanip.getNodeNoEx(p2);
-			if (nodedef->nodeboxConnects(n, n2, dir))
-				neighbors_set |= 1 << dir;
+			if (nodedef->nodeboxConnects(n, n2, flag))
+				neighbors_set |= flag;
 		}
 	}
 
