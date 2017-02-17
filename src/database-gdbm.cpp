@@ -30,6 +30,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/string.h"
 
+// Change this IF you change serialization way to match width needed to serialize V3S16 vector
+#define GDBM_KEY_WIDTH 6
+
 Database_Gdbm::Database_Gdbm(const std::string &savedir) :
 	m_database(NULL)
 {
@@ -74,9 +77,9 @@ bool Database_Gdbm::deleteBlock(const v3s16 &pos)
 bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 {
 	datum key, value;
-	char buffer[6];
+	char buffer[GDBM_KEY_WIDTH];
 
-	key.dsize = 6;
+	key.dsize = sizeof(buffer)/sizeof(char);
 	key.dptr = &buffer[0];
 	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 
@@ -93,9 +96,9 @@ bool Database_Gdbm::saveBlock(const v3s16 &pos, const std::string &data)
 void Database_Gdbm::loadBlock(const v3s16 &pos, std::string *block)
 {
 	datum key,value;
-	char buffer[6];
+	char buffer[GDBM_KEY_WIDTH];
 
-	key.dsize = 6;
+	key.dsize = sizeof(buffer)/sizeof(char);
 	key.dptr = &buffer[0];
 	writeV3S16(reinterpret_cast<unsigned char*>(key.dptr),pos);
 	value = gdbm_fetch(m_database, key);
@@ -112,7 +115,7 @@ void Database_Gdbm::listAllLoadableBlocks(std::vector<v3s16> &dst)
 	while (key.dptr) {
 		datum value;
 
-		if (key.dsize != 6)
+		if (key.dsize != GDBM_KEY_WIDTH)
 			throw DatabaseException(std::string("Unexpected key size, database corrupted?"));
 
 		dst.push_back(readV3S16(reinterpret_cast<unsigned char*>(key.dptr)));
