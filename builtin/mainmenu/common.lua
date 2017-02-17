@@ -54,7 +54,8 @@ end
 function image_column(tooltip, flagname)
 	return "image,tooltip=" .. core.formspec_escape(tooltip) .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png") .. "," ..
+		"1=" .. core.formspec_escape(defaulttexturedir ..
+			(flagname and "server_flags_" .. flagname .. ".png" or "blank.png")) .. "," ..
 		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
 		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
 		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
