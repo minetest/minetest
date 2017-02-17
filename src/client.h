@@ -692,6 +692,8 @@ private:
 	bool m_cache_enable_shaders;
 	bool m_cache_use_tangent_vertices;
 
+	u16 m_cache_max_processed_meshes_per_frame;
+
 	DISABLE_CLASS_COPY(Client);
 };
 

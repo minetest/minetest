@@ -269,6 +269,8 @@ Client::Client(
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
 		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
+	m_cache_max_processed_meshes_per_frame =
+		g_settings->getU16("max_processed_meshes_per_frame");
 }
 
 void Client::Stop()
@@ -537,7 +539,8 @@ void Client::step(float dtime)
 	*/
 	{
 		int num_processed_meshes = 0;
-		while (!m_mesh_update_thread.m_queue_out.empty())
+		while (!m_mesh_update_thread.m_queue_out.empty() &&
+			num_processed_meshes < m_cache_max_processed_meshes_per_frame)
 		{
 			num_processed_meshes++;
 
