@@ -301,7 +301,6 @@ end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
@@ -497,7 +496,7 @@ end
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change)
-	local last = false
+	local last
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
 		local func = core.registered_on_player_hpchanges.modifiers[i]
 		hp_change, last = func(player, hp_change)
