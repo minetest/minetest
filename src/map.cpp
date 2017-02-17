@@ -3161,7 +3161,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		if(block_data_inexistent)
 		{
 
-			if (load_if_inexistent) {
+			if (load_if_inexistent && !blockpos_over_limit(p)) {
 				ServerMap *svrmap = (ServerMap *)m_map;
 				block = svrmap->emergeBlock(p, false);
 				if (block == NULL)
