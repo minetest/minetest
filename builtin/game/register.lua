@@ -403,10 +403,6 @@ function core.run_callbacks(callbacks, mode, ...)
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callbacks[i]) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 		local cb_ret = callbacks[i](...)
 

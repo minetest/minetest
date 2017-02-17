@@ -509,10 +509,6 @@ function core.node_dig(pos, node, digger)
 		local origin = core.callback_origins[callback]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callback) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 
 		-- Copy pos and node because callback can modify them
