@@ -836,11 +836,13 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	description = "Shutdown server",
+	params = "[reconnect] [message]",
 	privs = {server=true},
 	func = function(name, param)
 		core.log("action", name .. " shuts down server")
-		core.request_shutdown()
 		core.chat_send_all("*** Server shutting down (operator request).")
+		local reconnect, message = param:match("([^ ]+)(.*)")
+		core.request_shutdown(message:trim(), minetest.is_yes(reconnect))
 	end,
 })
 
