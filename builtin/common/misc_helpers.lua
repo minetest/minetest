@@ -537,7 +537,7 @@ function core.string_to_pos(value)
 		p.z = tonumber(p.z)
 		return p
 	end
-	local p = {}
+	p = {}
 	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
 	if p.x and p.y and p.z then
 		p.x = tonumber(p.x)
