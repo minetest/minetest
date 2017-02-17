@@ -5,7 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
-function basic_dump(o)
+local function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
 		return tostring(o)
