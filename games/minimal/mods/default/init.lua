@@ -39,9 +39,14 @@ minetest.register_item(":", {
 			crumbly = {times={[2]=3.00, [3]=0.70}, uses=0, maxlevel=1},
 			snappy = {times={[3]=0.40}, uses=0, maxlevel=1},
 			oddly_breakable_by_hand = {times={[1]=7.00,[2]=4.00,[3]=1.40}, uses=0, maxlevel=3},
-		}
+		},
+		damage_groups = {fleshy=1},
 	}
 })
+
+--
+-- Picks
+--
 
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
@@ -50,7 +55,8 @@ minetest.register_tool("default:pick_wood", {
 		max_drop_level=0,
 		groupcaps={
 			cracky={times={[2]=2.00, [3]=1.20}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:pick_stone", {
@@ -60,7 +66,8 @@ minetest.register_tool("default:pick_stone", {
 		max_drop_level=0,
 		groupcaps={
 			cracky={times={[1]=2.00, [2]=1.20, [3]=0.80}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:pick_steel", {
@@ -70,7 +77,8 @@ minetest.register_tool("default:pick_steel", {
 		max_drop_level=1,
 		groupcaps={
 			cracky={times={[1]=4.00, [2]=1.60, [3]=1.00}, uses=10, maxlevel=2}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
 minetest.register_tool("default:pick_mese", {
@@ -83,9 +91,15 @@ minetest.register_tool("default:pick_mese", {
 			cracky={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 			crumbly={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 			snappy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
+
+--
+-- Shovels
+--
+
 minetest.register_tool("default:shovel_wood", {
 	description = "Wooden Shovel",
 	inventory_image = "default_tool_woodshovel.png",
@@ -93,7 +107,8 @@ minetest.register_tool("default:shovel_wood", {
 		max_drop_level=0,
 		groupcaps={
 			crumbly={times={[1]=2.00, [2]=0.80, [3]=0.50}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:shovel_stone", {
@@ -103,7 +118,8 @@ minetest.register_tool("default:shovel_stone", {
 		max_drop_level=0,
 		groupcaps={
 			crumbly={times={[1]=1.20, [2]=0.50, [3]=0.30}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:shovel_steel", {
@@ -113,9 +129,15 @@ minetest.register_tool("default:shovel_steel", {
 		max_drop_level=1,
 		groupcaps={
 			crumbly={times={[1]=1.00, [2]=0.70, [3]=0.60}, uses=10, maxlevel=2}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
+
+--
+-- Axes
+--
+
 minetest.register_tool("default:axe_wood", {
 	description = "Wooden Axe",
 	inventory_image = "default_tool_woodaxe.png",
@@ -124,7 +146,8 @@ minetest.register_tool("default:axe_wood", {
 		groupcaps={
 			choppy={times={[2]=1.40, [3]=0.80}, uses=10, maxlevel=1},
 			fleshy={times={[2]=1.50, [3]=0.80}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:axe_stone", {
@@ -135,7 +158,8 @@ minetest.register_tool("default:axe_stone", {
 		groupcaps={
 			choppy={times={[1]=1.50, [2]=1.00, [3]=0.60}, uses=20, maxlevel=1},
 			fleshy={times={[2]=1.30, [3]=0.70}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:axe_steel", {
@@ -146,9 +170,15 @@ minetest.register_tool("default:axe_steel", {
 		groupcaps={
 			choppy={times={[1]=2.00, [2]=1.60, [3]=1.00}, uses=10, maxlevel=2},
 			fleshy={times={[2]=1.10, [3]=0.60}, uses=40, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
+
+--
+-- Swords
+--
+
 minetest.register_tool("default:sword_wood", {
 	description = "Wooden Sword",
 	inventory_image = "default_tool_woodsword.png",
@@ -159,7 +189,8 @@ minetest.register_tool("default:sword_wood", {
 			fleshy={times={[2]=1.10, [3]=0.60}, uses=10, maxlevel=1},
 			snappy={times={[2]=1.00, [3]=0.50}, uses=10, maxlevel=1},
 			choppy={times={[3]=1.00}, uses=20, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=2},
 	}
 })
 minetest.register_tool("default:sword_stone", {
@@ -172,7 +203,8 @@ minetest.register_tool("default:sword_stone", {
 			fleshy={times={[2]=0.80, [3]=0.40}, uses=20, maxlevel=1},
 			snappy={times={[2]=0.80, [3]=0.40}, uses=20, maxlevel=1},
 			choppy={times={[3]=0.90}, uses=20, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=4},
 	}
 })
 minetest.register_tool("default:sword_steel", {
@@ -185,7 +217,8 @@ minetest.register_tool("default:sword_steel", {
 			fleshy={times={[1]=2.00, [2]=0.80, [3]=0.40}, uses=10, maxlevel=2},
 			snappy={times={[2]=0.70, [3]=0.30}, uses=40, maxlevel=1},
 			choppy={times={[3]=0.70}, uses=40, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=6},
 	}
 })
 
