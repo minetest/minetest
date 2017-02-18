@@ -425,7 +425,7 @@ private:
 			float far_d_nodes = 100, bool remove_metadata = true);
 
 	void sendMetadataChanged(const std::list<v3s16> &meta_updates,
-			float far_d_nodes=100);
+			float far_d_nodes = 100);
 
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);

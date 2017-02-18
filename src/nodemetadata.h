@@ -76,9 +76,9 @@ public:
 	~NodeMetadataList();
 
 	void serialize(std::ostream &os, u8 blockver, bool disk = true,
-		bool uncompressed_pos = false) const;
+		bool absolute_pos = false) const;
 	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr,
-		bool uncompressed_pos = false);
+		bool absolute_pos = false);
 
 	// Add all keys in this list to the vector keys
 	std::vector<v3s16> getAllKeys();
@@ -89,7 +89,7 @@ public:
 	// Deletes old data and sets a new one
 	void set(v3s16 p, NodeMetadata *d);
 	// Deletes all
-	void clear();
+	void clear(bool delete_nodemetadata = true);
 
 private:
 	int countNonEmpty() const;

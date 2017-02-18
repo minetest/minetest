@@ -113,7 +113,7 @@ int NodeMetadata::countNonPrivate() const
 */
 
 void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
-	bool uncompressed_pos) const
+	bool absolute_pos) const
 {
 	/*
 		Version 0 is a placeholder for "nothing to see here; go away."
@@ -135,12 +135,13 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 		if (data->empty())
 			continue;
 
-		if (uncompressed_pos) {
-			writeU16(os, p.X);
-			writeU16(os, p.Y);
-			writeU16(os, p.Z);
+		if (absolute_pos) {
+			writeS16(os, p.X);
+			writeS16(os, p.Y);
+			writeS16(os, p.Z);
 		} else {
-			u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;
+			// Serialize positions within a mapblock
+			u16 p16 = (p.Z * MAP_BLOCKSIZE + p.Y) * MAP_BLOCKSIZE + p.X;
 			writeU16(os, p16);
 		}
 		data->serialize(os, version, disk);
@@ -148,7 +149,7 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk,
 }
 
 void NodeMetadataList::deSerialize(std::istream &is,
-	IItemDefManager *item_def_mgr, bool uncompressed_pos)
+	IItemDefManager *item_def_mgr, bool absolute_pos)
 {
 	clear();
 
@@ -170,17 +171,17 @@ void NodeMetadataList::deSerialize(std::istream &is,
 
 	for (u16 i = 0; i < count; i++) {
 		v3s16 p;
-		if (uncompressed_pos) {
-			p.X = readU16(is);
-			p.Y = readU16(is);
-			p.Z = readU16(is);
+		if (absolute_pos) {
+			p.X = readS16(is);
+			p.Y = readS16(is);
+			p.Z = readS16(is);
 		} else {
 			u16 p16 = readU16(is);
-			p.Z = p16 / MAP_BLOCKSIZE / MAP_BLOCKSIZE;
-			p16 &= MAP_BLOCKSIZE * MAP_BLOCKSIZE - 1;
-			p.Y = p16 / MAP_BLOCKSIZE;
-			p16 &= MAP_BLOCKSIZE - 1;
-			p.X = p16;
+			p.X = p16 & (MAP_BLOCKSIZE - 1);
+			p16 /= MAP_BLOCKSIZE;
+			p.Y = p16 & (MAP_BLOCKSIZE - 1);
+			p16 /= MAP_BLOCKSIZE;
+			p.Z = p16;
 		}
 		if (m_data.find(p) != m_data.end()) {
 			warningstream << "NodeMetadataList::deSerialize(): "
@@ -234,11 +235,13 @@ void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
 	m_data.insert(std::make_pair(p, d));
 }
 
-void NodeMetadataList::clear()
+void NodeMetadataList::clear(bool delete_nodemetadata)
 {
-	std::map<v3s16, NodeMetadata*>::iterator it;
-	for (it = m_data.begin(); it != m_data.end(); ++it) {
-		delete it->second;
+	if (delete_nodemetadata) {
+		std::map<v3s16, NodeMetadata*>::iterator it;
+		for (it = m_data.begin(); it != m_data.end(); ++it) {
+			delete it->second;
+		}
 	}
 	m_data.clear();
 }

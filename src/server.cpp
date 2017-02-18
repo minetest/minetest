@@ -2176,45 +2176,50 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 {
 	float maxd = far_d_nodes * BS;
 	NodeMetadataList *meta_updates_list = new NodeMetadataList();
-
 	std::vector<u16> clients = m_clients.getClientIDs();
+
 	m_clients.lock();
 
 	for (std::vector<u16>::iterator i = clients.begin();
 			i != clients.end(); ++i) {
-		meta_updates_list->clear();
-		RemotePlayer *player = m_env->getPlayer(*i);
-		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
+		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
 		if (client == NULL)
 			continue;
+
 		if (client->net_proto_version >= 37) {
-			PlayerSAO *sao = player ? player->getPlayerSAO() : nullptr;
+			ServerActiveObject *player = m_env->getActiveObject(*i);
+
 			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
 					i2 != meta_updates.end(); ++i2) {
 				v3s16 pos = *i2;
 				NodeMetadata *meta = m_env->getMap().getNodeMetadata(pos);
-				if (!meta) {
+
+				if (!meta)
 					continue;
-				}
-				if (sao) {
+
+				if (player) {
 					// If player is far away, only set modified blocks not sent
-					v3f player_pos = sao->getBasePosition();
+					v3f player_pos = player->getBasePosition();
 					if (player_pos.getDistanceFrom(intToFloat(pos, BS)) > maxd) {
 						client->SetBlockNotSent(getNodeBlockPos(pos));
 						continue;
 					}
 				}
+
 				// Add the change to send list
 				meta_updates_list->set(pos, meta);
 			}
 			// Send the meta changes
-			NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
 			std::ostringstream os(std::ios::binary);
 			meta_updates_list->serialize(os, true);
 			std::ostringstream oss(std::ios::binary);
 			compressZlib(os.str(), oss);
+
+			NetworkPacket pkt(TOCLIENT_NODEMETA_CHANGED, 0);
 			pkt.putLongString(oss.str());
 			m_clients.send(*i, 0, &pkt, true);
+
+			meta_updates_list->clear(false);
 		} else {
 			// Older clients expect whole blocks, set them not sent
 			for (std::list<v3s16>::const_iterator i2 = meta_updates.begin();
@@ -2226,6 +2231,7 @@ void Server::sendMetadataChanged(const std::list<v3s16> &meta_updates, float far
 	}
 
 	m_clients.unlock();
+	delete meta_updates_list;
 }
 
 void Server::SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver,
