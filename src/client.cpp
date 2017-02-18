@@ -157,6 +157,12 @@ QueuedMeshUpdate *MeshUpdateQueue::pop()
 	MeshUpdateThread
 */
 
+MeshUpdateThread::MeshUpdateThread() : UpdateThread("Mesh")
+{
+	m_generation_interval = g_settings->getU16("mesh_generation_interval");
+	m_generation_interval = rangelim(m_generation_interval, 0, 50);
+}
+
 void MeshUpdateThread::enqueueUpdate(v3s16 p, MeshMakeData *data,
 		bool ack_block_to_server, bool urgent)
 {
@@ -168,7 +174,8 @@ void MeshUpdateThread::doUpdate()
 {
 	QueuedMeshUpdate *q;
 	while ((q = m_queue_in.pop())) {
-
+		if (m_generation_interval)
+			sleep_ms(m_generation_interval);
 		ScopeProfiler sp(g_profiler, "Client: Mesh making");
 
 		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);

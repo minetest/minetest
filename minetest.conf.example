@@ -594,6 +594,11 @@ enable_client_modding (Client modding) bool false
 #    type: bool
 # enable_mesh_cache = false
 
+#    Delay between mesh updates on the client in ms. Increasing this will slow
+#    down the rate of mesh updates, thus reducing jitter on slower clients.
+#    type: int min: 0 max: 50
+# mesh_generation_interval = 0
+
 #    Enables minimap.
 #    type: bool
 # enable_minimap = true

@@ -511,6 +511,10 @@ hud_hotbar_max_width (Maximum hotbar width) float 1.0
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
 
+#    Delay between mesh updates on the client in ms. Increasing this will slow
+#    down the rate of mesh updates, thus reducing jitter on slower clients.
+mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
+
 #    Enables minimap.
 enable_minimap (Minimap) bool true
 
