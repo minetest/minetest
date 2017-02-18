@@ -245,6 +245,8 @@ fake_function() {
 	gettext("Maximum proportion of current window to be used for hotbar.\nUseful if there's something to be displayed right or left of hotbar.");
 	gettext("Mesh cache");
 	gettext("Enables caching of facedir rotated meshes.");
+	gettext("Mapblock mesh generation delay");
+	gettext("Delay between mesh updates on the client in ms. Increasing this will slow\ndown the rate of mesh updates, thus reducing jitter on slower clients.");
 	gettext("Minimap");
 	gettext("Enables minimap.");
 	gettext("Round minimap");

@@ -120,13 +120,14 @@ class MeshUpdateThread : public UpdateThread
 {
 private:
 	MeshUpdateQueue m_queue_in;
+	int m_generation_interval;
 
 protected:
 	virtual void doUpdate();
 
 public:
 
-	MeshUpdateThread() : UpdateThread("Mesh") {}
+	MeshUpdateThread();
 
 	void enqueueUpdate(v3s16 p, MeshMakeData *data,
 			bool ack_block_to_server, bool urgent);
