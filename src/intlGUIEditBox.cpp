@@ -61,10 +61,10 @@ namespace gui
 //! constructor
 intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
-		const core::rect<s32>& rectangle)
+		const core::rect<s32>& rectangle, bool writable, bool has_vscrollbar)
 	: IGUIEditBox(environment, parent, id, rectangle),
-	Border(border),
-	FrameRect(rectangle)
+	Border(border), FrameRect(rectangle),
+	m_scrollbar_width(0), m_vscrollbar(NULL), m_writable(writable)
 {
 	#ifdef _DEBUG
 	setDebugName("intlintlGUIEditBox");
@@ -93,9 +93,18 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		FrameRect.LowerRightCorner.Y -= skin->getSize(EGDS_TEXT_DISTANCE_Y)+1;
 	}
 
+	if (skin && has_vscrollbar) {
+		m_scrollbar_width = skin->getSize(gui::EGDS_SCROLLBAR_SIZE);
+
+		if (m_scrollbar_width > 0) {
+			createVScrollBar();
+		}
+	}
+
 	breakText();
 
 	calculateScrollPos();
+	setWritable(writable);
 }
 
 
@@ -251,7 +260,7 @@ void intlGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT 
 //! called if an event happened.
 bool intlGUIEditBox::OnEvent(const SEvent& event)
 {
-	if (IsEnabled)
+	if (IsEnabled && m_writable)
 	{
 
 		switch(event.EventType)
@@ -771,14 +780,18 @@ void intlGUIEditBox::draw()
 
 	if (Border)
 	{
-		skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
-			false, true, FrameRect, &AbsoluteClippingRect);
+		if (m_writable)	{
+			skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
+				false, true, FrameRect, &AbsoluteClippingRect);
+		}
 
 		FrameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
 		FrameRect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y)+1;
 		FrameRect.LowerRightCorner.X -= skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
 		FrameRect.LowerRightCorner.Y -= skin->getSize(EGDS_TEXT_DISTANCE_Y)+1;
 	}
+
+	updateVScrollBar();
 	core::rect<s32> localClipRect = FrameRect;
 	localClipRect.clipAgainst(AbsoluteClippingRect);
 
@@ -930,14 +943,16 @@ void intlGUIEditBox::draw()
 		charcursorpos = font->getDimension(s.c_str()).Width +
 			font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
-		if (focus && (porting::getTimeMs() - BlinkStartTime) % 700 < 350)
-		{
-			setTextRect(cursorLine);
-			CurrentTextRect.UpperLeftCorner.X += charcursorpos;
+		if (m_writable)	{
+			if (focus && (porting::getTimeMs() - BlinkStartTime) % 700 < 350)
+			{
+				setTextRect(cursorLine);
+				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
-			font->draw(L"_", CurrentTextRect,
-				OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
-				false, true, &localClipRect);
+				font->draw(L"_", CurrentTextRect,
+					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
+					false, true, &localClipRect);
+			}
 		}
 	}
 
@@ -1418,6 +1433,9 @@ void intlGUIEditBox::calculateScrollPos()
 		VScrollPos = 0;
 
 	// todo: adjust scrollbar
+	if (m_vscrollbar) {
+		m_vscrollbar->setPos(VScrollPos);
+	}	
 }
 
 //! set text markers
@@ -1446,6 +1464,70 @@ void intlGUIEditBox::sendGuiEvent(EGUI_EVENT_TYPE type)
 	}
 }
 
+//! Create a vertical scrollbar
+void intlGUIEditBox::createVScrollBar()
+{
+	irr::core::rect<s32> scrollbarrect = FrameRect;
+	scrollbarrect.UpperLeftCorner.X += FrameRect.getWidth() - m_scrollbar_width;
+	m_vscrollbar = Environment->addScrollBar(false, scrollbarrect, getParent(), getID());
+	m_vscrollbar->setVisible(false);
+	m_vscrollbar->setSmallStep(1);
+	m_vscrollbar->setLargeStep(1);
+}
+
+//! Update the vertical scrollbar (visibilty & scroll position)
+void intlGUIEditBox::updateVScrollBar()
+{
+	if (!m_vscrollbar) {
+		return;
+	}
+
+	// OnScrollBarChanged(...)
+	if (m_vscrollbar->getPos() != VScrollPos) {
+		s32 deltaScrollY = m_vscrollbar->getPos() - VScrollPos;
+		CurrentTextRect.UpperLeftCorner.Y -= deltaScrollY;
+		CurrentTextRect.LowerRightCorner.Y -= deltaScrollY;
+
+		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
+		if (scrollymax != m_vscrollbar->getMax()) {
+			// manage a newline or a deleted line
+			m_vscrollbar->setMax(scrollymax);
+			calculateScrollPos();
+		} else {
+			// manage a newline or a deleted line
+			VScrollPos = m_vscrollbar->getPos();
+		}
+	}
+
+	// check if a vertical scrollbar is needed ?
+	if (getTextDimension().Height > FrameRect.getHeight()) {
+		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
+		if (scrollymax != m_vscrollbar->getMax()) {
+			m_vscrollbar->setMax(scrollymax);
+		}
+
+		if (!m_vscrollbar->isVisible() && MultiLine) {
+			AbsoluteRect.LowerRightCorner.X -= m_scrollbar_width;
+
+			m_vscrollbar->setVisible(true);
+		}
+	} else {
+		if (m_vscrollbar->isVisible()) {
+			AbsoluteRect.LowerRightCorner.X += m_scrollbar_width;
+
+			VScrollPos = 0;
+			m_vscrollbar->setPos(0);
+			m_vscrollbar->setMax(1);
+			m_vscrollbar->setVisible(false);
+		}
+	}
+}
+
+void intlGUIEditBox::setWritable(bool can_write_text)
+{
+	m_writable = can_write_text;
+}
+
 //! Writes attributes of the element.
 void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -1464,6 +1546,7 @@ void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addString("PasswordChar",        ch.c_str());
 	out->addEnum  ("HTextAlign",          HAlign, GUIAlignmentNames);
 	out->addEnum  ("VTextAlign",          VAlign, GUIAlignmentNames);
+	out->addBool  ("Writable",            m_writable);
 
 	IGUIEditBox::serializeAttributes(out,options);
 }
@@ -1490,6 +1573,7 @@ void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
+	setWritable(in->getAttributeAsBool("Writable"));
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
 }
 

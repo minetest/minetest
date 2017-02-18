@@ -10,6 +10,7 @@
 #include "IGUIEditBox.h"
 #include "irrArray.h"
 #include "IOSOperator.h"
+#include "IGUIScrollBar.h"
 
 namespace irr
 {
@@ -21,7 +22,8 @@ namespace gui
 
 		//! constructor
 		intlGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle);
+			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle,
+			bool writable = true, bool has_vscrollbar = false);
 
 		//! destructor
 		virtual ~intlGUIEditBox();
@@ -118,6 +120,9 @@ namespace gui
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
 
+		//! set true if this EditBox is writable
+		virtual void setWritable(bool can_write_text);
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
@@ -143,6 +148,12 @@ namespace gui
 		bool processKey(const SEvent& event);
 		bool processMouse(const SEvent& event);
 		s32 getCursorPos(s32 x, s32 y);
+
+		//! Create a vertical scrollbar
+		void createVScrollBar();
+
+		//! Update the vertical scrollbar (visibilty & scroll position)
+		void updateVScrollBar();
 
 		bool MouseMarking = false;
 		bool Border;
@@ -174,6 +185,10 @@ namespace gui
 
 		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
 		core::rect<s32> FrameRect; // temporary values
+		u32 m_scrollbar_width;
+		IGUIScrollBar *m_vscrollbar;
+		bool m_writable;
+
 	};
 
 

@@ -511,6 +511,7 @@ set(client_SRCS
 	fontengine.cpp
 	game.cpp
 	guiChatConsole.cpp
+	guiEditBoxWithScrollbar.cpp
 	guiEngine.cpp
 	guiPathSelectMenu.cpp
 	guiFormSpecMenu.cpp
