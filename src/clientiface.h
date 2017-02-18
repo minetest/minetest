@@ -165,7 +165,6 @@ namespace con {
 	class Connection;
 }
 
-#define CI_ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 // Also make sure to update the ClientInterface::statenames
 // array when modifying these enums
