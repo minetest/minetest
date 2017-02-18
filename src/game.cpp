@@ -884,7 +884,8 @@ bool nodePlacementPrediction(Client &client,
 			};
 			v3s16 pp;
 
-			if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED)
+			if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED ||
+					nodedef->get(id).param_type_2 == CPT2_COLORED_WALLMOUNTED)
 				pp = p + wallmounted_dirs[param2];
 			else
 				pp = p + v3s16(0, -1, 0);

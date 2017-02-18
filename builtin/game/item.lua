@@ -262,7 +262,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Calculate direction for wall mounted stuff like torches and signs
 	if def.place_param2 ~= nil then
 		newnode.param2 = def.place_param2
-	elseif def.paramtype2 == 'wallmounted' and not param2 then
+	elseif (def.paramtype2 == 'wallmounted' or
+			def.paramtype2 == 'colorwallmounted') and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -270,7 +271,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		}
 		newnode.param2 = core.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
-	elseif def.paramtype2 == 'facedir' and not param2 then
+	elseif (def.paramtype2 == 'facedir' or
+			def.paramtype2 == 'colorfacedir') and not param2 then
 		local placer_pos = placer:getpos()
 		if placer_pos then
 			local dir = {
