@@ -2496,7 +2496,9 @@ These functions return the leftover itemstack.
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
-* `minetest.sound_stop(handle)`
+* `minetest.sound_pause(handle)`: pause the sound
+* `minetest.sound_resume(handle)`: resume the previously paused sound
+* `minetest.sound_stop(handle)`: stop the sound
 
 ### Timing
 * `minetest.after(time, func, ...)`
