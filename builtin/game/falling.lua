@@ -134,7 +134,8 @@ end
 function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
-	if def.paramtype2 == "wallmounted" then
+	if def.paramtype2 == "wallmounted" or
+			def.paramtype2 == "colorwallmounted" then
 		-- The fallback vector here is in case 'wallmounted to dir' is nil due
 		-- to voxelmanip placing a wallmounted node without resetting a
 		-- pre-existing param2 value that is out-of-range for wallmounted.
