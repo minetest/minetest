@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "light.h"
 #include <math.h>
 #include "util/numeric.h"
+#include "settings.h"
 
 #ifndef SERVER
 
@@ -35,12 +36,21 @@ const u8 *light_decode_table = light_LUT;
  */
 void set_light_table(float gamma)
 {
-	gamma = rangelim(gamma, 0.1, 10.0);
+// lighting curve derivatives
+	const float alpha = g_settings->getFloat("lighting_alpha");
+	const float beta  = g_settings->getFloat("lighting_beta");
+// lighting curve coefficients
+	const float a = alpha + beta - 2;
+	const float b = 3 - 2 * alpha - beta;
+	const float c = alpha;
+// gamma correction
+	gamma = rangelim(gamma, 0.5, 3.0);
+
 	for (size_t i = 0; i < LIGHT_MAX; i++) {
-		float brightness = i;
-		brightness /= LIGHT_MAX;
+		float x = i;
+		x /= LIGHT_MAX;
+		float brightness = a * x * x * x + b * x * x + c * x;
 		brightness = powf(brightness, 1.0 / gamma);
-		brightness = asin(2.0 * brightness - 1.0) / M_PI + 0.5;
 		light_LUT[i] = rangelim((u32)(255 * brightness), 0, 255);
 		if (i > 1 && light_LUT[i] <= light_LUT[i - 1])
 			light_LUT[i] = light_LUT[i - 1] + 1;
