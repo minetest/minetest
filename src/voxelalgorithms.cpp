@@ -995,10 +995,7 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 			// Get the bottom block.
 			MapNode above = source_block->getNodeNoCheck(x, 0, z,
 				&is_valid_position);
-			if (above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
-				light[x][z] = true;
-			else
-				light[x][z] = false;
+			light[x][z] = above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN;
 		}
 	}
 }
