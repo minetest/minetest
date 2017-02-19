@@ -1914,7 +1914,7 @@ Helper functions
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
 * `minetest.is_yes(arg)`
-    * returns whether `arg` can be interpreted as yes
+    * returns true if passed 'y', 'yes', 'true' or a number that isn't zero.
 * `minetest.get_us_time()`
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
