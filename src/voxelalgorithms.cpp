@@ -960,8 +960,8 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
  * If block above is not found, it is loaded.
  *
  * \param pos position of the map block that gets the sunlight.
- * \param light incoming sunlight, light[x][z] is true if there
- * is sunlight above the block at the given x-z relative
+ * \param light incoming sunlight, light[z][x] is true if there
+ * is sunlight above the block at the given z-x relative
  * node coordinates.
  */
 void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
@@ -983,19 +983,19 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 			sunlight = false;
 		else
 			sunlight = !node_block->getIsUnderground();
-		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
 		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
-			light[x][z] = sunlight;
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+			light[z][x] = sunlight;
 	} else {
 		// Dummy boolean, the position is valid.
 		bool is_valid_position;
 		// For each column:
-		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
-		for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
 			// Get the bottom block.
 			MapNode above = source_block->getNodeNoCheck(x, 0, z,
 				&is_valid_position);
-			light[x][z] = above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN;
+			light[z][x] = above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN;
 		}
 	}
 }
@@ -1044,9 +1044,10 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 					modified = true;
 					relight->push(LIGHT_SUN, current_pos, data->target_block,
 						block, 4);
-				} else
+				} else {
 					// Light already valid, propagation stopped.
 					break;
+				}
 			}
 		} else {
 			// Propagate shadow.
@@ -1061,9 +1062,10 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 					modified = true;
 					unlight->push(LIGHT_SUN, current_pos, data->target_block,
 						block, 4);
-				} else
+				} else {
 					// Reached shadow, propagation stopped.
 					break;
+				}
 			}
 		}
 		if (current_pos.Y >= 0) {
@@ -1118,10 +1120,10 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 		fill_with_sunlight(vm, ndef, offset, lights);
 		// Copy sunlight data
 		data.target_block = v3s16(x, minblock.Y - 1, z);
-		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
 		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
 			data.data.push_back(
-				SunlightPropagationUnit(v2s16(x, z), lights[x][z]));
+				SunlightPropagationUnit(v2s16(x, z), lights[z][x]));
 		// Propagate sunlight and shadow below the voxel manipulator.
 		while (!data.data.empty()) {
 			if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
