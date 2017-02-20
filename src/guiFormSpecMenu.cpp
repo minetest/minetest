@@ -1706,6 +1706,74 @@ bool GUIFormSpecMenu::parseSizeDirect(parserData* data, std::string element)
 	return true;
 }
 
+bool GUIFormSpecMenu::parsePositionDirect(parserData *data, const std::string &element)
+{
+	if (element.empty())
+		return false;
+
+	std::vector<std::string> parts = split(element, '[');
+
+	if (parts.size() != 2)
+		return false;
+
+	std::string type = trim(parts[0]);
+	std::string description = trim(parts[1]);
+
+	if (type != "position")
+		return false;
+
+	parsePosition(data, description);
+
+	return true;
+}
+
+void GUIFormSpecMenu::parsePosition(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ',');
+
+	if (parts.size() == 2) {
+		data->offset.X = stof(parts[0]);
+		data->offset.Y = stof(parts[1]);
+		return;
+	}
+
+	errorstream << "Invalid position element (" << parts.size() << "): '" << element << "'" << std::endl;
+}
+
+bool GUIFormSpecMenu::parseAnchorDirect(parserData *data, const std::string &element)
+{
+	if (element.empty())
+		return false;
+
+	std::vector<std::string> parts = split(element, '[');
+
+	if (parts.size() != 2)
+		return false;
+
+	std::string type = trim(parts[0]);
+	std::string description = trim(parts[1]);
+
+	if (type != "anchor")
+		return false;
+
+	parseAnchor(data, description);
+
+	return true;
+}
+
+void GUIFormSpecMenu::parseAnchor(parserData *data, const std::string &element)
+{
+	std::vector<std::string> parts = split(element, ',');
+
+	if (parts.size() == 2) {
+		data->anchor.X = stof(parts[0]);
+		data->anchor.Y = stof(parts[1]);
+		return;
+	}
+
+	errorstream << "Invalid anchor element (" << parts.size() << "): '" << element << "'" << std::endl;
+}
+
 void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 {
 	//some prechecks
@@ -1917,6 +1985,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	mydata.size= v2s32(100,100);
 	mydata.screensize = screensize;
+	mydata.offset = v2f32(0.5f, 0.5f);
+	mydata.anchor = v2f32(0.5f, 0.5f);
 
 	// Base position of contents of form
 	mydata.basepos = getBasePos();
@@ -1982,6 +2052,21 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			break;
 		}
 	}
+
+	/* "position" element is always after "size" element if it used */
+	for (; i< elements.size(); i++) {
+		if (!parsePositionDirect(&mydata, elements[i])) {
+			break;
+		}
+	}
+
+	/* "anchor" element is always after "position" (or  "size" element) if it used */
+	for (; i< elements.size(); i++) {
+		if (!parseAnchorDirect(&mydata, elements[i])) {
+			break;
+		}
+	}
+
 
 	if (mydata.explicit_size) {
 		// compute scaling for specified form size
@@ -2066,10 +2151,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 			padding.Y*2+spacing.Y*(mydata.invsize.Y-1.0)+imgsize.Y + m_btn_height*2.0/3.0
 		);
 		DesiredRect = mydata.rect = core::rect<s32>(
-				mydata.screensize.X/2 - mydata.size.X/2 + offset.X,
-				mydata.screensize.Y/2 - mydata.size.Y/2 + offset.Y,
-				mydata.screensize.X/2 + mydata.size.X/2 + offset.X,
-				mydata.screensize.Y/2 + mydata.size.Y/2 + offset.Y
+				(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * (f32)mydata.size.X) + offset.X,
+				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * (f32)mydata.size.Y) + offset.Y,
+				(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * (f32)mydata.size.X) + offset.X,
+				(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * (f32)mydata.size.Y) + offset.Y
 		);
 	} else {
 		// Non-size[] form must consist only of text fields and
@@ -2078,10 +2163,10 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		m_font = g_fontengine->getFont();
 		m_btn_height = font_line_height(m_font) * 0.875;
 		DesiredRect = core::rect<s32>(
-			mydata.screensize.X/2 - 580/2,
-			mydata.screensize.Y/2 - 300/2,
-			mydata.screensize.X/2 + 580/2,
-			mydata.screensize.Y/2 + 300/2
+			(s32)((f32)mydata.screensize.X * mydata.offset.X) - (s32)(mydata.anchor.X * 580.0),
+			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) - (s32)(mydata.anchor.Y * 300.0),
+			(s32)((f32)mydata.screensize.X * mydata.offset.X) + (s32)((1.0 - mydata.anchor.X) * 580.0),
+			(s32)((f32)mydata.screensize.Y * mydata.offset.Y) + (s32)((1.0 - mydata.anchor.Y) * 300.0)
 		);
 	}
 	recalculateAbsolutePosition(false);

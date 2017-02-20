@@ -1522,6 +1522,16 @@ examples.
 * `fixed_size`: `true`/`false` (optional)
 * deprecated: `invsize[<W>,<H>;]`
 
+#### `position[<X>,<Y>]`
+* Define the position of the formspec
+* A value between 0.0 and 1.0 represents a position inside the screen
+* The default value is the center of the screen (0.5, 0.5)
+
+#### `anchor[<X>,<Y>]`
+* Define the anchor of the formspec
+* A value between 0.0 and 1.0 represents an anchor inside the formspec
+* The default value is the center of the formspec (0.5, 0.5)
+
 #### `container[<X>,<Y>]`
 * Start of a container block, moves all physical elements in the container by (X, Y)
 * Must have matching container_end
