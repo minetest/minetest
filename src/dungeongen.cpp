@@ -52,6 +52,7 @@ DungeonGen::DungeonGen(INodeDefManager *ndef,
 	if (dparams) {
 		memcpy(&dp, dparams, sizeof(dp));
 	} else {
+		// Default dungeon parameters
 		dp.seed = 0;
 
 		dp.c_water       = ndef->getId("mapgen_water_source");
@@ -63,14 +64,20 @@ DungeonGen::DungeonGen(INodeDefManager *ndef,
 		if (dp.c_river_water == CONTENT_IGNORE)
 			dp.c_river_water = ndef->getId("mapgen_water_source");
 
-		dp.diagonal_dirs = false;
-		dp.holesize      = v3s16(1, 2, 1);
-		dp.roomsize      = v3s16(0, 0, 0);
-		dp.rooms_min     = 2;
-		dp.rooms_max     = 16;
-		dp.y_min         = -MAX_MAP_GENERATION_LIMIT;
-		dp.y_max         = MAX_MAP_GENERATION_LIMIT;
-		dp.notifytype    = GENNOTIFY_DUNGEON;
+		dp.diagonal_dirs       = false;
+		dp.only_in_ground      = true;
+		dp.holesize            = v3s16(1, 2, 1);
+		dp.corridor_len_min    = 1;
+		dp.corridor_len_max    = 13;
+		dp.room_size_min       = v3s16(4, 4, 4);
+		dp.room_size_max       = v3s16(8, 6, 8);
+		dp.room_size_large_min = v3s16(8, 8, 8);
+		dp.room_size_large_max = v3s16(16, 16, 16);
+		dp.rooms_min           = 2;
+		dp.rooms_max           = 16;
+		dp.y_min               = -MAX_MAP_GENERATION_LIMIT;
+		dp.y_max               = MAX_MAP_GENERATION_LIMIT;
+		dp.notifytype          = GENNOTIFY_DUNGEON;
 
 		dp.np_density  = nparams_dungeon_density;
 		dp.np_alt_wall = nparams_dungeon_alt_wall;
@@ -97,16 +104,19 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	// Dungeon generator doesn't modify places which have this set
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
-	// Set all air and water to be untouchable
-	// to make dungeons open to caves and open air
-	for (s16 z = nmin.Z; z <= nmax.Z; z++) {
-		for (s16 y = nmin.Y; y <= nmax.Y; y++) {
-			u32 i = vm->m_area.index(nmin.X, y, z);
-			for (s16 x = nmin.X; x <= nmax.X; x++) {
-				content_t c = vm->m_data[i].getContent();
-				if (c == CONTENT_AIR || c == dp.c_water || c == dp.c_river_water)
-					vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
-				i++;
+	if (dp.only_in_ground) {
+		// Set all air and water to be untouchable
+		// to make dungeons open to caves and open air
+		for (s16 z = nmin.Z; z <= nmax.Z; z++) {
+			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
+				u32 i = vm->m_area.index(nmin.X, y, z);
+				for (s16 x = nmin.X; x <= nmax.X; x++) {
+					content_t c = vm->m_data[i].getContent();
+					if (c == CONTENT_AIR || c == dp.c_water ||
+							c == dp.c_river_water)
+						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
+					i++;
+				}
 			}
 		}
 	}
@@ -142,21 +152,25 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 	v3s16 roomplace;
 
 	/*
-		Find place for first room
+		Find place for first room.
+		There is a 1 in 4 chance of the first room being 'large',
+		all other rooms are not 'large'.
 	*/
 	bool fits = false;
 	for (u32 i = 0; i < 100 && !fits; i++) {
 		bool is_large_room = ((random.next() & 3) == 1);
 		if (is_large_room) {
-			roomsize.Z = random.range(8, 16);
-			roomsize.Y = random.range(8, 16);
-			roomsize.X = random.range(8, 16);
+			roomsize.Z = random.range(
+				dp.room_size_large_min.Z, dp.room_size_large_max.Z);
+			roomsize.Y = random.range(
+				dp.room_size_large_min.Y, dp.room_size_large_max.Y);
+			roomsize.X = random.range(
+				dp.room_size_large_min.X, dp.room_size_large_max.X);
 		} else {
-			roomsize.Z = random.range(4, 8);
-			roomsize.Y = random.range(4, 6);
-			roomsize.X = random.range(4, 8);
+			roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
+			roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
+			roomsize.X = random.range(dp.room_size_min.X, dp.room_size_max.X);
 		}
-		roomsize += dp.roomsize;
 
 		// start_padding is used to disallow starting the generation of
 		// a dungeon in a neighboring generation chunk
@@ -246,10 +260,9 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		makeCorridor(doorplace, doordir, corridor_end, corridor_end_dir);
 
 		// Find a place for a random sized room
-		roomsize.Z = random.range(4, 8);
-		roomsize.Y = random.range(4, 6);
-		roomsize.X = random.range(4, 8);
-		roomsize += dp.roomsize;
+		roomsize.Z = random.range(dp.room_size_min.Z, dp.room_size_max.Z);
+		roomsize.Y = random.range(dp.room_size_min.Y, dp.room_size_max.Y);
+		roomsize.X = random.range(dp.room_size_min.X, dp.room_size_max.X);
 
 		m_pos = corridor_end;
 		m_dir = corridor_end_dir;
@@ -397,13 +410,8 @@ void DungeonGen::makeCorridor(v3s16 doorplace, v3s16 doordir,
 	makeHole(doorplace);
 	v3s16 p0 = doorplace;
 	v3s16 dir = doordir;
-	u32 length;
-	/*if (random.next() % 2)
-		length = random.range(1, 13);
-	else
-		length = random.range(1, 6);*/
-	length = random.range(1, 13);
-	u32 partlength = random.range(1, 13);
+	u32 length = random.range(dp.corridor_len_min, dp.corridor_len_max);
+	u32 partlength = random.range(dp.corridor_len_min, dp.corridor_len_max);
 	u32 partcount = 0;
 	s16 make_stairs = 0;
 
@@ -556,7 +564,6 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 			continue;
 		v3s16 roomplace;
 		// X east, Z north, Y up
-#if 1
 		if (doordir == v3s16(1, 0, 0)) // X+
 			roomplace = doorplace +
 				v3s16(0, -1, random.range(-roomsize.Z + 2, -2));
@@ -569,17 +576,6 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 		if (doordir == v3s16(0, 0, -1)) // Z-
 			roomplace = doorplace +
 				v3s16(random.range(-roomsize.X + 2, -2), -1, -roomsize.Z + 1);
-#endif
-#if 0
-		if (doordir == v3s16(1, 0, 0)) // X+
-			roomplace = doorplace + v3s16(0, -1, -roomsize.Z / 2);
-		if (doordir == v3s16(-1, 0, 0)) // X-
-			roomplace = doorplace + v3s16(-roomsize.X+1,-1,-roomsize.Z / 2);
-		if (doordir == v3s16(0, 0, 1)) // Z+
-			roomplace = doorplace + v3s16(-roomsize.X / 2, -1, 0);
-		if (doordir == v3s16(0, 0, -1)) // Z-
-			roomplace = doorplace + v3s16(-roomsize.X / 2, -1, -roomsize.Z + 1);
-#endif
 
 		// Check fit
 		bool fits = true;
