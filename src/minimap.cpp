@@ -120,89 +120,63 @@ void MinimapUpdateThread::doUpdate()
 	}
 
 	if (data->map_invalidated && data->mode != MINIMAP_MODE_OFF) {
-		getMap(data->pos, data->map_size, data->scan_height, data->is_radar);
+		getMap(data->pos, data->map_size, data->scan_height);
 		data->map_invalidated = false;
 	}
 }
 
-MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos,
-	s16 scan_height, s16 *pixel_height)
+void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 {
-	s16 height = scan_height - MAP_BLOCKSIZE;
-	v3s16 blockpos_max, blockpos_min, relpos;
+	v3s16 region(size, 0, size);
+	v3s16 pos_min(pos.X - size / 2, pos.Y - height / 2, pos.Z - size / 2);
+	v3s16 pos_max(pos_min.X + size - 1, pos.Y + height / 2, pos_min.Z + size - 1);
+	v3s16 blockpos_min = getNodeBlockPos(pos_min);
+	v3s16 blockpos_max = getNodeBlockPos(pos_max);
 
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y - scan_height / 2, pos.Z),
-		blockpos_min, relpos);
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y + scan_height / 2, pos.Z),
-		blockpos_max, relpos);
-
-	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		std::map<v3s16, MinimapMapblock *>::iterator it =
-			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
-		if (it != m_blocks_cache.end()) {
-			MinimapMapblock *mmblock = it->second;
-			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
-			if (pixel->n.param0 != CONTENT_AIR) {
-				*pixel_height = height + pixel->height;
-				return pixel;
-			}
-		}
-
-		height -= MAP_BLOCKSIZE;
+// clear the map
+	for (int z = 0; z < size; z++)
+	for (int x = 0; x < size; x++) {
+		MinimapPixel &mmpixel = data->minimap_scan[x + z * size];
+		mmpixel.air_count = 0;
+		mmpixel.height = 0;
+		mmpixel.n = MapNode(CONTENT_AIR);
 	}
 
-	return NULL;
-}
+// draw the map
+	v3s16 blockpos;
+	for (blockpos.Z = blockpos_min.Z; blockpos.Z <= blockpos_max.Z; ++blockpos.Z)
+	for (blockpos.Y = blockpos_min.Y; blockpos.Y <= blockpos_max.Y; ++blockpos.Y)
+	for (blockpos.X = blockpos_min.X; blockpos.X <= blockpos_max.X; ++blockpos.X) {
+		std::map<v3s16, MinimapMapblock *>::const_iterator pblock =
+			m_blocks_cache.find(blockpos);
+		if (pblock == m_blocks_cache.end())
+			continue;
+		const MinimapMapblock &block = *pblock->second;
 
-s16 MinimapUpdateThread::getAirCount(v3s16 pos, s16 height)
-{
-	s16 air_count = 0;
-	v3s16 blockpos_max, blockpos_min, relpos;
+		v3s16 block_node_min(blockpos * MAP_BLOCKSIZE);
+		v3s16 block_node_max(block_node_min + MAP_BLOCKSIZE - 1);
+		// clip
+		v3s16 range_min = componentwise_max(block_node_min, pos_min);
+		v3s16 range_max = componentwise_min(block_node_max, pos_max);
 
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y - height / 2, pos.Z),
-		blockpos_min, relpos);
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y + height / 2, pos.Z),
-		blockpos_max, relpos);
+		v3s16 pos;
+		pos.Y = range_min.Y;
+		for (pos.Z = range_min.Z; pos.Z <= range_max.Z; ++pos.Z)
+		for (pos.X = range_min.X; pos.X <= range_max.X; ++pos.X) {
+			v3s16 inblock_pos = pos - block_node_min;
+			const MinimapPixel &in_pixel =
+				block.data[inblock_pos.Z * MAP_BLOCKSIZE + inblock_pos.X];
 
-	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		std::map<v3s16, MinimapMapblock *>::iterator it =
-			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
-		if (it != m_blocks_cache.end()) {
-			MinimapMapblock *mmblock = it->second;
-			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
-			air_count += pixel->air_count;
-		}
-	}
+			v3s16 inmap_pos = pos - pos_min;
+			MinimapPixel &out_pixel =
+				data->minimap_scan[inmap_pos.X + inmap_pos.Z * size];
 
-	return air_count;
-}
-
-void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
-{
-	v3s16 p = v3s16(pos.X - size / 2, pos.Y, pos.Z - size / 2);
-
-	for (s16 x = 0; x < size; x++)
-	for (s16 z = 0; z < size; z++) {
-		MapNode n(CONTENT_AIR);
-		MinimapPixel *mmpixel = &data->minimap_scan[x + z * size];
-
-		if (!is_radar) {
-			s16 pixel_height = 0;
-			MinimapPixel *cached_pixel =
-				getMinimapPixel(v3s16(p.X + x, p.Y, p.Z + z), height, &pixel_height);
-			if (cached_pixel) {
-				n = cached_pixel->n;
-				mmpixel->height = pixel_height;
+			out_pixel.air_count += in_pixel.air_count;
+			if (in_pixel.n.param0 != CONTENT_AIR) {
+				out_pixel.n = in_pixel.n;
+				out_pixel.height = inmap_pos.Y + in_pixel.height;
 			}
-		} else {
-			mmpixel->air_count = getAirCount(v3s16(p.X + x, p.Y, p.Z + z), height);
 		}
-
-		mmpixel->n = n;
 	}
 }
 
