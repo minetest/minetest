@@ -3391,20 +3391,23 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// up/down: 0 = down (press), 1 = up (release), 2 = unknown event, -1 movement
 		int button = 0;
 		int updown = 2;
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-			{ button = 0; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-			{ button = 1; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
-			{ button = 2; updown = 0; }
-		else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-			{ button = 0; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-			{ button = 1; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP)
-			{ button = 2; updown = 1; }
-		else if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
-			{ updown = -1;}
+		switch (event.MouseInput.Event) {
+		case EMIE_LMOUSE_PRESSED_DOWN:
+			button = 0; updown = 0; break;
+		case EMIE_RMOUSE_PRESSED_DOWN:
+			button = 1; updown = 0; break;
+		case EMIE_MMOUSE_PRESSED_DOWN:
+			button = 2; updown = 0; break;
+		case EMIE_LMOUSE_LEFT_UP:
+			button = 0; updown = 1; break;
+		case EMIE_RMOUSE_LEFT_UP:
+			button = 1; updown = 1; break;
+		case EMIE_MMOUSE_LEFT_UP:
+			button = 2; updown = 1; break;
+		case EMIE_MOUSE_MOVED:
+			updown = -1;
+		default:;
+		}
 
 		// Set this number to a positive value to generate a move action
 		// from m_selected_item to s.
@@ -3421,7 +3424,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		// Set this number to a positive value to generate a craft action at s.
 		u32 craft_amount = 0;
 
-		if (updown == 0) {
+		if (!updown) {
 			// Some mouse button has been pressed
 
 			//infostream<<"Mouse button "<<button<<" pressed at p=("
@@ -3451,11 +3454,8 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_selected_dragging = true;
 						m_auto_place = false;
 					} else {
-						// shift pressed: move item
-						if (button != 1)
-							shift_move_amount = count;
-						else // count of 1 at left click like after drag & drop
-							shift_move_amount = 1;
+						// shift pressed: move item, right click moves 1 item
+						shift_move_amount = button == 1 ? 1 : count;
 					}
 				}
 			} else { // m_selected_item != NULL
@@ -3488,22 +3488,23 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						drop_amount = m_selected_amount;
 				}
 			}
-		}
-		else if (updown == 1) {
+		} else if (updown == 1) {
 			// Some mouse button has been released
 
 			//infostream<<"Mouse button "<<button<<" released at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
-			if (m_selected_item != NULL && m_selected_dragging && s.isValid()) {
-				if (!identical) {
-					// Dragged to different slot: move all selected
-					move_amount = m_selected_amount;
-				}
-			} else if (m_selected_item != NULL && m_selected_dragging &&
+			if (m_selected_dragging && m_selected_item != NULL) {
+				if (s.isValid()) {
+					if (!identical) {
+						// Dragged to different slot: move all selected
+						move_amount = m_selected_amount;
+					}
+				} else if (
 					!(getAbsoluteClippingRect().isPointInside(m_pointer))) {
-				// Dragged outside of window: drop all selected
-				drop_amount = m_selected_amount;
+					// Dragged outside of window: drop all selected
+					drop_amount = m_selected_amount;
+				}
 			}
 
 			m_selected_dragging = false;
