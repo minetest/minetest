@@ -96,13 +96,8 @@ public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
 
-	void getMap(v3s16 pos, s16 size, s16 height, bool radar);
-	MinimapPixel *getMinimapPixel(v3s16 pos, s16 height, s16 *pixel_height);
-	s16 getAirCount(v3s16 pos, s16 height);
-	video::SColor getColorFromId(u16 id);
-
+	void getMap(v3s16 pos, s16 size, s16 height);
 	void enqueueBlock(v3s16 pos, MinimapMapblock *data);
-
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
