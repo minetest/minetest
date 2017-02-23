@@ -156,7 +156,8 @@ function core.yaw_to_dir(yaw)
 end
 
 function core.get_node_drops(nodename, toolname)
-	local drop = ItemStack({name=nodename}):get_definition().drop
+	local def = core.registered_nodes[nodename]
+	local drop = def and def.drop
 	if drop == nil then
 		-- default drop
 		return {nodename}
@@ -205,7 +206,6 @@ function core.get_node_drops(nodename, toolname)
 end
 
 function core.item_place_node(itemstack, placer, pointed_thing, param2)
-	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
 		return itemstack, false
@@ -215,20 +215,21 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local oldnode_under = core.get_node_or_nil(under)
 	local above = pointed_thing.above
 	local oldnode_above = core.get_node_or_nil(above)
+	local playername = placer:get_player_name()
 
 	if not oldnode_under or not oldnode_above then
-		core.log("info", placer:get_player_name() .. " tried to place"
+		core.log("info", playername .. " tried to place"
 			.. " node in unloaded position " .. core.pos_to_string(above))
 		return itemstack, false
 	end
 
-	local olddef_under = ItemStack({name=oldnode_under.name}):get_definition()
+	local olddef_under = core.registered_nodes[oldnode_under.name]
 	olddef_under = olddef_under or core.nodedef_default
-	local olddef_above = ItemStack({name=oldnode_above.name}):get_definition()
+	local olddef_above = core.registered_nodes[oldnode_above.name]
 	olddef_above = olddef_above or core.nodedef_default
 
 	if not olddef_above.buildable_to and not olddef_under.buildable_to then
-		core.log("info", placer:get_player_name() .. " tried to place"
+		core.log("info", playername .. " tried to place"
 			.. " node in invalid position " .. core.pos_to_string(above)
 			.. ", replacing " .. oldnode_above.name)
 		return itemstack, false
@@ -243,17 +244,17 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		place_to = {x = under.x, y = under.y, z = under.z}
 	end
 
-	if core.is_protected(place_to, placer:get_player_name()) and
+	if core.is_protected(place_to, playername) and
 			not minetest.check_player_privs(placer, "protection_bypass") then
-		core.log("action", placer:get_player_name()
+		core.log("action", playername
 				.. " tried to place " .. def.name
 				.. " at protected position "
 				.. core.pos_to_string(place_to))
-		core.record_protection_violation(place_to, placer:get_player_name())
+		core.record_protection_violation(place_to, playername)
 		return itemstack
 	end
 
-	core.log("action", placer:get_player_name() .. " places node "
+	core.log("action", playername .. " places node "
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	local oldnode = core.get_node(place_to)
@@ -262,8 +263,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	-- Calculate direction for wall mounted stuff like torches and signs
 	if def.place_param2 ~= nil then
 		newnode.param2 = def.place_param2
-	elseif (def.paramtype2 == 'wallmounted' or
-			def.paramtype2 == 'colorwallmounted') and not param2 then
+	elseif (def.paramtype2 == "wallmounted" or
+			def.paramtype2 == "colorwallmounted") and not param2 then
 		local dir = {
 			x = under.x - above.x,
 			y = under.y - above.y,
@@ -271,8 +272,8 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		}
 		newnode.param2 = core.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
-	elseif (def.paramtype2 == 'facedir' or
-			def.paramtype2 == 'colorfacedir') and not param2 then
+	elseif (def.paramtype2 == "facedir" or
+			def.paramtype2 == "colorfacedir") and not param2 then
 		local placer_pos = placer:getpos()
 		if placer_pos then
 			local dir = {
@@ -310,7 +311,6 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 
 	-- Run script hook
-	local _, callback
 	for _, callback in ipairs(core.registered_on_placenodes) do
 		-- Deepcopy pos, node and pointed_thing because callback can modify them
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
@@ -451,8 +451,9 @@ function core.handle_node_drops(pos, drops, digger)
 end
 
 function core.node_dig(pos, node, digger)
-	local def = ItemStack({name=node.name}):get_definition()
-	if not def.diggable or (def.can_dig and not def.can_dig(pos,digger)) then
+	local def = core.registered_nodes[node.name]
+	if def and (not def.diggable or
+			(def.can_dig and not def.can_dig(pos, digger))) then
 		core.log("info", digger:get_player_name() .. " tried to dig "
 			.. node.name .. " which is not diggable "
 			.. core.pos_to_string(pos))
@@ -477,7 +478,7 @@ function core.node_dig(pos, node, digger)
 
 	local wdef = wielded:get_definition()
 	local tp = wielded:get_tool_capabilities()
-	local dp = core.get_dig_params(def.groups, tp)
+	local dp = core.get_dig_params(def and def.groups, tp)
 	if wdef and wdef.after_use then
 		wielded = wdef.after_use(wielded, digger, node, dp) or wielded
 	else
