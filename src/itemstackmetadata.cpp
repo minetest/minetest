@@ -19,6 +19,10 @@ void ItemStackMetadata::serialize(std::ostream &os) const
 		os2 << it->first << DESERIALIZE_KV_DELIM
 		    << it->second << DESERIALIZE_PAIR_DELIM;
 	}
+
+	if (!legacy_metadata.empty())
+		os2 << DESERIALIZE_KV_DELIM << legacy_metadata << DESERIALIZE_PAIR_DELIM;
+
 	os << serializeJsonStringIfNeeded(os2.str());
 }
 
@@ -29,15 +33,21 @@ void ItemStackMetadata::deSerialize(std::istream &is)
 	m_stringvars.clear();
 
 	if (!in.empty() && in[0] == DESERIALIZE_START) {
+		legacy_metadata = "";
+
 		Strfnd fnd(in);
 		fnd.to(1);
 		while (!fnd.at_end()) {
 			std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
 			std::string var  = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
-			m_stringvars[name] = var;
+			if (name == "") {
+				legacy_metadata = var;
+			} else {
+				m_stringvars[name] = var;
+			}
 		}
 	} else {
 		// BACKWARDS COMPATIBILITY
-		m_stringvars[""] = in;
+		legacy_metadata = in;
 	}
 }

@@ -154,7 +154,7 @@ int LuaItemStack::l_get_metadata(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaItemStack *o = checkobject(L, 1);
 	ItemStack &item = o->m_stack;
-	const std::string &value = item.metadata.getString("");
+	const std::string &value = item.metadata.legacy_metadata;
 	lua_pushlstring(L, value.c_str(), value.size());
 	return 1;
 }
@@ -169,7 +169,7 @@ int LuaItemStack::l_set_metadata(lua_State *L)
 
 	size_t len = 0;
 	const char *ptr = luaL_checklstring(L, 2, &len);
-	item.metadata.setString("", std::string(ptr, len));
+	item.metadata.legacy_metadata = std::string(ptr, len);
 
 	lua_pushboolean(L, true);
 	return 1;
@@ -225,7 +225,7 @@ int LuaItemStack::l_to_table(lua_State *L)
 		lua_pushinteger(L, item.wear);
 		lua_setfield(L, -2, "wear");
 
-		const std::string &metadata_str = item.metadata.getString("");
+		const std::string &metadata_str = item.metadata.legacy_metadata;
 		lua_pushlstring(L, metadata_str.c_str(), metadata_str.size());
 		lua_setfield(L, -2, "metadata");
 

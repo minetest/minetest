@@ -30,6 +30,8 @@ class ItemStackMetadata : public Metadata
 public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
+
+	std::string legacy_metadata;
 };
 
 #endif
