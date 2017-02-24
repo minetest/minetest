@@ -2394,6 +2394,9 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 						utf8_to_wide(item.getDefinition(m_client->idef()).description);
 				else
 					tooltip_text = utf8_to_wide(desc);
+				// Show itemstring as fallback for easier debugging
+				if (!item.name.empty() && tooltip_text.empty())
+					tooltip_text = utf8_to_wide(item.name);
 			}
 			if (tooltip_text != L"") {
 				std::vector<std::wstring> tt_rows = str_split(tooltip_text, L'\n');
