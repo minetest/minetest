@@ -37,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettext.h"
 #include "guiChatConsole.h"
+#include "guieditboxwithscrollbar.h"
 #include "guiFormSpecMenu.h"
 #include "guiKeyChangeMenu.h"
 #include "guiPasswordChange.h"
