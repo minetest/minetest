@@ -21,7 +21,7 @@ local function filter_texture_pack_list(list)
 
 	for _, item in ipairs(list) do
 		if item ~= "base" then
-			retval[#retval + 1] = item
+			table.insert(retval, item)
 		end
 	end
 

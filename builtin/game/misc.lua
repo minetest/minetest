@@ -40,12 +40,12 @@ end)
 function core.after(after, func, ...)
 	assert(tonumber(after) and type(func) == "function",
 			"Invalid core.after invocation")
-	jobs[#jobs + 1] = {
+	table.insert(jobs, {
 		func = func,
 		expire = time + after,
 		arg = {...},
 		mod_origin = core.get_last_run_mod()
-	}
+	})
 end
 
 function core.check_player_privs(name, ...)
@@ -65,14 +65,14 @@ function core.check_player_privs(name, ...)
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
 			if value and not player_privs[priv] then
-				missing_privileges[#missing_privileges + 1] = priv
+				table.insert(missing_privileges, priv)
 			end
 		end
 	else
 		-- Only a list, we can process it directly.
 		for key, priv in pairs(requested_privs) do
 			if not player_privs[priv] then
-				missing_privileges[#missing_privileges + 1] = priv
+				table.insert(missing_privileges, priv)
 			end
 		end
 	end
@@ -108,7 +108,7 @@ function core.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
 		if value:is_player_connected() then
-			temp_table[#temp_table + 1] = value
+			table.insert(temp_table, value)
 		end
 	end
 	return temp_table

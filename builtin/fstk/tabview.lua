@@ -46,7 +46,7 @@ local function add_tab(self,tab)
 		tabdata = {},
 	}
 
-	self.tablist[#self.tablist + 1] = newtab
+	table.insert(self.tablist, newtab)
 
 	if self.last_tab_index == #self.tablist then
 		self.current_tab = tab.name

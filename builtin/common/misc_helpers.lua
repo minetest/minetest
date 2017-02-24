@@ -2,6 +2,7 @@
 
 --------------------------------------------------------------------------------
 -- Localize functions to avoid table lookups (better performance).
+local table_insert = table.insert
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
@@ -93,13 +94,13 @@ function dump2(o, name, dumped)
 				-- the form _G["table: 0xFFFFFFF"]
 				keyStr = string.format("_G[%q]", tostring(k))
 				-- Dump key table
-				t[#t + 1] = dump2(k, keyStr, dumped)
+				table_insert(t, dump2(k, keyStr, dumped))
 			end
 		else
 			keyStr = basic_dump(k)
 		end
 		local vname = string.format("%s[%s]", name, keyStr)
-		t[#t + 1] = dump2(v, vname, dumped)
+		table_insert(t, dump2(v, vname, dumped))
 	end
 	return string.format("%s = {}\n%s", name, table.concat(t))
 end
@@ -134,7 +135,7 @@ function dump(o, indent, nested, level)
 	local t = {}
 	local dumped_indexes = {}
 	for i, v in ipairs(o) do
-		t[#t + 1] = dump(v, indent, nested, level + 1)
+		table_insert(t, dump(v, indent, nested, level + 1))
 		dumped_indexes[i] = true
 	end
 	for k, v in pairs(o) do
@@ -143,7 +144,7 @@ function dump(o, indent, nested, level)
 				k = "["..dump(k, indent, nested, level + 1).."]"
 			end
 			v = dump(v, indent, nested, level + 1)
-			t[#t + 1] = k.." = "..v
+			table_insert(t, k.." = "..v)
 		end
 	end
 	nested[o] = nil
@@ -176,7 +177,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 		local s = string_sub(str, pos, np - 1)
 		if include_empty or (s ~= "") then
 			max_splits = max_splits - 1
-			items[#items + 1] = s
+			table_insert(items, s)
 		end
 		pos = npe + 1
 	until (max_splits == 0) or (pos > (len + 1))
@@ -323,7 +324,7 @@ function core.splittext(text,charlimit)
 	local last_line = ""
 	while start ~= nil do
 		if string.len(last_line) + (stop-start) > charlimit then
-			retval[#retval + 1] = last_line
+			table_insert(retval, last_line)
 			last_line = ""
 		end
 
@@ -334,7 +335,7 @@ function core.splittext(text,charlimit)
 		last_line = last_line .. string_sub(text, current_idx, stop - 1)
 
 		if gotnewline then
-			retval[#retval + 1] = last_line
+			table_insert(retval, last_line)
 			last_line = ""
 			gotnewline = false
 		end
@@ -352,11 +353,11 @@ function core.splittext(text,charlimit)
 
 	--add last part of text
 	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			retval[#retval + 1] = last_line
-			retval[#retval + 1] = string_sub(text, current_idx)
+			table_insert(retval, last_line)
+			table_insert(retval, string_sub(text, current_idx))
 	else
 		last_line = last_line .. " " .. string_sub(text, current_idx)
-		retval[#retval + 1] = last_line
+		table_insert(retval, last_line)
 	end
 
 	return retval
