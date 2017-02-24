@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
+#include "guieditboxwithscrollbar.h"
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
@@ -1153,8 +1154,8 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		} else {
 #else
 		{
-#endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+#endif			
+			e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true, Environment,this, spec.fid, rect, 20);
 		}
 
 		if (spec.fname == data->focused_fieldname) {
