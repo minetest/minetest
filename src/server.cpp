@@ -1504,9 +1504,9 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 		return;
 
 	u16 peer_id   = playersao->getPeerID();
-	bool is_alive = playersao->getHP() > 0;
+	bool is_alive_or_died = playersao->getHP() > 0 || playersao->getDeadStatus();
 
-	if (is_alive)
+	if (is_alive_or_died)
 		SendPlayerHP(peer_id);
 	else
 		DiePlayer(peer_id);
@@ -2576,7 +2576,8 @@ void Server::DiePlayer(u16 peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " dies" << std::endl;
 
-	playersao->setHP(0);
+	playersao->setHP(0); // NOTE: might not be necessary
+	playersao->setDeadStatus(true);
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao);
@@ -2596,6 +2597,7 @@ void Server::RespawnPlayer(u16 peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
+	playersao->setDeadStatus(false);
 	playersao->setHP(PLAYER_MAX_HP);
 	playersao->setBreath(PLAYER_MAX_BREATH);
 
