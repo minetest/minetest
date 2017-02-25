@@ -48,8 +48,14 @@ struct DungeonParams {
 	content_t c_stair;
 
 	bool diagonal_dirs;
+	bool only_in_ground;
 	v3s16 holesize;
-	v3s16 roomsize;
+	u16 corridor_len_min;
+	u16 corridor_len_max;
+	v3s16 room_size_min;
+	v3s16 room_size_max;
+	v3s16 room_size_large_min;
+	v3s16 room_size_large_max;
 	u16 rooms_min;
 	u16 rooms_max;
 	s16 y_min;
