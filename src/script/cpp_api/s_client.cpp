@@ -178,3 +178,23 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 	bool blocked = lua_toboolean(L, -1);
 	return blocked;
 }
+
+bool ScriptApiClient::on_placenode(v3s16 p, MapNode node)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	INodeDefManager *ndef = getClient()->ndef();
+
+	// Get core.registered_on_punchgnode
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_placenode");
+
+	// Push data
+	push_v3s16(L, p);
+	pushnode(L, node, ndef);
+
+	// Call functions
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	bool blocked = lua_toboolean(L, -1);
+	return blocked;
+}

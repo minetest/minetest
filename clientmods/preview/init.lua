@@ -86,3 +86,10 @@ core.register_on_punchnode(function(pos, node)
 	print("node:" .. dump(node))
 	return false
 end)
+
+core.register_on_placenode(function(pos, node)
+	print("The local player placed a node!")
+	print("pos:" .. dump(pos))
+	print("node:" .. dump(node))
+	return false
+end)

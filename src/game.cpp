@@ -3807,6 +3807,10 @@ void Game::handlePointingAtNode(GameRunData *runData,
 
 			camera->setDigging(1);  // right click animation (always shown for feedback)
 
+			MapNode node = map.getNodeNoEx(neighbourpos);
+			if (client->getScript()->on_placenode(neighbourpos, node))
+				return;
+
 			// If the wielded item has node placement prediction,
 			// make that happen
 			bool placed = nodePlacementPrediction(*client,

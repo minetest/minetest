@@ -47,5 +47,6 @@ public:
 
 	bool on_dignode(v3s16 p, MapNode node);
 	bool on_punchnode(v3s16 p, MapNode node);
+	bool on_placenode(v3s16 p, MapNode node);
 };
 #endif
