@@ -149,6 +149,16 @@ inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 		SWAP(s16, p1.Z, p2.Z);
 }
 
+inline v3s16 componentwise_min(const v3s16 &a, const v3s16 &b)
+{
+	return v3s16(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));
+}
+
+inline v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
+{
+	return v3s16(MYMAX(a.X, b.X), MYMAX(a.Y, b.Y), MYMAX(a.Z, b.Z));
+}
+
 
 /** Returns \p f wrapped to the range [-360, 360]
  *

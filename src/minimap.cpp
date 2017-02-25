@@ -125,16 +125,6 @@ void MinimapUpdateThread::doUpdate()
 	}
 }
 
-static v3s16 componentwise_min(const v3s16 &a, const v3s16 &b)
-{
-	return v3s16(std::min(a.X, b.X), std::min(a.Y, b.Y), std::min(a.Z, b.Z));
-}
-
-static v3s16 componentwise_max(const v3s16 &a, const v3s16 &b)
-{
-	return v3s16(std::max(a.X, b.X), std::max(a.Y, b.Y), std::max(a.Z, b.Z));
-}
-
 void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 {
 	v3s16 region(size, 0, size);
