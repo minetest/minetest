@@ -70,6 +70,8 @@ private:
 	List of metadata of all the nodes of a block
 */
 
+typedef std::map<v3s16, NodeMetadata *> NodeMetadataMap;
+	
 class NodeMetadataList
 {
 public:
@@ -91,8 +93,18 @@ public:
 	// Deletes all
 	void clear(bool delete_nodemetadata = true);
 
+	NodeMetadataMap::const_iterator begin()
+	{
+		return m_data.begin();
+	}
+
+	NodeMetadataMap::const_iterator end()
+	{
+		return m_data.end();
+	}
+
 private:
 	int countNonEmpty() const;
 
-	std::map<v3s16, NodeMetadata *> m_data;
+	NodeMetadataMap m_data;
 };

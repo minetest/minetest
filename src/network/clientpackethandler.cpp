@@ -256,16 +256,17 @@ void Client::handleCommand_NodemetaChanged(NetworkPacket *pkt)
 	NodeMetadataList *meta_updates_list = new NodeMetadataList();
 	meta_updates_list->deSerialize(sstr, m_itemdef, true);
 
-	std::vector<v3s16> meta_updates = meta_updates_list->getAllKeys();
-	for (std::vector<v3s16>::const_iterator i = meta_updates.begin();
-			i != meta_updates.end(); ++i) {
-		v3s16 pos = *i;
-		NodeMetadata *meta = meta_updates_list->get(pos);
-		try {
-			m_env.getMap().setNodeMetadata(pos, meta);
-		} catch (InvalidPositionException &e) {
-			delete meta;
-		}
+	Map &map = m_env.getMap();
+	for (NodeMetadataMap::const_iterator i = meta_updates_list->begin();
+			i != meta_updates_list->end(); ++i) {
+		v3s16 pos = i->first;
+
+		if (map.isValidPosition(pos) &&
+				map.setNodeMetadata(pos, i->second))
+			continue; // Prevent from deleting metadata
+
+		// Meta couldn't be set, unused metadata
+		delete i->second;
 	}
 
 	meta_updates_list->clear(false);
