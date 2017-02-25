@@ -842,7 +842,8 @@ core.register_chatcommand("shutdown", {
 		core.log("action", name .. " shuts down server")
 		core.chat_send_all("*** Server shutting down (operator request).")
 		local reconnect, message = param:match("([^ ]+)(.*)")
-		core.request_shutdown(message:trim(), minetest.is_yes(reconnect))
+		message = message or ""
+		core.request_shutdown(message:trim(), core.is_yes(reconnect))
 	end,
 })
 
