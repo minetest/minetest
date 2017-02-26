@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-02-03 22:17+0000\n"
+"PO-Revision-Date: 2017-02-26 11:13+0000\n"
 "Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo.com>"
 "\n"
 "Language-Team: Malay "
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.11\n"
+"X-Generator: Weblate 2.12-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -654,7 +654,7 @@ msgstr "Tetapan"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "Mulakan Pemain Perseorangan"
+msgstr "Mula Main Seorang"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
@@ -686,67 +686,68 @@ msgstr "Pek tekstur"
 
 #: src/client.cpp
 msgid "Connection timed out."
-msgstr ""
+msgstr "Sambungan tamat tempoh."
 
 #: src/client.cpp
 msgid "Loading textures..."
-msgstr ""
+msgstr "Sedang memuatkan tekstur..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr ""
+msgstr "Sedang membina semula pembayang..."
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr ""
+msgstr "Sedang mengasalkan nod..."
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr ""
+msgstr "Mengasalkan nod"
 
 #: src/client.cpp
 msgid "Done!"
-msgstr ""
+msgstr "Selesai!"
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr ""
+msgstr "Menu Utama"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr ""
+msgstr "Nama pemain terlalu panjang."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr ""
+msgstr "Ralat dalam penyambungan (tamat tempoh?)"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
 msgstr ""
+"Tiada dunia dipilih atau tiada alamat diberi. Tiada apa boleh dilakukan."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr ""
+msgstr "Laluan dunia diberi tidak wujud: "
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr ""
+msgstr "Tidak jumpa atau tidak boleh muatkan permainan \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
-msgstr ""
+msgstr "Spesifikasi permainan tidak sah."
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr ""
+msgstr "no"
 
 #: src/game.cpp
 msgid "You died."
-msgstr ""
+msgstr "Anda telah meninggal dunia."
 
 #: src/game.cpp
 msgid "Respawn"
-msgstr ""
+msgstr "Lahir semula"
 
 #: src/game.cpp
 msgid ""
@@ -763,6 +764,18 @@ msgid ""
 "- touch&drag, tap 2nd finger\n"
 " --> place single item to slot\n"
 msgstr ""
+"Kawalan Asal:\n"
+"Tiada menu kelihatan:\n"
+"- tekan sekali: aktifkan butang\n"
+"- tekan berganda: letak barang/guna sesuatu\n"
+"- tarik dengan jari: lihat sekeliling\n"
+"Menu/Inventori kelihatan:\n"
+"- tekan berganda (luar kawasan inventori):\n"
+" -->tutup\n"
+"- tekan tindanan, tekan slot:\n"
+" --> pindah tindanan\n"
+"- sentuh & tarik, tekan skrin pakai jari kedua\n"
+" --> letak satu item dari tindanan ke dalam slot\n"
 
 #: src/game.cpp
 msgid ""
@@ -778,208 +791,223 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- T: chat\n"
 msgstr ""
+"Kawalan Asal:\n"
+"- WASD: bergerak\n"
+"- Selang: lompat/naik atas\n"
+"- Anjak: selinap/turun bawah\n"
+"- Q: jatuhkan item\n"
+"- I: inventori\n"
+"- Tetikus: pusing/lihat sekeliling\n"
+"- Butang Kiri Tetikus: gali/ketuk\n"
+"- Butang Kanan Tetikus: letak barang/guna sesuatu\n"
+"- Roda Tetikus: pilih item\n"
+"- T: sembang\n"
 
 #: src/game.cpp
 msgid "Continue"
-msgstr ""
+msgstr "Teruskan"
 
 #: src/game.cpp
 msgid "Change Password"
-msgstr ""
+msgstr "Tukar Kata Laluan"
 
 #: src/game.cpp
 msgid "Sound Volume"
-msgstr ""
+msgstr "Kekuatan Bunyi"
 
 #: src/game.cpp
 msgid "Change Keys"
-msgstr ""
+msgstr "Tukar Kekunci"
 
 #: src/game.cpp
 msgid "Exit to Menu"
-msgstr ""
+msgstr "Keluar ke Menu"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr ""
+msgstr "Keluar Terus Permainan"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr ""
+msgstr "Sedang menutup..."
 
 #: src/game.cpp
 msgid "Creating server..."
-msgstr ""
+msgstr "Sedang mencipta pelayan..."
 
 #: src/game.cpp
 msgid "Creating client..."
-msgstr ""
+msgstr "Sedang mencipta klien..."
 
 #: src/game.cpp
 msgid "Resolving address..."
-msgstr ""
+msgstr "Sedang menyelesaikan alamat..."
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr ""
+msgstr "Sedang menyambung kepada pelayan..."
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr ""
+msgstr "Sedang mentakrifkan item..."
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr ""
+msgstr "Sedang mentakrifkan nod..."
 
 #: src/game.cpp
 msgid "Media..."
-msgstr ""
+msgstr "Sedang memuatkan media..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr ""
+msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr ""
+msgstr "MiB/s"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
-msgstr ""
+msgstr "ok"
 
 #: src/game.cpp
 msgid ""
 "\n"
 "Check debug.txt for details."
 msgstr ""
+"\n"
+"Periksa fail debug.txt untuk maklumat lanjut."
 
 #: src/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr ""
+msgstr "Teruskan"
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr ""
+msgstr "Masuk "
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
 msgstr ""
+"Ikatan kekunci. (Jika menu ini berselerak, padam sesetengah benda dari fail "
+"minetest.conf)"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
-msgstr ""
+msgstr "\"Guna sesuatu\" = panjat turun"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr ""
+msgstr "Tekan berganda \"lompat\" untuk menogol terbang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Key already in use"
-msgstr ""
+msgstr "Kekunci telah digunakan untuk fungsi lain"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "press key"
-msgstr ""
+msgstr "tekan kekunci"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
-msgstr ""
+msgstr "Ke Depan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
-msgstr ""
+msgstr "Ke Belakang"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
-msgstr ""
+msgstr "Ke Kiri"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Right"
-msgstr ""
+msgstr "Ke Kanan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
-msgstr ""
+msgstr "Guna Sesuatu"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Jump"
-msgstr ""
+msgstr "Lompat"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr ""
+msgstr "Selinap"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr ""
+msgstr "Jatuhkan Item"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
-msgstr ""
+msgstr "Inventori"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr ""
+msgstr "Sembang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
-msgstr ""
+msgstr "Arahan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
-msgstr ""
+msgstr "Konsol"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr ""
+msgstr "Togol Terbang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr ""
+msgstr "Togol Laju"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr ""
+msgstr "Togol Sinematik"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr ""
+msgstr "Togol Ketidakketipan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
-msgstr ""
+msgstr "Jarak Pemilihan"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
-msgstr ""
+msgstr "Tindanan Cetak"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
-msgstr ""
+msgstr "Zum"
 
 #: src/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr ""
+msgstr "Kata Laluan Lama"
 
 #: src/guiPasswordChange.cpp
 msgid "New Password"
-msgstr ""
+msgstr "Kata Laluan Baru"
 
 #: src/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr ""
+msgstr "Sahkan Kata Laluan"
 
 #: src/guiPasswordChange.cpp
 msgid "Change"
-msgstr ""
+msgstr "Tukar"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr ""
+msgstr "Kata laluan tidak padan!"
 
 #: src/guiVolumeChange.cpp
 msgid "Sound Volume: "
-msgstr ""
+msgstr "Kekuatan Bunyi: "
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
