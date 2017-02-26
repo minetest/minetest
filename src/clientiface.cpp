@@ -180,7 +180,7 @@ void RemoteClient::GetNextBlocks (
 	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
 
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
-	const s16 d_opt = g_settings->getS16("block_send_optimization");
+	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
@@ -287,20 +287,16 @@ void RemoteClient::GetNextBlocks (
 					block_is_invalid = true;
 
 				/*
-					If send optimization was requests and
-					if block is not close, don't send it unless it is near
+					If block is not close, don't send it unless it is near
 					ground level.
 
 					Block is near ground level if night-time mesh
 					differs from day-time mesh.
-
-					For medium optimization only optimize for blocks above ground.
 				*/
-				if((d_opt > 0 && d >= 4) &&
-					(d_opt > 9 || !block->getIsUnderground()) &&
-					!block->getDayNightDiff())
-			        {
-					continue;
+				if(d >= d_opt)
+				{
+					if(block->getDayNightDiff() == false)
+						continue;
 				}
 			}
 

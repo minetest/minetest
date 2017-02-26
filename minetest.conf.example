@@ -1048,13 +1048,13 @@
 #    type: float
 # liquid_update = 1.0
 
-#    How agressively the server will optimize which blocks are sent to clients.
-#    The more aggressive the optimization the better the performance, at the expense
-#    of rendering glitches due to missing blocks.
-#    0 = no optimization
-#    1-9 = medium optimization
-#    10 = aggressive optimization
-# block_send_optimization = 10
+#    At this distance the server will aggressively optimize which blocks are sent to clients.
+#    Small values potentially improve performance a lot, at the expense of visible rendering glitches.
+#    (some blocks will not be rendered under water and in caves, as well as sometimes on land)
+#    Setting this to a value greater than max_block_send_distance disables this optimization.
+#    Stated in mapblocks (16 nodes)
+#    type: int min: 2
+# block_send_optimize_distance = 4
 
 ## Mapgen
 
