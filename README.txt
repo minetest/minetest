@@ -43,7 +43,7 @@ Default controls
 - 0-9: Select item
 - Z: Zoom (needs zoom privilege)
 - T: Chat
-- /: Commad
+- /: Command
 
 - Esc: Pause menu/abort/exit (pauses only singleplayer game)
 - R: Enable/disable full range view
@@ -85,7 +85,7 @@ $bin   = /usr/bin
 $share = /usr/share/minetest
 $user  = ~/.minetest
 
-OS X:
+macOS:
 $bin   = Contents/MacOS
 $share = Contents/Resources
 $user  = Contents/User OR ~/Library/Application Support/minetest
@@ -117,7 +117,7 @@ For Fedora users:
 $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
 
 You can install git for easily keeping your copy up to date.
-If you dont want git, read below on how to get the source without git.
+If you don’t want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
 $ sudo apt-get install git
 
@@ -502,7 +502,7 @@ Lua is licensed under the terms of the MIT license reproduced below.
 This means that Lua is free software and can be used for both academic
 and commercial purposes at absolutely no cost.
 
-For details and rationale, see http://www.lua.org/license.html .
+For details and rationale, see https://www.lua.org/license.html .
 
 Copyright (C) 1994-2008 Lua.org, PUC-Rio.
 
