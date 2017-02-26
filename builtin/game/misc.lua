@@ -248,3 +248,36 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
+
+-- Returns the exact coordinate of a pointed surface
+function minetest.get_face_pos_from_pointed_thing(placer, pointed_thing)
+	local first_eye, third_eye = placer:get_eye_offset()
+
+	local node_pos = pointed_thing.under
+	local player_pos = placer:get_pos()
+	local pos_off = vector.multiply(vector.subtract(pointed_thing.above, pointed_thing.under), 0.5)
+	local look_dir = placer:get_look_dir()
+
+	local offset, nc
+	local oc = {}
+	for c, v in pairs(pos_off) do
+		if v == 0 then
+			oc[#oc + 1] = c
+		else
+			offset = v
+			nc = c
+		end
+	end
+
+	local fine_pos = {[nc] = node_pos[nc] + offset}
+
+	player_pos.y = player_pos.y + 1.625 + first_eye.y / 10
+
+	local f = (node_pos[nc] + offset - player_pos[nc]) / look_dir[nc]
+	for i = 1, #oc do
+		fine_pos[oc[i]] = player_pos[oc[i]] + look_dir[oc[i]] * f
+	end
+
+	return fine_pos
+end
+
