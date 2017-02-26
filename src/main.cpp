@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 	if (!cmd_args_ok
 			|| cmd_args.getFlag("help")
 			|| cmd_args.exists("nonopt1")) {
-		print_help(allowed_options);
+		print_help();
 		return cmd_args_ok ? 0 : 1;
 	}
 
@@ -315,6 +315,7 @@ static void print_help(const OptionList &allowed_options)
 {
 	std::cout << _("Allowed options:") << std::endl;
 	print_allowed_options(allowed_options);
+	std::cout << _("\nVisit wiki.minetest.com for more information.") << std_endl;
 }
 
 static void print_allowed_options(const OptionList &allowed_options)
@@ -340,7 +341,7 @@ static void print_version()
 	std::cout << PROJECT_NAME_C " " << g_version_hash
 	          << " (" << porting::getPlatformName() << ")" << std::endl;
 #ifndef SERVER
-	std::cout << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
+	std::cout << "Using Irrlicht version " << IRRLICHT_SDK_VERSION << std::endl;
 #endif
 	std::cout << "Build info: " << g_build_info << std::endl;
 }
