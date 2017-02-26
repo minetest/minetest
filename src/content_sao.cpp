@@ -1091,7 +1091,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 }
 
-void PlayerSAO::setDeadStatus(const bool dead) {
+void PlayerSAO::setDeadStatus(bool dead)
+{
 	m_dead = dead;
 }
 
