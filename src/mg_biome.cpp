@@ -96,6 +96,8 @@ void BiomeParamsOriginal::readParams(const Settings *settings)
 	settings->getNoiseParams("mg_biome_np_heat_blend",     np_heat_blend);
 	settings->getNoiseParams("mg_biome_np_humidity",       np_humidity);
 	settings->getNoiseParams("mg_biome_np_humidity_blend", np_humidity_blend);
+	settings->getV3FNoEx("mg_biome_heat_gradient",         heat_gradient);
+	settings->getV3FNoEx("mg_biome_humidity_gradient",     humidity_gradient);
 }
 
 
@@ -105,6 +107,8 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 	settings->setNoiseParams("mg_biome_np_heat_blend",     np_heat_blend);
 	settings->setNoiseParams("mg_biome_np_humidity",       np_humidity);
 	settings->setNoiseParams("mg_biome_np_humidity_blend", np_humidity_blend);
+	settings->setV3F("mg_biome_heat_gradient",             heat_gradient);
+	settings->setV3F("mg_biome_humidity_gradient",         humidity_gradient);
 }
 
 
@@ -125,6 +129,8 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 									params->seed, m_csize.X, m_csize.Z);
 	noise_humidity_blend = new Noise(&params->np_humidity_blend,
 									params->seed, m_csize.X, m_csize.Z);
+	this->heat_gradient     = params->heat_gradient;
+	this->humidity_gradient = params->humidity_gradient;
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
@@ -144,12 +150,16 @@ BiomeGenOriginal::~BiomeGenOriginal()
 
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
-	float heat =
+	float heat = rangelim(
 		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
-	float humidity =
+		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed) +
+		pos.Y * heat_gradient.Y,
+		-50.0f, 150.0f);
+	float humidity = rangelim(
 		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
+		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed) +
+		pos.Y * humidity_gradient.Y,
+		-50.0f, 150.0f);
 
 	return calcBiomeFromNoise(heat, humidity, pos.Y);
 }
@@ -174,11 +184,14 @@ void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin)
 biome_t *BiomeGenOriginal::getBiomes(s16 *heightmap)
 {
 	for (s32 i = 0; i != m_csize.X * m_csize.Z; i++) {
-		Biome *biome = calcBiomeFromNoise(
-			noise_heat->result[i],
-			noise_humidity->result[i],
-			heightmap[i]);
-
+		s16 y = heightmap[i];
+		float heat = rangelim(
+			noise_heat->result[i] + y * heat_gradient.Y,
+			-50.0f, 150.0f);
+		float humidity = rangelim(
+			noise_humidity->result[i] + y * humidity_gradient.Y,
+			-50.0f, 150.0f);
+		Biome *biome = calcBiomeFromNoise(heat, humidity, y);
 		biomemap[i] = biome->index;
 	}
 
@@ -196,10 +209,14 @@ Biome *BiomeGenOriginal::getBiomeAtPoint(v3s16 pos) const
 
 Biome *BiomeGenOriginal::getBiomeAtIndex(size_t index, s16 y) const
 {
-	return calcBiomeFromNoise(
-		noise_heat->result[index],
-		noise_humidity->result[index],
-		y);
+	float heat = rangelim(
+		noise_heat->result[index] + y * heat_gradient.Y,
+		-50.0f, 150.0f);
+	float humidity = rangelim(
+		noise_humidity->result[index] + y * humidity_gradient.Y,
+		-50.0f, 150.0f);
+
+	return calcBiomeFromNoise(heat, humidity, y);
 }
 
 

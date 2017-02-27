@@ -140,6 +140,8 @@ struct BiomeParamsOriginal : public BiomeParams {
 		np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
 		np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
 	{
+		heat_gradient     = v3f(0.0, -0.5, 0.0);
+		humidity_gradient = v3f(0.0, -0.5, 0.0);
 	}
 
 	virtual void readParams(const Settings *settings);
@@ -149,6 +151,8 @@ struct BiomeParamsOriginal : public BiomeParams {
 	NoiseParams np_humidity;
 	NoiseParams np_heat_blend;
 	NoiseParams np_humidity_blend;
+	v3f heat_gradient;
+	v3f humidity_gradient;
 };
 
 class BiomeGenOriginal : public BiomeGen {
@@ -178,6 +182,8 @@ private:
 	Noise *noise_humidity;
 	Noise *noise_heat_blend;
 	Noise *noise_humidity_blend;
+	v3f heat_gradient;
+	v3f humidity_gradient;
 };
 
 
