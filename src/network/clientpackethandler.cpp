@@ -389,7 +389,7 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 	m_time_of_day_set = true;
 
 	u32 dr = m_env.getDayNightRatio();
-	infostream << "Client: time_of_day=" << time_of_day
+	infostream << "Client: time_of_day=" << time_of_day << "::" << m_env.getTimeOfDay()
 			<< " time_speed=" << time_speed
 			<< " dr=" << dr << std::endl;
 }
@@ -773,14 +773,19 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	v3f pos;
 	u16 object_id;
 	bool loop;
+	float fade = 0;
 
-	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+	try	{
+		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop >> fade;
+	} catch (...) {
+		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+	}
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain);
+			client_id = m_sound->playSound(name, loop, gain, fade);
 			break;
 		case 1: // positional
 			client_id = m_sound->playSoundAt(name, loop, gain, pos);
@@ -816,6 +821,26 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 	if (i != m_sounds_server_to_client.end()) {
 		int client_id = i->second;
 		m_sound->stopSound(client_id);
+	}
+}
+
+void Client::handleCommand_FadeSound(NetworkPacket* pkt)
+{
+	s32 server_id;
+	float step;
+	float gain;
+
+	*pkt >> server_id >> step >> gain;
+
+	actionstream << step << std::endl;
+	actionstream << gain << std::endl;
+
+	std::map<s32, int>::iterator i =
+			m_sounds_server_to_client.find(server_id);
+
+	if (i != m_sounds_server_to_client.end()) {
+		int client_id = i->second;
+		m_sound->fadeSound(client_id,step,gain);
 	}
 }
 

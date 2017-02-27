@@ -605,6 +605,13 @@ enum ToClientCommand
 		u32 id
 	*/
 
+	TOCLIENT_FADE_SOUND = 0x54,
+	/*
+		s32 sound_id
+		float step
+		float gain
+	 */
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
