@@ -118,6 +118,12 @@ local function spawn_falling_node(p, node)
 	end
 end
 
+function core.spawn_falling_node(pos)
+	local obj = core.add_entity(pos, "__builtin:falling_node")
+	obj:get_luaentity():set_node(core.get_node(pos))
+	core.remove_node(pos)
+end
+
 local function drop_attached_node(p)
 	local nn = core.get_node(p).name
 	core.remove_node(p)
