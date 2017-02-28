@@ -244,9 +244,6 @@ public:
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
 	void setBreath(const u16 breath, bool send = true);
-	// m_dead is set to true when the deathscreen is displayed to the client.
-	void setDeadStatus(bool dead);
-	bool getDeadStatus() const { return m_dead; }
 
 	/*
 		Inventory interface
@@ -364,7 +361,6 @@ private:
 	u16 m_peer_id;
 	Inventory *m_inventory;
 	s16 m_damage;
-	bool m_dead;
 
 	// Cheat prevention
 	LagPool m_dig_pool;

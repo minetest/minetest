@@ -784,7 +784,6 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_peer_id(peer_id_),
 	m_inventory(NULL),
 	m_damage(0),
-	m_dead(false),
 	m_last_good_position(0,0,0),
 	m_time_from_last_teleport(0),
 	m_time_from_last_punch(0),
@@ -948,8 +947,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If node generates drown
-		if (c.drowning > 0) {
-			if (m_hp > 0 && m_breath > 0)
+		if (c.drowning > 0 && m_hp > 0) {
+			if (m_breath > 0)
 				setBreath(m_breath - 1);
 
 			// No more breath, damage player
@@ -1089,11 +1088,6 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
 	}
-}
-
-void PlayerSAO::setDeadStatus(bool dead)
-{
-	m_dead = dead;
 }
 
 void PlayerSAO::setBasePosition(const v3f &position)
