@@ -109,35 +109,6 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
-static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
-		float start_off, float end_off, u32 needed_count, INodeDefManager *nodemgr)
-{
-	float d0 = (float)BS * p0.getDistanceFrom(p1);
-	v3s16 u0 = p1 - p0;
-	v3f uf = v3f(u0.X, u0.Y, u0.Z) * BS;
-	uf.normalize();
-	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
-	u32 count = 0;
-	for(float s=start_off; s<d0+end_off; s+=step){
-		v3f pf = p0f + uf * s;
-		v3s16 p = floatToInt(pf, BS);
-		MapNode n = map->getNodeNoEx(p);
-		bool is_transparent = false;
-		const ContentFeatures &f = nodemgr->get(n);
-		if(f.solidness == 0)
-			is_transparent = (f.visual_solidness != 2);
-		else
-			is_transparent = (f.solidness != 2);
-		if(!is_transparent){
-			count++;
-			if(count >= needed_count)
-				return true;
-		}
-		step *= stepfac;
-	}
-	return false;
-}
-
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max)
 {
@@ -273,43 +244,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			/*
 				Occlusion culling
 			*/
-			v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
-			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
-			float step = BS * 1;
-			float stepfac = 1.1;
-			float startoff = BS * 1;
-			// The occlusion search of 'isOccluded()' must stop short of the target
-			// point by distance 'endoff' (end offset) to not enter the target mapblock.
-			// For the 8 mapblock corners 'endoff' must therefore be the maximum diagonal
-			// of a mapblock, because we must consider all view angles.
-			// sqrt(1^2 + 1^2 + 1^2) = 1.732
-			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
-			v3s16 spn = cam_pos_nodes;
-			s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
-			// to reduce the likelihood of falsely occluded blocks
-			// require at least two solid blocks
-			// this is a HACK, we should think of a more precise algorithm
-			u32 needed_count = 2;
-			if (occlusion_culling_enabled &&
-					// For the central point of the mapblock 'endoff' can be halved
-					isOccluded(this, spn, cpn,
-						step, stepfac, startoff, endoff / 2.0f, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef)) {
+			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
