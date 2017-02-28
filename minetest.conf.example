@@ -1137,7 +1137,8 @@
 #    Only the group format supports noise flags which are needed for eased noise.
 #    Mgv5 uses eased noise for np_ground so this is shown in group format below.
 
-#    Noise parameters for biome API temperature, humidity and biome blend.
+#### Biome parameters
+
 #    type: noise_params
 # mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
 
@@ -1149,6 +1150,14 @@
 
 #    type: noise_params
 # mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+
+#    Biome vertical heat gradient in change per node from y = 0.
+#    type: float
+# mg_biome_heat_gradient = 0.0
+
+#    Biome vertical humidity gradient in change per node from y = 0.
+#    type: float
+# mg_biome_humidity_gradient = 0.0
 
 #### Mapgen v5
 

@@ -915,11 +915,18 @@ emergequeue_limit_generate (Limit of emerge queues to generate) int 32
 #    at the cost of slightly buggy caves.
 num_emerge_threads (Number of emerge threads) int 1
 
-#    Noise parameters for biome API temperature, humidity and biome blend.
+[***Biome parameters]
+
 mg_biome_np_heat (Mapgen biome heat noise parameters) noise_params 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
-mg_biome_np_heat_blend (Mapgen heat blend noise parameters) noise_params 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
+mg_biome_np_heat_blend (Mapgen biome heat blend noise parameters) noise_params 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
 mg_biome_np_humidity (Mapgen biome humidity noise parameters) noise_params 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
 mg_biome_np_humidity_blend (Mapgen biome humidity blend noise parameters) noise_params 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+
+#    Biome vertical heat gradient in change per node from y = 0.
+mg_biome_heat_gradient (Mapgen biome heat gradient) float 0.0
+
+#    Biome vertical humidity gradient in change per node from y = 0.
+mg_biome_humidity_gradient (Mapgen biome humidity gradient) float 0.0
 
 [***Mapgen v5]
 

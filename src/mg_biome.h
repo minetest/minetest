@@ -101,7 +101,13 @@ public:
 	// Computes any intermediate results needed for biome generation.  Must be
 	// called before using any of: getBiomes, getBiomeAtPoint, or getBiomeAtIndex.
 	// Calling this invalidates the previous results stored in biomemap.
+	// Does not include heat/humidity gradient calculations.
 	virtual void calcBiomeNoise(v3s16 pmin) = 0;
+
+	// Computes any intermediate results needed for biome generation.  Must be
+	// called before using any of: getBiomes, getBiomeAtPoint, or getBiomeAtIndex.
+	// Calling this invalidates the previous results stored in biomemap.
+	virtual void calcBiomeNoiseWithGradient(v3s16 pmin, s16 *heightmap) = 0;
 
 	// Gets all biomes in current chunk using each corresponding element of
 	// heightmap as the y position, then stores the results by biome index in
@@ -140,6 +146,8 @@ struct BiomeParamsOriginal : public BiomeParams {
 		np_heat_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 13, 2, 1.0, 2.0),
 		np_humidity_blend(0, 1.5, v3f(8.0, 8.0, 8.0), 90003, 2, 1.0, 2.0)
 	{
+		heat_gradient     = 0.0;
+		humidity_gradient = 0.0;
 	}
 
 	virtual void readParams(const Settings *settings);
@@ -149,6 +157,8 @@ struct BiomeParamsOriginal : public BiomeParams {
 	NoiseParams np_humidity;
 	NoiseParams np_heat_blend;
 	NoiseParams np_humidity_blend;
+	float heat_gradient;
+	float humidity_gradient;
 };
 
 class BiomeGenOriginal : public BiomeGen {
@@ -161,6 +171,7 @@ public:
 
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
 	void calcBiomeNoise(v3s16 pmin);
+	void calcBiomeNoiseWithGradient(v3s16 pmin, s16 *heightmap);
 
 	biome_t *getBiomes(s16 *heightmap);
 	Biome *getBiomeAtPoint(v3s16 pos) const;
@@ -178,6 +189,8 @@ private:
 	Noise *noise_humidity;
 	Noise *noise_heat_blend;
 	Noise *noise_humidity_blend;
+	float heat_gradient;
+	float humidity_gradient;
 };
 
 
