@@ -197,6 +197,9 @@ void RemoteClient::GetNextBlocks (
 	s32 nearest_sent_d = -1;
 	//bool queue_is_full = false;
 
+	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
+	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
+
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
 		/*
@@ -297,6 +300,11 @@ void RemoteClient::GetNextBlocks (
 				{
 					if(block->getDayNightDiff() == false)
 						continue;
+				}
+
+				if (occ_cull && !block_is_invalid &&
+						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					continue;
 				}
 			}
 

@@ -1056,6 +1056,12 @@
 #    type: int min: 2
 # block_send_optimize_distance = 4
 
+#    If enabled the server will perform map block occlusion culling based on
+#    on the eye position of the player. This can reduce the number of blocks
+#    sent to the client 50-80%. The client will not longer receive most invisible
+#    so that the utility of noclip mode is reduced.
+server_side_occlusion_culling = false
+
 ## Mapgen
 
 #    Name of map generator to be used when creating a new world.

@@ -314,6 +314,7 @@ public:
 	void transforming_liquid_add(v3s16 p);
 	s32 transforming_liquid_size();
 
+	bool isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes);
 protected:
 	friend class LuaVoxelManip;
 
@@ -334,6 +335,9 @@ protected:
 
 	// This stores the properties of the nodes on the map.
 	INodeDefManager *m_nodedef;
+
+	bool isOccluded(v3s16 p0, v3s16 p1, float step, float stepfac,
+			float start_off, float end_off, u32 needed_count);
 
 private:
 	f32 m_transforming_liquid_loop_count_multiplier;

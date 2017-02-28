@@ -864,6 +864,12 @@ liquid_update (Liquid update tick) float 1.0
 #    Stated in mapblocks (16 nodes)
 block_send_optimize_distance (block send optimize distance) int 4 2
 
+#    If enabled the server will perform map block occlusion culling based on
+#    on the eye position of the player. This can reduce the number of blocks
+#    sent to the client 50-80%. The client will not longer receive most invisible
+#    so that the utility of noclip mode is reduced.
+server_side_occlusion_culling (Server side occlusion culling) bool false
+
 [*Mapgen]
 
 #    Name of map generator to be used when creating a new world.
