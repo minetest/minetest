@@ -1057,8 +1057,8 @@
 # block_send_optimize_distance = 4
 
 #    Optimize sending under ground (below the water line) blocks to the client.
-#    This significantly reduces the number of blocks sent, but
-#    may lead to rendering glitches around the ocean floor and in caves.
+#    This reduces the number of blocks sent, but may lead to rendering glitches
+#    around the ocean floor and in caves beyond the block send optimize distance.
 block_send_optimize_underground = true
 
 ## Mapgen
