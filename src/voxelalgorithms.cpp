@@ -768,7 +768,7 @@ void update_lighting_nodes(Map *map,
 		for (u8 i = 0; i <= LIGHT_SUN; i++) {
 			const std::vector<ChangingLight> &lights = light_sources.lights[i];
 			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); it++) {
+					it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position,
 					&is_valid_position);
 				n.setLight(bank, i, ndef);
@@ -832,8 +832,10 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 	bool is_valid_position;
 	for (s32 i = 0; i < 2; i++) {
 		LightBank bank = banks[i];
-		UnlightQueue disappearing_lights(256);
-		ReLightQueue light_sources(256);
+		// Since invalid light is not common, do not allocate
+		// memory if not needed.
+		UnlightQueue disappearing_lights(0);
+		ReLightQueue light_sources(0);
 		// Get incorrect lights
 		for (direction d = 0; d < 6; d++) {
 			// For each direction
@@ -888,7 +890,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 		for (u8 i = 0; i <= LIGHT_SUN; i++) {
 			const std::vector<ChangingLight> &lights = light_sources.lights[i];
 			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); it++) {
+					it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position,
 					&is_valid_position);
 				n.setLight(bank, i, ndef);
@@ -921,8 +923,8 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
 	// Cache the ignore node.
 	MapNode ignore = MapNode(CONTENT_IGNORE);
 	// For each column of nodes:
-	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
-	for (s16 z = 0; z < MAP_BLOCKSIZE; z++) {
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
 		// Position of the column on the map.
 		v2s16 realpos = offset + v2s16(x, z);
 		// Array indices in the voxel manipulator
@@ -931,7 +933,7 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
 		s32 minindex = vm->m_area.index(realpos.X, vm->m_area.MinEdge.Y,
 			realpos.Y);
 		// True if the current node has sunlight.
-		bool lig = light[x][z];
+		bool lig = light[z][x];
 		// For each node, downwards:
 		for (s32 i = maxindex; i >= minindex; i -= ystride) {
 			MapNode *n;
@@ -951,7 +953,7 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
 			n->setLight(LIGHTBANK_NIGHT, 0, f);
 		}
 		// Output outgoing light.
-		light[x][z] = lig;
+		light[z][x] = lig;
 	}
 }
 
@@ -1036,7 +1038,7 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 			for (; current_pos.Y >= 0; current_pos.Y--) {
 				MapNode n = block->getNodeNoCheck(current_pos, &is_valid);
 				const ContentFeatures &f = ndef->get(n);
-				if (n.getLightNoChecks(LIGHTBANK_DAY, &f) < LIGHT_SUN
+				if (n.getLightRaw(LIGHTBANK_DAY, f) < LIGHT_SUN
 						&& f.sunlight_propagates) {
 					// This node gets sunlight.
 					n.setLight(LIGHTBANK_DAY, LIGHT_SUN, f);
@@ -1055,7 +1057,7 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 			for (; current_pos.Y >= 0; current_pos.Y--) {
 				MapNode n = block->getNodeNoCheck(current_pos, &is_valid);
 				const ContentFeatures &f = ndef->get(n);
-				if (n.getLightNoChecks(LIGHTBANK_DAY, &f) == LIGHT_SUN) {
+				if (n.getLightRaw(LIGHTBANK_DAY, f) == LIGHT_SUN) {
 					// The sunlight is no longer valid.
 					n.setLight(LIGHTBANK_DAY, 0, f);
 					block->setNodeNoCheck(current_pos, n);
@@ -1165,8 +1167,12 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 				// For each light bank
 				for (size_t b = 0; b < 2; b++) {
 					LightBank bank = banks[b];
-					u8 oldlight = oldnode.getLightNoChecks(bank, &oldf);
-					u8 newlight = newnode.getLightNoChecks(bank, &newf);
+					u8 oldlight = oldf.param_type == CPT_LIGHT ?
+						oldnode.getLightNoChecks(bank, &oldf):
+						LIGHT_SUN; // no light information, force unlighting
+					u8 newlight = newf.param_type == CPT_LIGHT ?
+						newnode.getLightNoChecks(bank, &newf):
+						newf.light_source;
 					// If the new node is dimmer, unlight.
 					if (oldlight > newlight) {
 						unlight[b].push(
@@ -1210,7 +1216,9 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 			// For each light bank
 			for (size_t b = 0; b < 2; b++) {
 				LightBank bank = banks[b];
-				u8 light = node.getLightNoChecks(bank, &f);
+				u8 light = f.param_type == CPT_LIGHT ?
+					node.getLightNoChecks(bank, &f):
+					f.light_source;
 				if (light > 1)
 					relight[b].push(light, relpos, blockpos, block, 6);
 			} // end of banks
@@ -1228,7 +1236,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 		for (u8 i = 0; i <= maxlight; i++) {
 			const std::vector<ChangingLight> &lights = relight[b].lights[i];
 			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); it++) {
+					it < lights.end(); ++it) {
 				MapNode n = it->block->getNodeNoCheck(it->rel_position,
 					&is_valid);
 				n.setLight(bank, i, ndef);
