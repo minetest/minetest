@@ -141,9 +141,9 @@ private:
 	bool m_sneak_node_exists;
 	// Whether recalculation of the sneak node is needed
 	bool m_need_to_get_new_sneak_node;
-	// Stores the max player uplift by m_sneak_node and is updated
+	// Stores the top bounding box of m_sneak_node and is updated
 	// when m_need_to_get_new_sneak_node == true
-	f32 m_sneak_node_bb_ymax;
+	aabb3f m_sneak_node_bb_top;
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
 	v3s16 m_old_node_below;
