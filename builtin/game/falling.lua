@@ -119,9 +119,16 @@ local function spawn_falling_node(p, node)
 end
 
 function core.spawn_falling_node(pos)
+	if core.get_node(pos).name == "air" then
+		return false
+	end
 	local obj = core.add_entity(pos, "__builtin:falling_node")
-	obj:get_luaentity():set_node(core.get_node(pos))
-	core.remove_node(pos)
+	if obj then
+		obj:get_luaentity():set_node(core.get_node(pos))
+		core.remove_node(pos)
+		return true
+	end
+	return false
 end
 
 local function drop_attached_node(p)
