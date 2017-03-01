@@ -384,8 +384,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
-	m_can_jump = (m_need_to_get_new_sneak_node && m_sneak_node_exists) /* this makes sneak ladders still work */
-			|| (touching_ground && !in_liquid);
+	m_can_jump = touching_ground && !in_liquid;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 	// Jump key pressed while jumping off from a bouncy block
