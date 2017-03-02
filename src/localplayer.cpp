@@ -231,11 +231,10 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 		position.X = rangelim(position.X,
 				sn_f.X+bmin.X - sneak_max.X, sn_f.X+bmax.X + sneak_max.X);
-		// due to kepping the player cbox center on-node this shouldn't be needed
-		// (and omitting this has no noticeable effect in practice)
-		//position.Y = MYMAX(position.Y, sn_f.Y+bmax.Y);
 		position.Z = rangelim(position.Z,
 				sn_f.Z+bmin.Z - sneak_max.Z, sn_f.Z+bmax.Z + sneak_max.Z);
+		// Because we keep the player collision box on the node,
+		//   limiting position.Y is not necessary
 	}
 
 	if (got_teleported)
@@ -265,15 +264,18 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
     //bool standing_on_unloaded = result.standing_on_unloaded;
 
+	// We want the top of the sneak node to be below the players feet
+	f32 position_y_mod;
+	if (m_sneak_node_exists)
+		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - 0.05 * BS;
+	else
+		position_y_mod = (1.0 - 0.05) * BS;
+	v3s16 current_node = floatToInt(position - v3f(0, position_y_mod, 0), BS);
 	/*
 		Check the nodes under the player to see from which node the
 		player is sneaking from, if any.  If the node from under
 		the player has been removed, the player falls.
 	*/
-	f32 position_y_mod = 0.05 * BS;
-	if (m_sneak_node_exists)
-		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - position_y_mod;
-	v3s16 current_node = floatToInt(position - v3f(0, position_y_mod, 0), BS);
 	if (m_sneak_node_exists &&
 			nodemgr->get(map->getNodeNoEx(m_old_node_below)).name == "air" &&
 			m_old_node_below_type != "air") {
