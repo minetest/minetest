@@ -250,8 +250,8 @@ function core.close_formspec(player_name, formname)
 end
 
 -- Returns the exact coordinate of a pointed surface
-function minetest.get_face_pos_from_pointed_thing(placer, pointed_thing)
-	local first_eye, third_eye = placer:get_eye_offset()
+function minetest.pointed_thing_to_face_pos(placer, pointed_thing)
+	local eye_offset_first = placer:get_eye_offset()
 
 	local node_pos = pointed_thing.under
 	local player_pos = placer:get_pos()
@@ -271,7 +271,7 @@ function minetest.get_face_pos_from_pointed_thing(placer, pointed_thing)
 
 	local fine_pos = {[nc] = node_pos[nc] + offset}
 
-	player_pos.y = player_pos.y + 1.625 + first_eye.y / 10
+	player_pos.y = player_pos.y + 1.625 + eye_offset_first.y / 10
 
 	local f = (node_pos[nc] + offset - player_pos[nc]) / look_dir[nc]
 	for i = 1, #oc do
