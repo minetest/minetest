@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-02-26 11:13+0000\n"
+"PO-Revision-Date: 2017-03-04 04:32+0000\n"
 "Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo.com>"
 "\n"
 "Language-Team: Malay "
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.12-dev\n"
+"X-Generator: Weblate 2.12\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -34,7 +34,7 @@ msgstr "Sambung semula"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Terdapat ralat dalam skrip Lua, seperti mod:"
+msgstr "Terdapat ralat dalam skrip Lua, contohnya mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -60,7 +60,7 @@ msgstr "Pelayan permainan menyokong protokol versi $1 hingga $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Pelayan permainan memaksa untuk pakai protokol versi $1. "
+msgstr "Pelayan permainan menguatkuasakan protokol versi $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -80,11 +80,15 @@ msgstr "Dunia:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr "Sembunyi Permainan"
+msgstr ""
+"Sembunyikan\n"
+"Permainan"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "Sembunyi kandungan MP"
+msgstr ""
+"Sembunyikan\n"
+"Kandungan MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
@@ -165,8 +169,7 @@ msgstr "Amaran: Percubaan pembangunan minimum adalah untuk kegunaan pembangun."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr ""
-"Muat turun satu subpermainan, contohnya minetest_game, dari minetest.net"
+msgstr "Muat turun subpermainan, contohnya minetest_game, dari minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -192,7 +195,7 @@ msgstr "Pengurus mod: gagal memadam \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Pengurus mod: laluan mod \"$1\" adalah tidak sah"
+msgstr "Pengurus mod: laluan mod tidak sah - \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -767,7 +770,7 @@ msgstr ""
 "Kawalan Asal:\n"
 "Tiada menu kelihatan:\n"
 "- tekan sekali: aktifkan butang\n"
-"- tekan berganda: letak barang/guna sesuatu\n"
+"- tekan dua kali: letak barang/guna sesuatu\n"
 "- tarik dengan jari: lihat sekeliling\n"
 "Menu/Inventori kelihatan:\n"
 "- tekan berganda (luar kawasan inventori):\n"
@@ -899,7 +902,7 @@ msgstr "\"Guna sesuatu\" = panjat turun"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Tekan berganda \"lompat\" untuk menogol terbang"
+msgstr "Tekan dua kali \"lompat\" untuk menogol terbang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Key already in use"
@@ -927,7 +930,7 @@ msgstr "Ke Kanan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
-msgstr "Guna Sesuatu"
+msgstr "Guna"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Jump"
@@ -939,7 +942,7 @@ msgstr "Selinap"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr "Jatuhkan Item"
+msgstr "Jatuhkan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1011,299 +1014,307 @@ msgstr "Kekuatan Bunyi: "
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
-msgstr ""
+msgstr "Keluar"
 
 #: src/keycode.cpp
 msgid "Left Button"
-msgstr ""
+msgstr "Butang Kiri"
 
 #: src/keycode.cpp
 msgid "Middle Button"
-msgstr ""
+msgstr "Butang Tengah"
 
 #: src/keycode.cpp
 msgid "Right Button"
-msgstr ""
+msgstr "Butang Kanan"
 
 #: src/keycode.cpp
 msgid "X Button 1"
-msgstr ""
+msgstr "Butang X 1"
 
 #: src/keycode.cpp
 msgid "Back"
-msgstr ""
+msgstr "Butang Backspace"
 
 #: src/keycode.cpp
 msgid "Clear"
-msgstr ""
+msgstr "Padam"
 
 #: src/keycode.cpp
 msgid "Return"
-msgstr ""
+msgstr "Butang Enter"
 
 #: src/keycode.cpp
 msgid "Tab"
-msgstr ""
+msgstr "Butang Tab"
 
 #: src/keycode.cpp
 msgid "X Button 2"
-msgstr ""
+msgstr "Butang X 2"
 
 #: src/keycode.cpp
 msgid "Capital"
-msgstr ""
+msgstr "Butang Caps Lock"
 
 #: src/keycode.cpp
 msgid "Control"
-msgstr ""
+msgstr "Butang Ctrl"
 
 #: src/keycode.cpp
 msgid "Kana"
-msgstr ""
+msgstr "Butang Kana"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Menu"
-msgstr ""
+msgstr "Menu"
 
 #: src/keycode.cpp
 msgid "Pause"
-msgstr ""
+msgstr "Butang Pause"
 
 #: src/keycode.cpp
 msgid "Shift"
-msgstr ""
+msgstr "Butang Shift"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Convert"
-msgstr ""
+msgstr "Ubah"
 
 #: src/keycode.cpp
 msgid "Escape"
-msgstr ""
+msgstr "Butang Esc"
 
 #: src/keycode.cpp
 msgid "Final"
-msgstr ""
+msgstr "Butang Final"
 
 #: src/keycode.cpp
 msgid "Junja"
-msgstr ""
+msgstr "Butang Junja"
 
 #: src/keycode.cpp
 msgid "Kanji"
-msgstr ""
+msgstr "Butang Kanji"
 
 #: src/keycode.cpp
 msgid "Nonconvert"
-msgstr ""
+msgstr "Tidakubah"
 
 #: src/keycode.cpp
 msgid "End"
-msgstr ""
+msgstr "Butang End"
 
 #: src/keycode.cpp
 msgid "Home"
-msgstr ""
+msgstr "Butang Home"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr ""
+msgstr "Penukaran Mod"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Next"
-msgstr ""
+msgstr "Seterusnya"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Prior"
-msgstr ""
+msgstr "Sebelumnya"
 
 #: src/keycode.cpp
 msgid "Space"
-msgstr ""
+msgstr "Butang Selang"
 
 #: src/keycode.cpp
 msgid "Down"
-msgstr ""
+msgstr "Bawah"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Execute"
-msgstr ""
+msgstr "Lakukan"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Print"
-msgstr ""
+msgstr "Butang Cetak"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Select"
-msgstr ""
+msgstr "Pilih kekunci"
 
 #: src/keycode.cpp
 msgid "Up"
-msgstr ""
+msgstr "Atas"
 
 #: src/keycode.cpp
 msgid "Help"
-msgstr ""
+msgstr "Bantuan"
 
 #: src/keycode.cpp
 msgid "Insert"
-msgstr ""
+msgstr "Butang Insert"
 
 #: src/keycode.cpp
 msgid "Snapshot"
-msgstr ""
+msgstr "Tangkap Gambar Skrin"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr ""
+msgstr "Butang Windows Kiri"
 
 #: src/keycode.cpp
 msgid "Apps"
-msgstr ""
+msgstr "Aplikasi"
 
 #: src/keycode.cpp
 msgid "Numpad 0"
-msgstr ""
+msgstr "Numpad 0"
 
 #: src/keycode.cpp
 msgid "Numpad 1"
-msgstr ""
+msgstr "Numpad 1"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr ""
+msgstr "Butang Windows Kanan"
 
 #: src/keycode.cpp
 msgid "Sleep"
-msgstr ""
+msgstr "Butang Tidur"
 
 #: src/keycode.cpp
 msgid "Numpad 2"
-msgstr ""
+msgstr "Numpad 2"
 
 #: src/keycode.cpp
 msgid "Numpad 3"
-msgstr ""
+msgstr "Numpad 3"
 
 #: src/keycode.cpp
 msgid "Numpad 4"
-msgstr ""
+msgstr "Numpad 4"
 
 #: src/keycode.cpp
 msgid "Numpad 5"
-msgstr ""
+msgstr "Numpad 5"
 
 #: src/keycode.cpp
 msgid "Numpad 6"
-msgstr ""
+msgstr "Numpad 6"
 
 #: src/keycode.cpp
 msgid "Numpad 7"
-msgstr ""
+msgstr "Numpad 7"
 
 #: src/keycode.cpp
 msgid "Numpad *"
-msgstr ""
+msgstr "Numpad *"
 
 #: src/keycode.cpp
 msgid "Numpad +"
-msgstr ""
+msgstr "Numpad +"
 
 #: src/keycode.cpp
 msgid "Numpad -"
-msgstr ""
+msgstr "Numpad -"
 
 #: src/keycode.cpp
 msgid "Numpad /"
-msgstr ""
+msgstr "Numpad /"
 
 #: src/keycode.cpp
 msgid "Numpad 8"
-msgstr ""
+msgstr "Numpad 8"
 
 #: src/keycode.cpp
 msgid "Numpad 9"
-msgstr ""
+msgstr "Numpad 9"
 
 #: src/keycode.cpp
 msgid "Num Lock"
-msgstr ""
+msgstr "Butang Num Lock"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
-msgstr ""
+msgstr "Butang Scroll Lock"
 
 #: src/keycode.cpp
 msgid "Left Shift"
-msgstr ""
+msgstr "Butang Shift Kiri"
 
 #: src/keycode.cpp
 msgid "Right Shift"
-msgstr ""
+msgstr "Butang Shift Kanan"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr ""
+msgstr "Butang Ctrl Kiri"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Left Menu"
-msgstr ""
+msgstr "Butang Menu Kiri"
 
 #: src/keycode.cpp
 msgid "Right Control"
-msgstr ""
+msgstr "Butang Ctrl Kanan"
 
 #: src/keycode.cpp
 msgid "Right Menu"
-msgstr ""
+msgstr "Butang Menu Kanan"
 
 #: src/keycode.cpp
 msgid "Comma"
-msgstr ""
+msgstr "Koma"
 
 #: src/keycode.cpp
 msgid "Minus"
-msgstr ""
+msgstr "Minus"
 
 #: src/keycode.cpp
 msgid "Period"
-msgstr ""
+msgstr "Noktah"
 
 #: src/keycode.cpp
 msgid "Plus"
-msgstr ""
+msgstr "Plus"
 
 #: src/keycode.cpp
 msgid "Attn"
-msgstr ""
+msgstr "Butang Attn"
 
 #: src/keycode.cpp
 msgid "CrSel"
-msgstr ""
+msgstr "Butang CrSel"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
-msgstr ""
+msgstr "Padam OEF"
 
 #: src/keycode.cpp
 msgid "ExSel"
-msgstr ""
+msgstr "Butang ExSel"
 
 #: src/keycode.cpp
 msgid "OEM Clear"
-msgstr ""
+msgstr "Padam OEM"
 
 #: src/keycode.cpp
 msgid "PA1"
-msgstr ""
+msgstr "Butang PA1"
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
-msgstr ""
+msgstr "Kawalan"
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
-msgstr ""
+msgstr "Bina dalam sistem pemain"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1311,30 +1322,37 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Jika dibolehkan, anda boleh meletak blok di kedudukan berdiri (aras kaki + "
+"mata).\n"
+"Ini sangat berguna apabila bekerja dengan kotak nod di kawasan yang kecil."
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
-msgstr ""
+msgstr "Terbang"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"Pemain boleh terbang tanpa terkesan dengan graviti.\n"
+"Ini memerlukan hak \"terbang\" dalam pelayan permainan tersebut."
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
-msgstr ""
+msgstr "Pergerakan pantas"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Bergerak pantas (dengan kekunci \"guna\").\n"
+"Ini memerlukan hak \"pergerakan pantas\" dalam pelayan permainan tersebut."
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "Ketidakketipan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1342,130 +1360,149 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Jika dibolehkan bersama mod terbang, pemain boleh terbang menerusi nod "
+"pepejal.\n"
+"Ini memerlukan hak \"ketidakketipan\" dalam pelayan permainan tersebut."
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr ""
+msgstr "Mod sinematik"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"Melembutkan kamera apabila melihat sekeliling. Juga dikenali sebagai "
+"pelembutan penglihatan atau pelembutan tetikus.\n"
+"Berguna untuk merakam video."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing"
-msgstr ""
+msgstr "Pelembutan kamera"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
-msgstr ""
+msgstr "Melembutkan pemutaran kamera. Set sebagai 0 untuk melumpuhkannya."
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr ""
+msgstr "Pelembutan kamera dalam mod sinematik"
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
 msgstr ""
+"Melembutkan pemutaran kamera dalam mod sinematik. Set sebagai 0 untuk "
+"melumpuhkannya."
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Tetikus songsang"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Menyongsangkan pergerakan tetikus menegak."
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "Kepekaan tetikus"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
-msgstr ""
+msgstr "Pendarab kepekaan tetikus."
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "Kekunci untuk memanjat/menurun"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"Jika dibolehkan, kekunci \"guna\" akan digunakan untuk panjat ke bawah dan "
+"turun dalam mod terbang, menggantikan kekunci \"selinap\"."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr ""
+msgstr "Tekan \"lompat\" dua kali untuk terbang"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
 msgstr ""
+"Tekan butang \"lompat\" secara cepat dua kali untuk menogol mod terbang."
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr ""
+msgstr "Sentiasa terbang dan laju"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Jika dilumpuhkan, kekunci \"guna\" akan digunakan untuk terbang sekiranya "
+"kedua-dua mod terbang dan mod pergerakan pantas dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr ""
+msgstr "Selang pengulangan klik kanan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"Jumlah selang masa dalam saat, diambil untuk melakukan klik kanan yang "
+"berulang apabila pemain menekan butang tetikus kanan tanpa melepaskannya."
 
 #: src/settings_translation_file.cpp
 msgid "Random input"
-msgstr ""
+msgstr "Input rawak"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Membolehkan input pengguna secara rawak (hanya untuk percubaan)."
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward"
-msgstr ""
+msgstr "Ke depan berterusan"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Sentiasa bergerak ke depan tanpa henti (hanya untuk percubaan)."
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "Membolehkan Kayu Bedik"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr ""
+msgstr "Selang masa pengulangan butang kayu bedik"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
+"Selang masa dalam saat, diambil antara peristiwa yang berulangan\n"
+"apabila menekan kombinasi butang kayu bedik."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr ""
+msgstr "Kepekaan frustum kayu bedik"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "ingame view frustum around."
 msgstr ""
+"Kepekaan paksi kayu bedik untuk menggerakkan\n"
+"frustum penglihatan dalam permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Forward key"
-msgstr ""
+msgstr "Kekunci ke depan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1473,10 +1510,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menggerakkan pemain ke depan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
-msgstr ""
+msgstr "Kekunci ke belakang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1484,10 +1524,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menggerakkan pemain ke belakang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr ""
+msgstr "Kekunci ke kiri"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1495,10 +1538,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menggerakkan pemain ke kiri.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
-msgstr ""
+msgstr "Kekunci ke kanan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1506,10 +1552,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menggerakkan pemain ke kanan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
-msgstr ""
+msgstr "Kekunci lompat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1517,10 +1566,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk melompat.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Sneak key"
-msgstr ""
+msgstr "Kekunci selinap"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1530,10 +1582,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menyelinap.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr ""
+msgstr "Kekunci inventori"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1541,10 +1596,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk membuka inventori.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Use key"
-msgstr ""
+msgstr "Kekunci guna"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1552,10 +1610,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk bergerak laju dalam mod pergerakan laju.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
-msgstr ""
+msgstr "Kekunci sembang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1563,10 +1624,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk membuka tetingkap sembang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
-msgstr ""
+msgstr "Kekunci arahan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1574,10 +1638,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk membuka tetingkap sembang untuk menaip arahan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Console key"
-msgstr ""
+msgstr "Kekunci konsol"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1585,10 +1652,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk membuka konsol sembang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr ""
+msgstr "Kekunci jarak pemilihan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1596,10 +1666,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol jarak pandangan tiada had.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr ""
+msgstr "Kekunci terbang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1607,10 +1680,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol mod terbang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr ""
+msgstr "Kekunci pergerakan laju"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1618,10 +1694,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol mod pergerakan laju.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
-msgstr ""
+msgstr "Kekunci ketidakketipan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1629,10 +1708,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol mod ketidakketipan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "Kekunci berlari auto"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1640,10 +1722,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol mod berlari auto.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr ""
+msgstr "Kekunci mod sinematik"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1651,10 +1736,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol mod sinematik.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Minimap key"
-msgstr ""
+msgstr "Kekunci peta mini"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1662,10 +1750,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan peta mini.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot"
-msgstr ""
+msgstr "Tangkap layar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1673,10 +1764,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menangkap gambar layar.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
-msgstr ""
+msgstr "Kekunci jatuhkan item"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1684,10 +1778,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menjatuhkan item yang sedang dipilih.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "Kekunci menogol HUD"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1695,10 +1792,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan HUD.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr ""
+msgstr "Kekunci togol sembang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1706,10 +1806,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan sembang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr ""
+msgstr "Kekunci togol kabut"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1717,10 +1820,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan kabut.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr ""
+msgstr "Kekunci togol kemas kini kamera"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1728,10 +1834,14 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol pengemaskinian kamera. Hanya digunakan untuk "
+"pembangunan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr ""
+msgstr "Kekunci togol maklumat nyahpepijat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1739,10 +1849,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan maklumat nyahpepijat.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr ""
+msgstr "Kekunci togol pembukah"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1750,10 +1863,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menogol paparan pembukah. Digunakan untuk pembangunan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr ""
+msgstr "Kekunci togol mod kamera"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1761,10 +1877,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk bertukar antara kamera orang pertama dan ketiga.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
-msgstr ""
+msgstr "Kekunci menambah jarak pandang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1772,10 +1891,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk menambah jarak pandang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
-msgstr ""
+msgstr "Kekunci mengurang jarak pandang"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1783,6 +1905,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk mengurangkan jarak pandang.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1790,14 +1915,17 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Kekunci untuk mencetak tindanan nyahpepijat. Digunakan untuk pembangunan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Network"
-msgstr ""
+msgstr "Rangkaian"
 
 #: src/settings_translation_file.cpp
 msgid "Server address"
-msgstr ""
+msgstr "Alamat pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1805,20 +1933,25 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Alamat untuk menyambung.\n"
+"Biar kosong untuk memulakan pelayan permainan tempatan.\n"
+"Ambil perhatian bahawa medan alamat dalam menu utama mengatasi tetapan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr ""
+msgstr "Port jarak jauh"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
+"Port untuk menyambung (UDP).\n"
+"Ambil perhatian bahawa medan port dalam menu utama mengatasi tetapan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
-msgstr ""
+msgstr "Sokong pelayan permainan lama"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1827,22 +1960,28 @@ msgid ""
 "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
 "Disabling this option will protect your password better."
 msgstr ""
+"Pilihan untuk menyokong pelayan permainan lama sebelum protokol versi 25.\n"
+"Bolehkan pilihan jika anda ingin sambung ke pelayan permainan 0.4.12 dan "
+"sebelumnya.\n"
+"Pelayan 0.4.13 ke atas akan berjaya sambung, pelayan 0.4.12-dev mungkin "
+"boleh sambung.\n"
+"Lumpuhkan pilihan ini akan melindungi kata laluan anda dengan lebih baik."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
-msgstr ""
+msgstr "Simpan peta diterima dari pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
-msgstr ""
+msgstr "Simpan peta yang diterima oleh klien dalam cakera."
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "Tunjukkan kotak pemilihan entiti"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr ""
+msgstr "Sambung ke pelayan media luaran"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1851,56 +1990,65 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Membolehkan penggunaan pelayan media jarak jauh (jika diberikan oleh "
+"pelayan).\n"
+"Pelayan jarak jauh menawarkan cara lebih cepat untuk muat turun media (cth. "
+"tekstur)\n"
+"apabila menyambung ke pelayan permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
-msgstr ""
+msgstr "URL senarai pelayan"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "URL to the server list displayed in the Multiplayer Tab."
-msgstr ""
+msgstr "URL untuk senarai pelayan yang dipaparkan dalam Tab Permainan Ramai"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist file"
-msgstr ""
+msgstr "Fail senarai pelayan"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
 msgstr ""
+"Fail dalam laluan client/serverlist/ yang mengandungi senarai pelayan "
+"kegemaran yang dipaparkan dalam Tab Pemain Ramai"
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
-msgstr ""
+msgstr "Grafik"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
-msgstr ""
+msgstr "Dalam Permainan"
 
 #: src/settings_translation_file.cpp
 msgid "Basic"
-msgstr ""
+msgstr "Asas"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
-msgstr ""
+msgstr "VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
-msgstr ""
+msgstr "Membolehkan VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Fog"
-msgstr ""
+msgstr "Kabut"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Sama ada hendak mengkabutkan penghujung kawasan yang kelihatan."
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
-msgstr ""
+msgstr "Gaya daun"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1909,88 +2057,97 @@ msgid ""
 "-   Simple: only outer faces, if defined special_tiles are used\n"
 "-   Opaque: disable transparency"
 msgstr ""
+"Gaya daun:\n"
+"-   Beragam:  semua susu kelihatan\n"
+"-   Ringkas: hanya sisi luar kelihatan, jika special_tiles yang ditentukan "
+"digunakan\n"
+"-   Legap: melumpuhkan lut sinar"
 
 #: src/settings_translation_file.cpp
 msgid "Connect glass"
-msgstr ""
+msgstr "Sambung kaca"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
-msgstr ""
+msgstr "Sambungkan kaca jika disokong oleh nod."
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
-msgstr ""
+msgstr "Pencahayaan lembut"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Membolehkan pencahayaan lembut dengan oklusi sekitar yang ringkas.\n"
+"Lumpuhkannya untuk kelajuan atau untuk kelihatan berbeza."
 
 #: src/settings_translation_file.cpp
 msgid "Clouds"
-msgstr ""
+msgstr "Awan"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds are a client side effect."
-msgstr ""
+msgstr "Awan adalah efek pada pihak klien."
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr ""
+msgstr "Awan 3D"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
-msgstr ""
+msgstr "Guna paparan awan 3D menggantikan awan rata."
 
 #: src/settings_translation_file.cpp
 msgid "Node highlighting"
-msgstr ""
+msgstr "Tonjolan nod"
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
-msgstr ""
+msgstr "Kaedah yang digunakan untuk menonjolkan objek dipilih."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
-msgstr ""
+msgstr "Penapisan"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
-msgstr ""
+msgstr "Pemetaan Mip"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
 msgstr ""
+"Gunakan pemetaan Mip untuk menyesuaikan tekstur. Mungkin boleh meningkatkan "
+"prestasi sedikit."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr ""
+msgstr "Penapisan anisotropik"
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr ""
+msgstr "Gunakan penapisan anisotropik apabila melihat tekstur dari suatu sudut."
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
-msgstr ""
+msgstr "Penapisan bilinear"
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr ""
+msgstr "Gunakan penapisan bilinear apabila menyesuaikan tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
-msgstr ""
+msgstr "Penapisan trilinear"
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr ""
+msgstr "Gunakan penapisan trilinear apabila menyesuaikan tekstur."
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
-msgstr ""
+msgstr "Bersihkan tekstur lut sinar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1999,6 +2156,11 @@ msgid ""
 "light edge to transparent textures.  Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
+"Tekstur yang ditapis boleh sebatikan nilai RGB dengan jiran yang\n"
+"lut sinar sepenuhnya, yang mana pengoptimum PNG sering abaikan\n"
+"dan kadangkala menyebabkan sisi gelap atau terang pada tekstur\n"
+"lut sinar.  Guna penapisan ini untuk membersihkan tekstur tersebut\n"
+"ketika ia sedang dimuatkan."
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
