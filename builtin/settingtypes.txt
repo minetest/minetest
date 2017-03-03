@@ -868,7 +868,7 @@ block_send_optimize_distance (block send optimize distance) int 4 2
 #    on the eye position of the player. This can reduce the number of blocks
 #    sent to the client 50-80%. The client will not longer receive most invisible
 #    so that the utility of noclip mode is reduced.
-server_side_occlusion_culling (Server side occlusion culling) bool false
+server_side_occlusion_culling (Server side occlusion culling) bool true
 
 [*Mapgen]
 
