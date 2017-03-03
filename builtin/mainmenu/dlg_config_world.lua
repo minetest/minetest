@@ -51,15 +51,7 @@ local function get_formspec(data)
 
 	if mod and mod.name ~= "" and not mod.is_game_content then
 		if mod.is_modpack then
-			local rawlist = data.list:get_raw_list()
-
-			local all_enabled = true
-			for j = 1, #rawlist, 1 do
-				if rawlist[j].modpack == mod.name and not rawlist[j].enabled then
-					all_enabled = false
-					break
-				end
-			end
+			local all_enabled = modmgr.check_modpack_enabled(data.list, mod.full_name)
 
 			if all_enabled then
 				retval = retval .. "button[5.5,0.125;2.5,0.5;btn_mp_disable;" ..
@@ -106,15 +98,7 @@ local function enable_mod(this, toset)
 			mod.enabled = toset
 		end
 	else
-		local list = this.data.list:get_raw_list()
-		for i=1,#list,1 do
-			if list[i].modpack == mod.name then
-				if toset == nil then
-					toset = not list[i].enabled
-				end
-				list[i].enabled = toset
-			end
-		end
+		modmgr.set_modpack_enabled(this.data.list, mod.full_name, toset)
 	end
 end
 

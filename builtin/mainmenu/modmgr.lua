@@ -15,9 +15,31 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+--[[
+ On the format of the mods table returned by get_mods:
+ This is an example entry for the 'lrfurn' mod found in the homedecor modpack
+ {
+    name = "LivingRoomFurniture",
+       human-readable name of the mod/modpack, the name written in mod.conf if available
+    full_name = "/homedecor/lrfurn",
+       pseudo-path to the mod in the modpack directory structure. This field is the
+       sort criteria in sort_mod_list()
+    path = "/home/user/.minetest/mods/homedecor/lrfurn",
+       filesystem path to the mods/modpack's base directory
+    modpack = "/homedecor",
+       full_name of the parent modpack. If mod is not in any modpack, value is "".
+    mp_level = 1
+       Intendation level where this mod(pack) should be drawn in a tree.
+       0 is top layer (modpack "")
+ }
+]]--
+
 --------------------------------------------------------------------------------
-function get_mods(path,retval,modpack)
+function get_mods(path, retval, modpack_p, mp_level_p)
 	local mods = core.get_dir_list(path, true)
+
+	local mp_level = mp_level_p or 0
+	local modpack = modpack_p or ""
 
 	for _, name in ipairs(mods) do
 		if name:sub(1, 1) ~= "." then
@@ -31,17 +53,16 @@ function get_mods(path,retval,modpack)
 			end
 
 			toadd.name = name
+			toadd.full_name = modpack..DIR_DELIM..name
 			toadd.path = prefix
+			toadd.modpack = modpack
+			toadd.mp_level = mp_level
 
-			if modpack ~= nil and modpack ~= "" then
-				toadd.modpack = modpack
-			else
-				local modpackfile = io.open(prefix .. "modpack.txt")
-				if modpackfile then
-					modpackfile:close()
-					toadd.is_modpack = true
-					get_mods(prefix, retval, name)
-				end
+			local modpackfile = io.open(prefix .. "modpack.txt")
+			if modpackfile then
+				modpackfile:close()
+				toadd.is_modpack = true
+				get_mods(prefix, retval, toadd.full_name, mp_level+1)
 			end
 		end
 	end
@@ -240,34 +261,56 @@ function modmgr.render_modlist(render_list)
 	local retval = {}
 	for i, v in ipairs(list) do
 		local color = ""
-		if v.is_modpack then
-			local rawlist = render_list:get_raw_list()
-			color = mt_color_dark_green
-
-			for j = 1, #rawlist, 1 do
-				if rawlist[j].modpack == list[i].name and
-						rawlist[j].enabled ~= true then
-					-- Modpack not entirely enabled so showing as grey
-					color = mt_color_grey
-					break
-				end
-			end
-		elseif v.is_game_content then
+		if v.is_game_content then
 			color = mt_color_blue
+		elseif v.is_modpack then
+			if modmgr.check_modpack_enabled(render_list, list[i].full_name) then
+				color = mt_color_dark_green
+			else
+				color = mt_color_grey
+			end
 		elseif v.enabled then
 			color = mt_color_green
 		end
 
 		retval[#retval + 1] = color
-		if v.modpack ~= nil or v.typ == "game_mod" then
-			retval[#retval + 1] = "1"
+		if v.is_game_content then
+			retval[#retval + 1] = tostring((v.mp_level or 0) + 1)
 		else
-			retval[#retval + 1] = "0"
+			retval[#retval + 1] = tostring(v.mp_level or 0)
 		end
 		retval[#retval + 1] = core.formspec_escape(v.name)
 	end
 
 	return table.concat(retval, ",")
+end
+--------------------------------------------------------------------------------
+function modmgr.check_modpack_enabled(modlist, mp_name)
+	local rawlist = modlist:get_raw_list()
+	for j = 1, #rawlist, 1 do
+		if rawlist[j].modpack == mp_name then
+			if rawlist[j].is_modpack then
+				if not modmgr.check_modpack_enabled(modlist, rawlist[j].full_name) then
+					return false
+				end
+			elseif rawlist[j].enabled ~= true then
+				return false
+			end
+		end
+	end
+	return true
+end
+function modmgr.set_modpack_enabled(modlist, mp_name, toset)
+	local rawlist = modlist:get_raw_list()
+	for j = 1, #rawlist, 1 do
+		if rawlist[j].modpack == mp_name then
+			if rawlist[j].is_modpack then
+				modmgr.set_modpack_enabled(modlist, rawlist[j].full_name, toset)
+			else
+				rawlist[j].enabled = toset
+			end
+		end
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -468,6 +511,9 @@ function modmgr.comparemod(elem1,elem2)
 	if elem1.name ~= elem2.name then
 		return false
 	end
+	if elem1.full_name ~= elem2.full_name then
+		return false
+	end
 	if elem1.is_modpack ~= elem2.is_modpack then
 		return false
 	end
@@ -479,6 +525,9 @@ function modmgr.comparemod(elem1,elem2)
 	end
 
 	if elem1.path ~= elem2.path then
+		return false
+	end
+	if elem1.mp_level ~= elem2.mp_level then
 		return false
 	end
 

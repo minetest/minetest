@@ -261,6 +261,53 @@ local function parse_single_file(file, filepath, read_all, result, base_level, a
 	result.current_comment = nil
 end
 
+local function check_modpack_for_settings(mods, modpack)
+	for _, mod in ipairs(mods) do
+		if mod.modpack == modpack then
+			local path = mod.path .. DIR_DELIM .. FILENAME
+			local file = io.open(path, "r")
+			if file then
+				file:close()
+				return true
+			end
+			if mod.is_modpack then
+				if check_modpack_for_settings(mods, mod.full_name) then
+					return true
+				end
+			end
+		end
+	end
+end
+
+local function parse_settings_of_modpack(mods, modpack, settings, read_all)
+	for _, mod in ipairs(mods) do
+		if mod.modpack == modpack then
+			local create_mp_category = false
+			if mod.is_modpack then
+				create_mp_category = check_modpack_for_settings(mods, mod.full_name)
+			end
+
+			local path = mod.path .. DIR_DELIM .. FILENAME
+			local file = io.open(path, "r")
+			if file or create_mp_category then
+				table.insert(settings, {
+					name = mod.name,
+					level = mod.mp_level + 1,
+					type = "category",
+				})
+			end
+			if file then
+				parse_single_file(file, path, read_all, settings, mod.mp_level + 2, false)
+
+				file:close()
+			end
+			if mod.is_modpack then
+				parse_settings_of_modpack(mods, mod.full_name, settings, read_all)
+			end
+		end
+	end
+end
+
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
@@ -311,33 +358,16 @@ local function parse_config_file(read_all, parse_mods)
 		end
 
 		-- Parse mods
-		local mods_category_initialized = false
 		local mods = {}
 		get_mods(core.get_modpath(), mods)
-		for _, mod in ipairs(mods) do
-			local path = mod.path .. DIR_DELIM .. FILENAME
-			local file = io.open(path, "r")
-			if file then
-				if not mods_category_initialized then
-					local translation = fgettext_ne("Mods"), -- not used, but needed for xgettext
-					table.insert(settings, {
-						name = "Mods",
-						level = 0,
-						type = "category",
-					})
-					mods_category_initialized = true
-				end
-
-				table.insert(settings, {
-					name = mod.name,
-					level = 1,
-					type = "category",
-				})
-
-				parse_single_file(file, path, read_all, settings, 2, false)
-
-				file:close()
-			end
+		local translation = fgettext_ne("Mods") -- not used, but needed for xgettext
+		if check_modpack_for_settings(mods, "") then
+			table.insert(settings, {
+				name = "Mods",
+				level = 0,
+				type = "category",
+			})
+			parse_settings_of_modpack(mods, "", settings, read_all)
 		end
 	end
 
