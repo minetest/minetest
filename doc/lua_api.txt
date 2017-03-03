@@ -132,6 +132,7 @@ Mod directory structure
     |   |-- screenshot.png
     |   |-- description.txt
     |   |-- settingtypes.txt
+    |   |-- mod.conf
     |   |-- init.lua
     |   |-- models
     |   |-- textures
@@ -166,6 +167,31 @@ A File containing description to be shown within mainmenu.
 ### `settingtypes.txt`
 A file in the same format as the one in builtin. It will be parsed by the
 settings menu and the settings will be displayed in the "Mods" category.
+
+### `mod.conf`
+File that contains additional mod information. It has the same format as
+minetest.conf.
+Adding a mod.conf is not necessary in most cases.
+The following options are recognized:
+  name = foo
+  ^-- The name of the mod.
+  ^-- If this option is not specified, defaults to the directory name
+  is_standalone_mapgen = false
+  ^-- This mod is a LUA mapgen. It will generate all terrain itself,
+      without being backed by a builtin mapgen.
+  ^-- When this option is specified, users can select this mod as world mapgen
+      when creating a world. Internally, singlenode is chosen as mapgen and the
+      selected mapgen mod gets enabled.
+  ^-- Note: You should only use this option when the scenario matches exactly
+      Don't set it if your mod just adds biomes or decorations and therefore requires
+      a core mapgen to run.
+  ^-- As a general rule of thumb, this option should only be set when your mod code
+      contains something like:
+        ```
+        minetest.register_on_mapgen_init(function(mgparams)
+            minetest.set_mapgen_params({mgname = "singlenode"})
+        end)
+        ```
 
 ### `init.lua`
 The main Lua script. Running this script should register everything it

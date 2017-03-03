@@ -31,6 +31,11 @@
     mp_level = 1
        Intendation level where this mod(pack) should be drawn in a tree.
        0 is top layer (modpack "")
+    is_standalone_mapgen = nil,
+       Whether this mod is a standalone mapgen that should be shown in the world creation dialog.
+       If a world was created using this feature, the selected mapgen mod is saved in the 'mapgen_mod'
+       field in world.mt for future handling.
+       See lua_api.txt ### mod.conf for more info
  }
 ]]--
 
@@ -63,6 +68,9 @@ function get_mods(path, retval, modpack_p, mp_level_p)
 				modpackfile:close()
 				toadd.is_modpack = true
 				get_mods(prefix, retval, toadd.full_name, mp_level+1)
+			end
+			if core.is_yes(mod_conf.is_standalone_mapgen) and not toadd.is_modpack then
+				toadd.is_standalone_mapgen = true
 			end
 		end
 	end
