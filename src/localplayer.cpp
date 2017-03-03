@@ -91,14 +91,13 @@ LocalPlayer::~LocalPlayer()
 {
 }
 
-static inline aabb3f getTopBoundingBox(const std::vector<aabb3f> &nodeboxes, float max_d=1/16*BS)
+static aabb3f getTopBoundingBox(const std::vector<aabb3f> &nodeboxes, float max_d=1/16*BS)
 {
 	aabb3f b_max;
 	b_max.reset(-BS, -BS, -BS);
 	for (std::vector<aabb3f>::const_iterator it = nodeboxes.begin();
 			it != nodeboxes.end(); ++it) {
 		aabb3f box = *it;
-		//actionstream << "getTopBoundingBox() box = " << PP(box.MinEdge) << " -> " << PP(box.MaxEdge) << std::endl;
 		if (box.MaxEdge.Y > b_max.MaxEdge.Y)
 			b_max = box;
 		else if (box.MaxEdge.Y == b_max.MaxEdge.Y)
@@ -302,7 +301,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			v2f node_p2df(pf.X, pf.Z);
 			f32 distance_f = player_p2df.getDistanceFrom(node_p2df);
 
-			if(distance_f > min_distance_f ||
+			if (distance_f > min_distance_f ||
 					fabs(player_p2df.X-node_p2df.X) > (.5+.1)*BS + sneak_max.X ||
 					fabs(player_p2df.Y-node_p2df.Y) > (.5+.1)*BS + sneak_max.Z)
 				continue;
