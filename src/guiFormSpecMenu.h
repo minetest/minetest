@@ -447,6 +447,8 @@ private:
 		bool explicit_size;
 		v2f invsize;
 		v2s32 size;
+		v2f32 offset;
+		v2f32 anchor;
 		core::rect<s32> rect;
 		v2s32 basepos;
 		v2u32 screensize;
@@ -502,6 +504,10 @@ private:
 	bool parseVersionDirect(std::string data);
 	bool parseSizeDirect(parserData* data, std::string element);
 	void parseScrollBar(parserData* data, std::string element);
+	bool parsePositionDirect(parserData *data, const std::string &element);
+	void parsePosition(parserData *data, const std::string &element);
+	bool parseAnchorDirect(parserData *data, const std::string &element);
+	void parseAnchor(parserData *data, const std::string &element);
 
 	void tryClose();
 
