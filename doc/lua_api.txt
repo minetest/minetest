@@ -2219,6 +2219,9 @@ and `minetest.auth_reload` call the authetification handler.
     * Returns `true` if successful, `false` on failure (e.g. protected location)
 * `minetest.punch_node(pos)`
     * Punch node with the same effects that a player would cause
+* `minetest.spawn_falling_node(pos)`
+    * Change node into falling node
+    * Returns `true` if successful, `false` on failure
 
 * `minetest.find_nodes_with_meta(pos1, pos2)`
     * Get a table of positions of nodes that have metadata within a region {pos1, pos2}
