@@ -601,12 +601,12 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 		c_sandstone = c_stone;
 
 	//// Content used for dungeon generation
-	c_cobble               = ndef->getId("mapgen_cobble");
-	c_mossycobble          = ndef->getId("mapgen_mossycobble");
-	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
-	c_stair_desert_stone   = ndef->getId("mapgen_stair_desert_stone");
-	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
-	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
+	c_cobble                = ndef->getId("mapgen_cobble");
+	c_mossycobble           = ndef->getId("mapgen_mossycobble");
+	c_stair_cobble          = ndef->getId("mapgen_stair_cobble");
+	c_stair_desert_stone    = ndef->getId("mapgen_stair_desert_stone");
+	c_sandstonebrick        = ndef->getId("mapgen_sandstonebrick");
+	c_stair_sandstone_block = ndef->getId("mapgen_stair_sandstone_block");
 
 	// Fall back to more basic content if not defined
 	if (c_mossycobble == CONTENT_IGNORE)
@@ -617,8 +617,8 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 		c_stair_desert_stone = c_desert_stone;
 	if (c_sandstonebrick == CONTENT_IGNORE)
 		c_sandstonebrick = c_sandstone;
-	if (c_stair_sandstonebrick == CONTENT_IGNORE)
-		c_stair_sandstonebrick = c_sandstonebrick;
+	if (c_stair_sandstone_block == CONTENT_IGNORE)
+		c_stair_sandstone_block = c_sandstonebrick;
 }
 
 
@@ -891,7 +891,7 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 	case MGSTONE_SANDSTONE:
 		dp.c_wall              = c_sandstonebrick;
 		dp.c_alt_wall          = CONTENT_IGNORE;
-		dp.c_stair             = c_stair_sandstonebrick;
+		dp.c_stair             = c_stair_sandstone_block;
 
 		dp.diagonal_dirs       = false;
 		dp.holesize            = v3s16(2, 2, 2);
