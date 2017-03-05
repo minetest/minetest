@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-02-27 06:30+0000\n"
+"PO-Revision-Date: 2017-03-05 03:12+0000\n"
 "Last-Translator: Han So Ri <2_0_2_0_@naver.com>\n"
 "Language-Team: Korean "
 "<https://hosted.weblate.org/projects/minetest/minetest/ko/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.12-dev\n"
+"X-Generator: Weblate 2.12\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -417,7 +417,7 @@ msgstr "크리에이티브 모드"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr "데미지를 입을 수 있습니다"
+msgstr "데미지 활성화"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
@@ -451,7 +451,7 @@ msgstr "크리에이티브 모드"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "데미지를 받을 수 있습니다"
+msgstr "데미지 활성화"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
@@ -1036,7 +1036,7 @@ msgstr "변환"
 
 #: src/keycode.cpp
 msgid "CrSel"
-msgstr ""
+msgstr "CrSel"
 
 #: src/keycode.cpp
 msgid "Down"
@@ -1056,7 +1056,7 @@ msgstr ""
 
 #: src/keycode.cpp
 msgid "ExSel"
-msgstr ""
+msgstr "ExSel"
 
 #: src/keycode.cpp
 msgid "Execute"
@@ -1923,7 +1923,7 @@ msgstr "보안 모드 적용"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr "플레이어는 데미지를 받거나 죽을 수 있습니다."
+msgstr "플레이어는 데미지를 받고 죽을 수 있습니다."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -2358,7 +2358,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr ""
+msgstr "적용할 경우, 멀티플레이어에서 치트 방지를 해제합니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2368,7 +2368,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr ""
+msgstr "적용할 경우, 새로운 플레이어는 빈 암호로 가입 할 수 없습니다."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2379,11 +2379,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "적용할 경우, 플레이어는 지정된 위치에 항상 스폰 될 것입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "월드 에러 무시"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
@@ -2442,7 +2442,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
+msgstr "인벤토리 아이템 애니메이션"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
@@ -2450,7 +2450,7 @@ msgstr "인벤토리 키"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "마우스 반전"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
@@ -2810,7 +2810,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr ""
+msgstr "오르기/내리기 키사용"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -3003,7 +3003,7 @@ msgstr "맵 생성 제한"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "맵 저장 간격"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
@@ -3031,7 +3031,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
-msgstr ""
+msgstr "맵젠 디버그"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flags"
@@ -3355,7 +3355,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent per client."
-msgstr ""
+msgstr "클라이언트 당 동시에 전송되는 블록의 최대 수입니다."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
@@ -3422,7 +3422,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
-msgstr ""
+msgstr "ms 에서 파일을 다운로드하면 (예 : 모드 다운로드) 최대 시간이 걸릴 수 있습니다."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
