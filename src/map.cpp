@@ -1441,36 +1441,6 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		block->setGenerated(true);
 	}
 
-	// An other thread could have changed the blocks next to the generated
-	// area. To avoid lighting bugs, now we should check for any
-	// invalid light values on the borders.
-	std::map<v3s16, MapBlock*> changed_copy = *changed_blocks;
-	for (std::map<v3s16, MapBlock *>::iterator it = changed_copy.begin();
-			it != changed_copy.end(); ++it) {
-		v3s16 pos = it->first;
-		MapBlock *block = it->second;
-		u16 complete_flags = block->getLightingComplete();
-		if (pos.X == bpmin.X - 1)
-			complete_flags &= 0b1111011111011111; // X- is not correct
-		else if (pos.X == bpmax.X + 1)
-			complete_flags &= 0b1111111110111110; // X+ is not correct
-
-		if (pos.Y == bpmin.Y - 1)
-			complete_flags &= 0b1111101111101111; // Y- is not correct
-		else if (pos.Y == bpmax.Y + 1)
-			complete_flags &= 0b1111111101111101; // Y+ is not correct
-
-		if (pos.Z == bpmin.Z - 1)
-			complete_flags &= 0b1111110111110111; // Z- is not correct
-		else if (pos.Z == bpmax.Z + 1)
-			complete_flags &= 0b1111111011111011; // Z+ is not correct
-
-		block->setLightingComplete(complete_flags);
-		if (complete_flags != 0xFFFF)
-			voxalgo::update_block_border_lighting(this, block,
-				*changed_blocks);
-	}
-
 	/*
 		Save changed parts of map
 		NOTE: Will be saved later.
