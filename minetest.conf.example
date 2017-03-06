@@ -965,7 +965,7 @@
 # movement_speed_fast = 20
 
 #    type: float
-# movement_speed_climb = 2
+# movement_speed_climb = 3
 
 #    type: float
 # movement_speed_jump = 6.5
