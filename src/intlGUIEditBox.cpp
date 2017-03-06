@@ -67,7 +67,8 @@ intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
 	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
 	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
-	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
+	CurrentTextRect(0,0,1,1), FrameRect(rectangle),
+	m_bg_color(video::SColor(0,0,0,0)), m_bg_color_used(false)
 {
 	#ifdef _DEBUG
 	setDebugName("intlintlGUIEditBox");
@@ -776,7 +777,8 @@ void intlGUIEditBox::draw()
 
 	if (Border)
 	{
-		skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
+		video::SColor bg_color = m_bg_color_used ? m_bg_color :skin->getColor(EGDC_WINDOW);
+		skin->draw3DSunkenPane(this, bg_color,
 			false, true, FrameRect, &AbsoluteClippingRect);
 
 		FrameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
@@ -1454,6 +1456,15 @@ void intlGUIEditBox::sendGuiEvent(EGUI_EVENT_TYPE type)
         Parent->OnEvent(e);
 	}
 }
+
+
+//! Change the background color
+void intlGUIEditBox::setBackgroundColor(const video::SColor &bg_color)
+{
+	m_bg_color = bg_color;
+	m_bg_color_used = true;
+}
+
 
 //! Writes attributes of the element.
 void intlGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const

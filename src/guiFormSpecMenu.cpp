@@ -52,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
+#include "guiEditBoxWithScrollbar.h"
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
@@ -934,6 +935,8 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		std::vector<std::string> v_geom = split(parts[1],',');
 		std::string name = parts[2];
 		std::string label = parts[3];
+		video::SColor bg_color;
+		bool has_bg_color = parts.size() > 4 && parseColorString(parts[4], bg_color, true);
 
 		MY_CHECKPOS("pwdfield",0);
 		MY_CHECKGEOM("pwdfield",1);
@@ -961,7 +964,12 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 			);
 
 		spec.send = true;
-		gui::IGUIEditBox * e = Environment->addEditBox(0, rect, true, this, spec.fid);
+		GUIEditBoxWithScrollBar *e = new GUIEditBoxWithScrollBar(0, true,
+			Environment, this, spec.fid, rect, true, false);
+
+		if (has_bg_color) {
+			e->setBackgroundColor(bg_color);
+		}
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -986,7 +994,7 @@ void GUIFormSpecMenu::parsePwdField(parserData* data,std::string element)
 		evt.KeyInput.PressedDown = true;
 		e->OnEvent(evt);
 
-		if (parts.size() >= 5) {
+		if (parts.size() >= 5 && !has_bg_color) {
 			// TODO: remove after 2016-11-03
 			warningstream << "pwdfield: use field_close_on_enter[name, enabled]" <<
 					" instead of the 5th param" << std::endl;
@@ -1005,6 +1013,8 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	std::string name = parts[0];
 	std::string label = parts[1];
 	std::string default_val = parts[2];
+	video::SColor bg_color;
+	bool has_bg_color = parts.size() > 3 && parseColorString(parts[3], bg_color, true);
 
 	core::rect<s32> rect;
 
@@ -1035,7 +1045,12 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 	if (name == "")
 	{
 		// spec field id to 0, this stops submit searching for a value that isn't there
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
+		gui::IGUIStaticText *static_text = addStaticText(Environment,
+			spec.flabel.c_str(), rect, false, true, this, spec.fid);
+
+		if (has_bg_color) {
+			static_text->setBackgroundColor(bg_color);
+		}
 	}
 	else
 	{
@@ -1043,14 +1058,29 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		gui::IGUIElement *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIElement *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
+			gui::intlGUIEditBox *intl_gui_editbox = new gui::intlGUIEditBox(
+				spec.fdefault.c_str(), true, Environment, this, spec.fid,
+				rect);
+
+			if (has_bg_color) {
+				intl_gui_editbox->setBackgroundColor(bg_color);
+			}
+
+			e = (gui::IGUIElement *)intl_gui_editbox;
 			e->drop();
 		} else {
 #else
 		{
 #endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+			GUIEditBoxWithScrollBar *editbox_with_scrollbar =
+				new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
+				Environment, this, spec.fid, rect, true, false);
+
+			if (has_bg_color) {
+				editbox_with_scrollbar->setBackgroundColor(bg_color);
+			}
+			
+			e = (gui::IGUIElement *) editbox_with_scrollbar;
 		}
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
@@ -1074,7 +1104,7 @@ void GUIFormSpecMenu::parseSimpleField(parserData* data,
 		}
 	}
 
-	if (parts.size() >= 4) {
+	if (parts.size() >= 4 && !has_bg_color) {
 		// TODO: remove after 2016-11-03
 		warningstream << "field/simple: use field_close_on_enter[name, enabled]" <<
 				" instead of the 4th param" << std::endl;
@@ -1093,9 +1123,11 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 	std::string name = parts[2];
 	std::string label = parts[3];
 	std::string default_val = parts[4];
-
-	MY_CHECKPOS(type,0);
-	MY_CHECKGEOM(type,1);
+	video::SColor bg_color;
+	bool has_bg_color = parts.size() > 5 && parseColorString(parts[5], bg_color, true);
+	
+	MY_CHECKPOS(type, 0);
+	MY_CHECKGEOM(type, 1);
 
 	v2s32 pos = pos_offset * spacing;
 	pos.X += stof(v_pos[0]) * (float) spacing.X;
@@ -1135,26 +1167,45 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		258+m_fields.size()
 	);
 
-	if (name == "")
-	{
+	if (name.empty()) {	
+		IGUIStaticText *static_text;
+
 		// spec field id to 0, this stops submit searching for a value that isn't there
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
-	}
-	else
-	{
+		static_text = addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
+
+		if (has_bg_color) {
+			static_text->setBackgroundColor(bg_color);
+		}
+	} else {
 		spec.send = true;
 
 		gui::IGUIEditBox *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 		if (g_settings->getBool("freetype")) {
-			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
+			gui::intlGUIEditBox *intl_gui_editbox =
+				new gui::intlGUIEditBox(spec.fdefault.c_str(), true,
+				Environment, this, spec.fid, rect);
+
+			if (has_bg_color) {
+				intl_gui_editbox->setBackgroundColor(bg_color);
+			}
+
+			e = (gui::IGUIEditBox *) intl_gui_editbox;
 			e->drop();
 		} else {
 #else
 		{
 #endif
-			e = Environment->addEditBox(spec.fdefault.c_str(), rect, true, this, spec.fid);
+			GUIEditBoxWithScrollBar *gui_editbox_with_scrollbar =
+				new GUIEditBoxWithScrollBar(spec.fdefault.c_str(),
+				true, Environment, this, spec.fid, rect, true, false);
+
+			if (has_bg_color) {
+				gui_editbox_with_scrollbar->setBackgroundColor(bg_color);
+			}
+
+			e = (gui::IGUIEditBox *) gui_editbox_with_scrollbar;
+			e->drop();
 		}
 
 		if (spec.fname == data->focused_fieldname) {
@@ -1186,7 +1237,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data,
 		}
 	}
 
-	if (parts.size() >= 6) {
+	if (parts.size() >= 6 && !has_bg_color) {
 		// TODO: remove after 2016-11-03
 		warningstream << "field/textarea: use field_close_on_enter[name, enabled]" <<
 				" instead of the 6th param" << std::endl;
