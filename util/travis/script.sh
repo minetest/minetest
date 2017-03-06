@@ -24,8 +24,15 @@ if [[ $PLATFORM == "Unix" ]]; then
 		-DBUILD_SERVER=TRUE \
 		$CMAKE_FLAGS ..
 	make -j2
+
 	echo "Running unit tests."
-	../bin/minetest --run-unittests && exit 0
+	CMD="../bin/minetest --run-unittests"
+	if [[ "$VALGRIND" == "1" ]]; then
+		valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ${CMD} && exit 0
+	else
+		${CMD} && exit 0
+	fi
+
 elif [[ $PLATFORM == Win* ]]; then
 	[[ $CC == "clang" ]] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because

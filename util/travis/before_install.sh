@@ -18,6 +18,9 @@ if [[ $PLATFORM == "Unix" ]]; then
 		# Linking to LevelDB is broken, use a custom build
 		wget http://minetest.kitsunemimi.pw/libleveldb-1.18-ubuntu12.04.7z
 		sudo 7z x -o/usr libleveldb-1.18-ubuntu12.04.7z
+		if [[ "$VALGRIND" == "1" ]]; then
+			sudo apt-get install valgrind
+		fi
 	else
 		brew update
 		brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
