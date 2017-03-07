@@ -149,7 +149,6 @@ LOCAL_SRC_FILES := \
 		jni/src/genericobject.cpp                 \
 		jni/src/gettext.cpp                       \
 		jni/src/guiChatConsole.cpp                \
-		jni/src/guieditboxwithscrollbar.cpp       \
 		jni/src/guiEngine.cpp                     \
 		jni/src/guiFileSelectMenu.cpp             \
 		jni/src/guiFormSpecMenu.cpp               \
