@@ -128,7 +128,6 @@ core.builtin_auth_handler = {
 			privileges = core.string_to_privs(core.setting_get("default_privs")),
 			last_login = os.time(),
 		}
-		save_auth_file()
 	end,
 	set_password = function(name, password)
 		assert(type(name) == "string")
@@ -138,7 +137,6 @@ core.builtin_auth_handler = {
 		else
 			core.log('info', "Built-in authentication handler setting password of player '"..name.."'")
 			core.auth_table[name].password = password
-			save_auth_file()
 		end
 		return true
 	end,
@@ -152,16 +150,19 @@ core.builtin_auth_handler = {
 		end
 		core.auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
-		save_auth_file()
 	end,
 	reload = function()
 		read_auth_file()
 		return true
 	end,
+	commit = function()
+		minetest.log( "action", "Writing authentication data to disk..." )
+		save_auth_file()
+		return true
+	end, 
 	record_login = function(name)
 		assert(type(name) == "string")
 		assert(core.auth_table[name]).last_login = os.time()
-		save_auth_file()
 	end,
 }
 
@@ -191,7 +192,9 @@ end
 core.set_player_password = auth_pass("set_password")
 core.set_player_privs    = auth_pass("set_privileges")
 core.auth_reload         = auth_pass("reload")
+core.auth_commit         = auth_pass("commit")
 
+core.auth_reload()
 
 local record_login = auth_pass("record_login")
 
@@ -214,4 +217,8 @@ core.register_on_prejoinplayer(function(name, ip)
 					"or use a different nickname.", name, k)
 		end
 	end
+end)
+
+core.register_on_shutdown(function()
+	core.auth_commit()
 end)
