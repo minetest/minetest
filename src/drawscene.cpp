@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "filesys.h"
 
 typedef enum {
 	LEFT = -1,
@@ -590,30 +591,35 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
 	// draw progress bar
-	if ((percent >= 0) && (percent <= 100))
-	{
-		v2s32 barsize(
-				// 342 is (approximately) 256/0.75 to keep bar on same size as
-				// before with default settings
-				342 * porting::getDisplayDensity() *
-				g_settings->getFloat("gui_scaling"),
-				g_fontengine->getTextHeight() * 2);
+	if ((percent >= 0) && (percent <= 100)) {
+		std::string gamepath = fs::RemoveRelativePathComponents(
+			porting::path_share + DIR_DELIM + "textures");
+		video::ITexture *progress_img = driver->getTexture(
+			(gamepath + "/base/pack/progress_bar.png").c_str());
+		video::ITexture *progress_img_bg = driver->getTexture(
+			(gamepath + "/base/pack/progress_bar_bg.png").c_str());
 
-		core::rect<s32> barrect(center - barsize / 2, center + barsize / 2);
-		driver->draw2DRectangle(video::SColor(255, 255, 255, 255),barrect, NULL); // border
-		driver->draw2DRectangle(video::SColor(255, 64, 64, 64), core::rect<s32> (
-				barrect.UpperLeftCorner + 1,
-				barrect.LowerRightCorner-1), NULL); // black inside the bar
-		driver->draw2DRectangle(video::SColor(255, 128, 128, 128), core::rect<s32> (
-				barrect.UpperLeftCorner + 1,
-				core::vector2d<s32>(
-						barrect.LowerRightCorner.X -
-						(barsize.X - 1) + percent * (barsize.X - 2) / 100,
-						barrect.LowerRightCorner.Y - 1)), NULL); // the actual progress
+		const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
+		u32 imgW = MYMAX(208, img_size.Width);
+		u32 imgH = MYMAX(24, img_size.Height);
+		v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
+
+		draw2DImageFilterScaled(
+			driver, progress_img_bg,
+			core::rect<s32>(img_pos.X, img_pos.Y, img_pos.X + imgW, img_pos.Y + imgH),
+			core::rect<s32>(0, 0, img_size.Width, img_size.Height),
+			0, 0, true);
+
+		draw2DImageFilterScaled(
+			driver, progress_img,
+			core::rect<s32>(img_pos.X, img_pos.Y,
+					img_pos.X + (percent * imgW) / 100, img_pos.Y + imgH),
+			core::rect<s32>(0, 0, ((percent * img_size.Width) / 100), img_size.Height),
+			0, 0, true);
 	}
+
 	guienv->drawAll();
 	driver->endScene();
-
 	guitext->remove();
 
 	//return guitext;
