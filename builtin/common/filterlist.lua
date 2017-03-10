@@ -289,6 +289,9 @@ function sort_mod_list(self)
 	table.sort(self.m_processed_list, function(a, b)
 		-- Show game mods at bottom
 		if a.typ ~= b.typ then
+			if b.typ == "game" then	
+				return a.typ ~= "game_mod"
+			end
 			return b.typ == "game_mod"
 		end
 		-- If in same or no modpack, sort by name
