@@ -135,8 +135,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 
 // clear the map
 	for (int z = 0; z < size; z++)
-	for (int x = 0; x < size; x++)
-	{
+	for (int x = 0; x < size; x++) {
 		MinimapPixel &mmpixel = data->minimap_scan[x + z * size];
 		mmpixel.air_count = 0;
 		mmpixel.height = 0;
@@ -147,8 +146,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 	v3s16 blockpos;
 	for (blockpos.Z = blockpos_min.Z; blockpos.Z <= blockpos_max.Z; ++blockpos.Z)
 	for (blockpos.Y = blockpos_min.Y; blockpos.Y <= blockpos_max.Y; ++blockpos.Y)
-	for (blockpos.X = blockpos_min.X; blockpos.X <= blockpos_max.X; ++blockpos.X)
-	{
+	for (blockpos.X = blockpos_min.X; blockpos.X <= blockpos_max.X; ++blockpos.X) {
 		std::map<v3s16, MinimapMapblock *>::const_iterator pblock =
 			m_blocks_cache.find(blockpos);
 		if (pblock == m_blocks_cache.end())
@@ -164,8 +162,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 		v3s16 pos;
 		pos.Y = range_min.Y;
 		for (pos.Z = range_min.Z; pos.Z <= range_max.Z; ++pos.Z)
-		for (pos.X = range_min.X; pos.X <= range_max.X; ++pos.X)
-		{
+		for (pos.X = range_min.X; pos.X <= range_max.X; ++pos.X) {
 			v3s16 inblock_pos = pos - block_node_min;
 			const MinimapPixel &in_pixel =
 				block.data[inblock_pos.Z * MAP_BLOCKSIZE + inblock_pos.X];
