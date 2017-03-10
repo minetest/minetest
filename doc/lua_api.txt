@@ -1480,6 +1480,9 @@ Item metadata only contains a key-value store.
 Some of the values in the key-value store are handled specially:
 
 * `description`: Set the itemstack's description. Defaults to idef.description
+* `color`: A `ColorString`, which sets the stack's color.
+* `palette_index`: If the item has a palette, this is used to get the
+                  current color from the palette.
 
 Example stuff:
 
@@ -2855,6 +2858,8 @@ See `StorageRef`, `NodeMetaRef` and `ItemStackMetaRef`.
     * Any non-table value will clear the metadata
     * See "Node Metadata" for an example
     * returns `true` on success
+* `equals(other)`
+    * returns `true` if this metadata has the same key-value pairs as `other`
 
 ### `NodeMetaRef`
 Node metadata: reference extra data and functionality stored in a node.
@@ -3735,6 +3740,19 @@ Definition tables
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
         wield_image = "",
+        palette = "",
+        --[[
+        ^ An image file containing the palette of a node.
+        ^ You can set the currently used color as the
+        ^ "palette_index" field of the item stack metadata.
+        ^ The palette is always stretched to fit indices
+        ^ between 0 and 255, to ensure compatibility with
+        ^ "colorfacedir" and "colorwallmounted" nodes.
+        ]]
+        color = "0xFFFFFFFF",
+        --[[
+        ^ The color of the item. The palette overrides this.
+        ]]
         wield_scale = {x = 1, y = 1, z = 1},
         stack_max = 99,
         range = 4.0,

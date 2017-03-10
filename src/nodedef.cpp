@@ -786,6 +786,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			tiledef_special[j].backface_culling, material_type);
 	}
 
+	palette = tsrc->getPalette(palette_name);
+
 	if ((drawtype == NDT_MESH) && (mesh != "")) {
 		// Meshnode drawtype
 		// Read the mesh and apply scale
@@ -859,9 +861,6 @@ public:
 	virtual void removeNode(const std::string &name);
 	virtual void updateAliases(IItemDefManager *idef);
 	virtual void applyTextureOverrides(const std::string &override_filepath);
-	//! Returns a palette or NULL if not found. Only on client.
-	std::vector<video::SColor> *getPalette(const ContentFeatures &f,
-		const IGameDef *gamedef);
 	virtual void updateTextures(IGameDef *gamedef,
 		void (*progress_cbk)(void *progress_args, u32 progress, u32 max_progress),
 		void *progress_cbk_args);
@@ -909,9 +908,6 @@ private:
 
 	// Next possibly free id
 	content_t m_next_id;
-
-	// Maps image file names to loaded palettes.
-	UNORDERED_MAP<std::string, std::vector<video::SColor> > m_palettes;
 
 	// NodeResolvers to callback once node registration has ended
 	std::vector<NodeResolver *> m_pending_resolve_callbacks;
@@ -1401,78 +1397,6 @@ void CNodeDefManager::applyTextureOverrides(const std::string &override_filepath
 	}
 }
 
-std::vector<video::SColor> *CNodeDefManager::getPalette(
-	const ContentFeatures &f, const IGameDef *gamedef)
-{
-#ifndef SERVER
-	// This works because colors always use the most significant bits
-	// of param2. If you add a new colored type which uses param2
-	// in a more advanced way, you should change this code, too.
-	u32 palette_pixels = 0;
-	switch (f.param_type_2) {
-		case CPT2_COLOR:
-			palette_pixels = 256;
-			break;
-		case CPT2_COLORED_FACEDIR:
-			palette_pixels = 8;
-			break;
-		case CPT2_COLORED_WALLMOUNTED:
-			palette_pixels = 32;
-			break;
-		default:
-			return NULL;
-	}
-	// This many param2 values will have the same color
-	u32 step = 256 / palette_pixels;
-	const std::string &name = f.palette_name;
-	if (name == "")
-		return NULL;
-	Client *client = (Client *) gamedef;
-	ITextureSource *tsrc = client->tsrc();
-
-	UNORDERED_MAP<std::string, std::vector<video::SColor> >::iterator it =
-	m_palettes.find(name);
-	if (it == m_palettes.end()) {
-		// Create palette
-		if (!tsrc->isKnownSourceImage(name)) {
-			warningstream << "CNodeDefManager::getPalette(): palette \"" << name
-				<< "\" could not be loaded." << std::endl;
-			return NULL;
-		}
-		video::IImage *img = tsrc->generateImage(name);
-		std::vector<video::SColor> new_palette;
-		u32 w = img->getDimension().Width;
-		u32 h = img->getDimension().Height;
-		// Real area of the image
-		u32 area = h * w;
-		if (area != palette_pixels)
-			warningstream << "CNodeDefManager::getPalette(): the "
-				<< "specified palette image \"" << name << "\" does not "
-				<< "contain exactly " << palette_pixels
-				<< " pixels." << std::endl;
-		if (area > palette_pixels)
-			area = palette_pixels;
-		// For each pixel in the image
-		for (u32 i = 0; i < area; i++) {
-			video::SColor c = img->getPixel(i % w, i / w);
-			// Fill in palette with 'step' colors
-			for (u32 j = 0; j < step; j++)
-				new_palette.push_back(c);
-		}
-		img->drop();
-		// Fill in remaining elements
-		while (new_palette.size() < 256)
-			new_palette.push_back(video::SColor(0xFFFFFFFF));
-		m_palettes[name] = new_palette;
-		it = m_palettes.find(name);
-	}
-	if (it != m_palettes.end())
-		return &((*it).second);
-
-#endif
-	return NULL;
-}
-
 void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	void (*progress_callback)(void *progress_args, u32 progress, u32 max_progress),
 	void *progress_callback_args)
@@ -1489,12 +1413,10 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
-	m_palettes.clear();
 	u32 size = m_content_features.size();
 
 	for (u32 i = 0; i < size; i++) {
 		ContentFeatures *f = &(m_content_features[i]);
-		f->palette = getPalette(*f, gamedef);
 		f->updateTextures(tsrc, shdsrc, meshmanip, client, tsettings);
 		progress_callback(progress_callback_args, i, size);
 	}

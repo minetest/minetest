@@ -341,6 +341,8 @@ public:
 	*/
 	video::ITexture* getTextureForMesh(const std::string &name, u32 *id);
 
+	virtual Palette* getPalette(const std::string &name);
+
 	// Returns a pointer to the irrlicht device
 	virtual IrrlichtDevice* getDevice()
 	{
@@ -377,8 +379,6 @@ public:
 	video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params);
 
-	video::IImage* generateImage(const std::string &name);
-
 	video::ITexture* getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
 	video::ITexture *getShaderFlagsTexture(bool normamap_present);
@@ -401,6 +401,13 @@ private:
 	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
 	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg);
 
+	/*! Generates an image from a full string like
+	 * "stone.png^mineral_coal.png^[crack:1:0".
+	 * Shall be called from the main thread.
+	 * The returned Image should be dropped.
+	 */
+	video::IImage* generateImage(const std::string &name);
+
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
 
@@ -418,6 +425,9 @@ private:
 	// Textures that have been overwritten with other ones
 	// but can't be deleted because the ITexture* might still be used
 	std::vector<video::ITexture*> m_texture_trash;
+
+	// Maps image file names to loaded palettes.
+	UNORDERED_MAP<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
@@ -680,6 +690,61 @@ video::ITexture* TextureSource::getTexture(const std::string &name, u32 *id)
 video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *id)
 {
 	return getTexture(name + "^[applyfiltersformesh", id);
+}
+
+Palette* TextureSource::getPalette(const std::string &name)
+{
+	// Only the main thread may load images
+	sanity_check(thr_is_current_thread(m_main_thread));
+
+	if (name == "")
+		return NULL;
+
+	UNORDERED_MAP<std::string, Palette>::iterator it = m_palettes.find(name);
+	if (it == m_palettes.end()) {
+		// Create palette
+		video::IImage *img = generateImage(name);
+		if (!img) {
+			warningstream << "TextureSource::getPalette(): palette \"" << name
+				<< "\" could not be loaded." << std::endl;
+			return NULL;
+		}
+		Palette new_palette;
+		u32 w = img->getDimension().Width;
+		u32 h = img->getDimension().Height;
+		// Real area of the image
+		u32 area = h * w;
+		if (area == 0)
+			return NULL;
+		if (area > 256) {
+			warningstream << "TextureSource::getPalette(): the specified"
+				<< " palette image \"" << name << "\" is larger than 256"
+				<< " pixels, using the first 256." << std::endl;
+			area = 256;
+		} else if (256 % area != 0)
+			warningstream << "TextureSource::getPalette(): the "
+				<< "specified palette image \"" << name << "\" does not "
+				<< "contain power of two pixels." << std::endl;
+		// We stretch the palette so it will fit 256 values
+		// This many param2 values will have the same color
+		u32 step = 256 / area;
+		// For each pixel in the image
+		for (u32 i = 0; i < area; i++) {
+			video::SColor c = img->getPixel(i % w, i / w);
+			// Fill in palette with 'step' colors
+			for (u32 j = 0; j < step; j++)
+				new_palette.push_back(c);
+		}
+		img->drop();
+		// Fill in remaining elements
+		while (new_palette.size() < 256)
+			new_palette.push_back(video::SColor(0xFFFFFFFF));
+		m_palettes[name] = new_palette;
+		it = m_palettes.find(name);
+	}
+	if (it != m_palettes.end())
+		return &((*it).second);
+	return NULL;
 }
 
 void TextureSource::processQueue()

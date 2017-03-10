@@ -318,11 +318,15 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
+
+	// Color-related
 	m_colors.clear();
+	video::SColor basecolor = idef->getItemstackColor(item, client);
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
 		setExtruded(def.wield_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(basecolor);
 		return;
 	}
 	// Handle nodes
@@ -371,7 +375,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			} else {
 				material.setTexture(0, tile->texture);
 			}
-			m_colors.push_back(tile->color);
+			m_colors.push_back(tile->has_color ? tile->color : basecolor);
 			material.MaterialType = m_material_type;
 			if (m_enable_shaders) {
 				if (tile->normal_texture) {
@@ -389,6 +393,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	}
 	else if (def.inventory_image != "") {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(basecolor);
 		return;
 	}
 
@@ -455,7 +460,7 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setVisible(true);
 }
 
-scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
+void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 {
 	ITextureSource *tsrc = client->getTextureSource();
 	IItemDefManager *idef = client->getItemDefManager();
@@ -475,12 +480,13 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 	// If inventory_image is defined, it overrides everything else
 	if (def.inventory_image != "") {
 		mesh = getExtrudedMesh(tsrc, def.inventory_image);
-		return mesh;
+		result->mesh = mesh;
+		result->buffer_colors.push_back(
+			std::pair<bool, video::SColor>(false, video::SColor(0xFFFFFFFF)));
 	} else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-			setMeshColor(mesh, video::SColor (255, 255, 255, 255));
 		} else if (f.drawtype == NDT_PLANTLIKE) {
 			mesh = getExtrudedMesh(tsrc,
 				tsrc->getTextureName(f.tiles[0].texture_id));
@@ -515,6 +521,8 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 		for (u32 i = 0; i < mc; ++i) {
 			const TileSpec *tile = &(f.tiles[i]);
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			result->buffer_colors.push_back(
+				std::pair<bool, video::SColor>(tile->has_color, tile->color));
 			colorizeMeshBuffer(buf, &tile->color);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
@@ -532,9 +540,8 @@ scene::IMesh *getItemMesh(Client *client, const ItemStack &item)
 
 		rotateMeshXZby(mesh, -45);
 		rotateMeshYZby(mesh, -30);
-		return mesh;
+		result->mesh = mesh;
 	}
-	return NULL;
 }
 
 scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,

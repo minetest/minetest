@@ -33,6 +33,8 @@ class IGameDef;
 struct TileSpec;
 struct TileDef;
 
+typedef std::vector<video::SColor> Palette;
+
 /*
 	tile.{h,cpp}: Texture handling stuff.
 */
@@ -106,14 +108,15 @@ public:
 			const std::string &name, u32 *id = NULL)=0;
 	virtual video::ITexture* getTextureForMesh(
 			const std::string &name, u32 *id = NULL) = 0;
+	/*!
+	 * Returns a palette from the given texture name.
+	 * The pointer is valid until the texture source is
+	 * destructed.
+	 * Should be called from the main thread.
+	 */
+	virtual Palette* getPalette(const std::string &name) = 0;
 	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
-	/*! Generates an image from a full string like
-	 * "stone.png^mineral_coal.png^[crack:1:0".
-	 * Shall be called from the main thread.
-	 * The returned Image should be dropped.
-	 */
-	virtual video::IImage* generateImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
 	virtual video::ITexture* getNormalTexture(const std::string &name)=0;
