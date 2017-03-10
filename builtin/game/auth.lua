@@ -57,7 +57,6 @@ local function read_auth_file()
 end
 
 local function save_auth_file()
-	local newtable = {}
 	-- Check table for validness before attempting to save
 	for name, stuff in pairs(core.auth_table) do
 		assert(type(name) == "string")
@@ -84,10 +83,6 @@ read_auth_file()
 core.builtin_auth_handler = {
 	get_auth = function(name)
 		assert(type(name) == "string")
-		-- Figure out what password to use for a new player (singleplayer
-		-- always has an empty password, otherwise use default, which is
-		-- usually empty too)
-		local new_password_hash = ""
 		-- If not in authentication table, return nil
 		if not core.auth_table[name] then
 			return nil

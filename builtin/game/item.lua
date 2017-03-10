@@ -171,7 +171,6 @@ function core.get_node_drops(nodename, toolname)
 	-- Extended drop table
 	local got_items = {}
 	local got_count = 0
-	local _, item, tool
 	for _, item in ipairs(drop.items) do
 		local good_rarity = true
 		local good_tool = true
@@ -190,7 +189,7 @@ function core.get_node_drops(nodename, toolname)
 					break
 				end
 			end
-        	end
+		end
 		if good_rarity and good_tool then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do
@@ -205,7 +204,6 @@ function core.get_node_drops(nodename, toolname)
 end
 
 function core.item_place_node(itemstack, placer, pointed_thing, param2)
-	local item = itemstack:peek_item()
 	local def = itemstack:get_definition()
 	if def.type ~= "node" or pointed_thing.type ~= "node" then
 		return itemstack, false
@@ -244,7 +242,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 
 	if core.is_protected(place_to, placer:get_player_name()) and
-			not minetest.check_player_privs(placer, "protection_bypass") then
+			not core.check_player_privs(placer, "protection_bypass") then
 		core.log("action", placer:get_player_name()
 				.. " tried to place " .. def.name
 				.. " at protected position "
@@ -310,7 +308,6 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 
 	-- Run script hook
-	local _, callback
 	for _, callback in ipairs(core.registered_on_placenodes) do
 		-- Deepcopy pos, node and pointed_thing because callback can modify them
 		local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
@@ -435,7 +432,6 @@ end
 function core.handle_node_drops(pos, drops, digger)
 	-- Add dropped items to object's inventory
 	if digger:get_inventory() then
-		local _, dropped_item
 		for _, dropped_item in ipairs(drops) do
 			local left = digger:get_inventory():add_item("main", dropped_item)
 			if not left:is_empty() then
@@ -460,7 +456,7 @@ function core.node_dig(pos, node, digger)
 	end
 
 	if core.is_protected(pos, digger:get_player_name()) and
-			not minetest.check_player_privs(digger, "protection_bypass") then
+			not core.check_player_privs(digger, "protection_bypass") then
 		core.log("action", digger:get_player_name()
 				.. " tried to dig " .. node.name
 				.. " at protected position "
@@ -511,15 +507,10 @@ function core.node_dig(pos, node, digger)
 	end
 
 	-- Run script hook
-	local _, callback
 	for _, callback in ipairs(core.registered_on_dignodes) do
 		local origin = core.callback_origins[callback]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callback) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 
 		-- Copy pos and node because callback can modify them

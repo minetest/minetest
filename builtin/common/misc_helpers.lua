@@ -5,7 +5,7 @@
 local string_sub, string_find = string.sub, string.find
 
 --------------------------------------------------------------------------------
-function basic_dump(o)
+local function basic_dump(o)
 	local tp = type(o)
 	if tp == "number" then
 		return tostring(o)
@@ -163,7 +163,7 @@ function string.split(str, delim, include_empty, max_splits, sep_is_pattern)
 	delim = delim or ","
 	max_splits = max_splits or -1
 	local items = {}
-	local pos, len, seplen = 1, #str, #delim
+	local pos, len = 1, #str
 	local plain = not sep_is_pattern
 	max_splits = max_splits + 1
 	repeat
@@ -537,7 +537,7 @@ function core.string_to_pos(value)
 		p.z = tonumber(p.z)
 		return p
 	end
-	local p = {}
+	p = {}
 	p.x, p.y, p.z = string.match(value, "^%( *([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+) *%)$")
 	if p.x and p.y and p.z then
 		p.x = tonumber(p.x)

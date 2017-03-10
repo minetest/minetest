@@ -45,7 +45,7 @@ core.register_on_chat_message(function(name, message)
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
 		core.set_last_run_mod(cmd_def.mod_origin)
-		local success, message = cmd_def.func(name, param)
+		local _, message = cmd_def.func(name, param)
 		if message then
 			core.chat_send_player(name, message)
 		end
@@ -100,7 +100,7 @@ core.register_chatcommand("me", {
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = minetest.setting_get("name")
+		local admin = core.setting_get("name")
 		if admin then
 			return true, "The administrator of this server is "..admin.."."
 		else
@@ -125,7 +125,6 @@ core.register_chatcommand("help", {
 			return msg
 		end
 		if param == "" then
-			local msg = ""
 			local cmds = {}
 			for cmd, def in pairs(core.registered_chatcommands) do
 				if core.check_player_privs(name, def.privs) then
@@ -177,7 +176,7 @@ core.register_chatcommand("privs", {
 })
 
 local function handle_grant_command(caller, grantname, grantprivstr)
-	local caller_privs = minetest.get_player_privs(caller)
+	local caller_privs = core.get_player_privs(caller)
 	if not (caller_privs.privs or caller_privs.basic_privs) then
 		return false, "Your privileges are insufficient."
 	end
@@ -300,8 +299,7 @@ core.register_chatcommand("setpassword", {
 		if not toname then
 			return false, "Name field required"
 		end
-		local act_str_past = "?"
-		local act_str_pres = "?"
+		local act_str_past, act_str_pres
 		if not raw_password then
 			core.set_player_password(toname, "")
 			act_str_past = "cleared"
@@ -378,14 +376,14 @@ core.register_chatcommand("teleport", {
 			return pos, false
 		end
 
-		local teleportee = nil
+		local teleportee
 		local p = {}
 		p.x, p.y, p.z = string.match(param, "^([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x = tonumber(p.x)
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
 		if p.x and p.y and p.z then
-			local lm = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+			local lm = tonumber(core.setting_get("map_generation_limit") or 31000)
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
 				return false, "Cannot teleport out of map bounds!"
 			end
@@ -396,10 +394,8 @@ core.register_chatcommand("teleport", {
 			end
 		end
 
-		local teleportee = nil
-		local p = nil
-		local target_name = nil
-		target_name = param:match("^([^ ]+)$")
+		p = nil
+		local target_name = param:match("^([^ ]+)$")
 		teleportee = core.get_player_by_name(name)
 		if target_name then
 			local target = core.get_player_by_name(target_name)
@@ -418,9 +414,9 @@ core.register_chatcommand("teleport", {
 			return false, "You don't have permission to teleport other players (missing bring privilege)"
 		end
 
-		local teleportee = nil
-		local p = {}
-		local teleportee_name = nil
+		teleportee = nil
+		p = {}
+		local teleportee_name
 		teleportee_name, p.x, p.y, p.z = param:match(
 				"^([^ ]+) +([%d.-]+)[, ] *([%d.-]+)[, ] *([%d.-]+)$")
 		p.x, p.y, p.z = tonumber(p.x), tonumber(p.y), tonumber(p.z)
@@ -433,10 +429,8 @@ core.register_chatcommand("teleport", {
 					.. " to " .. core.pos_to_string(p)
 		end
 
-		local teleportee = nil
-		local p = nil
-		local teleportee_name = nil
-		local target_name = nil
+		teleportee = nil
+		p = nil
 		teleportee_name, target_name = string.match(param, "^([^ ]+) +([^ ]+)$")
 		if teleportee_name then
 			teleportee = core.get_player_by_name(teleportee_name)
@@ -470,7 +464,7 @@ core.register_chatcommand("set", {
 			core.setting_set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
+		setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
 			if not core.setting_get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
@@ -478,7 +472,7 @@ core.register_chatcommand("set", {
 			core.setting_set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
-		local setname = string.match(param, "([^ ]+)")
+		setname = string.match(param, "([^ ]+)")
 		if setname then
 			local setvalue = core.setting_get(setname)
 			if not setvalue then
@@ -752,7 +746,7 @@ core.register_chatcommand("rollback", {
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
 		if not target_name then
-			local player_name = nil
+			local player_name
 			player_name, seconds = string.match(param, "([^ ]+) *(%d*)")
 			if not player_name then
 				return false, "Invalid parameters. See /help rollback"

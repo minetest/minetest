@@ -53,12 +53,6 @@ core.register_entity(":__builtin:item", {
 		if itemtable then
 			itemname = stack:to_table().name
 		end
-		local item_texture = nil
-		local item_type = ""
-		if core.registered_items[itemname] then
-			item_texture = core.registered_items[itemname].inventory_image
-			item_type = core.registered_items[itemname].type
-		end
 		local prop = {
 			is_visible = true,
 			visual = "wielditem",
@@ -117,7 +111,6 @@ core.register_entity(":__builtin:item", {
 			pos.y = pos.y + (count - stack:get_count()) / max_count * 0.15
 			object:moveto(pos, false)
 			local s, c
-			local max_count = stack:get_stack_max()
 			local name = stack:get_name()
 			if not overflow then
 				obj.itemstring = name .. " " .. count

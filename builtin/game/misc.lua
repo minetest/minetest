@@ -89,7 +89,7 @@ local player_list = {}
 core.register_on_joinplayer(function(player)
 	local player_name = player:get_player_name()
 	player_list[player_name] = player
-	if not minetest.is_singleplayer() then
+	if not core.is_singleplayer() then
 		core.chat_send_all("*** " .. player_name .. " joined the game.")
 	end
 end)
@@ -114,8 +114,8 @@ function core.get_connected_players()
 	return temp_table
 end
 
-function minetest.player_exists(name)
-	return minetest.get_auth_handler().get_auth(name) ~= nil
+function core.player_exists(name)
+	return core.get_auth_handler().get_auth(name) ~= nil
 end
 
 -- Returns two position vectors representing a box of `radius` in each
@@ -214,7 +214,7 @@ function core.http_add_fetch(httpenv)
 	return httpenv
 end
 
-if minetest.setting_getbool("disable_escape_sequences") then
+if core.setting_getbool("disable_escape_sequences") then
 
 	function core.get_color_escape_sequence(color)
 		return ""
@@ -246,5 +246,5 @@ else
 end
 
 function core.close_formspec(player_name, formname)
-	return minetest.show_formspec(player_name, formname, "")
+	return core.show_formspec(player_name, formname, "")
 end

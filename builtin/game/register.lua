@@ -65,14 +65,14 @@ local function check_modname_prefix(name)
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
-		
+
 		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
-		
+
 		return name
 	end
 end
@@ -301,7 +301,6 @@ end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
@@ -404,10 +403,6 @@ function core.run_callbacks(callbacks, mode, ...)
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
 			core.set_last_run_mod(origin.mod)
-			--print("Running " .. tostring(callbacks[i]) ..
-			--	" (a " .. origin.name .. " callback in " .. origin.mod .. ")")
-		else
-			--print("No data associated with callback")
 		end
 		local cb_ret = callbacks[i](...)
 
@@ -497,7 +492,7 @@ end
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change)
-	local last = false
+	local last
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
 		local func = core.registered_on_player_hpchanges.modifiers[i]
 		hp_change, last = func(player, hp_change)
