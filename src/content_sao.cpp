@@ -965,7 +965,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & no drowning, breath
-		if (m_hp > 0 && c.drowning == 0)
+		if (m_hp > 0 && m_breath < PLAYER_MAX_BREATH && c.drowning == 0)
 			setBreath(m_breath + 1);
 	}
 
