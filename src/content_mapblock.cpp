@@ -1486,10 +1486,10 @@ void mapblock_mesh_generate_special(MeshMakeData *data,
 			for (int j = 0; j < 4; j++) {
 				video::S3DVertex vertices[4] =
 				{
-					video::S3DVertex(-s,-BS/2, 0, 0,0,0, c, 0,1),
-					video::S3DVertex( s,-BS/2, 0, 0,0,0, c, 1,1),
-					video::S3DVertex( s,-BS/2 + s*2,0, 0,0,0, c, 1,0),
-					video::S3DVertex(-s,-BS/2 + s*2,0, 0,0,0, c, 0,0),
+					video::S3DVertex(-s*1.4,-BS/2, 0, 0,0,0, c, 0,1),
+					video::S3DVertex( s*1.4,-BS/2, 0, 0,0,0, c, 1,1),
+					video::S3DVertex( s*1.4,-BS/2 + s*2,0, 0,0,0, c, 1,0),
+					video::S3DVertex(-s*1.4,-BS/2 + s*2,0, 0,0,0, c, 0,0),
 				};
 
 				float rotate_degree = 0;
