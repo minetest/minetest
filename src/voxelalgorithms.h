@@ -98,6 +98,15 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!
+ * Corrects the light in a map block.
+ * For server use only.
+ *
+ * \param block the block to update
+ */
+void repair_block_light(ServerMap *map, MapBlock *block,
+	std::map<v3s16, MapBlock*> *modified_blocks);
+
+/*!
  * This class iterates trough voxels that intersect with
  * a line. The collision detection does not see nodeboxes,
  * every voxel is a cube and is returned.

@@ -2591,6 +2591,16 @@ void ServerMap::PrintInfo(std::ostream &out)
 	out<<"ServerMap: ";
 }
 
+bool ServerMap::repairBlockLight(v3s16 blockpos,
+	std::map<v3s16, MapBlock *> *modified_blocks)
+{
+	MapBlock *block = emergeBlock(blockpos, false);
+	if (!block || !block->isGenerated())
+		return false;
+	voxalgo::repair_block_light(this, block, modified_blocks);
+	return true;
+}
+
 MMVManip::MMVManip(Map *map):
 		VoxelManipulator(),
 		m_is_dirty(false),

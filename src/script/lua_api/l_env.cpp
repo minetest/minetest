@@ -847,6 +847,36 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
+// fix_light(p1, p2)
+int ModApiEnvMod::l_fix_light(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 blockpos1 = getContainerPos(read_v3s16(L, 1), MAP_BLOCKSIZE);
+	v3s16 blockpos2 = getContainerPos(read_v3s16(L, 2), MAP_BLOCKSIZE);
+	ServerMap &map = env->getServerMap();
+	std::map<v3s16, MapBlock *> modified_blocks;
+	bool success = true;
+	v3s16 blockpos;
+	for (blockpos.X = blockpos1.X; blockpos.X <= blockpos2.X; blockpos.X++)
+	for (blockpos.Y = blockpos1.Y; blockpos.Y <= blockpos2.Y; blockpos.Y++)
+	for (blockpos.Z = blockpos1.Z; blockpos.Z <= blockpos2.Z; blockpos.Z++) {
+		success = success & map.repairBlockLight(blockpos, &modified_blocks);
+	}
+	if (modified_blocks.size() > 0) {
+		MapEditEvent event;
+		event.type = MEET_OTHER;
+		for (std::map<v3s16, MapBlock *>::iterator it = modified_blocks.begin();
+				it != modified_blocks.end(); ++it)
+			event.modified_blocks.insert(it->first);
+
+		map.dispatchEvent(&event);
+	}
+	lua_pushboolean(L, success);
+
+	return 1;
+}
+
 // emerge_area(p1, p2, [callback, context])
 // emerge mapblocks in area p1..p2, calls callback with context upon completion
 int ModApiEnvMod::l_emerge_area(lua_State *L)
@@ -1089,6 +1119,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(fix_light);
 	API_FCT(emerge_area);
 	API_FCT(delete_area);
 	API_FCT(get_perlin);
