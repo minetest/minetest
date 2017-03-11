@@ -2366,6 +2366,12 @@ and `minetest.auth_reload` call the authetification handler.
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * can be negative for decreasing
+* `minetest.fix_light(pos)`: returns `true`/`false`
+    * resets the light of a map block and removes lighting bugs.
+    * Loads the block if it is not loaded.
+    * `pos` is the position of the block (in block coordinates)
+    * returns `false` if the block is not generated (so nothing changed),
+      `true` otherwise
 * `core.check_single_for_falling(pos)`
     * causes an unsupported `group:falling_node` node to fall and causes an
       unattached `group:attached_node` node to fall.
@@ -3379,8 +3385,14 @@ will place the schematic inside of the VoxelManip.
 * `read_from_map(p1, p2)`:  Loads a chunk of map into the VoxelManip object containing
   the region formed by `p1` and `p2`.
     * returns actual emerged `pmin`, actual emerged `pmax`
-* `write_to_map()`: Writes the data loaded from the `VoxelManip` back to the map.
+* `write_to_map([light])`: Writes the data loaded from the `VoxelManip` back to the map.
     * **important**: data must be set using `VoxelManip:set_data()` before calling this
+    * if `light` is true, then lighting is automatically recalculated.
+      The default value is true.
+      If `light` is false, no light calculations happen, and you should correct
+      all modified blocks with `minetest.fix_light()` as soon as possible.
+      Keep in mind that modifying the map where light is incorrect can cause
+      more lighting bugs. 
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at that position

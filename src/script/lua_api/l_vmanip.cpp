@@ -110,9 +110,10 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
+	bool update_light = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : true;
 	GET_ENV_PTR;
 	ServerMap *map = &(env->getServerMap());
-	if (o->is_mapgen_vm) {
+	if (o->is_mapgen_vm || !update_light) {
 		o->vm->blitBackAll(&(o->modified_blocks));
 	} else {
 		voxalgo::blit_back_with_light(map, o->vm,
