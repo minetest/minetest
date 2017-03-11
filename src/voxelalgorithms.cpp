@@ -1094,6 +1094,95 @@ const VoxelArea block_pad[] = {
 	VoxelArea(v3s16(0, 0, 0), v3s16(0, 15, 15))    //X-
 };
 
+/*!
+ * The common part of bulk light updates - it is always executed.
+ * The procedure takes the nodes that should be unlit, and the
+ * full modified area.
+ *
+ * The procedure handles the correction of all lighting except
+ * direct sunlight spreading.
+ *
+ * \param minblock least coordinates of the changed area in block
+ * coordinates
+ * \param maxblock greatest coordinates of the changed area in block
+ * coordinates
+ * \param unlight the first queue is for day light, the second is for
+ * night light. Contains all nodes on the borders that need to be unlit.
+ * \param relight the first queue is for day light, the second is for
+ * night light. Contains nodes that were not modified, but got sunlight
+ * because the changes.
+ * \param modified_blocks the procedure adds all modified blocks to
+ * this map
+ */
+void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
+	mapblock_v3 maxblock, UnlightQueue unlight[2], ReLightQueue relight[2],
+	std::map<v3s16, MapBlock*> *modified_blocks)
+{
+	INodeDefManager *ndef = map->getNodeDefManager();
+	// dummy boolean
+	bool is_valid;
+
+	// --- STEP 1: Do unlighting
+
+	for (size_t bank = 0; bank < 2; bank++) {
+		LightBank b = banks[bank];
+		unspread_light(map, ndef, b, unlight[bank], relight[bank],
+			*modified_blocks);
+	}
+
+	// --- STEP 2: Get all newly inserted light sources
+
+	// For each block:
+	for (s16 b_x = minblock.X; b_x <= maxblock.X; b_x++)
+	for (s16 b_y = minblock.Y; b_y <= maxblock.Y; b_y++)
+	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
+		v3s16 blockpos(b_x, b_y, b_z);
+		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
+		if (!block || block->isDummy())
+			// Skip not existing blocks
+			continue;
+		// For each node in the block:
+		for (s32 x = 0; x < MAP_BLOCKSIZE; x++)
+		for (s32 z = 0; z < MAP_BLOCKSIZE; z++)
+		for (s32 y = 0; y < MAP_BLOCKSIZE; y++) {
+			v3s16 relpos(x, y, z);
+			MapNode node = block->getNodeNoCheck(x, y, z, &is_valid);
+			const ContentFeatures &f = ndef->get(node);
+			// For each light bank
+			for (size_t b = 0; b < 2; b++) {
+				LightBank bank = banks[b];
+				u8 light = f.param_type == CPT_LIGHT ?
+					node.getLightNoChecks(bank, &f):
+					f.light_source;
+				if (light > 1)
+					relight[b].push(light, relpos, blockpos, block, 6);
+			} // end of banks
+		} // end of nodes
+	} // end of blocks
+
+	// --- STEP 3: do light spreading
+
+	// For each light bank:
+	for (size_t b = 0; b < 2; b++) {
+		LightBank bank = banks[b];
+		// Sunlight is already initialized.
+		u8 maxlight = (b == 0) ? LIGHT_MAX : LIGHT_SUN;
+		// Initialize light values for light spreading.
+		for (u8 i = 0; i <= maxlight; i++) {
+			const std::vector<ChangingLight> &lights = relight[b].lights[i];
+			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
+					it < lights.end(); ++it) {
+				MapNode n = it->block->getNodeNoCheck(it->rel_position,
+					&is_valid);
+				n.setLight(bank, i, ndef);
+				it->block->setNodeNoCheck(it->rel_position, n);
+			}
+		}
+		// Spread lights.
+		spread_light(map, ndef, bank, relight[b], *modified_blocks);
+	}
+}
+
 void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	std::map<v3s16, MapBlock*> *modified_blocks)
 {
@@ -1187,65 +1276,10 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 
 	vm->blitBackAll(modified_blocks, true);
 
-	// --- STEP 4: Do unlighting
+	// --- STEP 4: Finish light update
 
-	for (size_t bank = 0; bank < 2; bank++) {
-		LightBank b = banks[bank];
-		unspread_light(map, ndef, b, unlight[bank], relight[bank],
-			*modified_blocks);
-	}
-
-	// --- STEP 5: Get all newly inserted light sources
-
-	// For each block:
-	for (s16 b_x = minblock.X; b_x <= maxblock.X; b_x++)
-	for (s16 b_y = minblock.Y; b_y <= maxblock.Y; b_y++)
-	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
-		v3s16 blockpos(b_x, b_y, b_z);
-		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
-		if (!block || block->isDummy())
-			// Skip not existing blocks
-			continue;
-		// For each node in the block:
-		for (s32 x = 0; x < MAP_BLOCKSIZE; x++)
-		for (s32 z = 0; z < MAP_BLOCKSIZE; z++)
-		for (s32 y = 0; y < MAP_BLOCKSIZE; y++) {
-			v3s16 relpos(x, y, z);
-			MapNode node = block->getNodeNoCheck(x, y, z, &is_valid);
-			const ContentFeatures &f = ndef->get(node);
-			// For each light bank
-			for (size_t b = 0; b < 2; b++) {
-				LightBank bank = banks[b];
-				u8 light = f.param_type == CPT_LIGHT ?
-					node.getLightNoChecks(bank, &f):
-					f.light_source;
-				if (light > 1)
-					relight[b].push(light, relpos, blockpos, block, 6);
-			} // end of banks
-		} // end of nodes
-	} // end of blocks
-
-	// --- STEP 6: do light spreading
-
-	// For each light bank:
-	for (size_t b = 0; b < 2; b++) {
-		LightBank bank = banks[b];
-		// Sunlight is already initialized.
-		u8 maxlight = (b == 0) ? LIGHT_MAX : LIGHT_SUN;
-		// Initialize light values for light spreading.
-		for (u8 i = 0; i <= maxlight; i++) {
-			const std::vector<ChangingLight> &lights = relight[b].lights[i];
-			for (std::vector<ChangingLight>::const_iterator it = lights.begin();
-					it < lights.end(); ++it) {
-				MapNode n = it->block->getNodeNoCheck(it->rel_position,
-					&is_valid);
-				n.setLight(bank, i, ndef);
-				it->block->setNodeNoCheck(it->rel_position, n);
-			}
-		}
-		// Spread lights.
-		spread_light(map, ndef, bank, relight[b], *modified_blocks);
-	}
+	finish_bulk_light_update(map, minblock, maxblock, unlight, relight,
+		modified_blocks);
 }
 
 VoxelLineIterator::VoxelLineIterator(
