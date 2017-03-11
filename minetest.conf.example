@@ -1056,6 +1056,11 @@
 #    type: int min: 2
 # block_send_optimize_distance = 4
 
+#    Optimize sending under ground (below the water line) blocks to the client.
+#    This reduces the number of blocks sent, but may lead to rendering glitches
+#    around the ocean floor and in caves beyond the block send optimize distance.
+block_send_optimize_underground = true
+
 ## Mapgen
 
 #    Name of map generator to be used when creating a new world.

@@ -281,7 +281,8 @@ void set_default_settings(Settings *settings)
 	//settings->setDefault("max_simultaneous_block_sends_per_client", "1");
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_block_send_distance", "9");
-	settings->setDefault("block_send_optimize_distance", "4");
+	settings->setDefault("block_send_optimize_distance", "6");
+	settings->setDefault("block_send_optimize_underground", "true");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
@@ -371,6 +372,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chunksize", "3");
 
 	settings->setDefault("viewing_range", "25");
+	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("inventory_image_hack", "false");
 
 	// Check for a device with a small screen

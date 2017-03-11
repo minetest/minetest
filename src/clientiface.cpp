@@ -182,6 +182,7 @@ void RemoteClient::GetNextBlocks (
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+	const bool optimize_underground = g_settings->getBool("block_send_optimize_underground");
 	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
@@ -283,7 +284,7 @@ void RemoteClient::GetNextBlocks (
 					surely_not_found_on_disk = true;
 				}
 
-				if(block->isGenerated() == false)
+				if(!block->isGenerated())
 					block_is_invalid = true;
 
 				/*
@@ -295,7 +296,8 @@ void RemoteClient::GetNextBlocks (
 				*/
 				if(d >= d_opt)
 				{
-					if(block->getDayNightDiff() == false)
+					if((optimize_underground || !block->getIsUnderground()) &&
+						!block->getDayNightDiff())
 						continue;
 				}
 			}
