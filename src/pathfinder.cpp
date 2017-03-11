@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define DEBUG_OUT(a)     while(0)
 #define INFO_TARGET      infostream << "Pathfinder: "
 #define VERBOSE_TARGET   verbosestream << "Pathfinder: "
-#define ERROR_TARGET     errorstream << "Pathfinder: "
+#define ERROR_TARGET     warningstream << "Pathfinder: "
 #endif
 
 /******************************************************************************/
