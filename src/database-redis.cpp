@@ -53,6 +53,18 @@ Database_Redis::Database_Redis(Settings &conf)
 		redisFree(ctx);
 		throw DatabaseException(err);
 	}
+	if (conf.exists("redis_password")) {
+		tmp = conf.get("redis_password");
+		redisReply *reply = static_cast<redisReply *>(redisCommand(ctx, "AUTH %s", tmp.c_str()));
+		if (!reply)
+			throw DatabaseException("Redis authentication failed");
+		if (reply->type == REDIS_REPLY_ERROR) {
+			std::string err = "Redis authentication failed: " + std::string(reply->str, reply->len);
+			freeReplyObject(reply);
+			throw DatabaseException(err);
+		}
+		freeReplyObject(reply);
+	}
 }
 
 Database_Redis::~Database_Redis()
