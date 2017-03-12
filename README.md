@@ -1,20 +1,48 @@
-Minetest
-========
+# Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
 Copyright (c) 2010-2017 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
-In case you downloaded the source code:
----------------------------------------
+## Table of Contents
+* [In Case You Downloaded The Source Code](#in-case-you-downloaded-the-source-code)
+* [Further Documentation](#further-documentation)
+* [This Game Is Not Finished](#this-game-is-not-finished)
+* [Default Controls](#default-controls)
+    * [Movement](#movement)
+    * [Actions](#actions)
+    * [Item Management](#item-management)
+    * [Misc](#misc)
+* [Paths](#paths)
+* [World Directory](#world-directory)
+* [Configuration File](#configuration-file)
+* [Command-line Options](#command-line-options)
+* [Compiling on GNU and Linux](#compiling-on-gnu-and-linux)
+* [CMake Options](#cmake-options)
+    * [General Options](#general-options)
+    * [Library Specific Options](#library-specific-options)
+* [Compiling on Windows](#compiling-on-windows)
+    * [Requirements](#requirements)
+    * [Steps](#steps)
+* [Licensing](#licensing)
+    * [License of Minetest Source Code](#license-of-minetest-source-code)
+    * [License of Minetest Textures and Sounds](#license-of-minetest-textures-and-sounds)
+    * [Authors of Media Files](#authors-of-media-files)
+    * [Irrlicht](#irrlicht)
+    * [JThread](#jthread)
+    * [Lua](#lua)
+    * [Fonts](#fonts)
+
+## In Case You Downloaded The Source Code:
+
 If you downloaded the Minetest Engine source code in which this file is
 contained, you probably want to download the minetest_game project too:
   https://github.com/minetest/minetest_game/
 See the README.txt in it.
 
-Further documentation
-----------------------
+## Further Documentation
+
 - Website: http://minetest.net/
 - Wiki: http://wiki.minetest.net/
 - Developer wiki: http://dev.minetest.net/
@@ -22,29 +50,35 @@ Further documentation
 - Github: https://github.com/minetest/minetest/
 - doc/ directory of source distribution
 
-This game is not finished
---------------------------
+## This Game Is Not Finished
+
 - Don't expect it to work as well as a finished game will.
 - Please report any bugs. When doing that, debug.txt is useful.
 
-Default controls
------------------
+## Default Controls
+
+### Movement
 - Move mouse: Look around
 - W, A, S, D: Move
 - Space: Jump/move up
 - Shift: Sneak/move down
+
+### Actions
 - Q: Drop itemstack
 - Shift + Q: Drop single item
 - Left mouse button: Dig/punch/take item
 - Right mouse button: Place/use
 - Shift + right mouse button: Build (without using)
+
+### Item Management
 - I: Inventory menu
 - Mouse wheel: Select item
 - 0-9: Select item
+
+### Misc
 - Z: Zoom (needs zoom privilege)
 - T: Chat
 - /: Command
-
 - Esc: Pause menu/abort/exit (pauses only singleplayer game)
 - R: Enable/disable full range view
 - +: Increase view range
@@ -52,7 +86,6 @@ Default controls
 - K: Enable/disable fly mode (needs fly privilege)
 - J: Enable/disable fast mode (needs fast privilege)
 - H: Enable/disable noclip mode (needs noclip privilege)
-
 - F1:  Hide/show HUD
 - F2:  Hide/show chat
 - F3:  Disable/enable fog
@@ -69,8 +102,8 @@ Default controls
 
 Most controls are settable in the configuration file, see the section below.
 
-Paths
-------
+## Paths
+
 $bin   - Compiled binaries
 $share - Distributed read-only data
 $user  - User-created modifiable data
@@ -90,13 +123,13 @@ $bin   = Contents/MacOS
 $share = Contents/Resources
 $user  = Contents/User OR ~/Library/Application Support/minetest
 
-World directory
-----------------
+## World Directory
+
 - Worlds can be found as separate folders in:
     $user/worlds/
 
-Configuration file:
--------------------
+## Configuration File:
+
 - Default location:
     $user/minetest.conf
 - It is created by Minetest when it is ran the first time.
@@ -105,17 +138,16 @@ Configuration file:
 - A run-in-place build will look for the configuration file in
     $location_of_exe/../minetest.conf and also $location_of_exe/../../minetest.conf
 
-Command-line options:
----------------------
+## Command-line Options:
+
 - Use --help
 
-Compiling on GNU/Linux:
------------------------
+## Compiling on GNU and Linux:
 
 Install dependencies. Here's an example for Debian/Ubuntu:
 $ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
-For Fedora users:
+##### For Fedora users:
 $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
 
 You can install git for easily keeping your copy up to date.
@@ -123,7 +155,7 @@ If you don’t want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
 $ sudo apt-get install git
 
-For Fedora users:
+##### For Fedora users:
 $ sudo dnf install git
 
 Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
@@ -162,9 +194,9 @@ $ ./bin/minetest
 - If you build a bare server, you don't need to have Irrlicht installed.
   In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
 
-CMake options
--------------
-General options:
+## CMake Options
+
+#### General Options:
 
 BUILD_CLIENT        - Build Minetest client
 BUILD_SERVER        - Build Minetest server
@@ -190,7 +222,7 @@ RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in curren
 USE_GPROF           - Enable profiling using GProf
 VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
 
-Library specific options:
+#### Library Specific Options:
 
 BZIP2_INCLUDE_DIR               - Linux only; directory where bzlib.h is located
 BZIP2_LIBRARY                   - Linux only; path to libbz2.a/libbz2.so
@@ -244,13 +276,13 @@ ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
 ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
 ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
 
-Compiling on Windows:
----------------------
+## Compiling on Windows:
+
 - This section is outdated. In addition to what is described here:
-  - In addition to minetest, you need to download minetest_game.
+  - In addition to Minetest, you need to download minetest_game.
   - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
-- You need:
+### Requirements:
 	* CMake:
 		http://www.cmake.org/cmake/resources/software.html
 	* MinGW or Visual Studio
@@ -269,7 +301,7 @@ Compiling on Windows:
 		- This is used for other UI languages. Feel free to leave it out.
 	* And, of course, Minetest:
 		http://minetest.net/download
-- Steps:
+### Steps:
 	- Select a directory called DIR hereafter in which you will operate.
 	- Make sure you have CMake and a compiler installed.
 	- Download all the other stuff to DIR and extract them into there.
@@ -280,42 +312,42 @@ Compiling on Windows:
 	      into "sqlite3" directory, and generate sqlite3.lib using command
 	      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
 	- All those packages contain a nice base directory in them, which
-	  should end up being the direct subdirectories of DIR.
-	- You will end up with a directory structure like this (+=dir, -=file):
-	-----------------
-	+ DIR
-		- zlib-1.2.5.tar.gz
-		- zlib125dll.zip
-		- irrlicht-1.8.3.zip
-		- sqlite-amalgamation-3130000.zip (SQLite3 headers)
-		- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
-		- 110214175330.zip (or whatever, this is the minetest source)
-		+ zlib-1.2.5
-			- zlib.h
-			+ win32
-			...
-		+ zlib125dll
-			- readme.txt
-			+ dll32
-			...
-		+ irrlicht-1.8.3
-			+ lib
-			+ include
-			...
-		+ sqlite3
-			sqlite3.h
-			sqlite3ext.h
-			sqlite3.lib
-			sqlite3.dll
-		+ gettext (optional)
-			+bin
-			+include
-			+lib
-		+ minetest
-			+ src
-			+ doc
-			- CMakeLists.txt
-			...
+	  should end up being the direct subdirectories of DIR. 
+	####- You will end up with a directory structure like this (+=dir, -=file):
+
+    	+ DIR
+    		- zlib-1.2.5.tar.gz
+    		- zlib125dll.zip
+    		- irrlicht-1.8.3.zip
+    		- sqlite-amalgamation-3130000.zip (SQLite3 headers)
+    		- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
+    		- 110214175330.zip (or whatever, this is the minetest source)
+    		+ zlib-1.2.5
+    			- zlib.h
+    			+ win32
+    			...
+    		+ zlib125dll
+    			- readme.txt
+    			+ dll32
+    			...
+    		+ irrlicht-1.8.3
+    			+ lib
+    			+ include
+    			...
+    		+ sqlite3
+    			sqlite3.h
+    			sqlite3ext.h
+    			sqlite3.lib
+    			sqlite3.dll
+    		+ gettext (optional)
+    			+bin
+    			+include
+    			+lib
+    		+ minetest
+    			+ src
+    			+ doc
+    			- CMakeLists.txt
+    			...
 	-----------------
 	- Start up the CMake GUI
 	- Select "Browse Source..." and select DIR/minetest
@@ -327,8 +359,8 @@ Compiling on Windows:
 	- Select your compiler
 	- It will warn about missing stuff, ignore that at this point. (later don't)
 	- Make sure the configuration is as follows
-	  (note that the versions may differ for you):
-	-----------------
+	### (note that the versions may differ for you):
+
 	BUILD_CLIENT             [X]
 	BUILD_SERVER             [ ]
 	CMAKE_BUILD_TYPE         Release
@@ -342,12 +374,12 @@ Compiling on Windows:
 	GETTEXT_BIN_DIR          DIR/gettext/bin
 	GETTEXT_INCLUDE_DIR      DIR/gettext/include
 	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
-	-----------------
+	## GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
+
 	- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
 	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
 	  SQLITE3_LIBRARY manually.
-	- If you want to build 64-bit minetest, you will need to build 64-bit version
+	- If you want to build 64-bit Minetest, you will need to build 64-bit version
 	  of irrlicht engine manually, as only 32-bit pre-built library is provided.
 	- Hit "Configure"
 	- Hit "Configure" once again 8)
@@ -372,8 +404,9 @@ Compiling on Windows:
 		- You should now have a working game with the executable in
 			DIR/minetest/bin/minetest.exe
 
-Windows releases of minetest are built using a bat script like this:
---------------------------------------------------------------------
+## Windows Releases Note:
+```
+Windows releases of Minetest are built using a batch script like this:
 
 set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
@@ -398,37 +431,13 @@ exit /b 0
 popd
 echo Failed.
 exit /b 1
+```
 
-License of Minetest textures and sounds
----------------------------------------
+# Licensing
 
-This applies to textures and sounds contained in the main Minetest
-distribution.
+## License of Minetest Source Code
 
-Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
-http://creativecommons.org/licenses/by-sa/3.0/
-
-Authors of media files
------------------------
-Everything not listed in here:
-Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-ShadowNinja:
-  textures/base/pack/smoke_puff.png
-
-Paramat:
-  textures/base/pack/menu_header.png
-
-erlehmann:
-  misc/minetest-icon-24x24.png
-  misc/minetest-icon.ico
-  misc/minetest.svg
-  textures/base/pack/logo.png
-
-License of Minetest source code
--------------------------------
-
-Minetest
+##### Minetest
 Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -445,12 +454,36 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-Irrlicht
----------------
+## License of Minetest Textures and Sounds
 
-This program uses the Irrlicht Engine. http://irrlicht.sourceforge.net/
+This applies to textures and sounds contained in the main Minetest
+distribution.
 
- The Irrlicht Engine License
+Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
+http://creativecommons.org/licenses/by-sa/3.0/
+
+## Authors of Media Files
+
+Everything not listed in here:
+Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+##### ShadowNinja:
+  textures/base/pack/smoke_puff.png
+
+##### Paramat:
+  textures/base/pack/menu_header.png
+
+#####erlehmann:
+  misc/minetest-icon-24x24.png
+  misc/minetest-icon.ico
+  misc/minetest.svg
+  textures/base/pack/logo.png
+
+## Irrlicht
+
+This program uses the [Irrlicht Engine.](http://irrlicht.sourceforge.net/)
+
+#####The Irrlicht Engine License
 
 Copyright © 2002-2005 Nikolaus Gebhardt
 
@@ -472,8 +505,7 @@ it freely, subject to the following restrictions:
       distribution.
 
 
-JThread
----------------
+## JThread
 
 This program uses the JThread library. License for JThread follows:
 
@@ -497,8 +529,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
-Lua
----------------
+### Lua
 
 Lua is licensed under the terms of the MIT license reproduced below.
 This means that Lua is free software and can be used for both academic
@@ -526,21 +557,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Fonts
----------------
+## Fonts
 
-Bitstream Vera Fonts Copyright:
+##### Bitstream Vera Fonts Copyright:
 
-  Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
   a trademark of Bitstream, Inc.
 
-Arimo - Apache License, version 2.0
+##### Arimo - Apache License, version 2.0
   Digitized data copyright (c) 2010-2012 Google Corporation.
 
-Cousine - Apache License, version 2.0
+##### Cousine - Apache License, version 2.0
   Digitized data copyright (c) 2010-2012 Google Corporation.
 
-DroidSansFallBackFull:
+##### DroidSansFallBackFull:
 
   Copyright (C) 2008 The Android Open Source Project
 
