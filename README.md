@@ -1,5 +1,4 @@
 # Minetest
-
 An InfiniMiner/Minecraft inspired game.
 
 Copyright (c) 2010-2017 Perttu Ahola <celeron55@gmail.com>
@@ -37,17 +36,16 @@ and contributors (see source file comments and the version control log)
 ## In Case You Downloaded The Source Code:
 
 If you downloaded the Minetest Engine source code in which this file is
-contained, you probably want to download the minetest_game project too:
-  https://github.com/minetest/minetest_game/
+contained, you probably want to download [minetest_game project](https://github.com/minetest/minetest_game/)
 See the README.txt in it.
 
 ## Further Documentation
 
-- Website: http://minetest.net/
-- Wiki: http://wiki.minetest.net/
-- Developer wiki: http://dev.minetest.net/
-- Forum: http://forum.minetest.net/
-- Github: https://github.com/minetest/minetest/
+- [Official Minetest website](http://minetest.net/)
+- [Minetest wiki](http://wiki.minetest.net/) 
+- [Developer wiki](http://dev.minetest.net/)
+- [Forum](http://forum.minetest.net/)
+- [Github](https://github.com/minetest/minetest/)
 - doc/ directory of source distribution
 
 ## This Game Is Not Finished
@@ -104,100 +102,123 @@ Most controls are settable in the configuration file, see the section below.
 
 ## Paths
 
-$bin   - Compiled binaries
-$share - Distributed read-only data
-$user  - User-created modifiable data
+- bin   - Compiled binaries
+- share - Distributed read-only data
+- user  - User-created modifiable data
 
-Windows .zip / RUN_IN_PLACE source:
-$bin   = bin
-$share = .
-$user  = .
+- Windows .zip / RUN_IN_PLACE source:
+    - bin   = `bin`
+    - share = `.`
+    - user  = `.`
 
-Linux installed:
-$bin   = /usr/bin
-$share = /usr/share/minetest
-$user  = ~/.minetest
+- Linux installed:
+    - bin   = `/usr/bin`
+    - share = `/usr/share/minetest`
+    - user  = `~/.minetest`
 
-macOS:
-$bin   = Contents/MacOS
-$share = Contents/Resources
-$user  = Contents/User OR ~/Library/Application Support/minetest
+- macOS:
+    - bin   = `Contents/MacOS`
+    - share = `Contents/Resources`
+    - user  = `Contents/User` OR `~/Library/Application Support/minetest`
 
 ## World Directory
 
 - Worlds can be found as separate folders in:
-    $user/worlds/
+    - `user/worlds/`
 
 ## Configuration File:
 
 - Default location:
-    $user/minetest.conf
-- It is created by Minetest when it is ran the first time.
+    - `user/minetest.conf`
+- It is created by Minetest when it is run the first time.
 - A specific file can be specified on the command line:
-    --config <path-to-file>
+    - `-config <path-to-file>`
 - A run-in-place build will look for the configuration file in
-    $location_of_exe/../minetest.conf and also $location_of_exe/../../minetest.conf
+    - `location_of_exe/../minetest.conf` 
+- and also 
+    - `location_of_exe/../../minetest.conf`
 
 ## Command-line Options:
 
-- Use --help
+- Use `-help`
 
 ## Compiling on GNU and Linux:
 
 Install dependencies. Here's an example for Debian/Ubuntu:
-$ sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
-##### For Fedora users:
-$ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+```
+sudo apt-get install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+```
+
+### For Fedora users:
+
+```
+sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+```
 
 You can install git for easily keeping your copy up to date.
 If you don’t want git, read below on how to get the source without git.
+
 This is an example for installing git on Debian/Ubuntu:
-$ sudo apt-get install git
+`sudo apt-get install git`
 
-##### For Fedora users:
-$ sudo dnf install git
+### For Fedora users:
+`sudo dnf install git`
 
-Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
-$ git clone --depth 1 https://github.com/minetest/minetest.git
-$ cd minetest
+- Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
+
+`git clone --depth 1 https://github.com/minetest/minetest.git`
+
+`cd minetest`
 
 Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
-$ git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+
+`git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game`
 
 Download source, without using git:
-$ wget https://github.com/minetest/minetest/archive/master.tar.gz
-$ tar xf master.tar.gz
-$ cd minetest-master
+
+`wget https://github.com/minetest/minetest/archive/master.tar.gz`
+
+`tar xf master.tar.gz`
+
+`cd minetest-master`
 
 Download minetest_game, without using git:
-$ cd games/
-$ wget https://github.com/minetest/minetest_game/archive/master.tar.gz
-$ tar xf master.tar.gz
-$ mv minetest_game-master minetest_game
-$ cd ..
+
+`cd games/`
+
+`wget https://github.com/minetest/minetest_game/archive/master.tar.gz`
+
+`tar xf master.tar.gz`
+
+`mv minetest_game-master minetest_game`
+
+`cd ..`
 
 Build a version that runs directly from the source directory:
-$ cmake . -DRUN_IN_PLACE=TRUE
-$ make -j <number of processors>
+
+`cmake . -DRUN_IN_PLACE=TRUE`
+
+`make -j <number of processors>`
 
 Run it:
-$ ./bin/minetest
 
-- Use cmake . -LH to see all CMake options and their current state
+`./bin/minetest`
+
+- Use `cmake . -LH` to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package),
-  you will want to use -DRUN_IN_PLACE=FALSE
-- You can build a bare server by specifying -DBUILD_SERVER=TRUE
-- You can disable the client build by specifying -DBUILD_CLIENT=FALSE
-- You can select between Release and Debug build by -DCMAKE_BUILD_TYPE=<Debug or Release>
-  - Debug build is slower, but gives much more useful output in a debugger
+  you will want to use `-DRUN_IN_PLACE=FALSE`
+- You can build a bare server by specifying `-DBUILD_SERVER=TRUE`
+- You can disable the client build by specifying `-DBUILD_CLIENT=FALSE`
+- You can select between Release and Debug build by `-DCMAKE_BUILD_TYPE=<Debug or Release>`
+    - Debug build is slower, but gives much more useful output in a debugger
 - If you build a bare server, you don't need to have Irrlicht installed.
-  In that case use -DIRRLICHT_SOURCE_DIR=/the/irrlicht/source
+  In that case use `-DIRRLICHT_SOURCE_DIR=/the/irrlicht/source`
 
 ## CMake Options
 
 #### General Options:
-
+```
 BUILD_CLIENT        - Build Minetest client
 BUILD_SERVER        - Build Minetest server
 CMAKE_BUILD_TYPE    - Type of build (Release vs. Debug)
@@ -221,9 +242,9 @@ ENABLE_SYSTEM_GMP   - Use GMP from system (much faster than bundled mini-gmp)
 RUN_IN_PLACE        - Create a portable install (worlds, settings etc. in current directory)
 USE_GPROF           - Enable profiling using GProf
 VERSION_EXTRA       - Text to append to version (e.g. VERSION_EXTRA=foobar -> Minetest 0.4.9-foobar)
-
+```
 #### Library Specific Options:
-
+```
 BZIP2_INCLUDE_DIR               - Linux only; directory where bzlib.h is located
 BZIP2_LIBRARY                   - Linux only; path to libbz2.a/libbz2.so
 CURL_DLL                        - Only if building with cURL on Windows; path to libcurl.dll
@@ -275,7 +296,7 @@ ZLIB_DLL                        - Only on Windows; path to zlib1.dll
 ZLIBWAPI_DLL                    - Only on Windows; path to zlibwapi.dll
 ZLIB_INCLUDE_DIR                - Directory that contains zlib.h
 ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
-
+```
 ## Compiling on Windows:
 
 - This section is outdated. In addition to what is described here:
@@ -283,84 +304,80 @@ ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
   - If you wish to have sound support, you need libogg, libvorbis and libopenal
 
 ### Requirements:
-	* CMake:
-		http://www.cmake.org/cmake/resources/software.html
-	* MinGW or Visual Studio
-		http://www.mingw.org/
-		http://msdn.microsoft.com/en-us/vstudio/default
-	* Irrlicht SDK 1.7:
-		http://irrlicht.sourceforge.net/downloads.html
-	* Zlib headers (zlib125.zip)
-		http://www.winimage.com/zLibDll/index.html
-	* Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip):
-		http://www.winimage.com/zLibDll/index.html
-	* SQLite3 headers and library
-		https://www.sqlite.org/download.html
-	* Optional: gettext library and tools:
-		http://gnuwin32.sourceforge.net/downlinks/gettext.php
-		- This is used for other UI languages. Feel free to leave it out.
-	* And, of course, Minetest:
-		http://minetest.net/download
+
+- [CMake](http://www.cmake.org/cmake/resources/software.html)
+- [MinGW](http://www.cmake.org/cmake/resources/software.html)
+- [Irrlicht SDK 1.7:](http://irrlicht.sourceforge.net/downloads.html)
+- [Zlib headers (zlib125.zip)](http://www.winimage.com/zLibDll/index.html)
+- [Zlib library (zlibwapi.lib and zlibwapi.dll from zlib125dll.zip)](http://www.winimage.com/zLibDll/index.html)
+- [SQLite3 headers and library](https://www.sqlite.org/download.html)
+- Optional:
+    - [gettext library and tools](http://gnuwin32.sourceforge.net/downlinks/gettext.php) - This is used for other UI languages. Feel free to leave it out.
+- And, of course, [Minetest](http://minetest.net/download)
+
 ### Steps:
-	- Select a directory called DIR hereafter in which you will operate.
-	- Make sure you have CMake and a compiler installed.
-	- Download all the other stuff to DIR and extract them into there.
-	  ("extract here", not "extract to packagename/")
-	  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
-	  NOTE: You need to extract sqlite3.h & sqlite3ext.h from sqlite3 source
-	      and sqlite3.dll & sqlite3.def from sqlite3 precompiled binaries
-	      into "sqlite3" directory, and generate sqlite3.lib using command
-	      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
-	- All those packages contain a nice base directory in them, which
-	  should end up being the direct subdirectories of DIR. 
-	####- You will end up with a directory structure like this (+=dir, -=file):
 
-    	+ DIR
-    		- zlib-1.2.5.tar.gz
-    		- zlib125dll.zip
-    		- irrlicht-1.8.3.zip
-    		- sqlite-amalgamation-3130000.zip (SQLite3 headers)
-    		- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
-    		- 110214175330.zip (or whatever, this is the minetest source)
-    		+ zlib-1.2.5
-    			- zlib.h
-    			+ win32
-    			...
-    		+ zlib125dll
-    			- readme.txt
-    			+ dll32
-    			...
-    		+ irrlicht-1.8.3
-    			+ lib
-    			+ include
-    			...
-    		+ sqlite3
-    			sqlite3.h
-    			sqlite3ext.h
-    			sqlite3.lib
-    			sqlite3.dll
-    		+ gettext (optional)
-    			+bin
-    			+include
-    			+lib
-    		+ minetest
-    			+ src
-    			+ doc
-    			- CMakeLists.txt
-    			...
-	-----------------
-	- Start up the CMake GUI
-	- Select "Browse Source..." and select DIR/minetest
-	- Now, if using MSVC:
-		- Select "Browse Build..." and select DIR/minetest-build
-	- Else if using MinGW:
-		- Select "Browse Build..." and select DIR/minetest
-	- Select "Configure"
-	- Select your compiler
-	- It will warn about missing stuff, ignore that at this point. (later don't)
-	- Make sure the configuration is as follows
-	### (note that the versions may differ for you):
+- Select a directory called DIR hereafter in which you will operate.
+- Make sure you have CMake and a compiler installed.
+- Download all the other stuff to DIR and extract them into there.
+  ("extract here", not "extract to packagename/")
+  NOTE: zlib125dll.zip needs to be extracted into zlib125dll
+  NOTE: You need to extract sqlite3.h & sqlite3ext.h from sqlite3 source
+      and sqlite3.dll & sqlite3.def from sqlite3 precompiled binaries
+      into "sqlite3" directory, and generate sqlite3.lib using command
+      "LIB /DEF:sqlite3.def /OUT:sqlite3.lib"
+- All those packages contain a nice base directory in them, which
+  should end up being the direct subdirectories of DIR. 
+- You will end up with a directory structure like this (+=dir, -=file):
 
+```
++ DIR
+	- zlib-1.2.5.tar.gz
+	- zlib125dll.zip
+	- irrlicht-1.8.3.zip
+	- sqlite-amalgamation-3130000.zip (SQLite3 headers)
+	- sqlite-dll-win32-x86-3130000.zip (SQLite3 library for 32bit system)
+	- 110214175330.zip (or whatever, this is the minetest source)
+	+ zlib-1.2.5
+		- zlib.h
+		+ win32
+		...
+	+ zlib125dll
+		- readme.txt
+		+ dll32
+		...
+	+ irrlicht-1.8.3
+		+ lib
+		+ include
+		...
+	+ sqlite3
+		sqlite3.h
+		sqlite3ext.h
+		sqlite3.lib
+		sqlite3.dll
+	+ gettext (optional)
+		+bin
+		+include
+		+lib
+	+ minetest
+		+ src
+		+ doc
+		- CMakeLists.txt
+		...
+```
+- Start up the CMake GUI
+- Select "Browse Source..." and select `DIR/minetest`
+- Now, if using MSVC:
+	- Select "Browse Build..." and select `DIR/minetest-build`
+- Else if using MinGW:
+	- Select "Browse Build..." and select `DIR/minetest`
+- Select "Configure"
+- Select your compiler
+- It will warn about missing stuff, ignore that at this point. (later don't)
+- Make sure the configuration is as follows
+  (note that the versions may differ for you):
+  
+```
 	BUILD_CLIENT             [X]
 	BUILD_SERVER             [ ]
 	CMAKE_BUILD_TYPE         Release
@@ -374,40 +391,42 @@ ZLIB_LIBRARY                    - Path to libz.a/libz.so/zlibwapi.lib
 	GETTEXT_BIN_DIR          DIR/gettext/bin
 	GETTEXT_INCLUDE_DIR      DIR/gettext/include
 	GETTEXT_LIBRARIES        DIR/gettext/lib/intl.lib
-	## GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
-
-	- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
-	  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
-	  SQLITE3_LIBRARY manually.
-	- If you want to build 64-bit Minetest, you will need to build 64-bit version
-	  of irrlicht engine manually, as only 32-bit pre-built library is provided.
-	- Hit "Configure"
-	- Hit "Configure" once again 8)
-	- If something is still coloured red, you have a problem.
-	- Hit "Generate"
-	If using MSVC:
-		- Open the generated minetest.sln
-		- The project defaults to the "Debug" configuration. Make very sure to
-		  select "Release", unless you want to debug some stuff (it's slower
-		  and might not even work at all)
-		- Build the ALL_BUILD project
-		- Build the INSTALL project
-		- You should now have a working game with the executable in
-			DIR/minetest-install/bin/minetest.exe
-		- Additionally you may create a zip package by building the PACKAGE
-		  project.
-	If using MinGW:
-		- Using the command line, browse to the build directory and run 'make'
-		  (or mingw32-make or whatever it happens to be)
-		- You may need to copy some of the downloaded DLLs into bin/, see what
-		  running the produced executable tells you it doesn't have.
-		- You should now have a working game with the executable in
-			DIR/minetest/bin/minetest.exe
-
-## Windows Releases Note:
+	GETTEXT_MSGFMT           DIR/gettext/bin/msgfmt
 ```
+
+- If CMake complains it couldn't find SQLITE3, choose "Advanced" box on the
+  right top corner, then specify the location of SQLITE3_INCLUDE_DIR and
+  SQLITE3_LIBRARY manually.
+- If you want to build 64-bit Minetest, you will need to build 64-bit version
+  of irrlicht engine manually, as only 32-bit pre-built library is provided.
+- Hit "Configure"
+- Hit "Configure" once again 8)
+- If something is still coloured red, you have a problem.
+- Hit "Generate"
+If using MSVC:
+	- Open the generated minetest.sln
+	- The project defaults to the "Debug" configuration. Make very sure to
+	  select "Release", unless you want to debug some stuff (it's slower
+	  and might not even work at all)
+	- Build the ALL_BUILD project
+	- Build the INSTALL project
+	- You should now have a working game with the executable in
+		`DIR/minetest-install/bin/minetest.exe`
+	- Additionally you may create a zip package by building the PACKAGE
+	  project.
+If using MinGW:
+	- Using the command line, browse to the build directory and run `make`
+	  (or `mingw32-make` or whatever it happens to be)
+	- You may need to copy some of the downloaded DLLs into `bin/`, see what
+	  running the produced executable tells you it doesn't have.
+	- You should now have a working game with the executable in
+		`DIR/minetest/bin/minetest.exe`
+
+## Windows Release Notes:
+
 Windows releases of Minetest are built using a batch script like this:
 
+```
 set sourcedir=%CD%
 set installpath="C:\tmp\minetest_install"
 set irrlichtpath="C:\tmp\irrlicht-1.7.2"
@@ -437,7 +456,7 @@ exit /b 1
 
 ## License of Minetest Source Code
 
-##### Minetest
+### Minetest:
 Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -460,30 +479,30 @@ This applies to textures and sounds contained in the main Minetest
 distribution.
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
-http://creativecommons.org/licenses/by-sa/3.0/
+`http://creativecommons.org/licenses/by-sa/3.0/`
 
 ## Authors of Media Files
 
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 
-##### ShadowNinja:
-  textures/base/pack/smoke_puff.png
+- ##### ShadowNinja:
+    - `textures/base/pack/smoke_puff.png`
 
-##### Paramat:
-  textures/base/pack/menu_header.png
+- ##### Paramat:
+    - `textures/base/pack/menu_header.png`
 
-#####erlehmann:
-  misc/minetest-icon-24x24.png
-  misc/minetest-icon.ico
-  misc/minetest.svg
-  textures/base/pack/logo.png
+- ##### erlehmann:
+    - `misc/minetest-icon-24x24.png`
+    - `misc/minetest-icon.ico`
+    - `misc/minetest.svg`
+    - `textures/base/pack/logo.png`
 
 ## Irrlicht
 
 This program uses the [Irrlicht Engine.](http://irrlicht.sourceforge.net/)
 
-#####The Irrlicht Engine License
+### The Irrlicht Engine License
 
 Copyright © 2002-2005 Nikolaus Gebhardt
 
@@ -559,26 +578,24 @@ THE SOFTWARE.
 
 ## Fonts
 
-##### Bitstream Vera Fonts Copyright:
-
+### Bitstream Vera Fonts Copyright:
 Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
   a trademark of Bitstream, Inc.
 
-##### Arimo - Apache License, version 2.0
+### Arimo - Apache License, version 2.0
   Digitized data copyright (c) 2010-2012 Google Corporation.
 
-##### Cousine - Apache License, version 2.0
+### Cousine - Apache License, version 2.0
   Digitized data copyright (c) 2010-2012 Google Corporation.
 
-##### DroidSansFallBackFull:
-
+### DroidSansFallBackFull:
   Copyright (C) 2008 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
