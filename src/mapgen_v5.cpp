@@ -41,15 +41,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_mapgen_v5[] = {
-	{NULL,         0}
+	{"caverns", MGV5_CAVERNS},
+	{NULL,      0}
 };
 
 
 MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags    = params->spflags;
-	this->cave_width = params->cave_width;
+	this->spflags          = params->spflags;
+	this->cave_width       = params->cave_width;
+	this->cavern_limit     = params->cavern_limit;
+	this->cavern_taper     = params->cavern_taper;
+	this->cavern_threshold = params->cavern_threshold;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
@@ -59,9 +63,10 @@ MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	// 3D terrain noise
 	// 1-up 1-down overgeneration
 	noise_ground = new Noise(&params->np_ground, seed, csize.X, csize.Y + 2, csize.Z);
-
-	MapgenBasic::np_cave1 = params->np_cave1;
-	MapgenBasic::np_cave2 = params->np_cave2;
+	// 1 down overgeneration
+	MapgenBasic::np_cave1  = params->np_cave1;
+	MapgenBasic::np_cave2  = params->np_cave2;
+	MapgenBasic::np_cavern = params->np_cavern;
 }
 
 
@@ -76,47 +81,55 @@ MapgenV5::~MapgenV5()
 
 MapgenV5Params::MapgenV5Params()
 {
-	spflags    = 0;
-	cave_width = 0.125;
+	spflags          = MGV5_CAVERNS;
+	cave_width       = 0.125;
+	cavern_limit     = -256;
+	cavern_taper     = 256;
+	cavern_threshold = 0.7;
 
 	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
 	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
 	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);
+	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
 	np_cave1        = NoiseParams(0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0);
 	np_cave2        = NoiseParams(0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0);
-	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
+	np_cavern       = NoiseParams(0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0);
 }
-
-
-//#define CAVE_NOISE_SCALE 12.0
-//#define CAVE_NOISE_THRESHOLD (1.5/CAVE_NOISE_SCALE) = 0.125
 
 
 void MapgenV5Params::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgv5_spflags",  spflags, flagdesc_mapgen_v5);
-	settings->getFloatNoEx("mgv5_cave_width", cave_width);
+	settings->getFlagStrNoEx("mgv5_spflags",        spflags, flagdesc_mapgen_v5);
+	settings->getFloatNoEx("mgv5_cave_width",       cave_width);
+	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
+	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
+	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
 
 	settings->getNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->getNoiseParams("mgv5_np_factor",       np_factor);
 	settings->getNoiseParams("mgv5_np_height",       np_height);
+	settings->getNoiseParams("mgv5_np_ground",       np_ground);
 	settings->getNoiseParams("mgv5_np_cave1",        np_cave1);
 	settings->getNoiseParams("mgv5_np_cave2",        np_cave2);
-	settings->getNoiseParams("mgv5_np_ground",       np_ground);
+	settings->getNoiseParams("mgv5_np_cavern",       np_cavern);
 }
 
 
 void MapgenV5Params::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgv5_spflags",  spflags, flagdesc_mapgen_v5, U32_MAX);
-	settings->setFloat("mgv5_cave_width", cave_width);
+	settings->setFlagStr("mgv5_spflags",        spflags, flagdesc_mapgen_v5, U32_MAX);
+	settings->setFloat("mgv5_cave_width",       cave_width);
+	settings->setS16("mgv5_cavern_limit",       cavern_limit);
+	settings->setS16("mgv5_cavern_taper",       cavern_taper);
+	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
 
 	settings->setNoiseParams("mgv5_np_filler_depth", np_filler_depth);
 	settings->setNoiseParams("mgv5_np_factor",       np_factor);
 	settings->setNoiseParams("mgv5_np_height",       np_height);
+	settings->setNoiseParams("mgv5_np_ground",       np_ground);
 	settings->setNoiseParams("mgv5_np_cave1",        np_cave1);
 	settings->setNoiseParams("mgv5_np_cave2",        np_cave2);
-	settings->setNoiseParams("mgv5_np_ground",       np_ground);
+	settings->setNoiseParams("mgv5_np_cavern",       np_cavern);
 }
 
 
@@ -190,9 +203,21 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 	biomegen->calcBiomeNoise(node_min);
 	MgStoneType stone_type = generateBiomes();
 
-	// Generate caves
-	if ((flags & MG_CAVES) && (stone_surface_max_y >= node_min.Y))
-		generateCaves(stone_surface_max_y, MGV5_LARGE_CAVE_DEPTH);
+	// Generate caverns, tunnels and classic caves
+	if (flags & MG_CAVES) {
+		bool has_cavern = false;
+		// Generate caverns
+		if (spflags & MGV5_CAVERNS)
+			has_cavern = generateCaverns(stone_surface_max_y);
+		// Generate tunnels and classic caves
+		if (has_cavern)
+			// Disable classic caves in this mapchunk by setting
+			// 'large cave depth' to world base. Avoids excessive liquid in
+			// large caverns and floating blobs of overgenerated liquid.
+			generateCaves(stone_surface_max_y, -MAX_MAP_GENERATION_LIMIT);
+		else
+			generateCaves(stone_surface_max_y, MGV5_LARGE_CAVE_DEPTH);
+	}
 
 	// Generate dungeons and desert temples
 	if (flags & MG_DUNGEONS)
@@ -221,23 +246,6 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	this->generating = false;
 }
-
-
-//bool is_cave(u32 index) {
-//	double d1 = contour(noise_cave1->result[index]);
-//	double d2 = contour(noise_cave2->result[index]);
-//	return d1*d2 > CAVE_NOISE_THRESHOLD;
-//}
-
-//bool val_is_ground(v3s16 p, u32 index, u32 index2d) {
-//	double f = 0.55 + noise_factor->result[index2d];
-//	if(f < 0.01)
-//		f = 0.01;
-//	else if(f >= 1.0)
-//		f *= 1.6;
-//	double h = WATER_LEVEL + 10 * noise_height->result[index2d];
-//	return (noise_ground->result[index] * f > (double)p.Y - h);
-//}
 
 
 int MapgenV5::generateBaseTerrain()
