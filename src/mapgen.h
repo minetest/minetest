@@ -243,6 +243,7 @@ public:
 	virtual ~MapgenBasic();
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
+	virtual bool generateCaverns(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
 	virtual MgStoneType generateBiomes();
 	virtual void dustTopNodes();
@@ -282,7 +283,11 @@ protected:
 
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_cavern;
 	float cave_width;
+	float cavern_limit;
+	float cavern_taper;
+	float cavern_threshold;
 };
 
 #endif
