@@ -54,6 +54,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_file_download_timeout", "300000");
 	settings->setDefault("curl_verify_cert", "true");
 	settings->setDefault("enable_remote_media_server", "true");
+	settings->setDefault("enable_client_modding", "false");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");

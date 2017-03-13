@@ -155,8 +155,7 @@ bool ScriptApiClient::on_dignode(v3s16 p, MapNode node)
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
-	bool blocked = lua_toboolean(L, -1);
-	return blocked;
+	return lua_toboolean(L, -1);
 }
 
 bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)

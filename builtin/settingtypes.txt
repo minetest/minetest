@@ -264,6 +264,9 @@ show_entity_selectionbox (Show entity selection boxes) bool true
 #    when connecting to the server.
 enable_remote_media_server (Connect to external media server) bool true
 
+#    Enable Lua modding support on client.
+enable_client_modding (Client modding) bool false
+
 #    URL to the server list displayed in the Multiplayer Tab.
 serverlist_url (Serverlist URL) string servers.minetest.net
 

@@ -245,7 +245,9 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
-	m_script->environment_step(dtime);
+	if (m_client->moddingEnabled()) {
+		m_script->environment_step(dtime);
+	}
 
 	/*
 		A quick draft of lava damage
