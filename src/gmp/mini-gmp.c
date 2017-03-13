@@ -1944,6 +1944,7 @@ mpz_mul (mpz_t r, const mpz_t u, const mpz_t v)
 
   sign = (u->_mp_size ^ v->_mp_size) < 0;
 
+  /* TODO t non initialized! */
   mpz_init2 (t, (un + vn) * GMP_LIMB_BITS);
 
   tp = t->_mp_d;
@@ -1989,8 +1990,9 @@ mpz_mul_2exp (mpz_t r, const mpz_t u, mp_bitcnt_t bits)
   else
     mpn_copyd (rp + limbs, u->_mp_d, un);
 
-  while (limbs > 0)
-    rp[--limbs] = 0;
+  /* TODO Not used
+    while (limbs > 0)
+    rp[--limbs] = 0;*/
 
   r->_mp_size = (u->_mp_size < 0) ? - rn : rn;
 }

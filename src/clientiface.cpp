@@ -452,7 +452,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		/* GotInit2 SetDefinitionsSent SetMediaSent */
 		default:
-			myerror << "Created: Invalid client state transition! " << event;
+			myerror << "Created: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
@@ -480,7 +481,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
 		default:
-			myerror << "HelloSent: Invalid client state transition! " << event;
+			myerror << "HelloSent: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
@@ -500,7 +502,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init SetDefinitionsSent SetMediaSent */
 		default:
-			myerror << "InitSent: Invalid client state transition! " << event;
+			myerror << "InitSent: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
@@ -520,7 +523,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 
 		/* Init GotInit2 SetMediaSent */
 		default:
-			myerror << "InitDone: Invalid client state transition! " << event;
+			myerror << "InitDone: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
@@ -538,7 +542,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		/* Init GotInit2 SetDefinitionsSent */
 		default:
-			myerror << "DefinitionsSent: Invalid client state transition! " << event;
+			myerror << "DefinitionsSent: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 		}
 		break;
@@ -560,7 +565,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		/* Init GotInit2 SetDefinitionsSent SetMediaSent SetDenied */
 		default:
-			myerror << "Active: Invalid client state transition! " << event;
+			myerror << "Active: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 			break;
 		}
@@ -578,7 +584,8 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			m_state = CS_Active;
 			break;
 		default:
-			myerror << "Active: Invalid client state transition! " << event;
+			myerror << "Active: Invalid client state transition! "
+				<< event;
 			throw ClientStateError(myerror.str());
 			break;
 		}
@@ -652,7 +659,8 @@ void ClientInterface::UpdatePlayerList()
 		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
 
-		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
+		for (std::vector<u16>::iterator i = clients.begin();
+		     i != clients.end(); ++i) {
 			RemotePlayer *player = m_env->getPlayer(*i);
 
 			if (player == NULL)
@@ -707,7 +715,8 @@ RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 		return NULL;
 }
 
-RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState state_min)
+RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id,
+						   ClientState state_min)
 {
 	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
@@ -828,7 +837,9 @@ u16 ClientInterface::getProtocolVersion(u16 peer_id)
 	return n->second->net_proto_version;
 }
 
-void ClientInterface::setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch, std::string full)
+void ClientInterface::setClientVersion(u16 peer_id,
+				       u8 major, u8 minor, u8 patch,
+				       std::string full)
 {
 	MutexAutoLock conlock(m_clients_mutex);
 

@@ -316,14 +316,13 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			const wchar_t *text = wgettext(k->key.name());
 			k->button->setText(text);
 			delete[] text;
-
 			this->key_used.push_back(kp);
 
 			// Allow characters made with shift
-			if(shift_went_down){
+			if(shift_went_down) {
 				shift_down = true;
 				return false;
-			}else{
+			} else {
 				activeKey = -1;
 				return true;
 			}
@@ -358,15 +357,18 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					return true;
 				default:
 					key_setting *k = NULL;
-					for(size_t i = 0; i < key_settings.size(); i++)
+					for(size_t i = 0;
+					    i < key_settings.size(); i++)
 					{
-						if(key_settings.at(i)->id == event.GUIEvent.Caller->getID())
+						if(key_settings.at(i)->id ==
+						   event.GUIEvent.Caller->getID())
 						{
 							k = key_settings.at(i);
 							break;
 						}
 					}
-					FATAL_ERROR_IF(k == NULL, "Key setting not found");
+					FATAL_ERROR_IF(k == NULL,
+						       "Key setting not found");
 
 					resetMenu();
 					shift_down = false;
@@ -417,4 +419,3 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
 	this->add_key(GUI_ID_KEY_ZOOM_BUTTON,      wgettext("Zoom"),             "keymap_zoom");
 }
-
