@@ -238,9 +238,9 @@ void RemoteClient::GetNextBlocks (
 				continue;
 
 			/*
-				Do not go over-limit
+				Do not go over max mapgen limit
 			*/
-			if (blockpos_over_limit(p))
+			if (blockpos_over_max_limit(p))
 				continue;
 
 			// If this is true, inexistent block will be made from scratch
