@@ -248,7 +248,8 @@ Client::Client(
 	m_recommended_send_interval(0.1),
 	m_removed_sounds_check_timer(0),
 	m_state(LC_Created),
-	m_localdb(NULL)
+	m_localdb(NULL),
+	m_script(NULL)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -262,6 +263,7 @@ Client::Client(
 		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
 
+	m_modding_enabled = g_settings->getBool("enable_client_modding");
 	m_script = new ClientScripting(this);
 	m_env.setScript(m_script);
 }
@@ -269,6 +271,11 @@ Client::Client(
 void Client::initMods()
 {
 	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+
+	// If modding is not enabled, don't load mods, just builtin
+	if (!m_modding_enabled) {
+		return;
+	}
 
 	ClientModConfiguration modconf(getClientModsLuaPath());
 	std::vector<ModSpec> mods = modconf.getMods();
@@ -327,6 +334,7 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 
 void Client::Stop()
 {
+	// Don't disable this part when modding is disabled, it's used in builtin
 	m_script->on_shutdown();
 	//request all client managed threads to stop
 	m_mesh_update_thread.stop();

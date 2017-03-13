@@ -179,6 +179,8 @@ struct LocalFormspecHandler : public TextDest {
 				return;
 			}
 		}
+
+		// Don't disable this part when modding is disabled, it's used in builtin
 		m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
@@ -3185,9 +3187,10 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 
 	for ( ; event.type != CE_NONE; event = client->getClientEvent()) {
 
-		if (event.type == CE_PLAYER_DAMAGE &&
-				client->getHP() != 0) {
-			client->getScript()->on_damage_taken(event.player_damage.amount);
+		if (event.type == CE_PLAYER_DAMAGE && client->getHP() != 0) {
+			if (client->moddingEnabled()) {
+				client->getScript()->on_damage_taken(event.player_damage.amount);
+			}
 
 			*damage_flash += 95.0 + 3.2 * event.player_damage.amount;
 			*damage_flash = MYMIN(*damage_flash, 127.0);
@@ -3202,6 +3205,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			cam->camera_yaw = event.player_force_move.yaw;
 			cam->camera_pitch = event.player_force_move.pitch;
 		} else if (event.type == CE_DEATHSCREEN) {
+			// This should be enabled for death formspec in builtin
 			client->getScript()->on_death();
 
 			/* Handle visualization */
@@ -3902,7 +3906,7 @@ void Game::handleDigging(GameRunData *runData,
 
 	if (!runData->digging) {
 		infostream << "Started digging" << std::endl;
-		if (client->getScript()->on_punchnode(nodepos, n))
+		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
 			return;
 		client->interact(0, pointed);
 		runData->digging = true;
@@ -3971,7 +3975,7 @@ void Game::handleDigging(GameRunData *runData,
 	} else {
 		infostream << "Digging completed" << std::endl;
 		client->setCrack(-1, v3s16(0, 0, 0));
-	
+
 		runData->dig_time = 0;
 		runData->digging = false;
 
@@ -3993,9 +3997,10 @@ void Game::handleDigging(GameRunData *runData,
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
 		if (is_valid_position) {
-			bool block = client->getScript()->on_dignode(nodepos, wasnode);
-			if (block) {
-				return;
+			if (client->moddingEnabled()) {
+				if (client->getScript()->on_dignode(nodepos, wasnode)) {
+					return;
+				}
 			}
 			client->removeNode(nodepos);
 		}

@@ -413,7 +413,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 
 	// If chat message not consummed by client lua API
-	if (!m_script->on_receiving_message(wide_to_utf8(message))) {
+	if (!moddingEnabled() || !m_script->on_receiving_message(wide_to_utf8(message))) {
 		pushToChatQueue(message);
 	}
 }
@@ -526,7 +526,9 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 
 	player->hp = hp;
 
-	m_script->on_hp_modification(hp);
+	if (moddingEnabled()) {
+		m_script->on_hp_modification(hp);
+	}
 
 	if (hp < oldhp) {
 		// Add to ClientEvent queue

@@ -572,6 +572,7 @@ public:
 	}
 
 	ClientScripting *getScript() { return m_script; }
+	const bool moddingEnabled() const { return m_modding_enabled; }
 
 	inline void pushToEventQueue(const ClientEvent &event)
 	{
@@ -722,6 +723,7 @@ private:
 	bool m_cache_use_tangent_vertices;
 
 	ClientScripting *m_script;
+	bool m_modding_enabled;
 
 	DISABLE_CLASS_COPY(Client);
 };
