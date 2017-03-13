@@ -1380,9 +1380,9 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	v3s16 full_bpmin = bpmin - extra_borders;
 	v3s16 full_bpmax = bpmax + extra_borders;
 
-	// Do nothing if not inside limits (+-1 because of neighbors)
-	if (blockpos_over_limit(full_bpmin) ||
-		blockpos_over_limit(full_bpmax))
+	// Do nothing if not inside mapgen limits (+-1 because of neighbors)
+	if (blockpos_over_mapgen_limit(full_bpmin) ||
+			blockpos_over_mapgen_limit(full_bpmax))
 		return false;
 
 	data->seed = getSeed();
@@ -1549,25 +1549,14 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 #endif
 
 	/*
-		Do not create over-limit.
-		We are checking for any nodes of the mapblocks of the sector being beyond the limit.
-		A sector is a vertical column of mapblocks, so sectorpos is like a 2D blockpos.
-
-		At the negative limit we are checking for
-			block minimum nodepos < -mapgenlimit.
-		At the positive limit we are checking for
-			block maximum nodepos > mapgenlimit.
-
-		Block minimum nodepos = blockpos * mapblocksize.
-		Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
+		Do not create over max mapgen limit
 	*/
-	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
-	if (p2d.X * MAP_BLOCKSIZE < -map_gen_limit
-			|| (p2d.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-			|| p2d.Y * MAP_BLOCKSIZE < -map_gen_limit
-			|| (p2d.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit)
-		throw InvalidPositionException("createSector(): pos. over limit");
+	const s16 max_limit_bp = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
+	if (p2d.X < -max_limit_bp ||
+			p2d.X >  max_limit_bp ||
+			p2d.Y < -max_limit_bp ||
+			p2d.Y >  max_limit_bp)
+		throw InvalidPositionException("createSector(): pos. over max mapgen limit");
 
 	/*
 		Generate blank sector
@@ -1708,10 +1697,10 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 			FUNCTION_NAME, p.X, p.Y, p.Z);
 
 	/*
-		Do not create over-limit
+		Do not create over max mapgen limit
 	*/
-	if (blockpos_over_limit(p))
-		throw InvalidPositionException("createBlock(): pos. over limit");
+	if (blockpos_over_max_limit(p))
+		throw InvalidPositionException("createBlock(): pos. over max mapgen limit");
 
 	v2s16 p2d(p.X, p.Z);
 	s16 block_y = p.Y;
@@ -2655,7 +2644,7 @@ void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		if(block_data_inexistent)
 		{
 
-			if (load_if_inexistent && !blockpos_over_limit(p)) {
+			if (load_if_inexistent && !blockpos_over_max_limit(p)) {
 				ServerMap *svrmap = (ServerMap *)m_map;
 				block = svrmap->emergeBlock(p, false);
 				if (block == NULL)

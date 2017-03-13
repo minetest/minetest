@@ -669,41 +669,37 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	// MAP_BLOCKSIZE must be subtracted to avoid an object being spawned just
-	// within the map generation limit but in a block and sector that extend
-	// beyond the map generation limit.
-	// This avoids crashes caused by sector over limit in createSector().
-	const float object_limit = (MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit")) - MAP_BLOCKSIZE) * BS;
-	return (p.X < -object_limit
-		|| p.X > object_limit
-		|| p.Y < -object_limit
-		|| p.Y > object_limit
-		|| p.Z < -object_limit
-		|| p.Z > object_limit);
+	const float max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+	return p.X < -max_limit_bs ||
+		p.X >  max_limit_bs ||
+		p.Y < -max_limit_bs ||
+		p.Y >  max_limit_bs ||
+		p.Z < -max_limit_bs ||
+		p.Z >  max_limit_bs;
 }
 
-/*
-	We are checking for any node of the mapblock being beyond the limit.
-
-	At the negative limit we are checking for
-		block minimum nodepos < -mapgenlimit.
-	At the positive limit we are checking for
-		block maximum nodepos > mapgenlimit.
-
-	Block minimum nodepos = blockpos * mapblocksize.
-	Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
-*/
-inline bool blockpos_over_limit(v3s16 p)
+inline bool blockpos_over_max_limit(v3s16 p)
 {
-	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
-	return (p.X * MAP_BLOCKSIZE < -map_gen_limit
-		|| (p.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Y * MAP_BLOCKSIZE < -map_gen_limit
-		|| (p.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Z * MAP_BLOCKSIZE < -map_gen_limit
-		|| (p.Z + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit);
+	const s16 max_limit_bp = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
+	return p.X < -max_limit_bp ||
+		p.X >  max_limit_bp ||
+		p.Y < -max_limit_bp ||
+		p.Y >  max_limit_bp ||
+		p.Z < -max_limit_bp ||
+		p.Z >  max_limit_bp;
+}
+
+inline bool blockpos_over_mapgen_limit(v3s16 p)
+{
+	const s16 mapgen_limit_bp = rangelim(
+		g_settings->getS16("map_generation_limit"), 0, MAX_MAP_GENERATION_LIMIT) /
+		MAP_BLOCKSIZE;
+	return p.X < -mapgen_limit_bp ||
+		p.X >  mapgen_limit_bp ||
+		p.Y < -mapgen_limit_bp ||
+		p.Y >  mapgen_limit_bp ||
+		p.Z < -mapgen_limit_bp ||
+		p.Z >  mapgen_limit_bp;
 }
 
 /*
