@@ -419,7 +419,7 @@ size_t get_biome_list(lua_State *L, int index,
 	if (is_single) {
 		Biome *biome = get_or_load_biome(L, index, biomemgr);
 		if (!biome) {
-			errorstream << "get_biome_list: failed to get biome '"
+			infostream << "get_biome_list: failed to get biome '"
 				<< (lua_isstring(L, index) ? lua_tostring(L, index) : "")
 				<< "'." << std::endl;
 			return 1;
@@ -438,7 +438,7 @@ size_t get_biome_list(lua_State *L, int index,
 		Biome *biome = get_or_load_biome(L, -1, biomemgr);
 		if (!biome) {
 			fail_count++;
-			errorstream << "get_biome_list: failed to get biome '"
+			infostream << "get_biome_list: failed to get biome '"
 				<< (lua_isstring(L, -1) ? lua_tostring(L, -1) : "")
 				<< "'" << std::endl;
 			continue;
@@ -927,7 +927,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
 	if (get_biome_list(L, -1, biomemgr, &deco->biomes))
-		errorstream << "register_decoration: couldn't get all biomes " << std::endl;
+		infostream << "register_decoration: couldn't get all biomes " << std::endl;
 	lua_pop(L, 1);
 
 	//// Get node name(s) to 'spawn by'
@@ -1092,7 +1092,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
 	if (get_biome_list(L, -1, bmgr, &ore->biomes))
-		errorstream << "register_ore: couldn't get all biomes " << std::endl;
+		infostream << "register_ore: couldn't get all biomes " << std::endl;
 	lua_pop(L, 1);
 
 	//// Get noise parameters if needed
