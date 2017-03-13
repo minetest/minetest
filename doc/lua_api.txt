@@ -2190,6 +2190,13 @@ and `minetest.auth_reload` call the authetification handler.
 ### Chat
 * `minetest.chat_send_all(text)`
 * `minetest.chat_send_player(name, text)`
+* `minetest.set_join_message(text)`
+	* Override player join message
+	* First `%s` found is replaced with player name
+* `minetest.set_leave_message(text, timeout_append)
+	* Override player leave message
+	* First %s found is replaced with player name
+	* Optional second argument for time-out append. `(timed out)` by default
 
 ### Environment access
 * `minetest.set_node(pos, node)`
