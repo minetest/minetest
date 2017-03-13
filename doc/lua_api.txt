@@ -1728,7 +1728,7 @@ examples.
 * `w` and `h` are the size of box
 * `color` is color specified as a `ColorString`
 
-#### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>]`
+#### `dropdown[<X>,<Y>;<W>;<name>;<item 1>,<item 2>, ...,<item n>;<selected idx>;<bg_color>;<selected_item_color>]`
 * Show a dropdown field
 * **Important note**: There are two different operation modes:
      1. handle directly on change (only changed dropdown is submitted)
@@ -1738,6 +1738,8 @@ examples.
 * Fieldname data is transferred to Lua
 * Items to be shown in dropdown
 * Index of currently selected dropdown item
+* `bg_color`is the background color of the dropdown
+* `selected_item_color` is the color of the selected item
 
 #### `checkbox[<X>,<Y>;<name>;<label>;<selected>]`
 * Show a checkbox

@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIStaticText.h>
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
-#include <IGUIComboBox.h>
 #include "log.h"
 #include "client/tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
@@ -52,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h" // for parseColorString()
 #include "irrlicht_changes/static_text.h"
 #include "guiscalingfilter.h"
+#include "guiComboBox.h"
 
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 #include "intlGUIEditBox.h"
@@ -853,14 +853,19 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 {
 	std::vector<std::string> parts = split(element,';');
 
-	if ((parts.size() == 5) ||
-		((parts.size() > 5) && (m_formspec_version > FORMSPEC_API_VERSION)))
+	if ((parts.size() >= 5 && parts.size() <= 7) ||
+		((parts.size() > 7) && (m_formspec_version > FORMSPEC_API_VERSION)))
 	{
 		std::vector<std::string> v_pos = split(parts[0],',');
 		std::string name = parts[2];
 		std::vector<std::string> items = split(parts[3],',');
 		std::string str_initial_selection = "";
 		str_initial_selection = parts[4];
+		video::SColor bg_color;
+		bool has_bg_color = parts.size() > 5 && parseColorString(parts[5], bg_color, false);
+		video::SColor selected_item_color;
+		bool has_selected_item_color = parts.size() > 6 && parseColorString(parts[6], selected_item_color, false);
+				
 
 		MY_CHECKPOS("dropdown",0);
 
@@ -884,7 +889,15 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 		spec.send = true;
 
 		//now really show list
-		gui::IGUIComboBox *e = Environment->addComboBox(rect, this,spec.fid);
+		GUIComboBox* e = new GUIComboBox(Environment, this, spec.fid, rect);
+
+		if (has_bg_color) {
+			e->setBackgroundColor(bg_color);
+		}
+
+		if (has_selected_item_color) {
+			e->setSelectedItemColor(selected_item_color);
+		}
 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
