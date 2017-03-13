@@ -309,6 +309,7 @@ public:
 			{ m_async_fatal_error.set(error); }
 
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
+	bool UpdateDeathFormspec(const char *playername);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
 
@@ -398,6 +399,7 @@ private:
 	void SendPlayerPrivileges(u16 peer_id);
 	void SendPlayerInventoryFormspec(u16 peer_id);
 	void SendShowFormspecMessage(u16 peer_id, const std::string &formspec, const std::string &formname);
+	void SendDeathFormspec(u16 peer_id, const std::string &formspec, bool custom, bool enable);
 	void SendHUDAdd(u16 peer_id, u32 id, HudElement *form);
 	void SendHUDRemove(u16 peer_id, u32 id);
 	void SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value);

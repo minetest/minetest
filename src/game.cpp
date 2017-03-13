@@ -961,14 +961,25 @@ static void show_deathscreen(GUIFormSpecMenu **cur_formspec,
 		IWritableTextureSource *tsrc, IrrlichtDevice *device,
 		JoystickController *joystick)
 {
-	std::string formspec =
-		std::string(FORMSPEC_VERSION_STRING) +
-		SIZE_TAG
-		"bgcolor[#320000b4;true]"
-		"label[4.85,1.35;" + gettext("You died.") + "]"
-		"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]"
-		;
+	std::string formspec;
 
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	bool enable_deathscreen = player->enable_deathscreen;
+	if (!enable_deathscreen){
+		client->sendRespawn();
+		return;
+	}
+  	bool custom = player->custom_deathscreen;
+	if (custom) {
+		formspec = player->get_deathscreen_formspec();
+	} else {
+		formspec =    
+			std::string(FORMSPEC_VERSION_STRING) +
+			SIZE_TAG
+			"bgcolor[#320000b4;true]"
+			"label[4.85,1.35;" + gettext("You died.") + "]"
+			"button_exit[4,3;3,0.5;btn_respawn;" + gettext("Respawn") + "]";
+	}
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler
 	 * are deleted by guiFormSpecMenu                     */

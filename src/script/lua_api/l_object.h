@@ -313,6 +313,13 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
+	// get_nametag_attributes(self)
+	static int l_set_death_formspec(lua_State *L);
+
+	static int l_enable_death_formspec(lua_State *L);
+
+	static int l_disable_death_formspec(lua_State *L);
+
 public:
 	ObjectRef(ServerActiveObject *object);
 

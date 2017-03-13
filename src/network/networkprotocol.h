@@ -605,6 +605,15 @@ enum ToClientCommand
 		u32 id
 	*/
 
+	TOCLIENT_DEATHSCREEN_FORMSPEC = 0x5F,
+
+	/*
+	bool custom
+	bool enable
+	u32 len
+	u8[len] formspec
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.

@@ -77,6 +77,8 @@ Player::Player(const char *name, IItemDefManager *idef):
 		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
+	custom_deathscreen = false;
+	enable_deathscreen = true;
 }
 
 Player::~Player()
