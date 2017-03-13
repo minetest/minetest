@@ -136,6 +136,7 @@ private:
 	bool m_enable_shaders;
 	bool m_use_tangent_vertices;
 	bool m_enable_vbo;
+	bool m_dig_crack_animation;
 
 	// Must animate() be called before rendering?
 	bool m_has_animation;

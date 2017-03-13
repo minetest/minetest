@@ -568,6 +568,11 @@
 #    type: int min: 1 max: 5
 # selectionbox_width = 2
 
+#    Enable crack animation on nodes to show digging progress.
+#    If disabled, reduces the number of mapblock mesh updates when digging.
+#    type: bool
+# dig_crack_animation = true
+
 #    Crosshair color (R,G,B).
 #    type: string
 # crosshair_color = (255,255,255)

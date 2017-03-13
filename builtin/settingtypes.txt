@@ -492,6 +492,10 @@ selectionbox_color (Selection box color) string (0,0,0)
 #    Width of the selectionbox's lines around nodes.
 selectionbox_width (Selection box width) int 2 1 5
 
+#    Enable crack animation on nodes to show digging progress.
+#    If disabled, reduces the number of mapblock mesh updates when digging.
+dig_crack_animation (Digging crack animation) bool true
+
 #    Crosshair color (R,G,B).
 crosshair_color (Crosshair color) string (255,255,255)
 

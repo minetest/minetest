@@ -269,6 +269,7 @@ Client::Client(
 	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
 		g_settings->getBool("enable_bumpmapping") ||
 		g_settings->getBool("enable_parallax_occlusion"));
+	m_cache_dig_crack_animation = g_settings->getBool("dig_crack_animation");
 }
 
 void Client::Stop()
@@ -1519,15 +1520,15 @@ void Client::setCrack(int level, v3s16 pos)
 	m_crack_level = level;
 	m_crack_pos = pos;
 
-	if(old_crack_level >= 0 && (level < 0 || pos != old_crack_pos))
-	{
-		// remove old crack
-		addUpdateMeshTaskForNode(old_crack_pos, false, true);
-	}
-	if(level >= 0 && (old_crack_level < 0 || pos != old_crack_pos))
-	{
-		// add new crack
-		addUpdateMeshTaskForNode(pos, false, true);
+	if (m_cache_dig_crack_animation) {
+		if (old_crack_level >= 0 && (level < 0 || pos != old_crack_pos)) {
+			// remove old crack
+			addUpdateMeshTaskForNode(old_crack_pos, false, true);
+		}
+		if (level >= 0 && (old_crack_level < 0 || pos != old_crack_pos)) {
+			// add new crack
+			addUpdateMeshTaskForNode(pos, false, true);
+		}
 	}
 }
 
