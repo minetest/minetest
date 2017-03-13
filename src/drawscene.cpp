@@ -592,30 +592,51 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
-		std::string gamepath = fs::RemoveRelativePathComponents(
-			porting::path_share + DIR_DELIM + "textures");
-		video::ITexture *progress_img = driver->getTexture(
-			(gamepath + "/base/pack/progress_bar.png").c_str());
-		video::ITexture *progress_img_bg = driver->getTexture(
-			(gamepath + "/base/pack/progress_bar_bg.png").c_str());
+		const std::string &texture_path = g_settings->get("texture_path");
+		std::string tp_progress_bar = texture_path + "/progress_bar.png";
+		std::string tp_progress_bar_bg = texture_path + "/progress_bar_bg.png";
 
-		const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
-		u32 imgW = MYMAX(208, img_size.Width);
-		u32 imgH = MYMAX(24, img_size.Height);
-		v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
+		if (!(fs::PathExists(tp_progress_bar) &&
+				fs::PathExists(tp_progress_bar_bg))) {
+			std::string gamepath = fs::RemoveRelativePathComponents(
+				porting::path_share + DIR_DELIM + "textures");
+			tp_progress_bar = gamepath + "/base/pack/progress_bar.png";
+			tp_progress_bar_bg = gamepath + "/base/pack/progress_bar_bg.png";
+		}
 
-		draw2DImageFilterScaled(
-			driver, progress_img_bg,
-			core::rect<s32>(img_pos.X, img_pos.Y, img_pos.X + imgW, img_pos.Y + imgH),
-			core::rect<s32>(0, 0, img_size.Width, img_size.Height),
-			0, 0, true);
+		video::ITexture *progress_img =
+			driver->getTexture(tp_progress_bar.c_str());
+		video::ITexture *progress_img_bg =
+			driver->getTexture(tp_progress_bar_bg.c_str());
 
-		draw2DImageFilterScaled(
-			driver, progress_img,
-			core::rect<s32>(img_pos.X, img_pos.Y,
-					img_pos.X + (percent * imgW) / 100, img_pos.Y + imgH),
-			core::rect<s32>(0, 0, ((percent * img_size.Width) / 100), img_size.Height),
-			0, 0, true);
+		if (progress_img && progress_img_bg) {
+			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
+			u32 imgW = rangelim(img_size.Width, 200, 600);
+			u32 imgH = rangelim(img_size.Height, 24, 72);
+			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
+
+			draw2DImageFilterScaled(
+				driver, progress_img_bg,
+				core::rect<s32>(img_pos.X,
+						img_pos.Y,
+						img_pos.X + imgW,
+						img_pos.Y + imgH),
+				core::rect<s32>(0, 0,
+						img_size.Width,
+						img_size.Height),
+				0, 0, true);
+
+			draw2DImageFilterScaled(
+				driver, progress_img,
+				core::rect<s32>(img_pos.X,
+						img_pos.Y,
+						img_pos.X + (percent * imgW) / 100,
+						img_pos.Y + imgH),
+				core::rect<s32>(0, 0,
+						(percent * img_size.Width) / 100,
+						img_size.Height),
+				0, 0, true);
+		}
 	}
 
 	guienv->drawAll();
