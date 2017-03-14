@@ -1,10 +1,13 @@
-Minetest Lua Modding API Reference 0.4.15
-=========================================
+Minetest Lua Client Modding API Reference 0.4.15
+================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
 
 Introduction
 ------------
+
+**WARNING: The client API is currently unstable, and may break/change without warning.**
+
 Content and functionality can be added to Minetest 0.4 by using Lua
 scripting in run-time loaded mods.
 
@@ -732,7 +735,7 @@ Call these functions only at load time!
 
 ### Player
 * `minetest.get_wielded_item()`
-    * Returns the itemstack the local player is holding 
+    * Returns the itemstack the local player is holding
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
