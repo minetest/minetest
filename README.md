@@ -1,10 +1,12 @@
 # Minetest
+
 An InfiniMiner/Minecraft inspired game.
 
 Copyright (c) 2010-2017 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 ## Table of Contents
+
 * [In Case You Downloaded The Source Code](#in-case-you-downloaded-the-source-code)
 * [Further Documentation](#further-documentation)
 * [This Game Is Not Finished](#this-game-is-not-finished)
@@ -160,50 +162,60 @@ You can install git for easily keeping your copy up to date.
 If you don’t want git, read below on how to get the source without git.
 
 This is an example for installing git on Debian/Ubuntu:
-`sudo apt-get install git`
+
+```
+sudo apt-get install git
+```
 
 ### For Fedora users:
-`sudo dnf install git`
+
+```
+sudo dnf install git
+```
 
 - Download source (this is the URL to the latest of source repository, which might not work at all times) using git:
 
-`git clone --depth 1 https://github.com/minetest/minetest.git`
-
-`cd minetest`
+```
+git clone --depth 1 https://github.com/minetest/minetest.git
+cd minetest
+```
 
 Download minetest_game (otherwise only the "Minimal development test" game is available) using git:
 
-`git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game`
+```
+git clone --depth 1 https://github.com/minetest/minetest_game.git games/minetest_game
+```
 
 Download source, without using git:
 
-`wget https://github.com/minetest/minetest/archive/master.tar.gz`
-
-`tar xf master.tar.gz`
-
-`cd minetest-master`
+```
+wget https://github.com/minetest/minetest/archive/master.tar.gz
+tar xf master.tar.gz
+cd minetest-master
+```
 
 Download minetest_game, without using git:
 
-`cd games/`
-
-`wget https://github.com/minetest/minetest_game/archive/master.tar.gz`
-
-`tar xf master.tar.gz`
-
-`mv minetest_game-master minetest_game`
-
-`cd ..`
+```
+cd games/
+wget https://github.com/minetest/minetest_game/archive/master.tar.gz
+tar xf master.tar.gz
+mv minetest_game-master minetest_game
+cd ..
+```
 
 Build a version that runs directly from the source directory:
 
-`cmake . -DRUN_IN_PLACE=TRUE`
-
-`make -j <number of processors>`
+```
+cmake . -DRUN_IN_PLACE=TRUE
+make -j <number of processors>
+```
 
 Run it:
 
-`./bin/minetest`
+```
+./bin/minetest
+```
 
 - Use `cmake . -LH` to see all CMake options and their current state
 - If you want to install it system-wide (or are making a distribution package),
@@ -452,11 +464,11 @@ echo Failed.
 exit /b 1
 ```
 
-# Licensing
+## Licensing
 
-## License of Minetest Source Code
+### License of Minetest Source Code
 
-### Minetest:
+#### Minetest:
 Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
@@ -473,7 +485,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-## License of Minetest Textures and Sounds
+### License of Minetest Textures and Sounds
 
 This applies to textures and sounds contained in the main Minetest
 distribution.
@@ -481,7 +493,7 @@ distribution.
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 `http://creativecommons.org/licenses/by-sa/3.0/`
 
-## Authors of Media Files
+### Authors of Media Files
 
 Everything not listed in here:
 Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
