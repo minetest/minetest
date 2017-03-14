@@ -554,6 +554,10 @@ public:
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
 
+	virtual std::string getModStoragePath() const;
+	virtual bool registerModStorage(ModMetadata *meta);
+	virtual void unregisterModStorage(const std::string &name);
+
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
@@ -724,6 +728,8 @@ private:
 
 	ClientScripting *m_script;
 	bool m_modding_enabled;
+	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer;
 
 	DISABLE_CLASS_COPY(Client);
 };

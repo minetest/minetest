@@ -58,4 +58,5 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	ModApiStorage::Initialize(L, top);
 
 	LuaItemStack::Register(L);
+	StorageRef::Register(L);
 }

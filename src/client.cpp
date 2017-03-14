@@ -249,7 +249,8 @@ Client::Client(
 	m_removed_sounds_check_timer(0),
 	m_state(LC_Created),
 	m_localdb(NULL),
-	m_script(NULL)
+	m_script(NULL),
+	m_mod_storage_save_timer(10.0f)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -727,6 +728,18 @@ void Client::step(float dtime)
 		// Sync to server
 		if(!removed_server_ids.empty()) {
 			sendRemovedSounds(removed_server_ids);
+		}
+	}
+
+	m_mod_storage_save_timer -= dtime;
+	if (m_mod_storage_save_timer <= 0.0f) {
+		verbosestream << "Saving registered mod storages." << std::endl;
+		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
+		for (UNORDERED_MAP<std::string, ModMetadata *>::const_iterator
+				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
+			if (it->second->isModified()) {
+				it->second->save(getModStoragePath());
+			}
 		}
 	}
 
@@ -1998,3 +2011,31 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 	smgr->getMeshCache()->removeMesh(mesh);
 	return mesh;
 }
+
+bool Client::registerModStorage(ModMetadata *storage)
+{
+	if (m_mod_storages.find(storage->getModName()) != m_mod_storages.end()) {
+		errorstream << "Unable to register same mod storage twice. Storage name: "
+				<< storage->getModName() << std::endl;
+		return false;
+	}
+
+	m_mod_storages[storage->getModName()] = storage;
+	return true;
+}
+
+void Client::unregisterModStorage(const std::string &name)
+{
+	UNORDERED_MAP<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
+	if (it != m_mod_storages.end()) {
+		// Save unconditionaly on unregistration
+		it->second->save(getModStoragePath());
+		m_mod_storages.erase(name);
+	}
+}
+
+std::string Client::getModStoragePath() const
+{
+	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
+}
+

@@ -33,10 +33,9 @@ int ModApiStorage::l_get_mod_storage(lua_State *L)
 	std::string mod_name = lua_tostring(L, -1);
 
 	ModMetadata *store = new ModMetadata(mod_name);
-	// For server side
-	if (Server *server = getServer(L)) {
-		store->load(server->getModStoragePath());
-		server->registerModStorage(store);
+	if (IGameDef *gamedef = getGameDef(L)) {
+		store->load(gamedef->getModStoragePath());
+		gamedef->registerModStorage(store);
 	} else {
 		assert(false); // this should not happen
 	}
@@ -70,8 +69,8 @@ int StorageRef::gc_object(lua_State *L)
 {
 	StorageRef *o = *(StorageRef **)(lua_touserdata(L, 1));
 	// Server side
-	if (Server *server = getServer(L))
-		server->unregisterModStorage(getobject(o)->getModName());
+	if (IGameDef *gamedef = getGameDef(L))
+		gamedef->unregisterModStorage(getobject(o)->getModName());
 	delete o;
 	return 0;
 }

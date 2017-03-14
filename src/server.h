@@ -299,8 +299,8 @@ public:
 	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	std::string getWorldPath() const { return m_path_world; }
-	std::string getModStoragePath() const;
+	virtual std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
@@ -361,8 +361,8 @@ public:
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);
 
-	bool registerModStorage(ModMetadata *storage);
-	void unregisterModStorage(const std::string &name);
+	virtual bool registerModStorage(ModMetadata *storage);
+	virtual void unregisterModStorage(const std::string &name);
 
 	// Bind address
 	Address m_bind_addr;
