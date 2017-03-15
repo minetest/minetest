@@ -204,3 +204,8 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
+
+function core.is_nothing(pos)
+	local name = core.get_node(pos).name
+	return name == "air" or name == "ignore"
+end
