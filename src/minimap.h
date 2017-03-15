@@ -112,19 +112,21 @@ private:
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
-class Mapper {
+class Minimap {
 public:
-	Mapper(IrrlichtDevice *device, Client *client);
-	~Mapper();
+	Minimap(IrrlichtDevice *device, Client *client);
+	~Minimap();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);
 
 	v3f getYawVec();
-	MinimapMode getMinimapMode();
 
 	void setPos(v3s16 pos);
+	v3s16 getPos() const { return data->pos; }
 	void setAngle(f32 angle);
+	f32 getAngle() const { return m_angle; }
 	void setMinimapMode(MinimapMode mode);
+	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape();
 
 

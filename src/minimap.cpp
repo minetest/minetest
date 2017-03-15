@@ -184,7 +184,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 //// Mapper
 ////
 
-Mapper::Mapper(IrrlichtDevice *device, Client *client)
+Minimap::Minimap(IrrlichtDevice *device, Client *client)
 {
 	this->client    = client;
 	this->driver    = device->getVideoDriver();
@@ -238,7 +238,7 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 	m_minimap_update_thread->start();
 }
 
-Mapper::~Mapper()
+Minimap::~Minimap()
 {
 	m_minimap_update_thread->stop();
 	m_minimap_update_thread->wait();
@@ -258,17 +258,12 @@ Mapper::~Mapper()
 	delete m_minimap_update_thread;
 }
 
-void Mapper::addBlock(v3s16 pos, MinimapMapblock *data)
+void Minimap::addBlock(v3s16 pos, MinimapMapblock *data)
 {
 	m_minimap_update_thread->enqueueBlock(pos, data);
 }
 
-MinimapMode Mapper::getMinimapMode()
-{
-	return data->mode;
-}
-
-void Mapper::toggleMinimapShape()
+void Minimap::toggleMinimapShape()
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -277,7 +272,7 @@ void Mapper::toggleMinimapShape()
 	m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setMinimapMode(MinimapMode mode)
+void Minimap::setMinimapMode(MinimapMode mode)
 {
 	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {
 		{false, 0, 0},
@@ -302,7 +297,7 @@ void Mapper::setMinimapMode(MinimapMode mode)
 	m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setPos(v3s16 pos)
+void Minimap::setPos(v3s16 pos)
 {
 	bool do_update = false;
 
@@ -320,12 +315,12 @@ void Mapper::setPos(v3s16 pos)
 		m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setAngle(f32 angle)
+void Minimap::setAngle(f32 angle)
 {
 	m_angle = angle;
 }
 
-void Mapper::blitMinimapPixelsToImageRadar(video::IImage *map_image)
+void Minimap::blitMinimapPixelsToImageRadar(video::IImage *map_image)
 {
 	for (s16 x = 0; x < data->map_size; x++)
 	for (s16 z = 0; z < data->map_size; z++) {
@@ -339,7 +334,7 @@ void Mapper::blitMinimapPixelsToImageRadar(video::IImage *map_image)
 	}
 }
 
-void Mapper::blitMinimapPixelsToImageSurface(
+void Minimap::blitMinimapPixelsToImageSurface(
 	video::IImage *map_image, video::IImage *heightmap_image)
 {
 	for (s16 x = 0; x < data->map_size; x++)
@@ -368,7 +363,7 @@ void Mapper::blitMinimapPixelsToImageSurface(
 	}
 }
 
-video::ITexture *Mapper::getMinimapTexture()
+video::ITexture *Minimap::getMinimapTexture()
 {
 	// update minimap textures when new scan is ready
 	if (data->map_invalidated)
@@ -418,7 +413,7 @@ video::ITexture *Mapper::getMinimapTexture()
 	return data->texture;
 }
 
-v3f Mapper::getYawVec()
+v3f Minimap::getYawVec()
 {
 	if (data->minimap_shape_round) {
 		return v3f(
@@ -430,7 +425,7 @@ v3f Mapper::getYawVec()
 	}
 }
 
-scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
+scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	buf->Vertices.set_used(4);
@@ -452,7 +447,7 @@ scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
 	return buf;
 }
 
-void Mapper::drawMinimap()
+void Minimap::drawMinimap()
 {
 	video::ITexture *minimap_texture = getMinimapTexture();
 	if (!minimap_texture)
@@ -550,7 +545,7 @@ void Mapper::drawMinimap()
 	}
 }
 
-void Mapper::updateActiveMarkers ()
+void Minimap::updateActiveMarkers()
 {
 	video::IImage *minimap_mask = data->minimap_shape_round ?
 		data->minimap_mask_round : data->minimap_mask_square;

@@ -1140,7 +1140,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	if (m_minimap_disabled_by_server && was_minimap_visible) {
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
-		m_mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);
 	}
 }
 

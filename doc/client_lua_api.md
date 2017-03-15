@@ -789,8 +789,26 @@ Call these functions only at load time!
     * same as fgettext_ne(), but calls core.formspec_escape before returning result
 * `show_formspec(formname, formspec)` : returns true on success
 	* Shows a formspec to the player
+
+### UI
+* `minetest.ui.minimap`
+    * Reference to the minimap object. See `Minimap` class reference for methods.
+
 Class reference
 ---------------
+
+### `Minimap`
+An interface to manipulate minimap on client UI
+
+* `show()`: shows the minimap (if not disabled by server)
+* `hide()`: hides the minimap
+* `set_pos(pos)`: sets the minimap position on screen
+* `get_pos()`: returns the minimap current position
+* `set_angle(deg)`: sets the minimap angle in degrees
+* `get_angle()`: returns the current minimap angle in degrees
+* `set_mode(mode)`: sets the minimap mode (0 to 6)
+* `get_mode()`: returns the current minimap mode
+* `toggle_shape()`: toggles minimap shape to round or square.
 
 ### `Settings`
 An interface to read config files in the format of `minetest.conf`.
