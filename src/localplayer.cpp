@@ -233,13 +233,13 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		position.Z = rangelim(position.Z,
 				sn_f.Z+bmin.Z - sneak_max.Z, sn_f.Z+bmax.Z + sneak_max.Z);
 		// Because we keep the player collision box on the node,
-		//   limiting position.Y is not necessary
+		// limiting position.Y is not necessary
 	}
 
 	if (got_teleported)
 		got_teleported = false;
 
-	// this shouldn't be hardcoded but transmitted from server
+	// TODO: this shouldn't be hardcoded but transmitted from server
 	float player_stepheight = touching_ground ? (BS*0.6) : (BS*0.2);
 
 #ifdef __ANDROID__
