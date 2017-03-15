@@ -40,6 +40,12 @@ core.register_chatcommand("dump", {
 	end,
 })
 
+core.register_chatcommand("colorize_test", {
+	func = function(param)
+		return true, core.colorize("red", param)
+	end,
+})
+
 core.register_chatcommand("test_node", {
 	func = function(param)
 		core.display_chat_message(dump(core.get_node({x=0, y=0, z=0})))

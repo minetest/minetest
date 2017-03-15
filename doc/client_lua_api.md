@@ -787,12 +787,12 @@ Call these functions only at load time!
       extra arguments and return the result
 * `fgettext(string, ...)` : returns string
     * same as fgettext_ne(), but calls core.formspec_escape before returning result
-* `show_formspec(formname, formspec)` : returns true on success
-	* Shows a formspec to the player
 
 ### UI
 * `minetest.ui.minimap`
     * Reference to the minimap object. See `Minimap` class reference for methods.
+* `show_formspec(formname, formspec)` : returns true on success
+	* Shows a formspec to the player
 
 Class reference
 ---------------
@@ -837,3 +837,37 @@ Definition tables
         func = function(name, param), -- Called when command is run.
                                       -- Returns boolean success and text output.
     }
+
+Escape sequences
+----------------
+Most text can contain escape sequences, that can for example color the text.
+There are a few exceptions: tab headers, dropdowns and vertical labels can't.
+The following functions provide escape sequences:
+* `core.get_color_escape_sequence(color)`:
+    * `color` is a ColorString
+    * The escape sequence sets the text color to `color`
+* `core.colorize(color, message)`:
+    * Equivalent to:
+      `core.get_color_escape_sequence(color) ..
+       message ..
+       core.get_color_escape_sequence("#ffffff")`
+* `color.get_background_escape_sequence(color)`
+    * `color` is a ColorString
+    * The escape sequence sets the background of the whole text element to
+      `color`. Only defined for item descriptions and tooltips.
+	  
+`ColorString`
+-------------
+`#RGB` defines a color in hexadecimal format.
+
+`#RGBA` defines a color in hexadecimal format and alpha channel.
+
+`#RRGGBB` defines a color in hexadecimal format.
+
+`#RRGGBBAA` defines a color in hexadecimal format and alpha channel.
+
+Named colors are also supported and are equivalent to
+[CSS Color Module Level 4](http://dev.w3.org/csswg/css-color/#named-colors).
+To specify the value of the alpha channel, append `#AA` to the end of the color name
+(e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
+value must (always) be two hexadecima
