@@ -496,7 +496,7 @@ function core.node_dig(pos, node, digger)
 	core.handle_node_drops(pos, drops, digger)
 
 	local oldmetadata = nil
-	if def.after_dig_node then
+	if def and def.after_dig_node then
 		oldmetadata = core.get_meta(pos):to_table()
 	end
 
@@ -504,7 +504,7 @@ function core.node_dig(pos, node, digger)
 	core.remove_node(pos)
 
 	-- Run callback
-	if def.after_dig_node then
+	if def and def.after_dig_node then
 		-- Copy pos and node because callback can modify them
 		local pos_copy = {x=pos.x, y=pos.y, z=pos.z}
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
