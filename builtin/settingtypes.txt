@@ -904,6 +904,9 @@ enable_damage (Damage) bool false
 #    Enable creative mode for new created maps.
 creative_mode (Creative) bool false
 
+#    Enable falling node damage
+node_fall_hurt (Falling node damage) bool true
+
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
 fixed_map_seed (Fixed map seed) string

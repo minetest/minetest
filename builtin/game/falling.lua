@@ -6,6 +6,34 @@ local builtin_shared = ...
 -- Falling stuff
 --
 
+local node_fall_hurt = minetest.setting_getbool("node_fall_hurt") ~= false
+
+local function fall_hurt_check(self, pos, dtime)
+	if not node_fall_hurt then return end
+	if self.hurt_timer > 0 then
+		self.hurt_timer = self.hurt_timer - dtime
+		return
+	end
+
+	-- Get damage level from falling_node_damage group
+	local damage = core.registered_nodes[self.node.name] and
+		core.registered_nodes[self.node.name].groups.falling_node_damage
+	if damage then
+		local all_objects = minetest.get_objects_inside_radius(pos, 0.7)
+		for _,obj in ipairs(all_objects) do
+			local name = obj:get_luaentity() and
+					obj:get_luaentity().name or ""
+			if name ~= "__builtin:item"
+					and name ~= "__builtin:falling_node" then
+				obj:punch(obj, 4.0, {
+					full_punch_interval = 4.0,
+					damage_groups = {fleshy = damage}})
+				self.hurt_timer = 0.2
+			end
+		end
+	end
+end
+
 core.register_entity(":__builtin:falling_node", {
 	initial_properties = {
 		visual = "wielditem",
@@ -23,6 +51,7 @@ core.register_entity(":__builtin:falling_node", {
 	set_node = function(self, node, meta)
 		self.node = node
 		self.meta = meta or {}
+		self.hurt_timer = 0
 		self.object:set_properties({
 			is_visible = true,
 			textures = {node.name},
@@ -60,6 +89,8 @@ core.register_entity(":__builtin:falling_node", {
 		local pos = self.object:getpos()
 		-- Position of bottom center point
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
+		-- Check for player/mobs below falling node and hurt them >:D
+		fall_hurt_check(self, bcp, dtime)
 		-- Avoid bugs caused by an unloaded node below
 		local bcn = core.get_node_or_nil(bcp)
 		local bcd = bcn and core.registered_nodes[bcn.name]
