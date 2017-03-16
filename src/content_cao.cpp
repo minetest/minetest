@@ -933,23 +933,30 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	}
 	else if(m_prop.visual == "wielditem") {
-		infostream<<"GenericCAO::addToScene(): wielditem"<<std::endl;
-		infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
-		if(m_prop.textures.size() >= 1){
-			infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
-			IItemDefManager *idef = m_client->idef();
-			ItemStack item(m_prop.textures[0], 1, 0, idef);
-
-			m_wield_meshnode = new WieldMeshSceneNode(
-					smgr->getRootSceneNode(), smgr, -1);
-			m_wield_meshnode->setItem(item, m_client);
-
-			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
-					m_prop.visual_size.Y/2,
-					m_prop.visual_size.X/2));
-			u8 li = m_last_light;
-			m_wield_meshnode->setColor(video::SColor(255,li,li,li));
+		ItemStack item;
+		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
+		if (m_prop.wield_item == "") {
+			// Old format, only textures are specified.
+			infostream << "textures: " << m_prop.textures.size() << std::endl;
+			if (m_prop.textures.size() >= 1) {
+				infostream << "textures[0]: " << m_prop.textures[0]
+					<< std::endl;
+				IItemDefManager *idef = m_client->idef();
+				item = ItemStack(m_prop.textures[0], 1, 0, idef);
+			}
+		} else {
+			infostream << "serialized form: " << m_prop.wield_item << std::endl;
+			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
+		m_wield_meshnode = new WieldMeshSceneNode(smgr->getRootSceneNode(),
+			smgr, -1);
+		m_wield_meshnode->setItem(item, m_client);
+
+		m_wield_meshnode->setScale(
+			v3f(m_prop.visual_size.X / 2, m_prop.visual_size.Y / 2,
+				m_prop.visual_size.X / 2));
+		u8 li = m_last_light;
+		m_wield_meshnode->setColor(video::SColor(255, li, li, li));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
