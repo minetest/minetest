@@ -353,7 +353,8 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
 	ServerScripting *scriptIface, Server *server,
-	const std::string &path_world) :
+	const std::string &path_world):
+	Environment(server),
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),

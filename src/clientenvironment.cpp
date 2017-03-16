@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	ITextureSource *texturesource, Client *client,
 	IrrlichtDevice *irr):
+	Environment(client),
 	m_map(map),
 	m_local_player(NULL),
 	m_smgr(smgr),
