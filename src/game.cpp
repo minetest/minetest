@@ -1299,51 +1299,43 @@ protected:
 
 	// Main loop
 
-	void updateInteractTimers(GameRunData *runData, f32 dtime);
+	void updateInteractTimers(f32 dtime);
 	bool checkConnection();
 	bool handleCallbacks();
 	void processQueues();
-	void updateProfilers(const GameRunData &runData, const RunStats &stats,
-			const FpsControl &draw_times, f32 dtime);
-	void addProfilerGraphs(const RunStats &stats, const FpsControl &draw_times,
-			f32 dtime);
+	void updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
+	void addProfilerGraphs(const RunStats &stats, const FpsControl &draw_times, f32 dtime);
 	void updateStats(RunStats *stats, const FpsControl &draw_times, f32 dtime);
 
 	// Input related
-	void processUserInput(VolatileRunFlags *flags, GameRunData *runData,
-			f32 dtime);
-	void processKeyInput(VolatileRunFlags *flags,
-			float *statustext_time,
-			float *jump_timer,
-			bool *reset_jump_timer,
-			u32 *profiler_current_page,
-			u32 profiler_max_page);
+	void processUserInput(f32 dtime);
+	void processKeyInput();
 	void processItemSelection(u16 *new_playeritem);
 
 	void dropSelectedItem();
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
-	void toggleFreeMove(float *statustext_time);
-	void toggleFreeMoveAlt(float *statustext_time, float *jump_timer);
-	void toggleFast(float *statustext_time);
-	void toggleNoClip(float *statustext_time);
-	void toggleCinematic(float *statustext_time);
-	void toggleAutorun(float *statustext_time);
+	void toggleFreeMove();
+	void toggleFreeMoveAlt();
+	void toggleFast();
+	void toggleNoClip();
+	void toggleCinematic();
+	void toggleAutorun();
 
-	void toggleChat(float *statustext_time, bool *flag);
-	void toggleHud(float *statustext_time, bool *flag);
-	void toggleMinimap(float *statustext_time, bool *flag, bool show_hud,
+	void toggleChat(bool *flag);
+	void toggleHud(bool *flag);
+	void toggleMinimap(bool *flag, bool show_hud,
 			bool shift_pressed);
-	void toggleFog(float *statustext_time, bool *flag);
-	void toggleDebug(float *statustext_time, bool *show_debug,
+	void toggleFog(bool *flag);
+	void toggleDebug(bool *show_debug,
 			bool *show_profiler_graph, bool *show_wireframe);
-	void toggleUpdateCamera(float *statustext_time, bool *flag);
-	void toggleProfiler(float *statustext_time, u32 *profiler_current_page,
+	void toggleUpdateCamera(bool *flag);
+	void toggleProfiler(u32 *profiler_current_page,
 			u32 profiler_max_page);
 
-	void increaseViewRange(float *statustext_time);
-	void decreaseViewRange(float *statustext_time);
-	void toggleFullViewRange(float *statustext_time);
+	void increaseViewRange();
+	void decreaseViewRange();
+	void toggleFullViewRange();
 
 	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags,
 		float dtime);
@@ -1351,12 +1343,10 @@ protected:
 		const VolatileRunFlags &flags, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void step(f32 *dtime);
-	void processClientEvents(CameraOrientation *cam, float *damage_flash);
-	void updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime,
-			float time_from_last_punch);
+	void processClientEvents(CameraOrientation *cam);
+	void updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime);
 	void updateSound(f32 dtime);
-	void processPlayerInteraction(GameRunData *runData, f32 dtime, bool show_hud,
-			bool show_debug);
+	void processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug);
 	/*!
 	 * Returns the object or node the player is pointing at.
 	 * Also updates the selected thing in the Hud.
@@ -1374,21 +1364,17 @@ protected:
 			const core::line3d<f32> &shootline, bool liquids_pointable,
 			bool look_for_object, const v3s16 &camera_offset,
 			ClientActiveObject *&selected_object);
-	void handlePointingAtNothing(GameRunData *runData, const ItemStack &playerItem);
-	void handlePointingAtNode(GameRunData *runData,
-			const PointedThing &pointed, const ItemDefinition &playeritem_def,
+	void handlePointingAtNothing(const ItemStack &playerItem);
+	void handlePointingAtNode(const PointedThing &pointed, const ItemDefinition &playeritem_def,
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
-	void handlePointingAtObject(GameRunData *runData,
-			const PointedThing &pointed, const ItemStack &playeritem,
+	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
-	void handleDigging(GameRunData *runData, const PointedThing &pointed,
-			const v3s16 &nodepos, const ToolCapabilities &playeritem_toolcap,
-			f32 dtime);
-	void updateFrame(ProfilerGraph *graph, RunStats *stats, GameRunData *runData,
-			f32 dtime, const VolatileRunFlags &flags, const CameraOrientation &cam);
-	void updateGui(float *statustext_time, const RunStats &stats,
-			const GameRunData& runData, f32 dtime, const VolatileRunFlags &flags,
-			const CameraOrientation &cam);
+	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
+			const ToolCapabilities &playeritem_toolcap, f32 dtime);
+	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
+			const VolatileRunFlags &flags, const CameraOrientation &cam);
+	void updateGui(const RunStats &stats, f32 dtime,
+			const VolatileRunFlags &flags, const CameraOrientation &cam);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Misc
@@ -1737,7 +1723,7 @@ void Game::run()
 		limitFps(&draw_times, &dtime);
 
 		updateStats(&stats, draw_times, dtime);
-		updateInteractTimers(&runData, dtime);
+		updateInteractTimers(dtime);
 
 		if (!checkConnection())
 			break;
@@ -1749,8 +1735,8 @@ void Game::run()
 		infotext = L"";
 		hud->resizeHotbar();
 
-		updateProfilers(runData, stats, draw_times, dtime);
-		processUserInput(&flags, &runData, dtime);
+		updateProfilers(stats, draw_times, dtime);
+		processUserInput(dtime);
 		// Update camera before player movement to avoid camera lag of one frame
 		updateCameraDirection(&cam_view_target, &flags, dtime);
 		cam_view.camera_yaw += (cam_view_target.camera_yaw -
@@ -1759,13 +1745,11 @@ void Game::run()
 				cam_view.camera_pitch) * m_cache_cam_smoothing;
 		updatePlayerControl(cam_view);
 		step(&dtime);
-		processClientEvents(&cam_view_target, &runData.damage_flash);
-		updateCamera(&flags, draw_times.busy_time, dtime,
-				runData.time_from_last_punch);
+		processClientEvents(&cam_view_target);
+		updateCamera(&flags, draw_times.busy_time, dtime);
 		updateSound(dtime);
-		processPlayerInteraction(&runData, dtime, flags.show_hud,
-				flags.show_debug);
-		updateFrame(&graph, &stats, &runData, dtime, flags, cam_view);
+		processPlayerInteraction(dtime, flags.show_hud, flags.show_debug);
+		updateFrame(&graph, &stats, dtime, flags, cam_view);
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
@@ -2331,15 +2315,15 @@ bool Game::getServerContent(bool *aborted)
  ****************************************************************************/
 /****************************************************************************/
 
-inline void Game::updateInteractTimers(GameRunData *runData, f32 dtime)
+inline void Game::updateInteractTimers(f32 dtime)
 {
-	if (runData->nodig_delay_timer >= 0)
-		runData->nodig_delay_timer -= dtime;
+	if (runData.nodig_delay_timer >= 0)
+		runData.nodig_delay_timer -= dtime;
 
-	if (runData->object_hit_delay_timer >= 0)
-		runData->object_hit_delay_timer -= dtime;
+	if (runData.object_hit_delay_timer >= 0)
+		runData.object_hit_delay_timer -= dtime;
 
-	runData->time_from_last_punch += dtime;
+	runData.time_from_last_punch += dtime;
 }
 
 
@@ -2403,8 +2387,7 @@ void Game::processQueues()
 }
 
 
-void Game::updateProfilers(const GameRunData &runData, const RunStats &stats,
-		const FpsControl &draw_times, f32 dtime)
+void Game::updateProfilers(const RunStats &stats, const FpsControl &draw_times, f32 dtime)
 {
 	float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
@@ -2502,13 +2485,10 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
  Input handling
  ****************************************************************************/
 
-void Game::processUserInput(VolatileRunFlags *flags,
-		GameRunData *runData, f32 dtime)
+void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
-	if (device->isWindowActive() == false
-			|| noMenuActive() == false
-			|| guienv->hasFocus(gui_chat_console)) {
+	if (!device->isWindowActive() || !noMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		input->clear();
 #ifdef HAVE_TOUCHSCREENGUI
 		g_touchscreengui->hide();
@@ -2537,35 +2517,20 @@ void Game::processUserInput(VolatileRunFlags *flags,
 #endif
 
 	// Increase timer for double tap of "keymap_jump"
-	if (m_cache_doubletap_jump && runData->jump_timer <= 0.2)
-		runData->jump_timer += dtime;
+	if (m_cache_doubletap_jump && runData.jump_timer <= 0.2f)
+		runData.jump_timer += dtime;
 
-	processKeyInput(
-			flags,
-			&runData->statustext_time,
-			&runData->jump_timer,
-			&runData->reset_jump_timer,
-			&runData->profiler_current_page,
-			runData->profiler_max_page);
-
-	processItemSelection(&runData->new_playeritem);
+	processKeyInput();
+	processItemSelection(&runData.new_playeritem);
 }
 
 
-void Game::processKeyInput(VolatileRunFlags *flags,
-		float *statustext_time,
-		float *jump_timer,
-		bool *reset_jump_timer,
-		u32 *profiler_current_page,
-		u32 profiler_max_page)
+void Game::processKeyInput()
 {
-
-	//TimeTaker tt("process kybd input", NULL, PRECISION_NANO);
-
 	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem();
 	} else if (wasKeyDown(KeyType::AUTORUN)) {
-		toggleAutorun(statustext_time);
+		toggleAutorun();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
@@ -2582,40 +2547,40 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 		openConsole(core::clamp(
 			g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
-		toggleFreeMove(statustext_time);
+		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
-		toggleFreeMoveAlt(statustext_time, jump_timer);
-		*reset_jump_timer = true;
+		toggleFreeMoveAlt();
+		runData.reset_jump_timer = true;
 	} else if (wasKeyDown(KeyType::FASTMOVE)) {
-		toggleFast(statustext_time);
+		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
-		toggleNoClip(statustext_time);
+		toggleNoClip();
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
-		toggleCinematic(statustext_time);
+		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
 		client->makeScreenshot(device);
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
-		toggleHud(statustext_time, &flags->show_hud);
+		toggleHud(&flags.show_hud);
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
-		toggleMinimap(statustext_time, &flags->show_minimap, flags->show_hud,
-			isKeyDown(KeyType::SNEAK));
+		toggleMinimap(&flags.show_minimap, flags.show_hud, isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		toggleChat(statustext_time, &flags->show_chat);
+		toggleChat(&flags.show_hud);
 	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
-		toggleFog(statustext_time, &flags->force_fog_off);
+		toggleFog(&flags.force_fog_off);
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
-		toggleUpdateCamera(statustext_time, &flags->disable_camera_update);
+		toggleUpdateCamera(&flags.disable_camera_update);
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
-		toggleDebug(statustext_time, &flags->show_debug, &flags->show_profiler_graph,
+		toggleDebug(&flags.show_debug, &flags.show_profiler_graph,
 			&draw_control->show_wireframe);
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
-		toggleProfiler(statustext_time, profiler_current_page, profiler_max_page);
+		toggleProfiler(&runData.profiler_current_page,
+			runData.profiler_max_page);
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
-		increaseViewRange(statustext_time);
+		increaseViewRange();
 	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
-		decreaseViewRange(statustext_time);
+		decreaseViewRange();
 	} else if (wasKeyDown(KeyType::RANGESELECT)) {
-		toggleFullViewRange(statustext_time);
+		toggleFullViewRange();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_NEXT)) {
 		quicktune->next();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_PREV)) {
@@ -2634,17 +2599,14 @@ void Game::processKeyInput(VolatileRunFlags *flags,
 		debug_stacks_print();
 	}
 
-	if (!isKeyDown(KeyType::JUMP) && *reset_jump_timer) {
-		*reset_jump_timer = false;
-		*jump_timer = 0.0;
+	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {
+		runData.reset_jump_timer = false;
+		runData.jump_timer = 0.0f;
 	}
 
-	//tt.stop();
-
 	if (quicktune->hasMessage()) {
-		std::string msg = quicktune->getMessage();
-		statustext = utf8_to_wide(msg);
-		*statustext_time = 0;
+		statustext = utf8_to_wide(quicktune->getMessage());
+		runData.statustext_time = 0.0f;
 	}
 }
 
@@ -2761,34 +2723,34 @@ void Game::handleAndroidChatInput()
 #endif
 
 
-void Game::toggleFreeMove(float *statustext_time)
+void Game::toggleFreeMove()
 {
 	static const wchar_t *msg[] = { L"free_move disabled", L"free_move enabled" };
 
 	bool free_move = !g_settings->getBool("free_move");
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[free_move];
 	if (free_move && !client->checkPrivilege("fly"))
 		statustext += L" (note: no 'fly' privilege)";
 }
 
 
-void Game::toggleFreeMoveAlt(float *statustext_time, float *jump_timer)
+void Game::toggleFreeMoveAlt()
 {
-	if (m_cache_doubletap_jump && *jump_timer < 0.2f)
-		toggleFreeMove(statustext_time);
+	if (m_cache_doubletap_jump && runData.jump_timer < 0.2f)
+		toggleFreeMove();
 }
 
 
-void Game::toggleFast(float *statustext_time)
+void Game::toggleFast()
 {
 	static const wchar_t *msg[] = { L"fast_move disabled", L"fast_move enabled" };
 	bool fast_move = !g_settings->getBool("fast_move");
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[fast_move];
 
 	bool has_fast_privs = client->checkPrivilege("fast");
@@ -2802,60 +2764,60 @@ void Game::toggleFast(float *statustext_time)
 }
 
 
-void Game::toggleNoClip(float *statustext_time)
+void Game::toggleNoClip()
 {
 	static const wchar_t *msg[] = { L"noclip disabled", L"noclip enabled" };
 	bool noclip = !g_settings->getBool("noclip");
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[noclip];
 
 	if (noclip && !client->checkPrivilege("noclip"))
 		statustext += L" (note: no 'noclip' privilege)";
 }
 
-void Game::toggleCinematic(float *statustext_time)
+void Game::toggleCinematic()
 {
 	static const wchar_t *msg[] = { L"cinematic disabled", L"cinematic enabled" };
 	bool cinematic = !g_settings->getBool("cinematic");
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[cinematic];
 }
 
 // Add WoW-style autorun by toggling continuous forward.
-void Game::toggleAutorun(float *statustext_time)
+void Game::toggleAutorun()
 {
 	static const wchar_t *msg[] = { L"autorun disabled", L"autorun enabled" };
 	bool autorun_enabled = !g_settings->getBool("continuous_forward");
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[autorun_enabled ? 1 : 0];
 }
 
-void Game::toggleChat(float *statustext_time, bool *flag)
+void Game::toggleChat(bool *flag)
 {
 	static const wchar_t *msg[] = { L"Chat hidden", L"Chat shown" };
 
 	*flag = !*flag;
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[*flag];
 }
 
 
-void Game::toggleHud(float *statustext_time, bool *flag)
+void Game::toggleHud(bool *flag)
 {
 	static const wchar_t *msg[] = { L"HUD hidden", L"HUD shown" };
 
 	*flag = !*flag;
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[*flag];
 }
 
-void Game::toggleMinimap(float *statustext_time, bool *flag,
+void Game::toggleMinimap(bool *flag,
 	bool show_hud, bool shift_pressed)
 {
 	if (!show_hud || !g_settings->getBool("enable_minimap"))
@@ -2901,22 +2863,21 @@ void Game::toggleMinimap(float *statustext_time, bool *flag,
 				L"Minimap hidden" : L"Minimap disabled by server";
 	}
 
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	mapper->setMinimapMode(mode);
 }
 
-void Game::toggleFog(float *statustext_time, bool *flag)
+void Game::toggleFog(bool *flag)
 {
 	static const wchar_t *msg[] = { L"Fog enabled", L"Fog disabled" };
 
 	*flag = !*flag;
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[*flag];
 }
 
 
-void Game::toggleDebug(float *statustext_time, bool *show_debug,
-		bool *show_profiler_graph, bool *show_wireframe)
+void Game::toggleDebug(bool *show_debug, bool *show_profiler_graph, bool *show_wireframe)
 {
 	// Initial / 4x toggle: Chat only
 	// 1x toggle: Debug text with chat
@@ -2944,11 +2905,11 @@ void Game::toggleDebug(float *statustext_time, bool *show_debug,
 			statustext = L"Debug info and profiler graph hidden";
 		}
 	}
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 }
 
 
-void Game::toggleUpdateCamera(float *statustext_time, bool *flag)
+void Game::toggleUpdateCamera(bool *flag)
 {
 	static const wchar_t *msg[] = {
 		L"Camera update enabled",
@@ -2956,13 +2917,12 @@ void Game::toggleUpdateCamera(float *statustext_time, bool *flag)
 	};
 
 	*flag = !*flag;
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 	statustext = msg[*flag];
 }
 
 
-void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
-		u32 profiler_max_page)
+void Game::toggleProfiler(u32 *profiler_current_page, u32 profiler_max_page)
 {
 	*profiler_current_page = (*profiler_current_page + 1) % (profiler_max_page + 1);
 
@@ -2978,11 +2938,11 @@ void Game::toggleProfiler(float *statustext_time, u32 *profiler_current_page,
 	} else {
 		statustext = L"Profiler hidden";
 	}
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 }
 
 
-void Game::increaseViewRange(float *statustext_time)
+void Game::increaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
@@ -2996,11 +2956,11 @@ void Game::increaseViewRange(float *statustext_time)
 				+ itos(range_new));
 	}
 	g_settings->set("viewing_range", itos(range_new));
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 }
 
 
-void Game::decreaseViewRange(float *statustext_time)
+void Game::decreaseViewRange()
 {
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
@@ -3014,11 +2974,11 @@ void Game::decreaseViewRange(float *statustext_time)
 				+ itos(range_new));
 	}
 	g_settings->set("viewing_range", itos(range_new));
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 }
 
 
-void Game::toggleFullViewRange(float *statustext_time)
+void Game::toggleFullViewRange()
 {
 	static const wchar_t *msg[] = {
 		L"Disabled full viewing range",
@@ -3028,7 +2988,7 @@ void Game::toggleFullViewRange(float *statustext_time)
 	draw_control->range_all = !draw_control->range_all;
 	infostream << msg[draw_control->range_all] << std::endl;
 	statustext = msg[draw_control->range_all];
-	*statustext_time = 0;
+	runData.statustext_time = 0;
 }
 
 
@@ -3179,7 +3139,7 @@ inline void Game::step(f32 *dtime)
 }
 
 
-void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
+void Game::processClientEvents(CameraOrientation *cam)
 {
 	ClientEvent event = client->getClientEvent();
 
@@ -3192,8 +3152,8 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 				client->getScript()->on_damage_taken(event.player_damage.amount);
 			}
 
-			*damage_flash += 95.0 + 3.2 * event.player_damage.amount;
-			*damage_flash = MYMIN(*damage_flash, 127.0);
+			runData.damage_flash += 95.0 + 3.2 * event.player_damage.amount;
+			runData.damage_flash = MYMIN(runData.damage_flash, 127.0);
 
 			player->hurt_tilt_timer = 1.5;
 			player->hurt_tilt_strength =
@@ -3209,7 +3169,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 			client->getScript()->on_death();
 
 			/* Handle visualization */
-			*damage_flash = 0;
+			runData.damage_flash = 0;
 			player->hurt_tilt_timer = 0;
 			player->hurt_tilt_strength = 0;
 
@@ -3245,8 +3205,6 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 					smgr, player);
 		} else if (event.type == CE_HUDADD) {
 			u32 id = event.hudadd.id;
-
-			LocalPlayer *player = client->getEnv().getLocalPlayer();
 			HudElement *e = player->getHud(id);
 
 			if (e != NULL) {
@@ -3397,8 +3355,7 @@ void Game::processClientEvents(CameraOrientation *cam, float *damage_flash)
 }
 
 
-void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
-		f32 dtime, float time_from_last_punch)
+void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -3415,6 +3372,7 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
 		if (mlist && client->getPlayerItem() < mlist->getSize())
 			playeritem = mlist->getItem(client->getPlayerItem());
 	}
+
 	if (playeritem.getDefinition(itemdef_manager).name.empty()) { // override the hand
 		InventoryList *hlist = local_inventory->getList("hand");
 		if (hlist)
@@ -3441,7 +3399,7 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time,
 	}
 
 	float full_punch_interval = playeritem_toolcap.full_punch_interval;
-	float tool_reload_ratio = time_from_last_punch / full_punch_interval;
+	float tool_reload_ratio = runData.time_from_last_punch / full_punch_interval;
 
 	tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
 	camera->update(player, dtime, busy_time / 1000.0f, tool_reload_ratio,
@@ -3492,8 +3450,7 @@ void Game::updateSound(f32 dtime)
 }
 
 
-void Game::processPlayerInteraction(GameRunData *runData,
-		f32 dtime, bool show_hud, bool show_debug)
+void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -3553,12 +3510,12 @@ void Game::processPlayerInteraction(GameRunData *runData,
 
 	PointedThing pointed = updatePointedThing(shootline,
 			playeritem_def.liquids_pointable,
-			!runData->ldown_for_dig,
+			!runData.ldown_for_dig,
 			camera_offset,
 			// output
-			runData->selected_object);
+			runData.selected_object);
 
-	if (pointed != runData->pointed_old) {
+	if (pointed != runData.pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 		hud->updateSelectionMesh(camera_offset);
 	}
@@ -3568,45 +3525,45 @@ void Game::processPlayerInteraction(GameRunData *runData,
 		- releasing left mouse button
 		- pointing away from node
 	*/
-	if (runData->digging) {
+	if (runData.digging) {
 		if (getLeftReleased()) {
 			infostream << "Left button released"
 			           << " (stopped digging)" << std::endl;
-			runData->digging = false;
-		} else if (pointed != runData->pointed_old) {
+			runData.digging = false;
+		} else if (pointed != runData.pointed_old) {
 			if (pointed.type == POINTEDTHING_NODE
-					&& runData->pointed_old.type == POINTEDTHING_NODE
+					&& runData.pointed_old.type == POINTEDTHING_NODE
 					&& pointed.node_undersurface
-							== runData->pointed_old.node_undersurface) {
+							== runData.pointed_old.node_undersurface) {
 				// Still pointing to the same node, but a different face.
 				// Don't reset.
 			} else {
 				infostream << "Pointing away from node"
 				           << " (stopped digging)" << std::endl;
-				runData->digging = false;
+				runData.digging = false;
 				hud->updateSelectionMesh(camera_offset);
 			}
 		}
 
-		if (!runData->digging) {
-			client->interact(1, runData->pointed_old);
+		if (!runData.digging) {
+			client->interact(1, runData.pointed_old);
 			client->setCrack(-1, v3s16(0, 0, 0));
-			runData->dig_time = 0.0;
+			runData.dig_time = 0.0;
 		}
 	}
 
-	if (!runData->digging && runData->ldown_for_dig && !isLeftPressed()) {
-		runData->ldown_for_dig = false;
+	if (!runData.digging && runData.ldown_for_dig && !isLeftPressed()) {
+		runData.ldown_for_dig = false;
 	}
 
-	runData->left_punch = false;
+	runData.left_punch = false;
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	if (isRightPressed())
-		runData->repeat_rightclick_timer += dtime;
+		runData.repeat_rightclick_timer += dtime;
 	else
-		runData->repeat_rightclick_timer = 0;
+		runData.repeat_rightclick_timer = 0;
 
 	if (playeritem_def.usable && isLeftPressed()) {
 		if (getLeftClicked())
@@ -3614,21 +3571,19 @@ void Game::processPlayerInteraction(GameRunData *runData,
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);
-		handlePointingAtNode(runData, pointed, playeritem_def,
-				playeritem_toolcap, dtime);
+		handlePointingAtNode(pointed, playeritem_def, playeritem_toolcap, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
-		handlePointingAtObject(runData, pointed, playeritem,
-				player_position, show_debug);
+		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
 	} else if (isLeftPressed()) {
 		// When button is held down in air, show continuous animation
-		runData->left_punch = true;
+		runData.left_punch = true;
 	} else if (getRightClicked()) {
-		handlePointingAtNothing(runData, playeritem);
+		handlePointingAtNothing(playeritem);
 	}
 
-	runData->pointed_old = pointed;
+	runData.pointed_old = pointed;
 
-	if (runData->left_punch || getLeftClicked())
+	if (runData.left_punch || getLeftClicked())
 		camera->setDigging(0); // left click animation
 
 	input->resetLeftClicked();
@@ -3746,7 +3701,7 @@ PointedThing Game::updatePointedThing(
 }
 
 
-void Game::handlePointingAtNothing(GameRunData *runData, const ItemStack &playerItem)
+void Game::handlePointingAtNothing(const ItemStack &playerItem)
 {
 	infostream << "Right Clicked in Air" << std::endl;
 	PointedThing fauxPointed;
@@ -3755,8 +3710,7 @@ void Game::handlePointingAtNothing(GameRunData *runData, const ItemStack &player
 }
 
 
-void Game::handlePointingAtNode(GameRunData *runData,
-		const PointedThing &pointed, const ItemDefinition &playeritem_def,
+void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinition &playeritem_def,
 		const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
@@ -3780,15 +3734,15 @@ void Game::handlePointingAtNode(GameRunData *runData,
 		}
 	}
 
-	if (runData->nodig_delay_timer <= 0.0 && isLeftPressed()
+	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
 			&& client->checkPrivilege("interact")) {
-		handleDigging(runData, pointed, nodepos, playeritem_toolcap, dtime);
+		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
 	}
 
 	if ((getRightClicked() ||
-			runData->repeat_rightclick_timer >= m_repeat_right_click_time) &&
+			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
 			client->checkPrivilege("interact")) {
-		runData->repeat_rightclick_timer = 0;
+		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
 
 		if (meta && meta->getString("formspec") != "" && !random_input
@@ -3841,31 +3795,28 @@ void Game::handlePointingAtNode(GameRunData *runData,
 }
 
 
-void Game::handlePointingAtObject(GameRunData *runData,
-		const PointedThing &pointed,
-		const ItemStack &playeritem,
-		const v3f &player_position,
-		bool show_debug)
+void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
+		const v3f &player_position, bool show_debug)
 {
 	infotext = unescape_enriched(
-		utf8_to_wide(runData->selected_object->infoText()));
+		utf8_to_wide(runData.selected_object->infoText()));
 
 	if (show_debug) {
 		if (infotext != L"") {
 			infotext += L"\n";
 		}
 		infotext += unescape_enriched(utf8_to_wide(
-			runData->selected_object->debugInfoText()));
+			runData.selected_object->debugInfoText()));
 	}
 
 	if (isLeftPressed()) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
-		if (runData->object_hit_delay_timer <= 0.0) {
+		if (runData.object_hit_delay_timer <= 0.0) {
 			do_punch = true;
 			do_punch_damage = true;
-			runData->object_hit_delay_timer = object_hit_delay;
+			runData.object_hit_delay_timer = object_hit_delay;
 		}
 
 		if (getLeftClicked())
@@ -3873,17 +3824,17 @@ void Game::handlePointingAtObject(GameRunData *runData,
 
 		if (do_punch) {
 			infostream << "Left-clicked object" << std::endl;
-			runData->left_punch = true;
+			runData.left_punch = true;
 		}
 
 		if (do_punch_damage) {
 			// Report direct punch
-			v3f objpos = runData->selected_object->getPosition();
+			v3f objpos = runData.selected_object->getPosition();
 			v3f dir = (objpos - player_position).normalize();
 
-			bool disable_send = runData->selected_object->directReportPunch(
-					dir, &playeritem, runData->time_from_last_punch);
-			runData->time_from_last_punch = 0;
+			bool disable_send = runData.selected_object->directReportPunch(
+					dir, &playeritem, runData.time_from_last_punch);
+			runData.time_from_last_punch = 0;
 
 			if (!disable_send)
 				client->interact(0, pointed);
@@ -3895,22 +3846,20 @@ void Game::handlePointingAtObject(GameRunData *runData,
 }
 
 
-void Game::handleDigging(GameRunData *runData,
-		const PointedThing &pointed, const v3s16 &nodepos,
+void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
-
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
 
-	if (!runData->digging) {
+	if (!runData.digging) {
 		infostream << "Started digging" << std::endl;
 		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
 			return;
 		client->interact(0, pointed);
-		runData->digging = true;
-		runData->ldown_for_dig = true;
+		runData.digging = true;
+		runData.ldown_for_dig = true;
 	}
 
 	// NOTE: Similar piece of code exists on the server side for
@@ -3928,11 +3877,11 @@ void Game::handleDigging(GameRunData *runData,
 			params = getDigParams(nodedef_manager->get(n).groups, tp);
 	}
 
-	if (params.diggable == false) {
+	if (!params.diggable) {
 		// I guess nobody will wait for this long
-		runData->dig_time_complete = 10000000.0;
+		runData.dig_time_complete = 10000000.0;
 	} else {
-		runData->dig_time_complete = params.time;
+		runData.dig_time_complete = params.time;
 
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
@@ -3942,13 +3891,13 @@ void Game::handleDigging(GameRunData *runData,
 		}
 	}
 
-	if (runData->dig_time_complete >= 0.001) {
-		runData->dig_index = (float)crack_animation_length
-				* runData->dig_time
-				/ runData->dig_time_complete;
+	if (runData.dig_time_complete >= 0.001) {
+		runData.dig_index = (float)crack_animation_length
+				* runData.dig_time
+				/ runData.dig_time_complete;
 	} else {
 		// This is for torches
-		runData->dig_index = crack_animation_length;
+		runData.dig_index = crack_animation_length;
 	}
 
 	SimpleSoundSpec sound_dig = nodedef_manager->get(n).sound_dig;
@@ -3967,32 +3916,32 @@ void Game::handleDigging(GameRunData *runData,
 	}
 
 	// Don't show cracks if not diggable
-	if (runData->dig_time_complete >= 100000.0) {
-	} else if (runData->dig_index < crack_animation_length) {
+	if (runData.dig_time_complete >= 100000.0) {
+	} else if (runData.dig_index < crack_animation_length) {
 		//TimeTaker timer("client.setTempMod");
 		//infostream<<"dig_index="<<dig_index<<std::endl;
-		client->setCrack(runData->dig_index, nodepos);
+		client->setCrack(runData.dig_index, nodepos);
 	} else {
 		infostream << "Digging completed" << std::endl;
 		client->setCrack(-1, v3s16(0, 0, 0));
 
-		runData->dig_time = 0;
-		runData->digging = false;
+		runData.dig_time = 0;
+		runData.digging = false;
 
-		runData->nodig_delay_timer =
-				runData->dig_time_complete / (float)crack_animation_length;
+		runData.nodig_delay_timer =
+				runData.dig_time_complete / (float)crack_animation_length;
 
 		// We don't want a corresponding delay to
 		// very time consuming nodes
-		if (runData->nodig_delay_timer > 0.3)
-			runData->nodig_delay_timer = 0.3;
+		if (runData.nodig_delay_timer > 0.3)
+			runData.nodig_delay_timer = 0.3;
 
 		// We want a slight delay to very little
 		// time consuming nodes
 		const float mindelay = 0.15;
 
-		if (runData->nodig_delay_timer < mindelay)
-			runData->nodig_delay_timer = mindelay;
+		if (runData.nodig_delay_timer < mindelay)
+			runData.nodig_delay_timer = mindelay;
 
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
@@ -4020,10 +3969,10 @@ void Game::handleDigging(GameRunData *runData,
 		client->event()->put(e);
 	}
 
-	if (runData->dig_time_complete < 100000.0) {
-		runData->dig_time += dtime;
+	if (runData.dig_time_complete < 100000.0) {
+		runData.dig_time += dtime;
 	} else {
-		runData->dig_time = 0;
+		runData.dig_time = 0;
 		client->setCrack(-1, nodepos);
 	}
 
@@ -4031,9 +3980,8 @@ void Game::handleDigging(GameRunData *runData,
 }
 
 
-void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
-		GameRunData *runData, f32 dtime, const VolatileRunFlags &flags,
-		const CameraOrientation &cam)
+void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
+		const VolatileRunFlags &flags, const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -4042,9 +3990,9 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	*/
 
 	if (draw_control->range_all) {
-		runData->fog_range = 100000 * BS;
+		runData.fog_range = 100000 * BS;
 	} else {
-		runData->fog_range = draw_control->wanted_range * BS;
+		runData.fog_range = draw_control->wanted_range * BS;
 	}
 
 	/*
@@ -4062,13 +4010,13 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		ScopeProfiler sp(g_profiler, "Detecting background light", SPT_AVG);
 		float old_brightness = sky->getBrightness();
 		direct_brightness = client->getEnv().getClientMap()
-				.getBackgroundBrightness(MYMIN(runData->fog_range * 1.2, 60 * BS),
+				.getBackgroundBrightness(MYMIN(runData.fog_range * 1.2, 60 * BS),
 					daynight_ratio, (int)(old_brightness * 255.5), &sunlight_seen)
 				    / 255.0;
 	}
 
-	float time_of_day = runData->time_of_day;
-	float time_of_day_smooth = runData->time_of_day_smooth;
+	float time_of_day = runData.time_of_day;
+	float time_of_day_smooth = runData.time_of_day_smooth;
 
 	time_of_day = client->getEnv().getTimeOfDayF();
 
@@ -4087,8 +4035,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		time_of_day_smooth = time_of_day_smooth * (1.0 - todsm)
 				+ time_of_day * todsm;
 
-	runData->time_of_day = time_of_day;
-	runData->time_of_day_smooth = time_of_day_smooth;
+	runData.time_of_day = time_of_day;
+	runData.time_of_day_smooth = time_of_day_smooth;
 
 	sky->update(time_of_day_smooth, time_brightness, direct_brightness,
 			sunlight_seen, camera->getCameraMode(), player->getYaw(),
@@ -4122,8 +4070,8 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 		driver->setFog(
 				sky->getBgColor(),
 				video::EFT_FOG_LINEAR,
-				runData->fog_range * m_cache_fog_start,
-				runData->fog_range * 1.0,
+				runData.fog_range * m_cache_fog_start,
+				runData.fog_range * 1.0,
 				0.01,
 				false, // pixel fog
 				true // range fog
@@ -4147,24 +4095,24 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	v2u32 screensize = driver->getScreenSize();
 
 	updateChat(*client, dtime, flags.show_debug, screensize,
-			flags.show_chat, runData->profiler_current_page,
+			flags.show_chat, runData.profiler_current_page,
 			*chat_backend, guitext_chat);
 
 	/*
 		Inventory
 	*/
 
-	if (client->getPlayerItem() != runData->new_playeritem)
-		client->selectPlayerItem(runData->new_playeritem);
+	if (client->getPlayerItem() != runData.new_playeritem)
+		client->selectPlayerItem(runData.new_playeritem);
 
 	// Update local inventory if it has changed
 	if (client->getLocalInventoryUpdated()) {
 		//infostream<<"Updating local inventory"<<std::endl;
 		client->getLocalInventory(*local_inventory);
-		runData->update_wielded_item_trigger = true;
+		runData.update_wielded_item_trigger = true;
 	}
 
-	if (runData->update_wielded_item_trigger) {
+	if (runData.update_wielded_item_trigger) {
 		// Update wielded tool
 		InventoryList *mlist = local_inventory->getList("main");
 
@@ -4178,25 +4126,25 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 			camera->wield(item);
 		}
 
-		runData->update_wielded_item_trigger = false;
+		runData.update_wielded_item_trigger = false;
 	}
 
 	/*
 		Update block draw list every 200ms or when camera direction has
 		changed much
 	*/
-	runData->update_draw_list_timer += dtime;
+	runData.update_draw_list_timer += dtime;
 
 	v3f camera_direction = camera->getDirection();
-	if (runData->update_draw_list_timer >= 0.2
-			|| runData->update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
+	if (runData.update_draw_list_timer >= 0.2
+			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
 			|| flags.camera_offset_changed) {
-		runData->update_draw_list_timer = 0;
+		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList(driver);
-		runData->update_draw_list_last_cam_dir = camera_direction;
+		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
-	updateGui(&runData->statustext_time, *stats, *runData, dtime, flags, cam);
+	updateGui(*stats, dtime, flags, cam);
 
 	/*
 	   make sure menu is on top
@@ -4238,13 +4186,13 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats,
 	/*
 		Damage flash
 	*/
-	if (runData->damage_flash > 0.0) {
-		video::SColor color(runData->damage_flash, 180, 0, 0);
+	if (runData.damage_flash > 0.0) {
+		video::SColor color(runData.damage_flash, 180, 0, 0);
 		driver->draw2DRectangle(color,
 					core::rect<s32>(0, 0, screensize.X, screensize.Y),
 					NULL);
 
-		runData->damage_flash -= 100.0 * dtime;
+		runData.damage_flash -= 100.0 * dtime;
 	}
 
 	/*
@@ -4290,8 +4238,7 @@ inline static const char *yawToDirectionString(int yaw)
 }
 
 
-void Game::updateGui(float *statustext_time, const RunStats &stats,
-		const GameRunData& runData, f32 dtime, const VolatileRunFlags &flags,
+void Game::updateGui(const RunStats &stats, f32 dtime, const VolatileRunFlags &flags,
 		const CameraOrientation &cam)
 {
 	v2u32 screensize = driver->getScreenSize();
@@ -4303,7 +4250,6 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
 
 		u16 fps = 1.0 / stats.dtime_jitter.avg;
-		//s32 fps = driver->getFPS();
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
@@ -4374,11 +4320,11 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 	float statustext_time_max = 1.5;
 
 	if (!statustext.empty()) {
-		*statustext_time += dtime;
+		runData.statustext_time += dtime;
 
-		if (*statustext_time >= statustext_time_max) {
+		if (runData.statustext_time >= statustext_time_max) {
 			statustext = L"";
-			*statustext_time = 0;
+			runData.statustext_time = 0;
 		}
 	}
 
@@ -4406,7 +4352,7 @@ void Game::updateGui(float *statustext_time, const RunStats &stats,
 		final_color.setAlpha(0);
 		video::SColor fade_color = initial_color.getInterpolated_quadratic(
 				initial_color, final_color,
-				pow(*statustext_time / statustext_time_max, 2.0f));
+				pow(runData.statustext_time / statustext_time_max, 2.0f));
 		guitext_status->setOverrideColor(fade_color);
 		guitext_status->enableOverrideColor(true);
 	}
