@@ -49,7 +49,7 @@ struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
 class Database;
-class Mapper;
+class Minimap;
 struct MinimapMapblock;
 class Camera;
 class NetworkPacket;
@@ -522,21 +522,17 @@ public:
 
 	void afterContentReceived(IrrlichtDevice *device);
 
-	float getRTT(void);
-	float getCurRate(void);
-	float getAvgRate(void);
+	float getRTT();
+	float getCurRate();
 
-	Mapper* getMapper ()
-	{ return m_mapper; }
-
-	void setCamera(Camera* camera)
-	{ m_camera = camera; }
+	Minimap* getMinimap() { return m_minimap; }
+	void setCamera(Camera* camera) { m_camera = camera; }
 
 	Camera* getCamera ()
 	{ return m_camera; }
 
-	bool isMinimapDisabledByServer()
-	{ return m_minimap_disabled_by_server; }
+	bool shouldShowMinimap() const;
+	void setMinimapShownByMod(bool state) { m_minimap_shown_by_mod = state; }
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
@@ -636,8 +632,9 @@ private:
 	con::Connection m_con;
 	IrrlichtDevice *m_device;
 	Camera *m_camera;
-	Mapper *m_mapper;
+	Minimap *m_minimap;
 	bool m_minimap_disabled_by_server;
+	bool m_minimap_shown_by_mod;
 	// Server serialization version
 	u8 m_server_ser_ver;
 

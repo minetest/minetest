@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
+#include "lua_api/l_minimap.h"
 #include "lua_api/l_storage.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
@@ -40,8 +41,13 @@ ClientScripting::ClientScripting(Client *client):
 	lua_getglobal(L, "core");
 	int top = lua_gettop(L);
 
+	lua_newtable(L);
+	lua_setfield(L, -2, "ui");
+
 	InitializeModApi(L, top);
 	lua_pop(L, 1);
+
+	LuaMinimap::create(L, client->getMinimap());
 
 	// Push builtin initialization type
 	lua_pushstring(L, "client");
@@ -59,4 +65,5 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
+  LuaMinimap::Register(L);
 }

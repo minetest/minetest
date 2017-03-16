@@ -224,6 +224,7 @@ Client::Client(
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
+	m_minimap_shown_by_mod(false),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_proto_ver(0),
 	m_playeritem(0),
@@ -255,7 +256,7 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
-	m_mapper = new Mapper(device, this);
+	m_minimap = new Minimap(device, this);
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
@@ -386,7 +387,7 @@ Client::~Client()
 			m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
 	}
 
-	delete m_mapper;
+	delete m_minimap;
 }
 
 void Client::connect(Address address,
@@ -636,7 +637,7 @@ void Client::step(float dtime)
 			}
 
 			if (do_mapper_update)
-				m_mapper->addBlock(r.p, minimap_mapblock);
+				m_minimap->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {
 				/*
@@ -1859,21 +1860,15 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	delete[] text;
 }
 
-float Client::getRTT(void)
+float Client::getRTT()
 {
 	return m_con.getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
 }
 
-float Client::getCurRate(void)
+float Client::getCurRate()
 {
 	return ( m_con.getLocalStat(con::CUR_INC_RATE) +
 			m_con.getLocalStat(con::CUR_DL_RATE));
-}
-
-float Client::getAvgRate(void)
-{
-	return ( m_con.getLocalStat(con::AVG_INC_RATE) +
-			m_con.getLocalStat(con::AVG_DL_RATE));
 }
 
 void Client::makeScreenshot(IrrlichtDevice *device)
@@ -1933,6 +1928,15 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 	}
 
 	raw_image->drop();
+}
+
+bool Client::shouldShowMinimap() const
+{
+	if (m_minimap_disabled_by_server) {
+		return false;
+	}
+
+	return m_minimap_shown_by_mod;
 }
 
 // IGameDef interface

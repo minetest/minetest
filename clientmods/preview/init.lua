@@ -47,9 +47,21 @@ core.register_chatcommand("test_node", {
 	end,
 })
 
+local function preview_minimap()
+	local minimap = core.ui.minimap
+	minimap:show()
+	minimap:set_mode(4)
+	minimap:set_pos({x=5, y=50, z=5})
+	minimap:toggle_shape()
+
+	print("[PREVIEW] Minimap: mode => " .. dump(minimap:get_mode()) ..
+			" position => " .. dump(minimap:get_pos()) ..
+			" angle => " .. dump(minimap:get_angle()))
+end
 
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
+	preview_minimap()
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
 end)
