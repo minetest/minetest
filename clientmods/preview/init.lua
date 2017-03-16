@@ -1,4 +1,5 @@
 local modname = core.get_current_modname() or "??"
+local modstorage = core.get_mod_storage()
 
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_shutdown(function()
@@ -49,6 +50,8 @@ core.register_chatcommand("test_node", {
 
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
+	modstorage:set_string("current_mod", modname)
+	print(modstorage:get_string("current_mod"))
 end)
 
 core.register_on_dignode(function(pos, node)
