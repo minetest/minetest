@@ -232,12 +232,12 @@ class CItemDefManager: public IWritableItemDefManager
 	struct ClientCached
 	{
 		video::ITexture *inventory_texture;
-		scene::IMesh *wield_mesh;
+		ItemMesh wield_mesh;
 		Palette *palette;
 
 		ClientCached():
 			inventory_texture(NULL),
-			wield_mesh(NULL),
+			wield_mesh(),
 			palette(NULL)
 		{}
 	};
@@ -260,8 +260,8 @@ public:
 				i = values.begin(); i != values.end(); ++i)
 		{
 			ClientCached *cc = *i;
-			if (cc->wield_mesh)
-				cc->wield_mesh->drop();
+			if (cc->wield_mesh.mesh)
+				cc->wield_mesh.mesh->drop();
 			delete cc;
 		}
 
@@ -346,8 +346,8 @@ public:
 		ItemStack item = ItemStack();
 		item.name = def.name;
 
-		scene::IMesh *mesh = getItemMesh(client, item);
-		cc->wield_mesh = mesh;
+		getItemMesh(client, item, &(cc->wield_mesh));
+
 		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
@@ -402,15 +402,15 @@ public:
 		return cc->inventory_texture;
 	}
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh* getWieldMesh(const std::string &name,
 			Client *client) const
 	{
 		ClientCached *cc = getClientCached(name, client);
 		if(!cc)
 			return NULL;
-		return cc->wield_mesh;
+		return &(cc->wield_mesh);
 	}
-	
+
 	// Get item palette
 	virtual Palette* getPalette(const std::string &name,
 			Client *client) const

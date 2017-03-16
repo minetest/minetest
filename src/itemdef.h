@@ -32,6 +32,7 @@ class Client;
 struct ToolCapabilities;
 #ifndef SERVER
 #include "client/tile.h"
+struct ItemMesh;
 struct ItemStack;
 #endif
 
@@ -116,7 +117,7 @@ public:
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh* getWieldMesh(const std::string &name,
 		Client *client) const=0;
 	// Get item palette
 	virtual Palette* getPalette(const std::string &name,
@@ -149,7 +150,7 @@ public:
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
 			Client *client) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
+	virtual ItemMesh* getWieldMesh(const std::string &name,
 		Client *client) const=0;
 #endif
 
