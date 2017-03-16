@@ -715,7 +715,7 @@ public:
 		m_eye_position_vertex.set(eye_position_array, services);
 
 		float minimap_yaw_array[3];
-		v3f minimap_yaw = m_client->getMapper()->getYawVec();
+		v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
 		minimap_yaw_array[0] = minimap_yaw.X;
 		minimap_yaw_array[1] = minimap_yaw.Y;
@@ -1473,7 +1473,7 @@ private:
 	Sky *sky;                         // Free using ->Drop()
 	Inventory *local_inventory;
 	Hud *hud;
-	Mapper *mapper;
+	Minimap *mapper;
 
 	GameRunData runData;
 	VolatileRunFlags flags;
@@ -1769,7 +1769,7 @@ void Game::run()
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
-		flags.show_minimap &= !client->isMinimapDisabledByServer();
+		flags.show_minimap = client->shouldShowMinimap();
 	}
 }
 
@@ -2029,7 +2029,7 @@ bool Game::createClient(const std::string &playername,
 		return false;
 	}
 
-	mapper = client->getMapper();
+	mapper = client->getMinimap();
 	mapper->setMinimapMode(MINIMAP_MODE_OFF);
 
 	return true;
