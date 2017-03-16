@@ -118,7 +118,7 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 
 /******************************************************************************/
 void read_object_properties(lua_State *L, int index,
-		ObjectProperties *prop)
+		ObjectProperties *prop, IItemDefManager *idef)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -216,6 +216,10 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 	getstringfield(L, -1, "infotext", prop->infotext);
+	lua_getfield(L, -1, "wield_item");
+	if (!lua_isnil(L, -1))
+		prop->wield_item = read_item(L, -1, idef).getItemString();
+	lua_pop(L, 1);
 }
 
 /******************************************************************************/
@@ -284,6 +288,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
+	lua_pushlstring(L, prop->wield_item.c_str(), prop->wield_item.size());
+	lua_setfield(L, -2, "wield_item");
 }
 
 /******************************************************************************/

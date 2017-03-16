@@ -737,7 +737,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 	ObjectProperties *prop = co->accessObjectProperties();
 	if (!prop)
 		return 0;
-	read_object_properties(L, 2, prop);
+	read_object_properties(L, 2, prop, getServer(L)->idef());
 	co->notifyObjectPropertiesModified();
 	return 0;
 }

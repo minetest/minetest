@@ -66,6 +66,7 @@ core.register_entity(":__builtin:item", {
 			visual_size = {x = s, y = s},
 			collisionbox = {-c, -c, -c, c, c, c},
 			automatic_rotate = math.pi * 0.5,
+			wield_item = itemstring,
 		}
 		self.object:set_properties(prop)
 	end,
