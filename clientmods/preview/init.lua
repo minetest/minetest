@@ -52,6 +52,9 @@ core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
+
+	print("[PREVIEW] Day count: " .. core.get_day_count() ..
+		" time of day " .. core.get_timeofday())
 end)
 
 core.register_on_dignode(function(pos, node)

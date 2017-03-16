@@ -558,11 +558,14 @@ int ModApiEnvMod::l_set_timeofday(lua_State *L)
 // get_timeofday() -> 0...1
 int ModApiEnvMod::l_get_timeofday(lua_State *L)
 {
-	GET_ENV_PTR;
+	Environment *env = getEnv(L);
+	if (!env) {
+		return 0;
+	}
 
 	// Do it
 	int timeofday_mh = env->getTimeOfDay();
-	float timeofday_f = (float)timeofday_mh / 24000.0;
+	float timeofday_f = (float)timeofday_mh / 24000.0f;
 	lua_pushnumber(L, timeofday_f);
 	return 1;
 }
@@ -570,7 +573,10 @@ int ModApiEnvMod::l_get_timeofday(lua_State *L)
 // get_day_count() -> int
 int ModApiEnvMod::l_get_day_count(lua_State *L)
 {
-	GET_ENV_PTR;
+	Environment *env = getEnv(L);
+	if (!env) {
+		return 0;
+	}
 
 	lua_pushnumber(L, env->getDayCount());
 	return 1;
@@ -1086,4 +1092,10 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(transforming_liquid_add);
 	API_FCT(forceload_block);
 	API_FCT(forceload_free_block);
+}
+
+void ModApiEnvMod::InitializeClient(lua_State *L, int top)
+{
+	API_FCT(get_timeofday);
+	API_FCT(get_day_count);
 }

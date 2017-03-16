@@ -29,6 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstdint>
 #endif
 
+class ClientEnvironment;
+
 class ScriptApiClient: virtual public ScriptApiBase
 {
 public:
@@ -47,5 +49,7 @@ public:
 
 	bool on_dignode(v3s16 p, MapNode node);
 	bool on_punchnode(v3s16 p, MapNode node);
+
+	void setEnv(ClientEnvironment *env);
 };
 #endif
