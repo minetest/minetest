@@ -30,6 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class Client;
 struct ToolCapabilities;
+#ifndef SERVER
+#include "client/tile.h"
+struct ItemStack;
+#endif
 
 /*
 	Base item definition
@@ -57,6 +61,8 @@ struct ItemDefinition
 	*/
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
+	std::string palette_image; // If specified, the item will be colorized based on this
+	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
 
 	/*
@@ -112,6 +118,13 @@ public:
 	// Get item wield mesh
 	virtual scene::IMesh* getWieldMesh(const std::string &name,
 		Client *client) const=0;
+	// Get item palette
+	virtual Palette* getPalette(const std::string &name,
+		Client *client) const = 0;
+	// Returns the base color of an item stack: the color of all
+	// tiles that do not define their own color.
+	virtual video::SColor getItemstackColor(const ItemStack &stack,
+		Client *client) const = 0;
 #endif
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;

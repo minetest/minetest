@@ -82,6 +82,8 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	sound_place = def.sound_place;
 	sound_place_failed = def.sound_place_failed;
 	range = def.range;
+	palette_image = def.palette_image;
+	color = def.color;
 	return *this;
 }
 
@@ -104,6 +106,8 @@ void ItemDefinition::reset()
 	description = "";
 	inventory_image = "";
 	wield_image = "";
+	palette_image = "";
+	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
 	usable = false;
@@ -153,6 +157,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeF1000(os, range);
 	os << serializeString(sound_place_failed.name);
 	writeF1000(os, sound_place_failed.gain);
+	os << serializeString(palette_image);
+	writeU32(os, color.color);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -209,6 +215,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 	try {
 		sound_place_failed.name = deSerializeString(is);
 		sound_place_failed.gain = readF1000(is);
+		palette_image = deSerializeString(is);
+		color.set(readU32(is));
 	} catch(SerializationError &e) {};
 }
 
@@ -225,10 +233,12 @@ class CItemDefManager: public IWritableItemDefManager
 	{
 		video::ITexture *inventory_texture;
 		scene::IMesh *wield_mesh;
+		Palette *palette;
 
 		ClientCached():
 			inventory_texture(NULL),
-			wield_mesh(NULL)
+			wield_mesh(NULL),
+			palette(NULL)
 		{}
 	};
 #endif
@@ -338,6 +348,7 @@ public:
 
 		scene::IMesh *mesh = getItemMesh(client, item);
 		cc->wield_mesh = mesh;
+		cc->palette = tsrc->getPalette(def.palette_image);
 
 		// Put in cache
 		m_clientcached.set(name, cc);
@@ -398,6 +409,34 @@ public:
 		if(!cc)
 			return NULL;
 		return cc->wield_mesh;
+	}
+	
+	// Get item palette
+	virtual Palette* getPalette(const std::string &name,
+			Client *client) const
+	{
+		ClientCached *cc = getClientCached(name, client);
+		if(!cc)
+			return NULL;
+		return cc->palette;
+	}
+
+	virtual video::SColor getItemstackColor(const ItemStack &stack,
+		Client *client) const
+	{
+		// Look for direct color definition
+		const std::string &colorstring = stack.metadata.getString("color", 0);
+		video::SColor directcolor;
+		if ((colorstring != "")
+				&& parseColorString(colorstring, directcolor, true))
+			return directcolor;
+		// See if there is a palette
+		Palette *palette = getPalette(stack.name, client);
+		const std::string &index = stack.metadata.getString("paletteindex", 0);
+		if ((palette != NULL) && (index != ""))
+			return (*palette)[mystoi(index, 0, 255)];
+		// Fallback color
+		return get(stack.name).color;
 	}
 #endif
 	void clear()
