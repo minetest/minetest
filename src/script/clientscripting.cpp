@@ -65,5 +65,5 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
-  LuaMinimap::Register(L);
+	LuaMinimap::Register(L);
 }
