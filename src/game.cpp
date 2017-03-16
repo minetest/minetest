@@ -1769,7 +1769,7 @@ void Game::run()
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
-		flags.show_minimap = client->shouldShowMinimap();
+		flags.show_minimap &= client->shouldShowMinimap();
 	}
 }
 
