@@ -53,6 +53,8 @@ core.register_entity(":__builtin:item", {
 		if itemtable then
 			itemname = stack:to_table().name
 		end
+		-- Backwards compatibility: old clients use the texture
+		-- to get the type of the item
 		local item_texture = nil
 		local item_type = ""
 		if core.registered_items[itemname] then
