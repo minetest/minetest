@@ -290,6 +290,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/common/c_types.cpp         \
 		jni/src/script/cpp_api/s_async.cpp        \
 		jni/src/script/cpp_api/s_base.cpp         \
+		jni/src/script/cpp_api/s_client.cpp       \
 		jni/src/script/cpp_api/s_entity.cpp       \
 		jni/src/script/cpp_api/s_env.cpp          \
 		jni/src/script/cpp_api/s_inventory.cpp    \
@@ -302,6 +303,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/cpp_api/s_server.cpp       \
 		jni/src/script/lua_api/l_areastore.cpp    \
 		jni/src/script/lua_api/l_base.cpp         \
+		jni/src/script/lua_api/l_client.cpp       \
 		jni/src/script/lua_api/l_craft.cpp        \
 		jni/src/script/lua_api/l_env.cpp          \
 		jni/src/script/lua_api/l_inventory.cpp    \
@@ -318,11 +320,13 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_rollback.cpp     \
 		jni/src/script/lua_api/l_server.cpp       \
 		jni/src/script/lua_api/l_settings.cpp     \
+		jni/src/script/lua_api/l_sound.cpp        \
 		jni/src/script/lua_api/l_http.cpp         \
 		jni/src/script/lua_api/l_storage.cpp      \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
-		jni/src/script/scripting_game.cpp         \
+		jni/src/script/clientscripting.cpp        \
+		jni/src/script/serverscripting.cpp        \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support

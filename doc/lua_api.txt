@@ -1943,13 +1943,31 @@ Helper functions
 * `minetest.get_worldpath()`: returns e.g. `"/home/user/.minetest/world"`
     * Useful for storing custom data
 * `minetest.is_singleplayer()`
-* `minetest.features`
-    * Table containing API feature flags: `{foo=true, bar=true}`
+* `minetest.features`: Table containing API feature flags
+      {
+         glasslike_framed = true,
+         nodebox_as_selectionbox = true,
+         chat_send_player_param3 = true,
+         get_all_craft_recipes_works = true,
+         use_texture_alpha = true,
+      -- ^ The transparency channel of textures can be used optionally
+         no_legacy_abms = true,
+      -- ^ Tree and grass ABMs are no longer done from C++
+         texture_names_parens = true,
+      -- ^ Texture grouping is possible using parentheses
+         area_store_custom_ids = true,
+      -- ^ Unique Area ID for AreaStore:insert_area
+         add_entity_with_staticdata = true,
+      -- ^ add_entity supports passing initial staticdata to on_activate
+         no_chat_message_prediction = true,
+      -- ^ Chat messages are no longer predicted
+      }
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
-* `minetest.get_player_information(player_name)`: returns a table containing
-  information about player. Example return value:
+* `minetest.get_player_information(player_name)`:
+    * Returns a table containing information about a player
+      Example return value:
         {
             address = "127.0.0.1",     -- IP address of client
             ip_version = 4,            -- IPv4 / IPv6

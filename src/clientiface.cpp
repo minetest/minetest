@@ -252,8 +252,8 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight) == false)
-			{
+			f32 dist;
+			if (!isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist)) {
 				continue;
 			}
 
@@ -342,7 +342,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Add block to send queue
 			*/
-			PrioritySortedBlockTransfer q((float)d, p, peer_id);
+			PrioritySortedBlockTransfer q((float)dist, p, peer_id);
 
 			dest.push_back(q);
 
