@@ -318,11 +318,15 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		u32 shader_id = shdrsrc->getShader("wielded_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
+
+	// Color-related
 	m_colors.clear();
+	video::SColor basecolor = idef->getItemstackColor(item, client);
 
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
 		setExtruded(def.wield_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(basecolor);
 		return;
 	}
 	// Handle nodes
@@ -371,7 +375,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			} else {
 				material.setTexture(0, tile->texture);
 			}
-			m_colors.push_back(tile->color);
+			m_colors.push_back(tile->has_color ? tile->color : basecolor);
 			material.MaterialType = m_material_type;
 			if (m_enable_shaders) {
 				if (tile->normal_texture) {
@@ -389,6 +393,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	}
 	else if (def.inventory_image != "") {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(basecolor);
 		return;
 	}
 
