@@ -1,13 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-# This program is free software. It comes without any warranty, to
-# the extent permitted by applicable law. You can redistribute it
-# and/or modify it under the terms of the WTFPL,
-# Version 2, as published by Sam Hocevar. See
-# COPYING for more details.
-
-# Made by Jogge, modified by celeron55
+# Made by Jogge, modified by: celeron55, expertmm
 # 2011-05-29: j0gge: initial release
 # 2011-05-30: celeron55: simultaneous support for sectors/sectors2, removed
 # 2011-06-02: j0gge: command line parameters, coordinates, players, ...
@@ -16,6 +10,7 @@
 # 2011-07-30: WF: Support for content types extension, refactoring
 # 2011-07-30: erlehmann: PEP 8 compliance.
 # 2016-03-08: expertmm: geometry and region params
+# 2017-03-17: removed license from this file (this file should fall under the license of minetest)
 
 # Requires Python Imaging Library: http://www.pythonware.com/products/pil/
 
