@@ -46,7 +46,11 @@ Clouds::Clouds(
 	m_seed(seed),
 	m_camera_pos(0,0),
 	m_time(0),
-	m_camera_offset(0,0,0)
+	m_camera_offset(0,0,0),
+	m_density(0.4),
+	m_color(1.0, 1.0, 1.0, 1.0),
+	m_color_bright(255.0/255.0, 240.0/255.0, 240.0/255.0, 1.0),
+	m_color_ambient(0.0, 0.0, 0.0, 1.0)
 {
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -191,7 +195,10 @@ void Clouds::render()
 					(float)p_in_noise_i.X * cloud_size_noise,
 					(float)p_in_noise_i.Y * cloud_size_noise,
 					m_seed, 3, 0.5);
-			grid[i] = (noise >= 0.4);
+			// normalize to 0..1 (given 3 octaves)
+			double noise_bound = 1.0 + 0.5 + 0.25;
+			double density = noise / noise_bound * 0.5 + 0.5;
+			grid[i] = (density < m_density);
 		}
 	}
 
@@ -348,12 +355,13 @@ void Clouds::step(float dtime)
 	m_time += dtime;
 }
 
-void Clouds::update(v2f camera_p, video::SColorf color)
+void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 {
 	m_camera_pos = camera_p;
-	m_color = color;
-	//m_brightness = brightness;
-	//dstream<<"m_brightness="<<m_brightness<<std::endl;
+	m_color.r = MYMIN(color_diffuse.r * m_color_bright.r + m_color_ambient.r, 1.0);
+	m_color.g = MYMIN(color_diffuse.g * m_color_bright.g + m_color_ambient.g, 1.0);
+	m_color.b = MYMIN(color_diffuse.b * m_color_bright.b + m_color_ambient.b, 1.0);
+	m_color.a = 1.0;
 }
 
 void Clouds::readSettings()
