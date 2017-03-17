@@ -615,6 +615,7 @@ enum ToClientCommand
 		u16 density
 		u8[4] color_diffuse (ARGB)
 		u8[4] color_ambient (ARGB)
+		f1000 height
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

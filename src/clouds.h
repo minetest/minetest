@@ -79,8 +79,7 @@ public:
 	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;
-		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS - BS * camera_offset.Y, -BS * 1000000,
-			BS * 1000000, m_cloud_y + BS - BS * camera_offset.Y, BS * 1000000);
+		updateBox();
 	}
 
 	void readSettings();
@@ -101,6 +100,13 @@ public:
 		m_color_ambient = color_ambient;
 	}
 
+	void setHeight(float height)
+	{
+		m_cloud_y = BS * height; // add bounding when necessary
+		updateBox();
+	}
+
+
 private:
 	video::SMaterial m_material;
 	aabb3f m_box;
@@ -116,6 +122,13 @@ private:
 	video::SColorf m_color;
 	video::SColorf m_color_bright;
 	video::SColorf m_color_ambient;
+
+	// called in several places
+	void updateBox()
+	{
+		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS - BS * m_camera_offset.Y, -BS * 1000000,
+				BS * 1000000, m_cloud_y + BS - BS * m_camera_offset.Y, BS * 1000000);
+	}
 };
 
 

@@ -32,6 +32,7 @@ irr::scene::ISceneManager *g_menucloudsmgr = NULL;
 
 static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 {
+	// TODO: only re-read cloud settings, not height or radius
 	((Clouds *)data)->readSettings();
 }
 
@@ -66,9 +67,7 @@ Clouds::Clouds(
 	g_settings->registerChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
 
-	m_box = aabb3f(-BS*1000000,m_cloud_y-BS,-BS*1000000,
-			BS*1000000,m_cloud_y+BS,BS*1000000);
-
+	updateBox();
 }
 
 Clouds::~Clouds()

@@ -289,7 +289,7 @@ private:
 	// get_sky(self, type, list)
 	static int l_get_sky(lua_State *L);
 
-	// set_clouds(self, {density=, color=, ambient=})
+	// set_clouds(self, {density=, color=, ambient=, height=})
 	static int l_set_clouds(lua_State *L);
 
 	// get_clouds(self)

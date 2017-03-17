@@ -1176,12 +1176,14 @@ void Client::handleCommand_HudSetClouds(NetworkPacket* pkt)
 	u16 density                    = readU16(is);
 	video::SColor *color_bright    = new video::SColor(readARGB8(is));
 	video::SColor *color_ambient   = new video::SColor(readARGB8(is));
+	f32 height                     = readF1000(is);
 
 	ClientEvent event;
 	event.type                     = CE_SET_CLOUDS;
 	event.set_clouds.density       = density / 65535.0;
 	event.set_clouds.color_bright  = color_bright;
 	event.set_clouds.color_ambient = color_ambient;
+	event.set_clouds.height        = height;
 	m_client_event_queue.push(event);
 }
 
