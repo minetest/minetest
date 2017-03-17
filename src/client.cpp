@@ -268,6 +268,7 @@ Client::Client(
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
 	m_script = new ClientScripting(this);
 	m_env.setScript(m_script);
+	m_script->setEnv(&m_env);
 }
 
 void Client::initMods()

@@ -40,13 +40,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
 
+class IGameDef;
 class Map;
 
 class Environment
 {
 public:
 	// Environment will delete the map passed to the constructor
-	Environment();
+	Environment(IGameDef *gamedef);
 	virtual ~Environment();
 
 	/*
@@ -77,6 +78,7 @@ public:
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
+	IGameDef* getGameDef() { return m_gamedef; }
 protected:
 	GenericAtomic<float> m_time_of_day_speed;
 
@@ -114,6 +116,7 @@ protected:
 	float m_cache_abm_interval;
 	float m_cache_nodetimer_interval;
 
+	IGameDef *m_gamedef;
 private:
 	Mutex m_time_lock;
 
