@@ -1163,8 +1163,6 @@ void KeyCache::populate()
 
  ****************************************************************************/
 
-const float object_hit_delay = 0.2;
-
 struct FpsControl {
 	u32 last_time, busy_time, sleep_time;
 };
@@ -3865,7 +3863,9 @@ void Game::handlePointingAtObject(GameRunData *runData,
 		if (runData->object_hit_delay_timer <= 0.0) {
 			do_punch = true;
 			do_punch_damage = true;
-			runData->object_hit_delay_timer = object_hit_delay;
+			runData->object_hit_delay_timer =
+				playeritem.getToolCapabilities(itemdef_manager)
+				.full_punch_interval;
 		}
 
 		if (getLeftClicked())
