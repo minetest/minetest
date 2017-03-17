@@ -224,7 +224,6 @@ Client::Client(
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
-	m_minimap_shown_by_mod(false),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_proto_ver(0),
 	m_playeritem(0),
@@ -1933,11 +1932,7 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 
 bool Client::shouldShowMinimap() const
 {
-	if (m_minimap_disabled_by_server) {
-		return false;
-	}
-
-	return m_minimap_shown_by_mod;
+	return !m_minimap_disabled_by_server;
 }
 
 // IGameDef interface

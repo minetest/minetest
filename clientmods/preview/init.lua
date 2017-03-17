@@ -49,8 +49,8 @@ core.register_chatcommand("test_node", {
 
 local function preview_minimap()
 	local minimap = core.ui.minimap
-	minimap:show()
 	minimap:set_mode(4)
+	minimap:show()
 	minimap:set_pos({x=5, y=50, z=5})
 	minimap:toggle_shape()
 
@@ -61,9 +61,13 @@ end
 
 core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
-	preview_minimap()
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
+	preview_minimap()
+end)
+
+core.after(5, function()
+	core.ui.minimap:show()
 
 	print("[PREVIEW] Day count: " .. core.get_day_count() ..
 		" time of day " .. core.get_timeofday())

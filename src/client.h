@@ -532,7 +532,6 @@ public:
 	{ return m_camera; }
 
 	bool shouldShowMinimap() const;
-	void setMinimapShownByMod(bool state) { m_minimap_shown_by_mod = state; }
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
@@ -634,7 +633,6 @@ private:
 	Camera *m_camera;
 	Minimap *m_minimap;
 	bool m_minimap_disabled_by_server;
-	bool m_minimap_shown_by_mod;
 	// Server serialization version
 	u8 m_server_ser_ver;
 

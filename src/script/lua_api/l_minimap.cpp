@@ -118,17 +118,21 @@ int LuaMinimap::l_toggle_shape(lua_State *L)
 
 int LuaMinimap::l_show(lua_State *L)
 {
-	Client *client = getClient(L);
-	assert(client);
-	client->setMinimapShownByMod(true);
+	LuaMinimap *ref = checkobject(L, 1);
+	Minimap *m = getobject(ref);
+
+	if (m->getMinimapMode() == MINIMAP_MODE_OFF)
+		m->setMinimapMode(MINIMAP_MODE_SURFACEx1);
 	return 1;
 }
 
 int LuaMinimap::l_hide(lua_State *L)
 {
-	Client *client = getClient(L);
-	assert(client);
-	client->setMinimapShownByMod(false);
+	LuaMinimap *ref = checkobject(L, 1);
+	Minimap *m = getobject(ref);
+
+	if (m->getMinimapMode() != MINIMAP_MODE_OFF)
+		m->setMinimapMode(MINIMAP_MODE_OFF);
 	return 1;
 }
 
