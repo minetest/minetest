@@ -638,3 +638,35 @@ if INIT == "client" or INIT == "mainmenu" then
 		return core.formspec_escape(fgettext_ne(text, ...))
 	end
 end
+
+-- Client-sided mods don't have access to getbool
+if core.setting_getbool and core.setting_getbool("disable_escape_sequences") then
+
+	function core.get_color_escape_sequence(color)
+		return ""
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ""
+	end
+
+	function core.colorize(color, message)
+		return message
+	end
+
+else
+
+	local ESCAPE_CHAR = string.char(0x1b)
+	function core.get_color_escape_sequence(color)
+		return ESCAPE_CHAR .. "(c@" .. color .. ")"
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ESCAPE_CHAR .. "(b@" .. color .. ")"
+	end
+
+	function core.colorize(color, message)
+		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+	end
+
+end

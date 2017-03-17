@@ -170,37 +170,6 @@ function core.http_add_fetch(httpenv)
 	return httpenv
 end
 
-if minetest.setting_getbool("disable_escape_sequences") then
-
-	function core.get_color_escape_sequence(color)
-		return ""
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ""
-	end
-
-	function core.colorize(color, message)
-		return message
-	end
-
-else
-
-	local ESCAPE_CHAR = string.char(0x1b)
-	function core.get_color_escape_sequence(color)
-		return ESCAPE_CHAR .. "(c@" .. color .. ")"
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ESCAPE_CHAR .. "(b@" .. color .. ")"
-	end
-
-	function core.colorize(color, message)
-		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
-	end
-
-end
-
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
