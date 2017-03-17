@@ -68,6 +68,15 @@ end)
 
 core.after(5, function()
 	core.ui.minimap:show()
+
+	print("[PREVIEW] Day count: " .. core.get_day_count() ..
+		" time of day " .. core.get_timeofday())
+
+	print("[PREVIEW] Node level: " .. core.get_node_level({x=0, y=20, z=0}) ..
+		" max level " .. core.get_node_max_level({x=0, y=20, z=0}))
+
+	print("[PREVIEW] Find node near: " .. dump(core.find_node_near({x=0, y=20, z=0}, 10,
+		{"group:tree", "default:dirt", "default:stone"})))
 end)
 
 core.register_on_dignode(function(pos, node)

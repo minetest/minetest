@@ -37,16 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MAP_LOCK_REQUIRED
 #define NO_MAP_LOCK_REQUIRED
 
-/*
-#if (defined(WIN32) || defined(_WIN32_WCE))
-	#define NO_MAP_LOCK_REQUIRED
-#else
-	#include "profiler.h"
-	#define NO_MAP_LOCK_REQUIRED \
-		ScopeProfiler nolocktime(g_profiler,"Scriptapi: unlockable time",SPT_ADD)
-#endif
-*/
-
 #define GET_ENV_PTR_NO_MAP_LOCK                              \
 	ServerEnvironment *env = (ServerEnvironment *)getEnv(L); \
 	if (env == NULL)                                         \

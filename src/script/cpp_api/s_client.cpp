@@ -177,3 +177,8 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 	bool blocked = lua_toboolean(L, -1);
 	return blocked;
 }
+
+void ScriptApiClient::setEnv(ClientEnvironment *env)
+{
+	ScriptApiBase::setEnv(env);
+}
