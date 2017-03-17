@@ -65,6 +65,11 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_liquid_fluidity_smooth = g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
 	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
+
+	// copy defaults
+	m_cloud_settings.density = 0.4;
+	m_cloud_settings.color_bright = video::SColor(255, 255, 240, 240);
+	m_cloud_settings.color_ambient = video::SColor(255, 0, 0, 0);
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)

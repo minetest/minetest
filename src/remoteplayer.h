@@ -32,6 +32,13 @@ enum RemotePlayerChatResult
 	RPLAYER_CHATRESULT_KICK,
 };
 
+struct CloudSettings
+{
+	float density;
+	video::SColor color_bright;
+	video::SColor color_ambient;
+};
+
 /*
 	Player on the server
 */
@@ -99,6 +106,16 @@ public:
 		*params = m_sky_params;
 	}
 
+	void setCloudSettings(const CloudSettings &cloud_settings)
+	{
+		m_cloud_settings = cloud_settings;
+	}
+
+	CloudSettings getCloudSettings() const
+	{
+		return m_cloud_settings;
+	}
+
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
 	void setModified(const bool x)
@@ -154,6 +171,7 @@ private:
 	std::string m_sky_type;
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_params;
+	CloudSettings m_cloud_settings;
 };
 
 #endif

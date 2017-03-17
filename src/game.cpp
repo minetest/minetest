@@ -3296,6 +3296,16 @@ void Game::processClientEvents(CameraOrientation *cam)
 					event.override_day_night_ratio.ratio_f * 1000);
 			break;
 
+		case CE_SET_CLOUDS:
+			if (clouds) {
+				clouds->setDensity(event.set_clouds.density);
+				clouds->setColorBright(*event.set_clouds.color_bright);
+				delete event.set_clouds.color_bright;
+				clouds->setColorAmbient(*event.set_clouds.color_ambient);
+				delete event.set_clouds.color_ambient;
+			}
+			break;
+
 		default:
 			// unknown or unhandled type
 			break;
