@@ -3077,6 +3077,11 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `"skybox"`: Uses 6 textures, `bgcolor` used
         * `"plain"`: Uses 0 textures, `bgcolor` used
 * `get_sky()`: returns bgcolor, type and a table with the textures
+* `set_clouds({density=number, color=ColorSpec, ambient=ColorSpec})`: set cloud parameters
+	* `density`: from `0` (no clouds) to `1` (full clouds)
+	* `color`: cloud color during daylight
+	* `ambient`: this will be added to cloud color regardless of light, "glow at night" effect
+* `get_clouds()`: returns a table with the current cloud settings as in `set_clouds`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle

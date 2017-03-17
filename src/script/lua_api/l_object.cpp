@@ -1727,6 +1727,68 @@ int ObjectRef::l_get_sky(lua_State *L)
 	return 3;
 }
 
+#if 0
+static void _out_color(std::string name, video::SColorf color) {
+	dstream << name << ": (" << color.r << ", " << color.g << ", " << color.b << ")" << std::endl; 
+}
+#endif
+
+// set_clouds(self, {density=, color=, ambient=})
+int ObjectRef::l_set_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+	CloudSettings cloud_settings = player->getCloudSettings();
+
+	if (lua_istable(L, 2)) {
+
+		cloud_settings.density = getfloatfield_default(L, 2, "density", cloud_settings.density);
+
+		lua_getfield(L, 2, "color");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &cloud_settings.color_bright);
+		lua_pop(L, 1);
+		lua_getfield(L, 2, "ambient");
+		if (!lua_isnil(L, -1))
+			read_color(L, -1, &cloud_settings.color_ambient);
+		lua_pop(L, 1);
+	}
+
+
+	if (!getServer(L)->setClouds(player, cloud_settings.density,
+			cloud_settings.color_bright, cloud_settings.color_ambient))
+		return 0;
+
+	player->setCloudSettings(cloud_settings);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ObjectRef::l_get_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (player == NULL)
+		return 0;
+	CloudSettings cloud_settings = player->getCloudSettings();
+
+	lua_newtable(L);
+	lua_pushnumber(L, cloud_settings.density);
+	lua_setfield(L, -2, "density");
+	push_ARGB8(L, cloud_settings.color_bright);
+	lua_setfield(L, -2, "color");
+	push_ARGB8(L, cloud_settings.color_ambient);
+	lua_setfield(L, -2, "ambient");
+
+	return 1;
+}
+
+
 // override_day_night_ratio(self, brightness=0...1)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
 {
@@ -1909,6 +1971,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, get_sky),
+	luamethod(ObjectRef, set_clouds),
+	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),
