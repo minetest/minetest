@@ -289,6 +289,12 @@ private:
 	// get_sky(self, type, list)
 	static int l_get_sky(lua_State *L);
 
+	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+	static int l_set_clouds(lua_State *L);
+
+	// get_clouds(self)
+	static int l_get_clouds(lua_State *L);
+
 	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);
 

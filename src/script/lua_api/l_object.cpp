@@ -1729,6 +1729,85 @@ int ObjectRef::l_get_sky(lua_State *L)
 	return 3;
 }
 
+// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+int ObjectRef::l_set_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+	if (!lua_istable(L, 2))
+		return 0;
+
+	CloudParams cloud_params = player->getCloudParams();
+
+	cloud_params.density = getfloatfield_default(L, 2, "density", cloud_params.density);
+
+	lua_getfield(L, 2, "color");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_params.color_bright);
+	lua_pop(L, 1);
+	lua_getfield(L, 2, "ambient");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_params.color_ambient);
+	lua_pop(L, 1);
+
+	cloud_params.height    = getfloatfield_default(L, 2, "height",    cloud_params.height   );
+	cloud_params.thickness = getfloatfield_default(L, 2, "thickness", cloud_params.thickness);
+
+	lua_getfield(L, 2, "speed");
+	if (lua_istable(L, -1)) {
+		v2f new_speed;
+		new_speed.X = getfloatfield_default(L, -1, "x", 0);
+		new_speed.Y = getfloatfield_default(L, -1, "y", 0);
+		cloud_params.speed = new_speed;
+	}
+	lua_pop(L, 1);
+
+	if (!getServer(L)->setClouds(player, cloud_params.density,
+			cloud_params.color_bright, cloud_params.color_ambient,
+			cloud_params.height, cloud_params.thickness,
+			cloud_params.speed))
+		return 0;
+
+	player->setCloudParams(cloud_params);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ObjectRef::l_get_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+	const CloudParams &cloud_params = player->getCloudParams();
+
+	lua_newtable(L);
+	lua_pushnumber(L, cloud_params.density);
+	lua_setfield(L, -2, "density");
+	push_ARGB8(L, cloud_params.color_bright);
+	lua_setfield(L, -2, "color");
+	push_ARGB8(L, cloud_params.color_ambient);
+	lua_setfield(L, -2, "ambient");
+	lua_pushnumber(L, cloud_params.height);
+	lua_setfield(L, -2, "height");
+	lua_pushnumber(L, cloud_params.thickness);
+	lua_setfield(L, -2, "thickness");
+	lua_newtable(L);
+	lua_pushnumber(L, cloud_params.speed.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, cloud_params.speed.Y);
+	lua_setfield(L, -2, "y");
+	lua_setfield(L, -2, "speed");
+
+	return 1;
+}
+
+
 // override_day_night_ratio(self, brightness=0...1)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
 {
@@ -1911,6 +1990,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, get_sky),
+	luamethod(ObjectRef, set_clouds),
+	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),

@@ -32,6 +32,7 @@ irr::scene::ISceneManager *g_menucloudsmgr = NULL;
 
 static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 {
+	// TODO: only re-read cloud settings, not height or radius
 	((Clouds *)data)->readSettings();
 }
 
@@ -44,9 +45,10 @@ Clouds::Clouds(
 ):
 	scene::ISceneNode(parent, mgr, id),
 	m_seed(seed),
-	m_camera_pos(0,0),
-	m_time(0),
-	m_camera_offset(0,0,0)
+	m_camera_pos(0.0f, 0.0f),
+	m_origin(0.0f, 0.0f),
+	m_camera_offset(0.0f, 0.0f, 0.0f),
+	m_color(1.0f, 1.0f, 1.0f, 1.0f)
 {
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -57,14 +59,18 @@ Clouds::Clouds(
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
+	m_params.density       = 0.4f;
+	m_params.thickness     = 16.0f;
+	m_params.color_bright  = video::SColor(229, 255, 240, 240);
+	m_params.color_ambient = video::SColor(255, 0, 0, 0);
+	m_params.speed         = v2f(0.0f, -2.0f);
+
 	m_passed_cloud_y = cloudheight;
 	readSettings();
 	g_settings->registerChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
 
-	m_box = aabb3f(-BS*1000000,m_cloud_y-BS,-BS*1000000,
-			BS*1000000,m_cloud_y+BS,BS*1000000);
-
+	updateBox();
 }
 
 Clouds::~Clouds()
@@ -88,6 +94,10 @@ void Clouds::OnRegisterSceneNode()
 
 void Clouds::render()
 {
+
+	if (m_params.density <= 0.0f)
+		return; // no need to do anything
+
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
@@ -107,15 +117,12 @@ void Clouds::render()
 		Clouds move from Z+ towards Z-
 	*/
 
-	const float cloud_size = BS * 64;
-	const v2f cloud_speed(0, -BS * 2);
+	static const float cloud_size = BS * 64.0f;
 	
 	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
 	
-	// Position of cloud noise origin in world coordinates
-	v2f world_cloud_origin_pos_f = m_time * cloud_speed;
 	// Position of cloud noise origin from the camera
-	v2f cloud_origin_from_camera_f = world_cloud_origin_pos_f - m_camera_pos;
+	v2f cloud_origin_from_camera_f = m_origin - m_camera_pos;
 	// The center point of drawing in the noise
 	v2f center_of_drawing_in_noise_f = -cloud_origin_from_camera_f;
 	// The integer center point of drawing in the noise
@@ -127,7 +134,7 @@ void Clouds::render()
 	v2f world_center_of_drawing_in_noise_f = v2f(
 		center_of_drawing_in_noise_i.X * cloud_size,
 		center_of_drawing_in_noise_i.Y * cloud_size
-	) + world_cloud_origin_pos_f;
+	) + m_origin;
 
 	/*video::SColor c_top(128,b*240,b*240,b*255);
 	video::SColor c_side_1(128,b*230,b*230,b*255);
@@ -146,10 +153,6 @@ void Clouds::render()
 	c_bottom_f.r *= 0.80;
 	c_bottom_f.g *= 0.80;
 	c_bottom_f.b *= 0.80;
-	c_top_f.a = 0.9;
-	c_side_1_f.a = 0.9;
-	c_side_2_f.a = 0.9;
-	c_bottom_f.a = 0.9;
 	video::SColor c_top = c_top_f.toSColor();
 	video::SColor c_side_1 = c_side_1_f.toSColor();
 	video::SColor c_side_2 = c_side_2_f.toSColor();
@@ -187,11 +190,14 @@ void Clouds::render()
 				zi + center_of_drawing_in_noise_i.Y
 			);
 
-			double noise = noise2d_perlin(
+			float noise = noise2d_perlin(
 					(float)p_in_noise_i.X * cloud_size_noise,
 					(float)p_in_noise_i.Y * cloud_size_noise,
 					m_seed, 3, 0.5);
-			grid[i] = (noise >= 0.4);
+			// normalize to 0..1 (given 3 octaves)
+			static const float noise_bound = 1.0f + 0.5f + 0.25f;
+			float density = noise / noise_bound * 0.5f + 0.5f;
+			grid[i] = (density < m_params.density);
 		}
 	}
 
@@ -236,8 +242,9 @@ void Clouds::render()
 			v[3].Color.setBlue(255);
 		}*/
 
-		f32 rx = cloud_size/2;
-		f32 ry = 8 * BS;
+		f32 rx = cloud_size / 2.0f;
+		// if clouds are flat, the top layer should be at the given height
+		f32 ry = m_enable_3d ? m_params.thickness * BS : 0.0f;
 		f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
@@ -265,8 +272,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set(-rx, ry,-rz);
 				v[1].Pos.set( rx, ry,-rz);
-				v[2].Pos.set( rx,-ry,-rz);
-				v[3].Pos.set(-rx,-ry,-rz);
+				v[2].Pos.set( rx,  0,-rz);
+				v[3].Pos.set(-rx,  0,-rz);
 				break;
 			case 2: //right
 				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
@@ -280,8 +287,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set( rx, ry,-rz);
 				v[1].Pos.set( rx, ry, rz);
-				v[2].Pos.set( rx,-ry, rz);
-				v[3].Pos.set( rx,-ry,-rz);
+				v[2].Pos.set( rx,  0, rz);
+				v[3].Pos.set( rx,  0,-rz);
 				break;
 			case 3: // front
 				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
@@ -295,8 +302,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set( rx, ry, rz);
 				v[1].Pos.set(-rx, ry, rz);
-				v[2].Pos.set(-rx,-ry, rz);
-				v[3].Pos.set( rx,-ry, rz);
+				v[2].Pos.set(-rx,  0, rz);
+				v[3].Pos.set( rx,  0, rz);
 				break;
 			case 4: // left
 				if (INAREA(xi-1, zi, m_cloud_radius_i)) {
@@ -310,22 +317,22 @@ void Clouds::render()
 				}
 				v[0].Pos.set(-rx, ry, rz);
 				v[1].Pos.set(-rx, ry,-rz);
-				v[2].Pos.set(-rx,-ry,-rz);
-				v[3].Pos.set(-rx,-ry, rz);
+				v[2].Pos.set(-rx,  0,-rz);
+				v[3].Pos.set(-rx,  0, rz);
 				break;
 			case 5: // bottom
 				for(int j=0;j<4;j++){
 					v[j].Color = c_bottom;
 					v[j].Normal.set(0,-1,0);
 				}
-				v[0].Pos.set( rx,-ry, rz);
-				v[1].Pos.set(-rx,-ry, rz);
-				v[2].Pos.set(-rx,-ry,-rz);
-				v[3].Pos.set( rx,-ry,-rz);
+				v[0].Pos.set( rx,  0, rz);
+				v[1].Pos.set(-rx,  0, rz);
+				v[2].Pos.set(-rx,  0,-rz);
+				v[3].Pos.set( rx,  0,-rz);
 				break;
 			}
 
-			v3f pos(p0.X, m_cloud_y, p0.Y);
+			v3f pos(p0.X, m_params.height * BS, p0.Y);
 			pos -= intToFloat(m_camera_offset, BS);
 
 			for(u16 i=0; i<4; i++)
@@ -345,22 +352,25 @@ void Clouds::render()
 
 void Clouds::step(float dtime)
 {
-	m_time += dtime;
+	m_origin = m_origin + dtime * BS * m_params.speed;
 }
 
-void Clouds::update(v2f camera_p, video::SColorf color)
+void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 {
 	m_camera_pos = camera_p;
-	m_color = color;
-	//m_brightness = brightness;
-	//dstream<<"m_brightness="<<m_brightness<<std::endl;
+	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getRed(),
+			m_params.color_ambient.getRed()), 255) / 255.0f;
+	m_color.g = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getGreen(),
+			m_params.color_ambient.getGreen()), 255) / 255.0f;
+	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_params.color_bright.getBlue(),
+			m_params.color_ambient.getBlue()), 255) / 255.0f;
+	m_color.a = m_params.color_bright.getAlpha() / 255.0f;
 }
 
 void Clouds::readSettings()
 {
-	m_cloud_y = BS * (m_passed_cloud_y ? m_passed_cloud_y :
+	m_params.height = (m_passed_cloud_y ? m_passed_cloud_y :
 		g_settings->getS16("cloud_height"));
 	m_cloud_radius_i = g_settings->getU16("cloud_radius");
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }
-

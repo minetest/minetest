@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REMOTEPLAYER_HEADER
 
 #include "player.h"
+#include "cloudparams.h"
 
 class PlayerSAO;
 
@@ -99,6 +100,16 @@ public:
 		*params = m_sky_params;
 	}
 
+	void setCloudParams(const CloudParams &cloud_params)
+	{
+		m_cloud_params = cloud_params;
+	}
+
+	const CloudParams &getCloudParams() const
+	{
+		return m_cloud_params;
+	}
+
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
 	void setModified(const bool x)
@@ -154,6 +165,7 @@ private:
 	std::string m_sky_type;
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_params;
+	CloudParams m_cloud_params;
 };
 
 #endif

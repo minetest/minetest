@@ -610,6 +610,16 @@ enum ToClientCommand
 		u32 id
 	*/
 
+	TOCLIENT_CLOUD_PARAMS = 0x54,
+	/*
+		f1000 density
+		u8[4] color_diffuse (ARGB)
+		u8[4] color_ambient (ARGB)
+		f1000 height
+		f1000 thickness
+		v2f1000 speed
+	*/
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
