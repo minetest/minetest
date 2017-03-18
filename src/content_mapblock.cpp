@@ -403,8 +403,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 	u8 range = rangelim(nodedef->get(c_flowing).liquid_range, 1, 8);
 
 	for (int w = -1; w <= 1; w++)
-	for (int u = -1; u <= 1; u++)
-	{
+	for (int u = -1; u <= 1; u++) {
 		// Skip getting unneeded data
 		if (!flowing && u && w)
 			continue;
@@ -436,7 +435,7 @@ void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
 		// Check node above neighbor.
 		// NOTE: This doesn't get executed if neighbor
 		//       doesn't exist
-		p2.Y += 1;
+		p2.Y++;
 		n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 		if (n2.getContent() == c_source || n2.getContent() == c_flowing)
 			neighbor.top_is_same_liquid = true;
@@ -463,8 +462,7 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 	int count = 0;
 	int air_count = 0;
 	for (int dk = 0; dk < 2; dk++)
-	for (int di = 0; di < 2; di++)
-	{
+	for (int di = 0; di < 2; di++) {
 		NeighborData &neighbor_data = liquid_neighbors[k + dk][i + di];
 		content_t content = neighbor_data.content;
 
@@ -474,7 +472,7 @@ f32 MapblockMeshGenerator::getCornerLevel(int i, int k)
 
 		// Source always has the full height
 		if (content == c_source)
-			return sum = 0.5 * BS;
+			return 0.5 * BS;
 
 		// Flowing liquid has level information
 		if (content == c_flowing) {
@@ -820,7 +818,7 @@ void MapblockMeshGenerator::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, true);
-	float offset = BS/16;
+	static const float offset = BS/16;
 	float size = BS/2 * f->visual_scale;
 	// Wall at X+ of node
 	v3f vertices[4] = {
@@ -1148,9 +1146,9 @@ void MapblockMeshGenerator::drawRaillikeNode()
 
 	useTile(tile_index, true);
 
-	float offset = BS/64;
-	float size   = BS/2;
-	float y2     = sloped ? size : -size;
+	static const float offset = BS/64;
+	static const float size   = BS/2;
+	float y2 = sloped ? size : -size;
 	v3f vertices[4] = {
 		v3f(-size, -size + offset, -size),
 		v3f( size, -size + offset, -size),
@@ -1310,8 +1308,7 @@ void MapblockMeshGenerator::generate()
 {
 	for (p.Z = 0; p.Z < MAP_BLOCKSIZE; p.Z++)
 	for (p.Y = 0; p.Y < MAP_BLOCKSIZE; p.Y++)
-	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++)
-	{
+	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++) {
 		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		f = &nodedef->get(n);
 		// Solid nodes are drawn by MapBlockMesh

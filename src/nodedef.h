@@ -377,7 +377,8 @@ struct ContentFeatures
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
 
-	int getGroup(const std::string &group) const {
+	int getGroup(const std::string &group) const
+	{
 		return itemgroup_get(groups, group);
 	}
 
