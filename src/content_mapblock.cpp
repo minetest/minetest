@@ -53,6 +53,9 @@ static const v3s16 light_dirs[8] = {
 	v3s16( 1,  1,  1),
 };
 
+// Standard index set to make a quad on 4 vertices
+static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
+
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
 MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output)
@@ -95,7 +98,6 @@ TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
 void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
 	static const v2f tcoords[4] = { v2f(0, 1), v2f(1, 1), v2f(1, 0), v2f(0, 0) };
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	video::S3DVertex vertices[4];
 	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
@@ -110,7 +112,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 			applyFacesShading(vertices[j].Color, normal2);
 		vertices[j].TCoords = tcoords[j];
 	}
-	collector->append(tile, vertices, 4, indices, 6);
+	collector->append(tile, vertices, 4, quad_indices, 6);
 }
 
 // Create a cuboid.
@@ -255,10 +257,9 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	}
 
 	// Add to mesh collector
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
 	for (int k = 0; k < 6; ++k) {
 		int tileindex = MYMIN(k, tilecount - 1);
-		collector->append(tiles[tileindex], vertices + 4 * k, 4, indices, 6);
+		collector->append(tiles[tileindex], vertices + 4 * k, 4, quad_indices, 6);
 	}
 }
 
@@ -558,8 +559,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			pos += origin;
 			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, color, vertex.u, vertex.v);
 		};
-		static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-		collector->append(tile_liquid, vertices, 4, indices, 6);
+		collector->append(tile_liquid, vertices, 4, quad_indices, 6);
 	}
 }
 
@@ -611,8 +611,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		std::swap(vertices[0].TCoords, vertices[2].TCoords);
 	}
 
-	static const u16 indices[] = { 0, 1, 2, 2, 3, 0 };
-	collector->append(tile_liquid_top, vertices, 4, indices, 6);
+	collector->append(tile_liquid_top, vertices, 4, quad_indices, 6);
 }
 
 void MapblockMeshGenerator::drawLiquidNode(bool flowing)
