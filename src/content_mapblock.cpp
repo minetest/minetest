@@ -766,13 +766,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		tile = getSpecialTile(*f, n, 0);
-		aabb3f box(-(nb[5] ? g : b),
-		           -(nb[4] ? g : b),
-		           -(nb[3] ? g : b),
-		            (nb[2] ? g : b),
-		            (nb[1] ? g : b) * vlev,
-		            (nb[0] ? g : b));
-		drawAutoLightedCuboid(box);
+		drawAutoLightedCuboid(aabb3f(-(nb[5] ? g : b),
+		                             -(nb[4] ? g : b),
+		                             -(nb[3] ? g : b),
+		                              (nb[2] ? g : b),
+		                              (nb[1] ? g : b) * vlev,
+		                              (nb[0] ? g : b)));
 	}
 }
 
@@ -1074,8 +1073,8 @@ bool MapblockMeshGenerator::isSameRail(v3s16 dir)
 	if (node2.getContent() == n.getContent())
 		return true;
 	const ContentFeatures &def2 = nodedef->get(node2);
-	return (def2.drawtype == NDT_RAILLIKE) &&
-		(def2.getGroup(raillike_groupname) == raillike_group);
+	return ((def2.drawtype == NDT_RAILLIKE) &&
+		(def2.getGroup(raillike_groupname) == raillike_group));
 }
 
 void MapblockMeshGenerator::drawRaillikeNode()
