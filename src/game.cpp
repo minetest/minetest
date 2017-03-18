@@ -2564,7 +2564,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
 		toggleMinimap(&flags.show_minimap, flags.show_hud, isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		toggleChat(&flags.show_hud);
+		toggleChat(&flags.show_chat);
 	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
 		toggleFog(&flags.force_fog_off);
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
