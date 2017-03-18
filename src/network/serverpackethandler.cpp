@@ -614,20 +614,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
 
-	///// begin compatibility code
-	PlayerSAO* playersao = NULL;
-	if (protocol_version <= 22) {
-		playersao = StageTwoClientInit(pkt->getPeerId());
-
-		if (playersao == NULL) {
-			actionstream
-				<< "TOSERVER_INIT2 stage 2 client init failed for peer "
-				<< pkt->getPeerId() << std::endl;
-			return;
-		}
-	}
-	///// end compatibility code
-
 	/*
 		Send some initialization data
 	*/
@@ -656,13 +642,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 time = m_env->getTimeOfDay();
 	float time_speed = g_settings->getFloat("time_speed");
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
-
-	///// begin compatibility code
-	if (protocol_version <= 22) {
-		m_clients.event(pkt->getPeerId(), CSE_SetClientReady);
-		m_script->on_joinplayer(playersao);
-	}
-	///// end compatibility code
 
 	// Warnings about protocol version can be issued here
 	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
