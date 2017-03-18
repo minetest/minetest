@@ -377,6 +377,9 @@ bool setXorgWindowIconFromPath(IrrlichtDevice *device,
 void setWin32ExceptionHandler();
 
 bool secure_rand_fill_buf(void *buf, size_t len);
+
+// This attaches to the parents process console, or creates a new one if it doesnt exist.
+void attachOrCreateConsole(void);
 } // namespace porting
 
 #ifdef __ANDROID__
