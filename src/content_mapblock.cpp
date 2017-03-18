@@ -34,6 +34,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // After this distance, it gives up and considers light level constant
 #define SMOOTH_LIGHTING_OVERSIZE 1.0
 
+// Node edge count (for glasslike-framed)
+#define FRAMED_EDGE_COUNT 12
+
+// Node neighbor count, including edge-connected, but not vertex-connected
+// (for glasslike-framed)
+// Corresponding offsets are listed in g_27dirs
+#define FRAMED_NEIGHBOR_COUNT 18
+
 static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
 	v3s16(-1, -1,  1),
@@ -681,7 +689,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	static const float g = a - 0.003;
 	static const float b = .876 * ( BS / 2 );
 
-	static const aabb3f frame_edges[12] = {
+	static const aabb3f frame_edges[FRAMED_EDGE_COUNT] = {
 		aabb3f( b, b,-a, a, a, a), // y+
 		aabb3f(-a, b,-a,-b, a, a), // y+
 		aabb3f( b,-a,-a, a,-b, a), // y-
@@ -708,12 +716,12 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	// checked with g_26dirs
 
 	// 1 = connect, 0 = face visible
-	bool nb[18] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	bool nb[FRAMED_NEIGHBOR_COUNT] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 	// 1 = check
-	static const bool check_nb_vertical   [18] = { 0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
-	static const bool check_nb_horizontal [18] = { 1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0 };
-	static const bool check_nb_all        [18] = { 1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
+	static const bool check_nb_vertical   [FRAMED_NEIGHBOR_COUNT] = { 0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
+	static const bool check_nb_horizontal [FRAMED_NEIGHBOR_COUNT] = { 1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0 };
+	static const bool check_nb_all        [FRAMED_NEIGHBOR_COUNT] = { 1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
 	const bool *check_nb = check_nb_all;
 
 	// neighbours checks for frames visibility
@@ -723,7 +731,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		if (!V_merge)
 			check_nb = check_nb_horizontal; // horizontal-only merge
 		content_t current = n.getContent();
-		for (int i = 0; i < 18; i++) {
+		for (int i = 0; i < FRAMED_NEIGHBOR_COUNT; i++) {
 			if (!check_nb[i])
 				continue;
 			v3s16 n2p = blockpos_nodes + p + g_26dirs[i];
@@ -736,19 +744,19 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 	// edge visibility
 
-	static const u8 nb_triplet[12*3] = {
-		1,2, 7,  1,5, 6,  4,2,15,  4,5,14,
-		2,0,11,  2,3,13,  5,0,10,  5,3,12,
-		0,1, 8,  0,4,16,  3,4,17,  3,1, 9
+	static const u8 nb_triplet[FRAMED_EDGE_COUNT][3] = {
+		{1, 2,  7}, {1, 5,  6}, {4, 2, 15}, {4, 5, 14},
+		{2, 0, 11}, {2, 3, 13}, {5, 0, 10}, {5, 3, 12},
+		{0, 1,  8}, {0, 4, 16}, {3, 4, 17}, {3, 1,  9},
 	};
 
 	tile = tiles[1];
-	for (int edge = 0; edge < 12; edge++) {
+	for (int edge = 0; edge < FRAMED_EDGE_COUNT; edge++) {
 		bool edge_invisible;
-		if (nb[nb_triplet[edge * 3 + 2]])
-			edge_invisible = nb[nb_triplet[edge * 3]] & nb[nb_triplet[edge * 3 + 1]];
+		if (nb[nb_triplet[edge][2]])
+			edge_invisible = nb[nb_triplet[edge][0]] & nb[nb_triplet[edge][1]];
 		else
-			edge_invisible = nb[nb_triplet[edge * 3]] ^ nb[nb_triplet[edge * 3 + 1]];
+			edge_invisible = nb[nb_triplet[edge][0]] ^ nb[nb_triplet[edge][1]];
 		if (edge_invisible)
 			continue;
 		drawAutoLightedCuboid(frame_edges[edge]);
