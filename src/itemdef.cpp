@@ -432,7 +432,7 @@ public:
 			return directcolor;
 		// See if there is a palette
 		Palette *palette = getPalette(stack.name, client);
-		const std::string &index = stack.metadata.getString("paletteindex", 0);
+		const std::string &index = stack.metadata.getString("palette_index", 0);
 		if ((palette != NULL) && (index != ""))
 			return (*palette)[mystoi(index, 0, 255)];
 		// Fallback color
