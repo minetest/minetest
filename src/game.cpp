@@ -3162,10 +3162,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			player->hurt_tilt_strength =
 				rangelim(event.player_damage.amount / 4, 1.0, 4.0);
 
-			{
-				MtEvent *e = new SimpleTriggerEvent("PlayerDamage");
-				client->event()->put(e);
-			}
+			client->event()->put(new SimpleTriggerEvent("PlayerDamage"));
 			break;
 
 		case CE_PLAYER_FORCE_MOVE:
@@ -3199,8 +3196,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 				cur_formname = *(event.show_formspec.formname);
 			}
 
-			delete(event.show_formspec.formspec);
-			delete(event.show_formspec.formname);
+			delete event.show_formspec.formspec;
+			delete event.show_formspec.formname;
 			break;
 
 		case CE_SHOW_LOCAL_FORMSPEC:
@@ -3273,7 +3270,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 				HudElement *e = player->removeHud(event.hudrm.id);
 
 				if (e != NULL)
-					delete(e);
+					delete e;
 			}
 			break;
 
@@ -3380,11 +3377,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 			break;
 
 		case CE_OVERRIDE_DAY_NIGHT_RATIO:
-			{
-				bool enable = event.override_day_night_ratio.do_override;
-				u32 value = event.override_day_night_ratio.ratio_f * 1000;
-				client->getEnv().setDayNightRatioOverride(enable, value);
-			}
+			client->getEnv().setDayNightRatioOverride(
+					event.override_day_night_ratio.do_override,
+					event.override_day_night_ratio.ratio_f * 1000);
 			break;
 
 		default:
