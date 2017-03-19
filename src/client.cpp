@@ -46,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 #include "guiscalingfilter.h"
 #include "script/clientscripting.h"
+#include "game.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -198,7 +199,8 @@ Client::Client(
 		IWritableNodeDefManager *nodedef,
 		ISoundManager *sound,
 		MtEventManager *event,
-		bool ipv6
+		bool ipv6,
+		GameUIFlags *game_ui_flags
 ):
 	m_packetcounter_timer(0.0),
 	m_connection_reinit_timer(0.1),
@@ -250,7 +252,8 @@ Client::Client(
 	m_state(LC_Created),
 	m_localdb(NULL),
 	m_script(NULL),
-	m_mod_storage_save_timer(10.0f)
+	m_mod_storage_save_timer(10.0f),
+	m_game_ui_flags(game_ui_flags)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -1933,6 +1936,36 @@ void Client::makeScreenshot(IrrlichtDevice *device)
 bool Client::shouldShowMinimap() const
 {
 	return !m_minimap_disabled_by_server;
+}
+
+void Client::showGameChat(const bool show)
+{
+	m_game_ui_flags->show_chat = show;
+}
+
+void Client::showGameHud(const bool show)
+{
+	m_game_ui_flags->show_hud = show;
+}
+
+void Client::showMinimap(const bool show)
+{
+	m_game_ui_flags->show_minimap = show;
+}
+
+void Client::showProfiler(const bool show)
+{
+	m_game_ui_flags->show_profiler_graph = show;
+}
+
+void Client::showGameFog(const bool show)
+{
+	m_game_ui_flags->force_fog_off = !show;
+}
+
+void Client::showGameDebug(const bool show)
+{
+	m_game_ui_flags->show_debug = show;
 }
 
 // IGameDef interface

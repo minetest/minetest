@@ -123,16 +123,15 @@ struct TextDestPlayerInventory : public TextDest {
 	Client *m_client;
 };
 
-struct LocalFormspecHandler : public TextDest {
-	LocalFormspecHandler();
-
-	LocalFormspecHandler(std::string formname) :
+struct LocalFormspecHandler : public TextDest
+{
+	LocalFormspecHandler(std::string formname):
 		m_client(0)
 	{
 		m_formname = formname;
 	}
 
-	LocalFormspecHandler(std::string formname, Client *client) :
+	LocalFormspecHandler(std::string formname, Client *client):
 		m_client(client)
 	{
 		m_formname = formname;
@@ -1148,20 +1147,6 @@ struct RunStats {
 	Jitter dtime_jitter, busy_time_jitter;
 };
 
-/* Flags that can, or may, change during main game loop
- */
-struct GameUIFlags
-{
-	bool show_chat;
-	bool show_hud;
-	bool show_minimap;
-	bool force_fog_off;
-	bool show_debug;
-	bool show_profiler_graph;
-	bool disable_camera_update;
-};
-
-
 /****************************************************************************
  THE GAME
  ****************************************************************************/
@@ -2053,7 +2038,7 @@ bool Game::connectToServer(const std::string &playername,
 			playername.c_str(), password,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6());
+			connect_address.isIPv6(), &flags);
 
 	if (!client)
 		return false;
@@ -4076,9 +4061,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	video::SColor skycolor = sky->getSkyColor();
 
 	TimeTaker tt_draw("mainloop: draw");
-	{
-		driver->beginScene(true, true, skycolor);
-	}
+	driver->beginScene(true, true, skycolor);
 
 	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
 			guienv, screensize, skycolor, flags.show_hud,
@@ -4123,9 +4106,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		End scene
 	*/
-	{
-		driver->endScene();
-	}
+	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);
 	g_profiler->graphAdd("mainloop_draw", stats->drawtime / 1000.0f);
