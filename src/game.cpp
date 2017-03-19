@@ -123,16 +123,15 @@ struct TextDestPlayerInventory : public TextDest {
 	Client *m_client;
 };
 
-struct LocalFormspecHandler : public TextDest {
-	LocalFormspecHandler();
-
-	LocalFormspecHandler(std::string formname) :
+struct LocalFormspecHandler : public TextDest
+{
+	LocalFormspecHandler(std::string formname):
 		m_client(0)
 	{
 		m_formname = formname;
 	}
 
-	LocalFormspecHandler(std::string formname, Client *client) :
+	LocalFormspecHandler(std::string formname, Client *client):
 		m_client(client)
 	{
 		m_formname = formname;
@@ -928,81 +927,6 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #endif
 
 /******************************************************************************/
-static void show_pause_menu(GUIFormSpecMenu **cur_formspec,
-		Client *client,
-		IWritableTextureSource *tsrc, IrrlichtDevice *device,
-		JoystickController *joystick, bool singleplayermode)
-{
-#ifdef __ANDROID__
-	std::string control_text = strgettext("Default Controls:\n"
-		"No menu visible:\n"
-		"- single tap: button activate\n"
-		"- double tap: place/use\n"
-		"- slide finger: look around\n"
-		"Menu/Inventory visible:\n"
-		"- double tap (outside):\n"
-		" -->close\n"
-		"- touch stack, touch slot:\n"
-		" --> move stack\n"
-		"- touch&drag, tap 2nd finger\n"
-		" --> place single item to slot\n"
-		);
-#else
-	std::string control_text = strgettext("Default Controls:\n"
-		"- WASD: move\n"
-		"- Space: jump/climb\n"
-		"- Shift: sneak/go down\n"
-		"- Q: drop item\n"
-		"- I: inventory\n"
-		"- Mouse: turn/look\n"
-		"- Mouse left: dig/punch\n"
-		"- Mouse right: place/use\n"
-		"- Mouse wheel: select item\n"
-		"- T: chat\n"
-		);
-#endif
-
-	float ypos = singleplayermode ? 0.5 : 0.1;
-	std::ostringstream os;
-
-	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
-	   << "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
-	   << strgettext("Continue") << "]";
-
-	if (!singleplayermode) {
-		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
-		   << strgettext("Change Password") << "]";
-	}
-
-#ifndef __ANDROID__
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
-			<< strgettext("Sound Volume") << "]";
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
-			<< strgettext("Change Keys")  << "]";
-#endif
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
-			<< strgettext("Exit to Menu") << "]";
-	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
-			<< strgettext("Exit to OS")   << "]"
-			<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-			<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
-			<< g_build_info << "\n"
-			<< "path_user = " << wrap_rows(porting::path_user, 20)
-			<< "\n;]";
-
-	/* Create menu */
-	/* Note: FormspecFormSource and LocalFormspecHandler  *
-	 * are deleted by guiFormSpecMenu                     */
-	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
-	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
-
-	create_formspec_menu(cur_formspec, client, device, joystick, fs_src, txt_dst);
-	std::string con("btn_continue");
-	(*cur_formspec)->setFocus(con);
-	(*cur_formspec)->doPause = true;
-}
-
-/******************************************************************************/
 static void updateChat(Client &client, f32 dtime, bool show_debug,
 		const v2u32 &screensize, bool show_chat, u32 show_profiler,
 		ChatBackend &chat_backend, gui::IGUIStaticText *guitext_chat)
@@ -1219,27 +1143,9 @@ struct Jitter {
 
 struct RunStats {
 	u32 drawtime;
-	u32 beginscenetime;
-	u32 endscenetime;
 
 	Jitter dtime_jitter, busy_time_jitter;
 };
-
-/* Flags that can, or may, change during main game loop
- */
-struct VolatileRunFlags {
-	bool invert_mouse;
-	bool show_chat;
-	bool show_hud;
-	bool show_minimap;
-	bool force_fog_off;
-	bool show_debug;
-	bool show_profiler_graph;
-	bool disable_camera_update;
-	bool first_loop_after_window_activation;
-	bool camera_offset_changed;
-};
-
 
 /****************************************************************************
  THE GAME
@@ -1322,29 +1228,24 @@ protected:
 	void toggleCinematic();
 	void toggleAutorun();
 
-	void toggleChat(bool *flag);
-	void toggleHud(bool *flag);
-	void toggleMinimap(bool *flag, bool show_hud,
-			bool shift_pressed);
-	void toggleFog(bool *flag);
-	void toggleDebug(bool *show_debug,
-			bool *show_profiler_graph, bool *show_wireframe);
-	void toggleUpdateCamera(bool *flag);
-	void toggleProfiler(u32 *profiler_current_page,
-			u32 profiler_max_page);
+	void toggleChat();
+	void toggleHud();
+	void toggleMinimap(bool shift_pressed);
+	void toggleFog();
+	void toggleDebug();
+	void toggleUpdateCamera();
+	void toggleProfiler();
 
 	void increaseViewRange();
 	void decreaseViewRange();
 	void toggleFullViewRange();
 
-	void updateCameraDirection(CameraOrientation *cam, VolatileRunFlags *flags,
-		float dtime);
-	void updateCameraOrientation(CameraOrientation *cam,
-		const VolatileRunFlags &flags, float dtime);
+	void updateCameraDirection(CameraOrientation *cam, float dtime);
+	void updateCameraOrientation(CameraOrientation *cam, float dtime);
 	void updatePlayerControl(const CameraOrientation &cam);
 	void step(f32 *dtime);
 	void processClientEvents(CameraOrientation *cam);
-	void updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime);
+	void updateCamera(u32 busy_time, f32 dtime);
 	void updateSound(f32 dtime);
 	void processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug);
 	/*!
@@ -1362,8 +1263,7 @@ protected:
 	 */
 	PointedThing updatePointedThing(
 			const core::line3d<f32> &shootline, bool liquids_pointable,
-			bool look_for_object, const v3s16 &camera_offset,
-			ClientActiveObject *&selected_object);
+			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
 	void handlePointingAtNode(const PointedThing &pointed, const ItemDefinition &playeritem_def,
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
@@ -1372,9 +1272,8 @@ protected:
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
-			const VolatileRunFlags &flags, const CameraOrientation &cam);
-	void updateGui(const RunStats &stats, f32 dtime,
-			const VolatileRunFlags &flags, const CameraOrientation &cam);
+			const CameraOrientation &cam);
+	void updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam);
 	void updateProfilerGraphs(ProfilerGraph *graph);
 
 	// Misc
@@ -1426,6 +1325,8 @@ protected:
 #endif
 
 private:
+	void showPauseMenu();
+
 	InputHandler *input;
 
 	Client *client;
@@ -1462,7 +1363,7 @@ private:
 	Minimap *mapper;
 
 	GameRunData runData;
-	VolatileRunFlags flags;
+	GameUIFlags flags;
 
 	/* 'cache'
 	   This class does take ownership/responsibily for cleaning up etc of any of
@@ -1494,7 +1395,7 @@ private:
 	gui::IGUIStaticText *guitext_profiler; // Profiler text
 
 	std::wstring infotext;
-	std::wstring statustext;
+	std::wstring m_statustext;
 
 	KeyCache keycache;
 
@@ -1518,6 +1419,10 @@ private:
 	f32  m_repeat_right_click_time;
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
+
+	bool m_invert_mouse;
+	bool m_first_loop_after_window_activation;
+	bool m_camera_offset_changed;
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
@@ -1547,7 +1452,10 @@ Game::Game() :
 	sky(NULL),
 	local_inventory(NULL),
 	hud(NULL),
-	mapper(NULL)
+	mapper(NULL),
+	m_invert_mouse(false),
+	m_first_loop_after_window_activation(false),
+	m_camera_offset_changed(false)
 {
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -1678,8 +1586,8 @@ bool Game::startup(bool *kill,
 	flags.show_chat = true;
 	flags.show_hud = true;
 	flags.show_debug = g_settings->getBool("show_debug");
-	flags.invert_mouse = g_settings->getBool("invert_mouse");
-	flags.first_loop_after_window_activation = true;
+	m_invert_mouse = g_settings->getBool("invert_mouse");
+	m_first_loop_after_window_activation = true;
 
 	if (!init(map_dir, address, port, gamespec))
 		return false;
@@ -1738,7 +1646,7 @@ void Game::run()
 		updateProfilers(stats, draw_times, dtime);
 		processUserInput(dtime);
 		// Update camera before player movement to avoid camera lag of one frame
-		updateCameraDirection(&cam_view_target, &flags, dtime);
+		updateCameraDirection(&cam_view_target, dtime);
 		cam_view.camera_yaw += (cam_view_target.camera_yaw -
 				cam_view.camera_yaw) * m_cache_cam_smoothing;
 		cam_view.camera_pitch += (cam_view_target.camera_pitch -
@@ -1746,10 +1654,10 @@ void Game::run()
 		updatePlayerControl(cam_view);
 		step(&dtime);
 		processClientEvents(&cam_view_target);
-		updateCamera(&flags, draw_times.busy_time, dtime);
+		updateCamera(draw_times.busy_time, dtime);
 		updateSound(dtime);
 		processPlayerInteraction(dtime, flags.show_hud, flags.show_debug);
-		updateFrame(&graph, &stats, dtime, flags, cam_view);
+		updateFrame(&graph, &stats, dtime, cam_view);
 		updateProfilerGraphs(&graph);
 
 		// Update if minimap has been disabled by the server
@@ -2130,7 +2038,7 @@ bool Game::connectToServer(const std::string &playername,
 			playername.c_str(), password,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6());
+			connect_address.isIPv6(), &flags);
 
 	if (!client)
 		return false;
@@ -2535,22 +2443,18 @@ void Game::processKeyInput()
 		openInventory();
 	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
 		if (!gui_chat_console->isOpenInhibited()) {
-			show_pause_menu(&current_formspec, client,
-				texture_src, device, &input->joystick,
-				simple_singleplayer_mode);
+			showPauseMenu();
 		}
 	} else if (wasKeyDown(KeyType::CHAT)) {
 		openConsole(0.2, L"");
 	} else if (wasKeyDown(KeyType::CMD)) {
 		openConsole(0.2, L"/");
 	} else if (wasKeyDown(KeyType::CONSOLE)) {
-		openConsole(core::clamp(
-			g_settings->getFloat("console_height"), 0.1f, 1.0f));
+		openConsole(core::clamp(g_settings->getFloat("console_height"), 0.1f, 1.0f));
 	} else if (wasKeyDown(KeyType::FREEMOVE)) {
 		toggleFreeMove();
 	} else if (wasKeyDown(KeyType::JUMP)) {
 		toggleFreeMoveAlt();
-		runData.reset_jump_timer = true;
 	} else if (wasKeyDown(KeyType::FASTMOVE)) {
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
@@ -2560,21 +2464,19 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
 		client->makeScreenshot(device);
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
-		toggleHud(&flags.show_hud);
+		toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {
-		toggleMinimap(&flags.show_minimap, flags.show_hud, isKeyDown(KeyType::SNEAK));
+		toggleMinimap(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::TOGGLE_CHAT)) {
-		toggleChat(&flags.show_chat);
+		toggleChat();
 	} else if (wasKeyDown(KeyType::TOGGLE_FORCE_FOG_OFF)) {
-		toggleFog(&flags.force_fog_off);
+		toggleFog();
 	} else if (wasKeyDown(KeyType::TOGGLE_UPDATE_CAMERA)) {
-		toggleUpdateCamera(&flags.disable_camera_update);
+		toggleUpdateCamera();
 	} else if (wasKeyDown(KeyType::TOGGLE_DEBUG)) {
-		toggleDebug(&flags.show_debug, &flags.show_profiler_graph,
-			&draw_control->show_wireframe);
+		toggleDebug();
 	} else if (wasKeyDown(KeyType::TOGGLE_PROFILER)) {
-		toggleProfiler(&runData.profiler_current_page,
-			runData.profiler_max_page);
+		toggleProfiler();
 	} else if (wasKeyDown(KeyType::INCREASE_VIEWING_RANGE)) {
 		increaseViewRange();
 	} else if (wasKeyDown(KeyType::DECREASE_VIEWING_RANGE)) {
@@ -2605,7 +2507,7 @@ void Game::processKeyInput()
 	}
 
 	if (quicktune->hasMessage()) {
-		statustext = utf8_to_wide(quicktune->getMessage());
+		m_statustext = utf8_to_wide(quicktune->getMessage());
 		runData.statustext_time = 0.0f;
 	}
 }
@@ -2731,9 +2633,9 @@ void Game::toggleFreeMove()
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	runData.statustext_time = 0;
-	statustext = msg[free_move];
+	m_statustext = msg[free_move];
 	if (free_move && !client->checkPrivilege("fly"))
-		statustext += L" (note: no 'fly' privilege)";
+		m_statustext += L" (note: no 'fly' privilege)";
 }
 
 
@@ -2741,6 +2643,8 @@ void Game::toggleFreeMoveAlt()
 {
 	if (m_cache_doubletap_jump && runData.jump_timer < 0.2f)
 		toggleFreeMove();
+
+	runData.reset_jump_timer = true;
 }
 
 
@@ -2751,12 +2655,12 @@ void Game::toggleFast()
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	runData.statustext_time = 0;
-	statustext = msg[fast_move];
+	m_statustext = msg[fast_move];
 
 	bool has_fast_privs = client->checkPrivilege("fast");
 
 	if (fast_move && !has_fast_privs)
-		statustext += L" (note: no 'fast' privilege)";
+		m_statustext += L" (note: no 'fast' privilege)";
 
 #ifdef __ANDROID__
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
@@ -2771,10 +2675,10 @@ void Game::toggleNoClip()
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	runData.statustext_time = 0;
-	statustext = msg[noclip];
+	m_statustext = msg[noclip];
 
 	if (noclip && !client->checkPrivilege("noclip"))
-		statustext += L" (note: no 'noclip' privilege)";
+		m_statustext += L" (note: no 'noclip' privilege)";
 }
 
 void Game::toggleCinematic()
@@ -2784,7 +2688,7 @@ void Game::toggleCinematic()
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
 	runData.statustext_time = 0;
-	statustext = msg[cinematic];
+	m_statustext = msg[cinematic];
 }
 
 // Add WoW-style autorun by toggling continuous forward.
@@ -2795,32 +2699,31 @@ void Game::toggleAutorun()
 	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
 	runData.statustext_time = 0;
-	statustext = msg[autorun_enabled ? 1 : 0];
+	m_statustext = msg[autorun_enabled ? 1 : 0];
 }
 
-void Game::toggleChat(bool *flag)
+void Game::toggleChat()
 {
 	static const wchar_t *msg[] = { L"Chat hidden", L"Chat shown" };
 
-	*flag = !*flag;
+	flags.show_chat = !flags.show_chat;
 	runData.statustext_time = 0;
-	statustext = msg[*flag];
+	m_statustext = msg[flags.show_chat];
 }
 
 
-void Game::toggleHud(bool *flag)
+void Game::toggleHud()
 {
 	static const wchar_t *msg[] = { L"HUD hidden", L"HUD shown" };
 
-	*flag = !*flag;
+	flags.show_hud = !flags.show_hud;
 	runData.statustext_time = 0;
-	statustext = msg[*flag];
+	m_statustext = msg[flags.show_hud];
 }
 
-void Game::toggleMinimap(bool *flag,
-	bool show_hud, bool shift_pressed)
+void Game::toggleMinimap(bool shift_pressed)
 {
-	if (!show_hud || !g_settings->getBool("enable_minimap"))
+	if (!flags.show_hud || !g_settings->getBool("enable_minimap"))
 		return;
 
 	if (shift_pressed) {
@@ -2836,30 +2739,30 @@ void Game::toggleMinimap(bool *flag,
 		mode = (MinimapMode)((int)mode + 1);
 	}
 
-	*flag = true;
+	flags.show_minimap = true;
 	switch (mode) {
 		case MINIMAP_MODE_SURFACEx1:
-			statustext = L"Minimap in surface mode, Zoom x1";
+			m_statustext = L"Minimap in surface mode, Zoom x1";
 			break;
 		case MINIMAP_MODE_SURFACEx2:
-			statustext = L"Minimap in surface mode, Zoom x2";
+			m_statustext = L"Minimap in surface mode, Zoom x2";
 			break;
 		case MINIMAP_MODE_SURFACEx4:
-			statustext = L"Minimap in surface mode, Zoom x4";
+			m_statustext = L"Minimap in surface mode, Zoom x4";
 			break;
 		case MINIMAP_MODE_RADARx1:
-			statustext = L"Minimap in radar mode, Zoom x1";
+			m_statustext = L"Minimap in radar mode, Zoom x1";
 			break;
 		case MINIMAP_MODE_RADARx2:
-			statustext = L"Minimap in radar mode, Zoom x2";
+			m_statustext = L"Minimap in radar mode, Zoom x2";
 			break;
 		case MINIMAP_MODE_RADARx4:
-			statustext = L"Minimap in radar mode, Zoom x4";
+			m_statustext = L"Minimap in radar mode, Zoom x4";
 			break;
 		default:
 			mode = MINIMAP_MODE_OFF;
-			*flag = false;
-			statustext = (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ?
+			flags.show_minimap = false;
+			m_statustext = (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ?
 				L"Minimap hidden" : L"Minimap disabled by server";
 	}
 
@@ -2867,76 +2770,77 @@ void Game::toggleMinimap(bool *flag,
 	mapper->setMinimapMode(mode);
 }
 
-void Game::toggleFog(bool *flag)
+void Game::toggleFog()
 {
 	static const wchar_t *msg[] = { L"Fog enabled", L"Fog disabled" };
 
-	*flag = !*flag;
+	flags.force_fog_off = !flags.force_fog_off;
 	runData.statustext_time = 0;
-	statustext = msg[*flag];
+	m_statustext = msg[flags.force_fog_off];
 }
 
 
-void Game::toggleDebug(bool *show_debug, bool *show_profiler_graph, bool *show_wireframe)
+void Game::toggleDebug()
 {
 	// Initial / 4x toggle: Chat only
 	// 1x toggle: Debug text with chat
 	// 2x toggle: Debug text with profiler graph
 	// 3x toggle: Debug text and wireframe
-	if (!*show_debug) {
-		*show_debug = true;
-		*show_profiler_graph = false;
-		*show_wireframe = false;
-		statustext = L"Debug info shown";
-	} else if (!*show_profiler_graph && !*show_wireframe) {
-		*show_profiler_graph = true;
-		statustext = L"Profiler graph shown";
-	} else if (!*show_wireframe && client->checkPrivilege("debug")) {
-		*show_profiler_graph = false;
-		*show_wireframe = true;
-		statustext = L"Wireframe shown";
+	if (!flags.show_debug) {
+		flags.show_debug = true;
+		flags.show_profiler_graph = false;
+		draw_control->show_wireframe = false;
+		m_statustext = L"Debug info shown";
+	} else if (!flags.show_profiler_graph && !draw_control->show_wireframe) {
+		flags.show_profiler_graph = true;
+		m_statustext = L"Profiler graph shown";
+	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
+		flags.show_profiler_graph = false;
+		draw_control->show_wireframe = true;
+		m_statustext = L"Wireframe shown";
 	} else {
-		*show_debug = false;
-		*show_profiler_graph = false;
-		*show_wireframe = false;
+		flags.show_debug = false;
+		flags.show_profiler_graph = false;
+		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
-			statustext = L"Debug info, profiler graph, and wireframe hidden";
+			m_statustext = L"Debug info, profiler graph, and wireframe hidden";
 		} else {
-			statustext = L"Debug info and profiler graph hidden";
+			m_statustext = L"Debug info and profiler graph hidden";
 		}
 	}
 	runData.statustext_time = 0;
 }
 
 
-void Game::toggleUpdateCamera(bool *flag)
+void Game::toggleUpdateCamera()
 {
 	static const wchar_t *msg[] = {
 		L"Camera update enabled",
 		L"Camera update disabled"
 	};
 
-	*flag = !*flag;
+	flags.disable_camera_update = !flags.disable_camera_update;
 	runData.statustext_time = 0;
-	statustext = msg[*flag];
+	m_statustext = msg[flags.disable_camera_update];
 }
 
 
-void Game::toggleProfiler(u32 *profiler_current_page, u32 profiler_max_page)
+void Game::toggleProfiler()
 {
-	*profiler_current_page = (*profiler_current_page + 1) % (profiler_max_page + 1);
+	runData.profiler_current_page =
+		(runData.profiler_current_page + 1) % (runData.profiler_max_page + 1);
 
 	// FIXME: This updates the profiler with incomplete values
-	update_profiler_gui(guitext_profiler, g_fontengine, *profiler_current_page,
-			profiler_max_page, driver->getScreenSize().Height);
+	update_profiler_gui(guitext_profiler, g_fontengine, runData.profiler_current_page,
+		runData.profiler_max_page, driver->getScreenSize().Height);
 
-	if (*profiler_current_page != 0) {
+	if (runData.profiler_current_page != 0) {
 		std::wstringstream sstr;
-		sstr << "Profiler shown (page " << *profiler_current_page
-		     << " of " << profiler_max_page << ")";
-		statustext = sstr.str();
+		sstr << "Profiler shown (page " << runData.profiler_current_page
+		     << " of " << runData.profiler_max_page << ")";
+		m_statustext = sstr.str();
 	} else {
-		statustext = L"Profiler hidden";
+		m_statustext = L"Profiler hidden";
 	}
 	runData.statustext_time = 0;
 }
@@ -2949,10 +2853,10 @@ void Game::increaseViewRange()
 
 	if (range_new > 4000) {
 		range_new = 4000;
-		statustext = utf8_to_wide("Viewing range is at maximum: "
+		m_statustext = utf8_to_wide("Viewing range is at maximum: "
 				+ itos(range_new));
 	} else {
-		statustext = utf8_to_wide("Viewing range changed to "
+		m_statustext = utf8_to_wide("Viewing range changed to "
 				+ itos(range_new));
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2967,10 +2871,10 @@ void Game::decreaseViewRange()
 
 	if (range_new < 20) {
 		range_new = 20;
-		statustext = utf8_to_wide("Viewing range is at minimum: "
+		m_statustext = utf8_to_wide("Viewing range is at minimum: "
 				+ itos(range_new));
 	} else {
-		statustext = utf8_to_wide("Viewing range changed to "
+		m_statustext = utf8_to_wide("Viewing range changed to "
 				+ itos(range_new));
 	}
 	g_settings->set("viewing_range", itos(range_new));
@@ -2987,13 +2891,12 @@ void Game::toggleFullViewRange()
 
 	draw_control->range_all = !draw_control->range_all;
 	infostream << msg[draw_control->range_all] << std::endl;
-	statustext = msg[draw_control->range_all];
+	m_statustext = msg[draw_control->range_all];
 	runData.statustext_time = 0;
 }
 
 
-void Game::updateCameraDirection(CameraOrientation *cam,
-		VolatileRunFlags *flags, float dtime)
+void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
 	if ((device->isWindowActive() && noMenuActive()) || random_input) {
 
@@ -3005,10 +2908,10 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 		}
 #endif
 
-		if (flags->first_loop_after_window_activation)
-			flags->first_loop_after_window_activation = false;
+		if (m_first_loop_after_window_activation)
+			m_first_loop_after_window_activation = false;
 		else
-			updateCameraOrientation(cam, *flags, dtime);
+			updateCameraOrientation(cam, dtime);
 
 		input->setMousePos((driver->getScreenSize().Width / 2),
 				(driver->getScreenSize().Height / 2));
@@ -3016,18 +2919,17 @@ void Game::updateCameraDirection(CameraOrientation *cam,
 
 #ifndef ANDROID
 		// Mac OSX gets upset if this is set every frame
-		if (device->getCursorControl()->isVisible() == false)
+		if (!device->getCursorControl()->isVisible())
 			device->getCursorControl()->setVisible(true);
 #endif
 
-		if (!flags->first_loop_after_window_activation)
-			flags->first_loop_after_window_activation = true;
+		if (!m_first_loop_after_window_activation)
+			m_first_loop_after_window_activation = true;
 
 	}
 }
 
-void Game::updateCameraOrientation(CameraOrientation *cam,
-		const VolatileRunFlags &flags, float dtime)
+void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 {
 #ifdef HAVE_TOUCHSCREENGUI
 	if (g_touchscreengui) {
@@ -3039,8 +2941,7 @@ void Game::updateCameraOrientation(CameraOrientation *cam,
 		s32 dx = input->getMousePos().X - (driver->getScreenSize().Width / 2);
 		s32 dy = input->getMousePos().Y - (driver->getScreenSize().Height / 2);
 
-		if (flags.invert_mouse
-				|| camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
+		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
 			dy = -dy;
 		}
 
@@ -3053,10 +2954,8 @@ void Game::updateCameraOrientation(CameraOrientation *cam,
 
 	if (m_cache_enable_joysticks) {
 		f32 c = m_cache_joystick_frustum_sensitivity * (1.f / 32767.f) * dtime;
-		cam->camera_yaw -= input->joystick.getAxisWithoutDead(JA_FRUSTUM_HORIZONTAL) *
-			c;
-		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) *
-			c;
+		cam->camera_yaw -= input->joystick.getAxisWithoutDead(JA_FRUSTUM_HORIZONTAL) * c;
+		cam->camera_pitch += input->joystick.getAxisWithoutDead(JA_FRUSTUM_VERTICAL) * c;
 	}
 
 	cam->camera_pitch = rangelim(cam->camera_pitch, -89.5, 89.5);
@@ -3355,7 +3254,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 }
 
 
-void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime)
+void Game::updateCamera(u32 busy_time, f32 dtime)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -3411,13 +3310,13 @@ void Game::updateCamera(VolatileRunFlags *flags, u32 busy_time, f32 dtime)
 	f32 camera_fov = camera->getFovMax();
 	v3s16 camera_offset = camera->getOffset();
 
-	flags->camera_offset_changed = (camera_offset != old_camera_offset);
+	m_camera_offset_changed = (camera_offset != old_camera_offset);
 
-	if (!flags->disable_camera_update) {
+	if (!flags.disable_camera_update) {
 		client->getEnv().getClientMap().updateCamera(camera_position,
 				camera_direction, camera_fov, camera_offset);
 
-		if (flags->camera_offset_changed) {
+		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);
 			client->getEnv().updateCameraOffset(camera_offset);
 
@@ -3511,9 +3410,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	PointedThing pointed = updatePointedThing(shootline,
 			playeritem_def.liquids_pointable,
 			!runData.ldown_for_dig,
-			camera_offset,
-			// output
-			runData.selected_object);
+			camera_offset);
 
 	if (pointed != runData.pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
@@ -3604,8 +3501,7 @@ PointedThing Game::updatePointedThing(
 	const core::line3d<f32> &shootline,
 	bool liquids_pointable,
 	bool look_for_object,
-	const v3s16 &camera_offset,
-	ClientActiveObject *&selected_object)
+	const v3s16 &camera_offset)
 {
 	std::vector<aabb3f> *selectionboxes = hud->getSelectionBoxes();
 	selectionboxes->clear();
@@ -3616,21 +3512,21 @@ PointedThing Game::updatePointedThing(
 	ClientMap &map = client->getEnv().getClientMap();
 	INodeDefManager *nodedef=client->getNodeDefManager();
 
-	selected_object = NULL;
+	runData.selected_object = NULL;
 
 	PointedThing result=client->getEnv().getPointedThing(
 		shootline, liquids_pointable, look_for_object);
 	if (result.type == POINTEDTHING_OBJECT) {
-		selected_object = client->getEnv().getActiveObject(result.object_id);
-		if (show_entity_selectionbox && selected_object->doShowSelectionBox()) {
-			aabb3f *selection_box = selected_object->getSelectionBox();
+		runData.selected_object = client->getEnv().getActiveObject(result.object_id);
+		if (show_entity_selectionbox && runData.selected_object->doShowSelectionBox()) {
+			aabb3f *selection_box = runData.selected_object->getSelectionBox();
 
 			// Box should exist because object was
 			// returned in the first place
 
 			assert(selection_box);
 
-			v3f pos = selected_object->getPosition();
+			v3f pos = runData.selected_object->getPosition();
 			selectionboxes->push_back(aabb3f(
 				selection_box->MinEdge, selection_box->MaxEdge));
 			selectionboxes->push_back(
@@ -3981,7 +3877,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 
 void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
-		const VolatileRunFlags &flags, const CameraOrientation &cam)
+		const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
@@ -4015,13 +3911,11 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 				    / 255.0;
 	}
 
-	float time_of_day = runData.time_of_day;
 	float time_of_day_smooth = runData.time_of_day_smooth;
+	float time_of_day = client->getEnv().getTimeOfDayF();
 
-	time_of_day = client->getEnv().getTimeOfDayF();
-
-	const float maxsm = 0.05;
-	const float todsm = 0.05;
+	static const float maxsm = 0.05;
+	static const float todsm = 0.05;
 
 	if (fabs(time_of_day - time_of_day_smooth) > maxsm &&
 			fabs(time_of_day - time_of_day_smooth + 1.0) > maxsm &&
@@ -4138,13 +4032,13 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	v3f camera_direction = camera->getDirection();
 	if (runData.update_draw_list_timer >= 0.2
 			|| runData.update_draw_list_last_cam_dir.getDistanceFrom(camera_direction) > 0.2
-			|| flags.camera_offset_changed) {
+			|| m_camera_offset_changed) {
 		runData.update_draw_list_timer = 0;
 		client->getEnv().getClientMap().updateDrawList(driver);
 		runData.update_draw_list_last_cam_dir = camera_direction;
 	}
 
-	updateGui(*stats, dtime, flags, cam);
+	updateGui(*stats, dtime, cam);
 
 	/*
 	   make sure menu is on top
@@ -4167,11 +4061,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	video::SColor skycolor = sky->getSkyColor();
 
 	TimeTaker tt_draw("mainloop: draw");
-	{
-		TimeTaker timer("beginScene");
-		driver->beginScene(true, true, skycolor);
-		stats->beginscenetime = timer.stop(true);
-	}
+	driver->beginScene(true, true, skycolor);
 
 	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
 			guienv, screensize, skycolor, flags.show_hud,
@@ -4216,11 +4106,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		End scene
 	*/
-	{
-		TimeTaker timer("endScene");
-		driver->endScene();
-		stats->endscenetime = timer.stop(true);
-	}
+	driver->endScene();
 
 	stats->drawtime = tt_draw.stop(true);
 	g_profiler->graphAdd("mainloop_draw", stats->drawtime / 1000.0f);
@@ -4238,8 +4124,7 @@ inline static const char *yawToDirectionString(int yaw)
 }
 
 
-void Game::updateGui(const RunStats &stats, f32 dtime, const VolatileRunFlags &flags,
-		const CameraOrientation &cam)
+void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam)
 {
 	v2u32 screensize = driver->getScreenSize();
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -4319,19 +4204,19 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const VolatileRunFlags &f
 
 	float statustext_time_max = 1.5;
 
-	if (!statustext.empty()) {
+	if (!m_statustext.empty()) {
 		runData.statustext_time += dtime;
 
 		if (runData.statustext_time >= statustext_time_max) {
-			statustext = L"";
+			m_statustext = L"";
 			runData.statustext_time = 0;
 		}
 	}
 
-	setStaticText(guitext_status, statustext.c_str());
-	guitext_status->setVisible(!statustext.empty());
+	setStaticText(guitext_status, m_statustext.c_str());
+	guitext_status->setVisible(!m_statustext.empty());
 
-	if (!statustext.empty()) {
+	if (!m_statustext.empty()) {
 		s32 status_width  = guitext_status->getTextWidth();
 		s32 status_height = guitext_status->getTextHeight();
 		s32 status_y = screensize.Y - 150;
@@ -4485,6 +4370,75 @@ void Game::extendedResourceCleanup()
 		       << " (note: irrlicht doesn't support removing renderers)" << std::endl;
 }
 
+void Game::showPauseMenu()
+{
+#ifdef __ANDROID__
+	static const std::string control_text = strgettext("Default Controls:\n"
+		"No menu visible:\n"
+		"- single tap: button activate\n"
+		"- double tap: place/use\n"
+		"- slide finger: look around\n"
+		"Menu/Inventory visible:\n"
+		"- double tap (outside):\n"
+		" -->close\n"
+		"- touch stack, touch slot:\n"
+		" --> move stack\n"
+		"- touch&drag, tap 2nd finger\n"
+		" --> place single item to slot\n"
+		);
+#else
+	static const std::string control_text = strgettext("Default Controls:\n"
+		"- WASD: move\n"
+		"- Space: jump/climb\n"
+		"- Shift: sneak/go down\n"
+		"- Q: drop item\n"
+		"- I: inventory\n"
+		"- Mouse: turn/look\n"
+		"- Mouse left: dig/punch\n"
+		"- Mouse right: place/use\n"
+		"- Mouse wheel: select item\n"
+		"- T: chat\n"
+	);
+#endif
+
+	float ypos = simple_singleplayer_mode ? 0.5 : 0.1;
+	std::ostringstream os;
+
+	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
+		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_continue;"
+		<< strgettext("Continue") << "]";
+
+	if (!simple_singleplayer_mode) {
+		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
+			<< strgettext("Change Password") << "]";
+	}
+
+#ifndef __ANDROID__
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
+		<< strgettext("Sound Volume") << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_key_config;"
+		<< strgettext("Change Keys")  << "]";
+#endif
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_menu;"
+		<< strgettext("Exit to Menu") << "]";
+	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
+		<< strgettext("Exit to OS")   << "]"
+		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
+		<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
+		<< g_build_info << "\n"
+		<< "path_user = " << wrap_rows(porting::path_user, 20)
+		<< "\n;]";
+
+	/* Create menu */
+	/* Note: FormspecFormSource and LocalFormspecHandler  *
+	 * are deleted by guiFormSpecMenu                     */
+	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
+	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
+
+	create_formspec_menu(&current_formspec, client, device, &input->joystick, fs_src, txt_dst);
+	current_formspec->setFocus("btn_continue");
+	current_formspec->doPause = true;
+}
 
 /****************************************************************************/
 /****************************************************************************

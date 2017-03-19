@@ -143,6 +143,18 @@ public:
 class ChatBackend;  /* to avoid having to include chat.h */
 struct SubgameSpec;
 
+// Flags that can, or may, change during main game loop
+struct GameUIFlags
+{
+	bool show_chat;
+	bool show_hud;
+	bool show_minimap;
+	bool force_fog_off;
+	bool show_debug;
+	bool show_profiler_graph;
+	bool disable_camera_update;
+};
+
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,

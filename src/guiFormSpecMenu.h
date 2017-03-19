@@ -335,7 +335,7 @@ public:
 	void removeChildren();
 	void setInitialFocus();
 
-	void setFocus(std::string &elementname)
+	void setFocus(const std::string &elementname)
 	{
 		m_focused_element = elementname;
 	}
