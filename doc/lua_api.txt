@@ -2843,6 +2843,8 @@ See `StorageRef`, `NodeMetaRef` and `ItemStackMetaRef`.
     * Any non-table value will clear the metadata
     * See "Node Metadata" for an example
     * returns `true` on success
+* `equals(other)`
+    * returns `true` if this metadata has the same key-value pairs as `other`
 
 ### `NodeMetaRef`
 Node metadata: reference extra data and functionality stored in a node.

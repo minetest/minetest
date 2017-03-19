@@ -102,31 +102,39 @@ core.register_entity(":__builtin:item", {
 		self:set_item(self.itemstring)
 	end,
 
+  -- moves items from this stack to an other stack
 	try_merge_with = function(self, own_stack, object, obj)
+	  -- other item's stack
 		local stack = ItemStack(obj.itemstring)
-		if own_stack:get_name() == stack:get_name() and stack:get_free_space() > 0 then
+		-- only merge if items are the same
+		if own_stack:get_name() == stack:get_name() and
+				own_stack:get_meta() == stack:get_meta() and
+				own_stack:get_wear() == stack:get_wear() and
+				stack:get_free_space() > 0 then
 			local overflow = false
 			local count = stack:get_count() + own_stack:get_count()
 			local max_count = stack:get_stack_max()
 			if count > max_count then
 				overflow = true
+				stack:set_count(max_count)
 				count = count - max_count
+				own_stack:set_count(count)
 			else
 				self.itemstring = ''
+				stack:set_count(count)
 			end
 			local pos = object:getpos()
 			pos.y = pos.y + (count - stack:get_count()) / max_count * 0.15
 			object:moveto(pos, false)
 			local s, c
-			local max_count = stack:get_stack_max()
-			local name = stack:get_name()
 			if not overflow then
-				obj.itemstring = name .. " " .. count
+				obj.itemstring = stack:to_string()
 				s = 0.2 + 0.1 * (count / max_count)
 				c = s
 				object:set_properties({
 					visual_size = {x = s, y = s},
-					collisionbox = {-c, -c, -c, c, c, c}
+					collisionbox = {-c, -c, -c, c, c, c},
+					wield_item = obj.itemstring
 				})
 				self.object:remove()
 				-- merging succeeded
@@ -134,18 +142,20 @@ core.register_entity(":__builtin:item", {
 			else
 				s = 0.4
 				c = 0.3
+				obj.itemstring = stack:to_string()
 				object:set_properties({
 					visual_size = {x = s, y = s},
-					collisionbox = {-c, -c, -c, c, c, c}
+					collisionbox = {-c, -c, -c, c, c, c},
+					wield_item = obj.itemstring
 				})
-				obj.itemstring = name .. " " .. max_count
 				s = 0.2 + 0.1 * (count / max_count)
 				c = s
+				self.itemstring = own_stack:to_string()
 				self.object:set_properties({
 					visual_size = {x = s, y = s},
-					collisionbox = {-c, -c, -c, c, c, c}
+					collisionbox = {-c, -c, -c, c, c, c},
+					wield_item = self.itemstring
 				})
-				self.itemstring = name .. " " .. count
 			end
 		end
 		-- merging didn't succeed
