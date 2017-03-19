@@ -28,7 +28,8 @@ class Client;
 class ITextureSource;
 struct TileSpec;
 
-struct ItemMesh {
+struct ItemMesh
+{
 	scene::IMesh* mesh;
 	/*!
 	 * Stores the color of each mesh buffer.
