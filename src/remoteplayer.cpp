@@ -141,7 +141,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	m_dirty = true;
 	//args.getS32("version"); // Version field value not used
-	std::string name = args.get("name");
+	const std::string &name = args.get("name");
 	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
 
 	if (sao) {
@@ -167,7 +167,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 
 		try {
-			std::string extended_attributes = args.get("extended_attributes");
+			const std::string &extended_attributes = args.get("extended_attributes");
 			Json::Reader reader;
 			Json::Value attr_root;
 			reader.parse(extended_attributes, attr_root);

@@ -4094,7 +4094,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Drawing begins
 	*/
 
-	video::SColor skycolor = sky->getSkyColor();
+	const video::SColor &skycolor = sky->getSkyColor();
 
 	TimeTaker tt_draw("mainloop: draw");
 	driver->beginScene(true, true, skycolor);

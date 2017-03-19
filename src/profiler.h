@@ -119,39 +119,34 @@ public:
 		u32 minindex, maxindex;
 		paging(m_data.size(), page, pagecount, minindex, maxindex);
 
-		for(std::map<std::string, float>::iterator
-				i = m_data.begin();
-				i != m_data.end(); ++i)
-		{
-			if(maxindex == 0)
+		for (std::map<std::string, float>::const_iterator i = m_data.begin();
+				i != m_data.end(); ++i) {
+			if (maxindex == 0)
 				break;
 			maxindex--;
 
-			if(minindex != 0)
-			{
+			if (minindex != 0) {
 				minindex--;
 				continue;
 			}
 
-			std::string name = i->first;
 			int avgcount = 1;
-			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-			if(n != m_avgcounts.end()){
+			std::map<std::string, int>::const_iterator n = m_avgcounts.find(i->first);
+			if (n != m_avgcounts.end()) {
 				if(n->second >= 1)
 					avgcount = n->second;
 			}
-			o<<"  "<<name<<": ";
+			o << "  " << i->first << ": ";
 			s32 clampsize = 40;
-			s32 space = clampsize - name.size();
-			for(s32 j=0; j<space; j++)
-			{
-				if(j%2 == 0 && j < space - 1)
-					o<<"-";
+			s32 space = clampsize - i->first.size();
+			for(s32 j = 0; j < space; j++) {
+				if (j % 2 == 0 && j < space - 1)
+					o << "-";
 				else
-					o<<" ";
+					o << " ";
 			}
-			o<<(i->second / avgcount);
-			o<<std::endl;
+			o << (i->second / avgcount);
+			o << std::endl;
 		}
 	}
 

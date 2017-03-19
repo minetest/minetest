@@ -1332,12 +1332,13 @@ void CNodeDefManager::removeNode(const std::string &name)
 
 void CNodeDefManager::updateAliases(IItemDefManager *idef)
 {
-	std::set<std::string> all = idef->getAll();
+	std::set<std::string> all;
+	idef->getAll(all);
 	m_name_id_mapping_with_aliases.clear();
-	for (std::set<std::string>::iterator
+	for (std::set<std::string>::const_iterator
 			i = all.begin(); i != all.end(); ++i) {
-		std::string name = *i;
-		std::string convert_to = idef->getAlias(name);
+		const std::string &name = *i;
+		const std::string &convert_to = idef->getAlias(name);
 		content_t id;
 		if (m_name_id_mapping.getId(convert_to, id)) {
 			m_name_id_mapping_with_aliases.insert(

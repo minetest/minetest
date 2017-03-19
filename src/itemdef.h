@@ -100,9 +100,9 @@ public:
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
 	// Get alias definition
-	virtual std::string getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
-	virtual std::set<std::string> getAll() const=0;
+	virtual void getAll(std::set<std::string> &result) const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
@@ -126,9 +126,9 @@ public:
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
 	// Get alias definition
-	virtual std::string getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
-	virtual std::set<std::string> getAll() const=0;
+	virtual void getAll(std::set<std::string> &result) const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER

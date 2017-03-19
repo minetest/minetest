@@ -56,18 +56,21 @@ public:
 	void update(float m_time_of_day, float time_brightness,
 			float direct_brightness, bool sunlight_seen, CameraMode cam_mode,
 			float yaw, float pitch);
-	
+
 	float getBrightness(){ return m_brightness; }
 
-	video::SColor getBgColor(){
+	const video::SColor &getBgColor() const
+	{
 		return m_visible ? m_bgcolor : m_fallback_bg_color;
 	}
-	video::SColor getSkyColor(){
+
+	const video::SColor &getSkyColor() const
+	{
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
-	
-	bool getCloudsVisible(){ return m_clouds_visible && m_visible; }
-	video::SColorf getCloudColor(){ return m_cloudcolor_f; }
+
+	bool getCloudsVisible() { return m_clouds_visible && m_visible; }
+	const video::SColorf &getCloudColor() { return m_cloudcolor_f; }
 
 	void setVisible(bool visible){ m_visible = visible; }
 	void setFallbackBgColor(const video::SColor &fallback_bg_color){
