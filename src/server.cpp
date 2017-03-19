@@ -3569,6 +3569,9 @@ void dedicated_server_loop(Server &server, bool &kill)
 		}
 		server.step(steplen);
 
+		if (server.getShutdownRequested() || kill)
+			break;
+
 		/*
 			Profiler
 		*/
