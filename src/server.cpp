@@ -2147,14 +2147,6 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if (client != 0) {
 			pkt << p << n.param0 << n.param1 << n.param2
 					<< (u8) (remove_metadata ? 0 : 1);
-
-			if (!remove_metadata) {
-				if (client->net_proto_version <= 21) {
-					// Old clients always clear metadata; fix it
-					// by sending the full block again.
-					client->SetBlockNotSent(getNodeBlockPos(p));
-				}
-			}
 		}
 		m_clients.unlock();
 
@@ -2188,7 +2180,7 @@ void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver, u16 net_proto
 
 	std::ostringstream os(std::ios_base::binary);
 	block->serialize(os, ver, false);
-	block->serializeNetworkSpecific(os, net_proto_version);
+	block->serializeNetworkSpecific(os);
 	std::string s = os.str();
 
 	NetworkPacket pkt(TOCLIENT_BLOCKDATA, 2 + 2 + 2 + 2 + s.size(), peer_id);

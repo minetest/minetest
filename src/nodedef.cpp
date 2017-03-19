@@ -61,11 +61,10 @@ void NodeBox::reset()
 
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
-	int version = 1;
+	// Protocol >= 21
+	int version = 2;
 	if (protocol_version >= 27)
 		version = 3;
-	else if (protocol_version >= 21)
-		version = 2;
 	writeU8(os, version);
 
 	switch (type) {
@@ -195,14 +194,12 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 		writeU8(os, 3);
 	else if (protocol_version >= 26)
 		writeU8(os, 2);
-	else if (protocol_version >= 17)
-		writeU8(os, 1);
 	else
-		writeU8(os, 0);
-	os<<serializeString(name);
+		writeU8(os, 1);
+
+	os << serializeString(name);
 	animation.serialize(os, protocol_version);
-	if (protocol_version >= 17)
-		writeU8(os, backface_culling);
+	writeU8(os, backface_culling);
 	if (protocol_version >= 26) {
 		writeU8(os, tileable_horizontal);
 		writeU8(os, tileable_vertical);
@@ -1615,109 +1612,8 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 	if (protocol_version < 30 && drawtype == NDT_PLANTLIKE)
 		compatible_visual_scale = sqrt(visual_scale);
 
-	if (protocol_version == 13)
-	{
-		writeU8(os, 5); // version
-		os<<serializeString(name);
-		writeU16(os, groups.size());
-		for (ItemGroupList::const_iterator
-				i = groups.begin(); i != groups.end(); ++i) {
-			os<<serializeString(i->first);
-			writeS16(os, i->second);
-		}
-		writeU8(os, drawtype);
-		writeF1000(os, compatible_visual_scale);
-		writeU8(os, 6);
-		for (u32 i = 0; i < 6; i++)
-			tiledef[i].serialize(os, protocol_version);
-		//CF_SPECIAL_COUNT = 2 before cf ver. 7 and protocol ver. 24
-		writeU8(os, 2);
-		for (u32 i = 0; i < 2; i++)
-			tiledef_special[i].serialize(os, protocol_version);
-		writeU8(os, alpha);
-		writeU8(os, post_effect_color.getAlpha());
-		writeU8(os, post_effect_color.getRed());
-		writeU8(os, post_effect_color.getGreen());
-		writeU8(os, post_effect_color.getBlue());
-		writeU8(os, param_type);
-		writeU8(os, compatible_param_type_2);
-		writeU8(os, is_ground_content);
-		writeU8(os, light_propagates);
-		writeU8(os, sunlight_propagates);
-		writeU8(os, walkable);
-		writeU8(os, pointable);
-		writeU8(os, diggable);
-		writeU8(os, climbable);
-		writeU8(os, buildable_to);
-		os<<serializeString(""); // legacy: used to be metadata_name
-		writeU8(os, liquid_type);
-		os<<serializeString(liquid_alternative_flowing);
-		os<<serializeString(liquid_alternative_source);
-		writeU8(os, liquid_viscosity);
-		writeU8(os, light_source);
-		writeU32(os, damage_per_second);
-		node_box.serialize(os, protocol_version);
-		selection_box.serialize(os, protocol_version);
-		writeU8(os, legacy_facedir_simple);
-		writeU8(os, legacy_wallmounted);
-		serializeSimpleSoundSpec(sound_footstep, os);
-		serializeSimpleSoundSpec(sound_dig, os);
-		serializeSimpleSoundSpec(sound_dug, os);
-	}
-	else if (protocol_version > 13 && protocol_version < 24) {
-		writeU8(os, 6); // version
-		os<<serializeString(name);
-		writeU16(os, groups.size());
-		for (ItemGroupList::const_iterator
-				i = groups.begin(); i != groups.end(); ++i) {
-			os<<serializeString(i->first);
-			writeS16(os, i->second);
-		}
-		writeU8(os, drawtype);
-		writeF1000(os, compatible_visual_scale);
-		writeU8(os, 6);
-		for (u32 i = 0; i < 6; i++)
-			tiledef[i].serialize(os, protocol_version);
-		//CF_SPECIAL_COUNT = 2 before cf ver. 7 and protocol ver. 24
-		writeU8(os, 2);
-		for (u32 i = 0; i < 2; i++)
-			tiledef_special[i].serialize(os, protocol_version);
-		writeU8(os, alpha);
-		writeU8(os, post_effect_color.getAlpha());
-		writeU8(os, post_effect_color.getRed());
-		writeU8(os, post_effect_color.getGreen());
-		writeU8(os, post_effect_color.getBlue());
-		writeU8(os, param_type);
-		writeU8(os, compatible_param_type_2);
-		writeU8(os, is_ground_content);
-		writeU8(os, light_propagates);
-		writeU8(os, sunlight_propagates);
-		writeU8(os, walkable);
-		writeU8(os, pointable);
-		writeU8(os, diggable);
-		writeU8(os, climbable);
-		writeU8(os, buildable_to);
-		os<<serializeString(""); // legacy: used to be metadata_name
-		writeU8(os, liquid_type);
-		os<<serializeString(liquid_alternative_flowing);
-		os<<serializeString(liquid_alternative_source);
-		writeU8(os, liquid_viscosity);
-		writeU8(os, liquid_renewable);
-		writeU8(os, light_source);
-		writeU32(os, damage_per_second);
-		node_box.serialize(os, protocol_version);
-		selection_box.serialize(os, protocol_version);
-		writeU8(os, legacy_facedir_simple);
-		writeU8(os, legacy_wallmounted);
-		serializeSimpleSoundSpec(sound_footstep, os);
-		serializeSimpleSoundSpec(sound_dig, os);
-		serializeSimpleSoundSpec(sound_dug, os);
-		writeU8(os, rightclickable);
-		writeU8(os, drowning);
-		writeU8(os, leveled);
-		writeU8(os, liquid_range);
-	}
-	else if(protocol_version >= 24 && protocol_version < 30) {
+	// Protocol >= 24
+	if (protocol_version < 30) {
 		writeU8(os, protocol_version < 27 ? 7 : 8);
 
 		os << serializeString(name);
@@ -1778,9 +1674,10 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 				i != connects_to_ids.end(); ++i)
 			writeU16(os, *i);
 		writeU8(os, connect_sides);
-	} else
+	} else {
 		throw SerializationError("ContentFeatures::serialize(): "
 			"Unsupported version requested");
+	}
 }
 
 void ContentFeatures::deSerializeOld(std::istream &is, int version)

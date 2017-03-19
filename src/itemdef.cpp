@@ -123,17 +123,13 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if(protocol_version <= 17)
-		writeU8(os, 1); // version
-	else if(protocol_version <= 20)
-		writeU8(os, 2); // version
-	else
-		writeU8(os, 3); // version
+
+	writeU8(os, 3); // version (proto > 20)
 	writeU8(os, type);
-	os<<serializeString(name);
-	os<<serializeString(description);
-	os<<serializeString(inventory_image);
-	os<<serializeString(wield_image);
+	os << serializeString(name);
+	os << serializeString(description);
+	os << serializeString(inventory_image);
+	os << serializeString(wield_image);
 	writeV3F1000(os, wield_scale);
 	writeS16(os, stack_max);
 	writeU8(os, usable);
@@ -144,24 +140,19 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 		tool_capabilities->serialize(tmp_os, protocol_version);
 		tool_capabilities_s = tmp_os.str();
 	}
-	os<<serializeString(tool_capabilities_s);
+	os << serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
 	for (ItemGroupList::const_iterator
 			i = groups.begin(); i != groups.end(); ++i){
 		os << serializeString(i->first);
 		writeS16(os, i->second);
 	}
-	os<<serializeString(node_placement_prediction);
-	if(protocol_version > 17){
-		//serializeSimpleSoundSpec(sound_place, os);
-		os<<serializeString(sound_place.name);
-		writeF1000(os, sound_place.gain);
-	}
-	if (protocol_version > 20) {
-		writeF1000(os, range);
-		os << serializeString(sound_place_failed.name);
-		writeF1000(os, sound_place_failed.gain);
-	}
+	os << serializeString(node_placement_prediction);
+	os << serializeString(sound_place.name);
+	writeF1000(os, sound_place.gain);
+	writeF1000(os, range);
+	os << serializeString(sound_place_failed.name);
+	writeF1000(os, sound_place_failed.gain);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)

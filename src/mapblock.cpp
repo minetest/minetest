@@ -640,19 +640,15 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	}
 }
 
-void MapBlock::serializeNetworkSpecific(std::ostream &os, u16 net_proto_version)
+void MapBlock::serializeNetworkSpecific(std::ostream &os)
 {
-	if(data == NULL)
-	{
+	if (!data) {
 		throw SerializationError("ERROR: Not writing dummy block.");
 	}
 
-	if(net_proto_version >= 21){
-		int version = 1;
-		writeU8(os, version);
-		writeF1000(os, 0); // deprecated heat
-		writeF1000(os, 0); // deprecated humidity
-	}
+	writeU8(os, 1); // version
+	writeF1000(os, 0); // deprecated heat
+	writeF1000(os, 0); // deprecated humidity
 }
 
 void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)

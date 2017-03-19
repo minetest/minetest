@@ -27,33 +27,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if(protocol_version <= 17)
-		writeU8(os, 1); // version
-	else
-		writeU8(os, 2); // version
+	writeU8(os, 2); // version (protocol >= 18)
 	writeF1000(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
 	for (ToolGCMap::const_iterator i = groupcaps.begin(); i != groupcaps.end(); ++i) {
 		const std::string *name = &i->first;
 		const ToolGroupCap *cap = &i->second;
-		os<<serializeString(*name);
+		os << serializeString(*name);
 		writeS16(os, cap->uses);
 		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
 		for (UNORDERED_MAP<int, float>::const_iterator
-				i = cap->times.begin(); i != cap->times.end(); ++i) {
-			writeS16(os, i->first);
-			writeF1000(os, i->second);
+				j = cap->times.begin(); j != cap->times.end(); ++j) {
+			writeS16(os, j->first);
+			writeF1000(os, j->second);
 		}
 	}
-	if(protocol_version > 17){
-		writeU32(os, damageGroups.size());
-		for (DamageGroup::const_iterator i = damageGroups.begin();
-			 	i != damageGroups.end(); ++i) {
-			os<<serializeString(i->first);
-			writeS16(os, i->second);
-		}
+
+	writeU32(os, damageGroups.size());
+
+	for (DamageGroup::const_iterator i = damageGroups.begin();
+			i != damageGroups.end(); ++i) {
+		os << serializeString(i->first);
+		writeS16(os, i->second);
 	}
 }
 

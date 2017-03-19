@@ -541,7 +541,7 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
-	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
 private:
 	/*
@@ -698,11 +698,11 @@ inline bool blockpos_over_limit(v3s16 p)
 {
 	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
 		g_settings->getU16("map_generation_limit"));
-	return (p.X * MAP_BLOCKSIZE < -map_gen_limit 
+	return (p.X * MAP_BLOCKSIZE < -map_gen_limit
 		|| (p.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Y * MAP_BLOCKSIZE < -map_gen_limit 
+		|| p.Y * MAP_BLOCKSIZE < -map_gen_limit
 		|| (p.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Z * MAP_BLOCKSIZE < -map_gen_limit 
+		|| p.Z * MAP_BLOCKSIZE < -map_gen_limit
 		|| (p.Z + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit);
 }
 
