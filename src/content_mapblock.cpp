@@ -54,7 +54,7 @@ static const v3s16 light_dirs[8] = {
 };
 
 // Standard index set to make a quad on 4 vertices
-static const u16 quad_indices[] = { 0, 1, 2, 2, 3, 0 };
+static const u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
@@ -97,7 +97,7 @@ TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
 
 void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
-	static const v2f tcoords[4] = { v2f(0, 1), v2f(1, 1), v2f(1, 0), v2f(0, 0) };
+	static const v2f tcoords[4] = {v2f(0, 1), v2f(1, 1), v2f(1, 0), v2f(0, 0)};
 	video::S3DVertex vertices[4];
 	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
@@ -151,35 +151,35 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	video::S3DVertex vertices[24] = {
 		// top
-		video::S3DVertex(min.X,max.Y,max.Z, 0,1,0, colors[0], txc[0],txc[1]),
-		video::S3DVertex(max.X,max.Y,max.Z, 0,1,0, colors[0], txc[2],txc[1]),
-		video::S3DVertex(max.X,max.Y,min.Z, 0,1,0, colors[0], txc[2],txc[3]),
-		video::S3DVertex(min.X,max.Y,min.Z, 0,1,0, colors[0], txc[0],txc[3]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[0], txc[1]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 1, 0, colors[0], txc[2], txc[1]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[2], txc[3]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 1, 0, colors[0], txc[0], txc[3]),
 		// bottom
-		video::S3DVertex(min.X,min.Y,min.Z, 0,-1,0, colors[1], txc[4],txc[5]),
-		video::S3DVertex(max.X,min.Y,min.Z, 0,-1,0, colors[1], txc[6],txc[5]),
-		video::S3DVertex(max.X,min.Y,max.Z, 0,-1,0, colors[1], txc[6],txc[7]),
-		video::S3DVertex(min.X,min.Y,max.Z, 0,-1,0, colors[1], txc[4],txc[7]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[4], txc[5]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, -1, 0, colors[1], txc[6], txc[5]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[6], txc[7]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, -1, 0, colors[1], txc[4], txc[7]),
 		// right
-		video::S3DVertex(max.X,max.Y,min.Z, 1,0,0, colors[2], txc[ 8],txc[9]),
-		video::S3DVertex(max.X,max.Y,max.Z, 1,0,0, colors[2], txc[10],txc[9]),
-		video::S3DVertex(max.X,min.Y,max.Z, 1,0,0, colors[2], txc[10],txc[11]),
-		video::S3DVertex(max.X,min.Y,min.Z, 1,0,0, colors[2], txc[ 8],txc[11]),
+		video::S3DVertex(max.X, max.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[9]),
+		video::S3DVertex(max.X, max.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[9]),
+		video::S3DVertex(max.X, min.Y, max.Z, 1, 0, 0, colors[2], txc[10], txc[11]),
+		video::S3DVertex(max.X, min.Y, min.Z, 1, 0, 0, colors[2], txc[ 8], txc[11]),
 		// left
-		video::S3DVertex(min.X,max.Y,max.Z, -1,0,0, colors[3], txc[12],txc[13]),
-		video::S3DVertex(min.X,max.Y,min.Z, -1,0,0, colors[3], txc[14],txc[13]),
-		video::S3DVertex(min.X,min.Y,min.Z, -1,0,0, colors[3], txc[14],txc[15]),
-		video::S3DVertex(min.X,min.Y,max.Z, -1,0,0, colors[3], txc[12],txc[15]),
+		video::S3DVertex(min.X, max.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[13]),
+		video::S3DVertex(min.X, max.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[13]),
+		video::S3DVertex(min.X, min.Y, min.Z, -1, 0, 0, colors[3], txc[14], txc[15]),
+		video::S3DVertex(min.X, min.Y, max.Z, -1, 0, 0, colors[3], txc[12], txc[15]),
 		// back
-		video::S3DVertex(max.X,max.Y,max.Z, 0,0,1, colors[4], txc[16],txc[17]),
-		video::S3DVertex(min.X,max.Y,max.Z, 0,0,1, colors[4], txc[18],txc[17]),
-		video::S3DVertex(min.X,min.Y,max.Z, 0,0,1, colors[4], txc[18],txc[19]),
-		video::S3DVertex(max.X,min.Y,max.Z, 0,0,1, colors[4], txc[16],txc[19]),
+		video::S3DVertex(max.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[17]),
+		video::S3DVertex(min.X, max.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[17]),
+		video::S3DVertex(min.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[18], txc[19]),
+		video::S3DVertex(max.X, min.Y, max.Z, 0, 0, 1, colors[4], txc[16], txc[19]),
 		// front
-		video::S3DVertex(min.X,max.Y,min.Z, 0,0,-1, colors[5], txc[20],txc[21]),
-		video::S3DVertex(max.X,max.Y,min.Z, 0,0,-1, colors[5], txc[22],txc[21]),
-		video::S3DVertex(max.X,min.Y,min.Z, 0,0,-1, colors[5], txc[22],txc[23]),
-		video::S3DVertex(min.X,min.Y,min.Z, 0,0,-1, colors[5], txc[20],txc[23]),
+		video::S3DVertex(min.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[21]),
+		video::S3DVertex(max.X, max.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[21]),
+		video::S3DVertex(max.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[22], txc[23]),
+		video::S3DVertex(min.X, min.Y, min.Z, 0, 0, -1, colors[5], txc[20], txc[23]),
 	};
 
 	static const u8 light_indices[24] = {
@@ -322,12 +322,12 @@ void MapblockMeshGenerator::generateCuboidTextureCoords(const aabb3f &box, f32 *
 	f32 ty2 = (box.MaxEdge.Y / BS) + 0.5;
 	f32 tz2 = (box.MaxEdge.Z / BS) + 0.5;
 	f32 txc[24] = {
-		  tx1, 1-tz2,   tx2, 1-tz1, // up
-		  tx1,   tz1,   tx2,   tz2, // down
-		  tz1, 1-ty2,   tz2, 1-ty1, // right
-		1-tz2, 1-ty2, 1-tz1, 1-ty1, // left
-		1-tx2, 1-ty2, 1-tx1, 1-ty1, // back
-		  tx1, 1-ty2,   tx2, 1-ty1, // front
+		    tx1, 1 - tz2,     tx2, 1 - tz1, // up
+		    tx1,     tz1,     tx2,     tz2, // down
+		    tz1, 1 - ty2,     tz2, 1 - ty1, // right
+		1 - tz2, 1 - ty2, 1 - tz1, 1 - ty1, // left
+		1 - tx2, 1 - ty2, 1 - tx1, 1 - ty1, // back
+		    tx1, 1 - ty2,     tx2, 1 - ty1, // front
 	};
 	for (int i = 0; i != 24; ++i)
 		coords[i] = txc[i];
@@ -385,7 +385,7 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 	tile_liquid_top = getSpecialTile(*f, n, 0);
 	tile_liquid = getSpecialTile(*f, n, flowing ? 1 : 0);
 
-	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X,p.Y+1,p.Z));
+	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
 	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
 	c_source = nodedef->getId(f->liquid_alternative_source);
 	top_is_same_liquid = (ntop.getContent() == c_flowing) || (ntop.getContent() == c_source);
@@ -508,16 +508,16 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 		int u, v;
 	};
 	static const LiquidFaceDesc base_faces[4] = {
-		{ v3s16( 1, 0,  0), { v3s16(1, 0, 1), v3s16(1, 0, 0) }},
-		{ v3s16(-1, 0,  0), { v3s16(0, 0, 0), v3s16(0, 0, 1) }},
-		{ v3s16( 0, 0,  1), { v3s16(0, 0, 1), v3s16(1, 0, 1) }},
-		{ v3s16( 0, 0, -1), { v3s16(1, 0, 0), v3s16(0, 0, 0) }},
+		{v3s16( 1, 0,  0), {v3s16(1, 0, 1), v3s16(1, 0, 0)}},
+		{v3s16(-1, 0,  0), {v3s16(0, 0, 0), v3s16(0, 0, 1)}},
+		{v3s16( 0, 0,  1), {v3s16(0, 0, 1), v3s16(1, 0, 1)}},
+		{v3s16( 0, 0, -1), {v3s16(1, 0, 0), v3s16(0, 0, 0)}},
 	};
 	static const UV base_vertices[4] = {
-		{ 0, 1 },
-		{ 1, 1 },
-		{ 1, 0 },
-		{ 0, 0 }
+		{0, 1},
+		{1, 1},
+		{1, 0},
+		{0, 0}
 	};
 	for (int i = 0; i < 4; i++) {
 		const LiquidFaceDesc &face = base_faces[i];
@@ -571,10 +571,10 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 	static const int corner_resolve[4][2] = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
 
 	video::S3DVertex vertices[4] = {
-		video::S3DVertex(-BS/2, 0,  BS/2, 0,0,0, color_liquid_top, 0,1),
-		video::S3DVertex( BS/2, 0,  BS/2, 0,0,0, color_liquid_top, 1,1),
-		video::S3DVertex( BS/2, 0, -BS/2, 0,0,0, color_liquid_top, 1,0),
-		video::S3DVertex(-BS/2, 0, -BS/2, 0,0,0, color_liquid_top, 0,0),
+		video::S3DVertex(-BS / 2, 0,  BS / 2, 0, 0, 0, color_liquid_top, 0, 1),
+		video::S3DVertex( BS / 2, 0,  BS / 2, 0, 0, 0, color_liquid_top, 1, 1),
+		video::S3DVertex( BS / 2, 0, -BS / 2, 0, 0, 0, color_liquid_top, 1, 0),
+		video::S3DVertex(-BS / 2, 0, -BS / 2, 0, 0, 0, color_liquid_top, 0, 0),
 	};
 
 	for (int i = 0; i < 4; i++) {
@@ -640,10 +640,10 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		if (neighbor.getContent() == n.getContent())
 			continue;
 		v3f vertices[4] = {
-			v3f(-BS/2, -BS/2, BS/2),
-			v3f( BS/2, -BS/2, BS/2),
-			v3f( BS/2,  BS/2, BS/2),
-			v3f(-BS/2,  BS/2, BS/2),
+			v3f(-BS / 2, -BS / 2, BS / 2),
+			v3f( BS / 2, -BS / 2, BS / 2),
+			v3f( BS / 2,  BS / 2, BS / 2),
+			v3f(-BS / 2,  BS / 2, BS / 2),
 		};
 		for (int i = 0; i < 4; i++) {
 			// Rotations in the g_6dirs format
@@ -689,38 +689,38 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	static const float b = .876 * ( BS / 2 );
 
 	static const aabb3f frame_edges[FRAMED_EDGE_COUNT] = {
-		aabb3f( b, b,-a, a, a, a), // y+
-		aabb3f(-a, b,-a,-b, a, a), // y+
-		aabb3f( b,-a,-a, a,-b, a), // y-
-		aabb3f(-a,-a,-a,-b,-b, a), // y-
-		aabb3f( b,-a, b, a, a, a), // x+
-		aabb3f( b,-a,-a, a, a,-b), // x+
-		aabb3f(-a,-a, b,-b, a, a), // x-
-		aabb3f(-a,-a,-a,-b, a,-b), // x-
-		aabb3f(-a, b, b, a, a, a), // z+
-		aabb3f(-a,-a, b, a,-b, a), // z+
-		aabb3f(-a,-a,-a, a,-b,-b), // z-
-		aabb3f(-a, b,-a, a, a,-b), // z-
+		aabb3f( b,  b, -a,  a,  a,  a), // y+
+		aabb3f(-a,  b, -a, -b,  a,  a), // y+
+		aabb3f( b, -a, -a,  a, -b,  a), // y-
+		aabb3f(-a, -a, -a, -b, -b,  a), // y-
+		aabb3f( b, -a,  b,  a,  a,  a), // x+
+		aabb3f( b, -a, -a,  a,  a, -b), // x+
+		aabb3f(-a, -a,  b, -b,  a,  a), // x-
+		aabb3f(-a, -a, -a, -b,  a, -b), // x-
+		aabb3f(-a,  b,  b,  a,  a,  a), // z+
+		aabb3f(-a, -a,  b,  a, -b,  a), // z+
+		aabb3f(-a, -a, -a,  a, -b, -b), // z-
+		aabb3f(-a,  b, -a,  a,  a, -b), // z-
 	};
 	static const aabb3f glass_faces[6] = {
-		aabb3f(-g,-g, g, g, g, g), // z+
-		aabb3f(-g, g,-g, g, g, g), // y+
-		aabb3f( g,-g,-g, g, g, g), // x+
-		aabb3f(-g,-g,-g, g, g,-g), // z-
-		aabb3f(-g,-g,-g, g,-g, g), // y-
-		aabb3f(-g,-g,-g,-g, g, g), // x-
+		aabb3f(-g, -g,  g,  g,  g,  g), // z+
+		aabb3f(-g,  g, -g,  g,  g,  g), // y+
+		aabb3f( g, -g, -g,  g,  g,  g), // x+
+		aabb3f(-g, -g, -g,  g,  g, -g), // z-
+		aabb3f(-g, -g, -g,  g, -g,  g), // y-
+		aabb3f(-g, -g, -g, -g,  g,  g), // x-
 	};
 
 	// tables of neighbour (connect if same type and merge allowed),
 	// checked with g_26dirs
 
 	// 1 = connect, 0 = face visible
-	bool nb[FRAMED_NEIGHBOR_COUNT] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	bool nb[FRAMED_NEIGHBOR_COUNT] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 	// 1 = check
-	static const bool check_nb_vertical   [FRAMED_NEIGHBOR_COUNT] = { 0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0 };
-	static const bool check_nb_horizontal [FRAMED_NEIGHBOR_COUNT] = { 1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0 };
-	static const bool check_nb_all        [FRAMED_NEIGHBOR_COUNT] = { 1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1 };
+	static const bool check_nb_vertical   [FRAMED_NEIGHBOR_COUNT] = {0,1,0,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+	static const bool check_nb_horizontal [FRAMED_NEIGHBOR_COUNT] = {1,0,1,1,0,1, 0,0,0,0, 1,1,1,1, 0,0,0,0};
+	static const bool check_nb_all        [FRAMED_NEIGHBOR_COUNT] = {1,1,1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
 	const bool *check_nb = check_nb_all;
 
 	// neighbours checks for frames visibility
@@ -784,7 +784,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 
 void MapblockMeshGenerator::drawAllfacesNode()
 {
-	static const aabb3f box(-BS/2, -BS/2, -BS/2, BS/2, BS/2, BS/2);
+	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
 	useDefaultTile(false);
 	drawAutoLightedCuboid(box);
 }
@@ -824,14 +824,14 @@ void MapblockMeshGenerator::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
 	useTile(0, true);
-	static const float offset = BS/16;
-	float size = BS/2 * f->visual_scale;
+	static const float offset = BS / 16;
+	float size = BS / 2 * f->visual_scale;
 	// Wall at X+ of node
 	v3f vertices[4] = {
-		v3f(BS/2 - offset,  size,  size),
-		v3f(BS/2 - offset,  size, -size),
-		v3f(BS/2 - offset, -size, -size),
-		v3f(BS/2 - offset, -size,  size),
+		v3f(BS / 2 - offset,  size,  size),
+		v3f(BS / 2 - offset,  size, -size),
+		v3f(BS / 2 - offset, -size, -size),
+		v3f(BS / 2 - offset, -size,  size),
 	};
 	for (int i = 0; i < 4; i++) {
 		switch (wall) {
@@ -850,10 +850,10 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS/2, 0),
-		v3f( scale, -BS/2, 0),
-		v3f( scale, -BS/2 + scale * 2, 0),
-		v3f(-scale, -BS/2 + scale * 2, 0),
+		v3f(-scale, -BS / 2, 0),
+		v3f( scale, -BS / 2, 0),
+		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f(-scale, -BS / 2 + scale * 2, 0),
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
@@ -919,17 +919,17 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 		break;
 
 	case PLANT_STYLE_HASH:
-		drawPlantlikeQuad(  1, BS/4);
-		drawPlantlikeQuad( 91, BS/4);
-		drawPlantlikeQuad(181, BS/4);
-		drawPlantlikeQuad(271, BS/4);
+		drawPlantlikeQuad(  1, BS / 4);
+		drawPlantlikeQuad( 91, BS / 4);
+		drawPlantlikeQuad(181, BS / 4);
+		drawPlantlikeQuad(271, BS / 4);
 		break;
 
 	case PLANT_STYLE_HASH2:
-		drawPlantlikeQuad(  1, -BS/2, true);
-		drawPlantlikeQuad( 91, -BS/2, true);
-		drawPlantlikeQuad(181, -BS/2, true);
-		drawPlantlikeQuad(271, -BS/2, true);
+		drawPlantlikeQuad(  1, -BS / 2, true);
+		drawPlantlikeQuad( 91, -BS / 2, true);
+		drawPlantlikeQuad(181, -BS / 2, true);
+		drawPlantlikeQuad(271, -BS / 2, true);
 		break;
 	}
 }
@@ -938,10 +938,10 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 	float offset_h, float offset_v)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS/2, 0),
-		v3f( scale, -BS/2, 0),
-		v3f( scale, -BS/2 + scale * 2, 0),
-		v3f(-scale, -BS/2 + scale * 2, 0),
+		v3f(-scale, -BS / 2, 0),
+		v3f( scale, -BS / 2, 0),
+		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f(-scale, -BS / 2 + scale * 2, 0),
 	};
 	for (int i = 0; i < 4; i++) {
 		vertices[i].rotateYZBy(opening_angle);
@@ -959,7 +959,7 @@ void MapblockMeshGenerator::drawFirelikeNode()
 
 	// Check for adjacent nodes
 	bool neighbors = false;
-	bool neighbor[6] = { 0, 0, 0, 0, 0, 0 };
+	bool neighbor[6] = {0, 0, 0, 0, 0, 0};
 	content_t current = n.getContent();
 	for (int i = 0; i < 6; i++) {
 		v3s16 n2p = blockpos_nodes + p + g_6dirs[i];
@@ -974,14 +974,14 @@ void MapblockMeshGenerator::drawFirelikeNode()
 	bool drawBottomFire = neighbor[D6D_YP];
 
 	if (drawBasicFire || neighbor[D6D_ZP])
-		drawFirelikeQuad(  0, -10, 0.4 * BS);
+		drawFirelikeQuad(0, -10, 0.4 * BS);
 	else if (drawBottomFire)
-		drawFirelikeQuad(  0, 70, 0.47 * BS, 0.484 * BS);
+		drawFirelikeQuad(0, 70, 0.47 * BS, 0.484 * BS);
 
 	if (drawBasicFire || neighbor[D6D_XN])
-		drawFirelikeQuad( 90, -10, 0.4 * BS);
+		drawFirelikeQuad(90, -10, 0.4 * BS);
 	else if (drawBottomFire)
-		drawFirelikeQuad( 90, 70, 0.47 * BS, 0.484 * BS);
+		drawFirelikeQuad(90, 70, 0.47 * BS, 0.484 * BS);
 
 	if (drawBasicFire || neighbor[D6D_ZN])
 		drawFirelikeQuad(180, -10, 0.4 * BS);
@@ -1009,13 +1009,13 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	TileSpec tile_rot = tile;
 	tile_rot.rotation = 1;
 
-	static const f32 post_rad = BS/8;
-	static const f32 bar_rad  = BS/16;
-	static const f32 bar_len  = BS/2 - post_rad;
+	static const f32 post_rad = BS / 8;
+	static const f32 bar_rad  = BS / 16;
+	static const f32 bar_len  = BS / 2 - post_rad;
 
 	// The post - always present
-	static const aabb3f post(-post_rad, -BS/2, -post_rad,
-	                          post_rad,  BS/2,  post_rad);
+	static const aabb3f post(-post_rad, -BS / 2, -post_rad,
+	                          post_rad,  BS / 2,  post_rad);
 	static const f32 postuv[24] = {
 		0.375, 0.375, 0.625, 0.625,
 		0.375, 0.375, 0.625, 0.625,
@@ -1035,10 +1035,10 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	MapNode n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	const ContentFeatures *f2 = &nodedef->get(n2);
 	if (f2->drawtype == NDT_FENCELIKE) {
-		static const aabb3f bar_x1(BS/2 - bar_len,  BS/4 - bar_rad, -bar_rad,
-		                           BS/2 + bar_len,  BS/4 + bar_rad,  bar_rad);
-		static const aabb3f bar_x2(BS/2 - bar_len, -BS/4 - bar_rad, -bar_rad,
-		                           BS/2 + bar_len, -BS/4 + bar_rad,  bar_rad);
+		static const aabb3f bar_x1(BS / 2 - bar_len,  BS / 4 - bar_rad, -bar_rad,
+		                           BS / 2 + bar_len,  BS / 4 + bar_rad,  bar_rad);
+		static const aabb3f bar_x2(BS / 2 - bar_len, -BS / 4 - bar_rad, -bar_rad,
+		                           BS / 2 + bar_len, -BS / 4 + bar_rad,  bar_rad);
 		static const f32 xrailuv[24] = {
 			0.000, 0.125, 1.000, 0.250,
 			0.000, 0.250, 1.000, 0.375,
@@ -1057,10 +1057,10 @@ void MapblockMeshGenerator::drawFencelikeNode()
 	n2 = data->m_vmanip.getNodeNoEx(blockpos_nodes + p2);
 	f2 = &nodedef->get(n2);
 	if (f2->drawtype == NDT_FENCELIKE) {
-		static const aabb3f bar_z1(-bar_rad,  BS/4 - bar_rad, BS/2 - bar_len,
-		                            bar_rad,  BS/4 + bar_rad, BS/2 + bar_len);
-		static const aabb3f bar_z2(-bar_rad, -BS/4 - bar_rad, BS/2 - bar_len,
-		                            bar_rad, -BS/4 + bar_rad, BS/2 + bar_len);
+		static const aabb3f bar_z1(-bar_rad,  BS / 4 - bar_rad, BS / 2 - bar_len,
+		                            bar_rad,  BS / 4 + bar_rad, BS / 2 + bar_len);
+		static const aabb3f bar_z2(-bar_rad, -BS / 4 - bar_rad, BS / 2 - bar_len,
+		                            bar_rad, -BS / 4 + bar_rad, BS / 2 + bar_len);
 		static const f32 zrailuv[24] = {
 			0.1875, 0.0625, 0.3125, 0.3125, // cannot rotate; stretch
 			0.2500, 0.0625, 0.3750, 0.3125, // for wood texture instead
@@ -1092,7 +1092,7 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		v3s16(-1, 0,  0),
 		v3s16( 1, 0,  0),
 	};
-	static const int slope_angle[4] = { 0, 180, 90, -90 };
+	static const int slope_angle[4] = {0, 180, 90, -90};
 
 	enum RailTile {
 		straight,
@@ -1107,22 +1107,22 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	static const RailDesc rail_kinds[16] = {
 		                   // +x -x -z +z
 		                   //-------------
-		{ straight,   0 }, //  .  .  .  .
-		{ straight,   0 }, //  .  .  . +Z
-		{ straight,   0 }, //  .  . -Z  .
-		{ straight,   0 }, //  .  . -Z +Z
-		{ straight,  90 }, //  . -X  .  .
-		{   curved, 180 }, //  . -X  . +Z
-		{   curved, 270 }, //  . -X -Z  .
-		{ junction, 180 }, //  . -X -Z +Z
-		{ straight,  90 }, // +X  .  .  .
-		{   curved,  90 }, // +X  .  . +Z
-		{   curved,   0 }, // +X  . -Z  .
-		{ junction,   0 }, // +X  . -Z +Z
-		{ straight,  90 }, // +X -X  .  .
-		{ junction,  90 }, // +X -X  . +Z
-		{ junction, 270 }, // +X -X -Z  .
-		{    cross,   0 }, // +X -X -Z +Z
+		{straight,   0}, //  .  .  .  .
+		{straight,   0}, //  .  .  . +Z
+		{straight,   0}, //  .  . -Z  .
+		{straight,   0}, //  .  . -Z +Z
+		{straight,  90}, //  . -X  .  .
+		{  curved, 180}, //  . -X  . +Z
+		{  curved, 270}, //  . -X -Z  .
+		{junction, 180}, //  . -X -Z +Z
+		{straight,  90}, // +X  .  .  .
+		{  curved,  90}, // +X  .  . +Z
+		{  curved,   0}, // +X  . -Z  .
+		{junction,   0}, // +X  . -Z +Z
+		{straight,  90}, // +X -X  .  .
+		{junction,  90}, // +X -X  . +Z
+		{junction, 270}, // +X -X -Z  .
+		{   cross,   0}, // +X -X -Z +Z
 	};
 
 	raillike_group = nodedef->get(n).getGroup(raillike_groupname);
@@ -1152,8 +1152,8 @@ void MapblockMeshGenerator::drawRaillikeNode()
 
 	useTile(tile_index, true);
 
-	static const float offset = BS/64;
-	static const float size   = BS/2;
+	static const float offset = BS / 64;
+	static const float size   = BS / 2;
 	float y2 = sloped ? size : -size;
 	v3f vertices[4] = {
 		v3f(-size, -size + offset, -size),
@@ -1227,7 +1227,7 @@ void MapblockMeshGenerator::drawMeshNode()
 		// When cache enabled, it is already converted.
 		facedir = n.getWallMounted(nodedef);
 		if (!enable_mesh_cache) {
-			static const u8 wm_to_6d[6] = {20, 0, 16+1, 12+3, 8, 4+2};
+			static const u8 wm_to_6d[6] = {20, 0, 16 + 1, 12 + 3, 8, 4 + 2};
 			facedir = wm_to_6d[facedir];
 		}
 	}
