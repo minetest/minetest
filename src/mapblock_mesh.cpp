@@ -933,7 +933,7 @@ static void updateFastFaceRow(
 		makes_face = next_makes_face;
 		p_corrected = next_p_corrected;
 		face_dir_corrected = next_face_dir_corrected;
-		std::memcpy(lights, next_lights, 4);
+		std::memcpy(lights, next_lights, ARRLEN(lights) * sizeof(u16));
 		if (next_is_different)
 			tile = next_tile;
 		p = p_next;
