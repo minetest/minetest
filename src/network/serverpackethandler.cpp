@@ -1127,7 +1127,14 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("enable_damage") && playersao->getHP() > 0) {
+	if (g_settings->getBool("enable_damage")) {
+		if (playerSAO->isDead()) {
+			verbosestream << "Server::ProcessData(): Info: "
+				"Ignoring damage as player " << player->getName()
+				<< " is already dead." << std::endl;
+			return;
+		}
+
 		actionstream << player->getName() << " damaged by "
 				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
