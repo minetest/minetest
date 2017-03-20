@@ -3211,6 +3211,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 			delete event.hudchange.v2fdata;
 			delete event.hudchange.sdata;
 			delete event.hudchange.v2s32data;
+		} else if (event.type == CE_HUD_SET_ABOVE) {
+			player->setHudAbove(event.hud_set_above.bottom, event.hud_set_above.top);
 		} else if (event.type == CE_SET_SKY) {
 			sky->setVisible(false);
 

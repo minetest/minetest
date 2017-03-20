@@ -1120,6 +1120,20 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
+void Client::handleCommand_HudSetAbove(NetworkPacket* pkt)
+{
+	u32 bottom;
+	u32 top;
+
+	*pkt >> bottom >> top;
+
+	ClientEvent event;
+	event.type                 = CE_HUD_SET_ABOVE;
+	event.hud_set_above.bottom = bottom;
+	event.hud_set_above.top    = top;
+	m_client_event_queue.push(event);
+}
+
 void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 {
 	u32 flags, mask;
