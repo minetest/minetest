@@ -21,6 +21,12 @@ if [[ $PLATFORM == "Unix" ]]; then
 		if [[ "$VALGRIND" == "1" ]]; then
 			sudo apt-get install valgrind
 		fi
+		if [[ "$LINT" == "1" ]]; then
+			curl http://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+			sudo add-apt-repository "deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main"
+			sudo apt-get -yq update
+			sudo apt-get install clang-format-3.9
+		fi
 	else
 		brew update
 		brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
