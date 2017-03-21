@@ -737,6 +737,10 @@ Call these functions only at load time!
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
 
+### Client Environment
+* `minetest.get_names_in_range()`
+    * Returns list of player names on server in range
+
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
     * Convert a string containing JSON data into the Lua equivalent
