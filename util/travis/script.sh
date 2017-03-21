@@ -34,13 +34,14 @@ if [ $(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep -
 	exit 0
 fi
 
+if [[ "$LINT" == "1" ]]; then
+	# Lint with exit CI
+	perform_lint
+fi
+
 if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
 	cd travisbuild || exit 1
-	if [[ "$LINT" == "1" ]]; then
-		# Lint with exit CI
-		perform_lint
-	fi
 
 	CMAKE_FLAGS=''
 	if [[ $COMPILER == "g++-6" ]]; then
