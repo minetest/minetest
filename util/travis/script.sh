@@ -5,8 +5,6 @@ needs_compile || exit 0
 
 function perform_lint() {
 	CLANG_FORMAT=clang-format-3.9
-	${CLANG_FORMAT} --version
-
 	if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
 		# Get list of every file modified in this pull request
 		files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^src/[^.]*[.]\(cpp\|h\)$' | egrep -v '^src/(gmp|lua|jsoncpp)/' || true)"
@@ -15,24 +13,22 @@ function perform_lint() {
 		files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h' | egrep -v '^src/(gmp|lua|jsoncpp)/')"
 	fi
 
+	local fail=0
 	for f in ${files_to_lint}; do
 		d=$(diff -u "$f" <(${CLANG_FORMAT} "$f") || true)
 		if ! [ -z "$d" ]; then
-			printf "The file %s is no compliant with the coding style:\n%s\n" "$f" "$d"
-			fail=1
+			printf "The file %s is not compliant with the coding style:\n%s\n" "$f" "$d"
+			# Disable build failure at this moment as we need to have a complete MT source whitelist to check
+			fail=0
 		fi
 	done
 
 	if [ "$fail" = 1 ]; then
-		exit 0 # Not mandatory at this moment
+		exit 1
 	fi
 
 	exit 0
 }
-
-if [ $(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep -c '^src/[^.]*[.]\(c\|cpp\|h\)$') -eq 0 ]; then
-	exit 0
-fi
 
 if [[ "$LINT" == "1" ]]; then
 	# Lint with exit CI
