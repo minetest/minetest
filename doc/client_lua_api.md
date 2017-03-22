@@ -738,7 +738,7 @@ Call these functions only at load time!
     * Returns the itemstack the local player is holding
 
 ### Client Environment
-* `minetest.get_names_in_range()`
+* `minetest.get_player_names_in_range()`
     * Returns list of player names on server in range
 
 ### Misc.
