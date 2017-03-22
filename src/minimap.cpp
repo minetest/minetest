@@ -105,7 +105,7 @@ void MinimapUpdateThread::doUpdate()
 			// Swap two values in the map using single lookup
 			std::pair<std::map<v3s16, MinimapMapblock*>::iterator, bool>
 			    result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
-			if (result.second == false) {
+			if (!result.second) {
 				delete result.first->second;
 				result.first->second = update.data;
 			}
@@ -322,13 +322,15 @@ void Minimap::setAngle(f32 angle)
 
 void Minimap::blitMinimapPixelsToImageRadar(video::IImage *map_image)
 {
+	video::SColor c(240, 0, 0, 0);
 	for (s16 x = 0; x < data->map_size; x++)
 	for (s16 z = 0; z < data->map_size; z++) {
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
 
-		video::SColor c(240, 0, 0, 0);
 		if (mmpixel->air_count > 0)
 			c.setGreen(core::clamp(core::round32(32 + mmpixel->air_count * 8), 0, 255));
+		else
+			c.setGreen(0);
 
 		map_image->setPixel(x, data->map_size - z - 1, c);
 	}
@@ -337,21 +339,23 @@ void Minimap::blitMinimapPixelsToImageRadar(video::IImage *map_image)
 void Minimap::blitMinimapPixelsToImageSurface(
 	video::IImage *map_image, video::IImage *heightmap_image)
 {
+	// This variable creation/destruction has a 1% cost on rendering minimap
+	video::SColor tilecolor;
 	for (s16 x = 0; x < data->map_size; x++)
 	for (s16 z = 0; z < data->map_size; z++) {
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
 
 		const ContentFeatures &f = m_ndef->get(mmpixel->n);
 		const TileDef *tile = &f.tiledef[0];
+
 		// Color of the 0th tile (mostly this is the topmost)
-		video::SColor tilecolor;
 		if(tile->has_color)
 			tilecolor = tile->color;
 		else
 			mmpixel->n.getColor(f, &tilecolor);
+
 		tilecolor.setRed(tilecolor.getRed() * f.minimap_color.getRed() / 255);
-		tilecolor.setGreen(tilecolor.getGreen() * f.minimap_color.getGreen()
-			/ 255);
+		tilecolor.setGreen(tilecolor.getGreen() * f.minimap_color.getGreen() / 255);
 		tilecolor.setBlue(tilecolor.getBlue() * f.minimap_color.getBlue() / 255);
 		tilecolor.setAlpha(240);
 
@@ -391,7 +395,7 @@ video::ITexture *Minimap::getMinimapTexture()
 	if (minimap_mask) {
 		for (s16 y = 0; y < MINIMAP_MAX_SY; y++)
 		for (s16 x = 0; x < MINIMAP_MAX_SX; x++) {
-			video::SColor mask_col = minimap_mask->getPixel(x, y);
+			const video::SColor &mask_col = minimap_mask->getPixel(x, y);
 			if (!mask_col.getAlpha())
 				minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
 		}
@@ -430,7 +434,7 @@ scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	buf->Vertices.set_used(4);
 	buf->Indices.set_used(6);
-	video::SColor c(255, 255, 255, 255);
+	static const video::SColor c(255, 255, 255, 255);
 
 	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
 	buf->Vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
@@ -550,15 +554,13 @@ void Minimap::updateActiveMarkers()
 	video::IImage *minimap_mask = data->minimap_shape_round ?
 		data->minimap_mask_round : data->minimap_mask_square;
 
-	std::list<Nametag *> *nametags = client->getCamera()->getNametags();
+	const std::list<Nametag *> &nametags = client->getCamera()->getNametags();
 
 	m_active_markers.clear();
 
-	for (std::list<Nametag *>::const_iterator
-			i = nametags->begin();
-			i != nametags->end(); ++i) {
-		Nametag *nametag = *i;
-		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
+	for (std::list<Nametag *>::const_iterator i = nametags.begin();
+			i != nametags.end(); ++i) {
+		v3s16 pos = floatToInt((*i)->parent_node->getPosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,
@@ -570,7 +572,7 @@ void Minimap::updateActiveMarkers()
 		}
 		pos.X = ((float)pos.X / data->map_size) * MINIMAP_MAX_SX;
 		pos.Z = ((float)pos.Z / data->map_size) * MINIMAP_MAX_SY;
-		video::SColor mask_col = minimap_mask->getPixel(pos.X, pos.Z);
+		const video::SColor &mask_col = minimap_mask->getPixel(pos.X, pos.Z);
 		if (!mask_col.getAlpha()) {
 			continue;
 		}

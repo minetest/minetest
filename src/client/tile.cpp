@@ -134,9 +134,8 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from texture_path
 	*/
-	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "")
-	{
+	const std::string &texture_path = g_settings->get("texture_path");
+	if (texture_path != "") {
 		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
@@ -1854,7 +1853,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			for (u32 x = 0; x < dim.Width; x++)
 			{
 				video::SColor c = baseimg->getPixel(x, y);
-				c.color ^= mask;	
+				c.color ^= mask;
 				baseimg->setPixel(x, y, c);
 			}
 		}
@@ -2266,7 +2265,8 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 	if (isKnownSourceImage("override_normal.png"))
 		return getTexture("override_normal.png");
 	std::string fname_base = name;
-	std::string normal_ext = "_normal.png";
+	static const char *normal_ext = "_normal.png";
+	static const uint32_t normal_ext_size = strlen(normal_ext);
 	size_t pos = fname_base.find(".");
 	std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
 	if (isKnownSourceImage(fname_normal)) {
@@ -2274,7 +2274,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		size_t i = 0;
 		while ((i = fname_base.find(".", i)) != std::string::npos) {
 			fname_base.replace(i, 4, normal_ext);
-			i += normal_ext.length();
+			i += normal_ext_size;
 		}
 		return getTexture(fname_base);
 		}

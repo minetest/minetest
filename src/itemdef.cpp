@@ -275,16 +275,16 @@ public:
 		assert(i != m_item_definitions.end());
 		return *(i->second);
 	}
-	virtual std::string getAlias(const std::string &name) const
+	virtual const std::string &getAlias(const std::string &name) const
 	{
 		StringMap::const_iterator it = m_aliases.find(name);
 		if (it != m_aliases.end())
 			return it->second;
 		return name;
 	}
-	virtual std::set<std::string> getAll() const
+	virtual void getAll(std::set<std::string> &result) const
 	{
-		std::set<std::string> result;
+		result.clear();
 		for(std::map<std::string, ItemDefinition *>::const_iterator
 				it = m_item_definitions.begin();
 				it != m_item_definitions.end(); ++it) {
@@ -295,7 +295,6 @@ public:
 				it != m_aliases.end(); ++it) {
 			result.insert(it->first);
 		}
-		return result;
 	}
 	virtual bool isKnown(const std::string &name_) const
 	{

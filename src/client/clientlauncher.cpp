@@ -530,7 +530,7 @@ bool ClientLauncher::create_engine_device()
 
 	// Determine driver
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
-	std::string driverstring = g_settings->get("video_driver");
+	const std::string &driverstring = g_settings->get("video_driver");
 	std::vector<video::E_DRIVER_TYPE> drivers
 		= porting::getSupportedVideoDrivers();
 	u32 i;

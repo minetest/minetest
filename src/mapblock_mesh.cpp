@@ -855,8 +855,9 @@ static void updateFastFaceRow(
 			makes_face, p_corrected, face_dir_corrected,
 			lights, tile);
 
-	for(u16 j=0; j<MAP_BLOCKSIZE; j++)
-	{
+	// Unroll this variable which has a significant build cost
+	TileSpec next_tile;
+	for (u16 j = 0; j < MAP_BLOCKSIZE; j++) {
 		// If tiling can be done, this is set to false in the next step
 		bool next_is_different = true;
 
@@ -866,12 +867,11 @@ static void updateFastFaceRow(
 		v3s16 next_p_corrected;
 		v3s16 next_face_dir_corrected;
 		u16 next_lights[4] = {0,0,0,0};
-		TileSpec next_tile;
+
 
 		// If at last position, there is nothing to compare to and
 		// the face must be drawn anyway
-		if(j != MAP_BLOCKSIZE - 1)
-		{
+		if (j != MAP_BLOCKSIZE - 1) {
 			p_next = p + translate_dir;
 
 			getTileInfo(data, p_next, face_dir,
@@ -879,7 +879,7 @@ static void updateFastFaceRow(
 					next_face_dir_corrected, next_lights,
 					next_tile);
 
-			if(next_makes_face == makes_face
+			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
 					&& next_lights[0] == lights[0]
@@ -894,38 +894,14 @@ static void updateFastFaceRow(
 					&& tile.emissive_light == next_tile.emissive_light) {
 				next_is_different = false;
 				continuous_tiles_count++;
-			} else {
-				/*if(makes_face){
-					g_profiler->add("Meshgen: diff: next_makes_face != makes_face",
-							next_makes_face != makes_face ? 1 : 0);
-					g_profiler->add("Meshgen: diff: n_p_corr != p_corr + t_dir",
-							(next_p_corrected != p_corrected + translate_dir) ? 1 : 0);
-					g_profiler->add("Meshgen: diff: next_f_dir_corr != f_dir_corr",
-							next_face_dir_corrected != face_dir_corrected ? 1 : 0);
-					g_profiler->add("Meshgen: diff: next_lights[] != lights[]",
-							(next_lights[0] != lights[0] ||
-							next_lights[0] != lights[0] ||
-							next_lights[0] != lights[0] ||
-							next_lights[0] != lights[0]) ? 1 : 0);
-					g_profiler->add("Meshgen: diff: !(next_tile == tile)",
-							!(next_tile == tile) ? 1 : 0);
-				}*/
 			}
-			/*g_profiler->add("Meshgen: Total faces checked", 1);
-			if(makes_face)
-				g_profiler->add("Meshgen: Total makes_face checked", 1);*/
-		} else {
-			/*if(makes_face)
-				g_profiler->add("Meshgen: diff: last position", 1);*/
 		}
 
-		if(next_is_different)
-		{
+		if (next_is_different) {
 			/*
 				Create a face if there should be one
 			*/
-			if(makes_face)
-			{
+			if (makes_face) {
 				// Floating point conversion of the position vector
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
@@ -957,11 +933,9 @@ static void updateFastFaceRow(
 		makes_face = next_makes_face;
 		p_corrected = next_p_corrected;
 		face_dir_corrected = next_face_dir_corrected;
-		lights[0] = next_lights[0];
-		lights[1] = next_lights[1];
-		lights[2] = next_lights[2];
-		lights[3] = next_lights[3];
-		tile = next_tile;
+		std::memcpy(lights, next_lights, ARRLEN(lights) * sizeof(u16));
+		if (next_is_different)
+			tile = next_tile;
 		p = p_next;
 	}
 }

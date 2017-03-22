@@ -494,7 +494,7 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	catch(SettingNotFoundException) {}
 #endif
 
-	std::string draw_mode = g_settings->get("3d_mode");
+	const std::string &draw_mode = g_settings->get("3d_mode");
 
 	smgr->drawAll();
 
