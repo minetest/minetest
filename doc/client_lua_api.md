@@ -739,7 +739,7 @@ Call these functions only at load time!
 
 ### Client Environment
 * `minetest.get_player_names()`
-    * Returns list of player names on server in range
+    * Returns list of player names on server
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
