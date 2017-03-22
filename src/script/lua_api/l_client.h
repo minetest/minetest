@@ -31,6 +31,9 @@ private:
 
 	// display_chat_message(message)
 	static int l_display_chat_message(lua_State *L);
+	
+	// get_player_names()
+	static int l_get_player_names(lua_State *L);
 
 	// show_formspec(name, fornspec)
 	static int l_show_formspec(lua_State *L);

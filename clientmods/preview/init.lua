@@ -102,7 +102,7 @@ core.register_on_punchnode(function(pos, node)
 	print(dump(itemstack:get_count()))
 	print(dump(itemstack:get_wear()))
 	print(dump(itemstack:get_meta()))
-	print(dump(itemstack:get_metadata()))
+	print(dump(itemstack:get_metadata()
 	print(dump(itemstack:is_known()))
 	--print(dump(itemstack:get_definition()))
 	print(dump(itemstack:get_tool_capabilities()))
@@ -120,3 +120,10 @@ core.register_on_punchnode(function(pos, node)
 	print("node:" .. dump(node))
 	return false
 end)
+
+-- This is an example function to ensure it's working properly, should be removed before merge
+core.register_chatcommand("list_players", {
+	func = function(param)
+		core.display_chat_message(dump(core.get_player_names()))
+	end
+})

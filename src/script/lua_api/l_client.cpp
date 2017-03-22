@@ -69,6 +69,22 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 	return 1;
 }
 
+// get_player_names()
+int ModApiClient::l_get_player_names(lua_State *L)
+{
+	const std::list<std::string> &plist = getClient(L)->getConnectedPlayerNames();
+	lua_createtable(L, plist.size(), 0);
+	int newTable = lua_gettop(L);
+	int index = 1;
+	std::list<std::string>::const_iterator iter;
+	for (iter = plist.begin(); iter != plist.end(); iter++) {
+		lua_pushstring(L, (*iter).c_str());
+		lua_rawseti(L, newTable, index);
+		index++;
+	}
+	return 1;
+}
+
 // show_formspec(formspec)
 int ModApiClient::l_show_formspec(lua_State *L)
 {
@@ -154,6 +170,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
 	API_FCT(display_chat_message);
+	API_FCT(get_player_names);
 	API_FCT(set_last_run_mod);
 	API_FCT(get_last_run_mod);
 	API_FCT(show_formspec);
