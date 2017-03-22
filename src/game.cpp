@@ -3402,13 +3402,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			playeritem = mlist->getItem(client->getPlayerItem());
 	}
 
-	if (playeritem.getDefinition(itemdef_manager).name.empty()) { // override the hand
-		InventoryList *hlist = local_inventory->getList("hand");
-		if (hlist)
-			playeritem = hlist->getItem(0);
-	}
 	const ItemDefinition &playeritem_def =
 			playeritem.getDefinition(itemdef_manager);
+	InventoryList *hlist = local_inventory->getList("hand");
+	const ItemDefinition &hand_def =
+		hlist?hlist->getItem(0).getDefinition(itemdef_manager):itemdef_manager->get("");
 
 	v3f player_position  = player->getPosition();
 	v3f camera_position  = camera->getPosition();
@@ -3421,7 +3419,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	*/
 
 	f32 d = playeritem_def.range; // max. distance
-	f32 d_hand = itemdef_manager->get("").range;
+	f32 d_hand = hand_def.range;
 
 	if (d < 0 && d_hand >= 0)
 		d = d_hand;
@@ -3509,6 +3507,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);
+		if (playeritem.name.empty()) {
+			playeritem_toolcap = *hand_def.tool_capabilities;
+		}
 		handlePointingAtNode(pointed, playeritem_def, playeritem_toolcap, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
@@ -3768,9 +3769,16 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			// Report direct punch
 			v3f objpos = runData.selected_object->getPosition();
 			v3f dir = (objpos - player_position).normalize();
+			ItemStack item = playeritem;
+			if (playeritem.name.empty()) {
+				InventoryList *hlist = local_inventory->getList("hand");
+				if (hlist) {
+					item = hlist->getItem(0);
+				}
+			}
 
 			bool disable_send = runData.selected_object->directReportPunch(
-					dir, &playeritem, runData.time_from_last_punch);
+					dir, &item, runData.time_from_last_punch);
 			runData.time_from_last_punch = 0;
 
 			if (!disable_send)
@@ -3807,7 +3815,9 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 	// If can't dig, try hand
 	if (!params.diggable) {
-		const ItemDefinition &hand = itemdef_manager->get("");
+		InventoryList *hlist = local_inventory->getList("hand");
+		const ItemDefinition &hand =
+			hlist?hlist->getItem(0).getDefinition(itemdef_manager):itemdef_manager->get("");
 		const ToolCapabilities *tp = hand.tool_capabilities;
 
 		if (tp)

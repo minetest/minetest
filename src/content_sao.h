@@ -254,6 +254,7 @@ public:
 	InventoryLocation getInventoryLocation() const;
 	std::string getWieldList() const;
 	ItemStack getWieldedItem() const;
+	ItemStack getWieldedItemOrHand() const;
 	bool setWieldedItem(const ItemStack &item);
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
