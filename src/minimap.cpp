@@ -560,8 +560,7 @@ void Minimap::updateActiveMarkers()
 
 	for (std::list<Nametag *>::const_iterator i = nametags.begin();
 			i != nametags.end(); ++i) {
-		Nametag *nametag = *i;
-		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
+		v3s16 pos = floatToInt((*i)->parent_node->getPosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,
