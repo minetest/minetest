@@ -215,7 +215,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 			if (inventory_add) {
 				// Silently ignore different current item
 				if (list->getItem(inventory_index).name !=
-					gamedef->idef()->getAlias(inventory_stack.name))
+						gamedef->idef()->getAlias(inventory_stack.name))
 					return false;
 				list->takeItem(inventory_index, inventory_stack.count);
 			} else {
