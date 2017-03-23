@@ -667,7 +667,14 @@ else
 	end
 
 	function core.colorize(color, message)
-		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
+		local lines = message:split("\n", true)
+		local color_code = core.get_color_escape_sequence(color)
+
+		for i, line in ipairs(lines) do
+			lines[i] = colour_code .. line
+		end
+
+		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
 	end
 
 end
