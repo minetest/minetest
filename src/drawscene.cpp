@@ -459,6 +459,7 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 #endif
 }
 
+// returns (size / coef), rounded upwards
 inline int scaledown(int coef, int size)
 {
 	return (size + coef - 1) / coef;
@@ -470,13 +471,13 @@ void draw_plain(Camera &camera, bool show_hud,
 		bool draw_wield_tool, Client &client, gui::IGUIEnvironment *guienv,
 		video::SColor skycolor)
 {
-// Undersampling-specific stuff
+	// Undersampling-specific stuff
 	static video::ITexture *image = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
 	int undersampling = g_settings->getU16("undersampling");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
-	if (undersampling) {
+	if (undersampling > 0) {
 		pixelated_size = v2u32(scaledown(undersampling, screensize.X),
 				scaledown(undersampling, screensize.Y));
 		dest_size = v2u32(undersampling * pixelated_size.X, undersampling * pixelated_size.Y);
@@ -487,7 +488,7 @@ void draw_plain(Camera &camera, bool show_hud,
 		driver->setRenderTarget(image, true, true, skycolor);
 	}
 
-// Render
+	// Render
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
@@ -497,8 +498,8 @@ void draw_plain(Camera &camera, bool show_hud,
 		}
 	}
 
-// Upscale lowres render
-	if (undersampling) {
+	// Upscale lowres render
+	if (undersampling > 0) {
 		driver->setRenderTarget(0, true, true);
 		driver->draw2DImage(image,
 				irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
