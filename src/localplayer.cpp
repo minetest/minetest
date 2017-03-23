@@ -370,16 +370,26 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 			node = map->getNodeNoEx(p, &is_valid_position);
 			if (!is_valid_position || !nodemgr->get(node).walkable)
 				continue;
-			// And the node above it has to be nonwalkable
-			// TODO: The players collisionbox should be used here instead
-			node = map->getNodeNoEx(p + v3s16(0,1,0), &is_valid_position);
-			if (!is_valid_position || nodemgr->get(node).walkable)
-				continue;
+			// And the node(s) above have to be nonwalkable
+			bool ok = true;
 			if (!physics_override_sneak_glitch) {
-				node = map->getNodeNoEx(p + v3s16(0,2,0), &is_valid_position);
-				if (!is_valid_position || nodemgr->get(node).walkable)
-					continue;
+				u16 height = ceilf(
+						(m_collisionbox.MaxEdge.Y - m_collisionbox.MinEdge.Y) / BS
+				);
+				for (u16 y = 1; y <= height; y++) {
+					node = map->getNodeNoEx(p + v3s16(0,y,0), &is_valid_position);
+					if (!is_valid_position || nodemgr->get(node).walkable) {
+						ok = false;
+						break;
+					}
+				}
+			} else {
+				// legacy behaviour: check just one node
+				node = map->getNodeNoEx(p + v3s16(0,1,0), &is_valid_position);
+				ok = is_valid_position && !nodemgr->get(node).walkable;
 			}
+			if (!ok)
+				continue;
 
 			min_distance_f = distance_f;
 			new_sneak_node = p;
