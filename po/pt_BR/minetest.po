@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-26 18:35+0000\n"
+"PO-Revision-Date: 2017-03-23 18:38+0000\n"
 "Last-Translator: Cold Meson 06 <fernando.devmines@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) "
 "<https://hosted.weblate.org/projects/minetest/minetest/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.11-dev\n"
+"X-Generator: Weblate 2.12\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -41,7 +41,7 @@ msgstr "Reconectar"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "O servidor solicitou uma reconexão:"
+msgstr "O servidor solicitou uma nova conexão:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -108,7 +108,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr "Ocultar jogos"
+msgstr "Ocultar jogo"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
@@ -1516,7 +1516,6 @@ msgid "Build inside player"
 msgstr "Construir com o jogador dentro do bloco"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Builtin"
 msgstr "Embutido"
 
@@ -1952,7 +1951,6 @@ msgid "Enable VBO"
 msgstr "Habilitar VBO"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable mod security"
 msgstr "Habilitar Mod Security (Segurança nos mods)"
 
@@ -4013,7 +4011,6 @@ msgid "Saving map received from server"
 msgstr "Salvado mapa recebido do servidor"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Scale gui by a user specified value.\n"
 "Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
@@ -4024,7 +4021,7 @@ msgstr ""
 "Escala de GUI por um valor especificado pelo usuário.\n"
 "Use um filtro nearest-neighbor-anti-alias para escala do GUI.\n"
 "Isso irá suavizar algumas das arestas e misturar pixels \n"
-"quando a escalado baixo, ao custo de borrar alguns pixels de borda \n"
+"quando a escala é reduzida, ao custo de borrar alguns pixels da borda \n"
 "quando as imagens são dimensionadas em tamanhos não-inteiros."
 
 #: src/settings_translation_file.cpp
