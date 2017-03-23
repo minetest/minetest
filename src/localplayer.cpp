@@ -123,8 +123,7 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 	// X/Z vectors for 4 neighboring nodes
 	static const v2s16 vecs[] = { v2s16(-1, 0), v2s16(1, 0), v2s16(0, -1), v2s16(0, 1) };
 
-	for (u16 i = 0; i < ARRLEN(vecs); i++)
-	{
+	for (u16 i = 0; i < ARRLEN(vecs); i++) {
 		bool w;
 		v2s16 vec = vecs[i];
 		v2s16 vec_r = vecs[i];
@@ -138,7 +137,7 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 		if (!is_valid_position)
 			continue;
 		// walkability of node in front & node to the left should differ
-		if(w == nodemgr->get(node).walkable)
+		if (w == nodemgr->get(node).walkable)
 			continue;
 
 		node = GETNODE(map, pos, vec, 1, &is_valid_position);
@@ -151,8 +150,7 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 		node = GETNODE(map, pos, vec_r, 1, &is_valid_position);
 		if (!is_valid_position)
 			continue;
-		// (same walkability check)
-		if(w == nodemgr->get(node).walkable)
+		if (w == nodemgr->get(node).walkable) // (same walkability check)
 			continue;
 
 		return true;
