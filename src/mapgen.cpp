@@ -97,11 +97,12 @@ STATIC_ASSERT(
 
 Mapgen::Mapgen()
 {
-	generating  = false;
-	id          = -1;
-	seed        = 0;
-	water_level = 0;
-	flags       = 0;
+	generating   = false;
+	id           = -1;
+	seed         = 0;
+	water_level  = 0;
+	mapgen_limit = 0;
+	flags        = 0;
 
 	vm        = NULL;
 	ndef      = NULL;
@@ -114,11 +115,12 @@ Mapgen::Mapgen()
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
-	generating  = false;
-	id          = mapgenid;
-	water_level = params->water_level;
-	flags       = params->flags;
-	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	generating   = false;
+	id           = mapgenid;
+	water_level  = params->water_level;
+	mapgen_limit = params->mapgen_limit;
+	flags        = params->flags;
+	csize        = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
 	/*
 		We are losing half our entropy by doing this, but it is necessary to
@@ -1005,6 +1007,7 @@ void MapgenParams::readParams(const Settings *settings)
 		this->mgtype = Mapgen::getMapgenType(mg_name);
 
 	settings->getS16NoEx("water_level", water_level);
+	settings->getS16NoEx("mapgen_limit", mapgen_limit);
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
@@ -1022,6 +1025,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->set("mg_name", Mapgen::getMapgenName(mgtype));
 	settings->setU64("seed", seed);
 	settings->setS16("water_level", water_level);
+	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
 	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
 

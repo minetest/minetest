@@ -303,7 +303,7 @@ core.register_chatcommand("teleport", {
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
 		if p.x and p.y and p.z then
-			local lm = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+			local lm = 31000
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
 				return false, "Cannot teleport out of map bounds!"
 			end

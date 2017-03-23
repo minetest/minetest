@@ -1367,6 +1367,19 @@ s16 ServerMap::getWaterLevel()
 	return getMapgenParams()->water_level;
 }
 
+bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
+{
+	const s16 mapgen_limit_bp = rangelim(
+		getMapgenParams()->mapgen_limit, 0, MAX_MAP_GENERATION_LIMIT) /
+		MAP_BLOCKSIZE;
+	return p.X < -mapgen_limit_bp ||
+		p.X >  mapgen_limit_bp ||
+		p.Y < -mapgen_limit_bp ||
+		p.Y >  mapgen_limit_bp ||
+		p.Z < -mapgen_limit_bp ||
+		p.Z >  mapgen_limit_bp;
+}
+
 bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 {
 	s16 csize = getMapgenParams()->chunksize;
