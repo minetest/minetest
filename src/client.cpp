@@ -879,6 +879,10 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	u8 wanted_range  = MYMIN(255,
 			std::ceil(clientMap->getControl().wanted_range / MAP_BLOCKSIZE));
 
+	if (clientMap->getCameraFrontView()) {
+		yaw += 180 * 100;
+		pitch = -pitch;
+	}
 	v3s32 position(pf.X, pf.Y, pf.Z);
 	v3s32 speed(sf.X, sf.Y, sf.Z);
 
@@ -1271,12 +1275,18 @@ void Client::sendPlayerPos()
 
 	u8 camera_fov    = map.getCameraFov();
 	u8 wanted_range  = map.getControl().wanted_range;
+	float pitch = myplayer->getPitch();
+	float yaw = myplayer->getYaw();
+	if (map.getCameraFrontView()) {
+		yaw += 180;
+		pitch = -pitch;
+	}
 
 	// Save bandwidth by only updating position when something changed
 	if(myplayer->last_position        == myplayer->getPosition() &&
 			myplayer->last_speed        == myplayer->getSpeed()    &&
-			myplayer->last_pitch        == myplayer->getPitch()    &&
-			myplayer->last_yaw          == myplayer->getYaw()      &&
+			myplayer->last_pitch        == pitch                   &&
+			myplayer->last_yaw          == yaw                     &&
 			myplayer->last_keyPressed   == myplayer->keyPressed    &&
 			myplayer->last_camera_fov   == camera_fov              &&
 			myplayer->last_wanted_range == wanted_range)
@@ -1284,8 +1294,8 @@ void Client::sendPlayerPos()
 
 	myplayer->last_position     = myplayer->getPosition();
 	myplayer->last_speed        = myplayer->getSpeed();
-	myplayer->last_pitch        = myplayer->getPitch();
-	myplayer->last_yaw          = myplayer->getYaw();
+	myplayer->last_pitch        = pitch;
+	myplayer->last_yaw          = yaw;
 	myplayer->last_keyPressed   = myplayer->keyPressed;
 	myplayer->last_camera_fov   = camera_fov;
 	myplayer->last_wanted_range = wanted_range;

@@ -3536,7 +3536,10 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 	if (!flags.disable_camera_update) {
 		client->getEnv().getClientMap().updateCamera(camera_position,
-				camera_direction, camera_fov, camera_offset);
+				camera_direction,
+				camera_fov,
+				camera_offset,
+				camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT);
 
 		if (m_camera_offset_changed) {
 			client->updateCameraOffset(camera_offset);
