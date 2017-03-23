@@ -124,6 +124,7 @@ struct MapgenParams {
 	s16 chunksize;
 	u64 seed;
 	s16 water_level;
+	s16 mapgen_limit;
 	u32 flags;
 
 	BiomeParams *bparams;
@@ -133,6 +134,7 @@ struct MapgenParams {
 		chunksize(5),
 		seed(0),
 		water_level(1),
+		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
 		bparams(NULL)
 	{
@@ -158,6 +160,7 @@ class Mapgen {
 public:
 	s32 seed;
 	int water_level;
+	int mapgen_limit;
 	u32 flags;
 	bool generating;
 	int id;

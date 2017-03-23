@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
+#include "mapgen.h"
 
 class Map;
 class NodeMetadataList;
@@ -687,19 +688,6 @@ inline bool blockpos_over_max_limit(v3s16 p)
 		p.Y >  max_limit_bp ||
 		p.Z < -max_limit_bp ||
 		p.Z >  max_limit_bp;
-}
-
-inline bool blockpos_over_mapgen_limit(v3s16 p)
-{
-	const s16 mapgen_limit_bp = rangelim(
-		g_settings->getS16("map_generation_limit"), 0, MAX_MAP_GENERATION_LIMIT) /
-		MAP_BLOCKSIZE;
-	return p.X < -mapgen_limit_bp ||
-		p.X >  mapgen_limit_bp ||
-		p.Y < -mapgen_limit_bp ||
-		p.Y >  mapgen_limit_bp ||
-		p.Z < -mapgen_limit_bp ||
-		p.Z >  mapgen_limit_bp;
 }
 
 /*

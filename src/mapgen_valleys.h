@@ -101,8 +101,6 @@ public:
 private:
 	BiomeGenOriginal *m_bgen;
 
-	float map_gen_limit;
-
 	bool humid_rivers;
 	bool use_altitude_chill;
 	float humidity_adjust;

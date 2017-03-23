@@ -70,9 +70,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
 	this->m_bgen = (BiomeGenOriginal *)biomegen;
 
-	this->map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-			g_settings->getU16("map_generation_limit"));
-
 	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
 	this->spflags            = params->spflags;
@@ -621,7 +618,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	const float massive_cave_threshold = 0.6f;
 	// mct: 1 = small rare caves, 0.5 1/3rd ground volume, 0 = 1/2 ground volume.
 
-	float yblmin = -map_gen_limit + massive_cave_blend * 1.5f;
+	float yblmin = -mapgen_limit + massive_cave_blend * 1.5f;
 	float yblmax = massive_cave_depth - massive_cave_blend * 1.5f;
 	bool made_a_big_one = false;
 
@@ -646,11 +643,11 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 
 	// lava_depth varies between one and ten as you approach
 	//  the bottom of the world.
-	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / map_gen_limit);
+	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
 	// This allows random lava spawns to be less common at the surface.
 	s16 lava_chance = MYCUBE(lava_features_lim) * lava_depth;
 	// water_depth varies between ten and one on the way down.
-	s16 water_depth = ceil((map_gen_limit - abs(node_min.Y) + 1) * 10.f / map_gen_limit);
+	s16 water_depth = ceil((mapgen_limit - abs(node_min.Y) + 1) * 10.f / mapgen_limit);
 	// This allows random water spawns to be more common at the surface.
 	s16 water_chance = MYCUBE(water_features_lim) * water_depth;
 
