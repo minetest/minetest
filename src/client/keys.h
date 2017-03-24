@@ -42,6 +42,7 @@ public:
 		INVENTORY,
 		CHAT,
 		CMD,
+		CMD_LOCAL,
 		CONSOLE,
 		MINIMAP,
 		FREEMOVE,

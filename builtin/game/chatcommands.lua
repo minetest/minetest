@@ -82,61 +82,6 @@ core.register_chatcommand("admin", {
 	end,
 })
 
-core.register_chatcommand("help", {
-	privs = {},
-	params = "[all/privs/<cmd>]",
-	description = "Get help for commands or list privileges",
-	func = function(name, param)
-		local function format_help_line(cmd, def)
-			local msg = core.colorize("#00ffff", "/"..cmd)
-			if def.params and def.params ~= "" then
-				msg = msg .. " " .. def.params
-			end
-			if def.description and def.description ~= "" then
-				msg = msg .. ": " .. def.description
-			end
-			return msg
-		end
-		if param == "" then
-			local msg = ""
-			local cmds = {}
-			for cmd, def in pairs(core.registered_chatcommands) do
-				if core.check_player_privs(name, def.privs) then
-					cmds[#cmds + 1] = cmd
-				end
-			end
-			table.sort(cmds)
-			return true, "Available commands: " .. table.concat(cmds, " ") .. "\n"
-					.. "Use '/help <cmd>' to get more information,"
-					.. " or '/help all' to list everything."
-		elseif param == "all" then
-			local cmds = {}
-			for cmd, def in pairs(core.registered_chatcommands) do
-				if core.check_player_privs(name, def.privs) then
-					cmds[#cmds + 1] = format_help_line(cmd, def)
-				end
-			end
-			table.sort(cmds)
-			return true, "Available commands:\n"..table.concat(cmds, "\n")
-		elseif param == "privs" then
-			local privs = {}
-			for priv, def in pairs(core.registered_privileges) do
-				privs[#privs + 1] = priv .. ": " .. def.description
-			end
-			table.sort(privs)
-			return true, "Available privileges:\n"..table.concat(privs, "\n")
-		else
-			local cmd = param
-			local def = core.registered_chatcommands[cmd]
-			if not def then
-				return false, "Command not available: "..cmd
-			else
-				return true, format_help_line(cmd, def)
-			end
-		end
-	end,
-})
-
 core.register_chatcommand("privs", {
 	params = "<name>",
 	description = "Print privileges of player",
