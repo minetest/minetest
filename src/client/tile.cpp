@@ -2266,7 +2266,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		return getTexture("override_normal.png");
 	std::string fname_base = name;
 	static const char *normal_ext = "_normal.png";
-	static const uint32_t normal_ext_size = strlen(normal_ext);
+	static const u32 normal_ext_size = strlen(normal_ext);
 	size_t pos = fname_base.find(".");
 	std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
 	if (isKnownSourceImage(fname_normal)) {
@@ -2277,7 +2277,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 			i += normal_ext_size;
 		}
 		return getTexture(fname_base);
-		}
+	}
 	return NULL;
 }
 
