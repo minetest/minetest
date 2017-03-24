@@ -156,6 +156,10 @@ keymap_chat (Chat key) key KEY_KEY_T
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_cmd (Command key) key /
 
+#    Key for opening the chat window to type local commands.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_cmd_local (Command key) key .
+
 #    Key for opening the chat console.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keyman_console (Console key) key KEY_F10
