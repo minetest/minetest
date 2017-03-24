@@ -671,7 +671,7 @@ else
 		local color_code = core.get_color_escape_sequence(color)
 
 		for i, line in ipairs(lines) do
-			lines[i] = colour_code .. line
+			lines[i] = color_code .. line
 		end
 
 		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
