@@ -116,27 +116,33 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 	// Detects a structure known as "sneak ladder" or "sneak elevator"
 	// that relies on bugs to provide a fast means of vertical transportation,
 	// the bugs have since been fixed but this function remains to keep it working.
-	// NOTE: This is just entirely a huge hack added because people love this
-	// glitch so much.
+	// NOTE: This is just entirely a huge hack and causes way too many problems.
 	bool is_valid_position;
 	MapNode node;
 	// X/Z vectors for 4 neighboring nodes
 	static const v2s16 vecs[] = { v2s16(-1, 0), v2s16(1, 0), v2s16(0, -1), v2s16(0, 1) };
 
 	for (u16 i = 0; i < ARRLEN(vecs); i++) {
-		bool w;
 		const v2s16 vec = vecs[i];
 
+		// walkability of bottom & top node should differ
 		node = GETNODE(map, pos, vec, 0, &is_valid_position);
 		if (!is_valid_position)
 			continue;
-		w = nodemgr->get(node).walkable;
+		bool w = nodemgr->get(node).walkable;
 		node = GETNODE(map, pos, vec, 1, &is_valid_position);
-		if (!is_valid_position)
+		if (!is_valid_position || w == nodemgr->get(node).walkable)
 			continue;
 
-		// walkability of bottom & top node should differ
-		if (w != nodemgr->get(node).walkable)
+		// check one more node above OR below with corresponding walkability
+		node = GETNODE(map, pos, vec, -1, &is_valid_position);
+		bool ok = is_valid_position && w != nodemgr->get(node).walkable;
+		if (!ok) {
+			node = GETNODE(map, pos, vec, 2, &is_valid_position);
+			ok = is_valid_position && w == nodemgr->get(node).walkable;
+		}
+
+		if (ok)
 			return true;
 	}
 
