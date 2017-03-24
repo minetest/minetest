@@ -125,35 +125,19 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 
 	for (u16 i = 0; i < ARRLEN(vecs); i++) {
 		bool w;
-		v2s16 vec = vecs[i];
-		v2s16 vec_r = vecs[i];
-		vec_r.rotateBy(90);
+		const v2s16 vec = vecs[i];
 
 		node = GETNODE(map, pos, vec, 0, &is_valid_position);
 		if (!is_valid_position)
 			continue;
 		w = nodemgr->get(node).walkable;
-		node = GETNODE(map, pos, vec_r, 0, &is_valid_position);
-		if (!is_valid_position)
-			continue;
-		// walkability of node in front & node to the left should differ
-		if (w == nodemgr->get(node).walkable)
-			continue;
-
 		node = GETNODE(map, pos, vec, 1, &is_valid_position);
 		if (!is_valid_position)
 			continue;
-		// should be opposite for nodes above
-		if (nodemgr->get(node).walkable == w)
-			continue;
-		w = nodemgr->get(node).walkable;
-		node = GETNODE(map, pos, vec_r, 1, &is_valid_position);
-		if (!is_valid_position)
-			continue;
-		if (w == nodemgr->get(node).walkable) // (same walkability check)
-			continue;
 
-		return true;
+		// walkability of bottom & top node should differ
+		if (w != nodemgr->get(node).walkable)
+			return true;
 	}
 
 	return false;
@@ -271,6 +255,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Max. distance (X, Z) over border for sneaking determined by collision box
 	// * 0.49 to keep the center just barely on the node
 	v3f sneak_max = m_collisionbox.getExtent() * 0.49;
+	if (m_sneak_ladder_detected)
+		sneak_max = v3f(0.4 * BS, 0, 0.4 * BS); // restore legacy behaviour
 
 	/*
 		If sneaking, keep in range from the last walked node and don't
@@ -290,7 +276,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		// Because we keep the player collision box on the node,
 		// limiting position.Y is not necessary
 
-		if (m_sneak_ladder_detected && control.sneak) {
+		if (m_sneak_ladder_detected) {
 			// this sometimes causes some weird slow sinking but *shrug*
 			m_speed.Y = MYMAX(m_speed.Y, 0);
 		}
