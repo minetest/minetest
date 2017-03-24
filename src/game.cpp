@@ -3406,7 +3406,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			playeritem.getDefinition(itemdef_manager);
 	InventoryList *hlist = local_inventory->getList("hand");
 	const ItemDefinition &hand_def =
-		hlist?hlist->getItem(0).getDefinition(itemdef_manager):itemdef_manager->get("");
+		hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
 
 	v3f player_position  = player->getPosition();
 	v3f camera_position  = camera->getPosition();
@@ -3817,7 +3817,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	if (!params.diggable) {
 		InventoryList *hlist = local_inventory->getList("hand");
 		const ItemDefinition &hand =
-			hlist?hlist->getItem(0).getDefinition(itemdef_manager):itemdef_manager->get("");
+			hlist ? hlist->getItem(0).getDefinition(itemdef_manager) : itemdef_manager->get("");
 		const ToolCapabilities *tp = hand.tool_capabilities;
 
 		if (tp)

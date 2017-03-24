@@ -1384,7 +1384,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		float max_d = BS * playeritem_def.range;
 		InventoryList *hlist = playersao->getInventory()->getList("hand");
 		const ItemDefinition &hand_def =
-			hlist?(hlist->getItem(0).getDefinition(m_itemdef)):(m_itemdef->get(""));
+			hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
 		float max_d_hand = BS * hand_def.range;
 		if (max_d < 0 && max_d_hand >= 0)
 			max_d = max_d_hand;
@@ -1523,7 +1523,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				if (!params.diggable) {
 					InventoryList *hlist = playersao->getInventory()->getList("hand");
 					const ItemDefinition &hand =
-						hlist?hlist->getItem(0).getDefinition(m_itemdef):m_itemdef->get("");
+						hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
 					const ToolCapabilities *tp = hand.tool_capabilities;
 					if (tp)
 						params = getDigParams(m_nodedef->get(n).groups, tp);
