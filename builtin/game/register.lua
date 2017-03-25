@@ -496,15 +496,12 @@ end
 
 local function make_wrap_deregistration(reg_fn, clear_fn, list)
 	local unregister = function (unregistered_key)
-		local temporary_list = {}
-		for k, v in pairs(list) do
-			if unregistered_key ~= k then
-				temporary_list[k] = v
-			end
-		end
+		local temporary_list = table.copy(list)
 		clear_fn()
 		for k,v in pairs(temporary_list) do
-			reg_fn(v)
+			if unregistered_key ~= k then
+				reg_fn(v)
+			end
 		end
 	end
 	return unregister
