@@ -58,6 +58,9 @@ private:
 
 	// get_wielded_item()
 	static int l_get_wielded_item(lua_State *L);
+	
+	// send_chat_message(message)
+	static int l_send_chat_message(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
