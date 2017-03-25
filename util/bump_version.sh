@@ -91,11 +91,11 @@ sed -i -re "s/^set\(DEVELOPMENT_BUILD TRUE\)$/set(DEVELOPMENT_BUILD FALSE)/" CMa
 
 sed -i -re "s/versionCode [0-9]+$/versionCode $NEW_ANDROID_VERSION_CODE/" build/android/build.gradle || die "Failed to update Android version code"
 
-sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/lua_api.txt || die "Failed to update doc/lua_api.txt"
+sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/lua_api.md || die "Failed to update doc/lua_api.md"
 
 sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/menu_lua_api.txt || die "Failed to update doc/menu_lua_api.txt"
 
-git add -f CMakeLists.txt build/android/build.gradle doc/lua_api.txt doc/menu_lua_api.txt || die "git add failed"
+git add -f CMakeLists.txt build/android/build.gradle doc/lua_api.md doc/menu_lua_api.txt || die "git add failed"
 
 git commit -m "Bump version to $NEW_VERSION" || die "git commit failed"
 

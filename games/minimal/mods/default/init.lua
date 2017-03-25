@@ -1,7 +1,7 @@
 -- default (Minetest 0.4 mod)
 -- Most default stuff
 
--- The API documentation in here was moved into doc/lua_api.txt
+-- The API documentation in here was moved into doc/lua_api.md
 
 WATER_ALPHA = 160
 WATER_VISC = 1

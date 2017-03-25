@@ -15,7 +15,7 @@ If you are planning to start some significant coding, you would benefit from ask
 1. [Fork](https://help.github.com/articles/fork-a-repo/) the repository and [clone](https://help.github.com/articles/cloning-a-repository/) your fork.
 
 2. Start coding!
-    - Refer to the [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.txt), [Developer Wiki](http://dev.minetest.net/Main_Page) and other [documentation](https://github.com/minetest/minetest/tree/master/doc).
+    - Refer to the [Lua API](https://github.com/minetest/minetest/blob/master/doc/lua_api.md), [Developer Wiki](http://dev.minetest.net/Main_Page) and other [documentation](https://github.com/minetest/minetest/tree/master/doc).
     - Follow the [C/C++](http://dev.minetest.net/Code_style_guidelines) and [Lua](http://dev.minetest.net/Lua_code_style_guidelines) code style guidelines.
     - Check your code works as expected and document any changes to the Lua API.
 
