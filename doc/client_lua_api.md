@@ -739,7 +739,7 @@ Call these functions only at load time!
     * Returns the itemstack the local player is holding
 * `minetest.send_chat_message(message)`
     * Act as if `message` was typed by the player into the terminal.
-    * Commands starting with '/' are run.
+   
 
 ### Client Environment
 * `minetest.get_player_names()`
