@@ -42,7 +42,7 @@ unsure, just test your texture pack in-game.
 Texture modifiers
 -----------------
 
-See lua_api.txt for texture modifiers
+See lua_api.md for texture modifiers
 
 Special textures
 ----------------
