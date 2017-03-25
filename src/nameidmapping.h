@@ -32,10 +32,12 @@ public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
-	void clear(){
+	void clear()
+	{
 		m_id_to_name.clear();
 		m_name_to_id.clear();
 	}
+
 	void set(u16 id, const std::string &name){
 		m_id_to_name[id] = name;
 		m_name_to_id[name] = id;

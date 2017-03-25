@@ -26,6 +26,10 @@ matrix:
       compiler: clang
       os: linux
       dist: trusty
+    - env: COMPILER=none LINT=1
+      compiler: clang
+      os: linux
+      dist: trusty
     - env: PLATFORM=Unix COMPILER=g++-6
       compiler: gcc
       os: linux

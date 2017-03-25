@@ -1,0 +1,12 @@
+BasedOnStyle: LLVM
+IndentWidth: 8
+UseTab: Always
+BreakBeforeBraces: Linux
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+AccessModifierOffset: -8
+IncludeCategories:
+  - Regex:           '^".*'
+    Priority:        2
+  - Regex:           '^<.*'
+    Priority:        1
