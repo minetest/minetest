@@ -69,6 +69,16 @@ int ModApiClient::l_display_chat_message(lua_State *L)
 	return 1;
 }
 
+// send_chat_message(message)
+int ModApiClient::l_send_chat_message(lua_State *L)
+{
+	if(!lua_isstring(L,1))
+		return 0;
+	std::string message = luaL_checkstring(L, 1);
+	getClient(L)->sendChatMessage(utf8_to_wide(message));
+	lua_pushboolean(L, true);
+	return 1;
+}
 // get_player_names()
 int ModApiClient::l_get_player_names(lua_State *L)
 {
@@ -179,4 +189,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
+	API_FCT(send_chat_message);
 }
