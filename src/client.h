@@ -308,7 +308,7 @@ private:
 };
 
 class ClientScripting;
-class GameUIFlags;
+struct GameUIFlags;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
