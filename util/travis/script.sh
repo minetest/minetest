@@ -6,6 +6,8 @@ needs_compile || exit 0
 function perform_lint() {
 	echo "Performing LINT..."
 	CLANG_FORMAT=clang-format-3.9
+	CLANG_FORMAT_WHITELIST="util/travis/clang-format-whitelist.txt"
+
 	if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
 		# Get list of every file modified in this pull request
 		files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^src/[^.]*[.]\(cpp\|h\)$' | egrep -v '^src/(gmp|lua|jsoncpp)/' || true)"
@@ -28,8 +30,13 @@ function perform_lint() {
 			else
 				printf ":\n%s\n" "$d"
 			fi
-			# Disable build failure at this moment as we need to have a complete MT source whitelist to check
-			fail=0
+
+			whitelisted=$(egrep -c "^${f}" "${CLANG_FORMAT_WHITELIST}")
+
+			# If file is not whitelisted, mark a failure
+			if [ ${whitelisted} -eq 0 ]; then
+				fail=1
+			fi
 		fi
 	done
 
@@ -37,6 +44,8 @@ function perform_lint() {
 		echo "LINT reports failure."
 		exit 1
 	fi
+
+	echo "LINT OK"
 }
 
 if [[ "$LINT" == "1" ]]; then
