@@ -13,11 +13,18 @@ function perform_lint() {
 		files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h' | egrep -v '^src/(gmp|lua|jsoncpp)/')"
 	fi
 
+	local errorcount=0
 	local fail=0
 	for f in ${files_to_lint}; do
 		d=$(diff -u "$f" <(${CLANG_FORMAT} "$f") || true)
 		if ! [ -z "$d" ]; then
+			((errorcount++))
 			printf "The file %s is not compliant with the coding style:\n%s\n" "$f" "$d"
+			if [ ${errorcount} -gt 50 ]; then
+				printf "Too many errors encountered previously, this diff is hidden.\n"
+			else
+				printf "%s\n" "$d"
+			fi
 			# Disable build failure at this moment as we need to have a complete MT source whitelist to check
 			fail=0
 		fi
