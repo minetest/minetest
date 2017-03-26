@@ -4,6 +4,7 @@
 needs_compile || exit 0
 
 function perform_lint() {
+	echo "Performing LINT..."
 	CLANG_FORMAT=clang-format-3.9
 	if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
 		# Get list of every file modified in this pull request
@@ -17,13 +18,15 @@ function perform_lint() {
 	local fail=0
 	for f in ${files_to_lint}; do
 		d=$(diff -u "$f" <(${CLANG_FORMAT} "$f") || true)
+
 		if ! [ -z "$d" ]; then
-			((errorcount++))
-			printf "The file %s is not compliant with the coding style:\n%s\n" "$f" "$d"
+			errorcount=$((errorcount+1))
+
+			printf "The file %s is not compliant with the coding style" "$f"
 			if [ ${errorcount} -gt 50 ]; then
-				printf "Too many errors encountered previously, this diff is hidden.\n"
+				printf "\nToo many errors encountered previously, this diff is hidden.\n"
 			else
-				printf "%s\n" "$d"
+				printf ":\n%s\n" "$d"
 			fi
 			# Disable build failure at this moment as we need to have a complete MT source whitelist to check
 			fail=0
@@ -31,15 +34,15 @@ function perform_lint() {
 	done
 
 	if [ "$fail" = 1 ]; then
+		echo "LINT reports failure."
 		exit 1
 	fi
-
-	exit 0
 }
 
 if [[ "$LINT" == "1" ]]; then
 	# Lint with exit CI
 	perform_lint
+	exit 0
 fi
 
 if [[ $PLATFORM == "Unix" ]]; then
