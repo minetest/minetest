@@ -436,6 +436,11 @@ protected:
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
 
+#ifndef __ANDROID__
+	video::ITexture *m_cursor_img;
+	bool m_custom_cursor;
+#endif
+
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;

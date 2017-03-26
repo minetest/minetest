@@ -122,6 +122,20 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
+
+#ifndef __ANDROID__
+	const std::string &tp_path = g_settings->get("texture_path");
+	std::string cursor_img_path = tp_path + "/cursor.png";
+	m_custom_cursor = fs::PathExists(cursor_img_path);
+
+	if (m_custom_cursor) {
+		g_settings->setS32("pause_fps_max", 60);
+		video::IVideoDriver *driver = dev->getVideoDriver();
+		m_cursor_img = driver->getTexture(cursor_img_path.c_str());
+	} else {
+		g_settings->setS32("pause_fps_max", 20);
+	}
+#endif
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -2717,6 +2731,17 @@ void GUIFormSpecMenu::drawMenu()
 	drawSelectedItem();
 
 	skin->setFont(old_font);
+
+#ifndef __ANDROID__
+	if (m_custom_cursor) {
+		m_device->getCursorControl()->setVisible(false);
+		const core::dimension2d<u32> &cursor_size = m_cursor_img->getSize();
+
+		driver->draw2DImage(m_cursor_img, m_pointer,
+			core::rect<s32>(0, 0, cursor_size.Width, cursor_size.Height),
+			0, video::SColor(255,255,255,255), true);
+	}
+#endif
 }
 
 void GUIFormSpecMenu::updateSelectedItem()
