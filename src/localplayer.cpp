@@ -261,15 +261,18 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// Max. distance (X, Z) over border for sneaking determined by collision box
 	// * 0.49 to keep the center just barely on the node
 	v3f sneak_max = m_collisionbox.getExtent() * 0.49;
-	if (m_sneak_ladder_detected)
-		sneak_max = v3f(0.4 * BS, 0, 0.4 * BS); // restore legacy behaviour
+	if (m_sneak_ladder_detected) {
+		// restore legacy behaviour (this makes the m_speed.Y hack necessary)
+		sneak_max = v3f(0.4 * BS, 0, 0.4 * BS);
+	}
 
 	/*
 		If sneaking, keep in range from the last walked node and don't
 		fall off from it
 	*/
 	if (control.sneak && m_sneak_node_exists &&
-			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
+			!(fly_allowed && g_settings->getBool("free_move")) &&
+			!in_liquid && !is_climbing &&
 			physics_override_sneak && !got_teleported) {
 		v3f sn_f = intToFloat(m_sneak_node, BS);
 		const v3f bmin = m_sneak_node_bb_top.MinEdge;
@@ -279,11 +282,14 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				sn_f.X+bmin.X - sneak_max.X, sn_f.X+bmax.X + sneak_max.X);
 		position.Z = rangelim(position.Z,
 				sn_f.Z+bmin.Z - sneak_max.Z, sn_f.Z+bmax.Z + sneak_max.Z);
-		// Because we keep the player collision box on the node,
-		// limiting position.Y is not necessary
 
-		if (m_sneak_ladder_detected) {
-			// this sometimes causes some weird slow sinking but *shrug*
+		// Because we keep the player collision box on the node, limiting
+		// position.Y is not necessary but useful to prevent players from
+		// being inside a node if sneaking on e.g. the lower part of a stair
+		if (!m_sneak_ladder_detected) {
+			position.Y = MYMAX(position.Y, sn_f.Y+bmax.Y);
+		} else {
+			// legacy behaviour that sometimes causes some weird slow sinking
 			m_speed.Y = MYMAX(m_speed.Y, 0);
 		}
 	}
@@ -451,8 +457,11 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
 	m_can_jump = touching_ground && !in_liquid;
-	if(itemgroup_get(f.groups, "disable_jump"))
+	if (itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
+	else if (control.sneak && m_sneak_ladder_detected && !in_liquid && !is_climbing)
+		m_can_jump = true;
+
 	// Jump key pressed while jumping off from a bouncy block
 	if (m_can_jump && control.jump && itemgroup_get(f.groups, "bouncy") &&
 		m_speed.Y >= -0.5 * BS) {
@@ -631,7 +640,7 @@ void LocalPlayer::applyControl(float dtime)
 					speedV.Y = movement_speed_walk;
 			}
 		}
-		else if(m_can_jump || (control.sneak && m_sneak_ladder_detected))
+		else if(m_can_jump)
 		{
 			/*
 				NOTE: The d value in move() affects jump height by
