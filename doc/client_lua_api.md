@@ -791,6 +791,8 @@ Call these functions only at load time!
       extra arguments and return the result
 * `fgettext(string, ...)` : returns string
     * same as fgettext_ne(), but calls core.formspec_escape before returning result
+* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a table
+    * returns the exact position on the surface of a pointed node
 
 ### UI
 * `minetest.ui.minimap`
@@ -859,7 +861,7 @@ The following functions provide escape sequences:
     * `color` is a ColorString
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
-	  
+
 `ColorString`
 -------------
 `#RGB` defines a color in hexadecimal format.
