@@ -680,7 +680,7 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	local node_pos = pointed_thing.under
 	local camera_pos = placer:get_pos()
 	local pos_off = vector.multiply(
-			vector.subtract(pointed_thing.above, pointed_thing.under), 0.5)
+			vector.subtract(pointed_thing.above, node_pos), 0.5)
 	local look_dir = placer:get_look_dir()
 	local offset, nc
 	local oc = {}

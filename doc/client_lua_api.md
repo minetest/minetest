@@ -787,7 +787,7 @@ Call these functions only at load time!
       extra arguments and return the result
 * `fgettext(string, ...)` : returns string
     * same as fgettext_ne(), but calls core.formspec_escape before returning result
-* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a table
+* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
     * returns the exact position on the surface of a pointed node
 
 ### UI
