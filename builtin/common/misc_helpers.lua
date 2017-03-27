@@ -640,6 +640,8 @@ if INIT == "client" or INIT == "mainmenu" then
 	end
 end
 
+local ESCAPE_CHAR = string.char(0x1b)
+
 -- Client-sided mods don't have access to getbool
 if core.setting_getbool and core.setting_getbool("disable_escape_sequences") then
 
@@ -657,7 +659,6 @@ if core.setting_getbool and core.setting_getbool("disable_escape_sequences") the
 
 else
 
-	local ESCAPE_CHAR = string.char(0x1b)
 	function core.get_color_escape_sequence(color)
 		return ESCAPE_CHAR .. "(c@" .. color .. ")"
 	end
@@ -677,4 +678,16 @@ else
 		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
 	end
 
+end
+
+function core.strip_foreground_colors(str)
+	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
+end
+
+function core.strip_background_colors(str)
+	return (str:gsub(ESCAPE_CHAR .. "%(b@[^)]+%)", ""))
+end
+
+function core.strip_colors(str)
+	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
