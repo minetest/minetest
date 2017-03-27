@@ -48,7 +48,7 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 	physics_override_jump(1.0f),
 	physics_override_gravity(1.0f),
 	physics_override_sneak(true),
-	physics_override_sneak_glitch(true),
+	physics_override_sneak_glitch(false),
 	overridePosition(v3f(0,0,0)),
 	last_position(v3f(0,0,0)),
 	last_speed(v3f(0,0,0)),
