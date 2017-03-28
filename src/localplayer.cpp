@@ -450,7 +450,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
-	m_can_jump = touching_ground && !in_liquid;
+	m_can_jump = (touching_ground || (physics_override_sneak_glitch && m_sneak_node_exists && control.sneak)) && !in_liquid;
 	if(itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 	// Jump key pressed while jumping off from a bouncy block
