@@ -667,7 +667,7 @@ else
 	end
 
 	function core.colorize(color, message)
-		local lines = message:split("\n", true)
+		local lines = tostring(message):split("\n", true)
 		local color_code = core.get_color_escape_sequence(color)
 
 		for i, line in ipairs(lines) do
