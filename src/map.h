@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map_settings_manager.h"
 
 class Settings;
-class Database;
+class MapDatabase;
 class ClientMap;
 class MapSector;
 class ServerMapSector;
@@ -430,7 +430,7 @@ public:
 	/*
 		Database functions
 	*/
-	static Database *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
+	static MapDatabase *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();
@@ -458,7 +458,7 @@ public:
 	bool loadSectorMeta(v2s16 p2d);
 
 	bool saveBlock(MapBlock *block);
-	static bool saveBlock(MapBlock *block, Database *db);
+	static bool saveBlock(MapBlock *block, MapDatabase *db);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(const std::string &sectordir, const std::string &blockfile,
 			MapSector *sector, bool save_after_load=false);
@@ -510,7 +510,7 @@ private:
 		This is reset to false when written on disk.
 	*/
 	bool m_map_metadata_changed;
-	Database *dbase;
+	MapDatabase *dbase;
 };
 
 

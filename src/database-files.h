@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,34 +17,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_LEVELDB_HEADER
-#define DATABASE_LEVELDB_HEADER
+#ifndef DATABASE_FILES_HEADER
+#define DATABASE_FILES_HEADER
 
-#include "config.h"
+// !!! WARNING !!!
+// This backend is intended to be used on Minetest 0.4.16 only for the transition backend for
+// player files
 
-#if USE_LEVELDB
-
-#include <string>
 #include "database.h"
-#include "leveldb/db.h"
 
-class Database_LevelDB : public MapDatabase
+class PlayerDatabaseFiles : public PlayerDatabase
 {
 public:
-	Database_LevelDB(const std::string &savedir);
-	~Database_LevelDB();
+	PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir) {}
+	virtual ~PlayerDatabaseFiles() {}
 
-	bool saveBlock(const v3s16 &pos, const std::string &data);
-	void loadBlock(const v3s16 &pos, std::string *block);
-	bool deleteBlock(const v3s16 &pos);
-	void listAllLoadableBlocks(std::vector<v3s16> &dst);
+	void savePlayer(RemotePlayer *player);
+	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
+	bool removePlayer(const std::string &name);
+	void listPlayers(std::vector<std::string> &res);
 
-	void beginSave() {}
-	void endSave() {}
 private:
-	leveldb::DB *m_database;
-};
+	void serialize(std::ostringstream &os, RemotePlayer *player);
 
-#endif // USE_LEVELDB
+	std::string m_savedir;
+};
 
 #endif

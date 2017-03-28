@@ -49,7 +49,7 @@ class ClientMediaDownloader;
 struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
-class Database;
+class MapDatabase;
 class Minimap;
 struct MinimapMapblock;
 class Camera;
@@ -645,7 +645,7 @@ private:
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	Database *m_localdb;
+	MapDatabase *m_localdb;
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 

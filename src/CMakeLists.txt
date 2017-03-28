@@ -377,6 +377,7 @@ set(common_SRCS
 	convert_json.cpp
 	craftdef.cpp
 	database-dummy.cpp
+	database-files.cpp
 	database-leveldb.cpp
 	database-postgresql.cpp
 	database-redis.cpp

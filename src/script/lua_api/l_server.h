@@ -92,6 +92,9 @@ private:
 	// kick_player(name, [message]) -> success
 	static int l_kick_player(lua_State *L);
 
+	// remove_player(name)
+	static int l_remove_player(lua_State *L);
+
 	// notify_authentication_modified(name)
 	static int l_notify_authentication_modified(lua_State *L);
 
