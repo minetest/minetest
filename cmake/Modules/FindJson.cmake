@@ -22,6 +22,6 @@ if(NOT JSONCPP_FOUND)
 	message(STATUS "Using bundled JSONCPP library.")
 	set(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/jsoncpp)
 	set(JSON_LIBRARY jsoncpp)
-	add_subdirectory(jsoncpp/json)
+	add_subdirectory(jsoncpp)
 endif()
 

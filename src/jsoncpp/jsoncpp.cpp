@@ -73,7 +73,7 @@ license you like.
 
 
 
-#include "json.h"
+#include "json/json.h"
 
 #ifndef JSON_IS_AMALGAMATION
 #error "Compile with -I PATH_TO_JSON_DIRECTORY"
