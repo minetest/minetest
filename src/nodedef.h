@@ -74,7 +74,9 @@ enum ContentParamType2
 	// 3 bits of palette index, then facedir
 	CPT2_COLORED_FACEDIR,
 	// 5 bits of palette index, then wallmounted
-	CPT2_COLORED_WALLMOUNTED
+	CPT2_COLORED_WALLMOUNTED,
+	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
+	CPT2_GLASSLIKE_LIQUID_LEVEL,
 };
 
 enum LiquidType
@@ -144,26 +146,46 @@ public:
 
 enum NodeDrawType
 {
-	NDT_NORMAL, // A basic solid block
-	NDT_AIRLIKE, // Nothing is drawn
-	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
-	NDT_FLOWINGLIQUID, // A very special kind of thing
-	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
-	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
-	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
+	// A basic solid block
+	NDT_NORMAL,
+	// Nothing is drawn
+	NDT_AIRLIKE,
+	// Do not draw face towards same kind of flowing/source liquid
+	NDT_LIQUID,
+	// A very special kind of thing
+	NDT_FLOWINGLIQUID,
+	// Glass-like, don't draw faces towards other glass
+	NDT_GLASSLIKE,
+	// Leaves-like, draw all faces no matter what
+	NDT_ALLFACES,
+	// Enabled -> ndt_allfaces, disabled -> ndt_normal
+	NDT_ALLFACES_OPTIONAL,
+	// Single plane perpendicular to a surface
 	NDT_TORCHLIKE,
+	// Single plane parallel to a surface
 	NDT_SIGNLIKE,
+	// 2 vertical planes in a 'X' shape diagonal to XZ axes.
+	// paramtype2 = "meshoptions" allows various forms, sizes and
+	// vertical and horizontal random offsets.
 	NDT_PLANTLIKE,
+	// Fenceposts that connect to neighbouring fenceposts with horizontal bars
 	NDT_FENCELIKE,
+	// Selects appropriate junction texture to connect like rails to
+	// neighbouring raillikes.
 	NDT_RAILLIKE,
+	// Custom Lua-definable structure of multiple cuboids
 	NDT_NODEBOX,
-	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
-	                      // visible faces
-						  // uses 2 textures, one for frames, second for faces
-	NDT_FIRELIKE, // Draw faces slightly rotated and only on connecting nodes,
-	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
-									// uses 2 textures, one for frames, second for faces
-	NDT_MESH, // Uses static meshes
+	// Glass-like, draw connected frames and all visible faces.
+	// param2 > 0 defines 64 levels of internal liquid
+	// Uses 3 textures, one for frames, second for faces,
+	// optional third is a 'special tile' for the liquid.
+	NDT_GLASSLIKE_FRAMED,
+	// Draw faces slightly rotated and only on neighbouring nodes
+	NDT_FIRELIKE,
+	// Enabled -> ndt_glasslike_framed, disabled -> ndt_glasslike
+	NDT_GLASSLIKE_FRAMED_OPTIONAL,
+	// Uses static meshes
+	NDT_MESH,
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS

@@ -658,6 +658,10 @@ node definition:
       The first five bits of `param2` tells which color
       is picked from the palette.
       The palette should have 32 pixels.
+    paramtype2 == "glasslikeliquidlevel"
+    ^ Only valid for "glasslike_framed" or "glasslike_framed_optional" drawtypes.
+      param2 defines 64 levels of internal liquid.
+      Liquid texture is defined using `special_tiles = {"modname_tilename.png"},`
     collision_box = {
       type = "fixed",
       fixed = {
