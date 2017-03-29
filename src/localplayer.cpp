@@ -324,7 +324,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (m_sneak_node_exists)
 		position_y_mod = m_sneak_node_bb_top.MaxEdge.Y - 0.05 * BS;
 	else
-		position_y_mod = (1.0 - 0.05) * BS;
+		position_y_mod = (0.5 - 0.05) * BS;
 	v3s16 current_node = floatToInt(position - v3f(0, position_y_mod, 0), BS);
 	/*
 		Check the nodes under the player to see from which node the
