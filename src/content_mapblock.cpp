@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "log.h"
 #include "noise.h"
+#include "util/cpp11.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -42,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
-static const v3s16 light_dirs[8] = {
+static constexpr v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
 	v3s16(-1, -1,  1),
 	v3s16(-1,  1, -1),
@@ -54,7 +55,7 @@ static const v3s16 light_dirs[8] = {
 };
 
 // Standard index set to make a quad on 4 vertices
-static const u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
+static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
