@@ -760,8 +760,11 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
-	if (param2 > 0 && f->special_tiles[0].texture) {
-		// Interior volume level is in range 0 .. 63,
+	// Optionally render internal liquid level defined by param2
+	// Liquid is textured with 1 tile defined in nodedef 'special_tiles'
+	if (param2 > 0 && f->param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL &&
+			f->special_tiles[0].texture) {
+		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		tile = getSpecialTile(*f, n, 0);
