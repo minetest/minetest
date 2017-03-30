@@ -260,7 +260,8 @@ Client::Client(
 	m_localdb(NULL),
 	m_script(NULL),
 	m_mod_storage_save_timer(10.0f),
-	m_game_ui_flags(game_ui_flags)
+	m_game_ui_flags(game_ui_flags),
+	m_shutdown(false)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -346,6 +347,7 @@ const ModSpec* Client::getModSpec(const std::string &modname) const
 
 void Client::Stop()
 {
+	m_shutdown = true;
 	// Don't disable this part when modding is disabled, it's used in builtin
 	m_script->on_shutdown();
 	//request all client managed threads to stop
@@ -361,14 +363,12 @@ void Client::Stop()
 
 bool Client::isShutdown()
 {
-
-	if (!m_mesh_update_thread.isRunning()) return true;
-
-	return false;
+	return m_shutdown || !m_mesh_update_thread.isRunning();
 }
 
 Client::~Client()
 {
+	m_shutdown = true;
 	m_con.Disconnect();
 
 	m_mesh_update_thread.stop();

@@ -737,6 +737,7 @@ private:
 	float m_mod_storage_save_timer;
 	GameUIFlags *m_game_ui_flags;
 
+	bool m_shutdown;
 	DISABLE_CLASS_COPY(Client);
 };
 

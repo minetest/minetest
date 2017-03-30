@@ -25,7 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "l_internal.h"
 #include "lua_api/l_item.h"
+#include "mainmenumanager.h"
 #include "util/string.h"
+
+extern MainGameCallback *g_gamecallback;
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -107,6 +110,20 @@ int ModApiClient::l_send_respawn(lua_State *L)
 	return 0;
 }
 
+// disconnect()
+int ModApiClient::l_disconnect(lua_State *L)
+{
+	// Stops badly written Lua code form causing boot loops
+	if (getClient(L)->isShutdown()) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	g_gamecallback->disconnect();
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // gettext(text)
 int ModApiClient::l_gettext(lua_State *L)
 {
@@ -178,4 +195,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
+	API_FCT(disconnect);
 }
