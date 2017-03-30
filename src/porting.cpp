@@ -611,9 +611,9 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 #endif
 }
 
-bool setXorgWindowIcon(IrrlichtDevice *device)
+bool setWindowIcon(IrrlichtDevice *device)
 {
-#ifdef XORG_USED
+#if defined(XORG_USED)
 #	if RUN_IN_PLACE
 	return setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
@@ -627,6 +627,36 @@ bool setXorgWindowIcon(IrrlichtDevice *device)
 		setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #	endif
+#elif defined(_WIN32)
+	const video::SExposedVideoData exposedData = device->getVideoDriver()->getExposedVideoData();
+	HWND hWnd; // Window handle
+
+	switch (device->getVideoDriver()->getDriverType()) {
+	case video::EDT_DIRECT3D8:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
+		break;
+	case video::EDT_DIRECT3D9:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
+		break;
+	case video::EDT_OPENGL:
+		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
+		break;
+	default:
+		return false;
+	}
+
+	// Load the ICON from resource file
+	const HICON hicon = LoadIcon(
+		GetModuleHandle(NULL),
+		MAKEINTRESOURCE(130) // The ID of the ICON defined in winresource.rc
+	);
+
+	if (hicon) {
+		SendMessage(hWnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hicon));
+		SendMessage(hWnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hicon));
+		return true;
+	}
+	return false;
 #else
 	return false;
 #endif

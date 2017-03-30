@@ -114,7 +114,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	porting::setXorgClassHint(video_driver->getExposedVideoData(), PROJECT_NAME_C);
 
-	porting::setXorgWindowIcon(device);
+	porting::setWindowIcon(device);
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
