@@ -1866,27 +1866,27 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 		return;
 	}
 
-	if (type == "tableoptions"){
+	if (type == "tableoptions") {
 		parseTableOptions(data,description);
 		return;
 	}
 
-	if (type == "tablecolumns"){
+	if (type == "tablecolumns") {
 		parseTableColumns(data,description);
 		return;
 	}
 
-	if (type == "table"){
+	if (type == "table") {
 		parseTable(data,description);
 		return;
 	}
 
-	if (type == "textlist"){
+	if (type == "textlist") {
 		parseTextList(data,description);
 		return;
 	}
 
-	if (type == "dropdown"){
+	if (type == "dropdown") {
 		parseDropDown(data,description);
 		return;
 	}
@@ -1901,7 +1901,7 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 		return;
 	}
 
-	if ((type == "field") || (type == "textarea")){
+	if ((type == "field") || (type == "textarea")) {
 		parseField(data,description,type);
 		return;
 	}
@@ -2320,7 +2320,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
-	if (!inv){
+	if (!inv) {
 		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory location "
 				<<"\""<<s.inventoryloc.dump()<<"\" doesn't exist"
@@ -2328,7 +2328,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 		return;
 	}
 	InventoryList *ilist = inv->getList(s.listname);
-	if (!ilist){
+	if (!ilist) {
 		warningstream<<"GUIFormSpecMenu::drawList(): "
 				<<"The inventory list \""<<s.listname<<"\" @ \""
 				<<s.inventoryloc.dump()<<"\" doesn't exist"
@@ -2478,7 +2478,7 @@ void GUIFormSpecMenu::drawMenu()
 	bool regenerate = false;
 	if (m_form_src) {
 		std::string newform = m_form_src->getForm();
-		if (newform != m_formspec_string){
+		if (newform != m_formspec_string) {
 			m_formspec_string = newform;
 			regenerate = true;
 		}
@@ -2754,10 +2754,10 @@ void GUIFormSpecMenu::updateSelectedItem()
 	// If such stack does not exist, clear the guess.
 	if (m_selected_content_guess.name != "" &&
 			selected.name == m_selected_content_guess.name &&
-			selected.count == m_selected_content_guess.count){
+			selected.count == m_selected_content_guess.count) {
 		// Selected item fits the guess. Skip the black magic.
 	}
-	else if (m_selected_content_guess.name != ""){
+	else if (m_selected_content_guess.name != "") {
 		bool found = false;
 		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
 			const ListDrawSpec &s = m_inventorylists[i];
@@ -2773,7 +2773,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 					continue;
 				ItemStack stack = list->getItem(item_i);
 				if (stack.name == m_selected_content_guess.name &&
-						stack.count == m_selected_content_guess.count){
+						stack.count == m_selected_content_guess.count) {
 					found = true;
 					infostream<<"Client: Changing selected content guess to "
 							<<s.inventoryloc.dump()<<" "<<s.listname
@@ -2784,7 +2784,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 				}
 			}
 		}
-		if (!found){
+		if (!found) {
 			infostream<<"Client: Discarding selected content guess: "
 					<<m_selected_content_guess.getItemString()<<std::endl;
 			m_selected_content_guess.name = "";
