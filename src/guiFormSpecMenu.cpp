@@ -1824,139 +1824,85 @@ void GUIFormSpecMenu::parseElement(parserData* data, std::string element)
 	if (type == "container") {
 		parseContainer(data, description);
 		return;
-	}
-
-	if (type == "container_end") {
+	} else if (type == "container_end") {
 		parseContainerEnd(data);
 		return;
-	}
-
-	if (type == "list") {
+	} else if (type == "list") {
 		parseList(data, description);
 		return;
-	}
-
-	if (type == "listring") {
+	} else if (type == "listring") {
 		parseListRing(data, description);
 		return;
-	}
-
-	if (type == "checkbox") {
+	} else if (type == "checkbox") {
 		parseCheckbox(data, description);
 		return;
-	}
-
-	if (type == "image") {
+	} else if (type == "image") {
 		parseImage(data, description);
 		return;
-	}
-
-	if (type == "item_image") {
+	} else if (type == "item_image") {
 		parseItemImage(data, description);
 		return;
-	}
-
-	if (type == "button" || type == "button_exit") {
+	} else if (type == "button" || type == "button_exit") {
 		parseButton(data, description, type);
 		return;
-	}
-
-	if (type == "background") {
+	} else if (type == "background") {
 		parseBackground(data,description);
 		return;
-	}
-
-	if (type == "tableoptions") {
+	} else if (type == "tableoptions") {
 		parseTableOptions(data,description);
 		return;
-	}
-
-	if (type == "tablecolumns") {
+	} else if (type == "tablecolumns") {
 		parseTableColumns(data,description);
 		return;
-	}
-
-	if (type == "table") {
+	} else if (type == "table") {
 		parseTable(data,description);
 		return;
-	}
-
-	if (type == "textlist") {
+	} else if (type == "textlist") {
 		parseTextList(data,description);
 		return;
-	}
-
-	if (type == "dropdown") {
+	} else if (type == "dropdown") {
 		parseDropDown(data,description);
 		return;
-	}
-
-	if (type == "field_close_on_enter") {
+	} else if (type == "field_close_on_enter") {
 		parseFieldCloseOnEnter(data, description);
 		return;
-	}
-
-	if (type == "pwdfield") {
+	} else if (type == "pwdfield") {
 		parsePwdField(data,description);
 		return;
-	}
-
-	if ((type == "field") || (type == "textarea")) {
+	} else if ((type == "field") || (type == "textarea")) {
 		parseField(data,description,type);
 		return;
-	}
-
-	if (type == "keyeventbox") {
+	} else if (type == "keyeventbox") {
 		parseKeyEventBox(data,description);
 		return;
-	}
-
-	if (type == "label") {
+	} else if (type == "label") {
 		parseLabel(data,description);
 		return;
-	}
-
-	if (type == "vertlabel") {
+	} else if (type == "vertlabel") {
 		parseVertLabel(data,description);
 		return;
-	}
-
-	if (type == "item_image_button") {
+	} else if (type == "item_image_button") {
 		parseItemImageButton(data,description);
 		return;
-	}
-
-	if ((type == "image_button") || (type == "image_button_exit")) {
+	} else if ((type == "image_button") || (type == "image_button_exit")) {
 		parseImageButton(data,description,type);
 		return;
-	}
-
-	if (type == "tabheader") {
+	} else if (type == "tabheader") {
 		parseTabHeader(data,description);
 		return;
-	}
-
-	if (type == "box") {
+	} else if (type == "box") {
 		parseBox(data,description);
 		return;
-	}
-
-	if (type == "bgcolor") {
+	} else if (type == "bgcolor") {
 		parseBackgroundColor(data,description);
 		return;
-	}
-
-	if (type == "listcolors") {
+	} else if (type == "listcolors") {
 		parseListColors(data,description);
 		return;
-	}
-
-	if (type == "tooltip") {
+	} else if (type == "tooltip") {
 		parseTooltip(data,description);
 		return;
-	}
-
-	if (type == "scrollbar") {
+	} else if (type == "scrollbar") {
 		parseScrollBar(data, description);
 		return;
 	}
@@ -1984,7 +1930,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	}
 	
 	//preserve editboxes
-	for (u32 i=0; i<m_fields.size(); i++) {
+	for (u32 i = 0; i < m_fields.size(); ++i) {
 		if (getElementFromId(m_fields[i].fid)->getTypeName() != std::string("editBox")) {
 			continue;
 		}
@@ -2304,8 +2250,7 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 			s32 y = (i/s.geom.X) * spacing.Y;
 			v2s32 p0(x,y);
 			core::rect<s32> rect = imgrect + s.pos + p0;
-			if (rect.isPointInside(p))
-			{
+			if (rect.isPointInside(p)) {
 				return ItemSpec(s.inventoryloc, s.listname, item_i);
 			}
 		}
@@ -3903,7 +3848,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
  */
 std::string GUIFormSpecMenu::getNameByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->fname;
@@ -3919,7 +3864,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
  */
 std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->flabel;
@@ -3935,7 +3880,7 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
  */
 FormspecFieldType GUIFormSpecMenu::getTypeByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); iter++) {
 		if (iter->fid == id) {
 			return iter->ftype;
