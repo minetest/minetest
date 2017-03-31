@@ -132,8 +132,6 @@ GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
 		g_settings->setS32("pause_fps_max", 60);
 		video::IVideoDriver *driver = dev->getVideoDriver();
 		m_cursor_img = driver->getTexture(cursor_img_path.c_str());
-	} else {
-		g_settings->setS32("pause_fps_max", 20);
 	}
 #endif
 }
