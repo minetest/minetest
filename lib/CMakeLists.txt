@@ -14,8 +14,8 @@ endif()
 
 if(NOT USE_LUAJIT)
 	message(STATUS "LuaJIT not found, using bundled Lua.")
-	set(LUA_LIBRARY "lua")
-	set(LUA_INCLUDE_DIR "lua/src")
+	set(LUA_LIBRARY lua PARENT_SCOPE)
+	set(LUA_INCLUDE_DIR lua/src PARENT_SCOPE)
 	add_subdirectory(lua)
 endif()
 
