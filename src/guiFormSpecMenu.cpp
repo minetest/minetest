@@ -3828,7 +3828,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
  */
 std::string GUIFormSpecMenu::getNameByID(s32 id)
 {
-	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::const_iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->fname;
@@ -3844,7 +3844,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
  */
 std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 {
-	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::const_iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->flabel;
@@ -3860,7 +3860,7 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
  */
 FormspecFieldType GUIFormSpecMenu::getTypeByID(s32 id)
 {
-	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::const_iterator iter = m_fields.begin();
 				iter != m_fields.end(); iter++) {
 		if (iter->fid == id) {
 			return iter->ftype;
