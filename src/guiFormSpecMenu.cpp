@@ -891,7 +891,7 @@ void GUIFormSpecMenu::parseDropDown(parserData* data,std::string element)
 			Environment->setFocus(e);
 		}
 
-		for (unsigned int i=0; i < items.size(); i++) {
+		for (unsigned int i = 0; i < items.size(); ++i) {
 			e->addItem(unescape_enriched(unescape_string(
 				utf8_to_wide(items[i]))).c_str());
 		}
@@ -1391,7 +1391,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data,std::string element)
 
 		std::wstring label = L"";
 
-		for (unsigned int i=0; i < text.length(); i++) {
+		for (unsigned int i = 0; i < text.length(); ++i) {
 			label += text[i];
 			label += L"\n";
 		}
@@ -1946,7 +1946,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	if (focused_element && focused_element->getParent() == this) {
 		s32 focused_id = focused_element->getID();
 		if (focused_id > 257) {
-			for (u32 i=0; i<m_fields.size(); i++) {
+			for (u32 i = 0; i < m_fields.size(); ++i) {
 				if (m_fields[i].fid == focused_id) {
 					mydata.focused_fieldname =
 						m_fields[i].fname;
@@ -2211,7 +2211,7 @@ bool GUIFormSpecMenu::getAndroidUIInput()
 		return false;
 	}
 
-	for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 			iter != m_fields.end(); ++iter) {
 
 		if (iter->fname != fieldname) {
@@ -2240,11 +2240,10 @@ GUIFormSpecMenu::ItemSpec GUIFormSpecMenu::getItemAtPos(v2s32 p) const
 {
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 
-	for(u32 i=0; i<m_inventorylists.size(); i++)
-	{
+	for (u32 i = 0; i < m_inventorylists.size(); ++i) {
 		const ListDrawSpec &s = m_inventorylists[i];
 
-		for(s32 i=0; i<s.geom.X*s.geom.Y; i++) {
+		for (s32 i = 0; i < s.geom.X * s.geom.Y; ++i) {
 			s32 item_i = i + s.start_item_i;
 			s32 x = (i%s.geom.X) * spacing.X;
 			s32 y = (i/s.geom.X) * spacing.Y;
@@ -2283,8 +2282,7 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 
 	core::rect<s32> imgrect(0,0,imgsize.X,imgsize.Y);
 
-	for(s32 i=0; i<s.geom.X*s.geom.Y; i++)
-	{
+	for (s32 i = 0; i < s.geom.X * s.geom.Y; ++i)	{
 		s32 item_i = i + s.start_item_i;
 		if (item_i >= (s32) ilist->getSize())
 			break;
@@ -2457,8 +2455,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw backgrounds
 	*/
-	for(u32 i=0; i<m_backgrounds.size(); i++)
-	{
+	for (u32 i = 0; i < m_backgrounds.size(); ++i) {
 		const ImageDrawSpec &spec = m_backgrounds[i];
 		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
@@ -2491,8 +2488,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw Boxes
 	*/
-	for(u32 i=0; i<m_boxes.size(); i++)
-	{
+	for (u32 i = 0; i < m_boxes.size(); ++i) {
 		const BoxDrawSpec &spec = m_boxes[i];
 
 		irr::video::SColor todraw = spec.color;
@@ -2513,8 +2509,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw images
 	*/
-	for(u32 i=0; i<m_images.size(); i++)
-	{
+	for (u32 i = 0; i < m_images.size(); ++i) {
 		const ImageDrawSpec &spec = m_images[i];
 		video::ITexture *texture = m_tsrc->getTexture(spec.name);
 
@@ -2546,8 +2541,7 @@ void GUIFormSpecMenu::drawMenu()
 	/*
 		Draw item images
 	*/
-	for(u32 i=0; i<m_itemimages.size(); i++)
-	{
+	for (u32 i = 0; i < m_itemimages.size(); ++i) {
 		if (m_client == 0)
 			break;
 
@@ -2640,7 +2634,7 @@ void GUIFormSpecMenu::drawMenu()
 		}
 
 		if (id != -1 && delta >= m_tooltip_show_delay) {
-			for(std::vector<FieldSpec>::iterator iter =  m_fields.begin();
+			for (std::vector<FieldSpec>::iterator iter =  m_fields.begin();
 					iter != m_fields.end(); ++iter) {
 				if (iter->fid == id && m_tooltips[iter->fname].tooltip != L"") {
 					if (m_old_tooltip != m_tooltips[iter->fname].tooltip) {
@@ -2704,7 +2698,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 	else if (m_selected_content_guess.name != "") {
 		bool found = false;
-		for(u32 i=0; i<m_inventorylists.size() && !found; i++){
+		for (u32 i = 0; i < m_inventorylists.size() && !found; ++i) {
 			const ListDrawSpec &s = m_inventorylists[i];
 			Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 			if (!inv)
@@ -2712,7 +2706,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 			InventoryList *list = inv->getList(s.listname);
 			if (!list)
 				continue;
-			for(s32 i=0; i<s.geom.X*s.geom.Y && !found; i++){
+			for (s32 i = 0; i < s.geom.X * s.geom.Y && !found; ++i){
 				u32 item_i = i + s.start_item_i;
 				if (item_i >= list->getSize())
 					continue;
@@ -2739,7 +2733,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	// If craftresult is nonempty and nothing else is selected, select it now.
 	if (!m_selected_item)
 	{
-		for(u32 i=0; i<m_inventorylists.size(); i++)
+		for (u32 i = 0; i < m_inventorylists.size(); ++i)
 		{
 			const ListDrawSpec &s = m_inventorylists[i];
 			if (s.listname == "craftpreview")
@@ -2843,7 +2837,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 			current_keys_pending.key_escape = false;
 		}
 
-		for(unsigned int i=0; i<m_fields.size(); i++) {
+		for (unsigned int i = 0; i < m_fields.size(); ++i) {
 			const FieldSpec &s = m_fields[i];
 			if (s.send) {
 				std::string name = s.fname;
@@ -3692,7 +3686,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (event.GUIEvent.EventType == gui::EGET_TAB_CHANGED
 				&& isVisible()) {
 			// find the element that was clicked
-			for (unsigned int i=0; i<m_fields.size(); i++) {
+			for (unsigned int i = 0; i < m_fields.size(); ++i) {
 				FieldSpec &s = m_fields[i];
 				if ((s.ftype == f_TabHeader) &&
 						(s.fid == event.GUIEvent.Caller->getID())) {
@@ -3848,7 +3842,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
  */
 std::string GUIFormSpecMenu::getNameByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->fname;
@@ -3864,7 +3858,7 @@ std::string GUIFormSpecMenu::getNameByID(s32 id)
  */
 std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); ++iter) {
 		if (iter->fid == id) {
 			return iter->flabel;
@@ -3880,7 +3874,7 @@ std::wstring GUIFormSpecMenu::getLabelByID(s32 id)
  */
 FormspecFieldType GUIFormSpecMenu::getTypeByID(s32 id)
 {
-	for(std::vector<FieldSpec>::iterator iter = m_fields.begin();
+	for (std::vector<FieldSpec>::iterator iter = m_fields.begin();
 				iter != m_fields.end(); iter++) {
 		if (iter->fid == id) {
 			return iter->ftype;
