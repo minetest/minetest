@@ -287,8 +287,6 @@ src/script/lua_api/l_areastore.cpp
 src/script/lua_api/l_areastore.h
 src/script/lua_api/l_base.cpp
 src/script/lua_api/l_base.h
-src/script/lua_api/l_client.cpp
-src/script/lua_api/l_client.h
 src/script/lua_api/l_craft.cpp
 src/script/lua_api/l_craft.h
 src/script/lua_api/l_env.cpp

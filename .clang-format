@@ -5,6 +5,7 @@ BreakBeforeBraces: Linux
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 AccessModifierOffset: -8
+ColumnLimit: 90
 IncludeCategories:
   - Regex:           '^".*'
     Priority:        2
