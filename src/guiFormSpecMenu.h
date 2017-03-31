@@ -363,6 +363,7 @@ public:
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
+	bool hasCustomCursor() const { return m_custom_cursor; }
 #endif
 
 protected:
@@ -435,11 +436,6 @@ protected:
 	video::SColor m_slotbordercolor;
 	video::SColor m_default_tooltip_bgcolor;
 	video::SColor m_default_tooltip_color;
-
-#ifndef __ANDROID__
-	video::ITexture *m_cursor_img;
-	bool m_custom_cursor;
-#endif
 
 private:
 	IFormSource        *m_form_src;
@@ -538,6 +534,8 @@ private:
 #ifdef __ANDROID__
 	v2s32 m_down_pos;
 	std::string m_JavaDialogFieldName;
+	video::ITexture *m_cursor_img;
+	bool m_custom_cursor;
 #endif
 
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so
