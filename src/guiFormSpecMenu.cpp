@@ -2973,7 +2973,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		KeyPress kp(event.KeyInput);
 		if (kp == EscapeKey || kp == CancelKey
 				|| kp == getKeySetting("keymap_inventory")
-				|| event.KeyInput.Key==KEY_RETURN) {
+				|| event.KeyInput.Key == KEY_RETURN) {
 			gui::IGUIElement *focused = Environment->getFocus();
 			if (focused && isMyChild(focused) &&
 					(focused->getType() == gui::EGUIET_LIST_BOX ||
@@ -3257,7 +3257,7 @@ void GUIFormSpecMenu::tryClose()
 
 bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType==EET_KEY_INPUT_EVENT) {
+	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
 		if (event.KeyInput.PressedDown && ( (kp == EscapeKey) ||
 				(kp == getKeySetting("keymap_inventory")) || (kp == CancelKey))) {
@@ -3268,9 +3268,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			m_client->makeScreenshot(m_device);
 		}
 		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key==KEY_RETURN ||
-			 event.KeyInput.Key==KEY_UP ||
-			 event.KeyInput.Key==KEY_DOWN)
+			(event.KeyInput.Key == KEY_RETURN ||
+			 event.KeyInput.Key == KEY_UP ||
+			 event.KeyInput.Key == KEY_DOWN)
 			) {
 			switch (event.KeyInput.Key) {
 				case KEY_RETURN:
@@ -3692,7 +3692,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
-		if (event.GUIEvent.EventType==gui::EGET_ELEMENT_FOCUSED && isVisible()) {
+		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUSED && isVisible()) {
 			if (event.GUIEvent.Caller->getID() != event.GUIEvent.Element->getID() 
 			&& event.GUIEvent.Caller->getTypeName() == std::string("editBox")) {
 				// regenerate on focus change to update decorations
