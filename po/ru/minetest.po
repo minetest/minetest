@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-19 10:06+0000\n"
-"Last-Translator: Nikolay <nikolay0054@factmodule.ru>\n"
+"PO-Revision-Date: 2017-03-31 20:38+0000\n"
+"Last-Translator: Andrey K. <contact@libnaru.so>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.10\n"
+"X-Generator: Weblate 2.13-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -160,8 +160,9 @@ msgid "No worldname given or no game selected"
 msgstr "Не задано имя мира или не выбрана игра"
 
 #: builtin/mainmenu/dlg_create_world.lua
+#, fuzzy
 msgid "Seed"
-msgstr "Сид"
+msgstr "Зерно"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -217,7 +218,7 @@ msgstr "(Отсутствует описание настройки)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Назад к странице Настроек"
+msgstr "< Назад к странице настроек"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
@@ -229,7 +230,7 @@ msgstr "Отключено"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Редактировать"
+msgstr "Править"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -277,7 +278,7 @@ msgstr "Возможные значения: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Восстановить по умолчанию"
+msgstr "Сброс по умолчанию"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
@@ -426,7 +427,7 @@ msgstr "Режим творчества"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr "Ущерб включен"
+msgstr "Урон включен"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
@@ -460,7 +461,7 @@ msgstr "Режим творчества"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Включить Урон"
+msgstr "Включить урон"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
@@ -516,7 +517,7 @@ msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
-msgstr "расширенные настройки"
+msgstr "Расширенные настройки"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
@@ -572,9 +573,8 @@ msgid "Node Highlighting"
 msgstr "Подсветка нод"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Outlining"
-msgstr "Подсветка нод"
+msgstr "Обводка нод"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -629,9 +629,8 @@ msgid "To enable shaders the OpenGL driver needs to be used."
 msgstr "Для включения шейдеров необходим драйвер OpenGL."
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tone Mapping"
-msgstr "Mip-текстурирование (Мип-маппинг)"
+msgstr "Тональное отображение"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Touchthreshold (px)"
@@ -1350,11 +1349,12 @@ msgstr ""
 "-    sidebyside: Разделение экрана право/лево."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Выбранный сид для новой карты, оставьте значение пустым для случайной "
+"Выбранное зерно для новой карты, оставьте значение пустым для случайной "
 "генерации.\n"
 "Будет отменено при создании нового мира, в главном меню."
 
