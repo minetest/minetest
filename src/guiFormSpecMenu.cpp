@@ -2332,15 +2332,12 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 								v2s32(x2 + border, y2)), NULL);
 		}
 
-		if (phase == 1)
-		{
+		if (phase == 1)	{
 			// Draw item stack
-			if (selected)
-			{
+			if (selected) {
 				item.takeItem(m_selected_amount);
 			}
-			if (!item.empty())
-			{
+			if (!item.empty()) {
 				drawItemStack(driver, m_font, item,
 					rect, &AbsoluteClippingRect, m_client,
 					rotation_kind);
@@ -2573,7 +2570,7 @@ void GUIFormSpecMenu::drawMenu()
 	*/
 	bool item_hovered = false;
 	int start_phase = 0;
-	for (int phase = start_phase; phase <= 1; phase++) {
+	for (int phase = start_phase; phase <= 1; ++phase) {
 		for (u32 i = 0; i < m_inventorylists.size(); i++) {
 			drawList(m_inventorylists[i], phase, item_hovered);
 		}
@@ -2731,17 +2728,13 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 
 	// If craftresult is nonempty and nothing else is selected, select it now.
-	if (!m_selected_item)
-	{
-		for (u32 i = 0; i < m_inventorylists.size(); ++i)
-		{
+	if (!m_selected_item) {
+		for (u32 i = 0; i < m_inventorylists.size(); ++i) {
 			const ListDrawSpec &s = m_inventorylists[i];
-			if (s.listname == "craftpreview")
-			{
+			if (s.listname == "craftpreview") {
 				Inventory *inv = m_invmgr->getInventory(s.inventoryloc);
 				InventoryList *list = inv->getList("craftresult");
-				if (list && list->getSize() >= 1 && !list->getItem(0).empty())
-				{
+				if (list && list->getSize() >= 1 && !list->getItem(0).empty()) {
 					m_selected_item = new ItemSpec;
 					m_selected_item->inventoryloc = s.inventoryloc;
 					m_selected_item->listname = "craftresult";
@@ -2755,8 +2748,7 @@ void GUIFormSpecMenu::updateSelectedItem()
 	}
 
 	// If craftresult is selected, keep the whole stack selected
-	if (m_selected_item && m_selected_item->listname == "craftresult")
-	{
+	if (m_selected_item && m_selected_item->listname == "craftresult") {
 		m_selected_amount = verifySelectedItem().count;
 	}
 }
@@ -2768,16 +2760,12 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 	// If the selected stack has become smaller, adjust m_selected_amount.
 	// Return the selected stack.
 
-	if (m_selected_item)
-	{
-		if (m_selected_item->isValid())
-		{
+	if (m_selected_item) {
+		if (m_selected_item->isValid()) {
 			Inventory *inv = m_invmgr->getInventory(m_selected_item->inventoryloc);
-			if (inv)
-			{
+			if (inv) {
 				InventoryList *list = inv->getList(m_selected_item->listname);
-				if (list && (u32) m_selected_item->i < list->getSize())
-				{
+				if (list && (u32) m_selected_item->i < list->getSize())	{
 					ItemStack stack = list->getItem(m_selected_item->i);
 					if (m_selected_amount > stack.count)
 						m_selected_amount = stack.count;
@@ -2798,8 +2786,7 @@ ItemStack GUIFormSpecMenu::verifySelectedItem()
 
 void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 {
-	if (m_text_dst)
-	{
+	if (m_text_dst)	{
 		StringMap fields;
 
 		if (quitmode == quit_mode_accept) {
@@ -3068,8 +3055,7 @@ bool GUIFormSpecMenu::preprocessEvent(const SEvent& event)
 		}
 	}
 
-	if (event.EventType == EET_TOUCH_INPUT_EVENT)
-	{
+	if (event.EventType == EET_TOUCH_INPUT_EVENT) {
 		SEvent translated;
 		memset(&translated, 0, sizeof(SEvent));
 		translated.EventType   = EET_MOUSE_INPUT_EVENT;
