@@ -691,3 +691,35 @@ end
 function core.strip_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%([bc]@[^)]+%)", ""))
 end
+
+--------------------------------------------------------------------------------
+-- Returns the exact coordinate of a pointed surface
+--------------------------------------------------------------------------------
+function core.pointed_thing_to_face_pos(placer, pointed_thing)
+	local eye_offset_first = placer:get_eye_offset()
+	local node_pos = pointed_thing.under
+	local camera_pos = placer:get_pos()
+	local pos_off = vector.multiply(
+			vector.subtract(pointed_thing.above, node_pos), 0.5)
+	local look_dir = placer:get_look_dir()
+	local offset, nc
+	local oc = {}
+
+	for c, v in pairs(pos_off) do
+		if v == 0 then
+			oc[#oc + 1] = c
+		else
+			offset = v
+			nc = c
+		end
+	end
+	local fine_pos = {[nc] = node_pos[nc] + offset}
+	camera_pos.y = camera_pos.y + 1.625 + eye_offset_first.y / 10
+	local f = (node_pos[nc] + offset - camera_pos[nc]) / look_dir[nc]
+
+	for i = 1, #oc do
+		fine_pos[oc[i]] = camera_pos[oc[i]] + look_dir[oc[i]] * f
+	end
+	return fine_pos
+end
+

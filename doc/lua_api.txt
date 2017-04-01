@@ -1939,6 +1939,8 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
+    * returns the exact position on the surface of a pointed node
 
 `minetest` namespace reference
 ------------------------------
