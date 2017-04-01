@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef DATABASE_HEADER
 #define DATABASE_HEADER
 
-#include <vector>
 #include <string>
+#include <vector>
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"
@@ -47,4 +47,3 @@ public:
 };
 
 #endif
-

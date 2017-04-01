@@ -20,11 +20,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef DATABASE_SQLITE3_HEADER
 #define DATABASE_SQLITE3_HEADER
 
-#include "database.h"
 #include <string>
+#include "database.h"
 
 extern "C" {
-	#include "sqlite3.h"
+#include "sqlite3.h"
 }
 
 class Database_SQLite3 : public Database
@@ -50,7 +50,7 @@ private:
 	// Open and initialize the database if needed
 	void verifyDatabase();
 
-	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index=1);
+	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index = 1);
 
 	bool m_initialized;
 
@@ -70,4 +70,3 @@ private:
 };
 
 #endif
-

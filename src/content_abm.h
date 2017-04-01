@@ -30,4 +30,3 @@ class INodeDefManager;
 void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef);
 
 #endif
-
