@@ -7,9 +7,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-12-30 02:37+0000\n"
-"Last-Translator: Muhammad Rifqi Priyo Susanto "
-"<muhammadrifqipriyosusanto@gmail.com>\n"
+"PO-Revision-Date: 2017-04-01 08:46+0000\n"
+"Last-Translator: fdedraco <080893lukie@gmail.com>\n"
 "Language-Team: Indonesian "
 "<https://hosted.weblate.org/projects/minetest/minetest/id/>\n"
 "Language: id\n"
@@ -17,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.11-dev\n"
+"X-Generator: Weblate 2.13-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Sebuah kesalahan terjadi di salah satu skrip Lua, misalnya sebuah mod:"
+msgstr "Sebuah kesalahan terjadi di salah satu script Lua, misalnya satu mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -37,11 +36,11 @@ msgstr "Oke"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Sambung ulang"
+msgstr "Menyambung Kembali"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
-msgstr "Server ini meminta penyambungan ulang:"
+msgstr "Server ini meminta untuk menyambung kembali:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
@@ -49,7 +48,7 @@ msgstr "Memuat..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr "Versi protokol tidak cocok. "
+msgstr "Versi protokol tidak sesuai. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
@@ -62,7 +61,8 @@ msgstr "Server mendukung protokol antara versi $1 dan versi $2. "
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Cobalah mencentang ulang daftar server publik dan cek koneksi internet Anda."
+"Cobalah untuk mengaktifkan daftar server publik dan cek koneksi internet "
+"Anda."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -106,9 +106,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr ""
-"Sembunyikan\n"
-"permainan"
+msgstr "Sembunyikan permainan"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
@@ -245,7 +243,7 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"Format: <offset>, <skala>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -4480,7 +4478,7 @@ msgstr "Batas cURL paralel"
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr "Batas waktu cURL"
+msgstr "waktu habis cURL"
 
 #~ msgid "Useful for mod developers."
 #~ msgstr "Berguna untuk pengembang mod."
