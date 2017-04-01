@@ -698,6 +698,9 @@ Call these functions only at load time!
 ### Client Environment
 * `minetest.get_player_names()`
     * Returns list of player names on server
+* `minetest.disconnect()`
+    * Disconnect from the server and exit to main menu.
+    * Returns `false` if the client is already disconnecting otherwise returns `true`.
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something

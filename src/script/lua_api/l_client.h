@@ -41,6 +41,9 @@ private:
 	// send_respawn()
 	static int l_send_respawn(lua_State *L);
 
+	// disconnect()
+	static int l_disconnect(lua_State *L);
+
 	// gettext(text)
 	static int l_gettext(lua_State *L);
 
