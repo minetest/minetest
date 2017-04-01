@@ -1024,10 +1024,6 @@ enable_client_modding (Client modding) bool false
 #    type: int
 # max_objects_per_block = 64
 
-#    See http://www.sqlite.org/pragma.html#pragma_synchronous
-#    type: enum values: 0, 1, 2
-# sqlite_synchronous = 2
-
 #    Length of a server tick and the interval at which objects are generally updated over network.
 #    type: float
 # dedicated_server_step = 0.1
@@ -1567,6 +1563,73 @@ server_side_occlusion_culling = true
 #    allow them to upload and download data to/from the internet.
 #    type: string
 # secure.http_mods =
+
+## Database
+
+#    Set the synchronous level for sqlite.
+#    See http://www.sqlite.org/pragma.html#pragma_synchronous
+#    Besides the sqlite3 supported values (0..3), the value -1 is accepted, which
+#    makes minetest choose the level depending on the journal mode.
+#    (which is 1 for wal, and 2 for other journal modes)
+#
+#    The value in minetest.conf is used for newly-created worlds only. When a
+#    world is created, the level is written to world.mt. To change the synchronous
+#    level for an existing database, modify the value in world.mt.
+#
+#    For locally saved maps (enable_local_map_saving = true), the value from
+#    minetest.conf is always used unless the user configures a different value
+#    in the file world.mt in the local database's directory.
+#
+#    type: enum values: -1, 0, 1, 2, 3
+# sqlite_synchronous = -1
+
+#    Set the journal mode for sqlite3.
+#    See https://www.sqlite.org/pragma.html#pragma_journal_mode
+#    The default journal mode that sqlite3 uses is DELETE. Minetest uses WAL by default
+#    See https://www.sqlite.org/wal.html
+#
+#    Some advantages of WAL mode over DELETE mode:
+#    - setting sqlite_synchronous to normal (1) will never cause database corruption.
+#      (it may still cause data loss though, but not significantly more than the
+#       data loss due to unsaved blocks following a minetest crash).
+#	See: https://www.sqlite.org/pragma.html#pragma_synchronous.
+#    - minetestmapper or other applications *reading* the database will never
+#      interfere with minetest's use of the database.
+#    - WAL mode with a separate checkpoint thread (which is what minetest uses) is
+#      *much* faster. In particular: it significantly reduces IO delays in the server.
+#    Disadvantages:
+#    - WAL mode may not be supported on all file systems
+#    - WAL mode does not work over a network file system
+#    - Write access is needed to the wal file when opening the database, even
+#      in read-only mode.
+#    - The additional wal file, if it still exists, contains important data, and must
+#      be included in any backups. In practise, after a clean minetest shutdown, minetest
+#      will usually have managed to checkpoint and remove the file altogether.
+#
+#    The value set in minetest.conf is used for newly-created worlds only. When a
+#    world is created, the mode is written to world.mt. To change the journal mode
+#    for an existing database, modify the value in world.mt.
+#
+#    For locally saved maps (enable_local_map_saving = true), the value from
+#    minetest.conf is always used unless the user configures a different value
+#    in the file world.mt in the local database's directory.
+#
+#    Sqlite3 journal modes 'memory' and 'off' are not supported.
+#    type: enum values: delete, truncate, persist, wal
+# sqlite_journal_mode = wal
+
+#    Set the checkpoint interval for the sqlite WAL journal.
+#    See https://www.sqlite.org/wal.html
+#    This is the interval in seconds with which minetest will checkpoint the WAL
+#    (i.e. transfer committed transactions from the WAL to the database).
+#    Note that checkpointing is just database-internal housekeeping. It does not
+#    in any way affect the safety and persistence of already-saved mapblocks.
+#
+#    Setting this sufficiently high will allow disk IO to be combined in larger
+#    batches, thus reducing the IO load on the database.
+#    Setting this too high may increase mapblock read delays.
+#    type: int
+# sqlite_wal_checkpoint_interval = 10
 
 ## Advanced
 
