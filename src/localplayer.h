@@ -143,30 +143,30 @@ public:
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
+	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 
 	v3f m_position;
 
 	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
-	// Stores the max player uplift by m_sneak_node
-	// To support temporary option for old move code
-	f32 m_sneak_node_bb_ymax = 0.0f;
 	// Stores the top bounding box of m_sneak_node
 	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists = false;
-	// Whether recalculation of m_sneak_node and its top bbox is needed
-	bool m_need_to_get_new_sneak_node = true;
 	// Whether a "sneak ladder" structure is detected at the players pos
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
 	bool m_sneak_ladder_detected = false;
-	// Whether a 2-node-up ledge is detected at the players pos,
-	// see detectLedge() in the .cpp for more info (always false if disabled).
-	bool m_ledge_detected = false;
 
+	// ***** Variables for temporary option of the old move code *****
+	// Stores the max player uplift by m_sneak_node
+	f32 m_sneak_node_bb_ymax = 0.0f;
+	// Whether recalculation of m_sneak_node and its top bbox is needed
+	bool m_need_to_get_new_sneak_node = true;
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
 	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
 	std::string m_old_node_below_type = "air";
+	// ***** End of variables for temporary option *****
+
 	bool m_can_jump = false;
 	u16 m_breath = PLAYER_MAX_BREATH;
 	f32 m_yaw = 0.0f;
