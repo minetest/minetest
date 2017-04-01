@@ -845,7 +845,7 @@ int ModApiEnvMod::l_fix_light(lua_State *L)
 		MapEditEvent event;
 		event.type = MEET_OTHER;
 		for (std::map<v3s16, MapBlock *>::iterator it = modified_blocks.begin();
-			it != modified_blocks.end(); ++it)
+				it != modified_blocks.end(); ++it)
 			event.modified_blocks.insert(it->first);
 
 		map.dispatchEvent(&event);

@@ -1136,7 +1136,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 	for (s16 b_x = minblock.X; b_x <= maxblock.X; b_x++)
 	for (s16 b_y = minblock.Y; b_y <= maxblock.Y; b_y++)
 	for (s16 b_z = minblock.Z; b_z <= maxblock.Z; b_z++) {
-		v3s16 blockpos(b_x, b_y, b_z);
+		const v3s16 blockpos(b_x, b_y, b_z);
 		MapBlock *block = map->getBlockNoCreateNoEx(blockpos);
 		if (!block || block->isDummy())
 			// Skip not existing blocks
@@ -1311,9 +1311,10 @@ void fill_with_sunlight(MapBlock *block, INodeDefManager *ndef,
 			if (n.getContent() == CONTENT_IGNORE)
 				continue;
 			const ContentFeatures &f = ndef->get(n.getContent());
-			if (lig && !f.sunlight_propagates)
+			if (lig && !f.sunlight_propagates) {
 				// Sunlight is stopped.
 				lig = false;
+			}
 			// Reset light
 			n.setLight(LIGHTBANK_DAY, lig ? 15 : 0, f);
 			n.setLight(LIGHTBANK_NIGHT, 0, f);
