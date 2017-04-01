@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef FILECACHE_HEADER
 #define FILECACHE_HEADER
 
-#include <string>
 #include <iostream>
+#include <string>
 
 class FileCache
 {
@@ -30,13 +30,11 @@ public:
 	/*
 		'dir' is the file cache directory to use.
 	*/
-	FileCache(std::string dir):
-		m_dir(dir)
-	{
-	}
-	
+	FileCache(std::string dir) : m_dir(dir) {}
+
 	bool update(const std::string &name, const std::string &data);
 	bool load(const std::string &name, std::ostream &os);
+
 private:
 	std::string m_dir;
 
