@@ -1939,6 +1939,9 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* string indexing
+    * if the index is an integer, the character at index or nil is returned
+    * e.g. `("foo")[1] == "f"`
 
 `minetest` namespace reference
 ------------------------------
