@@ -68,14 +68,6 @@ int LuaLocalPlayer::l_get_name(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_is_teleported(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	lua_pushboolean(L, player->got_teleported);
-	return 1;
-}
-
 int LuaLocalPlayer::l_is_attached(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
@@ -386,7 +378,6 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, get_velocity),
 		luamethod(LuaLocalPlayer, get_hp),
 		luamethod(LuaLocalPlayer, get_name),
-		luamethod(LuaLocalPlayer, is_teleported),
 		luamethod(LuaLocalPlayer, is_attached),
 		luamethod(LuaLocalPlayer, is_touching_ground),
 		luamethod(LuaLocalPlayer, is_in_liquid),

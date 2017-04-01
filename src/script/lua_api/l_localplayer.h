@@ -39,7 +39,6 @@ private:
 
 	static int l_get_name(lua_State *L);
 
-	static int l_is_teleported(lua_State *L);
 	static int l_is_attached(lua_State *L);
 	static int l_is_touching_ground(lua_State *L);
 	static int l_is_in_liquid(lua_State *L);
