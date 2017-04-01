@@ -810,8 +810,6 @@ Methods:
     * returns player HP
 * `get_name()`
     * returns player name
-* `got_teleported()`
-    * returns true if player was teleported
 * `is_attached()`
     * returns true if player is attached
 * `is_touching_ground()`

@@ -561,7 +561,6 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 
 	*pkt >> pos >> pitch >> yaw;
 
-	player->got_teleported = true;
 	player->setPosition(pos);
 
 	infostream << "Client got TOCLIENT_MOVE_PLAYER"

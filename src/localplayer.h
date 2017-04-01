@@ -47,7 +47,6 @@ public:
 	ClientActiveObject *parent;
 
 	u16 hp;
-	bool got_teleported;
 	bool isAttached;
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
@@ -126,7 +125,11 @@ public:
 
 	f32 getPitch() const { return m_pitch; }
 
-	void setPosition(const v3f &position) { m_position = position; }
+	inline void setPosition(const v3f &position)
+	{
+		m_position = position;
+		m_sneak_node_exists = false;
+	}
 
 	v3f getPosition() const { return m_position; }
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
