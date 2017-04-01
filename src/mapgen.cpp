@@ -1003,8 +1003,11 @@ void MapgenParams::readParams(const Settings *settings)
 	}
 
 	std::string mg_name;
-	if (settings->getNoEx("mg_name", mg_name))
-		this->mgtype = Mapgen::getMapgenType(mg_name);
+	if (settings->getNoEx("mg_name", mg_name)) {
+		mgtype = Mapgen::getMapgenType(mg_name);
+		if (mgtype == MAPGEN_INVALID)
+			mgtype = MAPGEN_DEFAULT;
+	}
 
 	settings->getS16NoEx("water_level", water_level);
 	settings->getS16NoEx("mapgen_limit", mapgen_limit);
