@@ -2192,8 +2192,10 @@ bool Game::getServerContent(bool *aborted)
 			delete[] text;
 		} else {
 			std::stringstream message;
-			message.precision(3);
-			message << gettext("Media...");
+			std::fixed(message);
+			message.precision(0);
+			message << gettext("Media...") << " " << (client->mediaReceiveProgress()*100) << "%";
+			message.precision(2);
 
 			if ((USE_CURL == 0) ||
 					(!g_settings->getBool("enable_remote_media_server"))) {
