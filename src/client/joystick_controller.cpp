@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keys.h"
 #include "settings.h"
 #include "gettime.h"
+#include "../util/string.h"
 
 bool JoystickButtonCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 {
@@ -42,7 +43,7 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 #define JLO_B_PB(A, B, C)    jlo.button_keys.push_back(JoystickButtonCmb(A, B, C))
 #define JLO_A_PB(A, B, C, D) jlo.axis_keys.push_back(JoystickAxisCmb(A, B, C, D))
 
-static JoystickLayout create_default_layout()
+JoystickLayout create_default_layout()
 {
 	JoystickLayout jlo;
 
@@ -103,11 +104,59 @@ static JoystickLayout create_default_layout()
 	return jlo;
 }
 
-static const JoystickLayout default_layout = create_default_layout();
+JoystickLayout create_xbox_layout()
+{
+	JoystickLayout jlo;
+
+	jlo.axes_dead_border = 7000;
+
+	const JoystickAxisLayout axes[JA_COUNT] = {
+		{0, 1}, // JA_SIDEWARD_MOVE
+		{1, 1}, // JA_FORWARD_MOVE
+		{2, 1}, // JA_FRUSTUM_HORIZONTAL
+		{3, 1}, // JA_FRUSTUM_VERTICAL
+	};
+	memcpy(jlo.axes, axes, sizeof(jlo.axes));
+
+	// The back button means "ESC".
+	JLO_B_PB(KeyType::ESC,        1 << 8,  1 << 8); // back
+	JLO_B_PB(KeyType::ESC,        1 << 9,  1 << 9); // start
+
+	// 4 Buttons
+	JLO_B_PB(KeyType::JUMP,        1 << 0,  1 << 0); // A/green
+	JLO_B_PB(KeyType::ESC,         1 << 1,  1 << 1); // B/red
+	JLO_B_PB(KeyType::SPECIAL1,    1 << 2,  1 << 2); // X/blue
+	JLO_B_PB(KeyType::INVENTORY,   1 << 3,  1 << 3); // Y/yellow
+
+	// Analog Sticks
+	JLO_B_PB(KeyType::SPECIAL1,    1 << 11, 1 << 11); // left
+	JLO_B_PB(KeyType::SNEAK,       1 << 12, 1 << 12); // right
+
+	// Triggers
+	JLO_B_PB(KeyType::MOUSE_L,     1 << 6,  1 << 6); // lt
+	JLO_B_PB(KeyType::MOUSE_R,     1 << 7,  1 << 7); // rt
+	JLO_B_PB(KeyType::SCROLL_UP,   1 << 4,  1 << 4); // lb
+	JLO_B_PB(KeyType::SCROLL_DOWN, 1 << 5,  1 << 5); // rb
+
+	// D-PAD
+	JLO_B_PB(KeyType::ZOOM,        1 << 15, 1 << 15); // up
+	JLO_B_PB(KeyType::DROP,        1 << 13, 1 << 13); // left
+	JLO_B_PB(KeyType::SCREENSHOT,  1 << 14, 1 << 14); // right
+	JLO_B_PB(KeyType::FREEMOVE,    1 << 16, 1 << 16); // down
+
+	// Movement buttons, important for vessels
+	JLO_A_PB(KeyType::FORWARD,  1,  1, 1024);
+	JLO_A_PB(KeyType::BACKWARD, 1, -1, 1024);
+	JLO_A_PB(KeyType::LEFT,     0,  1, 1024);
+	JLO_A_PB(KeyType::RIGHT,    0, -1, 1024);
+
+	return jlo;
+}
 
 JoystickController::JoystickController()
 {
-	m_layout = &default_layout;
+	m_joystick_id = 0;
+
 	doubling_dtime = g_settings->getFloat("repeat_joystick_button_time");
 
 	for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
@@ -116,23 +165,54 @@ JoystickController::JoystickController()
 	clear();
 }
 
+void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo> &joystick_infos)
+{
+	s32         id     = g_settings->getS32("joystick_id");
+	std::string layout = g_settings->get("joystick_type");
+
+	if (id < 0 || id >= joystick_infos.size()) {
+		// TODO: auto detection
+		id = 0;
+	}
+
+	if (id >= 0 && id < joystick_infos.size()) {
+		if (layout.empty() || layout == "auto")
+			setLayoutFromControllerName(joystick_infos[id].Name.c_str());
+		else
+			setLayoutFromControllerName(layout);
+	}
+
+	m_joystick_id = id;
+}
+
+void JoystickController::setLayoutFromControllerName(std::string name) {
+	if (lowercase(name).find("xbox") >= 0) {
+		m_layout = create_xbox_layout();
+	} else {
+		m_layout = create_default_layout();
+	}
+}
+
 bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 {
+	if (ev.Joystick != m_joystick_id)
+		return false;
+
 	m_internal_time = getTimeMs() / 1000.f;
 
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> keys_pressed;
 
 	// First generate a list of keys pressed
 
-	for (size_t i = 0; i < m_layout->button_keys.size(); i++) {
-		if (m_layout->button_keys[i].isTriggered(ev)) {
-			keys_pressed.set(m_layout->button_keys[i].key);
+	for (size_t i = 0; i < m_layout.button_keys.size(); i++) {
+		if (m_layout.button_keys[i].isTriggered(ev)) {
+			keys_pressed.set(m_layout.button_keys[i].key);
 		}
 	}
 
-	for (size_t i = 0; i < m_layout->axis_keys.size(); i++) {
-		if (m_layout->axis_keys[i].isTriggered(ev)) {
-			keys_pressed.set(m_layout->axis_keys[i].key);
+	for (size_t i = 0; i < m_layout.axis_keys.size(); i++) {
+		if (m_layout.axis_keys[i].isTriggered(ev)) {
+			keys_pressed.set(m_layout.axis_keys[i].key);
 		}
 	}
 
@@ -153,7 +233,7 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 	}
 
 	for (size_t i = 0; i < JA_COUNT; i++) {
-		const JoystickAxisLayout &ax_la = m_layout->axes[i];
+		const JoystickAxisLayout &ax_la = m_layout.axes[i];
 		m_axes_vals[i] = ax_la.invert * ev.Axis[ax_la.axis_id];
 	}
 
@@ -172,8 +252,8 @@ void JoystickController::clear()
 s16 JoystickController::getAxisWithoutDead(JoystickAxis axis)
 {
 	s16 v = m_axes_vals[axis];
-	if (((v > 0) && (v < m_layout->axes_dead_border)) ||
-			((v < 0) && (v > -m_layout->axes_dead_border)))
+	if (((v > 0) && (v < m_layout.axes_dead_border)) ||
+			((v < 0) && (v > -m_layout.axes_dead_border)))
 		return 0;
 	return v;
 }

@@ -87,6 +87,14 @@
 #    type: bool
 # enable_joysticks = false
 
+#    The identifier of the joystick to use
+#    type: int
+# joystick_id = 0
+
+#    The type of joystick
+#    type: enum values: auto,generic,xbox
+# joystick_type = auto
+
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
 #    type: float
@@ -1786,4 +1794,3 @@ server_side_occlusion_culling = true
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
-

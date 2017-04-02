@@ -98,6 +98,9 @@ class JoystickController {
 
 public:
 	JoystickController();
+
+	void onJoystickConnect(const std::vector<irr::SJoystickInfo> &joystick_infos);
+
 	bool handleEvent(const irr::SEvent::SJoystickEvent &ev);
 	void clear();
 
@@ -146,9 +149,13 @@ public:
 	f32 doubling_dtime;
 
 private:
-	const JoystickLayout *m_layout;
+	void setLayoutFromControllerName(std::string name);
+
+	JoystickLayout m_layout;
 
 	s16 m_axes_vals[JA_COUNT];
+
+	u8 m_joystick_id;
 
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_pressed_keys;
 

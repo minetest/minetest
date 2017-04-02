@@ -107,6 +107,12 @@ continuous_forward (Continuous forward) bool false
 #    Enable Joysticks
 enable_joysticks (Enable Joysticks) bool false
 
+#    The identifier of the joystick to use
+joystick_id (Joystick ID) int 0
+
+#    The type of joystick
+joystick_type (Joystick Type) enum auto auto,generic,xbox
+
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
 repeat_joystick_button_time (Joystick button repetition interval) float 0.17
