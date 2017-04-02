@@ -613,7 +613,8 @@ void *EmergeThread::run()
 		EMERGE_DBG_OUT("pos=" PP(pos) " allow_gen=" << allow_gen);
 
 		action = getBlockOrStartGen(pos, allow_gen, &block, &bmdata);
-		if (action == EMERGE_GENERATED) {
+		if (action == EMERGE_GENERATED &&
+				!m_map->blockpos_over_mapgen_limit(pos)) {
 			{
 				ScopeProfiler sp(g_profiler,
 					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
