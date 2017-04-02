@@ -203,6 +203,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("always_fly_fast", "true");
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
+	settings->setDefault("joystick_id", "0");
+	settings->setDefault("joystick_type", "");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 

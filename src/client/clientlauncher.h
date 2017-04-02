@@ -91,6 +91,7 @@ public:
 protected:
 	void init_args(GameParams &game_params, const Settings &cmd_args);
 	bool init_engine();
+	void init_input();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
 		GameParams &game_params, const Settings &cmd_args);

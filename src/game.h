@@ -171,4 +171,3 @@ void the_game(bool *kill,
 		bool simple_singleplayer_mode);
 
 #endif
-
