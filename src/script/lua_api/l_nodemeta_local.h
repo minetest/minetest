@@ -1,0 +1,80 @@
+/*
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+#ifndef L_NODEMETA_LOCAL_H_
+#define L_NODEMETA_LOCAL_H_
+
+#include "lua_api/l_base.h"
+#include "lua_api/l_metadata.h"
+#include "irrlichttypes_bloated.h"
+#include "nodemetadata.h"
+
+class NodeMetadata;
+
+/*
+	NodeMetaLocalRef
+*/
+
+class NodeMetaLocalRef : public MetaDataRef {
+private:
+	Metadata *m_meta;
+
+	static const char className[];
+	static const luaL_reg methods[];
+
+	static NodeMetaLocalRef *checkobject(lua_State *L, int narg);
+
+	/**
+	 * Retrieve metadata for a node.
+	 * If @p auto_create is set and the specified node has no metadata information
+	 * associated with it yet, the method attempts to attach a new metadata object
+	 * to the node and returns a pointer to the metadata when successful.
+	 *
+	 * However, it is NOT guaranteed that the method will return a pointer,
+	 * and @c NULL may be returned in case of an error regardless of @p auto_create.
+	 *
+	 * @param ref specifies the node for which the associated metadata is retrieved.
+	 * @param auto_create when true, try to create metadata information for the node if it has none.
+	 * @return pointer to a @c NodeMetadata object or @c NULL in case of error.
+	 */
+	virtual Metadata* getmeta(bool auto_create);
+	virtual void clearMeta();
+
+	virtual void reportMetadataChange();
+
+	virtual void handleToTable(lua_State *L, Metadata *_meta);
+	virtual bool handleFromTable(lua_State *L, int table, Metadata *_meta);
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+public:
+	NodeMetaLocalRef(Metadata *meta);
+
+	~NodeMetaLocalRef();
+
+	// Creates an NodeMetaRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, Metadata *meta);
+
+	static void Register(lua_State *L);
+};
+
+#endif /* L_NODEMETA_LOCAL_H_ */

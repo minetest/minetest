@@ -62,6 +62,9 @@ private:
 	// get_wielded_item()
 	static int l_get_wielded_item(lua_State *L);
 
+	// get_meta(pos)
+	static int l_get_meta(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };
