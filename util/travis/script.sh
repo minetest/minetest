@@ -10,10 +10,10 @@ function perform_lint() {
 
 	if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
 		# Get list of every file modified in this pull request
-		files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^src/[^.]*[.]\(cpp\|h\)$' | egrep -v '^src/(gmp|lua|jsoncpp)/' || true)"
+		files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^src/[^.]*[.]\(cpp\|h\)$' | true)"
 	else
 		# Check everything for branch pushes
-		files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h' | egrep -v '^src/(gmp|lua|jsoncpp)/')"
+		files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h')"
 	fi
 
 	local errorcount=0

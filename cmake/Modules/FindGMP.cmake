@@ -1,7 +1,6 @@
-
 option(ENABLE_SYSTEM_GMP "Use GMP from system" TRUE)
 mark_as_advanced(GMP_LIBRARY GMP_INCLUDE_DIR)
-set(USE_SYSTEM_GMP FALSE)
+set(USE_SYSTEM_GMP FALSE PARENT_SCOPE)
 
 if(ENABLE_SYSTEM_GMP)
 	find_library(GMP_LIBRARY NAMES libgmp.so)
@@ -10,6 +9,7 @@ if(ENABLE_SYSTEM_GMP)
 	if(GMP_LIBRARY AND GMP_INCLUDE_DIR)
 		message (STATUS "Using GMP provided by system.")
 		set(USE_SYSTEM_GMP TRUE)
+		set(USE_SYSTEM_GMP TRUE PARENT_SCOPE)
 	else()
 		message (STATUS "Detecting GMP from system failed.")
 	endif()
@@ -19,8 +19,10 @@ endif()
 
 if(NOT USE_SYSTEM_GMP)
 	message(STATUS "Using bundled mini-gmp library.")
-	set(GMP_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/gmp)
+	set(GMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gmp)
+	set(GMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gmp PARENT_SCOPE)
 	set(GMP_LIBRARY gmp)
+	set(GMP_LIBRARY gmp PARENT_SCOPE)
 	add_subdirectory(gmp)
 endif()
 
