@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_nodemeta.h"
 
 ClientScripting::ClientScripting(Client *client):
 	ScriptApiBase()
@@ -68,4 +69,5 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
+	NodeMetaRef::RegisterClient(L);
 }

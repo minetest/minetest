@@ -25,8 +25,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettext.h"
 #include "l_internal.h"
 #include "lua_api/l_item.h"
+#include "lua_api/l_nodemeta.h"
 #include "mainmenumanager.h"
 #include "util/string.h"
+#include "clientenvironment.h"
+#include "map.h"
 
 extern MainGameCallback *g_gamecallback;
 
@@ -182,6 +185,15 @@ int ModApiClient::l_get_wielded_item(lua_State *L)
 	return 1;
 }
 
+// get_meta(pos)
+int ModApiClient::l_get_meta(lua_State *L)
+{
+	v3s16 p = read_v3s16(L, 1);
+	NodeMetadata *meta = getClient(L)->getEnv().getMap().getNodeMetadata(p);
+	NodeMetaRef::createClient(L, meta);
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -196,4 +208,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
+	API_FCT(get_meta);
 }

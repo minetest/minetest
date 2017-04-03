@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "lua_api/l_metadata.h"
 #include "irrlichttypes_bloated.h"
+#include "nodemetadata.h"
 
 class ServerEnvironment;
 class NodeMetadata;
@@ -34,9 +35,12 @@ class NodeMetaRef : public MetaDataRef {
 private:
 	v3s16 m_p;
 	ServerEnvironment *m_env;
+	Metadata *m_meta;
+	bool m_is_local;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_reg methodsServer[];
+	static const luaL_reg methodsClient[];
 
 	static NodeMetaRef *checkobject(lua_State *L, int narg);
 
@@ -71,6 +75,7 @@ private:
 
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
+	NodeMetaRef(Metadata *meta);
 
 	~NodeMetaRef();
 
@@ -78,7 +83,12 @@ public:
 	// Not callable from Lua; all references are created on the C side.
 	static void create(lua_State *L, v3s16 p, ServerEnvironment *env);
 
+	// Client-sided version of the above
+	static void createClient(lua_State *L, Metadata *meta);
+
+	static void RegisterCommon(lua_State *L);
 	static void Register(lua_State *L);
+	static void RegisterClient(lua_State *L);
 };
 
 #endif /* L_NODEMETA_H_ */
