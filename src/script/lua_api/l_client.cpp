@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "mainmenumanager.h"
 #include "util/string.h"
+#include "camera.h"
+#include "content_cao.h"
 
 extern MainGameCallback *g_gamecallback;
 
@@ -85,6 +87,50 @@ int ModApiClient::l_get_player_names(lua_State *L)
 		lua_rawseti(L, newTable, index);
 		index++;
 	}
+	return 1;
+}
+
+// set_camera_mode(mode)
+int ModApiClient::l_set_camera_mode(lua_State *L)
+{
+	CameraMode cmode = static_cast<CameraMode>(lua_tonumber(L, 1));
+	Client *client = getClient(L);
+	if (!client)
+	{
+		lua_pushboolean(L, false);
+		return 0;
+	}
+	
+	Camera *camera = client->getCamera();
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (!player || !player->getCAO()) {
+		lua_pushboolean(L, false);
+		return 0;
+	}
+	GenericCAO *cao = player->getCAO();
+	
+	bool success = camera->setCameraMode(cmode);
+	
+	cao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+	cao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+	
+	lua_pushboolean(L, success);
+	return 1;
+}
+
+// get_camera_mode()
+int ModApiClient::l_get_camera_mode(lua_State *L)
+{
+	CameraMode cmode;
+	Client *client = getClient(L);
+	if (!client || !client->getCamera()) {
+		lua_pushnil(L);
+		return 0;
+	}
+	
+	Camera *camera = client->getCamera();
+	cmode = camera->getCameraMode();
+	lua_pushnumber(L, (int)cmode);
 	return 1;
 }
 
@@ -187,6 +233,8 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(display_chat_message);
 	API_FCT(get_player_names);
+	API_FCT(set_camera_mode);
+	API_FCT(get_camera_mode);
 	API_FCT(set_last_run_mod);
 	API_FCT(get_last_run_mod);
 	API_FCT(show_formspec);

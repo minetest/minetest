@@ -34,6 +34,12 @@ private:
 
 	// get_player_names()
 	static int l_get_player_names(lua_State *L);
+	
+	// set_camera_mode(mode)
+	static int l_set_camera_mode(lua_State *L);
+	
+	// get_camera_mode()
+	static int l_get_camera_mode(lua_State *L);
 
 	// show_formspec(name, fornspec)
 	static int l_show_formspec(lua_State *L);
