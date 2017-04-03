@@ -1174,6 +1174,18 @@ server_side_occlusion_culling = true
 #    type: float
 # mgv5_cave_width = 0.125
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv5_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv5_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv5_cavern_threshold = 0.7
+
 #    type: noise_params
 # mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
@@ -1188,6 +1200,9 @@ server_side_occlusion_culling = true
 
 #    type: noise_params
 # mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+
+#    type: noise_params
+# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    Noise parameters in group format, unsupported by advanced settings
 #    menu but settable in minetest.conf.
@@ -1284,6 +1299,18 @@ server_side_occlusion_culling = true
 #    type: int
 # mgv7_shadow_limit = 1024
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv7_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv7_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv7_cavern_threshold = 0.7
+
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 
@@ -1316,6 +1343,9 @@ server_side_occlusion_culling = true
 
 #    type: noise_params
 # mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    type: noise_params
+# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    type: noise_params
 # mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0

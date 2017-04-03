@@ -940,12 +940,25 @@ mg_biome_np_humidity_blend (Mapgen biome humidity blend noise parameters) noise_
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv5_cave_width (Mapgen v5 cave width) float 0.125
 
+#    Y-level of cavern upper limit.
+mgv5_cavern_limit (Mapgen v5 cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgv5_cavern_taper (Mapgen v5 cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgv5_cavern_threshold (Mapgen v5 cavern threshold) float 0.7
+
 mgv5_np_filler_depth (Mapgen v5 filler depth noise parameters) noise_params 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 mgv5_np_factor (Mapgen v5 factor noise parameters) noise_params 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 mgv5_np_height (Mapgen v5 height noise parameters) noise_params 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
 mgv5_np_cave1 (Mapgen v5 cave1 noise parameters) noise_params 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
 mgv5_np_cave2 (Mapgen v5 cave2 noise parameters) noise_params 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+mgv5_np_cavern (Mapgen v5 cavern noise parameters) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 #    TODO
+#    Noise parameters in group format, unsupported by advanced settings
+#    menu but settable in minetest.conf.
+#    See documentation of noise parameter formats in minetest.conf.example.
 #mgv5_np_ground = {
 #    offset      = 0
 #    scale       = 40
@@ -1007,6 +1020,15 @@ mgv7_floatland_level (Mapgen v7 floatland level) int 1280
 #    Y-level to which floatland shadows extend.
 mgv7_shadow_limit (Mapgen v7 shadow limit) int 1024
 
+#    Y-level of cavern upper limit.
+mgv7_cavern_limit (Mapgen v7 cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgv7_cavern_taper (Mapgen v7 cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgv7_cavern_threshold (Mapgen v7 cavern threshold) float 0.7
+
 mgv7_np_terrain_base (Mapgen v7 terrain base noise parameters) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 mgv7_np_terrain_alt (Mapgen v7 terrain altitude noise parameters) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
 mgv7_np_terrain_persist (Mapgen v7 terrain persistation noise parameters) noise_params 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
@@ -1018,6 +1040,7 @@ mgv7_np_floatland_base (Mapgen v7 floatland base terrain noise parameters) noise
 mgv7_np_float_base_height (Mapgen v7 floatland base terrain height noise parameters) noise_params 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 mgv7_np_mountain (Mapgen v7 mountain noise parameters) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 mgv7_np_ridge (Mapgen v7 river channel wall noise parameters) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+mgv7_np_cavern (Mapgen v7 cavern noise parameters) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 mgv7_np_cave1 (Mapgen v7 cave1 noise parameters) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 mgv7_np_cave2 (Mapgen v7 cave2 noise parameters) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 

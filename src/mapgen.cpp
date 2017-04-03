@@ -840,6 +840,18 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 }
 
 
+bool MapgenBasic::generateCaverns(s16 max_stone_y)
+{
+	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit)
+		return false;
+
+	CavernsNoise caverns_noise(ndef, csize, &np_cavern,
+		seed, cavern_limit, cavern_taper, cavern_threshold);
+
+	return caverns_noise.generateCaverns(vm, node_min, node_max);
+}
+
+
 void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 {
 	if (max_stone_y < node_min.Y)
