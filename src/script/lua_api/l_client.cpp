@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "mainmenumanager.h"
 #include "util/string.h"
+#include "camera.h"
+#include "content_cao.h"
 
 extern MainGameCallback *g_gamecallback;
 
