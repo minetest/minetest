@@ -40,6 +40,15 @@ core.register_chatcommand("dump", {
 	end,
 })
 
+core.register_chatcommand("mode", {
+	func = function(param)
+		core.display_chat_message("Mode was: " .. core.get_camera_mode())
+		core.set_camera_mode(tonumber(param) or 1)
+		core.display_chat_message("Mode is: " .. core.get_camera_mode())
+		return
+	end
+})
+
 core.register_chatcommand("colorize_test", {
 	func = function(param)
 		return true, core.colorize("red", param)

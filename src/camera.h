@@ -160,6 +160,16 @@ public:
 		else
 			m_camera_mode = CAMERA_MODE_FIRST;
 	}
+	
+	// Set the current camera mode
+	inline bool setCameraMode(CameraMode cmode) {
+		if (cmode >= CAMERA_MODE_FIRST && cmode <= CAMERA_MODE_THIRD_FRONT) {
+			m_camera_mode = cmode;
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	//read the current camera mode
 	inline CameraMode getCameraMode()
