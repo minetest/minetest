@@ -24,9 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_LEVELDB
 
+#include <string>
 #include "database.h"
 #include "leveldb/db.h"
-#include <string>
 
 class Database_LevelDB : public Database
 {
@@ -46,4 +46,3 @@ private:
 #endif // USE_LEVELDB
 
 #endif
-

@@ -44,7 +44,7 @@
 #if USE_SYSTEM_GMP || defined (__ANDROID__) || defined (ANDROID)
 	#include <gmp.h>
 #else
-	#include <gmp/mini-gmp.h>
+	#include <mini-gmp.h>
 #endif
 
 #include <util/sha2.h>

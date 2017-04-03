@@ -63,6 +63,36 @@ private:
 };
 
 /*
+	CavernsNoise is a cave digging algorithm
+*/
+class CavernsNoise {
+public:
+	CavernsNoise(INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+	s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold);
+	~CavernsNoise();
+
+	bool generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax);
+
+private:
+	INodeDefManager *m_ndef;
+
+	// configurable parameters
+	v3s16 m_csize;
+	float m_cavern_limit;
+	float m_cavern_taper;
+	float m_cavern_threshold;
+
+	// intermediate state variables
+	u16 m_ystride;
+	u16 m_zstride_1d;
+
+	Noise *noise_cavern;
+
+	content_t c_water_source;
+	content_t c_lava_source;
+};
+
+/*
 	CavesRandomWalk is an implementation of a cave-digging algorithm that
 	operates on the principle of a "random walk" to approximate the stochiastic
 	activity of cavern development.

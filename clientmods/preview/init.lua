@@ -127,3 +127,10 @@ core.register_chatcommand("list_players", {
 		core.display_chat_message(dump(core.get_player_names()))
 	end
 })
+
+core.register_chatcommand("disconnect", {
+	description = "Exit to main menu",
+	func = function(param)
+		core.disconnect()
+	end,
+})

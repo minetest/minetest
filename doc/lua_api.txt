@@ -658,6 +658,10 @@ node definition:
       The first five bits of `param2` tells which color
       is picked from the palette.
       The palette should have 32 pixels.
+    paramtype2 == "glasslikeliquidlevel"
+    ^ Only valid for "glasslike_framed" or "glasslike_framed_optional" drawtypes.
+      param2 defines 64 levels of internal liquid.
+      Liquid texture is defined using `special_tiles = {"modname_tilename.png"},`
     collision_box = {
       type = "fixed",
       fixed = {
@@ -1872,6 +1876,12 @@ The following functions provide escape sequences:
     * `color` is a ColorString
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
+* `color.strip_foreground_colors(str)`
+    * Removes foreground colors added by `get_color_escape_sequence`.
+* `color.strip_background_colors(str)`
+    * Removes background colors added by `get_background_escape_sequence`.
+* `color.strip_colors(str)`
+    * Removes all color escape sequences.
 
 Spatial Vectors
 ---------------
@@ -1929,6 +1939,8 @@ Helper functions
     * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
+* `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
+    * returns the exact position on the surface of a pointed node
 
 `minetest` namespace reference
 ------------------------------

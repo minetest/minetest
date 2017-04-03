@@ -28,3 +28,74 @@ function core.override_chatcommand(name, redefinition)
 	end
 	core.registered_chatcommands[name] = chatcommand
 end
+
+local cmd_marker = "/"
+
+if INIT == "client" then
+	cmd_marker = "."
+end
+
+local function do_help_cmd(name, param)
+	local function format_help_line(cmd, def)
+		local msg = core.colorize("#00ffff", cmd_marker .. cmd)
+		if def.params and def.params ~= "" then
+			msg = msg .. " " .. def.params
+		end
+		if def.description and def.description ~= "" then
+			msg = msg .. ": " .. def.description
+		end
+		return msg
+	end
+	if param == "" then
+		local cmds = {}
+		for cmd, def in pairs(core.registered_chatcommands) do
+			if INIT == "client" or core.check_player_privs(name, def.privs) then
+				cmds[#cmds + 1] = cmd
+			end
+		end
+		table.sort(cmds)
+		return true, "Available commands: " .. table.concat(cmds, " ") .. "\n"
+				.. "Use '"..cmd_marker.."help <cmd>' to get more information,"
+				.. " or '"..cmd_marker.."help all' to list everything."
+	elseif param == "all" then
+		local cmds = {}
+		for cmd, def in pairs(core.registered_chatcommands) do
+			if INIT == "client" or core.check_player_privs(name, def.privs) then
+				cmds[#cmds + 1] = format_help_line(cmd, def)
+			end
+		end
+		table.sort(cmds)
+		return true, "Available commands:\n"..table.concat(cmds, "\n")
+	elseif INIT == "game" and param == "privs" then
+		local privs = {}
+		for priv, def in pairs(core.registered_privileges) do
+			privs[#privs + 1] = priv .. ": " .. def.description
+		end
+		table.sort(privs)
+		return true, "Available privileges:\n"..table.concat(privs, "\n")
+	else
+		local cmd = param
+		local def = core.registered_chatcommands[cmd]
+		if not def then
+			return false, "Command not available: "..cmd
+		else
+			return true, format_help_line(cmd, def)
+		end
+	end
+end
+
+if INIT == "client" then
+	core.register_chatcommand("help", {
+		params = "[all/<cmd>]",
+		description = "Get help for commands",
+		func = function(param)
+			return do_help_cmd(nil, param)
+		end,
+	})
+else
+	core.register_chatcommand("help", {
+		params = "[all/privs/<cmd>]",
+		description = "Get help for commands or list privileges",
+		func = do_help_cmd,
+	})
+end

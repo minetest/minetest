@@ -120,13 +120,14 @@ class MeshUpdateThread : public UpdateThread
 {
 private:
 	MeshUpdateQueue m_queue_in;
+	int m_generation_interval;
 
 protected:
 	virtual void doUpdate();
 
 public:
 
-	MeshUpdateThread() : UpdateThread("Mesh") {}
+	MeshUpdateThread();
 
 	void enqueueUpdate(v3s16 p, MeshMakeData *data,
 			bool ack_block_to_server, bool urgent);
@@ -307,7 +308,7 @@ private:
 };
 
 class ClientScripting;
-class GameUIFlags;
+struct GameUIFlags;
 
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
@@ -736,6 +737,7 @@ private:
 	float m_mod_storage_save_timer;
 	GameUIFlags *m_game_ui_flags;
 
+	bool m_shutdown;
 	DISABLE_CLASS_COPY(Client);
 };
 

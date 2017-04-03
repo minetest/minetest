@@ -135,15 +135,18 @@ private:
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 
 	v3f m_position;
-	// This is used for determining the sneaking range
+
 	v3s16 m_sneak_node;
+	// Stores the top bounding box of m_sneak_node
+	aabb3f m_sneak_node_bb_top;
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists;
-	// Whether recalculation of the sneak node is needed
+	// Whether recalculation of m_sneak_node and its top bbox is needed
 	bool m_need_to_get_new_sneak_node;
-	// Stores the top bounding box of m_sneak_node and is updated
-	// when m_need_to_get_new_sneak_node == true
-	aabb3f m_sneak_node_bb_top;
+	// Whether a "sneak ladder" structure is detected at the players pos
+	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
+	bool m_sneak_ladder_detected;
+
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
 	v3s16 m_old_node_below;

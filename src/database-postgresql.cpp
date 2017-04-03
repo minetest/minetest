@@ -281,7 +281,7 @@ bool Database_PostgreSQL::deleteBlock(const v3s16 &pos)
 	const int argLen[] = { sizeof(x), sizeof(y), sizeof(z) };
 	const int argFmt[] = { 1, 1, 1 };
 
-	execPrepared("read_block", ARRLEN(args), args, argLen, argFmt);
+	execPrepared("delete_block", ARRLEN(args), args, argLen, argFmt);
 
 	return true;
 }

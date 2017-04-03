@@ -19,13 +19,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_client.h"
-#include "l_internal.h"
-#include "util/string.h"
+#include "common/c_content.h"
+#include "common/c_converter.h"
 #include "cpp_api/s_base.h"
 #include "gettext.h"
-#include "common/c_converter.h"
-#include "common/c_content.h"
+#include "l_internal.h"
 #include "lua_api/l_item.h"
+#include "mainmenumanager.h"
+#include "util/string.h"
+
+extern MainGameCallback *g_gamecallback;
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {
@@ -98,7 +101,7 @@ int ModApiClient::l_get_player_names(lua_State *L)
 // show_formspec(formspec)
 int ModApiClient::l_show_formspec(lua_State *L)
 {
-	if ( !lua_isstring(L, 1) || !lua_isstring(L, 2) )
+	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
 		return 0;
 
 	ClientEvent event;
@@ -115,6 +118,20 @@ int ModApiClient::l_send_respawn(lua_State *L)
 {
 	getClient(L)->sendRespawn();
 	return 0;
+}
+
+// disconnect()
+int ModApiClient::l_disconnect(lua_State *L)
+{
+	// Stops badly written Lua code form causing boot loops
+	if (getClient(L)->isShutdown()) {
+		lua_pushboolean(L, false);
+		return 1;
+	}
+
+	g_gamecallback->disconnect();
+	lua_pushboolean(L, true);
+	return 1;
 }
 
 // gettext(text)
@@ -152,8 +169,7 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 	if (pos_ok) {
 		// Return node
 		pushnode(L, n, getClient(L)->ndef());
-	}
-	else {
+	} else {
 		lua_pushnil(L);
 	}
 	return 1;
@@ -190,5 +206,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_node);
 	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
-	
+	API_FCT(disconnect);
+
 }

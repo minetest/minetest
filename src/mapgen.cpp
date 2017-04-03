@@ -97,11 +97,12 @@ STATIC_ASSERT(
 
 Mapgen::Mapgen()
 {
-	generating  = false;
-	id          = -1;
-	seed        = 0;
-	water_level = 0;
-	flags       = 0;
+	generating   = false;
+	id           = -1;
+	seed         = 0;
+	water_level  = 0;
+	mapgen_limit = 0;
+	flags        = 0;
 
 	vm        = NULL;
 	ndef      = NULL;
@@ -114,11 +115,12 @@ Mapgen::Mapgen()
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
-	generating  = false;
-	id          = mapgenid;
-	water_level = params->water_level;
-	flags       = params->flags;
-	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	generating   = false;
+	id           = mapgenid;
+	water_level  = params->water_level;
+	mapgen_limit = params->mapgen_limit;
+	flags        = params->flags;
+	csize        = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
 	/*
 		We are losing half our entropy by doing this, but it is necessary to
@@ -838,6 +840,18 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 }
 
 
+bool MapgenBasic::generateCaverns(s16 max_stone_y)
+{
+	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit)
+		return false;
+
+	CavernsNoise caverns_noise(ndef, csize, &np_cavern,
+		seed, cavern_limit, cavern_taper, cavern_threshold);
+
+	return caverns_noise.generateCaverns(vm, node_min, node_max);
+}
+
+
 void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 {
 	if (max_stone_y < node_min.Y)
@@ -1001,10 +1015,14 @@ void MapgenParams::readParams(const Settings *settings)
 	}
 
 	std::string mg_name;
-	if (settings->getNoEx("mg_name", mg_name))
-		this->mgtype = Mapgen::getMapgenType(mg_name);
+	if (settings->getNoEx("mg_name", mg_name)) {
+		mgtype = Mapgen::getMapgenType(mg_name);
+		if (mgtype == MAPGEN_INVALID)
+			mgtype = MAPGEN_DEFAULT;
+	}
 
 	settings->getS16NoEx("water_level", water_level);
+	settings->getS16NoEx("mapgen_limit", mapgen_limit);
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
@@ -1022,6 +1040,7 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->set("mg_name", Mapgen::getMapgenName(mgtype));
 	settings->setU64("seed", seed);
 	settings->setS16("water_level", water_level);
+	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
 	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
 

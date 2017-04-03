@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
 #include "minimap.h"
+#include "settings.h"
 
 LuaMinimap::LuaMinimap(Minimap *m)
 {
@@ -118,6 +119,10 @@ int LuaMinimap::l_toggle_shape(lua_State *L)
 
 int LuaMinimap::l_show(lua_State *L)
 {
+	// If minimap is disabled by config, don't show it.
+	if (!g_settings->getBool("enable_minimap"))
+		return 1;
+
 	Client *client = getClient(L);
 	assert(client);
 

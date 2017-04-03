@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-class ModApiClient: public ModApiBase
+class ModApiClient : public ModApiBase
 {
 private:
 	// get_current_modname()
@@ -31,7 +31,7 @@ private:
 
 	// display_chat_message(message)
 	static int l_display_chat_message(lua_State *L);
-	
+
 	// get_player_names()
 	static int l_get_player_names(lua_State *L);
 
@@ -40,6 +40,9 @@ private:
 
 	// send_respawn()
 	static int l_send_respawn(lua_State *L);
+
+	// disconnect()
+	static int l_disconnect(lua_State *L);
 
 	// gettext(text)
 	static int l_gettext(lua_State *L);

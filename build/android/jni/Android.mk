@@ -98,8 +98,8 @@ endif
 LOCAL_C_INCLUDES := \
 		jni/src                                   \
 		jni/src/script                            \
-		jni/src/lua/src                           \
-		jni/src/jsoncpp                           \
+		jni/lib/lua/src                           \
+		jni/lib/jsoncpp                           \
 		jni/src/cguittfont                        \
 		deps/irrlicht/include                     \
 		deps/libiconv/include                     \
@@ -312,6 +312,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_mainmenu.cpp     \
 		jni/src/script/lua_api/l_mapgen.cpp       \
 		jni/src/script/lua_api/l_metadata.cpp     \
+		jni/src/script/lua_api/l_minimap.cpp      \
 		jni/src/script/lua_api/l_nodemeta.cpp     \
 		jni/src/script/lua_api/l_nodetimer.cpp    \
 		jni/src/script/lua_api/l_noise.cpp        \
@@ -334,36 +335,36 @@ LOCAL_SRC_FILES += jni/src/cguittfont/xCGUITTFont.cpp
 
 # Lua
 LOCAL_SRC_FILES += \
-		jni/src/lua/src/lapi.c                    \
-		jni/src/lua/src/lauxlib.c                 \
-		jni/src/lua/src/lbaselib.c                \
-		jni/src/lua/src/lcode.c                   \
-		jni/src/lua/src/ldblib.c                  \
-		jni/src/lua/src/ldebug.c                  \
-		jni/src/lua/src/ldo.c                     \
-		jni/src/lua/src/ldump.c                   \
-		jni/src/lua/src/lfunc.c                   \
-		jni/src/lua/src/lgc.c                     \
-		jni/src/lua/src/linit.c                   \
-		jni/src/lua/src/liolib.c                  \
-		jni/src/lua/src/llex.c                    \
-		jni/src/lua/src/lmathlib.c                \
-		jni/src/lua/src/lmem.c                    \
-		jni/src/lua/src/loadlib.c                 \
-		jni/src/lua/src/lobject.c                 \
-		jni/src/lua/src/lopcodes.c                \
-		jni/src/lua/src/loslib.c                  \
-		jni/src/lua/src/lparser.c                 \
-		jni/src/lua/src/lstate.c                  \
-		jni/src/lua/src/lstring.c                 \
-		jni/src/lua/src/lstrlib.c                 \
-		jni/src/lua/src/ltable.c                  \
-		jni/src/lua/src/ltablib.c                 \
-		jni/src/lua/src/ltm.c                     \
-		jni/src/lua/src/lundump.c                 \
-		jni/src/lua/src/lvm.c                     \
-		jni/src/lua/src/lzio.c                    \
-		jni/src/lua/src/print.c
+		jni/lib/lua/src/lapi.c                    \
+		jni/lib/lua/src/lauxlib.c                 \
+		jni/lib/lua/src/lbaselib.c                \
+		jni/lib/lua/src/lcode.c                   \
+		jni/lib/lua/src/ldblib.c                  \
+		jni/lib/lua/src/ldebug.c                  \
+		jni/lib/lua/src/ldo.c                     \
+		jni/lib/lua/src/ldump.c                   \
+		jni/lib/lua/src/lfunc.c                   \
+		jni/lib/lua/src/lgc.c                     \
+		jni/lib/lua/src/linit.c                   \
+		jni/lib/lua/src/liolib.c                  \
+		jni/lib/lua/src/llex.c                    \
+		jni/lib/lua/src/lmathlib.c                \
+		jni/lib/lua/src/lmem.c                    \
+		jni/lib/lua/src/loadlib.c                 \
+		jni/lib/lua/src/lobject.c                 \
+		jni/lib/lua/src/lopcodes.c                \
+		jni/lib/lua/src/loslib.c                  \
+		jni/lib/lua/src/lparser.c                 \
+		jni/lib/lua/src/lstate.c                  \
+		jni/lib/lua/src/lstring.c                 \
+		jni/lib/lua/src/lstrlib.c                 \
+		jni/lib/lua/src/ltable.c                  \
+		jni/lib/lua/src/ltablib.c                 \
+		jni/lib/lua/src/ltm.c                     \
+		jni/lib/lua/src/lundump.c                 \
+		jni/lib/lua/src/lvm.c                     \
+		jni/lib/lua/src/lzio.c                    \
+		jni/lib/lua/src/print.c
 
 # SQLite3
 LOCAL_SRC_FILES += deps/sqlite/sqlite3.c
@@ -376,7 +377,7 @@ LOCAL_SRC_FILES += \
 		jni/src/threading/thread.cpp
 
 # JSONCPP
-LOCAL_SRC_FILES += jni/src/jsoncpp/json/jsoncpp.cpp
+LOCAL_SRC_FILES += jni/lib/jsoncpp/jsoncpp.cpp
 
 LOCAL_SHARED_LIBRARIES := iconv openal ogg vorbis gmp
 LOCAL_STATIC_LIBRARIES := Irrlicht freetype curl ssl crypto android_native_app_glue $(PROFILER_LIBS)

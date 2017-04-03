@@ -38,6 +38,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("enable_mesh_cache", "false");
+	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -71,6 +72,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_special1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
+	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_F9");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
@@ -331,10 +333,10 @@ void set_default_settings(Settings *settings)
 	// Mapgen
 	settings->setDefault("mg_name", "v7");
 	settings->setDefault("water_level", "1");
+	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("map_generation_limit", "31000");
 	settings->setDefault("max_block_generate_distance", "7");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 

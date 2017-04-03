@@ -31,4 +31,3 @@ typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;
 
 #endif
-

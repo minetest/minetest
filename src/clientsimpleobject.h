@@ -29,10 +29,9 @@ protected:
 public:
 	bool m_to_be_removed;
 
-	ClientSimpleObject(): m_to_be_removed(false) {}
-	virtual ~ClientSimpleObject(){}
-	virtual void step(float dtime){}
+	ClientSimpleObject() : m_to_be_removed(false) {}
+	virtual ~ClientSimpleObject() {}
+	virtual void step(float dtime) {}
 };
 
 #endif
-

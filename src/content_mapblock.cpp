@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "log.h"
 #include "noise.h"
+#include "util/cpp11.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -42,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
-static const v3s16 light_dirs[8] = {
+static constexpr v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
 	v3s16(-1, -1,  1),
 	v3s16(-1,  1, -1),
@@ -54,7 +55,7 @@ static const v3s16 light_dirs[8] = {
 };
 
 // Standard index set to make a quad on 4 vertices
-static const u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
+static constexpr u16 quad_indices[] = {0, 1, 2, 2, 3, 0};
 
 const std::string MapblockMeshGenerator::raillike_groupname = "connect_to_raillike";
 
@@ -97,7 +98,7 @@ TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
 
 void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
-	static const v2f tcoords[4] = {v2f(0, 1), v2f(1, 1), v2f(1, 0), v2f(0, 0)};
+	static const v2f tcoords[4] = {v2f(0, 0), v2f(1, 0), v2f(1, 1), v2f(0, 1)};
 	video::S3DVertex vertices[4];
 	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
@@ -630,22 +631,22 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 		// Don't make face if neighbor is of same type
 		if (neighbor.getContent() == n.getContent())
 			continue;
+		// Face at Z-
 		v3f vertices[4] = {
-			v3f(-BS / 2, -BS / 2, BS / 2),
-			v3f( BS / 2, -BS / 2, BS / 2),
-			v3f( BS / 2,  BS / 2, BS / 2),
-			v3f(-BS / 2,  BS / 2, BS / 2),
+			v3f(-BS / 2,  BS / 2, -BS / 2),
+			v3f( BS / 2,  BS / 2, -BS / 2),
+			v3f( BS / 2, -BS / 2, -BS / 2),
+			v3f(-BS / 2, -BS / 2, -BS / 2),
 		};
 		for (int i = 0; i < 4; i++) {
-			// Rotations in the g_6dirs format
 			switch (face) {
-				case 0: vertices[i].rotateXZBy(  0); break; // Z+
-				case 1: vertices[i].rotateYZBy(-90); break; // Y+
-				case 2: vertices[i].rotateXZBy(-90); break; // X+
-				case 3: vertices[i].rotateXZBy(180); break; // Z-
-				case 4: vertices[i].rotateYZBy( 90); break; // Y-
-				case 5: vertices[i].rotateXZBy( 90); break; // X-
-			};
+				case D6D_ZP: vertices[i].rotateXZBy(180); break;
+				case D6D_YP: vertices[i].rotateYZBy( 90); break;
+				case D6D_XP: vertices[i].rotateXZBy( 90); break;
+				case D6D_ZN: vertices[i].rotateXZBy(  0); break;
+				case D6D_YN: vertices[i].rotateYZBy(-90); break;
+				case D6D_XN: vertices[i].rotateXZBy(-90); break;
+			}
 		}
 		drawQuad(vertices, dir);
 	}
@@ -759,8 +760,11 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		drawAutoLightedCuboid(glass_faces[face]);
 	}
 
-	if (param2 > 0 && f->special_tiles[0].texture) {
-		// Interior volume level is in range 0 .. 63,
+	// Optionally render internal liquid level defined by param2
+	// Liquid is textured with 1 tile defined in nodedef 'special_tiles'
+	if (param2 > 0 && f->param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL &&
+			f->special_tiles[0].texture) {
+		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
 		tile = getSpecialTile(*f, n, 0);
@@ -793,10 +797,10 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 
 	float size = BS / 2 * f->visual_scale;
 	v3f vertices[4] = {
-		v3f(-size, -size, 0),
-		v3f( size, -size, 0),
-		v3f( size,  size, 0),
 		v3f(-size,  size, 0),
+		v3f( size,  size, 0),
+		v3f( size, -size, 0),
+		v3f(-size, -size, 0),
 	};
 	for (int i = 0; i < 4; i++) {
 		switch (wall) {
@@ -841,19 +845,19 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2, 0),
-		v3f( scale, -BS / 2, 0),
-		v3f( scale, -BS / 2 + scale * 2, 0),
 		v3f(-scale, -BS / 2 + scale * 2, 0),
+		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f( scale, -BS / 2, 0),
+		v3f(-scale, -BS / 2, 0),
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
 		offset.Y = BS * ((yrng.next() % 16 / 16.0) * 0.125);
 	}
-	int offset_first_index = offset_top_only ? 2 : 0;
+	int offset_count = offset_top_only ? 2 : 4;
+	for (int i = 0; i < offset_count; i++)
+		vertices[i].Z += quad_offset;
 	for (int i = 0; i < 4; i++) {
-		if (i >= offset_first_index)
-			vertices[i].Z += quad_offset;
 		vertices[i].rotateXZBy(rotation + rotate_degree);
 		vertices[i] += offset;
 	}
@@ -929,10 +933,10 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 	float offset_h, float offset_v)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2, 0),
-		v3f( scale, -BS / 2, 0),
-		v3f( scale, -BS / 2 + scale * 2, 0),
 		v3f(-scale, -BS / 2 + scale * 2, 0),
+		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f( scale, -BS / 2, 0),
+		v3f(-scale, -BS / 2, 0),
 	};
 	for (int i = 0; i < 4; i++) {
 		vertices[i].rotateYZBy(opening_angle);
@@ -1147,10 +1151,10 @@ void MapblockMeshGenerator::drawRaillikeNode()
 	static const float size   = BS / 2;
 	float y2 = sloped ? size : -size;
 	v3f vertices[4] = {
-		v3f(-size, -size + offset, -size),
-		v3f( size, -size + offset, -size),
-		v3f( size,    y2 + offset,  size),
 		v3f(-size,    y2 + offset,  size),
+		v3f( size,    y2 + offset,  size),
+		v3f( size, -size + offset, -size),
+		v3f(-size, -size + offset, -size),
 	};
 	if (angle)
 		for (int i = 0; i < 4; i++)

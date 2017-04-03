@@ -148,6 +148,11 @@
 #    type: key
 # keymap_cmd = /
 
+#    Key for opening the chat window to type local commands.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_cmd_local = .
+
 #    Key for opening the chat console.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -593,6 +598,11 @@ enable_client_modding (Client modding) bool false
 #    Enables caching of facedir rotated meshes.
 #    type: bool
 # enable_mesh_cache = false
+
+#    Delay between mesh updates on the client in ms. Increasing this will slow
+#    down the rate of mesh updates, thus reducing jitter on slower clients.
+#    type: int min: 0 max: 50
+# mesh_generation_interval = 0
 
 #    Enables minimap.
 #    type: bool
@@ -1082,14 +1092,11 @@ server_side_occlusion_culling = true
 #    type: int
 # max_block_generate_distance = 6
 
-#    Where the map generator stops.
-#    Please note:
-#    -    Limited to 31000 (setting above has no effect)
-#    -    The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).
-#    -    Those groups have an offset of -32, -32 nodes from the origin.
-#    -    Only groups which are within the map_generation_limit are generated
+#    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
+#    Only mapchunks completely within the mapgen limit are generated.
+#    Value is stored per-world.
 #    type: int min: 0 max: 31000
-# map_generation_limit = 31000
+# mapgen_limit = 31000
 
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
@@ -1167,6 +1174,18 @@ server_side_occlusion_culling = true
 #    type: float
 # mgv5_cave_width = 0.125
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv5_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv5_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv5_cavern_threshold = 0.7
+
 #    type: noise_params
 # mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
@@ -1181,6 +1200,9 @@ server_side_occlusion_culling = true
 
 #    type: noise_params
 # mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+
+#    type: noise_params
+# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    Noise parameters in group format, unsupported by advanced settings
 #    menu but settable in minetest.conf.
@@ -1277,6 +1299,18 @@ server_side_occlusion_culling = true
 #    type: int
 # mgv7_shadow_limit = 1024
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv7_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv7_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv7_cavern_threshold = 0.7
+
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 
@@ -1309,6 +1343,9 @@ server_side_occlusion_culling = true
 
 #    type: noise_params
 # mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    type: noise_params
+# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    type: noise_params
 # mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0

@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,16 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_ABM_HEADER
-#define CONTENT_ABM_HEADER
+#ifndef MT_CPP11_HEADER
+#define MT_CPP11_HEADER
 
-class ServerEnvironment;
-class INodeDefManager;
+#if __cplusplus < 201103L || _MSC_VER < 1600
+#define USE_CPP11_FAKE_KEYWORD
+#endif
 
-/*
-	Legacy ActiveBlockModifiers
-*/
-
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef);
+#ifdef USE_CPP11_FAKE_KEYWORD
+#define constexpr const
+#define nullptr NULL
+#endif
 
 #endif

@@ -53,6 +53,7 @@ enum
 	GUI_ID_KEY_CINEMATIC_BUTTON,
 	GUI_ID_KEY_CHAT_BUTTON,
 	GUI_ID_KEY_CMD_BUTTON,
+	GUI_ID_KEY_CMD_LOCAL_BUTTON,
 	GUI_ID_KEY_CONSOLE_BUTTON,
 	GUI_ID_KEY_SNEAK_BUTTON,
 	GUI_ID_KEY_DROP_BUTTON,
@@ -408,6 +409,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
 	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),          "keymap_cmd");
+	this->add_key(GUI_ID_KEY_CMD_LOCAL_BUTTON, wgettext("Local command"),    "keymap_cmd_local");
 	this->add_key(GUI_ID_KEY_CONSOLE_BUTTON,   wgettext("Console"),          "keymap_console");
 	this->add_key(GUI_ID_KEY_FLY_BUTTON,       wgettext("Toggle fly"),       "keymap_freemove");
 	this->add_key(GUI_ID_KEY_FAST_BUTTON,      wgettext("Toggle fast"),      "keymap_fastmove");
