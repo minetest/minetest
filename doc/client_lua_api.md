@@ -672,6 +672,7 @@ Call these functions only at load time!
     * Called when the local player punches a node
     * Newest functions are called first
     * If any function returns true, the punch is ignored
+    
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
@@ -694,6 +695,9 @@ Call these functions only at load time!
 ### Player
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
+* `minetest.send_chat_message(message)`
+    * Act as if `message` was typed by the player into the terminal.
+   
 
 ### Client Environment
 * `minetest.get_player_names()`
