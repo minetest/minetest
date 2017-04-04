@@ -173,3 +173,32 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
+
+local ktimer = 0
+core.register_globalstep(function(dtime)
+	ktimer = ktimer + dtime
+	if ktimer >= 1 then
+		local limit = tonumber(core.setting_get("mapgen_limit")) or 31000
+		local key, val
+		for key, val in pairs(core.object_refs) do
+			local pos = val:getpos()
+			local name = val:get_player_name()
+			if math.abs(pos.x) >= limit or
+				math.abs(pos.y) >= limit or
+				math.abs(pos.z) >=limit then
+				
+					if name == "" then
+						val:remove()
+						core.log("warning", "Object " .. tostring(key) ..
+							" was removed because it was outside of map bounds.")
+					else
+						val:set_pos({x = 0, y = 0, z = 0})
+						core.kick_player(name, "Illegal Position.")
+						core.log("warning", "Player " .. name ..
+							" was kicked because they were outside of map bounds.")
+					end
+			end
+		end
+		ktimer = 0
+	end
+end)
