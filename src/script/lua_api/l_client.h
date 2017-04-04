@@ -65,6 +65,10 @@ private:
 	// get_meta(pos)
 	static int l_get_meta(lua_State *L);
 
+	static int l_sound_play(lua_State *L);
+
+	static int l_sound_stop(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

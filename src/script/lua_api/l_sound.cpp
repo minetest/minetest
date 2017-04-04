@@ -30,12 +30,7 @@ int ModApiSound::l_sound_play(lua_State *L)
 	read_soundspec(L, 1, spec);
 	bool looped = lua_toboolean(L, 2);
 
-	s32 handle;
-	if (Client *client = getClient(L))
-		handle = client->getSoundManager()->playSound(spec, looped);
-	// Main menu doesn't have access to client, use guiEngine
-	else
-		handle = getGuiEngine(L)->playSound(spec, looped);
+	s32 handle = getGuiEngine(L)->playSound(spec, looped);
 
 	lua_pushinteger(L, handle);
 
@@ -46,11 +41,7 @@ int ModApiSound::l_sound_stop(lua_State *L)
 {
 	u32 handle = luaL_checkinteger(L, 1);
 
-	if (Client *client = getClient(L))
-		client->getSoundManager()->stopSound(handle);
-	// Main menu doesn't have access to client, use guiEngine
-	else
-		getGuiEngine(L)->stopSound(handle);
+	getGuiEngine(L)->stopSound(handle);
 
 	return 1;
 }
