@@ -205,7 +205,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
-	biomegen->calcBiomeNoise(node_min);
+	biomegen->calcBiomeNoiseWithGradient(node_min, heightmap);
 	MgStoneType stone_type = generateBiomes();
 
 	if (flags & MG_CAVES)
