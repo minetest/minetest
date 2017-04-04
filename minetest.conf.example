@@ -1155,20 +1155,31 @@ server_side_occlusion_culling = true
 #    Only the group format supports noise flags which are needed for eased noise.
 #    Mgv5 uses eased noise for np_ground so this is shown in group format below.
 
-#    Noise parameters for biome API temperature, humidity and biome blend.
+#### Biome API temperature and humidity noise parameters
+
+#    Temperature variation for biomes.
 #    type: noise_params
 # mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
 
+#    Small-scale temperature variation for blending biomes on borders.
 #    type: noise_params
 # mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
 
+#    Humidity variation for biomes.
 #    type: noise_params
 # mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
 
+#    Small-scale humidity variation for blending biomes on borders.
 #    type: noise_params
 # mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
 
 #### Mapgen v5
+
+#    Map generation attributes specific to Mapgen v5.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: caverns, nocaverns
+# mgv5_spflags = caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -1186,27 +1197,36 @@ server_side_occlusion_culling = true
 #    type: float
 # mgv5_cavern_threshold = 0.7
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
+#    Variation of terrain vertical scale.
+#    When noise is < -0.55 terrain is near-flat.
 #    type: noise_params
 # mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 
+#    Y-level of average terrain surface.
 #    type: noise_params
 # mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
 
+#    3D noise defining giant caverns.
 #    type: noise_params
 # mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
-#    Noise parameters in group format, unsupported by advanced settings
+#    Noise parameter in group format, unsupported by advanced settings
 #    menu but settable in minetest.conf.
 #    See documentation of noise parameter formats above.
+#    3D noise defining terrain.
+#    type: noise_params
 # mgv5_np_ground = {
 #    offset      = 0,
 #    scale       = 40,
@@ -1221,50 +1241,64 @@ server_side_occlusion_culling = true
 #### Mapgen v6
 
 #    Map generation attributes specific to Mapgen v6.
-#    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
+#    The 'snowbiomes' flag enables the new 5 biome system.
+#    When the new biome system is enabled jungles are automatically enabled and
+#    the 'jungles' flag is ignored.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
 # mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
 
-#    Controls size of deserts and beaches in Mapgen v6.
-#    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
+#    Deserts occur when np_biome exceeds this value.
+#    When the new biome system is enabled, this is ignored.
 #    type: float
 # mgv6_freq_desert = 0.45
 
+#    Sandy beaches occur when np_beach exceeds this value.
 #    type: float
 # mgv6_freq_beach = 0.15
 
+#    Y-level of lower terrain and lakebeds.
 #    type: noise_params
 # mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
 
+#    Y-level of higher (cliff-top) terrain.
 #    type: noise_params
 # mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
 
+#    Varies steepness of cliffs.
 #    type: noise_params
 # mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
 
+#    Defines areas of 'terrain_higher' (cliff-top terrain).
 #    type: noise_params
 # mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
 
+#    Varies depth of biome surface nodes.
 #    type: noise_params
 # mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
 
+#    Defines areas with sandy beaches.
 #    type: noise_params
 # mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
 
+#    Temperature variation for biomes.
 #    type: noise_params
 # mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
 
+#    Variation of number of caves.
 #    type: noise_params
 # mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
 
+#    Humidity variation for biomes.
 #    type: noise_params
 # mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
 
+#    Defines tree areas and tree density.
 #    type: noise_params
 # mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
 
+#    Defines areas where trees have apples.
 #    type: noise_params
 # mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
 
@@ -1275,8 +1309,8 @@ server_side_occlusion_culling = true
 #    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, nomountains, noridges, nofloatlands
-# mgv7_spflags = mountains,ridges
+#    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -1311,45 +1345,62 @@ server_side_occlusion_culling = true
 #    type: float
 # mgv7_cavern_threshold = 0.7
 
+#    Y-level of higher (cliff-top) terrain.
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 
+#    Y-level of lower terrain and lakebeds.
 #    type: noise_params
 # mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
 
+#    Varies roughness of terrain.
+#    Defines the 'persistence' value for terrain_base and terrain_alt noises.
 #    type: noise_params
 # mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
 
+#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
 #    type: noise_params
 # mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    Variation of maximum mountain height (in nodes).
 #    type: noise_params
 # mgv7_np_mount_height = 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
 
+#    Defines large-scale river channel structure.
 #    type: noise_params
 # mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
 
+#    Defines areas of floatland smooth terrain.
+#    Smooth floatlands occur when noise > 0.
 #    type: noise_params
 # mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
 
+#    Variation of hill height and lake depth on floatland smooth terrain.
 #    type: noise_params
 # mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 
+#    3D noise defining mountain structure and height.
+#    Also defines structure of floatland mountain terrain.
 #    type: noise_params
 # mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 
+#    3D noise defining structure of river canyon walls.
 #    type: noise_params
 # mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
+#    3D noise defining giant caverns.
 #    type: noise_params
 # mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
@@ -1359,8 +1410,8 @@ server_side_occlusion_culling = true
 #    Occasional lakes and hills can be added to the flat world.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: lakes, hills, , nolakes, nohills
-# mgflat_spflags =
+#    type: flags possible values: lakes, hills, nolakes, nohills
+# mgflat_spflags = nolakes,nohills
 
 #    Y of flat ground.
 #    type: int
@@ -1374,7 +1425,7 @@ server_side_occlusion_culling = true
 #    type: float
 # mgflat_cave_width = 0.09
 
-#    Terrain noise threshold for lakes.
+#    Terrain noise threshold for optional lakes.
 #    Controls proportion of world area covered by lakes.
 #    Adjust towards 0.0 for a larger proportion.
 #    type: float
@@ -1384,7 +1435,7 @@ server_side_occlusion_culling = true
 #    type: float
 # mgflat_lake_steepness = 48.0
 
-#    Terrain noise threshold for hills.
+#    Terrain noise threshold for optional hills.
 #    Controls proportion of world area covered by hills.
 #    Adjust towards 0.0 for a larger proportion.
 #    type: float
@@ -1394,18 +1445,19 @@ server_side_occlusion_culling = true
 #    type: float
 # mgflat_hill_steepness = 64.0
 
-#    Determines terrain shape.
-#    The 3 numbers in brackets control the scale of the
-#    terrain, the 3 numbers should be identical.
+#    Defines location and terrain of optional hills and lakes.
 #    type: noise_params
 # mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
@@ -1481,15 +1533,19 @@ server_side_occlusion_culling = true
 #    type: float
 # mgfractal_julia_w = 0.33
 
+#    Y-level of seabed.
 #    type: noise_params
 # mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
