@@ -37,7 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
-#include "treegen.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"
