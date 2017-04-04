@@ -107,9 +107,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
 	tcave_cache = new float[csize.Y + 2];
-
-	// Resolve content to be used
-	c_lava_source = ndef->getId("mapgen_lava_source");
 }
 
 

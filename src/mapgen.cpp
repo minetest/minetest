@@ -593,6 +593,7 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 	c_sandstone          = ndef->getId("mapgen_sandstone");
 	c_water_source       = ndef->getId("mapgen_water_source");
 	c_river_water_source = ndef->getId("mapgen_river_water_source");
+	c_lava_source        = ndef->getId("mapgen_lava_source");
 
 	// Fall back to more basic content if not defined
 	// river_water_source cannot fallback to water_source because river water
