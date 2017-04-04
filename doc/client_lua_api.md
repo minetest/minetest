@@ -690,6 +690,8 @@ Call these functions only at load time!
       for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
+* `minetest.get_meta(pos)`
+    * Get a `NodeMetaRef` at that position
 
 ### Player
 * `minetest.get_wielded_item()`
@@ -794,7 +796,18 @@ It can be created via `Settings(filename)`.
     * write changes to file
 * `to_table()`: returns `{[key1]=value1,...}`
 
-Definition tables
+### NodeMetaRef
+Node metadata: reference extra data and functionality stored in a node.
+Can be obtained via `minetest.get_meta(pos)`.
+
+#### Methods
+* `get_string(name)`
+* `get_int(name)`
+* `get_float(name)`
+* `to_table()`: returns `nil` or a table with keys:
+    * `fields`: key-value storage
+    * `inventory`: `{list1 = {}, ...}}`
+
 -----------------
 
 ### Chat command definition (`register_chatcommand`)

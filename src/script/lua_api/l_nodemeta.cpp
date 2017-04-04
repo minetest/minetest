@@ -38,6 +38,9 @@ NodeMetaRef* NodeMetaRef::checkobject(lua_State *L, int narg)
 
 Metadata* NodeMetaRef::getmeta(bool auto_create)
 {
+	if (m_is_local)
+		return m_meta;
+
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
 	if (meta == NULL && auto_create) {
 		meta = new NodeMetadata(m_env->getGameDef()->idef());
@@ -142,7 +145,14 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 
 NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 	m_p(p),
-	m_env(env)
+	m_env(env),
+	m_is_local(false)
+{
+}
+
+NodeMetaRef::NodeMetaRef(Metadata *meta):
+	m_meta(meta),
+	m_is_local(true)
 {
 }
 
@@ -161,7 +171,17 @@ void NodeMetaRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)
 	lua_setmetatable(L, -2);
 }
 
-void NodeMetaRef::Register(lua_State *L)
+// Client-sided version of the above
+void NodeMetaRef::createClient(lua_State *L, Metadata *meta)
+{
+	NodeMetaRef *o = new NodeMetaRef(meta);
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+}
+
+const char NodeMetaRef::className[] = "NodeMetaRef";
+void NodeMetaRef::RegisterCommon(lua_State *L)
 {
 	lua_newtable(L);
 	int methodtable = lua_gettop(L);
@@ -185,16 +205,17 @@ void NodeMetaRef::Register(lua_State *L)
 	lua_settable(L, metatable);
 
 	lua_pop(L, 1);  // drop metatable
-
-	luaL_openlib(L, 0, methods, 0);  // fill methodtable
-	lua_pop(L, 1);  // drop methodtable
-
-	// Cannot be created from Lua
-	//lua_register(L, className, create_object);
 }
 
-const char NodeMetaRef::className[] = "NodeMetaRef";
-const luaL_reg NodeMetaRef::methods[] = {
+void NodeMetaRef::Register(lua_State *L)
+{
+	RegisterCommon(L);
+	luaL_openlib(L, 0, methodsServer, 0);  // fill methodtable
+	lua_pop(L, 1);  // drop methodtable
+}
+
+
+const luaL_reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string),
 	luamethod(MetaDataRef, get_int),
@@ -204,5 +225,22 @@ const luaL_reg NodeMetaRef::methods[] = {
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
 	luamethod(NodeMetaRef, get_inventory),
+	{0,0}
+};
+
+
+void NodeMetaRef::RegisterClient(lua_State *L)
+{
+	RegisterCommon(L);
+	luaL_openlib(L, 0, methodsClient, 0);  // fill methodtable
+	lua_pop(L, 1);  // drop methodtable
+}
+
+
+const luaL_reg NodeMetaRef::methodsClient[] = {
+	luamethod(MetaDataRef, get_string),
+	luamethod(MetaDataRef, get_int),
+	luamethod(MetaDataRef, get_float),
+	luamethod(MetaDataRef, to_table),
 	{0,0}
 };
