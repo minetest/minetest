@@ -58,11 +58,16 @@ public:
 	float physics_override_gravity;
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
+	// Temporary option for old move code
+	bool physics_override_new_move;
 
 	v3f overridePosition;
 
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
+			std::vector<CollisionInfo> *collision_info);
+	// Temporary option for old move code
+	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 
 	void applyControl(float dtime);
@@ -137,6 +142,9 @@ private:
 	v3f m_position;
 
 	v3s16 m_sneak_node;
+	// Stores the max player uplift by m_sneak_node
+	// To support temporary option for old move code
+	f32 m_sneak_node_bb_ymax;
 	// Stores the top bounding box of m_sneak_node
 	aabb3f m_sneak_node_bb_top;
 	// Whether the player is allowed to sneak

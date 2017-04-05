@@ -789,6 +789,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_physics_override_gravity(1),
 	m_physics_override_sneak(true),
 	m_physics_override_sneak_glitch(true),
+	m_physics_override_new_move(true),
 	m_physics_override_sent(false)
 {
 	assert(m_peer_id != 0);	// pre-condition
@@ -886,7 +887,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 	msg_os << serializeLongString(gob_cmd_update_physics_override(m_physics_override_speed,
 			m_physics_override_jump, m_physics_override_gravity, m_physics_override_sneak,
-			m_physics_override_sneak_glitch)); // 5
+			m_physics_override_sneak_glitch, m_physics_override_new_move)); // 5
 	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
 	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
 	int message_count = 6 + m_bone_position.size();
@@ -1049,7 +1050,8 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		m_physics_override_sent = true;
 		std::string str = gob_cmd_update_physics_override(m_physics_override_speed,
 				m_physics_override_jump, m_physics_override_gravity,
-				m_physics_override_sneak, m_physics_override_sneak_glitch);
+				m_physics_override_sneak, m_physics_override_sneak_glitch,
+				m_physics_override_new_move);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);

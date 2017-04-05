@@ -105,7 +105,7 @@ private:
 	static int l_get_armor_groups(lua_State *L);
 
 	// set_physics_override(self, physics_override_speed, physics_override_jump,
-	//                      physics_override_gravity, sneak, sneak_glitch)
+	//                      physics_override_gravity, sneak, sneak_glitch, new_move)
 	static int l_set_physics_override(lua_State *L);
 
 	// get_physics_override(self)
