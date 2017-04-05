@@ -66,6 +66,8 @@ ClientEnvironment::~ClientEnvironment()
 
 	// Drop/delete map
 	m_map->drop();
+
+	delete m_local_player;
 }
 
 Map & ClientEnvironment::getMap()
