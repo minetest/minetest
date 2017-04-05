@@ -84,11 +84,11 @@ msgstr "依赖："
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr "禁用MOD包"
+msgstr "禁用模组包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
-msgstr "启用MOD包"
+msgstr "启用模组包"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -98,7 +98,7 @@ msgstr "全部启用"
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
-msgstr "无法启用 MOD \"$1\"：含有不支持的字符。允许的字符为 [a-z0-9_]。"
+msgstr "无法启用模组 \"$1\"：含有不支持的字符。允许的字符为 [a-z0-9_]。"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -106,11 +106,11 @@ msgstr "隐藏游戏"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "隐藏MOD包内容"
+msgstr "隐藏模组包内容"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod："
+msgstr "模组："
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -159,7 +159,7 @@ msgstr "种子"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "警告: 最小化开发测试是为开发者提供。"
+msgstr "警告: “最小化开发测试”是为开发者提供。"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
@@ -181,11 +181,11 @@ msgstr "删除"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "MOD管理器：无法删除“$1”"
+msgstr "模组管理器：无法删除“$1”"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "MOD管理器：MOD“$1“路径非法"
+msgstr "模组管理器：模组“$1“路径非法"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -197,11 +197,11 @@ msgstr "接受"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "重命名MOD包："
+msgstr "重命名模组包："
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
-msgstr "\"$1\" 不是合法的 flag."
+msgstr "\"$1\" 不是合法的标签。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -236,7 +236,7 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"格式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"格式: <偏移>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -244,32 +244,32 @@ msgid "Games"
 msgstr "游戏"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
-msgid "Mods"
-msgstr "Mod"
+msgid "模组"
+msgstr "模组"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "可选附加一逗号起始的孔隙度参数。"
+msgstr "可附加可选的选项（以“,”起始）。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr "请输入 flag, 多个 flag 以半角逗号分隔."
+msgstr "请输入标签，多个标签以“,”分隔。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "请输入一个整数类型."
+msgstr "请输入一个整数类型。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "请输入一个合法的数字."
+msgstr "请输入一个合法的数字。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
-msgstr "可设置的 flag: "
+msgstr "可设置的标签："
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "回复初始设置"
+msgstr "恢复初始设置"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
@@ -281,11 +281,11 @@ msgstr "显示高级设置"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr "这个值必须大于 $1."
+msgstr "这个值必须大于 $1。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr "这个值必须小于 $1."
+msgstr "这个值必须小于 $1。"
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -293,7 +293,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"安装MOD：不支持的文件类型“$1“或文件损坏"
+"安装模组：不支持的文件类型“$1“或文件损坏"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -301,15 +301,15 @@ msgstr "无法安装$1到$2"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "安装MOD：文件：”$1“"
+msgstr "安装模组：文件：”$1“"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "安装MOD：找不到$1的真正MOD名"
+msgstr "安装模组：找不到$1的真正模组名"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "安装MOD：找不到MOD包$1的合适文件夹名"
+msgstr "安装模组：找不到模组包$1的合适文件夹名"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -341,7 +341,7 @@ msgstr "短名称:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr "成功的安装："
+msgstr "成功安装："
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -373,15 +373,15 @@ msgstr "前核心开发者"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr "已安装的MOD："
+msgstr "已安装的模组："
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr "MOD资料："
+msgstr "模组资料："
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "无MOD资料可得"
+msgstr "无模组资料可得"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -389,19 +389,19 @@ msgstr "改名"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "选择MOD文件："
+msgstr "选择模组文件："
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "删除选中的MOD"
+msgstr "删除选中的模组"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "删除选中的MOD包"
+msgstr "删除选中的模组包"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
-msgstr "地址/端口"
+msgstr "地址、端口"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
@@ -431,11 +431,11 @@ msgstr "收藏的服务器"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr "用户名/密码"
+msgstr "用户名、密码"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "启用 PvP"
+msgstr "启用玩家互相攻击"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -453,11 +453,11 @@ msgstr "创造模式"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "开启伤害风险"
+msgstr "开启伤害"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
-msgstr "名字/密码"
+msgstr "名字、密码"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
@@ -497,7 +497,7 @@ msgstr "两倍"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr "3D 云彩"
+msgstr "三维云彩"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
@@ -530,7 +530,7 @@ msgstr "凹凸贴图"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Change keys"
-msgstr "更改键位设置"
+msgstr "更改按键设置"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Connected Glass"
@@ -542,11 +542,11 @@ msgstr "华丽的树叶"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap"
-msgstr "Mip 贴图"
+msgstr "Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Mipmap + Aniso. Filter"
-msgstr "Mip 贴图 + Aniso 过滤"
+msgstr "Mipmap + Aniso 过滤"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
@@ -558,11 +558,11 @@ msgstr "无过滤"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "无 Mip 贴图"
+msgstr "无Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "节点高亮"
+msgstr "方块高亮"
 
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
@@ -652,7 +652,7 @@ msgstr "是"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr "配置 MOD"
+msgstr "配置模组"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
@@ -660,7 +660,7 @@ msgstr "主要"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "单人游戏"
+msgstr "开始单人游戏"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -688,15 +688,15 @@ msgstr "连接超时。"
 
 #: src/client.cpp
 msgid "Done!"
-msgstr "完成!"
+msgstr "完成！"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr "初始化节点中"
+msgstr "初始化方块中"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr "初始化节点..."
+msgstr "初始化方块..."
 
 #: src/client.cpp
 msgid "Loading textures..."
@@ -712,7 +712,7 @@ msgstr "连接出错（超时？）"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "无法找到或载入游戏模式"
+msgstr "无法找到或载入游戏"
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -724,7 +724,7 @@ msgstr "主菜单"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "没有选择世界或提供地址。未执行操作。"
+msgstr "没有选择世界或提供地址。无事可做。"
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
@@ -732,11 +732,11 @@ msgstr "玩家名称太长了。"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
-msgstr "提供的世界路径不存在: "
+msgstr "提供的世界路径不存在："
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "yes"
+msgstr "需要备用的字体"
 
 #: src/game.cpp
 msgid ""
@@ -744,11 +744,11 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"查看 debug.txt 以获得详细信息。"
+"查看debug.txt以获得详细信息。"
 
 #: src/game.cpp
 msgid "Change Keys"
-msgstr "更改键位设置"
+msgstr "更改按键设置"
 
 #: src/game.cpp
 msgid "Change Password"
@@ -785,14 +785,14 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "默认控制：\n"
-"W/A/S/D: 移动\n"
-"空格: 跳/爬\n"
-"Shift: 潜行/向下\n"
+"W、A、S、D: 移动\n"
+"空格: 跳、爬\n"
+"Shift: 潜行、向下\n"
 "Q: 丢物品\n"
 "I: 物品栏\n"
-"鼠标:转身/环顾\n"
+"鼠标:转身、环顾\n"
 "鼠标左键: 挖\n"
-"鼠标右键: 放/使用\n"
+"鼠标右键: 放、使用\n"
 "鼠标滚轮: 选择物品\n"
 "T: 聊天\n"
 
@@ -830,15 +830,15 @@ msgstr "退出至菜单"
 
 #: src/game.cpp
 msgid "Exit to OS"
-msgstr "退出至操作系统"
+msgstr "关闭"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr "物品定义..."
+msgstr "定义物品..."
 
 #: src/game.cpp
 msgid "KiB/s"
-msgstr "KiB/s"
+msgstr "千字节/秒"
 
 #: src/game.cpp
 msgid "Media..."
@@ -846,7 +846,7 @@ msgstr "媒体..."
 
 #: src/game.cpp
 msgid "MiB/s"
-msgstr "MiB/s"
+msgstr "MiB/秒"
 
 #: src/game.cpp
 msgid "Node definitions..."
@@ -862,7 +862,7 @@ msgstr "重生"
 
 #: src/game.cpp
 msgid "Shutting down..."
-msgstr "关闭..."
+msgstr "关闭中..."
 
 #: src/game.cpp
 msgid "Sound Volume"
@@ -930,7 +930,7 @@ msgstr "按键已被占用"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "键位配置。（如果这个菜单被弄乱，从 minetest.conf 中删掉点东西）"
+msgstr "按键配置。（如果这个菜单被弄乱，从minetest.conf中删掉点东西）"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -998,7 +998,7 @@ msgstr "旧密码"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "密码不匹配！"
+msgstr "密码不正确！"
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
@@ -1102,7 +1102,7 @@ msgstr "左键"
 
 #: src/keycode.cpp
 msgid "Left Control"
-msgstr "左Control键"
+msgstr "左Ctrl键"
 
 #: src/keycode.cpp
 msgid "Left Menu"
@@ -1138,7 +1138,7 @@ msgstr "下一个"
 
 #: src/keycode.cpp
 msgid "Nonconvert"
-msgstr "无转换"
+msgstr "无变换"
 
 #: src/keycode.cpp
 msgid "Num Lock"
@@ -1238,7 +1238,7 @@ msgstr "右键"
 
 #: src/keycode.cpp
 msgid "Right Control"
-msgstr "右Control键"
+msgstr "右Ctrl键"
 
 #: src/keycode.cpp
 msgid "Right Menu"
@@ -1315,11 +1315,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "3D clouds"
-msgstr "3D 云彩"
+msgstr "三维云彩"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr "3D 模式"
+msgstr "三维模式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1332,14 +1332,14 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
-"3D 支持。\n"
+"三维支持。\n"
 "目前已支持：\n"
-"-    无: 无 3D输出。\n"
-"-    浮雕：青红/品红色彩色 3D。\n"
+"-    无: 无三维输出。\n"
+"-    浮雕：青红/品红色彩色三维。\n"
 "-    交错：基于偏振屏的奇偶行支持。\n"
 "-    顶底：上下分屏。\n"
 "-    并列：左右分屏。\n"
-"-    翻页：基于 3D 的四重缓冲。"
+"-    翻页：基于三维的四重缓冲。"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1359,7 +1359,7 @@ msgstr "当关闭服务器时，发送给所有客户端的信息。"
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr "生产队列绝对限制"
+msgstr "队列的绝对限制"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -1447,7 +1447,7 @@ msgid ""
 "minetest.net."
 msgstr ""
 "发布到此服务器列表。\n"
-"如果你想发布你的 IPv6 地址，使用 serverlist_url = v6.servers.minetest.net 。"
+"如果你想发布你的IPv6地址，使用“serverlist_url = v6.servers.minetest.net”。"
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1463,7 +1463,7 @@ msgstr "自动报告到服务器列表。"
 
 #: src/settings_translation_file.cpp
 msgid "Autorun key"
-msgstr ""
+msgstr "自动运行键"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1499,7 +1499,7 @@ msgstr "建立内部玩家"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
-msgstr ""
+msgstr "内建"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
@@ -1643,7 +1643,7 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"以逗号分隔的 mod 清单，让您可以存取 HTTP API，\n"
+"以逗号分隔的模组清单，让您可以存取超文字传输协定应用程序编程接口，\n"
 "其可从互联网上传及下载资料。"
 
 #: src/settings_translation_file.cpp
@@ -1651,8 +1651,8 @@ msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"受信任的 Mod 列表，以逗号分隔，其可存取不安全的\n"
-"功能，即便 mod 安全性已启用（经由 request_insecure_environment()）。"
+"受信任的模组列表，以逗号分隔，其可存取不安全的\n"
+"功能，即便模组安全性已启用（经由 request_insecure_environment()）。"
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1713,11 +1713,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "控制湖泊洼地的陡度、深度。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr "控制山丘的坡度/高度。"
+msgstr "控制山丘的坡度、高度。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -1766,7 +1766,7 @@ msgstr "蹲伏速度"
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr "DPI"
+msgstr "点/英寸"
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
@@ -1810,7 +1810,7 @@ msgstr "默认权限"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "默认的报告格式"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1830,11 +1830,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
-msgstr ""
+msgstr "定义区块中最大移动距离（0 =无限）。"
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "传送区块的延迟"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1842,7 +1842,7 @@ msgstr "工具提示显示延迟，按毫秒计算。"
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr "已弃用 Lua API 处理"
+msgstr "已弃用Lua应用程序接口处理"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
@@ -1872,6 +1872,8 @@ msgid ""
 "The 3 numbers in brackets control the scale of the\n"
 "terrain, the 3 numbers should be identical."
 msgstr ""
+"确定地形的形状。\n"
+"括号内的3个数控制地形的规模，3个数应相同。"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -1879,7 +1881,7 @@ msgstr "禁用反作弊"
 
 #: src/settings_translation_file.cpp
 msgid "Disable escape sequences"
-msgstr ""
+msgstr "禁用转义"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1888,6 +1890,8 @@ msgid ""
 "disable\n"
 "the escape sequences generated by mods."
 msgstr ""
+"禁用转义，例如聊天彩色。\n"
+"如果你想运行一个服务器和客户端pre-0.4.14要禁用产生模组的转义的使用。"
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -1903,7 +1907,7 @@ msgstr "双击“跳跃”键飞行"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "连按两次“跳跃”键切换飞行模式。"
+msgstr "双击“跳跃”键切换飞行模式。"
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -1915,19 +1919,19 @@ msgstr "转储地图生成器调试信息。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "启用摇杆"
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
-msgstr "启用 VBO"
+msgstr "启用VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
-msgstr "启用 mod 安全"
+msgstr "启用模组安全"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr "启用玩家受到伤害和死亡。"
+msgstr "启用玩家伤害和死亡。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
@@ -1949,6 +1953,11 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Enable to disallow old clients from connecting.\n"
+"Older clients are compatible in the sense that they will not crash when "
+"connecting\n"
+"to new servers, but they may not support all new features that you are "
+"expecting."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1957,6 +1966,10 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Enable usage of remote media server (if provided by server).\n"
+"Remote servers offer a significantly faster way to download media (e.g. "
+"textures)\n"
+"when connecting to the server."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1964,6 +1977,9 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"Enable/disable running an IPv6 server.  An IPv6 server may be restricted\n"
+"to IPv6 clients, depending on system configuration.\n"
+"Ignored if bind_address is set."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -1976,10 +1992,14 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Enables bumpmapping for textures. Normalmaps need to be supplied by the "
+"texture pack\n"
+"or need to be auto-generated.\n"
+"Requires shaders to be enabled."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Enables caching of facedir rotated meshes."
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
@@ -1994,6 +2014,8 @@ msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"Enables on the fly normalmap generation (Emboss effect).\n"
+"Requires bumpmapping to be enabled."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2010,7 +2032,7 @@ msgstr "剖析印出间隔"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "实体的方法"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2114,6 +2136,10 @@ msgid ""
 "light edge to transparent textures.  Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
+"Filtered textures can blend RGB values with fully-transparent neighbors,\n"
+"which PNG optimizers usually discard, sometimes resulting in a dark or\n"
+"light edge to transparent textures.  Apply this filter to clean that up\n"
+"at texture load time."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -2181,16 +2207,20 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"From how far blocks are generated for clients, stated in mapblocks (16 "
+"nodes)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"From how far clients know about objects, stated in mapblocks (16 nodes)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2230,7 +2260,7 @@ msgstr "生成常规地图"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "Global callbacks"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2241,6 +2271,12 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Global map generation attributes.\n"
+"In Mapgen v6 the 'decorations' flag controls all decorations except trees\n"
+"and junglegrass, in all other mapgens this flag controls all decorations.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2265,6 +2301,10 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Handling for deprecated lua api calls:\n"
+"-    legacy: (try to) mimic old behaviour (default for release).\n"
+"-    log: mimic and log backtrace of deprecated call (default for debug).\n"
+"-    error: abort on usage of deprecated call (suggested for mod developers)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2274,10 +2314,15 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"Have the profiler instrument itself:\n"
+"* Instrument an empty function.\n"
+"This estimates the overhead, that instrumentation is adding (+1 function "
+"call).\n"
+"* Instrument the sampler being used to update the statistics."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Height component of the initial window size."
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
@@ -2301,12 +2346,17 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"How large area of blocks are subject to the active block stuff, stated in "
+"mapblocks (16 nodes).\n"
+"In active blocks objects are loaded and ABMs run."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"How much the server will wait before unloading unused mapblocks.\n"
+"Higher value is smoother, but will use more RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
@@ -2335,6 +2385,8 @@ msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"If disabled \"use\" key is used to fly fast if both fly and fast mode are "
+"enabled."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2342,32 +2394,41 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"If enabled together with fly mode, player is able to fly through solid "
+"nodes.\n"
+"This requires the \"noclip\" privilege on the server."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
+"and descending."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"If enabled, actions are recorded for rollback.\n"
+"This option is only read when server starts."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr ""
+msgstr "If enabled, disable cheat prevention in multiplayer."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"If enabled, invalid world data won't cause the server to shut down.\n"
+"Only enable this if you know what you are doing."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr ""
+msgstr "If enabled, new players cannot join with an empty password."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2375,10 +2436,13 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"If enabled, you can place blocks at the position (feet + eye level) where "
+"you stand.\n"
+"This is helpful when working with nodeboxes in small areas."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
-msgstr ""
+msgstr "If this is set, players will always (re)spawn at the given position."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
@@ -2390,61 +2454,67 @@ msgstr "游戏中"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "In-game chat console background alpha (opaqueness, between 0 and 255)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr ""
+msgstr "In-game chat console background color (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"Instrument builtin.\n"
+"This is usually only needed by core/builtin contributors"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr ""
+msgstr "Instrument chatcommands on registration."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"Instrument global callback functions on registration.\n"
+"(anything you pass to a minetest.register_*() function)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
+"Instrument the action function of Active Block Modifiers on registration."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
+"Instrument the action function of Loading Block Modifiers on registration."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "Instrument the methods of entities on registration."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr ""
+msgstr "Instrumentation"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr ""
+msgstr "Interval of saving important changes in the world, stated in seconds."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr ""
+msgstr "Interval of sending time of day to clients."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr "库存物品动画"
+msgstr "物品栏物品动画"
 
 #: src/settings_translation_file.cpp
 msgid "Inventory key"
-msgstr "库存键"
+msgstr "物品栏键"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
@@ -2463,6 +2533,8 @@ msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
 msgstr ""
+"Iterations of the recursive function.\n"
+"Controls the amount of fine detail."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2481,6 +2553,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia set only: W component of hypercomplex constant determining julia "
+"shape.\n"
+"Has no effect on 3D fractals.\n"
+"Range roughly -2 to 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2488,6 +2564,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia set only: X component of hypercomplex constant determining julia "
+"shape.\n"
+"Range roughly -2 to 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2495,6 +2574,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia set only: Y component of hypercomplex constant determining julia "
+"shape.\n"
+"Range roughly -2 to 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2502,6 +2584,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Julia set only: Z component of hypercomplex constant determining julia "
+"shape.\n"
+"Range roughly -2 to 2."
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -2517,6 +2602,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Key for decreasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2524,6 +2612,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Key for dropping the currently selected item.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2531,6 +2622,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Key for increasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
