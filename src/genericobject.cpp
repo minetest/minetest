@@ -118,7 +118,7 @@ std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups)
 }
 
 std::string gob_cmd_update_physics_override(float physics_override_speed, float physics_override_jump,
-		float physics_override_gravity, bool sneak, bool sneak_glitch)
+		float physics_override_gravity, bool sneak, bool sneak_glitch, bool new_move)
 {
 	std::ostringstream os(std::ios::binary);
 	// command 
@@ -130,6 +130,7 @@ std::string gob_cmd_update_physics_override(float physics_override_speed, float 
 	// these are sent inverted so we get true when the server sends nothing
 	writeU8(os, !sneak);
 	writeU8(os, !sneak_glitch);
+	writeU8(os, !new_move);
 	return os.str();
 }
 

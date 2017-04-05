@@ -397,6 +397,7 @@ public:
 	float m_physics_override_gravity;
 	bool m_physics_override_sneak;
 	bool m_physics_override_sneak_glitch;
+	bool m_physics_override_new_move;
 	bool m_physics_override_sent;
 };
 
