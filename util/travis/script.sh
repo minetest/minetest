@@ -22,19 +22,19 @@ function perform_lint() {
 		d=$(diff -u "$f" <(${CLANG_FORMAT} "$f") || true)
 
 		if ! [ -z "$d" ]; then
-			errorcount=$((errorcount+1))
-
-			printf "The file %s is not compliant with the coding style" "$f"
-			if [ ${errorcount} -gt 50 ]; then
-				printf "\nToo many errors encountered previously, this diff is hidden.\n"
-			else
-				printf ":\n%s\n" "$d"
-			fi
-
 			whitelisted=$(egrep -c "^${f}" "${CLANG_FORMAT_WHITELIST}")
 
 			# If file is not whitelisted, mark a failure
 			if [ ${whitelisted} -eq 0 ]; then
+				errorcount=$((errorcount+1))
+
+				printf "The file %s is not compliant with the coding style" "$f"
+				if [ ${errorcount} -gt 50 ]; then
+					printf "\nToo many errors encountered previously, this diff is hidden.\n"
+				else
+					printf ":\n%s\n" "$d"
+				fi
+
 				fail=1
 			fi
 		fi
