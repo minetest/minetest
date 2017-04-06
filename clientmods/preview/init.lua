@@ -69,6 +69,7 @@ core.after(2, function()
 	print("[PREVIEW] loaded " .. modname .. " mod")
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
+	print("Server version:" .. core.get_protocol_version())
 	preview_minimap()
 end)
 

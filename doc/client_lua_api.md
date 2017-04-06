@@ -696,6 +696,9 @@ Call these functions only at load time!
 * `minetest.disconnect()`
     * Disconnect from the server and exit to main menu.
     * Returns `false` if the client is already disconnecting otherwise returns `true`.
+* `minetest.get_protocol_version()`
+    * Returns the protocol version of the server.
+    * Might not be accurate at start up as the client might not be connected to the server yet, in that case it will return 0.
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
