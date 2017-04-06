@@ -70,6 +70,7 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 	m_sneak_node_exists(false),
 	m_need_to_get_new_sneak_node(true),
 	m_sneak_ladder_detected(false),
+	m_ledge_detected(false),
 	m_old_node_below(32767,32767,32767),
 	m_old_node_below_type("air"),
 	m_can_jump(false),
@@ -144,6 +145,29 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 
 		if (ok)
 			return true;
+	}
+
+	return false;
+}
+
+static bool detectLedge(Map *map, INodeDefManager *nodemgr, v3s16 pos)
+{
+	bool is_valid_position;
+	MapNode node;
+	// X/Z vectors for 4 neighboring nodes
+	static const v2s16 vecs[] = {v2s16(-1, 0), v2s16(1, 0), v2s16(0, -1), v2s16(0, 1)};
+
+	for (u16 i = 0; i < ARRLEN(vecs); i++) {
+		const v2s16 vec = vecs[i];
+
+		node = GETNODE(map, pos, vec, 1, &is_valid_position);
+		if (is_valid_position && nodemgr->get(node).walkable) {
+			// Ledge exists
+			node = GETNODE(map, pos, vec, 2, &is_valid_position);
+			if (is_valid_position && !nodemgr->get(node).walkable)
+				// Space above ledge exists
+				return true;
+		}
 	}
 
 	return false;
@@ -410,6 +434,13 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	/*
+		If 'sneak glitch' enabled detect ledge for old sneak-jump
+		behaviour of climbing onto a ledge 2 nodes up.
+	*/
+	if (physics_override_sneak_glitch && control.sneak && control.jump)
+		m_ledge_detected = detectLedge(map, nodemgr, floatToInt(position, BS));
+
+	/*
 		Set new position
 	*/
 	setPosition(position);
@@ -648,10 +679,18 @@ void LocalPlayer::applyControl(float dtime)
 				at its starting value
 			*/
 			v3f speedJ = getSpeed();
-			if(speedJ.Y >= -0.5 * BS)
-			{
-				speedJ.Y = movement_speed_jump * physics_override_jump;
-				setSpeed(speedJ);
+			if(speedJ.Y >= -0.5 * BS) {
+				if (m_ledge_detected) {
+					// Limit jump speed to a minimum that allows
+					// jumping up onto a ledge 2 nodes up.
+					speedJ.Y = movement_speed_jump *
+							MYMAX(physics_override_jump, 1.3f);
+					setSpeed(speedJ);
+					m_ledge_detected = false;
+				} else {
+					speedJ.Y = movement_speed_jump * physics_override_jump;
+					setSpeed(speedJ);
+				}
 
 				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
 				m_client->event()->put(e);
