@@ -146,6 +146,9 @@ private:
 	// Whether a "sneak ladder" structure is detected at the players pos
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
 	bool m_sneak_ladder_detected;
+	// Whether a 2-node-up ledge is detected at the players pos,
+	// see detectLedge() in the .cpp for more info (always false if disabled).
+	bool m_ledge_detected;
 
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
