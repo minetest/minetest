@@ -234,6 +234,13 @@ int ModApiClient::l_sound_stop(lua_State *L)
 	return 0;
 }
 
+// get_protocol_version()
+int ModApiClient::l_get_protocol_version(lua_State *L)
+{
+	lua_pushinteger(L, getClient(L)->getProtoVersion());
+	return 1;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -251,4 +258,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(get_protocol_version);
 }
