@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "daynightratio.h"
 #include "emerge.h"
 
+
 Environment::Environment(IGameDef *gamedef):
 	m_time_of_day_speed(0),
 	m_time_of_day(9000),

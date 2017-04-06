@@ -31,7 +31,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Normal build: main.cpp
 		Server build: servermain.cpp
 */
-enum TimePrecision {
+enum TimePrecision
+{
 	PRECISION_SECONDS = 0,
 	PRECISION_MILLI,
 	PRECISION_MICRO,
