@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef WIELDMESH_HEADER
 #define WIELDMESH_HEADER
 
-#include "irrlichttypes_extrabloated.h"
 #include <string>
+#include "irrlichttypes_extrabloated.h"
 
 struct ItemStack;
 class Client;
@@ -31,30 +31,27 @@ struct TileSpec;
 /*
 	Wield item scene node, renders the wield mesh of some item
 */
-class WieldMeshSceneNode: public scene::ISceneNode
+class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
 	WieldMeshSceneNode(scene::ISceneNode *parent, scene::ISceneManager *mgr,
 			s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const TileSpec tiles[6],
-			v3f wield_scale, ITextureSource *tsrc);
-	void setExtruded(const std::string &imagename,
-			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
+	void setCube(const TileSpec tiles[6], v3f wield_scale, ITextureSource *tsrc);
+	void setExtruded(const std::string &imagename, v3f wield_scale,
+			ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);
 
-	scene::IMesh *getMesh()
-	{ return m_meshnode->getMesh(); }
+	scene::IMesh *getMesh() { return m_meshnode->getMesh(); }
 
 	virtual void render();
 
-	virtual const aabb3f &getBoundingBox() const
-	{ return m_bounding_box; }
+	virtual const aabb3f &getBoundingBox() const { return m_bounding_box; }
 
 private:
 	void changeToMesh(scene::IMesh *mesh);
@@ -84,6 +81,5 @@ private:
 
 scene::IMesh *getItemMesh(Client *client, const ItemStack &item);
 
-scene::IMesh *getExtrudedMesh(ITextureSource *tsrc,
-		const std::string &imagename);
+scene::IMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename);
 #endif

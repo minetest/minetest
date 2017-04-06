@@ -21,3 +21,5 @@ IncludeCategories:
     Priority:        2
   - Regex:           '^<.*'
     Priority:        1
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 16

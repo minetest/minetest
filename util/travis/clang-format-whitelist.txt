@@ -438,4 +438,3 @@ src/voxelalgorithms.h
 src/voxel.cpp
 src/voxel.h
 src/wieldmesh.cpp
-src/wieldmesh.h

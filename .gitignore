@@ -75,6 +75,8 @@ locale/
 *.ninja
 .ninja*
 *.gch
+cmake-build-debug/
+cmake-build-release/
 
 ## Android build files
 build/android/src/main/assets
