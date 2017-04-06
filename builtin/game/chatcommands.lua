@@ -7,13 +7,22 @@
 core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
 core.register_on_chat_message(function(name, message)
-	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
-	if not param then
-		param = ""
+	if message:sub(1,1) ~= "/" then
+		return
 	end
+
+	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
+	if not cmd then
+		core.chat_send_player(name, "-!- Empty command")
+		return true
+	end
+
+	param = param or ""
+
 	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
-		return false
+		core.chat_send_player(name, "-!- Invalid command: " .. cmd)
+		return true
 	end
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
