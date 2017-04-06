@@ -194,6 +194,45 @@ int ModApiClient::l_get_meta(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_sound_play(lua_State *L)
+{
+	ISoundManager *sound = getClient(L)->getSoundManager();
+
+	SimpleSoundSpec spec;
+	read_soundspec(L, 1, spec);
+	float gain = 1.0 ;
+	bool looped = false;
+	s32 handle;
+
+	if (lua_istable(L, 2)) {
+		getfloatfield(L, 2, "gain", gain);
+		getboolfield(L, 2, "loop", looped);
+
+		lua_getfield(L, 2, "pos");
+		if (!lua_isnil(L, -1)) {
+			v3f pos = read_v3f(L, -1) * BS;
+			lua_pop(L, 1);
+			handle = sound->playSoundAt(spec.name, looped, gain * spec.gain, pos);
+			lua_pushinteger(L, handle);
+			return 1;
+		}
+	}
+
+	handle = sound->playSound(spec.name, looped, gain * spec.gain);
+	lua_pushinteger(L, handle);
+
+	return 1;
+}
+
+int ModApiClient::l_sound_stop(lua_State *L)
+{
+	u32 handle = luaL_checkinteger(L, 1);
+
+	getClient(L)->getSoundManager()->stopSound(handle);
+
+	return 0;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -209,4 +248,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
+	API_FCT(sound_play);
+	API_FCT(sound_stop);
 }

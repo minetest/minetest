@@ -131,7 +131,7 @@ The `:` prefix can also be used for maintaining backwards compatibility.
 
 Sounds
 ------
-**NOTE: Not fully implemented yet.**
+**NOTE: max_hear_distance and connecting to objects is not implemented.**
 
 Only Ogg Vorbis files are supported.
 
@@ -158,18 +158,12 @@ from the available ones of the following files:
 
 Examples of sound parameter tables:
 
-    -- Play locationless on all clients
+    -- Play locationless
     {
         gain = 1.0, -- default
     }
-    -- Play locationless to one player
+    -- Play locationless, looped
     {
-        to_player = name,
-        gain = 1.0, -- default
-    }
-    -- Play locationless to one player, looped
-    {
-        to_player = name,
         gain = 1.0, -- default
         loop = true,
     }
@@ -187,8 +181,7 @@ Examples of sound parameter tables:
         loop = true,
     }
 
-Looped sounds must either be connected to an object or played locationless to
-one player using `to_player = name,`
+Looped sounds must either be connected to an object or played locationless.
 
 ### SimpleSoundSpec
 * e.g. `""`
