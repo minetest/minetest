@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "l_client.h"
+#include "clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
 #include "cpp_api/s_base.h"
@@ -27,9 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "mainmenumanager.h"
-#include "util/string.h"
-#include "clientenvironment.h"
 #include "map.h"
+#include "util/string.h"
 
 extern MainGameCallback *g_gamecallback;
 
@@ -200,7 +200,7 @@ int ModApiClient::l_sound_play(lua_State *L)
 
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
-	float gain = 1.0 ;
+	float gain = 1.0;
 	bool looped = false;
 	s32 handle;
 
@@ -212,7 +212,8 @@ int ModApiClient::l_sound_play(lua_State *L)
 		if (!lua_isnil(L, -1)) {
 			v3f pos = read_v3f(L, -1) * BS;
 			lua_pop(L, 1);
-			handle = sound->playSoundAt(spec.name, looped, gain * spec.gain, pos);
+			handle =
+			    sound->playSoundAt(spec.name, looped, gain * spec.gain, pos);
 			lua_pushinteger(L, handle);
 			return 1;
 		}
