@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
 #include "log.h"
+#include "clientscripting.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -623,6 +624,10 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_visible = false;
 			player->setCAO(this);
 		}
+
+		if (m_client->moddingEnabled())
+			m_client->getScript()->on_joinplayer(m_name);
+
 		m_env->addPlayerName(m_name.c_str());
 	}
 }
@@ -667,6 +672,8 @@ void GenericCAO::processInitData(const std::string &data)
 GenericCAO::~GenericCAO()
 {
 	if (m_is_player) {
+		if (m_client->moddingEnabled() && !m_client->isShutdown())
+			m_client->getScript()->on_leaveplayer(m_name);
 		m_env->removePlayerName(m_name.c_str());
 	}
 	removeFromScene(true);

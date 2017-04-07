@@ -68,3 +68,6 @@ core.registered_on_damage_taken, core.register_on_damage_taken = make_registrati
 core.registered_on_formspec_input, core.register_on_formspec_input = make_registration()
 core.registered_on_dignode, core.register_on_dignode = make_registration()
 core.registered_on_punchnode, core.register_on_punchnode = make_registration()
+core.registered_on_joinplayer, core.register_on_joinplayer = make_registration()
+core.registered_on_leaveplayer, core.register_on_leaveplayer = make_registration()
+

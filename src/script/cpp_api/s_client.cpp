@@ -178,6 +178,30 @@ bool ScriptApiClient::on_punchnode(v3s16 p, MapNode node)
 	return blocked;
 }
 
+void ScriptApiClient::on_joinplayer(const std::string &name)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_joinplayer
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_joinplayer");
+	// Call callbacks
+	lua_pushstring(L, name.c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_LAST);
+}
+
+void ScriptApiClient::on_leaveplayer(const std::string &name)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_leaveplayer
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_leaveplayer");
+	// Call callbacks
+	lua_pushstring(L, name.c_str());
+	runCallbacks(1, RUN_CALLBACKS_MODE_LAST);
+}
+
 void ScriptApiClient::setEnv(ClientEnvironment *env)
 {
 	ScriptApiBase::setEnv(env);
