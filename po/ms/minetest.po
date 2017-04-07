@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-03-04 04:32+0000\n"
-"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo.com>"
-"\n"
+"PO-Revision-Date: 2017-04-26 11:11+0000\n"
+"Last-Translator: chester <chesteran321@yahoo.com.tw>\n"
 "Language-Team: Malay "
 "<https://hosted.weblate.org/projects/minetest/minetest/ms/>\n"
 "Language: ms\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.12\n"
+"X-Generator: Weblate 2.14-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -1067,7 +1066,7 @@ msgstr "Butang Kana"
 #: src/keycode.cpp
 #, fuzzy
 msgid "Menu"
-msgstr "Menu"
+msgstr "選擇單"
 
 #: src/keycode.cpp
 msgid "Pause"
@@ -2164,7 +2163,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
-msgstr ""
+msgstr "Saiz tekstur minima untuk penapisan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2176,16 +2175,28 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
+"Apabila menggunakan tapisan bilinear/trilinear/anisotropik, tekstur "
+"resolusi\n"
+"rendah boleh jadi kabur, jadi tekstur ini disesuai-naikkan dengan sisipan "
+"jiran\n"
+"terdekat untuk memelihara piksel keras.  Tetapan ini menetapkan saiz "
+"tekstur\n"
+"minima untuk tekstur selepas penyesuai-naikkan; nilai lebih tinggi tampak\n"
+"lebih tajam, tetapi memerlukan memori yang lebih banyak.  Nilai kuasa 2\n"
+"disyorkan.  Menetapkan nilai ini lebih tinggi dari 1 tidak akan menampakkan\n"
+"kesan yang nyata melainkan tapisan bilinear/trilinear/anisotropik dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "FSAA"
-msgstr ""
+msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
+"Pilihan percubaan, mungkin menampakkan ruang yang nyata di\n"
+"antara blok apabila ditetapkan dengan nombor lebih besar dari 0."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2193,18 +2204,21 @@ msgid ""
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
+"Pembayang membolehkan kesan visual mendalam dan boleh meningkatkan prestasi "
+"untuk sesetengah kad video.\n"
+"Namun ia hanya berfungsi dengan pembahagian belakang video OpenGL."
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
-msgstr ""
+msgstr "Pemetaan tona sinematik"
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
-msgstr ""
+msgstr "Membolehkan pemetaan tona sinematik"
 
 #: src/settings_translation_file.cpp
 msgid "Bumpmapping"
-msgstr ""
+msgstr "Pemetaan timbul"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2213,260 +2227,289 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Membolehkan pemetaan timbul pada tekstur. Peta normal perlu disediakan oleh "
+"pek\n"
+"tekstur atau perlu dijana secara automatik.\n"
+"Perlukan pembayang dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Generate normalmaps"
-msgstr ""
+msgstr "Jana peta normal"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"Membolehkan penjanaan peta normal secara layang (Kesan cetak timbul).\n"
+"Perlukan pemetaan timbul untuk dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps strength"
-msgstr ""
+msgstr "Kekuatan peta normal"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
-msgstr ""
+msgstr "Kekuatan peta normal yang dijana."
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
-msgstr ""
+msgstr "Persampelan peta normal"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"Mentakrifkan tahap persampelan tekstur.\n"
+"Nilai lebih tinggi menghasilakn peta normal lebih lembut."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
-msgstr ""
+msgstr "Oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Membolehkan pemetaan oklusi paralaks.\n"
+"Memerlukan pembayang untuk dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion mode"
-msgstr ""
+msgstr "Mod oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
+"0 = oklusi paralaks dengan maklumat cerun (lebih cepat).\n"
+"1 = pemetaan bentuk muka bumi (lebih lambat, lebih tepat)."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion strength"
-msgstr ""
+msgstr "Kekuatan oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of parallax."
-msgstr ""
+msgstr "Kekuatan paralaks."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion iterations"
-msgstr ""
+msgstr "Lelaran oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
-msgstr ""
+msgstr "Jumlah lelaran oklusi paralaks."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion Scale"
-msgstr ""
+msgstr "Skala oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr ""
+msgstr "Skala keseluruhan kesan oklusi paralaks."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion bias"
-msgstr ""
+msgstr "Pengaruh oklusi paralaks"
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
 msgstr ""
+"Pengaruh kesan oklusi paralaks pada keseluruhannya, kebiasaannya skala/2."
 
 #: src/settings_translation_file.cpp
 msgid "Waving Nodes"
-msgstr ""
+msgstr "Nod bergoyang"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water"
-msgstr ""
+msgstr "Air bergelora"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Tetapkan ke \"true\" untuk membolehkan air bergelora.\n"
+"Memerlukan pembayang dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Waving water height"
-msgstr ""
+msgstr "Ketinggian air bergelora"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water length"
-msgstr ""
+msgstr "Panjang air bergelora"
 
 #: src/settings_translation_file.cpp
 msgid "Waving water speed"
-msgstr ""
+msgstr "Kelajuan air bergelora"
 
 #: src/settings_translation_file.cpp
 msgid "Waving leaves"
-msgstr ""
+msgstr "Daun bergoyang"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Tetapkan kepada \"true\" untuk membolehkan daun bergoyang.\n"
+"Memerlukan pembayang untuk dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Waving plants"
-msgstr ""
+msgstr "Tumbuhan bergoyang"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Tetapkan kepada \"true\" untuk membolehkan tumbuhan bergoyang.\n"
+"Memerlukan pembayang untuk dibolehkan."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
-msgstr ""
+msgstr "Tetapan mendalam"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "FPS maksima"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
+"Jika bingkai per saat (FPS) ingin naik lebih tinggi\n"
+"dari nilai ini, hadkan ia dengan tidurkannya supaya\n"
+"tidak bazirkan kuasa CPU dengan sia-sia."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
-msgstr ""
+msgstr "FPS di menu jeda"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "Bingkai per saat (FPS) maksima apabila permainan dijedakan."
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
-msgstr ""
+msgstr "Jarak pandang"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "View distance in nodes.\n"
 "Min = 20"
 msgstr ""
+"Jarak pandang nod.\n"
+"Minima = 20"
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
+msgstr "Lebar skrin"
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
-msgstr ""
+msgstr "Komponen lebar saiz tetingkap awal."
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
-msgstr ""
+msgstr "Tinggi skrin"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Komponen tinggi saiz tetingkap asal."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
-msgstr ""
+msgstr "Skrin penuh"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr ""
+msgstr "Mod skrin penuh."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen BPP"
-msgstr ""
+msgstr "BPP skrin penuh"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr ""
+msgstr "Bit per piksel (atau kedalaman warna) dalam mod skrin penuh."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
-msgstr ""
+msgstr "Segerak-V"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr ""
+msgstr "Penyegerakan menegak skrin."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
-msgstr ""
+msgstr "Medan pandang"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
-msgstr ""
+msgstr "Medan pandang dalam darjah sudut."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view for zoom"
-msgstr ""
+msgstr "Medan pandang untuk zum"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
+"Medan pandang apabila mengezum, dalam darjah sudut.\n"
+"Ini memerlukan hak \"zum\" dalam pelayan."
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
-msgstr ""
+msgstr "Gama"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Laraskan pengekodan gama untuk jadual cahaya. Makin rendah nombor, makin "
+"terang cahaya.\n"
+"Tetapan ini hanya untuk klien dan diabaikan oleh pelayan permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
-msgstr ""
+msgstr "Laluan tekstur"
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
+msgstr "Laluan ke direktori tekstur. Semua tekstur dicari dari sini dahulu."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
-msgstr ""
+msgstr "Pemacu video"
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
-msgstr ""
+msgstr "Penerjemahan bahagian belakang untuk Irrlicht."
 
 #: src/settings_translation_file.cpp
 msgid "Cloud height"
-msgstr ""
+msgstr "Tinggi awan"
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Ketinggian di mana awan muncul."
 
 #: src/settings_translation_file.cpp
 msgid "Cloud radius"
-msgstr ""
+msgstr "Jejari awan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2474,30 +2517,37 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"Jejari keluasan awan dinyatakan dalam jumlah 64 nod petak awan.\n"
+"Nilai lebih besar dari 26 akan mula menghasilkan pemotongan tajam di sudut "
+"kawasan awan."
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing"
-msgstr ""
+msgstr "Apungan pandang"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Pendarab untuk pengapungan pandangan.\n"
+"Contohnya: 0 untuk tiada apungan; 1.0 untuk biasa; 2.0 untuk dua kali ganda."
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing"
-msgstr ""
+msgstr "Apungan timbul tenggelam"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Pendarab untuk apungan timbul tenggelam.\n"
+"Contohnya: 0 untuk tiada apungan; 1.0 untuk biasa; 2.0 untuk dua kali ganda."
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "Mod 3D"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2510,100 +2560,114 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"Sokongan 3D.\n"
+"Yang disokong pada masa ini:\n"
+"-    tiada: tiada output 3D.\n"
+"-    anaglif: 3D warna biru/merah.\n"
+"-    selang-seli: garis genap/ganjil berdasarkan sokongan skrin polarisasi.\n"
+"-    atas-bawah: pisah skrin atas/bawah.\n"
+"-    kiri-kanan: pisah skrin kiri/kanan.\n"
+"-    selak halaman: 3D berasaskan penimbal kuad."
 
 #: src/settings_translation_file.cpp
 msgid "Console color"
-msgstr ""
+msgstr "Warna konsol"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr ""
+msgstr "Warna latar belakang konsol sembang dalam permainan (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Console alpha"
-msgstr ""
+msgstr "Nilai alfa konsol"
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
 msgstr ""
+"Nilai alfa latar belakang konsol sembang dalam permainan (kelehapan, antara "
+"0 dan 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
-msgstr ""
+msgstr "Warna kotak pemilihan"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr ""
+msgstr "Warna sempadan kotak pemilihan (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box width"
-msgstr ""
+msgstr "Lebar kotak pemilihan"
 
 #: src/settings_translation_file.cpp
 msgid "Width of the selectionbox's lines around nodes."
-msgstr ""
+msgstr "Lebar garisan kotak pemilihan sekeliling nod."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
-msgstr ""
+msgstr "Warna rerambut silang"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color (R,G,B)."
-msgstr ""
+msgstr "Warna bagi kursor rerambut silang (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
-msgstr ""
+msgstr "Nilai alfa rerambut silang"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Nilai alfa rerambut silang (kelegapan, antara 0 dan 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
-msgstr ""
+msgstr "Menyahsegerakkan animasi blok"
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr ""
+"Sama ada animasi tekstur nod perlu dinyahsegerakkan pada setiap blok peta."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr ""
+msgstr "Lebar hotbar maksima"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"Perkadaran maksima untuk tetingkap semasa yang digunakan untuk hotbar.\n"
+"Berguna jika ada sesuatu yang akan dipaparkan di sebelah kanan atau kiri "
+"hotbar."
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Cache jejaring"
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Membolehkan pengagregatan jejaring yang diputar di paksi Y (facedir)."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
-msgstr ""
+msgstr "Peta mini"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr ""
+msgstr "Membolehkan peta mini."
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
-msgstr ""
+msgstr "Peta mini bulat"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
-msgstr ""
+msgstr "Bentuk peta mini. Dibolehkan = bulat, dilumpuhkan = petak."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap scan height"
-msgstr ""
+msgstr "Ketinggian imbasan peta mini"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2611,19 +2675,25 @@ msgid ""
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
+"True = 256\n"
+"False = 128\n"
+"Boleh digunakan untuk membuatkan peta mini kelihatan lebih lembut pada mesin "
+"yang lebih perlahan."
 
 #: src/settings_translation_file.cpp
 msgid "Colored fog"
-msgstr ""
+msgstr "Kabut berwarna"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Buatkan warna kabut dan langit bergantung kepada waktu (fajar/matahari "
+"terbenam) dan arah pandang."
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Gama oklusi sekitar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2632,30 +2702,34 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"Kekuatan (kegelapan) pembayang nod oklusi-sekitar.\n"
+"Lebih rendah lebih gelap, lebih tinggi lebih terang. Nilai yang sah\n"
+"untuk tetapan ini adalah daripada 0.25 sehingga 4.0. Jika nilai di\n"
+"luar julat, ia akan ditetapkan kepada nilai sah yang terdekat."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
-msgstr ""
+msgstr "Animasi item inventori"
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
-msgstr ""
+msgstr "Membolehkan animasi item dalam inventori."
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
-msgstr ""
+msgstr "Menu"
 
 #: src/settings_translation_file.cpp
 msgid "Clouds in menu"
-msgstr ""
+msgstr "Awan dalam menu"
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Gunakan animasi awan sebagai latar belakang menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr ""
+msgstr "Skala GUI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2665,10 +2739,16 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"Menyesuaikan GUI dengan nilai ditentukan oleh pengguna.\n"
+"Gunakan penapis antialias jiran terdekat untuk menyesuaikan GUI.\n"
+"Ini membolehkan sisi tajam dilembutkan, dan sebatikan piksel\n"
+"apabila menyesuaiturunkan, namun ia akan mengkaburkan\n"
+"sesetengah piksel di sisi apabila imej disesuaikan dengan saiz\n"
+"bukan integer."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr ""
+msgstr "Penapis skala GUI"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2676,10 +2756,14 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"Apabila penapis skala GUI (gui_scaling_filter) ditetapkan kepada\n"
+"\"true\", semua imej GUI perlu ditapis dalam perisian, tetapi sesetengah\n"
+"imeg dijana secara terus ke perkakasan (contohnya, render-to-texture\n"
+"untuk nod dalam inventori)."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "Penapis skala GUI txr2img"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2688,99 +2772,108 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
+"Apabila gui_scaling_filter_txr2img ditetapkan kepada \"true\",\n"
+"salin semula kesemua imej tersebut daripada perkakasan\n"
+"kepada perisian untuk disesuaikan.  Sekiranya ia ditetapkan\n"
+"kepada \"false\", berbalik kepada kaedah penyesuaian yang\n"
+"lama, untuk pemacu video yang tidak mampu menyokong\n"
+"dengan sempurna fungsi muat turun semula tekstur\n"
+"daripada perkakasan."
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
-msgstr ""
+msgstr "Lengah tip alatan"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
-msgstr ""
+msgstr "Jumlah lengah untuk menunjukkan tip alatan, dinyatakan dalam milisaat."
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
-msgstr ""
+msgstr "Fon Freetype"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether freetype fonts are used, requires freetype support to be compiled in."
 msgstr ""
+"Menetapkan sama ada fon Freetype akan digunakan, memerlukan sokongan "
+"Freetype dibina bersama."
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr ""
+msgstr "Laluan fon"
 
 #: src/settings_translation_file.cpp
 msgid "Path to TrueTypeFont or bitmap."
-msgstr ""
+msgstr "Laluan ke fon TrueType atau peta bit."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "Saiz fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
-msgstr ""
+msgstr "Bayang fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
-msgstr ""
+msgstr "Ofset bayang fon, jika 0 maka bayang tidak akan dilukis."
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha"
-msgstr ""
+msgstr "Nilai alfa bayang fon"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow alpha (opaqueness, between 0 and 255)."
-msgstr ""
+msgstr "Nilai alfa bayang fon (kelegapan, antara 0 dan 255)."
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr ""
+msgstr "Laluan fon monospace"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
-msgstr ""
+msgstr "Saiz fon monospace"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
-msgstr ""
+msgstr "Fon berbalik"
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr ""
+msgstr "Fon ini akan digunakan untuk sesetengah bahasa."
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr ""
+msgstr "Saiz fon berbalik"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr ""
+msgstr "Bayang fon berbalik"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr ""
+msgstr "Nilai alfa bayang fon berbalik"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "Folder tangkap layar"
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr ""
+msgstr "Laluan untuk simpan tangkap layar."
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
-msgstr ""
+msgstr "Format tangkap layar"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
-msgstr ""
+msgstr "Format yang digunakan untuk tangkap layar."
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot quality"
-msgstr ""
+msgstr "Kualiti tangkap layar"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2788,94 +2881,112 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Kualiti tangkap layar. Hanya digunakan untuk format JPEG.\n"
+"1 maksudnya paling teruk; 100 maksudnya paling bagus.\n"
+"Gunakan 0 untuk kualiti lalai."
 
 #: src/settings_translation_file.cpp
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
+"Laraskan konfigurasi DPI ke skrin anda (bukan X11/Android sahaja) cth. untuk "
+"skrin 4K."
 
 #: src/settings_translation_file.cpp
 msgid "Sound"
-msgstr ""
+msgstr "Bunyi"
 
 #: src/settings_translation_file.cpp
 msgid "Volume"
-msgstr ""
+msgstr "Kekuatan bunyi"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr ""
+msgstr "Had masa nyahmuat blok peta"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
+"Had masa untuk klien membuang peta yang tidak digunakan daripada memori."
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr ""
+msgstr "Had blok peta"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
+"Jumlah peta blok maksima yang klien boleh simpan dalam memori.\n"
+"Tetapkan kepada -1 untuk jumlah tanpa had."
 
 #: src/settings_translation_file.cpp
 msgid "Show debug info"
-msgstr ""
+msgstr "Tunjukkan maklumat nyahpepijat"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
+"Tetapkan sama ada hendak menunjukkan maklumat nyahpepijat (kesannya sama "
+"seperti menekan butang F5)."
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
-msgstr ""
+msgstr "Pelayan permainan / Pemain perseorangan"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr ""
+msgstr "Nama pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of the server, to be displayed when players join and in the serverlist."
 msgstr ""
+"Nama pelayan permainan, untuk dipaparkan apabila pemain masuk dan juga dalam "
+"senarai pelayan."
 
 #: src/settings_translation_file.cpp
 msgid "Server description"
-msgstr ""
+msgstr "Perihal pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
+"Perihal pelayan permainan, untuk dipaparkan apabila pemain masuk dan juga "
+"dalam senarai pelayan."
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
 msgstr ""
+"Nama domain pelayan permainan, untuk dipaparkan dalam senarai pelayan "
+"permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Server URL"
-msgstr ""
+msgstr "URL pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr ""
+"Laman utama pelayan permainan, untuk dipaparkan dalam senarai pelayan "
+"permainan."
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr ""
+msgstr "Mengumumkan pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
-msgstr ""
+msgstr "Melaporkan pelayan kepada senarai pelayan permainan secara automatik."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2883,10 +2994,13 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Umumkan ke senarai pelayan ini.\n"
+"Jika anda ingin umumkan alamat IPv6 anda, gunakan serverlist_url = "
+"v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Disable escape sequences"
-msgstr ""
+msgstr "Melumpuhkan jujukan lepas"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2895,28 +3009,34 @@ msgid ""
 "disable\n"
 "the escape sequences generated by mods."
 msgstr ""
+"Melumpuhkan jujukan lepas (escape sequences), cth: pewarnaan sembang.\n"
+"Gunakan ini jika anda ingin menjalankan pelayan dengan klien sebelum 0.4.14 "
+"dan\n"
+"anda ingin melumpuhkan jujukan lepas yang dijana oleh mods."
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
-msgstr ""
+msgstr "Port pelayan permainan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
 msgstr ""
+"Port rangkaian untuk dengar (UDP).\n"
+"Nilai ini akan diatasi apabila memulakan pelayan dari menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr ""
+msgstr "Alamat ikatan"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
-msgstr ""
+msgstr "Antaramuka rangkaian yang pelayan permainan dengar."
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr ""
+msgstr "Pemeriksaan protokal ketat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2926,10 +3046,15 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Bolehkan tetapan untuk melarang klien lama daripada menyambung.\n"
+"Klien lama masih sesuai digunakan jika mereka tidak runtuh (crash) apabila "
+"cuba\n"
+"untuk menyambung ke pelayan baharu, tetapi mereka mungkin tidak mampu\n"
+"menyokong semua sifat baharu yang anda sangkakan."
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
-msgstr ""
+msgstr "Media jarak jauh"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2938,10 +3063,15 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"Menetapkan URL dari mana klien mengambil media, menggantikan UDP.\n"
+"$filename mestilah boleh diakses daripada $remote_media$filename\n"
+"melalui cURL (sudah tentu, remote_media mesti berakhir dengan tanda\n"
+"condong).\n"
+"Fail yang tidak wujud akan diambil dengan cara biasa."
 
 #: src/settings_translation_file.cpp
 msgid "IPv6 server"
-msgstr ""
+msgstr "Pelayan IPv6"
 
 #: src/settings_translation_file.cpp
 msgid ""
