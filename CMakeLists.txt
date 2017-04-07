@@ -186,11 +186,14 @@ if(APPLE)
 	install(FILES "misc/Info.plist" DESTINATION "${BUNDLE_PATH}/Contents")
 endif()
 
+# Library pack
+find_package(GMP REQUIRED)
+find_package(Json REQUIRED)
+find_package(Lua REQUIRED)
 
 # Subdirectories
 # Be sure to add all relevant definitions above this
 
-add_subdirectory(lib)
 add_subdirectory(src)
 
 

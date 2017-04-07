@@ -1,6 +1,8 @@
-# LuaJIT
+# Look for Lua library to use
+# This selects LuaJIT by default
+
 option(ENABLE_LUAJIT "Enable LuaJIT support" TRUE)
-set(USE_LUAJIT FALSE PARENT_SCOPE)
+set(USE_LUAJIT FALSE)
 option(REQUIRE_LUAJIT "Require LuaJIT support" FALSE)
 if(REQUIRE_LUAJIT)
 	set(ENABLE_LUAJIT TRUE)
@@ -9,7 +11,6 @@ if(ENABLE_LUAJIT)
 	find_package(LuaJIT)
 	if(LUAJIT_FOUND)
 		set(USE_LUAJIT TRUE)
-		set(USE_LUAJIT TRUE PARENT_SCOPE)
 		message (STATUS "Using LuaJIT provided by system.")
 	elseif(REQUIRE_LUAJIT)
 		message(FATAL_ERROR "LuaJIT not found whereas REQUIRE_LUAJIT=\"TRUE\" is used.\n"
@@ -21,10 +22,7 @@ endif()
 
 if(NOT USE_LUAJIT)
 	message(STATUS "LuaJIT not found, using bundled Lua.")
-	set(LUA_LIBRARY lua PARENT_SCOPE)
-	set(LUA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lua/src PARENT_SCOPE)
-	add_subdirectory(lua)
+	set(LUA_LIBRARY lua)
+	set(LUA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/lua/src)
+	add_subdirectory(lib/lua)
 endif()
-
-find_package(GMP REQUIRED)
-find_package(Json REQUIRED)
