@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-03-31 20:38+0000\n"
+"PO-Revision-Date: 2017-04-07 10:25+0000\n"
 "Last-Translator: Andrey K. <contact@libnaru.so>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
@@ -160,7 +160,6 @@ msgid "No worldname given or no game selected"
 msgstr "Не задано имя мира или не выбрана игра"
 
 #: builtin/mainmenu/dlg_create_world.lua
-#, fuzzy
 msgid "Seed"
 msgstr "Зерно"
 
@@ -521,7 +520,7 @@ msgstr "Расширенные настройки"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr "Сглаживание:"
+msgstr "Антиалиасинг:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -568,7 +567,6 @@ msgid "No Mipmap"
 msgstr "Без Мипмаппинга"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
 msgstr "Подсветка нод"
 
@@ -1328,7 +1326,6 @@ msgid "3D mode"
 msgstr "3D режим"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1346,7 +1343,8 @@ msgstr ""
 "-    interlaced: четные/нечетные линии отображают два разных кадра для "
 "экранов поддерживающих поляризацию.\n"
 "-    topbottom: Разделение экрана низ/верх.\n"
-"-    sidebyside: Разделение экрана право/лево."
+"-    sidebyside: Разделение экрана право/лево.\n"
+"-    pageflip: Четырёхкратная буферизация (QuadBuffer)."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1430,7 +1428,7 @@ msgstr "Дополнительно"
 
 #: src/settings_translation_file.cpp
 msgid "Altitude Chill"
-msgstr ""
+msgstr "Высота нивального пояса"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
@@ -1493,7 +1491,6 @@ msgid "Basic"
 msgstr "Базовый"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Basic Privileges"
 msgstr "Стандартные права"
 
@@ -1543,9 +1540,8 @@ msgid "Cave noise #2"
 msgstr "Шум пещеры #2"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave width"
-msgstr "Ширина экрана"
+msgstr "Ширина пещеры"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1636,22 +1632,20 @@ msgid "Colored fog"
 msgstr "Цветной туман"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Список доверенных модов, через запятую, которым разрешён доступ к HTTP API,  "
-"что позволяет им отправлять и принимать данные в/из сети Интернет."
+"Список доверенных модов через запятую, которым разрешён доступ к HTTP API,  "
+"что позволяет им отправлять и принимать данные через Интернет."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
-"Список доверенных модов, через запятую, которым разрешён доступ к "
-"небезопасным функциям, даже в безопасном режиме (с помощью "
+"Список доверенных модов через запятую, которым разрешён доступ к "
+"небезопасным функциям даже когда включена защита модов (через "
 "request_insecure_environment())."
 
 #: src/settings_translation_file.cpp
