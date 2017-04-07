@@ -6,6 +6,10 @@ core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")
 end)
 
+core.register_on_connect(function()
+	print("[PREVIEW] Player connection completed")
+end)
+
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_receiving_chat_messages(function(message)
 	print("[PREVIEW] Received message " .. message)

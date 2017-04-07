@@ -1864,6 +1864,9 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 
 	m_state = LC_Ready;
 	sendReady();
+
+	m_script->on_connect();
+
 	text = wgettext("Done!");
 	draw_load_screen(text, device, guienv, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
