@@ -1107,7 +1107,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 
 	if (g_settings->getBool("enable_damage")) {
-		if (playerSAO->isDead()) {
+		if (playersao->isDead()) {
 			verbosestream << "Server::ProcessData(): Info: "
 				"Ignoring damage as player " << player->getName()
 				<< " is already dead." << std::endl;
