@@ -1111,15 +1111,14 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	// Send inventory
 	SendInventory(playersao);
 
-	// Send HP
-	SendPlayerHPOrDie(playersao);
+	// Send HP or death screen
+	if (playersao->isDead())
+		SendDeathscreen(peer_id, false, v3f(0,0,0));
+	else
+		SendPlayerHPOrDie(playersao);
 
 	// Send Breath
 	SendPlayerBreath(playersao);
-
-	// Show death screen if necessary
-	if (playersao->isDead())
-		SendDeathscreen(peer_id, false, v3f(0,0,0));
 
 	// Note things in chat if not in simple singleplayer mode
 	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
