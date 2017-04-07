@@ -57,21 +57,21 @@
  */
 
 #ifndef HEADER_SHA_H
-# define HEADER_SHA_H
+#define HEADER_SHA_H
 
-# include <stddef.h>
+#include <stddef.h>
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-# if defined(OPENSSL_NO_SHA) || (defined(OPENSSL_NO_SHA0) && defined(OPENSSL_NO_SHA1))
-#  error SHA is disabled.
-# endif
+#if defined(OPENSSL_NO_SHA) || (defined(OPENSSL_NO_SHA0) && defined(OPENSSL_NO_SHA1))
+#error SHA is disabled.
+#endif
 
-# if defined(OPENSSL_FIPS)
-#  define FIPS_SHA_SIZE_T size_t
-# endif
+#if defined(OPENSSL_FIPS)
+#define FIPS_SHA_SIZE_T size_t
+#endif
 
 /*
 	Compat stuff from OpenSSL land
@@ -79,11 +79,10 @@ extern "C" {
 
 /* crypto.h */
 
-# define fips_md_init(alg) fips_md_init_ctx(alg, alg)
+#define fips_md_init(alg) fips_md_init_ctx(alg, alg)
 
-# define fips_md_init_ctx(alg, cx) \
-        int alg##_Init(cx##_CTX *c)
-# define fips_cipher_abort(alg) while(0)
+#define fips_md_init_ctx(alg, cx) int alg##_Init(cx##_CTX *c)
+#define fips_cipher_abort(alg) while (0)
 
 /*-
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -92,47 +91,51 @@ extern "C" {
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  */
 
-# if defined(__LP32__)
-#  define SHA_LONG unsigned long
-# elif defined(__ILP64__)
-#  define SHA_LONG unsigned long
-#  define SHA_LONG_LOG2 3
-# else
-#  define SHA_LONG unsigned int
-# endif
+#if defined(__LP32__)
+#define SHA_LONG unsigned long
+#elif defined(__ILP64__)
+#define SHA_LONG unsigned long
+#define SHA_LONG_LOG2 3
+#else
+#define SHA_LONG unsigned int
+#endif
 
-# define SHA_LBLOCK      16
-# define SHA_CBLOCK      (SHA_LBLOCK*4)/* SHA treats input data as a
-                                        * contiguous array of 32 bit wide
-                                        * big-endian values. */
-# define SHA_LAST_BLOCK  (SHA_CBLOCK-8)
-# define SHA_DIGEST_LENGTH 20
+#define SHA_LBLOCK 16
+#define SHA_CBLOCK                                                                       \
+	(SHA_LBLOCK * 4) /* SHA treats input data as a                                   \
+			  * contiguous array of 32 bit wide                              \
+			  * big-endian values. */
+#define SHA_LAST_BLOCK (SHA_CBLOCK - 8)
+#define SHA_DIGEST_LENGTH 20
 
-typedef struct SHAstate_st {
-    SHA_LONG h0, h1, h2, h3, h4;
-    SHA_LONG Nl, Nh;
-    SHA_LONG data[SHA_LBLOCK];
-    unsigned int num;
+typedef struct SHAstate_st
+{
+	SHA_LONG h0, h1, h2, h3, h4;
+	SHA_LONG Nl, Nh;
+	SHA_LONG data[SHA_LBLOCK];
+	unsigned int num;
 } SHA_CTX;
 
-# define SHA256_CBLOCK   (SHA_LBLOCK*4)/* SHA-256 treats input data as a
-                                        * contiguous array of 32 bit wide
-                                        * big-endian values. */
-# define SHA224_DIGEST_LENGTH    28
-# define SHA256_DIGEST_LENGTH    32
+#define SHA256_CBLOCK                                                                    \
+	(SHA_LBLOCK * 4) /* SHA-256 treats input data as a                               \
+			  * contiguous array of 32 bit wide                              \
+			  * big-endian values. */
+#define SHA224_DIGEST_LENGTH 28
+#define SHA256_DIGEST_LENGTH 32
 
-typedef struct SHA256state_st {
-    SHA_LONG h[8];
-    SHA_LONG Nl, Nh;
-    SHA_LONG data[SHA_LBLOCK];
-    unsigned int num, md_len;
+typedef struct SHA256state_st
+{
+	SHA_LONG h[8];
+	SHA_LONG Nl, Nh;
+	SHA_LONG data[SHA_LBLOCK];
+	unsigned int num, md_len;
 } SHA256_CTX;
 
-# ifndef OPENSSL_NO_SHA256
-#  ifdef OPENSSL_FIPS
+#ifndef OPENSSL_NO_SHA256
+#ifdef OPENSSL_FIPS
 int private_SHA224_Init(SHA256_CTX *c);
 int private_SHA256_Init(SHA256_CTX *c);
-#  endif
+#endif
 int SHA224_Init(SHA256_CTX *c);
 int SHA224_Update(SHA256_CTX *c, const void *data, size_t len);
 int SHA224_Final(unsigned char *md, SHA256_CTX *c);
@@ -142,12 +145,12 @@ int SHA256_Update(SHA256_CTX *c, const void *data, size_t len);
 int SHA256_Final(unsigned char *md, SHA256_CTX *c);
 unsigned char *SHA256(const unsigned char *d, size_t n, unsigned char *md);
 void SHA256_Transform(SHA256_CTX *c, const unsigned char *data);
-# endif
+#endif
 
-# define SHA384_DIGEST_LENGTH    48
-# define SHA512_DIGEST_LENGTH    64
+#define SHA384_DIGEST_LENGTH 48
+#define SHA512_DIGEST_LENGTH 64
 
-#ifdef  __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

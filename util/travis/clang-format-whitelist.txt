@@ -229,7 +229,6 @@ src/raycast.h
 src/reflowscan.cpp
 src/reflowscan.h
 src/remoteplayer.cpp
-src/remoteplayer.h
 src/rollback.cpp
 src/rollback.h
 src/rollback_interface.cpp
@@ -291,7 +290,6 @@ src/script/lua_api/l_itemstackmeta.h
 src/script/lua_api/l_mainmenu.cpp
 src/script/lua_api/l_mainmenu.h
 src/script/lua_api/l_mapgen.cpp
-src/script/lua_api/l_mapgen.h
 src/script/lua_api/l_metadata.cpp
 src/script/lua_api/l_metadata.h
 src/script/lua_api/l_minimap.cpp
@@ -313,13 +311,9 @@ src/script/lua_api/l_server.h
 src/script/lua_api/l_settings.cpp
 src/script/lua_api/l_settings.h
 src/script/lua_api/l_sound.cpp
-src/script/lua_api/l_sound.h
 src/script/lua_api/l_storage.cpp
-src/script/lua_api/l_storage.h
 src/script/lua_api/l_util.cpp
-src/script/lua_api/l_util.h
 src/script/lua_api/l_vmanip.cpp
-src/script/lua_api/l_vmanip.h
 src/script/scripting_mainmenu.cpp
 src/script/scripting_mainmenu.h
 src/script/serverscripting.cpp
@@ -340,11 +334,9 @@ src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
 src/sky.cpp
-src/sky.h
 src/socket.cpp
 src/socket.h
 src/sound.cpp
-src/sound.h
 src/sound_openal.cpp
 src/sound_openal.h
 src/staticobject.cpp
@@ -411,7 +403,6 @@ src/util/directiontables.cpp
 src/util/directiontables.h
 src/util/enriched_string.cpp
 src/util/enriched_string.h
-src/util/hex.h
 src/util/md32_common.h
 src/util/numeric.cpp
 src/util/numeric.h
@@ -421,8 +412,6 @@ src/util/pointer.h
 src/util/serialize.cpp
 src/util/serialize.h
 src/util/sha1.cpp
-src/util/sha1.h
-src/util/sha2.h
 src/util/srp.cpp
 src/util/srp.h
 src/util/strfnd.h

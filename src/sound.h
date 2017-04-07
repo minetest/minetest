@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SOUND_HEADER
 #define SOUND_HEADER
 
-#include "irrlichttypes_bloated.h"
-#include <string>
 #include <set>
+#include <string>
+#include "irrlichttypes_bloated.h"
 
 class OnDemandSoundFetcher
 {
@@ -36,61 +36,68 @@ struct SimpleSoundSpec
 {
 	std::string name;
 	float gain;
-	SimpleSoundSpec(std::string name="", float gain=1.0):
-		name(name),
-		gain(gain)
-	{}
-	bool exists() {return name != "";}
+	SimpleSoundSpec(std::string name = "", float gain = 1.0) : name(name), gain(gain)
+	{
+	}
+	bool exists() { return name != ""; }
 	// Serialization intentionally left out
 };
 
 class ISoundManager
 {
 public:
-	virtual ~ISoundManager(){}
-	
+	virtual ~ISoundManager() {}
+
 	// Multiple sounds can be loaded per name; when played, the sound
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure
-	virtual bool loadSoundFile(const std::string &name,
-			const std::string &filepath) = 0;
-	virtual bool loadSoundData(const std::string &name,
-			const std::string &filedata) = 0;
+	virtual bool loadSoundFile(
+			const std::string &name, const std::string &filepath) = 0;
+	virtual bool loadSoundData(
+			const std::string &name, const std::string &filedata) = 0;
 
 	virtual void updateListener(v3f pos, v3f vel, v3f at, v3f up) = 0;
 	virtual void setListenerGain(float gain) = 0;
 
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
-	virtual int playSound(const std::string &name, bool loop,
-			float volume) = 0;
-	virtual int playSoundAt(const std::string &name, bool loop,
-			float volume, v3f pos) = 0;
+	virtual int playSound(const std::string &name, bool loop, float volume) = 0;
+	virtual int playSoundAt(
+			const std::string &name, bool loop, float volume, v3f pos) = 0;
 	virtual void stopSound(int sound) = 0;
 	virtual bool soundExists(int sound) = 0;
 	virtual void updateSoundPosition(int sound, v3f pos) = 0;
 
 	int playSound(const SimpleSoundSpec &spec, bool loop)
-		{ return playSound(spec.name, loop, spec.gain); }
+	{
+		return playSound(spec.name, loop, spec.gain);
+	}
 	int playSoundAt(const SimpleSoundSpec &spec, bool loop, v3f pos)
-		{ return playSoundAt(spec.name, loop, spec.gain, pos); }
+	{
+		return playSoundAt(spec.name, loop, spec.gain, pos);
+	}
 };
 
-class DummySoundManager: public ISoundManager
+class DummySoundManager : public ISoundManager
 {
 public:
-	virtual bool loadSoundFile(const std::string &name,
-			const std::string &filepath) {return true;}
-	virtual bool loadSoundData(const std::string &name,
-			const std::string &filedata) {return true;}
+	virtual bool loadSoundFile(const std::string &name, const std::string &filepath)
+	{
+		return true;
+	}
+	virtual bool loadSoundData(const std::string &name, const std::string &filedata)
+	{
+		return true;
+	}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
 	void setListenerGain(float gain) {}
-	int playSound(const std::string &name, bool loop,
-			float volume) {return 0;}
-	int playSoundAt(const std::string &name, bool loop,
-			float volume, v3f pos) {return 0;}
+	int playSound(const std::string &name, bool loop, float volume) { return 0; }
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
+	{
+		return 0;
+	}
 	void stopSound(int sound) {}
-	bool soundExists(int sound) {return false;}
+	bool soundExists(int sound) { return false; }
 	void updateSoundPosition(int sound, v3f pos) {}
 };
 
@@ -98,4 +105,3 @@ public:
 extern DummySoundManager dummySoundManager;
 
 #endif
-

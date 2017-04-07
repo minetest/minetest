@@ -21,21 +21,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef __L_STORAGE_H__
 #define __L_STORAGE_H__
 
-#include "lua_api/l_base.h"
 #include "l_metadata.h"
+#include "lua_api/l_base.h"
 
 class ModMetadata;
 
-class ModApiStorage: public ModApiBase
+class ModApiStorage : public ModApiBase
 {
 protected:
 	static int l_get_mod_storage(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
-
 };
 
-class StorageRef: public MetaDataRef
+class StorageRef : public MetaDataRef
 {
 private:
 	ModMetadata *m_object;
@@ -43,11 +43,12 @@ private:
 	static const char className[];
 	static const luaL_reg methods[];
 
-	virtual Metadata* getmeta(bool auto_create);
+	virtual Metadata *getmeta(bool auto_create);
 	virtual void clearMeta();
 
 	// garbage collector
 	static int gc_object(lua_State *L);
+
 public:
 	StorageRef(ModMetadata *object);
 	~StorageRef() {}
@@ -56,7 +57,7 @@ public:
 	static void create(lua_State *L, ModMetadata *object);
 
 	static StorageRef *checkobject(lua_State *L, int narg);
-	static ModMetadata* getobject(StorageRef *ref);
+	static ModMetadata *getobject(StorageRef *ref);
 };
 
 #endif /* __L_STORAGE_H__ */
