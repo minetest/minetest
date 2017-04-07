@@ -206,6 +206,10 @@ keymap_screenshot (Screenshot) key KEY_F12
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_drop (Drop item key) key KEY_KEY_Q
 
+#    Key to use view zoom when possible.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_zoom (View zoom key) key KEY_KEY_Z
+
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_hud (HUD toggle key) key KEY_F1
@@ -213,6 +217,10 @@ keymap_toggle_hud (HUD toggle key) key KEY_F1
 #    Key for toggling the display of the chat.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_toggle_chat (Chat toggle key) key KEY_F2
+
+#    Key for toggling the display of the large chat console.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+keymap_console (Large chat console key) key KEY_F10
 
 #    Key for toggling the display of the fog.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -275,6 +283,7 @@ show_entity_selectionbox (Show entity selection boxes) bool true
 enable_remote_media_server (Connect to external media server) bool true
 
 #    Enable Lua modding support on client.
+#    This support is experimental and API can change.
 enable_client_modding (Client modding) bool false
 
 #    URL to the server list displayed in the Multiplayer Tab.
@@ -317,6 +326,9 @@ enable_3d_clouds (3D clouds) bool true
 #    Method used to highlight selected object.
 node_highlighting (Node highlighting) enum box box,halo
 
+#    Adds particles when digging a node.
+enable_particles (Digging particles) bool true
+
 [***Filtering]
 
 #    Use mip mapping to scale textures. May slightly increase performance.
@@ -353,8 +365,11 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 [***Shaders]
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
-#    Thy only work with the OpenGL video backend.
+#    This only works with the OpenGL video backend.
 enable_shaders (Shaders) bool true
+
+#    Path to shader directory. If no path is defined, default location will be used.
+shader_path (Shader path) path
 
 [****Tone Mapping]
 
@@ -390,7 +405,7 @@ enable_parallax_occlusion (Parallax occlusion) bool false
 parallax_occlusion_mode (Parallax occlusion mode) int 1 0 1
 
 #    Strength of parallax.
-3d_parallax_strength (Parallax occlusion strength) float 0.025
+3d_paralax_strength (Parallax occlusion strength) float 0.025
 
 #    Number of parallax occlusion iterations.
 parallax_occlusion_iterations (Parallax occlusion iterations) int 4
@@ -472,13 +487,16 @@ cloud_height (Cloud height) int 120
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
 cloud_radius (Cloud radius) int 12
 
+#    Enables view bobbing when walking.
+view_bobbing (Enable view bobbing) bool true
+
 #    Multiplier for view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-view_bobbing_amount (View bobbing) float 1.0
+view_bobbing_amount (View bobbing factor) float 1.0
 
 #    Multiplier for fall bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
-fall_bobbing_amount (Fall bobbing) float 0.0
+fall_bobbing_amount (Fall bobbing factor) float 0.0
 
 #    3D support.
 #    Currently supported:
@@ -518,6 +536,9 @@ desynchronize_mapblock_texture_animation (Desynchronize block animation) bool tr
 #    Useful if there's something to be displayed right or left of hotbar.
 hud_hotbar_max_width (Maximum hotbar width) float 1.0
 
+#    Modifies the size of the hudbar elements.
+hud_scaling (HUD scale factor) float 1.0
+
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
 
@@ -548,8 +569,15 @@ ambient_occlusion_gamma (Ambient occlusion gamma) float 2.2 0.25 4.0
 #    Enables animation of inventory items.
 inventory_items_animations (Inventory items animations) bool false
 
+#    Android systems only: Tries to create inventory textures from meshes
+#    when no supported render was found.
+inventory_image_hack (Inventory image hack) bool false
+
 #    Fraction of the visible distance at which fog starts to be rendered
 fog_start (Fog Start) float 0.4 0.0 0.99
+
+#    Makes all liquids opaque
+opaque_water (Opaque liquids) bool false
 
 [**Menus]
 
@@ -616,6 +644,10 @@ screenshot_quality (Screenshot quality) int 0 0 100
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 screen_dpi (DPI) int 72
+
+#    Windows systems only: Start Minetest with the command line window in the background.
+#    Contains the same information as the file debug.txt (default name).
+enable_console (Enable console window) bool false
 
 [*Sound]
 
@@ -728,6 +760,9 @@ show_statusline_on_connect (Status message on connection) bool true
 
 #    Enable players getting damage and dying.
 enable_damage (Damage) bool false
+
+#    Enable creative mode for new created maps.
+creative_mode (Creative) bool false
 
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
@@ -972,6 +1007,7 @@ mgv5_cavern_threshold (Cavern threshold) float 0.7
 mgv5_np_filler_depth (Filler depth noise) noise_params 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
 #    Variation of terrain vertical scale.
+#    When noise is < -0.55 terrain is near-flat.
 mgv5_np_factor (Factor noise) noise_params 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 
 #    Y-level of average terrain surface.
@@ -1059,7 +1095,7 @@ mgv6_np_apple_trees (Apple trees noise) noise_params 0, 1, (100, 100, 100), 3429
 #    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgv7_spflags (Mapgen v7 specific flags) flags mountains,ridges,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
+mgv7_spflags (Mapgen v7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv7_cave_width (Cave width) float 0.09
@@ -1137,7 +1173,7 @@ mgv7_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 #    Occasional lakes and hills can be added to the flat world.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgflat_spflags (Mapgen flat specific flags) flags  lakes,hills,,nolakes,nohills
+mgflat_spflags (Mapgen flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
 
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8
@@ -1349,7 +1385,6 @@ profiler.load (Load the game profiler) bool false
 profiler.default_report_format (Default report format) enum txt txt,csv,lua,json,json_pretty
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#
 profiler.report_path (Report path) string ""
 
 [***Instrumentation]
