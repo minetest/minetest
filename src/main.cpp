@@ -17,9 +17,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-// This would get rid of the console window
-//#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-
 #include "irrlicht.h" // createDevice
 
 #include "mainmenumanager.h"
@@ -44,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "database.h"
 #include "config.h"
+#include "porting.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -134,7 +132,6 @@ static OptionList allowed_options;
 int main(int argc, char *argv[])
 {
 	int retval;
-
 	debug_set_exception_handler();
 
 	g_logger.registerThread("Main");
@@ -145,11 +142,15 @@ int main(int argc, char *argv[])
 	if (!cmd_args_ok
 			|| cmd_args.getFlag("help")
 			|| cmd_args.exists("nonopt1")) {
+		porting::attachOrCreateConsole();
 		print_help(allowed_options);
 		return cmd_args_ok ? 0 : 1;
 	}
+	if (cmd_args.getFlag("console"))
+		porting::attachOrCreateConsole();
 
 	if (cmd_args.getFlag("version")) {
+		porting::attachOrCreateConsole();
 		print_version();
 		return 0;
 	}
@@ -191,6 +192,9 @@ int main(int argc, char *argv[])
 	if (!init_common(cmd_args, argc, argv))
 		return 1;
 
+	if (g_settings->getBool("enable_console"))
+		porting::attachOrCreateConsole();
+
 #ifndef __ANDROID__
 	// Run unit tests
 	if (cmd_args.getFlag("run-unittests")) {
@@ -200,9 +204,13 @@ int main(int argc, char *argv[])
 
 	GameParams game_params;
 #ifdef SERVER
+	porting::attachOrCreateConsole();
 	game_params.is_dedicated_server = true;
 #else
-	game_params.is_dedicated_server = cmd_args.getFlag("server");
+	const bool isServer = cmd_args.getFlag("server");
+	if (isServer)
+		porting::attachOrCreateConsole();
+	game_params.is_dedicated_server = isServer;
 #endif
 
 	if (!game_configure(&game_params, cmd_args))
@@ -303,6 +311,8 @@ static void set_allowed_options(OptionList *allowed_options)
 			_("Set password"))));
 	allowed_options->insert(std::make_pair("go", ValueSpec(VALUETYPE_FLAG,
 			_("Disable main menu"))));
+	allowed_options->insert(std::make_pair("console", ValueSpec(VALUETYPE_FLAG,
+		_("Starts with the console (Windows only)"))));
 #endif
 
 }

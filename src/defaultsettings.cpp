@@ -350,6 +350,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_description", "");
 
 	settings->setDefault("high_precision_fpu", "true");
+	settings->setDefault("enable_console", "false");
 
 #ifdef __ANDROID__
 	settings->setDefault("screenW", "0");
