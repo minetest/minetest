@@ -170,12 +170,12 @@ void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo>
 	s32         id     = g_settings->getS32("joystick_id");
 	std::string layout = g_settings->get("joystick_type");
 
-	if (id < 0 || id >= joystick_infos.size()) {
+	if (id < 0 || (u16)id >= joystick_infos.size()) {
 		// TODO: auto detection
 		id = 0;
 	}
 
-	if (id >= 0 && id < joystick_infos.size()) {
+	if (id >= 0 && (u16)id < joystick_infos.size()) {
 		if (layout.empty() || layout == "auto")
 			setLayoutFromControllerName(joystick_infos[id].Name.c_str());
 		else
