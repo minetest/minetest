@@ -2709,7 +2709,7 @@ These functions return the leftover itemstack.
 * `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
-    * Unserializable things like functions and userdata are saved as null.
+    * Unserializable things like functions and userdata will cause an error.
     * **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as keys.
         2. You can not mix string and integer keys.
