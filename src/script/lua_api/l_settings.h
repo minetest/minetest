@@ -24,51 +24,51 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 
-class LuaSettings : public ModApiBase {
+class LuaSettings : public ModApiBase
+{
 private:
 	static const char className[];
 	static const luaL_reg methods[];
 
 	// garbage collector
-	static int gc_object(lua_State* L);
+	static int gc_object(lua_State *L);
 
 	// get(self, key) -> value
-	static int l_get(lua_State* L);
+	static int l_get(lua_State *L);
 
 	// get_bool(self, key) -> boolean
-	static int l_get_bool(lua_State* L);
+	static int l_get_bool(lua_State *L);
 
 	// set(self, key, value)
-	static int l_set(lua_State* L);
+	static int l_set(lua_State *L);
 
 	// remove(self, key) -> success
-	static int l_remove(lua_State* L);
+	static int l_remove(lua_State *L);
 
 	// get_names(self) -> {key1, ...}
-	static int l_get_names(lua_State* L);
+	static int l_get_names(lua_State *L);
 
 	// write(self) -> success
-	static int l_write(lua_State* L);
+	static int l_write(lua_State *L);
 
 	// to_table(self) -> {[key1]=value1,...}
-	static int l_to_table(lua_State* L);
+	static int l_to_table(lua_State *L);
 
 	bool m_write_allowed;
-	Settings* m_settings;
+	Settings *m_settings;
 	std::string m_filename;
 
 public:
-	LuaSettings(const char* filename, bool write_allowed);
+	LuaSettings(const char *filename, bool write_allowed);
 	~LuaSettings();
 
 	// LuaSettings(filename)
 	// Creates an LuaSettings and leaves it on top of stack
-	static int create_object(lua_State* L);
+	static int create_object(lua_State *L);
 
-	static LuaSettings* checkobject(lua_State* L, int narg);
+	static LuaSettings *checkobject(lua_State *L, int narg);
 
-	static void Register(lua_State* L);
-
+	static void Register(lua_State *L);
 };
 
 #endif

@@ -22,12 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_base.h"
 
-
 class Minimap;
 
-class LuaMinimap : public ModApiBase {
+class LuaMinimap : public ModApiBase
+{
 private:
-
 	static const char className[];
 	static const luaL_reg methods[];
 
@@ -49,6 +48,7 @@ private:
 	static int l_toggle_shape(lua_State *L);
 
 	Minimap *m_minimap;
+
 public:
 	LuaMinimap(Minimap *m);
 	~LuaMinimap() {}
@@ -56,7 +56,7 @@ public:
 	static void create(lua_State *L, Minimap *object);
 
 	static LuaMinimap *checkobject(lua_State *L, int narg);
-	static Minimap* getobject(LuaMinimap *ref);
+	static Minimap *getobject(LuaMinimap *ref);
 
 	static void Register(lua_State *L);
 };

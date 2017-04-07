@@ -29,11 +29,10 @@ DEALINGS IN THE SOFTWARE.
 #include "threads.h"
 
 #if USE_CPP11_MUTEX
-	#include <condition_variable>
-	#include "threading/mutex.h"
-	#include "threading/mutex_auto_lock.h"
+#include <condition_variable>
+#include "threading/mutex.h"
+#include "threading/mutex_auto_lock.h"
 #endif
-
 
 /** A syncronization primitive that will wake up one waiting thread when signaled.
  * Calling @c signal() multiple times before a waiting thread has had a chance
@@ -41,7 +40,8 @@ DEALINGS IN THE SOFTWARE.
  * are waiting on the event when it is signaled, the next call to @c wait()
  * will return (almost) immediately.
  */
-class Event {
+class Event
+{
 public:
 	Event();
 #ifndef USE_CPP11_MUTEX

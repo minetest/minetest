@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_METADATA_H_
 #define L_METADATA_H_
 
-#include "lua_api/l_base.h"
 #include "irrlichttypes_bloated.h"
+#include "lua_api/l_base.h"
 
 class Metadata;
 
@@ -28,14 +28,15 @@ class Metadata;
 	NodeMetaRef
 */
 
-class MetaDataRef : public ModApiBase {
+class MetaDataRef : public ModApiBase
+{
 public:
 	virtual ~MetaDataRef() {}
 protected:
 	static MetaDataRef *checkobject(lua_State *L, int narg);
 
 	virtual void reportMetadataChange() {}
-	virtual Metadata* getmeta(bool auto_create) = 0;
+	virtual Metadata *getmeta(bool auto_create) = 0;
 	virtual void clearMeta() = 0;
 
 	virtual void handleToTable(lua_State *L, Metadata *meta);

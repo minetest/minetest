@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define S_CLIENT_H_
 
 #include "cpp_api/s_base.h"
-#include "util/string.h"
 #include "mapnode.h"
+#include "util/string.h"
 
 #ifdef _CRT_MSVCP_CURRENT
 #include <cstdint>
@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ClientEnvironment;
 
-class ScriptApiClient: virtual public ScriptApiBase
+class ScriptApiClient : virtual public ScriptApiBase
 {
 public:
 	// Calls on_shutdown handlers

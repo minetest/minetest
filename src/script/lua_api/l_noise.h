@@ -20,14 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_NOISE_H_
 #define L_NOISE_H_
 
-#include "lua_api/l_base.h"
 #include "irr_v3d.h"
+#include "lua_api/l_base.h"
 #include "noise.h"
 
 /*
 	LuaPerlinNoise
 */
-class LuaPerlinNoise : public ModApiBase {
+class LuaPerlinNoise : public ModApiBase
+{
 private:
 	NoiseParams np;
 	static const char className[];
@@ -57,7 +58,8 @@ public:
 /*
 	LuaPerlinNoiseMap
 */
-class LuaPerlinNoiseMap : public ModApiBase {
+class LuaPerlinNoiseMap : public ModApiBase
+{
 	NoiseParams np;
 	Noise *noise;
 	bool m_is3d;
@@ -95,7 +97,8 @@ public:
 /*
 	LuaPseudoRandom
 */
-class LuaPseudoRandom : public ModApiBase {
+class LuaPseudoRandom : public ModApiBase
+{
 private:
 	PseudoRandom m_pseudo;
 
@@ -111,8 +114,7 @@ private:
 	static int l_next(lua_State *L);
 
 public:
-	LuaPseudoRandom(s32 seed) :
-		m_pseudo(seed) {}
+	LuaPseudoRandom(s32 seed) : m_pseudo(seed) {}
 
 	// LuaPseudoRandom(seed)
 	// Creates an LuaPseudoRandom and leaves it on top of stack
@@ -126,7 +128,8 @@ public:
 /*
 	LuaPcgRandom
 */
-class LuaPcgRandom : public ModApiBase {
+class LuaPcgRandom : public ModApiBase
+{
 private:
 	PcgRandom m_rnd;
 
@@ -146,10 +149,8 @@ private:
 	static int l_rand_normal_dist(lua_State *L);
 
 public:
-	LuaPcgRandom(u64 seed) :
-		m_rnd(seed) {}
-	LuaPcgRandom(u64 seed, u64 seq) :
-		m_rnd(seed, seq) {}
+	LuaPcgRandom(u64 seed) : m_rnd(seed) {}
+	LuaPcgRandom(u64 seed, u64 seq) : m_rnd(seed, seq) {}
 
 	// LuaPcgRandom(seed)
 	// Creates an LuaPcgRandom and leaves it on top of stack
@@ -160,11 +161,11 @@ public:
 	static void Register(lua_State *L);
 };
 
-
 /*
 	LuaSecureRandom
 */
-class LuaSecureRandom : public ModApiBase {
+class LuaSecureRandom : public ModApiBase
+{
 private:
 	static const size_t RAND_BUF_SIZE = 2048;
 	static const char className[];

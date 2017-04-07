@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_NODETIMER_H_
 #define L_NODETIMER_H_
 
-#include "lua_api/l_base.h"
 #include "irr_v3d.h"
+#include "lua_api/l_base.h"
 
 class ServerEnvironment;
 
-class NodeTimerRef : public ModApiBase {
+class NodeTimerRef : public ModApiBase
+{
 private:
 	v3s16 m_p;
 	ServerEnvironment *m_env;
@@ -61,7 +62,5 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-
 
 #endif /* L_NODETIMER_H_ */

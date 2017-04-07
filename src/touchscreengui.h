@@ -19,15 +19,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef TOUCHSCREENGUI_HEADER
 #define TOUCHSCREENGUI_HEADER
 
-#include <IGUIEnvironment.h>
-#include <IGUIButton.h>
 #include <IEventReceiver.h>
+#include <IGUIButton.h>
+#include <IGUIEnvironment.h>
 
-#include <vector>
 #include <map>
+#include <vector>
 
-#include "game.h"
 #include "client/tile.h"
+#include "game.h"
 
 using namespace irr;
 using namespace irr::core;
@@ -68,32 +68,32 @@ typedef enum {
 #define SETTINGS_BAR_Y_OFFSET 6.5
 #define RARE_CONTROLS_BAR_Y_OFFSET 4
 
-extern const char** touchgui_button_imagenames;
+extern const char **touchgui_button_imagenames;
 
-struct button_info {
-	float            repeatcounter;
-	float            repeatdelay;
-	irr::EKEY_CODE   keycode;
+struct button_info
+{
+	float repeatcounter;
+	float repeatdelay;
+	irr::EKEY_CODE keycode;
 	std::vector<int> ids;
-	IGUIButton*      guibutton = NULL;
-	bool             immediate_release;
+	IGUIButton *guibutton = NULL;
+	bool immediate_release;
 };
 
 class AutoHideButtonBar
 {
 public:
+	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
 
-	AutoHideButtonBar( IrrlichtDevice *device, IEventReceiver* receiver );
-
-	void init(ISimpleTextureSource* tsrc, const char* starter_img,
-			int button_id, v2s32 UpperLeft, v2s32 LowerRight,
-			autohide_button_bar_dir dir, float timeout);
+	void init(ISimpleTextureSource *tsrc, const char *starter_img, int button_id,
+			v2s32 UpperLeft, v2s32 LowerRight, autohide_button_bar_dir dir,
+			float timeout);
 
 	~AutoHideButtonBar();
 
 	/* add button to be shown */
-	void addButton(touch_gui_button_id id, const wchar_t* caption,
-			const char* btn_image);
+	void addButton(touch_gui_button_id id, const wchar_t *caption,
+			const char *btn_image);
 
 	/* detect settings bar button events */
 	bool isButton(const SEvent &event);
@@ -114,40 +114,41 @@ public:
 	void show();
 
 private:
-	ISimpleTextureSource*     m_texturesource;
-	irr::video::IVideoDriver* m_driver;
-	IGUIEnvironment*          m_guienv;
-	IEventReceiver*           m_receiver;
-	v2u32                     m_screensize;
-	button_info               m_starter;
-	std::vector<button_info*> m_buttons;
+	ISimpleTextureSource *m_texturesource;
+	irr::video::IVideoDriver *m_driver;
+	IGUIEnvironment *m_guienv;
+	IEventReceiver *m_receiver;
+	v2u32 m_screensize;
+	button_info m_starter;
+	std::vector<button_info *> m_buttons;
 
-	v2s32                     m_upper_left;
-	v2s32                     m_lower_right;
+	v2s32 m_upper_left;
+	v2s32 m_lower_right;
 
 	/* show settings bar */
-	bool                      m_active;
+	bool m_active;
 
-	bool                      m_visible;
+	bool m_visible;
 
 	/* settings bar timeout */
-	float                     m_timeout;
-	float                     m_timeout_value;
-	bool                      m_initialized;
-	autohide_button_bar_dir   m_dir;
+	float m_timeout;
+	float m_timeout_value;
+	bool m_initialized;
+	autohide_button_bar_dir m_dir;
 };
 
 class TouchScreenGUI
 {
 public:
-	TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver);
+	TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver);
 	~TouchScreenGUI();
 
 	void translateEvent(const SEvent &event);
 
-	void init(ISimpleTextureSource* tsrc);
+	void init(ISimpleTextureSource *tsrc);
 
-	double getYawChange() {
+	double getYawChange()
+	{
 		double res = m_camera_yaw_change;
 		m_camera_yaw_change = 0;
 		return res;
@@ -166,28 +167,28 @@ public:
 	void show();
 
 private:
-	IrrlichtDevice*         m_device;
-	IGUIEnvironment*        m_guienv;
-	IEventReceiver*         m_receiver;
-	ISimpleTextureSource*   m_texturesource;
-	v2u32                   m_screensize;
-	std::map<int,rect<s32> > m_hud_rects;
-	std::map<int,irr::EKEY_CODE> m_hud_ids;
-	bool                    m_visible; // is the gui visible
+	IrrlichtDevice *m_device;
+	IGUIEnvironment *m_guienv;
+	IEventReceiver *m_receiver;
+	ISimpleTextureSource *m_texturesource;
+	v2u32 m_screensize;
+	std::map<int, rect<s32>> m_hud_rects;
+	std::map<int, irr::EKEY_CODE> m_hud_ids;
+	bool m_visible; // is the gui visible
 
 	/* value in degree */
-	double                  m_camera_yaw_change;
-	double                  m_camera_pitch;
+	double m_camera_yaw_change;
+	double m_camera_pitch;
 
-	line3d<f32>             m_shootline;
+	line3d<f32> m_shootline;
 
-	rect<s32>               m_control_pad_rect;
+	rect<s32> m_control_pad_rect;
 
-	int                     m_move_id;
-	bool                    m_move_has_really_moved;
-	s32                     m_move_downtime;
-	bool                    m_move_sent_as_mouse_event;
-	v2s32                   m_move_downlocation;
+	int m_move_id;
+	bool m_move_has_really_moved;
+	s32 m_move_downtime;
+	bool m_move_sent_as_mouse_event;
+	v2s32 m_move_downlocation;
 
 	button_info m_buttons[after_last_element_id];
 
@@ -206,9 +207,10 @@ private:
 			float repeat_delay = BUTTON_REPEAT_DELAY);
 
 	/* load texture */
-	void loadButtonTexture(button_info* btn, const char* path, rect<s32> button_rect);
+	void loadButtonTexture(button_info *btn, const char *path, rect<s32> button_rect);
 
-	struct id_status{
+	struct id_status
+	{
 		int id;
 		int X;
 		int Y;
@@ -236,7 +238,8 @@ private:
 	int getGuiButtonSize();
 
 	/* doubleclick detection variables */
-	struct key_event {
+	struct key_event
+	{
 		unsigned int down_time;
 		s32 x;
 		s32 y;
