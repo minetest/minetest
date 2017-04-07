@@ -263,7 +263,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("show_statusline_on_connect", "true");
 	settings->setDefault("enable_damage", "true");
-	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("enable_pvp", "true");

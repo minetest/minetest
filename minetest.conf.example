@@ -211,6 +211,11 @@
 #    type: key
 # keymap_drop = KEY_KEY_Q
 
+#    Key to use view zoom when possible.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_zoom = KEY_KEY_Z
+
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -220,6 +225,11 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_chat = KEY_F2
+
+#    Key for toggling the display of the large chat console.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_console = KEY_F10
 
 #    Key for toggling the display of the fog.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -298,7 +308,7 @@
 #    Enable Lua modding support on client.
 #    This support is experimental and API can change.
 #    type: bool
-enable_client_modding (Client modding) bool false
+# enable_client_modding = false
 
 #    URL to the server list displayed in the Multiplayer Tab.
 #    type: string
@@ -350,6 +360,10 @@ enable_client_modding (Client modding) bool false
 #    type: enum values: box, halo
 # node_highlighting = box
 
+#    Adds particles when digging a node.
+#    type: bool
+# enable_particles = true
+
 #### Filtering
 
 #    Use mip mapping to scale textures. May slightly increase performance.
@@ -393,9 +407,13 @@ enable_client_modding (Client modding) bool false
 #### Shaders
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
-#    Thy only work with the OpenGL video backend.
+#    This only works with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
+
+#    Path to shader directory. If no path is defined, default location will be used.
+#    type: path
+# shader_path =
 
 ##### Tone Mapping
 
@@ -439,7 +457,7 @@ enable_client_modding (Client modding) bool false
 
 #    Strength of parallax.
 #    type: float
-# 3d_parallax_strength = 0.025
+# 3d_paralax_strength = 0.025
 
 #    Number of parallax occlusion iterations.
 #    type: int
@@ -545,6 +563,10 @@ enable_client_modding (Client modding) bool false
 #    type: int
 # cloud_radius = 12
 
+#    Enables view bobbing when walking.
+#    type: bool
+# view_bobbing = true
+
 #    Multiplier for view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 #    type: float
@@ -567,7 +589,7 @@ enable_client_modding (Client modding) bool false
 # 3d_mode = none
 
 #    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
-#    type: float
+#    type: float min: 0.1 max: 1
 # console_height = 1.0
 
 #    In-game chat console background color (R,G,B).
@@ -602,6 +624,10 @@ enable_client_modding (Client modding) bool false
 #    Useful if there's something to be displayed right or left of hotbar.
 #    type: float
 # hud_hotbar_max_width = 1.0
+
+#    Modifies the size of the hudbar elements.
+#    type: float
+# hud_scaling = 1.0
 
 #    Enables caching of facedir rotated meshes.
 #    type: bool
@@ -641,9 +667,18 @@ enable_client_modding (Client modding) bool false
 #    type: bool
 # inventory_items_animations = false
 
+#    Android systems only: Tries to create inventory textures from meshes
+#    when no supported render was found.
+#    type: bool
+# inventory_image_hack = false
+
 #    Fraction of the visible distance at which fog starts to be rendered
 #    type: float min: 0 max: 0.99
 # fog_start = 0.4
+
+#    Makes all liquids opaque
+#    type: bool
+# opaque_water = false
 
 ### Menus
 
@@ -733,6 +768,11 @@ enable_client_modding (Client modding) bool false
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 #    type: int
 # screen_dpi = 72
+
+#    Windows systems only: Start Minetest with the command line window in the background.
+#    Contains the same information as the file debug.txt (default name).
+#    type: bool
+# enable_console = false
 
 ## Sound
 
@@ -875,6 +915,10 @@ enable_client_modding (Client modding) bool false
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false
+
+#    Enable creative mode for new created maps.
+#    type: bool
+# creative_mode = false
 
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
@@ -1083,7 +1127,8 @@ enable_client_modding (Client modding) bool false
 #    on the eye position of the player. This can reduce the number of blocks
 #    sent to the client 50-80%. The client will not longer receive most invisible
 #    so that the utility of noclip mode is reduced.
-server_side_occlusion_culling = true
+#    type: bool
+# server_side_occlusion_culling = true
 
 ## Mapgen
 
@@ -1433,7 +1478,7 @@ server_side_occlusion_culling = true
 #    type: float
 # mgflat_cave_width = 0.09
 
-#    Terrain noise threshold for optional lakes.
+#    Terrain noise threshold for lakes.
 #    Controls proportion of world area covered by lakes.
 #    Adjust towards 0.0 for a larger proportion.
 #    type: float
@@ -1443,7 +1488,7 @@ server_side_occlusion_culling = true
 #    type: float
 # mgflat_lake_steepness = 48.0
 
-#    Terrain noise threshold for optional hills.
+#    Terrain noise threshold for hills.
 #    Controls proportion of world area covered by hills.
 #    Adjust towards 0.0 for a larger proportion.
 #    type: float
@@ -1678,7 +1723,6 @@ server_side_occlusion_culling = true
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#
 #    type: string
 # profiler.report_path = ""
 
@@ -1794,3 +1838,4 @@ server_side_occlusion_culling = true
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
+
