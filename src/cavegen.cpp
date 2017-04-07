@@ -199,7 +199,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 	noise_cavern->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
 	// Cache cavern_amp values
-	float cavern_amp[m_csize.Y + 1];
+	float *cavern_amp = new float[m_csize.Y + 1];
 	u8 cavern_amp_index = 0;  // Index zero at column top
 	for (s16 y = nmax.Y; y >= nmin.Y - 1; y--, cavern_amp_index++) {
 		cavern_amp[cavern_amp_index] =
@@ -241,6 +241,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 		}
 	}
 
+	delete[] cavern_amp;
 	return has_cavern;
 }
 
