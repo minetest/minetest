@@ -234,10 +234,14 @@ int LuaItemStack::l_to_table(lua_State *L)
 		for (StringMap::const_iterator it = fields.begin();
 				it != fields.end(); ++it) {
 			const std::string &name = it->first;
-			const std::string &value = it->second;
-			lua_pushlstring(L, name.c_str(), name.size());
-			lua_pushlstring(L, value.c_str(), value.size());
-			lua_settable(L, -3);
+
+			// don't export legacy meta, as it causes problems in ItemStack()
+			if (name != "") {
+				const std::string &value = it->second;
+				lua_pushlstring(L, name.c_str(), name.size());
+				lua_pushlstring(L, value.c_str(), value.size());
+				lua_settable(L, -3);
+			}
 		}
 		lua_setfield(L, -2, "meta");
 	}
