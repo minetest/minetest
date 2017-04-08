@@ -11,6 +11,54 @@ function core.spawn_item(pos, item)
 	return obj
 end
 
+local item_entity_infotext_error_reported = ""
+local function make_infotext(item, count)
+	infotext_type = core.setting_get("item_entity_infotext")
+	if infotext_type == "none" then
+		return ""
+	end
+	if not infotext_type or infotext_type == "" then
+		infotext_type = "name"
+	end
+	if not count then
+		item, count = item:match("([^ ]+) *(%d*)")
+	end
+	count = tonumber(count)
+	if not count or count <= 0 then
+		count = 1
+	end
+	local descr = item
+	local descr_format1 = "%s"
+	local descr_format = "%s %s"
+	if infotext_type ~= "stack" then
+		local def = minetest.registered_items[item]
+		if def and def.description and def.description ~= "" then
+			descr = def.description
+			if infotext_type == "both" then
+				descr_format1 = "%s\n(%s)"
+				descr_format = "%s (%s)\n(%s)"
+			else
+				if infotext_type ~= "name"
+						and item_entity_infotext_error_reported ~= infotext_type then
+					item_entity_infotext_error_reported = infotext_type
+					core.log("error",
+						"Invalid value for item_entity_infotext"
+						.. " in minetest.conf ("..infotext_type..")")
+				else
+					item_entity_infotext_error_reported = ""
+				end
+				descr_format1 = "%s"
+				descr_format = "%s (%s)"
+			end
+		end
+	end
+	if count == 1 then
+		return string.format(descr_format1, descr, item)
+	else
+		return string.format(descr_format, descr, count, item)
+	end
+end
+
 -- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
@@ -66,6 +114,7 @@ core.register_entity(":__builtin:item", {
 			visual_size = {x = s, y = s},
 			collisionbox = {-c, -c, -c, c, c, c},
 			automatic_rotate = math.pi * 0.5,
+			infotext = make_infotext(self.itemstring),
 		}
 		self.object:set_properties(prop)
 	end,
@@ -111,7 +160,8 @@ core.register_entity(":__builtin:item", {
 				overflow = true
 				count = count - max_count
 			else
-				self.itemstring = ''
+				self.itemstring = ""
+				self.object:set_properties({infotext = ""})
 			end
 			local pos = object:getpos()
 			pos.y = pos.y + (count - stack:get_count()) / max_count * 0.15
@@ -121,6 +171,7 @@ core.register_entity(":__builtin:item", {
 			local name = stack:get_name()
 			if not overflow then
 				obj.itemstring = name .. " " .. count
+				obj.object:set_properties({infotext = make_infotext(name, count)})
 				s = 0.2 + 0.1 * (count / max_count)
 				c = s
 				object:set_properties({
@@ -138,6 +189,7 @@ core.register_entity(":__builtin:item", {
 					collisionbox = {-c, -c, -c, c, c, c}
 				})
 				obj.itemstring = name .. " " .. max_count
+				obj.object:set_properties({infotext = make_infotext(name, max_count)})
 				s = 0.2 + 0.1 * (count / max_count)
 				c = s
 				self.object:set_properties({
@@ -145,6 +197,7 @@ core.register_entity(":__builtin:item", {
 					collisionbox = {-c, -c, -c, c, c, c}
 				})
 				self.itemstring = name .. " " .. count
+				self.object:set_properties({infotext = make_infotext(name, count)})
 			end
 		end
 		-- merging didn't succeed
@@ -154,7 +207,8 @@ core.register_entity(":__builtin:item", {
 	on_step = function(self, dtime)
 		self.age = self.age + dtime
 		if time_to_live > 0 and self.age > time_to_live then
-			self.itemstring = ''
+			self.itemstring = ""
+			self.object:set_properties({infotext = ""})
 			self.object:remove()
 			return
 		end
@@ -207,10 +261,12 @@ core.register_entity(":__builtin:item", {
 			local left = inv:add_item("main", self.itemstring)
 			if left and not left:is_empty() then
 				self.itemstring = left:to_string()
+				self.object:set_properties({infotext = make_infotext(self.itemstring)})
 				return
 			end
 		end
-		self.itemstring = ''
+		self.itemstring = ""
+		self.object:set_properties({infotext = ""})
 		self.object:remove()
 	end,
 })

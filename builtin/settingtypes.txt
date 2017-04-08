@@ -751,6 +751,14 @@ max_users (Maximum users) int 15
 #    Not needed if starting from the main menu.
 map-dir (Map directory) path
 
+#    Infotext to include in entities representing dropped items
+#    Values:
+#        none:     Don't set infotext for dropped items
+#        stack:    Set infotext to the itemstack. E.g.: 'default:dirt 22'
+#        name:     Use the regular name of the item. E.g.: 'Dirt (22)'
+#        both:     Use both name and itemstack
+item_entity_infotext (Item entity infotext) enum name none,stack,name,both
+
 #    Time in seconds for item entity (dropped items) to live.
 #    Setting it to -1 disables the feature.
 item_entity_ttl (Item entity TTL) int 900
