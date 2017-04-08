@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "guiscalingfilter.h"
 #include "mesh.h"
+#include "wieldmesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -642,9 +643,10 @@ void drawItemStack(video::IVideoDriver *driver,
 	}
 
 	const ItemDefinition &def = item.getDefinition(client->idef());
-	scene::IMesh* mesh = client->idef()->getWieldMesh(def.name, client);
+	ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
 
-	if (mesh) {
+	if (imesh && imesh->mesh) {
+		scene::IMesh *mesh = imesh->mesh;
 		driver->clearZBuffer();
 		s32 delta = 0;
 		if (rotation_kind < IT_ROT_NONE) {
@@ -667,16 +669,28 @@ void drawItemStack(video::IVideoDriver *driver,
 		matrix.makeIdentity();
 
 		if (enable_animations) {
-			float timer_f = (float)delta / 5000.0;
+			float timer_f = (float) delta / 5000.0;
 			matrix.setRotationDegrees(core::vector3df(0, 360 * timer_f, 0));
 		}
 
 		driver->setTransform(video::ETS_WORLD, matrix);
 		driver->setViewPort(rect);
 
+		video::SColor basecolor =
+			client->idef()->getItemstackColor(item, client);
+
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 j = 0; j < mc; ++j) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			// we can modify vertices relatively fast,
+			// because these meshes are not buffered.
+			assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
+			video::SColor c = basecolor;
+			if (imesh->buffer_colors.size() > j) {
+				std::pair<bool, video::SColor> p = imesh->buffer_colors[j];
+				c = p.first ? p.second : basecolor;
+			}
+			colorizeMeshBuffer(buf, &c);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			material.Lighting = false;

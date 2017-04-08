@@ -67,6 +67,9 @@ protected:
 
 	// from_table(self, table)
 	static int l_from_table(lua_State *L);
+
+	// equals(self, other)
+	static int l_equals(lua_State *L);
 };
 
 #endif /* L_NODEMETA_H_ */

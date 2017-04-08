@@ -28,6 +28,22 @@ class Client;
 class ITextureSource;
 struct TileSpec;
 
+struct ItemMesh
+{
+	scene::IMesh* mesh;
+	/*!
+	 * Stores the color of each mesh buffer.
+	 * If the boolean is true, the color is fixed, else
+	 * palettes can modify it.
+	 */
+	std::vector<std::pair<bool, video::SColor> > buffer_colors;
+
+	ItemMesh():
+		mesh(NULL),
+		buffer_colors()
+	{}
+};
+
 /*
 	Wield item scene node, renders the wield mesh of some item
 */
@@ -79,7 +95,7 @@ private:
 	aabb3f m_bounding_box;
 };
 
-scene::IMesh *getItemMesh(Client *client, const ItemStack &item);
+void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);
 
 scene::IMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename);
 #endif

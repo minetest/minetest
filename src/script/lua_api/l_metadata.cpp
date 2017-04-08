@@ -250,3 +250,17 @@ bool MetaDataRef::handleFromTable(lua_State *L, int table, Metadata *meta)
 
 	return true;
 }
+
+// equals(self, other)
+int MetaDataRef::l_equals(lua_State *L)
+{
+	MetaDataRef *ref1 = checkobject(L, 1);
+	Metadata *data1 = ref1->getmeta(false);
+	MetaDataRef *ref2 = checkobject(L, 2);
+	Metadata *data2 = ref2->getmeta(false);
+	if (data1 == NULL || data2 == NULL)
+		lua_pushboolean(L, data1 == data2);
+	else
+		lua_pushboolean(L, *data1 == *data2);
+	return 1;
+}

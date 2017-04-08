@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "object_properties.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "server.h"
 
 bool ScriptApiEntity::luaentity_Add(u16 id, const char *name)
 {
@@ -187,11 +188,11 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	getstringfield(L, -1, "mesh", prop->mesh);
 
 	// Deprecated: read object properties directly
-	read_object_properties(L, -1, prop);
+	read_object_properties(L, -1, prop, getServer()->idef());
 
 	// Read initial_properties
 	lua_getfield(L, -1, "initial_properties");
-	read_object_properties(L, -1, prop);
+	read_object_properties(L, -1, prop, getServer()->idef());
 	lua_pop(L, 1);
 }
 

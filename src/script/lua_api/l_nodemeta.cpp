@@ -204,6 +204,10 @@ void NodeMetaRef::RegisterCommon(lua_State *L)
 	lua_pushcfunction(L, gc_object);
 	lua_settable(L, metatable);
 
+	lua_pushliteral(L, "__eq");
+	lua_pushcfunction(L, l_equals);
+	lua_settable(L, metatable);
+
 	lua_pop(L, 1);  // drop metatable
 }
 
@@ -225,6 +229,7 @@ const luaL_Reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
 	luamethod(NodeMetaRef, get_inventory),
+	luamethod(MetaDataRef, equals),
 	{0,0}
 };
 
