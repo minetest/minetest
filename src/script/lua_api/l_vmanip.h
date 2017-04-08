@@ -38,7 +38,7 @@ private:
 	bool is_mapgen_vm;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static int gc_object(lua_State *L);
 

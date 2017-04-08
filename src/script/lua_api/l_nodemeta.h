@@ -39,8 +39,8 @@ private:
 	bool m_is_local;
 
 	static const char className[];
-	static const luaL_reg methodsServer[];
-	static const luaL_reg methodsClient[];
+	static const luaL_Reg methodsServer[];
+	static const luaL_Reg methodsClient[];
 
 	static NodeMetaRef *checkobject(lua_State *L, int narg);
 

@@ -41,7 +41,7 @@ private:
 	ModMetadata *m_object;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	virtual Metadata *getmeta(bool auto_create);
 	virtual void clearMeta();

@@ -452,7 +452,7 @@ void LuaVoxelManip::Register(lua_State *L)
 }
 
 const char LuaVoxelManip::className[] = "VoxelManip";
-const luaL_reg LuaVoxelManip::methods[] = {
+const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, read_from_map),
 	luamethod(LuaVoxelManip, get_data),
 	luamethod(LuaVoxelManip, set_data),

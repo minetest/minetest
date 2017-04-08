@@ -28,7 +28,7 @@ private:
 	ItemStack m_stack;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	// Exported functions
 

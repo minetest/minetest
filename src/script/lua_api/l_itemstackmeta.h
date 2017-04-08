@@ -31,7 +31,7 @@ private:
 	ItemStack *istack;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static ItemStackMetaRef *checkobject(lua_State *L, int narg);
 
