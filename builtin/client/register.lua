@@ -70,3 +70,4 @@ core.registered_on_formspec_input, core.register_on_formspec_input = make_regist
 core.registered_on_dignode, core.register_on_dignode = make_registration()
 core.registered_on_punchnode, core.register_on_punchnode = make_registration()
 core.registered_on_placenode, core.register_on_placenode = make_registration()
+core.registered_on_item_use, core.register_on_item_use = make_registration()
