@@ -691,6 +691,8 @@ Call these functions only at load time!
 ### Player
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
+* `minetest.localplayer`
+    * returns LocalPlayer handle. See LocalPlayer below.
 
 ### Client Environment
 * `minetest.get_player_names()`
@@ -712,7 +714,7 @@ Call these functions only at load time!
 * `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
-    * Unserializable things like functions and userdata will cause an error.
+    * Unserializable things like functions and userdata are saved as null.
     * **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as keys.
         2. You can not mix string and integer keys.
@@ -778,6 +780,118 @@ An interface to manipulate minimap on client UI
 * `set_mode(mode)`: sets the minimap mode (0 to 6)
 * `get_mode()`: returns the current minimap mode
 * `toggle_shape()`: toggles minimap shape to round or square.
+
+### LocalPlayer
+An interface to retrieve information about the player. The player is
+not accessible until the client is fully done loading and therefore
+not at module init time.
+
+To get the localplayer handle correctly, use `on_connect()` as follows:
+
+```lua
+local localplayer
+minetest.register_on_connect(function()
+        localplayer = minetest.localplayer
+end)
+```
+
+Methods:
+
+* `get_pos()`
+    * returns current player current position
+* `get_velocity()`
+    * returns player speed vector
+* `get_hp()`
+    * returns player HP
+* `got_teleported()`
+    * returns true if player was teleported
+* `is_attached()`
+    * returns true if player is attached
+* `is_touching_ground()`
+    * returns true if player touching ground
+* `is_in_liquid()`
+    * returns true if player is in a liquid (This oscillates so that the player jumps a bit above the surface)
+* `is_in_liquid_stable()`
+    * returns true if player is in a stable liquid (This is more stable and defines the maximum speed of the player)
+* `get_liquid_viscosity()`
+    * returns liquid viscosity (Gets the viscosity of liquid to calculate friction)
+* `is_climbing()`
+    * returns true if player is climbing
+* `swimming_vertical()`
+    * returns true if player is swimming in vertical
+* `get_physics_override()`
+    * returns:
+
+```lua
+    {
+        speed = float,
+        jump = float,
+        gravity = float,
+        sneak = boolean,
+        sneak_glitch = boolean
+    }
+```
+
+* `get_override_pos()`
+    * returns override position
+* `get_last_pos()`
+    * returns last player position before the current client step
+* `get_last_velocity()`
+    * returns last player speed
+* `get_breath()`
+    * returns the player's breath
+* `get_look_dir()`
+    * returns look direction vector
+* `get_look_horizontal()`
+    * returns look horizontal angle
+* `get_look_vertical()`
+    * returns look vertical angle
+* `get_eye_pos()`
+    * returns the player's eye position
+* `get_eye_offset()`
+    * returns the player's eye shift vector
+* `get_movement_acceleration()`
+    * returns acceleration of the player in different environments:
+
+```lua
+    {
+       fast = float,
+       air = float,
+       default = float,
+    }
+```
+
+* `get_movement_speed()`
+    * returns player's speed in different environments:
+
+```lua
+    {
+       walk = float,
+       jump = float,
+       crouch = float,
+       fast = float,
+       climb = float,
+    }
+```
+
+* `get_movement()`
+    * returns player's movement in different environments:
+
+```lua
+    {
+       liquid_fluidity = float,
+       liquid_sink = float,
+       liquid_fluidity_smooth = float,
+       gravity = float,
+    }
+```
+
+* `get_last_look_horizontal()`:
+    * returns last look horizontal angle
+* `get_last_look_vertical()`:
+    * returns last look vertical angle
+* `get_key_pressed()`:
+    * returns last key typed by the player
 
 ### Settings
 An interface to read config files in the format of `minetest.conf`.

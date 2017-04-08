@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_security.h"
 
 class Client;
+class LocalPlayer;
 class ClientScripting:
 	virtual public ScriptApiBase,
 	public ScriptApiSecurity,
@@ -33,6 +34,7 @@ class ClientScripting:
 {
 public:
 	ClientScripting(Client *client);
+	void on_client_ready(LocalPlayer *localplayer);
 
 private:
 	virtual void InitializeModApi(lua_State *L, int top);
