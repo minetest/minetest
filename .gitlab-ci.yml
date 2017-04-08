@@ -1,4 +1,8 @@
 ---
+# Github repository is cloned every day on Gitlab.com
+# https://gitlab.com/minetest/minetest
+# Pipelines URL: https://gitlab.com/minetest/minetest/pipelines
+
 stages:
   - build
 
