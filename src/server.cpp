@@ -2820,25 +2820,14 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	// Whether to send line to the player that sent the message, or to all players
 	bool broadcast_line = true;
 
-	// Commands are implemented in Lua, so only catch invalid
-	// commands that were not "eaten" and send an error back
-	if (wmessage[0] == L'/') {
-		std::wstring wcmd = wmessage.substr(1);
+	if (check_shout_priv && !checkPriv(name, "shout")) {
+		line += L"-!- You don't have permission to shout.";
 		broadcast_line = false;
-		if (wcmd.length() == 0)
-			line += L"-!- Empty command";
-		else
-			line += L"-!- Invalid command: " + str_split(wcmd, L' ')[0];
 	} else {
-		if (check_shout_priv && !checkPriv(name, "shout")) {
-			line += L"-!- You don't have permission to shout.";
-			broadcast_line = false;
-		} else {
-			line += L"<";
-			line += wname;
-			line += L"> ";
-			line += wmessage;
-		}
+		line += L"<";
+		line += wname;
+		line += L"> ";
+		line += wmessage;
 	}
 
 	/*
