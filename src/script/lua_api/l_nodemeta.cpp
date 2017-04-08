@@ -215,7 +215,7 @@ void NodeMetaRef::Register(lua_State *L)
 }
 
 
-const luaL_reg NodeMetaRef::methodsServer[] = {
+const luaL_Reg NodeMetaRef::methodsServer[] = {
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, set_string),
 	luamethod(MetaDataRef, get_int),
@@ -237,7 +237,7 @@ void NodeMetaRef::RegisterClient(lua_State *L)
 }
 
 
-const luaL_reg NodeMetaRef::methodsClient[] = {
+const luaL_Reg NodeMetaRef::methodsClient[] = {
 	luamethod(MetaDataRef, get_string),
 	luamethod(MetaDataRef, get_int),
 	luamethod(MetaDataRef, get_float),

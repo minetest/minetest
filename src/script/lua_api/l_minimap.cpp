@@ -201,7 +201,7 @@ void LuaMinimap::Register(lua_State *L)
 }
 
 const char LuaMinimap::className[] = "Minimap";
-const luaL_reg LuaMinimap::methods[] = {
+const luaL_Reg LuaMinimap::methods[] = {
 	luamethod(LuaMinimap, show),
 	luamethod(LuaMinimap, hide),
 	luamethod(LuaMinimap, get_pos),

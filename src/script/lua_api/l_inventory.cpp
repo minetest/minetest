@@ -463,7 +463,7 @@ void InvRef::Register(lua_State *L)
 }
 
 const char InvRef::className[] = "InvRef";
-const luaL_reg InvRef::methods[] = {
+const luaL_Reg InvRef::methods[] = {
 	luamethod(InvRef, is_empty),
 	luamethod(InvRef, get_size),
 	luamethod(InvRef, set_size),

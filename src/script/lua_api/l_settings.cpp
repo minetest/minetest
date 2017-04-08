@@ -214,7 +214,7 @@ LuaSettings* LuaSettings::checkobject(lua_State* L, int narg)
 }
 
 const char LuaSettings::className[] = "Settings";
-const luaL_reg LuaSettings::methods[] = {
+const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
 	luamethod(LuaSettings, set),

@@ -135,7 +135,7 @@ void LuaPerlinNoise::Register(lua_State *L)
 
 
 const char LuaPerlinNoise::className[] = "PerlinNoise";
-const luaL_reg LuaPerlinNoise::methods[] = {
+const luaL_Reg LuaPerlinNoise::methods[] = {
 	luamethod(LuaPerlinNoise, get2d),
 	luamethod(LuaPerlinNoise, get3d),
 	{0,0}
@@ -393,7 +393,7 @@ void LuaPerlinNoiseMap::Register(lua_State *L)
 
 
 const char LuaPerlinNoiseMap::className[] = "PerlinNoiseMap";
-const luaL_reg LuaPerlinNoiseMap::methods[] = {
+const luaL_Reg LuaPerlinNoiseMap::methods[] = {
 	luamethod(LuaPerlinNoiseMap, get2dMap),
 	luamethod(LuaPerlinNoiseMap, get2dMap_flat),
 	luamethod(LuaPerlinNoiseMap, calc2dMap),
@@ -498,7 +498,7 @@ void LuaPseudoRandom::Register(lua_State *L)
 
 
 const char LuaPseudoRandom::className[] = "PseudoRandom";
-const luaL_reg LuaPseudoRandom::methods[] = {
+const luaL_Reg LuaPseudoRandom::methods[] = {
 	luamethod(LuaPseudoRandom, next),
 	{0,0}
 };
@@ -597,7 +597,7 @@ void LuaPcgRandom::Register(lua_State *L)
 
 
 const char LuaPcgRandom::className[] = "PcgRandom";
-const luaL_reg LuaPcgRandom::methods[] = {
+const luaL_Reg LuaPcgRandom::methods[] = {
 	luamethod(LuaPcgRandom, next),
 	luamethod(LuaPcgRandom, rand_normal_dist),
 	{0,0}
@@ -711,7 +711,7 @@ void LuaSecureRandom::Register(lua_State *L)
 }
 
 const char LuaSecureRandom::className[] = "SecureRandom";
-const luaL_reg LuaSecureRandom::methods[] = {
+const luaL_Reg LuaSecureRandom::methods[] = {
 	luamethod(LuaSecureRandom, next_bytes),
 	{0,0}
 };

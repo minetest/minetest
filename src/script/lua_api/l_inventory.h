@@ -36,7 +36,7 @@ private:
 	InventoryLocation m_loc;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static InvRef *checkobject(lua_State *L, int narg);
 

@@ -28,7 +28,7 @@ class LuaMinimap : public ModApiBase
 {
 private:
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	// garbage collector
 	static int gc_object(lua_State *L);

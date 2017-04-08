@@ -74,7 +74,7 @@ static inline void push_areas(lua_State *L, const std::vector<Area *> &areas,
 static int deserialization_helper(lua_State *L, AreaStore *as,
 		std::istream &is)
 {
-	try {	
+	try {
 		as->deserialize(is);
 	} catch (const SerializationError &e) {
 		lua_pushboolean(L, false);
@@ -380,7 +380,7 @@ void LuaAreaStore::Register(lua_State *L)
 }
 
 const char LuaAreaStore::className[] = "AreaStore";
-const luaL_reg LuaAreaStore::methods[] = {
+const luaL_Reg LuaAreaStore::methods[] = {
 	luamethod(LuaAreaStore, get_area),
 	luamethod(LuaAreaStore, get_areas_for_pos),
 	luamethod(LuaAreaStore, get_areas_in_area),
