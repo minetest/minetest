@@ -78,6 +78,10 @@ private:
 	// returns: nil
 	static int l_set_hp(lua_State *L);
 
+	// kill(self)
+	// returns: nil
+	static int l_kill(lua_State *L);
+
 	// get_hp(self)
 	// returns: number of hitpoints (2 * number of hearts)
 	// 0 if not applicable to this type of object

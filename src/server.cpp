@@ -1489,11 +1489,8 @@ void Server::SendMovement(u16 peer_id)
 	Send(&pkt);
 }
 
-void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
+void Server::ForceSendPlayerHPOrDie(PlayerSAO *playersao)
 {
-	if (!g_settings->getBool("enable_damage"))
-		return;
-
 	u16 peer_id   = playersao->getPeerID();
 	bool is_alive = playersao->getHP() > 0;
 
@@ -1501,6 +1498,14 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 		SendPlayerHP(peer_id);
 	else
 		DiePlayer(peer_id);
+}
+
+void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
+{
+	if (!g_settings->getBool("enable_damage"))
+		return;
+
+	ForceSendPlayerHPOrDie(playersao);
 }
 
 void Server::SendHP(u16 peer_id, u8 hp)

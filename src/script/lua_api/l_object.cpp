@@ -279,6 +279,21 @@ int ObjectRef::l_set_hp(lua_State *L)
 	return 0;
 }
 
+// kill(self)
+// returns: nil
+int ObjectRef::l_kill(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL) return 0;
+	// Do it
+	co->setHP(0);
+	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+		getServer(L)->ForceSendPlayerHPOrDie((PlayerSAO *)co);
+	return 0;
+}
+
 // get_hp(self)
 // returns: number of hitpoints (2 * number of hearts)
 // 0 if not applicable to this type of object
@@ -1832,6 +1847,7 @@ const luaL_reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, punch),
 	luamethod(ObjectRef, right_click),
 	luamethod(ObjectRef, set_hp),
+	luamethod(ObjectRef, kill),
 	luamethod(ObjectRef, get_hp),
 	luamethod(ObjectRef, get_inventory),
 	luamethod(ObjectRef, get_wield_list),
