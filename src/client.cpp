@@ -1865,8 +1865,10 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	m_state = LC_Ready;
 	sendReady();
 
-	if (g_settings->getBool("enable_client_modding"))
+	if (g_settings->getBool("enable_client_modding")) {
+		m_script->on_client_ready(m_env.getLocalPlayer());
 		m_script->on_connect();
+	}
 
 	text = wgettext("Done!");
 	draw_load_screen(text, device, guienv, 0, 100);

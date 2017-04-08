@@ -712,7 +712,7 @@ Call these functions only at load time!
 * `minetest.write_json(data[, styled])`: returns a string or `nil` and an error message
     * Convert a Lua table into a JSON string
     * styled: Outputs in a human-readable format if this is set, defaults to false
-    * Unserializable things like functions and userdata will cause an error.
+    * Unserializable things like functions and userdata are saved as null.
     * **Warning**: JSON is more strict than the Lua table format.
         1. You can only use strings and positive integers of at least one as keys.
         2. You can not mix string and integer keys.
@@ -778,6 +778,118 @@ An interface to manipulate minimap on client UI
 * `set_mode(mode)`: sets the minimap mode (0 to 6)
 * `get_mode()`: returns the current minimap mode
 * `toggle_shape()`: toggles minimap shape to round or square.
+
+### LocalPlayer
+An interface to retrieve information about the player.
+
+**Warning ! The player is accessible only after loading.**
+
+* `minetest.localplayer`: returns LocalPlayer
+
+* `minetest.localplayer.get_pos()`
+    * returns player current position :
+
+```lua
+    {
+       y = num,
+       x = num,
+       z = num
+    }
+```
+
+* `minetest.localplayer.get_velocity()`: returns a position-like table
+    * returns player speed 
+* `minetest.localplayer.get_hp()`
+    * returns player HP
+* `minetest.localplayer.got_teleported()`
+    * returns true if player got teleported
+* `minetest.localplayer.is_attached()`
+    * returns true if player is attached
+* `minetest.localplayer.is_touching_ground()`
+    * returns true if player touching ground
+* `minetest.localplayer.is_in_liquid()`
+    * returns true if player in liquid (This oscillates so that the player jumps a bit above the surface)
+* `minetest.localplayer.is_in_liquid_stable()`
+    * returns true if player in liquid stable (This is more stable and defines the maximum speed of the player)
+* `minetest.localplayer.get_liquid_viscosity()`
+    * returns liquid viscosity (Gets the viscosity of water to calculate friction)
+* `minetest.localplayer.is_climbing()`
+    * returns true if player is climbing
+* `minetest.localplayer.swimming_vertical()`
+    * returns true if player swimming in vertical
+* `minetest.localplayer.get_physics_override()`
+    * returns :
+
+```lua
+    {
+        speed = num,
+        jump = num,
+        gravity = num,
+        sneak = boolean,
+        sneak_glitch = boolean
+    }
+```
+
+* `minetest.localplayer.get_override_pos()`
+    * returns override position (returns a position-like table)
+* `minetest.localplayer.get_last_pos()`
+    * returns last player position before the current client step (returns a position-like table)
+* `minetest.localplayer.get_last_velocity()`
+    * returns last player speed (returns a position-like table)
+* `minetest.localplayer.get_breath()`
+    * returns the player's breath
+* `minetest.localplayer.get_look_dir()`
+    * returns look direction (returns a position-like table)
+* `minetest.localplayer.get_look_horizontal()`
+    * returns look horizontal
+* `minetest.localplayer.get_look_vertical()`
+    * returns look vertical
+* `minetest.localplayer.get_eye_pos()`
+    * returns the player's eye position (returns a position-like table)
+* `minetest.localplayer.get_eye_offset()`
+    * returns the player's eye shift (returns a position-like table)
+* `minetest.localplayer.get_movement_acceleration()`
+    * returns acceleration of the player in different environments :
+
+```lua
+    {
+       fast = num,
+       air = num,
+       default = num
+    }
+```
+
+* `minetest.localplayer.get_movement_speed()`
+    * returns player's speed in different environments :
+
+```lua
+    {
+       walk = num,
+       jump = num,
+       crouch = num,
+       fast = num,
+       climb = num
+    }
+```
+
+* `minetest.localplayer.get_movement()`
+    * returns player's movement in different environments :
+
+```lua
+    {
+       liquid_fluidity = num,
+       liquid_sink = num,
+       liquid_fluidity_smooth = num,
+       gravity = num
+    }
+```
+
+* `minetest.localplayer.get_last_look_horizontal()`: returns num
+    * returns last look horizontal
+* `minetest.localplayer.get_last_look_vertical()`: returns num
+    * returns last look vertical
+* `minetest.localplayer.get_key_pressed()`: returns num
+    * returns last key typed by the player
 
 ### Settings
 An interface to read config files in the format of `minetest.conf`.
