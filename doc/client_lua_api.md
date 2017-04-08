@@ -639,6 +639,8 @@ Call these functions only at load time!
     * **Warning**: If the client terminates abnormally (i.e. crashes), the registered
       callbacks **will likely not be run**. Data should be saved at
       semi-frequent intervals as well as on server shutdown.
+* `minetest.register_on_connect(func())`
+    * Called at the end of client connection (when player is loaded onto map)
 * `minetest.register_on_receiving_chat_message(func(name, message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
