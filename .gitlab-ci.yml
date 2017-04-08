@@ -1,0 +1,79 @@
+---
+# Github repository is cloned every day on Gitlab.com
+# https://gitlab.com/minetest/minetest
+# Pipelines URL: https://gitlab.com/minetest/minetest/pipelines
+
+stages:
+  - build
+
+.build_template: &build_definition
+  stage: build
+  script:
+    - mkdir cmakebuild
+    - mkdir -p artifact/minetest/usr/
+    - cd cmakebuild
+    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=TRUE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
+    - make -j2
+    - make install
+  artifacts:
+    when: on_success
+    expire_in: 14 day
+    paths:
+      - artifact/*
+
+##
+## Debian
+##
+build:debian-8:
+  <<: *build_definition
+  image: debian:8
+  before_script:
+    - apt-get update -y
+    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+build:debian-9:
+ <<: *build_definition
+ image: debian:9
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+##
+## Ubuntu
+##
+build:ubuntu-14.04:
+ <<: *build_definition
+ image: ubuntu:trusty
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+build:ubuntu-16.04:
+ <<: *build_definition
+ image: ubuntu:xenial
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+build:ubuntu-16.10:
+ <<: *build_definition
+ image: ubuntu:yakkety
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+build:ubuntu-17.04:
+ <<: *build_definition
+ image: ubuntu:zesty
+ before_script:
+   - apt-get update -y
+   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+##
+## Fedora
+##
+build:fedora-24:
+  <<: *build_definition
+  image: fedora:24
+  before_script:
+    - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
