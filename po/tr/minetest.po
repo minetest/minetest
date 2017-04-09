@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-03-13 19:17+0000\n"
+"PO-Revision-Date: 2017-04-14 19:06+0000\n"
 "Last-Translator: monolifed <monolifed@gmail.com>\n"
 "Language-Team: Turkish "
 "<https://hosted.weblate.org/projects/minetest/minetest/tr/>\n"
@@ -16,13 +16,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.12\n"
+"X-Generator: Weblate 2.14-dev\n"
 "X-Poedit-Language: Turkish\n"
 "X-Poedit-Basepath: \n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Lua betiğinde bir hata meydana geldi:"
+msgstr "Lua betiğinde, mod gibi, bir hata meydana geldi:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -30,7 +30,7 @@ msgstr "Bir hata oluştu:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
-msgstr "Ana menu"
+msgstr "Ana menü"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
@@ -80,7 +80,7 @@ msgstr "Yalnızca $1 ve $2 arası protokol sürümleri desteklenmektedir."
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
 msgid "Cancel"
-msgstr "Iptal"
+msgstr "İptal"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Depends:"
@@ -88,11 +88,11 @@ msgstr "Bağımlılıklar :"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr "Paketi Kapat"
+msgstr "MP Devre Dışı"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
-msgstr "Paketi Aç"
+msgstr "MP Etkin"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
@@ -103,8 +103,8 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Geçersiz karakterler içerdiği için \"$1\" modu etkinleştirilemiyor. İzin "
-"verilen karakterler [a-z0-9_]."
+"Geçersiz karakterler içerdiği için \"$1\" modu etkinleştirilemedi. Sadece "
+"[a-z0-9_] karakterlerine izin verilir."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
@@ -112,11 +112,11 @@ msgstr "Oyunu Gizle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "Detayları gizle"
+msgstr "MP içeriğini gizle"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Eklnt:"
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -129,7 +129,7 @@ msgstr "Dünya:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "enabled"
-msgstr "Etkinleştirildi"
+msgstr "etkin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
@@ -141,11 +141,11 @@ msgstr "Oluştur"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Minetest.net adresinden bir oyun modu indirin"
+msgstr "minetest.net adresinden, minetest_game gibi, bir oyun modu indirin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr "Minetest.net adresinden indirin"
+msgstr "minetest.net adresinden indirin"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -157,23 +157,23 @@ msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr "Dünya seçilmedi ya da adlandırılmadı"
+msgstr "Dünya ismi verilmedi ya da oyun seçilmedi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr "Çekirdek"
+msgstr "Tohum"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
-msgstr "Uyarı : Minimal Development Test geliştiriciler içindir."
+msgstr "Uyarı : Minimal geliştirici testi geliştiriciler içindir."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Dünya adı"
+msgstr "Dünya ismi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "Ek bir oyun modu yüklü değil."
+msgstr "Yüklü oyun modu yok."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -187,11 +187,11 @@ msgstr "Sil"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr:\"$1\" dosyası silerken hata"
+msgstr "Modmgr: \"$1\" dosyası silinemedi"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: \"$1\" eklenti konumu yanlış"
+msgstr "Modmgr: \"$1\" mod konumu geçersiz"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -203,7 +203,7 @@ msgstr "Kabul et"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Eklenti paketini yeniden adlandır :"
+msgstr "Mod paketini yeniden adlandır:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
@@ -211,7 +211,7 @@ msgstr "\"$1\" geçerli bir bayrak değil."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Açıklama bilgisi verilmedi)"
+msgstr "(Ayarın verilen açıklaması yok)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -219,11 +219,11 @@ msgstr "< Ayarlar sayfasına geri dön"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr "Seç"
+msgstr "Gözat"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
-msgstr "Paketi Kapat"
+msgstr "Devre dışı"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
@@ -231,7 +231,7 @@ msgstr "Düzenle"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
-msgstr "Etkinleştirildi"
+msgstr "Etkin"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
@@ -242,24 +242,24 @@ msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Biçim: <ofset>, <boyut>, (<yayılmaX>, <yayılmaY>, <yayılmaZ>), <tohum>, "
+"Biçim: <kaydırma>, <boyut>, (<yayılmaX>, <yayılmaY>, <yayılmaZ>), <tohum>, "
 "<oktav>, <kalıcılık>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
-msgstr "Oyun"
+msgstr "Oyunlar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Eklentiler"
+msgstr "Modlar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "İsteğe bağlı olarak lacunarity önde gelen virgülle eklenebilir."
+msgstr "İstenirse lakuraniti öne gelen virgülle eklenebilir."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr "Bayraklar listesi ayrılmış bir virgül girin lütfen."
+msgstr "Lütfen virgülle ayrılmış bir bayrak listesi girin."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
@@ -279,7 +279,7 @@ msgstr "Varsayılanı Geri Yükle"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
-msgstr "Yolu seçin"
+msgstr "Konumu seçin"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -287,11 +287,11 @@ msgstr "Teknik isimleri göster"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr "Değer $1 değerinden büyük olmalıdır."
+msgstr "Değer $1'den büyük olmalı."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr "Değer $1'den düşük olmalı."
+msgstr "Değer $1'den küçük olmalı."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -299,23 +299,23 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Eklenti yükle: Desteklenmeyen dosya uzantısı \"$1\" veya bozuk dosya"
+"Mod yükle: Desteklenmeyen dosya türü \"$1\" veya bozuk arşiv"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
-msgstr "$1 arası $2 yükleme başarısız"
+msgstr "$1'den $2'ye yükleme başarısız"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "Eklenti yükle: Dosya: \"$1\""
+msgstr "Mod yükle: dosya: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Eklenti yükle: $1 için eklenti adı bulunamadı"
+msgstr "Mod yükle: $1 için gerçek mod ismi bulunamadı"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "Eklenti yükle:$1 eklenti paketi için uygun bir klasör adı bulunamadı"
+msgstr "Mod yükle:$1 mod paketi için uygun bir klasör ismi bulunamadı"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -323,7 +323,7 @@ msgstr "Mağazayı kapat"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr "$1, indiriliyor, lütfen bekleyin..."
+msgstr "$1 indiriliyor, lütfen bekleyin..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
@@ -331,11 +331,11 @@ msgstr "Yükle"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
-msgstr "$2 sayfadan $1 'cisi"
+msgstr "$2 sayfadan $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Rating"
-msgstr "Oylama"
+msgstr "Rating"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
@@ -343,15 +343,15 @@ msgstr "Ara"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
-msgstr "Takma ad :"
+msgstr "Kısa isim:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr "Yükleme başarılı :"
+msgstr "Yükleme başarılı:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
-msgstr "Sıralanmamış"
+msgstr "Sırasız"
 
 #: builtin/mainmenu/store.lua
 msgid "re-Install"
@@ -359,11 +359,11 @@ msgstr "yeniden yükle"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
-msgstr "Aktif katkı sağlayanlar"
+msgstr "Etkin Katkıda Bulunanlar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Core Developers"
-msgstr "Ana geliştiriciler"
+msgstr "Çekirdek Geliştiriciler"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Credits"
@@ -371,39 +371,39 @@ msgstr "Hakkında"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Contributors"
-msgstr "Katkı sağlayanlar"
+msgstr "Önceki Katkıda Bulunanlar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Previous Core Developers"
-msgstr "İlk geliştiriciler"
+msgstr "Önceki Çekirdek Geliştiriciler"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr "Yüklenen eklentiler :"
+msgstr "Yüklenen Modlar:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr "Eklenti bilgileri:"
+msgstr "Mod bilgileri:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "Eklenti bilgisi yok"
+msgstr "Mevcut mod açıklaması yok"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
-msgstr "Adlandır"
+msgstr "Yeniden adlandır"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "Eklenti seç :"
+msgstr "Mod Dosyası Seç:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "Seçili eklentiyi sil"
+msgstr "Seçili Modu Kaldır"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Seçilen eklenti paketini sil"
+msgstr "Seçili Mod Paketini Kaldır"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
@@ -411,7 +411,7 @@ msgstr "Adres / Port"
 
 #: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
 msgid "Client"
-msgstr "Çevirimiçi Oyna"
+msgstr "İstemci"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
@@ -419,11 +419,11 @@ msgstr "Bağlan"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
-msgstr "Yaratıcı mod"
+msgstr "Yaratıcı kip"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
-msgstr "Hasar alma etkin"
+msgstr "Hasar etkin"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
@@ -435,33 +435,33 @@ msgstr "Favori"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr "Ad / Şifre"
+msgstr "İsim / Şifre"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "Mücadele modu"
+msgstr "Savaş etkin"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
-msgstr "Adresi doğrula"
+msgstr "Bağlı Adres"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr "Ayarla"
+msgstr "Yapılandır"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Creative Mode"
-msgstr "Yaratıcı Mod"
+msgstr "Yaratıcı Kip"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Hasarı etkinleştir"
+msgstr "Hasar Etkin"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
-msgstr "Kullanıcı adı/Şifre"
+msgstr "İsim/Şifre"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
@@ -481,15 +481,15 @@ msgstr "Herkese Açık"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Select World:"
-msgstr "Dünya seç :"
+msgstr "Dünya Seç:"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server"
-msgstr "Sunucu Kur"
+msgstr "Sunucu"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Server Port"
-msgstr "Sunucu portu"
+msgstr "Sunucu Portu"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
@@ -517,15 +517,15 @@ msgstr "Gelişmiş Ayarlar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr "Yumuşatma:"
+msgstr "Düzgünleştirme:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
-msgstr "Tek kişilik dünyayı sıfırlamak istediğinizden emin misiniz ?"
+msgstr "Tek oyunculu dünyayı sıfırlamak istediğinizden emin misiniz ?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
-msgstr "Bilinear Filtre"
+msgstr "Bilineer Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bump Mapping"
@@ -561,15 +561,15 @@ msgstr "Filtre yok"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Mipmap"
-msgstr "Mip eşleme kapalı"
+msgstr "Mip eşleme yok"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Highlighting"
-msgstr "Nod Aydınlatma"
+msgstr "Nod Vurgulama"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
-msgstr "Nod Çizme"
+msgstr "Nod Anahatlama"
 
 #: builtin/mainmenu/tab_settings.lua builtin/mainmenu/tab_texturepacks.lua
 msgid "None"
@@ -585,11 +585,11 @@ msgstr "Opak Yapraklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr "Şeffaf su"
+msgstr "Opak Su"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
-msgstr "Parallax Occlusion"
+msgstr "Paralaks Oklüzyon"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Particles"
@@ -597,7 +597,7 @@ msgstr "Parçacıklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Reset singleplayer world"
-msgstr "Tek kişilik oyunu sıfırlayın"
+msgstr "Tek oyunculu dünyayı sıfırla"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -613,7 +613,7 @@ msgstr "Basit Yapraklar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Smooth Lighting"
-msgstr "Düzgün Aydınlatma"
+msgstr "Yumuşak Aydınlatma"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Texturing:"
@@ -633,7 +633,7 @@ msgstr "Dokunuş eşiği (px)"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Trilinear Filter"
-msgstr "Trilinear Filtre"
+msgstr "Trilineer Filtre"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Waving Leaves"
@@ -653,7 +653,7 @@ msgstr "Evet"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr "Eklentileri ayarla"
+msgstr "Modları yapılandır"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
@@ -661,7 +661,7 @@ msgstr "Ana"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
-msgstr "Tek kişilik oyunu başlat"
+msgstr "Tek oyunculu başlat"
 
 #: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
 msgid "Play"
@@ -669,11 +669,11 @@ msgstr "Oyna"
 
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Singleplayer"
-msgstr "Tek Kişilik"
+msgstr "Tek oyunculu"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
-msgstr "Bilgi yok"
+msgstr "Mevcut bilgi yok"
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "Select texture pack:"
@@ -693,11 +693,11 @@ msgstr "Tamam!"
 
 #: src/client.cpp
 msgid "Initializing nodes"
-msgstr "Nodlar yükleniyor"
+msgstr "Nodlar başlatılıyor"
 
 #: src/client.cpp
 msgid "Initializing nodes..."
-msgstr "Nodlar yükleniyor..."
+msgstr "Nodlar başlatılıyor..."
 
 #: src/client.cpp
 msgid "Loading textures..."
@@ -705,15 +705,15 @@ msgstr "Dokular yükleniyor..."
 
 #: src/client.cpp
 msgid "Rebuilding shaders..."
-msgstr "Gölgelemeler inşa ediliyor..."
+msgstr "Gölgelemeler yeniden oluşturuluyor..."
 
 #: src/client/clientlauncher.cpp
 msgid "Connection error (timed out?)"
-msgstr "Bağlantı hatası ( Zaman aşımı ? )"
+msgstr "Bağlantı hatası (zaman aşımı?)"
 
 #: src/client/clientlauncher.cpp
 msgid "Could not find or load game \""
-msgstr "Oyun yüklenemiyor \""
+msgstr "Oyun bulunamıyor veya yüklenemiyor \""
 
 #: src/client/clientlauncher.cpp
 msgid "Invalid gamespec."
@@ -721,15 +721,15 @@ msgstr "Geçersiz oyun özellikleri."
 
 #: src/client/clientlauncher.cpp
 msgid "Main Menu"
-msgstr "Ana menu"
+msgstr "Ana Menü"
 
 #: src/client/clientlauncher.cpp
 msgid "No world selected and no address provided. Nothing to do."
-msgstr "Dünya veya adres seçilmedi."
+msgstr "Dünya seçilmedi veya adres yok. Yapılacak bir şey yok."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Kullanıcı adı çok uzun."
+msgstr "Kullanıcı ismi çok uzun."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -737,7 +737,7 @@ msgstr "Belirtilen dünya konumu yok: "
 
 #: src/fontengine.cpp
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "needs_fallback_font"
 
 #: src/game.cpp
 msgid ""
@@ -745,7 +745,7 @@ msgid ""
 "Check debug.txt for details."
 msgstr ""
 "\n"
-"Hata ayrıntıları için debug.txt dosyasını inceleyin."
+"Hata ayrıntıları için debug.txt dosyasını kontrol edin."
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -786,16 +786,16 @@ msgid ""
 "- T: chat\n"
 msgstr ""
 "Varsayılanlar Kontroller:\n"
-"- WASD: Hareket et\n"
-"- Boşluk: Zıpla/Tırman\n"
-"- Shift: Sessiz yürü/Aşağı in\n"
-"- Q: Elindekini bırak\n"
-"- I: Envanter\n"
-"- Fare: Dön/Bak\n"
-"- Sol fare: Kaz/Vur\n"
-"- Sağ fare: Yerleştir/Kullan\n"
-"- Fare tekerleği: Araç seç\n"
-"- T: Sohbet\n"
+"- WASD: hareket\n"
+"- Boşluk: zıpla/tırman\n"
+"- Shift: sız/aşağı in\n"
+"- Q: öğeyi at\n"
+"- I: envanter\n"
+"- Fare: dön/bak\n"
+"- Sol fare: kaz/vur\n"
+"- Sağ fare: yerleştir/kullan\n"
+"- Fare tekerleği: öğe seç\n"
+"- T: sohbet\n"
 
 #: src/game.cpp
 msgid ""
@@ -814,20 +814,20 @@ msgid ""
 msgstr ""
 "Varsayılan Kontroller:\n"
 "Tüm menüler gizli:\n"
-"- Tek tık: tuş etkin\n"
-"- Çift tık: yerleştir/kullan\n"
-"- Parmağı kaydır: etrafa bak\n"
-"Menu/Encanter görünür:\n"
+"- tek tık: tuş etkin\n"
+"- çift tık: yerleştir/kullan\n"
+"- parmağı kaydır: etrafa bak\n"
+"Menü/Envanter görünür:\n"
 "- çift tık (dışarda):\n"
 " -->kapat\n"
-"- touch stack, touch slot:\n"
-" --> move stack\n"
-"- tut&bırak, iki parmağı kullan\n"
-" --> slotuna bir item bırak\n"
+"- yığına dokun, bölmeye dokun:\n"
+" --> yığını taşı\n"
+"- dokun&sürükle, iki parmakla dokun\n"
+" --> bölmeye tek bir öğe yerleştir\n"
 
 #: src/game.cpp
 msgid "Exit to Menu"
-msgstr "Menüye dön"
+msgstr "Menüye Çık"
 
 #: src/game.cpp
 msgid "Exit to OS"
@@ -835,7 +835,7 @@ msgstr "Oyundan Çık"
 
 #: src/game.cpp
 msgid "Item definitions..."
-msgstr "Nesne tanımlamaları..."
+msgstr "Öğe tanımları..."
 
 #: src/game.cpp
 msgid "KiB/s"
@@ -843,7 +843,7 @@ msgstr "KiB/s"
 
 #: src/game.cpp
 msgid "Media..."
-msgstr "Media..."
+msgstr "Medya..."
 
 #: src/game.cpp
 msgid "MiB/s"
@@ -851,7 +851,7 @@ msgstr "MiB/s"
 
 #: src/game.cpp
 msgid "Node definitions..."
-msgstr "Nod tanımlamaları..."
+msgstr "Nod tanımları..."
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -871,7 +871,7 @@ msgstr "Ses Düzeyi"
 
 #: src/game.cpp
 msgid "You died."
-msgstr "Geberdin."
+msgstr "Öldün."
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -879,15 +879,15 @@ msgstr "tamam"
 
 #: src/guiFormSpecMenu.cpp
 msgid "Enter "
-msgstr "Entrer "
+msgstr "Gir "
 
 #: src/guiFormSpecMenu.cpp
 msgid "Proceed"
-msgstr "Uygula"
+msgstr "İlerle"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "\"Use\" = climb down"
-msgstr "\"Kullan Tuşu\" = Aşağı in"
+msgstr "\"Kullan\" = Aşağı in"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
@@ -895,7 +895,7 @@ msgstr "Geri"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
-msgstr "Konuşma"
+msgstr "Sohbet"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Command"
@@ -907,11 +907,11 @@ msgstr "Konsol"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
-msgstr "Çift zıplayarak uçma modunu aç/kapa"
+msgstr "\"zıpla\" ya çift dokunarak uçmayı aç/kapa"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Drop"
-msgstr "Bırak"
+msgstr "At"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
@@ -931,7 +931,7 @@ msgstr "Tuş zaten kullanımda"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Keybindings. (If this menu screws up, remove stuff from minetest.conf)"
-msgstr "Tuş ayaları. ( Olağandışı durumlarda minetest.conf 'u düzenleyin )"
+msgstr "Tuş ayaları. (Eğer bu menü çalışmaz ise, minetest.conf 'tan kaldırın)"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
@@ -939,7 +939,7 @@ msgstr "Sol"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
-msgstr "Yazdırma yığınları"
+msgstr "Yığınları yazdır"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Range select"
@@ -951,23 +951,23 @@ msgstr "Sağ"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
-msgstr "Sessiz Yürü"
+msgstr "Sız"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr "Sinematik Geçiş"
+msgstr "Sinematik Aç/Kapa"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "Hız modu aç/kapa"
+msgstr "Hızlıyı aç/kapa"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fly"
-msgstr "Uçuş modu aç/kapa"
+msgstr "Uçmayı aç/kapa"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle noclip"
-msgstr "Noclip aç/kapa"
+msgstr "Hayalet aç/kapa"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Use"
@@ -987,19 +987,19 @@ msgstr "Değiştir"
 
 #: src/guiPasswordChange.cpp
 msgid "Confirm Password"
-msgstr "Şifreyi doğrulayın"
+msgstr "Şifreyi Doğrulayın"
 
 #: src/guiPasswordChange.cpp
 msgid "New Password"
-msgstr "Yeni şifre"
+msgstr "Yeni Şifre"
 
 #: src/guiPasswordChange.cpp
 msgid "Old Password"
-msgstr "Eski şifre"
+msgstr "Eski Şifre"
 
 #: src/guiPasswordChange.cpp
 msgid "Passwords do not match!"
-msgstr "Şifreler uyuşmuyor !"
+msgstr "Şifreler aynı değil!"
 
 #: src/guiVolumeChange.cpp
 msgid "Exit"
@@ -1031,11 +1031,11 @@ msgstr "Temizle"
 
 #: src/keycode.cpp
 msgid "Comma"
-msgstr "Virgul"
+msgstr "Virgül"
 
 #: src/keycode.cpp
 msgid "Control"
-msgstr "Kontroller"
+msgstr "Kontrol"
 
 #: src/keycode.cpp
 msgid "Convert"
@@ -1055,7 +1055,7 @@ msgstr "Son"
 
 #: src/keycode.cpp
 msgid "Erase OEF"
-msgstr "l'OEF 'i sil"
+msgstr "OEF'i sil"
 
 #: src/keycode.cpp
 msgid "Escape"
@@ -1083,7 +1083,7 @@ msgstr "Ev"
 
 #: src/keycode.cpp
 msgid "Insert"
-msgstr "Insert"
+msgstr "Ekle"
 
 #: src/keycode.cpp
 msgid "Junja"
@@ -1099,7 +1099,7 @@ msgstr "Kanji"
 
 #: src/keycode.cpp
 msgid "Left Button"
-msgstr "Sol tuşu"
+msgstr "Sol Tuş"
 
 #: src/keycode.cpp
 msgid "Left Control"
@@ -1107,7 +1107,7 @@ msgstr "Sol CTRL"
 
 #: src/keycode.cpp
 msgid "Left Menu"
-msgstr "Sol Menu"
+msgstr "Sol Menü"
 
 #: src/keycode.cpp
 msgid "Left Shift"
@@ -1115,7 +1115,7 @@ msgstr "Sol Shift"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr "Sol Windows tuşu"
+msgstr "Sol Windows"
 
 #: src/keycode.cpp
 msgid "Menu"
@@ -1131,11 +1131,11 @@ msgstr "Eksi"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr "Mod değiştir"
+msgstr "Kip Değiştir"
 
 #: src/keycode.cpp
 msgid "Next"
-msgstr "İleri"
+msgstr "Sonraki"
 
 #: src/keycode.cpp
 msgid "Nonconvert"
@@ -1147,59 +1147,59 @@ msgstr "Num Lock"
 
 #: src/keycode.cpp
 msgid "Numpad *"
-msgstr "Sayısal tuş takımı *"
+msgstr "Sayısal Tuş Takımı *"
 
 #: src/keycode.cpp
 msgid "Numpad +"
-msgstr "Sayısal tuş takımı +"
+msgstr "Sayısal Tuş Takımı +"
 
 #: src/keycode.cpp
 msgid "Numpad -"
-msgstr "Sayısal tuş takımı -"
+msgstr "Sayısal Tuş Takımı -"
 
 #: src/keycode.cpp
 msgid "Numpad /"
-msgstr "Sayısal tuş takımı /"
+msgstr "Sayısal Tuş Takımı /"
 
 #: src/keycode.cpp
 msgid "Numpad 0"
-msgstr "Sayısal tuş takımı 0"
+msgstr "Sayısal Tuş Takımı 0"
 
 #: src/keycode.cpp
 msgid "Numpad 1"
-msgstr "Sayısal tuş takımı 1"
+msgstr "Sayısal Tuş Takımı 1"
 
 #: src/keycode.cpp
 msgid "Numpad 2"
-msgstr "Sayısal tuş takımı 2"
+msgstr "Sayısal Tuş Takımı 2"
 
 #: src/keycode.cpp
 msgid "Numpad 3"
-msgstr "Sayısal tuş takımı 3"
+msgstr "Sayısal Tuş Takımı 3"
 
 #: src/keycode.cpp
 msgid "Numpad 4"
-msgstr "Sayısal tuş takımı 4"
+msgstr "Sayısal Tuş Takımı 4"
 
 #: src/keycode.cpp
 msgid "Numpad 5"
-msgstr "Sayısal tuş takımı 5"
+msgstr "Sayısal Tuş Takımı 5"
 
 #: src/keycode.cpp
 msgid "Numpad 6"
-msgstr "Sayısal tuş takımı 6"
+msgstr "Sayısal Tuş Takımı 6"
 
 #: src/keycode.cpp
 msgid "Numpad 7"
-msgstr "Sayısal tuş takımı 7"
+msgstr "Sayısal Tuş Takımı 7"
 
 #: src/keycode.cpp
 msgid "Numpad 8"
-msgstr "Sayısal tuş takımı 8"
+msgstr "Sayısal Tuş Takımı 8"
 
 #: src/keycode.cpp
 msgid "Numpad 9"
-msgstr "Sayısal tuş takımı 9"
+msgstr "Sayısal Tuş Takımı 9"
 
 #: src/keycode.cpp
 msgid "OEM Clear"
@@ -1211,11 +1211,11 @@ msgstr "PA1"
 
 #: src/keycode.cpp
 msgid "Pause"
-msgstr "Beklet"
+msgstr "Duraklat"
 
 #: src/keycode.cpp
 msgid "Period"
-msgstr "Dönem"
+msgstr "Nokta"
 
 #: src/keycode.cpp
 msgid "Plus"
@@ -1227,7 +1227,7 @@ msgstr "Yazdır"
 
 #: src/keycode.cpp
 msgid "Prior"
-msgstr "Öncelikli"
+msgstr "Önceki"
 
 #: src/keycode.cpp
 msgid "Return"
@@ -1235,7 +1235,7 @@ msgstr "Return"
 
 #: src/keycode.cpp
 msgid "Right Button"
-msgstr "Sağ tuş"
+msgstr "Sağ Tuş"
 
 #: src/keycode.cpp
 msgid "Right Control"
@@ -1243,7 +1243,7 @@ msgstr "Sağ CTRL"
 
 #: src/keycode.cpp
 msgid "Right Menu"
-msgstr "Sağ Menu"
+msgstr "Sağ Menü"
 
 #: src/keycode.cpp
 msgid "Right Shift"
@@ -1251,7 +1251,7 @@ msgstr "Sağ Shift"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr "Sağ Windows tuşu"
+msgstr "Sağ Windows"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
@@ -1267,7 +1267,7 @@ msgstr "Shift"
 
 #: src/keycode.cpp
 msgid "Sleep"
-msgstr "Uyu"
+msgstr "Uyku"
 
 #: src/keycode.cpp
 msgid "Snapshot"
@@ -1301,13 +1301,19 @@ msgid ""
 "sets.\n"
 "Range roughly -2 to 2. Multiply by 'scale' for offset in nodes."
 msgstr ""
+"Fraktalın dünya merkezinden 'scale' birimi cinsinden (X,Y,Z) kaydırması.\n"
+"Alçak karanın uygun canlanma alanını (0,0)'ın yakınına taşımak için "
+"kullanılır.\n"
+"Varsayılan mandelbrot setleri için uygundur, julia setleri için düzenlenmesi "
+"gerekir.\n"
+"Kabaca -2 ile 2 arası . Nodlardaki kaydırmalar için 'scale' ile çarpın."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "0 = parallax occlusion with slope information (faster).\n"
 "1 = relief mapping (slower, more accurate)."
 msgstr ""
-"0 = eğim bilgili parallax occlusion (daha hızlı).\n"
+"0 = eğim bilgili paralaks oklüzyon (daha hızlı).\n"
 "1 = kabartma eşleme (daha yavaş, daha doğru)."
 
 #: src/settings_translation_file.cpp
@@ -1316,7 +1322,7 @@ msgstr "3D bulutlar"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr "3D modu"
+msgstr "3D kipi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1329,24 +1335,34 @@ msgid ""
 "-    sidebyside: split screen side by side.\n"
 "-    pageflip: quadbuffer based 3d."
 msgstr ""
+"3D desteği.\n"
+"Şu an desteklenen:\n"
+"-    none: 3d çıkışı yok.\n"
+"-    anaglyph: cyan/magenta renkli 3d.\n"
+"-    interlaced: tek/çift çizgi tabanlı polarizasyon ekran desteği.\n"
+"-    topbottom: ayrık ekran üst/alt.\n"
+"-    sidebyside: ayrık ekran yan yana.\n"
+"-    pageflip: quadbuffer tabanlı 3d."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Yeni bir harita için seçilmiş bir harita tohumu, rastgele için boş bırakın.\n"
+"Ana menüden yeni bir dünya oluştururken geçersiz kılınır."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr "Sunucu çökerse tüm istemcilere görüntülenecek bir ileti."
+msgstr "Sunucu çökerse tüm istemcilere görüntülenecek bir mesaj."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr "Sunucu kapatıldığında tüm istemcilere görüntülenecek bir ileti."
+msgstr "Sunucu kapatıldığında tüm istemcilere görüntülenecek bir mesaj."
 
 #: src/settings_translation_file.cpp
 msgid "Absolute limit of emerge queues"
-msgstr "Emerge sıraların mutlak sınırı"
+msgstr "Emerge sıralarının mutlak sınırı"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
@@ -1354,23 +1370,23 @@ msgstr "Havada hızlanma"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
-msgstr "Aktif Blok Yönetimi aralığı"
+msgstr "Etkin Blok Yönetimi aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
-msgstr "Aktif Blok Değiştirici aralığı"
+msgstr "Etkin Blok Değiştirici aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifiers"
-msgstr "Aktif Blok Değiştiricileri"
+msgstr "Etkin Blok Değiştiricileri"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr "Aktif blok aralığı"
+msgstr "Etkin blok uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr "Etkin nesne gönderme aralığı"
+msgstr "Etkin nesne gönderme uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1378,13 +1394,16 @@ msgid ""
 "Leave this blank to start a local server.\n"
 "Note that the address field in the main menu overrides this setting."
 msgstr ""
+"Bağlanılacak adres.\n"
+"Yerel bir sunucu başlatmak için bunu boş bırakın.\n"
+"Ana menüdeki adres alanının bu ayarı geçersiz kılacağını unutmayın."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
 msgstr ""
-"Ekranınızın (X11 değil/sadece Android) dpi yapılandırmasını ayarlayın  örn. "
+"Ekranınızın (sadece Android/X11 olmayan) dpi yapılandırmasını ayarlayın  ör: "
 "4k ekranlar için."
 
 #: src/settings_translation_file.cpp
@@ -1392,6 +1411,8 @@ msgid ""
 "Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
+"Işık tabloları için gama kodlamayı ayarlayın. Düşük sayılar daha parlaktır.\n"
+"Bu ayar yalnızca istemci içindir ve sunucu tarafından yok sayılır."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1399,15 +1420,15 @@ msgstr "Gelişmiş"
 
 #: src/settings_translation_file.cpp
 msgid "Altitude Chill"
-msgstr "İrtifa Soğukluğu"
+msgstr "Yükseklik Soğukluğu"
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr "Her uçma ve hızlı"
+msgstr "Daima uçma ve hızlı"
 
 #: src/settings_translation_file.cpp
 msgid "Ambient occlusion gamma"
-msgstr "Ortam occlusion gama"
+msgstr "Ortam oklüzyon gama"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
@@ -1415,11 +1436,11 @@ msgstr "Vadiler güçlendirir"
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
-msgstr "Anisotropic filtreleme"
+msgstr "Anisotropik filtreleme"
 
 #: src/settings_translation_file.cpp
 msgid "Announce server"
-msgstr "Sunucu duyur"
+msgstr "Sunucuyu duyur"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1427,6 +1448,9 @@ msgid ""
 "If you want to announce your ipv6 address, use  serverlist_url = v6.servers."
 "minetest.net."
 msgstr ""
+"Bu sunucu listesine duyur.\n"
+"Eğer ipv6 adresinizi duyurmak istiyorsanız, serverlist_url = "
+"v6.servers.minetest.net kullanın."
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1462,15 +1486,15 @@ msgstr "Temel Ayrıcalıklar"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
-msgstr "Bilinear filtreleme"
+msgstr "Bilineer filtreleme"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
-msgstr "Bağlama adresi"
+msgstr "Bağlı adres"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
-msgstr "Tam ekran modunda bit/piksel (renk derinliği)."
+msgstr "Tam ekran kipinde piksel başına bit (renk derinliği)."
 
 #: src/settings_translation_file.cpp
 msgid "Build inside player"
@@ -1490,11 +1514,11 @@ msgstr "Kamera yumuşatma"
 
 #: src/settings_translation_file.cpp
 msgid "Camera smoothing in cinematic mode"
-msgstr "Sinematik modda kamera yumuşatma"
+msgstr "Sinematik kipte kamera yumuşatma"
 
 #: src/settings_translation_file.cpp
 msgid "Camera update toggle key"
-msgstr "Kamera güncelleme geçiş tuşu"
+msgstr "Kamera güncelleme açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Cave noise #1"
@@ -1510,7 +1534,7 @@ msgstr "Mağara genişliği"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
-msgstr "Mağaralar ve tüneller iki gürültü kesişiminde oluşur"
+msgstr "Mağaralar ve tüneller iki gürültünün kesişiminde oluşur"
 
 #: src/settings_translation_file.cpp
 msgid "Chat key"
@@ -1518,7 +1542,7 @@ msgstr "Sohbet tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Chat toggle key"
-msgstr "Sohbet geçiş tuşu"
+msgstr "Sohbet açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Chatcommands"
@@ -1568,15 +1592,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
-msgstr "Öbek boyutu"
+msgstr "Yığın boyutu"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode"
-msgstr "Sinematik mod"
+msgstr "Sinematik kip"
 
 #: src/settings_translation_file.cpp
 msgid "Cinematic mode key"
-msgstr "Sinematik mod tuşu"
+msgstr "Sinematik kip tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Clean transparent textures"
@@ -1619,12 +1643,18 @@ msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
+"Modların internet üstünden veri yüklemesine ve indirmesine izin veren HTTP "
+"API'lerine,\n"
+"erişim izni verilen modların virgülle ayrılmış listesi."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Comma-separated list of trusted mods that are allowed to access insecure\n"
 "functions even when mod security is on (via request_insecure_environment())."
 msgstr ""
+"Mod güvenliği açık olsa bile (request_insecure_environment() ile) güvensiz\n"
+"fonksiyonlara erişimine izin verilen güvenilen modların virgülle ayrılmış "
+"listesi."
 
 #: src/settings_translation_file.cpp
 msgid "Command key"
@@ -1636,7 +1666,7 @@ msgstr "Bitişik cam"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr "Dış ortam sunucusuna bağlan"
+msgstr "Dış medya sunucusuna bağlan"
 
 #: src/settings_translation_file.cpp
 msgid "Connects glass if supported by node."
@@ -1660,7 +1690,7 @@ msgstr "Sürekli ileri"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr "Sürekli ileri hareket (sadece test etmek için kullanılır)."
+msgstr "Sürekli ileri hareket (sadece test için)."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1672,24 +1702,31 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Gündüz/gece döngüsü uzunluğunu denetler.\n"
+"Örnekler: 72 = 20dk, 360 = 4dk, 1 = 24saat, 0 = gündüz/gece/herşey "
+"değişmeden kalır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Controls size of deserts and beaches in Mapgen v6.\n"
 "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
 msgstr ""
+"Mapgen v6'da çöllerin ve  plajların boyutunu denetler.\n"
+"Kar biyomları etkin ise 'mgv6_freq_desert' yok sayılır."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr "Göl çöküklerinin diklik/çukur derinliği kontrol eder."
+msgstr "Göl çöküklerinin diklik/çukurluğunu kontrol eder."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr "Tepelerin dikliği/yükseklik kontrol eder."
+msgstr "Tepelerin dikliğini/yüksekliğini kontrol eder."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Tünellerin genişliğini kontrol eder, daha küçük bir değer daha geniş "
+"tüneller oluşturur."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1741,11 +1778,11 @@ msgstr "Hasar"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
-msgstr "Hata ayıklama bilgisi değiştirme tuşu"
+msgstr "Hata ayıklama bilgisi açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
-msgstr "Hata ayıklama günlüğü düzeyi"
+msgstr "Hata ayıklama günlük düzeyi"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -1764,6 +1801,8 @@ msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Yeni bir dünya oluştururken varsayılan oyun.\n"
+"Bu ana menüden bir dünya oluştururken geçersiz kılınır."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -1771,7 +1810,7 @@ msgstr "Varsayılan şifre"
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr "Varsayılan yetkiler"
+msgstr "Varsayılan ayrıcalıklar"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
@@ -1782,6 +1821,8 @@ msgid ""
 "Default timeout for cURL, stated in milliseconds.\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"CURL için varsayılan zaman aşımı, milisaniye cinsinden.\n"
+"Sadece cURL ile derlenmiş ise bir etkisi vardır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1794,10 +1835,12 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Maksimal oyuncu transfer uzaklığını bloklar cinsinden tanımlar (0 = "
+"sınırsız)."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Blokları inşası sonrası göndermedeki gecikme"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -1809,11 +1852,11 @@ msgstr "Kaldırılan Lua API işleme"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr "Büyük mağaralar bulabileceğiniz alt derinlik."
+msgstr "Aşağısında büyük mağaralar bulabileceğiniz derinlik."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr "Büyük mağaralar bulabileceğiniz alt derinlik."
+msgstr "Aşağısında devasa mağaralar bulabileceğiniz derinlik."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -1824,6 +1867,8 @@ msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
 msgstr ""
+"Oyuncular bağlandığında ve sunucu listesinde görüntülenecek sunucu "
+"açıklaması."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -1835,14 +1880,17 @@ msgid ""
 "The 3 numbers in brackets control the scale of the\n"
 "terrain, the 3 numbers should be identical."
 msgstr ""
+"Arazi şeklini belirler.\n"
+"Parantez içinde 3 rakam arazi boyutunu kontrol eder,\n"
+"3 rakam aynı olmalıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr "Anticheat devre dışı"
+msgstr "Hile önleme devre dışı"
 
 #: src/settings_translation_file.cpp
 msgid "Disable escape sequences"
-msgstr "escape dizilerini devre dışı bırak"
+msgstr "Çıkış dizilerini devre dışı bırak"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1851,6 +1899,9 @@ msgid ""
 "disable\n"
 "the escape sequences generated by mods."
 msgstr ""
+"Çıkış dizilerini devre dışı bırak, ör: sohbet renkleri.\n"
+"Bu 0.4.14 öncesi istemciler ile bir sunucu çalıştırmak ve modlar tarafından "
+"oluşturulan çıkış dizilerini devre dışı bırakmak istiyorsanız bunu kullanın."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -1858,15 +1909,15 @@ msgstr "Boş şifrelere izin verme"
 
 #: src/settings_translation_file.cpp
 msgid "Domain name of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Sunucu listesinde görüntülenecek sunucu alan adı."
 
 #: src/settings_translation_file.cpp
 msgid "Double tap jump for fly"
-msgstr "Çift zıplayarak uç"
+msgstr "Uçma için zıplamaya çift dokun"
 
 #: src/settings_translation_file.cpp
 msgid "Double-tapping the jump key toggles fly mode."
-msgstr "Zıplama tuşuna çift dokunmak uçma modu açar/kapar."
+msgstr "Zıplama tuşuna çift dokunmak uçma kipini açar/kapar."
 
 #: src/settings_translation_file.cpp
 msgid "Drop item key"
@@ -1878,11 +1929,11 @@ msgstr "Mapgen hata ayıklama bilgisini dökümle."
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr "Oyun çubuklarını etkinleştir"
+msgstr "Joystickleri etkinleştir"
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
-msgstr "VBO etkinleştir"
+msgstr "VBO'yu etkinleştir"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1894,15 +1945,15 @@ msgstr "Oyuncuların hasar almasını ve ölmesini etkinleştir."
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
-"Rastgele kullanıcı girişini etkinleştirin (sadece test etmek için "
-"kullanılır)."
+msgstr "Rastgele kullanıcı girişini etkinleştir (sadece test için)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Basit ortam oklüzyon ile yumuşak aydınlatmayı etkinleştirir.\n"
+"Farklı görünüm veya hız için devre dışı bırakın."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1912,6 +1963,9 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Eski istemcilerin bağlanmasına izin vermemek için etkinleştirin.\n"
+"Eski istemciler yeni sunuculara bağlanırken çökmeyecek kadar uyumludur,\n"
+"ancak beklediğiniz tüm yeni özellikleri desteklemiyor olabilir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1920,6 +1974,9 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"(Sunucu tarafından sağlanan) uzak medya sunucu kullanımını etkinleştirin.\n"
+"Sunucuya bağlanırken uzak sunucular medya (ör: dokular) indirmek için daha\n"
+"hızlı bir yol sunar."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1927,6 +1984,9 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"IPv6 sunucu çalıştırmayı etkin/devre dışı kılar. Bir IPv6 sunucu,\n"
+"sistem yapılandırmasına bağlı olarak, IPv6 istemcilere kısıtlanabilir.\n"
+"Eğer bind_address ayarlı ise yok sayılır."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -1940,8 +2000,9 @@ msgid ""
 "Requires shaders to be enabled."
 msgstr ""
 "Tümsek eşlemeyi dokular için etkinleştirir. Dikey eşlemelerin doku paketi "
-"tarafından sağlanması veya otomatik oluşturulması gerekir\n"
-"Gölgelemelerin etkinleşmesini gerektirir."
+"tarafından sağlanması\n"
+"veya otomatik oluşturulması gerekir\n"
+"Gölgelemelerin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
@@ -1953,27 +2014,27 @@ msgstr "Filmsel ton eşlemeyi etkinleştirir"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
-msgstr "Mini-harita gösterir."
+msgstr "Mini haritayı etkinleştirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
-"Çalışma anı dikey eşleme oluşturulmasını etkinleştirir.\n"
-"Tümsek eşlemenin etkinleştirilmesini gerektirir."
+"Çalışma anı dikey eşleme oluşturulmasını (kabartma efekti) etkinleştirir.\n"
+"Tümsek eşlemenin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"Parallax occlusion eşlemeyi etkinleştirir.\n"
+"Paralaks oklüzyon eşlemeyi etkinleştirir.\n"
 "Gölgelemelerin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr ""
+msgstr "Motor profilleme veri yazdırma aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
@@ -1984,6 +2045,8 @@ msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
+"Deneysel seçenek, 0'dan daha büyük bir sayıya ayarlandığında\n"
+"bloklar arasında görünür boşluklara neden olabilir."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -2019,11 +2082,11 @@ msgstr "Hızlı tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr "Hızlı modu hızlanması"
+msgstr "Hızlı kip hızlanması"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr "Hızlı mod hızı"
+msgstr "Hızlı kip hızı"
 
 #: src/settings_translation_file.cpp
 msgid "Fast movement"
@@ -2034,6 +2097,8 @@ msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
+"Hızlı hareket (kullan tuşu ile).\n"
+"Bu sunucu üzerinde \"fast\" ayrıcalığı gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Field of view"
@@ -2041,7 +2106,7 @@ msgstr "Görüş alanı"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view for zoom"
-msgstr "Zoom için görüş alanı"
+msgstr "Yakınlaştırma için görüş alanı"
 
 #: src/settings_translation_file.cpp
 msgid "Field of view in degrees."
@@ -2052,12 +2117,16 @@ msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
+"Yakınlaştırırken derece olarak görüş alanı.\n"
+"Bu sunucu üzerinde \"zoom\" ayrıcalığı gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "File in client/serverlist/ that contains your favorite servers displayed in "
 "the Multiplayer Tab."
 msgstr ""
+"İstemci/sunucu listesi/ içinde Multiplayer Sekmesinde görüntülenen favori "
+"sunucuları içeren bir dosya."
 
 #: src/settings_translation_file.cpp
 msgid "Filler Depth"
@@ -2074,6 +2143,10 @@ msgid ""
 "light edge to transparent textures.  Apply this filter to clean that up\n"
 "at texture load time."
 msgstr ""
+"Filtre dokuları, genellikle PNG iyileştiricilerin dikkate almadığı, tamamen\n"
+"şeffaf komşuları ile RGB değerlerini karıştırabilir, bazen şeffaf dokularda\n"
+"karanlık veya aydınlık kenarlara neden olabilir. Bunu temizlemek için bu\n"
+"filtreyi doku yükleme zamanında uygulayın."
 
 #: src/settings_translation_file.cpp
 msgid "Filtering"
@@ -2085,7 +2158,7 @@ msgstr "Sabit harita tohumu"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
-msgstr "Uçuş tuşu"
+msgstr "Uçma tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Flying"
@@ -2097,11 +2170,11 @@ msgstr "Sis"
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
-msgstr "Sis geçiş tuşu"
+msgstr "Sis açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Font path"
-msgstr "Yazı tipi yolu"
+msgstr "Yazı tipi konumu"
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow"
@@ -2117,7 +2190,7 @@ msgstr "Yazı tipi gölge saydamlığı (solukluk, 0 ve 255 arası)."
 
 #: src/settings_translation_file.cpp
 msgid "Font shadow offset, if 0 then shadow will not be drawn."
-msgstr "Yazı tipi gölge ofseti, 0 ise gölge çizilmez."
+msgstr "Yazı tipi gölge kayması, 0 ise gölge çizilmez."
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
@@ -2141,13 +2214,13 @@ msgid ""
 "nodes)."
 msgstr ""
 "Harita-blokları (16 nod) cinsinden istemciler için blokların ne kadar "
-"uzaklıktan oluşturallacağı."
+"uzaklıktan oluşturalacağı."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
-"Harita-blokları (16 nod) cinsinden blokların ne kadar uzaklıkta istemciye "
+"Harita-blokları (16 nod) cinsinden blokların ne kadar uzaklıktan istemciye "
 "gönderileceği."
 
 #: src/settings_translation_file.cpp
@@ -2167,19 +2240,19 @@ msgstr "Tam ekran BPP"
 
 #: src/settings_translation_file.cpp
 msgid "Fullscreen mode."
-msgstr "Tam ekran modu."
+msgstr "Tam ekran kipi."
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling"
-msgstr "GUI boyutlandırma"
+msgstr "Arayüz boyutlandırma"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter"
-msgstr "GUI boyutlandırma filtresi"
+msgstr "Arayüz boyutlandırma filtresi"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr "GUI boyutlandırma filtresi txr2img"
+msgstr "Arayüz boyutlandırma filtresi txr2img"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
@@ -2206,6 +2279,13 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Global harita oluşturma özellikleri.\n"
+"Mapgen v6'da 'decorations' bayrağı ağaçlar ve orman çimi hariç tüm "
+"dekorasyonları\n"
+"kontrol eder, diğer mapgenlerde bu bayrak tüm dekorasyonları kontrol eder.\n"
+"Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+"değiştirilmez.\n"
+"'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2221,7 +2301,7 @@ msgstr "HTTP Modları"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr "HUD geçiş tuşu"
+msgstr "HUD açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2230,6 +2310,12 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Kullanım dışı lua API çağrılarının ele alınması:\n"
+"-    legacy: (eski) Eski davranış taklit etmeye çalışır (varsayılan).\n"
+"-    log: (günlük) kullanım dışı çağrıları taklit eder ve günlükler (hata "
+"ayıklama için varsayılan).\n"
+"-    error: (hata) kullanım dışı çağrıların kullanımını iptal eder (mod "
+"geliştiricileri için önerilen)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2239,14 +2325,18 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"Profilleyicinin kendini belgelemesini sağla\n"
+"* boş bir fonksiyonu belgele\n"
+"Bu belgelemenin eklediği (+1 donksiyon çağrısı) yükü tahmin eder.\n"
+"* istatistikleri güncellemek için kullanılan örnekleyiciyi belgelendir."
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "İlk pencere boyutunun yükseklik bileşeni."
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
-msgstr ""
+msgstr "Bulutların ortaya çıkacağı yükseklik."
 
 #: src/settings_translation_file.cpp
 msgid "High-precision FPU"
@@ -2254,7 +2344,7 @@ msgstr "Yüksek hassasiyetli FPU"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
-msgstr ""
+msgstr "Sunucu listesinde görüntülenecek sunucunun ana sayfası ."
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
@@ -2275,9 +2365,9 @@ msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
-"Sunucunun kullanılmayan harita-blokları boşaltmadan önce ne kadar "
+"Sunucunun kullanılmayan harita-bloklarını boşaltmadan önce ne kadar "
 "bekleyeceği.\n"
-"Yüksek değer daha düzgündür ancak daha çok RAM kullanır."
+"Daha yüksek değer daha düzgün olsa da daha çok RAM kullanır."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
@@ -2300,12 +2390,16 @@ msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
+"FPS bundan daha fazla yükselecekse, CPU gücünü boşa tüketmemek için, uykuya "
+"dalarak sınırla ."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
+"Devre dışı bırakılırsa \"kullan\" tuşu, hem uçma hem de hızlı kipi etkin "
+"ise, hızlı uçma için kullanılır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2313,32 +2407,41 @@ msgid ""
 "nodes.\n"
 "This requires the \"noclip\" privilege on the server."
 msgstr ""
+"Uçma kipi ile birlikte etkinleştirilirse, oyuncu katı nodlardan uçarak "
+"geçebilir.\n"
+"Bu sunucuda \"noclip\" ayrıcalığı gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, \"use\" key instead of \"sneak\" key is used for climbing down "
 "and descending."
 msgstr ""
+"Etkinleştirilirse, \"sızma\" tuşu yerine \"kullan\" tuşu aşağı tırmanma ve "
+"alçalma için kullanılır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Etkinleştirilirse, eylemler geri alma için kaydedilebilir.\n"
+"Bu seçenek sadece sunucu yeniden başlatıldığında okunur."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr ""
+msgstr "Etkinleştirilirse, multiplayer'da hile önleme devre dışı bırakılır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"Etkinleştirilirse, geçersiz dünya verisi sunucunun kapanmasına neden olmaz.\n"
+"Sadece ne yaptığınızı biliyorsanız bunu etkinleştirin."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
-msgstr ""
+msgstr "Etkinleştirilirse, yeni oyuncular boş bir şifre ile katılamaz."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2346,14 +2449,18 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Etkinleştirilirse, bulunduğunuz yerin konumuna (ayak + göz seviyesi) "
+"blokları yerleştirebilirsiniz.\n"
+"Küçük alanlarda nodkutuları ile çalışırken, bu yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
+"Bu ayarlanırsa, oyuncular her zaman verilen konumdan (yeniden) canlanacaktır."
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr "Dünya hatalarını yoksay"
+msgstr "Dünya hatalarını yok say"
 
 #: src/settings_translation_file.cpp
 msgid "In-Game"
@@ -2362,52 +2469,59 @@ msgstr "Oyun içi"
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background alpha (opaqueness, between 0 and 255)."
 msgstr ""
+"Oyun-içi sohbet konsolu arka plan saydamlığı (solukluk, 0 ile 255 arasında)."
 
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
-msgstr ""
+msgstr "Oyun-içi sohbet konsolu arka plan rengi (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"Yerleşiği belgele.\n"
+"Genellikle bu sadece çekirdek/yerleşik katkıda bulunanlar için gereklidir"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr ""
+msgstr "Kayıt sırasında sohbet komutlarını belgele."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"Kayıt sırasında global geri çağrı fonksiyonlarını belgele.\n"
+"(minetest.register_*() fonksiyonuna gönderdiğiniz herşey)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
 msgstr ""
+"Kayıt sırasında Etkin Blok Değiştiricilerin eylem fonksiyonlarını belgele."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
 msgstr ""
+"Kayıt sırasında Yükleme Blok Değiştiricilerin eylem fonksiyonlarını belgele."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "Kayıt sırasında varlık yöntemlerini belgele."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr "Enstürmantasyon"
+msgstr "Belgeleme"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr ""
+msgstr "Dünyadaki önemli değişiklikleri kaydetme aralığı, saniye cinsinden."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr "Günün saati istemcilere gönderme aralığı."
+msgstr "Günün saatini istemcilere gönderme aralığı."
 
 #: src/settings_translation_file.cpp
 msgid "Inventory items animations"
@@ -2434,6 +2548,8 @@ msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
 msgstr ""
+"Özyinelemeli fonksiyon yinelemelerini.\n"
+"İnce detay miktarını kontrol eder."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
@@ -2450,6 +2566,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Sadece Julia set için: julia şeklini belirleyici hypercomplex sabitinin W "
+"bileşeni.\n"
+"3D Fraktallar üzerinde etkisi yoktur.\n"
+"Aralığı kabaca -2 ile 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2457,6 +2577,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Sadece Julia set için: julia şeklini belirleyici hypercomplex sabitinin X "
+"bileşeni.\n"
+"Aralığı kabaca -2 ile 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2464,6 +2587,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Sadece Julia set için: julia şeklini belirleyici hypercomplex sabitinin Y "
+"bileşeni.\n"
+"Aralığı kabaca -2 ile 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2471,6 +2597,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Sadece Julia set için: julia şeklini belirleyici hypercomplex sabitinin Z "
+"bileşeni.\n"
+"Aralığı kabaca -2 ile 2."
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -2496,7 +2625,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Mevcut seçili nesneyi atma tuşu.\n"
+"Mevcut seçili öğeyi atma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2526,7 +2655,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Hızlı modda hızlı hareket tuşu.\n"
+"Hızlı kipte hızlı hareket tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2536,7 +2665,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Oyuncuyu geri hareket tuşu.\n"
+"Oyuncuyu geriye hareket ettirme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2546,7 +2675,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Oyuncuyu ileri hareket tuşu.\n"
+"Oyuncuyu ileriye hareket ettirme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2556,7 +2685,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Oyuncuyu sola hareket tuşu.\n"
+"Oyuncuyu sola hareket ettirme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2566,7 +2695,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Oyuncuyu sağa hareket tuşu.\n"
+"Oyuncuyu sağa hareket ettirme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2576,7 +2705,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sohbet konsolu açma tuşu.\n"
+"Sohbet konsolunu açma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2586,7 +2715,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Komut yazmak için sohbet penceresi açma tuşu.\n"
+"Komut yazmak için sohbet penceresini açma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2596,7 +2725,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sohbet penceresi açma tuşu.\n"
+"Sohbet penceresini açma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2606,7 +2735,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Envanter açma tuşu.\n"
+"Envanteri açma tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2629,8 +2758,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Sızma tuşu.\n"
-"Aynı zamanda aşağı inmek ve suda alçalmak için kullanılır, aux1_descends "
-"kapalı ise.\n"
+"Aynı zamanda aşağı inmek ve, aux1_descends kapalı ise, suda alçalmak için "
+"kullanılır.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2660,7 +2789,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Otomatik koşma geçiş tuşu.\n"
+"Otomatik koşma açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2670,7 +2799,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sinematik mod geçiş tuşu.\n"
+"Sinematik kip açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2680,7 +2809,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Mini harita geçiş tuşu.\n"
+"Mini harita gösterme/gizleme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2690,7 +2819,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Hızlı mod geçiş tuşu.\n"
+"Hızlı kip açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2700,7 +2829,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Uçuş geçiş tuşu.\n"
+"Uçma açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2710,7 +2839,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Hayalet modu geçiş tuşu.\n"
+"Hayalet kip açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2720,7 +2849,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Kamera güncelleme geçiş tuşu. Sadece geliştirme için kullanılır.\n"
+"Kamera güncelleme açma/kapama tuşu. Sadece geliştirme için kullanılır.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2730,7 +2859,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Hata ayıklama bilgi ekranı geçiş tuşu.\n"
+"Hata ayıklama bilgisi gösterme/gizleme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2740,7 +2869,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"HUD gösterme geçiş tuşu.\n"
+"HUD gösterme/gizleme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2750,7 +2879,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sohbet gösterme geçiş tuşu.\n"
+"Sohbet gösterme/gizleme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2760,7 +2889,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sis gösterme geçiş tuşu.\n"
+"Sis gösterme/gizleme tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2770,7 +2899,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Profil oluşturucu geçiş tuşu. Geliştirme için kullanılır.\n"
+"Profilleyiciyi gösterme/gizleme tuşu. Geliştirme için kullanılır.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
@@ -2780,13 +2909,13 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Sınırsız görüş aralığı geçiş tuşu.\n"
+"Sınırsız görüş uzaklığı açma/kapama tuşu.\n"
 "Bakın: http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
 "735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
-msgstr "Tırmanma/inme için kullanılan tuş"
+msgstr "Tırmanma/alçalma için kullanılan tuş"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2798,7 +2927,7 @@ msgstr "Büyük mağara derinliği"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr "Lava Özellikleri"
+msgstr "Lav Özellikleri"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -2812,19 +2941,21 @@ msgid ""
 "-   Opaque: disable transparency"
 msgstr ""
 "Yaprak stili:\n"
-"-   Şık: tüm yüzler görünür\n"
-"-   Basit: sadece dış yüzler, tanımlı special_tiles kullanılıyorsa\n"
-"-   Opak: saydamlık devre dışı"
+"-   Fancy: tüm yüzler görünür\n"
+"-   Simple: sadece dış yüzler, tanımlı special_tiles kullanılıyorsa\n"
+"-   Opaque: saydamlık devre dışı"
 
 #: src/settings_translation_file.cpp
 msgid "Left key"
-msgstr "Sol tuşu"
+msgstr "Sol tuş"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr ""
+"Sunucunun tık uzunluğu ve nesnelerin genellikle ağ üzerinden güncelleneceği "
+"aralık."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
@@ -2845,6 +2976,14 @@ msgid ""
 "-    info\n"
 "-    verbose"
 msgstr ""
+"debug.txt'e yazılacak günlük seviyesi:\n"
+"-    <nothing> (günlük yok)\n"
+"-    none (seviyesi olmayan mesajlar)\n"
+"-    error (hata)\n"
+"-    warning (uyarı)\n"
+"-    action (eylem)\n"
+"-    info (bilgi)\n"
+"-    verbose (ayrıntılı)"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
@@ -2862,6 +3001,11 @@ msgid ""
 "-    Downloads performed by main menu (e.g. mod manager).\n"
 "Only has an effect if compiled with cURL."
 msgstr ""
+"Paralel HTTP isteklerinin sayısını sınırlar. Etkilediği:\n"
+"-    Medya alma, sunucu remote_media ayarını kullanıyorsa\n"
+"-    Sunucu listesi indirme ve sunucu duyurusu.\n"
+"-    Ana menü (ör: mod yöneticisi) tarafından uygulanan indirmeler.\n"
+"Sadece cURL ile derlenmiş ise etkiye sahiptir."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
@@ -2873,11 +3017,11 @@ msgstr "Sıvı akışkanlığı yumuşatma"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr "Sıvı döngü en çok"
+msgstr "Maksimum sıvı döngüsü"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr "Sıvı sıra silme zamanı"
+msgstr "Sıvı sırası silme zamanı"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
@@ -2889,11 +3033,11 @@ msgstr "Saniye cinsinden sıvı güncelleme aralığı."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr "Sıvı güncelleme tiki"
+msgstr "Sıvı güncelleme tıkı"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
-msgstr "Oyun profil oluşturucuyu yükle"
+msgstr "Oyun profilleyiciyi yükle"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2901,6 +3045,9 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Oyun profilleme verisi toplamak için oyun profilleyiciyi yükler.\n"
+"Derlenmiş profile erişmek için /profiler komutu sağlar.\n"
+"Mod geliştiricileri ve sunucu operatörleri için yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
@@ -2912,7 +3059,7 @@ msgstr "Ana menü oyun yöneticisi"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu mod manager"
-msgstr "Ana Menü mod yöneticisi"
+msgstr "Ana menü mod yöneticisi"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu script"
@@ -2922,10 +3069,14 @@ msgstr "Ana menü betiği"
 msgid ""
 "Make fog and sky colors depend on daytime (dawn/sunset) and view direction."
 msgstr ""
+"Sis ve gökyüzü renklerini gün saatine (şafak/günbatımı) ve bakış yönüne "
+"bağlı değiştir."
 
 #: src/settings_translation_file.cpp
 msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr ""
+"DirectX'in LuaJIT ile çalışmasını sağlar. Sorunlara neden olursa devre dışı "
+"bırakın."
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
@@ -2943,6 +3094,14 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Mapgen vadilerine özgü harita oluşturma değerleri.\n"
+"'altitude_chill' yüksek seviyeleri daha soğuk yapar, bu biyom sorunlarına "
+"neden olabilir.\n"
+"'humid_rivers' nehirlerin ve suların toplandığı bölegelerin çevresinde nemi "
+"arttırır.\n"
+"Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+"değiştirilmez.\n"
+"'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2952,6 +3111,11 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Mapgen düze özgü harita oluşturma değerleri.\n"
+"Ara sıra göller ve tepeler düz dünyaya eklenebilir.\n"
+"Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+"değiştirilmez.\n"
+"'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2962,6 +3126,12 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Mapgen v6'ya özgü harita oluşturma değerleri.\n"
+"Kar biyomları etkin ise ormanlar otomatik etkinleştirilir, 'jungles' bayrağı "
+"yok sayılır.\n"
+"Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+"değiştirilmez.\n"
+"'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2971,6 +3141,11 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Mapgen v7'ye özgü harita oluşturma değerleri.\n"
+"'ridges' bayrağı nehirleri kontrol eder.\n"
+"Bayrak karakter dizisinde belirtilmeyen bayraklar varsayılandan "
+"değiştirilmez.\n"
+"'no' ile başlayan bayraklar onları devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -2998,7 +3173,7 @@ msgstr "Mapgen biyom ısı gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity blend noise parameters"
-msgstr "Mapgen biyom nem karışım gürültü parametreleri"
+msgstr "Mapgen biyom nem karıştırma gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome humidity noise parameters"
@@ -3030,7 +3205,7 @@ msgstr "Mapgen düz mağara2 gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat filler depth noise parameters"
-msgstr "Mapgen düz dolgu derinlik gürültü parametreleri"
+msgstr "Mapgen düz doldurma derinlik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat flags"
@@ -3042,7 +3217,7 @@ msgstr "Mapgen düz yer seviyesi"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill steepness"
-msgstr "Mapgen düz tepenin dikliği"
+msgstr "Mapgen düz tepe dikliği"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat hill threshold"
@@ -3082,7 +3257,7 @@ msgstr "Mapgen fraktal mağara2 gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal filler depth noise parameters"
-msgstr "Mapgen fraktal dolgu derinlik gürültü parametreleri"
+msgstr "Mapgen fraktal doldurma derinlik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal fractal"
@@ -3110,7 +3285,7 @@ msgstr "Mapgen fraktal julia z"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal offset"
-msgstr "Mapgen fraktal ofset"
+msgstr "Mapgen fraktal kaydırma"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal scale"
@@ -3126,11 +3301,11 @@ msgstr "Mapgen fraktal dilim w"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen heat blend noise parameters"
-msgstr "Mapgen ısı karışım gürültü parametreleri"
+msgstr "Mapgen ısı karıştırma gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr "Mapgen adı"
+msgstr "Mapgen isim"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
@@ -3154,7 +3329,7 @@ msgstr "Mapgen v5 faktör gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 filler depth noise parameters"
-msgstr "Mapgen v5 dolgu derinlik gürültü parametreleri"
+msgstr "Mapgen v5 doldurma derinlik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5 height noise parameters"
@@ -3210,7 +3385,7 @@ msgstr "Mapgen v6 diklik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr "Mapgen v6 arazi irtifa gürültü parametreleri"
+msgstr "Mapgen v6 arazi yükseklik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6 terrain base noise parameters"
@@ -3238,7 +3413,7 @@ msgstr "Mapgen v7 mağara2 gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 filler depth noise parameters"
-msgstr "Mapgen v7 dolgu derinlik gürültü parametreleri"
+msgstr "Mapgen v7 doldurma derinlik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 flags"
@@ -3266,7 +3441,7 @@ msgstr "Mapgen v7 sırt su gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr "Mapgen v7 arazi irtifa gürültü parametreleri"
+msgstr "Mapgen v7 arazi yükseklik gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7 terrain base noise parameters"
@@ -3290,74 +3465,78 @@ msgstr "Devasa mağaralar burada oluşuyor."
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr "En fazla blok oluşturma uzaklığı"
+msgstr "Maksimum blok oluşturma uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr "En fazla blok gönderme uzaklığı"
+msgstr "Maksimum blok gönderme uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
-msgstr "Bir adımda işlenen en çok sıvı."
+msgstr "Bir adımda işlenen maksimum sıvı."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr "En fazla clearobjects ek bloğu"
+msgstr "Maksimum clearobjects ek bloğu"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
-msgstr "Bir yinelemede en fazla paket"
+msgstr "Yinelemede başına maksimum paket"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr "En fazla FPS"
+msgstr "Maksimum FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr "Oyun duraklatıldığında en fazla FPS."
+msgstr "Oyun duraklatıldığında maksimum FPS."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr "En fazla forceloaded blok"
+msgstr "Maksimum forceloaded blok"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
-msgstr "En fazla hotbar eni"
+msgstr "Maksimum hotbar eni"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent in total."
-msgstr ""
+msgstr "Aynı anda toplamda gönderilen maksimum blok sayısı ."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent per client."
-msgstr ""
+msgstr "Aynı anda istemci başına gönderilen maksimum blok sayısı."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
-msgstr ""
+msgstr "Yükleme için sıraya alınabilecek maksimum blok sayısı."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Oluşturulması için sıraya koyulacak maksimum blok sayısı.\n"
+"Uygun miktarın otomatik olarak seçilmesi için boş olarak ayarlayın."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Bir dosyadan yüklenmesi için sıraya koyulacak maksimum blok sayısı.\n"
+"Uygun miktarın otomatik olarak seçilmesi için boş olarak ayarlayın."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr "Forceloaded harita-bloklarının en fazla sayısı."
+msgstr "Forceloaded harita-bloklarının maksimum sayısı."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"İstemcinin hafızada tutacağı en fazla harita-blok sayısı.\n"
+"İstemcinin hafızada tutacağı maksimum harita-blok sayısı.\n"
 "Sınırsız miktar için -1'e ayarlayın."
 
 #: src/settings_translation_file.cpp
@@ -3366,40 +3545,48 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"Gönderme adımı başına gönderilecek maksimum paket sayısı, bağlantınız\n"
+"yavaş ise azaltmayı deneyin, fakat hedeflenen istemci sayısının iki "
+"katından\n"
+"düşük bir sayıya azaltmayın."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr ""
+msgstr "Aynı anda bağlanabilen maksimum oyuncu sayısı."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr ""
+msgstr "Bir blokta statik olarak saklı nesnelerin maksimum sayısı."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
-msgstr "Blok başına en fazla nesne"
+msgstr "Blok başına maksimum nesne"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"Hotbar için kullanılacak mevcut pencerinin maksimum oranı.\n"
+"Sağ veya sol hotbar'da gösterilecek bir şey varsa yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr "Bir istemci için en fazla eşzamanlı blok gönderimi"
+msgstr "İstemci başına maksimum eşzamanlı blok gönderimi"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends total"
-msgstr "En fazla toplam eşzamanlı blok gönderimi"
+msgstr "Maksimum toplam eşzamanlı blok gönderimi"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
+"Bir dosya indirmesinin ms cinsinden alabileceği maksimum zaman (ör: mod "
+"indirme)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr "En fazla kullanıcı"
+msgstr "Maksimum kullanıcı"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3407,7 +3594,7 @@ msgstr "Menüler"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr "Izgara önbelleği"
+msgstr "Kafes önbelleği"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -3415,7 +3602,7 @@ msgstr "Günün mesajı"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
-msgstr "Günün mesajı bağlanan oyuncular için görüntülenir."
+msgstr "Bağlanan oyunculara görüntülenecek günün mesajı."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
@@ -3455,7 +3642,7 @@ msgstr "Modstore mod liste URL'si"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
-msgstr "Eş aralıklı yazı tipi yolu"
+msgstr "Eş aralıklı yazı tipi konumu"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font size"
@@ -3474,20 +3661,24 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Düşme sallanması için çarpan.\n"
+"Örneğin: 0 ise görüntü sallanması yok; 1.0 ise normal; 2.0 ise çift."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Görüntü sallanması için çarpan.\n"
+"Örneğin: 0 ise görüntü sallanması yok; 1.0 ise normal; 2.0 ise çift."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
 msgstr ""
-"Yeni bir dünya yaratılırken kullanılacak harita oluşturucu adı.\n"
-"Ana menüden bir dünya yaratmak bunu geçersiz kılar."
+"Yeni bir dünya yaratılırken kullanılacak harita oluşturucu ismi.\n"
+"Ana menüde bir dünya yaratmak bunu geçersiz kılar."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3495,14 +3686,15 @@ msgid ""
 "When running a server, clients connecting with this name are admins.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
-"Oyuncunun adını.\n"
-"Bir sunucu çalışırken, bu adla bağlanan istemciler yöneticidir.\n"
-"Ana menüden başlatırken, bu geçersiz olur."
+"Oyuncunun ismi.\n"
+"Bir sunucu çalışırken, bu isimle bağlanan istemciler yöneticidir.\n"
+"Ana menüden başlatırken, bu geçersiz kılınır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of the server, to be displayed when players join and in the serverlist."
-msgstr "Oyuncular katıldığında ve sunucu listesinde görüntülenecek sunucu adı."
+msgstr ""
+"Oyuncular katılındığında ve sunucu listesinde görüntülenecek sunucu ismi."
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -3513,7 +3705,7 @@ msgid ""
 "Network port to listen (UDP).\n"
 "This value will be overridden when starting from the main menu."
 msgstr ""
-"Dinlenecek ağ bağlantı noktası (UDP).\n"
+"Dinlenecek ağ portu (UDP).\n"
 "Bu değer ana menüden başlatılırken geçersiz kılınır."
 
 #: src/settings_translation_file.cpp
@@ -3538,7 +3730,8 @@ msgstr "NodeTimer aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "Noise parameters for biome API temperature, humidity and biome blend."
-msgstr "Biyom API sıcaklık, nem ve biyom karışımı için gürültü parametreleri."
+msgstr ""
+"Biyom API'si sıcaklık, nem ve biyom karıştırma için gürültü parametreleri."
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -3565,8 +3758,10 @@ msgid ""
 "at the cost of slightly buggy caves."
 msgstr ""
 "Kullanılacak emerge iş sayısı. Çoklu iş kullanmak için bu alanı boş bırakın "
-"veya bu sayıyı arttırın. Çok işlemcili sistemlerde, bu mapgen hızını, az "
-"hatalı mağaralar pahasına, büyük ölçüde artıracaktır."
+"veya\n"
+"bu sayıyı arttırın. Çok işlemcili sistemlerde, bu mapgen hızını, biraz "
+"hatalı mağaralar\n"
+"pahasına, büyük ölçüde arttıracaktır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3574,54 +3769,57 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"/clearobjects tarafında tek seferde yüklenebilecek ek blokların sayısı.\n"
+"Bu sqlite işlem yükü ve bellek tüketimi (4096=100MB)\n"
+"arasında bir dengedir."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
-msgstr "Parallax occlusion yineleme sayısı."
+msgstr "Paralaks oklüzyon yineleme sayısı."
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
+msgstr "Paralaks oklüzyon efektinin genel sapması, genellikle boyut/2."
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr "Prallax occlusion efektinin genel boyutu."
+msgstr "Paralaks oklüzyon efektinin genel boyutu."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
-msgstr "Parallax occlusion"
+msgstr "Paralaks oklüzyon"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion Scale"
-msgstr "Parallax occlusion Boyutu"
+msgstr "Paralaks oklüzyon Boyutu"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion bias"
-msgstr "Parallax occlusion biası"
+msgstr "Paralaks oklüzyon sapması"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion iterations"
-msgstr "Parallax occlusion yinelemesi"
+msgstr "Paralaks oklüzyon yinelemesi"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion mode"
-msgstr "Parallax occlusion modu"
+msgstr "Paralaks oklüzyon kipi"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion strength"
-msgstr "Parallax occlusion gücü"
+msgstr "Paralaks oklüzyon gücü"
 
 #: src/settings_translation_file.cpp
 msgid "Path to TrueTypeFont or bitmap."
-msgstr "TrueTypeFont veya bitmap yolu."
+msgstr "TrueTypeFont veya bitmap konumu."
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
-msgstr "Ekran yakalamaların kaydedileceği yol."
+msgstr "Ekran yakalamaların kaydedileceği konum."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
-msgstr ""
+msgstr "Doku dizini konumu. Tüm dokular ilk burada aranır."
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
@@ -3632,14 +3830,16 @@ msgid ""
 "Player is able to fly without being affected by gravity.\n"
 "This requires the \"fly\" privilege on the server."
 msgstr ""
+"Oyuncu yerçekimi tarafından etkilenmeden uçabilir.\n"
+"Bu sunucu üzerinde \"fly\" ayrıcalığı gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr "Oyuncu adı"
+msgstr "Oyuncu ismi"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr "Oyuncu transfer mesafesi"
+msgstr "Oyuncu transfer uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
@@ -3650,36 +3850,37 @@ msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
-"Bağlanılacak bağlantı noktası (UDP).\n"
-"Ana menüdeki bağlantı noktası alanının bunu geçersiz kılacağını unutmayın."
+"Bağlanılacak port (UDP).\n"
+"Ana menüdeki port alanının bunu geçersiz kılacağını unutmayın."
 
 #: src/settings_translation_file.cpp
 msgid "Prevent mods from doing insecure things like running shell commands."
 msgstr ""
-"Modların bir konsol komutu çalıştırmak gibi güvenliksiz şeyler yapmasını "
-"önle."
+"Modların bir kabuk komutu çalıştırmak gibi güvensiz şeyler yapmasını önle."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Print the engine's profiling data in regular intervals (in seconds). 0 = "
 "disable. Useful for developers."
 msgstr ""
+"Motorun profilleme verilerini düzenli aralıklarla (saniye cinsinden) "
+"yazdırın. 0 = devre dışı. Geliştiriciler için yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "basic_privs sahibi oyuncuların verebileceği ayrıcalıklar"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr "Profil Oluşturucu"
+msgstr "Profilleyici"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr "Profiler oluşturucu geçiş tuşu"
+msgstr "Profilleyiciyi açma/kapama tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr "Profil oluşturma"
+msgstr "Profilleme"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3687,6 +3888,9 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"Bulut alanı yarıçapı, 64 nod bulut kareleri sayısı cinsinden.\n"
+"26'dan büyük değerler bulut alanı köşelerinde keskin kesimler üretmeye "
+"başlar."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers"
@@ -3698,7 +3902,7 @@ msgstr "Rasgele giriş"
 
 #: src/settings_translation_file.cpp
 msgid "Range select key"
-msgstr "Aralığı seçme tuşu"
+msgstr "Uzaklık seçim tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Remote media"
@@ -3706,7 +3910,7 @@ msgstr "Uzak medya"
 
 #: src/settings_translation_file.cpp
 msgid "Remote port"
-msgstr "Uzak bağlantı noktası"
+msgstr "Uzak port"
 
 #: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
@@ -3714,7 +3918,7 @@ msgstr "Varsayılan ana menüyü özel olanı ile değiştirir."
 
 #: src/settings_translation_file.cpp
 msgid "Report path"
-msgstr "Rapor yolu"
+msgstr "Rapor konumu"
 
 #: src/settings_translation_file.cpp
 msgid "Right key"
@@ -3722,7 +3926,7 @@ msgstr "Sağ tuş"
 
 #: src/settings_translation_file.cpp
 msgid "Rightclick repetition interval"
-msgstr "Sağ tıklatma tekrarlama aralığı"
+msgstr "Sağ tık tekrarlama aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "River Depth"
@@ -3742,7 +3946,7 @@ msgstr "Nehir gürültüsü -- nehirler sıfıra yakın oluşur"
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr "Geri alma kayıtı"
+msgstr "Geri alma kaydı"
 
 #: src/settings_translation_file.cpp
 msgid "Round minimap"
@@ -3764,6 +3968,11 @@ msgid ""
 "pixels when scaling down, at the cost of blurring some\n"
 "edge pixels when images are scaled by non-integer sizes."
 msgstr ""
+"Kullanıcı tanımlı bir değerle arayüzü boyutlandır.\n"
+"Arayüzü boyutlandırırken en yakın-komşu-kenar filtresi kullan.\n"
+"Bu bazı pürüzlü kenarları yumuşatır ve küçültürken pikselleri\n"
+"karıştırır, görüntüler tam sayı olmayan boyutlarla ölçeklendiğinde\n"
+"bazı kenar piksellerde bulanıklığa neden olur."
 
 #: src/settings_translation_file.cpp
 msgid "Screen height"
@@ -3795,6 +4004,9 @@ msgid ""
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
+"Ekran yakalama kalitesi. Sadece JPEG biçimi için kullanılır.\n"
+"1 en kötü kalite; 100 en iyi kalite.\n"
+"Varsayılan kalite için 0 kullanın."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -3806,7 +4018,7 @@ msgstr "http://www.sqlite.org/pragma.html#pragma_synchronous adresine bakın"
 
 #: src/settings_translation_file.cpp
 msgid "Selection box border color (R,G,B)."
-msgstr "Seçim kutusu kenarlık rengi (R,G,B)."
+msgstr "Seçim kutusu kenar rengi (R,G,B)."
 
 #: src/settings_translation_file.cpp
 msgid "Selection box color"
@@ -3834,7 +4046,7 @@ msgstr "Sunucu açıklaması"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr "Sunucu adı"
+msgstr "Sunucu İsmi"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
@@ -3853,30 +4065,32 @@ msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
+"Dili ayarlayın. Sistem dilini kullanmak için boş bırakın.\n"
+"Bunu değiştirdikten sonra yeniden başlatmak gerekir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"True olarak ayarlandığında dalgalanan yaprakları sağlar.\n"
-"Gölgelemenin etkinleştirilmesini gerektirir."
+"True (doğru) olarak ayarlamak dalgalanan yaprakları etkinleştirir.\n"
+"Gölgelemenin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"True olarak ayarlandığında dalgalanan bitkiler sağlar.\n"
-"Gölgelemenin etkinleştirilmesini gerektirir."
+"True (doğru) olarak ayarlamak dalgalanan bitkileri etkinleştirir.\n"
+"Gölgelemenin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
-"True olarak ayarlandığında dalgalanan su sağlar.\n"
-"Gölgelemenin etkinleştirilmesini gerektirir."
+"True (doğru) olarak ayarlamak dalgalanan suyu etkinleştirir.\n"
+"Gölgelemenin etkin olmasını gerektirir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3884,8 +4098,8 @@ msgid ""
 "video cards.\n"
 "Thy only work with the OpenGL video backend."
 msgstr ""
-"Gölgelemeler gelişmiş görsel efektleri izin ve bazı ekran kartlarında "
-"performansını artırabilir.\n"
+"Gölgelemeler gelişmiş görsel efektlere izin verir ve bazı ekran kartlarında "
+"performansı arttırabilir.\n"
 "Sadece OpenGL video arka ucu ile çalışır."
 
 #: src/settings_translation_file.cpp
@@ -3902,7 +4116,7 @@ msgstr "Varlık seçim kutularını göster"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr "Kapatma mesajı"
+msgstr "Kapanma mesajı"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3910,25 +4124,28 @@ msgid ""
 "nodes)."
 msgstr ""
 "Harita-blokları (16 nod) cinsinden bir kerede mapgen tarafından oluşturulan "
-"parçaların boyutu."
+"yığınların boyutu."
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights"
-msgstr ""
+msgstr "Yükseklikleri değiştirmek için eğim ve dolgu birlikte işler"
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
-msgstr "Düzgün aydınlatma"
+msgstr "Yumuşak aydınlatma"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
+"Etrafa bakarken kamerayı yumuşatır. Bakış veya fare yumuşatma olarak da "
+"bilinir.\n"
+"Videoların kaydı için yararlıdır."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr "Sinematik modda kamera dönüşünü yumuşatır. 0 devre dışı bırakır."
+msgstr "Sinematik kipte kamera dönüşünü yumuşatır. 0 devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid "Smooths rotation of camera. 0 to disable."
@@ -3949,10 +4166,14 @@ msgid ""
 "(obviously, remote_media should end with a slash).\n"
 "Files that are not present will be fetched the usual way."
 msgstr ""
+"İstemcinin UDP kullanmak yerine medyayı hangi URL'den alacağını belirtir.\n"
+"$filename cURL ile $remote_media$filename den erişilebilir olmalıdır\n"
+"(tabi ki, remote_media eğik çizgi ile bitmelidir).\n"
+"Mevcut olmayan dosyalar her zamanki gibi alınır."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr "Sabit spawn noktası"
+msgstr "Sabit canlanma noktası"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
@@ -3960,11 +4181,11 @@ msgstr "Oluşturulan dikey eşlemelerin gücü."
 
 #: src/settings_translation_file.cpp
 msgid "Strength of parallax."
-msgstr "Parallax gücü."
+msgstr "Paralaks gücü."
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
-msgstr "Katı protokol kontrolü"
+msgstr "Sıkı protokol kontrolü"
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
@@ -3984,6 +4205,9 @@ msgid ""
 "Controls proportion of world area covered by hills.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"Tepeler için arazi gürültü eşiği.\n"
+"Dünyanın tepelerle kaplı alanının oranını kontrol eder.\n"
+"Daha büyük oranlar için 0.0'a doğru ayarlayın."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3991,30 +4215,35 @@ msgid ""
 "Controls proportion of world area covered by lakes.\n"
 "Adjust towards 0.0 for a larger proportion."
 msgstr ""
+"Göller için arazi gürültü eşiği.\n"
+"Dünyanın göllerle kaplı alanının oranını kontrol eder.\n"
+"Daha büyük oranlar için 0.0'a doğru ayarlayın."
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
-msgstr "Doku yolu"
+msgstr "Doku konumu"
 
 #: src/settings_translation_file.cpp
 msgid "The altitude at which temperature drops by 20C"
-msgstr "Sıcaklığın 20C düşeceği yükseklik"
+msgstr "Sıcaklığın 20C birden düşeceği yükseklik"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"`/profiler save [biçim]` biçim olmadan çağırıldığında,\n"
+"profillerin kayıt edileceği varsayılan biçim."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
-msgstr "Kir veya diğer dolgu derinliği"
+msgstr "Toprağın veya başka doldurucunun derinliği"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved "
 "to.\n"
-msgstr "Profillerin içine kaydedileceği dünya yoluna bağlı dosya yolu.\n"
+msgstr "Profillerin içine kaydedileceği dünya konumuna bağlı dosya konumu.\n"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -4025,6 +4254,9 @@ msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Yeni kullanıcıların otomatik edindiği ayrıcalıklar.\n"
+"Sunucunuzda ve mod yapılandırmanızda tam liste için oyun içinde /privs "
+"komutuna bakın."
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
@@ -4035,6 +4267,8 @@ msgid ""
 "The sensitivity of the joystick axes for moving the\n"
 "ingame view frustum around."
 msgstr ""
+"Oyun-içi görünüm frustum'unu hareket ettirirken joystick eksenlerinin "
+"hassasiyeti."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4043,6 +4277,10 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"Nod ortam-oklüzyon gölgelemenin gücü (koyuluğu).\n"
+"Daha düşük daha karanlık, daha yüksek daha aydınlıktır. Geçerli\n"
+"değer aralığı 0.25 ile 4.0 dahil. Değer aralık dışında ise en yakın\n"
+"geçerli değere ayarlanır."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4050,32 +4288,43 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"Eski sıra öğeleri atılarak boyutunun düşürülmesine çalışılana kadar, "
+"sıvılar\n"
+"sırasının işleme kapasitesinin ötesine büyüyebileceği süre (saniye cinsinden)"
+"\n"
+"0 değeri bu özelliği devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
 msgstr ""
+"Bir joystick tuş kombinasyonuna basılı tutarken, saniye\n"
+"cinsinden tekrar eden olaylar arasında geçen süre."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
+"Sağ fare tuşuna basılı tutarken tekrar eden sağ tıklar arasında saniye "
+"cinsinden geçen süre."
 
 #: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
-msgstr "Bazı diller için bu yazı tipi kullanılacak."
+msgstr "Belirli diller için bu yazı tipi kullanılacak."
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
-msgstr "Aktif blok yönetimi döngüleri arasındaki zaman"
+msgstr "Etkin blok yönetimi döngüleri arasındaki zaman"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"Saniye cinsinde öğe varlığının (atılan öğeler) yaşayacağı süre.\n"
+"-1'e ayarlamak bu özelliği devre dışı bırakır."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -4083,7 +4332,7 @@ msgstr "Zaman gönderme aralığı"
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr "Zaman hızlı"
+msgstr "Zaman hızı"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -4098,10 +4347,14 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Gecikmeyi azaltmak için, oyuncu birşey inşa ederken blok transferleri "
+"yavaşlatılır.\n"
+"Bu bir nod yerleştirildikten veya kaldırıldıktan sonra ne kadar süre "
+"yavaşlayacaklarını belirler."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
-msgstr "Kamera modu geçiş tuşu"
+msgstr "Kamera kipi değiştirme tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Tooltip delay"
@@ -4109,7 +4362,7 @@ msgstr "İpucu gecikmesi"
 
 #: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
-msgstr "Trilinear filtreleme"
+msgstr "Trilineer filtreleme"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4117,8 +4370,8 @@ msgid ""
 "False = 128\n"
 "Useable to make minimap smoother on slower machines."
 msgstr ""
-"True = 256\n"
-"False = 128\n"
+"True (Doğru) = 256\n"
+"False (Yanlış) = 128\n"
 "Yavaş makinelerde mini haritayı daha düzgün yapmak için kullanılabilir."
 
 #: src/settings_translation_file.cpp
@@ -4127,15 +4380,15 @@ msgstr "Güvenilen modlar"
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
-msgstr ""
+msgstr "Multiplayer sekmesinde görüntülenen sunucu listesi URL'si."
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr "Sınırsız oyuncu transfer mesafesi"
+msgstr "Sınırsız oyuncu transfer uzaklığı"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr "Kullanılmayan sunucu verileri boşalt"
+msgstr "Kullanılmayan sunucu verilerini boşalt"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -4143,29 +4396,28 @@ msgstr "Düz yerine 3D bulut görünümünü kullanın."
 
 #: src/settings_translation_file.cpp
 msgid "Use a cloud animation for the main menu background."
-msgstr ""
+msgstr "Ana menü arka planı için bir bulut animasyonu kullan."
 
 #: src/settings_translation_file.cpp
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr "Dokulara bir açıdan bakarken anisotropic filtreleme kullan."
+msgstr "Dokulara bir açıdan bakarken anisotropik filtreleme kullan."
 
 #: src/settings_translation_file.cpp
 msgid "Use bilinear filtering when scaling textures."
-msgstr "Dokuları boyutlandırırken bilinear filtreleme kullan."
+msgstr "Dokuları boyutlandırırken bilineer filtreleme kullan."
 
 #: src/settings_translation_file.cpp
 msgid "Use key"
-msgstr "Kullanma tuşu"
+msgstr "Kullan tuşu"
 
 #: src/settings_translation_file.cpp
 msgid "Use mip mapping to scale textures. May slightly increase performance."
 msgstr ""
-"Dokular boyutlandırmak için mip eşleme kullan. Performansı biraz "
-"arttırabilir."
+"Dokuları boyutlandırırken mip eşleme kullan. Performansı biraz arttırabilir."
 
 #: src/settings_translation_file.cpp
 msgid "Use trilinear filtering when scaling textures."
-msgstr "Dokuları boyutlandırırken trilinear filtreleme kullan."
+msgstr "Dokuları boyutlandırırken trilineer filtreleme kullan."
 
 #: src/settings_translation_file.cpp
 msgid "V-Sync"
@@ -4197,7 +4449,7 @@ msgstr "Vadi C Bayrakları"
 
 #: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
-msgstr "Dikey ekran eşitleme."
+msgstr "Dikey ekran senkronizasyonu."
 
 #: src/settings_translation_file.cpp
 msgid "Video driver"
@@ -4212,8 +4464,8 @@ msgid ""
 "View distance in nodes.\n"
 "Min = 20"
 msgstr ""
-"Nod cinsinden görüntü uzaklığı.\n"
-"En az = 20"
+"Nodlar cinsinden görüntü uzaklığı.\n"
+"Minimum = 20"
 
 #: src/settings_translation_file.cpp
 msgid "View range decrease key"
@@ -4238,6 +4490,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Bir 4D fraktalın oluşturulan 3D diliminin W kordinatı.\n"
+"4D şeklin hangi 3D diliminin oluşturulacağını belirler.\n"
+"3D fraktallarda etkisizdir.\n"
+"Kabaca -2 ile 2 arası."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -4289,6 +4545,9 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"gui_scaling_filter true (doğru) olduğunda, tüm arayüz görüntülerinin\n"
+"yazılım ile filtrelenmesi gerekir, ama bazı görüntüler direkt\n"
+"donanımda oluşturulur (ör: envanterdeki nodlar için dokuya-işleme)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4297,6 +4556,10 @@ msgid ""
 "to the old scaling method, for video drivers that don't\n"
 "properly support downloading textures back from hardware."
 msgstr ""
+"gui_scaling_filter_txr2img true (doğru) olduğunda, görüntüleri\n"
+"boyutlandırmak için donanımdan yazılıma kopyala. False (yanlış) ise,\n"
+"dokuları donanımdan geri indirmeyi düzgün desteklemeyen video\n"
+"sürücüleri için, eski boyutlandırma yöntemini kullan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4308,6 +4571,17 @@ msgid ""
 "have a visible effect unless bilinear/trilinear/anisotropic filtering is\n"
 "enabled."
 msgstr ""
+"Bilineer/trilineer/anisotropik filtreler, düşük çözünürlüklü dokular "
+"kullanırken\n"
+"bulanık olabilir, bu yüzden en yakın komşu aradeğerleme ile keskin "
+"pikselleri\n"
+"korumak için otomatik büyütme yapılır. Bu minimum doku boyutunu\n"
+"büyütülmüş dokular için ayarlar; daha yüksek değerler daha net görünür,\n"
+"ama daha fazla bellek gerektirir. 2'nin kuvvetleri tavsiye edilir. 1'den "
+"daha\n"
+"yükseğe ayarlamanın, bilineer/trilineer/anisotropik filtreler etkin değilse,"
+"\n"
+"görünür bit etkisi olmayabilir."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4320,16 +4594,18 @@ msgid ""
 msgstr ""
 "Harita olşturucunun nerede duracağı.\n"
 "Lütfen dikkat:\n"
-"-     31000 sınırdır (yukarıdaki ayar etkisizdir)\n"
-"-     harita oluşturucu grupları 80 x 80 x 80 nod (5 x 5 x 5 harita-bloğu) "
+"-    31000 sınırdır (yukarıdaki ayar etkisizdir)\n"
+"-    harita oluşturucu grupları 80 x 80 x 80 nod (5 x 5 x 5 harita-bloğu) "
 "ile çalışır.\n"
-"-    Bu grupların merkezden -32, -32 nod ofseti vardır.\n"
+"-    Bu grupların merkezden -32, -32 nod kayması vardır.\n"
 "-    Sadece map_generation_limit içinde grupları oluşturulur"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether freetype fonts are used, requires freetype support to be compiled in."
 msgstr ""
+"Freetype yazı tiplerinin kullanılıp kullanılmayacağını, freetype desteği ile "
+"derlenmiş olması gerekir."
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
@@ -4342,25 +4618,36 @@ msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Bir uzaklık sınırı olmadan oyuncuların istemcilere gösterilip "
+"gösterilmeyeceği.\n"
+"Kaldırıldı, bunun yerine player_transfer_distance ayarını kullanın."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
 msgstr ""
+"Oyuncuların birbirini öldürmesine veya zarar vermesine izin verilip "
+"verilmeyeceği."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"İstemcilere bir (lua) çökmesinden sonra yeniden bağlanmanın sorulup "
+"sorulmayacağı.\n"
+"Eğer sunucu otomatik olarak yeniden başlamak için ayarlı ise bunu true "
+"(doğru) olarak ayarlayın."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
-msgstr ""
+msgstr "Görünebilir alanın sonuda sis oluşturulup oluşturulmayacağı."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
 msgstr ""
+"İstemciye hata ayıklama bilgisinin gösterilip gösterilmeyeceği (F5'e basmak "
+"ile aynı etkiye sahiptir)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4369,6 +4656,10 @@ msgid ""
 "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
 "Disabling this option will protect your password better."
 msgstr ""
+"Protokol sürümü 25'ten önceki sunucuların desteklenip desteklenmeyeceği.\n"
+"0.4.12 ve önceki sunuculara bağlanmak için etkinleştirin.\n"
+"0.4.13 ile başlayan sunucular çalışır, 0.4.12-dev sunucuları çalışabilir.\n"
+"Bu seçeneği devre dışı bırakmak şifrenizi daha iyi korur."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
@@ -4383,6 +4674,8 @@ msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Dünya dizini (dünyadaki her şey burada saklanır).\n"
+"Ana menüden başlatıldığında gerekli değildir."
 
 #: src/settings_translation_file.cpp
 msgid "Y of flat ground."
