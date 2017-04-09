@@ -126,16 +126,3 @@ core.register_on_punchnode(function(pos, node)
 	return false
 end)
 
--- This is an example function to ensure it's working properly, should be removed before merge
-core.register_chatcommand("list_players", {
-	func = function(param)
-		core.display_chat_message(dump(core.get_player_names()))
-	end
-})
-
-core.register_chatcommand("disconnect", {
-	description = "Exit to main menu",
-	func = function(param)
-		core.disconnect()
-	end,
-})
