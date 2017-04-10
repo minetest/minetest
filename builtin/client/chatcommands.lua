@@ -34,3 +34,18 @@ core.register_on_sending_chat_messages(function(message)
 
 	return true
 end)
+
+core.register_chatcommand("list_players", {
+	description = "List online players",
+	func = function(param)
+		local players = table.concat(core.get_player_names(), ", ")
+		core.display_chat_message("Online players: " .. players)
+	end
+})
+
+core.register_chatcommand("disconnect", {
+	description = "Exit to main menu",
+	func = function(param)
+		core.disconnect()
+	end,
+})
