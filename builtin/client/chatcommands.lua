@@ -4,7 +4,7 @@
 core.register_on_sending_chat_messages(function(message)
 	local first_char = message:sub(1,1)
 	if first_char == "/" or first_char == "." then
-		core.display_chat_message("issued command: " .. message)
+		core.display_chat_message(core.gettext("issued command: ") .. message)
 	end
 
 	if first_char ~= "." then
@@ -17,7 +17,7 @@ core.register_on_sending_chat_messages(function(message)
 	end
 
 	if not cmd then
-		core.display_chat_message("-!- Empty command")
+		core.display_chat_message(core.gettext("-!- Empty command"))
 		return true
 	end
 
@@ -29,7 +29,7 @@ core.register_on_sending_chat_messages(function(message)
 			core.display_chat_message(message)
 		end
 	else
-		core.display_chat_message("-!- Invalid command: " .. cmd)
+		core.display_chat_message(core.gettext("-!- Invalid command: ") .. cmd)
 	end
 
 	return true

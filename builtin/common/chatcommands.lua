@@ -31,8 +31,19 @@ end
 
 local cmd_marker = "/"
 
+local function gettext(...)
+	return ...
+end
+
+local function gettext_replace(text, replace)
+	return text:gsub("$1", replace)
+end
+
+
 if INIT == "client" then
 	cmd_marker = "."
+	gettext = core.gettext
+	gettext_replace = fgettext_ne
 end
 
 local function do_help_cmd(name, param)
@@ -54,9 +65,9 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, "Available commands: " .. table.concat(cmds, " ") .. "\n"
-				.. "Use '"..cmd_marker.."help <cmd>' to get more information,"
-				.. " or '"..cmd_marker.."help all' to list everything."
+		return true, gettext("Available commands: ") .. table.concat(cmds, " ") .. "\n"
+				.. gettext_replace("Use '$1help <cmd>' to get more information,"
+				.. " or '$1help all' to list everything.", cmd_marker)
 	elseif param == "all" then
 		local cmds = {}
 		for cmd, def in pairs(core.registered_chatcommands) do
@@ -65,7 +76,7 @@ local function do_help_cmd(name, param)
 			end
 		end
 		table.sort(cmds)
-		return true, "Available commands:\n"..table.concat(cmds, "\n")
+		return true, gettext("Available commands:").."\n"..table.concat(cmds, "\n")
 	elseif INIT == "game" and param == "privs" then
 		local privs = {}
 		for priv, def in pairs(core.registered_privileges) do
@@ -77,7 +88,7 @@ local function do_help_cmd(name, param)
 		local cmd = param
 		local def = core.registered_chatcommands[cmd]
 		if not def then
-			return false, "Command not available: "..cmd
+			return false, gettext("Command not available: ")..cmd
 		else
 			return true, format_help_line(cmd, def)
 		end
@@ -86,8 +97,8 @@ end
 
 if INIT == "client" then
 	core.register_chatcommand("help", {
-		params = "[all/<cmd>]",
-		description = "Get help for commands",
+		params = gettext("[all/<cmd>]"),
+		description = gettext("Get help for commands"),
 		func = function(param)
 			return do_help_cmd(nil, param)
 		end,
