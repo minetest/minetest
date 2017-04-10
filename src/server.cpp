@@ -230,32 +230,6 @@ Server::Server(
 		modconf.printUnsatisfiedModsError();
 	}
 
-	Settings worldmt_settings;
-	std::string worldmt = m_path_world + DIR_DELIM + "world.mt";
-	worldmt_settings.readConfigFile(worldmt.c_str());
-	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> load_mod_names;
-	for(std::vector<std::string>::iterator it = names.begin();
-		it != names.end(); ++it) {
-		std::string name = *it;
-		if(name.compare(0,9,"load_mod_")==0 && worldmt_settings.getBool(name))
-			load_mod_names.insert(name.substr(9));
-	}
-	// complain about mods declared to be loaded, but not found
-	for(std::vector<ModSpec>::iterator it = m_mods.begin();
-			it != m_mods.end(); ++it)
-		load_mod_names.erase((*it).name);
-	for(std::vector<ModSpec>::iterator it = unsatisfied_mods.begin();
-			it != unsatisfied_mods.end(); ++it)
-		load_mod_names.erase((*it).name);
-	if(!load_mod_names.empty()) {
-		errorstream << "The following mods could not be found:";
-		for(std::set<std::string>::iterator it = load_mod_names.begin();
-			it != load_mod_names.end(); ++it)
-			errorstream << " \"" << (*it) << "\"";
-		errorstream << std::endl;
-	}
-
 	//lock environment
 	MutexAutoLock envlock(m_env_mutex);
 
