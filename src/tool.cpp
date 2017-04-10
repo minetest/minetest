@@ -170,16 +170,13 @@ void ToolCapabilities::deserializeJson(std::istream &is)
 }
 
 DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp, float time_from_last_punch)
+		const ToolCapabilities *tp)
 {
-	//infostream<<"getDigParams"<<std::endl;
-	/* Check group dig_immediate */
-	switch(itemgroup_get(groups, "dig_immediate")){
+	// Group dig_immediate has fixed time and no wear
+	switch (itemgroup_get(groups, "dig_immediate")) {
 	case 2:
-		//infostream<<"dig_immediate=2"<<std::endl;
 		return DigParams(true, 0.5, 0, "dig_immediate");
 	case 3:
-		//infostream<<"dig_immediate=3"<<std::endl;
 		return DigParams(true, 0, 0, "dig_immediate");
 	default:
 		break;
@@ -192,47 +189,35 @@ DigParams getDigParams(const ItemGroupList &groups,
 	std::string result_main_group;
 
 	int level = itemgroup_get(groups, "level");
-	//infostream<<"level="<<level<<std::endl;
 	for (const auto &groupcap : tp->groupcaps) {
-		const std::string &name = groupcap.first;
-		//infostream<<"group="<<name<<std::endl;
 		const ToolGroupCap &cap = groupcap.second;
-		int rating = itemgroup_get(groups, name);
-		float time = 0;
-		bool time_exists = cap.getTime(rating, &time);
+
 		int leveldiff = cap.maxlevel - level;
-		time /= MYMAX(1, leveldiff);
-		if(!result_diggable || time < result_time){
-			if(cap.maxlevel >= level && time_exists){
-				result_diggable = true;
-				result_time = time;
-				if(cap.uses != 0)
-					result_wear = 1.0 / cap.uses / pow(3.0, (double)leveldiff);
-				else
-					result_wear = 0;
-				result_main_group = name;
-			}
+		if (leveldiff < 0)
+			continue;
+
+		const std::string &groupname = groupcap.first;
+		float time = 0;
+		int rating = itemgroup_get(groups, groupname);
+		bool time_exists = cap.getTime(rating, &time);
+		if (!time_exists)
+			continue;
+
+		if (leveldiff > 1)
+			time /= leveldiff;
+		if (!result_diggable || time < result_time) {
+			result_time = time;
+			result_diggable = true;
+			if (cap.uses != 0)
+				result_wear = 1.0 / cap.uses / pow(3.0, leveldiff);
+			else
+				result_wear = 0;
+			result_main_group = groupname;
 		}
 	}
-	//infostream<<"result_diggable="<<result_diggable<<std::endl;
-	//infostream<<"result_time="<<result_time<<std::endl;
-	//infostream<<"result_wear="<<result_wear<<std::endl;
 
-	if(time_from_last_punch < tp->full_punch_interval){
-		float f = time_from_last_punch / tp->full_punch_interval;
-		//infostream<<"f="<<f<<std::endl;
-		result_time /= f;
-		result_wear /= f;
-	}
-
-	u16 wear_i = 65535.*result_wear;
+	u16 wear_i = U16_MAX * result_wear;
 	return DigParams(result_diggable, result_time, wear_i, result_main_group);
-}
-
-DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp)
-{
-	return getDigParams(groups, tp, 1000000);
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
