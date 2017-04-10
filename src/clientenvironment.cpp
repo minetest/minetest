@@ -112,13 +112,12 @@ void ClientEnvironment::step(float dtime)
 		Get the speed the player is going
 	*/
 	bool is_climbing = lplayer->is_climbing;
-
+	f32 player_gravity = lplayer->movement_gravity * lplayer->physics_override_gravity;
 	f32 player_speed = lplayer->getSpeed().getLength();
 
 	/*
 		Maximum position increment
 	*/
-	//f32 position_max_increment = 0.05*BS;
 	f32 position_max_increment = 0.1*BS;
 
 	// Maximum time increment (for collision detection etc)
@@ -174,7 +173,7 @@ void ClientEnvironment::step(float dtime)
 				// Gravity
 				v3f speed = lplayer->getSpeed();
 				if(!lplayer->in_liquid)
-					speed.Y -= lplayer->movement_gravity * lplayer->physics_override_gravity * dtime_part * 2;
+					speed.Y -= player_gravity * dtime_part * 2;
 
 				// Liquid floating / sinking
 				if(lplayer->in_liquid && !lplayer->swimming_vertical)
@@ -229,6 +228,16 @@ void ClientEnvironment::step(float dtime)
 			// Determine fall damage multiplier
 			pre_factor = 1 + itemgroup_get(f.groups,
 				"fall_damage_add_percent") / 100.f;
+
+			// Get param to overwrite fall tolerance
+			ItemGroupList::const_iterator tolerance_it =
+				f.groups.find("fall_damage_tolerance");
+			if (tolerance_it != f.groups.end()) {
+				// Gravity calculation is somewhat broken
+				// Average fall speed is 1/4 the final speed (wtf?)
+				tolerance = player_gravity * (tolerance_it->second * BS) * 4;
+				tolerance = sqrt(MYMAX(0.f, tolerance));
+			}
 		}
 		float speed = pre_factor * fabs(speed_diff.Y);
 		if (speed > tolerance) {
