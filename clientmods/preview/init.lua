@@ -139,3 +139,12 @@ core.register_chatcommand("disconnect", {
 		core.disconnect()
 	end,
 })
+
+core.register_on_joinplayer(function(name)
+	print(name .. " joined the game.")
+end)
+
+core.register_on_leaveplayer(function(name)
+	print(name .. " left the game.")
+end)
+

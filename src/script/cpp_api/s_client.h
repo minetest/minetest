@@ -52,6 +52,9 @@ public:
 	bool on_dignode(v3s16 p, MapNode node);
 	bool on_punchnode(v3s16 p, MapNode node);
 
+	void on_joinplayer(const std::string &name);
+	void on_leaveplayer(const std::string &name);
+
 	void setEnv(ClientEnvironment *env);
 };
 #endif

@@ -667,6 +667,12 @@ Call these functions only at load time!
     * Called when the local player punches a node
     * Newest functions are called first
     * If any function returns true, the punch is ignored
+* `minetest.register_on_joinplayer(func(name))`
+    * Called when a remote player joined the server.
+    * Gets called for all players currently on a server when joining a server.
+* `minetest.register_on_leaveplayer(func(name))`
+    * Called when a remote player disconnected from the server.
+
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
