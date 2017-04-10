@@ -1231,9 +1231,8 @@ Another example: Make red wool from white wool and red dye:
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
 * `dig_immediate`: (player can always pick up node without tool wear)
-    * `2`: node is removed without tool wear after 0.5 seconds or so
-      (rail, sign)
-    * `3`: node is removed without tool wear immediately (torch)
+    * `2`: node is removed without tool wear after 0.5 seconds (rail, sign)
+    * `3`: node is removed without tool wear after 0.15 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `bouncy`: value is bounce speed in percent
