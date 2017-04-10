@@ -22,12 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_base.h"
 
-
 class LocalPlayer;
 
-class LuaLocalPlayer : public ModApiBase {
+class LuaLocalPlayer : public ModApiBase
+{
 private:
-
 	static const char className[];
 	static const luaL_Reg methods[];
 
@@ -91,5 +90,4 @@ public:
 	static void Register(lua_State *L);
 };
 
-
-#endif //MINETEST_L_LOCALPLAYER_H
+#endif // MINETEST_L_LOCALPLAYER_H

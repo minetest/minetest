@@ -30,18 +30,15 @@ struct TileSpec;
 
 struct ItemMesh
 {
-	scene::IMesh* mesh;
+	scene::IMesh *mesh;
 	/*!
 	 * Stores the color of each mesh buffer.
 	 * If the boolean is true, the color is fixed, else
 	 * palettes can modify it.
 	 */
-	std::vector<std::pair<bool, video::SColor> > buffer_colors;
+	std::vector<std::pair<bool, video::SColor>> buffer_colors;
 
-	ItemMesh():
-		mesh(NULL),
-		buffer_colors()
-	{}
+	ItemMesh() : mesh(NULL), buffer_colors() {}
 };
 
 /*
