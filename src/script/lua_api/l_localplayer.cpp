@@ -21,7 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_internal.h"
 #include "script/common/c_converter.h"
 
-LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) { m_localplayer = m; }
+LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m)
+{
+	m_localplayer = m;
+}
 
 void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)
 {
@@ -332,7 +335,10 @@ LuaLocalPlayer *LuaLocalPlayer::checkobject(lua_State *L, int narg)
 	return *(LuaLocalPlayer **)ud;
 }
 
-LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref) { return ref->m_localplayer; }
+LocalPlayer *LuaLocalPlayer::getobject(LuaLocalPlayer *ref)
+{
+	return ref->m_localplayer;
+}
 
 LocalPlayer *LuaLocalPlayer::getobject(lua_State *L, int narg)
 {
@@ -376,8 +382,10 @@ void LuaLocalPlayer::Register(lua_State *L)
 }
 
 const char LuaLocalPlayer::className[] = "LocalPlayer";
-const luaL_reg LuaLocalPlayer::methods[] = {luamethod(LuaLocalPlayer, get_velocity),
-		luamethod(LuaLocalPlayer, get_hp), luamethod(LuaLocalPlayer, get_name),
+const luaL_reg LuaLocalPlayer::methods[] = {
+		luamethod(LuaLocalPlayer, get_velocity),
+		luamethod(LuaLocalPlayer, get_hp),
+		luamethod(LuaLocalPlayer, get_name),
 		luamethod(LuaLocalPlayer, is_teleported),
 		luamethod(LuaLocalPlayer, is_attached),
 		luamethod(LuaLocalPlayer, is_touching_ground),
@@ -404,4 +412,5 @@ const luaL_reg LuaLocalPlayer::methods[] = {luamethod(LuaLocalPlayer, get_veloci
 		luamethod(LuaLocalPlayer, get_movement_speed),
 		luamethod(LuaLocalPlayer, get_movement),
 
-		{0, 0}};
+		{0, 0}
+};

@@ -284,6 +284,7 @@ src/script/lua_api/l_item.cpp
 src/script/lua_api/l_item.h
 src/script/lua_api/l_itemstackmeta.cpp
 src/script/lua_api/l_itemstackmeta.h
+src/script/lua_api/l_localplayer.cpp
 src/script/lua_api/l_mainmenu.cpp
 src/script/lua_api/l_mainmenu.h
 src/script/lua_api/l_mapgen.cpp

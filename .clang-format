@@ -2,6 +2,7 @@ BasedOnStyle: LLVM
 IndentWidth: 8
 UseTab: Always
 BreakBeforeBraces: Custom
+Standard: Cpp03
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: false
@@ -16,6 +17,8 @@ AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 AccessModifierOffset: -8
 ColumnLimit: 90
+AllowShortFunctionsOnASingleLine: Inline
+SortIncludes: false
 IncludeCategories:
   - Regex:           '^".*'
     Priority:        2
