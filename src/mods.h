@@ -99,6 +99,8 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
+	void addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods);
+
 	void checkConflictsAndDeps();
 private:
 	// move mods from m_unsatisfied_mods to m_sorted_mods
