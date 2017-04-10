@@ -3888,13 +3888,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		if (runData.nodig_delay_timer > 0.3)
 			runData.nodig_delay_timer = 0.3;
 
-		// We want a slight delay to very little
-		// time consuming nodes
-		const float mindelay = 0.15;
-
-		if (runData.nodig_delay_timer < mindelay)
-			runData.nodig_delay_timer = mindelay;
-
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);
 		if (is_valid_position) {

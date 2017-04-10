@@ -98,7 +98,7 @@ DigParams getDigParams(const ItemGroupList &groups,
 		return DigParams(true, 0.5, 0, "dig_immediate");
 	case 3:
 		//infostream<<"dig_immediate=3"<<std::endl;
-		return DigParams(true, 0.0, 0, "dig_immediate");
+		return DigParams(true, 0.15, 0, "dig_immediate");
 	default:
 		break;
 	}
