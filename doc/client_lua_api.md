@@ -692,7 +692,7 @@ Call these functions only at load time!
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
 * `minetest.localplayer`
-    * returns LocalPlayer handle. See LocalPlayer below.
+    * Holds a reference to LocalPlayer object. See LocalPlayer below.
 
 ### Client Environment
 * `minetest.get_player_names()`
