@@ -85,7 +85,7 @@ void ToolCapabilities::deSerialize(std::istream &is)
 }
 
 DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp, float time_from_last_punch)
+		const ToolCapabilities *tp)
 {
 	// Group dig_immediate has fixed time and no wear
 	switch (itemgroup_get(groups, "dig_immediate")) {
@@ -131,20 +131,8 @@ DigParams getDigParams(const ItemGroupList &groups,
 		}
 	}
 
-	if (time_from_last_punch < tp->full_punch_interval) {
-		float f = tp->full_punch_interval / time_from_last_punch;
-		result_time *= f;
-		result_wear *= f;
-	}
-
 	u16 wear_i = U16_MAX * result_wear;
 	return DigParams(result_diggable, result_time, wear_i, result_main_group);
-}
-
-DigParams getDigParams(const ItemGroupList &groups,
-		const ToolCapabilities *tp)
-{
-	return getDigParams(groups, tp, 1000000);
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
