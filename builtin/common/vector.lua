@@ -150,7 +150,6 @@ end
 -- limits the length of a vector
 function vector.limit(v, l)
 	if vector.length(v) > l then
-		v = vector.normalize(v)
 		return vector.set_length(v, l)
 	end
 	return v
