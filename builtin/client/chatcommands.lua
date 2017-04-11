@@ -2,6 +2,10 @@
 
 
 core.register_on_sending_chat_messages(function(message)
+	if message:sub(1,2) == ".." then
+		return false
+	end
+
 	local first_char = message:sub(1,1)
 	if first_char == "/" or first_char == "." then
 		core.display_chat_message(core.gettext("issued command: ") .. message)
@@ -12,9 +16,7 @@ core.register_on_sending_chat_messages(function(message)
 	end
 
 	local cmd, param = string.match(message, "^%.([^ ]+) *(.*)")
-	if not param then
-		param = ""
-	end
+ 	param = param or ""
 
 	if not cmd then
 		core.display_chat_message(core.gettext("-!- Empty command"))
@@ -36,15 +38,15 @@ core.register_on_sending_chat_messages(function(message)
 end)
 
 core.register_chatcommand("list_players", {
-	description = "List online players",
+	description = core.gettext("List online players"),
 	func = function(param)
 		local players = table.concat(core.get_player_names(), ", ")
-		core.display_chat_message("Online players: " .. players)
+		core.display_chat_message(core.gettext("Online players: ") .. players)
 	end
 })
 
 core.register_chatcommand("disconnect", {
-	description = "Exit to main menu",
+	description = core.gettext("Exit to main menu"),
 	func = function(param)
 		core.disconnect()
 	end,
