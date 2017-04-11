@@ -122,3 +122,75 @@ function vector.sort(a, b)
 	return {x = math.min(a.x, b.x), y = math.min(a.y, b.y), z = math.min(a.z, b.z)},
 		{x = math.max(a.x, b.x), y = math.max(a.y, b.y), z = math.max(a.z, b.z)}
 end
+
+-- returns a new normalized 2d vector with random values
+function vector.random_2d()
+	local vect
+	repeat
+		vect = {x=math.random()*2-1, y=0, z=math.random()*2-1}
+	until vector.length(vect) <= 1
+	return vector.normalize(vect)
+end
+
+-- returns a new normalized 3d vector with random values
+function vector.random_3d()
+	local vect
+	repeat
+		vect = {x=math.random()*2-1, y=math.random()*2-1, z=math.random()*2-1}
+	until vector.length(vect) <= 1
+	return vector.normalize(vect)
+end
+
+-- returns a vector with a specific length
+function vector.set_length(v, l)
+	v = vector.normalize(v)
+	return vector.multiply(v, l)
+end
+
+-- limits the length of a vector
+function vector.limit(v, l)
+	if vector.length(v) > l then
+		v = vector.normalize(v)
+		return vector.set_length(v, l)
+	end
+	return v
+end
+
+-- returns the dot product of two vectors
+function vector.dot(a, b)
+	return a.x * b.x + a.y * b.y + a.z * b.z
+end
+
+-- returns the cross product of two vectors
+function vector.cross(a, b)
+	return {x = a.y * b.z - a.z * b.y,
+		y = a.z * b.x - a.x * b.z,
+		z = a.x * b.y - a.y * b.x}
+end
+
+-- returns the scalar triple product of three vectors
+function vector.scalar_triple(a, b, c)
+	return vector.dot(a, vector.cross(b, c))
+end
+
+-- returns the vector triple product of three vectors
+function vector.vector_triple(a, b, c)
+	return vector.cross(a, vector.cross(b, c))
+end
+
+-- returns the angle between two 2d vectors (x,z) in radians
+-- y from a 3d vector is ignored
+function vector.angle_between_2d(a, b)
+	return math.atan2(a.x * b.z - a.z * b.x, a.x * b.x + a.z * b.z)
+end
+
+
+-- returns yaw from a 2d vector (x, z) in radians
+-- y from a 3d vector is ignored
+function vector.yaw(v)
+	local yaw = math.atan2(-v.x, v.z)
+	if yaw >= -math.pi and yaw < 0 then
+		yaw = math.pi * 2 + yaw
+	end
+	return yaw
+end
