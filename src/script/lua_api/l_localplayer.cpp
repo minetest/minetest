@@ -382,7 +382,7 @@ void LuaLocalPlayer::Register(lua_State *L)
 }
 
 const char LuaLocalPlayer::className[] = "LocalPlayer";
-const luaL_reg LuaLocalPlayer::methods[] = {
+const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, get_velocity),
 		luamethod(LuaLocalPlayer, get_hp),
 		luamethod(LuaLocalPlayer, get_name),
