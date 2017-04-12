@@ -105,6 +105,34 @@ function core.register_entity(name, prototype)
 	prototype.mod_origin = core.get_current_modname() or "??"
 end
 
+local function sort_boxes(nodebox, name)
+	if not (nodebox and nodebox[1]) then
+		return {}
+	end
+	if type(nodebox[1]) == "table" then
+		for k, v in pairs(nodebox) do
+			v = {
+			math.min(v[1], v[4]),
+			math.min(v[2], v[5]),
+			math.min(v[3], v[6]),
+			math.max(v[1], v[4]),
+			math.max(v[2], v[5]),
+			math.max(v[3], v[6]),
+			}
+		end
+	else
+		nodebox = {
+			math.min(nodebox[1], nodebox[4]),
+			math.min(nodebox[2], nodebox[5]),
+			math.min(nodebox[3], nodebox[6]),
+			math.max(nodebox[1], nodebox[4]),
+			math.max(nodebox[2], nodebox[5]),
+			math.max(nodebox[3], nodebox[6]),
+		}
+	end
+	return nodebox
+end
+
 function core.register_item(name, itemdef)
 	-- Check name
 	if name == nil then
@@ -131,6 +159,102 @@ function core.register_item(name, itemdef)
 			itemdef.light_source = core.LIGHT_MAX
 			core.log("warning", "Node 'light_source' value exceeds maximum," ..
 				" limiting to maximum: " ..name)
+		end
+		if itemdef.node_box then
+			if itemdef.node_box.fixed then
+				itemdef.node_box.fixed = sort_boxes(itemdef.node_box.fixed, itemdef.name)
+			end
+			if itemdef.node_box.connect_front then
+				itemdef.node_box.connect_front = sort_boxes(itemdef.node_box.connect_front, itemdef.name)
+			end
+			if itemdef.node_box.connect_back then
+				itemdef.node_box.connect_back = sort_boxes(itemdef.node_box.connect_back, itemdef.name)
+			end
+			if itemdef.node_box.connect_left then
+				itemdef.node_box.connect_left = sort_boxes(itemdef.node_box.connect_left, itemdef.name)
+			end
+			if itemdef.node_box.connect_right then
+				itemdef.node_box.connect_right = sort_boxes(itemdef.node_box.connect_right, itemdef.name)
+			end
+			if itemdef.node_box.connect_top then
+				itemdef.node_box.connect_top = sort_boxes(itemdef.node_box.connect_top, itemdef.name)
+			end
+			if itemdef.node_box.connect_bottom then
+				itemdef.node_box.connect_bottom = sort_boxes(itemdef.node_box.connect_bottom, itemdef.name)
+			end
+			if itemdef.node_box.wall_top then
+				itemdef.node_box.wall_top = sort_boxes(itemdef.node_box.wall_top, itemdef.name)
+			end
+			if itemdef.node_box.wall_bottom then
+				itemdef.node_box.wall_bottom = sort_boxes(itemdef.node_box.wall_bottom, itemdef.name)
+			end
+			if itemdef.node_box.wall_side then
+				itemdef.node_box.wall_side = sort_boxes(itemdef.node_box.wall_side, itemdef.name)
+			end
+		end
+		if itemdef.selection_box then
+			if itemdef.selection_box.fixed then
+				itemdef.selection_box.fixed = sort_boxes(itemdef.selection_box.fixed, itemdef.name)
+			end
+			if itemdef.selection_box.connect_front then
+				itemdef.selection_box.connect_front = sort_boxes(itemdef.selection_box.connect_front, itemdef.name)
+			end
+			if itemdef.selection_box.connect_back then
+				itemdef.selection_box.connect_back = sort_boxes(itemdef.selection_box.connect_back, itemdef.name)
+			end
+			if itemdef.selection_box.connect_left then
+				itemdef.selection_box.connect_left = sort_boxes(itemdef.selection_box.connect_left, itemdef.name)
+			end
+			if itemdef.selection_box.connect_right then
+				itemdef.selection_box.connect_right = sort_boxes(itemdef.selection_box.connect_right, itemdef.name)
+			end
+			if itemdef.selection_box.connect_top then
+				itemdef.selection_box.connect_top = sort_boxes(itemdef.selection_box.connect_top, itemdef.name)
+			end
+			if itemdef.selection_box.connect_bottom then
+				itemdef.selection_box.connect_bottom = sort_boxes(itemdef.selection_box.connect_bottom, itemdef.name)
+			end
+			if itemdef.selection_box.wall_top then
+				itemdef.selection_box.wall_top = sort_boxes(itemdef.selection_box.wall_top, itemdef.name)
+			end
+			if itemdef.selection_box.wall_bottom then
+				itemdef.selection_box.wall_bottom = sort_boxes(itemdef.selection_box.wall_bottom, itemdef.name)
+			end
+			if itemdef.selection_box.wall_side then
+				itemdef.selection_box.wall_side = sort_boxes(itemdef.selection_box.wall_side, itemdef.name)
+			end
+		end
+		if itemdef.collision_box then
+			if itemdef.collision_box.fixed then
+				itemdef.collision_box.fixed = sort_boxes(itemdef.collision_box.fixed, itemdef.name)
+			end
+			if itemdef.collision_box.connect_front then
+				itemdef.collision_box.connect_front = sort_boxes(itemdef.collision_box.connect_front, itemdef.name)
+			end
+			if itemdef.collision_box.connect_back then
+				itemdef.collision_box.connect_back = sort_boxes(itemdef.collision_box.connect_back, itemdef.name)
+			end
+			if itemdef.collision_box.connect_left then
+				itemdef.collision_box.connect_left = sort_boxes(itemdef.collision_box.connect_left, itemdef.name)
+			end
+			if itemdef.collision_box.connect_right then
+				itemdef.collision_box.connect_right = sort_boxes(itemdef.collision_box.connect_right, itemdef.name)
+			end
+			if itemdef.collision_box.connect_top then
+				itemdef.collision_box.connect_top = sort_boxes(itemdef.collision_box.connect_top, itemdef.name)
+			end
+			if itemdef.collision_box.connect_bottom then
+				itemdef.collision_box.connect_bottom = sort_boxes(itemdef.collision_box.connect_bottom, itemdef.name)
+			end
+			if itemdef.collision_box.wall_top then
+				itemdef.collision_box.wall_top = sort_boxes(itemdef.collision_box.wall_top, itemdef.name)
+			end
+			if itemdef.collision_box.wall_bottom then
+				itemdef.collision_box.wall_bottom = sort_boxes(itemdef.collision_box.wall_bottom, itemdef.name)
+			end
+			if itemdef.collision_box.wall_side then
+				itemdef.collision_box.wall_side = sort_boxes(itemdef.collision_box.wall_side, itemdef.name)
+			end
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
 		core.registered_nodes[itemdef.name] = itemdef
