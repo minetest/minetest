@@ -692,7 +692,7 @@ Call these functions only at load time!
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
 * `minetest.localplayer`
-    * returns LocalPlayer handle. See LocalPlayer below.
+    * Reference to the LocalPlayer object. See `LocalPlayer` class reference for methods.
 
 ### Client Environment
 * `minetest.get_player_names()`
@@ -803,6 +803,8 @@ Methods:
     * returns player speed vector
 * `get_hp()`
     * returns player HP
+* `get_name()`
+    * returns player name
 * `got_teleported()`
     * returns true if player was teleported
 * `is_attached()`
