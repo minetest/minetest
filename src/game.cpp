@@ -184,6 +184,7 @@ struct LocalFormspecHandler : public TextDest
 
 /* Form update callback */
 
+static const std::string empty_string = "";
 class NodeMetadataFormSource: public IFormSource
 {
 public:
@@ -192,12 +193,12 @@ public:
 		m_p(p)
 	{
 	}
-	std::string getForm()
+	const std::string &getForm() const
 	{
 		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
 		if (!meta)
-			return "";
+			return empty_string;
 
 		return meta->getString("formspec");
 	}
@@ -223,7 +224,8 @@ public:
 		m_client(client)
 	{
 	}
-	std::string getForm()
+
+	const std::string &getForm() const
 	{
 		LocalPlayer *player = m_client->getEnv().getLocalPlayer();
 		return player->inventory_formspec;

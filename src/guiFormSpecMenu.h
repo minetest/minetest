@@ -66,7 +66,7 @@ class IFormSource
 {
 public:
 	virtual ~IFormSource() = default;
-	virtual std::string getForm() = 0;
+	virtual const std::string &getForm() const = 0;
 	// Fill in variables in field text
 	virtual std::string resolveText(const std::string &str) { return str; }
 };
@@ -419,6 +419,7 @@ protected:
 	bool m_bgfullscreen;
 	bool m_slotborder;
 	video::SColor m_bgcolor;
+	video::SColor m_fullscreen_bgcolor;
 	video::SColor m_slotbg_n;
 	video::SColor m_slotbg_h;
 	video::SColor m_slotbordercolor;
@@ -554,7 +555,10 @@ public:
 		m_formspec = FORMSPEC_VERSION_STRING + formspec;
 	}
 
-	std::string getForm() { return m_formspec; }
+	const std::string &getForm() const
+	{
+		return m_formspec;
+	}
 
 	std::string m_formspec;
 };
