@@ -633,9 +633,10 @@ private:
 	/*!
 	 * Each bit indicates if light spreading was finished
 	 * in a direction. (Because the neighbor could also be unloaded.)
-	 * Bits: day X+, day Y+, day Z+, day Z-, day Y-, day X-,
-	 * night X+, night Y+, night Z+, night Z-, night Y-, night X-,
-	 * nothing, nothing, nothing, nothing.
+	 * Bits (most significant first):
+	 * nothing,  nothing,  nothing,  nothing,
+	 * night X-, night Y-, night Z-, night Z+, night Y+, night X+,
+	 * day X-,   day Y-,   day Z-,   day Z+,   day Y+,   day X+.
 	*/
 	u16 m_lighting_complete;
 
