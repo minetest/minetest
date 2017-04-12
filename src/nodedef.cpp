@@ -786,7 +786,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			tiledef_special[j].backface_culling, material_type);
 	}
 
-	palette = tsrc->getPalette(palette_name);
+	if (param_type_2 == CPT2_COLOR ||
+			param_type_2 == CPT2_COLORED_FACEDIR ||
+			param_type_2 == CPT2_COLORED_WALLMOUNTED)
+		palette = tsrc->getPalette(palette_name);
 
 	if ((drawtype == NDT_MESH) && (mesh != "")) {
 		// Meshnode drawtype
