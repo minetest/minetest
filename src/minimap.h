@@ -45,6 +45,11 @@ enum MinimapMode {
 	MINIMAP_MODE_COUNT,
 };
 
+enum MinimapShape {
+	MINIMAP_SHAPE_SQUARE = 0,
+	MINIMAP_SHAPE_ROUND = 1,
+};
+
 struct MinimapModeDef {
 	bool is_radar;
 	u16 scan_height;
@@ -127,7 +132,8 @@ public:
 	f32 getAngle() const { return m_angle; }
 	void setMinimapMode(MinimapMode mode);
 	MinimapMode getMinimapMode() const { return data->mode; }
-	void toggleMinimapShape();
+	void toggleMinimapShape(); // Deprecated!
+	void setMinimapShape();
 
 
 	video::ITexture *getMinimapTexture();

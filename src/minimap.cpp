@@ -263,13 +263,29 @@ void Minimap::addBlock(v3s16 pos, MinimapMapblock *data)
 	m_minimap_update_thread->enqueueBlock(pos, data);
 }
 
-void Minimap::toggleMinimapShape()
+void Minimap::toggleMinimapShape() // Deprecated
 {
 	MutexAutoLock lock(m_mutex);
 
 	data->minimap_shape_round = !data->minimap_shape_round;
 	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
 	m_minimap_update_thread->deferUpdate();
+}
+
+void Minimap::setMinimapShape(MinimapShape shape)
+{
+	MutexAutoLock lock(m_mutex);
+	
+	if (shape == MINIMAP_SHAPE_SQUARE)
+	{
+		data->minimap_shape_round = false;
+	}
+	else if (shape == MINIMAP_SHAPE_ROUND)
+	{
+		data->minimap_shape_round = true;
+	}
+	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
+	m_minimap_update_thread->deferUpdate();	
 }
 
 void Minimap::setMinimapMode(MinimapMode mode)
