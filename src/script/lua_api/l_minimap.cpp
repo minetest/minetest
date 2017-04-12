@@ -217,7 +217,6 @@ const luaL_Reg LuaMinimap::methods[] = {
 	luamethod(LuaMinimap, set_angle),
 	luamethod(LuaMinimap, get_mode),
 	luamethod(LuaMinimap, set_mode),
-	luamethod(LuaMinimap, toggle_shape),
 	luamethod(LuaMinimap, set_shape),
 	{0,0}
 };
