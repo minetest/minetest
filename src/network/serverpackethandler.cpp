@@ -674,10 +674,6 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	sendRequestedMedia(pkt->getPeerId(), tosend);
 }
 
-void Server::handleCommand_ReceivedMedia(NetworkPacket* pkt)
-{
-}
-
 void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 {
 	u16 peer_id = pkt->getPeerId();

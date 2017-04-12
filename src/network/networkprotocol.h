@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		ContentFeatures and NodeDefManager use a different serialization
 		    format; better for future version cross-compatibility
 		Many things
+		Obsolete TOCLIENT_PLAYERITEM
 	PROTOCOL_VERSION 10:
 		TOCLIENT_PRIVILEGES
 		Version raised to force 'fly' and 'fast' privileges into effect.
@@ -104,7 +105,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 22:
 		add swap_node
 	PROTOCOL_VERSION 23:
-		TOSERVER_CLIENT_READY
+		Obsolete TOSERVER_RECEIVED_MEDIA
+		Add TOSERVER_CLIENT_READY
 	PROTOCOL_VERSION 24:
 		ContentFeatures version 7
 		ContentFeatures: change number of special tiles to 6 (CF_SPECIAL_COUNT)

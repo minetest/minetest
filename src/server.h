@@ -174,7 +174,6 @@ public:
 	void handleCommand_Init_Legacy(NetworkPacket* pkt);
 	void handleCommand_Init2(NetworkPacket* pkt);
 	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ReceivedMedia(NetworkPacket* pkt);
 	void handleCommand_ClientReady(NetworkPacket* pkt);
 	void handleCommand_GotBlocks(NetworkPacket* pkt);
 	void handleCommand_PlayerPos(NetworkPacket* pkt);
