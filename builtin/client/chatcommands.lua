@@ -51,3 +51,11 @@ core.register_chatcommand("disconnect", {
 		core.disconnect()
 	end,
 })
+
+core.register_chatcommand("ping", {
+	description = core.gettext("Get ping"),
+	func = function(param)
+		local ping = math.floor(core.get_ping() * 1000 + 0.5)
+		core.display_chat_message(core.gettext("Ping: ") .. ping .. "ms")
+	end,
+})
