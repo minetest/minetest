@@ -133,7 +133,7 @@ public:
 	void setMinimapMode(MinimapMode mode);
 	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape(); // Deprecated!
-	void setMinimapShape();
+	void setMinimapShape(MinimapShape shape);
 
 
 	video::ITexture *getMinimapTexture();
