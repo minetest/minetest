@@ -952,15 +952,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		u32 damage_per_second = 0;
 		damage_per_second = MYMAX(damage_per_second,
-			((Server*) m_env->getGameDef())->ndef()->get(n1).damage_per_second);
+			m_env->getGameDef()->ndef()->get(n1).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-			((Server*) m_env->getGameDef())->ndef()->get(n2).damage_per_second);
+			m_env->getGameDef()->ndef()->get(n2).damage_per_second);
 		damage_per_second = MYMAX(damage_per_second,
-			((Server*) m_env->getGameDef())->ndef()->get(n3).damage_per_second);
+			m_env->getGameDef()->ndef()->get(n3).damage_per_second);
 
 		if (damage_per_second != 0) {
-			s16 newhp = (damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
+			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
 			setHP(newhp);
+			m_env->getGameDef()->SendPlayerHPOrDie(this);
 		}
 	}
 
