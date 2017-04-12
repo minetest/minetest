@@ -132,7 +132,7 @@ public:
 	f32 getAngle() const { return m_angle; }
 	void setMinimapMode(MinimapMode mode);
 	MinimapMode getMinimapMode() const { return data->mode; }
-	void toggleMinimapShape(); // Deprecated!
+	void toggleMinimapShape();
 	void setMinimapShape(MinimapShape shape);
 
 

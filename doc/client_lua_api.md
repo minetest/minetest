@@ -779,8 +779,7 @@ An interface to manipulate minimap on client UI
 * `get_angle()`: returns the current minimap angle in degrees
 * `set_mode(mode)`: sets the minimap mode (0 to 6)
 * `get_mode()`: returns the current minimap mode
-* `toggle_shape()`: toggles minimap shape to round or square. This function is deprecated.
-* `set_shape()`: Sets the minimap shape. _0 = square, 1 = round_
+* `set_shape(shape)`: Sets the minimap shape. _0 = square, 1 = round_
 
 ### LocalPlayer
 An interface to retrieve information about the player. The player is

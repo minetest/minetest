@@ -108,26 +108,19 @@ int LuaMinimap::l_set_mode(lua_State *L)
 	return 1;
 }
 
-int LuaMinimap::l_toggle_shape(lua_State *L) // Deprecated!
-{
-	LuaMinimap *ref = checkobject(L, 1);
-	Minimap *m = getobject(ref);
-
-	m->toggleMinimapShape();
-	return 1;
-}
-
 int LuaMinimap::l_set_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
-	int shapenum = (int)lua_tonumber(L, 2);
-	if (!shapenum) {
+	if (!lua_isnumber(L, 2)) {
+		lua_pushboolean(L, false);
 		return 0;
 	}
-	MinimapShape shape = static_cast<MinimapShape>(shapenum);
+	int shapenum = lua_tonumber(L, 2);
+	MinimapShape shape = (MinimapShape)shapenum;
 	
 	m->setMinimapShape(shape);
+	lua_pushboolean(L, true);
 	return 1;
 }
 
