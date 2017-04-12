@@ -10,8 +10,9 @@
 # 2011-07-30: WF: Support for content types extension, refactoring
 # 2011-07-30: erlehmann: PEP 8 compliance.
 # 2016-03-08: expertmm: geometry and region params
-# 2017-03-17: removed license from this file (this file should fall under the
-#             license of minetest)
+# 2017-03-17: expertmm: removed license from this file (this file should fall
+#             under the license of minetest)
+# 2017-04-12: expertmm: PEP8 compliance
 
 # Requires Python Imaging Library: http://www.pythonware.com/products/pil/
 
