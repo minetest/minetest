@@ -112,13 +112,10 @@ int LuaMinimap::l_set_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
-	if (!lua_isnumber(L, 2)) {
+	if (!lua_isnumber(L, 2))
 		return 0;
-	}
-	int shapenum = lua_tonumber(L, 2);
-	MinimapShape shape = (MinimapShape)shapenum;
-	
-	m->setMinimapShape(shape);
+
+	m->setMinimapShape((MinimapShape)lua_tonumber(L, 2));
 	return 0;
 }
 
@@ -126,8 +123,8 @@ int LuaMinimap::l_get_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
-	MinimapShape shape = m->getMinimapShape();
-	lua_pushnumber(L, (int)shape);
+
+	lua_pushnumber(L, (int)m->getMinimapShape());
 	return 1;
 }
 
