@@ -706,13 +706,14 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	local oc = {}
 
 	for c, v in pairs(pos_off) do
-		if v == 0 then
+		if nc or v == 0 then
 			oc[#oc + 1] = c
 		else
 			offset = v
 			nc = c
 		end
 	end
+
 	local fine_pos = {[nc] = node_pos[nc] + offset}
 	camera_pos.y = camera_pos.y + 1.625 + eye_offset_first.y / 10
 	local f = (node_pos[nc] + offset - camera_pos[nc]) / look_dir[nc]
@@ -722,4 +723,3 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 	return fine_pos
 end
-
