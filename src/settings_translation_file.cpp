@@ -126,7 +126,7 @@ fake_function() {
 	gettext("Fog");
 	gettext("Whether to fog out the end of the visible area.");
 	gettext("Leaves style");
-	gettext("Leaves style:\n-   Fancy:  all faces visible\n-   Simple: only outer faces, if defined special_tiles are used\n-   Opaque: disable transparency");
+	gettext("Leaves style:\n-   Plantlike: two crossed vertical planes\n-   Fancy: all faces visible\n-   Simple: only outer faces, if defined special_tiles are used\n-   Opaque: disable transparency");
 	gettext("Connect glass");
 	gettext("Connects glass if supported by node.");
 	gettext("Smooth lighting");

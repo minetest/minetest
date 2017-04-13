@@ -333,11 +333,12 @@
 # enable_fog = true
 
 #    Leaves style:
-#    -   Fancy:  all faces visible
+#    -   Plantlike: two crossed vertical planes
+#    -   Fancy: all faces visible
 #    -   Simple: only outer faces, if defined special_tiles are used
 #    -   Opaque: disable transparency
-#    type: enum values: fancy, simple, opaque
-# leaves_style = fancy
+#    type: enum values: plantlike, fancy, simple, opaque
+# leaves_style = plantlike
 
 #    Connects glass if supported by node.
 #    type: bool

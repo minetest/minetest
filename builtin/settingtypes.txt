@@ -305,10 +305,11 @@ enable_vbo (VBO) bool true
 enable_fog (Fog) bool true
 
 #    Leaves style:
-#    -   Fancy:  all faces visible
+#    -   Plantlike: two crossed vertical planes
+#    -   Fancy: all faces visible
 #    -   Simple: only outer faces, if defined special_tiles are used
 #    -   Opaque: disable transparency
-leaves_style (Leaves style) enum fancy fancy,simple,opaque
+leaves_style (Leaves style) enum plantlike plantlike,fancy,simple,opaque
 
 #    Connects glass if supported by node.
 connected_glass (Connect glass) bool false

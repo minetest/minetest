@@ -124,7 +124,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fullscreen_bpp", "24");
 	settings->setDefault("vsync", "false");
 	settings->setDefault("fov", "72");
-	settings->setDefault("leaves_style", "fancy");
+	settings->setDefault("leaves_style", "plantlike");
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
 	settings->setDefault("display_gamma", "2.2");
