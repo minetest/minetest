@@ -224,9 +224,7 @@ if geometry_string is not None:
         coords_string, width_string, height_string = parts
         coords = coords_string.split(":")
         if len(coords) == 2:
-            x_string, z_string = coords
-            x = int(x_string)
-            z = int(z_string)
+            x, z = [int(coord) for coord in coords]
             this_width = int(width_string)
             this_height = int(height_string)
             nonchunky_xmin = x
@@ -293,10 +291,10 @@ colors = {}
 colors_path = "colors.txt"
 
 profile_path = None
-if 'USERPROFILE' in os.environ:
-    profile_path = os.environ['USERPROFILE']
-elif 'HOME' in os.environ:
+if 'HOME' in os.environ:
     profile_path = os.environ['HOME']
+elif 'USERPROFILE' in os.environ:
+    profile_path = os.environ['USERPROFILE']
 
 mt_path = None
 mt_util_path = None
