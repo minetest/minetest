@@ -133,6 +133,7 @@ function core.register_item(name, itemdef)
 				" limiting to maximum: " ..name)
 		end
 		setmetatable(itemdef, {__index = core.nodedef_default})
+		itemdef.groups["__builtin_drawtype_" .. itemdef.drawtype] = 1
 		core.registered_nodes[itemdef.name] = itemdef
 	elseif itemdef.type == "craft" then
 		setmetatable(itemdef, {__index = core.craftitemdef_default})
