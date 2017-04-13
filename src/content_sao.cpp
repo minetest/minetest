@@ -958,7 +958,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		damage_per_second = MYMAX(damage_per_second,
 			m_env->getGameDef()->ndef()->get(n3).damage_per_second);
 
-		if (damage_per_second != 0) {
+		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
 			setHP(newhp);
 			m_env->getGameDef()->SendPlayerHPOrDie(this);
