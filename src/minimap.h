@@ -46,8 +46,8 @@ enum MinimapMode {
 };
 
 enum MinimapShape {
-	MINIMAP_SHAPE_SQUARE = 0,
-	MINIMAP_SHAPE_ROUND = 1,
+	MINIMAP_SHAPE_SQUARE,
+	MINIMAP_SHAPE_ROUND,
 };
 
 struct MinimapModeDef {
@@ -134,6 +134,7 @@ public:
 	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape();
 	void setMinimapShape(MinimapShape shape);
+	MinimapShape getMinimapShape();
 
 
 	video::ITexture *getMinimapTexture();

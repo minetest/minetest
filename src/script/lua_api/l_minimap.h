@@ -46,6 +46,7 @@ private:
 	static int l_hide(lua_State *L);
 
 	static int l_set_shape(lua_State *L);
+	static int l_get_shape(lua_State *L);
 
 	Minimap *m_minimap;
 

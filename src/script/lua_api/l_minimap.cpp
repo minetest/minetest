@@ -113,14 +113,23 @@ int LuaMinimap::l_set_shape(lua_State *L)
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
 	if (!lua_isnumber(L, 2)) {
-		lua_pushboolean(L, false);
 		return 0;
 	}
 	int shapenum = lua_tonumber(L, 2);
 	MinimapShape shape = (MinimapShape)shapenum;
 	
 	m->setMinimapShape(shape);
-	lua_pushboolean(L, true);
+	return 0;
+}
+
+int LuaMinimap::l_get_shape(lua_State *L)
+{
+	LuaMinimap *ref = checkobject(L, 1);
+	Minimap *m = getobject(ref);
+	MinimapShape shape = m->getMinimapShape();
+	int shapenum = (int)shape;
+	
+	lua_pushnumber(L, shapenum);
 	return 1;
 }
 
@@ -218,5 +227,6 @@ const luaL_Reg LuaMinimap::methods[] = {
 	luamethod(LuaMinimap, get_mode),
 	luamethod(LuaMinimap, set_mode),
 	luamethod(LuaMinimap, set_shape),
+	luamethod(LuaMinimap, get_shape),
 	{0,0}
 };

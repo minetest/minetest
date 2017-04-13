@@ -285,6 +285,16 @@ void Minimap::setMinimapShape(MinimapShape shape)
 	m_minimap_update_thread->deferUpdate();	
 }
 
+MinimapShape Minimap::getMinimapShape()
+{
+	if (data->minimap_shape_round) {
+		return MINIMAP_SHAPE_ROUND;
+	} else {
+		return MINIMAP_SHAPE_SQUARE;
+	}
+		
+}
+
 void Minimap::setMinimapMode(MinimapMode mode)
 {
 	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {
