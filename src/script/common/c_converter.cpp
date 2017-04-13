@@ -306,6 +306,7 @@ aabb3f read_aabb3f(lua_State *L, int index, f32 scale)
 		box.MaxEdge.Z = lua_tonumber(L, -1) * scale;
 		lua_pop(L, 1);
 	}
+	box.repair();
 	return box;
 }
 
