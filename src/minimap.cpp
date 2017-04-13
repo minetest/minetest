@@ -292,7 +292,6 @@ MinimapShape Minimap::getMinimapShape()
 	} else {
 		return MINIMAP_SHAPE_SQUARE;
 	}
-		
 }
 
 void Minimap::setMinimapMode(MinimapMode mode)
