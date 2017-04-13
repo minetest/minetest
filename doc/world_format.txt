@@ -1,12 +1,13 @@
 =============================
-Minetest World Format 22...25
+Minetest World Format 22...27
 =============================
 
 This applies to a world format carrying the block serialization version
-22...25, used at least in
+22...27, used at least in
 - 0.4.dev-20120322 ... 0.4.dev-20120606 (22...23)
 - 0.4.0 (23)
 - 24 was never released as stable and existed for ~2 days
+- 27 was added in 0.4.15-dev
 
 The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
@@ -262,14 +263,35 @@ u8 flags
   - 0x02: day_night_differs: Whether the lighting of the block is different
     on day and night. Only blocks that have this bit set are updated when
     day transforms to night.
-  - 0x04: lighting_expired: If true, lighting is invalid and should be
-    updated.  If you can't calculate lighting in your generator properly,
-    you could try setting this 1 to everything and setting the uppermost
-    block in every sector as is_underground=0. I am quite sure it doesn't
-    work properly, though.
+  - 0x04: lighting_expired: Not used in version 27 and above. If true,
+    lighting is invalid and should be updated.  If you can't calculate
+    lighting in your generator properly, you could try setting this 1 to
+    everything and setting the uppermost block in every sector as
+    is_underground=0. I am quite sure it doesn't work properly, though.
   - 0x08: generated: True if the block has been generated. If false, block
     is mostly filled with CONTENT_IGNORE and is likely to contain eg. parts
     of trees of neighboring blocks.
+
+u16 lighting_complete
+- Added in version 27.
+- This contains 12 flags, each of them corresponds to a direction.
+- Indicates if the light is correct at the sides of a map block.
+  Lighting may not be correct if the light changed, but a neighbor
+  block was not loaded at that time.
+  If these flags are false, Minetest will automatically recompute light
+  when both this block and its required neighbor are loaded.
+- The bit order is:
+  nothing,  nothing,  nothing,  nothing,
+  night X-, night Y-, night Z-, night Z+, night Y+, night X+,
+  day X-,   day Y-,   day Z-,   day Z+,   day Y+,   day X+.
+  Where 'day' is for the day light bank, 'night' is for the night
+  light bank.
+  The 'nothing' bits should be always set, as they will be used
+  to indicate if direct sunlight spreading is finished.
+- Example: if the block at (0, 0, 0) has
+  lighting_complete = 0b1111111111111110,
+  then Minetest will correct lighting in the day light bank when
+  the block at (1, 0, 0) is also loaded.
 
 u8 content_width
 - Number of bytes in the content (param0) fields of nodes
