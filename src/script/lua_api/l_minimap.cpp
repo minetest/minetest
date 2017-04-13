@@ -127,9 +127,7 @@ int LuaMinimap::l_get_shape(lua_State *L)
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
 	MinimapShape shape = m->getMinimapShape();
-	int shapenum = (int)shape;
-	
-	lua_pushnumber(L, shapenum);
+	lua_pushnumber(L, (int)shape);
 	return 1;
 }
 
