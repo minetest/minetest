@@ -714,7 +714,7 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 		end
 	end
 
-	if not oc["y"] then
+	if #oc < 2 and nc ~= "y" then
 		oc[#oc + 1] = "y"
 	end
 
