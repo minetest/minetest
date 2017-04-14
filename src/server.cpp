@@ -1642,7 +1642,7 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0, &pkt, true);
+		m_clients.sendToAll(&pkt);
 	}
 }
 
@@ -1761,7 +1761,7 @@ void Server::SendDeleteParticleSpawner(u16 peer_id, u32 id)
 		Send(&pkt);
 	}
 	else {
-		m_clients.sendToAll(0, &pkt, true);
+		m_clients.sendToAll(&pkt);
 	}
 
 }
@@ -1866,7 +1866,7 @@ void Server::SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed)
 	pkt << time << time_speed;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
-		m_clients.sendToAll(0, &pkt, true);
+		m_clients.sendToAll(&pkt);
 	}
 	else {
 		Send(&pkt);
@@ -2519,7 +2519,7 @@ void Server::sendDetachedInventory(const std::string &name, u16 peer_id)
 	const std::string &check = m_detached_inventories_player[name];
 	if (peer_id == PEER_ID_INEXISTENT) {
 		if (check == "")
-			return m_clients.sendToAll(0, &pkt, true);
+			return m_clients.sendToAll(&pkt);
 		RemotePlayer *p = m_env->getPlayer(check.c_str());
 		if (p)
 			m_clients.send(p->peer_id, 0, &pkt, true);

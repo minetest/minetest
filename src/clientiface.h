@@ -458,7 +458,7 @@ public:
 	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* send to all clients */
-	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);
+	void sendToAll(NetworkPacket *pkt);
 
 	/* delete a client */
 	void DeleteClient(u16 peer_id);
