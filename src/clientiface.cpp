@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "content_sao.h"              // TODO this is used for cleanup of only
 #include "log.h"
+#include "network/serveropcodes.h"
 #include "util/srp.h"
 
 const char *ClientInterface::statenames[] = {
@@ -678,16 +679,17 @@ void ClientInterface::send(u16 peer_id, u8 channelnum,
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
-void ClientInterface::sendToAll(u16 channelnum,
-		NetworkPacket* pkt, bool reliable)
+void ClientInterface::sendToAll(NetworkPacket *pkt)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	for(UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
-		i != m_clients.end(); ++i) {
+	for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
+			i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
 
 		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id, channelnum, pkt, reliable);
+			m_con->Send(client->peer_id,
+					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
+					clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}
 }
