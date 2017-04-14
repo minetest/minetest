@@ -25,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 extern const v3s16 g_6dirs[6];
 
+extern const v3s16 g_18dirs[18];
+
 extern const v3s16 g_26dirs[26];
 
 // 26th is (0,0,0)
