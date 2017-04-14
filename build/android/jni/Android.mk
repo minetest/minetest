@@ -309,6 +309,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_inventory.cpp    \
 		jni/src/script/lua_api/l_item.cpp         \
 		jni/src/script/lua_api/l_itemstackmeta.cpp\
+		jni/src/script/lua_api/l_localplayer.cpp  \
 		jni/src/script/lua_api/l_mainmenu.cpp     \
 		jni/src/script/lua_api/l_mapgen.cpp       \
 		jni/src/script/lua_api/l_metadata.cpp     \
