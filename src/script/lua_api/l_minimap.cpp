@@ -108,12 +108,23 @@ int LuaMinimap::l_set_mode(lua_State *L)
 	return 1;
 }
 
-int LuaMinimap::l_toggle_shape(lua_State *L)
+int LuaMinimap::l_set_shape(lua_State *L)
+{
+	LuaMinimap *ref = checkobject(L, 1);
+	Minimap *m = getobject(ref);
+	if (!lua_isnumber(L, 2))
+		return 0;
+
+	m->setMinimapShape((MinimapShape)lua_tonumber(L, 2));
+	return 0;
+}
+
+int LuaMinimap::l_get_shape(lua_State *L)
 {
 	LuaMinimap *ref = checkobject(L, 1);
 	Minimap *m = getobject(ref);
 
-	m->toggleMinimapShape();
+	lua_pushnumber(L, (int)m->getMinimapShape());
 	return 1;
 }
 
@@ -210,6 +221,7 @@ const luaL_Reg LuaMinimap::methods[] = {
 	luamethod(LuaMinimap, set_angle),
 	luamethod(LuaMinimap, get_mode),
 	luamethod(LuaMinimap, set_mode),
-	luamethod(LuaMinimap, toggle_shape),
+	luamethod(LuaMinimap, set_shape),
+	luamethod(LuaMinimap, get_shape),
 	{0,0}
 };

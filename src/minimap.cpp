@@ -272,6 +272,28 @@ void Minimap::toggleMinimapShape()
 	m_minimap_update_thread->deferUpdate();
 }
 
+void Minimap::setMinimapShape(MinimapShape shape)
+{
+	MutexAutoLock lock(m_mutex);
+	
+	if (shape == MINIMAP_SHAPE_SQUARE)
+		data->minimap_shape_round = false;
+	else if (shape == MINIMAP_SHAPE_ROUND)
+		data->minimap_shape_round = true;
+	
+	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
+	m_minimap_update_thread->deferUpdate();	
+}
+
+MinimapShape Minimap::getMinimapShape()
+{
+	if (data->minimap_shape_round) {
+		return MINIMAP_SHAPE_ROUND;
+	} else {
+		return MINIMAP_SHAPE_SQUARE;
+	}
+}
+
 void Minimap::setMinimapMode(MinimapMode mode)
 {
 	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {

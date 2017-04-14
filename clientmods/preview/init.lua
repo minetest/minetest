@@ -62,7 +62,7 @@ local function preview_minimap()
 	minimap:set_mode(4)
 	minimap:show()
 	minimap:set_pos({x=5, y=50, z=5})
-	minimap:toggle_shape()
+	minimap:set_shape(math.random(0, 1))
 
 	print("[PREVIEW] Minimap: mode => " .. dump(minimap:get_mode()) ..
 			" position => " .. dump(minimap:get_pos()) ..
