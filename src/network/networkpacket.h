@@ -52,12 +52,12 @@ public:
 			{ putRawString(src.c_str(), src.size()); }
 
 		NetworkPacket& operator>>(std::string& dst);
-		NetworkPacket& operator<<(std::string src);
+		NetworkPacket& operator<<(const std::string &src);
 
-		void putLongString(std::string src);
+		void putLongString(const std::string &src);
 
 		NetworkPacket& operator>>(std::wstring& dst);
-		NetworkPacket& operator<<(std::wstring src);
+		NetworkPacket& operator<<(const std::wstring &src);
 
 		std::string readLongString();
 
