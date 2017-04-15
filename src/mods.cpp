@@ -53,6 +53,19 @@ void parseModContents(ModSpec &spec)
 	if (info.exists("name"))
 		spec.name = info.get("name");
 
+	Settings info;
+
+	// Remove everything after the first dash ('-')
+	int i = spec.name.find('-');
+	if (i > 0) {
+		spec.name = spec.name.substr(0, i);
+	}
+
+	info.readConfigFile((spec.path+DIR_DELIM+"mod.conf").c_str());
+
+	if (info.exists("name"))
+		spec.name = info.get("name");
+
 	spec.depends.clear();
 	spec.optdepends.clear();
 	spec.is_modpack = false;
