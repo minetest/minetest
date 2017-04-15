@@ -3021,7 +3021,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `jump`: multiplier to default jump value (default: `1`)
         * `gravity`: multiplier to default gravity value (default: `1`)
         * `sneak`: whether player can sneak (default: `true`)
-        * `sneak_glitch`: whether player can use the sneak glitch (default: `true`)
+        * `sneak_glitch`: whether player can use the 'sneak glitch'
+          and sneak ladder (default: `false`)
 * `get_physics_override()`: returns the table given to set_physics_override
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
