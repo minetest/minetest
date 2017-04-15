@@ -115,7 +115,7 @@ int LuaMinimap::l_set_shape(lua_State *L)
 	if (!lua_isnumber(L, 2))
 		return 0;
 
-	m->setMinimapShape((MinimapShape)lua_tonumber(L, 2));
+	m->setMinimapShape((MinimapShape)((int)lua_tonumber(L, 2)));
 	return 0;
 }
 
