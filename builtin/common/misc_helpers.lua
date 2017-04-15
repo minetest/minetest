@@ -714,8 +714,19 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 		end
 	end
 
-	if #oc < 2 and nc ~= "y" then
-		oc[#oc + 1] = "y"
+	if #oc < 2 then
+		if oc[1] == "x" and nc == "z" or oc[1] == "z" and nc == "x" then
+			oc[2] = "y"
+		elseif oc[1] == "z" and nc == "y" or oc[1] == "y" and nc == "z" then
+			oc[2] = "x"
+		elseif oc[1] == "x" and nc == "y" or oc[1] == "y" and nc == "x" then
+			oc[2] = "z"
+		else
+			oc[1] = "x"
+			oc[2] = "y"
+			nc = "z"
+			offset = 0
+		end
 	end
 
 	local fine_pos = {[nc] = node_pos[nc] + offset}
