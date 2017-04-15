@@ -177,6 +177,7 @@ Server::Server(
 	m_clients(&m_con),
 	m_shutdown_requested(false),
 	m_shutdown_ask_reconnect(false),
+	m_shutdown_timer(0.0f),
 	m_admin_chat(iface),
 	m_ignore_map_edit_events(false),
 	m_ignore_map_edit_events_peer_id(0),
@@ -1027,6 +1028,39 @@ void Server::AsyncRunStep(bool initial_step)
 
 			// Save environment metadata
 			m_env->saveMeta();
+		}
+	}
+
+	// Timed shutdown
+	static const float shutdown_msg_times[] =
+	{
+		1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 45, 60, 120, 180, 300, 600, 1200, 1800, 3600
+	};
+
+	if (m_shutdown_timer > 0.0f) {
+		// Automated messages
+		if (m_shutdown_timer < shutdown_msg_times[ARRLEN(shutdown_msg_times) - 1]) {
+			for (u16 i = 0; i < ARRLEN(shutdown_msg_times) - 1; i++) {
+				// If shutdown timer matches an automessage, shot it
+				if (m_shutdown_timer > shutdown_msg_times[i] &&
+					m_shutdown_timer - dtime < shutdown_msg_times[i]) {
+					std::wstringstream ws;
+
+					ws << L"*** Server shutting down in "
+						<< duration_to_string(round(m_shutdown_timer - dtime)).c_str()
+						<< ".";
+
+					infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
+					SendChatMessage(PEER_ID_INEXISTENT, ws.str());
+					break;
+				}
+			}
+		}
+
+		m_shutdown_timer -= dtime;
+		if (m_shutdown_timer < 0.0f) {
+			m_shutdown_timer = 0.0f;
+			m_shutdown_requested = true;
 		}
 	}
 }
@@ -3441,6 +3475,39 @@ v3f Server::findSpawnPos()
 	}
 
 	return nodeposf;
+}
+
+void Server::requestShutdown(const std::string &msg, bool reconnect, float delay)
+{
+	if (delay == 0.0f) {
+	// No delay, shutdown immediately
+		m_shutdown_requested = true;
+	} else if (delay < 0.0f && m_shutdown_timer > 0.0f) {
+	// Negative delay, cancel shutdown if requested
+		m_shutdown_timer = 0.0f;
+		m_shutdown_msg = "";
+		m_shutdown_ask_reconnect = false;
+		m_shutdown_requested = false;
+		std::wstringstream ws;
+
+		ws << L"*** Server shutdown canceled.";
+
+		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
+		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
+	} else if (delay > 0.0f) {
+	// Positive delay, delay the shutdown
+		m_shutdown_timer = delay;
+		m_shutdown_msg = msg;
+		m_shutdown_ask_reconnect = reconnect;
+		std::wstringstream ws;
+
+		ws << L"*** Server shutting down in "
+				<< duration_to_string(round(m_shutdown_timer)).c_str()
+				<< ".";
+
+		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
+		SendChatMessage(PEER_ID_INEXISTENT, ws.str());
+	}
 }
 
 PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version)

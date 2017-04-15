@@ -614,4 +614,28 @@ inline const char *bool_to_cstr(bool val)
 	return val ? "true" : "false";
 }
 
+inline const std::string duration_to_string(int sec)
+{
+	int min = floor(sec / 60);
+	sec %= 60;
+	int hour = floor(min / 60);
+	min %= 60;
+
+	std::stringstream ss;
+	if (hour > 0) {
+		ss << hour << "h ";
+	}
+
+	if (min > 0) {
+		ss << min << "m ";
+	}
+
+	if (sec > 0) {
+		ss << sec << "s ";
+	}
+
+	return ss.str();
+}
+
+
 #endif

@@ -763,14 +763,20 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	description = "Shutdown server",
-	params = "[reconnect] [message]",
+	params = "[delay_in_seconds(0..inf) or -1 for cancel] [reconnect] [message]",
 	privs = {server=true},
 	func = function(name, param)
-		core.log("action", name .. " shuts down server")
-		core.chat_send_all("*** Server shutting down (operator request).")
-		local reconnect, message = param:match("([^ ]+)(.*)")
+		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
 		message = message or ""
-		core.request_shutdown(message:trim(), core.is_yes(reconnect))
+
+		if delay ~= "" then
+			delay = tonumber(param) or 0
+		else
+			delay = 0
+			core.log("action", name .. " shuts down server")
+			core.chat_send_all("*** Server shutting down (operator request).")
+		end
+		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
 	end,
 })
 

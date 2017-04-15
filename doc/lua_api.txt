@@ -2576,8 +2576,12 @@ These functions return the leftover itemstack.
     * Optional: Variable number of arguments that are passed to `func`
 
 ### Server
-* `minetest.request_shutdown([message],[reconnect])`: request for server shutdown. Will display `message` to clients,
-    and `reconnect` == true displays a reconnect button.
+* `minetest.request_shutdown([message],[reconnect],[delay])`: request for server shutdown. Will display `message` to clients,
+    `reconnect` == true displays a reconnect button,
+    `delay` adds an optional delay (in seconds) before shutdown
+        negative delay cancels the current active shutdown
+        zero delay triggers an immediate shutdown.
+* `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
 
