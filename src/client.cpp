@@ -51,147 +51,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 extern gui::IGUIEnvironment* guienv;
 
 /*
-	QueuedMeshUpdate
-*/
-
-QueuedMeshUpdate::QueuedMeshUpdate():
-	p(-1337,-1337,-1337),
-	data(NULL),
-	ack_block_to_server(false)
-{
-}
-
-QueuedMeshUpdate::~QueuedMeshUpdate()
-{
-	if(data)
-		delete data;
-}
-
-/*
-	MeshUpdateQueue
-*/
-
-MeshUpdateQueue::MeshUpdateQueue()
-{
-}
-
-MeshUpdateQueue::~MeshUpdateQueue()
-{
-	MutexAutoLock lock(m_mutex);
-
-	for(std::vector<QueuedMeshUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i)
-	{
-		QueuedMeshUpdate *q = *i;
-		delete q;
-	}
-}
-
-/*
-	peer_id=0 adds with nobody to send to
-*/
-void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server, bool urgent)
-{
-	DSTACK(FUNCTION_NAME);
-
-	assert(data);	// pre-condition
-
-	MutexAutoLock lock(m_mutex);
-
-	if(urgent)
-		m_urgents.insert(p);
-
-	/*
-		Find if block is already in queue.
-		If it is, update the data and quit.
-	*/
-	for(std::vector<QueuedMeshUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i)
-	{
-		QueuedMeshUpdate *q = *i;
-		if(q->p == p)
-		{
-			if(q->data)
-				delete q->data;
-			q->data = data;
-			if(ack_block_to_server)
-				q->ack_block_to_server = true;
-			return;
-		}
-	}
-
-	/*
-		Add the block
-	*/
-	QueuedMeshUpdate *q = new QueuedMeshUpdate;
-	q->p = p;
-	q->data = data;
-	q->ack_block_to_server = ack_block_to_server;
-	m_queue.push_back(q);
-}
-
-// Returned pointer must be deleted
-// Returns NULL if queue is empty
-QueuedMeshUpdate *MeshUpdateQueue::pop()
-{
-	MutexAutoLock lock(m_mutex);
-
-	bool must_be_urgent = !m_urgents.empty();
-	for(std::vector<QueuedMeshUpdate*>::iterator
-			i = m_queue.begin();
-			i != m_queue.end(); ++i)
-	{
-		QueuedMeshUpdate *q = *i;
-		if(must_be_urgent && m_urgents.count(q->p) == 0)
-			continue;
-		m_queue.erase(i);
-		m_urgents.erase(q->p);
-		return q;
-	}
-	return NULL;
-}
-
-/*
-	MeshUpdateThread
-*/
-
-MeshUpdateThread::MeshUpdateThread() : UpdateThread("Mesh")
-{
-	m_generation_interval = g_settings->getU16("mesh_generation_interval");
-	m_generation_interval = rangelim(m_generation_interval, 0, 50);
-}
-
-void MeshUpdateThread::enqueueUpdate(v3s16 p, MeshMakeData *data,
-		bool ack_block_to_server, bool urgent)
-{
-	m_queue_in.addBlock(p, data, ack_block_to_server, urgent);
-	deferUpdate();
-}
-
-void MeshUpdateThread::doUpdate()
-{
-	QueuedMeshUpdate *q;
-	while ((q = m_queue_in.pop())) {
-		if (m_generation_interval)
-			sleep_ms(m_generation_interval);
-		ScopeProfiler sp(g_profiler, "Client: Mesh making");
-
-		MapBlockMesh *mesh_new = new MapBlockMesh(q->data, m_camera_offset);
-
-		MeshUpdateResult r;
-		r.p = q->p;
-		r.mesh = mesh_new;
-		r.ack_block_to_server = q->ack_block_to_server;
-
-		m_queue_out.push_back(r);
-
-		delete q;
-	}
-}
-
-/*
 	Client
 */
 
@@ -220,7 +79,7 @@ Client::Client(
 	m_nodedef(nodedef),
 	m_sound(sound),
 	m_event(event),
-	m_mesh_update_thread(),
+	m_mesh_update_thread(this),
 	m_env(
 		new ClientMap(this, control,
 			device->getSceneManager()->getRootSceneNode(),
@@ -268,12 +127,6 @@ Client::Client(
 
 	m_minimap = new Minimap(device, this);
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
-
-	m_cache_smooth_lighting = g_settings->getBool("smooth_lighting");
-	m_cache_enable_shaders  = g_settings->getBool("enable_shaders");
-	m_cache_use_tangent_vertices = m_cache_enable_shaders && (
-		g_settings->getBool("enable_bumpmapping") ||
-		g_settings->getBool("enable_parallax_occlusion"));
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
 	m_script = new ClientScripting(this);
@@ -1605,6 +1458,11 @@ int Client::getCrackLevel()
 	return m_crack_level;
 }
 
+v3s16 Client::getCrackPos()
+{
+	return m_crack_pos;
+}
+
 void Client::setCrack(int level, v3s16 pos)
 {
 	int old_crack_level = m_crack_level;
@@ -1670,28 +1528,14 @@ void Client::typeChatMessage(const std::wstring &message)
 
 void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server, bool urgent)
 {
+	// Check if the block exists to begin with. In the case when a non-existing
+	// neighbor is automatically added, it may not. In that case we don't want
+	// to tell the mesh update thread about it.
 	MapBlock *b = m_env.getMap().getBlockNoCreateNoEx(p);
-	if(b == NULL)
+	if (b == NULL)
 		return;
 
-	/*
-		Create a task to update the mesh of the block
-	*/
-
-	MeshMakeData *data = new MeshMakeData(this, m_cache_enable_shaders,
-		m_cache_use_tangent_vertices);
-
-	{
-		//TimeTaker timer("data fill");
-		// Release: ~0ms
-		// Debug: 1-6ms, avg=2ms
-		data->fill(b);
-		data->setCrack(m_crack_level, m_crack_pos);
-		data->setSmoothLighting(m_cache_smooth_lighting);
-	}
-
-	// Add task to queue
-	m_mesh_update_thread.enqueueUpdate(p, data, ack_to_server, urgent);
+	m_mesh_update_thread.updateBlock(&m_env.getMap(), p, ack_to_server, urgent);
 }
 
 void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server, bool urgent)

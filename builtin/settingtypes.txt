@@ -551,6 +551,11 @@ enable_mesh_cache (Mesh cache) bool false
 #    down the rate of mesh updates, thus reducing jitter on slower clients.
 mesh_generation_interval (Mapblock mesh generation delay) int 0 0 50
 
+#    Size of the MapBlock cache of the mesh generator. Increasing this will
+#    increase the cache hit %, reducing the data being copied from the main
+#    thread, thus reducing jitter.
+meshgen_block_cache_size (Mapblock mesh generator's MapBlock cache size MB) int 20 0 1000
+
 #    Enables minimap.
 enable_minimap (Minimap) bool true
 

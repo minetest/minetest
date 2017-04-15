@@ -644,6 +644,12 @@
 #    type: int min: 0 max: 50
 # mesh_generation_interval = 0
 
+#    Size of the MapBlock cache of the mesh generator. Increasing this will
+#    increase the cache hit %, reducing the data being copied from the main
+#    thread, thus reducing jitter.
+#    type: int min: 0 max: 1000
+# meshgen_block_cache_size = 20
+
 #    Enables minimap.
 #    type: bool
 # enable_minimap = true
