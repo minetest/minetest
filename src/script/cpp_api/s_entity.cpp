@@ -196,34 +196,6 @@ void ScriptApiEntity::luaentity_GetProperties(u16 id,
 	lua_pop(L, 1);
 }
 
-void ScriptApiEntity::luaentity_Step(u16 id, float dtime)
-{
-	SCRIPTAPI_PRECHECKHEADER
-
-	//infostream<<"scriptapi_luaentity_step: id="<<id<<std::endl;
-
-	int error_handler = PUSH_ERROR_HANDLER(L);
-
-	// Get core.luaentities[id]
-	luaentity_get(L, id);
-	int object = lua_gettop(L);
-	// State: object is at top of stack
-	// Get step function
-	lua_getfield(L, -1, "on_step");
-	if (lua_isnil(L, -1)) {
-		lua_pop(L, 2); // Pop on_step and entity
-		return;
-	}
-	luaL_checktype(L, -1, LUA_TFUNCTION);
-	lua_pushvalue(L, object); // self
-	lua_pushnumber(L, dtime); // dtime
-
-	setOriginFromTable(object);
-	PCALL_RES(lua_pcall(L, 2, 0, error_handler));
-
-	lua_pop(L, 2); // Pop object and error handler
-}
-
 // Calls entity:on_punch(ObjectRef puncher, time_from_last_punch,
 //                       tool_capabilities, direction, damage)
 bool ScriptApiEntity::luaentity_Punch(u16 id,

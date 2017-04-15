@@ -173,3 +173,14 @@ end
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
 end
+
+-- Execute objects' on_steps
+core.register_globalstep(function(dtime)
+	for _, ent in pairs(core.luaentities) do
+		local stepfunc = core.registered_entities[ent.name].on_step
+		if stepfunc then
+			core.set_last_run_mod(ent.mod_origin)
+			stepfunc(ent, dtime)
+		end
+	end
+end)

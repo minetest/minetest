@@ -402,10 +402,6 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_registered){
-		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
-	}
-
 	if(send_recommended == false)
 		return;
 
