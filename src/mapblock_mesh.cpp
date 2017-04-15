@@ -48,49 +48,43 @@ MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
 	m_use_tangent_vertices(use_tangent_vertices)
 {}
 
-void MeshMakeData::fill(MapBlock *block)
+void MeshMakeData::fillBlockDataBegin(const v3s16 &blockpos)
 {
-	m_blockpos = block->getPos();
+	m_blockpos = blockpos;
 
 	v3s16 blockpos_nodes = m_blockpos*MAP_BLOCKSIZE;
 
-	/*
-		Copy data
-	*/
-
-	// Allocate this block + neighbors
 	m_vmanip.clear();
 	VoxelArea voxel_area(blockpos_nodes - v3s16(1,1,1) * MAP_BLOCKSIZE,
 			blockpos_nodes + v3s16(1,1,1) * MAP_BLOCKSIZE*2-v3s16(1,1,1));
 	m_vmanip.addArea(voxel_area);
+}
 
-	{
-		//TimeTaker timer("copy central block data");
-		// 0ms
+void MeshMakeData::fillBlockData(const v3s16 &block_offset, MapNode *data)
+{
+	v3s16 data_size(MAP_BLOCKSIZE, MAP_BLOCKSIZE, MAP_BLOCKSIZE);
+	VoxelArea data_area(v3s16(0,0,0), data_size - v3s16(1,1,1));
 
-		// Copy our data
-		block->copyTo(m_vmanip);
-	}
-	{
-		//TimeTaker timer("copy neighbor block data");
-		// 0ms
+	v3s16 bp = m_blockpos + block_offset;
+	v3s16 blockpos_nodes = bp * MAP_BLOCKSIZE;
+	m_vmanip.copyFrom(data, data_area, v3s16(0,0,0), blockpos_nodes, data_size);
+}
 
-		/*
-			Copy neighbors. This is lightning fast.
-			Copying only the borders would be *very* slow.
-		*/
+void MeshMakeData::fill(MapBlock *block)
+{
+	fillBlockDataBegin(block->getPos());
 
-		// Get map
-		Map *map = block->getParent();
+	fillBlockData(v3s16(0,0,0), block->getData());
 
-		for(u16 i=0; i<26; i++)
-		{
-			const v3s16 &dir = g_26dirs[i];
-			v3s16 bp = m_blockpos + dir;
-			MapBlock *b = map->getBlockNoCreateNoEx(bp);
-			if(b)
-				b->copyTo(m_vmanip);
-		}
+	// Get map for reading neigbhor blocks
+	Map *map = block->getParent();
+
+	for (u16 i=0; i<26; i++) {
+		const v3s16 &dir = g_26dirs[i];
+		v3s16 bp = m_blockpos + dir;
+		MapBlock *b = map->getBlockNoCreateNoEx(bp);
+		if(b)
+			fillBlockData(dir, b->getData());
 	}
 }
 

@@ -522,6 +522,7 @@ set(client_SRCS
 	main.cpp
 	mapblock_mesh.cpp
 	mesh.cpp
+	mesh_generator_thread.cpp
 	minimap.cpp
 	particles.cpp
 	shader.cpp

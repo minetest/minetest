@@ -53,6 +53,12 @@ struct MeshMakeData
 			bool use_tangent_vertices = false);
 
 	/*
+		Copy block data manually (to allow optimizations by the caller)
+	*/
+	void fillBlockDataBegin(const v3s16 &blockpos);
+	void fillBlockData(const v3s16 &block_offset, MapNode *data);
+
+	/*
 		Copy central data directly from block, and other data from
 		parent of block.
 	*/
