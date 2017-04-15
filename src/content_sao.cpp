@@ -941,6 +941,30 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			setBreath(m_breath + 1);
 	}
 
+	if (m_node_hurt_interval.step(dtime, 1.0)) {
+		// Feet, middle and head
+		v3s16 p1 = floatToInt(m_base_position + v3f(0, BS*0.1, 0), BS);
+		MapNode n1 = m_env->getMap().getNodeNoEx(p1);
+		v3s16 p2 = floatToInt(m_base_position + v3f(0, BS*0.8, 0), BS);
+		MapNode n2 = m_env->getMap().getNodeNoEx(p2);
+		v3s16 p3 = floatToInt(m_base_position + v3f(0, BS*1.6, 0), BS);
+		MapNode n3 = m_env->getMap().getNodeNoEx(p3);
+
+		u32 damage_per_second = 0;
+		damage_per_second = MYMAX(damage_per_second,
+			m_env->getGameDef()->ndef()->get(n1).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+			m_env->getGameDef()->ndef()->get(n2).damage_per_second);
+		damage_per_second = MYMAX(damage_per_second,
+			m_env->getGameDef()->ndef()->get(n3).damage_per_second);
+
+		if (damage_per_second != 0 && m_hp > 0) {
+			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
+			setHP(newhp);
+			m_env->getGameDef()->SendPlayerHPOrDie(this);
+		}
+	}
+
 	if (!m_properties_sent) {
 		m_properties_sent = true;
 		std::string str = getPropertyPacket();

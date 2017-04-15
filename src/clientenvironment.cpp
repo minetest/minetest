@@ -252,37 +252,31 @@ void ClientEnvironment::step(float dtime)
 		m_script->environment_step(dtime);
 	}
 
-	/*
-		A quick draft of lava damage
-	*/
-	if(m_lava_hurt_interval.step(dtime, 1.0))
-	{
-		v3f pf = lplayer->getPosition();
-
-		// Feet, middle and head
-		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_map->getNodeNoEx(p1);
-		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_map->getNodeNoEx(p2);
-		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_map->getNodeNoEx(p3);
-
-		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n3).damage_per_second);
-
-		if(damage_per_second != 0)
-		{
-			damageLocalPlayer(damage_per_second, true);
-		}
-	}
-
 	// Protocol v29 make this behaviour obsolete
 	if (getGameDef()->getProtoVersion() < 29) {
+		if (m_lava_hurt_interval.step(dtime, 1.0)) {
+			v3f pf = lplayer->getPosition();
+
+			// Feet, middle and head
+			v3s16 p1 = floatToInt(pf + v3f(0, BS * 0.1, 0), BS);
+			MapNode n1 = m_map->getNodeNoEx(p1);
+			v3s16 p2 = floatToInt(pf + v3f(0, BS * 0.8, 0), BS);
+			MapNode n2 = m_map->getNodeNoEx(p2);
+			v3s16 p3 = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
+			MapNode n3 = m_map->getNodeNoEx(p3);
+
+			u32 damage_per_second = 0;
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n1).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n2).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n3).damage_per_second);
+
+			if (damage_per_second != 0)
+				damageLocalPlayer(damage_per_second, true);
+		}
+
 		/*
 			Drowning
 		*/
