@@ -102,20 +102,31 @@ local function create_world_button_handler(this, fields)
 		map_generator = fields["map_generator"]
 	}
 
+	if values.name == "" then
+		values.name = fgettext_ne("Unnamed")
+	end
+	while menudata.worldlist:uid_exists_raw(values.name) do
+		local words = {}
+		for word in string.gmatch(values.name, "[^ ]+") do
+			table.insert(words, word)
+		end
+		local number = tonumber(words[#words])
+		if number == nil then
+			values.name = values.name .. " 2"
+		else
+			words[#words] = tostring(number + 1)
+			values.name = table.concat(words, " ")
+		end
+	end
+
 	if buttons.create then
-		if values.name == "" or values.game_index == nil then
+		if values.game_index == nil then
 			gamedata.errormessage =
-				fgettext("No worldname given or no game selected")
+				fgettext("No game selected")
 			return true
 		end
 
 		core.settings:set("fixed_map_seed", values.seed)
-		if menudata.worldlist:uid_exists_raw(values.name) then
-			gamedata.errormessage =
-				fgettext("A world named \"$1\" already exists", worldname)
-			return true
-		end
-
 		core.settings:set("mg_name", values.map_generator)
 		local create_world_error =
 			core.create_world(values.name, values.game_index)
@@ -131,9 +142,11 @@ local function create_world_button_handler(this, fields)
 			mm_texture.update("singleplayer", game_id)
 		end
 		menudata.worldlist:refresh()
+		local raw_worldlist_index =
+			menudata.worldlist:raw_index_by_uid(values.name);
 		core.settings:set(
 			"mainmenu_last_selected_world",
-			menudata.worldlist:raw_index_by_uid(values.name)
+			raw_worldlist_index
 		)
 		this:delete()
 		return true
