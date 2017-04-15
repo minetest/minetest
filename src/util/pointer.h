@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_POINTER_HEADER
 
 #include "../irrlichttypes.h"
+#include "jthread/jmutex.h"
 #include "../debug.h" // For assert()
 #include <cstring>
 
@@ -195,6 +196,7 @@ public:
 		m_size = 0;
 		data = NULL;
 		refcount = new unsigned int;
+		mutex = new JMutex();
 		(*refcount) = 1;
 	}
 	SharedBuffer(unsigned int size)
@@ -206,15 +208,19 @@ public:
 			data = NULL;
 		refcount = new unsigned int;
 		memset(data,0,sizeof(T)*m_size);
+		mutex = new JMutex();
 		(*refcount) = 1;
 	}
 	SharedBuffer(const SharedBuffer &buffer)
 	{
 		//std::cout<<"SharedBuffer(const SharedBuffer &buffer)"<<std::endl;
+		buffer.mutex->Lock();
 		m_size = buffer.m_size;
 		data = buffer.data;
 		refcount = buffer.refcount;
+		mutex = buffer.mutex;
 		(*refcount)++;
+		buffer.mutex->Unlock();
 	}
 	SharedBuffer & operator=(const SharedBuffer & buffer)
 	{
@@ -222,10 +228,13 @@ public:
 		if(this == &buffer)
 			return *this;
 		drop();
+		buffer.mutex->Lock();
 		m_size = buffer.m_size;
 		data = buffer.data;
 		refcount = buffer.refcount;
+		mutex = buffer.mutex;
 		(*refcount)++;
+		buffer.mutex->Unlock();
 		return *this;
 	}
 	/*
@@ -242,6 +251,7 @@ public:
 		else
 			data = NULL;
 		refcount = new unsigned int;
+		mutex = new JMutex();
 		(*refcount) = 1;
 	}
 	/*
@@ -258,6 +268,7 @@ public:
 		else
 			data = NULL;
 		refcount = new unsigned int;
+		mutex = new JMutex();
 		(*refcount) = 1;
 	}
 	~SharedBuffer()
@@ -285,17 +296,24 @@ private:
 	void drop()
 	{
 		assert((*refcount) > 0);
+		mutex->Lock();
 		(*refcount)--;
 		if(*refcount == 0)
 		{
 			if(data)
 				delete[] data;
 			delete refcount;
+			mutex->Unlock();
+			delete mutex;
+		}
+		else {
+			mutex->Unlock();
 		}
 	}
 	T *data;
 	unsigned int m_size;
 	unsigned int *refcount;
+	JMutex* mutex;
 };
 
 inline SharedBuffer<u8> SharedBufferFromString(const char *string)
