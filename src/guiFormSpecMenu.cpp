@@ -3296,8 +3296,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 {
 	if (event.EventType==EET_KEY_INPUT_EVENT) {
 		KeyPress kp(event.KeyInput);
-		if (event.KeyInput.PressedDown && ( (kp == EscapeKey) ||
-				(kp == getKeySetting("keymap_inventory")) || (kp == CancelKey))) {
+		if (event.KeyInput.PressedDown && (
+				(kp == EscapeKey) || (kp == CancelKey) ||
+				((m_client != NULL) && (kp == getKeySetting("keymap_inventory"))))) {
 			tryClose();
 			return true;
 		} else if (m_client != NULL && event.KeyInput.PressedDown &&
