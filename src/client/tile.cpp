@@ -1127,8 +1127,7 @@ inline u16 get_GL_major_version()
 {
 	const GLubyte *gl_version = glGetString(GL_VERSION);
 	std::string gl_ver((const char *)gl_version);
-	u16 GL_version = stoi(gl_ver.substr(0,1));
-	return GL_version;
+	return (u16) (gl_version[0] - '0');
 }
 
 video::IImage * Align2Npot2(video::IImage * image,

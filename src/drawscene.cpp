@@ -630,16 +630,15 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 		video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 
 		if (progress_img && progress_img_bg) {
-			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
 #ifndef __ANDROID__
+			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
 			u32 imgW = rangelim(img_size.Width, 200, 600);
 			u32 imgH = rangelim(img_size.Height, 24, 72);
 #else
-			u32 imgW = rangelim(img_size.Width, 256, 1024);
-			u32 imgH = rangelim(img_size.Height, 48, 128);
-			float imgRatio = (float) imgH / imgW;
-			imgW = screensize.X / 2.2f;
-			imgH = floor(imgW * imgRatio);
+			const core::dimension2d<u32> img_size(256, 48);
+			float imgRatio = (float) img_size.Height / img_size.Width;
+			u32 imgW = screensize.X / 2.2f;
+			u32 imgH = floor(imgW * imgRatio);
 #endif
 			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
 
