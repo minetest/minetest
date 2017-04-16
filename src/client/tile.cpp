@@ -790,8 +790,6 @@ void TextureSource::rebuildImagesAndTextures()
 		video::IImage *img = generateImage(ti->name);
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
-		sanity_check(img->getDimension().Height == npot2(img->getDimension().Height));
-		sanity_check(img->getDimension().Width == npot2(img->getDimension().Width));
 #endif
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
@@ -1143,6 +1141,8 @@ video::IImage * Align2Npot2(video::IImage * image,
 	core::dimension2d<u32> dim = image->getDimension();
 
 	std::string extensions = (char*) glGetString(GL_EXTENSIONS);
+
+	// Only GLES2 is trusted to correctly report npot support
 	if (get_GL_major_version() > 1 &&
 			extensions.find("GL_OES_texture_npot") != std::string::npos) {
 		return image;
