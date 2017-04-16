@@ -2366,11 +2366,15 @@ and `minetest.auth_reload` call the authetification handler.
     * increase level of leveled node by level, default `level` equals `1`
     * if `totallevel > maxlevel`, returns rest (`total-max`)
     * can be negative for decreasing
-* `minetest.fix_light(pos)`: returns `true`/`false`
-    * resets the light of a map block and removes lighting bugs.
-    * Loads the block if it is not loaded.
-    * `pos` is the position of the block (in block coordinates)
-    * returns `false` if the block is not generated (so nothing changed),
+* `minetest.fix_light(pos1, pos2)`: returns `true`/`false`
+    * resets the light in a cuboid-shaped part of
+      the map and removes lighting bugs.
+    * Loads the area if it is not loaded.
+    * `pos1` is the corner of the cuboid with the least coordinates
+      (in node coordinates), inclusive.
+    * `pos2` is the opposite corner of the cuboid, inclusive.
+    * The actual updated cuboid might be larger than the specified one.
+    * returns `false` if the area is not fully generated,
       `true` otherwise
 * `core.check_single_for_falling(pos)`
     * causes an unsupported `group:falling_node` node to fall and causes an

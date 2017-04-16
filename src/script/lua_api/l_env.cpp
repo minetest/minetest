@@ -832,16 +832,26 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	return 1;
 }
 
-// fix_light(p)
+// fix_light(p1, p2)
 int ModApiEnvMod::l_fix_light(lua_State *L)
 {
 	GET_ENV_PTR;
 
-	v3s16 blockpos = read_v3s16(L, 1);
+	v3s16 blockpos1 = getContainerPos(read_v3s16(L, 1), MAP_BLOCKSIZE);
+	v3s16 blockpos2 = getContainerPos(read_v3s16(L, 2), MAP_BLOCKSIZE);
 	ServerMap &map = env->getServerMap();
 	std::map<v3s16, MapBlock *> modified_blocks;
-	bool success = map.repairBlockLight(blockpos, &modified_blocks);
-	if (success) {
+	bool success = true;
+	v3s16 blockpos;
+	for (blockpos.X = blockpos1.X; blockpos.X <= blockpos2.X;
+			blockpos.X++)
+		for (blockpos.Y = blockpos1.Y; blockpos.Y <= blockpos2.Y;
+				blockpos.Y++)
+			for (blockpos.Z = blockpos1.Z; blockpos.Z <= blockpos2.Z;
+					blockpos.Z++)
+				success = success
+					& map.repairBlockLight(blockpos, &modified_blocks);
+	if (modified_blocks.size() > 0) {
 		MapEditEvent event;
 		event.type = MEET_OTHER;
 		for (std::map<v3s16, MapBlock *>::iterator it = modified_blocks.begin();
