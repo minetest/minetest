@@ -1782,6 +1782,7 @@ typedef struct TextureUpdateArgs {
 	u32 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
+	ITextureSource *tsrc;
 } TextureUpdateArgs;
 
 void texture_update_progress(void *args, u32 progress, u32 max_progress)
@@ -1803,8 +1804,8 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 			targs->last_time_ms = time_ms;
 			std::basic_stringstream<wchar_t> strm;
 			strm << targs->text_base << " " << targs->last_percent << "%...";
-			draw_load_screen(strm.str(), targs->device, targs->guienv, 0,
-				72 + (u16) ((18. / 100.) * (double) targs->last_percent));
+			draw_load_screen(strm.str(), targs->device, targs->guienv, targs->tsrc, 0,
+				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
 		}
 }
 
@@ -1824,21 +1825,21 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	draw_load_screen(text,device, guienv, 0, 70);
+	draw_load_screen(text,device, guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	draw_load_screen(text, device, guienv, 0, 71);
+	draw_load_screen(text, device, guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	draw_load_screen(text, device, guienv, 0, 72);
+	draw_load_screen(text, device, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	std::string texture_path = g_settings->get("texture_path");
 	if (texture_path != "" && fs::IsDir(texture_path))
@@ -1855,6 +1856,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	tu_args.last_time_ms = getTimeMs();
 	tu_args.last_percent = 0;
 	tu_args.text_base =  wgettext("Initializing nodes");
+	tu_args.tsrc = m_tsrc;
 	m_nodedef->updateTextures(this, texture_update_progress, &tu_args);
 	delete[] tu_args.text_base;
 
@@ -1871,7 +1873,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	}
 
 	text = wgettext("Done!");
-	draw_load_screen(text, device, guienv, 0, 100);
+	draw_load_screen(text, device, guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
 }
