@@ -706,26 +706,11 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	local oc = {}
 
 	for c, v in pairs(pos_off) do
-		if v == 0 then
+		if nc or v == 0 then
 			oc[#oc + 1] = c
 		else
 			offset = v
 			nc = c
-		end
-	end
-
-	if #oc < 2 then
-		if oc[1] == "x" and nc == "z" or oc[1] == "z" and nc == "x" then
-			oc[2] = "y"
-		elseif oc[1] == "z" and nc == "y" or oc[1] == "y" and nc == "z" then
-			oc[2] = "x"
-		elseif oc[1] == "x" and nc == "y" or oc[1] == "y" and nc == "x" then
-			oc[2] = "z"
-		else
-			oc[1] = "x"
-			oc[2] = "y"
-			nc = "z"
-			offset = 0
 		end
 	end
 
