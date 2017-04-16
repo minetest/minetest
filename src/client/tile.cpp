@@ -1124,6 +1124,15 @@ video::IImage* TextureSource::generateImage(const std::string &name)
  * @param driver driver to use for image operations
  * @return image or copy of image aligned to npot2
  */
+
+inline u16 get_GL_major_version()
+{
+	const GLubyte *gl_version = glGetString(GL_VERSION);
+	std::string gl_ver((const char *)gl_version);
+	u16 GL_version = stoi(gl_ver.substr(0,1));
+	return GL_version;
+}
+
 video::IImage * Align2Npot2(video::IImage * image,
 		video::IVideoDriver* driver)
 {
@@ -1134,7 +1143,8 @@ video::IImage * Align2Npot2(video::IImage * image,
 	core::dimension2d<u32> dim = image->getDimension();
 
 	std::string extensions = (char*) glGetString(GL_EXTENSIONS);
-	if (extensions.find("GL_OES_texture_npot") != std::string::npos) {
+	if (get_GL_major_version() > 1 &&
+			extensions.find("GL_OES_texture_npot") != std::string::npos) {
 		return image;
 	}
 
