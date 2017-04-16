@@ -599,7 +599,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
-		gui::IGUIEnvironment* guienv, float dtime, int percent, bool clouds )
+		gui::IGUIEnvironment* guienv, ITextureSource *tsrc,
+		float dtime, int percent, bool clouds)
 {
 	video::IVideoDriver* driver    = device->getVideoDriver();
 	v2u32 screensize               = porting::getWindowSize();
@@ -625,27 +626,20 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 
 	// draw progress bar
 	if ((percent >= 0) && (percent <= 100)) {
-		const std::string &texture_path = g_settings->get("texture_path");
-		std::string tp_progress_bar = texture_path + "/progress_bar.png";
-		std::string tp_progress_bar_bg = texture_path + "/progress_bar_bg.png";
-
-		if (!(fs::PathExists(tp_progress_bar) &&
-				fs::PathExists(tp_progress_bar_bg))) {
-			std::string gamepath = fs::RemoveRelativePathComponents(
-				porting::path_share + DIR_DELIM + "textures");
-			tp_progress_bar = gamepath + "/base/pack/progress_bar.png";
-			tp_progress_bar_bg = gamepath + "/base/pack/progress_bar_bg.png";
-		}
-
-		video::ITexture *progress_img =
-			driver->getTexture(tp_progress_bar.c_str());
-		video::ITexture *progress_img_bg =
-			driver->getTexture(tp_progress_bar_bg.c_str());
+		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
+		video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 
 		if (progress_img && progress_img_bg) {
+#ifndef __ANDROID__
 			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
 			u32 imgW = rangelim(img_size.Width, 200, 600);
 			u32 imgH = rangelim(img_size.Height, 24, 72);
+#else
+			const core::dimension2d<u32> img_size(256, 48);
+			float imgRatio = (float) img_size.Height / img_size.Width;
+			u32 imgW = screensize.X / 2.2f;
+			u32 imgH = floor(imgW * imgRatio);
+#endif
 			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
 
 			draw2DImageFilterScaled(

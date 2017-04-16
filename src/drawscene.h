@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 void draw_load_screen(const std::wstring &text, IrrlichtDevice *device,
-		gui::IGUIEnvironment *guienv, float dtime = 0, int percent = 0,
-		bool clouds = true);
+		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime = 0,
+		int percent = 0, bool clouds = true);
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		Camera &camera, Client &client, LocalPlayer *player,

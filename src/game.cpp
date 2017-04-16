@@ -1725,9 +1725,10 @@ bool Game::init(
 		u16 port,
 		const SubgameSpec &gamespec)
 {
+	texture_src = createTextureSource(device);
+
 	showOverlayMessage(wgettext("Loading..."), 0, 0);
 
-	texture_src = createTextureSource(device);
 	shader_src = createShaderSource(device);
 
 	itemdef_manager = createItemDefManager();
@@ -2183,12 +2184,14 @@ bool Game::getServerContent(bool *aborted)
 		if (!client->itemdefReceived()) {
 			const wchar_t *text = wgettext("Item definitions...");
 			progress = 25;
-			draw_load_screen(text, device, guienv, dtime, progress);
+			draw_load_screen(text, device, guienv, texture_src,
+				dtime, progress);
 			delete[] text;
 		} else if (!client->nodedefReceived()) {
 			const wchar_t *text = wgettext("Node definitions...");
 			progress = 30;
-			draw_load_screen(text, device, guienv, dtime, progress);
+			draw_load_screen(text, device, guienv, texture_src,
+				dtime, progress);
 			delete[] text;
 		} else {
 			std::stringstream message;
@@ -2212,7 +2215,7 @@ bool Game::getServerContent(bool *aborted)
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
 			draw_load_screen(utf8_to_wide(message.str()), device,
-					guienv, dtime, progress);
+					guienv, texture_src, dtime, progress);
 		}
 	}
 
@@ -4357,7 +4360,8 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 void Game::showOverlayMessage(const wchar_t *msg, float dtime,
 		int percent, bool draw_clouds)
 {
-	draw_load_screen(msg, device, guienv, dtime, percent, draw_clouds);
+	draw_load_screen(msg, device, guienv, texture_src, dtime, percent,
+		draw_clouds);
 	delete[] msg;
 }
 
