@@ -2373,7 +2373,13 @@ and `minetest.auth_reload` call the authetification handler.
     * `pos1` is the corner of the cuboid with the least coordinates
       (in node coordinates), inclusive.
     * `pos2` is the opposite corner of the cuboid, inclusive.
-    * The actual updated cuboid might be larger than the specified one.
+    * The actual updated cuboid might be larger than the specified one,
+      because only whole map blocks can be updated.
+      The actual updated area consists of those map blocks that intersect
+      with the given cuboid.
+    * However, the neighborhood of the updated area might change
+      as well, as light can spread out of the cuboid, also light
+      might be removed.
     * returns `false` if the area is not fully generated,
       `true` otherwise
 * `core.check_single_for_falling(pos)`
