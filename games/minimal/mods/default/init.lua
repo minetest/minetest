@@ -854,7 +854,6 @@ minetest.register_node("default:leaves", {
 	visual_scale = 1.3,
 	tiles ={"default_leaves.png"},
 	paramtype = "light",
-	is_ground_content = false,
 	groups = {snappy=3},
 	drop = {
 		max_items = 1,
@@ -871,6 +870,17 @@ minetest.register_node("default:leaves", {
 			}
 		}
 	},
+	sounds = default.node_sound_leaves_defaults(),
+})
+
+minetest.register_node("default:jungleleaves", {
+	description = "Jungle Leaves",
+	drawtype = "allfaces_optional",
+	waving = 1,
+	visual_scale = 1.3,
+	tiles = {"default_jungleleaves.png"},
+	paramtype = "light",
+	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
 	sounds = default.node_sound_leaves_defaults(),
 })
 
@@ -1542,6 +1552,74 @@ minetest.register_node("default:apple", {
 	groups = {fleshy=3,dig_immediate=3},
 	on_use = minetest.item_eat(4),
 	sounds = default.node_sound_defaults(),
+})
+
+minetest.register_node("default:dirt_with_snow", {
+	description = "Dirt with Snow",
+	tiles = {"default_snow.png", "default_dirt.png", "default_dirt.png^default_snow_side.png"},
+	groups = {crumbly=3,soil=1},
+	drop = 'default:dirt',
+	sounds = default.node_sound_dirt_defaults(),
+})
+
+minetest.register_node("default:snow", {
+	description = "Snow",
+	tiles = {"default_snow.png"},
+	inventory_image = "default_snowball.png",
+	wield_image = "default_snowball.png",
+	paramtype = "light",
+	buildable_to = true,
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.5,  0.5, -0.5+2/16, 0.5},
+		},
+	},
+	groups = {crumbly=3,falling_node=1},
+	sounds = default.node_sound_dirt_defaults(),
+
+	on_construct = function(pos)
+		pos.y = pos.y - 1
+		if minetest.get_node(pos).name == "default:dirt_with_grass" then
+			minetest.set_node(pos, {name="default:dirt_with_snow"})
+		end
+	end,
+})
+
+minetest.register_node("default:snowblock", {
+	description = "Snow Block",
+	tiles = {"default_snow.png"},
+	groups = {crumbly=3},
+	sounds = default.node_sound_dirt_defaults(),
+})
+
+minetest.register_node("default:ice", {
+	description = "Ice",
+	tiles = {"default_ice.png"},
+	is_ground_content = false,
+	paramtype = "light",
+	groups = {cracky=3},
+	sounds = default.node_sound_glass_defaults(),
+})
+
+minetest.register_node("default:pinetree", {
+	description = "Pine Tree",
+	tiles = {"default_pinetree_top.png", "default_pinetree_top.png", "default_pinetree.png"},
+	paramtype2 = "facedir",
+	groups = {tree=1,choppy=2,oddly_breakable_by_hand=1,flammable=2},
+	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_node("default:pine_needles",{
+	description = "Pine Needles",
+	drawtype = "allfaces_optional",
+	visual_scale = 1.3,
+	tiles = {"default_pine_needles.png"},
+	waving = 1,
+	paramtype = "light",
+	groups = {snappy=3, leafdecay=3, flammable=2, leaves=1},
+	sounds = default.node_sound_leaves_defaults(),
 })
 
 --
