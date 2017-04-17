@@ -3304,6 +3304,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 				clouds->setColorAmbient(*event.set_clouds.color_ambient);
 				delete event.set_clouds.color_ambient;
 				clouds->setHeight(event.set_clouds.height);
+				clouds->setSpeed(*event.set_clouds.speed);
+				delete event.set_clouds.speed;
 			}
 			break;
 

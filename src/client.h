@@ -184,6 +184,7 @@ struct ClientEvent
 			video::SColor *color_bright;
 			video::SColor *color_ambient;
 			float height;
+			v2f *speed;
 		} set_clouds;
 	};
 };

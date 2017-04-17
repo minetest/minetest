@@ -38,6 +38,7 @@ struct CloudSettings
 	video::SColor color_bright;
 	video::SColor color_ambient;
 	float height;
+	v2f speed;
 };
 
 /*

@@ -335,7 +335,8 @@ public:
 	bool setClouds(RemotePlayer *player, const float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
-			const float height);
+			const float height,
+			const v2f speed);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
@@ -408,7 +409,8 @@ private:
 	void SendSetClouds(u16 peer_id, const float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
-			const float height);
+			const float height,
+			const v2f speed);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
 
 	/*

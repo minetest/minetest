@@ -616,6 +616,7 @@ enum ToClientCommand
 		u8[4] color_diffuse (ARGB)
 		u8[4] color_ambient (ARGB)
 		f1000 height
+		v2f1000 speed
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,

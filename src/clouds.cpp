@@ -46,7 +46,8 @@ Clouds::Clouds(
 	scene::ISceneNode(parent, mgr, id),
 	m_seed(seed),
 	m_camera_pos(0,0),
-	m_time(0),
+	m_origin(0, 0),
+	m_speed(0, -2),
 	m_camera_offset(0,0,0),
 	m_density(0.4),
 	m_color(1.0, 1.0, 1.0, 1.0),
@@ -111,14 +112,11 @@ void Clouds::render()
 	*/
 
 	const float cloud_size = BS * 64;
-	const v2f cloud_speed(0, -BS * 2);
 	
 	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
 	
-	// Position of cloud noise origin in world coordinates
-	v2f world_cloud_origin_pos_f = m_time * cloud_speed;
 	// Position of cloud noise origin from the camera
-	v2f cloud_origin_from_camera_f = world_cloud_origin_pos_f - m_camera_pos;
+	v2f cloud_origin_from_camera_f = m_origin - m_camera_pos;
 	// The center point of drawing in the noise
 	v2f center_of_drawing_in_noise_f = -cloud_origin_from_camera_f;
 	// The integer center point of drawing in the noise
@@ -130,7 +128,7 @@ void Clouds::render()
 	v2f world_center_of_drawing_in_noise_f = v2f(
 		center_of_drawing_in_noise_i.X * cloud_size,
 		center_of_drawing_in_noise_i.Y * cloud_size
-	) + world_cloud_origin_pos_f;
+	) + m_origin;
 
 	/*video::SColor c_top(128,b*240,b*240,b*255);
 	video::SColor c_side_1(128,b*230,b*230,b*255);
@@ -351,7 +349,7 @@ void Clouds::render()
 
 void Clouds::step(float dtime)
 {
-	m_time += dtime;
+	m_origin = m_origin + dtime * BS * m_speed;
 }
 
 void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
@@ -370,4 +368,3 @@ void Clouds::readSettings()
 	m_cloud_radius_i = g_settings->getU16("cloud_radius");
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }
-

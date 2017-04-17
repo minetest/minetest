@@ -106,6 +106,7 @@ public:
 		updateBox();
 	}
 
+	void setSpeed(v2f speed) { m_speed = speed; }
 
 private:
 	video::SMaterial m_material;
@@ -116,7 +117,8 @@ private:
 	bool m_enable_3d;
 	u32 m_seed;
 	v2f m_camera_pos;
-	float m_time;
+	v2f m_origin;
+	v2f m_speed;
 	v3s16 m_camera_offset;
 	float m_density;
 	video::SColorf m_color;
@@ -134,4 +136,3 @@ private:
 
 
 #endif
-
