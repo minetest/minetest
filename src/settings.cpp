@@ -398,6 +398,16 @@ s16 Settings::getS16(const std::string &name) const
 }
 
 
+u32 Settings::getU32(const std::string &name) const
+{
+	u32 value = 0;
+	std::string s = get(name);
+	std::istringstream ss(s);
+	ss >> value;
+	return value;
+}
+
+
 s32 Settings::getS32(const std::string &name) const
 {
 	return stoi(get(name));
@@ -417,6 +427,12 @@ u64 Settings::getU64(const std::string &name) const
 	std::istringstream ss(s);
 	ss >> value;
 	return value;
+}
+
+
+s64 Settings::getS64(const std::string &name) const
+{
+	return stoi64(get(name));
 }
 
 
@@ -637,6 +653,28 @@ bool Settings::getS32NoEx(const std::string &name, s32 &val) const
 {
 	try {
 		val = getS32(name);
+		return true;
+	} catch (SettingNotFoundException &e) {
+		return false;
+	}
+}
+
+
+bool Settings::getU32NoEx(const std::string &name, u32 &val) const
+{
+	try {
+		val = getU32(name);
+		return true;
+	} catch (SettingNotFoundException &e) {
+		return false;
+	}
+}
+
+
+bool Settings::getS64NoEx(const std::string &name, s64 &val) const
+{
+	try {
+		val = getS64(name);
 		return true;
 	} catch (SettingNotFoundException &e) {
 		return false;
