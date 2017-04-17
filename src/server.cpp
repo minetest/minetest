@@ -1047,7 +1047,7 @@ void Server::AsyncRunStep(bool initial_step)
 					std::wstringstream ws;
 
 					ws << L"*** Server shutting down in "
-						<< duration_to_string(round(m_shutdown_timer - dtime)).c_str()
+						<< duration_to_string(myround(m_shutdown_timer - dtime)).c_str()
 						<< ".";
 
 					infostream << wide_to_utf8(ws.str()).c_str() << std::endl;
@@ -3502,7 +3502,7 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 		std::wstringstream ws;
 
 		ws << L"*** Server shutting down in "
-				<< duration_to_string(round(m_shutdown_timer)).c_str()
+				<< duration_to_string(myround(m_shutdown_timer)).c_str()
 				<< ".";
 
 		infostream << wide_to_utf8(ws.str()).c_str() << std::endl;

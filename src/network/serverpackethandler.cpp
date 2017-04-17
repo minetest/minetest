@@ -726,7 +726,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	if (m_shutdown_timer > 0.0f) {
 		std::wstringstream ws;
 		ws << L"*** Server shutting down in "
-				<< duration_to_string(round(m_shutdown_timer)).c_str() << ".";
+				<< duration_to_string(myround(m_shutdown_timer)).c_str() << ".";
 		SendChatMessage(pkt->getPeerId(), ws.str());
 	}
 }

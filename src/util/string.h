@@ -616,9 +616,9 @@ inline const char *bool_to_cstr(bool val)
 
 inline const std::string duration_to_string(int sec)
 {
-	int min = floor(sec / 60);
+	int min = sec / 60;
 	sec %= 60;
-	int hour = floor(min / 60);
+	int hour = min / 60;
 	min %= 60;
 
 	std::stringstream ss;
