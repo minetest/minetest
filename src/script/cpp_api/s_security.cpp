@@ -406,7 +406,14 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 
 	// Read the file
 	int ret = std::fseek(fp, 0, SEEK_END);
-	CHECK_FILE_ERR(ret, fp);
+	if (ret) {
+		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		std::fclose(fp);
+		if (path) {
+			delete [] chunk_name;
+		}
+		return false;
+	}
 
 	size_t size = std::ftell(fp) - start;
 	char *code = new char[size];
