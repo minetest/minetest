@@ -1126,7 +1126,6 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 inline u16 get_GL_major_version()
 {
 	const GLubyte *gl_version = glGetString(GL_VERSION);
-	std::string gl_ver((const char *)gl_version);
 	return (u16) (gl_version[0] - '0');
 }
 
