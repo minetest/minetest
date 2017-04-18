@@ -27,6 +27,13 @@ core.register_entity(":__builtin:falling_node", {
 			is_visible = true,
 			textures = {node.name},
 		})
+	
+		if node.param2 then
+			local facedir = node.param2 % 4
+			local yaw = -math.pi / 2 * facedir
+
+			self.object:setyaw(yaw)
+		end
 	end,
 
 	get_staticdata = function(self)
