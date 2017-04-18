@@ -51,11 +51,11 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 	-- category
 	local stars, category = line:match("^%[([%*]*)([^%]]+)%]$")
 	if category then
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = category,
 			level = stars:len() + base_level,
 			type = "category",
-		})
+		}
 		return
 	end
 
@@ -99,7 +99,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 		min = tonumber(min)
 		max = tonumber(max)
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "int",
@@ -107,7 +107,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			min = min,
 			max = max,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -123,13 +123,13 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return
 		end
 
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -138,13 +138,13 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid boolean setting"
 		end
 
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "bool",
 			default = remaining_line,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -162,7 +162,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 
 		min = tonumber(min)
 		max = tonumber(max)
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "float",
@@ -170,7 +170,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			min = min,
 			max = max,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -185,14 +185,14 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid enum setting"
 		end
 
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "enum",
 			default = default,
 			values = values:split(",", true),
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -203,13 +203,13 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid path setting"
 		end
 
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "path",
 			default = default,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -231,14 +231,14 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			default = ""
 		end
 
-		table.insert(settings, {
+		settings[#settings + 1] = {
 			name = name,
 			readable_name = readable_name,
 			type = "flags",
 			default = default,
 			possible = possible,
 			comment = current_comment,
-		})
+		}
 		return
 	end
 
@@ -287,19 +287,19 @@ local function parse_config_file(read_all, parse_mods)
 			if file then
 				if not games_category_initialized then
 					local translation = fgettext_ne("Games"), -- not used, but needed for xgettext
-					table.insert(settings, {
+					settings[#settings + 1] = {
 						name = "Games",
 						level = 0,
 						type = "category",
-					})
+					}
 					games_category_initialized = true
 				end
 
-				table.insert(settings, {
+				settings[#settings + 1] = {
 					name = game.name,
 					level = 1,
 					type = "category",
-				})
+				}
 
 				parse_single_file(file, path, read_all, settings, 2, false)
 
@@ -320,19 +320,19 @@ local function parse_config_file(read_all, parse_mods)
 			if file then
 				if not mods_category_initialized then
 					local translation = fgettext_ne("Mods"), -- not used, but needed for xgettext
-					table.insert(settings, {
+					settings[#settings + 1] = {
 						name = "Mods",
 						level = 0,
 						type = "category",
-					})
+					}
 					mods_category_initialized = true
 				end
 
-				table.insert(settings, {
+				settings[#settings + 1] = {
 					name = mod.name,
 					level = 1,
 					type = "category",
-				})
+				}
 
 				parse_single_file(file, path, read_all, settings, 2, false)
 
