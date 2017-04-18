@@ -79,14 +79,15 @@ extern Profiler *g_profiler;
 	Text input system
 */
 
-struct TextDestNodeMetadata : public TextDest {
+struct TextDestNodeMetadata : public TextDest
+{
 	TextDestNodeMetadata(v3s16 p, Client *client)
 	{
 		m_p = p;
 		m_client = client;
 	}
 	// This is deprecated I guess? -celeron55
-	void gotText(std::wstring text)
+	void gotText(const std::wstring &text)
 	{
 		std::string ntext = wide_to_utf8(text);
 		infostream << "Submitting 'text' field of node at (" << m_p.X << ","
@@ -104,13 +105,14 @@ struct TextDestNodeMetadata : public TextDest {
 	Client *m_client;
 };
 
-struct TextDestPlayerInventory : public TextDest {
+struct TextDestPlayerInventory : public TextDest
+{
 	TextDestPlayerInventory(Client *client)
 	{
 		m_client = client;
 		m_formname = "";
 	}
-	TextDestPlayerInventory(Client *client, std::string formname)
+	TextDestPlayerInventory(Client *client, const std::string &formname)
 	{
 		m_client = client;
 		m_formname = formname;
@@ -131,13 +133,13 @@ struct LocalFormspecHandler : public TextDest
 		m_formname = formname;
 	}
 
-	LocalFormspecHandler(std::string formname, Client *client):
+	LocalFormspecHandler(const std::string &formname, Client *client):
 		m_client(client)
 	{
 		m_formname = formname;
 	}
 
-	void gotText(std::wstring message)
+	void gotText(const std::wstring &message)
 	{
 		errorstream << "LocalFormspecHandler::gotText old style message received" << std::endl;
 	}
@@ -1190,7 +1192,7 @@ protected:
 			u16 port,
 			const SubgameSpec &gamespec);
 	bool initSound();
-	bool createSingleplayerServer(const std::string map_dir,
+	bool createSingleplayerServer(const std::string &map_dir,
 			const SubgameSpec &gamespec, u16 port, std::string *address);
 
 	// Client creation
@@ -1780,7 +1782,7 @@ bool Game::initSound()
 	return true;
 }
 
-bool Game::createSingleplayerServer(const std::string map_dir,
+bool Game::createSingleplayerServer(const std::string &map_dir,
 		const SubgameSpec &gamespec, u16 port, std::string *address)
 {
 	showOverlayMessage(wgettext("Creating server..."), 0, 5);

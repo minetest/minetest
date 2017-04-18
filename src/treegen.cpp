@@ -113,7 +113,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 
 // L-System tree LUA spawner
 treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
-		INodeDefManager *ndef, TreeDef tree_definition)
+		INodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;

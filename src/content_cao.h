@@ -200,7 +200,7 @@ public:
 
 	void updateTexturePos();
 
-	void updateTextures(const std::string mod);
+	void updateTextures(const std::string &mod);
 
 	void updateAnimation();
 

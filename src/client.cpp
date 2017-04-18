@@ -57,7 +57,7 @@ extern gui::IGUIEnvironment* guienv;
 Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
-		std::string password,
+		const std::string &password,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,

@@ -1226,7 +1226,8 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
 /*
 	ServerMap
 */
-ServerMap::ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge):
+ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
+		EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge),
@@ -1936,7 +1937,7 @@ std::string ServerMap::getSectorDir(v2s16 pos, int layout)
 	}
 }
 
-v2s16 ServerMap::getSectorPos(std::string dirname)
+v2s16 ServerMap::getSectorPos(const std::string &dirname)
 {
 	unsigned int x = 0, y = 0;
 	int r;
@@ -1966,7 +1967,7 @@ v2s16 ServerMap::getSectorPos(std::string dirname)
 	return pos;
 }
 
-v3s16 ServerMap::getBlockPos(std::string sectordir, std::string blockfile)
+v3s16 ServerMap::getBlockPos(const std::string &sectordir, const std::string &blockfile)
 {
 	v2s16 p2d = getSectorPos(sectordir);
 
