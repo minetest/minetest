@@ -5,6 +5,11 @@
 
 stages:
   - build
+  - package
+  - deploy
+
+variables:
+  MINETEST_GAME_REPO: "https://github.com/minetest/minetest_game.git"
 
 .build_template: &build_definition
   stage: build
@@ -12,7 +17,7 @@ stages:
     - mkdir cmakebuild
     - mkdir -p artifact/minetest/usr/
     - cd cmakebuild
-    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=TRUE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
+    - cmake -DCMAKE_INSTALL_PREFIX=../artifact/minetest/usr/ -DCMAKE_BUILD_TYPE=Release -DRUN_IN_PLACE=FALSE -DENABLE_GETTEXT=TRUE -DBUILD_SERVER=TRUE ..
     - make -j2
     - make install
   artifacts:
@@ -21,15 +26,64 @@ stages:
     paths:
       - artifact/*
 
+.debpkg_template: &debpkg_template
+  stage: package
+  before_script:
+    - apt-get update -y
+    - apt-get install -y git
+    - mkdir -p build/deb/minetest/DEBIAN/
+    - cp misc/debpkg-control build/deb/minetest/DEBIAN/control
+    - cp -Rp artifact/minetest/usr build/deb/minetest/
+  script:
+    - git clone $MINETEST_GAME_REPO build/deb/minetest/usr/share/minetest/games/minetest
+    - rm -Rf build/deb/minetest/usr/share/minetest/games/minetest/.git
+    - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
+    - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
+    - cd build/deb/ && dpkg-deb -b minetest/
+  artifacts:
+    when: on_success
+    expire_in: 30 day
+    paths:
+      - build/deb/*.deb
+
+.debpkg_install: &debpkg_install
+  stage: deploy
+  before_script:
+    - apt-get update -y
+    - apt-get install -y libc6 libcurl3-gnutls libfreetype6 libirrlicht1.8 $LEVELDB_PKG liblua5.1-0 libluajit-5.1-2 libopenal1 libstdc++6 libvorbisfile3 libx11-6 zlib1g
+  script:
+    - dpkg -i build/deb/*.deb
+
 ##
 ## Debian
 ##
+
+# Jessie
+
 build:debian-8:
   <<: *build_definition
   image: debian:8
   before_script:
     - apt-get update -y
     - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+package:debian-8:
+  image: debian:8
+  dependencies:
+    - build:debian-8
+  variables:
+    LEVELDB_PKG: libleveldb1
+  <<: *debpkg_template
+
+deploy:debian-8:
+  image: debian:8
+  dependencies:
+    - package:debian-8
+  variables:
+    LEVELDB_PKG: libleveldb1
+  <<: *debpkg_install
+
+# Stretch
 
 build:debian-9:
  <<: *build_definition
@@ -38,15 +92,52 @@ build:debian-9:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
+package:debian-9:
+  image: debian:9
+  dependencies:
+    - build:debian-9
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_template
+
+deploy:debian-9:
+  image: debian:9
+  dependencies:
+    - package:debian-9
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_install
+
 ##
 ## Ubuntu
 ##
+
+# Trusty
+
 build:ubuntu-14.04:
  <<: *build_definition
  image: ubuntu:trusty
  before_script:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+package:ubuntu-14.04:
+  image: ubuntu:trusty
+  dependencies:
+    - build:ubuntu-14.04
+  variables:
+    LEVELDB_PKG: libleveldb1
+  <<: *debpkg_template
+
+deploy:ubuntu-14.04:
+  image: ubuntu:trusty
+  dependencies:
+    - package:ubuntu-14.04
+  variables:
+    LEVELDB_PKG: libleveldb1
+  <<: *debpkg_install
+
+# Xenial
 
 build:ubuntu-16.04:
  <<: *build_definition
@@ -55,12 +146,48 @@ build:ubuntu-16.04:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
+package:ubuntu-16.04:
+  image: ubuntu:xenial
+  dependencies:
+    - build:ubuntu-16.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_template
+
+deploy:ubuntu-16.04:
+  image: ubuntu:xenial
+  dependencies:
+    - package:ubuntu-16.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_install
+
+# Yakkety
+
 build:ubuntu-16.10:
  <<: *build_definition
  image: ubuntu:yakkety
  before_script:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+
+package:ubuntu-16.10:
+  image: ubuntu:yakkety
+  dependencies:
+    - build:ubuntu-16.10
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_template
+
+deploy:ubuntu-16.10:
+  image: ubuntu:yakkety
+  dependencies:
+    - package:ubuntu-16.10
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_install
+
+# Zesty
 
 build:ubuntu-17.04:
  <<: *build_definition
@@ -69,9 +196,26 @@ build:ubuntu-17.04:
    - apt-get update -y
    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
+package:ubuntu-17.04:
+  image: ubuntu:zesty
+  dependencies:
+    - build:ubuntu-17.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_template
+
+deploy:ubuntu-17.04:
+  image: ubuntu:zesty
+  dependencies:
+    - package:ubuntu-17.04
+  variables:
+    LEVELDB_PKG: libleveldb1v5
+  <<: *debpkg_install
+
 ##
 ## Fedora
 ##
+
 build:fedora-24:
   <<: *build_definition
   image: fedora:24

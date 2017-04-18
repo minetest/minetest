@@ -1,0 +1,36 @@
+Section: games
+Priority: extra
+Standards-Version: 3.6.2
+Package: minetest-staging
+Version: 0.4.15-DATEPLACEHOLDER
+Depends: libc6, libcurl3-gnutls, libfreetype6, libirrlicht1.8, LEVELDB_PLACEHOLDER, liblua5.1-0, libluajit-5.1-2, libopenal1, libstdc++6, libvorbisfile3, libx11-6, zlib1g
+Maintainer: Loic Blot <loic.blot@unix-experience.fr>
+Homepage: http://minetest.net/
+Vcs-Git: https://github.com/minetest/minetest.git
+Vcs-Browser: https://github.com/minetest/minetest.git
+Architecture: amd64
+Build-Depends:
+ cmake,
+ gettext,
+ libbz2-dev,
+ libcurl4-gnutls-dev,
+ libfreetype6-dev,
+ libglu1-mesa-dev,
+ libirrlicht-dev (>= 1.7.0),
+ libjpeg-dev,
+ libjsoncpp-dev,
+ libleveldb-dev,
+ libluajit-5.1-dev | liblua5.1-dev,
+ libogg-dev,
+ libopenal-dev,
+ libpng-dev,
+ libsqlite3-dev,
+ libvorbis-dev,
+ libx11-dev,
+ zlib1g-dev
+Description: Multiplayer infinite-world block sandbox (server)
+ Minetest is a minecraft-inspired game written from scratch and licensed
+ under the LGPL (version 2.1 or later). It supports both survival and creative
+ modes along with multiplayer support, dynamic lighting, and an "infinite" map
+ generator.
+Conflicts: minetestc55, minetest, minetest-server, minetest-data
