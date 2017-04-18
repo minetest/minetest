@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include "itemgroup.h"
+#include <json/json.h>
 
 struct ToolGroupCap
 {
@@ -42,6 +43,9 @@ struct ToolGroupCap
 		*time = i->second;
 		return true;
 	}
+
+	void toJson(Json::Value &object) const;
+	void fromJson(const Json::Value &json);
 };
 
 
@@ -69,6 +73,8 @@ struct ToolCapabilities
 
 	void serialize(std::ostream &os, u16 version) const;
 	void deSerialize(std::istream &is);
+	void serializeJson(std::ostream &os) const;
+	void deserializeJson(std::istream &is);
 };
 
 struct DigParams

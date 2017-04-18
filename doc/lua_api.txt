@@ -3267,6 +3267,8 @@ Can be obtained via `item:get_meta()`.
 
 #### Methods
 * All methods in MetaDataRef
+* `set_tool_capabilities([tool_capabilities])`: overrides the item's tool
+  capabilities to those provided, or unoverrides it if nil.
 
 ### `StorageRef`
 Mod metadata: per mod metadata, saved automatically.
