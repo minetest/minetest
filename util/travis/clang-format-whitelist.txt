@@ -169,6 +169,7 @@ src/map_settings_manager.cpp
 src/map_settings_manager.h
 src/mesh.cpp
 src/mesh.h
+src/mesh_generator_thread.cpp
 src/metadata.cpp
 src/metadata.h
 src/mg_biome.cpp

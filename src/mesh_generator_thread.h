@@ -53,10 +53,12 @@ struct QueuedMeshUpdate
 */
 class MeshUpdateQueue
 {
-	enum UpdateMode {
+	enum UpdateMode
+	{
 		FORCE_UPDATE,
 		SKIP_UPDATE_IF_ALREADY_CACHED,
 	};
+
 public:
 	MeshUpdateQueue(Client *client);
 
@@ -68,7 +70,7 @@ public:
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
-	QueuedMeshUpdate * pop();
+	QueuedMeshUpdate *pop();
 
 	u32 size()
 	{
@@ -78,9 +80,9 @@ public:
 
 private:
 	Client *m_client;
-	std::vector<QueuedMeshUpdate*> m_queue;
+	std::vector<QueuedMeshUpdate *> m_queue;
 	std::set<v3s16> m_urgents;
-	std::map<v3s16, CachedMapBlockData*> m_cache;
+	std::map<v3s16, CachedMapBlockData *> m_cache;
 	Mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
@@ -89,9 +91,9 @@ private:
 	bool m_cache_smooth_lighting;
 	int m_meshgen_block_cache_size;
 
-	CachedMapBlockData* cacheBlock(Map *map, v3s16 p, UpdateMode mode,
-			size_t *cache_hit_counter=NULL);
-	CachedMapBlockData* getCachedBlock(const v3s16 &p);
+	CachedMapBlockData *cacheBlock(Map *map, v3s16 p, UpdateMode mode,
+			size_t *cache_hit_counter = NULL);
+	CachedMapBlockData *getCachedBlock(const v3s16 &p);
 	void fillDataFromMapBlockCache(QueuedMeshUpdate *q);
 	void cleanupCache();
 };
@@ -102,10 +104,8 @@ struct MeshUpdateResult
 	MapBlockMesh *mesh;
 	bool ack_block_to_server;
 
-	MeshUpdateResult():
-		p(-1338,-1338,-1338),
-		mesh(NULL),
-		ack_block_to_server(false)
+	MeshUpdateResult()
+	    : p(-1338, -1338, -1338), mesh(NULL), ack_block_to_server(false)
 	{
 	}
 };
