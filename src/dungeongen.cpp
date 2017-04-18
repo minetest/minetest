@@ -46,7 +46,7 @@ DungeonGen::DungeonGen(INodeDefManager *ndef,
 	this->gennotify = gennotify;
 
 #ifdef DGEN_USE_TORCHES
-	c_torch  = ndef->getId("default:torch");
+	c_torch  = mg->ndef->getId("default:torch");
 #endif
 
 	if (dparams) {
