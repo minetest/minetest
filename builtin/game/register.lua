@@ -54,7 +54,7 @@ local forbidden_item_names = {
 }
 
 local function check_modname_prefix(name)
-	if name:sub(1,1) == ":" then
+	if name:sub(1, 1) == ":" then
 		-- If the name starts with a colon, we can skip the modname prefix
 		-- mechanism.
 		return name:sub(2)
@@ -154,17 +154,17 @@ function core.register_item(name, itemdef)
 	-- BEGIN Legacy stuff
 	if itemdef.cookresult_itemstring ~= nil and itemdef.cookresult_itemstring ~= "" then
 		core.register_craft({
-			type="cooking",
-			output=itemdef.cookresult_itemstring,
-			recipe=itemdef.name,
-			cooktime=itemdef.furnace_cooktime
+			type = "cooking",
+			output = itemdef.cookresult_itemstring,
+			recipe = itemdef.name,
+			cooktime = itemdef.furnace_cooktime
 		})
 	end
 	if itemdef.furnace_burntime ~= nil and itemdef.furnace_burntime >= 0 then
 		core.register_craft({
-			type="fuel",
-			recipe=itemdef.name,
-			burntime=itemdef.furnace_burntime
+			type = "fuel",
+			recipe = itemdef.name,
+			burntime = itemdef.furnace_burntime
 		})
 	end
 	-- END Legacy stuff
@@ -301,7 +301,6 @@ end
 
 -- Alias the forbidden item names to "" so they can't be
 -- created via itemstrings (e.g. /give)
-local name
 for name in pairs(forbidden_item_names) do
 	core.registered_aliases[name] = ""
 	register_alias_raw(name, "")
@@ -325,7 +324,7 @@ core.register_item(":unknown", {
 	on_place = core.item_place,
 	on_secondary_use = core.item_secondary_use,
 	on_drop = core.item_drop,
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1},
 	diggable = true,
 })
 
@@ -343,7 +342,7 @@ core.register_node(":air", {
 	floodable = true,
 	air_equivalent = true,
 	drop = "",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1},
 })
 
 core.register_node(":ignore", {
@@ -359,31 +358,47 @@ core.register_node(":ignore", {
 	buildable_to = true, -- A way to remove accidentally placed ignores
 	air_equivalent = true,
 	drop = "",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1},
 })
 
 -- The hand (bare definition)
 core.register_item(":", {
 	type = "none",
-	groups = {not_in_creative_inventory=1},
+	groups = {not_in_creative_inventory = 1},
 })
 
 
 function core.override_item(name, redefinition)
 	if redefinition.name ~= nil then
-		error("Attempt to redefine name of "..name.." to "..dump(redefinition.name), 2)
+		error("Attempt to redefine name of " .. name .. " to " .. dump(redefinition.name), 2)
+	elseif redefinition.type ~= nil then
+		error("Attempt to redefine type of " .. name .. " to " .. dump(redefinition.type), 2)
 	end
-	if redefinition.type ~= nil then
-		error("Attempt to redefine type of "..name.." to "..dump(redefinition.type), 2)
-	end
+
 	local item = core.registered_items[name]
 	if not item then
-		error("Attempt to override non-existent item "..name, 2)
+		error("Attempt to override non-existent item " .. name, 2)
 	end
 	for k, v in pairs(redefinition) do
 		rawset(item, k, v)
 	end
+
 	register_item_raw(item)
+end
+
+function core.override_entity(name, redefinition)
+	if redefinition.name ~= nil then
+		error("Attempt to redefine name of " .. name .. " to " .. dump(redefinition.name), 2)
+	elseif not core.registered_entities[name] then
+		error("Attempt to override non-existent entity " .. name, 2)
+	end
+
+	local prototype = table.copy(core.registered_entities[name])
+	for k, v in pairs(redefinition) do
+		rawset(prototype, k, v)
+	end
+
+	core.register_entity(":" .. name, prototype)
 end
 
 
@@ -399,7 +414,7 @@ function core.run_callbacks(callbacks, mode, ...)
 			return false
 		end
 	end
-	local ret = nil
+	local ret
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
 		if origin then
