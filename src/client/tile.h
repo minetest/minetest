@@ -197,22 +197,22 @@ struct FrameSpec
 struct TileSpec
 {
 	TileSpec():
-		texture_id(0),
 		texture(NULL),
-		normal_texture(NULL),
-		flags_texture(NULL),
+		texture_id(0),
+		color(),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
 			MATERIAL_FLAG_BACKFACE_CULLING
 		),
-		shader_id(0),
-		animation_frame_count(1),
-		animation_frame_length_ms(0),
 		rotation(0),
-		has_color(false),
-		color(),
-		emissive_light(0)
+		emissive_light(0),
+		shader_id(0),
+		normal_texture(NULL),
+		flags_texture(NULL),
+		animation_frame_length_ms(0),
+		animation_frame_count(1),
+		has_color(false)
 	{
 	}
 
@@ -284,30 +284,33 @@ struct TileSpec
 			material.TextureLayer[1].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 		}
 	}
-	
-	u32 texture_id;
+
+	// ordered for performance! please do not reorder unless you pahole it first.
 	video::ITexture *texture;
-	video::ITexture *normal_texture;
-	video::ITexture *flags_texture;
-	
+	u32 texture_id;
+	// The color of the tile, or if the tile does not own
+	// a color then the color of the node owning this tile.
+	video::SColor color;
 	// Material parameters
 	u8 material_type;
 	u8 material_flags;
-	u32 shader_id;
-	// Animation parameters
-	u8 animation_frame_count;
-	u16 animation_frame_length_ms;
-	std::vector<FrameSpec> frames;
 
 	u8 rotation;
-	//! If true, the tile has its own color.
-	bool has_color;
-	/*!
-	 * The color of the tile, or if the tile does not own
-	 * a color then the color of the node owning this tile.
-	 */
-	video::SColor color;
 	//! This much light does the tile emit.
 	u8 emissive_light;
+
+	u32 shader_id;
+
+	video::ITexture *normal_texture;
+	// cacheline (64)
+
+	video::ITexture *flags_texture;
+	// Animation parameters
+	u16 animation_frame_length_ms;
+	u8 animation_frame_count;
+	//! If true, the tile has its own color.
+	bool has_color;
+
+	std::vector<FrameSpec> frames;
 };
 #endif
