@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-04-12 21:55+0000\n"
-"Last-Translator: monolifed <monolifed@gmail.com>\n"
+"PO-Revision-Date: 2017-04-18 12:21+0000\n"
+"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese "
 "<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
@@ -1757,7 +1757,7 @@ msgstr "丘の険しさ/高さの設定。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2377,7 +2377,7 @@ msgstr "Mod"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "HUD切り替えキー"
 
 #: src/settings_translation_file.cpp
 msgid ""
