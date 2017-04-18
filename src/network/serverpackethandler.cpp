@@ -1210,9 +1210,10 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 				// If can't dig, try hand
 				if (!params.diggable) {
 					InventoryList *hlist = playersao->getInventory()->getList("hand");
-					const ItemDefinition &hand =
-						hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
-					const ToolCapabilities *tp = hand.tool_capabilities;
+					const ToolCapabilities *tp = hlist
+						? &hlist->getItem(0).getToolCapabilities(m_itemdef)
+						: m_itemdef->get("").tool_capabilities;
+
 					if (tp)
 						params = getDigParams(m_nodedef->get(n).groups, tp);
 				}

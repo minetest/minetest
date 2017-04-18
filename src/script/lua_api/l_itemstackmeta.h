@@ -40,7 +40,18 @@ private:
 
 	virtual void reportMetadataChange();
 
+	void setToolCapabilities(const ToolCapabilities &caps)
+	{
+		istack->metadata.setToolCapabilities(caps);
+	}
+
+	void clearToolCapabilities()
+	{
+		istack->metadata.clearToolCapabilities();
+	}
+
 	// Exported functions
+	static int l_set_tool_capabilities(lua_State *L);
 
 	// garbage collector
 	static int gc_object(lua_State *L);

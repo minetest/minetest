@@ -50,6 +50,20 @@ void ItemStackMetaRef::reportMetadataChange()
 }
 
 // Exported functions
+int ItemStackMetaRef::l_set_tool_capabilities(lua_State *L)
+{
+	ItemStackMetaRef *metaref = checkobject(L, 1);
+	if (lua_isnoneornil(L, 2)) {
+		metaref->clearToolCapabilities();
+	} else if (lua_istable(L, 2)) {
+		ToolCapabilities caps = read_tool_capabilities(L, 2);
+		metaref->setToolCapabilities(caps);
+	} else {
+		luaL_typerror(L, 2, "table or nil");
+	}
+
+	return 0;
+}
 
 // garbage collector
 int ItemStackMetaRef::gc_object(lua_State *L) {
@@ -116,5 +130,6 @@ const luaL_Reg ItemStackMetaRef::methods[] = {
 	luamethod(MetaDataRef, to_table),
 	luamethod(MetaDataRef, from_table),
 	luamethod(MetaDataRef, equals),
+	luamethod(ItemStackMetaRef, set_tool_capabilities),
 	{0,0}
 };
