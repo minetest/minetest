@@ -186,7 +186,7 @@ void JoystickController::onJoystickConnect(const std::vector<irr::SJoystickInfo>
 }
 
 void JoystickController::setLayoutFromControllerName(std::string name) {
-	if (lowercase(name).find("xbox") >= 0) {
+	if (lowercase(name).find("xbox") != std::string::npos) {
 		m_layout = create_xbox_layout();
 	} else {
 		m_layout = create_default_layout();
