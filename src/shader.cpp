@@ -340,7 +340,7 @@ IWritableShaderSource* createShaderSource(IrrlichtDevice *device)
 /*
 	Generate shader given the shader name.
 */
-ShaderInfo generate_shader(std::string name,
+ShaderInfo generate_shader(const std::string &name,
 		u8 material_type, u8 drawtype,
 		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
@@ -525,7 +525,7 @@ void ShaderSource::rebuildShaders()
 }
 
 
-ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
+ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
 		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
 		SourceShaderCache *sourcecache)

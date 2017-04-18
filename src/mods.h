@@ -146,9 +146,10 @@ public:
 #endif
 
 #if USE_CURL
-Json::Value getModstoreUrl(std::string url);
+Json::Value getModstoreUrl(const std::string &url);
 #else
-inline Json::Value getModstoreUrl(std::string url) {
+inline Json::Value getModstoreUrl(const std::string &url)
+{
 	return Json::Value();
 }
 #endif

@@ -360,7 +360,7 @@ public:
 	/*
 		savedir: directory to which map data should be saved
 	*/
-	ServerMap(std::string savedir, IGameDef *gamedef, EmergeManager *emerge);
+	ServerMap(const std::string &savedir, IGameDef *gamedef, EmergeManager *emerge);
 	~ServerMap();
 
 	s32 mapType() const
@@ -422,16 +422,14 @@ public:
 	// returns something like "map/sectors/xxxxxxxx"
 	std::string getSectorDir(v2s16 pos, int layout = 2);
 	// dirname: final directory name
-	v2s16 getSectorPos(std::string dirname);
-	v3s16 getBlockPos(std::string sectordir, std::string blockfile);
+	v2s16 getSectorPos(const std::string &dirname);
+	v3s16 getBlockPos(const std::string &sectordir, const std::string &blockfile);
 	static std::string getBlockFilename(v3s16 p);
 
 	/*
 		Database functions
 	*/
 	static Database *createDatabase(const std::string &name, const std::string &savedir, Settings &conf);
-	// Verify we can read/write to the database
-	void verifyDatabase();
 
 	// Returns true if the database file does not exist
 	bool loadFromFolders();

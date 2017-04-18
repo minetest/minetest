@@ -30,7 +30,7 @@ public:
 	/*
 		'dir' is the file cache directory to use.
 	*/
-	FileCache(std::string dir) : m_dir(dir) {}
+	FileCache(const std::string &dir) : m_dir(dir) {}
 
 	bool update(const std::string &name, const std::string &data);
 	bool load(const std::string &name, std::ostream &os);

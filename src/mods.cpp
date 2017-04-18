@@ -347,7 +347,7 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path):
 #endif
 
 #if USE_CURL
-Json::Value getModstoreUrl(std::string url)
+Json::Value getModstoreUrl(const std::string &url)
 {
 	std::vector<std::string> extra_headers;
 

@@ -73,7 +73,7 @@ namespace treegen {
 		TreeDef tree_definition);
 	// Spawn L-systems tree from LUA
 	treegen::error spawn_ltree (ServerEnvironment *env, v3s16 p0, INodeDefManager *ndef,
-		TreeDef tree_definition);
+		const TreeDef &tree_definition);
 
 	// L-System tree gen helper functions
 	void tree_node_placement(MMVManip &vmanip, v3f p0,
