@@ -127,8 +127,8 @@ struct TextDestPlayerInventory : public TextDest
 
 struct LocalFormspecHandler : public TextDest
 {
-	LocalFormspecHandler(std::string formname):
-		m_client(0)
+	LocalFormspecHandler(const std::string &formname):
+		m_client(NULL)
 	{
 		m_formname = formname;
 	}
@@ -137,11 +137,6 @@ struct LocalFormspecHandler : public TextDest
 		m_client(client)
 	{
 		m_formname = formname;
-	}
-
-	void gotText(const std::wstring &message)
-	{
-		errorstream << "LocalFormspecHandler::gotText old style message received" << std::endl;
 	}
 
 	void gotText(const StringMap &fields)

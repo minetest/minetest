@@ -38,14 +38,14 @@ struct ChatLine
 	// message text
 	EnrichedString text;
 
-	ChatLine(std::wstring a_name, std::wstring a_text):
+	ChatLine(const std::wstring &a_name, const std::wstring &a_text):
 		age(0.0),
 		name(a_name),
 		text(a_text)
 	{
 	}
 
-	ChatLine(EnrichedString a_name, EnrichedString a_text):
+	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text):
 		age(0.0),
 		name(a_name),
 		text(a_text)
@@ -148,7 +148,7 @@ private:
 class ChatPrompt
 {
 public:
-	ChatPrompt(std::wstring prompt, u32 history_limit);
+	ChatPrompt(const std::wstring &prompt, u32 history_limit);
 	~ChatPrompt();
 
 	// Input character or string

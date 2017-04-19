@@ -173,7 +173,7 @@ struct ItemStack
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size, IItemDefManager *itemdef);
+	InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef);
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
@@ -239,9 +239,6 @@ public:
 	// Returns empty item if couldn't take any.
 	ItemStack takeItem(u32 i, u32 takecount);
 
-	// Similar to takeItem, but keeps the slot intact.
-	ItemStack peekItem(u32 i, u32 peekcount) const;
-
 	// Move an item to a different list (or a different stack in the same list)
 	// count is the maximum number of items to move (0 for everything)
 	// returns number of moved items
@@ -254,8 +251,8 @@ public:
 
 private:
 	std::vector<ItemStack> m_items;
-	u32 m_size, m_width;
 	std::string m_name;
+	u32 m_size, m_width;
 	IItemDefManager *m_itemdef;
 };
 

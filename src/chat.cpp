@@ -386,7 +386,7 @@ s32 ChatBuffer::getBottomScrollPos() const
 
 
 
-ChatPrompt::ChatPrompt(std::wstring prompt, u32 history_limit):
+ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
 	m_prompt(prompt),
 	m_line(L""),
 	m_history(),

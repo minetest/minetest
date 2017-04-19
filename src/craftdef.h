@@ -97,7 +97,7 @@ struct CraftOutput
 	CraftOutput():
 		item(""), time(0)
 	{}
-	CraftOutput(std::string item_, float time_):
+	CraftOutput(const std::string &item_, float time_):
 		item(item_), time(time_)
 	{}
 	std::string dump() const;
@@ -124,7 +124,7 @@ struct CraftReplacements
 	CraftReplacements():
 		pairs()
 	{}
-	CraftReplacements(std::vector<std::pair<std::string, std::string> > pairs_):
+	CraftReplacements(const std::vector<std::pair<std::string, std::string> > &pairs_):
 		pairs(pairs_)
 	{}
 	std::string dump() const;
@@ -359,10 +359,13 @@ public:
 	CraftDefinitionFuel():
 		recipe(""), hash_inited(false), burntime()
 	{}
-	CraftDefinitionFuel(std::string recipe_,
+	CraftDefinitionFuel(const std::string &recipe_,
 			float burntime_,
 			const CraftReplacements &replacements_):
-		recipe(recipe_), hash_inited(false), burntime(burntime_), replacements(replacements_)
+		recipe(recipe_),
+		hash_inited(false),
+		burntime(burntime_),
+		replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionFuel(){}
 

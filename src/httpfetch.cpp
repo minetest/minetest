@@ -207,7 +207,7 @@ public:
 class HTTPFetchOngoing
 {
 public:
-	HTTPFetchOngoing(HTTPFetchRequest request, CurlHandlePool *pool);
+	HTTPFetchOngoing(const HTTPFetchRequest &request, CurlHandlePool *pool);
 	~HTTPFetchOngoing();
 
 	CURLcode start(CURLM *multi);
@@ -228,7 +228,8 @@ private:
 };
 
 
-HTTPFetchOngoing::HTTPFetchOngoing(HTTPFetchRequest request_, CurlHandlePool *pool_):
+HTTPFetchOngoing::HTTPFetchOngoing(const HTTPFetchRequest &request_,
+		CurlHandlePool *pool_):
 	pool(pool_),
 	curl(NULL),
 	multi(NULL),
