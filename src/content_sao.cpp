@@ -116,6 +116,7 @@ UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
 	m_animation_blend(0),
 	m_animation_loop(true),
 	m_animation_sent(false),
+	m_animation_speed_sent(false),
 	m_bone_position_sent(false),
 	m_attachment_parent_id(0),
 	m_attachment_sent(false)
@@ -162,6 +163,12 @@ void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_bl
 	*frame_speed = m_animation_speed;
 	*frame_blend = m_animation_blend;
 	*frame_loop = m_animation_loop;
+}
+
+void UnitSAO::setAnimationSpeed(float frame_speed)
+{
+	m_animation_speed = frame_speed;
+	m_animation_speed_sent = false;
 }
 
 void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
@@ -440,6 +447,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if(m_animation_speed_sent == false){
+		m_animation_speed_sent = true;
+		std::string str = gob_cmd_update_animation_speed(m_animation_speed);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);

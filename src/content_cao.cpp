@@ -561,7 +561,7 @@ GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		m_initial_tx_basepos_set(false),
 		m_tx_select_horiz_by_yawpitch(false),
 		m_animation_range(v2s32(0,0)),
-		m_animation_speed(15),
+		m_animation_speed(15.0),
 		m_animation_blend(0),
 		m_animation_loop(true),
 		m_bone_position(UNORDERED_MAP<std::string, core::vector2d<v3f> >()),
@@ -1507,6 +1507,13 @@ void GenericCAO::updateAnimation()
 #endif
 }
 
+void GenericCAO::updateAnimationSpeed()
+{
+	if(m_animated_meshnode == NULL)
+		return;
+	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+}
+
 void GenericCAO::updateBonePosition()
 {
 	if(m_bone_position.empty() || m_animated_meshnode == NULL)
@@ -1699,6 +1706,9 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
+		m_animation_speed = readF1000(is);
+		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);
