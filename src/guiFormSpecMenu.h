@@ -44,6 +44,7 @@ typedef enum {
 	f_CheckBox,
 	f_DropDown,
 	f_ScrollBar,
+	f_KeyEventBox,
 	f_Unknown
 } FormspecFieldType;
 
@@ -441,6 +442,7 @@ private:
 	TextDest           *m_text_dst;
 	unsigned int        m_formspec_version;
 	std::string         m_focused_element;
+	bool		    m_dirty;
 	JoystickController *m_joystick;
 
 	typedef struct {
@@ -455,6 +457,7 @@ private:
 		std::string focused_fieldname;
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
+		UNORDERED_MAP<std::string,std::wstring> editbox_dyndata;
 		// used to restore table selection/scroll/treeview state
 		UNORDERED_MAP<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
@@ -489,7 +492,9 @@ private:
 	void parseFieldCloseOnEnter(parserData *data, const std::string &element);
 	void parsePwdField(parserData* data,std::string element);
 	void parseField(parserData* data,std::string element,std::string type);
+	
 	void parseSimpleField(parserData* data,std::vector<std::string> &parts);
+	void parseKeyEventBox(parserData* data,std::string element);
 	void parseTextArea(parserData* data,std::vector<std::string>& parts,
 			std::string type);
 	void parseLabel(parserData* data,std::string element);
@@ -529,7 +534,9 @@ private:
 	gui::IGUIFont *m_font;
 
 	std::wstring getLabelByID(s32 id);
+	FormspecFieldType getTypeByID(s32 id);
 	std::string getNameByID(s32 id);
+
 #ifdef __ANDROID__
 	v2s32 m_down_pos;
 	std::string m_JavaDialogFieldName;
