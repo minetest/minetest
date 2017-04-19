@@ -200,11 +200,12 @@ DigParams getDigParams(const ItemGroupList &groups,
 		int rating = itemgroup_get(groups, name);
 		float time = 0;
 		bool time_exists = cap.getTime(rating, &time);
+		int leveldiff = cap.maxlevel - level;
+		time /= MYMAX(1, leveldiff);
 		if(!result_diggable || time < result_time){
 			if(cap.maxlevel >= level && time_exists){
 				result_diggable = true;
-				int leveldiff = cap.maxlevel - level;
-				result_time = time / MYMAX(1, leveldiff);
+				result_time = time;
 				if(cap.uses != 0)
 					result_wear = 1.0 / cap.uses / pow(3.0, (double)leveldiff);
 				else
