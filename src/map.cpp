@@ -2347,16 +2347,15 @@ bool ServerMap::saveBlock(MapBlock *block, Database *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(std::string sectordir, std::string blockfile,
+void ServerMap::loadBlock(const std::string &sectordir, const std::string &blockfile,
 		MapSector *sector, bool save_after_load)
 {
 	DSTACK(FUNCTION_NAME);
 
 	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
-
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-		if(is.good() == false)
+		if (!is.good())
 			throw FileNotGoodException("Cannot open block file");
 
 		v3s16 p3d = getBlockPos(sectordir, blockfile);

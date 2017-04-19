@@ -111,7 +111,7 @@ public:
 	 * @param dir direction to set cost for
 	 * @cost cost to set
 	 */
-	void      setCost(v3s16 dir, PathCost cost);
+	void      setCost(v3s16 dir, const PathCost &cost);
 
 	bool      valid;               /**< node is on surface                    */
 	bool      target;              /**< node is target position               */
@@ -496,7 +496,7 @@ PathCost PathGridnode::getCost(v3s16 dir)
 }
 
 /******************************************************************************/
-void PathGridnode::setCost(v3s16 dir, PathCost cost)
+void PathGridnode::setCost(v3s16 dir, const PathCost &cost)
 {
 	if (dir.X > 0) {
 		directions[DIR_XP] = cost;

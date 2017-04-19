@@ -77,13 +77,15 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 }
 
 /******************************************************************************/
-void MainMenuScripting::step() {
+void MainMenuScripting::step()
+{
 	asyncEngine.step(getStack());
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::queueAsync(std::string serialized_func,
-		std::string serialized_param) {
+unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
+		const std::string &serialized_param)
+{
 	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
 }
 

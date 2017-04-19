@@ -456,17 +456,11 @@ public:
 	MapSector* loadSectorMeta(std::string dirname, bool save_after_load);
 	bool loadSectorMeta(v2s16 p2d);
 
-	// Full load of a sector including all blocks.
-	// returns true on success, false on failure.
-	bool loadSectorFull(v2s16 p2d);
-	// If sector is not found in memory, try to load it from disk.
-	// Returns true if sector now resides in memory
-	//bool deFlushSector(v2s16 p2d);
-
 	bool saveBlock(MapBlock *block);
 	static bool saveBlock(MapBlock *block, Database *db);
 	// This will generate a sector with getSector if not found.
-	void loadBlock(std::string sectordir, std::string blockfile, MapSector *sector, bool save_after_load=false);
+	void loadBlock(const std::string &sectordir, const std::string &blockfile,
+			MapSector *sector, bool save_after_load=false);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
 	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);

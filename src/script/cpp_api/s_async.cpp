@@ -100,7 +100,8 @@ void AsyncEngine::initialize(unsigned int numEngines)
 }
 
 /******************************************************************************/
-unsigned int AsyncEngine::queueAsyncJob(std::string func, std::string params)
+unsigned int AsyncEngine::queueAsyncJob(const std::string &func,
+		const std::string &params)
 {
 	jobQueueMutex.lock();
 	LuaJobInfo toAdd;
@@ -124,7 +125,6 @@ LuaJobInfo AsyncEngine::getJob()
 	jobQueueMutex.lock();
 
 	LuaJobInfo retval;
-	retval.valid = false;
 
 	if (!jobQueue.empty()) {
 		retval = jobQueue.front();
@@ -137,7 +137,7 @@ LuaJobInfo AsyncEngine::getJob()
 }
 
 /******************************************************************************/
-void AsyncEngine::putJobResult(LuaJobInfo result)
+void AsyncEngine::putJobResult(const LuaJobInfo &result)
 {
 	resultQueueMutex.lock();
 	resultQueue.push_back(result);
@@ -264,7 +264,7 @@ void* AsyncWorkerThread::run()
 		// Wait for job
 		LuaJobInfo toProcess = jobDispatcher->getJob();
 
-		if (toProcess.valid == false || stopRequested()) {
+		if (!toProcess.valid || stopRequested()) {
 			continue;
 		}
 

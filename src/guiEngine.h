@@ -178,7 +178,8 @@ public:
 	}
 
 	/** pass async callback to scriptengine **/
-	unsigned int queueAsync(std::string serialized_fct,std::string serialized_params);
+	unsigned int queueAsync(const std::string &serialized_fct,
+			const std::string &serialized_params);
 
 private:
 
@@ -187,9 +188,6 @@ private:
 
 	/** run main menu loop */
 	void run();
-
-	/** handler to limit frame rate within main menu */
-	void limitFrameRate();
 
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
