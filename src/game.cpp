@@ -2044,7 +2044,7 @@ bool Game::connectToServer(const std::string &playername,
 	}
 
 	client = new Client(device,
-			playername.c_str(), password,
+			playername.c_str(), password, *address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), &flags);
@@ -2056,7 +2056,7 @@ bool Game::connectToServer(const std::string &playername,
 	connect_address.print(&infostream);
 	infostream << std::endl;
 
-	client->connect(connect_address, *address,
+	client->connect(connect_address,
 		simple_singleplayer_mode || local_server_mode);
 
 	/*

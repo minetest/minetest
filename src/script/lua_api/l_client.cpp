@@ -234,10 +234,20 @@ int ModApiClient::l_sound_stop(lua_State *L)
 	return 0;
 }
 
-// get_protocol_version()
-int ModApiClient::l_get_protocol_version(lua_State *L)
+// get_server_info()
+int ModApiClient::l_get_server_info(lua_State *L)
 {
-	lua_pushinteger(L, getClient(L)->getProtoVersion());
+	Client *client = getClient(L);
+	Address serverAddress = client->getServerAddress();
+	lua_newtable(L);
+	lua_pushstring(L, client->getAddressName().c_str());
+	lua_setfield(L, -2, "address");
+	lua_pushstring(L, serverAddress.serializeString().c_str());
+	lua_setfield(L, -2, "ip");
+	lua_pushinteger(L, serverAddress.getPort());
+	lua_setfield(L, -2, "port");
+	lua_pushinteger(L, client->getProtoVersion());
+	lua_setfield(L, -2, "protocol_version");
 	return 1;
 }
 
@@ -265,6 +275,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_meta);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
-	API_FCT(get_protocol_version);
+	API_FCT(get_server_info);
 	API_FCT(take_screenshot);
 }
