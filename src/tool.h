@@ -63,8 +63,8 @@ struct ToolCapabilities
 	ToolCapabilities(
 			float full_punch_interval_=1.4,
 			int max_drop_level_=1,
-			ToolGCMap groupcaps_=ToolGCMap(),
-			DamageGroup damageGroups_=DamageGroup()
+			const ToolGCMap &groupcaps_ = ToolGCMap(),
+			const DamageGroup &damageGroups_ = DamageGroup()
 	):
 		full_punch_interval(full_punch_interval_),
 		max_drop_level(max_drop_level_),
@@ -85,8 +85,8 @@ struct DigParams
 	u16 wear;
 	std::string main_group;
 
-	DigParams(bool a_diggable=false, float a_time=0, u16 a_wear=0,
-			std::string a_main_group=""):
+	DigParams(bool a_diggable = false, float a_time = 0.0f, u16 a_wear = 0,
+			const std::string &a_main_group = ""):
 		diggable(a_diggable),
 		time(a_time),
 		wear(a_wear),

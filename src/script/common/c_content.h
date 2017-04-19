@@ -86,8 +86,8 @@ ToolCapabilities   read_tool_capabilities    (lua_State *L, int table);
 void               push_tool_capabilities    (lua_State *L,
                                               const ToolCapabilities &prop);
 
-ItemDefinition     read_item_definition      (lua_State *L, int index,
-                                              ItemDefinition default_def);
+void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
+		ItemDefinition &def);
 void               read_object_properties    (lua_State *L, int index,
                                               ObjectProperties *prop,
                                               IItemDefManager *idef);

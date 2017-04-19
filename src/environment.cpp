@@ -70,7 +70,7 @@ void Environment::setTimeOfDay(u32 time)
 {
 	MutexAutoLock lock(this->m_time_lock);
 	if (m_time_of_day > time)
-		m_day_count++;
+		++m_day_count;
 	m_time_of_day = time;
 	m_time_of_day_f = (float)time / 24000.0;
 }
@@ -103,7 +103,7 @@ void Environment::stepTimeOfDay(float dtime)
 		// Sync at overflow
 		if (m_time_of_day + units >= 24000) {
 			sync_f = true;
-			m_day_count++;
+			++m_day_count;
 		}
 		m_time_of_day = (m_time_of_day + units) % 24000;
 		if (sync_f)

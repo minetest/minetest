@@ -43,14 +43,11 @@ struct EnumString es_TileAnimationType[] =
 };
 
 /******************************************************************************/
-ItemDefinition read_item_definition(lua_State* L,int index,
-		ItemDefinition default_def)
+void read_item_definition(lua_State* L, int index,
+		const ItemDefinition &default_def, ItemDefinition &def)
 {
-	if(index < 0)
+	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
-
-	// Read the item definition
-	ItemDefinition def = default_def;
 
 	def.type = (ItemType)getenumfield(L, index, "type",
 			es_ItemType, ITEM_NONE);
@@ -118,8 +115,6 @@ ItemDefinition read_item_definition(lua_State* L,int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
-
-	return def;
 }
 
 /******************************************************************************/
@@ -873,7 +868,7 @@ void push_tool_capabilities(lua_State *L,
 		lua_newtable(L);
 		// For each groupcap
 		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
-			i != toolcap.groupcaps.end(); i++) {
+			i != toolcap.groupcaps.end(); ++i) {
 			// Create groupcap table
 			lua_newtable(L);
 			const std::string &name = i->first;
@@ -881,7 +876,7 @@ void push_tool_capabilities(lua_State *L,
 			// Create subtable "times"
 			lua_newtable(L);
 			for (UNORDERED_MAP<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); i++) {
+					i = groupcap.times.begin(); i != groupcap.times.end(); ++i) {
 				lua_pushinteger(L, i->first);
 				lua_pushnumber(L, i->second);
 				lua_settable(L, -3);
@@ -900,7 +895,7 @@ void push_tool_capabilities(lua_State *L,
 		lua_newtable(L);
 		// For each damage group
 		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
-			i != toolcap.damageGroups.end(); i++) {
+			i != toolcap.damageGroups.end(); ++i) {
 			// Create damage group table
 			lua_pushinteger(L, i->second);
 			lua_setfield(L, -2, i->first.c_str());
@@ -939,7 +934,7 @@ void read_inventory_list(lua_State *L, int tableindex,
 	InventoryList *invlist = inv->addList(name, listsize);
 	int index = 0;
 	for(std::vector<ItemStack>::const_iterator
-			i = items.begin(); i != items.end(); i++){
+			i = items.begin(); i != items.end(); ++i){
 		if(forcesize != -1 && index == forcesize)
 			break;
 		invlist->changeItem(index, *i);

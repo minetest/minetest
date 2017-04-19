@@ -46,12 +46,11 @@ static content_t content_translate_from_19_to_internal(content_t c_from)
 }
 
 ItemStack::ItemStack(const std::string &name_, u16 count_,
-		u16 wear_, IItemDefManager *itemdef)
+		u16 wear_, IItemDefManager *itemdef) :
+	name(itemdef->getAlias(name_)),
+	count(count_),
+	wear(wear_)
 {
-	name = itemdef->getAlias(name_);
-	count = count_;
-	wear = wear_;
-
 	if (name.empty() || count == 0)
 		clear();
 	else if (itemdef->get(name).type == ITEM_TOOL)
@@ -370,14 +369,13 @@ ItemStack ItemStack::peekItem(u32 peekcount) const
 	Inventory
 */
 
-InventoryList::InventoryList(std::string name, u32 size, IItemDefManager *itemdef)
+InventoryList::InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef):
+	m_name(name),
+	m_size(size),
+	m_width(0),
+	m_itemdef(itemdef)
 {
-	m_name = name;
-	m_size = size;
-	m_width = 0;
-	m_itemdef = itemdef;
 	clearItems();
-	//m_dirty = false;
 }
 
 InventoryList::~InventoryList()
@@ -710,14 +708,6 @@ ItemStack InventoryList::takeItem(u32 i, u32 takecount)
 	//if(!taken.empty())
 	//	setDirty(true);
 	return taken;
-}
-
-ItemStack InventoryList::peekItem(u32 i, u32 peekcount) const
-{
-	if(i >= m_items.size())
-		return ItemStack();
-
-	return m_items[i].peekItem(peekcount);
 }
 
 void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)

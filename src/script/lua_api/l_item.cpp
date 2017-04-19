@@ -526,7 +526,7 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	def.node_placement_prediction = "__default";
 
 	// Read the item definition
-	def = read_item_definition(L, table, def);
+	read_item_definition(L, table, def, def);
 
 	// Default to having client-side placement prediction for nodes
 	// ("" in item definition sets it off)
