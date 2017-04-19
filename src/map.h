@@ -477,6 +477,16 @@ public:
 	u64 getSeed();
 	s16 getWaterLevel();
 
+	/*!
+	 * Fixes lighting in one map block.
+	 * May modify other blocks as well, as light can spread
+	 * out of the specified block.
+	 * Returns false if the block is not generated (so nothing
+	 * changed), true otherwise.
+	 */
+	bool repairBlockLight(v3s16 blockpos,
+		std::map<v3s16, MapBlock *> *modified_blocks);
+
 	MapSettingsManager settings_mgr;
 
 private:
