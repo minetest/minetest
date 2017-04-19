@@ -336,6 +336,7 @@ public:
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
 			const float height,
+			const float thickness,
 			const v2f speed);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
@@ -410,6 +411,7 @@ private:
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
 			const float height,
+			const float thickness,
 			const v2f speed);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
 

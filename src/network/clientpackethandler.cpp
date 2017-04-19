@@ -1177,6 +1177,7 @@ void Client::handleCommand_HudSetClouds(NetworkPacket* pkt)
 	video::SColor *color_bright    = new video::SColor(readARGB8(is));
 	video::SColor *color_ambient   = new video::SColor(readARGB8(is));
 	f32 height                     = readF1000(is);
+	f32 thickness                  = readF1000(is);
 	v2f *speed                     = new v2f(readV2F1000(is));
 
 	ClientEvent event;
@@ -1185,6 +1186,7 @@ void Client::handleCommand_HudSetClouds(NetworkPacket* pkt)
 	event.set_clouds.color_bright  = color_bright;
 	event.set_clouds.color_ambient = color_ambient;
 	event.set_clouds.height        = height;
+	event.set_clouds.thickness     = thickness;
 	event.set_clouds.speed         = speed;
 	m_client_event_queue.push(event);
 }

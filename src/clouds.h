@@ -108,6 +108,12 @@ public:
 
 	void setSpeed(v2f speed) { m_speed = speed; }
 
+	void setThickness(float thickness)
+	{
+		m_thickness = BS * thickness;
+		updateBox();
+	}
+
 private:
 	video::SMaterial m_material;
 	aabb3f m_box;
@@ -121,6 +127,7 @@ private:
 	v2f m_speed;
 	v3s16 m_camera_offset;
 	float m_density;
+	float m_thickness;
 	video::SColorf m_color;
 	video::SColorf m_color_bright;
 	video::SColorf m_color_ambient;
@@ -128,8 +135,8 @@ private:
 	// called in several places
 	void updateBox()
 	{
-		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS - BS * m_camera_offset.Y, -BS * 1000000,
-				BS * 1000000, m_cloud_y + BS - BS * m_camera_offset.Y, BS * 1000000);
+		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS * m_camera_offset.Y, -BS * 1000000,
+				BS * 1000000, m_cloud_y + m_thickness - BS * m_camera_offset.Y, BS * 1000000);
 	}
 };
 

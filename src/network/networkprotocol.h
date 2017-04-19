@@ -616,6 +616,7 @@ enum ToClientCommand
 		u8[4] color_diffuse (ARGB)
 		u8[4] color_ambient (ARGB)
 		f1000 height
+		f1000 thickness
 		v2f1000 speed
 	*/
 

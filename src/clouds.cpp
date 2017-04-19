@@ -50,6 +50,7 @@ Clouds::Clouds(
 	m_speed(0, -2),
 	m_camera_offset(0,0,0),
 	m_density(0.4),
+	m_thickness(16 * BS),
 	m_color(1.0, 1.0, 1.0, 1.0),
 	m_color_bright(255.0/255.0, 240.0/255.0, 240.0/255.0, 1.0),
 	m_color_ambient(0.0, 0.0, 0.0, 1.0)
@@ -240,8 +241,9 @@ void Clouds::render()
 			v[3].Color.setBlue(255);
 		}*/
 
-		f32 rx = cloud_size/2;
-		f32 ry = 8 * BS;
+		f32 rx = cloud_size / 2;
+		// if clouds are flat, the top layer should be at the given height
+		f32 ry = m_enable_3d ? m_thickness : 0;
 		f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
@@ -269,8 +271,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set(-rx, ry,-rz);
 				v[1].Pos.set( rx, ry,-rz);
-				v[2].Pos.set( rx,-ry,-rz);
-				v[3].Pos.set(-rx,-ry,-rz);
+				v[2].Pos.set( rx,  0,-rz);
+				v[3].Pos.set(-rx,  0,-rz);
 				break;
 			case 2: //right
 				if (INAREA(xi + 1, zi, m_cloud_radius_i)) {
@@ -284,8 +286,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set( rx, ry,-rz);
 				v[1].Pos.set( rx, ry, rz);
-				v[2].Pos.set( rx,-ry, rz);
-				v[3].Pos.set( rx,-ry,-rz);
+				v[2].Pos.set( rx,  0, rz);
+				v[3].Pos.set( rx,  0,-rz);
 				break;
 			case 3: // front
 				if (INAREA(xi, zi + 1, m_cloud_radius_i)) {
@@ -299,8 +301,8 @@ void Clouds::render()
 				}
 				v[0].Pos.set( rx, ry, rz);
 				v[1].Pos.set(-rx, ry, rz);
-				v[2].Pos.set(-rx,-ry, rz);
-				v[3].Pos.set( rx,-ry, rz);
+				v[2].Pos.set(-rx,  0, rz);
+				v[3].Pos.set( rx,  0, rz);
 				break;
 			case 4: // left
 				if (INAREA(xi-1, zi, m_cloud_radius_i)) {
@@ -314,18 +316,18 @@ void Clouds::render()
 				}
 				v[0].Pos.set(-rx, ry, rz);
 				v[1].Pos.set(-rx, ry,-rz);
-				v[2].Pos.set(-rx,-ry,-rz);
-				v[3].Pos.set(-rx,-ry, rz);
+				v[2].Pos.set(-rx,  0,-rz);
+				v[3].Pos.set(-rx,  0, rz);
 				break;
 			case 5: // bottom
 				for(int j=0;j<4;j++){
 					v[j].Color = c_bottom;
 					v[j].Normal.set(0,-1,0);
 				}
-				v[0].Pos.set( rx,-ry, rz);
-				v[1].Pos.set(-rx,-ry, rz);
-				v[2].Pos.set(-rx,-ry,-rz);
-				v[3].Pos.set( rx,-ry,-rz);
+				v[0].Pos.set( rx,  0, rz);
+				v[1].Pos.set(-rx,  0, rz);
+				v[2].Pos.set(-rx,  0,-rz);
+				v[3].Pos.set( rx,  0,-rz);
 				break;
 			}
 

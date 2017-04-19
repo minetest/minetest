@@ -1727,7 +1727,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 	return 3;
 }
 
-// set_clouds(self, {density=, color=, ambient=, height=})
+// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
 int ObjectRef::l_set_clouds(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1750,7 +1750,8 @@ int ObjectRef::l_set_clouds(lua_State *L)
 			read_color(L, -1, &cloud_settings.color_ambient);
 		lua_pop(L, 1);
 
-		cloud_settings.height = getfloatfield_default(L, 2, "height", cloud_settings.height);
+		cloud_settings.height    = getfloatfield_default(L, 2, "height",    cloud_settings.height   );
+		cloud_settings.thickness = getfloatfield_default(L, 2, "thickness", cloud_settings.thickness);
 
 		lua_getfield(L, 2, "speed");
 		if (lua_istable(L, -1))
@@ -1767,7 +1768,8 @@ int ObjectRef::l_set_clouds(lua_State *L)
 
 	if (!getServer(L)->setClouds(player, cloud_settings.density,
 			cloud_settings.color_bright, cloud_settings.color_ambient,
-			cloud_settings.height, cloud_settings.speed))
+			cloud_settings.height, cloud_settings.thickness,
+			cloud_settings.speed))
 		return 0;
 
 	player->setCloudSettings(cloud_settings);
@@ -1794,6 +1796,8 @@ int ObjectRef::l_get_clouds(lua_State *L)
 	lua_setfield(L, -2, "ambient");
 	lua_pushnumber(L, cloud_settings.height);
 	lua_setfield(L, -2, "height");
+	lua_pushnumber(L, cloud_settings.thickness);
+	lua_setfield(L, -2, "thickness");
 	lua_newtable(L);
 	lua_pushnumber(L, cloud_settings.speed.X);
 	lua_setfield(L, -2, "x");
