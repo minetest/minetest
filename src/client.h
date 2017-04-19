@@ -257,6 +257,7 @@ public:
 			IrrlichtDevice *device,
 			const char *playername,
 			const std::string &password,
+			const std::string &address_name,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -284,9 +285,7 @@ public:
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address,
-			const std::string &address_name,
-			bool is_local_server);
+	void connect(Address address, bool is_local_server);
 
 	/*
 		Stuff that references the environment is valid only as
@@ -525,6 +524,16 @@ public:
 
 	IrrlichtDevice *getDevice() const { return m_device; }
 
+	const Address getServerAddress()
+	{
+		return m_con.GetPeerAddress(PEER_ID_SERVER);
+	}
+
+	const std::string &getAddressName() const
+	{
+		return m_address_name;
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -576,6 +585,7 @@ private:
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	con::Connection m_con;
+	std::string m_address_name;
 	IrrlichtDevice *m_device;
 	Camera *m_camera;
 	Minimap *m_minimap;

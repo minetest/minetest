@@ -702,11 +702,10 @@ Call these functions only at load time!
 * `minetest.disconnect()`
     * Disconnect from the server and exit to main menu.
     * Returns `false` if the client is already disconnecting otherwise returns `true`.
-* `minetest.get_protocol_version()`
-    * Returns the protocol version of the server.
-    * Might not be accurate at start up as the client might not be connected to the server yet, in that case it will return 0.
 * `minetest.take_screenshot()`
     * Take a screenshot.
+* `minetest.get_server_info()`
+    * Returns [server info](#server-info).
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
@@ -932,9 +931,18 @@ Can be obtained via `minetest.get_meta(pos)`.
     {
         params = "<name> <privilege>", -- Short parameter description
         description = "Remove privilege from player", -- Full description
-        func = function(param), -- Called when command is run.
-                                      -- Returns boolean success and text output.
+        func = function(param),        -- Called when command is run.
+                                       -- Returns boolean success and text output.
     }
+### Server info
+```lua
+{
+	address = "minetest.example.org", -- The domain name/IP address of a remote server or "" for a local server.
+	ip = "203.0.113.156",             -- The IP address of the server.
+	port = 30000,                     -- The port the client is connected to.
+	protocol_version = 30             -- Will not be accurate at start up as the client might not be connected to the server yet, in that case it will be 0.
+}
+```
 
 Escape sequences
 ----------------
