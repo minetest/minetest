@@ -408,7 +408,7 @@ bool setSystemPaths()
 #endif
 
 	for (std::list<std::string>::const_iterator
-			i = trylist.begin(); i != trylist.end(); i++) {
+			i = trylist.begin(); i != trylist.end(); ++i) {
 		const std::string &trypath = *i;
 		if (!fs::PathExists(trypath) ||
 			!fs::PathExists(trypath + DIR_DELIM + "builtin")) {

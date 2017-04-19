@@ -232,7 +232,7 @@ inline std::vector<std::basic_string<T> > str_split(
  */
 inline std::string lowercase(const std::string &str)
 {
-	std::string s2;
+	std::string s2 = "";
 
 	s2.reserve(str.size());
 

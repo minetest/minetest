@@ -38,7 +38,16 @@ class AsyncEngine;
 // Declarations
 
 // Data required to queue a job
-struct LuaJobInfo {
+struct LuaJobInfo
+{
+	LuaJobInfo() :
+		serializedFunction(""),
+		serializedParams(""),
+		serializedResult(""),
+		id(0),
+		valid(false)
+	{}
+
 	// Function to be called in async environment
 	std::string serializedFunction;
 	// Parameter to be passed to function
@@ -89,7 +98,7 @@ public:
 	 * @param params Serialized parameters
 	 * @return jobid The job is queued
 	 */
-	unsigned int queueAsyncJob(std::string func, std::string params);
+	unsigned int queueAsyncJob(const std::string &func, const std::string &params);
 
 	/**
 	 * Engine step to process finished jobs
@@ -116,7 +125,7 @@ protected:
 	 * Put a Job result back to result queue
 	 * @param result result of completed job
 	 */
-	void putJobResult(LuaJobInfo result);
+	void putJobResult(const LuaJobInfo &result);
 
 	/**
 	 * Initialize environment with current registred functions

@@ -324,14 +324,11 @@ public:
 	*/
 	std::set<u16> m_known_objects;
 
-	ClientState getState()
-		{ return m_state; }
+	ClientState getState() const { return m_state; }
 
-	std::string getName()
-		{ return m_name; }
+	std::string getName() const { return m_name; }
 
-	void setName(std::string name)
-		{ m_name = name; }
+	void setName(const std::string &name) { m_name = name; }
 
 	/* update internal client state */
 	void notifyEvent(ClientStateEvent event);
@@ -350,7 +347,8 @@ public:
 	u32 uptime();
 
 	/* set version information */
-	void setVersionInfo(u8 major, u8 minor, u8 patch, std::string full) {
+	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
+	{
 		m_version_major = major;
 		m_version_minor = minor;
 		m_version_patch = patch;
@@ -358,10 +356,10 @@ public:
 	}
 
 	/* read version information */
-	u8 getMajor() { return m_version_major; }
-	u8 getMinor() { return m_version_minor; }
-	u8 getPatch() { return m_version_patch; }
-	std::string getVersion() { return m_full_version; }
+	u8 getMajor() const { return m_version_major; }
+	u8 getMinor() const { return m_version_minor; }
+	u8 getPatch() const { return m_version_patch; }
+	std::string getVersion() const { return m_full_version; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version;

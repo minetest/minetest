@@ -218,14 +218,14 @@ struct TileDef
 
 	struct TileAnimationParams animation;
 
-	TileDef()
+	TileDef() :
+		name(""),
+		backface_culling(true),
+		tileable_horizontal(true),
+		tileable_vertical(true),
+		has_color(false),
+		color(video::SColor(0xFFFFFFFF))
 	{
-		name = "";
-		backface_culling = true;
-		tileable_horizontal = true;
-		tileable_vertical = true;
-		has_color = false;
-		color = video::SColor(0xFFFFFFFF);
 		animation.type = TAT_NONE;
 	}
 

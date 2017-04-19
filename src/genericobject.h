@@ -73,13 +73,16 @@ std::string gob_cmd_update_physics_override(float physics_override_speed,
 
 std::string gob_cmd_update_animation(v2f frames, float frame_speed, float frame_blend, bool frame_loop);
 
-std::string gob_cmd_update_bone_position(std::string bone, v3f position, v3f rotation);
+std::string gob_cmd_update_bone_position(const std::string &bone, v3f position,
+		v3f rotation);
 
-std::string gob_cmd_update_attachment(int parent_id, std::string bone, v3f position, v3f rotation);
+std::string gob_cmd_update_attachment(int parent_id, const std::string &bone,
+		v3f position, v3f rotation);
 
 std::string gob_cmd_update_nametag_attributes(video::SColor color);
 
-std::string gob_cmd_update_infant(u16 id, u8 type, std::string client_initialization_data);
+std::string gob_cmd_update_infant(u16 id, u8 type,
+		const std::string &client_initialization_data);
 
 #endif
 

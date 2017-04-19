@@ -149,7 +149,7 @@ public:
 	f32 doubling_dtime;
 
 private:
-	void setLayoutFromControllerName(std::string name);
+	void setLayoutFromControllerName(const std::string &name);
 
 	JoystickLayout m_layout;
 

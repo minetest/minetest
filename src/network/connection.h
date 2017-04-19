@@ -383,7 +383,7 @@ struct OutgoingPacket
 	bool reliable;
 	bool ack;
 
-	OutgoingPacket(u16 peer_id_, u8 channelnum_, SharedBuffer<u8> data_,
+	OutgoingPacket(u16 peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_,
 			bool reliable_,bool ack_=false):
 		peer_id(peer_id_),
 		channelnum(channelnum_),
@@ -448,7 +448,7 @@ struct ConnectionCommand
 		reliable = reliable_;
 	}
 
-	void ack(u16 peer_id_, u8 channelnum_, SharedBuffer<u8> data_)
+	void ack(u16 peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_ACK;
 		peer_id = peer_id_;
@@ -457,7 +457,7 @@ struct ConnectionCommand
 		reliable = false;
 	}
 
-	void createPeer(u16 peer_id_, SharedBuffer<u8> data_)
+	void createPeer(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_CREATE_PEER;
 		peer_id = peer_id_;
@@ -467,7 +467,7 @@ struct ConnectionCommand
 		raw = true;
 	}
 
-	void disableLegacy(u16 peer_id_, SharedBuffer<u8> data_)
+	void disableLegacy(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_DISABLE_LEGACY;
 		peer_id = peer_id_;
@@ -874,7 +874,7 @@ struct ConnectionEvent
 		return "Invalid ConnectionEvent";
 	}
 
-	void dataReceived(u16 peer_id_, SharedBuffer<u8> data_)
+	void dataReceived(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;

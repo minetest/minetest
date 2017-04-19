@@ -602,8 +602,8 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
-unsigned int GUIEngine::queueAsync(std::string serialized_func,
-		std::string serialized_params)
+unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
+		const std::string &serialized_params)
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
