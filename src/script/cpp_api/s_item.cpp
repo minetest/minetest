@@ -42,7 +42,11 @@ bool ScriptApiItem::item_OnDrop(ItemStack &item,
 
 	// Call function
 	LuaItemStack::create(L, item);
-	objectrefGetOrCreate(L, dropper);
+	if(dropper == NULL) {
+	  lua_pushnil(L);
+	} else {
+	  objectrefGetOrCreate(L, dropper);
+	}
 	pushFloatPos(L, pos);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
