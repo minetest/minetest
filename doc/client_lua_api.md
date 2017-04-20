@@ -703,6 +703,8 @@ Call these functions only at load time!
 * `minetest.get_protocol_version()`
     * Returns the protocol version of the server.
     * Might not be accurate at start up as the client might not be connected to the server yet, in that case it will return 0.
+* `minetest.get_ping()`
+    * Returns the round trip time.
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something

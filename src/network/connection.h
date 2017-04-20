@@ -732,8 +732,7 @@ class Peer {
 		virtual void reportRTT(float rtt) {};
 
 		void RTTStatistics(float rtt,
-							std::string profiler_id="",
-							unsigned int num_samples=1000);
+							std::string profiler_id = "");
 
 		bool IncUseCount();
 		void DecUseCount();
@@ -760,6 +759,8 @@ class Peer {
 			float avg_rtt;
 		};
 
+		std::list<float> m_rtt_list;
+		std::list<float> m_jitter_list;
 		rttstats m_rtt;
 		float    m_last_rtt;
 

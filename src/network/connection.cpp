@@ -930,9 +930,8 @@ void Peer::DecUseCount()
 	delete this;
 }
 
-void Peer::RTTStatistics(float rtt, std::string profiler_id,
-		unsigned int num_samples) {
-
+void Peer::RTTStatistics(float rtt, std::string profiler_id)
+{
 	if (m_last_rtt > 0) {
 		/* set min max values */
 		if (rtt < m_rtt.min_rtt)
@@ -940,12 +939,17 @@ void Peer::RTTStatistics(float rtt, std::string profiler_id,
 		if (rtt >= m_rtt.max_rtt)
 			m_rtt.max_rtt = rtt;
 
-		/* do average calculation */
-		if (m_rtt.avg_rtt < 0.0)
-			m_rtt.avg_rtt  = rtt;
-		else
-			m_rtt.avg_rtt  = m_rtt.avg_rtt * (num_samples/(num_samples-1)) +
-								rtt * (1/num_samples);
+		m_rtt_list.push_front(rtt);
+		if (m_rtt_list.size() > 15)
+			m_rtt_list.pop_back();
+
+		{
+			float total = 0.0;
+			std::list<float>::const_iterator iterator = m_rtt_list.begin();
+			for (; iterator != m_rtt_list.end(); ++iterator)
+				total = total + *iterator;
+			m_rtt.avg_rtt  = total / m_rtt_list.size();
+		}
 
 		/* do jitter calculation */
 
@@ -963,11 +967,17 @@ void Peer::RTTStatistics(float rtt, std::string profiler_id,
 		if (jitter >= m_rtt.jitter_max)
 			m_rtt.jitter_max = jitter;
 
-		if (m_rtt.jitter_avg < 0.0)
-			m_rtt.jitter_avg  = jitter;
-		else
-			m_rtt.jitter_avg  = m_rtt.jitter_avg * (num_samples/(num_samples-1)) +
-								jitter * (1/num_samples);
+		m_jitter_list.push_front(jitter);
+		if (m_jitter_list.size() > 15)
+			m_jitter_list.pop_back();
+
+		{
+			float total = 0.0;
+			std::list<float>::const_iterator iterator = m_jitter_list.begin();
+			for (; iterator != m_jitter_list.end(); ++iterator)
+				total = total + *iterator;
+			m_rtt.jitter_avg  = total / m_jitter_list.size();
+		}
 
 		if (profiler_id != "")
 		{
@@ -1046,7 +1056,7 @@ void UDPPeer::reportRTT(float rtt)
 	if (rtt < 0.0) {
 		return;
 	}
-	RTTStatistics(rtt,"rudp",MAX_RELIABLE_WINDOW_SIZE*10);
+	RTTStatistics(rtt,"rudp");
 
 	float timeout = getStat(AVG_RTT) * RESEND_TIMEOUT_FACTOR;
 	if (timeout < RESEND_TIMEOUT_MIN)

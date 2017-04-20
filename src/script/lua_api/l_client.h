@@ -72,6 +72,9 @@ private:
 	// get_protocol_version()
 	static int l_get_protocol_version(lua_State *L);
 
+	// get_ping()
+	static int l_get_ping(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };
