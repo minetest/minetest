@@ -425,6 +425,9 @@ erlehmann:
   misc/minetest.svg
   textures/base/pack/logo.png
 
+ShadowNinja:
+  textures/base/pack/tnt_smoke.png
+
 License of Minetest source code
 -------------------------------
 
