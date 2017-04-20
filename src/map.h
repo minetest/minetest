@@ -266,7 +266,8 @@ public:
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
 	virtual void PrintInfo(std::ostream &out);
 
-	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks);
+	void transformLiquids(std::map<v3s16, MapBlock*> & modified_blocks,
+			ServerEnvironment *env);
 
 	/*
 		Node metadata
