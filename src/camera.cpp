@@ -225,7 +225,10 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f old_player_position = m_playernode->getPosition();
 	v3f player_position = player->getPosition();
 	if (player->isAttached && player->parent)
-		player_position = player->parent->getPosition();
+	{
+		v3f* attach_offset = &player->getCAO()->m_attachment_position;
+		player_position = player->parent->getPosition() - v3f(attach_offset->X, 0, attach_offset->Z);
+	}
 	//if(player->touching_ground && player_position.Y > old_player_position.Y)
 	if(player->touching_ground &&
 			player_position.Y > old_player_position.Y)
