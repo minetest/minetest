@@ -3038,7 +3038,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `sneak`: whether player can sneak (default: `true`)
         * `sneak_glitch`: whether player can use the new move code replications
           of the old sneak side-effects: sneak ladders and 2 node sneak jump
-          when next to a ledge 2 nodes up (default: `true`)
+          (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behaviour (default: `true`)
 * `get_physics_override()`: returns the table given to set_physics_override

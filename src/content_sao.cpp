@@ -788,7 +788,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer
 	m_physics_override_jump(1),
 	m_physics_override_gravity(1),
 	m_physics_override_sneak(true),
-	m_physics_override_sneak_glitch(true),
+	m_physics_override_sneak_glitch(false),
 	m_physics_override_new_move(true),
 	m_physics_override_sent(false)
 {
