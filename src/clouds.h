@@ -115,6 +115,12 @@ public:
 	}
 
 private:
+	void updateBox()
+	{
+		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS * m_camera_offset.Y, -BS * 1000000,
+				BS * 1000000, m_cloud_y + m_thickness - BS * m_camera_offset.Y, BS * 1000000);
+	}
+
 	video::SMaterial m_material;
 	aabb3f m_box;
 	s16 m_passed_cloud_y;
@@ -132,12 +138,6 @@ private:
 	video::SColorf m_color_bright;
 	video::SColorf m_color_ambient;
 
-	// called in several places
-	void updateBox()
-	{
-		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS * m_camera_offset.Y, -BS * 1000000,
-				BS * 1000000, m_cloud_y + m_thickness - BS * m_camera_offset.Y, BS * 1000000);
-	}
 };
 
 

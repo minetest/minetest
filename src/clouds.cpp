@@ -93,6 +93,10 @@ void Clouds::OnRegisterSceneNode()
 
 void Clouds::render()
 {
+
+	if (m_density <= 0.0)
+		return; // no need to do anything
+
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 	if(SceneManager->getSceneNodeRenderPass() != scene::ESNRP_TRANSPARENT)
@@ -189,13 +193,13 @@ void Clouds::render()
 				zi + center_of_drawing_in_noise_i.Y
 			);
 
-			double noise = noise2d_perlin(
+			float noise = noise2d_perlin(
 					(float)p_in_noise_i.X * cloud_size_noise,
 					(float)p_in_noise_i.Y * cloud_size_noise,
 					m_seed, 3, 0.5);
 			// normalize to 0..1 (given 3 octaves)
-			double noise_bound = 1.0 + 0.5 + 0.25;
-			double density = noise / noise_bound * 0.5 + 0.5;
+			float noise_bound = 1.0 + 0.5 + 0.25;
+			float density = noise / noise_bound * 0.5 + 0.5;
 			grid[i] = (density < m_density);
 		}
 	}

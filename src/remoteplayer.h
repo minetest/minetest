@@ -114,7 +114,7 @@ public:
 		m_cloud_settings = cloud_settings;
 	}
 
-	CloudSettings getCloudSettings() const
+	const CloudSettings &getCloudSettings() const
 	{
 		return m_cloud_settings;
 	}

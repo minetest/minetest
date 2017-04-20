@@ -1168,7 +1168,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
-void Client::handleCommand_HudSetClouds(NetworkPacket* pkt)
+void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 {
 	std::string datastring(pkt->getString(0), pkt->getSize());
 	std::istringstream is(datastring, std::ios_base::binary);
@@ -1181,13 +1181,13 @@ void Client::handleCommand_HudSetClouds(NetworkPacket* pkt)
 	v2f *speed                     = new v2f(readV2F1000(is));
 
 	ClientEvent event;
-	event.type                     = CE_SET_CLOUDS;
-	event.set_clouds.density       = density / 65535.0;
-	event.set_clouds.color_bright  = color_bright;
-	event.set_clouds.color_ambient = color_ambient;
-	event.set_clouds.height        = height;
-	event.set_clouds.thickness     = thickness;
-	event.set_clouds.speed         = speed;
+	event.type                        = CE_CLOUDS_PARAMS;
+	event.clouds_params.density       = density / 65535.0;
+	event.clouds_params.color_bright  = color_bright;
+	event.clouds_params.color_ambient = color_ambient;
+	event.clouds_params.height        = height;
+	event.clouds_params.thickness     = thickness;
+	event.clouds_params.speed         = speed;
 	m_client_event_queue.push(event);
 }
 

@@ -3080,11 +3080,11 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_clouds(settings)`: set cloud parameters
 	* `settings` is a table with the following optional fields:
 		* `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
-		* `color`: cloud color during daylight (default `#fff0f0`)
-		* `ambient`: light-independent cloud color component, "glow at night" effect (default `#000000`)
-		* `height`: cloud height in blocks (default per conf, usually `120`)
-		* `thickness`: cloud thickness in blocks (default `16`)
-		* `speed`: 2D cloud speed + direction in blocks per second (default `{x=0, y=-2}`)
+		* `color`: cloud color component affected by daylight (default `#fff0f0`)
+		* `ambient`: daylight-independent cloud color component, "glow at night" effect (default `#000000`)
+		* `height`: cloud height, i.e. y of cloud base (default per conf, usually `120`)
+		* `thickness`: cloud thickness in nodes (default `16`)
+		* `speed`: 2D cloud speed + direction in nodes per second (default `{x=0, y=-2}`)
 * `get_clouds()`: returns a table with the current cloud settings as in `set_clouds`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount

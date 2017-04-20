@@ -610,7 +610,7 @@ enum ToClientCommand
 		u32 id
 	*/
 
-	TOCLIENT_SET_CLOUDS = 0x54,
+	TOCLIENT_CLOUDS_PARAMS = 0x54,
 	/*
 		u16 density
 		u8[4] color_diffuse (ARGB)

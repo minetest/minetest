@@ -77,7 +77,7 @@ enum ClientEventType
 	CE_HUDCHANGE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
-	CE_SET_CLOUDS,
+	CE_CLOUDS_PARAMS,
 };
 
 struct ClientEvent
@@ -179,14 +179,14 @@ struct ClientEvent
 			bool do_override;
 			float ratio_f;
 		} override_day_night_ratio;
-		struct{
+		struct {
 			float density;
 			video::SColor *color_bright;
 			video::SColor *color_ambient;
 			float height;
 			float thickness;
 			v2f *speed;
-		} set_clouds;
+		} clouds_params;
 	};
 };
 
@@ -340,7 +340,7 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
-	void handleCommand_HudSetClouds(NetworkPacket* pkt);
+	void handleCommand_CloudsParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
