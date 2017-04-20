@@ -361,9 +361,9 @@ void Clouds::step(float dtime)
 void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 {
 	m_camera_pos = camera_p;
-	m_color.r = MYMIN(color_diffuse.r * m_color_bright.r + m_color_ambient.r, 1.0);
-	m_color.g = MYMIN(color_diffuse.g * m_color_bright.g + m_color_ambient.g, 1.0);
-	m_color.b = MYMIN(color_diffuse.b * m_color_bright.b + m_color_ambient.b, 1.0);
+	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_color_bright.r, m_color_ambient.r), 1.0);
+	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_color_bright.g, m_color_ambient.g), 1.0);
+	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_color_bright.b, m_color_ambient.b), 1.0);
 	m_color.a = 1.0;
 }
 
