@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
+#include "script/serverscripting.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
@@ -637,7 +638,8 @@ s32 Map::transforming_liquid_size() {
         return m_transforming_liquid.size();
 }
 
-void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
+void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
+		ServerEnvironment *env)
 {
 	DSTACK(FUNCTION_NAME);
 	//TimeTaker timer("transformLiquids()");
@@ -897,7 +899,15 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks)
 			// set the liquid level and flow bit to 0
 			n0.param2 = ~(LIQUID_LEVEL_MASK | LIQUID_FLOW_DOWN_MASK);
 		}
+
+		// change the node.
 		n0.setContent(new_node_content);
+
+		// on_flood() the node
+		if (floodable_node != CONTENT_AIR) {
+			if (env->getScriptIface()->node_on_flood(p0, n00, n0))
+				continue;
+		}
 
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
 		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
