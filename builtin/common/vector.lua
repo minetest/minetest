@@ -69,24 +69,10 @@ function vector.direction(pos1, pos2)
 	local x_abs = math.abs(x_raw)
 	local y_abs = math.abs(y_raw)
 	local z_abs = math.abs(z_raw)
-	if x_abs >= y_abs and
-	   x_abs >= z_abs then
-		y_raw = y_raw * (1 / x_abs)
-		z_raw = z_raw * (1 / x_abs)
-		x_raw = x_raw / x_abs
-	end
-	if y_abs >= x_abs and
-	   y_abs >= z_abs then
-		x_raw = x_raw * (1 / y_abs)
-		z_raw = z_raw * (1 / y_abs)
-		y_raw = y_raw / y_abs
-	end
-	if z_abs >= y_abs and
-	   z_abs >= x_abs then
-		x_raw = x_raw * (1 / z_abs)
-		y_raw = y_raw * (1 / z_abs)
-		z_raw = z_raw / z_abs
-	end
+	local inv_max_length = 1/math.max(x_abs, y_abs, z_abs)
+	y_raw = y_raw*inv_max_length
+	z_raw = z_raw*inv_max_length
+	x_raw = x_raw*inv_max_length
 	return {x=x_raw, y=y_raw, z=z_raw}
 end
 
