@@ -201,8 +201,12 @@ struct TileLayer
 {
 	TileLayer():
 		texture(NULL),
+		normal_texture(NULL),
+		flags_texture(NULL),
+		shader_id(0),
 		texture_id(0),
-		color(),
+		animation_frame_length_ms(0),
+		animation_frame_count(1),
 		material_type(TILE_MATERIAL_BASIC),
 		material_flags(
 			//0 // <- DEBUG, Use the one below
@@ -210,12 +214,8 @@ struct TileLayer
 			MATERIAL_FLAG_TILEABLE_HORIZONTAL|
 			MATERIAL_FLAG_TILEABLE_VERTICAL
 		),
-		shader_id(0),
-		normal_texture(NULL),
-		flags_texture(NULL),
-		animation_frame_length_ms(0),
-		animation_frame_count(1),
-		has_color(false)
+		has_color(false),
+		color()
 	{
 	}
 
@@ -286,27 +286,32 @@ struct TileLayer
 			&& (material_flags & MATERIAL_FLAG_TILEABLE_VERTICAL);
 	}
 
+	// Ordered for size, please do not reorder
+
 	video::ITexture *texture;
+	video::ITexture *normal_texture;
+	video::ITexture *flags_texture;
+
+	u32 shader_id;
+
 	u32 texture_id;
+
+	u16 animation_frame_length_ms;
+	u8 animation_frame_count;
+
+	u8 material_type;
+	u8 material_flags;
+
+	//! If true, the tile has its own color.
+	bool has_color;
+
+	std::vector<FrameSpec> frames;
+
 	/*!
 	 * The color of the tile, or if the tile does not own
 	 * a color then the color of the node owning this tile.
 	 */
 	video::SColor color;
-	// Material parameters
-	u8 material_type;
-	u8 material_flags;
-	u32 shader_id;
-	video::ITexture *normal_texture;
-	video::ITexture *flags_texture;
-
-	// Animation parameters
-	u16 animation_frame_length_ms;
-	u8 animation_frame_count;
-	//! If true, the tile has its own color.
-	bool has_color;
-
-	std::vector<FrameSpec> frames;
 };
 
 /*!
