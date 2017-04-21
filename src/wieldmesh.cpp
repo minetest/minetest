@@ -438,7 +438,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		g_extrusion_mesh_cache->grab();
 	}
 
-	scene::SMesh *mesh;
+	scene::SMesh *mesh = NULL;
 
 	// If inventory_image is defined, it overrides everything else
 	if (def.inventory_image != "") {

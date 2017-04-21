@@ -108,7 +108,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 		vertices[j].Pos = coords[j] + origin;
 		vertices[j].Normal = normal2;
 		if (data->m_smooth_lighting)
-			vertices[j].Color = blendLight(coords[j]);
+			vertices[j].Color = blendLightColor(coords[j]);
 		else
 			vertices[j].Color = color;
 		if (shade_face)
@@ -298,7 +298,7 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 	const v3f &vertex_normal)
 {
-	video::SColor color = blendLight(vertex_pos);
+	video::SColor color = blendLightColor(vertex_pos);
 	if (!f->light_source)
 		applyFacesShading(color, vertex_normal);
 	return color;
