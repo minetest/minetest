@@ -4,13 +4,13 @@ vector = {}
 function vector.new(a, b, c)
 	if type(a) == "table" then
 		assert(a.x and a.y and a.z, "Invalid vector passed to vector.new()")
-		return {x=a.x, y=a.y, z=a.z}
+		return {x = a.x, y = a.y, z = a.z}
 	elseif a and b and c then
-		return {x=a, y=b, z=c}
+		return {x = a, y = b, z = c}
 	elseif a then
-		return {x=a, y=a, z=a}
+		return {x = a, y = a, z = a}
 	end
-	return {x=0, y=0, z=0}
+	return {x = 0, y = 0, z = 0}
 end
 
 function vector.equals(a, b)
@@ -31,11 +31,11 @@ end
 
 function vector.normalize(v)
 	if vector.is_nil(v) then return v end
-	local inv_len = 1/vector.length(v)
+	local inv_len = 1 / vector.length(v)
 	return {
-		x = v.x*inv_len,
-		y = v.y*inv_len,
-		z = v.z*inv_len,
+		x = v.x * inv_len,
+		y = v.y * inv_len,
+		z = v.z * inv_len,
 	}
 end
 
@@ -82,7 +82,7 @@ function vector.direction(pos1, pos2)
 	return vector.normalize({
 		x = pos2.x - pos1.x,
 		y = pos2.y - pos1.y,
-		z = pos2.z - pos1.z
+		z = pos2.z - pos1.z,
 	})
 end
 
@@ -152,7 +152,7 @@ function vector.divide(a, b)
 end
 
 function vector.sum(vs)
-	local V = {x=0, y=0, z=0}
+	local V = {x = 0, y = 0, z = 0}
 	for _, v in ipairs(vs) do
 		V.x = V.x + v.x
 		V.y = V.y + v.y
