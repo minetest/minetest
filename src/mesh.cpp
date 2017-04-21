@@ -387,37 +387,39 @@ void recalculateBoundingBox(scene::IMesh *src_mesh)
 
 scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 {
-	scene::IMeshBuffer *clone = NULL;
 	switch (mesh_buffer->getVertexType()) {
 	case video::EVT_STANDARD: {
 		video::S3DVertex *v = (video::S3DVertex *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBuffer *temp_buf = new scene::SMeshBuffer();
-		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
+		scene::SMeshBuffer *cloned_buffer = new scene::SMeshBuffer();
+		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
-		return temp_buf;
-		break;
+		return cloned_buffer;
 	}
 	case video::EVT_2TCOORDS: {
 		video::S3DVertex2TCoords *v =
 			(video::S3DVertex2TCoords *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBufferTangents *temp_buf = new scene::SMeshBufferTangents();
-		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
+		scene::SMeshBufferTangents *cloned_buffer =
+			new scene::SMeshBufferTangents();
+		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
-		break;
+		return cloned_buffer;
 	}
 	case video::EVT_TANGENTS: {
 		video::S3DVertexTangents *v =
 			(video::S3DVertexTangents *) mesh_buffer->getVertices();
 		u16 *indices = mesh_buffer->getIndices();
-		scene::SMeshBufferTangents *temp_buf = new scene::SMeshBufferTangents();
-		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
+		scene::SMeshBufferTangents *cloned_buffer =
+			new scene::SMeshBufferTangents();
+		cloned_buffer->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
-		break;
+		return cloned_buffer;
 	}
 	}
-	return clone;
+	// This should not happen.
+	sanity_check(false);
+	return NULL;
 }
 
 scene::SMesh* cloneMesh(scene::IMesh *src_mesh)

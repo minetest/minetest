@@ -85,6 +85,7 @@ void rotateMeshYZby (scene::IMesh *mesh, f64 degrees);
 
 /*
  *  Clone the mesh buffer.
+ *  The returned pointer should be dropped.
  */
 scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
  
