@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
+#include "debug.h"
+#include "log.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "gamedef.h"
@@ -229,7 +231,7 @@ bool run_tests()
 {
 	DSTACK(FUNCTION_NAME);
 
-	u32 t1 = porting::getTime(PRECISION_MILLI);
+	u32 t1 = getTimeMs();
 	TestGameDef gamedef;
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
@@ -246,7 +248,7 @@ bool run_tests()
 		num_total_tests_run += testmods[i]->num_tests_run;
 	}
 
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
+	u32 tdiff = getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
 
@@ -273,12 +275,12 @@ bool run_tests()
 bool TestBase::testModule(IGameDef *gamedef)
 {
 	rawstream << "======== Testing module " << getName() << std::endl;
-	u32 t1 = porting::getTime(PRECISION_MILLI);
+	u32 t1 = getTimeMs();
 
 
 	runTests(gamedef);
 
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
+	u32 tdiff = getTimeMs() - t1;
 	rawstream << "======== Module " << getName() << " "
 		<< (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
 		<< " failures / " << num_tests_run << " tests) - " << tdiff

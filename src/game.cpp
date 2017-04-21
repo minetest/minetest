@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "filesys.h"
 #include "gettext.h"
+#include "gettime.h"
 #include "guiChatConsole.h"
 #include "guiFormSpecMenu.h"
 #include "guiKeyChangeMenu.h"
@@ -231,6 +232,7 @@ public:
 
 	Client *m_client;
 };
+
 
 /* Profiler display */
 
@@ -693,7 +695,7 @@ public:
 			sunlight.b };
 		m_day_light.set(dnc, services);
 
-		u32 animation_timer = porting::getTimeMs() % 100000;
+		u32 animation_timer = getTimeMs() % 100000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
 		m_animation_timer_pixel.set(&animation_timer_f, services);
@@ -3620,7 +3622,7 @@ PointedThing Game::updatePointedThing(
 		final_color_blend(&c, light_level, daynight_ratio);
 
 		// Modify final color a bit with time
-		u32 timer = porting::getTimeMs() % 5000;
+		u32 timer = getTimeMs() % 5000;
 		float timerf = (float) (irr::core::PI * ((timer / 2500.0) - 0.5));
 		float sin_r = 0.08 * sin(timerf);
 		float sin_g = 0.08 * sin(timerf + irr::core::PI * 0.5);

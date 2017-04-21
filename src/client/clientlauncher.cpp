@@ -51,22 +51,6 @@ bool noMenuActive()
 MainGameCallback *g_gamecallback = NULL;
 
 
-// Instance of the time getter
-static TimeGetter *g_timegetter = NULL;
-
-u32 getTimeMs()
-{
-	if (g_timegetter == NULL)
-		return 0;
-	return g_timegetter->getTime(PRECISION_MILLI);
-}
-
-u32 getTime(TimePrecision prec) {
-	if (g_timegetter == NULL)
-		return 0;
-	return g_timegetter->getTime(prec);
-}
-
 ClientLauncher::~ClientLauncher()
 {
 	if (receiver)
@@ -95,9 +79,6 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		errorstream << "Could not initialize game engine." << std::endl;
 		return false;
 	}
-
-	// Create time getter
-	g_timegetter = new IrrlichtTimeGetter(device);
 
 	// Speed tests (done after irrlicht is loaded to get timer)
 	if (cmd_args.getFlag("speedtests")) {

@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 #define UNUSED(expr) do { (void)(expr); } while (0)
 
+#include <cassert>
 #if USE_CPP11_THREADS
 	#include <chrono>
 	#include <system_error>
@@ -39,7 +40,6 @@ DEALINGS IN THE SOFTWARE.
 	#endif
 #elif USE_POSIX_THREADS
 	#include <time.h>
-	#include <assert.h>
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <sys/time.h>
@@ -442,4 +442,3 @@ bool Thread::setPriority(int prio)
 
 #endif
 }
-

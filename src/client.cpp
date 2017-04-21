@@ -32,6 +32,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "network/clientopcodes.h"
 #include "filesys.h"
+#include "porting.h"
+#include "gettime.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
@@ -778,12 +780,12 @@ void Client::initLocalMapSaving(const Address &address,
 void Client::ReceiveAll()
 {
 	DSTACK(FUNCTION_NAME);
-	u32 start_ms = porting::getTimeMs();
+	u32 start_ms = getTimeMs();
 	for(;;)
 	{
 		// Limit time even if there would be huge amounts of data to
 		// process
-		if(porting::getTimeMs() > start_ms + 100)
+		if(getTimeMs() > start_ms + 100)
 			break;
 
 		try {
@@ -1627,7 +1629,7 @@ float Client::mediaReceiveProgress()
 typedef struct TextureUpdateArgs {
 	IrrlichtDevice *device;
 	gui::IGUIEnvironment *guienv;
-	u32 last_time_ms;
+	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;

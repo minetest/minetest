@@ -942,5 +942,4 @@ void attachOrCreateConsole(void)
 #endif
 }
 
-
 } //namespace porting

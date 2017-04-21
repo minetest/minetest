@@ -31,7 +31,7 @@ SQLite format specification:
 #include "filesys.h"
 #include "exceptions.h"
 #include "settings.h"
-#include "porting.h"
+#include "gettime.h"
 #include "util/string.h"
 
 #include <cassert>
@@ -297,4 +297,3 @@ Database_SQLite3::~Database_SQLite3()
 
 	SQLOK_ERRSTREAM(sqlite3_close(m_database), "Failed to close database");
 }
-
