@@ -69,7 +69,7 @@ public:
 	virtual ~IFormSource(){}
 	virtual std::string getForm() = 0;
 	// Fill in variables in field text
-	virtual std::string resolveText(std::string str){ return str; }
+	virtual std::string resolveText(const std::string &str) { return str; }
 };
 
 class GUIFormSpecMenu : public GUIModalMenu

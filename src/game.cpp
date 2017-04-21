@@ -202,15 +202,6 @@ public:
 
 		return meta->getString("formspec");
 	}
-	std::string resolveText(std::string str)
-	{
-		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
-
-		if (!meta)
-			return str;
-
-		return meta->resolveString(str);
-	}
 
 	ClientMap *m_map;
 	v3s16 m_p;

@@ -83,8 +83,8 @@ public:
 	GetRequest() {}
 	~GetRequest() {}
 
-	GetRequest(Key a_key) {
-		key = a_key;
+	GetRequest(const Key &a_key): key(a_key)
+	{
 	}
 
 	Key key;
@@ -106,7 +106,7 @@ public:
 		return m_queue.empty();
 	}
 
-	void add(Key key, Caller caller, CallerData callerdata,
+	void add(const Key &key, Caller caller, CallerData callerdata,
 		ResultQueue<Key, T, Caller, CallerData> *dest)
 	{
 		typename std::deque<GetRequest<Key, T, Caller, CallerData> >::iterator i;
