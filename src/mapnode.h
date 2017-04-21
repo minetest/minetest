@@ -73,8 +73,8 @@ typedef u16 content_t;
 
 enum LightBank
 {
-	LIGHTBANK_DAY,
-	LIGHTBANK_NIGHT
+	LIGHTBANK_SUN,
+	LIGHTBANK_ARTIFICIAL
 };
 
 /*

@@ -34,8 +34,8 @@ void setLight(VoxelManipulator &v, VoxelArea a, u8 light,
 	{
 		v3s16 p(x,y,z);
 		MapNode &n = v.getNodeRefUnsafe(p);
-		n.setLight(LIGHTBANK_DAY, light, ndef);
-		n.setLight(LIGHTBANK_NIGHT, light, ndef);
+		n.setLight(LIGHTBANK_SUN, light, ndef);
+		n.setLight(LIGHTBANK_ARTIFICIAL, light, ndef);
 	}
 }
 
@@ -105,7 +105,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		// Otherwise refer to it's light value
 		else
 			overtop_has_sunlight = (v.getNodeRefUnsafe(p_overtop).getLight(
-					LIGHTBANK_DAY, ndef) == LIGHT_SUN);
+					LIGHTBANK_SUN, ndef) == LIGHT_SUN);
 
 		// Copy overtop's sunlight all over the place
 		u8 incoming_light = overtop_has_sunlight ? LIGHT_SUN : 0;
@@ -123,10 +123,10 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 			} else {
 				incoming_light = diminish_light(incoming_light);
 			}
-			u8 old_light = n.getLight(LIGHTBANK_DAY, ndef);
+			u8 old_light = n.getLight(LIGHTBANK_SUN, ndef);
 
 			if(incoming_light > old_light)
-				n.setLight(LIGHTBANK_DAY, incoming_light, ndef);
+				n.setLight(LIGHTBANK_SUN, incoming_light, ndef);
 
 			if(diminish_light(incoming_light) != 0)
 				light_sources.insert(p);
@@ -144,7 +144,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 				// Is not known, cannot compare
 			} else {
 				bool overbottom_has_sunlight = (v.getNodeRefUnsafe(p_overbottom
-						).getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN);
+						).getLight(LIGHTBANK_SUN, ndef) == LIGHT_SUN);
 				if(sunlight_should_continue_down != overbottom_has_sunlight){
 					bottom_sunlight_valid = false;
 				}
@@ -590,7 +590,7 @@ bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
 				if (source_block->getIsUnderground()) {
 					sunlight = false;
 				}
-			} else if (above.getLight(LIGHTBANK_DAY, ndef) != LIGHT_SUN) {
+			} else if (above.getLight(LIGHTBANK_SUN, ndef) != LIGHT_SUN) {
 				// If the node above doesn't have sunlight, this
 				// node is in shadow.
 				sunlight = false;
@@ -600,7 +600,7 @@ bool is_sunlight_above(Map *map, v3s16 pos, INodeDefManager *ndef)
 	return sunlight;
 }
 
-static const LightBank banks[] = { LIGHTBANK_DAY, LIGHTBANK_NIGHT };
+static const LightBank banks[] = { LIGHTBANK_SUN, LIGHTBANK_ARTIFICIAL };
 
 void update_lighting_nodes(Map *map,
 	std::vector<std::pair<v3s16, MapNode> > &oldnodes,
@@ -658,7 +658,7 @@ void update_lighting_nodes(Map *map,
 			// Get new light level of the node
 			u8 new_light = 0;
 			if (ndef->get(n).light_propagates) {
-				if (bank == LIGHTBANK_DAY && ndef->get(n).sunlight_propagates
+				if (bank == LIGHTBANK_SUN && ndef->get(n).sunlight_propagates
 					&& is_sunlight_above(map, p, ndef)) {
 					new_light = LIGHT_SUN;
 				} else {
@@ -697,7 +697,7 @@ void update_lighting_nodes(Map *map,
 					6);
 
 				// Remove sunlight, if there was any
-				if (bank == LIGHTBANK_DAY && old_light == LIGHT_SUN) {
+				if (bank == LIGHTBANK_SUN && old_light == LIGHT_SUN) {
 					for (s16 y = p.Y - 1;; y--) {
 						v3s16 n2pos(p.X, y, p.Z);
 
@@ -709,11 +709,11 @@ void update_lighting_nodes(Map *map,
 
 						// If this node doesn't have sunlight, the nodes below
 						// it don't have too.
-						if (n2.getLight(LIGHTBANK_DAY, ndef) != LIGHT_SUN) {
+						if (n2.getLight(LIGHTBANK_SUN, ndef) != LIGHT_SUN) {
 							break;
 						}
 						// Remove sunlight and add to unlight queue.
-						n2.setLight(LIGHTBANK_DAY, 0, ndef);
+						n2.setLight(LIGHTBANK_SUN, 0, ndef);
 						map->setNode(n2pos, n2);
 						relative_v3 rel_pos2;
 						mapblock_v3 block_pos2;
@@ -729,7 +729,7 @@ void update_lighting_nodes(Map *map,
 				// It is sure that the node provides more light than the previous
 				// one, unlighting is not necessary.
 				// Propagate sunlight
-				if (bank == LIGHTBANK_DAY && new_light == LIGHT_SUN) {
+				if (bank == LIGHTBANK_SUN && new_light == LIGHT_SUN) {
 					for (s16 y = p.Y - 1;; y--) {
 						v3s16 n2pos(p.X, y, p.Z);
 
@@ -741,7 +741,7 @@ void update_lighting_nodes(Map *map,
 
 						// This should not happen, but if the node has sunlight
 						// then the iteration should stop.
-						if (n2.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN) {
+						if (n2.getLight(LIGHTBANK_SUN, ndef) == LIGHT_SUN) {
 							break;
 						}
 						// If the node terminates sunlight, stop.
@@ -949,8 +949,8 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
 				// Sunlight is stopped.
 				lig = false;
 			// Reset light
-			n->setLight(LIGHTBANK_DAY, lig ? 15 : 0, f);
-			n->setLight(LIGHTBANK_NIGHT, 0, f);
+			n->setLight(LIGHTBANK_SUN, lig ? 15 : 0, f);
+			n->setLight(LIGHTBANK_ARTIFICIAL, 0, f);
 		}
 		// Output outgoing light.
 		light[z][x] = lig;
@@ -997,7 +997,7 @@ void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
 			// Get the bottom block.
 			MapNode above = source_block->getNodeNoCheck(x, 0, z,
 				&is_valid_position);
-			light[z][x] = above.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN;
+			light[z][x] = above.getLight(LIGHTBANK_SUN, ndef) == LIGHT_SUN;
 		}
 	}
 }
@@ -1038,10 +1038,10 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 			for (; current_pos.Y >= 0; current_pos.Y--) {
 				MapNode n = block->getNodeNoCheck(current_pos, &is_valid);
 				const ContentFeatures &f = ndef->get(n);
-				if (n.getLightRaw(LIGHTBANK_DAY, f) < LIGHT_SUN
+				if (n.getLightRaw(LIGHTBANK_SUN, f) < LIGHT_SUN
 						&& f.sunlight_propagates) {
 					// This node gets sunlight.
-					n.setLight(LIGHTBANK_DAY, LIGHT_SUN, f);
+					n.setLight(LIGHTBANK_SUN, LIGHT_SUN, f);
 					block->setNodeNoCheck(current_pos, n);
 					modified = true;
 					relight->push(LIGHT_SUN, current_pos, data->target_block,
@@ -1057,9 +1057,9 @@ bool propagate_block_sunlight(Map *map, INodeDefManager *ndef,
 			for (; current_pos.Y >= 0; current_pos.Y--) {
 				MapNode n = block->getNodeNoCheck(current_pos, &is_valid);
 				const ContentFeatures &f = ndef->get(n);
-				if (n.getLightRaw(LIGHTBANK_DAY, f) == LIGHT_SUN) {
+				if (n.getLightRaw(LIGHTBANK_SUN, f) == LIGHT_SUN) {
 					// The sunlight is no longer valid.
-					n.setLight(LIGHTBANK_DAY, 0, f);
+					n.setLight(LIGHTBANK_SUN, 0, f);
 					block->setNodeNoCheck(current_pos, n);
 					modified = true;
 					unlight->push(LIGHT_SUN, current_pos, data->target_block,
@@ -1316,8 +1316,8 @@ void fill_with_sunlight(MapBlock *block, INodeDefManager *ndef,
 				lig = false;
 			}
 			// Reset light
-			n.setLight(LIGHTBANK_DAY, lig ? 15 : 0, f);
-			n.setLight(LIGHTBANK_NIGHT, 0, f);
+			n.setLight(LIGHTBANK_SUN, lig ? 15 : 0, f);
+			n.setLight(LIGHTBANK_ARTIFICIAL, 0, f);
 			block->setNodeNoCheck(x, y, z, n);
 		}
 		// Output outgoing light.

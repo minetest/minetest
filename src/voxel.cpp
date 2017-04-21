@@ -120,7 +120,7 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 							c = 'X';
 						else
 						{
-							u8 light = n.getLight(LIGHTBANK_DAY, ndef);
+							u8 light = n.getLight(LIGHTBANK_SUN, ndef);
 							if(light < 10)
 								c = '0' + light;
 							else

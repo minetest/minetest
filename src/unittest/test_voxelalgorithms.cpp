@@ -68,7 +68,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 				v, a, true, light_sources, ndef);
 		//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
 		UASSERT(res.bottom_sunlight_valid == true);
-		UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+		UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_SUN, ndef)
 				== LIGHT_SUN);
 	}
 
@@ -80,7 +80,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				v, a, true, light_sources, ndef);
 		UASSERT(res.bottom_sunlight_valid == true);
-		UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_DAY, ndef)
+		UASSERT(v.getNode(v3s16(1,1,1)).getLight(LIGHTBANK_SUN, ndef)
 				== LIGHT_SUN);
 	}
 
@@ -90,7 +90,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				v, a, false, light_sources, ndef);
 		UASSERT(res.bottom_sunlight_valid == true);
-		UASSERT(v.getNode(v3s16(2,0,2)).getLight(LIGHTBANK_DAY, ndef)
+		UASSERT(v.getNode(v3s16(2,0,2)).getLight(LIGHTBANK_SUN, ndef)
 				== 0);
 	}
 
@@ -102,7 +102,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				v, a, true, light_sources, ndef);
 		UASSERT(res.bottom_sunlight_valid == true);
-		UASSERT(v.getNode(v3s16(1,1,2)).getLight(LIGHTBANK_DAY, ndef)
+		UASSERT(v.getNode(v3s16(1,1,2)).getLight(LIGHTBANK_SUN, ndef)
 				== 0);
 	}
 
@@ -112,13 +112,13 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 		voxalgo::SunlightPropagateResult res = voxalgo::propagateSunlight(
 				v, a, false, light_sources, ndef);
 		UASSERT(res.bottom_sunlight_valid == true);
-		UASSERT(v.getNode(v3s16(1,0,2)).getLight(LIGHTBANK_DAY, ndef)
+		UASSERT(v.getNode(v3s16(1,0,2)).getLight(LIGHTBANK_SUN, ndef)
 				== 0);
 	}
 
 	{
 		MapNode n(CONTENT_AIR);
-		n.setLight(LIGHTBANK_DAY, 10, ndef);
+		n.setLight(LIGHTBANK_SUN, 10, ndef);
 		v.setNodeNoRef(v3s16(1,-1,2), n);
 	}
 
@@ -140,7 +140,7 @@ void TestVoxelAlgorithms::testPropogateSunlight(INodeDefManager *ndef)
 
 	{
 		MapNode n(CONTENT_AIR);
-		n.setLight(LIGHTBANK_DAY, LIGHT_SUN, ndef);
+		n.setLight(LIGHTBANK_SUN, LIGHT_SUN, ndef);
 		v.setNodeNoRef(v3s16(1,-1,2), n);
 	}
 
@@ -188,17 +188,17 @@ void TestVoxelAlgorithms::testClearLightAndCollectSources(INodeDefManager *ndef)
 
 	{
 		MapNode n(CONTENT_AIR);
-		n.setLight(LIGHTBANK_DAY, 1, ndef);
+		n.setLight(LIGHTBANK_SUN, 1, ndef);
 		v.setNode(v3s16(1,1,2), n);
 	}
 
 	{
 		std::set<v3s16> light_sources;
 		std::map<v3s16, u8> unlight_from;
-		voxalgo::clearLightAndCollectSources(v, a, LIGHTBANK_DAY,
+		voxalgo::clearLightAndCollectSources(v, a, LIGHTBANK_SUN,
 				ndef, light_sources, unlight_from);
 		//v.print(dstream, ndef, VOXELPRINT_LIGHT_DAY);
-		UASSERT(v.getNode(v3s16(0,1,1)).getLight(LIGHTBANK_DAY, ndef) == 0);
+		UASSERT(v.getNode(v3s16(0,1,1)).getLight(LIGHTBANK_SUN, ndef) == 0);
 		UASSERT(light_sources.find(v3s16(1,1,1)) != light_sources.end());
 		UASSERT(light_sources.size() == 1);
 		UASSERT(unlight_from.find(v3s16(1,1,2)) != unlight_from.end());

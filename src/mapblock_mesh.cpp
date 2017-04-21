@@ -163,8 +163,8 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 */
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 {
-	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
-	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
+	u16 day = getInteriorLight(LIGHTBANK_SUN, n, increment, ndef);
+	u16 night = getInteriorLight(LIGHTBANK_ARTIFICIAL, n, increment, ndef);
 	return day | (night << 8);
 }
 
@@ -198,8 +198,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 */
 u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 {
-	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
-	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
+	u16 day = getFaceLight(LIGHTBANK_SUN, n, n2, face_dir, ndef);
+	u16 night = getFaceLight(LIGHTBANK_ARTIFICIAL, n, n2, face_dir, ndef);
 	return day | (night << 8);
 }
 
@@ -242,8 +242,8 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_SUN, &f));
+			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_ARTIFICIAL, &f));
 			light_count++;
 		} else {
 			ambient_occlusion++;

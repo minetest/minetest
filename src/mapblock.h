@@ -236,7 +236,7 @@ public:
 		bool is_complete)
 	{
 		assert(direction >= 0 && direction <= 5);
-		if (bank == LIGHTBANK_NIGHT) {
+		if (bank == LIGHTBANK_ARTIFICIAL) {
 			direction += 6;
 		}
 		u16 newflags = m_lighting_complete;
@@ -251,7 +251,7 @@ public:
 	inline bool isLightingComplete(LightBank bank, u8 direction)
 	{
 		assert(direction >= 0 && direction <= 5);
-		if (bank == LIGHTBANK_NIGHT) {
+		if (bank == LIGHTBANK_ARTIFICIAL) {
 			direction += 6;
 		}
 		return (m_lighting_complete & (1 << direction)) != 0;
