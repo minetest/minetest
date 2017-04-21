@@ -391,7 +391,7 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 	switch (mesh_buffer->getVertexType()) {
 	case video::EVT_STANDARD: {
 		video::S3DVertex *v = (video::S3DVertex *) mesh_buffer->getVertices();
-		u16 *indices = (u16*) mesh_buffer->getIndices();
+		u16 *indices = mesh_buffer->getIndices();
 		scene::SMeshBuffer *temp_buf = new scene::SMeshBuffer();
 		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
@@ -401,7 +401,7 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 	case video::EVT_2TCOORDS: {
 		video::S3DVertex2TCoords *v =
 			(video::S3DVertex2TCoords *) mesh_buffer->getVertices();
-		u16 *indices = (u16*) mesh_buffer->getIndices();
+		u16 *indices = mesh_buffer->getIndices();
 		scene::SMeshBufferTangents *temp_buf = new scene::SMeshBufferTangents();
 		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
@@ -410,7 +410,7 @@ scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer)
 	case video::EVT_TANGENTS: {
 		video::S3DVertexTangents *v =
 			(video::S3DVertexTangents *) mesh_buffer->getVertices();
-		u16 *indices = (u16*) mesh_buffer->getIndices();
+		u16 *indices = mesh_buffer->getIndices();
 		scene::SMeshBufferTangents *temp_buf = new scene::SMeshBufferTangents();
 		temp_buf->append(v, mesh_buffer->getVertexCount(), indices,
 			mesh_buffer->getIndexCount());
@@ -447,7 +447,7 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 		buf->drop();
 	}
 
-	video::SColor c(255,255,255,255);	
+	video::SColor c(255,255,255,255);
 
 	for (std::vector<aabb3f>::const_iterator
 			i = boxes.begin();
@@ -534,7 +534,7 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 			buf->append(vertices + j, 4, indices, 6);
 		}
 	}
-	return dst_mesh;					
+	return dst_mesh;
 }
 
 struct vcache

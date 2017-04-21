@@ -34,10 +34,10 @@ public:
 
 struct SimpleSoundSpec
 {
-	SimpleSoundSpec(const std::string &name = "", float gain = 1.0) :
-		name(name),
-		gain(gain)
-	{}
+	SimpleSoundSpec(const std::string &name = "", float gain = 1.0)
+	    : name(name), gain(gain)
+	{
+	}
 
 	bool exists() const { return name != ""; }
 
