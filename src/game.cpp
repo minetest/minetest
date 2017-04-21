@@ -3299,14 +3299,13 @@ void Game::processClientEvents(CameraOrientation *cam)
 		case CE_CLOUDS_PARAMS:
 			if (clouds) {
 				clouds->setDensity(event.clouds_params.density);
-				clouds->setColorBright(*event.clouds_params.color_bright);
-				delete event.clouds_params.color_bright;
-				clouds->setColorAmbient(*event.clouds_params.color_ambient);
-				delete event.clouds_params.color_ambient;
+				clouds->setColorBright(video::SColor(event.clouds_params.color_bright));
+				clouds->setColorAmbient(video::SColor(event.clouds_params.color_ambient));
 				clouds->setHeight(event.clouds_params.height);
 				clouds->setThickness(event.clouds_params.thickness);
-				clouds->setSpeed(*event.clouds_params.speed);
-				delete event.clouds_params.speed;
+				clouds->setSpeed(v2f(
+						event.clouds_params.speed_x,
+						event.clouds_params.speed_y));
 			}
 			break;
 

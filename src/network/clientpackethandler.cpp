@@ -1170,24 +1170,39 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 
 void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 {
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
+	//std::string datastring(pkt->getString(0), pkt->getSize());
+	//std::istringstream is(datastring, std::ios_base::binary);
 
-	u16 density                    = readU16(is);
-	video::SColor *color_bright    = new video::SColor(readARGB8(is));
-	video::SColor *color_ambient   = new video::SColor(readARGB8(is));
-	f32 height                     = readF1000(is);
-	f32 thickness                  = readF1000(is);
-	v2f *speed                     = new v2f(readV2F1000(is));
+	//u16 density                    = readU16(is);
+	//video::SColor *color_bright    = new video::SColor(readARGB8(is));
+	//video::SColor *color_ambient   = new video::SColor(readARGB8(is));
+	//f32 height                     = readF1000(is);
+	//f32 thickness                  = readF1000(is);
+	//v2f *speed                     = new v2f(readV2F1000(is));
+
+	u16 density;
+	video::SColor color_bright;
+	video::SColor color_ambient;
+	f32 height;
+	f32 thickness;
+	v2f speed;
+
+	*pkt >> density >> color_bright >> color_ambient
+			>> height >> thickness >> speed;
 
 	ClientEvent event;
 	event.type                        = CE_CLOUDS_PARAMS;
 	event.clouds_params.density       = density / 65535.0;
-	event.clouds_params.color_bright  = color_bright;
-	event.clouds_params.color_ambient = color_ambient;
+	// use the underlying u32 representation, because we can't
+	// use struct members with constructors here, and this way
+	// we avoid using new() and delete() for no good reason
+	event.clouds_params.color_bright  = color_bright.color;
+	event.clouds_params.color_ambient = color_ambient.color;
 	event.clouds_params.height        = height;
 	event.clouds_params.thickness     = thickness;
-	event.clouds_params.speed         = speed;
+	// same here: deconstruct to skip constructor
+	event.clouds_params.speed_x       = speed.X;
+	event.clouds_params.speed_y       = speed.Y;
 	m_client_event_queue.push(event);
 }
 

@@ -180,12 +180,13 @@ struct ClientEvent
 			float ratio_f;
 		} override_day_night_ratio;
 		struct {
-			float density;
-			video::SColor *color_bright;
-			video::SColor *color_ambient;
-			float height;
-			float thickness;
-			v2f *speed;
+			f32 density;
+			u32 color_bright;
+			u32 color_ambient;
+			f32 height;
+			f32 thickness;
+			f32 speed_x;
+			f32 speed_y;
 		} clouds_params;
 	};
 };
