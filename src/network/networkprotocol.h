@@ -148,9 +148,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add node and tile color and palette
 		Fix plantlike visual_scale being applied squared and add compatibility
 			with pre-30 clients by sending sqrt(visual_scale)
+	PROTOCOL VERSION 31:
+		Add tile overlay
 */
 
-#define LATEST_PROTOCOL_VERSION 30
+#define LATEST_PROTOCOL_VERSION 31
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24

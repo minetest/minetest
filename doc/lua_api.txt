@@ -3908,6 +3908,12 @@ Definition tables
         tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
         ^ Textures of node; +Y, -Y, +X, -X, +Z, -Z (old field name: tile_images)
         ^ List can be shortened to needed length ]]
+        overlay_tiles = {tile definition 1, def2, def3, def4, def5, def6}, --[[
+        ^ Same as `tiles`, but these textures are drawn on top of the
+        ^ base tiles. You can use this to colorize only specific parts of
+        ^ your texture. If the texture name is an empty string, that
+        ^ overlay is not drawn. Since such tiles are drawn twice, it
+        ^ is not recommended to use overlays on very common nodes.
         special_tiles = {tile definition 1, Tile definition 2}, --[[
         ^ Special textures of node; used rarely (old field name: special_materials)
         ^ List can be shortened to needed length ]]

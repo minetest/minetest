@@ -60,8 +60,8 @@ public:
 // lighting
 	void getSmoothLightFrame();
 	u16 blendLight(const v3f &vertex_pos);
-	video::SColor blendLight(const v3f &vertex_pos, video::SColor tile_color);
-	video::SColor blendLight(const v3f &vertex_pos, const v3f &vertex_normal, video::SColor tile_color);
+	video::SColor blendLightColor(const v3f &vertex_pos);
+	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
 	void useTile(int index, bool disable_backface_culling);
 	void useDefaultTile(bool set_color = true);

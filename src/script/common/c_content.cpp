@@ -426,6 +426,34 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
+	// overlay_tiles = {}
+	lua_getfield(L, index, "overlay_tiles");
+	if (lua_istable(L, -1)) {
+		int table = lua_gettop(L);
+		lua_pushnil(L);
+		int i = 0;
+		while (lua_next(L, table) != 0) {
+			// Read tiledef from value
+			f.tiledef_overlay[i] = read_tiledef(L, -1, f.drawtype);
+			// removes value, keeps key for next iteration
+			lua_pop(L, 1);
+			i++;
+			if (i == 6) {
+				lua_pop(L, 1);
+				break;
+			}
+		}
+		// Copy last value to all remaining textures
+		if (i >= 1) {
+			TileDef lasttile = f.tiledef_overlay[i - 1];
+			while (i < 6) {
+				f.tiledef_overlay[i] = lasttile;
+				i++;
+			}
+		}
+	}
+	lua_pop(L, 1);
+
 	// special_tiles = {}
 	lua_getfield(L, index, "special_tiles");
 	// If nil, try the deprecated name "special_materials" instead

@@ -78,17 +78,19 @@ void MapblockMeshGenerator::useTile(int index, bool disable_backface_culling)
 {
 	tile = getNodeTileN(n, p, index, data);
 	if (!data->m_smooth_lighting)
-		color = encode_light_and_color(light, tile.color, f->light_source);
-	if (disable_backface_culling)
-		tile.material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
-	tile.material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+		color = encode_light(light, f->light_source);
+	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+		tile.layers[layer].material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
+		if (disable_backface_culling)
+			tile.layers[layer].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+	}
 }
 
 void MapblockMeshGenerator::useDefaultTile(bool set_color)
 {
 	tile = getNodeTile(n, p, v3s16(0, 0, 0), data);
 	if (set_color && !data->m_smooth_lighting)
-		color = encode_light_and_color(light, tile.color, f->light_source);
+		color = encode_light(light, f->light_source);
 }
 
 TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
@@ -106,7 +108,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 		vertices[j].Pos = coords[j] + origin;
 		vertices[j].Normal = normal2;
 		if (data->m_smooth_lighting)
-			vertices[j].Color = blendLight(coords[j], tile.color);
+			vertices[j].Color = blendLight(coords[j]);
 		else
 			vertices[j].Color = color;
 		if (shade_face)
@@ -137,8 +139,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	video::SColor colors[6];
 	if (!data->m_smooth_lighting) {
 		for (int face = 0; face != 6; ++face) {
-			int tileindex = MYMIN(face, tilecount - 1);
-			colors[face] = encode_light_and_color(light, tiles[tileindex].color, f->light_source);
+			colors[face] = encode_light(light, f->light_source);
 		}
 		if (!f->light_source) {
 			applyFacesShading(colors[0], v3f(0, 1, 0));
@@ -240,9 +241,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 
 	if (data->m_smooth_lighting) {
 		for (int j = 0; j < 24; ++j) {
-			int tileindex = MYMIN(j / 4, tilecount - 1);
-			vertices[j].Color = encode_light_and_color(lights[light_indices[j]],
-				tiles[tileindex].color, f->light_source);
+			vertices[j].Color = encode_light(lights[light_indices[j]],
+				f->light_source);
 			if (!f->light_source)
 				applyFacesShading(vertices[j].Color, vertices[j].Normal);
 		}
@@ -289,17 +289,16 @@ u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 // Calculates vertex color to be used in mapblock mesh
 //  vertex_pos - vertex position in the node (coordinates are clamped to [0.0, 1.0] or so)
 //  tile_color - node's tile color
-video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
-	video::SColor tile_color)
+video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 {
 	u16 light = blendLight(vertex_pos);
-	return encode_light_and_color(light, tile_color, f->light_source);
+	return encode_light(light, f->light_source);
 }
 
-video::SColor MapblockMeshGenerator::blendLight(const v3f &vertex_pos,
-	const v3f &vertex_normal, video::SColor tile_color)
+video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
+	const v3f &vertex_normal)
 {
-	video::SColor color = blendLight(vertex_pos, tile_color);
+	video::SColor color = blendLight(vertex_pos);
 	if (!f->light_source)
 		applyFacesShading(color, vertex_normal);
 	return color;
@@ -367,8 +366,13 @@ static TileSpec getSpecialTile(const ContentFeatures &f,
 	const MapNode &n, u8 i)
 {
 	TileSpec copy = f.special_tiles[i];
-	if (!copy.has_color)
-		n.getColor(f, &copy.color);
+	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
+		TileLayer *layer = &copy.layers[layernum];
+		if (layer->texture_id == 0)
+			continue;
+		if (!layer->has_color)
+			n.getColor(f, &(layer->color));
+	}
 	return copy;
 }
 
@@ -395,8 +399,8 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 		light = getInteriorLight(ntop, 0, nodedef);
 	}
 
-	color_liquid_top = encode_light_and_color(light, tile_liquid_top.color, f->light_source);
-	color = encode_light_and_color(light, tile_liquid.color, f->light_source);
+	color_liquid_top = encode_light(light, f->light_source);
+	color = encode_light(light, f->light_source);
 }
 
 void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
@@ -547,7 +551,7 @@ void MapblockMeshGenerator::drawLiquidSides(bool flowing)
 			else
 				pos.Y =     !top_is_same_liquid ? corner_levels[base.Z][base.X] :  0.5 * BS;
 			if (data->m_smooth_lighting)
-				color = blendLight(pos, tile_liquid.color);
+				color = blendLightColor(pos);
 			pos += origin;
 			vertices[j] = video::S3DVertex(pos.X, pos.Y, pos.Z, 0, 0, 0, color, vertex.u, vertex.v);
 		};
@@ -574,7 +578,7 @@ void MapblockMeshGenerator::drawLiquidTop(bool flowing)
 		int w = corner_resolve[i][1];
 		vertices[i].Pos.Y += corner_levels[w][u];
 		if (data->m_smooth_lighting)
-			vertices[i].Color = blendLight(vertices[i].Pos, tile_liquid_top.color);
+			vertices[i].Color = blendLightColor(vertices[i].Pos);
 		vertices[i].Pos += origin;
 	}
 
@@ -659,7 +663,9 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		tiles[face] = getTile(g_6dirs[face]);
 
 	TileSpec glass_tiles[6];
-	if (tiles[0].texture && tiles[3].texture && tiles[4].texture) {
+	if (tiles[1].layers[0].texture &&
+			tiles[2].layers[0].texture &&
+			tiles[3].layers[0].texture) {
 		glass_tiles[0] = tiles[4];
 		glass_tiles[1] = tiles[0];
 		glass_tiles[2] = tiles[4];
@@ -763,7 +769,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 	// Optionally render internal liquid level defined by param2
 	// Liquid is textured with 1 tile defined in nodedef 'special_tiles'
 	if (param2 > 0 && f->param_type_2 == CPT2_GLASSLIKE_LIQUID_LEVEL &&
-			f->special_tiles[0].texture) {
+			f->special_tiles[0].layers[0].texture) {
 		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
@@ -998,7 +1004,8 @@ void MapblockMeshGenerator::drawFencelikeNode()
 {
 	useDefaultTile(false);
 	TileSpec tile_nocrack = tile;
-	tile_nocrack.material_flags &= ~MATERIAL_FLAG_CRACK;
+	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
+		tile_nocrack.layers[layer].material_flags &= ~MATERIAL_FLAG_CRACK;
 
 	// Put wood the right way around in the posts
 	TileSpec tile_rot = tile;
@@ -1253,7 +1260,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			// vertex right here.
 			for (int k = 0; k < vertex_count; k++) {
 				video::S3DVertex &vertex = vertices[k];
-				vertex.Color = blendLight(vertex.Pos, vertex.Normal, tile.color);
+				vertex.Color = blendLightColor(vertex.Pos, vertex.Normal);
 				vertex.Pos += origin;
 			}
 			collector->append(tile, vertices, vertex_count,

@@ -687,8 +687,9 @@ void drawItemStack(video::IVideoDriver *driver,
 			assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
 			video::SColor c = basecolor;
 			if (imesh->buffer_colors.size() > j) {
-				std::pair<bool, video::SColor> p = imesh->buffer_colors[j];
-				c = p.first ? p.second : basecolor;
+				ItemPartColor *p = &imesh->buffer_colors[j];
+				if (p->override_base)
+					c = p->color;
 			}
 			colorizeMeshBuffer(buf, &c);
 			video::SMaterial &material = buf->getMaterial();

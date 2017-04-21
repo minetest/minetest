@@ -487,13 +487,17 @@ void Client::step(float dtime)
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
 					if (minimap_mapblock == NULL)
 						do_mapper_update = false;
-				}
 
-				if (r.mesh && r.mesh->getMesh()->getMeshBufferCount() == 0) {
-					delete r.mesh;
-				} else {
-					// Replace with the new mesh
-					block->mesh = r.mesh;
+					bool is_empty = true;
+					for (int l = 0; l < MAX_TILE_LAYERS; l++)
+						if (r.mesh->getMesh(l)->getMeshBufferCount() != 0)
+							is_empty = false;
+
+					if (is_empty)
+						delete r.mesh;
+					else
+						// Replace with the new mesh
+						block->mesh = r.mesh;
 				}
 			} else {
 				delete r.mesh;
