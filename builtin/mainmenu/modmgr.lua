@@ -395,6 +395,7 @@ function modmgr.installmod(modfilename,basename)
 
 	modmgr.refresh_globals()
 
+	return basefolder.type ~= "invalid"
 end
 
 --------------------------------------------------------------------------------
