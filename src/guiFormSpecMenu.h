@@ -57,7 +57,7 @@ struct TextDest
 {
 	virtual ~TextDest() {}
 	// This is deprecated I guess? -celeron55
-	virtual void gotText(std::wstring text){}
+	virtual void gotText(const std::wstring &text) {}
 	virtual void gotText(const StringMap &fields) = 0;
 
 	std::string m_formname;

@@ -43,14 +43,13 @@ public:
 class GUIModalMenu : public gui::IGUIElement
 {
 public:
-	GUIModalMenu(gui::IGUIEnvironment* env,
-			gui::IGUIElement* parent, s32 id,
+	GUIModalMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr):
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0,0,100,100))
 	{
 		//m_force_regenerate_gui = false;
-		
+
 		m_menumgr = menumgr;
 		m_allow_focus_removal = false;
 		m_screensize_old = v2u32(0,0);
@@ -59,6 +58,7 @@ public:
 		Environment->setFocus(this);
 		m_menumgr->createdMenu(this);
 	}
+
 	virtual ~GUIModalMenu()
 	{
 		m_menumgr->deletingMenu(this);
@@ -78,7 +78,7 @@ public:
 	{
 		if(!IsVisible)
 			return;
-			
+
 		video::IVideoDriver* driver = Environment->getVideoDriver();
 		v2u32 screensize = driver->getScreenSize();
 		if(screensize != m_screensize_old /*|| m_force_regenerate_gui*/)
@@ -90,7 +90,7 @@ public:
 
 		drawMenu();
 	}
-	
+
 	/*
 		This should be called when the menu wants to quit.
 

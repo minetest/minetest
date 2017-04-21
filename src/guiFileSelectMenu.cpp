@@ -25,7 +25,6 @@ GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 	GUIModalMenu(env, parent, id, menumgr),
 	m_title(utf8_to_wide(title)),
 	m_accepted(false),
-	m_parent(parent),
 	m_text_dst(NULL),
 	m_formname(formname)
 {
