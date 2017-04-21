@@ -930,7 +930,7 @@ void Peer::DecUseCount()
 	delete this;
 }
 
-void Peer::RTTStatistics(float rtt, std::string profiler_id,
+void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 		unsigned int num_samples) {
 
 	if (m_last_rtt > 0) {
@@ -969,8 +969,7 @@ void Peer::RTTStatistics(float rtt, std::string profiler_id,
 			m_rtt.jitter_avg  = m_rtt.jitter_avg * (num_samples/(num_samples-1)) +
 								jitter * (1/num_samples);
 
-		if (profiler_id != "")
-		{
+		if (profiler_id != "") {
 			g_profiler->graphAdd(profiler_id + "_rtt", rtt);
 			g_profiler->graphAdd(profiler_id + "_jitter", jitter);
 		}

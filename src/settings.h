@@ -74,24 +74,21 @@ struct ValueSpec {
 };
 
 struct SettingsEntry {
-	SettingsEntry()
-	{
-		group    = NULL;
-		is_group = false;
-	}
+	SettingsEntry() :
+		group(NULL),
+		is_group(false)
+	{}
 
-	SettingsEntry(const std::string &value_)
-	{
-		value    = value_;
-		group    = NULL;
-		is_group = false;
-	}
+	SettingsEntry(const std::string &value_) :
+		value(value_),
+		group(NULL),
+		is_group(false)
+	{}
 
-	SettingsEntry(Settings *group_)
-	{
-		group    = group_;
-		is_group = true;
-	}
+	SettingsEntry(Settings *group_) :
+		group(group_),
+		is_group(true)
+	{}
 
 	std::string value;
 	Settings *group;
