@@ -51,6 +51,7 @@ public:
 	v3f origin;
 	MapNode n;
 	const ContentFeatures *f;
+	bool need_shading;
 	u16 light;
 	LightFrame frame;
 	video::SColor color;
