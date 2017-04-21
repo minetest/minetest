@@ -55,12 +55,10 @@ typedef enum {
 
 struct TextDest
 {
-	virtual ~TextDest() {};
+	virtual ~TextDest() {}
 	// This is deprecated I guess? -celeron55
 	virtual void gotText(std::wstring text){}
 	virtual void gotText(const StringMap &fields) = 0;
-	virtual void setFormName(std::string formname)
-	{ m_formname = formname;};
 
 	std::string m_formname;
 };
@@ -80,7 +78,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 	{
 		ItemSpec() :
 			i(-1)
-		{}
+		{
+		}
 
 		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
@@ -88,7 +87,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			inventoryloc(a_inventoryloc),
 			listname(a_listname),
 			i(a_i)
-		{}
+		{
+		}
 
 		bool isValid() const { return i != -1; }
 
@@ -141,7 +141,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 		ImageDrawSpec():
 			parent_button(NULL),
 			clip(false)
-		{}
+		{
+		}
 
 		ImageDrawSpec(const std::string &a_name,
 				const std::string &a_item_name,
@@ -154,7 +155,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			geom(a_geom),
 			scale(true),
 			clip(false)
-		{}
+		{
+		}
 
 		ImageDrawSpec(const std::string &a_name,
 				const std::string &a_item_name,
@@ -166,7 +168,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			geom(a_geom),
 			scale(true),
 			clip(false)
-		{}
+		{
+		}
 
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos, const v2s32 &a_geom, bool clip=false):
@@ -176,7 +179,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			geom(a_geom),
 			scale(true),
 			clip(clip)
-		{}
+		{
+		}
 
 		ImageDrawSpec(const std::string &a_name,
 				const v2s32 &a_pos):
@@ -185,7 +189,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			pos(a_pos),
 			scale(false),
 			clip(false)
-		{}
+		{
+		}
 
 		std::string name;
 		std::string item_name;
@@ -210,7 +215,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 			send(false),
 			ftype(f_Unknown),
 			is_exit(false)
-		{}
+		{
+		}
 
 		std::string fname;
 		std::wstring flabel;
@@ -222,7 +228,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 		core::rect<s32> rect;
 	};
 
-	struct BoxDrawSpec {
+	struct BoxDrawSpec
+	{
 		BoxDrawSpec(v2s32 a_pos, v2s32 a_geom,irr::video::SColor a_color):
 			pos(a_pos),
 			geom(a_geom),
@@ -234,40 +241,45 @@ class GUIFormSpecMenu : public GUIModalMenu
 		irr::video::SColor color;
 	};
 
-	struct TooltipSpec {
+	struct TooltipSpec
+	{
 		TooltipSpec() {}
-		TooltipSpec(std::string a_tooltip, irr::video::SColor a_bgcolor,
+		TooltipSpec(const std::string &a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
 			tooltip(utf8_to_wide(a_tooltip)),
 			bgcolor(a_bgcolor),
 			color(a_color)
-		{}
+		{
+		}
 
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
 	};
 
-	struct StaticTextSpec {
+	struct StaticTextSpec
+	{
 		StaticTextSpec():
 			parent_button(NULL)
 		{
 		}
+
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect):
+			text(a_text),
 			rect(a_rect),
 			parent_button(NULL)
 		{
-			//text = unescape_enriched(a_text);
-			text = a_text;
 		}
+
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
 				gui::IGUIButton *a_parent_button):
 			text(a_text),
 			rect(a_rect),
 			parent_button(a_parent_button)
-		{}
+		{
+		}
 
 		std::wstring text;
 		core::rect<s32> rect;
@@ -288,7 +300,7 @@ public:
 	~GUIFormSpecMenu();
 
 	void setFormSpec(const std::string &formspec_string,
-			InventoryLocation current_inventory_location)
+			const InventoryLocation &current_inventory_location)
 	{
 		m_formspec_string = formspec_string;
 		m_current_inventory_location = current_inventory_location;
@@ -461,7 +473,7 @@ private:
 	fs_key_pendig current_keys_pending;
 	std::string current_field_enter_pending;
 
-	void parseElement(parserData* data, std::string element);
+	void parseElement(parserData* data, const std::string &element);
 
 	void parseSize(parserData* data, const std::string &element);
 	void parseContainer(parserData* data, const std::string &element);
@@ -544,10 +556,12 @@ class FormspecFormSource: public IFormSource
 public:
 	FormspecFormSource(const std::string &formspec):
 		m_formspec(formspec)
-	{}
+	{
+	}
 
 	~FormspecFormSource()
-	{}
+	{
+	}
 
 	void setForm(const std::string &formspec)
 	{

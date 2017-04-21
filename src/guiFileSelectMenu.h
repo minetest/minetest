@@ -32,8 +32,7 @@ class GUIFileSelectMenu: public GUIModalMenu
 public:
 	GUIFileSelectMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
 			s32 id, IMenuManager *menumgr,
-			std::string title,
-			std::string formid);
+			const std::string &title, const std::string &formid);
 	~GUIFileSelectMenu();
 
 	void removeChildren();
@@ -47,9 +46,7 @@ public:
 
 	bool OnEvent(const SEvent& event);
 
-	bool isRunning() {
-		return m_running;
-	}
+	bool isRunning() const { return m_running; }
 
 	void setTextDest(TextDest * dest) {
 		m_text_dst = dest;
