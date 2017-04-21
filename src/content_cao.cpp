@@ -1313,7 +1313,7 @@ void GenericCAO::updateTexturePos()
 	}
 }
 
-void GenericCAO::updateTextures(const std::string &mod)
+void GenericCAO::updateTextures(std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
