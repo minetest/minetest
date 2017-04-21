@@ -1170,16 +1170,6 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 
 void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 {
-	//std::string datastring(pkt->getString(0), pkt->getSize());
-	//std::istringstream is(datastring, std::ios_base::binary);
-
-	//u16 density                    = readU16(is);
-	//video::SColor *color_bright    = new video::SColor(readARGB8(is));
-	//video::SColor *color_ambient   = new video::SColor(readARGB8(is));
-	//f32 height                     = readF1000(is);
-	//f32 thickness                  = readF1000(is);
-	//v2f *speed                     = new v2f(readV2F1000(is));
-
 	u16 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
@@ -1192,7 +1182,7 @@ void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 
 	ClientEvent event;
 	event.type                        = CE_CLOUDS_PARAMS;
-	event.clouds_params.density       = density / 65535.0;
+	event.clouds_params.density       = density / 65535.0f;
 	// use the underlying u32 representation, because we can't
 	// use struct members with constructors here, and this way
 	// we avoid using new() and delete() for no good reason

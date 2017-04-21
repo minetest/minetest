@@ -45,15 +45,15 @@ Clouds::Clouds(
 ):
 	scene::ISceneNode(parent, mgr, id),
 	m_seed(seed),
-	m_camera_pos(0,0),
-	m_origin(0, 0),
-	m_speed(0, -2),
-	m_camera_offset(0,0,0),
-	m_density(0.4),
-	m_thickness(16 * BS),
-	m_color(1.0, 1.0, 1.0, 1.0),
-	m_color_bright(255.0/255.0, 240.0/255.0, 240.0/255.0, 1.0),
-	m_color_ambient(0.0, 0.0, 0.0, 1.0)
+	m_camera_pos(0.0f, 0.0f),
+	m_origin(0.0f, 0.0f),
+	m_speed(0.0f, -2.0f),
+	m_camera_offset(0.0f, 0.0f, 0.0f),
+	m_density(0.4f),
+	m_thickness(16.0f * BS),
+	m_color(1.0f, 1.0f, 1.0f, 1.0f),
+	m_color_bright(255.0f/255.0f, 240.0f/255.0f, 240.0f/255.0f, 1.0f),
+	m_color_ambient(0.0f, 0.0f, 0.0f, 1.0f)
 {
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
@@ -94,7 +94,7 @@ void Clouds::OnRegisterSceneNode()
 void Clouds::render()
 {
 
-	if (m_density <= 0.0)
+	if (m_density <= 0.0f)
 		return; // no need to do anything
 
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
@@ -116,7 +116,7 @@ void Clouds::render()
 		Clouds move from Z+ towards Z-
 	*/
 
-	const float cloud_size = BS * 64;
+	const float cloud_size = BS * 64.0f;
 	
 	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
 	
@@ -198,8 +198,8 @@ void Clouds::render()
 					(float)p_in_noise_i.Y * cloud_size_noise,
 					m_seed, 3, 0.5);
 			// normalize to 0..1 (given 3 octaves)
-			float noise_bound = 1.0 + 0.5 + 0.25;
-			float density = noise / noise_bound * 0.5 + 0.5;
+			float noise_bound = 1.0f + 0.5f + 0.25f;
+			float density = noise / noise_bound * 0.5f + 0.5f;
 			grid[i] = (density < m_density);
 		}
 	}
@@ -245,9 +245,9 @@ void Clouds::render()
 			v[3].Color.setBlue(255);
 		}*/
 
-		f32 rx = cloud_size / 2;
+		f32 rx = cloud_size / 2.0f;
 		// if clouds are flat, the top layer should be at the given height
-		f32 ry = m_enable_3d ? m_thickness : 0;
+		f32 ry = m_enable_3d ? m_thickness : 0.0f;
 		f32 rz = cloud_size / 2;
 
 		for(int i=0; i<num_faces_to_draw; i++)
@@ -361,10 +361,10 @@ void Clouds::step(float dtime)
 void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 {
 	m_camera_pos = camera_p;
-	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_color_bright.r, m_color_ambient.r), 1.0);
-	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_color_bright.g, m_color_ambient.g), 1.0);
-	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_color_bright.b, m_color_ambient.b), 1.0);
-	m_color.a = 1.0;
+	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_color_bright.r, m_color_ambient.r), 1.0f);
+	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_color_bright.g, m_color_ambient.g), 1.0f);
+	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_color_bright.b, m_color_ambient.b), 1.0f);
+	m_color.a = 1.0f;
 }
 
 void Clouds::readSettings()

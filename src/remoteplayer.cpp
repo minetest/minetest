@@ -67,12 +67,12 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
 
 	// copy defaults
-	m_cloud_settings.density = 0.4;
+	m_cloud_settings.density = 0.4f;
 	m_cloud_settings.color_bright = video::SColor(255, 255, 240, 240);
 	m_cloud_settings.color_ambient = video::SColor(255, 0, 0, 0);
-	m_cloud_settings.height = 120.0;
-	m_cloud_settings.thickness = 16.0;
-	m_cloud_settings.speed = v2f(0, -2);
+	m_cloud_settings.height = 120.0f;
+	m_cloud_settings.thickness = 16.0f;
+	m_cloud_settings.speed = v2f(0.0f, -2.0f);
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)

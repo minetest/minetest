@@ -117,8 +117,8 @@ public:
 private:
 	void updateBox()
 	{
-		m_box = aabb3f(-BS * 1000000, m_cloud_y - BS * m_camera_offset.Y, -BS * 1000000,
-				BS * 1000000, m_cloud_y + m_thickness - BS * m_camera_offset.Y, BS * 1000000);
+		m_box = aabb3f(-BS * 1000000.0f, m_cloud_y - BS * m_camera_offset.Y, -BS * 1000000.0f,
+				BS * 1000000.0f, m_cloud_y + m_thickness - BS * m_camera_offset.Y, BS * 1000000.0f);
 	}
 
 	video::SMaterial m_material;
