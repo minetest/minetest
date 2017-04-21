@@ -58,10 +58,10 @@ public:
 	}
 
 	// Add a file to the list of required file (but don't fetch it yet)
-	void addFile(std::string name, std::string sha1);
+	void addFile(const std::string &name, const std::string &sha1);
 
 	// Add a remote server to the list; ignored if not built with cURL
-	void addRemoteServer(std::string baseurl);
+	void addRemoteServer(const std::string &baseurl);
 
 	// Steps the media downloader:
 	// - May load media into client by calling client->loadMedia()

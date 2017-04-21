@@ -78,22 +78,19 @@ class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
-		ItemSpec()
-		{
-			i = -1;
-		}
+		ItemSpec() :
+			i(-1)
+		{}
+
 		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
-				s32 a_i)
-		{
-			inventoryloc = a_inventoryloc;
-			listname = a_listname;
-			i = a_i;
-		}
-		bool isValid() const
-		{
-			return i != -1;
-		}
+				s32 a_i) :
+			inventoryloc(a_inventoryloc),
+			listname(a_listname),
+			i(a_i)
+		{}
+
+		bool isValid() const { return i != -1; }
 
 		InventoryLocation inventoryloc;
 		std::string listname;
@@ -208,14 +205,13 @@ class GUIFormSpecMenu : public GUIModalMenu
 				const std::wstring &default_text, int id) :
 			fname(name),
 			flabel(label),
+			fdefault(unescape_enriched(default_text)),
 			fid(id),
 			send(false),
 			ftype(f_Unknown),
 			is_exit(false)
-		{
-			//flabel = unescape_enriched(label);
-			fdefault = unescape_enriched(default_text);
-		}
+		{}
+
 		std::string fname;
 		std::wstring flabel;
 		std::wstring fdefault;
@@ -239,17 +235,14 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 	struct TooltipSpec {
-		TooltipSpec()
-		{
-		}
+		TooltipSpec() {}
 		TooltipSpec(std::string a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
+			tooltip(utf8_to_wide(a_tooltip)),
 			bgcolor(a_bgcolor),
 			color(a_color)
-		{
-			//tooltip = unescape_enriched(utf8_to_wide(a_tooltip));
-			tooltip = utf8_to_wide(a_tooltip);
-		}
+		{}
+
 		std::wstring tooltip;
 		irr::video::SColor bgcolor;
 		irr::video::SColor color;
@@ -271,12 +264,11 @@ class GUIFormSpecMenu : public GUIModalMenu
 		StaticTextSpec(const std::wstring &a_text,
 				const core::rect<s32> &a_rect,
 				gui::IGUIButton *a_parent_button):
+			text(a_text),
 			rect(a_rect),
 			parent_button(a_parent_button)
-		{
-			//text = unescape_enriched(a_text);
-			text = a_text;
-		}
+		{}
+
 		std::wstring text;
 		core::rect<s32> rect;
 		gui::IGUIButton *parent_button;
@@ -550,22 +542,19 @@ private:
 class FormspecFormSource: public IFormSource
 {
 public:
-	FormspecFormSource(const std::string &formspec)
-	{
-		m_formspec = formspec;
-	}
+	FormspecFormSource(const std::string &formspec):
+		m_formspec(formspec)
+	{}
 
 	~FormspecFormSource()
 	{}
 
-	void setForm(const std::string &formspec) {
+	void setForm(const std::string &formspec)
+	{
 		m_formspec = FORMSPEC_VERSION_STRING + formspec;
 	}
 
-	std::string getForm()
-	{
-		return m_formspec;
-	}
+	std::string getForm() { return m_formspec; }
 
 	std::string m_formspec;
 };

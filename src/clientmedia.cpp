@@ -42,12 +42,12 @@ static std::string getMediaCacheDir()
 */
 
 ClientMediaDownloader::ClientMediaDownloader():
-	m_media_cache(getMediaCacheDir())
+	m_media_cache(getMediaCacheDir()),
+	m_initial_step_done(false),
+	m_uncached_count(0),
+	m_uncached_received_count(0),
+	m_name_bound("")
 {
-	m_initial_step_done = false;
-	m_name_bound = "";  // works because "" is an invalid file name
-	m_uncached_count = 0;
-	m_uncached_received_count = 0;
 	m_httpfetch_caller = HTTPFETCH_DISCARD;
 	m_httpfetch_active = 0;
 	m_httpfetch_active_limit = 0;
@@ -69,7 +69,7 @@ ClientMediaDownloader::~ClientMediaDownloader()
 		delete m_remotes[i];
 }
 
-void ClientMediaDownloader::addFile(std::string name, std::string sha1)
+void ClientMediaDownloader::addFile(const std::string &name, const std::string &sha1)
 {
 	assert(!m_initial_step_done); // pre-condition
 
@@ -104,7 +104,7 @@ void ClientMediaDownloader::addFile(std::string name, std::string sha1)
 	m_files.insert(std::make_pair(name, filestatus));
 }
 
-void ClientMediaDownloader::addRemoteServer(std::string baseurl)
+void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 {
 	assert(!m_initial_step_done);	// pre-condition
 
