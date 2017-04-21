@@ -483,36 +483,6 @@ int ModApiServer::l_set_last_run_mod(lua_State *L)
 	return 0;
 }
 
-#ifndef NDEBUG
-// cause_error(type_of_error)
-int ModApiServer::l_cause_error(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string type_of_error = "none";
-	if(lua_isstring(L, 1))
-		type_of_error = lua_tostring(L, 1);
-
-	errorstream << "Error handler test called, errortype=" << type_of_error << std::endl;
-
-	if(type_of_error == "segv") {
-		volatile int* some_pointer = 0;
-		errorstream << "Cause a sigsegv now: " << (*some_pointer) << std::endl;
-
-	} else if (type_of_error == "zerodivision") {
-
-		unsigned int some_number = porting::getTimeS();
-		unsigned int zerovalue = 0;
-		unsigned int result = some_number / zerovalue;
-		errorstream << "Well this shouldn't ever be shown: " << result << std::endl;
-
-	} else if (type_of_error == "exception") {
-		throw BaseException("Errorhandler test fct called");
-	}
-
-	return 0;
-}
-#endif
-
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -545,7 +515,4 @@ void ModApiServer::Initialize(lua_State *L, int top)
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
-#ifndef NDEBUG
-	API_FCT(cause_error);
-#endif
 }

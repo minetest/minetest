@@ -101,11 +101,6 @@ private:
 	// set_last_run_mod(modname)
 	static int l_set_last_run_mod(lua_State *L);
 
-#ifndef NDEBUG
-	//  cause_error(type_of_error)
-	static int l_cause_error(lua_State *L);
-#endif
-
 public:
 	static void Initialize(lua_State *L, int top);
 };
