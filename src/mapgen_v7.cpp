@@ -64,22 +64,30 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	this->cavern_taper        = params->cavern_taper;
 	this->cavern_threshold    = params->cavern_threshold;
 
-	//// Terrain noise
-	noise_terrain_base      = new Noise(&params->np_terrain_base,      seed, csize.X, csize.Z);
-	noise_terrain_alt       = new Noise(&params->np_terrain_alt,       seed, csize.X, csize.Z);
-	noise_terrain_persist   = new Noise(&params->np_terrain_persist,   seed, csize.X, csize.Z);
-	noise_height_select     = new Noise(&params->np_height_select,     seed, csize.X, csize.Z);
-	noise_filler_depth      = new Noise(&params->np_filler_depth,      seed, csize.X, csize.Z);
-	noise_mount_height      = new Noise(&params->np_mount_height,      seed, csize.X, csize.Z);
-	noise_ridge_uwater      = new Noise(&params->np_ridge_uwater,      seed, csize.X, csize.Z);
-	noise_floatland_base    = new Noise(&params->np_floatland_base,    seed, csize.X, csize.Z);
-	noise_float_base_height = new Noise(&params->np_float_base_height, seed, csize.X, csize.Z);
+	// 2D noise
+	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
+	noise_terrain_alt     = new Noise(&params->np_terrain_alt,     seed, csize.X, csize.Z);
+	noise_terrain_persist = new Noise(&params->np_terrain_persist, seed, csize.X, csize.Z);
+	noise_height_select   = new Noise(&params->np_height_select,   seed, csize.X, csize.Z);
+	noise_filler_depth    = new Noise(&params->np_filler_depth,    seed, csize.X, csize.Z);
 
-	//// 3d terrain noise
-	// 1-up 1-down overgeneration
-	noise_mountain = new Noise(&params->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
-	noise_ridge    = new Noise(&params->np_ridge,    seed, csize.X, csize.Y + 2, csize.Z);
-	// 1 down overgeneration
+	if (spflags & MGV7_MOUNTAINS)
+		noise_mount_height = new Noise(&params->np_mount_height, seed, csize.X, csize.Z);
+
+	if (spflags & MGV7_FLOATLANDS) {
+		noise_floatland_base    = new Noise(&params->np_floatland_base,    seed, csize.X, csize.Z);
+		noise_float_base_height = new Noise(&params->np_float_base_height, seed, csize.X, csize.Z);
+	}
+
+	if (spflags & MGV7_RIDGES) {
+		noise_ridge_uwater = new Noise(&params->np_ridge_uwater, seed, csize.X, csize.Z);
+	// 3D noise, 1-up 1-down overgeneration
+		noise_ridge = new Noise(&params->np_ridge, seed, csize.X, csize.Y + 2, csize.Z);
+	}
+	// 3D noise, 1 up, 1 down overgeneration
+	if ((spflags & MGV7_MOUNTAINS) || (spflags & MGV7_FLOATLANDS))
+		noise_mountain = new Noise(&params->np_mountain, seed, csize.X, csize.Y + 2, csize.Z);
+	// 3D noise, 1 down overgeneration
 	MapgenBasic::np_cave1  = params->np_cave1;
 	MapgenBasic::np_cave2  = params->np_cave2;
 	MapgenBasic::np_cavern = params->np_cavern;

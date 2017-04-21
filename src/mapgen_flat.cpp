@@ -60,10 +60,12 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 	this->hill_threshold   = params->hill_threshold;
 	this->hill_steepness   = params->hill_steepness;
 
-	//// 2D noise
-	noise_terrain      = new Noise(&params->np_terrain,      seed, csize.X, csize.Z);
+	// 2D noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		noise_terrain = new Noise(&params->np_terrain, seed, csize.X, csize.Z);
+	// 3D noise
 	MapgenBasic::np_cave1 = params->np_cave1;
 	MapgenBasic::np_cave2 = params->np_cave2;
 }
@@ -136,7 +138,9 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 {
 	s16 level_at_point = ground_level;
-	float n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
+	float n_terrain = 0.0f;
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
 
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
 		level_at_point = ground_level -
