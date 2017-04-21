@@ -184,8 +184,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 		light = l2;
 
 	// Boost light level for light sources
-	u8 light_source = MYMAX(ndef->get(n).light_source,
-			ndef->get(n2).light_source);
+	u8 light_source = MYMAX(ndef->get(n).light_source[LIGHTBANK_ARTIFICIAL],
+			ndef->get(n2).light_source[LIGHTBANK_ARTIFICIAL]);
 	if(light_source > light)
 		light = light_source;
 
@@ -238,8 +238,8 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 		}
 
 		const ContentFeatures &f = ndef->get(n);
-		if (f.light_source > light_source_max)
-			light_source_max = f.light_source;
+		if (f.light_source[LIGHTBANK_ARTIFICIAL] > light_source_max)
+			light_source_max = f.light_source[LIGHTBANK_ARTIFICIAL];
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
 			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_SUN, &f));
@@ -829,7 +829,7 @@ static void getTileInfo(
 
 	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
-	tile.emissive_light = f.light_source;
+	tile.emissive_light = f.light_source[LIGHTBANK_ARTIFICIAL];
 
 	// eg. water and glass
 	if (equivalent) {

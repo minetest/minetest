@@ -357,7 +357,8 @@ void ContentFeatures::reset()
 	liquid_renewable = true;
 	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
-	light_source = 0;
+	for (int bank = 0; bank < LIGHTBANK_COUNT; ++bank)
+		light_source[bank] = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
@@ -430,7 +431,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// lighting
 	writeU8(os, light_propagates);
 	writeU8(os, sunlight_propagates);
-	writeU8(os, light_source);
+	writeU8(os, light_source[LIGHTBANK_ARTIFICIAL]);
 
 	// map generation
 	writeU8(os, is_ground_content);
@@ -545,8 +546,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// lighting-related
 	light_propagates = readU8(is);
 	sunlight_propagates = readU8(is);
-	light_source = readU8(is);
-	light_source = MYMIN(light_source, LIGHT_MAX);
+	light_source[LIGHTBANK_ARTIFICIAL] = readU8(is);
+	light_source[LIGHTBANK_ARTIFICIAL] = MYMIN(
+		light_source[LIGHTBANK_ARTIFICIAL], LIGHT_MAX);
 
 	// map generation
 	is_ground_content = readU8(is);
@@ -1601,7 +1603,7 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 		os << serializeString(liquid_alternative_source);
 		writeU8(os, liquid_viscosity);
 		writeU8(os, liquid_renewable);
-		writeU8(os, light_source);
+		writeU8(os, light_source[LIGHTBANK_ARTIFICIAL]);
 		writeU32(os, damage_per_second);
 		node_box.serialize(os, protocol_version);
 		selection_box.serialize(os, protocol_version);
@@ -1672,8 +1674,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		liquid_alternative_flowing = deSerializeString(is);
 		liquid_alternative_source = deSerializeString(is);
 		liquid_viscosity = readU8(is);
-		light_source = readU8(is);
-		light_source = MYMIN(light_source, LIGHT_MAX);
+		light_source[LIGHTBANK_ARTIFICIAL] = readU8(is);
+		light_source[LIGHTBANK_ARTIFICIAL] = MYMIN(
+			light_source[LIGHTBANK_ARTIFICIAL], LIGHT_MAX);
 		damage_per_second = readU32(is);
 		node_box.deSerialize(is);
 		selection_box.deSerialize(is);
@@ -1723,7 +1726,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		liquid_alternative_source = deSerializeString(is);
 		liquid_viscosity = readU8(is);
 		liquid_renewable = readU8(is);
-		light_source = readU8(is);
+		light_source[LIGHTBANK_ARTIFICIAL] = readU8(is);
+		light_source[LIGHTBANK_ARTIFICIAL] = MYMIN(
+			light_source[LIGHTBANK_ARTIFICIAL], LIGHT_MAX);
 		damage_per_second = readU32(is);
 		node_box.deSerialize(is);
 		selection_box.deSerialize(is);
@@ -1777,8 +1782,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		liquid_alternative_source = deSerializeString(is);
 		liquid_viscosity = readU8(is);
 		liquid_renewable = readU8(is);
-		light_source = readU8(is);
-		light_source = MYMIN(light_source, LIGHT_MAX);
+		light_source[LIGHTBANK_ARTIFICIAL] = readU8(is);
+		light_source[LIGHTBANK_ARTIFICIAL] = MYMIN(
+			light_source[LIGHTBANK_ARTIFICIAL], LIGHT_MAX);
 		damage_per_second = readU32(is);
 		node_box.deSerialize(is);
 		selection_box.deSerialize(is);

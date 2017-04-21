@@ -577,13 +577,13 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.drowning = getintfield_default(L, index,
 			"drowning", f.drowning);
 	// Amount of light the node emits
-	f.light_source = getintfield_default(L, index,
-			"light_source", f.light_source);
-	if (f.light_source > LIGHT_MAX) {
+	f.light_source[LIGHTBANK_ARTIFICIAL] = getintfield_default(L, index,
+		"light_source", f.light_source[LIGHTBANK_ARTIFICIAL]);
+	if (f.light_source[LIGHTBANK_ARTIFICIAL] > LIGHT_MAX) {
 		warningstream << "Node " << f.name.c_str()
 			<< " had greater light_source than " << LIGHT_MAX
 			<< ", it was reduced." << std::endl;
-		f.light_source = LIGHT_MAX;
+		f.light_source[LIGHTBANK_ARTIFICIAL] = LIGHT_MAX;
 	}
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);

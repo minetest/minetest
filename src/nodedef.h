@@ -305,8 +305,8 @@ struct ContentFeatures
 
 	bool light_propagates;
 	bool sunlight_propagates;
-	// Amount of light the node emits
-	u8 light_source;
+	// Amount of light the node emits in each light bank
+	u8 light_source[LIGHTBANK_COUNT];
 
 	// --- MAP GENERATION ---
 

@@ -60,7 +60,7 @@ void clearLightAndCollectSources(VoxelManipulator &v, VoxelArea a,
 		n.setLight(bank, 0, ndef);
 
 		// If node sources light, add to list
-		u8 source = ndef->get(n).light_source;
+		u8 source = ndef->get(n).light_source[LIGHTBANK_ARTIFICIAL];
 		if(source != 0)
 			light_sources.insert(p);
 
@@ -407,7 +407,7 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 		const ContentFeatures &f = nodemgr->get(node);
 		// If the node emits light, it behaves like it had a
 		// brighter neighbor.
-		u8 brightest_neighbor_light = f.light_source + 1;
+		u8 brightest_neighbor_light = f.light_source[bank] + 1;
 		for (direction i = 0; i < 6; i++) {
 			//For each neighbor
 
@@ -453,8 +453,8 @@ void unspread_light(Map *map, INodeDefManager *nodemgr, LightBank bank,
 				}
 			} else {
 				// The neighbor can light up this node.
-				if (neighbor_light < neighbor_f.light_source) {
-					neighbor_light = neighbor_f.light_source;
+				if (neighbor_light < neighbor_f.light_source[bank]) {
+					neighbor_light = neighbor_f.light_source[bank];
 				}
 				if (brightest_neighbor_light < neighbor_light) {
 					brightest_neighbor_light = neighbor_light;
@@ -662,7 +662,7 @@ void update_lighting_nodes(Map *map,
 					&& is_sunlight_above(map, p, ndef)) {
 					new_light = LIGHT_SUN;
 				} else {
-					new_light = ndef->get(n).light_source;
+					new_light = ndef->get(n).light_source[bank];
 					for (int i = 0; i < 6; i++) {
 						v3s16 p2 = p + neighbor_dirs[i];
 						bool is_valid;
@@ -679,7 +679,7 @@ void update_lighting_nodes(Map *map,
 				}
 			} else {
 				// If this is an opaque node, it still can emit light.
-				new_light = ndef->get(n).light_source;
+				new_light = ndef->get(n).light_source[bank];
 			}
 
 			if (new_light > 0) {
@@ -811,8 +811,8 @@ bool is_light_locally_correct(Map *map, INodeDefManager *ndef, LightBank bank,
 		return true;
 	}
 	u8 light = n.getLightNoChecks(bank, &f);
-	assert(f.light_source <= LIGHT_MAX);
-	u8 brightest_neighbor = f.light_source + 1;
+	assert(f.light_source[bank] <= LIGHT_MAX);
+	u8 brightest_neighbor = f.light_source[bank] + 1;
 	for (direction d = 0; d < 6; ++d) {
 		MapNode n2 = map->getNodeNoEx(pos + neighbor_dirs[d],
 			&is_valid_position);
@@ -1153,7 +1153,7 @@ void finish_bulk_light_update(Map *map, mapblock_v3 minblock,
 				LightBank bank = banks[b];
 				u8 light = f.param_type == CPT_LIGHT ?
 					node.getLightNoChecks(bank, &f):
-					f.light_source;
+					f.light_source[bank];
 				if (light > 1)
 					relight[b].push(light, relpos, blockpos, block, 6);
 			} // end of banks
@@ -1261,7 +1261,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 						LIGHT_SUN; // no light information, force unlighting
 					u8 newlight = newf.param_type == CPT_LIGHT ?
 						newnode.getLightNoChecks(bank, &newf):
-						newf.light_source;
+						newf.light_source[bank];
 					// If the new node is dimmer, unlight.
 					if (oldlight > newlight) {
 						unlight[b].push(
@@ -1384,7 +1384,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 				LightBank bank = banks[b];
 				u8 light = f.param_type == CPT_LIGHT ?
 					node.getLightNoChecks(bank, &f):
-					f.light_source;
+					f.light_source[bank];
 				// If the new node is dimmer than sunlight, unlight.
 				// (if it has maximal light, it is pointless to remove
 				// surrounding light, as it can only become brighter)

@@ -78,7 +78,7 @@ void MapblockMeshGenerator::useTile(int index, bool disable_backface_culling)
 {
 	getNodeTileN(n, p, index, data, tile);
 	if (!data->m_smooth_lighting)
-		color = encode_light(light, f->light_source);
+		color = encode_light(light, f->light_source[LIGHTBANK_ARTIFICIAL]);
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
 		tile.layers[layer].material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
 		if (disable_backface_culling)
@@ -90,7 +90,7 @@ void MapblockMeshGenerator::useDefaultTile(bool set_color)
 {
 	getNodeTile(n, p, v3s16(0, 0, 0), data, tile);
 	if (set_color && !data->m_smooth_lighting)
-		color = encode_light(light, f->light_source);
+		color = encode_light(light, f->light_source[LIGHTBANK_ARTIFICIAL]);
 }
 
 void MapblockMeshGenerator::getTile(const v3s16& direction, TileSpec &tile)
@@ -102,7 +102,8 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
 	static const v2f tcoords[4] = {v2f(0, 0), v2f(1, 0), v2f(1, 1), v2f(0, 1)};
 	video::S3DVertex vertices[4];
-	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
+	bool shade_face = !f->light_source[LIGHTBANK_ARTIFICIAL] &&
+		(normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
 	for (int j = 0; j < 4; j++) {
 		vertices[j].Pos = coords[j] + origin;
@@ -139,9 +140,10 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	video::SColor colors[6];
 	if (!data->m_smooth_lighting) {
 		for (int face = 0; face != 6; ++face) {
-			colors[face] = encode_light(light, f->light_source);
+			colors[face] = encode_light(light,
+				f->light_source[LIGHTBANK_ARTIFICIAL]);
 		}
-		if (!f->light_source) {
+		if (!f->light_source[LIGHTBANK_ARTIFICIAL]) {
 			applyFacesShading(colors[0], v3f(0, 1, 0));
 			applyFacesShading(colors[1], v3f(0, -1, 0));
 			applyFacesShading(colors[2], v3f(1, 0, 0));
@@ -242,8 +244,8 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 	if (data->m_smooth_lighting) {
 		for (int j = 0; j < 24; ++j) {
 			vertices[j].Color = encode_light(lights[light_indices[j]],
-				f->light_source);
-			if (!f->light_source)
+				f->light_source[LIGHTBANK_ARTIFICIAL]);
+			if (!f->light_source[LIGHTBANK_ARTIFICIAL])
 				applyFacesShading(vertices[j].Color, vertices[j].Normal);
 		}
 	}
@@ -292,14 +294,14 @@ u16 MapblockMeshGenerator::blendLight(const v3f &vertex_pos)
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos)
 {
 	u16 light = blendLight(vertex_pos);
-	return encode_light(light, f->light_source);
+	return encode_light(light, f->light_source[LIGHTBANK_ARTIFICIAL]);
 }
 
 video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 	const v3f &vertex_normal)
 {
 	video::SColor color = blendLightColor(vertex_pos);
-	if (!f->light_source)
+	if (!f->light_source[LIGHTBANK_ARTIFICIAL])
 		applyFacesShading(color, vertex_normal);
 	return color;
 }
@@ -389,18 +391,19 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 	if (data->m_smooth_lighting)
 		return; // don't need to pre-compute anything in this case
 
-	if (f->light_source != 0) {
+	if (f->light_source[LIGHTBANK_ARTIFICIAL] != 0) {
 		// If this liquid emits light and doesn't contain light, draw
 		// it at what it emits, for an increased effect
-		light = decode_light(f->light_source);
+		light = decode_light(f->light_source[LIGHTBANK_ARTIFICIAL]);
 		light = light | (light << 8);
 	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
 		// Otherwise, use the light of the node on top if possible
 		light = getInteriorLight(ntop, 0, nodedef);
 	}
 
-	color_liquid_top = encode_light(light, f->light_source);
-	color = encode_light(light, f->light_source);
+	color_liquid_top = encode_light(light,
+		f->light_source[LIGHTBANK_ARTIFICIAL]);
+	color = encode_light(light, f->light_source[LIGHTBANK_ARTIFICIAL]);
 }
 
 void MapblockMeshGenerator::getLiquidNeighborhood(bool flowing)
@@ -1270,7 +1273,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			// Instead, let the collector process colors, etc.
 			collector->append(tile, vertices, vertex_count,
 				buf->getIndices(), buf->getIndexCount(), origin,
-				color, f->light_source);
+				color, f->light_source[LIGHTBANK_ARTIFICIAL]);
 		}
 	}
 	if (private_mesh)

@@ -90,18 +90,7 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 
 bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
 {
-	const ContentFeatures &f = nodemgr->get(*this);
-	bool isEqual;
-
-	if (f.param_type == CPT_LIGHT) {
-		u8 day   = MYMAX(f.light_source, param1 & 0x0f);
-		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
-		isEqual = day == night;
-	} else {
-		isEqual = true;
-	}
-
-	return isEqual;
+	return getLight(LIGHTBANK_SUN, nodemgr) == 0;
 }
 
 u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
@@ -115,7 +104,7 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 	else
 		light = 0;
 
-	return MYMAX(f.light_source, light);
+	return MYMAX(f.light_source[bank], light);
 }
 
 u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
@@ -127,29 +116,26 @@ u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
 
 u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
 {
-	return MYMAX(f->light_source,
+	return MYMAX(f->light_source[bank],
 	             bank == LIGHTBANK_SUN ? param1 & 0x0f : (param1 >> 4) & 0x0f);
 }
 
-bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const
+void MapNode::getLightBanks(u8 &lightsun, u8 &lightartificial,
+	INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type == CPT_LIGHT)
-	{
-		lightday = param1 & 0x0f;
-		lightnight = (param1>>4)&0x0f;
+	if (f.param_type == CPT_LIGHT) {
+		lightsun = param1 & 0x0f;
+		lightartificial = (param1 >> 4) & 0x0f;
+	} else {
+		lightsun = 0;
+		lightartificial = 0;
 	}
-	else
-	{
-		lightday = 0;
-		lightnight = 0;
-	}
-	if(f.light_source > lightday)
-		lightday = f.light_source;
-	if(f.light_source > lightnight)
-		lightnight = f.light_source;
-	return f.param_type == CPT_LIGHT || f.light_source != 0;
+	if (f.light_source[LIGHTBANK_SUN] > lightsun)
+		lightsun = f.light_source[LIGHTBANK_SUN];
+	if (f.light_source[LIGHTBANK_ARTIFICIAL] > lightartificial)
+		lightartificial = f.light_source[LIGHTBANK_ARTIFICIAL];
 }
 
 u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
