@@ -489,9 +489,8 @@ core.register_chatcommand("deleteblocks", {
 
 core.register_chatcommand("fixlight", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "Removes lighting bugs in the area between pos1 and pos2 "
-		.. "(light might actually change in a larger volume)",
-	privs = {server=true},
+	description = "Resets lighting in the area between pos1 and pos2",
+	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
 		if p1 == false then
@@ -499,7 +498,7 @@ core.register_chatcommand("fixlight", {
 		end
 
 		if core.fix_light(p1, p2) then
-			return true, "Successfully corrected light in the area ranging from " ..
+			return true, "Successfully reset light in the area ranging from " ..
 				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
 		else
 			return false, "Failed to load one or more blocks in area"
