@@ -587,11 +587,6 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	m_ignore_damage_timer = 3.0;
 }
 
-void Client::handleCommand_PlayerItem(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_PLAYERITEM" << std::endl;
-}
-
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
 {
 	bool set_camera_point_target;
@@ -718,11 +713,6 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	}
 }
 
-void Client::handleCommand_ToolDef(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_TOOLDEF" << std::endl;
-}
-
 void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 {
 	infostream << "Client: Received node definitions: packet size: "
@@ -741,11 +731,6 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	std::istringstream tmp_is2(tmp_os.str());
 	m_nodedef->deSerialize(tmp_is2);
 	m_nodedef_received = true;
-}
-
-void Client::handleCommand_CraftItemDef(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_CRAFTITEMDEF" << std::endl;
 }
 
 void Client::handleCommand_ItemDef(NetworkPacket* pkt)
