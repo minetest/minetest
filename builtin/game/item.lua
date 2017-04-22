@@ -156,17 +156,25 @@ function core.yaw_to_dir(yaw)
 end
 
 function core.get_node_drops(node, toolname)
-	local def = core.registered_nodes[node.name]
+	-- Compatibility, if node is string
+	local nodename = node
+	local param2 = 0
+	-- New format, if node is table
+	if(type(node) == "table") then
+		nodename = node.name
+		param2 = node.param2
+	end
+	local def = core.registered_nodes[nodename]
 	local drop = def and def.drop
 	if drop == nil then
 		-- default drop
-		local stack = ItemStack(node.name)
+		local stack = ItemStack(nodename)
 		if def then
 			local type = def.paramtype2
 			if (type == "color") or (type == "colorfacedir") or
 					(type == "colorwallmounted") then
 				local meta = stack:get_meta()
-				local color_part = node.param2
+				local color_part = param2
 				if (type == "colorfacedir") then
 					color_part = math.floor(color_part / 32) * 32;
 				elseif (type == "colorwallmounted") then
