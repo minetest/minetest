@@ -19,7 +19,7 @@ function vector.equals(a, b)
 	       a.z == b.z
 end
 
-function vector.is_nil(a)
+function vector.is_zero(a)
 	return a.x == 0 and
 	       a.y == 0 and
 	       a.z == 0
