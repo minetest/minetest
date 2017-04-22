@@ -97,16 +97,26 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 MapgenV7::~MapgenV7()
 {
 	delete noise_terrain_base;
+	delete noise_terrain_alt;
 	delete noise_terrain_persist;
 	delete noise_height_select;
-	delete noise_terrain_alt;
 	delete noise_filler_depth;
-	delete noise_mount_height;
-	delete noise_ridge_uwater;
-	delete noise_floatland_base;
-	delete noise_float_base_height;
-	delete noise_mountain;
-	delete noise_ridge;
+
+	if (spflags & MGV7_MOUNTAINS)
+		delete noise_mount_height;
+
+	if (spflags & MGV7_FLOATLANDS) {
+		delete noise_floatland_base;
+		delete noise_float_base_height;
+	}
+
+	if (spflags & MGV7_RIDGES) {
+		delete noise_ridge_uwater;
+		delete noise_ridge;
+	}
+
+	if ((spflags & MGV7_MOUNTAINS) || (spflags & MGV7_FLOATLANDS))
+		delete noise_mountain;
 }
 
 

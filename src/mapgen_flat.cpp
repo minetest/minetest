@@ -73,8 +73,10 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 
 MapgenFlat::~MapgenFlat()
 {
-	delete noise_terrain;
 	delete noise_filler_depth;
+
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		delete noise_terrain;
 }
 
 
