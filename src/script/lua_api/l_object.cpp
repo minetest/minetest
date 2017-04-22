@@ -722,18 +722,17 @@ int ObjectRef::l_set_detach(lua_State *L)
 
 	int parent_id = 0;
 	std::string bone = "";
-	v3f position;
-	v3f rotation;
+	v3f position = v3f(0, 0, 0);
+	v3f rotation = v3f(0, 0, 0);
 	co->getAttachment(&parent_id, &bone, &position, &rotation);
 	ServerActiveObject *parent = NULL;
 	if (parent_id)
 		parent = env->getActiveObject(parent_id);
-
-	if (parent != NULL) {
-		// Do it
-		co->setAttachment(parent->getId(), bone, position, rotation);
+	
+	// Do it
+	co->setAttachment(0, "", position, rotation);
+	if (parent != NULL) 
 		parent->removeAttachmentChild(co->getId());
-	}
 	return 0;
 }
 
