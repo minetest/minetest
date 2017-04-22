@@ -728,10 +728,10 @@ int ObjectRef::l_set_detach(lua_State *L)
 	ServerActiveObject *parent = NULL;
 	if (parent_id)
 		parent = env->getActiveObject(parent_id);
-	
+
 	// Do it
 	co->setAttachment(0, "", position, rotation);
-	if (parent != NULL) 
+	if (parent != NULL)
 		parent->removeAttachmentChild(co->getId());
 	return 0;
 }
