@@ -2155,6 +2155,10 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_try_to_interact(func(player))`
+    * Called when a player tries to interact without the interact privilege
+    * May be triggered very often in a short time span
+    * Useful e.g. to display a form where the player has to agree to the rules.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`

@@ -3672,62 +3672,68 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 		}
 	}
 
-	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
-			&& client->checkPrivilege("interact")) {
-		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
+	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()) {
+		if (client->checkPrivilege("interact")) {
+			handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
+		} else {
+			client->interact(6, pointed);
+		}
 	}
 
-	if ((getRightClicked() ||
-			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
-			client->checkPrivilege("interact")) {
-		runData.repeat_rightclick_timer = 0;
-		infostream << "Ground right-clicked" << std::endl;
+	if (getRightClicked() ||
+			runData.repeat_rightclick_timer >= m_repeat_right_click_time) {
+		if (client->checkPrivilege("interact")) {
+			runData.repeat_rightclick_timer = 0;
+			infostream << "Ground right-clicked" << std::endl;
 
-		if (meta && meta->getString("formspec") != "" && !random_input
-				&& !isKeyDown(KeyType::SNEAK)) {
-			infostream << "Launching custom inventory view" << std::endl;
+			if (meta && meta->getString("formspec") != "" && !random_input
+					&& !isKeyDown(KeyType::SNEAK)) {
+				infostream << "Launching custom inventory view" << std::endl;
 
-			InventoryLocation inventoryloc;
-			inventoryloc.setNodeMeta(nodepos);
+				InventoryLocation inventoryloc;
+				inventoryloc.setNodeMeta(nodepos);
 
-			NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
-				&client->getEnv().getClientMap(), nodepos);
-			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
+				NodeMetadataFormSource *fs_src = new NodeMetadataFormSource(
+					&client->getEnv().getClientMap(), nodepos);
+				TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
-			create_formspec_menu(&current_formspec, client,
-					device, &input->joystick, fs_src, txt_dst);
-			cur_formname = "";
+				create_formspec_menu(&current_formspec, client,
+						device, &input->joystick, fs_src, txt_dst);
+				cur_formname = "";
 
-			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
-		} else {
-			// Report right click to server
-
-			camera->setDigging(1);  // right click animation (always shown for feedback)
-
-			// If the wielded item has node placement prediction,
-			// make that happen
-			bool placed = nodePlacementPrediction(*client,
-					playeritem_def,
-					nodepos, neighbourpos);
-
-			if (placed) {
-				// Report to server
-				client->interact(3, pointed);
-				// Read the sound
-				soundmaker->m_player_rightpunch_sound =
-						playeritem_def.sound_place;
+				current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 			} else {
-				soundmaker->m_player_rightpunch_sound =
-						SimpleSoundSpec();
+				// Report right click to server
 
-				if (playeritem_def.node_placement_prediction == "" ||
-						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
-					client->interact(3, pointed); // Report to server
+				camera->setDigging(1);  // right click animation (always shown for feedback)
+
+				// If the wielded item has node placement prediction,
+				// make that happen
+				bool placed = nodePlacementPrediction(*client,
+						playeritem_def,
+						nodepos, neighbourpos);
+
+				if (placed) {
+					// Report to server
+					client->interact(3, pointed);
+					// Read the sound
+					soundmaker->m_player_rightpunch_sound =
+							playeritem_def.sound_place;
 				} else {
 					soundmaker->m_player_rightpunch_sound =
-						playeritem_def.sound_place_failed;
+							SimpleSoundSpec();
+
+					if (playeritem_def.node_placement_prediction == "" ||
+							nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+						client->interact(3, pointed); // Report to server
+					} else {
+						soundmaker->m_player_rightpunch_sound =
+							playeritem_def.sound_place_failed;
+					}
 				}
 			}
+		} else {
+			client->interact(6, pointed);
 		}
 	}
 }

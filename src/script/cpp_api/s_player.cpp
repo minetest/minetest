@@ -192,6 +192,18 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
+void ScriptApiPlayer::on_try_to_interact(ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_try_to_interact
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_try_to_interact");
+	// Call callbacks
+	objectrefGetOrCreate(L, player);
+	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+}
+
 ScriptApiPlayer::~ScriptApiPlayer()
 {
 }
