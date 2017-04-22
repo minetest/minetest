@@ -185,6 +185,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Mod channels
 		Raise ObjectProperties version to 3 for removing 'can_zoom' and adding
 			'zoom_fov'.
+		Nodebox version 5
+		Add disconnected nodeboxes
 */
 
 #define LATEST_PROTOCOL_VERSION 36

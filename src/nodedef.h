@@ -107,6 +107,14 @@ struct NodeBox
 	std::vector<aabb3f> connect_left;
 	std::vector<aabb3f> connect_back;
 	std::vector<aabb3f> connect_right;
+	std::vector<aabb3f> disconnected_top;
+	std::vector<aabb3f> disconnected_bottom;
+	std::vector<aabb3f> disconnected_front;
+	std::vector<aabb3f> disconnected_left;
+	std::vector<aabb3f> disconnected_back;
+	std::vector<aabb3f> disconnected_right;
+	std::vector<aabb3f> disconnected;
+	std::vector<aabb3f> disconnected_sides;
 
 	NodeBox()
 	{ reset(); }
