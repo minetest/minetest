@@ -1062,6 +1062,14 @@ NodeBox read_nodebox(lua_State *L, int index)
 		NODEBOXREADVEC(nodebox.connect_left, "connect_left");
 		NODEBOXREADVEC(nodebox.connect_back, "connect_back");
 		NODEBOXREADVEC(nodebox.connect_right, "connect_right");
+		NODEBOXREADVEC(nodebox.disconnected_top, "disconnected_top");
+		NODEBOXREADVEC(nodebox.disconnected_bottom, "disconnected_bottom");
+		NODEBOXREADVEC(nodebox.disconnected_front, "disconnected_front");
+		NODEBOXREADVEC(nodebox.disconnected_left, "disconnected_left");
+		NODEBOXREADVEC(nodebox.disconnected_back, "disconnected_back");
+		NODEBOXREADVEC(nodebox.disconnected_right, "disconnected_right");
+		NODEBOXREADVEC(nodebox.disconnected, "disconnected");
+		NODEBOXREADVEC(nodebox.disconnected_sides, "disconnected_sides");
 	}
 	return nodebox;
 }

@@ -422,16 +422,40 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		boxes_size += nodebox.fixed.size();
 		if (neighbors & 1)
 			boxes_size += nodebox.connect_top.size();
+		else
+			boxes_size += nodebox.disconnected_top.size();
+
 		if (neighbors & 2)
 			boxes_size += nodebox.connect_bottom.size();
+		else
+			boxes_size += nodebox.disconnected_bottom.size();
+
 		if (neighbors & 4)
 			boxes_size += nodebox.connect_front.size();
+		else
+			boxes_size += nodebox.disconnected_front.size();
+
 		if (neighbors & 8)
 			boxes_size += nodebox.connect_left.size();
+		else
+			boxes_size += nodebox.disconnected_left.size();
+
 		if (neighbors & 16)
 			boxes_size += nodebox.connect_back.size();
+		else
+			boxes_size += nodebox.disconnected_back.size();
+
 		if (neighbors & 32)
 			boxes_size += nodebox.connect_right.size();
+		else
+			boxes_size += nodebox.disconnected_right.size();
+
+		if (neighbors == 0)
+			boxes_size += nodebox.disconnected.size();
+
+		if (neighbors < 4)
+			boxes_size += nodebox.disconnected_sides.size();
+
 		boxes.reserve(boxes_size);
 
 #define BOXESPUSHBACK(c) \
@@ -442,18 +466,50 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 
 		BOXESPUSHBACK(nodebox.fixed);
 
-		if (neighbors & 1)
+		if (neighbors & 1) {
 			BOXESPUSHBACK(nodebox.connect_top);
-		if (neighbors & 2)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_top);
+		}
+
+		if (neighbors & 2) {
 			BOXESPUSHBACK(nodebox.connect_bottom);
-		if (neighbors & 4)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_bottom);
+		}
+
+		if (neighbors & 4) {
 			BOXESPUSHBACK(nodebox.connect_front);
-		if (neighbors & 8)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_front);
+		}
+
+		if (neighbors & 8) {
 			BOXESPUSHBACK(nodebox.connect_left);
-		if (neighbors & 16)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_left);
+		}
+
+		if (neighbors & 16) {
 			BOXESPUSHBACK(nodebox.connect_back);
-		if (neighbors & 32)
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_back);
+		}
+
+		if (neighbors & 32) {
 			BOXESPUSHBACK(nodebox.connect_right);
+		} else {
+			BOXESPUSHBACK(nodebox.disconnected_right);
+		}
+
+		if (neighbors == 0) {
+			BOXESPUSHBACK(nodebox.disconnected);
+		}
+
+		if (neighbors < 4) {
+			BOXESPUSHBACK(nodebox.disconnected_sides);
+		}
+
 	}
 	else // NODEBOX_REGULAR
 	{

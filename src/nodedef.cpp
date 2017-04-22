@@ -61,12 +61,20 @@ void NodeBox::reset()
 	connect_left.clear();
 	connect_back.clear();
 	connect_right.clear();
+	disconnected_top.clear();
+	disconnected_bottom.clear();
+	disconnected_front.clear();
+	disconnected_left.clear();
+	disconnected_back.clear();
+	disconnected_right.clear();
+	disconnected.clear();
+	disconnected_sides.clear();
 }
 
 void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 {
 	// Protocol >= 36
-	int version = 4;
+	int version = 5;
 	writeU8(os, version);
 
 	switch (type) {
@@ -107,6 +115,14 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 		WRITEBOX(connect_left);
 		WRITEBOX(connect_back);
 		WRITEBOX(connect_right);
+		WRITEBOX(disconnected_top);
+		WRITEBOX(disconnected_bottom);
+		WRITEBOX(disconnected_front);
+		WRITEBOX(disconnected_left);
+		WRITEBOX(disconnected_back);
+		WRITEBOX(disconnected_right);
+		WRITEBOX(disconnected);
+		WRITEBOX(disconnected_sides);
 		break;
 	default:
 		writeU8(os, type);
@@ -163,6 +179,16 @@ void NodeBox::deSerialize(std::istream &is)
 		READBOXES(connect_left);
 		READBOXES(connect_back);
 		READBOXES(connect_right);
+		if (version >= 5) {
+			READBOXES(disconnected_top);
+			READBOXES(disconnected_bottom);
+			READBOXES(disconnected_front);
+			READBOXES(disconnected_left);
+			READBOXES(disconnected_back);
+			READBOXES(disconnected_right);
+			READBOXES(disconnected);
+			READBOXES(disconnected_sides);
+		}
 	}
 }
 
@@ -1245,13 +1271,21 @@ void getNodeBoxUnion(const NodeBox &nodebox, const ContentFeatures &features,
 		}
 		case NODEBOX_CONNECTED: {
 			// Add all possible connected boxes
-			boxVectorUnion(nodebox.fixed,          box_union);
-			boxVectorUnion(nodebox.connect_top,    box_union);
-			boxVectorUnion(nodebox.connect_bottom, box_union);
-			boxVectorUnion(nodebox.connect_front,  box_union);
-			boxVectorUnion(nodebox.connect_left,   box_union);
-			boxVectorUnion(nodebox.connect_back,   box_union);
-			boxVectorUnion(nodebox.connect_right,  box_union);
+			boxVectorUnion(nodebox.fixed,               box_union);
+			boxVectorUnion(nodebox.connect_top,         box_union);
+			boxVectorUnion(nodebox.connect_bottom,      box_union);
+			boxVectorUnion(nodebox.connect_front,       box_union);
+			boxVectorUnion(nodebox.connect_left,        box_union);
+			boxVectorUnion(nodebox.connect_back,        box_union);
+			boxVectorUnion(nodebox.connect_right,       box_union);
+			boxVectorUnion(nodebox.disconnected_top,    box_union);
+			boxVectorUnion(nodebox.disconnected_bottom, box_union);
+			boxVectorUnion(nodebox.disconnected_front,  box_union);
+			boxVectorUnion(nodebox.disconnected_left,   box_union);
+			boxVectorUnion(nodebox.disconnected_back,   box_union);
+			boxVectorUnion(nodebox.disconnected_right,  box_union);
+			boxVectorUnion(nodebox.disconnected,        box_union);
+			boxVectorUnion(nodebox.disconnected_sides,  box_union);
 			break;
 		}
 		default: {
