@@ -506,7 +506,7 @@ set(client_SRCS
 	fontengine.cpp
 	game.cpp
 	guiChatConsole.cpp
-	guiEngine.cpp
+	guiEngine.cpp	
 	guiFileSelectMenu.cpp
 	guiFormSpecMenu.cpp
 	guiKeyChangeMenu.cpp

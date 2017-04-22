@@ -1092,6 +1092,7 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	std::string name = parts[2];
 	std::string label = parts[3];
 	std::string default_val = parts[4];
+	bool has_vscrollbar = parts.size() > 5? is_yes(parts[5]) : false;
 
 	MY_CHECKPOS(type,0);
 	MY_CHECKGEOM(type,1);
@@ -1134,20 +1135,32 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		258+m_fields.size()
 	);
 
+	gui::IGUIEditBox *e = NULL;
+
 	if (name == "")
 	{
-		// spec field id to 0, this stops submit searching for a value that isn't there
-		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
+#if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
+		if (type == "textarea" && has_vscrollbar && g_settings->getBool("freetype")) {
+			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.flabel.c_str(),
+					true, Environment, this, spec.fid, rect, false, has_vscrollbar);
+			e->drop();
+		} else {
+#else
+		{
+#endif
+			// spec field id to 0, this stops submit searching for a value that isn't there
+			addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, spec.fid);
+		}
+
 	}
 	else
 	{
 		spec.send = true;
 
-		gui::IGUIEditBox *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 		if (g_settings->getBool("freetype")) {
 			e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
-				true, Environment, this, spec.fid, rect);
+				true, Environment, this, spec.fid, rect, true, has_vscrollbar);
 			e->drop();
 		} else {
 #else
@@ -1159,7 +1172,9 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 		if (spec.fname == data->focused_fieldname) {
 			Environment->setFocus(e);
 		}
+	}
 
+	if (e) {
 		if (type == "textarea")
 		{
 			e->setMultiLine(true);
@@ -1167,17 +1182,18 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 			e->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_UPPERLEFT);
 		} else {
 			irr::SEvent evt;
-			evt.EventType            = EET_KEY_INPUT_EVENT;
-			evt.KeyInput.Key         = KEY_END;
-			evt.KeyInput.Char        = 0;
-			evt.KeyInput.Control     = 0;
-			evt.KeyInput.Shift       = 0;
+			evt.EventType = EET_KEY_INPUT_EVENT;
+			evt.KeyInput.Key = KEY_END;
+			evt.KeyInput.Char = 0;
+			evt.KeyInput.Control = 0;
+			evt.KeyInput.Shift = 0;
 			evt.KeyInput.PressedDown = true;
 			e->OnEvent(evt);
 		}
+	}
 
-		if (label.length() >= 1)
-		{
+	if (!name.empty()) {
+		if (label.length() >= 1) {
 			int font_height = g_fontengine->getTextHeight();
 			rect.UpperLeftCorner.Y -= font_height;
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
