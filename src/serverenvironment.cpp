@@ -2302,6 +2302,12 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 		else
 			actionstream << "world.mt updated" << std::endl;
 
+		// When migration is finished from file backend, remove players directory if empty
+		if (backend == "files") {
+			fs::DeleteSingleFileOrEmptyDirectory(game_params.world_path + DIR_DELIM
+				+ "players");
+		}
+
 		delete srcdb;
 		delete dstdb;
 
