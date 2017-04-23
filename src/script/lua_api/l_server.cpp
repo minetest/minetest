@@ -334,6 +334,22 @@ int ModApiServer::l_kick_player(lua_State *L)
 	return 1;
 }
 
+int ModApiServer::l_remove_player(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name = luaL_checkstring(L, 1);
+	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
+	assert(s_env);
+
+	RemotePlayer *player = s_env->getPlayer(name.c_str());
+	if (!player)
+		lua_pushinteger(L, s_env->removePlayerFromDatabase(name) ? 0 : 1);
+	else
+		lua_pushinteger(L, 2);
+
+	return 1;
+}
+
 // unban_player_or_ip()
 int ModApiServer::l_unban_player_or_ip(lua_State *L)
 {
@@ -510,6 +526,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_ban_description);
 	API_FCT(ban_player);
 	API_FCT(kick_player);
+	API_FCT(remove_player);
 	API_FCT(unban_player_or_ip);
 	API_FCT(notify_authentication_modified);
 

@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 
-class Database_Redis : public Database
+class Database_Redis : public MapDatabase
 {
 public:
 	Database_Redis(Settings &conf);

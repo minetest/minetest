@@ -27,7 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class ServerMap;
+struct GameParams;
 class RemotePlayer;
+class PlayerDatabase;
 class PlayerSAO;
 class ServerEnvironment;
 class ActiveBlockModifier;
@@ -217,9 +219,11 @@ public:
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
-	RemotePlayer *loadPlayer(const std::string &playername, PlayerSAO *sao);
+	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, u16 peer_id,
+		bool is_singleplayer);
 	void addPlayer(RemotePlayer *player);
 	void removePlayer(RemotePlayer *player);
+	bool removePlayerFromDatabase(const std::string &name);
 
 	/*
 		Save and load time of day and game timer
@@ -334,8 +338,13 @@ public:
 
 	RemotePlayer *getPlayer(const u16 peer_id);
 	RemotePlayer *getPlayer(const char* name);
+
+	static bool migratePlayersDatabase(const GameParams &game_params,
+			const Settings &cmd_args);
 private:
 
+	static PlayerDatabase *openPlayerDatabase(const std::string &name,
+			const std::string &savedir, const Settings &conf);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------
@@ -418,6 +427,8 @@ private:
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;
+
+	PlayerDatabase *m_player_database;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;

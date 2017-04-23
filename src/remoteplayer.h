@@ -37,11 +37,11 @@ enum RemotePlayerChatResult
 */
 class RemotePlayer : public Player
 {
+	friend class PlayerDatabaseFiles;
 public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
 	virtual ~RemotePlayer() {}
 
-	void save(std::string savedir, IGameDef *gamedef);
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
