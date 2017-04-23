@@ -1230,9 +1230,11 @@ Another example: Make red wool from white wool and red dye:
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-* `dig_immediate`: (player can always pick up node without tool wear)
-    * `2`: node is removed without tool wear after 0.5 seconds (rail, sign)
-    * `3`: node is removed without tool wear after 0.15 seconds (torch)
+* `dig_immediate`: (player can always pick up node)
+    * The node is dug without reducing tool wear
+    * and it's removed by clicking instead of holding LMB.
+    * `2`: The node disappears after 0.5 seconds (rail, sign)
+    * `3`: It disappears after 0.15 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `bouncy`: value is bounce speed in percent
@@ -3444,7 +3446,7 @@ will place the schematic inside of the VoxelManip.
       If `light` is false, no light calculations happen, and you should correct
       all modified blocks with `minetest.fix_light()` as soon as possible.
       Keep in mind that modifying the map where light is incorrect can cause
-      more lighting bugs. 
+      more lighting bugs.
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at that position
