@@ -38,6 +38,7 @@ enum RemotePlayerChatResult
 class RemotePlayer : public Player
 {
 	friend class PlayerDatabaseFiles;
+
 public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
 	virtual ~RemotePlayer() {}

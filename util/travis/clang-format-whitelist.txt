@@ -51,11 +51,13 @@ src/craftdef.cpp
 src/craftdef.h
 src/database.cpp
 src/database-dummy.cpp
+src/database-files.cpp
 src/database-leveldb.cpp
 src/database-postgresql.cpp
 src/database-postgresql.h
 src/database-redis.cpp
 src/database-sqlite3.cpp
+src/database-sqlite3.h
 src/daynightratio.h
 src/debug.cpp
 src/debug.h

@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 
 // !!! WARNING !!!
-// This backend is intended to be used on Minetest 0.4.16 only for the transition backend for
-// player files
+// This backend is intended to be used on Minetest 0.4.16 only for the transition backend
+// for player files
 
 void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player)
 {
