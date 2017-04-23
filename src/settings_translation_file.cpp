@@ -242,7 +242,7 @@ fake_function() {
 	gettext("Enable view bobbing");
 	gettext("Enables view bobbing when walking.");
 	gettext("View bobbing factor");
-	gettext("Multiplier for view bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
+	gettext("Enable view bobbing and amount of view bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("Fall bobbing factor");
 	gettext("Multiplier for fall bobbing.\nFor example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.");
 	gettext("3D mode");

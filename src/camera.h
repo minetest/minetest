@@ -231,7 +231,6 @@ private:
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
 	f32 m_cache_zoom_fov;
-	bool m_cache_view_bobbing;
 
 	std::list<Nametag *> m_nametags;
 };
