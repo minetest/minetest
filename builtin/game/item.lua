@@ -313,7 +313,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 
 	-- Transfer color information
 	if metatable.palette_index and not def.place_param2 then
-		local color_divisor = 0
+		local color_divisor = nil
 		if def.paramtype2 == "color" then
 			color_divisor = 1
 		elseif def.paramtype2 == "colorwallmounted" then
@@ -321,7 +321,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		elseif def.paramtype2 == "colorfacedir" then
 			color_divisor = 32
 		end
-		if color_divisor > 0 then
+		if color_divisor then
 			local color = math.floor(metatable.palette_index / color_divisor)
 			local other = newnode.param2 % color_divisor
 			newnode.param2 = color * color_divisor + other
