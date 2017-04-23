@@ -232,6 +232,22 @@ if(ENABLE_REDIS)
 endif(ENABLE_REDIS)
 
 
+OPTION(ENABLE_LMDB "Enable LMDB backend" TRUE)
+set(USE_LMDB FALSE)
+
+if(ENABLE_LMDB)
+	find_library(LMDB_LIBRARY lmdb)
+	find_path(LMDB_INCLUDE_DIR lmdb.h PATH_SUFFIXES lmdb)
+	if(LMDB_LIBRARY AND LMDB_INCLUDE_DIR)
+		set(USE_LMDB TRUE)
+		message(STATUS "LMDB backend enabled.")
+		include_directories(${LMDB_INCLUDE_DIR})
+	else(LMDB_LIBRARY AND LMDB_INCLUDE_DIR)
+		message(STATUS "LMDB not found!")
+	endif(LMDB_LIBRARY AND LMDB_INCLUDE_DIR)
+endif(ENABLE_LMDB)
+
+
 find_package(SQLite3 REQUIRED)
 
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
@@ -379,6 +395,7 @@ set(common_SRCS
 	database-dummy.cpp
 	database-leveldb.cpp
 	database-postgresql.cpp
+	database_lmdb.cpp
 	database-redis.cpp
 	database-sqlite3.cpp
 	database.cpp
@@ -633,6 +650,9 @@ if(BUILD_CLIENT)
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME} ${REDIS_LIBRARY})
 	endif()
+	if (USE_LMDB)
+		target_link_libraries(${PROJECT_NAME} ${LMDB_LIBRARY})
+	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME} ${SPATIAL_LIBRARY})
 	endif()
@@ -665,6 +685,9 @@ if(BUILD_SERVER)
 	endif()
 	if (USE_REDIS)
 		target_link_libraries(${PROJECT_NAME}server ${REDIS_LIBRARY})
+	endif()
+	if (USE_LMDB)
+		target_link_libraries(${PROJECT_NAME}server ${LMDB_LIBRARY})
 	endif()
 	if (USE_SPATIAL)
 		target_link_libraries(${PROJECT_NAME}server ${SPATIAL_LIBRARY})
@@ -805,6 +828,9 @@ if(WIN32)
 	endif()
 	if(LEVELDB_DLL)
 		install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(LMDB_DLL)
+		install(FILES ${LMDB_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

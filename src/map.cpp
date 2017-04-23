@@ -56,6 +56,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database-postgresql.h"
 #endif
+#if USE_LMDB
+#include "database_lmdb.h"
+#endif
 
 
 /*
@@ -2306,6 +2309,10 @@ Database *ServerMap::createDatabase(
 	#if USE_POSTGRESQL
 	else if (name == "postgresql")
 		return new Database_PostgreSQL(conf);
+	#endif
+	#if USE_LMDB
+	else if (name == "lmdb")
+		return new Database_LMDB(savedir, conf);
 	#endif
 	else
 		throw BaseException(std::string("Database backend ") + name + " not supported.");
