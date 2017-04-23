@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "player.h"
 
 class PlayerSAO;
+class InventoryChangeReceiver;
 
 enum RemotePlayerChatResult
 {
@@ -44,17 +45,14 @@ public:
 	virtual ~RemotePlayer() {}
 
 	void on_remove_item(
-		GameScripting *script_interface, 
 		const InventoryList *inventory_list, 
 		const ItemStack &deleted_item);
 	void on_change_item(
-		GameScripting *script_interface, 
 		const InventoryList *inventory_list, 
 		u32 query_slot, 
 		const ItemStack &old_item,
 		const ItemStack &new_item);
 	void on_add_item(
-		GameScripting *script_interface, 
 		const InventoryList *inventory_list, 
 		u32 query_slot, 
 		const ItemStack &added_item);
@@ -62,7 +60,7 @@ public:
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
-	void setPlayerSAO(PlayerSAO *sao) { m_sao = sao; }
+	void setPlayerSAO(PlayerSAO *sao);
 
 	const RemotePlayerChatResult canSendChatMessage();
 

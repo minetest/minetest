@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
+#include "script/scripting.h"
 
 /*
 	ItemStack
@@ -568,26 +569,28 @@ ItemStack& InventoryList::getItem(u32 i)
 	return m_items[i];
 }
 
-ItemStack InventoryList::changeItem(GameScripting *script_interface, u32 i, const ItemStack &newitem)
+ItemStack InventoryList::changeItem(bool script_callback, u32 i, const ItemStack &newitem)
 {
 	if(i >= m_items.size())
 		return newitem;
 
 	ItemStack olditem = m_items[i];
 	m_items[i] = newitem;
-	m_rec->on_change_item(script_interface, this, i, olditem, newitem);
+	if (script_callback && m_rec)
+		m_rec->on_change_item(this, i, olditem, newitem);
 	//setDirty(true);
 	return olditem;
 }
 
-void InventoryList::deleteItem(GameScripting *script_interface, u32 i)
+void InventoryList::deleteItem(bool script_callback, u32 i)
 {
 	assert(i < m_items.size()); // Pre-condition
-	m_rec->on_remove_item(script_interface, this, m_items[i]);
+	if (script_callback && m_rec)
+		m_rec->on_remove_item(this, m_items[i]);
 	m_items[i].clear();
 }
 
-ItemStack InventoryList::addItem(GameScripting *script_interface, const ItemStack &newitem_)
+ItemStack InventoryList::addItem(bool script_callback, const ItemStack &newitem_)
 {
 	ItemStack newitem = newitem_;
 
@@ -603,7 +606,7 @@ ItemStack InventoryList::addItem(GameScripting *script_interface, const ItemStac
 		if(m_items[i].empty())
 			continue;
 		// Try adding
-		newitem = addItem(script_interface, i, newitem);
+		newitem = addItem(true, i, newitem);
 		if(newitem.empty())
 			return newitem; // All was eaten
 	}
@@ -617,7 +620,7 @@ ItemStack InventoryList::addItem(GameScripting *script_interface, const ItemStac
 		if(!m_items[i].empty())
 			continue;
 		// Try adding
-		newitem = addItem(script_interface, i, newitem);
+		newitem = addItem(true, i, newitem);
 		if(newitem.empty())
 			return newitem; // All was eaten
 	}
@@ -626,16 +629,17 @@ ItemStack InventoryList::addItem(GameScripting *script_interface, const ItemStac
 	return newitem;
 }
 
-ItemStack InventoryList::addItem(GameScripting *script_interface, u32 i, const ItemStack &newitem)
+ItemStack InventoryList::addItem(bool script_callback, u32 i, const ItemStack &newitem)
 {
 	if(i >= m_items.size())
 		return newitem;
 
 	ItemStack leftover = m_items[i].addItem(newitem, m_itemdef);
-	if (leftover.count != newitem.count) {
+	if (script_callback && m_rec && leftover.count != newitem.count) {
 		ItemStack added_item(newitem.name, newitem.count - leftover.count,
-			newitem.wear, newitem.metadata, m_itemdef);
-		m_rec->on_add_item(script_interface, this, i, added_item);
+			newitem.wear, m_itemdef);
+		added_item.metadata = newitem.metadata;
+		m_rec->on_add_item(this, i, added_item);
 	}
 	//if(leftover != newitem)
 	//	setDirty(true);
@@ -690,7 +694,7 @@ bool InventoryList::containsItem(const ItemStack &item) const
 	return false;
 }
 
-ItemStack InventoryList::removeItem(GameScripting *script_interface, const ItemStack &item)
+ItemStack InventoryList::removeItem(bool script_callback, const ItemStack &item)
 {
 	ItemStack removed;
 	for(std::vector<ItemStack>::reverse_iterator
@@ -705,11 +709,12 @@ ItemStack InventoryList::removeItem(GameScripting *script_interface, const ItemS
 				break;
 		}
 	}
-	m_rec->on_remove_item(script_interface, this, removed);
+	if (script_callback && m_rec)
+		m_rec->on_remove_item(this, removed);
 	return removed;
 }
 
-ItemStack InventoryList::takeItem(GameScripting *script_interface, u32 i, u32 takecount)
+ItemStack InventoryList::takeItem(bool script_callback, u32 i, u32 takecount)
 {
 	if(i >= m_items.size())
 		return ItemStack();
@@ -717,18 +722,20 @@ ItemStack InventoryList::takeItem(GameScripting *script_interface, u32 i, u32 ta
 	ItemStack taken = m_items[i].takeItem(takecount);
 	//if(!taken.empty())
 	//	setDirty(true);
-	m_rec->on_remove_item(script_interface, this, taken);
+	if (script_callback && m_rec)
+		m_rec->on_remove_item(this, taken);
 	return taken;
 }
 
-void InventoryList::moveItemSomewhere(GameScripting *script_interface, u32 i, InventoryList *dest, u32 count)
+void InventoryList::moveItemSomewhere(bool script_callback, u32 i,
+	InventoryList *dest, u32 count)
 {
 	// Take item from source list
 	ItemStack item1;
 	if (count == 0)
-		item1 = changeItem(script_interface, i, ItemStack());
+		item1 = changeItem(script_callback, i, ItemStack());
 	else
-		item1 = takeItem(script_interface, i, count);
+		item1 = takeItem(script_callback, i, count);
 
 	if (item1.empty())
 		return;
@@ -738,7 +745,7 @@ void InventoryList::moveItemSomewhere(GameScripting *script_interface, u32 i, In
 	// First try all the non-empty slots
 	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
 		if (!m_items[dest_i].empty()) {
-			item1 = dest->addItem(script_interface, dest_i, item1);
+			item1 = dest->addItem(script_callback, dest_i, item1);
 			if (item1.empty()) return;
 		}
 	}
@@ -746,18 +753,18 @@ void InventoryList::moveItemSomewhere(GameScripting *script_interface, u32 i, In
 	// Then try all the empty ones
 	for (u32 dest_i = 0; dest_i < dest_size; dest_i++) {
 		if (m_items[dest_i].empty()) {
-			item1 = dest->addItem(script_interface, dest_i, item1);
+			item1 = dest->addItem(script_callback, dest_i, item1);
 			if (item1.empty()) return;
 		}
 	}
 
 	// If we reach this, the item was not fully added
 	// Add the remaining part back to the source item
-	addItem(script_interface, i, item1);
+	addItem(script_callback, i, item1);
 }
 
-u32 InventoryList::moveItem(GameScripting *script_interface, u32 i, InventoryList *dest, u32 dest_i,
-		u32 count, bool swap_if_needed, bool *did_swap)
+u32 InventoryList::moveItem(bool script_callback, u32 i, InventoryList *dest,
+	u32 dest_i, u32 count, bool swap_if_needed, bool *did_swap)
 {
 	if(this == dest && i == dest_i)
 		return count;
@@ -765,16 +772,16 @@ u32 InventoryList::moveItem(GameScripting *script_interface, u32 i, InventoryLis
 	// Take item from source list
 	ItemStack item1;
 	if(count == 0)
-		item1 = changeItem(script_interface, i, ItemStack());
+		item1 = changeItem(script_callback, i, ItemStack());
 	else
-		item1 = takeItem(script_interface, i, count);
+		item1 = takeItem(script_callback, i, count);
 
 	if(item1.empty())
 		return 0;
 
 	// Try to add the item to destination list
 	u32 oldcount = item1.count;
-	item1 = dest->addItem(script_interface, dest_i, item1);
+	item1 = dest->addItem(script_callback, dest_i, item1);
 
 	// If something is returned, the item was not fully added
 	if(!item1.empty())
@@ -784,7 +791,7 @@ u32 InventoryList::moveItem(GameScripting *script_interface, u32 i, InventoryLis
 
 		// If something else is returned, part of the item was left unadded.
 		// Add the other part back to the source item
-		addItem(script_interface, i, item1);
+		addItem(script_callback, i, item1);
 
 		// If olditem is returned, nothing was added.
 		// Swap the items
@@ -794,11 +801,11 @@ u32 InventoryList::moveItem(GameScripting *script_interface, u32 i, InventoryLis
 				*did_swap = true;
 			}
 			// Take item from source list
-			item1 = changeItem(script_interface, i, ItemStack());
+			item1 = changeItem(script_callback, i, ItemStack());
 			// Adding was not possible, swap the items.
-			ItemStack item2 = dest->changeItem(script_interface, dest_i, item1);
+			ItemStack item2 = dest->changeItem(script_callback, dest_i, item1);
 			// Put item from destination list to the source list
-			changeItem(script_interface, i, item2);
+			changeItem(script_callback, i, item2);
 		}
 	}
 	return (oldcount - item1.count);
@@ -808,48 +815,41 @@ u32 InventoryList::moveItem(GameScripting *script_interface, u32 i, InventoryLis
 	DetachedInventoryChangeReceiver
 */
 
-DetachedInventoryChangeReceiver::DetachedInventoryChangeReceiver(const std::string &name)
-{
-	m_name = name;
-}
-
-DetachedInventoryChangeReceiver::~DetachedInventoryChangeReceiver()
-{
-	delete &m_name;
-}
-
 void DetachedInventoryChangeReceiver::on_remove_item(
-	GameScripting *script_interface, 
 	const InventoryList *inventory_list, 
 	const ItemStack &deleted_item)
 {
-	if (script_interface) {
-		script_interface->on_detached_inventory_remove_item(
+	if (m_script.getServerScripting() != NULL) {
+		m_script.getServerScripting()->on_detached_inventory_remove_item(
 			m_name, inventory_list->getName(), deleted_item);
 	}
 }
 
-void DetachedInventoryChangeReceiver::on_change_item(GameScripting *script_interface, 
+void DetachedInventoryChangeReceiver::on_change_item(
 	const InventoryList *inventory_list,
 	u32 query_slot, 
 	const ItemStack &old_item,
 	const ItemStack &new_item)
 {
-	if (script_interface) {
-		script_interface->on_detached_inventory_change_item(
+	if (m_script.getServerScripting() != NULL) {
+		m_script.getServerScripting()->on_detached_inventory_change_item(
 			m_name, inventory_list->getName(), query_slot, old_item, new_item);
 	}
 }
 
-void DetachedInventoryChangeReceiver::on_add_item(GameScripting *script_interface, 
+void DetachedInventoryChangeReceiver::on_add_item(
 	const InventoryList *inventory_list,
 	u32 query_slot,
 	const ItemStack &added_item)
 {
-	if (script_interface) {
-		script_interface->on_detached_inventory_add_item(
+	if (m_script.getServerScripting() != NULL) {
+		m_script.getServerScripting()->on_detached_inventory_add_item(
 			m_name, inventory_list->getName(), query_slot, added_item);
-	}
+	}/* else if (m_script.getClientScripting() != NULL) {
+		NOT IMPLEMENTED
+		m_script.getClientScripting()->on_detached_inventory_add_item(
+			m_name, inventory_list->getName(), query_slot, added_item);
+	}*/
 }
 
 /*
@@ -879,7 +879,7 @@ void Inventory::clearContents()
 		InventoryList *list = m_lists[i];
 		for(u32 j=0; j<list->getSize(); j++)
 		{
-			list->deleteItem(NULL, j);
+			list->deleteItem(false, j);
 		}
 	}
 }

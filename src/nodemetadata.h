@@ -41,20 +41,11 @@ public:
 	NodeMetadata(IItemDefManager *item_def_mgr, v3s16 node_pos);
 	~NodeMetadata();
 
-	void on_remove_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
+	void on_remove_item(const InventoryList *inventory_list, 
 		const ItemStack &deleted_item);
-	void on_change_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
-		u32 query_slot, 
-		const ItemStack &old_item,
-		const ItemStack &new_item);
-	void on_add_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
-		u32 query_slot, 
+	void on_change_item(const InventoryList *inventory_list, u32 query_slot,
+		const ItemStack &old_item, const ItemStack &new_item);
+	void on_add_item(const InventoryList *inventory_list, u32 query_slot, 
 		const ItemStack &added_item);
 
 	void serialize(std::ostream &os) const;

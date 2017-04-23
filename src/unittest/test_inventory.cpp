@@ -48,9 +48,7 @@ void TestInventory::runTests(IGameDef *gamedef)
 
 void TestInventory::testSerializeDeserialize(IItemDefManager *idef)
 {
-	DetachedInventoryChangeReceiver *detached_inventory_change_receiver =
-		new DetachedInventoryChangeReceiver("test");
-	Inventory inv(idef, detached_inventory_change_receiver);
+	Inventory inv(idef, new DetachedInventoryChangeReceiver("test", Scripting()));
 	std::istringstream is(serialized_inventory, std::ios::binary);
 
 	inv.deSerialize(is);

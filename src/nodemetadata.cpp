@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
-#include "script/scripting_game.h"
+#include "script/scripting.h"
 
 /*
 	NodeMetadata
@@ -42,37 +42,37 @@ NodeMetadata::~NodeMetadata()
 }
 
 void NodeMetadata::on_remove_item(
-	GameScripting *script_interface, 
 	const InventoryList *inventory_list, 
 	const ItemStack &deleted_item)
 {
-	if (script_interface) {
-		script_interface->on_nodemeta_inventory_remove_item(
+	if (m_script.getServerScripting()) {
+		m_script.getServerScripting()->on_nodemeta_inventory_remove_item(
 			m_node_pos, inventory_list->getName(), deleted_item);
 	}
+	/* else if (m_script.getClientScripting()) {
+		NOT IMPLEMENTED YET
+	}*/
 }
 
 void NodeMetadata::on_change_item(
-	GameScripting *script_interface, 
 	const InventoryList *inventory_list, 
 	u32 query_slot, 
 	const ItemStack &old_item,
 	const ItemStack &new_item)
 {
-	if (script_interface) {
-		script_interface->on_nodemeta_inventory_change_item(
+	if (m_script.getServerScripting()) {
+		m_script.getServerScripting()->on_nodemeta_inventory_change_item(
 			m_node_pos, inventory_list->getName(), query_slot, old_item, new_item);
 	}
 }
 
 void NodeMetadata::on_add_item(
-	GameScripting *script_interface, 
 	const InventoryList *inventory_list, 
 	u32 query_slot, 
 	const ItemStack &added_item)
 {
-	if (script_interface) {
-		script_interface->on_nodemeta_inventory_add_item(
+	if (m_script.getServerScripting()) {
+		m_script.getServerScripting()->on_nodemeta_inventory_add_item(
 			m_node_pos, inventory_list->getName(), query_slot, added_item);
 	}
 }

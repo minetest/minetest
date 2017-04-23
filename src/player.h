@@ -101,7 +101,7 @@ class Map;
 struct CollisionInfo;
 struct HudElement;
 class Environment;
-class GameScripting;
+class InventoryChangeReceiver;
 
 // IMPORTANT:
 // Do *not* perform an assignment or copy operation on a Player or
@@ -113,21 +113,14 @@ public:
 	Player(const char *name, IItemDefManager *idef);
 	virtual ~Player() = 0;
 
-	virtual void on_remove_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
+	virtual void on_remove_item(const InventoryList *inventory_list,
 		const ItemStack &deleted_item) = 0;
-	virtual void on_change_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
-		u32 query_slot, 
-		const ItemStack &old_item,
-		const ItemStack &new_item) = 0;
-	virtual void on_add_item(
-		GameScripting *script_interface, 
-		const InventoryList *inventory_list, 
-		u32 query_slot, 
-		const ItemStack &added_item) = 0;
+
+	virtual void on_change_item(const InventoryList *inventory_list,
+		u32 query_slot, const ItemStack &old_item, const ItemStack &new_item) = 0;
+
+	virtual void on_add_item(const InventoryList *inventory_list,
+		u32 query_slot, const ItemStack &added_item) = 0;
 
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
 	{}

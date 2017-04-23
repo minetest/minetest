@@ -254,7 +254,7 @@ void ScriptApiDetached::on_detached_inventory_add_item(
 	lua_pushstring(L, name.c_str());                // detached inventory name
 	lua_pushstring(L, inventory_list_name.c_str()); // listname	2
 	lua_pushnumber(L, query_slot);                  // slot
-	LuaItemStack::create(L, added_item);		    // new stack
+	LuaItemStack::create(L, added_item);            // new stack
 	runCallbacks(4, RUN_CALLBACKS_MODE_LAST);
 }
 

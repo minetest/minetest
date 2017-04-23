@@ -255,8 +255,8 @@ struct ICraftAction : public InventoryAction
 
 // Crafting helper
 bool getCraftingResult(
-	GameScripting *script_interface, 
-	Inventory *inv, 
+	bool script_callback,
+	Inventory *inv,
 	ItemStack& result,
 	std::vector<ItemStack> &output_replacements,
 	bool decrementInput, 

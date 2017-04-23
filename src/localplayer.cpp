@@ -96,28 +96,39 @@ LocalPlayer::~LocalPlayer()
 }
 
 
-void LocalPlayer::on_remove_item(GameScripting *script_interface,
-	const InventoryList *inventory_list,
+void LocalPlayer::on_remove_item(const InventoryList *inventory_list,
 	const ItemStack &deleted_item)
 {
-	// Do nothing, because no client-side lua
+	/*
+		NOT IMPLEMENTED YET
+	if (m_script.getClientScripting() && m_cao)
+		m_script.getClientScripting()->on_player_inventory_remove_item(
+			m_cao, inventory_list->getName(), deleted_item);
+	*/
 }
 
-void LocalPlayer::on_change_item(GameScripting *script_interface,
-	const InventoryList *inventory_list,
-	u32 query_slot,
-	const ItemStack &old_item,
-	const ItemStack &new_item)
+void LocalPlayer::on_change_item(const InventoryList *inventory_list,
+	u32 query_slot, const ItemStack &old_item, const ItemStack &new_item)
 {
-	// Do nothing, because no client-side lua
+	/*
+		NOT IMPLEMENTED YET
+	if (m_script.getClientScripting() && m_cao) {
+		m_script.getClientScripting()->on_player_inventory_change_item(
+			m_cao, inventory_list->getName(), query_slot, old_item, new_item);
+	}
+	*/
 }
 
-void LocalPlayer::on_add_item(GameScripting *script_interface,
-	const InventoryList *inventory_list,
-	u32 query_slot,
-	const ItemStack &added_item)
+void LocalPlayer::on_add_item(const InventoryList *inventory_list,
+	u32 query_slot, const ItemStack &added_item)
 {
-	// Do nothing, because no client-side lua
+	/*
+		NOT IMPLEMENTED YET
+	if (m_script.getClientScripting() && m_cao) {
+		m_script.getClientScripting()->on_player_inventory_add_item(
+			m_cao, inventory_list->getName(), query_slot, added_item);
+	}
+	*/
 }
 
 static aabb3f getTopBoundingBox(const std::vector<aabb3f> &nodeboxes)

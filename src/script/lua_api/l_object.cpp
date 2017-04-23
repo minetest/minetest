@@ -365,7 +365,7 @@ int ObjectRef::l_set_wielded_item(lua_State *L)
 	if (co == NULL) return 0;
 	// Do it
 	ItemStack item = read_item(L, 2, getServer(L)->idef());
-	bool success = co->setWieldedItem(getServer(L)->getScriptIface(), item);
+	bool success = co->setWieldedItem(item);
 	if (success && co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 		getServer(L)->SendInventory(((PlayerSAO*)co));
 	}

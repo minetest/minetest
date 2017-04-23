@@ -217,9 +217,9 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				if (list->getItem(inventory_index).name !=
 						gamedef->idef()->getAlias(inventory_stack.name))
 					return false;
-				list->takeItem(NULL, inventory_index, inventory_stack.count);
+				list->takeItem(false, inventory_index, inventory_stack.count);
 			} else {
-				list->addItem(NULL, inventory_index, inventory_stack);
+				list->addItem(false, inventory_index, inventory_stack);
 			}
 			// Inventory was modified; send to clients
 			imgr->setInventoryModified(loc);
