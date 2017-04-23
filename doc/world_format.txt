@@ -196,52 +196,26 @@ SQLite3 was slammed in, and blocks files were directly inserted as blobs
 in a single table, indexed by integer primary keys, oddly mangled from
 coordinates.
 
-Today we know that SQLite3 allows multiple primary keys (which would allow
-storing coordinates separately), but the format has been kept unchanged for
-that part. So, this is where it has come.
-</history>
+Now the SQLite3 format has been changed to store the coordinates in seperate
+database fields, however the other database backends still use the mangled
+position hash -- usually encoded as ASCII decimal.
 
 So here goes
 -------------
-map.sqlite is an sqlite3 database, containing a single table, called
+map.sqlite is an SQLite3 database, containing a single table, called
 "blocks". It looks like this:
 
-  CREATE TABLE `blocks` (`pos` INT NOT NULL PRIMARY KEY,`data` BLOB);
+	CREATE TABLE `blocks` (
+		`x` INTEGER NOT NULL,
+		`y` INTEGER NOT NULL,
+		`z` INTEGER NOT NULL,
+		`data` BLOB,
+		PRIMARY KEY (`x`, `y`, `z`)
+	);
 
-The key
---------
-"pos" is created from the three coordinates of a MapBlock using this
-algorithm, defined here in Python:
-
-  def getBlockAsInteger(p):
-      return int64(p[2]*16777216 + p[1]*4096 + p[0])
-
-  def int64(u):
-      while u >= 2**63:
-          u -= 2**64
-      while u <= -2**63:
-          u += 2**64
-      return u
-
-It can be converted the other way by using this code:
-
-  def getIntegerAsBlock(i):
-      x = unsignedToSigned(i % 4096, 2048)
-      i = int((i - x) / 4096)
-      y = unsignedToSigned(i % 4096, 2048)
-      i = int((i - y) / 4096)
-      z = unsignedToSigned(i % 4096, 2048)
-      return x,y,z
-
-  def unsignedToSigned(i, max_positive):
-      if i < max_positive:
-          return i
-      else:
-          return i - 2*max_positive
-
-The blob
+The BLOB
 ---------
-The blob is the data that would have otherwise gone into the file.
+The BLOB is the data that would have otherwise gone into the file.
 
 See below for description.
 

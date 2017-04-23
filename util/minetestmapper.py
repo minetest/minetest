@@ -85,23 +85,6 @@ def int_to_hex4(i):
         return "%04X" % i
 
 
-def getBlockAsInteger(p):
-    return p[2]*16777216 + p[1]*4096 + p[0]
-
-def unsignedToSigned(i, max_positive):
-    if i < max_positive:
-        return i
-    else:
-        return i - 2*max_positive
-
-def getIntegerAsBlock(i):
-    x = unsignedToSigned(i % 4096, 2048)
-    i = int((i - x) / 4096)
-    y = unsignedToSigned(i % 4096, 2048)
-    i = int((i - y) / 4096)
-    z = unsignedToSigned(i % 4096, 2048)
-    return x,y,z
-
 def limit(i, l, h):
     if(i > h):
         i = h
@@ -244,21 +227,16 @@ if os.path.exists(path + "map.sqlite"):
     conn = sqlite3.connect(path + "map.sqlite")
     cur = conn.cursor()
     
-    cur.execute("SELECT `pos` FROM `blocks`")
+    cur.execute("SELECT `x`, `z` FROM `blocks` WHERE "
+            "`x` < ? AND `x` > ? AND `z` < ? AND `z` > ?;",
+        (sector_xmin, sector_xmax, sector_zmin, sector_zmax))
     while True:
         r = cur.fetchone()
         if not r:
             break
-        
-        x, y, z = getIntegerAsBlock(r[0])
-        
-        if x < sector_xmin or x > sector_xmax:
-            continue
-        if z < sector_zmin or z > sector_zmax:
-            continue
-        
-        xlist.append(x)
-        zlist.append(z)
+
+        xlist.append(r[0])
+        zlist.append(r[1])
 
 if os.path.exists(path + "sectors2"):
     for filename in os.listdir(path + "sectors2"):
@@ -428,15 +406,14 @@ for n in range(len(xlist)):
     sectortype = ""
 
     if cur:
-        psmin = getBlockAsInteger((xpos, -2048, zpos))
-        psmax = getBlockAsInteger((xpos, 2047, zpos))
-        cur.execute("SELECT `pos` FROM `blocks` WHERE `pos`>=? AND `pos`<=? AND (`pos` - ?) % 4096 = 0", (psmin, psmax, psmin))
+        cur.execute("SELECT `y` FROM `blocks` WHERE "
+                "`x` == ? AND `z` == ?",
+            (xpos, zpos))
         while True:
             r = cur.fetchone()
             if not r:
                 break
-            pos = getIntegerAsBlock(r[0])[1]
-            ylist.append(pos)
+            ylist.append(r[0])
             sectortype = "sqlite"
     try:
         for filename in os.listdir(path + "sectors/" + sector1):
@@ -482,8 +459,9 @@ for n in range(len(xlist)):
             yhex = int_to_hex4(ypos)
 
             if sectortype == "sqlite":
-                ps = getBlockAsInteger((xpos, ypos, zpos))
-                cur.execute("SELECT `data` FROM `blocks` WHERE `pos`==? LIMIT 1", (ps,))
+                cur.execute("SELECT `data` FROM `blocks` WHERE "
+				"`x` == ? AND `y` == ? AND `z` == ? "
+			"LIMIT 1", (xpos, ypos, zpos))
                 r = cur.fetchone()
                 if not r:
                     continue

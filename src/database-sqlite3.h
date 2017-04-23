@@ -27,6 +27,8 @@ extern "C" {
 #include "sqlite3.h"
 }
 
+class Settings;
+
 class Database_SQLite3 : public Database
 {
 public:
@@ -36,31 +38,42 @@ public:
 	void beginSave();
 	void endSave();
 
-	bool saveBlock(const v3s16 &pos, const std::string &data);
+	bool saveBlock(const v3s16 &pos, const std::string &data)
+		{ return saveBlock(pos, data.data(), data.size()); }
 	void loadBlock(const v3s16 &pos, std::string *block);
 	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
-	bool initialized() const { return m_initialized; }
 
 private:
 	// Open the database
 	void openDatabase();
 	// Create the database structure
-	void createDatabase();
-	// Open and initialize the database if needed
-	void verifyDatabase();
+	void createDatabase(bool set_ver=true);
+	// Pepares statements that depend on the database having an up-to-date schema
+	void prepareStatements();
+	// Check of the database is an old version and needs to be updated
+	void checkMigrate();
+	// Update database from version 0 to version 1 (pos split)
+	bool migrate(bool started);
 
-	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index = 1);
+	bool saveBlock(const v3s16 &pos, const char *data, size_t data_len,
+			s64 id = -1);
 
-	bool m_initialized;
+	bool deleteBlock(s64 id);
+
+	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int start = 1);
 
 	std::string m_savedir;
 
 	sqlite3 *m_database;
 	sqlite3_stmt *m_stmt_read;
-	sqlite3_stmt *m_stmt_write;
+	sqlite3_stmt *m_stmt_insert;
+	sqlite3_stmt *m_stmt_insert_pos;
+	sqlite3_stmt *m_stmt_update;
 	sqlite3_stmt *m_stmt_list;
+	sqlite3_stmt *m_stmt_get_id;
 	sqlite3_stmt *m_stmt_delete;
+	sqlite3_stmt *m_stmt_delete_pos;
 	sqlite3_stmt *m_stmt_begin;
 	sqlite3_stmt *m_stmt_end;
 
