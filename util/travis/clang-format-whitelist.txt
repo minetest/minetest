@@ -39,6 +39,7 @@ src/content_cao.h
 src/content_cso.cpp
 src/content_cso.h
 src/content_mapblock.cpp
+src/content_mapblock.h
 src/content_mapnode.cpp
 src/content_nodemeta.cpp
 src/content_nodemeta.h
@@ -147,6 +148,7 @@ src/map_settings_manager.cpp
 src/map_settings_manager.h
 src/mesh.cpp
 src/mesh.h
+src/mesh_generator_thread.cpp
 src/metadata.h
 src/mg_biome.cpp
 src/mg_biome.h
