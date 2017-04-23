@@ -60,6 +60,25 @@ public:
 	void nodemeta_inventory_OnTake(v3s16 p,
 			const std::string &listname, int index, ItemStack &stack,
 			ServerActiveObject *player);
+
+	void on_nodemeta_inventory_remove_item(
+		v3s16 p,
+		const std::string &inventory_list_name,
+		const ItemStack &deleted_item);
+
+	void on_nodemeta_inventory_change_item(
+		v3s16 p,
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item);
+
+	void on_nodemeta_inventory_add_item(
+		v3s16 p,
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &added_item);
+
 private:
 
 };

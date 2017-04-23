@@ -67,6 +67,39 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
 }
 
+void RemotePlayer::on_remove_item(GameScripting *script_interface,
+	const InventoryList *inventory_list,
+	const ItemStack &deleted_item)
+{
+	if (script_interface && m_sao) {
+		script_interface->on_player_inventory_remove_item(
+			m_sao, inventory_list->getName(), deleted_item);
+	}
+}
+
+void RemotePlayer::on_change_item(GameScripting *script_interface,
+	const InventoryList *inventory_list,
+	u32 query_slot,
+	const ItemStack &old_item,
+	const ItemStack &new_item)
+{
+	if (script_interface && m_sao) {
+		script_interface->on_player_inventory_change_item(
+			m_sao, inventory_list->getName(), query_slot, old_item, new_item);
+	}
+}
+
+void RemotePlayer::on_add_item(GameScripting *script_interface,
+	const InventoryList *inventory_list,
+	u32 query_slot,
+	const ItemStack &added_item)
+{
+	if (script_interface && m_sao) {
+		script_interface->on_player_inventory_add_item(
+			m_sao, inventory_list->getName(), query_slot, added_item);
+	}
+}
+
 void RemotePlayer::serializeExtraAttributes(std::string &output)
 {
 	assert(m_sao);
@@ -145,7 +178,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		if(craftresult_is_preview)
 		{
 			// Clear craftresult
-			inventory.getList("craftresult")->changeItem(0, ItemStack());
+			inventory.getList("craftresult")->changeItem(NULL, 0, ItemStack());
 		}
 	}
 }

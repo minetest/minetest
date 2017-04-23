@@ -2154,6 +2154,30 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_nodemeta_inventory_add_item(func(pos, list_name, slot, stack))`
+    * Called when an item is added to a node metadata inventory.
+    * 'pos' - {'x','y','z'} - Position of the affected node
+* `minetest.register_on_nodemeta_inventory_change_item(func(pos, list_name, slot, old_item, new_item))`
+    * Called when a node metadata inventory slot has changed.
+    * 'pos' - {'x','y','z'} - Position of the affected node
+* `minetest.register_on_nodemeta_inventory_remove_item(func(pos, list_name, stack))`
+    * Called when an item is removed from a node metadata inventory.
+    * 'pos' - {'x','y','z'} - absolute position of affected node with metadata
+* `minetest.register_on_detached_inventory_add_item(func(name, list_name, slot, stack))`
+    * Called when an item is added to a detached inventory.
+    * 'name' - String, name of detached inventory
+* `minetest.register_on_detached_inventory_change_item(func(name, list_name, slot, old_item, new_item))`
+    * Called when a detached inventory slot has changed.
+    * 'name' - String, name of detached inventory
+* `minetest.register_on_detached_inventory_remove_item(func(name, list_name, stack))`
+    * Called when an item is removed from a detached inventory.
+    * 'name' - String, name of detached inventory
+* `minetest.register_on_player_inventory_add_item(func(player, list_name, slot, stack))`
+    * Called when an item is added to a player inventory.
+* `minetest.register_on_player_inventory_change_item(func(player, list_name, slot, old_item, new_item))`
+    * Called when a player inventory slot has changed.
+* `minetest.register_on_player_inventory_remove_item(func(player, list_name, stack))`
+    * Called when an item is removed from a player inventory.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`

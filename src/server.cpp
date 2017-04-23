@@ -2782,7 +2782,7 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	InventoryLocation loc;
 	loc.setPlayer(player->getName());
 	std::vector<ItemStack> output_replacements;
-	getCraftingResult(&player->inventory, preview, output_replacements, false, this);
+	getCraftingResult(getEnv().getScriptIface(), &player->inventory, preview, output_replacements, false, this);
 	m_env->getScriptIface()->item_CraftPredict(preview, player->getPlayerSAO(),
 			(&player->inventory)->getList("craft"), loc);
 
@@ -2790,7 +2790,7 @@ void Server::UpdateCrafting(RemotePlayer *player)
 	InventoryList *plist = player->inventory.getList("craftpreview");
 	sanity_check(plist);
 	sanity_check(plist->getSize() >= 1);
-	plist->changeItem(0, preview);
+	plist->changeItem(NULL, 0, preview);
 }
 
 void Server::handleChatInterfaceEvent(ChatEvent *evt)
@@ -3301,7 +3301,8 @@ Inventory* Server::createDetachedInventory(const std::string &name, const std::s
 	} else {
 		infostream<<"Server creating detached inventory \""<<name<<"\""<<std::endl;
 	}
-	Inventory *inv = new Inventory(m_itemdef);
+	DetachedInventoryChangeReceiver *detached_inventory_change_reciever = new DetachedInventoryChangeReceiver(name);
+	Inventory *inv = new Inventory(m_itemdef, detached_inventory_change_reciever);
 	sanity_check(inv);
 	m_detached_inventories[name] = inv;
 	m_detached_inventories_player[name] = player;

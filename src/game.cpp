@@ -1886,7 +1886,8 @@ bool Game::createClient(const std::string &playername,
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
-	local_inventory = new Inventory(itemdef_manager);
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	local_inventory = new Inventory(itemdef_manager, player);
 
 	if (!(sky && local_inventory)) {
 		*error_message = "Memory allocation error (sky or local inventory)";
@@ -1917,7 +1918,6 @@ bool Game::createClient(const std::string &playername,
 	str += L"]";
 	device->setWindowCaption(str.c_str());
 
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
