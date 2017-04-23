@@ -74,7 +74,7 @@ private:
 	// get_player_ip()
 	static int l_get_player_ip(lua_State *L);
 
-	// get_player_information()
+	// get_player_information(name)
 	static int l_get_player_information(lua_State *L);
 
 	// get_ban_list()
