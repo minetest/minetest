@@ -34,8 +34,7 @@ void ScriptApiMainMenu::setMainMenuData(MainMenuDataForScript *data)
 		lua_pushnil(L);
 	}
 	lua_settable(L, gamedata_idx);
-	setboolfield(L, gamedata_idx, "reconnect_requested",
-		data->reconnect_requested);
+	setboolfield(L, gamedata_idx, "reconnect_requested", data->reconnect_requested);
 	lua_pop(L, 1);
 }
 
@@ -58,7 +57,7 @@ void ScriptApiMainMenu::handleMainMenuEvent(std::string text)
 	// Call it
 	lua_pushstring(L, text.c_str());
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
+	lua_pop(L, 1); // Pop error handler
 }
 
 void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
@@ -90,6 +89,5 @@ void ScriptApiMainMenu::handleMainMenuButtons(const StringMap &fields)
 
 	// Call it
 	PCALL_RES(lua_pcall(L, 1, 0, error_handler));
-	lua_pop(L, 1);  // Pop error handler
+	lua_pop(L, 1); // Pop error handler
 }
-

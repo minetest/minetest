@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "server.h"
 
-class TestPlayer : public TestBase {
+class TestPlayer : public TestBase
+{
 public:
 	TestPlayer() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestPlayer"; }

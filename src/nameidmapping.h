@@ -38,47 +38,51 @@ public:
 		m_name_to_id.clear();
 	}
 
-	void set(u16 id, const std::string &name){
+	void set(u16 id, const std::string &name)
+	{
 		m_id_to_name[id] = name;
 		m_name_to_id[name] = id;
 	}
-	void removeId(u16 id){
+	void removeId(u16 id)
+	{
 		std::string name;
 		bool found = getName(id, name);
-		if(!found) return;
+		if (!found)
+			return;
 		m_id_to_name.erase(id);
 		m_name_to_id.erase(name);
 	}
-	void eraseName(const std::string &name){
+	void eraseName(const std::string &name)
+	{
 		u16 id;
 		bool found = getId(name, id);
-		if(!found) return;
+		if (!found)
+			return;
 		m_id_to_name.erase(id);
 		m_name_to_id.erase(name);
 	}
-	bool getName(u16 id, std::string &result) const{
+	bool getName(u16 id, std::string &result) const
+	{
 		UNORDERED_MAP<u16, std::string>::const_iterator i;
 		i = m_id_to_name.find(id);
-		if(i == m_id_to_name.end())
+		if (i == m_id_to_name.end())
 			return false;
 		result = i->second;
 		return true;
 	}
-	bool getId(const std::string &name, u16 &result) const{
+	bool getId(const std::string &name, u16 &result) const
+	{
 		UNORDERED_MAP<std::string, u16>::const_iterator i;
 		i = m_name_to_id.find(name);
-		if(i == m_name_to_id.end())
+		if (i == m_name_to_id.end())
 			return false;
 		result = i->second;
 		return true;
 	}
-	u16 size() const{
-		return m_id_to_name.size();
-	}
+	u16 size() const { return m_id_to_name.size(); }
 private:
 	UNORDERED_MAP<u16, std::string> m_id_to_name;
 	UNORDERED_MAP<std::string, u16> m_name_to_id;
 };
 
 #endif
-

@@ -34,16 +34,16 @@ public:
 	KeyPress();
 	KeyPress(const char *name);
 
-	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character=false);
+	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
 
 	bool operator==(const KeyPress &o) const
 	{
-		return (Char > 0 && Char == o.Char) ||
-			(valid_kcode(Key) && Key == o.Key);
+		return (Char > 0 && Char == o.Char) || (valid_kcode(Key) && Key == o.Key);
 	}
 
 	const char *sym() const;
 	const char *name() const;
+
 protected:
 	static bool valid_kcode(irr::EKEY_CODE k)
 	{
@@ -68,4 +68,3 @@ void clearKeyCache();
 irr::EKEY_CODE keyname_to_keycode(const char *name);
 
 #endif
-

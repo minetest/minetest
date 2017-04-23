@@ -58,7 +58,7 @@ public:
 	*/
 	virtual void step(f32 dtime) = 0;
 
-	virtual Map & getMap() = 0;
+	virtual Map &getMap() = 0;
 
 	u32 getDayNightRatio();
 
@@ -78,7 +78,7 @@ public:
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
-	IGameDef* getGameDef() { return m_gamedef; }
+	IGameDef *getGameDef() { return m_gamedef; }
 protected:
 	GenericAtomic<float> m_time_of_day_speed;
 
@@ -117,6 +117,7 @@ protected:
 	float m_cache_nodetimer_interval;
 
 	IGameDef *m_gamedef;
+
 private:
 	Mutex m_time_lock;
 
@@ -124,4 +125,3 @@ private:
 };
 
 #endif
-
