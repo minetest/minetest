@@ -102,7 +102,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
-	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
 	m_nametags.clear();
 }
 
@@ -467,7 +466,6 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&
-			m_cache_view_bobbing &&
 			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly")))
 	{
 		// Start animation
