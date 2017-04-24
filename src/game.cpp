@@ -3324,8 +3324,9 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 		playeritem.getToolCapabilities(itemdef_manager);
 
 	v3s16 old_camera_offset = camera->getOffset();
-
-	if (wasKeyDown(KeyType::CAMERA_MODE)) {
+	
+	bool camerakey = wasKeyDown(KeyType::CAMERA_MODE);
+	if (camerakey && !isKeyDown(KeyType::SNEAK)) {
 		GenericCAO *playercao = player->getCAO();
 
 		// If playercao not loaded, don't change camera
@@ -3336,8 +3337,19 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 
 		playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+	} else if (camerakey && isKeyDown(KeyType::SNEAK)) {
+		GenericCAO *playercao = player->getCAO();
+		
+		// If playercao not loaded, don't change camera
+		if (playercao == NULL)
+			return;
+		
+		camera->toggleCameraModeBackwards();
+		
+		playercao->setVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
+		playercao->setChildrenVisible(camera->getCameraMode() > CAMERA_MODE_FIRST);
 	}
-
+	
 	float full_punch_interval = playeritem_toolcap.full_punch_interval;
 	float tool_reload_ratio = runData.time_from_last_punch / full_punch_interval;
 

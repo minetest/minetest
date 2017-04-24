@@ -160,6 +160,15 @@ public:
 		else
 			m_camera_mode = CAMERA_MODE_FIRST;
 	}
+	
+	void toggleCameraModeBackwards() {
+		if (m_camera_mode == CAMERA_MODE_FIRST)
+			m_camera_mode = CAMERA_MODE_THIRD_FRONT;
+		else if (m_camera_mode == CAMERA_MODE_THIRD) 
+			m_camera_mode = CAMERA_MODE_FIRST;
+		else if (m_camera_mode == CAMERA_MODE_THIRD_FRONT)
+			m_camera_mode = CAMERA_MODE_THIRD;
+	}
 
 	//read the current camera mode
 	inline CameraMode getCameraMode()
