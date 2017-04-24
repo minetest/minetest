@@ -3756,6 +3756,12 @@ Definition tables
     --  ^ Whether to run the LBM's action every time a block gets loaded,
     --    and not just for blocks that were saved last time before LBMs were
     --    introduced to the world.
+        once_per_session = false,
+    --  ^ A modification on the previous parameter, which takes effect ONLY if
+          the previous parameter `run_at_every_load` is false (the default).
+          If this parameter is set, then the LBM's introducement time is discarded
+          at shutdown, which will cause the LBM's action to be executed during
+          the next session.
         action = func(pos, node),
     }
 

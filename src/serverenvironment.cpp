@@ -246,6 +246,14 @@ std::string LBMManager::createIntroductionTimesString()
 			// and doesn't need to be stored
 			if ((*iit)->run_at_every_load)
 				continue;
+			// Don't add if the LBM is marked as running once per session.
+			// This requires `run_at_every_load` to be false to have a real effect.
+			// The reasoning is simple: if `run_at_every_load` is false, then
+			// introducement times will take effect. But if `once_per_session` is set,
+			// then introducement time is discarded at shutdown, which causes the
+			// LBM to be executed again during the next session.
+			if ((*iit)->once_per_session)
+				continue;
 			oss << (*iit)->name << "~" << time << ";";
 		}
 	}

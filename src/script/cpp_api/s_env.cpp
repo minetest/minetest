@@ -200,8 +200,11 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		bool run_at_every_load = getboolfield_default(L, current_lbm,
 			"run_at_every_load", false);
 
+		bool once_per_session = getboolfield_default(L, current_lbm,
+			"once_per_session", false);
+
 		LuaLBM *lbm = new LuaLBM(L, id, trigger_contents, name,
-			run_at_every_load);
+			run_at_every_load, once_per_session);
 
 		env->addLoadingBlockModifierDef(lbm);
 

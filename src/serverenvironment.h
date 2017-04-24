@@ -82,6 +82,7 @@ struct LoadingBlockModifierDef
 	std::set<std::string> trigger_contents;
 	std::string name;
 	bool run_at_every_load;
+	bool once_per_session;
 
 	virtual ~LoadingBlockModifierDef() {}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};

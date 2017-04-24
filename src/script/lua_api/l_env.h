@@ -235,10 +235,11 @@ public:
 	LuaLBM(lua_State *L, int id,
 			const std::set<std::string> &trigger_contents,
 			const std::string &name,
-			bool run_at_every_load):
+			bool run_at_every_load, bool once_per_session):
 		m_id(id)
 	{
 		this->run_at_every_load = run_at_every_load;
+		this->once_per_session = once_per_session;
 		this->trigger_contents = trigger_contents;
 		this->name = name;
 	}
