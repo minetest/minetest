@@ -965,15 +965,21 @@ void fill_with_sunlight(MMVManip *vm, INodeDefManager *ndef, v2s16 offset,
  * \param light incoming sunlight, light[z][x] is true if there
  * is sunlight above the block at the given z-x relative
  * node coordinates.
+ * \param load_top if true, the block above the examined block
+ * is also loaded, to prevent the need of prediction.
  */
 void is_sunlight_above_block(ServerMap *map, mapblock_v3 pos,
-	INodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE])
+	INodeDefManager *ndef, bool light[MAP_BLOCKSIZE][MAP_BLOCKSIZE],
+	bool load_top)
 {
 	mapblock_v3 source_block_pos = pos + v3s16(0, 1, 0);
 	// Get or load source block.
 	// It might take a while to load, but correcting incorrect
 	// sunlight may be even slower.
-	MapBlock *source_block = map->emergeBlock(source_block_pos, false);
+	MapBlock *source_block =
+		(load_top) ?
+			map->emergeBlock(source_block_pos, false) :
+			map->getBlockNoCreateNoEx(source_block_pos);
 	// Trust only generated blocks.
 	if (source_block == NULL || source_block->isDummy()
 			|| !source_block->isGenerated()) {
@@ -1204,7 +1210,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 	for (s16 x = minblock.X; x <= maxblock.X; x++)
 	for (s16 z = minblock.Z; z <= maxblock.Z; z++) {
 		// Extract sunlight above.
-		is_sunlight_above_block(map, v3s16(x, maxblock.Y, z), ndef, lights);
+		is_sunlight_above_block(map, v3s16(x, maxblock.Y, z), ndef, lights, true);
 		v2s16 offset(x, z);
 		offset *= MAP_BLOCKSIZE;
 		// Reset the voxel manipulator.
@@ -1326,7 +1332,7 @@ void fill_with_sunlight(MapBlock *block, INodeDefManager *ndef,
 }
 
 void repair_block_light(ServerMap *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> *modified_blocks)
+	bool load_top, std::map<v3s16, MapBlock*> *modified_blocks)
 {
 	if (!block || block->isDummy())
 		return;
@@ -1346,7 +1352,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 	(*modified_blocks)[blockpos] = block;
 	// For each map block:
 	// Extract sunlight above.
-	is_sunlight_above_block(map, blockpos, ndef, lights);
+	is_sunlight_above_block(map, blockpos, ndef, lights, load_top);
 	// Reset the voxel manipulator.
 	fill_with_sunlight(block, ndef, lights);
 	// Copy sunlight data

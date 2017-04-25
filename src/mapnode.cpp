@@ -600,6 +600,33 @@ u32 MapNode::serializedLength(u8 version)
 	else
 		return 4;
 }
+
+/*!
+ * Translates param1 from sun + artificial format to
+ * day + night format.
+ * NOTE: this converts even if the param1 is not light information
+ */
+inline u8 convert_param1_to_legacy(u8 param1){
+	u8 night = param1 & 0xF0;
+	u8 day = MYMAX(param1 & 0x0F, night >> 4);
+	return day | night;
+}
+
+/*!
+ * Translates param1 from day + night format to
+ * sun + artificial format.
+ * NOTE: this converts even if the param1 is not light information
+ */
+inline u8 convert_param1_from_legacy(u8 param1){
+	u8 night = (param1 & 0xF0) >> 4;
+	u8 day=param1 & 0x0F;
+	if (day > night)
+		return day | (night << 4);
+	// day == night
+	// Assume that all light is artificial
+	return night << 4;
+}
+
 void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
@@ -612,7 +639,8 @@ void MapNode::serialize(u8 *dest, u8 version)
 				"version < 24 not possible");
 
 	writeU16(dest+0, param0);
-	writeU8(dest+2, param1);
+	writeU8(dest + 2,
+		(version >= 28) ? param1 : convert_param1_to_legacy(param1));
 	writeU8(dest+3, param2);
 }
 void MapNode::deSerialize(u8 *source, u8 version)
@@ -628,11 +656,13 @@ void MapNode::deSerialize(u8 *source, u8 version)
 
 	if(version >= 24){
 		param0 = readU16(source+0);
-		param1 = readU8(source+2);
+		param1 = readU8(source + 2);
+		if (version < 28)
+			param1 = convert_param1_from_legacy(param1);
 		param2 = readU8(source+3);
 	}else{
 		param0 = readU8(source+0);
-		param1 = readU8(source+1);
+		param1 = convert_param1_from_legacy(readU8(source + 1));
 		param2 = readU8(source+2);
 		if(param0 > 0x7F){
 			param0 |= ((param2&0xF0)<<4);
@@ -664,8 +694,14 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		writeU8(&databuf[start1 + i], nodes[i].param1);
+	if (version >= 28)
+		for (u32 i = 0; i < nodecount; i++)
+			writeU8(&databuf[start1 + i], nodes[i].param1);
+	else
+		// Old format
+		for (u32 i = 0; i < nodecount; i++)
+			writeU8(&databuf[start1 + i],
+				convert_param1_to_legacy(nodes[i].param1));
 
 	// Serialize param2
 	u32 start2 = (content_width + 1) * nodecount;
@@ -734,8 +770,13 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// Deserialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		nodes[i].param1 = readU8(&databuf[start1 + i]);
+	if (version >= 28)
+		for (u32 i = 0; i < nodecount; i++)
+			nodes[i].param1 = readU8(&databuf[start1 + i]);
+	else
+		for (u32 i = 0; i < nodecount; i++)
+			nodes[i].param1 = convert_param1_from_legacy(
+				readU8(&databuf[start1 + i]));
 
 	// Deserialize param2
 	u32 start2 = (content_width + 1) * nodecount;
@@ -794,6 +835,7 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 		else if(param0 == 254)
 			param0 = CONTENT_AIR;
 	}
+	param1 = convert_param1_from_legacy(param1);
 
 	// Translate to our known version
 	*this = mapnode_translate_to_internal(*this, version);
