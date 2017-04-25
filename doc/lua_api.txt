@@ -2599,6 +2599,8 @@ These functions return the leftover itemstack.
 * `minetest.cancel_shutdown_requests()`: cancel current delayed shutdown
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
+* `minetest.remove_player(name)`: remove player from database (if he is not connected).
+    * Returns a code (0: successful, 1: no such player, 2: player is connected)
 
 ### Bans
 * `minetest.get_ban_list()`: returns the ban list (same as `minetest.get_ban_description("")`)

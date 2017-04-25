@@ -41,12 +41,12 @@ public:
 	void add(const std::string &ip, const std::string &name);
 	void remove(const std::string &ip_or_name);
 	bool isModified();
+
 private:
 	Mutex m_mutex;
 	std::string m_banfilepath;
 	StringMap m_ips;
 	bool m_modified;
-
 };
 
 #endif

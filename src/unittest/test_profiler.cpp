@@ -21,7 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "profiler.h"
 
-class TestProfiler : public TestBase {
+class TestProfiler : public TestBase
+{
 public:
 	TestProfiler() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestProfiler"; }

@@ -134,6 +134,7 @@ LOCAL_SRC_FILES := \
 		jni/src/convert_json.cpp                  \
 		jni/src/craftdef.cpp                      \
 		jni/src/database-dummy.cpp                \
+		jni/src/database-files.cpp                \
 		jni/src/database-sqlite3.cpp              \
 		jni/src/database.cpp                      \
 		jni/src/debug.cpp                         \

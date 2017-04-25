@@ -29,10 +29,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Database
 {
 public:
-	virtual ~Database() {}
+	virtual void beginSave() = 0;
+	virtual void endSave() = 0;
+	virtual bool initialized() const { return true; }
+};
 
-	virtual void beginSave() {}
-	virtual void endSave() {}
+class MapDatabase : public Database
+{
+public:
+	virtual ~MapDatabase() {}
 
 	virtual bool saveBlock(const v3s16 &pos, const std::string &data) = 0;
 	virtual void loadBlock(const v3s16 &pos, std::string *block) = 0;
@@ -42,8 +47,19 @@ public:
 	static v3s16 getIntegerAsBlock(s64 i);
 
 	virtual void listAllLoadableBlocks(std::vector<v3s16> &dst) = 0;
+};
 
-	virtual bool initialized() const { return true; }
+class PlayerSAO;
+class RemotePlayer;
+
+class PlayerDatabase
+{
+public:
+	virtual ~PlayerDatabase() {}
+	virtual void savePlayer(RemotePlayer *player) = 0;
+	virtual bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) = 0;
+	virtual bool removePlayer(const std::string &name) = 0;
+	virtual void listPlayers(std::vector<std::string> &res) = 0;
 };
 
 #endif

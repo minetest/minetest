@@ -280,8 +280,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f rel_cam_up = v3f(0,1,0);
 
 	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
-		m_camera_mode < CAMERA_MODE_THIRD)
-	{
+		m_camera_mode < CAMERA_MODE_THIRD) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
@@ -467,8 +466,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&
-			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly")))
-	{
+			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly"))) {
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);

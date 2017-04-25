@@ -32,8 +32,8 @@ class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_v5[];
 
-
-struct MapgenV5Params : public MapgenParams {
+struct MapgenV5Params : public MapgenParams
+{
 	u32 spflags;
 	float cave_width;
 	s16 cavern_limit;
@@ -55,8 +55,8 @@ struct MapgenV5Params : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
-
-class MapgenV5 : public MapgenBasic {
+class MapgenV5 : public MapgenBasic
+{
 public:
 	MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge);
 	~MapgenV5();

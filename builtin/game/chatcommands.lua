@@ -279,6 +279,31 @@ core.register_chatcommand("auth_reload", {
 	end,
 })
 
+core.register_chatcommand("remove_player", {
+	params = "<name>",
+	description = "Remove player data",
+	privs = {server=true},
+	func = function(name, param)
+		local toname = param
+		if toname == "" then
+			return false, "Name field required"
+		end
+
+		local rc = core.remove_player(toname)
+
+		if rc == 0 then
+			core.log("action", name .. " removed player data of " .. toname .. ".")
+			return true, "Player \"" .. toname .. "\" removed."
+		elseif rc == 1 then
+			return true, "No such player \"" .. toname .. "\" to remove."
+		elseif rc == 2 then
+			return true, "Player \"" .. toname .. "\" is connected, cannot remove."
+		end
+
+		return false, "Unhandled remove_player return code " .. rc .. ""
+	end,
+})
+
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
 	description = "Teleport to player or position",

@@ -22,7 +22,7 @@ variables:
     - make install
   artifacts:
     when: on_success
-    expire_in: 14 day
+    expire_in: 1h
     paths:
       - artifact/*
 

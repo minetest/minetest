@@ -36,4 +36,3 @@ void set_default_settings(Settings *settings);
 void override_default_settings(Settings *settings, Settings *from);
 
 #endif
-

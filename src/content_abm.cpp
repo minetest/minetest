@@ -29,6 +29,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverscripting.h"
 #include "log.h"
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
-
+void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
+{
 }

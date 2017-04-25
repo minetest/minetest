@@ -36,6 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "threading/mutex_auto_lock.h"
 #include "filesys.h"
+#include "gameparams.h"
+#include "database-dummy.h"
+#include "database-files.h"
+#include "database-sqlite3.h"
+#if USE_POSTGRESQL
+#include "database-postgresql.h"
+#endif
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
@@ -365,8 +372,30 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_game_time_fraction_counter(0),
 	m_last_clear_objects_time(0),
 	m_recommended_send_interval(0.1),
-	m_max_lag_estimate(0.1)
+	m_max_lag_estimate(0.1),
+	m_player_database(NULL)
 {
+	// Determine which database backend to use
+	std::string conf_path = path_world + DIR_DELIM + "world.mt";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if (!succeeded || !conf.exists("player_backend")) {
+		// fall back to files
+		conf.set("player_backend", "files");
+		warningstream << "/!\\ You are using old player file backend. "
+				<< "This backend is deprecated and will be removed in next release /!\\"
+				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+
+		if (!conf.updateConfigFile(conf_path.c_str())) {
+			errorstream << "ServerEnvironment::ServerEnvironment(): "
+				<< "Failed to update world.mt!" << std::endl;
+		}
+	}
+
+	std::string name = "";
+	conf.getNoEx("player_backend", name);
+	m_player_database = openPlayerDatabase(name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -392,6 +421,8 @@ ServerEnvironment::~ServerEnvironment()
 		i != m_players.end(); ++i) {
 		delete (*i);
 	}
+
+	delete m_player_database;
 }
 
 Map & ServerEnvironment::getMap()
@@ -455,6 +486,11 @@ void ServerEnvironment::removePlayer(RemotePlayer *player)
 	}
 }
 
+bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
+{
+	return m_player_database->removePlayer(name);
+}
+
 bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
 {
 	float distance = pos1.getDistanceFrom(pos2);
@@ -495,7 +531,7 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 
 void ServerEnvironment::saveLoadedPlayers()
 {
-	std::string players_path = m_path_world + DIR_DELIM "players";
+	std::string players_path = m_path_world + DIR_DELIM + "players";
 	fs::CreateDir(players_path);
 
 	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
@@ -503,63 +539,63 @@ void ServerEnvironment::saveLoadedPlayers()
 		++it) {
 		if ((*it)->checkModified() ||
 			((*it)->getPlayerSAO() && (*it)->getPlayerSAO()->extendedAttributesModified())) {
-			(*it)->save(players_path, m_server);
+			try {
+				m_player_database->savePlayer(*it);
+			} catch (DatabaseException &e) {
+				errorstream << "Failed to save player " << (*it)->getName() << " exception: "
+					<< e.what() << std::endl;
+				throw;
+			}
 		}
 	}
 }
 
 void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
-	std::string players_path = m_path_world + DIR_DELIM "players";
-	fs::CreateDir(players_path);
-
-	player->save(players_path, m_server);
+	try {
+		m_player_database->savePlayer(player);
+	} catch (DatabaseException &e) {
+		errorstream << "Failed to save player " << player->getName() << " exception: "
+			<< e.what() << std::endl;
+		throw;
+	}
 }
 
-RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername, PlayerSAO *sao)
+PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
+	u16 peer_id, bool is_singleplayer)
 {
-	bool newplayer = false;
-	bool found = false;
-	std::string players_path = m_path_world + DIR_DELIM "players" DIR_DELIM;
-	std::string path = players_path + playername;
+	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
+	// Create player if it doesn't exist
+	if (!m_player_database->loadPlayer(player, playersao)) {
+		*new_player = true;
+		// Set player position
+		infostream << "Server: Finding spawn place for player \""
+			<< player->getName() << "\"" << std::endl;
+		playersao->setBasePosition(m_server->findSpawnPos());
 
-	RemotePlayer *player = getPlayer(playername.c_str());
-	if (!player) {
-		player = new RemotePlayer("", m_server->idef());
-		newplayer = true;
-	}
-
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		//// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good())
-			continue;
-
-		player->deSerialize(is, path, sao);
-		is.close();
-
-		if (player->getName() == playername) {
-			found = true;
-			break;
+		// Make sure the player is saved
+		player->setModified(true);
+	} else {
+		// If the player exists, ensure that they respawn inside legal bounds
+		// This fixes an assert crash when the player can't be added
+		// to the environment
+		if (objectpos_over_limit(playersao->getBasePosition())) {
+			actionstream << "Respawn position for player \""
+				<< player->getName() << "\" outside limits, resetting" << std::endl;
+			playersao->setBasePosition(m_server->findSpawnPos());
 		}
-
-		path = players_path + playername + itos(i);
 	}
 
-	if (!found) {
-		infostream << "Player file for player " << playername
-			<< " not found" << std::endl;
-		if (newplayer)
-			delete player;
+	// Add player to environment
+	addPlayer(player);
 
-		return NULL;
-	}
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
 
-	if (newplayer) {
-		addPlayer(player);
-	}
-	player->setModified(false);
-	return player;
+	/* Add object to environment */
+	addActiveObject(playersao);
+
+	return playersao;
 }
 
 void ServerEnvironment::saveMeta()
@@ -2172,4 +2208,112 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 		i != objects_to_remove.end(); ++i) {
 		m_active_objects.erase(*i);
 	}
+}
+
+PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
+		const std::string &savedir, const Settings &conf)
+{
+
+	if (name == "sqlite3")
+		return new PlayerDatabaseSQLite3(savedir);
+	else if (name == "dummy")
+		return new Database_Dummy();
+#if USE_POSTGRESQL
+	else if (name == "postgresql") {
+		std::string connect_string = "";
+		conf.getNoEx("pgsql_player_connection", connect_string);
+		return new PlayerDatabasePostgreSQL(connect_string);
+	}
+#endif
+	else if (name == "files")
+		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
+	else
+		throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
+bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
+		const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-players");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	if (!world_mt.exists("player_backend")) {
+		errorstream << "Please specify your current backend in world.mt:"
+			<< std::endl
+			<< "	player_backend = {files|sqlite3|postgresql}"
+			<< std::endl;
+		return false;
+	}
+
+	std::string backend = world_mt.get("player_backend");
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+			<< " as the old one" << std::endl;
+		return false;
+	}
+
+	const std::string players_backup_path = game_params.world_path + DIR_DELIM
+		+ "players.bak";
+
+	if (backend == "files") {
+		// Create backup directory
+		fs::CreateDir(players_backup_path);
+	}
+
+	try {
+		PlayerDatabase *srcdb = ServerEnvironment::openPlayerDatabase(backend,
+			game_params.world_path, world_mt);
+		PlayerDatabase *dstdb = ServerEnvironment::openPlayerDatabase(migrate_to,
+			game_params.world_path, world_mt);
+
+		std::vector<std::string> player_list;
+		srcdb->listPlayers(player_list);
+		for (std::vector<std::string>::const_iterator it = player_list.begin();
+			it != player_list.end(); ++it) {
+			actionstream << "Migrating player " << it->c_str() << std::endl;
+			RemotePlayer player(it->c_str(), NULL);
+			PlayerSAO playerSAO(NULL, &player, 15000, false);
+
+			srcdb->loadPlayer(&player, &playerSAO);
+
+			playerSAO.finalize(&player, std::set<std::string>());
+			player.setPlayerSAO(&playerSAO);
+
+			dstdb->savePlayer(&player);
+
+			// For files source, move player files to backup dir
+			if (backend == "files") {
+				fs::Rename(
+					game_params.world_path + DIR_DELIM + "players" + DIR_DELIM + (*it),
+					players_backup_path + DIR_DELIM + (*it));
+			}
+		}
+
+		actionstream << "Successfully migrated " << player_list.size() << " players"
+			<< std::endl;
+		world_mt.set("player_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+		// When migration is finished from file backend, remove players directory if empty
+		if (backend == "files") {
+			fs::DeleteSingleFileOrEmptyDirectory(game_params.world_path + DIR_DELIM
+				+ "players");
+		}
+
+		delete srcdb;
+		delete dstdb;
+
+	} catch (BaseException &e) {
+		errorstream << "An error occured during migration: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
 }
