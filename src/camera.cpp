@@ -102,7 +102,6 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
-	m_cache_view_bobbing        = g_settings->getBool("view_bobbing");
 	m_nametags.clear();
 }
 
@@ -280,8 +279,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	v3f rel_cam_target = v3f(0,0,1);
 	v3f rel_cam_up = v3f(0,1,0);
 
-	if (m_view_bobbing_anim != 0 && m_camera_mode < CAMERA_MODE_THIRD)
-	{
+	if (m_cache_view_bobbing_amount != 0.0f && m_view_bobbing_anim != 0.0f &&
+		m_camera_mode < CAMERA_MODE_THIRD) {
 		f32 bobfrac = my_modf(m_view_bobbing_anim * 2);
 		f32 bobdir = (m_view_bobbing_anim < 0.5) ? 1.0 : -1.0;
 
@@ -467,9 +466,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	const bool swimming = (movement_XZ || player->swimming_vertical) && player->in_liquid;
 	const bool climbing = movement_Y && player->is_climbing;
 	if ((walking || swimming || climbing) &&
-			m_cache_view_bobbing &&
-			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly")))
-	{
+			(!g_settings->getBool("free_move") || !m_client->checkLocalPrivilege("fly"))) {
 		// Start animation
 		m_view_bobbing_state = 1;
 		m_view_bobbing_speed = MYMIN(speed.getLength(), 70);

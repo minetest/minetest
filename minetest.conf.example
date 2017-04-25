@@ -569,11 +569,7 @@
 #    type: int
 # cloud_radius = 12
 
-#    Enables view bobbing when walking.
-#    type: bool
-# view_bobbing = true
-
-#    Multiplier for view bobbing.
+#    Enable view bobbing and amount of view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 #    type: float
 # view_bobbing_amount = 1.0
@@ -1815,4 +1811,3 @@
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
-

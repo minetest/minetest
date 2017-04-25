@@ -492,10 +492,7 @@ cloud_height (Cloud height) int 120
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
 cloud_radius (Cloud radius) int 12
 
-#    Enables view bobbing when walking.
-view_bobbing (Enable view bobbing) bool true
-
-#    Multiplier for view bobbing.
+#    Enable view bobbing and amount of view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 view_bobbing_amount (View bobbing factor) float 1.0
 
