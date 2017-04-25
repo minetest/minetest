@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "network/clientopcodes.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "tileanimation.h"

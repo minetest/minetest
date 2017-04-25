@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "voxelalgorithms.h"
 #include "util/serialize.h"

@@ -42,7 +42,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "gettime.h"
 #include "gettext.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "porting.h"
 #include "settings.h"
 #include "client.h"

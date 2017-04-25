@@ -45,7 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 #include "game.h"
 
 extern gui::IGUIEnvironment* guienv;

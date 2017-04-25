@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "log.h"
 #include "serverenvironment.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "serverobject.h"
 #include "settings.h"
 #include "craftdef.h"

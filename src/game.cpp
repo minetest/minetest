@@ -60,7 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 
 #include "sound.h"
 
