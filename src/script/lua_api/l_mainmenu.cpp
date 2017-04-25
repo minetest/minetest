@@ -297,7 +297,7 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		int table2 = lua_gettop(L);
 		int internal_index=1;
 		for (std::set<std::string>::iterator iter = games[i].addon_mods_paths.begin();
-				iter != games[i].addon_mods_paths.end(); iter++) {
+				iter != games[i].addon_mods_paths.end(); ++iter) {
 			lua_pushnumber(L,internal_index);
 			lua_pushstring(L,(*iter).c_str());
 			lua_settable(L, table2);

@@ -1318,22 +1318,21 @@ void CNodeDefManager::removeNode(const std::string &name)
 
 	// Erase node content from all groups it belongs to
 	for (UNORDERED_MAP<std::string, GroupItems>::iterator iter_groups =
-			m_group_to_items.begin();
-			iter_groups != m_group_to_items.end();) {
+			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
 		GroupItems &items = iter_groups->second;
 		for (GroupItems::iterator iter_groupitems = items.begin();
 				iter_groupitems != items.end();) {
 			if (iter_groupitems->first == id)
 				items.erase(iter_groupitems++);
 			else
-				iter_groupitems++;
+				++iter_groupitems;
 		}
 
 		// Check if group is empty
 		if (items.size() == 0)
 			m_group_to_items.erase(iter_groups++);
 		else
-			iter_groups++;
+			++iter_groups;
 	}
 }
 

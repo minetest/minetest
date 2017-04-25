@@ -103,7 +103,7 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	int table = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
 	for(std::set<std::string>::const_iterator
-			i = privs_s.begin(); i != privs_s.end(); i++){
+			i = privs_s.begin(); i != privs_s.end(); ++i){
 		lua_pushboolean(L, true);
 		lua_setfield(L, table, i->c_str());
 	}
@@ -417,7 +417,7 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	// Package them up for Lua
 	lua_createtable(L, modlist.size(), 0);
 	std::vector<std::string>::iterator iter = modlist.begin();
-	for (u16 i = 0; iter != modlist.end(); iter++) {
+	for (u16 i = 0; iter != modlist.end(); ++iter) {
 		lua_pushstring(L, iter->c_str());
 		lua_rawseti(L, -2, ++i);
 	}

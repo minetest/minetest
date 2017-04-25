@@ -107,7 +107,7 @@ void NodeMetaRef::handleToTable(lua_State *L, Metadata *_meta)
 	if (inv) {
 		std::vector<const InventoryList *> lists = inv->getLists();
 		for(std::vector<const InventoryList *>::const_iterator
-				i = lists.begin(); i != lists.end(); i++) {
+				i = lists.begin(); i != lists.end(); ++i) {
 			push_inventory_list(L, inv, (*i)->getName().c_str());
 			lua_setfield(L, -2, (*i)->getName().c_str());
 		}

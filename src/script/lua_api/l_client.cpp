@@ -83,7 +83,7 @@ int ModApiClient::l_get_player_names(lua_State *L)
 	int newTable = lua_gettop(L);
 	int index = 1;
 	std::list<std::string>::const_iterator iter;
-	for (iter = plist.begin(); iter != plist.end(); iter++) {
+	for (iter = plist.begin(); iter != plist.end(); ++iter) {
 		lua_pushstring(L, (*iter).c_str());
 		lua_rawseti(L, newTable, index);
 		index++;
