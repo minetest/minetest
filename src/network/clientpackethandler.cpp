@@ -1170,7 +1170,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 
 void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 {
-	u16 density;
+	f32 density;
 	video::SColor color_bright;
 	video::SColor color_ambient;
 	f32 height;
@@ -1182,7 +1182,7 @@ void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 
 	ClientEvent event;
 	event.type                        = CE_CLOUDS_PARAMS;
-	event.clouds_params.density       = density / 65535.0f;
+	event.clouds_params.density       = density;
 	// use the underlying u32 representation, because we can't
 	// use struct members with constructors here, and this way
 	// we avoid using new() and delete() for no good reason

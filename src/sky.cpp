@@ -536,10 +536,8 @@ void Sky::update(float time_of_day, float time_brightness,
 	
 	// pure white: becomes "diffuse light component" for clouds
 	video::SColorf cloudcolor_bright_normal_f = video::SColor(255, 255, 255, 255);
-	video::SColorf cloudcolor_bright_dawn_f = cloudcolor_bright_normal_f;
-	cloudcolor_bright_dawn_f.r *= 255.0f/240.0f;
-	cloudcolor_bright_dawn_f.g *= 223.0f/240.0f;
-	cloudcolor_bright_dawn_f.b *= 191.0f/255.0f;
+	// dawn-factoring version of pure white (note: R is above 1.0)
+	video::SColorf cloudcolor_bright_dawn_f(255.0f/240.0f, 223.0f/240.0f, 191.0f/255.0f);
 
 	float cloud_color_change_fraction = 0.95;
 	if (sunlight_seen) {

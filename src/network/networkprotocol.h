@@ -612,7 +612,7 @@ enum ToClientCommand
 
 	TOCLIENT_CLOUDS_PARAMS = 0x54,
 	/*
-		u16 density
+		f1000 density
 		u8[4] color_diffuse (ARGB)
 		u8[4] color_ambient (ARGB)
 		f1000 height

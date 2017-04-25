@@ -1735,36 +1735,33 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
+	if (!lua_istable(L, 2))
+		return 0;
+
 	CloudSettings cloud_settings = player->getCloudSettings();
 
-	if (lua_istable(L, 2)) {
+	cloud_settings.density = getfloatfield_default(L, 2, "density", cloud_settings.density);
 
-		cloud_settings.density = getfloatfield_default(L, 2, "density", cloud_settings.density);
+	lua_getfield(L, 2, "color");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_settings.color_bright);
+	lua_pop(L, 1);
+	lua_getfield(L, 2, "ambient");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_settings.color_ambient);
+	lua_pop(L, 1);
 
-		lua_getfield(L, 2, "color");
-		if (!lua_isnil(L, -1))
-			read_color(L, -1, &cloud_settings.color_bright);
-		lua_pop(L, 1);
-		lua_getfield(L, 2, "ambient");
-		if (!lua_isnil(L, -1))
-			read_color(L, -1, &cloud_settings.color_ambient);
-		lua_pop(L, 1);
+	cloud_settings.height    = getfloatfield_default(L, 2, "height",    cloud_settings.height   );
+	cloud_settings.thickness = getfloatfield_default(L, 2, "thickness", cloud_settings.thickness);
 
-		cloud_settings.height    = getfloatfield_default(L, 2, "height",    cloud_settings.height   );
-		cloud_settings.thickness = getfloatfield_default(L, 2, "thickness", cloud_settings.thickness);
-
-		lua_getfield(L, 2, "speed");
-		if (lua_istable(L, -1))
-		{
-			v2f new_speed;
-			new_speed.X = getfloatfield_default(L, -1, "x", 0);
-			new_speed.Y = getfloatfield_default(L, -1, "y", 0);
-			cloud_settings.speed = new_speed;
-		}
-		lua_pop(L, 1);
-
+	lua_getfield(L, 2, "speed");
+	if (lua_istable(L, -1)) {
+		v2f new_speed;
+		new_speed.X = getfloatfield_default(L, -1, "x", 0);
+		new_speed.Y = getfloatfield_default(L, -1, "y", 0);
+		cloud_settings.speed = new_speed;
 	}
-
+	lua_pop(L, 1);
 
 	if (!getServer(L)->setClouds(player, cloud_settings.density,
 			cloud_settings.color_bright, cloud_settings.color_ambient,
