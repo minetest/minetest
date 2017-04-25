@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-03-30 19:16+0000\n"
-"Last-Translator: i486DX2 <capricornus@openmailbox.org>\n"
+"PO-Revision-Date: 2017-04-25 19:08+0000\n"
+"Last-Translator: Michele Mainardi <capopanzone@gmail.com>\n"
 "Language-Team: Italian "
 "<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.13-dev\n"
+"X-Generator: Weblate 2.14-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "E' avvenuto un errore in uno script Lua, come un mod.:"
+msgstr "Si è verificato un errore in uno script Lua (come una mod):"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
-msgstr "E' avvenuto un errore:"
+msgstr "Si è verificato un errore:"
 
 #: builtin/fstk/ui.lua
 msgid "Main menu"
@@ -32,11 +32,11 @@ msgstr "Menu principale"
 
 #: builtin/fstk/ui.lua builtin/mainmenu/store.lua
 msgid "Ok"
-msgstr "Va bene"
+msgstr "OK"
 
 #: builtin/fstk/ui.lua
 msgid "Reconnect"
-msgstr "Riconnettere"
+msgstr "Riconnettiti"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -61,12 +61,12 @@ msgstr "Il server supporta versioni di protocollo comprese tra $1 e $2. "
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Provate a riabilitare l'elenco dei server pubblici e controllate la vostra "
-"connessione internet."
+"Prova a riabilitare l'elenco dei server pubblici e a controllare la "
+"connessione a Internet."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
-msgstr "Supportiamo solo il protocollo versione $1."
+msgstr "Supportiamo solo la versione di protocollo $1."
 
 #: builtin/mainmenu/common.lua
 msgid "We support protocol versions between version $1 and $2."
@@ -78,7 +78,7 @@ msgstr "Supportiamo versioni di protocollo comprese tra $1 e $2."
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 #: src/keycode.cpp
 msgid "Cancel"
-msgstr "Annullare"
+msgstr "Annulla"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Depends:"
@@ -86,40 +86,40 @@ msgstr "Dipendenze:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr "Disabilitare p.m."
+msgstr "Disabilita p.m."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
-msgstr "Abilitare p.m."
+msgstr "Abilita p.m."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable all"
-msgstr "Abilitarli tutti"
+msgstr "Abilita tutti"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Abilitazione del mod. \"$1\" fallita perché contiene caratteri non ammessi. "
-"Sono ammessi solo i caratteri [a-z0-9_]."
+"Errore nell'abilitazione della mod \"$1\" perché contiene caratteri non "
+"ammessi. Sono ammessi solo i caratteri [a-z0-9_]."
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide Game"
-msgstr "Nasc. del gioco"
+msgstr "Nascondi gioco"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Hide mp content"
-msgstr "Nasc. il cont. dei pacchetti"
+msgstr "Nascondi contenuto dei pacchetti"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod.:"
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
 msgid "Save"
-msgstr "Salvare"
+msgstr "Salva"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "World:"
@@ -135,15 +135,15 @@ msgstr "Esiste già un mondo chiamato \"$1\""
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
-msgstr "Creare"
+msgstr "Crea"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Scaricare un sottogioco, come minetest_game, da minetest.net"
+msgstr "Scarica un sottogioco, come minetest_game, da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
-msgstr "Scaricarne uno da minetest.net"
+msgstr "Scaricane uno da minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Game"
@@ -151,16 +151,15 @@ msgstr "Gioco"
 
 #: builtin/mainmenu/dlg_create_world.lua src/settings_translation_file.cpp
 msgid "Mapgen"
-msgstr "Generatore mappa"
+msgstr "Generatore della mappa"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr ""
-"Non è stato dato nessun nome di mondo o non è stato scelto nessun gioco"
+msgstr "Nessun nome per il mondo o nessuna partita selezionata"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
-msgstr "Seme casuale"
+msgstr "Seme per il generatore"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Warning: The minimal development test is meant for developers."
@@ -172,37 +171,37 @@ msgstr "Nome del mondo"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "Non avete sottogiochi installati."
+msgstr "Non hai sottogiochi installati."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
-msgstr "Siete certi di volere cancellare \"$1\"?"
+msgstr "Vuoi davvero eliminare \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 #: src/keycode.cpp
 msgid "Delete"
-msgstr "Cancellare"
+msgstr "Elimina"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Modmgr: cancellazione di \"$1\" fallita"
+msgstr "Modmgr: eliminazione di \"$1\" fallita"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Modmgr: percorso mod. non valido \"$1\""
+msgstr "Modmgr: percorso mod \"$1\" non valido"
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
-msgstr "Cancellare il mondo \"$1\"?"
+msgstr "Eliminare il mondo \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
-msgstr "Accettare"
+msgstr "Accetta"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Rinominare il pacchetto mod.:"
+msgstr "Rinomina il pacchetto di mod:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "\"$1\" is not a valid flag."
@@ -210,15 +209,15 @@ msgstr "\"$1\" non è un marcatore valido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Non è stata fornita nessuna descrizione dell'impostazione)"
+msgstr "(Non è stata fornita alcuna descrizione dell'impostazione)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr "< Pag. delle impostazioni"
+msgstr "< Torna alle impostazioni"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
-msgstr "Mostrare"
+msgstr "Sfoglia"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
@@ -226,7 +225,7 @@ msgstr "Disabilitato"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Edit"
-msgstr "Modificare"
+msgstr "Modifica"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Enabled"
@@ -234,7 +233,8 @@ msgstr "Abilitato"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr "Il formato è tre numeri separati da virgole e dentro parentesi."
+msgstr ""
+"Il formato è composto da tre numeri separati da virgole e dentro parentesi."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
@@ -250,7 +250,7 @@ msgstr "Giochi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Mod."
+msgstr "Mod"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Optionally the lacunarity can be appended with a leading comma."
@@ -259,15 +259,15 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
-msgstr "Inserite un elenco di valori separati da virgole, prego."
+msgstr "Inserisci un elenco di valori separati da virgole."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr "Inserite un numero intero valido, prego."
+msgstr "Inserisci un numero intero valido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid number."
-msgstr "Inserite un numero valido, prego."
+msgstr "Inserisci un numero valido."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
@@ -275,15 +275,15 @@ msgstr "I valori possibili sono: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Restore Default"
-msgstr "Ripristino predefinite"
+msgstr "Ripristina predefinite"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
-msgstr "Scegliere il percorso"
+msgstr "Scegli il percorso"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr "Mostrare i nomi tecnici"
+msgstr "Mostra i nomi tecnici"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
@@ -299,7 +299,8 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Insallatore mod.: tipo di file non supportato \"$1\" o archivio danneggiato"
+"Installazione di una mod: tipo di file \"$1\" non supportato o archivio "
+"danneggiato"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -307,29 +308,30 @@ msgstr "Installazione di $1 in $2 fallita"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "Installatore mod.: file: \"$1\""
+msgstr "Installazione di una mod: file: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Installatore mod.: impossibile trovare il vero nome mod per: $1"
+msgstr ""
+"Installazione di una mod: impossibile trovare il vero nome della mod per: $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
-"Installatore mod.: impossibile trovare un nome cartella adatto per il "
-"pacchetto mod $1"
+"Installazione di una mod: impossibile trovare un nome di cartella adatto per "
+"il pacchetto mod $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
-msgstr "Chiudere il negozio"
+msgstr "Chiudi il negozio"
 
 #: builtin/mainmenu/store.lua
 msgid "Downloading $1, please wait..."
-msgstr "Scaricamento di $1, attendere prego..."
+msgstr "Download di $1. Attendi..."
 
 #: builtin/mainmenu/store.lua
 msgid "Install"
-msgstr "Installare"
+msgstr "Installa"
 
 #: builtin/mainmenu/store.lua
 msgid "Page $1 of $2"
@@ -341,7 +343,7 @@ msgstr "Valutazione"
 
 #: builtin/mainmenu/store.lua
 msgid "Search"
-msgstr "Cercare"
+msgstr "Cerca"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
@@ -349,7 +351,7 @@ msgstr "Nome abbreviato:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
-msgstr "Installato con successo:"
+msgstr "Installato correttamente:"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -381,31 +383,31 @@ msgstr "Sviluppatori principali precedenti"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr "Moduli installati:"
+msgstr "Mod installate:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr "Informazioni sul modulo:"
+msgstr "Informazioni sulla mod:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "Nessuna descrizione disponibile per il modulo"
+msgstr "Nessuna descrizione disponibile per la mod"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
-msgstr "Rinominare"
+msgstr "Rinomina"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "Scegliere il file mod.:"
+msgstr "Scegli il file della mod:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "Disinstallare il modulo scelto"
+msgstr "Disinstalla la mod scelta"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Disinstallare il pacchetto mod. scelto"
+msgstr "Disinstalla il pacchetto mod scelto"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
@@ -417,7 +419,7 @@ msgstr "Client"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
-msgstr "Connettersi"
+msgstr "Connettiti"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
@@ -429,7 +431,7 @@ msgstr "Danno abilitato"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
-msgstr "Canc. prefer."
+msgstr "Elimina prefer."
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
@@ -441,7 +443,7 @@ msgstr "Nome / Password"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
-msgstr "GcG abilitato"
+msgstr "PvP abilitato"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Bind Address"
@@ -449,7 +451,7 @@ msgstr "Legare indirizzo"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr "Configurare"
+msgstr "Configura"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
@@ -459,7 +461,7 @@ msgstr "Modalità creativa"
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
 #: builtin/mainmenu/tab_singleplayer.lua
 msgid "Enable Damage"
-msgstr "Abilitare il danno"
+msgstr "Abilita i danni"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
