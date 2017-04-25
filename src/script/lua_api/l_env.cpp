@@ -534,7 +534,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	ScriptApiBase *script = getScriptApiBase(L);
 	lua_createtable(L, ids.size(), 0);
 	std::vector<u16>::const_iterator iter = ids.begin();
-	for(u32 i = 0; iter != ids.end(); iter++) {
+	for(u32 i = 0; iter != ids.end(); ++iter) {
 		ServerActiveObject *obj = env->getActiveObject(*iter);
 		// Insert object reference into table
 		script->objectrefGetOrCreate(L, obj);
@@ -985,8 +985,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 		lua_newtable(L);
 		int top = lua_gettop(L);
 		unsigned int index = 1;
-		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end();i++)
-		{
+		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end(); ++i) {
 			lua_pushnumber(L,index);
 			push_v3s16(L, *i);
 			lua_settable(L, top);

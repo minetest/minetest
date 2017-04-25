@@ -202,7 +202,8 @@ public:
 
 		return meta->getString("formspec");
 	}
-	std::string resolveText(std::string str)
+
+	virtual std::string resolveText(const std::string &str)
 	{
 		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
