@@ -116,7 +116,7 @@ void Clouds::render()
 		Clouds move from Z+ towards Z-
 	*/
 
-	const float cloud_size = BS * 64.0f;
+	static const float cloud_size = BS * 64.0f;
 	
 	const float cloud_full_radius = cloud_size * m_cloud_radius_i;
 	
@@ -198,7 +198,7 @@ void Clouds::render()
 					(float)p_in_noise_i.Y * cloud_size_noise,
 					m_seed, 3, 0.5);
 			// normalize to 0..1 (given 3 octaves)
-			float noise_bound = 1.0f + 0.5f + 0.25f;
+			static const float noise_bound = 1.0f + 0.5f + 0.25f;
 			float density = noise / noise_bound * 0.5f + 0.5f;
 			grid[i] = (density < m_density);
 		}
