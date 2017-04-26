@@ -526,7 +526,6 @@ void Client::step(float dtime)
 	if (m_media_downloader && m_media_downloader->isStarted()) {
 		m_media_downloader->step(this);
 		if (m_media_downloader->isDone()) {
-			received_media();
 			delete m_media_downloader;
 			m_media_downloader = NULL;
 		}
@@ -745,14 +744,6 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 
 	infostream << "Client: Sending media request list to server ("
 			<< file_requests.size() << " files. packet size)" << std::endl;
-}
-
-void Client::received_media()
-{
-	NetworkPacket pkt(TOSERVER_RECEIVED_MEDIA, 0);
-	Send(&pkt);
-	infostream << "Client: Notifying server that we received all media"
-			<< std::endl;
 }
 
 void Client::initLocalMapSaving(const Address &address,
