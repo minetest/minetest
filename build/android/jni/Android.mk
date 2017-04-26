@@ -329,8 +329,8 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_storage.cpp      \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
-		jni/src/script/clientscripting.cpp        \
-		jni/src/script/serverscripting.cpp        \
+		jni/src/script/scripting_client.cpp       \
+		jni/src/script/scripting_server.cpp       \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support
