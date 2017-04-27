@@ -1116,6 +1116,7 @@ struct GameRunData {
 	u16 new_playeritem;
 	PointedThing pointed_old;
 	bool digging;
+	bool dig_immediate;
 	bool ldown_for_dig;
 	bool left_punch;
 	bool update_wielded_item_trigger;
@@ -3467,11 +3468,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	/*
 		Stop digging when
-		- releasing left mouse button
+		- releasing left mouse button (except dig_immediate)
 		- pointing away from node
 	*/
 	if (runData.digging) {
-		if (getLeftReleased()) {
+		if (getLeftReleased() && !runData.dig_immediate) {
 			infostream << "Left button released"
 			           << " (stopped digging)" << std::endl;
 			runData.digging = false;
@@ -3681,7 +3682,8 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 		}
 	}
 
-	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
+	if (runData.nodig_delay_timer <= 0.0
+			&& (isLeftPressed() || (runData.digging	&& runData.dig_immediate))
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
 	}
@@ -3807,6 +3809,10 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
 
+	// Get digging parameters
+	DigParams params = getDigParams(nodedef_manager->get(n).groups,
+			&playeritem_toolcap);
+
 	if (!runData.digging) {
 		infostream << "Started digging" << std::endl;
 		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
@@ -3814,13 +3820,11 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		client->interact(0, pointed);
 		runData.digging = true;
 		runData.ldown_for_dig = true;
+		runData.dig_immediate = params.main_group == "dig_immediate";
 	}
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
-	// Get digging parameters
-	DigParams params = getDigParams(nodedef_manager->get(n).groups,
-			&playeritem_toolcap);
 
 	// If can't dig, try hand
 	if (!params.diggable) {
