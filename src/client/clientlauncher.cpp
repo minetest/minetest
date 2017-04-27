@@ -17,6 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#ifndef SERVER
+#include <ILogger.h>
+#endif // !SERVER
+
 #include "mainmenumanager.h"
 #include "debug.h"
 #include "clouds.h"
@@ -95,6 +99,36 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		errorstream << "Could not initialize game engine." << std::endl;
 		return false;
 	}
+
+#ifndef SERVER
+	// Set Irrlicht LogLevel
+	switch (Logger::stringToLevel(g_settings->get("debug_log_level"))) {
+	case LL_NONE:
+		device->getLogger()->setLogLevel(irr::ELL_NONE);
+		break;
+	case LL_ERROR:
+		device->getLogger()->setLogLevel(irr::ELL_ERROR);
+		break;
+	case LL_WARNING:
+		device->getLogger()->setLogLevel(irr::ELL_WARNING);
+		break;
+	case LL_ACTION:
+	case LL_INFO:
+		device->getLogger()->setLogLevel(irr::ELL_INFORMATION);
+		break;
+	case LL_VERBOSE:
+	case LL_MAX:
+		// irr::ELL_DEBUG was added in irrlicht 1.8
+#if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
+		device->getLogger()->setLogLevel(irr::ELL_INFORMATION);
+#else
+		device->getLogger()->setLogLevel(irr::ELL_DEBUG);
+#endif	
+		break;
+	default:
+		break;
+	}
+#endif // !SERVER
 
 	// Create time getter
 	g_timegetter = new IrrlichtTimeGetter(device);
