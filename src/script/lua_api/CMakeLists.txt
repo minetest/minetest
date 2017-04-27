@@ -29,4 +29,5 @@ set(client_SCRIPT_LUA_API_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/l_storage.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_sound.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/l_localplayer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/l_camera.cpp
 	PARENT_SCOPE)

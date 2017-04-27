@@ -160,7 +160,13 @@ public:
 		else
 			m_camera_mode = CAMERA_MODE_FIRST;
 	}
-
+	
+	// Set the current camera mode
+	inline void setCameraMode(CameraMode mode)
+	{
+		m_camera_mode = mode;
+	}
+	
 	//read the current camera mode
 	inline CameraMode getCameraMode()
 	{
