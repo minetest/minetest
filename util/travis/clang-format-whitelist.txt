@@ -211,8 +211,6 @@ src/rollback.cpp
 src/rollback.h
 src/rollback_interface.cpp
 src/rollback_interface.h
-src/script/clientscripting.cpp
-src/script/clientscripting.h
 src/script/common/c_content.cpp
 src/script/common/c_content.h
 src/script/common/c_converter.cpp
@@ -283,10 +281,12 @@ src/script/lua_api/l_sound.cpp
 src/script/lua_api/l_storage.cpp
 src/script/lua_api/l_util.cpp
 src/script/lua_api/l_vmanip.cpp
+src/script/scripting_client.cpp
+src/script/scripting_client.h
 src/script/scripting_mainmenu.cpp
 src/script/scripting_mainmenu.h
-src/script/serverscripting.cpp
-src/script/serverscripting.h
+src/script/scripting_server.cpp
+src/script/scripting_server.h
 src/serialization.cpp
 src/serialization.h
 src/server.cpp
