@@ -1580,7 +1580,7 @@ examples.
 * Sets default background color of tooltips
 * Sets default font color of tooltips
 
-#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
+#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 * Adds tooltip for an element
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
@@ -3942,7 +3942,9 @@ Definition tables
         diggable = true, -- If false, can never be dug
         climbable = false, -- If true, can be climbed on (ladder)
         buildable_to = false, -- If true, placed nodes can replace this node
-        floodable = false, -- If true, liquids flow into and replace this node
+        floodable = false, --[[
+        ^ If true, liquids flow into and replace this node.
+        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
         liquidtype = "none", -- "none"/"source"/"flowing"
         liquid_alternative_flowing = "", -- Flowing version of source liquid
         liquid_alternative_source = "", -- Source version of flowing liquid
@@ -4009,7 +4011,8 @@ Definition tables
         ^ node placement (i.e. schematics and VoxelManip) or air nodes. If
         ^ return true the node is not flooded, but on_flood callback will
         ^ most likely be called over and over again every liquid update
-        ^ interval. Default: nil ]]
+        ^ interval. Default: nil.
+        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
 
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
         ^ Called after constructing node when node was placed using
