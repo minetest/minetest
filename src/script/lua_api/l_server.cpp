@@ -137,7 +137,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	}
 }
 
-// get_player_information()
+// get_player_information(name)
 int ModApiServer::l_get_player_information(lua_State *L)
 {
 
@@ -231,13 +231,13 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushnumber(L, uptime);
 	lua_settable(L, table);
 
+	lua_pushstring(L,"protocol_version");
+	lua_pushnumber(L, prot_vers);
+	lua_settable(L, table);
+	
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, ser_vers);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"protocol_version");
-	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
 
 	lua_pushstring(L,"major");
