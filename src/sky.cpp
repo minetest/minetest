@@ -85,6 +85,8 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
 	}
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
+
+	m_clouds_enabled = true;
 }
 
 

@@ -335,7 +335,8 @@ public:
 	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
 
 	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
 	bool setClouds(RemotePlayer *player, float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
@@ -410,7 +411,8 @@ private:
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
 	void SendCloudParams(u16 peer_id, float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,

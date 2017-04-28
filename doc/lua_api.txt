@@ -3077,13 +3077,15 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(bgcolor, type, {texture names})`
+* `set_sky(bgcolor, type, {texture names}, clouds)`
     * `bgcolor`: ColorSpec, defaults to white
-    * Available types:
+    * `type`: Available types:
         * `"regular"`: Uses 0 textures, `bgcolor` ignored
         * `"skybox"`: Uses 6 textures, `bgcolor` used
         * `"plain"`: Uses 0 textures, `bgcolor` used
-* `get_sky()`: returns bgcolor, type and a table with the textures
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
+* `get_sky()`: returns bgcolor, type, table of textures, clouds
 * `set_clouds(parameters)`: set cloud parameters
 	* `parameters` is a table with the following optional fields:
 		* `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)

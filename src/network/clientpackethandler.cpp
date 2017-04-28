@@ -1192,11 +1192,17 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	for (size_t i = 0; i < count; i++)
 		params->push_back(deSerializeString(is));
 
+	bool clouds = true;
+	try {
+		clouds = readU8(is);
+	} catch (...) {}
+
 	ClientEvent event;
 	event.type            = CE_SET_SKY;
 	event.set_sky.bgcolor = bgcolor;
 	event.set_sky.type    = type;
 	event.set_sky.params  = params;
+	event.set_sky.clouds  = clouds;
 	m_client_event_queue.push(event);
 }
 

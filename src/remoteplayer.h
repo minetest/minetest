@@ -85,19 +85,21 @@ public:
 	}
 
 	void setSky(const video::SColor &bgcolor, const std::string &type,
-			const std::vector<std::string> &params)
+			const std::vector<std::string> &params, bool &clouds)
 	{
 		m_sky_bgcolor = bgcolor;
 		m_sky_type = type;
 		m_sky_params = params;
+		m_sky_clouds = clouds;
 	}
 
 	void getSky(video::SColor *bgcolor, std::string *type,
-			std::vector<std::string> *params)
+			std::vector<std::string> *params, bool *clouds)
 	{
 		*bgcolor = m_sky_bgcolor;
 		*type = m_sky_type;
 		*params = m_sky_params;
+		*clouds = m_sky_clouds;
 	}
 
 	void setCloudParams(const CloudParams &cloud_params)
@@ -165,6 +167,8 @@ private:
 	std::string m_sky_type;
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_params;
+	bool m_sky_clouds;
+
 	CloudParams m_cloud_params;
 };
 

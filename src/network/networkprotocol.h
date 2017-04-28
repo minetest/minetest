@@ -584,6 +584,7 @@ enum ToClientCommand
 		foreach count:
 			u8 len
 			u8[len] param
+		u8 clouds (boolean)
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
