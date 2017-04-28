@@ -283,10 +283,10 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, type, list)
+	// set_sky(self, bgcolor, type, list, clouds = true)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self, type, list)
+	// get_sky(self)
 	static int l_get_sky(lua_State *L);
 
 	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})

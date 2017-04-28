@@ -3255,6 +3255,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 		case CE_SET_SKY:
 			sky->setVisible(false);
+			// Whether clouds are visible in front of a custom skybox
+			sky->setCloudsEnabled(event.set_sky.clouds);
 
 			if (skybox) {
 				skybox->remove();
@@ -3264,6 +3266,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			// Handle according to type
 			if (*event.set_sky.type == "regular") {
 				sky->setVisible(true);
+				sky->setCloudsEnabled(true);
 			} else if (*event.set_sky.type == "skybox" &&
 					event.set_sky.params->size() == 6) {
 				sky->setFallbackBgColor(*event.set_sky.bgcolor);

@@ -174,6 +174,7 @@ struct ClientEvent
 			video::SColor *bgcolor;
 			std::string *type;
 			std::vector<std::string> *params;
+			bool clouds;
 		} set_sky;
 		struct{
 			bool do_override;

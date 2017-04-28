@@ -1662,7 +1662,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
-// set_sky(self, bgcolor, type, list)
+// set_sky(self, bgcolor, type, list, clouds = true)
 int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1678,9 +1678,8 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 	std::vector<std::string> params;
 	if (lua_istable(L, 4)) {
-		int table = lua_gettop(L);
 		lua_pushnil(L);
-		while (lua_next(L, table) != 0) {
+		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			if (lua_isstring(L, -1))
 				params.push_back(lua_tostring(L, -1));
@@ -1694,7 +1693,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (type == "skybox" && params.size() != 6)
 		throw LuaError("skybox expects 6 textures");
 
-	if (!getServer(L)->setSky(player, bgcolor, type, params))
+	bool clouds = true;
+	if (lua_isboolean(L, 5))
+		clouds = lua_toboolean(L, 5);
+
+	if (!getServer(L)->setSky(player, bgcolor, type, params, clouds))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1712,8 +1715,9 @@ int ObjectRef::l_get_sky(lua_State *L)
 	video::SColor bgcolor(255, 255, 255, 255);
 	std::string type;
 	std::vector<std::string> params;
+	bool clouds;
 
-	player->getSky(&bgcolor, &type, &params);
+	player->getSky(&bgcolor, &type, &params, &clouds);
 	type = type == "" ? "regular" : type;
 
 	push_ARGB8(L, bgcolor);
@@ -1726,6 +1730,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_rawseti(L, -2, i);
 		i++;
 	}
+	lua_pushboolean(L, clouds);
 	return 3;
 }
 
