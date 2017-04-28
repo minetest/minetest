@@ -509,6 +509,8 @@ public:
 	void showGameFog(const bool show = true);
 	void showGameDebug(const bool show = true);
 
+	IrrlichtDevice *getDevice() const { return m_device; }
+
 private:
 
 	// Virtual methods from con::PeerHandler
