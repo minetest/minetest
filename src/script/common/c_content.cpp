@@ -119,7 +119,8 @@ void read_item_definition(lua_State* L, int index,
 }
 
 /******************************************************************************/
-void push_item_definition(lua_State *L, const ItemDefinition &i) {
+void push_item_definition(lua_State *L, const ItemDefinition &i)
+{
 	lua_newtable(L);
 	lua_pushstring(L, i.name.c_str());
 	lua_setfield(L, -2, "name");
@@ -1448,8 +1449,7 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed)
 		lua_setfield(L, -2, "under");
 		push_v3s16(L, pointed.node_abovesurface);
 		lua_setfield(L, -2, "above");
-	}
-	else if (pointed.type == POINTEDTHING_OBJECT) {
+	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		lua_pushstring(L, "object");
 		lua_setfield(L, -2, "type");
 		push_objectRef(L, pointed.object_id);

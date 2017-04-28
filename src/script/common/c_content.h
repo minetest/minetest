@@ -166,7 +166,7 @@ void               read_json_value           (lua_State *L, Json::Value &root,
 
 void               push_pointed_thing        (lua_State *L, const PointedThing &pointed);
 
-void               push_objectRef(lua_State *L, const u16 id);
+void               push_objectRef            (lua_State *L, const u16 id);
 
 extern struct EnumString es_TileAnimationType[];
 
