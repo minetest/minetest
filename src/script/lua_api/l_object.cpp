@@ -1738,38 +1738,38 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	if (!lua_istable(L, 2))
 		return 0;
 
-	CloudSettings cloud_settings = player->getCloudSettings();
+	CloudParameters cloud_parameters = player->getCloudParameters();
 
-	cloud_settings.density = getfloatfield_default(L, 2, "density", cloud_settings.density);
+	cloud_parameters.density = getfloatfield_default(L, 2, "density", cloud_parameters.density);
 
 	lua_getfield(L, 2, "color");
 	if (!lua_isnil(L, -1))
-		read_color(L, -1, &cloud_settings.color_bright);
+		read_color(L, -1, &cloud_parameters.color_bright);
 	lua_pop(L, 1);
 	lua_getfield(L, 2, "ambient");
 	if (!lua_isnil(L, -1))
-		read_color(L, -1, &cloud_settings.color_ambient);
+		read_color(L, -1, &cloud_parameters.color_ambient);
 	lua_pop(L, 1);
 
-	cloud_settings.height    = getfloatfield_default(L, 2, "height",    cloud_settings.height   );
-	cloud_settings.thickness = getfloatfield_default(L, 2, "thickness", cloud_settings.thickness);
+	cloud_parameters.height    = getfloatfield_default(L, 2, "height",    cloud_parameters.height   );
+	cloud_parameters.thickness = getfloatfield_default(L, 2, "thickness", cloud_parameters.thickness);
 
 	lua_getfield(L, 2, "speed");
 	if (lua_istable(L, -1)) {
 		v2f new_speed;
 		new_speed.X = getfloatfield_default(L, -1, "x", 0);
 		new_speed.Y = getfloatfield_default(L, -1, "y", 0);
-		cloud_settings.speed = new_speed;
+		cloud_parameters.speed = new_speed;
 	}
 	lua_pop(L, 1);
 
-	if (!getServer(L)->setClouds(player, cloud_settings.density,
-			cloud_settings.color_bright, cloud_settings.color_ambient,
-			cloud_settings.height, cloud_settings.thickness,
-			cloud_settings.speed))
+	if (!getServer(L)->setClouds(player, cloud_parameters.density,
+			cloud_parameters.color_bright, cloud_parameters.color_ambient,
+			cloud_parameters.height, cloud_parameters.thickness,
+			cloud_parameters.speed))
 		return 0;
 
-	player->setCloudSettings(cloud_settings);
+	player->setCloudParameters(cloud_parameters);
 
 	lua_pushboolean(L, true);
 	return 1;
@@ -1782,23 +1782,23 @@ int ObjectRef::l_get_clouds(lua_State *L)
 	RemotePlayer *player = getplayer(ref);
 	if (!player)
 		return 0;
-	CloudSettings cloud_settings = player->getCloudSettings();
+	const CloudParameters &cloud_parameters = player->getCloudParameters();
 
 	lua_newtable(L);
-	lua_pushnumber(L, cloud_settings.density);
+	lua_pushnumber(L, cloud_parameters.density);
 	lua_setfield(L, -2, "density");
-	push_ARGB8(L, cloud_settings.color_bright);
+	push_ARGB8(L, cloud_parameters.color_bright);
 	lua_setfield(L, -2, "color");
-	push_ARGB8(L, cloud_settings.color_ambient);
+	push_ARGB8(L, cloud_parameters.color_ambient);
 	lua_setfield(L, -2, "ambient");
-	lua_pushnumber(L, cloud_settings.height);
+	lua_pushnumber(L, cloud_parameters.height);
 	lua_setfield(L, -2, "height");
-	lua_pushnumber(L, cloud_settings.thickness);
+	lua_pushnumber(L, cloud_parameters.thickness);
 	lua_setfield(L, -2, "thickness");
 	lua_newtable(L);
-	lua_pushnumber(L, cloud_settings.speed.X);
+	lua_pushnumber(L, cloud_parameters.speed.X);
 	lua_setfield(L, -2, "x");
-	lua_pushnumber(L, cloud_settings.speed.Y);
+	lua_pushnumber(L, cloud_parameters.speed.Y);
 	lua_setfield(L, -2, "y");
 	lua_setfield(L, -2, "speed");
 

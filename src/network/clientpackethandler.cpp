@@ -1168,7 +1168,7 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	m_client_event_queue.push(event);
 }
 
-void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
+void Client::handleCommand_CloudParameters(NetworkPacket* pkt)
 {
 	f32 density;
 	video::SColor color_bright;
@@ -1181,18 +1181,18 @@ void Client::handleCommand_CloudsParams(NetworkPacket* pkt)
 			>> height >> thickness >> speed;
 
 	ClientEvent event;
-	event.type                        = CE_CLOUDS_PARAMS;
-	event.clouds_params.density       = density;
+	event.type                        = CE_CLOUD_PARAMETERS;
+	event.cloud_parameters.density       = density;
 	// use the underlying u32 representation, because we can't
 	// use struct members with constructors here, and this way
 	// we avoid using new() and delete() for no good reason
-	event.clouds_params.color_bright  = color_bright.color;
-	event.clouds_params.color_ambient = color_ambient.color;
-	event.clouds_params.height        = height;
-	event.clouds_params.thickness     = thickness;
+	event.cloud_parameters.color_bright  = color_bright.color;
+	event.cloud_parameters.color_ambient = color_ambient.color;
+	event.cloud_parameters.height        = height;
+	event.cloud_parameters.thickness     = thickness;
 	// same here: deconstruct to skip constructor
-	event.clouds_params.speed_x       = speed.X;
-	event.clouds_params.speed_y       = speed.Y;
+	event.cloud_parameters.speed_x       = speed.X;
+	event.cloud_parameters.speed_y       = speed.Y;
 	m_client_event_queue.push(event);
 }
 

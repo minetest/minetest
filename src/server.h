@@ -407,7 +407,7 @@ private:
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params);
-	void SendCloudsParams(u16 peer_id, float density,
+	void SendCloudParameters(u16 peer_id, float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
 			float height,

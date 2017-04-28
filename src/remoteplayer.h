@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REMOTEPLAYER_HEADER
 
 #include "player.h"
+#include "cloudparameters.h"
 
 class PlayerSAO;
 
@@ -30,16 +31,6 @@ enum RemotePlayerChatResult
 	RPLAYER_CHATRESULT_OK,
 	RPLAYER_CHATRESULT_FLOODING,
 	RPLAYER_CHATRESULT_KICK,
-};
-
-struct CloudSettings
-{
-	float density;
-	video::SColor color_bright;
-	video::SColor color_ambient;
-	float thickness;
-	float height;
-	v2f speed;
 };
 
 /*
@@ -109,14 +100,14 @@ public:
 		*params = m_sky_params;
 	}
 
-	void setCloudSettings(const CloudSettings &cloud_settings)
+	void setCloudParameters(const CloudParameters &cloud_parameters)
 	{
-		m_cloud_settings = cloud_settings;
+		m_cloud_parameters = cloud_parameters;
 	}
 
-	const CloudSettings &getCloudSettings() const
+	const CloudParameters &getCloudParameters() const
 	{
-		return m_cloud_settings;
+		return m_cloud_parameters;
 	}
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
@@ -174,7 +165,7 @@ private:
 	std::string m_sky_type;
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_params;
-	CloudSettings m_cloud_settings;
+	CloudParameters m_cloud_parameters;
 };
 
 #endif

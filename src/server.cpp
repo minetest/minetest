@@ -1882,14 +1882,14 @@ void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
 	Send(&pkt);
 }
 
-void Server::SendCloudsParams(u16 peer_id, float density,
+void Server::SendCloudParameters(u16 peer_id, float density,
 		const video::SColor &color_bright,
 		const video::SColor &color_ambient,
 		float height,
 		float thickness,
 		const v2f &speed)
 {
-	NetworkPacket pkt(TOCLIENT_CLOUDS_PARAMS, 0, peer_id);
+	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMETERS, 0, peer_id);
 	pkt << density << color_bright << color_ambient
 			<< height << thickness << speed;
 
@@ -3220,7 +3220,7 @@ bool Server::setClouds(RemotePlayer *player, float density,
 	if (!player)
 		return false;
 
-	SendCloudsParams(player->peer_id, density,
+	SendCloudParameters(player->peer_id, density,
 			color_bright, color_ambient, height,
 			thickness, speed);
 	return true;
