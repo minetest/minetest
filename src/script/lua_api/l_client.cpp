@@ -243,7 +243,7 @@ int ModApiClient::l_get_protocol_version(lua_State *L)
 
 int ModApiClient::l_take_screenshot(lua_State *L)
 {
-	Client* client = getClient(L);
+	Client *client = getClient(L);
 	client->makeScreenshot(client->getDevice());
 	return 0;
 }
