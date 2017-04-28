@@ -3973,6 +3973,12 @@ Definition tables
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
         legacy_facedir_simple = false, -- Support maps made in and before January 2012
         legacy_wallmounted = false, -- Support maps made in and before January 2012
+        waving = 0, --[[ valid for mesh, nodebox, plantlike, allfaces_optional nodes
+        ^ 1 - wave node like plants (top of node moves, bottom is fixed)
+        ^ 2 - wave node like leaves (whole node moves side-to-side synchronously)
+        ^ caveats: not all models will properly wave
+        ^ plantlike drawtype nodes can only wave like plants
+        ^ allfaces_optional drawtype nodes can only wave like leaves --]]
         sounds = {
             footstep = <SimpleSoundSpec>,
             dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
