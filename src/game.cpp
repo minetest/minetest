@@ -1117,6 +1117,7 @@ struct GameRunData {
 	PointedThing pointed_old;
 	bool digging;
 	bool ldown_for_dig;
+	bool dig_instantly;
 	bool left_punch;
 	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
@@ -3495,6 +3496,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
+	} else if (runData.dig_instantly && getLeftReleased()) {
+		// Remove e.g. torches faster when clicking instead of holding LMB
+		runData.nodig_delay_timer = 0;
+		runData.dig_instantly = false;
 	}
 
 	if (!runData.digging && runData.ldown_for_dig && !isLeftPressed()) {
@@ -3807,15 +3812,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
 
-	if (!runData.digging) {
-		infostream << "Started digging" << std::endl;
-		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
-			return;
-		client->interact(0, pointed);
-		runData.digging = true;
-		runData.ldown_for_dig = true;
-	}
-
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
 	// Get digging parameters
@@ -3833,6 +3829,16 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			params = getDigParams(nodedef_manager->get(n).groups, tp);
 	}
 
+	if (!runData.digging) {
+		infostream << "Started digging" << std::endl;
+		runData.dig_instantly = params.time == 0;
+		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
+			return;
+		client->interact(0, pointed);
+		runData.digging = true;
+		runData.ldown_for_dig = true;
+	}
+
 	if (!params.diggable) {
 		// I guess nobody will wait for this long
 		runData.dig_time_complete = 10000000.0;
@@ -3847,12 +3853,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		}
 	}
 
-	if (runData.dig_time_complete >= 0.001) {
+	if (!runData.dig_instantly) {
 		runData.dig_index = (float)crack_animation_length
 				* runData.dig_time
 				/ runData.dig_time_complete;
 	} else {
-		// This is for torches
+		// This is for e.g. torches
 		runData.dig_index = crack_animation_length;
 	}
 
@@ -3887,10 +3893,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// We don't want a corresponding delay to
-		// very time consuming nodes
+		// We don't want a corresponding delay to very time consuming nodes
+		// and nodes without digging time (e.g. torches) get a fixed delay.
 		if (runData.nodig_delay_timer > 0.3)
 			runData.nodig_delay_timer = 0.3;
+		else if (runData.dig_instantly)
+			runData.nodig_delay_timer = 0.15;
 
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);

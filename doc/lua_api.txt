@@ -1230,9 +1230,9 @@ Another example: Make red wool from white wool and red dye:
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-* `dig_immediate`: (player can always pick up node without tool wear)
-    * `2`: node is removed without tool wear after 0.5 seconds (rail, sign)
-    * `3`: node is removed without tool wear after 0.15 seconds (torch)
+* `dig_immediate`: (player can always pick up node without reducing tool wear)
+    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
+    * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `bouncy`: value is bounce speed in percent
@@ -1332,6 +1332,10 @@ For example, as a Lua table, `times={2=2.00, 3=0.70}`. This would
 result in the tool to be able to dig nodes that have a rating of `2` or `3`
 for this group, and unable to dig the rating `1`, which is the toughest.
 Unless there is a matching group that enables digging otherwise.
+
+If the result digging time is 0, a delay of 0.15 seconds is added between
+digging nodes; If the player releases LMB after digging, this delay is set to 0,
+i.e. players can more quickly click the nodes away instead of holding LMB.
 
 #### Damage groups
 List of damage for groups of entities. See "Entity damage mechanism".
@@ -3445,7 +3449,7 @@ will place the schematic inside of the VoxelManip.
       If `light` is false, no light calculations happen, and you should correct
       all modified blocks with `minetest.fix_light()` as soon as possible.
       Keep in mind that modifying the map where light is incorrect can cause
-      more lighting bugs. 
+      more lighting bugs.
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at that position
