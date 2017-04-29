@@ -54,17 +54,20 @@ struct ToolCapabilities
 	int max_drop_level;
 	ToolGCMap groupcaps;
 	DamageGroup damageGroups;
+	int knockback_power;
 
 	ToolCapabilities(
 			float full_punch_interval_=1.4,
 			int max_drop_level_=1,
 			const ToolGCMap &groupcaps_ = ToolGCMap(),
-			const DamageGroup &damageGroups_ = DamageGroup()
+			const DamageGroup &damageGroups_ = DamageGroup(),
+			int knockback_power_ = 1
 	):
 		full_punch_interval(full_punch_interval_),
 		max_drop_level(max_drop_level_),
 		groupcaps(groupcaps_),
-		damageGroups(damageGroups_)
+		damageGroups(damageGroups_),
+		knockback_power(knockback_power_)
 	{}
 
 	void serialize(std::ostream &os, u16 version) const;

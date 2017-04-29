@@ -722,6 +722,12 @@ v3f LocalPlayer::getEyeOffset() const
 	return v3f(0, BS * eye_height, 0);
 }
 
+void LocalPlayer::knockback(const v3f &direction, f32 time_knockback)
+{
+	accelerateHorizontal(direction, 300);
+	accelerateVertical(direction, 300);
+}
+
 // Horizontal acceleration (X and Z), Y direction is ignored
 void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
 	const f32 max_increase)

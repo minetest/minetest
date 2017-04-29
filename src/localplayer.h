@@ -144,6 +144,8 @@ public:
 	bool getCanZoom() const { return m_can_zoom; }
 	void setCanZoom(bool can_zoom) { m_can_zoom = can_zoom; }
 
+	void knockback(const v3f &direction, f32 time_knockback);
+
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);

@@ -57,6 +57,10 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_verify_cert", "true");
 	settings->setDefault("enable_remote_media_server", "true");
 	settings->setDefault("enable_client_modding", "false");
+	settings->setDefault("enable_knockback", "true");
+	settings->setDefault("knockback_default_duration", "0.3");
+	settings->setDefault("knockback_horizontal", "17.0");
+	settings->setDefault("knockback_vertical", "7.5");
 	settings->setDefault("max_out_chat_queue_size", "20");
 
 	// Keymap

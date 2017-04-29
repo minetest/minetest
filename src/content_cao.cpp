@@ -830,8 +830,19 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	} else {
 		v3f lastpos = pos_translator.vect_show;
 
-		if(m_prop.physical)
-		{
+		if(m_prop.physical) {
+			if (m_knockback_timer > 0.0f) {
+				m_knockback_timer -= dtime;
+				// If the player is dead, stop the movement.
+				if (m_hp <= 0) {
+					m_velocity = v3f(0, 0, 0);
+				}
+				// If the timer is finished go down the player.
+				else if (m_knockback_timer <= 0.0f) {
+					m_velocity = v3f(0, -m_env->getLocalPlayer()->movement_gravity * BS, 0);
+				}
+			}
+
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
@@ -921,6 +932,26 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		updateNodePos();
 	}
 }
+
+// Horizontal acceleration (X and Z), Y direction is ignored
+void GenericCAO::accelerateHorizontal(const v3f &target_speed, f32 max_increase)
+{
+	if (max_increase == 0)
+		return;
+
+	m_velocity.X += rangelim(target_speed.X - m_velocity.X, -max_increase, max_increase);
+	m_velocity.Z += rangelim(target_speed.Z - m_velocity.Z, -max_increase, max_increase);
+}
+
+// Vertical acceleration (Y), X and Z directions are ignored
+void GenericCAO::accelerateVertical(const v3f &target_speed, f32 max_increase)
+{
+	if (max_increase == 0)
+		return;
+
+	m_velocity.Y += rangelim(target_speed.Y - m_velocity.Y, -max_increase, max_increase);
+}
+
 
 void GenericCAO::updateTexturePos()
 {
@@ -1461,6 +1492,14 @@ void GenericCAO::processMessage(const std::string &data)
 			<< ": unknown command or outdated client \""
 			<< +cmd << "\"" << std::endl;
 	}
+}
+
+void GenericCAO::knockback(const v3f &direction, f32 time_knockback)
+{
+	m_knockback_timer = time_knockback;
+	m_prop.physical = true;
+	accelerateHorizontal(direction, 300);
+	accelerateVertical(direction, 300);
 }
 
 /* \pre punchitem != NULL

@@ -1017,9 +1017,14 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (!send_recommended)
 		return;
 
+	if (m_knockback) {
+		m_knockback_timer -= dtime;
+		if (m_knockback_timer <= 0.0f)
+			m_knockback = false;
+	}
+
 	// If the object is attached client-side, don't waste bandwidth sending its position to clients
-	if(m_position_not_sent && !isAttached())
-	{
+	if (m_position_not_sent && !isAttached() && !m_knockback) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
@@ -1211,6 +1216,40 @@ int PlayerSAO::punch(v3f dir,
 
 	if (!damage_handled) {
 		setHP(getHP() - hitparams.hp);
+
+		if (!isDead()) {
+			if (g_settings->getBool("enable_knockback")) {
+				int knockback_power = toolcap->knockback_power;
+
+				f32 knockback_x = fabs(puncher->getBasePosition().X - m_base_position.X);
+				f32 knockback_z = fabs(puncher->getBasePosition().Z - m_base_position.Z);
+				float total = knockback_x + knockback_z;
+				v3f direction;
+				static f32 knockback_horizontal = g_settings->getFloat("knockback_horizontal");
+				static f32 knockback_vertical = g_settings->getFloat("knockback_vertical");
+				static const f32 time_reset_knockback = g_settings->getFloat("knockback_default_duration");
+
+				if (knockback_x != 0) {
+					direction.X = -((((knockback_x / total) * knockback_horizontal) *
+						((puncher->getBasePosition().X - m_base_position.X) / knockback_x))) * knockback_power;
+				}
+
+				if (knockback_z != 0) {
+					direction.Z = -((((knockback_z / total) * knockback_horizontal) *
+						((puncher->getBasePosition().Z - m_base_position.Z) / knockback_z))) * knockback_power;
+				}
+
+				direction.Y = knockback_vertical * knockback_power;
+
+				if (direction != v3f(0, 0, 0)) {
+					m_knockback_timer = time_reset_knockback;
+					m_knockback = true;
+					m_env->getGameDef()->SendKnockBack(m_peer_id, direction, m_knockback_timer, getId());
+					m_knockback_timer *= 5;
+				}
+			}
+		}
+
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
