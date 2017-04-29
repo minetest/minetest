@@ -689,11 +689,11 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 /*
 	Gets nth node tile (0 <= n <= 5).
 */
-TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
+void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
-	TileSpec tile = f.tiles[tileindex];
+	tile = f.tiles[tileindex];
 	TileLayer *top_layer = NULL;
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		TileLayer *layer = &tile.layers[layernum];
@@ -706,13 +706,12 @@ TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 	// Apply temporary crack
 	if (p == data->m_crack_pos_relative)
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
-	return tile;
 }
 
 /*
 	Gets node tile given a face direction.
 */
-TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
+void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 
@@ -769,9 +768,8 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 
 	};
 	u16 tile_index=facedir*16 + dir_i;
-	TileSpec tile = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
+	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
 	tile.rotation = dir_to_tile[tile_index + 1];
-	return tile;
 }
 
 static void getTileInfo(
@@ -830,7 +828,7 @@ static void getTileInfo(
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
 	}
-	tile = getNodeTile(n, p_corrected, face_dir_corrected, data);
+	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
 	tile.emissive_light = f.light_source;
 
@@ -856,8 +854,6 @@ static void getTileInfo(
 					vertex_dirs[i], data);
 		}
 	}
-
-	return;
 }
 
 /*

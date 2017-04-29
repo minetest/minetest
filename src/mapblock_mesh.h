@@ -267,8 +267,8 @@ void final_color_blend(video::SColor *result,
 
 // Retrieves the TileSpec of a face of a node
 // Adds MATERIAL_FLAG_CRACK if the node is cracked
-TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data);
-TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data);
+void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile);
+void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile);
 
 #endif
 
