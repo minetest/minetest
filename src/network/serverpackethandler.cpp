@@ -975,6 +975,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			infostream << "Cannot move outside of player's inventory: "
 					<< "No interact privilege" << std::endl;
 			delete a;
+			PlayerSAO *playersao = player->getPlayerSAO();
+			m_env->getScriptIface()->on_try_to_interact(playersao);
 			return;
 		}
 	}
@@ -1002,6 +1004,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		// Disallow dropping items if not allowed to interact
 		if (!checkPriv(player->getName(), "interact")) {
 			delete a;
+			PlayerSAO *playersao = player->getPlayerSAO();
+			m_env->getScriptIface()->on_try_to_interact(playersao);
 			return;
 		}
 
@@ -1033,6 +1037,8 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			infostream << "Cannot craft: "
 					<< "No interact privilege" << std::endl;
 			delete a;
+			PlayerSAO *playersao = player->getPlayerSAO();
+			m_env->getScriptIface()->on_try_to_interact(playersao);
 			return;
 		}
 	}
@@ -1273,6 +1279,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		3: place block or item (to abovesurface)
 		4: use item
 		5: rightclick air ("activate")
+		6: action prohibited by client, only sent to trigger on_try_to_interact
 	*/
 	u8 action;
 	u16 item_i;
@@ -1356,9 +1363,15 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Make sure the player is allowed to do it
 	*/
 	if (!checkPriv(player->getName(), "interact")) {
+		PlayerSAO *playersao = player->getPlayerSAO();
+		m_env->getScriptIface()->on_try_to_interact(playersao);
+		if (action == 6) {
+			return;
+		}
 		actionstream<<player->getName()<<" attempted to interact with "
 				<<pointed.dump()<<" without 'interact' privilege"
 				<<std::endl;
+
 		// Re-send block to revert change on client-side
 		RemoteClient *client = getClient(pkt->getPeerId());
 		// Digging completed -> under

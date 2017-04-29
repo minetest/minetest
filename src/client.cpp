@@ -926,6 +926,7 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		3: place block or item (to abovesurface)
 		4: use item
 		5: perform secondary action of item
+		6: action prohibited by client, only sent to trigger on_try_to_interact
 	*/
 
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
