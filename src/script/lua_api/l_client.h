@@ -72,6 +72,8 @@ private:
 	// get_protocol_version()
 	static int l_get_protocol_version(lua_State *L);
 
+	static int l_take_screenshot(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

@@ -241,6 +241,13 @@ int ModApiClient::l_get_protocol_version(lua_State *L)
 	return 1;
 }
 
+int ModApiClient::l_take_screenshot(lua_State *L)
+{
+	Client *client = getClient(L);
+	client->makeScreenshot(client->getDevice());
+	return 0;
+}
+
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -259,4 +266,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(get_protocol_version);
+	API_FCT(take_screenshot);
 }
