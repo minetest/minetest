@@ -108,7 +108,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  TOCLIENT_STATE_CONNECTED, &Client::handleCommand_LocalPlayerAnimations }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_EyeOffset }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x53
-	null_command_handler,
+	{ "TOCLIENT_CLOUD_PARAMS",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CloudParams }, // 0x54
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
