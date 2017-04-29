@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
 #include "constants.h"
-#include "cloudparameters.h"
+#include "cloudparams.h"
 
 // Menu clouds
 class Clouds;
@@ -87,42 +87,42 @@ public:
 
 	void setDensity(float density)
 	{
-		m_parameters.density = density;
+		m_params.density = density;
 		// currently does not need bounding
 	}
 
 	void setColorBright(const video::SColor &color_bright)
 	{
-		m_parameters.color_bright = color_bright;
+		m_params.color_bright = color_bright;
 	}
 
 	void setColorAmbient(const video::SColor &color_ambient)
 	{
-		m_parameters.color_ambient = color_ambient;
+		m_params.color_ambient = color_ambient;
 	}
 
 	void setHeight(float height)
 	{
-		m_parameters.height = height; // add bounding when necessary
+		m_params.height = height; // add bounding when necessary
 		updateBox();
 	}
 
 	void setSpeed(v2f speed)
 	{
-		m_parameters.speed = speed;
+		m_params.speed = speed;
 	}
 
 	void setThickness(float thickness)
 	{
-		m_parameters.thickness = thickness;
+		m_params.thickness = thickness;
 		updateBox();
 	}
 
 private:
 	void updateBox()
 	{
-		float height_bs    = m_parameters.height    * BS;
-		float thickness_bs = m_parameters.thickness * BS;
+		float height_bs    = m_params.height    * BS;
+		float thickness_bs = m_params.thickness * BS;
 		m_box = aabb3f(-BS * 1000000.0f, height_bs - BS * m_camera_offset.Y, -BS * 1000000.0f,
 				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
 	}
@@ -138,7 +138,7 @@ private:
 	v2f m_speed;
 	v3s16 m_camera_offset;
 	video::SColorf m_color;
-	CloudParameters m_parameters;
+	CloudParams m_params;
 
 };
 

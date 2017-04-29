@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLOUDPARAMETERS_HEADER
-#define CLOUDPARAMETERS_HEADER
+#ifndef CLOUDPARAMS_HEADER
+#define CLOUDPARAMS_HEADER
 
-struct CloudParameters
+struct CloudParams
 {
 	float density;
 	video::SColor color_bright;

@@ -77,7 +77,7 @@ enum ClientEventType
 	CE_HUDCHANGE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
-	CE_CLOUD_PARAMETERS,
+	CE_CLOUD_PARAMS,
 };
 
 struct ClientEvent
@@ -187,7 +187,7 @@ struct ClientEvent
 			f32 thickness;
 			f32 speed_x;
 			f32 speed_y;
-		} cloud_parameters;
+		} cloud_params;
 	};
 };
 
@@ -341,7 +341,7 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
-	void handleCommand_CloudParameters(NetworkPacket* pkt);
+	void handleCommand_CloudParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);

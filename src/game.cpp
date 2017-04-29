@@ -3296,16 +3296,16 @@ void Game::processClientEvents(CameraOrientation *cam)
 					event.override_day_night_ratio.ratio_f * 1000);
 			break;
 
-		case CE_CLOUD_PARAMETERS:
+		case CE_CLOUD_PARAMS:
 			if (clouds) {
-				clouds->setDensity(event.cloud_parameters.density);
-				clouds->setColorBright(video::SColor(event.cloud_parameters.color_bright));
-				clouds->setColorAmbient(video::SColor(event.cloud_parameters.color_ambient));
-				clouds->setHeight(event.cloud_parameters.height);
-				clouds->setThickness(event.cloud_parameters.thickness);
+				clouds->setDensity(event.cloud_params.density);
+				clouds->setColorBright(video::SColor(event.cloud_params.color_bright));
+				clouds->setColorAmbient(video::SColor(event.cloud_params.color_ambient));
+				clouds->setHeight(event.cloud_params.height);
+				clouds->setThickness(event.cloud_params.thickness);
 				clouds->setSpeed(v2f(
-						event.cloud_parameters.speed_x,
-						event.cloud_parameters.speed_y));
+						event.cloud_params.speed_x,
+						event.cloud_params.speed_y));
 			}
 			break;
 
