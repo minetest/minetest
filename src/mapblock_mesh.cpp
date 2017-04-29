@@ -907,10 +907,7 @@ static void updateFastFaceRow(
 			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
-					&& next_lights[0] == lights[0]
-					&& next_lights[1] == lights[1]
-					&& next_lights[2] == lights[2]
-					&& next_lights[3] == lights[3]
+					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0
 					&& next_tile.isTileable(tile)) {
 				next_is_different = false;
 				continuous_tiles_count++;
@@ -925,7 +922,8 @@ static void updateFastFaceRow(
 				// Floating point conversion of the position vector
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
-				v3f sp = pf - ((f32)continuous_tiles_count / 2.0 - 0.5) * translate_dir_f;
+				v3f sp = pf -
+					((f32)continuous_tiles_count / 2.0f - 0.5f) * translate_dir_f;
 				v3f scale(1,1,1);
 
 				if(translate_dir.X != 0) {
