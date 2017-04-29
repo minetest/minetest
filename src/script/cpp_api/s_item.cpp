@@ -249,27 +249,6 @@ void ScriptApiItem::pushPointedThing(const PointedThing& pointed)
 {
 	lua_State* L = getStack();
 
-	lua_newtable(L);
-	if(pointed.type == POINTEDTHING_NODE)
-	{
-		lua_pushstring(L, "node");
-		lua_setfield(L, -2, "type");
-		push_v3s16(L, pointed.node_undersurface);
-		lua_setfield(L, -2, "under");
-		push_v3s16(L, pointed.node_abovesurface);
-		lua_setfield(L, -2, "above");
-	}
-	else if(pointed.type == POINTEDTHING_OBJECT)
-	{
-		lua_pushstring(L, "object");
-		lua_setfield(L, -2, "type");
-		objectrefGet(L, pointed.object_id);
-		lua_setfield(L, -2, "ref");
-	}
-	else
-	{
-		lua_pushstring(L, "nothing");
-		lua_setfield(L, -2, "type");
-	}
+	push_pointed_thing(L, pointed);
 }
 

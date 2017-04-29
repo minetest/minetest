@@ -42,6 +42,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <cstdarg>
+#include "script/common/c_content.h"
 #include <sstream>
 
 
@@ -320,20 +321,8 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 	if (cobj == NULL || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
 	} else {
-		objectrefGet(L, cobj->getId());
+		push_objectRef(L, cobj->getId());
 	}
-}
-
-void ScriptApiBase::objectrefGet(lua_State *L, u16 id)
-{
-	// Get core.object_refs[i]
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // core
 }
 
 Server* ScriptApiBase::getServer()

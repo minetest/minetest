@@ -3730,6 +3730,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 				// Read the sound
 				soundmaker->m_player_rightpunch_sound =
 						playeritem_def.sound_place;
+
+				if (client->moddingEnabled())
+					client->getScript()->on_placenode(pointed, playeritem_def);
 			} else {
 				soundmaker->m_player_rightpunch_sound =
 						SimpleSoundSpec();

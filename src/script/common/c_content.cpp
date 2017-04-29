@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "mg_schematic.h"
 #include "noise.h"
+#include "util/pointedthing.h"
 #include <json/json.h>
 
 struct EnumString es_TileAnimationType[] =
@@ -115,6 +116,16 @@ void read_item_definition(lua_State* L, int index,
 	// "" = no prediction
 	getstringfield(L, index, "node_placement_prediction",
 			def.node_placement_prediction);
+}
+
+/******************************************************************************/
+void push_item_definition(lua_State *L, const ItemDefinition &i)
+{
+	lua_newtable(L);
+	lua_pushstring(L, i.name.c_str());
+	lua_setfield(L, -2, "name");
+	lua_pushstring(L, i.description.c_str());
+	lua_setfield(L, -2, "description");
 }
 
 /******************************************************************************/
@@ -1426,4 +1437,37 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 		throw SerializationError("Can only store booleans, numbers, strings, objects, arrays, and null in JSON");
 	}
 	lua_pop(L, 1); // Pop value
+}
+
+void push_pointed_thing(lua_State *L, const PointedThing &pointed)
+{
+	lua_newtable(L);
+	if (pointed.type == POINTEDTHING_NODE) {
+		lua_pushstring(L, "node");
+		lua_setfield(L, -2, "type");
+		push_v3s16(L, pointed.node_undersurface);
+		lua_setfield(L, -2, "under");
+		push_v3s16(L, pointed.node_abovesurface);
+		lua_setfield(L, -2, "above");
+	} else if (pointed.type == POINTEDTHING_OBJECT) {
+		lua_pushstring(L, "object");
+		lua_setfield(L, -2, "type");
+		push_objectRef(L, pointed.object_id);
+		lua_setfield(L, -2, "ref");
+	} else {
+		lua_pushstring(L, "nothing");
+		lua_setfield(L, -2, "type");
+	}
+}
+
+void push_objectRef(lua_State *L, const u16 id)
+{
+	// Get core.object_refs[i]
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "object_refs");
+	luaL_checktype(L, -1, LUA_TTABLE);
+	lua_pushnumber(L, id);
+	lua_gettable(L, -2);
+	lua_remove(L, -2); // object_refs
+	lua_remove(L, -2); // core
 }
