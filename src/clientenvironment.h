@@ -126,8 +126,9 @@ public:
 	void getActiveObjects(v3f origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest);
 
-	// Get event from queue. CEE_NONE is returned if queue is empty.
-	ClientEnvEvent getClientEvent();
+	bool hasClientEnvEvents() const { return !m_client_event_queue.empty(); }
+	// Get event from queue. If queue is empty, it triggers an assertion failure.
+	ClientEnvEvent getClientEnvEvent();
 
 	/*!
 	 * Gets closest object pointed by the shootline.

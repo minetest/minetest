@@ -3055,11 +3055,10 @@ inline void Game::step(f32 *dtime)
 
 void Game::processClientEvents(CameraOrientation *cam)
 {
-	ClientEvent event = client->getClientEvent();
-
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	for ( ; event.type != CE_NONE; event = client->getClientEvent()) {
+	while (client->hasClientEvents()) {
+		ClientEvent event = client->getClientEvent();
 
 		switch (event.type) {
 		case CE_PLAYER_DAMAGE:
