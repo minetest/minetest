@@ -769,7 +769,7 @@ void Client::initLocalMapSaving(const Address &address,
 void Client::ReceiveAll()
 {
 	DSTACK(FUNCTION_NAME);
-	u32 start_ms = porting::getTimeMs();
+	u64 start_ms = porting::getTimeMs();
 	for(;;)
 	{
 		// Limit time even if there would be huge amounts of data to
@@ -1631,7 +1631,7 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 
 		// update the loading menu -- if neccessary
 		bool do_draw = false;
-		u32 time_ms = targs->last_time_ms;
+		u64 time_ms = targs->last_time_ms;
 		if (cur_percent != targs->last_percent) {
 			targs->last_percent = cur_percent;
 			time_ms = porting::getTimeMs();
