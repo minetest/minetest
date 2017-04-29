@@ -740,7 +740,7 @@ else()
 	if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		# clang does not understand __extern_always_inline but libc headers use it
 		set(OTHER_FLAGS "${OTHER_FLAGS} \"-D__extern_always_inline=extern __always_inline\"")
-		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare")
+		set(OTHER_FLAGS "${OTHER_FLAGS} -Wsign-compare -Werror=mismatched-tags")
 	endif()
 
 	if(WIN32 AND NOT ZLIBWAPI_DLL AND CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -753,7 +753,11 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
+	if (NOT WIN32)
+		set(OTHER_FLAGS "${OTHER_FLAGS} -Werror=overloaded-virtual")
+	endif()
+
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -pipe -funroll-loops")
 	if(APPLE)
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
