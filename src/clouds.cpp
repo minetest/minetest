@@ -61,7 +61,7 @@ Clouds::Clouds(
 
 	m_params.density       = 0.4f;
 	m_params.thickness     = 16.0f;
-	m_params.color_bright  = video::SColor(255, 255, 240, 240);
+	m_params.color_bright  = video::SColor(229, 255, 240, 240);
 	m_params.color_ambient = video::SColor(255, 0, 0, 0);
 	m_params.speed         = v2f(0.0f, -2.0f);
 
@@ -153,10 +153,6 @@ void Clouds::render()
 	c_bottom_f.r *= 0.80;
 	c_bottom_f.g *= 0.80;
 	c_bottom_f.b *= 0.80;
-	c_top_f.a = 0.9;
-	c_side_1_f.a = 0.9;
-	c_side_2_f.a = 0.9;
-	c_bottom_f.a = 0.9;
 	video::SColor c_top = c_top_f.toSColor();
 	video::SColor c_side_1 = c_side_1_f.toSColor();
 	video::SColor c_side_2 = c_side_2_f.toSColor();
@@ -365,7 +361,7 @@ void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getRed(), m_params.color_ambient.getRed()), 255) / 255.0f;
 	m_color.g = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getGreen(), m_params.color_ambient.getGreen()), 255) / 255.0f;
 	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_params.color_bright.getBlue(), m_params.color_ambient.getBlue()), 255) / 255.0f;
-	m_color.a = 1.0f;
+	m_color.a = m_params.color_bright.getAlpha() / 255.0f;
 }
 
 void Clouds::readSettings()
