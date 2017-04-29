@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <time.h>
 #include <string>
 
-
 enum TimePrecision
 {
 	PRECISION_SECONDS,
@@ -32,7 +31,6 @@ enum TimePrecision
 	PRECISION_MICRO,
 	PRECISION_NANO
 };
-
 
 inline std::string getTimestamp()
 {
