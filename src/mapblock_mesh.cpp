@@ -433,7 +433,7 @@ struct FastFace
 	u8 layernum;
 };
 
-static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
+static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
 	v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
@@ -603,7 +603,7 @@ static void makeFastFace(TileSpec tile, u16 li0, u16 li1, u16 li2, u16 li3,
 		core::vector2d<f32>(x0 + w * abs_scale, y0) };
 
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		TileLayer *layer = &tile.layers[layernum];
+		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
 
@@ -689,11 +689,11 @@ static u8 face_contents(content_t m1, content_t m2, bool *equivalent,
 /*
 	Gets nth node tile (0 <= n <= 5).
 */
-TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
+void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpec &tile)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
-	TileSpec tile = f.tiles[tileindex];
+	tile = f.tiles[tileindex];
 	TileLayer *top_layer = NULL;
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		TileLayer *layer = &tile.layers[layernum];
@@ -706,13 +706,12 @@ TileSpec getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data)
 	// Apply temporary crack
 	if (p == data->m_crack_pos_relative)
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
-	return tile;
 }
 
 /*
 	Gets node tile given a face direction.
 */
-TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
+void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &tile)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 
@@ -769,9 +768,8 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data)
 
 	};
 	u16 tile_index=facedir*16 + dir_i;
-	TileSpec tile = getNodeTileN(mn, p, dir_to_tile[tile_index], data);
+	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
 	tile.rotation = dir_to_tile[tile_index + 1];
-	return tile;
 }
 
 static void getTileInfo(
@@ -791,7 +789,7 @@ static void getTileInfo(
 	INodeDefManager *ndef = data->m_client->ndef();
 	v3s16 blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 
-	MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
+	const MapNode &n0 = vmanip.getNodeRefUnsafe(blockpos_nodes + p);
 
 	// Don't even try to get n1 if n0 is already CONTENT_IGNORE
 	if (n0.getContent() == CONTENT_IGNORE) {
@@ -799,8 +797,7 @@ static void getTileInfo(
 		return;
 	}
 
-	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(
-		blockpos_nodes + p + face_dir);
+	const MapNode &n1 = vmanip.getNodeRefUnsafeCheckFlags(blockpos_nodes + p + face_dir);
 
 	if (n1.getContent() == CONTENT_IGNORE) {
 		makes_face = false;
@@ -812,8 +809,7 @@ static void getTileInfo(
 	u8 mf = face_contents(n0.getContent(), n1.getContent(),
 			&equivalent, ndef);
 
-	if(mf == 0)
-	{
+	if (mf == 0) {
 		makes_face = false;
 		return;
 	}
@@ -830,34 +826,31 @@ static void getTileInfo(
 		p_corrected = p + face_dir;
 		face_dir_corrected = -face_dir;
 	}
-	tile = getNodeTile(n, p_corrected, face_dir_corrected, data);
+
+	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
 	tile.emissive_light = f.light_source;
 
 	// eg. water and glass
-	if (equivalent)
+	if (equivalent) {
 		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++)
 			tile.layers[layernum].material_flags |=
 				MATERIAL_FLAG_BACKFACE_CULLING;
+	}
 
-	if (data->m_smooth_lighting == false)
-	{
+	if (!data->m_smooth_lighting) {
 		lights[0] = lights[1] = lights[2] = lights[3] =
 				getFaceLight(n0, n1, face_dir, ndef);
 	}
-	else
-	{
+	else {
 		v3s16 vertex_dirs[4];
 		getNodeVertexDirs(face_dir_corrected, vertex_dirs);
-		for(u16 i=0; i<4; i++)
-		{
-			lights[i] = getSmoothLight(
-					blockpos_nodes + p_corrected,
-					vertex_dirs[i], data);
+
+		v3s16 light_p = blockpos_nodes + p_corrected;
+		for (u16 i = 0; i < 4; i++) {
+			lights[i] = getSmoothLight(light_p, vertex_dirs[i], data);
 		}
 	}
-
-	return;
 }
 
 /*
@@ -914,10 +907,7 @@ static void updateFastFaceRow(
 			if (next_makes_face == makes_face
 					&& next_p_corrected == p_corrected + translate_dir
 					&& next_face_dir_corrected == face_dir_corrected
-					&& next_lights[0] == lights[0]
-					&& next_lights[1] == lights[1]
-					&& next_lights[2] == lights[2]
-					&& next_lights[3] == lights[3]
+					&& memcmp(next_lights, lights, ARRLEN(lights) * sizeof(u16)) == 0
 					&& next_tile.isTileable(tile)) {
 				next_is_different = false;
 				continuous_tiles_count++;
@@ -932,7 +922,8 @@ static void updateFastFaceRow(
 				// Floating point conversion of the position vector
 				v3f pf(p_corrected.X, p_corrected.Y, p_corrected.Z);
 				// Center point of face (kind of)
-				v3f sp = pf - ((f32)continuous_tiles_count / 2.0 - 0.5) * translate_dir_f;
+				v3f sp = pf -
+					((f32)continuous_tiles_count / 2.0f - 0.5f) * translate_dir_f;
 				v3f scale(1,1,1);
 
 				if(translate_dir.X != 0) {
@@ -1148,8 +1139,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
 				}
 				// Replace tile texture with the first animation frame
-				FrameSpec animation_frame = p.layer.frames[0];
-				p.layer.texture = animation_frame.texture;
+				p.layer.texture = p.layer.frames[0].texture;
 			}
 
 			if (!m_enable_shaders) {
@@ -1337,7 +1327,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		scene::IMeshBuffer *buf = m_mesh[i->first.first]->
 			getMeshBuffer(i->first.second);
 
-		FrameSpec animation_frame = tile.frames[frame];
+		const FrameSpec &animation_frame = tile.frames[frame];
 		buf->getMaterial().setTexture(0, animation_frame.texture);
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture) {

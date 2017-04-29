@@ -65,7 +65,7 @@ public:
 
 	void useTile(int index, bool disable_backface_culling);
 	void useDefaultTile(bool set_color = true);
-	TileSpec getTile(const v3s16 &direction);
+	void getTile(const v3s16 &direction, TileSpec &tile);
 
 // face drawing
 	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
