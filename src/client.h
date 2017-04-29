@@ -414,7 +414,8 @@ public:
 	void updateCameraOffset(v3s16 camera_offset)
 	{ m_mesh_update_thread.m_camera_offset = camera_offset; }
 
-	// Get event from queue. CE_NONE is returned if queue is empty.
+	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
+	// Get event from queue. If queue is empty, it triggers an assertion failure.
 	ClientEvent getClientEvent();
 
 	bool accessDenied() const { return m_access_denied; }

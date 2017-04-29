@@ -598,15 +598,13 @@ void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	}
 }
 
-ClientEnvEvent ClientEnvironment::getClientEvent()
+ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 {
-	ClientEnvEvent event;
-	if(m_client_event_queue.empty())
-		event.type = CEE_NONE;
-	else {
-		event = m_client_event_queue.front();
-		m_client_event_queue.pop();
-	}
+	FATAL_ERROR_IF(m_client_event_queue.empty(),
+			"ClientEnvironment::getClientEnvEvent(): queue is empty");
+
+	ClientEnvEvent event = m_client_event_queue.front();
+	m_client_event_queue.pop();
 	return event;
 }
 

@@ -411,16 +411,14 @@ void Client::step(float dtime)
 	/*
 		Get events
 	*/
-	for(;;) {
-		ClientEnvEvent event = m_env.getClientEvent();
-		if(event.type == CEE_NONE) {
-			break;
-		}
-		else if(event.type == CEE_PLAYER_DAMAGE) {
-			if(m_ignore_damage_timer <= 0) {
-				u8 damage = event.player_damage.amount;
+	while (m_env.hasClientEnvEvents()) {
+		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
-				if(event.player_damage.send_to_server)
+		if (envEvent.type == CEE_PLAYER_DAMAGE) {
+			if (m_ignore_damage_timer <= 0) {
+				u8 damage = envEvent.player_damage.amount;
+
+				if (envEvent.player_damage.send_to_server)
 					sendDamage(damage);
 
 				// Add to ClientEvent queue
@@ -431,8 +429,8 @@ void Client::step(float dtime)
 			}
 		}
 		// Protocol v29 or greater obsoleted this event
-		else if (event.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
-			u16 breath = event.player_breath.amount;
+		else if (envEvent.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
+			u16 breath = envEvent.player_breath.amount;
 			sendBreath(breath);
 		}
 	}
@@ -1596,14 +1594,11 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 ClientEvent Client::getClientEvent()
 {
-	ClientEvent event;
-	if (m_client_event_queue.empty()) {
-		event.type = CE_NONE;
-	}
-	else {
-		event = m_client_event_queue.front();
-		m_client_event_queue.pop();
-	}
+	FATAL_ERROR_IF(m_client_event_queue.empty(),
+			"Cannot getClientEvent, queue is empty.");
+
+	ClientEvent event = m_client_event_queue.front();
+	m_client_event_queue.pop();
 	return event;
 }
 
