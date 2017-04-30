@@ -4824,6 +4824,22 @@ Environment access
     * `pos`: The position where to measure the light.
     * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
     * Returns a number between `0` and `15` or `nil`
+    * `nil` is returned e.g. when the map isn't loaded at `pos`
+* `minetest.get_natural_light(pos[, timeofday])`
+    * Figures out the sunlight (or moonlight) value at pos at the given time of
+      day.
+    * `pos`: The position of the node
+    * `timeofday`: `nil` for current time, `0` for night, `0.5` for day
+    * Returns a number between `0` and `15` or `nil`
+    * This function tests 203 nodes in the worst case, which happens very
+      unlikely
+* `minetest.get_artificial_light(param1)`
+    * Calculates the artificial light (light from e.g. torches) value from the
+      `param1` value.
+    * `param1`: The param1 value of a `paramtype = "light"` node.
+    * Returns a number between `0` and `15`
+    * Currently it's the same as `math.floor(param1 / 16)`, except that it
+      ensures compatibility.
 * `minetest.place_node(pos, node)`
     * Place node with the same effects that a player would cause
 * `minetest.dig_node(pos)`
