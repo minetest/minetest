@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-06-04 13:18+0000\n"
-"Last-Translator: Tim <t4im@openmailbox.org>\n"
-"Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
-"minetest/eo/>\n"
+"PO-Revision-Date: 2017-05-04 00:55+0000\n"
+"Last-Translator: yellowcrash10 <corini98@gmail.com>\n"
+"Language-Team: Esperanto "
+"<https://hosted.weblate.org/projects/minetest/minetest/eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.7-dev\n"
+"X-Generator: Weblate 2.14-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -40,36 +40,42 @@ msgid "Reconnect"
 msgstr "Rekonekti"
 
 #: builtin/fstk/ui.lua
+#, fuzzy
 msgid "The server has requested a reconnect:"
-msgstr "Servilo petis rekonekton:"
+msgstr "La servilo petis rekonekton:"
 
 #: builtin/mainmenu/common.lua src/game.cpp
 msgid "Loading..."
 msgstr "Ŝargas…"
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokola versia miskongruo. "
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "La servilo efikigas protokolan version $1. "
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "Server supports protocol versions between $1 and $2. "
-msgstr ""
+msgstr "La servilo subtenas protokolajn versiojn inter $1 kaj $2. "
 
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr "Provu reŝalti la publikan serviloliston kaj kontrolu vian retkonekton."
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "We only support protocol version $1."
-msgstr ""
+msgstr "Ni nur subtenas protokolan version $1."
 
 #: builtin/mainmenu/common.lua
+#, fuzzy
 msgid "We support protocol versions between version $1 and $2."
-msgstr ""
+msgstr "Ni subtenas protokolajn versiojn inter versia $1 kaj $2."
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/dlg_create_world.lua
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
@@ -204,20 +210,23 @@ msgid "Rename Modpack:"
 msgstr "Alinomi modifaron:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "\"$1\" is not a valid flag."
-msgstr ""
+msgstr "\"$1\" ne estas valida flago."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "(No description of setting given)"
-msgstr ""
+msgstr "(Neniu priskribo de agordo donitis)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
-msgstr ""
+msgstr "< Reiri al agorda paĝo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Browse"
-msgstr ""
+msgstr "Folii"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Disabled"
@@ -232,8 +241,9 @@ msgid "Enabled"
 msgstr "Ŝaltita"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
+msgstr "La aranĝo estas 3 diskomaj nombroj inter krampoj."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
@@ -254,24 +264,27 @@ msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Please enter a comma seperated list of flags."
-msgstr ""
+msgstr "Bonvolu enigi diskomaj listo de parametroj."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a valid integer."
-msgstr ""
+msgstr "Bonvolu enigi validan entjeron."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Please enter a valid number."
-msgstr ""
+msgstr "Bonvolu enigi validan nombron."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Possible values are: "
-msgstr ""
+msgstr "Eblaj valoroj estas: "
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
 msgid "Restore Default"
-msgstr ""
+msgstr "Refari Defaŭlton"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -280,15 +293,15 @@ msgstr "Selekto"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr ""
+msgstr "Demonstri teknikajn nomojn"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
-msgstr ""
+msgstr "La valoro devas esti pli ol $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be lower than $1."
-msgstr ""
+msgstr "La valoro devas esti malpli ol $1."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -424,12 +437,14 @@ msgid "Damage enabled"
 msgstr "Damaĝo ŝaltitas"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Del. Favorite"
-msgstr ""
+msgstr "Forigi Legosignon"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Favorite"
-msgstr ""
+msgstr "Legosigni"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
@@ -737,8 +752,9 @@ msgid "Provided world path doesn't exist: "
 msgstr "Donita monda dosierindiko ne ekzistas. "
 
 #: src/fontengine.cpp
+#, fuzzy
 msgid "needs_fallback_font"
-msgstr "no"
+msgstr "bezonas_retrodefaŭltan_tiparon"
 
 #: src/game.cpp
 msgid ""
@@ -879,6 +895,7 @@ msgid "ok"
 msgstr "bone"
 
 #: src/guiFormSpecMenu.cpp
+#, fuzzy
 msgid "Enter "
 msgstr "Enen "
 
@@ -1117,7 +1134,7 @@ msgstr "Maldekstra Majuskligo"
 
 #: src/keycode.cpp
 msgid "Left Windows"
-msgstr "Maldekstra fenestro"
+msgstr "Maldekstra Vindozo"
 
 #: src/keycode.cpp
 msgid "Menu"
@@ -1253,7 +1270,7 @@ msgstr "Dekstra Majuskligo"
 
 #: src/keycode.cpp
 msgid "Right Windows"
-msgstr "Dekstra fenestro"
+msgstr "Dekstra Vindozo"
 
 #: src/keycode.cpp
 msgid "Scroll Lock"
@@ -1316,7 +1333,7 @@ msgstr "3D nuboj"
 
 #: src/settings_translation_file.cpp
 msgid "3D mode"
-msgstr ""
+msgstr "3D reĝimo"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1349,8 +1366,9 @@ msgid "Absolute limit of emerge queues"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Rapidigo en aero"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
@@ -4303,7 +4321,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
-msgstr ""
+msgstr "cURL tempolimo"
 
 #, fuzzy
 #~ msgid "Useful for mod developers."
