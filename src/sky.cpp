@@ -137,7 +137,7 @@ void Sky::render()
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
 		
-		float nightlength = 0.415;
+		float nightlength = 0.5;
 		float wn = nightlength / 2;
 		float wicked_time_of_day = 0;
 		if (m_time_of_day > wn && m_time_of_day < 1.0 - wn)
