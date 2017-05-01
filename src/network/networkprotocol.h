@@ -153,9 +153,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 31:
 		Add tile overlay
 		Stop sending TOSERVER_CLIENT_READY
+	PROTOCOL VERSION 32:
+		Add fading sounds
 */
 
-#define LATEST_PROTOCOL_VERSION 31
+#define LATEST_PROTOCOL_VERSION 32
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24

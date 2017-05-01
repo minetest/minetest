@@ -134,6 +134,7 @@ struct ServerSoundParams
 struct ServerPlayingSound
 {
 	ServerSoundParams params;
+	SimpleSoundSpec spec;
 	UNORDERED_SET<u16> clients; // peer ids
 };
 

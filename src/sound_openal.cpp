@@ -279,14 +279,14 @@ private:
 		FadeState(float step, float current_gain, float target_gain):
 			step(step),
 			current_gain(current_gain),
-			target_gain(target_gain){}
+			target_gain(target_gain) {}
 		float step;
 		float current_gain;
 		float target_gain;
 	};
 
-	std::map<int, FadeState> m_sounds_fading;		// 0 = step, 1 = current gain, 2 = goal gain
-	typedef std::map<int, FadeState>::iterator m_fading_it;
+	UNORDERED_MAP<int, FadeState> m_sounds_fading;
+	float m_fade_delay;
 public:
 	bool m_is_initialized;
 	OpenALSoundManager(OnDemandSoundFetcher *fetcher):
@@ -294,6 +294,7 @@ public:
 		m_device(NULL),
 		m_context(NULL),
 		m_next_id(1),
+		m_fade_delay(0),
 		m_is_initialized(false)
 	{
 		ALCenum error = ALC_NO_ERROR;
@@ -362,7 +363,8 @@ public:
 		infostream<<"Audio: Deinitialized."<<std::endl;
 	}
 
-	void step(float dtime){
+	void step(float dtime)
+	{
 		doFades(dtime);
 	}
 
@@ -532,6 +534,7 @@ public:
 			addBuffer(name, buf);
 		return false;
 	}
+
 	bool loadSoundData(const std::string &name,
 			const std::string &filedata)
 	{
@@ -561,7 +564,6 @@ public:
 	int playSound(const std::string &name, bool loop, float volume, float fade)
 	{
 		maintain();
-		int handle = -1;
 		if(name == "")
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
@@ -570,7 +572,8 @@ public:
 					<<std::endl;
 			return -1;
 		}
-		if ( fade > 0 ){
+		int handle = -1;
+		if (fade > 0) {
 			handle = playSoundRaw(buf, loop, 0);
 			fadeSound(handle, fade, volume);
 		} else {
@@ -578,6 +581,7 @@ public:
 		}
 		return handle;
 	}
+
 	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
 	{
 		maintain();
@@ -591,6 +595,7 @@ public:
 		}
 		return playSoundRawAt(buf, loop, volume, pos);
 	}
+
 	void stopSound(int sound)
 	{
 		maintain();
@@ -599,42 +604,38 @@ public:
 
 	void fadeSound(int soundid, float step, float gain)
 	{
-		float cGain = getSoundGain(soundid);
-		FadeState f = FadeState(step,cGain,gain);
-		m_sounds_fading[soundid] = f;
+		m_sounds_fading[soundid] = FadeState(step, getSoundGain(soundid), gain);
 	}
 
 	void doFades(float dtime)
 	{
-		static float fadeDelay = 0;
-		fadeDelay += dtime;
-		if ( fadeDelay > 0.2 ){
-			float chkGain = 0;
-			for ( m_fading_it i = m_sounds_fading.begin(); i != m_sounds_fading.end(); i++ ){
-				if ( i->second.step < 0 )
-					chkGain = i->second.current_gain * -1;
-				else
-					chkGain = i->second.current_gain;
+		m_fade_delay += dtime;
 
-				if ( chkGain < i->second.target_gain ){
-					i->second.current_gain += (i->second.step * fadeDelay);
-					if ( i->second.current_gain < 0 )
-						i->second.current_gain = 0;
+		if (m_fade_delay < 0.2f)
+			return;
 
-					if ( i->second.current_gain > 1 )
-						i->second.current_gain = 1;
+		float chkGain = 0;
+		for (UNORDERED_MAP<int, FadeState>::iterator i = m_sounds_fading.begin();
+				i != m_sounds_fading.end();) {
+			if (i->second.step < 0.f)
+				chkGain = -(i->second.current_gain);
+			else
+				chkGain = i->second.current_gain;
 
+			if (chkGain < i->second.target_gain) {
+				i->second.current_gain += (i->second.step * m_fade_delay);
+				i->second.current_gain = rangelim(i->second.current_gain, 0, 1);
 
-					updateSoundGain(i->first,i->second.current_gain);
-				} else {
-					if ( i->second.target_gain <= 0 ){
-						stopSound(i->first);
-					}
-					m_sounds_fading.erase(i->first);
-				}
+				updateSoundGain(i->first, i->second.current_gain);
+				++i;
+			} else {
+				if (i->second.target_gain <= 0.f)
+					stopSound(i->first);
+
+				m_sounds_fading.erase(i++);
 			}
-			fadeDelay = 0;
 		}
+		m_fade_delay -= 0.2f;
 	}
 
 	bool soundExists(int sound)
@@ -642,6 +643,7 @@ public:
 		maintain();
 		return (m_sounds_playing.count(sound) != 0);
 	}
+
 	void updateSoundPosition(int id, v3f pos)
 	{
 		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
@@ -657,8 +659,8 @@ public:
 
 	bool updateSoundGain(int id, float gain)
 	{
-		std::map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		if (i == m_sounds_playing.end())
 			return false;
 
 		PlayingSound *sound = i->second;
@@ -668,12 +670,13 @@ public:
 
 	float getSoundGain(int id)
 	{
-		std::map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		if (i == m_sounds_playing.end())
 			return 0;
+
 		PlayingSound *sound = i->second;
 		ALfloat gain;
-		alGetSourcef(sound->source_id,AL_GAIN, &gain);
+		alGetSourcef(sound->source_id, AL_GAIN, &gain);
 		return gain;
 	}
 };

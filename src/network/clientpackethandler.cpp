@@ -390,7 +390,7 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 	m_time_of_day_set = true;
 
 	u32 dr = m_env.getDayNightRatio();
-	infostream << "Client: time_of_day=" << time_of_day << "::" << m_env.getTimeOfDay()
+	infostream << "Client: time_of_day=" << time_of_day
 			<< " time_speed=" << time_speed
 			<< " dr=" << dr << std::endl;
 }
@@ -755,8 +755,21 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
+	/*
+		[0] u32 server_id
+		[4] u16 name length
+		[6] char name[len]
+		[ 6 + len] f32 gain
+		[10 + len] u8 type
+		[11 + len] (f32 * 3) pos
+		[23 + len] u16 object_id
+		[25 + len] bool loop
+		[26 + len] f32 fade
+	*/
+
 	s32 server_id;
 	std::string name;
+
 	float gain;
 	u8 type; // 0=local, 1=positional, 2=object
 	v3f pos;
@@ -764,11 +777,11 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	bool loop;
 	float fade = 0;
 
-	try	{
-		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop >> fade;
-	} catch (...) {
-		*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
-	}
+	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+
+	try {
+		*pkt >> fade;
+	} catch (SerializationError &e) {};
 
 	// Start playing
 	int client_id = -1;
@@ -813,24 +826,19 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 	}
 }
 
-void Client::handleCommand_FadeSound(NetworkPacket* pkt)
+void Client::handleCommand_FadeSound(NetworkPacket *pkt)
 {
-	s32 server_id;
+	s32 sound_id;
 	float step;
 	float gain;
 
-	*pkt >> server_id >> step >> gain;
+	*pkt >> sound_id >> step >> gain;
 
-	actionstream << step << std::endl;
-	actionstream << gain << std::endl;
+	UNORDERED_MAP<s32, int>::iterator i =
+			m_sounds_server_to_client.find(sound_id);
 
-	std::map<s32, int>::iterator i =
-			m_sounds_server_to_client.find(server_id);
-
-	if (i != m_sounds_server_to_client.end()) {
-		int client_id = i->second;
-		m_sound->fadeSound(client_id,step,gain);
-	}
+	if (i != m_sounds_server_to_client.end())
+		m_sound->fadeSound(i->second, step, gain);
 }
 
 void Client::handleCommand_Privileges(NetworkPacket* pkt)
