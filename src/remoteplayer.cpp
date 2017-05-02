@@ -68,7 +68,7 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 
 	// copy defaults
 	m_cloud_params.density = 0.4f;
-	m_cloud_params.color_bright = video::SColor(255, 255, 240, 240);
+	m_cloud_params.color_bright = video::SColor(229, 240, 240, 255);
 	m_cloud_params.color_ambient = video::SColor(255, 0, 0, 0);
 	m_cloud_params.height = 120.0f;
 	m_cloud_params.thickness = 16.0f;

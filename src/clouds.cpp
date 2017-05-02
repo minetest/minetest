@@ -61,7 +61,7 @@ Clouds::Clouds(
 
 	m_params.density       = 0.4f;
 	m_params.thickness     = 16.0f;
-	m_params.color_bright  = video::SColor(229, 255, 240, 240);
+	m_params.color_bright  = video::SColor(229, 240, 240, 255);
 	m_params.color_ambient = video::SColor(255, 0, 0, 0);
 	m_params.speed         = v2f(0.0f, -2.0f);
 
