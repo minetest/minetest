@@ -209,6 +209,23 @@ if INIT ~= "client" then
 	end
 end
 --------------------------------------------------------------------------------
+function resolve_name(function_name)
+    local a = _G
+    for key in string.gmatch(function_name, "([^%.]+)(%.?)") do
+        if a[key] then
+            a = a[key]
+        else
+            return nil
+        end
+    end
+    return a
+end
+
+function function_exists(function_name)
+    return type(resolve_name(function_name)) == 'function'
+end
+
+--------------------------------------------------------------------------------
 function string:trim()
 	return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
