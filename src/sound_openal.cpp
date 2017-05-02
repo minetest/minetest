@@ -611,7 +611,7 @@ public:
 	{
 		m_fade_delay += dtime;
 
-		if (m_fade_delay < 0.2f)
+		if (m_fade_delay < 0.1f)
 			return;
 
 		float chkGain = 0;
@@ -635,7 +635,7 @@ public:
 				m_sounds_fading.erase(i++);
 			}
 		}
-		m_fade_delay -= 0.2f;
+		m_fade_delay = 0;
 	}
 
 	bool soundExists(int sound)
