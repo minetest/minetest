@@ -1068,6 +1068,14 @@ void KeyCache::populate()
 			= getKeySetting("keymap_rangeselect");
 	key[KeyType::ZOOM] = getKeySetting("keymap_zoom");
 
+	key[KeyType::ROTATE_UP]    = getKeySetting("keymap_rotate_up");
+	key[KeyType::ROTATE_DOWN]  = getKeySetting("keymap_rotate_down");
+	key[KeyType::ROTATE_LEFT]  = getKeySetting("keymap_rotate_left");
+	key[KeyType::ROTATE_RIGHT] = getKeySetting("keymap_rotate_right");
+
+	key[KeyType::MOUSE_BUTTON_ALT_LEFT]  = getKeySetting("keymap_mouse_button_alt_left");
+	key[KeyType::MOUSE_BUTTON_ALT_RIGHT] = getKeySetting("keymap_mouse_button_alt_right");
+
 	key[KeyType::QUICKTUNE_NEXT] = getKeySetting("keymap_quicktune_next");
 	key[KeyType::QUICKTUNE_PREV] = getKeySetting("keymap_quicktune_prev");
 	key[KeyType::QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
@@ -1296,27 +1304,32 @@ protected:
 	inline bool getLeftClicked()
 	{
 		return input->getLeftClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_L);
+			input->joystick.getWasKeyDown(KeyType::MOUSE_L) ||
+			wasKeyDown(KeyType::MOUSE_BUTTON_ALT_LEFT);
 	}
 	inline bool getRightClicked()
 	{
 		return input->getRightClicked() ||
-			input->joystick.getWasKeyDown(KeyType::MOUSE_R);
+			input->joystick.getWasKeyDown(KeyType::MOUSE_R) ||
+			wasKeyDown(KeyType::MOUSE_BUTTON_ALT_RIGHT);
 	}
 	inline bool isLeftPressed()
 	{
 		return input->getLeftState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_L);
+			input->joystick.isKeyDown(KeyType::MOUSE_L) ||
+			isKeyDown(KeyType::MOUSE_BUTTON_ALT_LEFT);
 	}
 	inline bool isRightPressed()
 	{
 		return input->getRightState() ||
-			input->joystick.isKeyDown(KeyType::MOUSE_R);
+			input->joystick.isKeyDown(KeyType::MOUSE_R) ||
+			isKeyDown(KeyType::MOUSE_BUTTON_ALT_RIGHT);
 	}
 	inline bool getLeftReleased()
 	{
 		return input->getLeftReleased() ||
-			input->joystick.wasKeyReleased(KeyType::MOUSE_L);
+			input->joystick.wasKeyReleased(KeyType::MOUSE_L) ||
+			wasKeyReleased(KeyType::MOUSE_BUTTON_ALT_LEFT);
 	}
 
 	inline bool isKeyDown(GameKeyType k)
@@ -1326,6 +1339,10 @@ protected:
 	inline bool wasKeyDown(GameKeyType k)
 	{
 		return input->wasKeyDown(keycache.key[k]) || input->joystick.wasKeyDown(k);
+	}
+	inline bool wasKeyReleased(GameKeyType k)
+	{
+		return input->wasKeyReleased(keycache.key[k]) || input->joystick.wasKeyReleased(k);
 	}
 
 #ifdef __ANDROID__
@@ -2959,6 +2976,15 @@ void Game::updateCameraOrientation(CameraOrientation *cam, float dtime)
 		if (m_invert_mouse || camera->getCameraMode() == CAMERA_MODE_THIRD_FRONT) {
 			dy = -dy;
 		}
+
+		if (isKeyDown(KeyType::ROTATE_UP))
+			dy -= 7;
+		if (isKeyDown(KeyType::ROTATE_DOWN))
+			dy += 7;
+		if (isKeyDown(KeyType::ROTATE_LEFT))
+			dx -= 7;
+		if (isKeyDown(KeyType::ROTATE_RIGHT))
+			dx += 7;
 
 		cam->camera_yaw   -= dx * m_cache_mouse_sensitivity;
 		cam->camera_pitch += dy * m_cache_mouse_sensitivity;
