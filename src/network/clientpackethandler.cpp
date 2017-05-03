@@ -780,7 +780,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 
 	try {
 		*pkt >> fade;
-	} catch (SerializationError &e) {};
+	} catch (PacketError &e) {};
 
 	// Start playing
 	int client_id = -1;
