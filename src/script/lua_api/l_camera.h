@@ -2,7 +2,6 @@
 #define L_CAMERA_H
 
 #include "l_base.h"
-#include "camera.h"
 
 class Camera;
 

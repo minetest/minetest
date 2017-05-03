@@ -2,6 +2,7 @@
 #include "l_camera.h"
 #include "l_internal.h"
 #include "content_cao.h"
+#include "camera.h"
 
 LuaCamera::LuaCamera(Camera *m)
 {
