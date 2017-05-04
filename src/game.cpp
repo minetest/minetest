@@ -1637,7 +1637,10 @@ void Game::run()
 			|| (server && server->getShutdownRequested()))) {
 
 		// Verify if window size has changed and save it if it's the case
-		if (previous_screen_size != device->getVideoDriver()->getScreenSize()) {
+		// Ensure evaluating settings->getBool after verifying screensize
+		// First condition is cheaper
+		if (previous_screen_size != device->getVideoDriver()->getScreenSize() &&
+			g_settings->getBool("autosave_screensize")) {
 			const irr::core::dimension2d<u32> &current_screen_size =
 				device->getVideoDriver()->getScreenSize();
 			g_settings->setU16("screenW", current_screen_size.Width);

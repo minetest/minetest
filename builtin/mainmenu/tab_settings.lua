@@ -190,7 +190,7 @@ local function formspec(tabview, name, tabdata)
 				.. getSettingIndex.NodeHighlighting() .. "]" ..
 		"dropdown[0.25,3.6;3.3;dd_leaves_style;" .. dd_options.leaves[1] .. ";"
 				.. getSettingIndex.Leaves() .. "]" ..
-		"box[3.75,0;3.75,3.45;#999999]" ..
+		"box[3.75,0;3.75,4.45;#999999]" ..
 		"label[3.85,0.1;" .. fgettext("Texturing:") .. "]" ..
 		"dropdown[3.85,0.55;3.85;dd_filters;" .. dd_options.filters[1] .. ";"
 				.. getSettingIndex.Filter() .. "]" ..
@@ -199,6 +199,9 @@ local function formspec(tabview, name, tabdata)
 		"label[3.85,2.15;" .. fgettext("Antialiasing:") .. "]" ..
 		"dropdown[3.85,2.6;3.85;dd_antialiasing;" .. dd_options.antialiasing[1] .. ";"
 				.. getSettingIndex.Antialiasing() .. "]" ..
+		"label[3.85,3.45;" .. fgettext("Screen:") .. "]" ..
+		"checkbox[3.85,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
+				.. dump(core.setting_getbool("autosave_screensize")) .. "]" ..
 		"box[7.75,0;4,4.4;#999999]" ..
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.setting_getbool("enable_shaders")) .. "]"
@@ -288,6 +291,10 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_connected_glass"] then
 		core.setting_set("connected_glass", fields["cb_connected_glass"])
+		return true
+	end
+	if fields["cb_autosave_screensize"] then
+		core.setting_set("autosave_screensize", fields["cb_autosave_screensize"])
 		return true
 	end
 	if fields["cb_shaders"] then

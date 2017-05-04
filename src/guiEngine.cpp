@@ -268,7 +268,10 @@ void GUIEngine::run()
 	while (m_device->run() && (!m_startgame) && (!m_kill)) {
 
 		// Verify if window size has changed and save it if it's the case
-		if (previous_screen_size != m_device->getVideoDriver()->getScreenSize()) {
+		// Ensure evaluating settings->getBool after verifying screensize
+		// First condition is cheaper
+		if (previous_screen_size != m_device->getVideoDriver()->getScreenSize() &&
+			g_settings->getBool("autosave_screensize")) {
 			const irr::core::dimension2d<u32> &current_screen_size =
 				m_device->getVideoDriver()->getScreenSize();
 			g_settings->setU16("screenW", current_screen_size.Width);
