@@ -111,8 +111,8 @@ int NodeMetadata::countNonPrivate() const
 	for (StringMap::const_iterator
 			it = m_stringvars.begin();
 			it != m_stringvars.end(); ++it) {
-			if (getPrivate(it->first) == false)
-				n++;
+		if (getPrivate(it->first) == false)
+			n++;
 	}
 	return n;
 }
