@@ -625,7 +625,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	int start_radius = lua_toboolean(L, 4) ? 0 : 1;
+	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
 	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (std::vector<v3s16>::iterator i = list.begin();
