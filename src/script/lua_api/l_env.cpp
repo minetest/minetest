@@ -599,7 +599,7 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 }
 
 
-// find_node_near(pos, radius, nodenames) -> pos or nil
+// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_node_near(lua_State *L)
 {
@@ -612,27 +612,27 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
 	std::set<content_t> filter;
-	if(lua_istable(L, 3)){
-		int table = 3;
+	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
+		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(lua_tostring(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)){
+	} else if (lua_isstring(L, 3)) {
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	for (int d=1; d<=radius; d++){
+	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (std::vector<v3s16>::iterator i = list.begin();
-				i != list.end(); ++i){
+				i != list.end(); ++i) {
 			v3s16 p = pos + (*i);
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
-			if (filter.count(c) != 0){
+			if (filter.count(c) != 0) {
 				push_v3s16(L, p);
 				return 1;
 			}

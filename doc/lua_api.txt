@@ -2280,9 +2280,11 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was created
 * `minetest.get_day_count()`: returns number days elapsed since world was created,
     * accounting for time changes.
-* `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
+* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `search_center` is an optional boolean (default: `false`)
+      If true `pos` is also checked for the nodes
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
     * returns as second value a table with the count of the individual nodes found
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
