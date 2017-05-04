@@ -107,10 +107,7 @@ public:
 		m_cloud_params = cloud_params;
 	}
 
-	const CloudParams &getCloudParams() const
-	{
-		return m_cloud_params;
-	}
+	const CloudParams &getCloudParams() const { return m_cloud_params; }
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 

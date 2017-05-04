@@ -125,8 +125,8 @@ private:
 	bool m_sunlight_seen;
 	float m_brightness;
 	float m_cloud_brightness;
-	bool m_clouds_visible;  // Whether clouds are disabled due to player underground
-	bool m_clouds_enabled;  // Initialised to true, reset only by set_sky API
+	bool m_clouds_visible; // Whether clouds are disabled due to player underground
+	bool m_clouds_enabled; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	video::SColorf m_bgcolor_bright_f;
 	video::SColorf m_skycolor_bright_f;
