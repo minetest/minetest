@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "log.h"
 #include "util/serialize.h"
+#include "util/basic_macros.h"
 #include "constants.h" // MAP_BLOCKSIZE
 #include <sstream>
 
