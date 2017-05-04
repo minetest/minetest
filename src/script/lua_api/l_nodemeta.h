@@ -73,6 +73,9 @@ private:
 	// get_inventory(self)
 	static int l_get_inventory(lua_State *L);
 
+	// mark_as_private(self, <string> or {<string>, <string>, ...})
+	static int l_mark_as_private(lua_State *L);
+
 public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
 	NodeMetaRef(Metadata *meta);

@@ -611,7 +611,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		Node metadata
 	*/
 	std::ostringstream oss(std::ios_base::binary);
-	m_node_metadata.serialize(oss);
+	m_node_metadata.serialize(oss, version, disk);
 	compressZlib(oss.str(), os);
 
 	/*
@@ -669,11 +669,10 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) ? true : false;
 	m_day_night_differs = (flags & 0x02) ? true : false;
-	if (version < 27) {
+	if (version < 27)
 		m_lighting_complete = 0xFFFF;
-	} else {
+	else
 		m_lighting_complete = readU16(is);
-	}
 	m_generated = (flags & 0x08) ? false : true;
 
 	/*

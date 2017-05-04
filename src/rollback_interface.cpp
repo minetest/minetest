@@ -44,7 +44,7 @@ RollbackNode::RollbackNode(Map *map, v3s16 p, IGameDef *gamedef)
 	NodeMetadata *metap = map->getNodeMetadata(p);
 	if (metap) {
 		std::ostringstream os(std::ios::binary);
-		metap->serialize(os);
+		metap->serialize(os, 1); // FIXME: version bump??
 		meta = os.str();
 	}
 }
@@ -165,7 +165,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 						}
 					}
 					std::istringstream is(n_old.meta, std::ios::binary);
-					meta->deSerialize(is);
+					meta->deSerialize(is, 1); // FIXME: version bump??
 				}
 				// Inform other things that the meta data has changed
 				v3s16 blockpos = getContainerPos(p, MAP_BLOCKSIZE);

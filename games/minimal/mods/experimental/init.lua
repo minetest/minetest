@@ -502,10 +502,16 @@ minetest.register_craftitem("experimental:tester_tool_1", {
     on_use = function(itemstack, user, pointed_thing)
 		--print(dump(pointed_thing))
 		if pointed_thing.type == "node" then
-			if minetest.get_node(pointed_thing.under).name == "experimental:tester_node_1" then
+			local node = minetest.get_node(pointed_thing.under)
+			if node.name == "experimental:tester_node_1" or node.name == "default:chest" then
 				local p = pointed_thing.under
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
-				minetest.dig_node(p)
+				if node.name == "experimental:tester_node_1" then
+					minetest.dig_node(p)
+				else
+					minetest.get_meta(p):mark_as_private({"infotext", "formspec"})
+					minetest.chat_send_player(user:get_player_name(), "Verify that chest is unusable now.")
+				end
 			else
 				local p = pointed_thing.above
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
