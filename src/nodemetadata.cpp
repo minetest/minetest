@@ -47,7 +47,7 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 	for (StringMap::const_iterator
 			it = m_stringvars.begin();
 			it != m_stringvars.end(); ++it) {
-		bool priv = getPrivate(it->first);
+		bool priv = isPrivate(it->first);
 		if (!disk && priv)
 			continue;
 
@@ -62,16 +62,15 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 
 void NodeMetadata::deSerialize(std::istream &is, u8 version)
 {
-	m_stringvars.clear();
+	clear();
 	int num_vars = readU32(is);
 	for(int i=0; i<num_vars; i++){
 		std::string name = deSerializeString(is);
 		std::string var = deSerializeLongString(is);
 		m_stringvars[name] = var;
 		if (version >= 2) {
-			bool priv = readU8(is) == 1;
-			if (priv)
-				setPrivate(name, true);
+			if (readU8(is) == 1)
+				markPrivate(name, true);
 		}
 	}
 
@@ -90,12 +89,8 @@ bool NodeMetadata::empty() const
 	return Metadata::empty() && m_inventory->getLists().size() == 0;
 }
 
-bool NodeMetadata::getPrivate(const std::string &name) const
-{
-	return m_privatevars.count(name) != 0;
-}
 
-void NodeMetadata::setPrivate(const std::string &name, bool set)
+void NodeMetadata::markPrivate(const std::string &name, bool set)
 {
 	if (set)
 		m_privatevars.insert(name);
@@ -111,7 +106,7 @@ int NodeMetadata::countNonPrivate() const
 	for (StringMap::const_iterator
 			it = m_stringvars.begin();
 			it != m_stringvars.end(); ++it) {
-		if (getPrivate(it->first) == false)
+		if (isPrivate(it->first) == false)
 			n++;
 	}
 	return n;

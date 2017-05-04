@@ -53,8 +53,11 @@ public:
 		return m_inventory;
 	}
 
-	bool getPrivate(const std::string &name) const;
-	void setPrivate(const std::string &name, bool set);
+	inline bool isPrivate(const std::string &name) const
+	{
+		return m_privatevars.count(name) != 0;
+	}
+	void markPrivate(const std::string &name, bool set);
 
 private:
 	int countNonPrivate() const;
