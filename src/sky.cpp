@@ -609,7 +609,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	);
 
 	// Horizon coloring based on sun and moon direction during sunset and sunrise
-	video::SColor pointcolor = video::SColor(255, 255, 255, m_bgcolor.getAlpha());
+	video::SColor pointcolor = video::SColor(m_bgcolor.getAlpha(), 255, 255, 255);
 	if (m_directional_colored_fog) {
 		if (m_horizon_blend() != 0) {
 			// Calculate hemisphere value from yaw, (inverted in third person front view)
