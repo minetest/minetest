@@ -922,7 +922,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	m_key_events[1].x         = m_move_downlocation.X;
 	m_key_events[1].y         = m_move_downlocation.Y;
 
-	u32 delta = porting::getDeltaMs(m_key_events[0].down_time, getTimeMs());
+	u32 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
 	if (delta > 400)
 		return false;
 
@@ -1006,7 +1006,7 @@ void TouchScreenGUI::step(float dtime)
 			(!m_move_has_really_moved) &&
 			(!m_move_sent_as_mouse_event)) {
 
-		u32 delta = porting::getDeltaMs(m_move_downtime,getTimeMs());
+		u32 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
 		if (delta > MIN_DIG_TIME_MS) {
 			m_shootline = m_device
