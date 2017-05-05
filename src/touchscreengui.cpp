@@ -1006,7 +1006,7 @@ void TouchScreenGUI::step(float dtime)
 			(!m_move_has_really_moved) &&
 			(!m_move_sent_as_mouse_event)) {
 
-		u32 delta = porting::getDeltaMs(m_move_downtime,porting::getTimeMs());
+		u32 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
 		if (delta > MIN_DIG_TIME_MS) {
 			m_shootline = m_device
