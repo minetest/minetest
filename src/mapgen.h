@@ -37,6 +37,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_LIGHT       0x10
 #define MG_DECORATIONS 0x20
 
+/////////////////// Mapgen type flags
+#define MAPGEN_TYPE_V5 0x01
+#define MAPGEN_TYPE_V6 0x02
+#define MAPGEN_TYPE_V7 0x04
+#define MAPGEN_TYPE_FLAT 0x08
+#define MAPGEN_TYPE_FRACTAL 0x10
+#define MAPGEN_TYPE_VALLEYS 0x20
+#define MAPGEN_TYPE_SINGLENODE 0x40
+
 typedef u8 biome_t;  // copy from mg_biome.h to avoid an unnecessary include
 
 class Settings;
@@ -45,6 +54,7 @@ class INodeDefManager;
 
 extern FlagDesc flagdesc_mapgen[];
 extern FlagDesc flagdesc_gennotify[];
+extern FlagDesc flagdesc_mapgen_type[];
 
 class Biome;
 class BiomeGen;

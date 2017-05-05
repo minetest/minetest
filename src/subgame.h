@@ -35,6 +35,9 @@ struct SubgameSpec
 	std::string gamemods_path; //path to mods of the game
 	std::set<std::string> addon_mods_paths; //paths to addon mods for this game
 	std::string name;
+	std::set<std::string> available_mapgens; // List of selectable mapgens in main menu
+	std::set<std::string> discouraged_mapgens; // List of mapgens which are don't perform well with this subgame while not being completely useless
+	bool mapgen_seed_used; // If true, setting the seed influences the result of the mapgen. If false, seed is ignored
 	std::string menuicon_path;
 
 	SubgameSpec(const std::string &id_="",
@@ -42,12 +45,18 @@ struct SubgameSpec
 			const std::string &gamemods_path_="",
 			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
 			const std::string &name_="",
+			const std::set<std::string> &available_mapgens_=std::set<std::string>(),
+			const std::set<std::string> &discouraged_mapgens_=std::set<std::string>(),
+			const bool &mapgen_seed_used_=true,
 			const std::string &menuicon_path_=""):
 		id(id_),
 		path(path_),
 		gamemods_path(gamemods_path_),		
 		addon_mods_paths(addon_mods_paths_),
 		name(name_),
+		available_mapgens(available_mapgens_),
+		discouraged_mapgens(discouraged_mapgens_),
+		mapgen_seed_used(mapgen_seed_used_),
 		menuicon_path(menuicon_path_)
 	{}
 
@@ -63,6 +72,9 @@ bool getGameMinetestConfig(const std::string &game_path, Settings &conf);
 bool getGameConfig(const std::string &game_path, Settings &conf);
 
 std::string getGameName(const std::string &game_path);
+std::set<std::string> getAvailableMapgens(const std::string &game_path);
+std::set<std::string> getDiscouragedMapgens(const std::string &game_path);
+bool isMapgenSeedUsedByGame(const std::string &game_path);
 
 SubgameSpec findSubgame(const std::string &id);
 SubgameSpec findWorldSubgame(const std::string &world_path);

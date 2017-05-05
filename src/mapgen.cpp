@@ -57,6 +57,17 @@ FlagDesc flagdesc_mapgen[] = {
 	{NULL,       0}
 };
 
+FlagDesc flagdesc_mapgen_type[] = {
+	{"v5",		MAPGEN_TYPE_V5},
+	{"v6",		MAPGEN_TYPE_V6},
+	{"v7",		MAPGEN_TYPE_V7},
+	{"flat",	MAPGEN_TYPE_FLAT},
+	{"fractal",	MAPGEN_TYPE_FRACTAL},
+	{"valleys",	MAPGEN_TYPE_VALLEYS},
+	{"singlenode",	MAPGEN_TYPE_SINGLENODE},
+	{NULL,    0}
+};
+
 FlagDesc flagdesc_gennotify[] = {
 	{"dungeon",          1 << GENNOTIFY_DUNGEON},
 	{"temple",           1 << GENNOTIFY_TEMPLE},
@@ -84,7 +95,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"flat",       true},
 	{"fractal",    true},
 	{"valleys",    true},
-	{"singlenode", false},
+	{"singlenode", true},
 };
 
 STATIC_ASSERT(
