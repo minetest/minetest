@@ -262,8 +262,24 @@ void GUIEngine::run()
 
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	while(m_device->run() && (!m_startgame) && (!m_kill))
-	{
+	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screenW"),
+		g_settings->getU16("screenH"));
+
+	while (m_device->run() && (!m_startgame) && (!m_kill)) {
+
+		const irr::core::dimension2d<u32> &current_screen_size =
+			m_device->getVideoDriver()->getScreenSize();
+		// Verify if window size has changed and save it if it's the case
+		// Ensure evaluating settings->getBool after verifying screensize
+		// First condition is cheaper
+		if (previous_screen_size != current_screen_size &&
+				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
+				g_settings->getBool("autosave_screensize")) {
+			g_settings->setU16("screenW", current_screen_size.Width);
+			g_settings->setU16("screenH", current_screen_size.Height);
+			previous_screen_size = current_screen_size;
+		}
+
 		//check if we need to update the "upper left corner"-text
 		if (text_height != g_fontengine->getTextHeight()) {
 			updateTopLeftTextSize();

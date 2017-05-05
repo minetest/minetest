@@ -526,6 +526,10 @@
 #    type: int
 # screenH = 600
 
+#    Save the window size automatically when modified.
+#    type: bool
+# autosave_screensize = true
+
 #    Fullscreen mode.
 #    type: bool
 # fullscreen = false

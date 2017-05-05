@@ -459,6 +459,9 @@ screenW (Screen width) int 800
 #    Height component of the initial window size.
 screenH (Screen height) int 600
 
+#    Save window size automatically when modified.
+autosave_screensize (Autosave Screen Size) bool true
+
 #    Fullscreen mode.
 fullscreen (Full screen) bool false
 
