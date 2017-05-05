@@ -360,7 +360,7 @@ void Clouds::update(v2f camera_p, video::SColorf color_diffuse)
 	m_camera_pos = camera_p;
 	m_color.r = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getRed(),
 			m_params.color_ambient.getRed()), 255) / 255.0f;
-	m_color.g = MYMIN(MYMAX(color_diffuse.r * m_params.color_bright.getGreen(),
+	m_color.g = MYMIN(MYMAX(color_diffuse.g * m_params.color_bright.getGreen(),
 			m_params.color_ambient.getGreen()), 255) / 255.0f;
 	m_color.b = MYMIN(MYMAX(color_diffuse.b * m_params.color_bright.getBlue(),
 			m_params.color_ambient.getBlue()), 255) / 255.0f;
