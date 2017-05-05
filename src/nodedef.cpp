@@ -670,7 +670,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	}
 
 	bool is_liquid = false;
-	bool is_water_surface = false;
 
 	u8 material_type = (alpha == 255) ?
 		TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
@@ -760,12 +759,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	}
 
-	if (is_liquid) {
+	if (is_liquid)
 		material_type = (alpha == 255) ?
 			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-		if (name == "default:water_source")
-			is_water_surface = true;
-	}
 
 	// Vertex alpha is no longer supported, correct if necessary.
 	correctAlpha();
@@ -773,11 +769,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 tile_shader[6];
 	for (u16 j = 0; j < 6; j++) {
 		tile_shader[j] = shdsrc->getShader("nodes_shader",
-			material_type, drawtype);
-	}
-
-	if (is_water_surface) {
-		tile_shader[0] = shdsrc->getShader("water_surface_shader",
 			material_type, drawtype);
 	}
 
