@@ -198,7 +198,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
 	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
-	null_command_factory,
+	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
