@@ -59,14 +59,7 @@ private:
 
 	static int l_get_breath(lua_State *L);
 
-	static int l_get_look_dir(lua_State *L);
-	static int l_get_look_horizontal(lua_State *L);
-	static int l_get_look_vertical(lua_State *L);
-
 	static int l_get_pos(lua_State *L);
-
-	static int l_get_eye_pos(lua_State *L);
-	static int l_get_eye_offset(lua_State *L);
 
 	static int l_get_movement_acceleration(lua_State *L);
 

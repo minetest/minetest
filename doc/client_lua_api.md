@@ -694,7 +694,7 @@ Call these functions only at load time!
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
 * `minetest.localplayer`
-    * Reference to the LocalPlayer object. See `LocalPlayer` class reference for methods.
+    * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
 ### Client Environment
 * `minetest.get_player_names()`
@@ -750,7 +750,7 @@ Call these functions only at load time!
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
     * Decodes a string encoded in base64.
-* `minetest.gettext(string) : returns string
+* `minetest.gettext(string)` : returns string
     * look up the translation of a string in the gettext message catalog
 * `fgettext_ne(string, ...)`
     * call minetest.gettext(string), replace "$1"..."$9" with the given
@@ -762,7 +762,9 @@ Call these functions only at load time!
 
 ### UI
 * `minetest.ui.minimap`
-    * Reference to the minimap object. See `Minimap` class reference for methods.
+    * Reference to the minimap object. See [`Minimap`](#minimap) class reference for methods.
+* `minetest.camera`
+    * Reference to the camera object. See [`Camera`](#camera) class reference for methods.
 * `minetest.show_formspec(formname, formspec)` : returns true on success
 	* Shows a formspec to the player
 * `minetest.display_chat_message(message)` returns true on success
@@ -784,6 +786,40 @@ An interface to manipulate minimap on client UI
 * `get_mode()`: returns the current minimap mode
 * `set_shape(shape)`: Sets the minimap shape. (0 = square, 1 = round)
 * `get_shape()`: Gets the minimap shape. (0 = square, 1 = round)
+
+### Camera
+An interface to get or set information about the camera and cameranode.
+Please do not try to access the reference until the camera is initialized, otherwise the reference will be nil.
+
+#### Methods
+* `set_camera_mode(mode)`
+    * Pass `0` for first-person, `1` for third person, and `2` for third person front
+* `get_camera_mode()`
+    * Returns with same syntax as above
+* `get_fov()`
+    * Returns:
+    
+```lua
+     {
+         x = number,
+         y = number,
+         max = number,
+         actual = number
+     }
+```
+    
+* `get_pos()`
+    * Returns position of camera with view bobbing
+* `get_offset()`
+    * Returns eye offset vector
+* `get_look_dir()`
+    * Returns eye direction unit vector
+* `get_look_vertical()`
+    * Returns pitch in radians
+* `get_look_horizontal()`
+    * Returns yaw in radians
+* `get_aspect_ratio()`
+    * Returns aspect ratio of screen
 
 ### LocalPlayer
 An interface to retrieve information about the player. The player is
@@ -844,16 +880,6 @@ Methods:
     * returns last player speed
 * `get_breath()`
     * returns the player's breath
-* `get_look_dir()`
-    * returns look direction vector
-* `get_look_horizontal()`
-    * returns look horizontal angle
-* `get_look_vertical()`
-    * returns look vertical angle
-* `get_eye_pos()`
-    * returns the player's eye position
-* `get_eye_offset()`
-    * returns the player's eye shift vector
 * `get_movement_acceleration()`
     * returns acceleration of the player in different environments:
 

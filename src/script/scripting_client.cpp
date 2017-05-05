@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_localplayer.h"
+#include "lua_api/l_camera.h"
 
 ClientScripting::ClientScripting(Client *client):
 	ScriptApiBase()
@@ -71,10 +72,16 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
+	LuaCamera::Register(L);
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 {
 	lua_State *L = getStack();
 	LuaLocalPlayer::create(L, localplayer);
+}
+
+void ClientScripting::on_camera_ready(Camera *camera)
+{
+	LuaCamera::create(getStack(), camera);
 }

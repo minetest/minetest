@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "constants.h"
 #include "fontengine.h"
+#include "script/scripting_client.h"
 
 #define CAMERA_OFFSET_STEP 200
 
@@ -124,6 +125,10 @@ bool Camera::successfullyCreated(std::string &error_message)
 		error_message = "Failed to create the wielded item scene node";
 	} else {
 		error_message.clear();
+	}
+	
+	if (g_settings->getBool("enable_client_modding")) {
+		m_client->getScript()->on_camera_ready(this);
 	}
 	return error_message.empty();
 }

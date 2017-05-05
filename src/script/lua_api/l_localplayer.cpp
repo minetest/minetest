@@ -203,55 +203,11 @@ int LuaLocalPlayer::l_get_breath(lua_State *L)
 	return 1;
 }
 
-int LuaLocalPlayer::l_get_look_dir(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	float pitch = -1.0 * player->getPitch() * core::DEGTORAD;
-	float yaw = (player->getYaw() + 90.) * core::DEGTORAD;
-	v3f v(cos(pitch) * cos(yaw), sin(pitch), cos(pitch) * sin(yaw));
-
-	push_v3f(L, v);
-	return 1;
-}
-
-int LuaLocalPlayer::l_get_look_horizontal(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	lua_pushnumber(L, (player->getYaw() + 90.) * core::DEGTORAD);
-	return 1;
-}
-
-int LuaLocalPlayer::l_get_look_vertical(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	lua_pushnumber(L, -1.0 * player->getPitch() * core::DEGTORAD);
-	return 1;
-}
-
 int LuaLocalPlayer::l_get_pos(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
 	push_v3f(L, player->getPosition() / BS);
-	return 1;
-}
-
-int LuaLocalPlayer::l_get_eye_pos(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	push_v3f(L, player->getEyePosition());
-	return 1;
-}
-
-int LuaLocalPlayer::l_get_eye_offset(lua_State *L)
-{
-	LocalPlayer *player = getobject(L, 1);
-
-	push_v3f(L, player->getEyeOffset());
 	return 1;
 }
 
@@ -393,12 +349,7 @@ const luaL_Reg LuaLocalPlayer::methods[] = {
 		luamethod(LuaLocalPlayer, get_last_look_vertical),
 		luamethod(LuaLocalPlayer, get_key_pressed),
 		luamethod(LuaLocalPlayer, get_breath),
-		luamethod(LuaLocalPlayer, get_look_dir),
-		luamethod(LuaLocalPlayer, get_look_horizontal),
-		luamethod(LuaLocalPlayer, get_look_vertical),
 		luamethod(LuaLocalPlayer, get_pos),
-		luamethod(LuaLocalPlayer, get_eye_pos),
-		luamethod(LuaLocalPlayer, get_eye_offset),
 		luamethod(LuaLocalPlayer, get_movement_acceleration),
 		luamethod(LuaLocalPlayer, get_movement_speed),
 		luamethod(LuaLocalPlayer, get_movement),
