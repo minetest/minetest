@@ -1418,9 +1418,6 @@ Another example: Make red wool from white wool and red dye:
     * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
-* `fall_damage_tolerance`: fall tolerance in nodes (whole numbers only)
-     * Amount of nodes that a player can fall on this node without being damaged
-     * Minimum: 0
 * `bouncy`: value is bounce speed in percent
 * `falling_node`: if there is no walkable block under the node it will fall
 * `attached_node`: if the node under it is not a walkable block the node will be
