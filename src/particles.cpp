@@ -18,15 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "particles.h"
-#include "client.h"
-#include "collision.h"
 #include <stdlib.h>
-#include "util/numeric.h"
-#include "light.h"
-#include "environment.h"
-#include "clientmap.h"
-#include "mapnode.h"
 #include "client.h"
+#include "clientmap.h"
+#include "collision.h"
+#include "environment.h"
+#include "light.h"
+#include "mapnode.h"
+#include "util/numeric.h"
 
 /*
 	Utility
@@ -96,8 +95,7 @@ Particle::Particle(
 	m_glow = glow;
 
 	// Irrlicht stuff
-	m_collisionbox = aabb3f
-			(-size/2,-size/2,-size/2,size/2,size/2,size/2);
+	m_collisionbox = aabb3f(-size/2,-size/2,-size/2,size/2,size/2,size/2);
 	this->setAutomaticCulling(scene::EAC_OFF);
 
 	// Init lighting
@@ -107,21 +105,20 @@ Particle::Particle(
 	updateVertices();
 }
 
-Particle::~Particle()
-{
-}
+Particle::~Particle() {}
 
 void Particle::OnRegisterSceneNode()
 {
 	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
+		SceneManager->registerNodeForRendering(this,
+				scene::ESNRP_TRANSPARENT_EFFECT);
 
 	ISceneNode::OnRegisterSceneNode();
 }
 
 void Particle::render()
 {
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 	driver->setMaterial(m_material);
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
@@ -431,31 +428,42 @@ ParticleManager::~ParticleManager()
 
 void ParticleManager::step(float dtime)
 {
-	stepParticles (dtime);
-	stepSpawners (dtime);
+	stepParticles(dtime);
+	stepSpawners(dtime);
+	stepSpawnersLocal(dtime);
 }
 
-void ParticleManager::stepSpawners (float dtime)
+void ParticleManager::stepSpawners(float dtime)
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	for (std::map<u32, ParticleSpawner*>::iterator i =
 			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
-		if (i->second->get_expired())
-		{
+			i != m_particle_spawners.end(); i++) {
+		if (i->second->get_expired()) {
 			delete i->second;
-			m_particle_spawners.erase(i++);
+			m_particle_spawners.erase(i);
+		} else {
+			i->second->step(dtime, m_env);
 		}
-		else
-		{
+	}
+}
+
+void ParticleManager::stepSpawnersLocal(float dtime)
+{
+	for (UNORDERED_MAP<u32, ParticleSpawner*>::iterator i =
+			m_particle_spawners_local.begin();
+			i != m_particle_spawners_local.end();) {
+		if (i->second->get_expired()) {
+			delete i->second;
+			m_particle_spawners_local.erase(i++);
+		} else {
 			i->second->step(dtime, m_env);
 			++i;
 		}
 	}
 }
 
-void ParticleManager::stepParticles (float dtime)
+void ParticleManager::stepParticles(float dtime)
 {
 	MutexAutoLock lock(m_particle_list_lock);
 	for(std::vector<Particle*>::iterator i = m_particles.begin();
@@ -475,25 +483,28 @@ void ParticleManager::stepParticles (float dtime)
 	}
 }
 
-void ParticleManager::clearAll ()
+void ParticleManager::clearAll()
 {
 	MutexAutoLock lock(m_spawner_list_lock);
 	MutexAutoLock lock2(m_particle_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i =
-			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
+
+	std::map<u32, ParticleSpawner*>::iterator i = m_particle_spawners.begin();
+	for(; i != m_particle_spawners.end(); i++) {
 		delete i->second;
-		m_particle_spawners.erase(i++);
+		m_particle_spawners.erase(i);
 	}
 
-	for(std::vector<Particle*>::iterator i =
-			m_particles.begin();
-			i != m_particles.end();)
-	{
-		(*i)->remove();
-		delete *i;
-		i = m_particles.erase(i);
+	UNORDERED_MAP<u32, ParticleSpawner*>::iterator it = m_particle_spawners_local.begin();
+	for(; it != m_particle_spawners_local.end();) {
+		delete it->second;
+		m_particle_spawners_local.erase(it++);
+	}
+
+	std::vector<Particle*>::iterator j = m_particles.begin();
+	for(; j != m_particles.end();) {
+		(*j)->remove();
+		delete *j;
+		j = m_particles.erase(j);
 	}
 }
 
@@ -503,21 +514,32 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 	switch (event->type) {
 		case CE_DELETE_PARTICLESPAWNER: {
 			MutexAutoLock lock(m_spawner_list_lock);
-			if (m_particle_spawners.find(event->delete_particlespawner.id) !=
-					m_particle_spawners.end()) {
-				delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
-				m_particle_spawners.erase(event->delete_particlespawner.id);
+			std::map<u32, ParticleSpawner*>::iterator it =
+					m_particle_spawners.find(event->delete_particlespawner.id);
+			if (it != m_particle_spawners.end()) {
+				delete it->second;
+				m_particle_spawners.erase(it);
 			}
 			// no allocated memory in delete event
+			break;
+		}
+		case CE_DELETE_LOCAL_PARTICLESPAWNER: {
+			UNORDERED_MAP<u32, ParticleSpawner*>::iterator it =
+				m_particle_spawners_local.find(event->delete_particlespawner.id);
+			if (it != m_particle_spawners_local.end()) {
+				delete it->second;
+				m_particle_spawners_local.erase(it);
+			}
 			break;
 		}
 		case CE_ADD_PARTICLESPAWNER: {
 			{
 				MutexAutoLock lock(m_spawner_list_lock);
-				if (m_particle_spawners.find(event->add_particlespawner.id) !=
-						m_particle_spawners.end()) {
-					delete m_particle_spawners.find(event->add_particlespawner.id)->second;
-					m_particle_spawners.erase(event->add_particlespawner.id);
+				std::map<u32, ParticleSpawner*>::iterator it =
+						m_particle_spawners.find(event->add_particlespawner.id);
+				if (it != m_particle_spawners.end()) {
+					delete it->second;
+					m_particle_spawners.erase(it);
 				}
 			}
 
@@ -563,6 +585,55 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 								event->add_particlespawner.id,
 								toadd));
 			}
+			break;
+		}
+		case CE_ADD_LOCAL_PARTICLESPAWNER: {
+			UNORDERED_MAP<u32, ParticleSpawner*>::iterator it =
+				m_particle_spawners_local.find(event->add_particlespawner.id);
+			if (it != m_particle_spawners_local.end()) {
+				delete it->second;
+				m_particle_spawners_local.erase(it);
+			}
+
+			video::ITexture *texture =
+				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
+
+			ParticleSpawner* toadd = new ParticleSpawner(client, smgr, player,
+					event->add_particlespawner.amount,
+					event->add_particlespawner.spawntime,
+					*event->add_particlespawner.minpos,
+					*event->add_particlespawner.maxpos,
+					*event->add_particlespawner.minvel,
+					*event->add_particlespawner.maxvel,
+					*event->add_particlespawner.minacc,
+					*event->add_particlespawner.maxacc,
+					event->add_particlespawner.minexptime,
+					event->add_particlespawner.maxexptime,
+					event->add_particlespawner.minsize,
+					event->add_particlespawner.maxsize,
+					event->add_particlespawner.collisiondetection,
+					event->add_particlespawner.collision_removal,
+					event->add_particlespawner.attached_id,
+					event->add_particlespawner.vertical,
+					texture,
+					event->add_particlespawner.id,
+					event->add_particlespawner.animation,
+					event->add_particlespawner.glow,
+					this);
+
+			/* delete allocated content of event */
+			delete event->add_particlespawner.minpos;
+			delete event->add_particlespawner.maxpos;
+			delete event->add_particlespawner.minvel;
+			delete event->add_particlespawner.maxvel;
+			delete event->add_particlespawner.minacc;
+			delete event->add_particlespawner.texture;
+			delete event->add_particlespawner.maxacc;
+
+			m_particle_spawners_local.insert(
+					std::pair<u32, ParticleSpawner*>(
+							event->add_particlespawner.id,
+							toadd));
 			break;
 		}
 		case CE_SPAWN_PARTICLE: {
@@ -679,6 +750,15 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	addParticle(toadd);
 }
 
+u32 ParticleManager::getSpawnerId() const
+{
+	for (u32 id = 0;; ++id) { // look for unused particlespawner id
+		UNORDERED_MAP<u32, ParticleSpawner*>::const_iterator f =
+			m_particle_spawners_local.find(id);
+		if (f == m_particle_spawners_local.end())
+			return id;
+	}
+}
 void ParticleManager::addParticle(Particle* toadd)
 {
 	MutexAutoLock lock(m_particle_list_lock);

@@ -23,17 +23,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"
+#include "lua_api/l_item.h"
 #include "lua_api/l_minimap.h"
-#include "lua_api/l_storage.h"
+#include "lua_api/l_particles_local.h"
 #include "lua_api/l_sound.h"
+#include "lua_api/l_storage.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_localplayer.h"
 #include "lua_api/l_camera.h"
 
-ClientScripting::ClientScripting(Client *client):
-	ScriptApiBase()
+ClientScripting::ClientScripting(Client *client) : ScriptApiBase()
 {
 	setGameDef(client);
 
@@ -66,6 +67,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	ModApiClient::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
 	ModApiEnvMod::InitializeClient(L, top);
+	ModApiParticlesLocal::Initialize(L, top);
 
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
