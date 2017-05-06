@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "player.h"
 #include "log.h"
+#include <algorithm>
 
 // request_shutdown()
 int ModApiServer::l_request_shutdown(lua_State *L)

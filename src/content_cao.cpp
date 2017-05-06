@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
 #include "log.h"
+#include <algorithm>
 
 class Settings;
 struct ToolCapabilities;

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include <algorithm>
 
 /*
 	ClientEnvironment

@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "log.h"
 #include "util/numeric.h"
+#include <algorithm>
+
 
 FlagDesc flagdesc_deco[] = {
 	{"place_center_x",  DECO_PLACE_CENTER_X},
