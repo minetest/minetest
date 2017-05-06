@@ -3143,6 +3143,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 		case CE_SPAWN_PARTICLE:
 		case CE_ADD_PARTICLESPAWNER:
 		case CE_DELETE_PARTICLESPAWNER:
+		case CE_ADD_LOCAL_PARTICLESPAWNER:
+		case CE_DELETE_LOCAL_PARTICLESPAWNER:
 			client->getParticleManager()->handleParticleEvent(&event, client,
 					smgr, player);
 			break;

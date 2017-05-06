@@ -35,7 +35,7 @@ struct ContentFeatures;
 
 class Particle : public scene::ISceneNode
 {
-	public:
+public:
 	Particle(
 		IGameDef* gamedef,
 		scene::ISceneManager* mgr,
@@ -117,7 +117,7 @@ private:
 
 class ParticleSpawner
 {
-	public:
+public:
 	ParticleSpawner(IGameDef* gamedef,
 		scene::ISceneManager *smgr,
 		LocalPlayer *player,
@@ -144,7 +144,7 @@ class ParticleSpawner
 	bool get_expired ()
 	{ return (m_amount <= 0) && m_spawntime != 0; }
 
-	private:
+private:
 	ParticleManager* m_particlemanager;
 	float m_time;
 	IGameDef *m_gamedef;
@@ -179,10 +179,10 @@ class ParticleManager
 {
 friend class ParticleSpawner;
 public:
-	ParticleManager(ClientEnvironment* env);
+	ParticleManager(ClientEnvironment *env);
 	~ParticleManager();
 
-	void step (float dtime);
+	void step(float dtime);
 
 	void handleParticleEvent(ClientEvent *event, Client *client,
 			scene::ISceneManager* smgr, LocalPlayer *player);
@@ -198,21 +198,24 @@ public:
 	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
 		LocalPlayer *player, v3s16 pos, const MapNode &n,
 		const ContentFeatures &f);
+	u32 getSpawnerId() const;
 
 protected:
-	void addParticle(Particle* toadd);
+	void addParticle(Particle *toadd);
 
 private:
 
-	void stepParticles (float dtime);
-	void stepSpawners (float dtime);
+	void stepParticles(float dtime);
+	void stepSpawners(float dtime);
+	void stepSpawnersLocal(float dtime);
 
-	void clearAll ();
+	void clearAll();
 
-	std::vector<Particle*> m_particles;
-	std::map<u32, ParticleSpawner*> m_particle_spawners;
+	std::vector<Particle *> m_particles;
+	std::map<u32, ParticleSpawner *> m_particle_spawners;
+	UNORDERED_MAP<u32, ParticleSpawner *> m_particle_spawners_local;
 
-	ClientEnvironment* m_env;
+	ClientEnvironment *m_env;
 	Mutex m_particle_list_lock;
 	Mutex m_spawner_list_lock;
 };
