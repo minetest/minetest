@@ -669,6 +669,10 @@ Call these functions only at load time!
     * If any function returns true, the punch is ignored
 * `minetest.register_on_placenode(function(pointed_thing, node))`    
     * Called when a node has been placed
+* `minetest.register_on_item_use(func(item, pointed_thing))`
+    * Called when the local player uses an item.
+    * Newest functions are called first.
+    * If any function returns true, the item use is not sent to server.
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`

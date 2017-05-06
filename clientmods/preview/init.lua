@@ -22,6 +22,13 @@ core.register_on_placenode(function(pointed_thing, node)
 	return false
 end)
 
+core.register_on_item_use(function(itemstack, pointed_thing)
+	print("The local player used an item!")
+	print("pointed_thing :" .. dump(pointed_thing))
+	print("item = " .. itemstack:get_name())
+	return false
+end)
+
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_receiving_chat_messages(function(message)
 	print("[PREVIEW] Received message " .. message)

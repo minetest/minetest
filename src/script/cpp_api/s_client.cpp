@@ -207,6 +207,23 @@ bool ScriptApiClient::on_placenode(const PointedThing &pointed, const ItemDefini
 	return lua_toboolean(L, -1);
 }
 
+bool ScriptApiClient::on_item_use(const ItemStack &item, const PointedThing &pointed)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_item_use
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_item_use");
+
+	// Push data
+	LuaItemStack::create(L, item);
+	push_pointed_thing(L, pointed);
+
+	// Call functions
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	return lua_toboolean(L, -1);
+}
+
 void ScriptApiClient::setEnv(ClientEnvironment *env)
 {
 	ScriptApiBase::setEnv(env);

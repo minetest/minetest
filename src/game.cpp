@@ -3553,7 +3553,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		runData.repeat_rightclick_timer = 0;
 
 	if (playeritem_def.usable && isLeftPressed()) {
-		if (getLeftClicked())
+		if (getLeftClicked() && (!client->moddingEnabled()
+				|| !client->getScript()->on_item_use(playeritem, pointed)))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
