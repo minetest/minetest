@@ -43,7 +43,7 @@ private:
 	static int l_set(lua_State *L);
 
 	// set_bool(self, key, value)
-	static int l_set_bool(lua_State* L);
+	static int l_set_bool(lua_State *L);
 
 	// remove(self, key) -> success
 	static int l_remove(lua_State *L);
