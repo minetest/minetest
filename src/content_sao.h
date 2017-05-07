@@ -277,6 +277,16 @@ public:
 		return true;
 	}
 
+	inline void removeExtendedAttribute(const std::string &attr)
+	{
+		PlayerAttributes::iterator it = m_extra_attributes.find(attr);
+		if (it == m_extra_attributes.end())
+			return;
+
+		m_extra_attributes.erase(it);
+		m_extended_attributes_modified = true;
+	}
+
 	inline const PlayerAttributes &getExtendedAttributes()
 	{
 		return m_extra_attributes;
