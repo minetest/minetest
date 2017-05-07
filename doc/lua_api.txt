@@ -3700,25 +3700,29 @@ Definition tables
     {
         hp_max = 1,
         physical = true,
-        collide_with_objects = true, -- collide with other objects if physical=true
+        collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
-        collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-        visual = "cube"/"sprite"/"upright_sprite"/"mesh"/"wielditem",
-        visual_size = {x=1, y=1},
-        mesh = "model", -- for players (0, -1, 0) is ground level,
-			-- for all other entities (0, 0, 0) is ground level.
+        collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
+    --  ^ For players (0, -1, 0) is at object base level,
+    --    for all other objects (0, 0, 0) is at object base level.
+    --    For example, Minetest Game player box is (-0.3, -1.0, -0.3, 0.3, 0.75, 0.3).
+        visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
+        visual_size = {x = 1, y = 1},
+        mesh = "model",
         textures = {}, -- number of required textures depends on visual
         colors = {}, -- number of required colors depends on visual
-        spritediv = {x=1, y=1},
-        initial_sprite_basepos = {x=0, y=0},
+        spritediv = {x = 1, y = 1},
+        initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true,
         makes_footstep_sound = false,
         automatic_rotate = false,
         stepheight = 0,
         automatic_face_movement_dir = 0.0,
-    --  ^ automatically set yaw to movement direction; offset in degrees; false to disable
+    --  ^ Automatically set yaw to movement direction, offset in degrees,
+    --    'false' to disable.
         automatic_face_movement_max_rotation_per_sec = -1,
-    --  ^ limit automatic rotation to this value in degrees per second. values < 0 no limit
+    --  ^ Limit automatic rotation to this value in degrees per second,
+    --    value < 0 no limit.
         backface_culling = true, -- false to disable backface_culling for model
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
