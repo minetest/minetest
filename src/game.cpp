@@ -4581,31 +4581,35 @@ void Game::showPauseMenu()
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
 	std::string address = client->getAddressName();
+	const static std::string mode = strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
 		Address serverAddress = client->getServerAddress();
 		if(address != "") {
-			os << strgettext("- Connected to remote server.") << "\n"
+			os << mode << strgettext("Remote server") << "\n"
 					<< strgettext("- Address: ") << address;
 		} else {
-			os << strgettext("- Hosting Server.");
+			os << mode << strgettext("Hosting Server");
 		}
 		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
 	} else {
-		os << strgettext("- Playing in singleplayer mode.") << "\n";
+		os << mode << strgettext("Singleplayer") << "\n";
 	}
 	if (simple_singleplayer_mode || address == "") {
 		const static std::string on = strgettext("On");
 		const static std::string off = strgettext("Off");
 		std::string damage = g_settings->getBool("enable_damage") ? on : off;
 		std::string creative = g_settings->getBool("creative_mode") ? on : off;
-
+		std::string announced = g_settings->getBool("server_announce") ? on : off;
 		os << strgettext("- Damage: ") << damage << "\n"
 				<< strgettext("- Creative mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
 			std::string pvp = g_settings->getBool("enable_pvp") ? on : off;
-			os << strgettext("- PvP: ") << pvp << "\n";
-			if (g_settings->getBool("server_announce"))
-				os << strgettext("- Announced to public server list");
+			os << strgettext("- PvP: ") << pvp << "\n"
+					<< strgettext("- Public: ") << announced << "\n";
+			std::string server_name = g_settings->get("server_name");
+			if(announced == on && server_name != "")
+				os << strgettext("- Server Name: ") <<  server_name;
+
 		}
 	}
 	os << ";]";
