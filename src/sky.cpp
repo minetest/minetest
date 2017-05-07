@@ -233,6 +233,10 @@ void Sky::render()
 		vertices[3] = video::S3DVertex(-1, -1.0, 1, 0, 1, 0, c, t, o);
 		driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
 
+		// If sun, moon and stars are (temporarily) disabled, abort here
+		if (!m_bodies_visible)
+			return;
+
 		driver->setMaterial(m_materials[2]);
 
 		// Draw sunrise/sunset horizon glow texture (textures/base/pack/sunrisebg.png)
@@ -412,8 +416,8 @@ void Sky::render()
 		}
 
 		// Draw stars
-		driver->setMaterial(m_materials[1]);
 		do {
+			driver->setMaterial(m_materials[1]);
 			float starbrightness = MYMAX(0, MYMIN(1,
 				(0.285 - fabs(wicked_time_of_day < 0.5 ?
 				wicked_time_of_day : (1.0 - wicked_time_of_day))) * 10));
@@ -501,6 +505,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_time_of_day = time_of_day;
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
+	m_bodies_visible = true;
 
 	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
 
