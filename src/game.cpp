@@ -4104,12 +4104,29 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		Update clouds
 	*/
 	if (clouds) {
-		v3f player_position = player->getPosition();
 		if (sky->getCloudsVisible()) {
 			clouds->setVisible(true);
 			clouds->step(dtime);
-			clouds->update(v2f(player_position.X, player_position.Z),
-				       sky->getCloudColor());
+			// camera->getPosition is not enough for 3rd person views
+			v3f camera_node_position = camera->getCameraNode()->getPosition();
+			v3s16 camera_offset      = camera->getOffset();
+			camera_node_position.X   = camera_node_position.X + camera_offset.X * BS;
+			camera_node_position.Y   = camera_node_position.Y + camera_offset.Y * BS;
+			camera_node_position.Z   = camera_node_position.Z + camera_offset.Z * BS;
+			clouds->update(camera_node_position,
+					sky->getCloudColor());
+			if (clouds->isCameraInsideCloud() && m_cache_enable_fog &&
+					!flags.force_fog_off) {
+				// if inside clouds, and fog enabled, use that as sky
+				// color(s)
+				video::SColor clouds_dark = clouds->getColor()
+						.getInterpolated(video::SColor(255, 0, 0, 0), 0.9);
+				sky->overrideColors(clouds_dark, clouds->getColor());
+				sky->setBodiesVisible(false);
+				runData.fog_range = 20.0f * BS;
+				// do not draw clouds after all
+				clouds->setVisible(false);
+			}
 		} else {
 			clouds->setVisible(false);
 		}
@@ -4221,7 +4238,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Drawing begins
 	*/
-
 	const video::SColor &skycolor = sky->getSkyColor();
 
 	TimeTaker tt_draw("mainloop: draw");
