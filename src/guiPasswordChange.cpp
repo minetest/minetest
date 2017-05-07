@@ -157,14 +157,14 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	ypos += 50;
 	{
 		core::rect<s32> rect(0, 0, 100, 30);
-		rect = rect + v2s32(size.X / 2 / 2 + 185, ypos);
+		rect = rect + v2s32(size.X / 4 + 56, ypos);
 		text = wgettext("Change");
 		Environment->addButton(rect, this, ID_change, text);
 		delete[] text;
 	}
 	{
 		core::rect<s32> rect(0, 0, 100, 30);
-		rect = rect + v2s32(size.X / 4 + 56, ypos);
+		rect = rect + v2s32(size.X / 2 / 2 + 185, ypos);
 		text = wgettext("Cancel");
 		Environment->addButton(rect, this, ID_cancel, text);
 		delete[] text;
