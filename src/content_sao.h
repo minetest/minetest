@@ -284,6 +284,7 @@ public:
 			return;
 
 		m_extra_attributes.erase(it);
+		m_extended_attributes_modified = true;
 	}
 
 	inline const PlayerAttributes &getExtendedAttributes()
