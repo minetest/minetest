@@ -33,6 +33,7 @@ const int ID_newPassword1 = 257;
 const int ID_newPassword2 = 258;
 const int ID_change = 259;
 const int ID_message = 260;
+const int ID_cancel = 261;
 
 GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
@@ -68,6 +69,11 @@ void GUIPasswordChange::removeChildren()
 	}
 	{
 		gui::IGUIElement *e = getElementFromId(ID_change);
+		if(e != NULL)
+			e->remove();
+	}
+	{
+		gui::IGUIElement *e = getElementFromId(ID_cancel);
 		if(e != NULL)
 			e->remove();
 	}
@@ -150,10 +156,17 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 
 	ypos += 50;
 	{
-		core::rect<s32> rect(0, 0, 140, 30);
-		rect = rect + v2s32(size.X/2-140/2, ypos);
+		core::rect<s32> rect(0, 0, 100, 30);
+		rect = rect + v2s32(size.X/2/2+185, ypos);
 		text = wgettext("Change");
 		Environment->addButton(rect, this, ID_change, text);
+		delete[] text;
+	}
+	{
+		core::rect<s32> rect(0, 0, 100, 30);
+		rect = rect + v2s32(size.X/4+56, ypos);
+		text = wgettext("Cancel");
+		Environment->addButton(rect, this, ID_cancel, text);
 		delete[] text;
 	}
 
@@ -244,6 +257,9 @@ bool GUIPasswordChange::OnEvent(const SEvent& event)
 			case ID_change:
 				if(acceptInput())
 					quitMenu();
+				return true;
+			case ID_cancel:
+				quitMenu();
 				return true;
 			}
 		}
