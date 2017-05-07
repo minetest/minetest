@@ -4504,6 +4504,7 @@ void Game::extendedResourceCleanup()
 		       << " (note: irrlicht doesn't support removing renderers)" << std::endl;
 }
 
+#define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
 #ifdef __ANDROID__
@@ -4521,21 +4522,36 @@ void Game::showPauseMenu()
 		" --> place single item to slot\n"
 		);
 #else
-	static const std::string control_text = strgettext("Default Controls:\n"
-		"- WASD: move\n"
-		"- Space: jump/climb\n"
-		"- Shift: sneak/go down\n"
-		"- Q: drop item\n"
-		"- I: inventory\n"
+	static const std::string control_text_template = strgettext("Controls:\n"
+		"- %s%s%s%s: move\n"
+		"- %s: jump/climb\n"
+		"- %s: sneak/go down\n"
+		"- %s: drop item\n"
+		"- %s: inventory\n"
 		"- Mouse: turn/look\n"
 		"- Mouse left: dig/punch\n"
 		"- Mouse right: place/use\n"
 		"- Mouse wheel: select item\n"
-		"- T: chat\n"
+		"- %s: chat\n"
 	);
+
+	 char control_text[500];
+
+	 snprintf(control_text, 500, control_text_template.c_str(),
+			 GET_KEY_NAME(keymap_forward),
+	 	 	 GET_KEY_NAME(keymap_left),
+			 GET_KEY_NAME(keymap_backward),
+			 GET_KEY_NAME(keymap_right),
+			 GET_KEY_NAME(keymap_jump),
+			 GET_KEY_NAME(keymap_sneak),
+			 GET_KEY_NAME(keymap_drop),
+			 GET_KEY_NAME(keymap_inventory),
+			 GET_KEY_NAME(keymap_chat)
+			 );
+
 #endif
 
-	float ypos = simple_singleplayer_mode ? 0.5 : 0.1;
+	float ypos = simple_singleplayer_mode ? 0.7 : 0.1;
 	std::ostringstream os;
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
@@ -4545,7 +4561,10 @@ void Game::showPauseMenu()
 	if (!simple_singleplayer_mode) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
+	} else {
+		os << "textarea[4.95,0.16;3.5,6;;" << strgettext("Game Paused") << ";]";
 	}
+
 
 #ifndef __ANDROID__
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
@@ -4558,10 +4577,38 @@ void Game::showPauseMenu()
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
 		<< strgettext("Exit to OS")   << "]"
 		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-		<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
-		<< g_build_info << "\n"
-		<< "path_user = " << wrap_rows(porting::path_user, 20)
-		<< "\n;]";
+		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
+		<< "\n"
+		<<  strgettext("Game info:") << "\n";
+	std::string address = client->getAddressName();
+	if (!simple_singleplayer_mode) {
+		Address serverAddress = client->getServerAddress();
+		if(address != "") {
+			os << strgettext("- Connected to remote server.") << "\n"
+					<< strgettext("- Address: ") << address;
+		} else {
+			os << strgettext("- Hosting Server.");
+		}
+		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+	} else {
+		os << strgettext("- Playing in singleplayer mode.") << "\n";
+	}
+	if (simple_singleplayer_mode || address == "") {
+		const static std::string on = strgettext("On");
+		const static std::string off = strgettext("Off");
+		std::string damage = g_settings->getBool("enable_damage") ? on : off;
+		std::string creative = g_settings->getBool("creative_mode") ? on : off;
+
+		os << strgettext("- Damage: ") << damage << "\n"
+				<< strgettext("- Creative mode: ") << creative << "\n";
+		if (!simple_singleplayer_mode) {
+			std::string pvp = g_settings->getBool("enable_pvp") ? on : off;
+			os << strgettext("- PvP: ") << pvp << "\n";
+			if (g_settings->getBool("server_announce"))
+				os << strgettext("- Announced to public server list");
+		}
+	}
+	os << ";]";
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *
