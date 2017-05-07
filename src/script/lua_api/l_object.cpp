@@ -1204,8 +1204,7 @@ int ObjectRef::l_set_attribute(lua_State *L)
 	std::string attr = luaL_checkstring(L, 2);
 	if (lua_isnil(L, 3)) {
 		co->removeExtendedAttribute(attr);
-	}
-	else {
+	} else {
 		std::string value = luaL_checkstring(L, 3);
 		co->setExtendedAttribute(attr, value);
 	}

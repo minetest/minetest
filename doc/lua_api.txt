@@ -3029,8 +3029,8 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `1`-`10`: remaining number of bubbles
         * `11`: bubbles bar is not shown
 * `set_attribute(attribute, value)`:
-	* Sets an extra attribute with value on player.
-	* If value is nil, remove attribute from player.
+    * Sets an extra attribute with value on player.
+    * If value is nil, remove attribute from player.
 * `get_attribute(attribute)`: returns value for extra attribute. Returns nil if no attribute found.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
