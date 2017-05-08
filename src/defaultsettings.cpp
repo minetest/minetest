@@ -80,6 +80,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
+	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
+	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
+	settings->setDefault("keymap_mute", "KEY_KEY_M");
+	settings->setDefault("keymap_increase_volume", "");
+	settings->setDefault("keymap_decrease_volume", "");
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -121,6 +126,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("viewing_range", "100");
 	settings->setDefault("screenW", "800");
 	settings->setDefault("screenH", "600");
+	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("fullscreen_bpp", "24");
 	settings->setDefault("vsync", "false");
@@ -171,7 +177,6 @@ void set_default_settings(Settings *settings)
 
 	// Effects
 	settings->setDefault("directional_colored_fog", "true");
-	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");

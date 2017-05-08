@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
-#include "clientscripting.h"
+#include "scripting_client.h"
 #include "mapblock_mesh.h"
 #include "event.h"
 #include "collision.h"
@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include <algorithm>
 
 /*
 	ClientEnvironment
@@ -598,15 +599,13 @@ void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	}
 }
 
-ClientEnvEvent ClientEnvironment::getClientEvent()
+ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 {
-	ClientEnvEvent event;
-	if(m_client_event_queue.empty())
-		event.type = CEE_NONE;
-	else {
-		event = m_client_event_queue.front();
-		m_client_event_queue.pop();
-	}
+	FATAL_ERROR_IF(m_client_event_queue.empty(),
+			"ClientEnvironment::getClientEnvEvent(): queue is empty");
+
+	ClientEnvEvent event = m_client_event_queue.front();
+	m_client_event_queue.pop();
 	return event;
 }
 

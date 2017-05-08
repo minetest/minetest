@@ -20,14 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef BASICMACROS_HEADER
 #define BASICMACROS_HEADER
 
-#include <algorithm>
-
 #define ARRLEN(x) (sizeof(x) / sizeof((x)[0]))
 
 #define MYMIN(a, b) ((a) < (b) ? (a) : (b))
 
 #define MYMAX(a, b) ((a) > (b) ? (a) : (b))
 
+// Requires <algorithm>
 #define CONTAINS(c, v) (std::find((c).begin(), (c).end(), (v)) != (c).end())
 
 // To disable copy constructors and assignment operations for some class

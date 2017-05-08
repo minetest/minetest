@@ -45,7 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 #include "game.h"
 
 extern gui::IGUIEnvironment* guienv;
@@ -58,6 +58,7 @@ Client::Client(
 		IrrlichtDevice *device,
 		const char *playername,
 		const std::string &password,
+		const std::string &address_name,
 		MapDrawControl &control,
 		IWritableTextureSource *tsrc,
 		IWritableShaderSource *shsrc,
@@ -89,6 +90,7 @@ Client::Client(
 	),
 	m_particle_manager(&m_env),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+	m_address_name(address_name),
 	m_device(device),
 	m_camera(NULL),
 	m_minimap_disabled_by_server(false),
@@ -253,13 +255,11 @@ Client::~Client()
 	delete m_minimap;
 }
 
-void Client::connect(Address address,
-		const std::string &address_name,
-		bool is_local_server)
+void Client::connect(Address address, bool is_local_server)
 {
 	DSTACK(FUNCTION_NAME);
 
-	initLocalMapSaving(address, address_name, is_local_server);
+	initLocalMapSaving(address, m_address_name, is_local_server);
 
 	m_con.SetTimeoutMs(0);
 	m_con.Connect(address);
@@ -407,20 +407,19 @@ void Client::step(float dtime)
 
 	// Step environment
 	m_env.step(dtime);
+	m_sound->step(dtime);
 
 	/*
 		Get events
 	*/
-	for(;;) {
-		ClientEnvEvent event = m_env.getClientEvent();
-		if(event.type == CEE_NONE) {
-			break;
-		}
-		else if(event.type == CEE_PLAYER_DAMAGE) {
-			if(m_ignore_damage_timer <= 0) {
-				u8 damage = event.player_damage.amount;
+	while (m_env.hasClientEnvEvents()) {
+		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
-				if(event.player_damage.send_to_server)
+		if (envEvent.type == CEE_PLAYER_DAMAGE) {
+			if (m_ignore_damage_timer <= 0) {
+				u8 damage = envEvent.player_damage.amount;
+
+				if (envEvent.player_damage.send_to_server)
 					sendDamage(damage);
 
 				// Add to ClientEvent queue
@@ -431,8 +430,8 @@ void Client::step(float dtime)
 			}
 		}
 		// Protocol v29 or greater obsoleted this event
-		else if (event.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
-			u16 breath = event.player_breath.amount;
+		else if (envEvent.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
+			u16 breath = envEvent.player_breath.amount;
 			sendBreath(breath);
 		}
 	}
@@ -526,7 +525,6 @@ void Client::step(float dtime)
 	if (m_media_downloader && m_media_downloader->isStarted()) {
 		m_media_downloader->step(this);
 		if (m_media_downloader->isDone()) {
-			received_media();
 			delete m_media_downloader;
 			m_media_downloader = NULL;
 		}
@@ -747,14 +745,6 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 			<< file_requests.size() << " files. packet size)" << std::endl;
 }
 
-void Client::received_media()
-{
-	NetworkPacket pkt(TOSERVER_RECEIVED_MEDIA, 0);
-	Send(&pkt);
-	infostream << "Client: Notifying server that we received all media"
-			<< std::endl;
-}
-
 void Client::initLocalMapSaving(const Address &address,
 		const std::string &hostname,
 		bool is_local_server)
@@ -778,7 +768,7 @@ void Client::initLocalMapSaving(const Address &address,
 void Client::ReceiveAll()
 {
 	DSTACK(FUNCTION_NAME);
-	u32 start_ms = porting::getTimeMs();
+	u64 start_ms = porting::getTimeMs();
 	for(;;)
 	{
 		// Limit time even if there would be huge amounts of data to
@@ -1605,14 +1595,11 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 
 ClientEvent Client::getClientEvent()
 {
-	ClientEvent event;
-	if (m_client_event_queue.empty()) {
-		event.type = CE_NONE;
-	}
-	else {
-		event = m_client_event_queue.front();
-		m_client_event_queue.pop();
-	}
+	FATAL_ERROR_IF(m_client_event_queue.empty(),
+			"Cannot getClientEvent, queue is empty.");
+
+	ClientEvent event = m_client_event_queue.front();
+	m_client_event_queue.pop();
 	return event;
 }
 
@@ -1627,7 +1614,7 @@ float Client::mediaReceiveProgress()
 typedef struct TextureUpdateArgs {
 	IrrlichtDevice *device;
 	gui::IGUIEnvironment *guienv;
-	u32 last_time_ms;
+	u64 last_time_ms;
 	u16 last_percent;
 	const wchar_t* text_base;
 	ITextureSource *tsrc;
@@ -1640,10 +1627,10 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 
 		// update the loading menu -- if neccessary
 		bool do_draw = false;
-		u32 time_ms = targs->last_time_ms;
+		u64 time_ms = targs->last_time_ms;
 		if (cur_percent != targs->last_percent) {
 			targs->last_percent = cur_percent;
-			time_ms = getTimeMs();
+			time_ms = porting::getTimeMs();
 			// only draw when the user will notice something:
 			do_draw = (time_ms - targs->last_time_ms > 100);
 		}
@@ -1701,7 +1688,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	TextureUpdateArgs tu_args;
 	tu_args.device = device;
 	tu_args.guienv = guienv;
-	tu_args.last_time_ms = getTimeMs();
+	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
 	tu_args.text_base =  wgettext("Initializing nodes");
 	tu_args.tsrc = m_tsrc;

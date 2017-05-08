@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "map.h"
 #include "client.h"
+#include "content_cao.h"
 
 /*
 	LocalPlayer
@@ -35,7 +36,6 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 	Player(name, client->idef()),
 	parent(0),
 	hp(PLAYER_MAX_HP),
-	got_teleported(false),
 	isAttached(false),
 	touching_ground(false),
 	in_liquid(false),
@@ -59,6 +59,7 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 	last_camera_fov(0),
 	last_wanted_range(0),
 	camera_impact(0.f),
+	makes_footstep_sound(true),
 	last_animation(NO_ANIM),
 	hotbar_image(""),
 	hotbar_selected_image(""),
@@ -305,35 +306,49 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	if (control.sneak && m_sneak_node_exists &&
 			!(fly_allowed && g_settings->getBool("free_move")) &&
 			!in_liquid && !is_climbing &&
-			physics_override_sneak && !got_teleported) {
-		v3f sn_f = intToFloat(m_sneak_node, BS);
-		const v3f bmin = m_sneak_node_bb_top.MinEdge;
-		const v3f bmax = m_sneak_node_bb_top.MaxEdge;
+			physics_override_sneak) {
+		const v3f sn_f = intToFloat(m_sneak_node, BS);
+		const v3f bmin = sn_f + m_sneak_node_bb_top.MinEdge;
+		const v3f bmax = sn_f + m_sneak_node_bb_top.MaxEdge;
+		const v3f old_pos = position;
+		const v3f old_speed = m_speed;
 
 		position.X = rangelim(position.X,
-				sn_f.X+bmin.X - sneak_max.X, sn_f.X+bmax.X + sneak_max.X);
+				bmin.X - sneak_max.X, bmax.X + sneak_max.X);
 		position.Z = rangelim(position.Z,
-				sn_f.Z+bmin.Z - sneak_max.Z, sn_f.Z+bmax.Z + sneak_max.Z);
+				bmin.Z - sneak_max.Z, bmax.Z + sneak_max.Z);
+
+		if (position.X != old_pos.X)
+			m_speed.X = 0;
+		if (position.Z != old_pos.Z)
+			m_speed.Z = 0;
 
 		// Because we keep the player collision box on the node, limiting
 		// position.Y is not necessary but useful to prevent players from
 		// being inside a node if sneaking on e.g. the lower part of a stair
 		if (!m_sneak_ladder_detected) {
-			position.Y = MYMAX(position.Y, sn_f.Y+bmax.Y);
+			position.Y = MYMAX(position.Y, bmax.Y);
 		} else {
 			// legacy behaviour that sometimes causes some weird slow sinking
 			m_speed.Y = MYMAX(m_speed.Y, 0);
 		}
+
+		if (collision_info != NULL &&
+				m_speed.Y - old_speed.Y > BS) {
+			// Collide with sneak node, report fall damage
+			CollisionInfo sn_info;
+			sn_info.node_p = m_sneak_node;
+			sn_info.old_speed = old_speed;
+			sn_info.new_speed = m_speed;
+			collision_info->push_back(sn_info);
+		}
 	}
 
-	if (got_teleported)
-		got_teleported = false;
-
-	// TODO: this shouldn't be hardcoded but transmitted from server
-	float player_stepheight = touching_ground ? (BS*0.6) : (BS*0.2);
+	float player_stepheight = (m_cao == 0) ? 0.0f :
+			((touching_ground) ? m_cao->getStepheight() : (0.2f * BS));
 
 #ifdef __ANDROID__
-	player_stepheight += (0.6 * BS);
+	player_stepheight += (0.6f * BS);
 #endif
 
 	v3f accel_f = v3f(0,0,0);
@@ -449,9 +464,11 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_ledge_detected = detectLedge(map, nodemgr, floatToInt(position, BS));
 
 	/*
-		Set new position
+		Set new position but keep sneak node set
 	*/
+	bool sneak_node_exists = m_sneak_node_exists;
 	setPosition(position);
+	m_sneak_node_exists = sneak_node_exists;
 
 	/*
 		Report collisions
@@ -917,7 +934,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	if (control.sneak && m_sneak_node_exists &&
 			!(fly_allowed && g_settings->getBool("free_move")) && !in_liquid &&
-			physics_override_sneak && !got_teleported) {
+			physics_override_sneak) {
 		f32 maxd = 0.5 * BS + sneak_max;
 		v3f lwn_f = intToFloat(m_sneak_node, BS);
 		position.X = rangelim(position.X, lwn_f.X - maxd, lwn_f.X + maxd);
@@ -937,9 +954,6 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 				m_speed.Y = 0;
 		}
 	}
-
-	if (got_teleported)
-		got_teleported = false;
 
 	// this shouldn't be hardcoded but transmitted from server
 	float player_stepheight = touching_ground ? (BS * 0.6) : (BS * 0.2);
@@ -1055,9 +1069,11 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	/*
-		Set new position
+		Set new position but keep sneak node set
 	*/
+	bool sneak_node_exists = m_sneak_node_exists;
 	setPosition(position);
+	m_sneak_node_exists = sneak_node_exists;
 
 	/*
 		Report collisions

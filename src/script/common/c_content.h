@@ -88,6 +88,8 @@ void               push_tool_capabilities    (lua_State *L,
 
 void read_item_definition (lua_State *L, int index, const ItemDefinition &default_def,
 		ItemDefinition &def);
+void               push_item_definition      (lua_State *L,
+                                              const ItemDefinition &i);
 void               read_object_properties    (lua_State *L, int index,
                                               ObjectProperties *prop,
                                               IItemDefManager *idef);
@@ -161,6 +163,10 @@ bool               push_json_value           (lua_State *L,
                                               int nullindex);
 void               read_json_value           (lua_State *L, Json::Value &root,
                                               int index, u8 recursion = 0);
+
+void               push_pointed_thing        (lua_State *L, const PointedThing &pointed);
+
+void               push_objectRef            (lua_State *L, const u16 id);
 
 extern struct EnumString es_TileAnimationType[];
 

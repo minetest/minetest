@@ -123,7 +123,7 @@ local function handle_buttons(this, fields)
 	if fields["world_config_modlist"] ~= nil then
 		local event = core.explode_table_event(fields["world_config_modlist"])
 		this.data.selected_mod = event.row
-		core.setting_set("world_config_selected_mod", event.row)
+		core.settings:set("world_config_selected_mod", event.row)
 
 		if event.type == "DCL" then
 			enable_mod(this)
@@ -227,7 +227,7 @@ function create_configure_world_dlg(worldidx)
 					handle_buttons,
 					nil)
 
-	dlg.data.selected_mod = tonumber(core.setting_get("world_config_selected_mod"))
+	dlg.data.selected_mod = tonumber(core.settings:get("world_config_selected_mod"))
 	if dlg.data.selected_mod == nil then
 		dlg.data.selected_mod = 0
 	end

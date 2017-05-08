@@ -670,7 +670,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	}
 
 	bool is_liquid = false;
-	bool is_water_surface = false;
 
 	u8 material_type = (alpha == 255) ?
 		TILE_MATERIAL_BASIC : TILE_MATERIAL_ALPHA;
@@ -733,35 +732,36 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			for (u32 i = 0; i < 6; i++)
 				tdef[i].name += std::string("^[noalpha");
 		}
-		if (waving == 1)
+		if (waving >= 1)
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
 		break;
 	case NDT_PLANTLIKE:
 		solidness = 0;
-		if (waving == 1)
+		if (waving >= 1)
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		break;
 	case NDT_FIRELIKE:
 		solidness = 0;
 		break;
 	case NDT_MESH:
+	case NDT_NODEBOX:
 		solidness = 0;
+		if (waving == 1)
+			material_type = TILE_MATERIAL_WAVING_PLANTS;
+		else if (waving == 2)
+			material_type = TILE_MATERIAL_WAVING_LEAVES;
 		break;
 	case NDT_TORCHLIKE:
 	case NDT_SIGNLIKE:
 	case NDT_FENCELIKE:
 	case NDT_RAILLIKE:
-	case NDT_NODEBOX:
 		solidness = 0;
 		break;
 	}
 
-	if (is_liquid) {
+	if (is_liquid)
 		material_type = (alpha == 255) ?
 			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-		if (name == "default:water_source")
-			is_water_surface = true;
-	}
 
 	// Vertex alpha is no longer supported, correct if necessary.
 	correctAlpha();
@@ -769,11 +769,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 tile_shader[6];
 	for (u16 j = 0; j < 6; j++) {
 		tile_shader[j] = shdsrc->getShader("nodes_shader",
-			material_type, drawtype);
-	}
-
-	if (is_water_surface) {
-		tile_shader[0] = shdsrc->getShader("water_surface_shader",
 			material_type, drawtype);
 	}
 
@@ -1318,22 +1313,21 @@ void CNodeDefManager::removeNode(const std::string &name)
 
 	// Erase node content from all groups it belongs to
 	for (UNORDERED_MAP<std::string, GroupItems>::iterator iter_groups =
-			m_group_to_items.begin();
-			iter_groups != m_group_to_items.end();) {
+			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
 		GroupItems &items = iter_groups->second;
 		for (GroupItems::iterator iter_groupitems = items.begin();
 				iter_groupitems != items.end();) {
 			if (iter_groupitems->first == id)
 				items.erase(iter_groupitems++);
 			else
-				iter_groupitems++;
+				++iter_groupitems;
 		}
 
 		// Check if group is empty
 		if (items.size() == 0)
 			m_group_to_items.erase(iter_groups++);
 		else
-			iter_groups++;
+			++iter_groups;
 	}
 }
 

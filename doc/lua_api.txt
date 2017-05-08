@@ -172,8 +172,8 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
-to read custom or existing settings at load time, if necessary.
+`minetest.settings` can be used to read custom or existing settings at load
+time, if necessary. (See `Settings`)
 
 ### `models`
 Models for entities or meshnodes.
@@ -456,11 +456,13 @@ Examples of sound parameter tables:
     -- Play locationless on all clients
     {
         gain = 1.0, -- default
+        fade = 0.0, -- default, change to a value > 0 to fade the sound in
     }
     -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
+        fade = 0.0, -- default, change to a value > 0 to fade the sound in
     }
     -- Play locationless to one player, looped
     {
@@ -1230,9 +1232,9 @@ Another example: Make red wool from white wool and red dye:
        from destroyed nodes.
      * `0` is something that is directly accessible at the start of gameplay
      * There is no upper limit
-* `dig_immediate`: (player can always pick up node without tool wear)
-    * `2`: node is removed without tool wear after 0.5 seconds (rail, sign)
-    * `3`: node is removed without tool wear after 0.15 seconds (torch)
+* `dig_immediate`: (player can always pick up node without reducing tool wear)
+    * `2`: the node always gets the digging time 0.5 seconds (rail, sign)
+    * `3`: the node always gets the digging time 0 seconds (torch)
 * `disable_jump`: Player (and possibly other things) cannot jump from node
 * `fall_damage_add_percent`: damage speed = `speed * (1 + value/100)`
 * `bouncy`: value is bounce speed in percent
@@ -1332,6 +1334,10 @@ For example, as a Lua table, `times={2=2.00, 3=0.70}`. This would
 result in the tool to be able to dig nodes that have a rating of `2` or `3`
 for this group, and unable to dig the rating `1`, which is the toughest.
 Unless there is a matching group that enables digging otherwise.
+
+If the result digging time is 0, a delay of 0.15 seconds is added between
+digging nodes; If the player releases LMB after digging, this delay is set to 0,
+i.e. players can more quickly click the nodes away instead of holding LMB.
 
 #### Damage groups
 List of damage for groups of entities. See "Entity damage mechanism".
@@ -1580,7 +1586,7 @@ examples.
 * Sets default background color of tooltips
 * Sets default font color of tooltips
 
-#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>,<fontcolor>]`
+#### `tooltip[<gui_element_name>;<tooltip_text>;<bgcolor>;<fontcolor>]`
 * Adds tooltip for an element
 * `<bgcolor>` tooltip background color as `ColorString` (optional)
 * `<fontcolor>` tooltip font color as `ColorString` (optional)
@@ -1919,8 +1925,7 @@ Helper functions
 * `math.sign(x, tolerance)`
     * Get the sign of a number.
       Optional: Also returns `0` when the absolute value is within the tolerance (default: `0`)
-* `string.split(str, separator=",", include_empty=false, max_splits=-1,
-* sep_is_pattern=false)`
+* `string.split(str, separator=",", include_empty=false, max_splits=-1, sep_is_pattern=false)`
     * If `max_splits` is negative, do not limit splits.
     * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
     * e.g. `string:split("a,b", ",") == {"a","b"}`
@@ -1992,11 +1997,11 @@ Helper functions
             max_jitter = 0.5,          -- maximum packet time jitter
             avg_jitter = 0.03,         -- average packet time jitter
             connection_uptime = 200,   -- seconds since client connected
+            prot_vers = 31,            -- protocol version used by client
 
             -- following information is available on debug build only!!!
             -- DO NOT USE IN MODS
             --ser_vers = 26,             -- serialization version used by client
-            --prot_vers = 23,            -- protocol version used by client
             --major = 0,                 -- major version number
             --minor = 4,                 -- minor version number
             --patch = 10,                -- patch version number
@@ -2172,16 +2177,10 @@ Call these functions only at load time!
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
 ### Setting-related
-* `minetest.setting_set(name, value)`
-    * Setting names can't contain whitespace or any of `="{}#`.
-    * Setting values can't contain the sequence `\n"""`.
-    * Setting names starting with "secure." can't be set.
-* `minetest.setting_get(name)`: returns string or `nil`
-* `minetest.setting_setbool(name, value)`
-    * See documentation on `setting_set` for restrictions.
-* `minetest.setting_getbool(name)`: returns boolean or `nil`
-* `minetest.setting_get_pos(name)`: returns position or nil
-* `minetest.setting_save()`, returns `nil`, save all settings to config file
+* `minetest.settings`: Settings object containing all of the settings from the
+  main config file (`minetest.conf`).
+* `minetest.setting_get_pos(name)`: Loads a setting from the main settings and
+  parses it as a position (in the format `(1,2,3)`). Returns a position or nil.
 
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
@@ -2275,9 +2274,11 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.get_gametime()`: returns the time, in seconds, since the world was created
 * `minetest.get_day_count()`: returns number days elapsed since world was created,
     * accounting for time changes.
-* `minetest.find_node_near(pos, radius, nodenames)`: returns pos or `nil`
+* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
     * `radius`: using a maximum metric
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `search_center` is an optional boolean (default: `false`)
+      If true `pos` is also checked for the nodes
 * `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
     * returns as second value a table with the count of the individual nodes found
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
@@ -2584,6 +2585,11 @@ These functions return the leftover itemstack.
     * `spec` is a `SimpleSoundSpec`
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
+* `minetest.sound_fade(handle, step, gain)`
+    * `handle` is a handle returned by minetest.sound_play
+    * `step` determines how fast a sound will fade.
+      Negative step will lower the sound volume, positive step will increase the sound volume
+    * `gain` the target gain for the fade.
 
 ### Timing
 * `minetest.after(time, func, ...)`
@@ -3022,7 +3028,9 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning,
         * `1`-`10`: remaining number of bubbles
         * `11`: bubbles bar is not shown
-* `set_attribute(attribute, value)`: sets an extra attribute with value on player
+* `set_attribute(attribute, value)`:
+    * Sets an extra attribute with value on player.
+    * If value is nil, remove attribute from player.
 * `get_attribute(attribute)`: returns value for extra attribute. Returns nil if no attribute found.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
@@ -3067,13 +3075,24 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `hud_set_hotbar_selected_image(texturename)`
     * sets image for selected item of hotbar
 * `hud_get_hotbar_selected_image`: returns texturename
-* `set_sky(bgcolor, type, {texture names})`
+* `set_sky(bgcolor, type, {texture names}, clouds)`
     * `bgcolor`: ColorSpec, defaults to white
-    * Available types:
+    * `type`: Available types:
         * `"regular"`: Uses 0 textures, `bgcolor` ignored
         * `"skybox"`: Uses 6 textures, `bgcolor` used
         * `"plain"`: Uses 0 textures, `bgcolor` used
-* `get_sky()`: returns bgcolor, type and a table with the textures
+    * `clouds`: Boolean for whether clouds appear in front of `"skybox"` or
+      `"plain"` custom skyboxes (default: `true`)
+* `get_sky()`: returns bgcolor, type, table of textures, clouds
+* `set_clouds(parameters)`: set cloud parameters
+	* `parameters` is a table with the following optional fields:
+		* `density`: from `0` (no clouds) to `1` (full clouds) (default `0.4`)
+		* `color`: basic cloud color, with alpha channel (default `#fff0f0e5`)
+		* `ambient`: cloud color lower bound, use for a "glow at night" effect (default `#000000`)
+		* `height`: cloud height, i.e. y of cloud base (default per conf, usually `120`)
+		* `thickness`: cloud thickness in nodes (default `16`)
+		* `speed`: 2D cloud speed + direction in nodes per second (default `{x=0, y=-2}`)
+* `get_clouds()`: returns a table with the current cloud parameters as in `set_clouds`
 * `override_day_night_ratio(ratio or nil)`
     * `0`...`1`: Overrides day-night ratio, controlling sunlight to a specific amount
     * `nil`: Disables override, defaulting to sunlight based on day-night cycle
@@ -3446,7 +3465,7 @@ will place the schematic inside of the VoxelManip.
       If `light` is false, no light calculations happen, and you should correct
       all modified blocks with `minetest.fix_light()` as soon as possible.
       Keep in mind that modifying the map where light is incorrect can cause
-      more lighting bugs. 
+      more lighting bugs.
 * `get_node_at(pos)`: Returns a `MapNode` table of the node currently loaded in
   the `VoxelManip` at that position
 * `set_node_at(pos, node)`: Sets a specific `MapNode` in the `VoxelManip` at that position
@@ -3513,10 +3532,15 @@ It can be created via `Settings(filename)`.
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
 * `set(key, value)`
+    * Setting names can't contain whitespace or any of `="{}#`.
+    * Setting values can't contain the sequence `\n"""`.
+    * Setting names starting with "secure." can't be set on the main settings object (`minetest.settings`).
+* `set_bool(key, value)`
+    * See documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `write()`: returns a boolean (`true` for success)
-    * write changes to file
+    * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
 
 Mapgen objects
@@ -3678,24 +3702,29 @@ Definition tables
     {
         hp_max = 1,
         physical = true,
-        collide_with_objects = true, -- collide with other objects if physical=true
+        collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
-        collisionbox = {-0.5,-0.5,-0.5, 0.5,0.5,0.5},
-        visual = "cube"/"sprite"/"upright_sprite"/"mesh"/"wielditem",
-        visual_size = {x=1, y=1},
+        collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
+    --  ^ For players (0, -1, 0) is at object base level,
+    --    for all other objects (0, 0, 0) is at object base level.
+    --    For example, Minetest Game player box is (-0.3, -1.0, -0.3, 0.3, 0.75, 0.3).
+        visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
+        visual_size = {x = 1, y = 1},
         mesh = "model",
         textures = {}, -- number of required textures depends on visual
         colors = {}, -- number of required colors depends on visual
-        spritediv = {x=1, y=1},
-        initial_sprite_basepos = {x=0, y=0},
+        spritediv = {x = 1, y = 1},
+        initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true,
         makes_footstep_sound = false,
         automatic_rotate = false,
         stepheight = 0,
         automatic_face_movement_dir = 0.0,
-    --  ^ automatically set yaw to movement direction; offset in degrees; false to disable
+    --  ^ Automatically set yaw to movement direction, offset in degrees,
+    --    'false' to disable.
         automatic_face_movement_max_rotation_per_sec = -1,
-    --  ^ limit automatic rotation to this value in degrees per second. values < 0 no limit
+    --  ^ Limit automatic rotation to this value in degrees per second,
+    --    value < 0 no limit.
         backface_culling = true, -- false to disable backface_culling for model
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
@@ -3943,7 +3972,9 @@ Definition tables
         diggable = true, -- If false, can never be dug
         climbable = false, -- If true, can be climbed on (ladder)
         buildable_to = false, -- If true, placed nodes can replace this node
-        floodable = false, -- If true, liquids flow into and replace this node
+        floodable = false, --[[
+        ^ If true, liquids flow into and replace this node.
+        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
         liquidtype = "none", -- "none"/"source"/"flowing"
         liquid_alternative_flowing = "", -- Flowing version of source liquid
         liquid_alternative_source = "", -- Source version of flowing liquid
@@ -3972,6 +4003,12 @@ Definition tables
         ^ If drawtype "nodebox" is used and selection_box is nil, then node_box is used. ]]
         legacy_facedir_simple = false, -- Support maps made in and before January 2012
         legacy_wallmounted = false, -- Support maps made in and before January 2012
+        waving = 0, --[[ valid for mesh, nodebox, plantlike, allfaces_optional nodes
+        ^ 1 - wave node like plants (top of node moves, bottom is fixed)
+        ^ 2 - wave node like leaves (whole node moves side-to-side synchronously)
+        ^ caveats: not all models will properly wave
+        ^ plantlike drawtype nodes can only wave like plants
+        ^ allfaces_optional drawtype nodes can only wave like leaves --]]
         sounds = {
             footstep = <SimpleSoundSpec>,
             dig = <SimpleSoundSpec>, -- "__group" = group-based sound (default)
@@ -4010,7 +4047,8 @@ Definition tables
         ^ node placement (i.e. schematics and VoxelManip) or air nodes. If
         ^ return true the node is not flooded, but on_flood callback will
         ^ most likely be called over and over again every liquid update
-        ^ interval. Default: nil ]]
+        ^ interval. Default: nil.
+        ^ Warning: making a liquid node 'floodable' does not work and may cause problems. ]]
 
         after_place_node = func(pos, placer, itemstack, pointed_thing) --[[
         ^ Called after constructing node when node was placed using

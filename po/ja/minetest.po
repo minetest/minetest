@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2016-11-16 13:08+0000\n"
-"Last-Translator: Rui <rui.minetest@gmail.com>\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
-"minetest/ja/>\n"
+"PO-Revision-Date: 2017-04-18 12:21+0000\n"
+"Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
+"Language-Team: Japanese "
+"<https://hosted.weblate.org/projects/minetest/minetest/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.10-dev\n"
+"X-Generator: Weblate 2.14-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1757,7 +1757,7 @@ msgstr "丘の険しさ/高さの設定。"
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
-msgstr ""
+msgstr "トンネルの幅を制御、小さい方の値ほど広いトンネルを生成します。"
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -2070,7 +2070,7 @@ msgstr "facedir回転するメッシュのキャッシングを可能にしま�
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
-msgstr "ミニマップを有効にする。"
+msgstr "ミニマップを有効にする"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2377,7 +2377,7 @@ msgstr "Mod"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
-msgstr ""
+msgstr "HUD切り替えキー"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3535,7 +3535,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Multiplier for view bobbing.\n"
+"Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
 
@@ -3992,7 +3992,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
-msgstr "ノーマルマップの生成"
+msgstr "ノーマルマップの生成。"
 
 #: src/settings_translation_file.cpp
 msgid "Strength of parallax."
@@ -4272,7 +4272,7 @@ msgstr "歩く速度"
 
 #: src/settings_translation_file.cpp
 msgid "Water Features"
-msgstr "テクスチャを設定中..."
+msgstr "テクスチャを設定中"
 
 #: src/settings_translation_file.cpp
 msgid "Water level"

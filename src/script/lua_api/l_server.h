@@ -68,13 +68,16 @@ private:
 	// sound_stop(handle)
 	static int l_sound_stop(lua_State *L);
 
+	// sound_fade(handle, step, gain)
+	static int l_sound_fade(lua_State *L);
+
 	// get_player_privs(name, text)
 	static int l_get_player_privs(lua_State *L);
 
 	// get_player_ip()
 	static int l_get_player_ip(lua_State *L);
 
-	// get_player_information()
+	// get_player_information(name)
 	static int l_get_player_information(lua_State *L);
 
 	// get_ban_list()

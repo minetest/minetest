@@ -68,9 +68,8 @@ public:
 
 	static bool registerFunction(lua_State *L,
 			const char* name,
-			lua_CFunction fct,
-			int top
-			);
+			lua_CFunction func,
+			int top);
 };
 
 #endif /* L_BASE_H_ */

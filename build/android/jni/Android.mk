@@ -143,6 +143,7 @@ LOCAL_SRC_FILES := \
 		jni/src/dungeongen.cpp                    \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \
+		jni/src/face_position_cache.cpp           \
 		jni/src/filecache.cpp                     \
 		jni/src/filesys.cpp                       \
 		jni/src/fontengine.cpp                    \
@@ -305,6 +306,7 @@ LOCAL_SRC_FILES += \
 		jni/src/script/cpp_api/s_server.cpp       \
 		jni/src/script/lua_api/l_areastore.cpp    \
 		jni/src/script/lua_api/l_base.cpp         \
+		jni/src/script/lua_api/l_camera.cpp       \
 		jni/src/script/lua_api/l_client.cpp       \
 		jni/src/script/lua_api/l_craft.cpp        \
 		jni/src/script/lua_api/l_env.cpp          \
@@ -329,8 +331,8 @@ LOCAL_SRC_FILES += \
 		jni/src/script/lua_api/l_storage.cpp      \
 		jni/src/script/lua_api/l_util.cpp         \
 		jni/src/script/lua_api/l_vmanip.cpp       \
-		jni/src/script/clientscripting.cpp        \
-		jni/src/script/serverscripting.cpp        \
+		jni/src/script/scripting_client.cpp       \
+		jni/src/script/scripting_server.cpp       \
 		jni/src/script/scripting_mainmenu.cpp
 
 #freetype2 support

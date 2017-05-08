@@ -13,7 +13,7 @@ dofile(gamepath.."constants.lua")
 assert(loadfile(gamepath.."item.lua"))(builtin_shared)
 dofile(gamepath.."register.lua")
 
-if core.setting_getbool("profiler.load") then
+if core.settings:get_bool("profiler.load") then
 	profiler = dofile(scriptpath.."profiler"..DIR_DELIM.."init.lua")
 end
 

@@ -44,7 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "database-dummy.h"
 #include "database-sqlite3.h"
-#include "script/serverscripting.h"
+#include "script/scripting_server.h"
 #include <deque>
 #include <queue>
 #if USE_LEVELDB
@@ -981,7 +981,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	time_until_purge *= 1000;	// seconds -> milliseconds
 
-	u32 curr_time = getTime(PRECISION_MILLI);
+	u32 curr_time = porting::getTime(PRECISION_MILLI);
 	u32 prev_unprocessed = m_unprocessed_count;
 	m_unprocessed_count = m_transforming_liquid.size();
 

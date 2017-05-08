@@ -1,5 +1,5 @@
 -- cache setting
-local enable_damage = core.setting_getbool("enable_damage") == true
+local enable_damage = core.settings:get_bool("enable_damage")
 
 local health_bar_definition =
 {

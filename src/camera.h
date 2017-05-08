@@ -170,6 +170,12 @@ public:
 			m_camera_mode = CAMERA_MODE_THIRD;
 	}
 
+	// Set the current camera mode
+	inline void setCameraMode(CameraMode mode)
+	{
+		m_camera_mode = mode;
+	}
+	
 	//read the current camera mode
 	inline CameraMode getCameraMode()
 	{
@@ -240,7 +246,6 @@ private:
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
 	f32 m_cache_zoom_fov;
-	bool m_cache_view_bobbing;
 
 	std::list<Nametag *> m_nametags;
 };

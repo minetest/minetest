@@ -619,7 +619,7 @@ void Hud::resizeHotbar() {
 }
 
 struct MeshTimeInfo {
-	s32 time;
+	s64 time;
 	scene::IMesh *mesh;
 };
 
@@ -653,9 +653,9 @@ void drawItemStack(video::IVideoDriver *driver,
 			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
 			if (mesh != ti.mesh) {
 				ti.mesh = mesh;
-				ti.time = getTimeMs();
+				ti.time = porting::getTimeMs();
 			} else {
-				delta = porting::getDeltaMs(ti.time, getTimeMs()) % 100000;
+				delta = porting::getDeltaMs(ti.time, porting::getTimeMs()) % 100000;
 			}
 		}
 		core::rect<s32> oldViewPort = driver->getViewPort();

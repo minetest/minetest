@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "server.h"
 #include "hud.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 
 struct EnumString es_HudElementType[] =
 {
@@ -726,11 +726,13 @@ int ObjectRef::l_set_detach(lua_State *L)
 	v3f rotation;
 	co->getAttachment(&parent_id, &bone, &position, &rotation);
 	ServerActiveObject *parent = NULL;
-	if (parent_id)
+	if (parent_id) {
 		parent = env->getActiveObject(parent_id);
-
+		co->setAttachment(0, "", position, rotation);
+	} else {
+		co->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
+	}
 	// Do it
-	co->setAttachment(0, "", v3f(0,0,0), v3f(0,0,0));
 	if (parent != NULL)
 		parent->removeAttachmentChild(co->getId());
 	return 0;
@@ -1200,9 +1202,10 @@ int ObjectRef::l_set_attribute(lua_State *L)
 	}
 
 	std::string attr = luaL_checkstring(L, 2);
-	std::string value = luaL_checkstring(L, 3);
-
-	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
+	if (lua_isnil(L, 3)) {
+		co->removeExtendedAttribute(attr);
+	} else {
+		std::string value = luaL_checkstring(L, 3);
 		co->setExtendedAttribute(attr, value);
 	}
 	return 1;
@@ -1660,7 +1663,7 @@ int ObjectRef::l_hud_get_hotbar_selected_image(lua_State *L)
 	return 1;
 }
 
-// set_sky(self, bgcolor, type, list)
+// set_sky(self, bgcolor, type, list, clouds = true)
 int ObjectRef::l_set_sky(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -1676,9 +1679,8 @@ int ObjectRef::l_set_sky(lua_State *L)
 
 	std::vector<std::string> params;
 	if (lua_istable(L, 4)) {
-		int table = lua_gettop(L);
 		lua_pushnil(L);
-		while (lua_next(L, table) != 0) {
+		while (lua_next(L, 4) != 0) {
 			// key at index -2 and value at index -1
 			if (lua_isstring(L, -1))
 				params.push_back(lua_tostring(L, -1));
@@ -1692,7 +1694,11 @@ int ObjectRef::l_set_sky(lua_State *L)
 	if (type == "skybox" && params.size() != 6)
 		throw LuaError("skybox expects 6 textures");
 
-	if (!getServer(L)->setSky(player, bgcolor, type, params))
+	bool clouds = true;
+	if (lua_isboolean(L, 5))
+		clouds = lua_toboolean(L, 5);
+
+	if (!getServer(L)->setSky(player, bgcolor, type, params, clouds))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1710,8 +1716,9 @@ int ObjectRef::l_get_sky(lua_State *L)
 	video::SColor bgcolor(255, 255, 255, 255);
 	std::string type;
 	std::vector<std::string> params;
+	bool clouds;
 
-	player->getSky(&bgcolor, &type, &params);
+	player->getSky(&bgcolor, &type, &params, &clouds);
 	type = type == "" ? "regular" : type;
 
 	push_ARGB8(L, bgcolor);
@@ -1724,8 +1731,88 @@ int ObjectRef::l_get_sky(lua_State *L)
 		lua_rawseti(L, -2, i);
 		i++;
 	}
+	lua_pushboolean(L, clouds);
 	return 3;
 }
+
+// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+int ObjectRef::l_set_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+	if (!lua_istable(L, 2))
+		return 0;
+
+	CloudParams cloud_params = player->getCloudParams();
+
+	cloud_params.density = getfloatfield_default(L, 2, "density", cloud_params.density);
+
+	lua_getfield(L, 2, "color");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_params.color_bright);
+	lua_pop(L, 1);
+	lua_getfield(L, 2, "ambient");
+	if (!lua_isnil(L, -1))
+		read_color(L, -1, &cloud_params.color_ambient);
+	lua_pop(L, 1);
+
+	cloud_params.height    = getfloatfield_default(L, 2, "height",    cloud_params.height   );
+	cloud_params.thickness = getfloatfield_default(L, 2, "thickness", cloud_params.thickness);
+
+	lua_getfield(L, 2, "speed");
+	if (lua_istable(L, -1)) {
+		v2f new_speed;
+		new_speed.X = getfloatfield_default(L, -1, "x", 0);
+		new_speed.Y = getfloatfield_default(L, -1, "y", 0);
+		cloud_params.speed = new_speed;
+	}
+	lua_pop(L, 1);
+
+	if (!getServer(L)->setClouds(player, cloud_params.density,
+			cloud_params.color_bright, cloud_params.color_ambient,
+			cloud_params.height, cloud_params.thickness,
+			cloud_params.speed))
+		return 0;
+
+	player->setCloudParams(cloud_params);
+
+	lua_pushboolean(L, true);
+	return 1;
+}
+
+int ObjectRef::l_get_clouds(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	RemotePlayer *player = getplayer(ref);
+	if (!player)
+		return 0;
+	const CloudParams &cloud_params = player->getCloudParams();
+
+	lua_newtable(L);
+	lua_pushnumber(L, cloud_params.density);
+	lua_setfield(L, -2, "density");
+	push_ARGB8(L, cloud_params.color_bright);
+	lua_setfield(L, -2, "color");
+	push_ARGB8(L, cloud_params.color_ambient);
+	lua_setfield(L, -2, "ambient");
+	lua_pushnumber(L, cloud_params.height);
+	lua_setfield(L, -2, "height");
+	lua_pushnumber(L, cloud_params.thickness);
+	lua_setfield(L, -2, "thickness");
+	lua_newtable(L);
+	lua_pushnumber(L, cloud_params.speed.X);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, cloud_params.speed.Y);
+	lua_setfield(L, -2, "y");
+	lua_setfield(L, -2, "speed");
+
+	return 1;
+}
+
 
 // override_day_night_ratio(self, brightness=0...1)
 int ObjectRef::l_override_day_night_ratio(lua_State *L)
@@ -1909,6 +1996,8 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, hud_get_hotbar_selected_image),
 	luamethod(ObjectRef, set_sky),
 	luamethod(ObjectRef, get_sky),
+	luamethod(ObjectRef, set_clouds),
+	luamethod(ObjectRef, get_clouds),
 	luamethod(ObjectRef, override_day_night_ratio),
 	luamethod(ObjectRef, get_day_night_ratio),
 	luamethod(ObjectRef, set_local_animation),

@@ -1,10 +1,10 @@
 -- Minetest: builtin/static_spawn.lua
 
 local function warn_invalid_static_spawnpoint()
-	if core.setting_get("static_spawnpoint") and
+	if core.settings:get("static_spawnpoint") and
 			not core.setting_get_pos("static_spawnpoint") then
 		core.log("error", "The static_spawnpoint setting is invalid: \""..
-				core.setting_get("static_spawnpoint").."\"")
+				core.settings:get("static_spawnpoint").."\"")
 	end
 end
 

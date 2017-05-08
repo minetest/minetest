@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_util.h"
 #include "lua_api/l_internal.h"
+#include "lua_api/l_settings.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_async.h"
@@ -75,71 +76,6 @@ int ModApiUtil::l_get_us_time(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	lua_pushnumber(L, porting::getTimeUs());
 	return 1;
-}
-
-#define CHECK_SECURE_SETTING(L, name) \
-	if (ScriptApiSecurity::isSecure(L) && \
-			name.compare(0, 7, "secure.") == 0) { \
-		throw LuaError("Attempt to set secure setting."); \
-	}
-
-// setting_set(name, value)
-int ModApiUtil::l_setting_set(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-	std::string value = luaL_checkstring(L, 2);
-	CHECK_SECURE_SETTING(L, name);
-	g_settings->set(name, value);
-	return 0;
-}
-
-// setting_get(name)
-int ModApiUtil::l_setting_get(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
-	try{
-		std::string value = g_settings->get(name);
-		lua_pushstring(L, value.c_str());
-	} catch(SettingNotFoundException &e){
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-// setting_setbool(name)
-int ModApiUtil::l_setting_setbool(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string name = luaL_checkstring(L, 1);
-	bool value = lua_toboolean(L, 2);
-	CHECK_SECURE_SETTING(L, name);
-	g_settings->setBool(name, value);
-	return 0;
-}
-
-// setting_getbool(name)
-int ModApiUtil::l_setting_getbool(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	const char *name = luaL_checkstring(L, 1);
-	try{
-		bool value = g_settings->getBool(name);
-		lua_pushboolean(L, value);
-	} catch(SettingNotFoundException &e){
-		lua_pushnil(L);
-	}
-	return 1;
-}
-
-// setting_save()
-int ModApiUtil::l_setting_save(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	if(g_settings_path != "")
-		g_settings->updateConfigFile(g_settings_path.c_str());
-	return 0;
 }
 
 // parse_json(str[, nullvalue])
@@ -493,12 +429,6 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 
 	API_FCT(get_us_time);
 
-	API_FCT(setting_set);
-	API_FCT(setting_get);
-	API_FCT(setting_setbool);
-	API_FCT(setting_getbool);
-	API_FCT(setting_save);
-
 	API_FCT(parse_json);
 	API_FCT(write_json);
 
@@ -524,6 +454,9 @@ void ModApiUtil::Initialize(lua_State *L, int top)
 	API_FCT(decode_base64);
 
 	API_FCT(get_version);
+
+	LuaSettings::create(L, g_settings, g_settings_path);
+	lua_setfield(L, top, "settings");
 }
 
 void ModApiUtil::InitializeClient(lua_State *L, int top)
@@ -548,34 +481,31 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(get_version);
 }
 
-void ModApiUtil::InitializeAsync(AsyncEngine& engine)
+void ModApiUtil::InitializeAsync(lua_State *L, int top)
 {
-	ASYNC_API_FCT(log);
+	API_FCT(log);
 
-	ASYNC_API_FCT(get_us_time);
+	API_FCT(get_us_time);
 
-	//ASYNC_API_FCT(setting_set);
-	ASYNC_API_FCT(setting_get);
-	//ASYNC_API_FCT(setting_setbool);
-	ASYNC_API_FCT(setting_getbool);
-	//ASYNC_API_FCT(setting_save);
+	API_FCT(parse_json);
+	API_FCT(write_json);
 
-	ASYNC_API_FCT(parse_json);
-	ASYNC_API_FCT(write_json);
+	API_FCT(is_yes);
 
-	ASYNC_API_FCT(is_yes);
+	API_FCT(get_builtin_path);
 
-	ASYNC_API_FCT(get_builtin_path);
+	API_FCT(compress);
+	API_FCT(decompress);
 
-	ASYNC_API_FCT(compress);
-	ASYNC_API_FCT(decompress);
+	API_FCT(mkdir);
+	API_FCT(get_dir_list);
 
-	ASYNC_API_FCT(mkdir);
-	ASYNC_API_FCT(get_dir_list);
+	API_FCT(encode_base64);
+	API_FCT(decode_base64);
 
-	ASYNC_API_FCT(encode_base64);
-	ASYNC_API_FCT(decode_base64);
+	API_FCT(get_version);
 
-	ASYNC_API_FCT(get_version);
+	LuaSettings::create(L, g_settings, g_settings_path);
+	lua_setfield(L, top, "settings");
 }
 

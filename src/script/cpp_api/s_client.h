@@ -21,9 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef S_CLIENT_H_
 #define S_CLIENT_H_
 
+#include "util/pointedthing.h"
 #include "cpp_api/s_base.h"
 #include "mapnode.h"
+#include "itemdef.h"
 #include "util/string.h"
+#include "util/pointedthing.h"
+#include "lua_api/l_item.h"
 
 #ifdef _CRT_MSVCP_CURRENT
 #include <cstdint>
@@ -51,6 +55,8 @@ public:
 
 	bool on_dignode(v3s16 p, MapNode node);
 	bool on_punchnode(v3s16 p, MapNode node);
+	bool on_placenode(const PointedThing &pointed, const ItemDefinition &item);
+	bool on_item_use(const ItemStack &item, const PointedThing &pointed);
 
 	void setEnv(ClientEnvironment *env);
 };

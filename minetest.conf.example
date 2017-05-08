@@ -186,6 +186,31 @@
 #    type: key
 # keymap_noclip = KEY_KEY_H
 
+#    Key for selecting the next item in the hotbar.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_hotbar_next = KEY_KEY_N
+
+#    Key for selecting the previous item in the hotbar.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_hotbar_previous = KEY_KEY_B
+
+#    Key for muting the game.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_mute = KEY_KEY_M
+
+#    Key for increasing the volume.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_increase_volume =
+
+#    Key for decreasing the volume.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_decrease_volume =
+
 #    Key for toggling autorun.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -526,6 +551,10 @@
 #    type: int
 # screenH = 600
 
+#    Save the window size automatically when modified.
+#    type: bool
+# autosave_screensize = true
+
 #    Fullscreen mode.
 #    type: bool
 # fullscreen = false
@@ -569,11 +598,7 @@
 #    type: int
 # cloud_radius = 12
 
-#    Enables view bobbing when walking.
-#    type: bool
-# view_bobbing = true
-
-#    Multiplier for view bobbing.
+#    Enable view bobbing and amount of view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 #    type: float
 # view_bobbing_amount = 1.0
@@ -1815,4 +1840,3 @@
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
-

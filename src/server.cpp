@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "profiler.h"
 #include "log.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "nodedef.h"
 #include "itemdef.h"
 #include "craftdef.h"
@@ -1871,13 +1871,30 @@ void Server::SendHUDSetParam(u16 peer_id, u16 param, const std::string &value)
 }
 
 void Server::SendSetSky(u16 peer_id, const video::SColor &bgcolor,
-		const std::string &type, const std::vector<std::string> &params)
+		const std::string &type, const std::vector<std::string> &params,
+		bool &clouds)
 {
 	NetworkPacket pkt(TOCLIENT_SET_SKY, 0, peer_id);
 	pkt << bgcolor << type << (u16) params.size();
 
 	for(size_t i=0; i<params.size(); i++)
 		pkt << params[i];
+
+	pkt << clouds;
+
+	Send(&pkt);
+}
+
+void Server::SendCloudParams(u16 peer_id, float density,
+		const video::SColor &color_bright,
+		const video::SColor &color_ambient,
+		float height,
+		float thickness,
+		const v2f &speed)
+{
+	NetworkPacket pkt(TOCLIENT_CLOUD_PARAMS, 0, peer_id);
+	pkt << density << color_bright << color_ambient
+			<< height << thickness << speed;
 
 	Send(&pkt);
 }
@@ -2086,15 +2103,23 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	m_playing_sounds[id] = ServerPlayingSound();
 	ServerPlayingSound &psound = m_playing_sounds[id];
 	psound.params = params;
+	psound.spec = spec;
 
+	float gain = params.gain * spec.gain;
 	NetworkPacket pkt(TOCLIENT_PLAY_SOUND, 0);
-	pkt << id << spec.name << (float) (spec.gain * params.gain)
-			<< (u8) params.type << pos << params.object << params.loop;
+	pkt << id << spec.name << gain
+			<< (u8) params.type << pos << params.object
+			<< params.loop << params.fade;
 
-	for(std::vector<u16>::iterator i = dst_clients.begin();
+	// Backwards compability
+	bool play_sound = gain > 0;
+
+	for (std::vector<u16>::iterator i = dst_clients.begin();
 			i != dst_clients.end(); ++i) {
-		psound.clients.insert(*i);
-		m_clients.send(*i, 0, &pkt, true);
+		if (play_sound || m_clients.getProtocolVersion(*i) >= 32) {
+			psound.clients.insert(*i);
+			m_clients.send(*i, 0, &pkt, true);
+		}
 	}
 	return id;
 }
@@ -2116,6 +2141,52 @@ void Server::stopSound(s32 handle)
 	}
 	// Remove sound reference
 	m_playing_sounds.erase(i);
+}
+
+void Server::fadeSound(s32 handle, float step, float gain)
+{
+	// Get sound reference
+	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i =
+			m_playing_sounds.find(handle);
+	if (i == m_playing_sounds.end())
+		return;
+
+	ServerPlayingSound &psound = i->second;
+	psound.params.gain = gain;
+
+	NetworkPacket pkt(TOCLIENT_FADE_SOUND, 4);
+	pkt << handle << step << gain;
+
+	// Backwards compability
+	bool play_sound = gain > 0;
+	ServerPlayingSound compat_psound = psound;
+	compat_psound.clients.clear();
+
+	NetworkPacket compat_pkt(TOCLIENT_STOP_SOUND, 4);
+	compat_pkt << handle;
+
+	for (UNORDERED_SET<u16>::iterator it = psound.clients.begin();
+			it != psound.clients.end();) {
+		if (m_clients.getProtocolVersion(*it) >= 32) {
+			// Send as reliable
+			m_clients.send(*it, 0, &pkt, true);
+			++it;
+		} else {
+			compat_psound.clients.insert(*it);
+			// Stop old sound
+			m_clients.send(*it, 0, &compat_pkt, true);
+			psound.clients.erase(it++);
+		}
+	}
+
+	// Remove sound reference
+	if (!play_sound || psound.clients.size() == 0)
+		m_playing_sounds.erase(i);
+
+	if (play_sound && compat_psound.clients.size() > 0) {
+		// Play new sound volume on older clients
+		playSound(compat_psound.spec, compat_psound.params);
+	}
 }
 
 void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
@@ -3186,13 +3257,30 @@ bool Server::setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third)
 }
 
 bool Server::setSky(RemotePlayer *player, const video::SColor &bgcolor,
-	const std::string &type, const std::vector<std::string> &params)
+	const std::string &type, const std::vector<std::string> &params,
+	bool &clouds)
 {
 	if (!player)
 		return false;
 
-	player->setSky(bgcolor, type, params);
-	SendSetSky(player->peer_id, bgcolor, type, params);
+	player->setSky(bgcolor, type, params, clouds);
+	SendSetSky(player->peer_id, bgcolor, type, params, clouds);
+	return true;
+}
+
+bool Server::setClouds(RemotePlayer *player, float density,
+	const video::SColor &color_bright,
+	const video::SColor &color_ambient,
+	float height,
+	float thickness,
+	const v2f &speed)
+{
+	if (!player)
+		return false;
+
+	SendCloudParams(player->peer_id, density,
+			color_bright, color_ambient, height,
+			thickness, speed);
 	return true;
 }
 

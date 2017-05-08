@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "remoteplayer.h"
 #include "server.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "genericobject.h"
 
 std::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
@@ -797,8 +797,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
-	m_prop.weight = 75;
-	m_prop.collisionbox = aabb3f(-1/3.,-1.0,-1/3., 1/3.,1.0,1/3.);
+	m_prop.weight = PLAYER_DEFAULT_WEIGHT;
+	m_prop.collisionbox = aabb3f(-0.3f, -1.0f, -0.3f, 0.3f, 0.75f, 0.3f);
 	// start of default appearance, this should be overwritten by LUA
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
@@ -811,6 +811,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	// end of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
+	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT;
 	m_hp = PLAYER_MAX_HP;
 }
 
@@ -1428,7 +1429,10 @@ bool PlayerSAO::checkMovementCheat()
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 {
-	*toset = aabb3f(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30);
+	//update collision box
+	toset->MinEdge = m_prop.collisionbox.MinEdge * BS + v3f(0, BS, 0);
+	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS + v3f(0, BS, 0);
+
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
 	return true;

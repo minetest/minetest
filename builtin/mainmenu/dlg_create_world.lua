@@ -18,8 +18,8 @@
 local function create_world_formspec(dialogdata)
 	local mapgens = core.get_mapgen_names()
 
-	local current_seed = core.setting_get("fixed_map_seed") or ""
-	local current_mg   = core.setting_get("mg_name")
+	local current_seed = core.settings:get("fixed_map_seed") or ""
+	local current_mg   = core.settings:get("mg_name")
 
 	local mglist = ""
 	local selindex = 1
@@ -33,7 +33,7 @@ local function create_world_formspec(dialogdata)
 	end
 	mglist = mglist:sub(1, -2)
 	
-	local gameid = core.setting_get("menu_last_game")
+	local gameid = core.settings:get("menu_last_game")
 	
 	local game, gameidx = nil , 0
 	if gameid ~= nil then
@@ -90,10 +90,10 @@ local function create_world_buttonhandler(this, fields)
 
 			local message = nil
 
-			core.setting_set("fixed_map_seed", fields["te_seed"])
+			core.settings:set("fixed_map_seed", fields["te_seed"])
 
 			if not menudata.worldlist:uid_exists_raw(worldname) then
-				core.setting_set("mg_name",fields["dd_mapgen"])
+				core.settings:set("mg_name",fields["dd_mapgen"])
 				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
@@ -102,13 +102,13 @@ local function create_world_buttonhandler(this, fields)
 			if message ~= nil then
 				gamedata.errormessage = message
 			else
-				core.setting_set("menu_last_game",gamemgr.games[gameindex].id)
+				core.settings:set("menu_last_game",gamemgr.games[gameindex].id)
 				if this.data.update_worldlist_filter then
 					menudata.worldlist:set_filtercriteria(gamemgr.games[gameindex].id)
 					mm_texture.update("singleplayer", gamemgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
-				core.setting_set("mainmenu_last_selected_world",
+				core.settings:set("mainmenu_last_selected_world",
 									menudata.worldlist:raw_index_by_uid(worldname))
 			end
 		else

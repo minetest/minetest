@@ -167,7 +167,7 @@ local function switch_to_tab(self, index)
 	self.current_tab = self.tablist[index].name
 
 	if (self.autosave_tab) then
-		core.setting_set(self.name .. "_LAST",self.current_tab)
+		core.settings:set(self.name .. "_LAST",self.current_tab)
 	end
 
 	-- call for tab to enter

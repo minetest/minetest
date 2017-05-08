@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "network/clientopcodes.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "tileanimation.h"
@@ -561,7 +561,6 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 
 	*pkt >> pos >> pitch >> yaw;
 
-	player->got_teleported = true;
 	player->setPosition(pos);
 
 	infostream << "Client got TOCLIENT_MOVE_PLAYER"
@@ -755,21 +754,39 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
+	/*
+		[0] u32 server_id
+		[4] u16 name length
+		[6] char name[len]
+		[ 6 + len] f32 gain
+		[10 + len] u8 type
+		[11 + len] (f32 * 3) pos
+		[23 + len] u16 object_id
+		[25 + len] bool loop
+		[26 + len] f32 fade
+	*/
+
 	s32 server_id;
 	std::string name;
+
 	float gain;
 	u8 type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
 	bool loop;
+	float fade = 0;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+
+	try {
+		*pkt >> fade;
+	} catch (PacketError &e) {};
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain);
+			client_id = m_sound->playSound(name, loop, gain, fade);
 			break;
 		case 1: // positional
 			client_id = m_sound->playSoundAt(name, loop, gain, pos);
@@ -806,6 +823,21 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 		int client_id = i->second;
 		m_sound->stopSound(client_id);
 	}
+}
+
+void Client::handleCommand_FadeSound(NetworkPacket *pkt)
+{
+	s32 sound_id;
+	float step;
+	float gain;
+
+	*pkt >> sound_id >> step >> gain;
+
+	UNORDERED_MAP<s32, int>::iterator i =
+			m_sounds_server_to_client.find(sound_id);
+
+	if (i != m_sounds_server_to_client.end())
+		m_sound->fadeSound(i->second, step, gain);
 }
 
 void Client::handleCommand_Privileges(NetworkPacket* pkt)
@@ -1160,11 +1192,45 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	for (size_t i = 0; i < count; i++)
 		params->push_back(deSerializeString(is));
 
+	bool clouds = true;
+	try {
+		clouds = readU8(is);
+	} catch (...) {}
+
 	ClientEvent event;
 	event.type            = CE_SET_SKY;
 	event.set_sky.bgcolor = bgcolor;
 	event.set_sky.type    = type;
 	event.set_sky.params  = params;
+	event.set_sky.clouds  = clouds;
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_CloudParams(NetworkPacket* pkt)
+{
+	f32 density;
+	video::SColor color_bright;
+	video::SColor color_ambient;
+	f32 height;
+	f32 thickness;
+	v2f speed;
+
+	*pkt >> density >> color_bright >> color_ambient
+			>> height >> thickness >> speed;
+
+	ClientEvent event;
+	event.type                       = CE_CLOUD_PARAMS;
+	event.cloud_params.density       = density;
+	// use the underlying u32 representation, because we can't
+	// use struct members with constructors here, and this way
+	// we avoid using new() and delete() for no good reason
+	event.cloud_params.color_bright  = color_bright.color;
+	event.cloud_params.color_ambient = color_ambient.color;
+	event.cloud_params.height        = height;
+	event.cloud_params.thickness     = thickness;
+	// same here: deconstruct to skip constructor
+	event.cloud_params.speed_x       = speed.X;
+	event.cloud_params.speed_y       = speed.Y;
 	m_client_event_queue.push(event);
 }
 

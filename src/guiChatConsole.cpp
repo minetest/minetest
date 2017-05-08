@@ -55,7 +55,7 @@ GUIChatConsole::GUIChatConsole(
 	m_client(client),
 	m_menumgr(menumgr),
 	m_screensize(v2u32(0,0)),
-	m_animate_time_old(0),
+	m_animate_time_old(porting::getTimeMs()),
 	m_open(false),
 	m_close_on_enter(false),
 	m_height(0),
@@ -71,8 +71,6 @@ GUIChatConsole::GUIChatConsole(
 	m_font(NULL),
 	m_fontsize(0, 0)
 {
-	m_animate_time_old = getTimeMs();
-
 	// load background settings
 	s32 console_alpha = g_settings->getS32("console_alpha");
 	m_background_color.setAlpha(clamp_u8(console_alpha));
@@ -124,7 +122,7 @@ void GUIChatConsole::openConsole(f32 scale)
 	m_desired_height_fraction = scale;
 	m_desired_height = scale * m_screensize.Y;
 	reformatConsole();
-	m_animate_time_old = getTimeMs();
+	m_animate_time_old = porting::getTimeMs();
 	IGUIElement::setVisible(true);
 	Environment->setFocus(this);
 	m_menumgr->createdMenu(this);
@@ -212,7 +210,7 @@ void GUIChatConsole::draw()
 	}
 
 	// Animation
-	u32 now = getTimeMs();
+	u64 now = porting::getTimeMs();
 	animate(now - m_animate_time_old);
 	m_animate_time_old = now;
 

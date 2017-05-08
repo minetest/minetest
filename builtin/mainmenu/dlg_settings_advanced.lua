@@ -423,7 +423,7 @@ local settings = full_settings
 local selected_setting = 1
 
 local function get_current_value(setting)
-	local value = core.setting_get(setting.name)
+	local value = core.settings:get(setting.name)
 	if value == nil then
 		value = setting.default
 	end
@@ -539,11 +539,11 @@ local function handle_change_setting_buttons(this, fields)
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
-			core.setting_setbool(setting.name, new_value == fgettext("Enabled"))
+			core.settings:set_bool(setting.name, new_value == fgettext("Enabled"))
 
 		elseif setting.type == "enum" then
 			local new_value = fields["dd_setting_value"]
-			core.setting_set(setting.name, new_value)
+			core.settings:set(setting.name, new_value)
 
 		elseif setting.type == "int" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -565,7 +565,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.setting_set(setting.name, new_value)
+			core.settings:set(setting.name, new_value)
 
 		elseif setting.type == "float" then
 			local new_value = tonumber(fields["te_setting_value"])
@@ -575,7 +575,7 @@ local function handle_change_setting_buttons(this, fields)
 				core.update_formspec(this:get_formspec())
 				return true
 			end
-			core.setting_set(setting.name, new_value)
+			core.settings:set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
 			local new_value = fields["te_setting_value"]
@@ -589,13 +589,13 @@ local function handle_change_setting_buttons(this, fields)
 					return true
 				end
 			end
-			core.setting_set(setting.name, new_value)
+			core.settings:set(setting.name, new_value)
 
 		else
 			local new_value = fields["te_setting_value"]
-			core.setting_set(setting.name, new_value)
+			core.settings:set(setting.name, new_value)
 		end
-		core.setting_save()
+		core.settings:write()
 		this:delete()
 		return true
 	end
@@ -629,7 +629,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 	local current_level = 0
 	for _, entry in ipairs(settings) do
 		local name
-		if not core.setting_getbool("main_menu_technical_settings") and entry.readable_name then
+		if not core.settings:get_bool("main_menu_technical_settings") and entry.readable_name then
 			name = fgettext_ne(entry.readable_name)
 		else
 			name = entry.name
@@ -666,7 +666,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 			"button[10,6;2,1;btn_edit;" .. fgettext("Edit") .. "]" ..
 			"button[7,6;3,1;btn_restore;" .. fgettext("Restore Default") .. "]" ..
 			"checkbox[0,5.3;cb_tech_settings;" .. fgettext("Show technical names") .. ";"
-					.. dump(core.setting_getbool("main_menu_technical_settings")) .. "]"
+					.. dump(core.settings:get_bool("main_menu_technical_settings")) .. "]"
 
 	return formspec
 end
@@ -680,8 +680,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 			local setting = settings[selected_setting]
 			if setting and setting.type == "bool" then
 				local current_value = get_current_value(setting)
-				core.setting_setbool(setting.name, not core.is_yes(current_value))
-				core.setting_save()
+				core.settings:set_bool(setting.name, not core.is_yes(current_value))
+				core.settings:write()
 				return true
 			else
 				list_enter = true
@@ -736,8 +736,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			core.setting_set(setting.name, setting.default)
-			core.setting_save()
+			core.settings:set(setting.name, setting.default)
+			core.settings:write()
 			core.update_formspec(this:get_formspec())
 		end
 		return true
@@ -749,8 +749,8 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 
 	if fields["cb_tech_settings"] then
-		core.setting_set("main_menu_technical_settings", fields["cb_tech_settings"])
-		core.setting_save()
+		core.settings:set("main_menu_technical_settings", fields["cb_tech_settings"])
+		core.settings:write()
 		core.update_formspec(this:get_formspec())
 		return true
 	end

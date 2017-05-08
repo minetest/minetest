@@ -54,9 +54,9 @@ local function get_formspec(tabview, name, tabdata)
 	local retval = "label[4,-0.25;" .. fgettext("Select texture pack:") .. "]" ..
 			"textlist[4,0.25;7.5,5.0;TPs;"
 
-	local current_texture_path = core.setting_get("texture_path")
+	local current_texture_path = core.settings:get("texture_path")
 	local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
-	local index = tonumber(core.setting_get("mainmenu_last_selected_TP"))
+	local index = tonumber(core.settings:get("mainmenu_last_selected_TP"))
 
 	if not index then index = 1 end
 
@@ -106,7 +106,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		local event = core.explode_textlist_event(fields["TPs"])
 		if event.type == "CHG" or event.type == "DCL" then
 			local index = core.get_textlist_index("TPs")
-			core.setting_set("mainmenu_last_selected_TP", index)
+			core.settings:set("mainmenu_last_selected_TP", index)
 			local list = filter_texture_pack_list(core.get_dir_list(core.get_texturepath(), true))
 			local current_index = core.get_textlist_index("TPs")
 			if current_index and #list >= current_index then
@@ -114,7 +114,7 @@ local function main_button_handler(tabview, fields, name, tabdata)
 				if list[current_index] == fgettext("None") then
 					new_path = ""
 				end
-				core.setting_set("texture_path", new_path)
+				core.settings:set("texture_path", new_path)
 			end
 		end
 		return true

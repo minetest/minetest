@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "clientscripting.h"
+#include "scripting_client.h"
 #include "client.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_client.h"
@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_localplayer.h"
+#include "lua_api/l_camera.h"
 
 ClientScripting::ClientScripting(Client *client):
 	ScriptApiBase()
@@ -61,20 +62,26 @@ ClientScripting::ClientScripting(Client *client):
 
 void ClientScripting::InitializeModApi(lua_State *L, int top)
 {
-	ModApiUtil::InitializeClient(L, top);
-	ModApiClient::Initialize(L, top);
-	ModApiStorage::Initialize(L, top);
-	ModApiEnvMod::InitializeClient(L, top);
-
 	LuaItemStack::Register(L);
 	StorageRef::Register(L);
 	LuaMinimap::Register(L);
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
+	LuaCamera::Register(L);
+
+	ModApiUtil::InitializeClient(L, top);
+	ModApiClient::Initialize(L, top);
+	ModApiStorage::Initialize(L, top);
+	ModApiEnvMod::InitializeClient(L, top);
 }
 
 void ClientScripting::on_client_ready(LocalPlayer *localplayer)
 {
 	lua_State *L = getStack();
 	LuaLocalPlayer::create(L, localplayer);
+}
+
+void ClientScripting::on_camera_ready(Camera *camera)
+{
+	LuaCamera::create(getStack(), camera);
 }

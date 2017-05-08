@@ -76,7 +76,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 
 void MapblockMeshGenerator::useTile(int index, bool disable_backface_culling)
 {
-	tile = getNodeTileN(n, p, index, data);
+	getNodeTileN(n, p, index, data, tile);
 	if (!data->m_smooth_lighting)
 		color = encode_light(light, f->light_source);
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
@@ -88,14 +88,14 @@ void MapblockMeshGenerator::useTile(int index, bool disable_backface_culling)
 
 void MapblockMeshGenerator::useDefaultTile(bool set_color)
 {
-	tile = getNodeTile(n, p, v3s16(0, 0, 0), data);
+	getNodeTile(n, p, v3s16(0, 0, 0), data, tile);
 	if (set_color && !data->m_smooth_lighting)
 		color = encode_light(light, f->light_source);
 }
 
-TileSpec MapblockMeshGenerator::getTile(const v3s16& direction)
+void MapblockMeshGenerator::getTile(const v3s16& direction, TileSpec &tile)
 {
-	return getNodeTile(n, p, direction, data);
+	getNodeTile(n, p, direction, data, tile);
 }
 
 void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
@@ -660,7 +660,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++)
-		tiles[face] = getTile(g_6dirs[face]);
+		getTile(g_6dirs[face], tiles[face]);
 
 	TileSpec glass_tiles[6];
 	if (tiles[1].layers[0].texture &&
@@ -1193,7 +1193,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++) {
 		// Handles facedir rotation for textures
-		tiles[face] = getTile(tile_dirs[face]);
+		getTile(tile_dirs[face], tiles[face]);
 	}
 
 	// locate possible neighboring nodes to connect to

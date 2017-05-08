@@ -54,7 +54,8 @@ Mutex log_message_mutex;
 #endif
 
 
-static inline float CALC_DTIME(unsigned int lasttime, unsigned int curtime) {
+static inline float CALC_DTIME(u64 lasttime, u64 curtime)
+{
 	float value = ( curtime - lasttime) / 1000.0;
 	return MYMAX(MYMIN(value,0.1),0.0);
 }
@@ -981,7 +982,7 @@ void Peer::RTTStatistics(float rtt, const std::string &profiler_id,
 bool Peer::isTimedOut(float timeout)
 {
 	MutexAutoLock lock(m_exclusive_access_mutex);
-	u32 current_time = porting::getTimeMs();
+	u64 current_time = porting::getTimeMs();
 
 	float dtime = CALC_DTIME(m_last_timeout_check,current_time);
 	m_last_timeout_check = current_time;
@@ -1276,8 +1277,8 @@ void * ConnectionSendThread::run()
 	LOG(dout_con<<m_connection->getDesc()
 			<<"ConnectionSend thread started"<<std::endl);
 
-	u32 curtime = porting::getTimeMs();
-	u32 lasttime = curtime;
+	u64 curtime = porting::getTimeMs();
+	u64 lasttime = curtime;
 
 	PROFILE(std::stringstream ThreadIdentifier);
 	PROFILE(ThreadIdentifier << "ConnectionSend: [" << m_connection->getDesc() << "]");
@@ -2046,8 +2047,8 @@ void * ConnectionReceiveThread::run()
 	PROFILE(ThreadIdentifier << "ConnectionReceive: [" << m_connection->getDesc() << "]");
 
 #ifdef DEBUG_CONNECTION_KBPS
-	u32 curtime = porting::getTimeMs();
-	u32 lasttime = curtime;
+	u64 curtime = porting::getTimeMs();
+	u64 lasttime = curtime;
 	float debug_print_timer = 0.0;
 #endif
 
@@ -2390,7 +2391,7 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 				// only calculate rtt from straight sent packets
 				if (p.resend_count == 0) {
 					// Get round trip time
-					unsigned int current_time = porting::getTimeMs();
+					u64 current_time = porting::getTimeMs();
 
 					// a overflow is quite unlikely but as it'd result in major
 					// rtt miscalculation we handle it here

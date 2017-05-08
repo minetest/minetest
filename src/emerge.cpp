@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_schematic.h"
 #include "nodedef.h"
 #include "profiler.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "serverobject.h"
 #include "settings.h"

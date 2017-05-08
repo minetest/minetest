@@ -71,7 +71,7 @@ int Database_SQLite3::busyHandler(void *data, int count)
 {
 	s64 &first_time = reinterpret_cast<s64 *>(data)[0];
 	s64 &prev_time = reinterpret_cast<s64 *>(data)[1];
-	s64 cur_time = getTimeMs();
+	s64 cur_time = porting::getTimeMs();
 
 	if (count == 0) {
 		first_time = cur_time;

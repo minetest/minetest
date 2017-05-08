@@ -47,7 +47,6 @@ public:
 	ClientActiveObject *parent;
 
 	u16 hp;
-	bool got_teleported;
 	bool isAttached;
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
@@ -92,6 +91,8 @@ public:
 
 	float camera_impact;
 
+	bool makes_footstep_sound;
+
 	int last_animation;
 	float last_animation_speed;
 
@@ -126,11 +127,17 @@ public:
 
 	f32 getPitch() const { return m_pitch; }
 
-	void setPosition(const v3f &position) { m_position = position; }
+	inline void setPosition(const v3f &position)
+	{
+		m_position = position;
+		m_sneak_node_exists = false;
+	}
 
 	v3f getPosition() const { return m_position; }
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
+
+	void setCollisionbox(aabb3f box) { m_collisionbox = box; }
 
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);

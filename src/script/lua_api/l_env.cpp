@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
-#include "serverscripting.h"
+#include "scripting_server.h"
 #include "environment.h"
 #include "server.h"
 #include "nodedef.h"
@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "treegen.h"
 #include "emerge.h"
 #include "pathfinder.h"
+#include "face_position_cache.h"
 
 struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 {
@@ -534,7 +535,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	ScriptApiBase *script = getScriptApiBase(L);
 	lua_createtable(L, ids.size(), 0);
 	std::vector<u16>::const_iterator iter = ids.begin();
-	for(u32 i = 0; iter != ids.end(); iter++) {
+	for(u32 i = 0; iter != ids.end(); ++iter) {
 		ServerActiveObject *obj = env->getActiveObject(*iter);
 		// Insert object reference into table
 		script->objectrefGetOrCreate(L, obj);
@@ -599,7 +600,7 @@ int ModApiEnvMod::l_get_gametime(lua_State *L)
 }
 
 
-// find_node_near(pos, radius, nodenames) -> pos or nil
+// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
 // nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 int ModApiEnvMod::l_find_node_near(lua_State *L)
 {
@@ -612,27 +613,27 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
 	std::set<content_t> filter;
-	if(lua_istable(L, 3)){
-		int table = 3;
+	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
-		while(lua_next(L, table) != 0){
+		while (lua_next(L, 3) != 0) {
 			// key at index -2 and value at index -1
 			luaL_checktype(L, -1, LUA_TSTRING);
 			ndef->getIds(lua_tostring(L, -1), filter);
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
-	} else if(lua_isstring(L, 3)){
+	} else if (lua_isstring(L, 3)) {
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	for (int d=1; d<=radius; d++){
+	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (std::vector<v3s16>::iterator i = list.begin();
-				i != list.end(); ++i){
+				i != list.end(); ++i) {
 			v3s16 p = pos + (*i);
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
-			if (filter.count(c) != 0){
+			if (filter.count(c) != 0) {
 				push_v3s16(L, p);
 				return 1;
 			}
@@ -985,8 +986,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 		lua_newtable(L);
 		int top = lua_gettop(L);
 		unsigned int index = 1;
-		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end();i++)
-		{
+		for (std::vector<v3s16>::iterator i = path.begin(); i != path.end(); ++i) {
 			lua_pushnumber(L,index);
 			push_v3s16(L, *i);
 			lua_settable(L, top);

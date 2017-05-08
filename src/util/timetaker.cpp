@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "timetaker.h"
 
-#include "../gettime.h"
+#include "../porting.h"
 #include "../log.h"
 #include <ostream>
 
@@ -29,14 +29,14 @@ TimeTaker::TimeTaker(const char *name, u32 *result, TimePrecision prec)
 	m_result = result;
 	m_running = true;
 	m_precision = prec;
-	m_time1 = getTime(prec);
+	m_time1 = porting::getTime(prec);
 }
 
 u32 TimeTaker::stop(bool quiet)
 {
 	if(m_running)
 	{
-		u32 time2 = getTime(m_precision);
+		u32 time2 = porting::getTime(m_precision);
 		u32 dtime = time2 - m_time1;
 		if(m_result != NULL)
 		{
@@ -64,7 +64,7 @@ u32 TimeTaker::stop(bool quiet)
 
 u32 TimeTaker::getTimerTime()
 {
-	u32 time2 = getTime(m_precision);
+	u32 time2 = porting::getTime(m_precision);
 	u32 dtime = time2 - m_time1;
 	return dtime;
 }

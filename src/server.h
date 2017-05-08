@@ -115,6 +115,7 @@ struct ServerSoundParams
 	u16 object;
 	float max_hear_distance;
 	bool loop;
+	float fade;
 
 	ServerSoundParams():
 		gain(1.0),
@@ -123,7 +124,8 @@ struct ServerSoundParams
 		pos(0,0,0),
 		object(0),
 		max_hear_distance(32*BS),
-		loop(false)
+		loop(false),
+		fade(0)
 	{}
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
@@ -132,6 +134,7 @@ struct ServerSoundParams
 struct ServerPlayingSound
 {
 	ServerSoundParams params;
+	SimpleSoundSpec spec;
 	UNORDERED_SET<u16> clients; // peer ids
 };
 
@@ -231,6 +234,7 @@ public:
 	// Envlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
+	void fadeSound(s32 handle, float step, float gain);
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -331,7 +335,14 @@ public:
 	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
 
 	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
+	bool setClouds(RemotePlayer *player, float density,
+			const video::SColor &color_bright,
+			const video::SColor &color_ambient,
+			float height,
+			float thickness,
+			const v2f &speed);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
@@ -400,7 +411,14 @@ private:
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
+	void SendCloudParams(u16 peer_id, float density,
+			const video::SColor &color_bright,
+			const video::SColor &color_ambient,
+			float height,
+			float thickness,
+			const v2f &speed);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
 
 	/*

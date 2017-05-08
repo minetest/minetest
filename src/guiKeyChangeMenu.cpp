@@ -58,6 +58,11 @@ enum
 	GUI_ID_KEY_SNEAK_BUTTON,
 	GUI_ID_KEY_DROP_BUTTON,
 	GUI_ID_KEY_INVENTORY_BUTTON,
+	GUI_ID_KEY_HOTBAR_PREV_BUTTON,
+	GUI_ID_KEY_HOTBAR_NEXT_BUTTON,
+	GUI_ID_KEY_MUTE_BUTTON,
+	GUI_ID_KEY_DEC_VOLUME_BUTTON,
+	GUI_ID_KEY_INC_VOLUME_BUTTON,
 	GUI_ID_KEY_DUMP_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON,
 	GUI_ID_KEY_ZOOM_BUTTON,
@@ -109,7 +114,7 @@ void GUIKeyChangeMenu::removeChildren()
 void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
-	v2s32 size(620, 430);
+	v2s32 size(745, 430);
 	
 	core::rect < s32 > rect(screensize.X / 2 - size.X / 2,
 							screensize.Y / 2 - size.Y / 2, screensize.X / 2 + size.X / 2,
@@ -146,15 +151,17 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 
 		{
 			core::rect < s32 > rect(0, 0, 100, 30);
-			rect += topleft + v2s32(offset.X + 115, offset.Y - 5);
+			rect += topleft + v2s32(offset.X + 120, offset.Y - 5);
 			const wchar_t *text = wgettext(k->key.name());
 			k->button = Environment->addButton(rect, this, k->id, text);
 			delete[] text;
 		}
-		if(i + 1 == KMaxButtonPerColumns)
-			offset = v2s32(260, 60);
-		else
+		if ((i + 1) % KMaxButtonPerColumns == 0) {
+			offset.X += 230;
+			offset.Y = 60;
+		} else {
 			offset += v2s32(0, 25);
+		}
 	}
 	
 	{
@@ -215,7 +222,7 @@ void GUIKeyChangeMenu::drawMenu()
 	video::SColor bgcolor(140, 0, 0, 0);
 
 	{
-		core::rect < s32 > rect(0, 0, 620, 620);
+		core::rect < s32 > rect(0, 0, 745, 620);
 		rect += AbsoluteRect.UpperLeftCorner;
 		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 	}
@@ -407,6 +414,11 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
 	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");
 	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
+	this->add_key(GUI_ID_KEY_HOTBAR_PREV_BUTTON,wgettext("Prev. item"),      "keymap_hotbar_previous");
+	this->add_key(GUI_ID_KEY_HOTBAR_NEXT_BUTTON,wgettext("Next item"),       "keymap_hotbar_next");
+	this->add_key(GUI_ID_KEY_MUTE_BUTTON,      wgettext("Mute"),             "keymap_mute");
+	this->add_key(GUI_ID_KEY_DEC_VOLUME_BUTTON,wgettext("Dec. volume"),      "keymap_decrease_volume");
+	this->add_key(GUI_ID_KEY_INC_VOLUME_BUTTON,wgettext("Inc. volume"),      "keymap_increase_volume");
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
 	this->add_key(GUI_ID_KEY_CMD_BUTTON,       wgettext("Command"),          "keymap_cmd");
 	this->add_key(GUI_ID_KEY_CMD_LOCAL_BUTTON, wgettext("Local command"),    "keymap_cmd_local");

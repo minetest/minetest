@@ -38,7 +38,7 @@ dofile(commonpath .. "misc_helpers.lua")
 if INIT == "game" then
 	dofile(gamepath .. "init.lua")
 elseif INIT == "mainmenu" then
-	local mm_script = core.setting_get("main_menu_script")
+	local mm_script = core.settings:get("main_menu_script")
 	if mm_script and mm_script ~= "" then
 		dofile(mm_script)
 	else

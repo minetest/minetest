@@ -60,7 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "version.h"
 #include "minimap.h"
 #include "mapblock_mesh.h"
-#include "script/clientscripting.h"
+#include "script/scripting_client.h"
 
 #include "sound.h"
 
@@ -202,7 +202,8 @@ public:
 
 		return meta->getString("formspec");
 	}
-	std::string resolveText(std::string str)
+
+	virtual std::string resolveText(const std::string &str)
 	{
 		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
@@ -475,6 +476,7 @@ class SoundMaker
 	ISoundManager *m_sound;
 	INodeDefManager *m_ndef;
 public:
+	bool makes_footstep_sound;
 	float m_player_step_timer;
 
 	SimpleSoundSpec m_player_step_sound;
@@ -484,6 +486,7 @@ public:
 	SoundMaker(ISoundManager *sound, INodeDefManager *ndef):
 		m_sound(sound),
 		m_ndef(ndef),
+		makes_footstep_sound(true),
 		m_player_step_timer(0)
 	{
 	}
@@ -492,7 +495,8 @@ public:
 	{
 		if (m_player_step_timer <= 0 && m_player_step_sound.exists()) {
 			m_player_step_timer = 0.03;
-			m_sound->playSound(m_player_step_sound, false);
+			if (makes_footstep_sound)
+				m_sound->playSound(m_player_step_sound, false);
 		}
 	}
 
@@ -566,27 +570,35 @@ public:
 class GameOnDemandSoundFetcher: public OnDemandSoundFetcher
 {
 	std::set<std::string> m_fetched;
+private:
+	void paths_insert(std::set<std::string> &dst_paths,
+		const std::string &base,
+		const std::string &name)
+	{
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".0.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".1.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".2.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".3.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".4.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".5.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".6.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".7.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".8.ogg");
+		dst_paths.insert(base + DIR_DELIM + "sounds" + DIR_DELIM + name + ".9.ogg");
+	}
 public:
 	void fetchSounds(const std::string &name,
-			std::set<std::string> &dst_paths,
-			std::set<std::string> &dst_datas)
+		std::set<std::string> &dst_paths,
+		std::set<std::string> &dst_datas)
 	{
 		if (m_fetched.count(name))
 			return;
 
 		m_fetched.insert(name);
-		std::string base = porting::path_share + DIR_DELIM + "sounds";
-		dst_paths.insert(base + DIR_DELIM + name + ".ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".0.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".1.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".2.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".3.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".4.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".5.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".6.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".7.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".8.ogg");
-		dst_paths.insert(base + DIR_DELIM + name + ".9.ogg");
+
+		paths_insert(dst_paths, porting::path_share, name);
+		paths_insert(dst_paths, porting::path_user,  name);
 	}
 };
 
@@ -1037,6 +1049,11 @@ void KeyCache::populate()
 	key[KeyType::FREEMOVE]     = getKeySetting("keymap_freemove");
 	key[KeyType::FASTMOVE]     = getKeySetting("keymap_fastmove");
 	key[KeyType::NOCLIP]       = getKeySetting("keymap_noclip");
+	key[KeyType::HOTBAR_PREV]  = getKeySetting("keymap_hotbar_previous");
+	key[KeyType::HOTBAR_NEXT]  = getKeySetting("keymap_hotbar_next");
+	key[KeyType::MUTE]         = getKeySetting("keymap_mute");
+	key[KeyType::INC_VOLUME]   = getKeySetting("keymap_increase_volume");
+	key[KeyType::DEC_VOLUME]   = getKeySetting("keymap_decrease_volume");
 	key[KeyType::CINEMATIC]    = getKeySetting("keymap_cinematic");
 	key[KeyType::SCREENSHOT]   = getKeySetting("keymap_screenshot");
 	key[KeyType::TOGGLE_HUD]   = getKeySetting("keymap_toggle_hud");
@@ -1108,6 +1125,7 @@ struct GameRunData {
 	PointedThing pointed_old;
 	bool digging;
 	bool ldown_for_dig;
+	bool dig_instantly;
 	bool left_punch;
 	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
@@ -1619,9 +1637,25 @@ void Game::run()
 			&& client->checkPrivilege("fast");
 #endif
 
+	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screenW"),
+		g_settings->getU16("screenH"));
+
 	while (device->run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->getShutdownRequested()))) {
+
+		const irr::core::dimension2d<u32> &current_screen_size =
+			device->getVideoDriver()->getScreenSize();
+		// Verify if window size has changed and save it if it's the case
+		// Ensure evaluating settings->getBool after verifying screensize
+		// First condition is cheaper
+		if (previous_screen_size != current_screen_size &&
+				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
+				g_settings->getBool("autosave_screensize")) {
+			g_settings->setU16("screenW", current_screen_size.Width);
+			g_settings->setU16("screenH", current_screen_size.Height);
+			previous_screen_size = current_screen_size;
+		}
 
 		/* Must be called immediately after a device->run() call because it
 		 * uses device->getTimer()->getTime()
@@ -2034,7 +2068,7 @@ bool Game::connectToServer(const std::string &playername,
 	}
 
 	client = new Client(device,
-			playername.c_str(), password,
+			playername.c_str(), password, *address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), &flags);
@@ -2046,7 +2080,7 @@ bool Game::connectToServer(const std::string &playername,
 	connect_address.print(&infostream);
 	infostream << std::endl;
 
-	client->connect(connect_address, *address,
+	client->connect(connect_address,
 		simple_singleplayer_mode || local_server_mode);
 
 	/*
@@ -2464,6 +2498,30 @@ void Game::processKeyInput()
 		toggleFast();
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
+	} else if (wasKeyDown(KeyType::MUTE)) {
+		float volume = g_settings->getFloat("sound_volume");
+		if (volume < 0.001f) {
+			g_settings->setFloat("sound_volume", 1.0f);
+			m_statustext = narrow_to_wide(gettext("Volume changed to 100%"));
+		} else {
+			g_settings->setFloat("sound_volume", 0.0f);
+			m_statustext = narrow_to_wide(gettext("Volume changed to 0%"));
+		}
+		runData.statustext_time = 0;
+	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
+		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
+		char buf[100];
+		g_settings->setFloat("sound_volume", new_volume);
+		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
+		m_statustext = narrow_to_wide(buf);
+		runData.statustext_time = 0;
+	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
+		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
+		char buf[100];
+		g_settings->setFloat("sound_volume", new_volume);
+		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
+		m_statustext = narrow_to_wide(buf);
+		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
@@ -2531,11 +2589,13 @@ void Game::processItemSelection(u16 *new_playeritem)
 
 	s32 dir = wheel;
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_DOWN)) {
+	if (input->joystick.wasKeyDown(KeyType::SCROLL_DOWN) ||
+			wasKeyDown(KeyType::HOTBAR_NEXT)) {
 		dir = -1;
 	}
 
-	if (input->joystick.wasKeyDown(KeyType::SCROLL_UP)) {
+	if (input->joystick.wasKeyDown(KeyType::SCROLL_UP) ||
+			wasKeyDown(KeyType::HOTBAR_PREV)) {
 		dir = 1;
 	}
 
@@ -3045,11 +3105,10 @@ inline void Game::step(f32 *dtime)
 
 void Game::processClientEvents(CameraOrientation *cam)
 {
-	ClientEvent event = client->getClientEvent();
-
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	for ( ; event.type != CE_NONE; event = client->getClientEvent()) {
+	while (client->hasClientEvents()) {
+		ClientEvent event = client->getClientEvent();
 
 		switch (event.type) {
 		case CE_PLAYER_DAMAGE:
@@ -3246,6 +3305,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 		case CE_SET_SKY:
 			sky->setVisible(false);
+			// Whether clouds are visible in front of a custom skybox
+			sky->setCloudsEnabled(event.set_sky.clouds);
 
 			if (skybox) {
 				skybox->remove();
@@ -3255,6 +3316,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			// Handle according to type
 			if (*event.set_sky.type == "regular") {
 				sky->setVisible(true);
+				sky->setCloudsEnabled(true);
 			} else if (*event.set_sky.type == "skybox" &&
 					event.set_sky.params->size() == 6) {
 				sky->setFallbackBgColor(*event.set_sky.bgcolor);
@@ -3284,6 +3346,19 @@ void Game::processClientEvents(CameraOrientation *cam)
 			client->getEnv().setDayNightRatioOverride(
 					event.override_day_night_ratio.do_override,
 					event.override_day_night_ratio.ratio_f * 1000);
+			break;
+
+		case CE_CLOUD_PARAMS:
+			if (clouds) {
+				clouds->setDensity(event.cloud_params.density);
+				clouds->setColorBright(video::SColor(event.cloud_params.color_bright));
+				clouds->setColorAmbient(video::SColor(event.cloud_params.color_ambient));
+				clouds->setHeight(event.cloud_params.height);
+				clouds->setThickness(event.cloud_params.thickness);
+				clouds->setSpeed(v2f(
+						event.cloud_params.speed_x,
+						event.cloud_params.speed_y));
+			}
 			break;
 
 		default:
@@ -3390,11 +3465,14 @@ void Game::updateSound(f32 dtime)
 			      camera->getCameraNode()->getUpVector());
 	sound->setListenerGain(g_settings->getFloat("sound_volume"));
 
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	// Tell the sound maker whether to make footstep sounds
+	soundmaker->makes_footstep_sound = player->makes_footstep_sound;
 
 	//	Update sound maker
-	soundmaker->step(dtime);
-
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	if (player->makes_footstep_sound)
+		soundmaker->step(dtime);
 
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = map.getNodeNoEx(player->getFootstepNodePos());
@@ -3498,6 +3576,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
+	} else if (runData.dig_instantly && getLeftReleased()) {
+		// Remove e.g. torches faster when clicking instead of holding LMB
+		runData.nodig_delay_timer = 0;
+		runData.dig_instantly = false;
 	}
 
 	if (!runData.digging && runData.ldown_for_dig && !isLeftPressed()) {
@@ -3514,7 +3596,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		runData.repeat_rightclick_timer = 0;
 
 	if (playeritem_def.usable && isLeftPressed()) {
-		if (getLeftClicked())
+		if (getLeftClicked() && (!client->moddingEnabled()
+				|| !client->getScript()->on_item_use(playeritem, pointed)))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
@@ -3728,6 +3811,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 				// Read the sound
 				soundmaker->m_player_rightpunch_sound =
 						playeritem_def.sound_place;
+
+				if (client->moddingEnabled())
+					client->getScript()->on_placenode(pointed, playeritem_def);
 			} else {
 				soundmaker->m_player_rightpunch_sound =
 						SimpleSoundSpec();
@@ -3810,15 +3896,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
 
-	if (!runData.digging) {
-		infostream << "Started digging" << std::endl;
-		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
-			return;
-		client->interact(0, pointed);
-		runData.digging = true;
-		runData.ldown_for_dig = true;
-	}
-
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
 	// Get digging parameters
@@ -3836,6 +3913,16 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			params = getDigParams(nodedef_manager->get(n).groups, tp);
 	}
 
+	if (!runData.digging) {
+		infostream << "Started digging" << std::endl;
+		runData.dig_instantly = params.time == 0;
+		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
+			return;
+		client->interact(0, pointed);
+		runData.digging = true;
+		runData.ldown_for_dig = true;
+	}
+
 	if (!params.diggable) {
 		// I guess nobody will wait for this long
 		runData.dig_time_complete = 10000000.0;
@@ -3850,12 +3937,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		}
 	}
 
-	if (runData.dig_time_complete >= 0.001) {
+	if (!runData.dig_instantly) {
 		runData.dig_index = (float)crack_animation_length
 				* runData.dig_time
 				/ runData.dig_time_complete;
 	} else {
-		// This is for torches
+		// This is for e.g. torches
 		runData.dig_index = crack_animation_length;
 	}
 
@@ -3890,10 +3977,12 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
 
-		// We don't want a corresponding delay to
-		// very time consuming nodes
+		// We don't want a corresponding delay to very time consuming nodes
+		// and nodes without digging time (e.g. torches) get a fixed delay.
 		if (runData.nodig_delay_timer > 0.3)
 			runData.nodig_delay_timer = 0.3;
+		else if (runData.dig_instantly)
+			runData.nodig_delay_timer = 0.15;
 
 		bool is_valid_position;
 		MapNode wasnode = map.getNodeNoEx(nodepos, &is_valid_position);

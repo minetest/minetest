@@ -20,8 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef PARTICLES_HEADER
 #define PARTICLES_HEADER
 
-#define DIGGING_PARTICLES_AMOUNT 10
-
 #include <iostream>
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
