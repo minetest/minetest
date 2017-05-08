@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_schematic.h"
 #include "noise.h"
 #include "util/pointedthing.h"
+#include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
 
 struct EnumString es_TileAnimationType[] =
@@ -126,6 +127,51 @@ void push_item_definition(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "name");
 	lua_pushstring(L, i.description.c_str());
 	lua_setfield(L, -2, "description");
+}
+
+void push_item_definition_full(lua_State *L, const ItemDefinition &i)
+{
+	std::string type(es_ItemType[(int)i.type].str);
+	
+	lua_newtable(L);
+	lua_pushstring(L, i.name.c_str());
+	lua_setfield(L, -2, "name");
+	lua_pushstring(L, i.description.c_str());
+	lua_setfield(L, -2, "description");
+	lua_pushstring(L, type.c_str());
+	lua_setfield(L, -2, "type");
+	lua_pushstring(L, i.inventory_image.c_str());
+	lua_setfield(L, -2, "inventory_image");
+	lua_pushstring(L, i.wield_image.c_str());
+	lua_setfield(L, -2, "wield_image");
+	lua_pushstring(L, i.palette_image.c_str());
+	lua_setfield(L, -2, "palette_image");
+	push_ARGB8(L, i.color);
+	lua_setfield(L, -2, "color");
+	push_v3f(L, i.wield_scale);
+	lua_setfield(L, -2, "wield_scale");
+	lua_pushinteger(L, i.stack_max);
+	lua_setfield(L, -2, "stack_max");
+	lua_pushboolean(L, i.usable);
+	lua_setfield(L, -2, "usable");
+	lua_pushboolean(L, i.liquids_pointable);
+	lua_setfield(L, -2, "liquids_pointable");
+	if (i.type == ITEM_TOOL) {
+		push_tool_capabilities(L, ToolCapabilities(
+			i.tool_capabilities->full_punch_interval,
+			i.tool_capabilities->max_drop_level,
+			i.tool_capabilities->groupcaps,
+			i.tool_capabilities->damageGroups));
+		lua_setfield(L, -2, "tool_capabilities");
+	}
+	push_groups(L, i.groups);
+	lua_setfield(L, -2, "groups");
+	push_soundspec(L, i.sound_place);
+	lua_setfield(L, -2, "sound_place");
+	push_soundspec(L, i.sound_place_failed);
+	lua_setfield(L, -2, "sound_place_failed");
+	lua_pushstring(L, i.node_placement_prediction.c_str());
+	lua_setfield(L, -2, "node_placement_prediction");
 }
 
 /******************************************************************************/
@@ -669,6 +715,204 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	return f;
 }
 
+void push_content_features(lua_State *L, const ContentFeatures &c)
+{
+	std::string paramtype(ScriptApiNode::es_ContentParamType[(int)c.param_type].str);
+	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
+	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
+	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
+	
+	/* Missing "tiles" because I don't see a usecase (at least not yet). */
+	
+	lua_newtable(L);
+	lua_pushboolean(L, c.has_on_construct);
+	lua_setfield(L, -2, "has_on_construct");
+	lua_pushboolean(L, c.has_on_destruct);
+	lua_setfield(L, -2, "has_on_destruct");
+	lua_pushboolean(L, c.has_after_destruct);
+	lua_setfield(L, -2, "has_after_destruct");
+	lua_pushstring(L, c.name.c_str());
+	lua_setfield(L, -2, "name");
+	push_groups(L, c.groups);
+	lua_setfield(L, -2, "groups");
+	lua_pushstring(L, paramtype.c_str());
+	lua_setfield(L, -2, "paramtype");
+	lua_pushstring(L, paramtype2.c_str());
+	lua_setfield(L, -2, "paramtype2");
+	lua_pushstring(L, drawtype.c_str());
+	lua_setfield(L, -2, "drawtype");
+	if (!c.mesh.empty()) {
+		lua_pushstring(L, c.mesh.c_str());
+		lua_setfield(L, -2, "mesh");
+	}
+#ifndef SERVER
+	push_ARGB8(L, c.minimap_color);       // I know this is not set-able w/ register_node,
+	lua_setfield(L, -2, "minimap_color"); // but the people need to know!
+#endif
+	lua_pushnumber(L, c.visual_scale);
+	lua_setfield(L, -2, "visual_scale");
+	lua_pushnumber(L, c.alpha);
+	lua_setfield(L, -2, "alpha");
+	if (!c.palette_name.empty()) {
+		push_ARGB8(L, c.color);
+		lua_setfield(L, -2, "color");
+		
+		lua_pushstring(L, c.palette_name.c_str());
+		lua_setfield(L, -2, "palette_name");
+		
+		push_palette(L, c.palette);
+		lua_setfield(L, -2, "palette");
+	}
+	lua_pushnumber(L, c.waving);
+	lua_setfield(L, -2, "waving");
+	lua_pushnumber(L, c.connect_sides);
+	lua_setfield(L, -2, "connect_sides");
+	
+	lua_newtable(L);
+	u16 i = 1;
+	for (std::vector<std::string>::const_iterator it = c.connects_to.begin();
+			it != c.connects_to.end(); ++it) {
+		lua_pushlstring(L, it->c_str(), it->size());
+		lua_rawseti(L, -2, i);
+	}
+	lua_setfield(L, -2, "connects_to");
+	
+	push_ARGB8(L, c.post_effect_color);
+	lua_setfield(L, -2, "post_effect_color");
+	lua_pushnumber(L, c.leveled);
+	lua_setfield(L, -2, "leveled");
+	lua_pushboolean(L, c.sunlight_propagates);
+	lua_setfield(L, -2, "sunlight_propagates");
+	lua_pushnumber(L, c.light_source);
+	lua_setfield(L, -2, "light_source");
+	lua_pushboolean(L, c.is_ground_content);
+	lua_setfield(L, -2, "is_ground_content");
+	lua_pushboolean(L, c.walkable);
+	lua_setfield(L, -2, "walkable");
+	lua_pushboolean(L, c.pointable);
+	lua_setfield(L, -2, "pointable");
+	lua_pushboolean(L, c.diggable);
+	lua_setfield(L, -2, "diggable");
+	lua_pushboolean(L, c.climbable);
+	lua_setfield(L, -2, "climbable");
+	lua_pushboolean(L, c.buildable_to);
+	lua_setfield(L, -2, "buildable_to");
+	lua_pushboolean(L, c.rightclickable);
+	lua_setfield(L, -2, "rightclickable");
+	lua_pushnumber(L, c.damage_per_second);
+	lua_setfield(L, -2, "damage_per_second");
+	if (c.isLiquid()) {
+		lua_pushstring(L, liquid_type.c_str());
+		lua_setfield(L, -2, "liquid_type");
+		lua_pushstring(L, c.liquid_alternative_flowing.c_str());
+		lua_setfield(L, -2, "liquid_alternative_flowing");
+		lua_pushstring(L, c.liquid_alternative_source.c_str());
+		lua_setfield(L, -2, "liquid_alternative_source");
+		lua_pushnumber(L, c.liquid_viscosity);
+		lua_setfield(L, -2, "liquid_viscosity");
+		lua_pushboolean(L, c.liquid_renewable);
+		lua_setfield(L, -2, "liquid_renewable");
+		lua_pushnumber(L, c.liquid_range);
+		lua_setfield(L, -2, "liquid_range");
+	}
+	lua_pushnumber(L, c.drowning);
+	lua_setfield(L, -2, "drowning");
+	lua_pushboolean(L, c.floodable);
+	lua_setfield(L, -2, "floodable");
+	push_nodebox(L, c.node_box);
+	lua_setfield(L, -2, "node_box");
+	push_nodebox(L, c.selection_box);
+	lua_setfield(L, -2, "selection_box");
+	push_nodebox(L, c.collision_box);
+	lua_setfield(L, -2, "collision_box");
+	lua_newtable(L);
+	push_soundspec(L, c.sound_footstep);
+	lua_setfield(L, -2, "sound_footstep");
+	push_soundspec(L, c.sound_dig);
+	lua_setfield(L, -2, "sound_dig");
+	push_soundspec(L, c.sound_dug);
+	lua_setfield(L, -2, "sound_dug");
+	lua_setfield(L, -2, "sounds");
+	lua_pushboolean(L, c.legacy_facedir_simple);
+	lua_setfield(L, -2, "legacy_facedir_simple");
+	lua_pushboolean(L, c.legacy_wallmounted);
+	lua_setfield(L, -2, "legacy_wallmounted");
+}
+
+/******************************************************************************/
+void push_nodebox(lua_State *L, const NodeBox &box)
+{
+	lua_newtable(L);
+	switch (box.type)
+	{
+		case NODEBOX_REGULAR:
+			lua_pushstring(L, "regular");
+			lua_setfield(L, -2, "type");
+			break;
+		case NODEBOX_LEVELED:
+		case NODEBOX_FIXED:
+			lua_pushstring(L, "fixed");
+			lua_setfield(L, -2, "type");
+			push_box(L, box.fixed);
+			lua_setfield(L, -2, "fixed");
+			break;
+		case NODEBOX_WALLMOUNTED:
+			lua_pushstring(L, "wallmounted");
+			lua_setfield(L, -2, "type");
+			push_aabb3f(L, box.wall_top);
+			lua_setfield(L, -2, "wall_top");
+			push_aabb3f(L, box.wall_bottom);
+			lua_setfield(L, -2, "wall_bottom");
+			push_aabb3f(L, box.wall_side);
+			lua_setfield(L, -2, "wall_side");
+			break;
+		case NODEBOX_CONNECTED:
+			lua_pushstring(L, "connected");
+			lua_setfield(L, -2, "type");
+			push_box(L, box.connect_top);
+			lua_setfield(L, -2, "connect_top");
+			push_box(L, box.connect_bottom);
+			lua_setfield(L, -2, "connect_bottom");
+			push_box(L, box.connect_front);
+			lua_setfield(L, -2, "connect_front");
+			push_box(L, box.connect_back);
+			lua_setfield(L, -2, "connect_back");
+			push_box(L, box.connect_left);
+			lua_setfield(L, -2, "connect_left");
+			push_box(L, box.connect_right);
+			lua_setfield(L, -2, "connect_right");
+			break;
+		default:
+			FATAL_ERROR("Invalid box.type");
+			break;
+	}
+}
+
+void push_box(lua_State *L, const std::vector<aabb3f> &box)
+{
+	lua_newtable(L);
+	u8 i = 1;
+	for (std::vector<aabb3f>::const_iterator it = box.begin();
+	                it != box.end(); ++it) {
+		push_aabb3f(L, (*it));
+		lua_rawseti(L, -2, i);
+	}
+}
+
+/******************************************************************************/
+void push_palette(lua_State *L, const std::vector<video::SColor> *palette)
+{
+	lua_createtable(L, palette->size(), 0);
+	int newTable = lua_gettop(L);
+	int index = 1;
+	std::vector<video::SColor>::const_iterator iter;
+	for (iter = palette->begin(); iter != palette->end(); ++iter) {
+		push_ARGB8(L, (*iter));
+		lua_rawseti(L, newTable, index);
+		index++;
+	}
+}
+
 /******************************************************************************/
 void read_server_sound_params(lua_State *L, int index,
 		ServerSoundParams &params)
@@ -717,6 +961,17 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 	} else if(lua_isstring(L, index)){
 		spec.name = lua_tostring(L, index);
 	}
+}
+
+void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
+{
+	lua_newtable(L);
+	lua_pushstring(L, spec.name.c_str());
+	lua_setfield(L, -2, "name");
+	lua_pushnumber(L, spec.gain);
+	lua_setfield(L, -2, "gain");
+	lua_pushnumber(L, spec.fade);
+	lua_setfield(L, -2, "fade");
 }
 
 /******************************************************************************/
