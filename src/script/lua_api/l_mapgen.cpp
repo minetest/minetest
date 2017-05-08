@@ -325,14 +325,22 @@ void read_schematic_replacements(lua_State *L, int index, StringMap *replace_nam
 
 		if (lua_istable(L, -1)) { // Old {{"x", "y"}, ...} format
 			lua_rawgeti(L, -1, 1);
+			FATAL_ERROR_IF(!lua_isstring(L, -1),
+				"schematics: replace_from field is not a string");
 			replace_from = lua_tostring(L, -1);
 			lua_pop(L, 1);
 
 			lua_rawgeti(L, -1, 2);
+			FATAL_ERROR_IF(!lua_isstring(L, -1),
+				"schematics: replace_to field is not a string");
 			replace_to = lua_tostring(L, -1);
 			lua_pop(L, 1);
 		} else { // New {x = "y", ...} format
+			FATAL_ERROR_IF(!lua_isstring(L, -2),
+				"schematics: replace_from field is not a string");
 			replace_from = lua_tostring(L, -2);
+			FATAL_ERROR_IF(!lua_isstring(L, -1),
+				"schematics: replace_to field is not a string");
 			replace_to = lua_tostring(L, -1);
 		}
 
