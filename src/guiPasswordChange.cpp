@@ -164,7 +164,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 100, 30);
-		rect = rect + v2s32(size.X / 2 / 2 + 185, ypos);
+		rect = rect + v2s32(size.X / 4 + 185, ypos);
 		text = wgettext("Cancel");
 		Environment->addButton(rect, this, ID_cancel, text);
 		delete[] text;
