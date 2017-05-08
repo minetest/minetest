@@ -2538,11 +2538,6 @@ void GUIFormSpecMenu::drawMenu()
 	}
 
 	/*
-		Call base class
-	*/
-	gui::IGUIElement::draw();
-
-	/*
 		Draw images
 	*/
 	for(u32 i=0; i<m_images.size(); i++)
@@ -2574,6 +2569,11 @@ void GUIFormSpecMenu::drawMenu()
 			errorstream << "\t" << spec.name << std::endl;
 		}
 	}
+
+	/*
+		Call base class
+	*/
+	gui::IGUIElement::draw();
 
 	/*
 		Draw item images
