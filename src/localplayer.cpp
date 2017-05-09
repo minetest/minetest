@@ -344,8 +344,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		}
 	}
 
-	float player_stepheight = (m_cao == 0) ? 0.0f :
-			((touching_ground) ? m_cao->getStepheight() : (0.2f * BS));
+	// TODO: this shouldn't be hardcoded but transmitted from server
+	float player_stepheight = (touching_ground) ? (BS * 0.6f) : (BS * 0.2f);
 
 #ifdef __ANDROID__
 	player_stepheight += (0.6f * BS);
