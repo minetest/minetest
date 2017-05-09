@@ -4535,9 +4535,9 @@ void Game::showPauseMenu()
 		"- %s: chat\n"
 	);
 
-	 char control_text[500];
+	 char control_text_buf[500];
 
-	 snprintf(control_text, 500, control_text_template.c_str(),
+	 snprintf(control_text_buf, 500, control_text_template.c_str(),
 			 GET_KEY_NAME(keymap_forward),
 	 	 	 GET_KEY_NAME(keymap_left),
 			 GET_KEY_NAME(keymap_backward),
@@ -4551,6 +4551,8 @@ void Game::showPauseMenu()
 
 #endif
 
+	std::string control_text = std::string(control_text_buf);
+	str_formspec_escape(control_text);
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
@@ -4564,7 +4566,6 @@ void Game::showPauseMenu()
 	} else {
 		os << "field[4.95,0;5,1.5;;" << strgettext("Game Paused") << ";]";
 	}
-
 
 #ifndef __ANDROID__
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_sound;"
@@ -4606,7 +4607,8 @@ void Game::showPauseMenu()
 			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
 			os << strgettext("- PvP: ") << pvp << "\n"
 					<< strgettext("- Public: ") << announced << "\n";
-			const std::string &server_name = g_settings->get("server_name");
+			std::string server_name = g_settings->get("server_name");
+			str_formspec_escape(server_name);
 			if (announced == on && server_name != "")
 				os << strgettext("- Server Name: ") << server_name;
 
