@@ -100,7 +100,8 @@ int NodeMetaRef::l_mark_as_private(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	NodeMetaRef *ref = checkobject(L, 1);
-	NodeMetadata *meta = static_cast<NodeMetadata*>(ref->getmeta(true));
+	NodeMetadata *meta = dynamic_cast<NodeMetadata*>(ref->getmeta(true));
+	assert(meta);
 
 	if (lua_istable(L, 2)) {
 		lua_pushnil(L);
