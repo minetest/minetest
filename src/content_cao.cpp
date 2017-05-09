@@ -1586,13 +1586,7 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
-
 			player->makes_footstep_sound = m_prop.makes_footstep_sound;
-
-			aabb3f collisionbox = m_selection_box;
-			collisionbox.MinEdge += v3f(0, BS, 0);
-			collisionbox.MaxEdge += v3f(0, BS, 0);
-			player->setCollisionbox(collisionbox);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")

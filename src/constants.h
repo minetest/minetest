@@ -90,12 +90,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Maximum hit points of a player
 #define PLAYER_MAX_HP 20
 
-// Player weight
-#define PLAYER_DEFAULT_WEIGHT 75
-
-// Player step height
-#define PLAYER_DEFAULT_STEPHEIGHT 0.6f
-
 // Maximal breath of a player
 #define PLAYER_MAX_BREATH 11
 

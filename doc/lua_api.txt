@@ -3705,9 +3705,6 @@ Definition tables
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
-    --  ^ For players (0, -1, 0) is at object base level,
-    --    for all other objects (0, 0, 0) is at object base level.
-    --    For example, Minetest Game player box is (-0.3, -1.0, -0.3, 0.3, 0.75, 0.3).
         visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
         visual_size = {x = 1, y = 1},
         mesh = "model",
