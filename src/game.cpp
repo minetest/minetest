@@ -4562,7 +4562,7 @@ void Game::showPauseMenu()
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
 	} else {
-		os << "textarea[4.95,0;3.5,6;;" << strgettext("Game Paused") << ";]";
+		os << "field[4.95,0;5,1.5;;" << strgettext("Game Paused") << ";]";
 	}
 
 
