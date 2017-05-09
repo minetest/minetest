@@ -4597,16 +4597,16 @@ void Game::showPauseMenu()
 	if (simple_singleplayer_mode || address == "") {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
-		std::string damage = g_settings->getBool("enable_damage") ? on : off;
-		std::string creative = g_settings->getBool("creative_mode") ? on : off;
-		std::string announced = g_settings->getBool("server_announce") ? on : off;
+		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
+		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
+		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
 		os << strgettext("- Damage: ") << damage << "\n"
 				<< strgettext("- Creative mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
-			std::string pvp = g_settings->getBool("enable_pvp") ? on : off;
+			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
 			os << strgettext("- PvP: ") << pvp << "\n"
 					<< strgettext("- Public: ") << announced << "\n";
-			std::string server_name = g_settings->get("server_name");
+			const std::string &server_name = g_settings->get("server_name");
 			if (announced == on && server_name != "")
 				os << strgettext("- Server Name: ") << server_name;
 
