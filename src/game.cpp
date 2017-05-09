@@ -4551,7 +4551,7 @@ void Game::showPauseMenu()
 
 #endif
 
-	float ypos = simple_singleplayer_mode ? 0.7 : 0.1;
+	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
@@ -4562,7 +4562,7 @@ void Game::showPauseMenu()
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
 	} else {
-		os << "textarea[4.95,0.16;3.5,6;;" << strgettext("Game Paused") << ";]";
+		os << "textarea[4.95,0;3.5,6;;" << strgettext("Game Paused") << ";]";
 	}
 
 
@@ -4580,23 +4580,23 @@ void Game::showPauseMenu()
 		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
-	std::string address = client->getAddressName();
-	const static std::string mode = strgettext("- Mode: ");
+	const std::string &address = client->getAddressName();
+	static const std::string mode = strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
 		Address serverAddress = client->getServerAddress();
-		if(address != "") {
+		if (address != "") {
 			os << mode << strgettext("Remote server") << "\n"
 					<< strgettext("- Address: ") << address;
 		} else {
-			os << mode << strgettext("Hosting Server");
+			os << mode << strgettext("Hosting server");
 		}
 		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
 	} else {
 		os << mode << strgettext("Singleplayer") << "\n";
 	}
 	if (simple_singleplayer_mode || address == "") {
-		const static std::string on = strgettext("On");
-		const static std::string off = strgettext("Off");
+		static const std::string on = strgettext("On");
+		static const std::string off = strgettext("Off");
 		std::string damage = g_settings->getBool("enable_damage") ? on : off;
 		std::string creative = g_settings->getBool("creative_mode") ? on : off;
 		std::string announced = g_settings->getBool("server_announce") ? on : off;
@@ -4607,8 +4607,8 @@ void Game::showPauseMenu()
 			os << strgettext("- PvP: ") << pvp << "\n"
 					<< strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");
-			if(announced == on && server_name != "")
-				os << strgettext("- Server Name: ") <<  server_name;
+			if (announced == on && server_name != "")
+				os << strgettext("- Server Name: ") << server_name;
 
 		}
 	}
