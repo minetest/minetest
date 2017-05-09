@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "util/string.h"
+#include "script/lua_api/l_item.h" // For LuaItemStack.
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 {
@@ -190,6 +191,62 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 		lua_settable(L, -3);
 	}
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
+}
+
+void ScriptApiPlayer::on_player_inventory_remove_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		const ItemStack &deleted_item)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_remove_item");
+	// Call callbacks
+	objectrefGetOrCreate(L, player_sao);            // player
+	lua_pushstring(L, inventory_list_name.c_str()); // listname
+	LuaItemStack::create(L, deleted_item);          // stack
+	runCallbacks(3, RUN_CALLBACKS_MODE_LAST);
+}
+
+void ScriptApiPlayer::on_player_inventory_change_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_change_item
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_change_item");
+	// Call callbacks
+	objectrefGetOrCreate(L, player_sao);            // player
+	lua_pushstring(L, inventory_list_name.c_str()); // listname
+	lua_pushnumber(L, query_slot);                  // slot			
+	LuaItemStack::create(L, old_item);              // stack
+	LuaItemStack::create(L, new_item);              // stack
+	runCallbacks(5, RUN_CALLBACKS_MODE_LAST);
+}
+
+void ScriptApiPlayer::on_player_inventory_add_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &added_item)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_inventory_add_item
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_player_inventory_add_item");
+	// Call callbacks
+	objectrefGetOrCreate(L, player_sao);            // player		
+	lua_pushstring(L, inventory_list_name.c_str()); // listname
+	lua_pushnumber(L, query_slot);                  // index
+	LuaItemStack::create(L, added_item);            // stack	
+	runCallbacks(4, RUN_CALLBACKS_MODE_LAST);
 }
 
 ScriptApiPlayer::~ScriptApiPlayer()

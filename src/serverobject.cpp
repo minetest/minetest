@@ -92,7 +92,7 @@ bool ServerActiveObject::setWieldedItem(const ItemStack &item)
 {
 	if(Inventory *inv = getInventory()) {
 		if (InventoryList *list = inv->getList(getWieldList())) {
-			list->changeItem(getWieldIndex(), item);
+			list->changeItem(true, getWieldIndex(), item);
 			return true;
 		}
 	}

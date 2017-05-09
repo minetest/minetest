@@ -172,7 +172,7 @@ int ModApiClient::l_get_wielded_item(lua_State *L)
 {
 	Client *client = getClient(L);
 
-	Inventory local_inventory(client->idef());
+	Inventory local_inventory(client->idef(), client->getEnv().getLocalPlayer());
 	client->getLocalInventory(local_inventory);
 
 	InventoryList *mlist = local_inventory.getList("main");

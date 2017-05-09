@@ -154,7 +154,7 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				} else {
 					NodeMetadata *meta = map->getNodeMetadata(p);
 					if (!meta) {
-						meta = new NodeMetadata(gamedef->idef());
+						meta = new NodeMetadata(gamedef->idef(), p);
 						if (!map->setNodeMetadata(p, meta)) {
 							delete meta;
 							infostream << "RollbackAction::applyRevert(): "
@@ -217,9 +217,9 @@ bool RollbackAction::applyRevert(Map *map, InventoryManager *imgr, IGameDef *gam
 				if (list->getItem(inventory_index).name !=
 						gamedef->idef()->getAlias(inventory_stack.name))
 					return false;
-				list->takeItem(inventory_index, inventory_stack.count);
+				list->takeItem(false, inventory_index, inventory_stack.count);
 			} else {
-				list->addItem(inventory_index, inventory_stack);
+				list->addItem(false, inventory_index, inventory_stack);
 			}
 			// Inventory was modified; send to clients
 			imgr->setInventoryModified(loc);

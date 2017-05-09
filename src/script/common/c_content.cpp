@@ -978,11 +978,11 @@ void read_inventory_list(lua_State *L, int tableindex,
 			i = items.begin(); i != items.end(); ++i){
 		if(forcesize != -1 && index == forcesize)
 			break;
-		invlist->changeItem(index, *i);
+		invlist->changeItem(false, index, *i);
 		index++;
 	}
 	while(forcesize != -1 && index < forcesize){
-		invlist->deleteItem(index);
+		invlist->deleteItem(false, index);
 		index++;
 	}
 }

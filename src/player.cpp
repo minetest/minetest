@@ -28,9 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"  // strlcpy
 
-
 Player::Player(const char *name, IItemDefManager *idef):
-	inventory(idef),
+	inventory(idef, this),
 	peer_id(PEER_ID_INEXISTENT),
 	keyPressed(0),
 // protected

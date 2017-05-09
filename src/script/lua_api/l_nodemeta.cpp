@@ -43,7 +43,7 @@ Metadata* NodeMetaRef::getmeta(bool auto_create)
 
 	NodeMetadata *meta = m_env->getMap().getNodeMetadata(m_p);
 	if (meta == NULL && auto_create) {
-		meta = new NodeMetadata(m_env->getGameDef()->idef());
+		meta = new NodeMetadata(m_env->getGameDef()->idef(), m_p);
 		if (!m_env->getMap().setNodeMetadata(m_p, meta)) {
 			delete meta;
 			return NULL;

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 struct ToolCapabilities;
+struct ItemStack;
 
 class ScriptApiPlayer : virtual public ScriptApiBase
 {
@@ -45,6 +46,21 @@ public:
 	s16 on_player_hpchange(ServerActiveObject *player, s16 hp_change);
 	void on_playerReceiveFields(ServerActiveObject *player,
 			const std::string &formname, const StringMap &fields);
+	void on_player_inventory_remove_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		const ItemStack &deleted_item);
+	void on_player_inventory_change_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &old_item,
+		const ItemStack &new_item);
+	void on_player_inventory_add_item(
+		ServerActiveObject *player_sao, 
+		const std::string &inventory_list_name,
+		u32 query_slot, 
+		const ItemStack &added_item);
 };
 
 #endif /* S_PLAYER_H_ */

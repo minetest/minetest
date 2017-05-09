@@ -1670,7 +1670,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 		if (m_script->item_OnSecondaryUse(
 				item, playersao)) {
-			if( playersao->setWieldedItem(item)) {
+			if (playersao->setWieldedItem(item)) {
 				SendInventory(playersao);
 			}
 		}

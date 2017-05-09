@@ -1328,7 +1328,7 @@ bool PlayerSAO::setWieldedItem(const ItemStack &item)
 	if (inv) {
 		InventoryList *mlist = inv->getList(getWieldList());
 		if (mlist) {
-			mlist->changeItem(getWieldIndex(), item);
+			mlist->changeItem(true, getWieldIndex(), item);
 			return true;
 		}
 	}
