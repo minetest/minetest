@@ -102,7 +102,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 {
 	static const v2f tcoords[4] = {v2f(0, 0), v2f(1, 0), v2f(1, 1), v2f(0, 1)};
 	video::S3DVertex vertices[4];
-	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
+	bool shade_face = need_shading && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
 	for (int j = 0; j < 4; j++) {
 		vertices[j].Pos = coords[j] + origin;
@@ -141,7 +141,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		for (int face = 0; face != 6; ++face) {
 			colors[face] = encode_light(light, f->light_source);
 		}
-		if (!f->light_source) {
+		if (need_shading) {
 			applyFacesShading(colors[0], v3f(0, 1, 0));
 			applyFacesShading(colors[1], v3f(0, -1, 0));
 			applyFacesShading(colors[2], v3f(1, 0, 0));
@@ -243,7 +243,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 		for (int j = 0; j < 24; ++j) {
 			vertices[j].Color = encode_light(lights[light_indices[j]],
 				f->light_source);
-			if (!f->light_source)
+			if (need_shading)
 				applyFacesShading(vertices[j].Color, vertices[j].Normal);
 		}
 	}
@@ -299,7 +299,7 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 	const v3f &vertex_normal)
 {
 	video::SColor color = blendLightColor(vertex_pos);
-	if (!f->light_source)
+	if (need_shading)
 		applyFacesShading(color, vertex_normal);
 	return color;
 }
@@ -389,17 +389,20 @@ void MapblockMeshGenerator::prepareLiquidNodeDrawing(bool flowing)
 	if (data->m_smooth_lighting)
 		return; // don't need to pre-compute anything in this case
 
-	if (f->light_source != 0) {
+	if (!need_shading) {
 		// If this liquid emits light and doesn't contain light, draw
 		// it at what it emits, for an increased effect
-		light = decode_light(f->light_source);
-		light = light | (light << 8);
+		u8 light_sun = decode_light(f->light_source[LIGHTBANK_SUN]);
+		u8 light_artificial = decode_light(
+			f->light_source[LIGHTBANK_ARTIFICIAL]);
+		light = light_sun | (light_artificial << 8);
 	} else if (nodedef->get(ntop).param_type == CPT_LIGHT) {
 		// Otherwise, use the light of the node on top if possible
 		light = getInteriorLight(ntop, 0, nodedef);
 	}
 
-	color_liquid_top = encode_light(light, f->light_source);
+	color_liquid_top = encode_light(light,
+		f->light_source);
 	color = encode_light(light, f->light_source);
 }
 
@@ -1270,7 +1273,7 @@ void MapblockMeshGenerator::drawMeshNode()
 			// Instead, let the collector process colors, etc.
 			collector->append(tile, vertices, vertex_count,
 				buf->getIndices(), buf->getIndexCount(), origin,
-				color, f->light_source);
+				color, need_shading);
 		}
 	}
 	if (private_mesh)
@@ -1290,6 +1293,8 @@ void MapblockMeshGenerator::drawNode()
 		getSmoothLightFrame();
 	else
 		light = getInteriorLight(n, 1, nodedef);
+	need_shading = (f->light_source[LIGHTBANK_ARTIFICIAL] == 0)
+		&& (f->light_source[LIGHTBANK_SUN] == 0);
 	switch (f->drawtype) {
 		case NDT_LIQUID:            drawLiquidNode(false); break;
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(true); break;

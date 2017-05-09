@@ -461,10 +461,11 @@ public:
 	static bool saveBlock(MapBlock *block, MapDatabase *db);
 	// This will generate a sector with getSector if not found.
 	void loadBlock(const std::string &sectordir, const std::string &blockfile,
-			MapSector *sector, bool save_after_load=false);
+		MapSector *sector, u8 *version, bool save_after_load = false);
 	MapBlock* loadBlock(v3s16 p);
 	// Database version
-	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load=false);
+	void loadBlock(std::string *blob, v3s16 p3d, MapSector *sector,
+		u8 *version, bool save_after_load = false);
 
 	bool deleteBlock(v3s16 blockpos);
 

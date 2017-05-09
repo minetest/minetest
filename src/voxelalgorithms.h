@@ -102,9 +102,11 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
  * For server use only.
  *
  * \param block the block to update
+ * \param load_top if true, the block above the corrected
+ * block is also loaded, to prevent the need of sunlight prediction.
  */
 void repair_block_light(ServerMap *map, MapBlock *block,
-	std::map<v3s16, MapBlock*> *modified_blocks);
+	bool load_top, std::map<v3s16, MapBlock*> *modified_blocks);
 
 /*!
  * This class iterates trough voxels that intersect with

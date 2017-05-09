@@ -320,9 +320,10 @@ struct TileLayer
 struct TileSpec
 {
 	TileSpec():
-		rotation(0),
-		emissive_light(0)
+		rotation(0)
 	{
+		for (int bank = 0; bank < 2; bank++)
+			emissive_light[bank] = 0;
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
 			layers[layer] = TileLayer();
 	}
@@ -344,7 +345,8 @@ struct TileSpec
 
 	u8 rotation;
 	//! This much light does the tile emit.
-	u8 emissive_light;
+	//! The first element is sunlight, the second is artificial light.
+	u8 emissive_light[2];
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
 };

@@ -114,17 +114,19 @@ void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 					}
 					else if(mode == VOXELPRINT_LIGHT_DAY)
 					{
-						if(ndef->get(m).light_source != 0)
+						const ContentFeatures &cf=ndef->get(m);
+						if ((cf.light_source[LIGHTBANK_SUN] != 0)
+							|| (cf.light_source[LIGHTBANK_ARTIFICIAL] != 0))
 							c = 'S';
-						else if(ndef->get(m).light_propagates == false)
+						else if (ndef->get(m).light_propagates == false)
 							c = 'X';
-						else
-						{
-							u8 light = n.getLight(LIGHTBANK_DAY, ndef);
-							if(light < 10)
+						else {
+							u8 light = MYMAX(n.getLight(LIGHTBANK_SUN, ndef),
+								n.getLight(LIGHTBANK_ARTIFICIAL, ndef));
+							if (light < 10)
 								c = '0' + light;
 							else
-								c = 'a' + (light-10);
+								c = 'a' + (light - 10);
 						}
 					}
 				}

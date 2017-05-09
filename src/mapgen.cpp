@@ -529,11 +529,13 @@ void Mapgen::spreadLight(v3s16 nmin, v3s16 nmax)
 				// TODO(hmmmmm): Abstract away direct param1 accesses with a
 				// wrapper, but something lighter than MapNode::get/setLight
 
-				u8 light_produced = cf.light_source;
-				if (light_produced)
-					n.param1 = light_produced | (light_produced << 4);
+				u8 light_sun = MYMAX(n.param1 & 0x0f,
+					cf.light_source[LIGHTBANK_SUN]);
+				// There is no artificial light there yet.
+				u8 light = light_sun
+					| (cf.light_source[LIGHTBANK_ARTIFICIAL] << 4);
 
-				u8 light = n.param1;
+				n.param1 = light;
 				if (light) {
 					lightSpread(a, v3s16(x,     y,     z + 1), light);
 					lightSpread(a, v3s16(x,     y + 1, z    ), light);

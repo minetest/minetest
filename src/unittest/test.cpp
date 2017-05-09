@@ -154,7 +154,7 @@ void TestGameDef::defineSomeNodes()
 	f.param_type = CPT_LIGHT;
 	f.light_propagates = true;
 	f.sunlight_propagates = true;
-	f.light_source = LIGHT_MAX-1;
+	f.light_source[LIGHTBANK_ARTIFICIAL] = LIGHT_MAX-1;
 	idef->registerItem(itemdef);
 	t_CONTENT_TORCH = ndef->set(f.name, f);
 
@@ -193,7 +193,7 @@ void TestGameDef::defineSomeNodes()
 	f.alpha = 128;
 	f.liquid_type = LIQUID_SOURCE;
 	f.liquid_viscosity = 7;
-	f.light_source = LIGHT_MAX-1;
+	f.light_source[LIGHTBANK_ARTIFICIAL] = LIGHT_MAX-1;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
 	for(int i = 0; i < 6; i++)

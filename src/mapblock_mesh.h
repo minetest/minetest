@@ -209,11 +209,11 @@ struct MeshCollector
 	void append(const TileSpec &material,
 				const video::S3DVertex *vertices, u32 numVertices,
 				const u16 *indices, u32 numIndices, v3f pos,
-				video::SColor c, u8 light_source);
+				video::SColor c, bool apply_shading);
 	void append(const TileLayer &material,
 			const video::S3DVertex *vertices, u32 numVertices,
 			const u16 *indices, u32 numIndices, v3f pos,
-			video::SColor c, u8 light_source, u8 layernum);
+			video::SColor c, bool apply_shading, u8 layernum);
 	/*!
 	 * Colorizes all vertices in the collector.
 	 */
@@ -229,10 +229,11 @@ struct MeshCollector
  *
  * \param light the first 8 bits are day light,
  * the last 8 bits are night light
- * \param emissive_light amount of light the surface emits,
- * from 0 to LIGHT_SUN.
+ * \param emissive_light amount of light the surface emits
+ * in both light banks, from 0 to LIGHT_SUN.
+ * emissive_light[0] is sunlight and emissive_light[1] is artificial light.
  */
-video::SColor encode_light(u16 light, u8 emissive_light);
+video::SColor encode_light(u16 light, const u8 *emissive_light);
 
 // Compute light at node
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef);

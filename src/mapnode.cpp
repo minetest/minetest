@@ -69,12 +69,12 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, const ContentFeatures &f
 	// If node doesn't contain light data, ignore this
 	if(f.param_type != CPT_LIGHT)
 		return;
-	if(bank == LIGHTBANK_DAY)
+	if(bank == LIGHTBANK_SUN)
 	{
 		param1 &= 0xf0;
 		param1 |= a_light & 0x0f;
 	}
-	else if(bank == LIGHTBANK_NIGHT)
+	else if(bank == LIGHTBANK_ARTIFICIAL)
 	{
 		param1 &= 0x0f;
 		param1 |= (a_light & 0x0f)<<4;
@@ -90,18 +90,7 @@ void MapNode::setLight(enum LightBank bank, u8 a_light, INodeDefManager *nodemgr
 
 bool MapNode::isLightDayNightEq(INodeDefManager *nodemgr) const
 {
-	const ContentFeatures &f = nodemgr->get(*this);
-	bool isEqual;
-
-	if (f.param_type == CPT_LIGHT) {
-		u8 day   = MYMAX(f.light_source, param1 & 0x0f);
-		u8 night = MYMAX(f.light_source, (param1 >> 4) & 0x0f);
-		isEqual = day == night;
-	} else {
-		isEqual = true;
-	}
-
-	return isEqual;
+	return getLight(LIGHTBANK_SUN, nodemgr) == 0;
 }
 
 u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
@@ -111,45 +100,42 @@ u8 MapNode::getLight(enum LightBank bank, INodeDefManager *nodemgr) const
 
 	u8 light;
 	if(f.param_type == CPT_LIGHT)
-		light = bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+		light = bank == LIGHTBANK_SUN ? param1 & 0x0f : (param1 >> 4) & 0x0f;
 	else
 		light = 0;
 
-	return MYMAX(f.light_source, light);
+	return MYMAX(f.light_source[bank], light);
 }
 
 u8 MapNode::getLightRaw(enum LightBank bank, const ContentFeatures &f) const
 {
 	if(f.param_type == CPT_LIGHT)
-		return bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f;
+		return bank == LIGHTBANK_SUN ? param1 & 0x0f : (param1 >> 4) & 0x0f;
 	return 0;
 }
 
 u8 MapNode::getLightNoChecks(enum LightBank bank, const ContentFeatures *f) const
 {
-	return MYMAX(f->light_source,
-	             bank == LIGHTBANK_DAY ? param1 & 0x0f : (param1 >> 4) & 0x0f);
+	return MYMAX(f->light_source[bank],
+	             bank == LIGHTBANK_SUN ? param1 & 0x0f : (param1 >> 4) & 0x0f);
 }
 
-bool MapNode::getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const
+void MapNode::getLightBanks(u8 &lightsun, u8 &lightartificial,
+	INodeDefManager *nodemgr) const
 {
 	// Select the brightest of [light source, propagated light]
 	const ContentFeatures &f = nodemgr->get(*this);
-	if(f.param_type == CPT_LIGHT)
-	{
-		lightday = param1 & 0x0f;
-		lightnight = (param1>>4)&0x0f;
+	if (f.param_type == CPT_LIGHT) {
+		lightsun = param1 & 0x0f;
+		lightartificial = (param1 >> 4) & 0x0f;
+	} else {
+		lightsun = 0;
+		lightartificial = 0;
 	}
-	else
-	{
-		lightday = 0;
-		lightnight = 0;
-	}
-	if(f.light_source > lightday)
-		lightday = f.light_source;
-	if(f.light_source > lightnight)
-		lightnight = f.light_source;
-	return f.param_type == CPT_LIGHT || f.light_source != 0;
+	if (f.light_source[LIGHTBANK_SUN] > lightsun)
+		lightsun = f.light_source[LIGHTBANK_SUN];
+	if (f.light_source[LIGHTBANK_ARTIFICIAL] > lightartificial)
+		lightartificial = f.light_source[LIGHTBANK_ARTIFICIAL];
 }
 
 u8 MapNode::getFaceDir(INodeDefManager *nodemgr) const
@@ -614,6 +600,33 @@ u32 MapNode::serializedLength(u8 version)
 	else
 		return 4;
 }
+
+/*!
+ * Translates param1 from sun + artificial format to
+ * day + night format.
+ * NOTE: this converts even if the param1 is not light information
+ */
+inline u8 convert_param1_to_legacy(u8 param1){
+	u8 night = param1 & 0xF0;
+	u8 day = MYMAX(param1 & 0x0F, night >> 4);
+	return day | night;
+}
+
+/*!
+ * Translates param1 from day + night format to
+ * sun + artificial format.
+ * NOTE: this converts even if the param1 is not light information
+ */
+inline u8 convert_param1_from_legacy(u8 param1){
+	u8 night = (param1 & 0xF0) >> 4;
+	u8 day=param1 & 0x0F;
+	if (day > night)
+		return day | (night << 4);
+	// day == night
+	// Assume that all light is artificial
+	return night << 4;
+}
+
 void MapNode::serialize(u8 *dest, u8 version)
 {
 	if(!ser_ver_supported(version))
@@ -626,7 +639,8 @@ void MapNode::serialize(u8 *dest, u8 version)
 				"version < 24 not possible");
 
 	writeU16(dest+0, param0);
-	writeU8(dest+2, param1);
+	writeU8(dest + 2,
+		(version >= 28) ? param1 : convert_param1_to_legacy(param1));
 	writeU8(dest+3, param2);
 }
 void MapNode::deSerialize(u8 *source, u8 version)
@@ -642,11 +656,13 @@ void MapNode::deSerialize(u8 *source, u8 version)
 
 	if(version >= 24){
 		param0 = readU16(source+0);
-		param1 = readU8(source+2);
+		param1 = readU8(source + 2);
+		if (version < 28)
+			param1 = convert_param1_from_legacy(param1);
 		param2 = readU8(source+3);
 	}else{
 		param0 = readU8(source+0);
-		param1 = readU8(source+1);
+		param1 = convert_param1_from_legacy(readU8(source + 1));
 		param2 = readU8(source+2);
 		if(param0 > 0x7F){
 			param0 |= ((param2&0xF0)<<4);
@@ -678,8 +694,14 @@ void MapNode::serializeBulk(std::ostream &os, int version,
 
 	// Serialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		writeU8(&databuf[start1 + i], nodes[i].param1);
+	if (version >= 28)
+		for (u32 i = 0; i < nodecount; i++)
+			writeU8(&databuf[start1 + i], nodes[i].param1);
+	else
+		// Old format
+		for (u32 i = 0; i < nodecount; i++)
+			writeU8(&databuf[start1 + i],
+				convert_param1_to_legacy(nodes[i].param1));
 
 	// Serialize param2
 	u32 start2 = (content_width + 1) * nodecount;
@@ -748,8 +770,13 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 
 	// Deserialize param1
 	u32 start1 = content_width * nodecount;
-	for(u32 i=0; i<nodecount; i++)
-		nodes[i].param1 = readU8(&databuf[start1 + i]);
+	if (version >= 28)
+		for (u32 i = 0; i < nodecount; i++)
+			nodes[i].param1 = readU8(&databuf[start1 + i]);
+	else
+		for (u32 i = 0; i < nodecount; i++)
+			nodes[i].param1 = convert_param1_from_legacy(
+				readU8(&databuf[start1 + i]));
 
 	// Deserialize param2
 	u32 start2 = (content_width + 1) * nodecount;
@@ -808,6 +835,7 @@ void MapNode::deSerialize_pre22(u8 *source, u8 version)
 		else if(param0 == 254)
 			param0 = CONTENT_AIR;
 	}
+	param1 = convert_param1_from_legacy(param1);
 
 	// Translate to our known version
 	*this = mapnode_translate_to_internal(*this, version);

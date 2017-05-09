@@ -253,8 +253,8 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	// Set the node on the map
 	// Ignore light (because calling voxalgo::update_lighting_nodes)
-	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
+	n.setLight(LIGHTBANK_SUN, 0, m_nodedef);
+	n.setLight(LIGHTBANK_ARTIFICIAL, 0, m_nodedef);
 	setNode(p, n);
 
 	// Update lighting
@@ -910,8 +910,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		}
 
 		// Ignore light (because calling voxalgo::update_lighting_nodes)
-		n0.setLight(LIGHTBANK_DAY, 0, m_nodedef);
-		n0.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
+		n0.setLight(LIGHTBANK_SUN, 0, m_nodedef);
+		n0.setLight(LIGHTBANK_ARTIFICIAL, 0, m_nodedef);
 
 		// Find out whether there is a suspect for this action
 		std::string suspect;
@@ -2360,10 +2360,13 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	return ret;
 }
 
-void ServerMap::loadBlock(const std::string &sectordir, const std::string &blockfile,
-		MapSector *sector, bool save_after_load)
+void ServerMap::loadBlock(const std::string &sectordir,
+	const std::string &blockfile, MapSector *sector, u8 *version,
+	bool save_after_load)
 {
 	DSTACK(FUNCTION_NAME);
+
+	*version = SER_FMT_VER_INVALID;
 
 	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
@@ -2376,31 +2379,28 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 
 		assert(sector->getPos() == p2d);
 
-		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
+		is.read((char*) version, 1);
 
-		if(is.fail())
+		if (is.fail())
 			throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
+				" to read MapBlock version");
 
 		/*u32 block_size = MapBlock::serializedLength(version);
-		SharedBuffer<u8> data(block_size);
-		is.read((char*)*data, block_size);*/
+		 SharedBuffer<u8> data(block_size);
+		 is.read((char*)*data, block_size);*/
 
 		// This will always return a sector because we're the server
 		//MapSector *sector = emergeSector(p2d);
-
 		MapBlock *block = NULL;
 		bool created_new = false;
 		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
+		if (block == NULL) {
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
 		}
 
 		// Read basic data
-		block->deSerialize(is, version, true);
+		block->deSerialize(is, *version, true);
 
 		// If it's a new block, insert it to the map
 		if (created_new) {
@@ -2410,11 +2410,10 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 		}
 
 		/*
-			Save blocks loaded in old format in new format
-		*/
+		 Save blocks loaded in old format in new format
+		 */
 
-		if(version < SER_FMT_VER_HIGHEST_WRITE || save_after_load)
-		{
+		if (*version < SER_FMT_VER_HIGHEST_WRITE || save_after_load) {
 			saveBlock(block);
 
 			// Should be in database now, so delete the old file
@@ -2424,46 +2423,43 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 		// We just loaded it from the disk, so it's up-to-date.
 		block->resetModified();
 
-	}
-	catch(SerializationError &e)
-	{
-		warningstream<<"Invalid block data on disk "
-				<<"fullpath="<<fullpath
-				<<" (SerializationError). "
-				<<"what()="<<e.what()
-				<<std::endl;
-				// Ignoring. A new one will be generated.
+	} catch (SerializationError &e) {
+		warningstream << "Invalid block data on disk " << "fullpath="
+			<< fullpath << " (SerializationError). " << "what()=" << e.what()
+			<< std::endl;
+		// Ignoring. A new one will be generated.
 		abort();
 
 		// TODO: Backup file; name is in fullpath.
 	}
 }
 
-void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
+void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector,
+	u8 *version, bool save_after_load)
 {
 	DSTACK(FUNCTION_NAME);
+
+	*version = SER_FMT_VER_INVALID;
 
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
 
-		u8 version = SER_FMT_VER_INVALID;
-		is.read((char*)&version, 1);
+		is.read((char*) version, 1);
 
-		if(is.fail())
+		if (is.fail())
 			throw SerializationError("ServerMap::loadBlock(): Failed"
-					" to read MapBlock version");
+				" to read MapBlock version");
 
 		MapBlock *block = NULL;
 		bool created_new = false;
 		block = sector->getBlockNoCreateNoEx(p3d.Y);
-		if(block == NULL)
-		{
+		if (block == NULL) {
 			block = sector->createBlankBlockNoInsert(p3d.Y);
 			created_new = true;
 		}
 
 		// Read basic data
-		block->deSerialize(is, version, true);
+		block->deSerialize(is, *version, true);
 
 		// If it's a new block, insert it to the map
 		if (created_new) {
@@ -2473,29 +2469,27 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		}
 
 		/*
-			Save blocks loaded in old format in new format
-		*/
+		 Save blocks loaded in old format in new format
+		 */
 
 		//if(version < SER_FMT_VER_HIGHEST_READ || save_after_load)
 		// Only save if asked to; no need to update version
-		if(save_after_load)
+		if (save_after_load)
 			saveBlock(block);
 
 		// We just loaded it from, so it's up-to-date.
 		block->resetModified();
-	}
-	catch(SerializationError &e)
-	{
-		errorstream<<"Invalid block data in database"
-				<<" ("<<p3d.X<<","<<p3d.Y<<","<<p3d.Z<<")"
-				<<" (SerializationError): "<<e.what()<<std::endl;
+	} catch (SerializationError &e) {
+		errorstream << "Invalid block data in database" << " (" << p3d.X << ","
+			<< p3d.Y << "," << p3d.Z << ")" << " (SerializationError): "
+			<< e.what() << std::endl;
 
 		// TODO: Block should be marked as invalid in memory so that it is
 		// not touched but the game can run
 
-		if(g_settings->getBool("ignore_world_load_errors")){
-			errorstream<<"Ignoring block load error. Duck and cover! "
-					<<"(ignore_world_load_errors)"<<std::endl;
+		if (g_settings->getBool("ignore_world_load_errors")) {
+			errorstream << "Ignoring block load error. Duck and cover! "
+				<< "(ignore_world_load_errors)" << std::endl;
 		} else {
 			throw SerializationError("Invalid block data in database");
 		}
@@ -2510,10 +2504,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	v2s16 p2d(blockpos.X, blockpos.Z);
 
+	u8 version = SER_FMT_VER_INVALID;
 	std::string ret;
 	dbase->loadBlock(blockpos, &ret);
 	if (ret != "") {
-		loadBlock(&ret, blockpos, createSector(p2d), false);
+		loadBlock(&ret, blockpos, createSector(p2d), &version, false);
 	} else {
 		// Not found in database, try the files
 
@@ -2561,11 +2556,13 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		/*
 		Load block and save it to the database
 		 */
-		loadBlock(sectordir, blockfilename, sector, true);
+		loadBlock(sectordir, blockfilename, sector, &version, true);
 	}
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (created_new && (block != NULL)) {
 		std::map<v3s16, MapBlock*> modified_blocks;
+		if(version < 28)
+			voxalgo::repair_block_light(this, block, false, &modified_blocks);
 		// Fix lighting if necessary
 		voxalgo::update_block_border_lighting(this, block, modified_blocks);
 		if (!modified_blocks.empty()) {
@@ -2610,7 +2607,7 @@ bool ServerMap::repairBlockLight(v3s16 blockpos,
 	MapBlock *block = emergeBlock(blockpos, false);
 	if (!block || !block->isGenerated())
 		return false;
-	voxalgo::repair_block_light(this, block, modified_blocks);
+	voxalgo::repair_block_light(this, block, true, modified_blocks);
 	return true;
 }
 

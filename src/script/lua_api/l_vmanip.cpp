@@ -225,8 +225,15 @@ int LuaVoxelManip::l_set_lighting(lua_State *L)
 		return 0;
 
 	u8 light;
-	light  = (getintfield_default(L, 2, "day",   0) & 0x0F);
-	light |= (getintfield_default(L, 2, "night", 0) & 0x0F) << 4;
+	u8 sun;
+	u8 artificial;
+	if (!(getintfield(L, 2, "sun", sun)
+			&& getintfield(L, 2, "artificial", artificial))) {
+		// Backwards compatibility
+		sun = (getintfield_default(L, 2, "day", 0) & 0x0F);
+		artificial = (getintfield_default(L, 2, "night", 0) & 0x0F);
+	}
+	light = (sun & 0x0F) | ((artificial & 0x0F) << 4);
 
 	MMVManip *vm = o->vm;
 

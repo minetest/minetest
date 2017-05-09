@@ -163,8 +163,8 @@ static u8 getInteriorLight(enum LightBank bank, MapNode n, s32 increment,
 */
 u16 getInteriorLight(MapNode n, s32 increment, INodeDefManager *ndef)
 {
-	u16 day = getInteriorLight(LIGHTBANK_DAY, n, increment, ndef);
-	u16 night = getInteriorLight(LIGHTBANK_NIGHT, n, increment, ndef);
+	u16 day = getInteriorLight(LIGHTBANK_SUN, n, increment, ndef);
+	u16 night = getInteriorLight(LIGHTBANK_ARTIFICIAL, n, increment, ndef);
 	return day | (night << 8);
 }
 
@@ -184,8 +184,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 		light = l2;
 
 	// Boost light level for light sources
-	u8 light_source = MYMAX(ndef->get(n).light_source,
-			ndef->get(n2).light_source);
+	u8 light_source = MYMAX(ndef->get(n).light_source[bank],
+			ndef->get(n2).light_source[bank]);
 	if(light_source > light)
 		light = light_source;
 
@@ -198,8 +198,8 @@ static u8 getFaceLight(enum LightBank bank, MapNode n, MapNode n2,
 */
 u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 {
-	u16 day = getFaceLight(LIGHTBANK_DAY, n, n2, face_dir, ndef);
-	u16 night = getFaceLight(LIGHTBANK_NIGHT, n, n2, face_dir, ndef);
+	u16 day = getFaceLight(LIGHTBANK_SUN, n, n2, face_dir, ndef);
+	u16 night = getFaceLight(LIGHTBANK_ARTIFICIAL, n, n2, face_dir, ndef);
 	return day | (night << 8);
 }
 
@@ -224,7 +224,8 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	u16 ambient_occlusion = 0;
 	u16 light_count = 0;
-	u8 light_source_max = 0;
+	u8 light_source_sun_max = 0;
+	u8 light_source_artificial_max = 0;
 	u16 light_day = 0;
 	u16 light_night = 0;
 
@@ -238,12 +239,14 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 		}
 
 		const ContentFeatures &f = ndef->get(n);
-		if (f.light_source > light_source_max)
-			light_source_max = f.light_source;
+		if (f.light_source[LIGHTBANK_SUN] > light_source_sun_max)
+			light_source_sun_max = f.light_source[LIGHTBANK_SUN];
+		if (f.light_source[LIGHTBANK_ARTIFICIAL] > light_source_artificial_max)
+			light_source_artificial_max = f.light_source[LIGHTBANK_ARTIFICIAL];
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
-			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_SUN, &f));
+			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_ARTIFICIAL, &f));
 			light_count++;
 		} else {
 			ambient_occlusion++;
@@ -258,14 +261,14 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;
-	if(decode_light(light_source_max) >= light_day) {
-		light_day = decode_light(light_source_max);
+	if(decode_light(light_source_sun_max) >= light_day) {
+		light_day = decode_light(light_source_sun_max);
 		skip_ambient_occlusion_day = true;
 	}
 
 	bool skip_ambient_occlusion_night = false;
-	if(decode_light(light_source_max) >= light_night) {
-		light_night = decode_light(light_source_max);
+	if(decode_light(light_source_artificial_max) >= light_night) {
+		light_night = decode_light(light_source_artificial_max);
 		skip_ambient_occlusion_night = true;
 	}
 
@@ -322,8 +325,9 @@ void final_color_blend(video::SColor *result,
 {
 	video::SColorf dayLight;
 	get_sunlight_color(&dayLight, daynight_ratio);
+	const static u8 nolight[2] = { 0, 0 };
 	final_color_blend(result,
-		encode_light(light, 0), dayLight);
+		encode_light(light, nolight), dayLight);
 }
 
 void final_color_blend(video::SColor *result,
@@ -829,7 +833,9 @@ static void getTileInfo(
 
 	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
-	tile.emissive_light = f.light_source;
+	tile.emissive_light[LIGHTBANK_SUN] = f.light_source[LIGHTBANK_SUN];
+	tile.emissive_light[LIGHTBANK_ARTIFICIAL] =
+		f.light_source[LIGHTBANK_ARTIFICIAL];
 
 	// eg. water and glass
 	if (equivalent) {
@@ -1457,21 +1463,21 @@ void MeshCollector::append(const TileLayer &layer,
 void MeshCollector::append(const TileSpec &tile,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source)
+		v3f pos, video::SColor c, bool apply_shading)
 {
 	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
 		append(*layer, vertices, numVertices, indices, numIndices, pos,
-			c, light_source, layernum);
+			c, apply_shading, layernum);
 	}
 }
 
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source, u8 layernum)
+		v3f pos, video::SColor c, bool apply_shading, u8 layernum)
 {
 	if (numIndices > 65535) {
 		dstream<<"FIXME: MeshCollector::append() called with numIndices="<<numIndices<<" (limit 65535)"<<std::endl;
@@ -1503,7 +1509,7 @@ void MeshCollector::append(const TileLayer &layer,
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
-			if (!light_source) {
+			if (apply_shading) {
 				c = original_c;
 				applyFacesShading(c, vertices[i].Normal);
 			}
@@ -1514,7 +1520,7 @@ void MeshCollector::append(const TileLayer &layer,
 	} else {
 		vertex_count = p->vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
-			if (!light_source) {
+			if (apply_shading) {
 				c = original_c;
 				applyFacesShading(c, vertices[i].Normal);
 			}
@@ -1566,22 +1572,19 @@ void MeshCollector::applyTileColors()
 		}
 }
 
-video::SColor encode_light(u16 light, u8 emissive_light)
+video::SColor encode_light(u16 light, const u8 *emissive_light)
 {
 	// Get components
 	u32 day = (light & 0xff);
 	u32 night = (light >> 8);
 	// Add emissive light
-	night += emissive_light * 2.5f;
+	day += emissive_light[LIGHTBANK_SUN] * 2.5f;
+	night += emissive_light[LIGHTBANK_ARTIFICIAL] * 2.5f;
+	if (day > 255)
+		day = 255;
 	if (night > 255)
 		night = 255;
-	// Since we don't know if the day light is sunlight or
-	// artificial light, assume it is artificial when the night
-	// light bank is also lit.
-	if (day < night)
-		day = 0;
-	else
-		day = day - night;
+
 	u32 sum = day + night;
 	// Ratio of sunlight:
 	u32 r;
@@ -1593,3 +1596,4 @@ video::SColor encode_light(u16 light, u8 emissive_light)
 	float b = (day + night) / 2;
 	return video::SColor(r, b, b, b);
 }
+
