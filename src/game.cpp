@@ -3890,7 +3890,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	DigParams params = getDigParams(nodedef_manager->get(n).groups,
 			&playeritem_toolcap);
 
-    runData.dig_instantly = params.time == 0;
+	runData.dig_instantly = params.time == 0;
 
 	// If can't dig, try hand
 	if (!params.diggable) {
