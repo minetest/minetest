@@ -304,6 +304,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	bool touching_ground_was = touching_ground;
 	touching_ground = result.touching_ground;
+	bool sneak_can_jump = false;
 
 	// Max. distance (X, Z) over border for sneaking determined by collision box
 	// * 0.49 to keep the center just barely on the node
@@ -339,8 +340,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 				m_speed.Z = 0;
 		}
 
-		if (y_diff > 0 && (m_speed.Y < 0 || (m_sneak_ladder_detected
-				&& m_speed.Y * dtime * 2 >= y_diff))) {
+		if (y_diff > 0 && m_speed.Y < 0) {
 			// Move player to the maximal height when falling or when
 			// the ledge is climbed on the next step.
 			position.Y = bmax.Y;
@@ -348,8 +348,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
  		}
 
 		// Allow jumping on node edges while sneaking
-		if (m_speed.Y == 0)
-			touching_ground = true;
+		if (m_speed.Y == 0 || m_sneak_ladder_detected)
+			sneak_can_jump = true;
 
 		if (collision_info != NULL &&
 				m_speed.Y - old_speed.Y > BS) {
@@ -412,7 +412,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	// Determine if jumping is possible
-	m_can_jump = touching_ground && !in_liquid && !is_climbing;
+	m_can_jump = (touching_ground && !in_liquid && !is_climbing)
+			|| sneak_can_jump;
 	if (itemgroup_get(f.groups, "disable_jump"))
 		m_can_jump = false;
 
