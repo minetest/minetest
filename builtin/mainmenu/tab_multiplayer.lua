@@ -299,7 +299,8 @@ local function main_button_handler(tabview, fields, name, tabdata)
 		return true
 	end
 
-	if (fields.btn_mp_connect or fields.key_enter) and fields.te_address and fields.te_port then
+	if (fields.btn_mp_connect or fields.key_enter)
+			and fields.te_address ~= "" and fields.te_port then
 		gamedata.playername = fields.te_name
 		gamedata.password   = fields.te_pwd
 		gamedata.address    = fields.te_address
