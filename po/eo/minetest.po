@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-05-04 00:55+0000\n"
+"PO-Revision-Date: 2017-05-10 02:53+0000\n"
 "Last-Translator: yellowcrash10 <corini98@gmail.com>\n"
 "Language-Team: Esperanto "
 "<https://hosted.weblate.org/projects/minetest/minetest/eo/>\n"
@@ -4308,8 +4308,9 @@ msgid "Y of flat ground."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Y of upper limit of large pseudorandom caves."
-msgstr ""
+msgstr "Y de limesosupremo de grandaj kvazaŭstokastaj kavernoj."
 
 #: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
