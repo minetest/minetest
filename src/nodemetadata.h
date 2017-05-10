@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define NODEMETADATA_HEADER
 
 #include "metadata.h"
+#include "util/cpp11_container.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -40,8 +41,8 @@ public:
 	NodeMetadata(IItemDefManager *item_def_mgr);
 	~NodeMetadata();
 
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
+	void serialize(std::ostream &os, u8 version, bool disk=true) const;
+	void deSerialize(std::istream &is, u8 version);
 
 	void clear();
 	bool empty() const;
@@ -52,8 +53,17 @@ public:
 		return m_inventory;
 	}
 
+	inline bool isPrivate(const std::string &name) const
+	{
+		return m_privatevars.count(name) != 0;
+	}
+	void markPrivate(const std::string &name, bool set);
+
 private:
+	int countNonPrivate() const;
+
 	Inventory *m_inventory;
+	UNORDERED_SET<std::string> m_privatevars;
 };
 
 
@@ -66,7 +76,7 @@ class NodeMetadataList
 public:
 	~NodeMetadataList();
 
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u8 blockver, bool disk=true) const;
 	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
 
 	// Add all keys in this list to the vector keys

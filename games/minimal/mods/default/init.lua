@@ -1228,6 +1228,8 @@ minetest.register_node("default:chest_locked", {
 		meta:set_string("owner", "")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
+		-- this is not really the intended usage but works for testing purposes:
+		meta:mark_as_private("owner")
 	end,
 	can_dig = function(pos,player)
 		local meta = minetest.get_meta(pos);

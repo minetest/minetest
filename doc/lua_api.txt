@@ -2895,6 +2895,10 @@ Can be obtained via `minetest.get_meta(pos)`.
 #### Methods
 * All methods in MetaDataRef
 * `get_inventory()`: returns `InvRef`
+* `mark_as_private(name or {name1, name2, ...})`: Mark specific vars as private
+  This will prevent them from being sent to the client. Note that the "private"
+  status will only be remembered if an associated key-value pair exists, meaning
+  it's best to call this when initializing all other meta (e.g. on_construct).
 
 ### `ItemStackMetaRef`
 ItemStack metadata: reference extra data and functionality stored in a stack.
