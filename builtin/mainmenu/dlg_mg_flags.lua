@@ -62,7 +62,7 @@ local default = {
 }
 
 -- This table has data from minetest.conf which then will be from player's input.
-local temporary = {
+mm_mg.ftemporary = {
 	water_level = 1,
 	flag_list_general = {},
 	flag_list_5 = {},
@@ -72,7 +72,7 @@ local temporary = {
 	flag_list_valleys = {}
 }
 
-local function update_mg_flags()
+function update_mg_flags()
 	local function mg_flags_helper(setting_name, list_name)
 		-- Only write to minetest.conf when it has changed or already there.
 		local changed = false
@@ -81,7 +81,7 @@ local function update_mg_flags()
 		end
 		if changed == false then
 			for flag, val in pairs(default[list_name]) do
-				if temporary[list_name][flag] ~= val then
+				if mm_mg.ftemporary[list_name][flag] ~= val then
 					changed = true
 					break
 				end
@@ -90,7 +90,7 @@ local function update_mg_flags()
 		if changed == true then
 			local flag_str = ""
 			local first = true
-			for flag, val in pairs(temporary[list_name]) do
+			for flag, val in pairs(mm_mg.ftemporary[list_name]) do
 				local name = flag
 				if flag:sub(1, 1) == "_" then
 					name = flag:sub(3)  -- Remove the prefix.
@@ -108,14 +108,14 @@ local function update_mg_flags()
 	mg_flags_helper("mgv7_spflags", "flag_list_7")
 	mg_flags_helper("mgflat_spflags", "flag_list_flat")
 	mg_flags_helper("mg_valleys_spflags", "flag_list_valleys")
-	if core.setting_get("water_level") ~= temporary.water_level then
-		core.setting_set("water_level", temporary.water_level)
+	if core.setting_get("water_level") ~= mm_mg.ftemporary.water_level then
+		core.setting_set("water_level", mm_mg.ftemporary.water_level)
 	end
 end
 
-local function load_mg_flags()
+function load_mg_flags()
 	local function mg_flags_helper(list_name, text)
-		temporary[list_name] = table.copy(default[list_name])
+		mm_mg.ftemporary[list_name] = table.copy(default[list_name])
 		if text == nil then
 			return
 		end
@@ -128,12 +128,12 @@ local function load_mg_flags()
 				if name == "caverns" then
 					name = list_name:sub(10) .. name
 				end
-				temporary[list_name][name] = false
+				mm_mg.ftemporary[list_name][name] = false
 			else
 				if name == "caverns" then
 					name = list_name:sub(10) .. name
 				end
-				temporary[list_name][name] = true
+				mm_mg.ftemporary[list_name][name] = true
 			end
 		end
 	end
@@ -144,7 +144,7 @@ local function load_mg_flags()
 	mg_flags_helper("flag_list_7", core.setting_get("mgv7_spflags"))
 	mg_flags_helper("flag_list_flat", core.setting_get("mgflat_spflags"))
 	mg_flags_helper("flag_list_valleys", core.setting_get("mg_valleys_spflags"))
-	temporary.water_level = core.setting_get("water_level")
+	mm_mg.ftemporary.water_level = core.setting_get("water_level")
 end
 
 local function mg_flags_formspec(dialogdata)
@@ -155,59 +155,58 @@ local function mg_flags_formspec(dialogdata)
 	mg_first_time = false
 	local mgname = "[" .. core.setting_get("mg_name") .. "]"
 	local formspec =
-		"size[8,6,true]" ..
-		"button[3.0,5.6;2.5,0.5;mg_save;" .. fgettext("Save") .. "]" ..
-		"button[5.5,5.6;2.5,0.5;mg_cancel;" .. fgettext("Cancel") .. "]" ..
+		"size[8,5,true]" ..
+		"button[5.5,4.6;2.5,0.5;mg_close;" .. fgettext("Close") .. "]" ..
 	-- Special mapgen-specific flags
 		"label[0,0;" .. minetest.formspec_escape(mgname) .. " " .. fgettext("Mapgen flags") .. "]"
 	if core.setting_get("mg_name") == "v5" then
 		formspec = formspec ..
 			"checkbox[0.25,0.5;cb__5caverns;" .. fgettext("Caverns") .. ";" ..
-				tostring(temporary.flag_list_5["_5caverns"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_5["_5caverns"]) .. "]"
 	elseif core.setting_get("mg_name") == "v6" then
 		-- If snowbiomes enabled, tell player if jungle is auto-enabled, too.
-		if temporary.flag_list_6["snowbiomes"] == true then
-			temporary.flag_list_6["jungles"] = true  -- Do not make the player get confused.
+		if mm_mg.ftemporary.flag_list_6["snowbiomes"] == true then
+			mm_mg.ftemporary.flag_list_6["jungles"] = true  -- Do not make the player get confused.
 			formspec = formspec ..
 			"label[0.7,2.2;" .. fgettext("(with Jungles)") .. "]"
 		else
 			formspec = formspec ..
 			"checkbox[0.25,2.0;cb_jungles;" .. fgettext("Jungles") .. ";" ..
-				tostring(temporary.flag_list_6["jungles"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_6["jungles"]) .. "]"
 		end
 		formspec = formspec ..
 			"checkbox[0.25,0.5;cb_biomeblend;" .. fgettext("Biome blend") .. ";" ..
-				tostring(temporary.flag_list_6["biomeblend"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_6["biomeblend"]) .. "]" ..
 			"checkbox[0.25,1.0;cb_mudflow;" .. fgettext("Mud flow") .. ";" ..
-				tostring(temporary.flag_list_6["mudflow"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_6["mudflow"]) .. "]" ..
 			"checkbox[0.25,1.5;cb_snowbiomes;" .. fgettext("Additional Biomes") .. ";" ..
-				tostring(temporary.flag_list_6["snowbiomes"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_6["snowbiomes"]) .. "]" ..
 			"checkbox[0.25,2.5;cb_flat;" .. fgettext("Flat world") .. ";" ..
-				tostring(temporary.flag_list_6["flat"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_6["flat"]) .. "]" ..
 			"checkbox[0.25,3.0;cb_trees;" .. fgettext("Trees") .. ";" ..
-				tostring(temporary.flag_list_6["trees"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_6["trees"]) .. "]"
 	elseif core.setting_get("mg_name") == "v7" then
 		formspec = formspec ..
 			"checkbox[0.25,0.5;cb_mountains;" .. fgettext("Mountains") .. ";" ..
-				tostring(temporary.flag_list_7["mountains"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_7["mountains"]) .. "]" ..
 			"checkbox[0.25,1.0;cb_ridges;" .. fgettext("Ridges") .. ";" ..
-				tostring(temporary.flag_list_7["ridges"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_7["ridges"]) .. "]" ..
 			"checkbox[0.25,1.5;cb_floatlands;" .. fgettext("Floatlands") .. ";" ..
-				tostring(temporary.flag_list_7["floatlands"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_7["floatlands"]) .. "]" ..
 			"checkbox[0.25,2.0;cb__7caverns;" .. fgettext("Caverns") .. ";" ..
-				tostring(temporary.flag_list_7["_7caverns"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_7["_7caverns"]) .. "]"
 	elseif core.setting_get("mg_name") == "flat" then
 		formspec = formspec ..
 			"checkbox[0.25,0.5;cb_lakes;" .. fgettext("Lakes") .. ";" ..
-				tostring(temporary.flag_list_flat["lakes"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_flat["lakes"]) .. "]" ..
 			"checkbox[0.25,1.0;cb_hills;" .. fgettext("Hills") .. ";" ..
-				tostring(temporary.flag_list_flat["hills"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_flat["hills"]) .. "]"
 	elseif core.setting_get("mg_name") == "valleys" then
 		formspec = formspec ..
 			"checkbox[0.25,0.5;cb_altitude_chill;" .. fgettext("Height temperature") .. ";" ..
-				tostring(temporary.flag_list_valleys["altitude_chill"]) .. "]" ..
+				tostring(mm_mg.ftemporary.flag_list_valleys["altitude_chill"]) .. "]" ..
 			"checkbox[0.25,1.0;cb_humid_rivers;" .. fgettext("Humid rivers") .. ";" ..
-				tostring(temporary.flag_list_valleys["humid_rivers"]) .. "]"
+				tostring(mm_mg.ftemporary.flag_list_valleys["humid_rivers"]) .. "]"
 	elseif core.setting_get("mg_name") == "fractal" then
 		formspec = formspec ..
 			"label[0,1.0;" .. fgettext("No flags in fractal mapgen for now") .. "]"
@@ -219,26 +218,20 @@ local function mg_flags_formspec(dialogdata)
 	formspec = formspec ..
 		"label[4,0;" .. fgettext("Generated structure") .. "]" ..
 		"checkbox[4.25,0.5;cb_caves;" .. fgettext("Caves") .. ";" ..
-			tostring(temporary.flag_list_general["caves"]) .. "]" ..
+			tostring(mm_mg.ftemporary.flag_list_general["caves"]) .. "]" ..
 		"checkbox[4.25,1.0;cb_dungeons;" .. fgettext("Dungeons") .. ";" ..
-			tostring(temporary.flag_list_general["dungeons"]) .. "]" ..
+			tostring(mm_mg.ftemporary.flag_list_general["dungeons"]) .. "]" ..
 		"checkbox[4.25,1.5;cb_decorations;" .. fgettext("Decorations") .. ";" ..
-			tostring(temporary.flag_list_general["decorations"]) .. "]"
+			tostring(mm_mg.ftemporary.flag_list_general["decorations"]) .. "]"
 	-- Water level
 	formspec = formspec ..
-		"field[0.5,4.9;5.0,0.5;te_water_level;" .. fgettext("Water level") .. ";" .. temporary.water_level .. "] " ..
-		"button[5.25,4.6;2.75,0.5;mg_water_level;" .. fgettext("Set water level") .. "]"
+		"field[0.5,4.9;2.0,0.5;te_water_level;" .. fgettext("Water level") .. ";" .. mm_mg.ftemporary.water_level .. "] " ..
+		"button[2.25,4.6;2.75,0.5;mg_water_level;" .. fgettext("Set water level") .. "]"
 	return formspec
 end
 
 local function mg_flags_buttonhandler(this, fields)
-	if fields["mg_save"] then
-		update_mg_flags()
-		this:delete()
-		return true
-	end
-	if fields["mg_cancel"] then
-		load_mg_flags()
+	if fields["mg_close"] then
 		this:delete()
 		return true
 	end
@@ -251,7 +244,7 @@ local function mg_flags_buttonhandler(this, fields)
 		for flag, val in pairs(default[flag_list]) do
 			local cbflag = "cb_" .. flag
 			if fields[cbflag] then
-				temporary[flag_list][flag] = core.is_yes(fields[cbflag])
+				mm_mg.ftemporary[flag_list][flag] = core.is_yes(fields[cbflag])
 				return true
 			end
 		end
@@ -259,7 +252,7 @@ local function mg_flags_buttonhandler(this, fields)
 
 	-- Player need to press enter on the textbox to run this or just click the button.
 	if fields["te_water_level"] or fields["mg_water_level"] then
-		temporary.water_level = tonumber(fields["te_water_level"])
+		mm_mg.ftemporary.water_level = tonumber(fields["te_water_level"])
 		return true
 	end
 	return false

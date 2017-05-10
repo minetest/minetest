@@ -15,6 +15,8 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+mm_mg = {}
+
 local function create_world_formspec(dialogdata)
 	local mapgens = core.get_mapgen_names()
 
@@ -92,6 +94,7 @@ local function create_world_buttonhandler(this, fields)
 			local message = nil
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
+			update_mg_flags()  -- Apply mapgen flags.
 
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.settings:set("mg_name",fields["dd_mapgen"])
@@ -124,6 +127,7 @@ local function create_world_buttonhandler(this, fields)
 	end
 	
 	if fields["world_create_cancel"] then
+		load_mg_flags()  -- Reset to last saved.
 		this:delete()
 		return true
 	end
