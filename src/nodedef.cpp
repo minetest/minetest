@@ -772,6 +772,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_RAILLIKE:
 		solidness = 0;
 		break;
+	case NDT_PLANTLIKE_ROOTED:
+		solidness = 2;
+		break;
 	}
 
 	if (is_liquid) {
@@ -783,38 +786,41 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
 	}
 
-	u32 tile_shader[6];
-	for (u16 j = 0; j < 6; j++) {
-		tile_shader[j] = shdsrc->getShader("nodes_shader",
-			material_type, drawtype);
-	}
+	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
+
 	u8 overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
 		overlay_material = TILE_MATERIAL_BASIC;
 	else if (overlay_material == TILE_MATERIAL_LIQUID_OPAQUE)
 		overlay_material = TILE_MATERIAL_LIQUID_TRANSPARENT;
-	u32 overlay_shader[6];
-	for (u16 j = 0; j < 6; j++) {
-		overlay_shader[j] = shdsrc->getShader("nodes_shader",
-			overlay_material, drawtype);
-	}
+
+	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype);
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
-		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader[j],
+		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader,
 			tsettings.use_normal_texture,
 			tdef[j].backface_culling, material_type);
 		if (tdef_overlay[j].name != "")
 			fillTileAttribs(tsrc, &tiles[j].layers[1], &tdef_overlay[j],
-				overlay_shader[j], tsettings.use_normal_texture,
+				overlay_shader, tsettings.use_normal_texture,
 				tdef[j].backface_culling, overlay_material);
 	}
+
+	u8 special_material = material_type;
+	if (drawtype == NDT_PLANTLIKE_ROOTED) {
+		if (waving == 1)
+			special_material = TILE_MATERIAL_WAVING_PLANTS;
+		else if (waving == 2)
+			special_material = TILE_MATERIAL_WAVING_LEAVES;
+	}
+	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], &tdef_spec[j],
-			tile_shader[j], tsettings.use_normal_texture,
-			tdef_spec[j].backface_culling, material_type);
+			special_shader, tsettings.use_normal_texture,
+			tdef_spec[j].backface_culling, special_material);
 	}
 
 	if (param_type_2 == CPT2_COLOR ||

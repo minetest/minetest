@@ -362,6 +362,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	bool default_culling = true;
 	switch (drawtype) {
 		case NDT_PLANTLIKE:
+		case NDT_PLANTLIKE_ROOTED:
 		case NDT_FIRELIKE:
 			default_tiling = false;
 			// "break" is omitted here intentionaly, as PLANTLIKE
