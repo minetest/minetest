@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
+#include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "irrlicht_changes/static_text.h"
@@ -4537,7 +4538,7 @@ void Game::showPauseMenu()
 
 	 char control_text_buf[500];
 
-	 snprintf(control_text_buf, 500, control_text_template.c_str(),
+	 snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
 			 GET_KEY_NAME(keymap_forward),
 	 	 	 GET_KEY_NAME(keymap_left),
 			 GET_KEY_NAME(keymap_backward),
