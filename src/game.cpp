@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
+#include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
 #include "irrlicht_changes/static_text.h"
@@ -4504,6 +4505,7 @@ void Game::extendedResourceCleanup()
 		       << " (note: irrlicht doesn't support removing renderers)" << std::endl;
 }
 
+#define GET_KEY_NAME(KEY) gettext(getKeySetting(#KEY).name())
 void Game::showPauseMenu()
 {
 #ifdef __ANDROID__
@@ -4521,21 +4523,38 @@ void Game::showPauseMenu()
 		" --> place single item to slot\n"
 		);
 #else
-	static const std::string control_text = strgettext("Default Controls:\n"
-		"- WASD: move\n"
-		"- Space: jump/climb\n"
-		"- Shift: sneak/go down\n"
-		"- Q: drop item\n"
-		"- I: inventory\n"
+	static const std::string control_text_template = strgettext("Controls:\n"
+		"- %s%s%s%s: move\n"
+		"- %s: jump/climb\n"
+		"- %s: sneak/go down\n"
+		"- %s: drop item\n"
+		"- %s: inventory\n"
 		"- Mouse: turn/look\n"
 		"- Mouse left: dig/punch\n"
 		"- Mouse right: place/use\n"
 		"- Mouse wheel: select item\n"
-		"- T: chat\n"
+		"- %s: chat\n"
 	);
+
+	 char control_text_buf[500];
+
+	 snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
+			 GET_KEY_NAME(keymap_forward),
+	 	 	 GET_KEY_NAME(keymap_left),
+			 GET_KEY_NAME(keymap_backward),
+			 GET_KEY_NAME(keymap_right),
+			 GET_KEY_NAME(keymap_jump),
+			 GET_KEY_NAME(keymap_sneak),
+			 GET_KEY_NAME(keymap_drop),
+			 GET_KEY_NAME(keymap_inventory),
+			 GET_KEY_NAME(keymap_chat)
+			 );
+
 #endif
 
-	float ypos = simple_singleplayer_mode ? 0.5 : 0.1;
+	std::string control_text = std::string(control_text_buf);
+	str_formspec_escape(control_text);
+	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
 	os << FORMSPEC_VERSION_STRING  << SIZE_TAG
@@ -4545,6 +4564,8 @@ void Game::showPauseMenu()
 	if (!simple_singleplayer_mode) {
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
+	} else {
+		os << "field[4.95,0;5,1.5;;" << strgettext("Game Paused") << ";]";
 	}
 
 #ifndef __ANDROID__
@@ -4558,10 +4579,43 @@ void Game::showPauseMenu()
 	os		<< "button_exit[4," << (ypos++) << ";3,0.5;btn_exit_os;"
 		<< strgettext("Exit to OS")   << "]"
 		<< "textarea[7.5,0.25;3.9,6.25;;" << control_text << ";]"
-		<< "textarea[0.4,0.25;3.5,6;;" << PROJECT_NAME_C "\n"
-		<< g_build_info << "\n"
-		<< "path_user = " << wrap_rows(porting::path_user, 20)
-		<< "\n;]";
+		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
+		<< "\n"
+		<<  strgettext("Game info:") << "\n";
+	const std::string &address = client->getAddressName();
+	static const std::string mode = strgettext("- Mode: ");
+	if (!simple_singleplayer_mode) {
+		Address serverAddress = client->getServerAddress();
+		if (address != "") {
+			os << mode << strgettext("Remote server") << "\n"
+					<< strgettext("- Address: ") << address;
+		} else {
+			os << mode << strgettext("Hosting server");
+		}
+		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+	} else {
+		os << mode << strgettext("Singleplayer") << "\n";
+	}
+	if (simple_singleplayer_mode || address == "") {
+		static const std::string on = strgettext("On");
+		static const std::string off = strgettext("Off");
+		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
+		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
+		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
+		os << strgettext("- Damage: ") << damage << "\n"
+				<< strgettext("- Creative mode: ") << creative << "\n";
+		if (!simple_singleplayer_mode) {
+			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
+			os << strgettext("- PvP: ") << pvp << "\n"
+					<< strgettext("- Public: ") << announced << "\n";
+			std::string server_name = g_settings->get("server_name");
+			str_formspec_escape(server_name);
+			if (announced == on && server_name != "")
+				os << strgettext("- Server Name: ") << server_name;
+
+		}
+	}
+	os << ";]";
 
 	/* Create menu */
 	/* Note: FormspecFormSource and LocalFormspecHandler  *

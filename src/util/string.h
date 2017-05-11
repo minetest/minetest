@@ -423,6 +423,18 @@ inline void str_replace(std::string &str, const std::string &pattern,
 }
 
 /**
+ * Escapes characters [ ] \ , ; that can not be used in formspecs
+ */
+inline void str_formspec_escape(std::string &str)
+{
+	str_replace(str, "\\", "\\\\");
+	str_replace(str, "]", "\\]");
+	str_replace(str, "[", "\\[");
+	str_replace(str, ";", "\\;");
+	str_replace(str, ",", "\\,");
+}
+
+/**
  * Replace all occurrences of the character \p from in \p str with \p to.
  *
  * @param str The string to (potentially) modify.
