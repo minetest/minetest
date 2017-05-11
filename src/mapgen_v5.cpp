@@ -204,12 +204,12 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
-		bool has_cavern = false;
+		bool near_cavern = false;
 		// Generate caverns
 		if (spflags & MGV5_CAVERNS)
-			has_cavern = generateCaverns(stone_surface_max_y);
+			near_cavern = generateCaverns(stone_surface_max_y);
 		// Generate tunnels and classic caves
-		if (has_cavern)
+		if (near_cavern)
 			// Disable classic caves in this mapchunk by setting
 			// 'large cave depth' to world base. Avoids excessive liquid in
 			// large caverns and floating blobs of overgenerated liquid.

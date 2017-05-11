@@ -160,9 +160,9 @@ CavernsNoise::CavernsNoise(
 {
 	assert(nodedef);
 
-	m_ndef = nodedef;
+	m_ndef  = nodedef;
 
-	m_csize = chunksize;
+	m_csize            = chunksize;
 	m_cavern_limit     = cavern_limit;
 	m_cavern_taper     = cavern_taper;
 	m_cavern_threshold = cavern_threshold;
@@ -207,7 +207,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 	}
 
 	//// Place nodes
-	bool has_cavern = false;
+	bool near_cavern = false;
 	v3s16 em = vm->m_area.getExtent();
 	u32 index2d = 0;
 
@@ -229,20 +229,22 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 				vm->m_area.add_y(em, vi, -1),
 				cavern_amp_index++) {
 			content_t c = vm->m_data[vi].getContent();
-			float nabs_cavern = fabs(noise_cavern->result[index3d]);
-			// Caverns generate first but still remove lava and water in case
-			// of overgenerated classic caves.
-			if (nabs_cavern * cavern_amp[cavern_amp_index] > m_cavern_threshold &&
-					(m_ndef->get(c).is_ground_content ||
-					c == c_lava_source || c == c_water_source)) {
-				vm->m_data[vi] = MapNode(CONTENT_AIR);
-				has_cavern = true;
+			float n_absamp_cavern = fabs(noise_cavern->result[index3d]) *
+				cavern_amp[cavern_amp_index];
+			// Disable CavesRandomWalk at a safe distance from caverns
+			// to avoid excessively spreading liquids in caverns.
+			if (n_absamp_cavern > m_cavern_threshold - 0.1f) {
+				near_cavern = true;
+				if (n_absamp_cavern > m_cavern_threshold &&
+						m_ndef->get(c).is_ground_content)
+					vm->m_data[vi] = MapNode(CONTENT_AIR);
 			}
 		}
 	}
 
 	delete[] cavern_amp;
-	return has_cavern;
+
+	return near_cavern;
 }
 
 
