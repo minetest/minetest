@@ -51,3 +51,7 @@ core.register_chatcommand("disconnect", {
 		core.disconnect()
 	end,
 })
+
+function core.run_server_chatcommand(cmd, param)
+	core.send_chat_message("/" .. cmd .. " " .. param)
+end
