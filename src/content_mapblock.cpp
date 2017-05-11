@@ -73,28 +73,42 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
 
-void MapblockMeshGenerator::useTile(int index, bool disable_backface_culling)
+void MapblockMeshGenerator::useTile(int index, int set_flags, int reset_flags, bool special)
 {
-	getNodeTileN(n, p, index, data, tile);
+	if (special)
+		getSpecialTile(index, &tile, p == data->m_crack_pos_relative);
+	else
+		getNodeTileN(n, p, index, data, tile);
 	if (!data->m_smooth_lighting)
 		color = encode_light(light, f->light_source);
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		tile.layers[layer].material_flags |= MATERIAL_FLAG_CRACK_OVERLAY;
-		if (disable_backface_culling)
-			tile.layers[layer].material_flags &= ~MATERIAL_FLAG_BACKFACE_CULLING;
+		tile.layers[layer].material_flags |= set_flags;
+		tile.layers[layer].material_flags &= ~reset_flags;
 	}
 }
 
-void MapblockMeshGenerator::useDefaultTile(bool set_color)
+void MapblockMeshGenerator::getTile(const v3s16& direction, TileSpec *tile)
 {
-	getNodeTile(n, p, v3s16(0, 0, 0), data, tile);
-	if (set_color && !data->m_smooth_lighting)
-		color = encode_light(light, f->light_source);
+	getNodeTile(n, p, direction, data, *tile);
 }
 
-void MapblockMeshGenerator::getTile(const v3s16& direction, TileSpec &tile)
+/*!
+ * Returns the i-th special tile for a map node.
+ */
+void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply_crack)
 {
-	getNodeTile(n, p, direction, data, tile);
+	*tile = f->special_tiles[index];
+	TileLayer *top_layer = NULL;
+	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
+		TileLayer *layer = &tile->layers[layernum];
+		if (layer->texture_id == 0)
+			continue;
+		top_layer = layer;
+		if (!layer->has_color)
+			n.getColor(*f, &layer->color);
+	}
+	if (apply_crack)
+		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 
 void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
@@ -358,27 +372,10 @@ void MapblockMeshGenerator::drawAutoLightedCuboid(aabb3f box, const f32 *txc,
 	}
 }
 
-/*!
- * Returns the i-th special tile for a map node.
- */
-static TileSpec getSpecialTile(const ContentFeatures &f,
-	const MapNode &n, u8 i)
-{
-	TileSpec copy = f.special_tiles[i];
-	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		TileLayer *layer = &copy.layers[layernum];
-		if (layer->texture_id == 0)
-			continue;
-		if (!layer->has_color)
-			n.getColor(f, &(layer->color));
-	}
-	return copy;
-}
-
 void MapblockMeshGenerator::prepareLiquidNodeDrawing()
 {
-	tile_liquid_top = getSpecialTile(*f, n, 0);
-	tile_liquid = getSpecialTile(*f, n, 1);
+	getSpecialTile(0, &tile_liquid_top);
+	getSpecialTile(1, &tile_liquid);
 
 	MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + v3s16(p.X, p.Y + 1, p.Z));
 	c_flowing = nodedef->getId(f->liquid_alternative_flowing);
@@ -603,7 +600,7 @@ void MapblockMeshGenerator::drawLiquidNode()
 
 void MapblockMeshGenerator::drawGlasslikeNode()
 {
-	useDefaultTile();
+	useTile(0, 0, 0);
 
 	for (int face = 0; face < 6; face++) {
 		// Check this neighbor
@@ -638,7 +635,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 {
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++)
-		getTile(g_6dirs[face], tiles[face]);
+		getTile(g_6dirs[face], &tiles[face]);
 
 	TileSpec glass_tiles[6];
 	if (tiles[1].layers[0].texture &&
@@ -751,7 +748,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		// Internal liquid level has param2 range 0 .. 63,
 		// convert it to -0.5 .. 0.5
 		float vlev = (param2 / 63.0) * 2.0 - 1.0;
-		tile = getSpecialTile(*f, n, 0);
+		getSpecialTile(0, &tile);
 		drawAutoLightedCuboid(aabb3f(-(nb[5] ? g : b),
 		                             -(nb[4] ? g : b),
 		                             -(nb[3] ? g : b),
@@ -764,7 +761,7 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 void MapblockMeshGenerator::drawAllfacesNode()
 {
 	static const aabb3f box(-BS / 2, -BS / 2, -BS / 2, BS / 2, BS / 2, BS / 2);
-	useDefaultTile(false);
+	useTile(0, 0, 0);
 	drawAutoLightedCuboid(box);
 }
 
@@ -777,7 +774,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		case DWM_YN: tileindex = 0; break; // floor
 		default:     tileindex = 2; // side (or invalid—should we care?)
 	}
-	useTile(tileindex, true);
+	useTile(tileindex, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 
 	float size = BS / 2 * f->visual_scale;
 	v3f vertices[4] = {
@@ -802,7 +799,7 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 void MapblockMeshGenerator::drawSignlikeNode()
 {
 	u8 wall = n.getWallMounted(nodedef);
-	useTile(0, true);
+	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 	static const float offset = BS / 16;
 	float size = BS / 2 * f->visual_scale;
 	// Wall at X+ of node
@@ -850,7 +847,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 
 void MapblockMeshGenerator::drawPlantlikeNode()
 {
-	useTile(0, false);
+	useTile();
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
@@ -933,7 +930,7 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 
 void MapblockMeshGenerator::drawFirelikeNode()
 {
-	useTile(0, false);
+	useTile();
 	scale = BS / 2 * f->visual_scale;
 
 	// Check for adjacent nodes
@@ -980,7 +977,7 @@ void MapblockMeshGenerator::drawFirelikeNode()
 
 void MapblockMeshGenerator::drawFencelikeNode()
 {
-	useDefaultTile(false);
+	useTile(0, 0, 0);
 	TileSpec tile_nocrack = tile;
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
 		tile_nocrack.layers[layer].material_flags &= ~MATERIAL_FLAG_CRACK;
@@ -1130,7 +1127,7 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		angle = rail_kinds[code].angle;
 	}
 
-	useTile(tile_index, true);
+	useTile(tile_index, MATERIAL_FLAG_CRACK_OVERLAY, MATERIAL_FLAG_BACKFACE_CULLING);
 
 	static const float offset = BS / 64;
 	static const float size   = BS / 2;
@@ -1171,7 +1168,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++) {
 		// Handles facedir rotation for textures
-		getTile(tile_dirs[face], tiles[face]);
+		getTile(tile_dirs[face], &tiles[face]);
 	}
 
 	// locate possible neighboring nodes to connect to
@@ -1228,7 +1225,7 @@ void MapblockMeshGenerator::drawMeshNode()
 
 	int mesh_buffer_count = mesh->getMeshBufferCount();
 	for (int j = 0; j < mesh_buffer_count; j++) {
-		useTile(j, false);
+		useTile(j);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
 		video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
 		int vertex_count = buf->getVertexCount();
@@ -1269,6 +1266,9 @@ void MapblockMeshGenerator::drawNode()
 	else
 		light = getInteriorLight(n, 1, nodedef);
 	switch (f->drawtype) {
+		case NDT_NORMAL:            break; // Drawn by MapBlockMesh
+		case NDT_AIRLIKE:           break; // Not drawn at all
+		case NDT_LIQUID:            break; // Drawn by MapBlockMesh
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
 		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;
@@ -1296,11 +1296,6 @@ void MapblockMeshGenerator::generate()
 	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++) {
 		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		f = &nodedef->get(n);
-		// Solid nodes are drawn by MapBlockMesh
-		if (f->solidness != 0)
-			continue;
-		if (f->drawtype == NDT_AIRLIKE)
-			continue;
 		origin = intToFloat(p, BS);
 		drawNode();
 	}
