@@ -382,7 +382,7 @@
 # enable_3d_clouds = true
 
 #    Method used to highlight selected object.
-#    type: enum values: box, halo
+#    type: enum values: box, halo, none
 # node_highlighting = box
 
 #    Adds particles when digging a node.

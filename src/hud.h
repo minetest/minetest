@@ -175,7 +175,11 @@ private:
 	v3f m_selected_face_normal;
 
 	video::SMaterial m_selection_material;
-	bool m_use_selection_mesh;
+
+	enum {
+		HIGHLIGHT_BOX,
+		HIGHLIGHT_HALO,
+		HIGHLIGHT_NONE } m_mode;
 };
 
 enum ItemRotationKind {
