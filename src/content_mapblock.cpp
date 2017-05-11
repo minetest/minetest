@@ -111,9 +111,11 @@ void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 
-void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
+void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal,
+	float vertical_tiling)
 {
-	static const v2f tcoords[4] = {v2f(0, 0), v2f(1, 0), v2f(1, 1), v2f(0, 1)};
+	const v2f tcoords[4] = {v2f(0.0, 0.0), v2f(1.0, 0.0),
+		v2f(1.0, vertical_tiling), v2f(0.0, vertical_tiling)};
 	video::S3DVertex vertices[4];
 	bool shade_face = !f->light_source && (normal != v3s16(0, 0, 0));
 	v3f normal2(normal.X, normal.Y, normal.Z);
@@ -826,8 +828,8 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	bool offset_top_only)
 {
 	v3f vertices[4] = {
-		v3f(-scale, -BS / 2 + scale * 2, 0),
-		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f(-scale, -BS / 2 + 2.0 * scale * plant_height, 0),
+		v3f( scale, -BS / 2 + 2.0 * scale * plant_height, 0),
 		v3f( scale, -BS / 2, 0),
 		v3f(-scale, -BS / 2, 0),
 	};
@@ -842,18 +844,18 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		vertices[i].rotateXZBy(rotation + rotate_degree);
 		vertices[i] += offset;
 	}
-	drawQuad(vertices);
+	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
 
-void MapblockMeshGenerator::drawPlantlikeNode()
+void MapblockMeshGenerator::drawPlantlike()
 {
-	useTile();
 	draw_style = PLANT_STYLE_CROSS;
 	scale = BS / 2 * f->visual_scale;
 	offset = v3f(0, 0, 0);
 	rotate_degree = 0;
 	random_offset_Y = false;
 	face_num = 0;
+	plant_height = 1.0;
 
 	switch (f->param_type_2) {
 	case CPT2_MESHOPTIONS:
@@ -871,6 +873,10 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 
 	case CPT2_DEGROTATE:
 		rotate_degree = n.param2 * 2;
+		break;
+
+	case CPT2_LEVELED:
+		plant_height = n.param2 / 16.0;
 		break;
 
 	default:
@@ -908,6 +914,19 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 		drawPlantlikeQuad(271, -BS / 2, true);
 		break;
 	}
+}
+
+void MapblockMeshGenerator::drawPlantlikeNode()
+{
+	useTile();
+	drawPlantlike();
+}
+
+void MapblockMeshGenerator::drawPlantlikeWaterNode()
+{
+	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
+	origin += v3f(0.0, BS, 0.0);
+	drawPlantlike();
 }
 
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
@@ -1276,6 +1295,7 @@ void MapblockMeshGenerator::drawNode()
 		case NDT_TORCHLIKE:         drawTorchlikeNode(); break;
 		case NDT_SIGNLIKE:          drawSignlikeNode(); break;
 		case NDT_PLANTLIKE:         drawPlantlikeNode(); break;
+		case NDT_PLANTLIKE_WATER:   drawPlantlikeWaterNode(); break;
 		case NDT_FIRELIKE:          drawFirelikeNode(); break;
 		case NDT_FENCELIKE:         drawFencelikeNode(); break;
 		case NDT_RAILLIKE:          drawRaillikeNode(); break;

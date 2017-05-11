@@ -772,6 +772,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_RAILLIKE:
 		solidness = 0;
 		break;
+	case NDT_PLANTLIKE_WATER:
+		solidness = 2;
+		break;
 	}
 
 	if (is_liquid) {
@@ -809,6 +812,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				overlay_shader[j], tsettings.use_normal_texture,
 				tdef[j].backface_culling, overlay_material);
 	}
+
+	if (drawtype == NDT_PLANTLIKE_WATER)
+		if (waving == 1)
+			material_type = TILE_MATERIAL_WAVING_PLANTS;
+		else if (waving == 2)
+			material_type = TILE_MATERIAL_WAVING_LEAVES;
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {

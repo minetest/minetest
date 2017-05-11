@@ -68,7 +68,8 @@ public:
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
+	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
+		float vertical_tiling = 1.0);
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
@@ -112,9 +113,11 @@ public:
 	int rotate_degree;
 	bool random_offset_Y;
 	int face_num;
+	float plant_height;
 
 	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
 		bool offset_top_only = false);
+	void drawPlantlike();
 
 // firelike-specific
 	void drawFirelikeQuad(float rotation, float opening_angle,
@@ -128,6 +131,7 @@ public:
 	void drawTorchlikeNode();
 	void drawSignlikeNode();
 	void drawPlantlikeNode();
+	void drawPlantlikeWaterNode();
 	void drawFirelikeNode();
 	void drawFencelikeNode();
 	void drawRaillikeNode();
