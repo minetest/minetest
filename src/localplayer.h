@@ -130,7 +130,6 @@ public:
 
 	f32 getPitch() const { return m_pitch; }
 
-
 	inline void setPosition(const v3f &position)
 	{
 		m_position = position;
