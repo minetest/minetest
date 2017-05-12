@@ -4524,7 +4524,10 @@ void Game::showPauseMenu()
 		);
 #else
 	static const std::string control_text_template = strgettext("Controls:\n"
-		"- %s%s%s%s: move\n"
+		"- %s: move forwards\n"
+		"- %s: move backwards\n"
+		"- %s: move left\n"
+		"- %s: move right\n"
 		"- %s: jump/climb\n"
 		"- %s: sneak/go down\n"
 		"- %s: drop item\n"
@@ -4536,19 +4539,19 @@ void Game::showPauseMenu()
 		"- %s: chat\n"
 	);
 
-	 char control_text_buf[500];
+	 char control_text_buf[600];
 
 	 snprintf(control_text_buf, ARRLEN(control_text_buf), control_text_template.c_str(),
-			 GET_KEY_NAME(keymap_forward),
-	 	 	 GET_KEY_NAME(keymap_left),
-			 GET_KEY_NAME(keymap_backward),
-			 GET_KEY_NAME(keymap_right),
-			 GET_KEY_NAME(keymap_jump),
-			 GET_KEY_NAME(keymap_sneak),
-			 GET_KEY_NAME(keymap_drop),
-			 GET_KEY_NAME(keymap_inventory),
-			 GET_KEY_NAME(keymap_chat)
-			 );
+			GET_KEY_NAME(keymap_forward),
+			GET_KEY_NAME(keymap_backward),
+			GET_KEY_NAME(keymap_left),
+			GET_KEY_NAME(keymap_right),
+			GET_KEY_NAME(keymap_jump),
+			GET_KEY_NAME(keymap_sneak),
+			GET_KEY_NAME(keymap_drop),
+			GET_KEY_NAME(keymap_inventory),
+			GET_KEY_NAME(keymap_chat)
+			);
 
 #endif
 
@@ -4565,7 +4568,7 @@ void Game::showPauseMenu()
 		os << "button_exit[4," << (ypos++) << ";3,0.5;btn_change_password;"
 			<< strgettext("Change Password") << "]";
 	} else {
-		os << "field[4.95,0;5,1.5;;" << strgettext("Game Paused") << ";]";
+		os << "field[4.95,0;5,1.5;;" << strgettext("Game paused") << ";]";
 	}
 
 #ifndef __ANDROID__
@@ -4603,7 +4606,7 @@ void Game::showPauseMenu()
 		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
 		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
 		os << strgettext("- Damage: ") << damage << "\n"
-				<< strgettext("- Creative mode: ") << creative << "\n";
+				<< strgettext("- Creative Mode: ") << creative << "\n";
 		if (!simple_singleplayer_mode) {
 			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
 			os << strgettext("- PvP: ") << pvp << "\n"
