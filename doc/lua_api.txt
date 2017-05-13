@@ -1931,7 +1931,7 @@ Helper functions
     * e.g. `string:split("a,b", ",") == {"a","b"}`
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
-* `minetest.splittext(str, limit)`: returns a string
+* `minetest.wrap_text(str, limit)`: returns a string
     * Adds new lines to the string to keep it within the specified character limit
     * limit: Maximal amount of characters in one line
 * `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
@@ -2030,8 +2030,6 @@ Helper functions
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
   `if minetest.nodeupdate then ... end`.
-* `minetest.get_builtin_path()`
-    * Returns the path to builtin. Not guaranteed to return the absolute path.
 
 ### Logging
 * `minetest.debug(...)`

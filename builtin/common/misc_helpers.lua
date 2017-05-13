@@ -308,7 +308,7 @@ function core.formspec_escape(text)
 end
 
 
-function core.splittext(text,charlimit)
+function core.wrap_text(text, charlimit)
 	local retval = {}
 
 	local current_idx = 1
