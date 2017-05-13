@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include "camera.h"
 #include "client.h"
+#include "client/inputhandler.h"
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
 #include "client/joystick_controller.h"
@@ -50,7 +51,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune_shortcutter.h"
 #include "server.h"
 #include "settings.h"
-#include "shader.h"          // For ShaderSource
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
@@ -59,18 +59,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "irrlicht_changes/static_text.h"
 #include "version.h"
-#include "minimap.h"
-#include "mapblock_mesh.h"
 #include "script/scripting_client.h"
-
-#include "sound.h"
 
 #if USE_SOUND
 	#include "sound_openal.h"
-#endif
-
-#ifdef HAVE_TOUCHSCREENGUI
-	#include "touchscreengui.h"
 #endif
 
 extern Settings *g_settings;

@@ -22,98 +22,90 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
+#include <list>
+#include "keycode.h"
+
+#ifdef HAVE_TOUCHSCREENGUI
+#include "touchscreengui.h"
+#endif
+
+class KeyList : private std::list<KeyPress>
+{
+	typedef std::list<KeyPress> super;
+	typedef super::iterator iterator;
+	typedef super::const_iterator const_iterator;
+
+	virtual const_iterator find(const KeyPress &key) const
+	{
+		const_iterator f(begin());
+		const_iterator e(end());
+
+		while (f != e) {
+			if (*f == key)
+				return f;
+
+			++f;
+		}
+
+		return e;
+	}
+
+	virtual iterator find(const KeyPress &key)
+	{
+		iterator f(begin());
+		iterator e(end());
+
+		while (f != e) {
+			if (*f == key)
+				return f;
+
+			++f;
+		}
+
+		return e;
+	}
+
+public:
+	void clear()
+	{
+		super::clear();
+	}
+
+	void set(const KeyPress &key)
+	{
+		if (find(key) == end())
+			push_back(key);
+	}
+
+	void unset(const KeyPress &key)
+	{
+		iterator p(find(key));
+
+		if (p != end())
+			erase(p);
+	}
+
+	void toggle(const KeyPress &key)
+	{
+		iterator p(this->find(key));
+
+		if (p != end())
+			erase(p);
+		else
+			push_back(key);
+	}
+
+	bool operator[](const KeyPress &key) const
+	{
+		return find(key) != end();
+	}
+};
 
 class MyEventReceiver : public IEventReceiver
 {
 public:
 	// This is the one method that we have to implement
-	virtual bool OnEvent(const SEvent& event)
-	{
-		/*
-			React to nothing here if a menu is active
-		*/
-		if (noMenuActive() == false) {
-#ifdef HAVE_TOUCHSCREENGUI
-			if (m_touchscreengui != 0) {
-				m_touchscreengui->Toggle(false);
-			}
-#endif
-			return g_menumgr.preprocessEvent(event);
-		}
-
-		// Remember whether each key is down or up
-		if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-			const KeyPress &keyCode = event.KeyInput;
-			if (keysListenedFor[keyCode]) {
-				if (event.KeyInput.PressedDown) {
-					keyIsDown.set(keyCode);
-					keyWasDown.set(keyCode);
-				} else {
-					keyIsDown.unset(keyCode);
-				}
-				return true;
-			}
-		}
-
-#ifdef HAVE_TOUCHSCREENGUI
-		// case of touchscreengui we have to handle different events
-		if ((m_touchscreengui != 0) &&
-				(event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
-			m_touchscreengui->translateEvent(event);
-			return true;
-		}
-#endif
-
-		if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
-			/* TODO add a check like:
-			if (event.JoystickEvent != joystick_we_listen_for)
-				return false;
-			*/
-			return joystick->handleEvent(event.JoystickEvent);
-		}
-		// handle mouse events
-		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-			if (noMenuActive() == false) {
-				left_active = false;
-				middle_active = false;
-				right_active = false;
-			} else {
-				left_active = event.MouseInput.isLeftPressed();
-				middle_active = event.MouseInput.isMiddlePressed();
-				right_active = event.MouseInput.isRightPressed();
-
-				if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-					leftclicked = true;
-				}
-				if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
-					rightclicked = true;
-				}
-				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
-					leftreleased = true;
-				}
-				if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
-					rightreleased = true;
-				}
-				if (event.MouseInput.Event == EMIE_MOUSE_WHEEL) {
-					mouse_wheel += event.MouseInput.Wheel;
-				}
-			}
-		} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
-			static const LogLevel irr_loglev_conv[] = {
-				LL_VERBOSE, // ELL_DEBUG
-				LL_INFO,    // ELL_INFORMATION
-				LL_WARNING, // ELL_WARNING
-				LL_ERROR,   // ELL_ERROR
-				LL_NONE,    // ELL_NONE
-			};
-			assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
-			g_logger.log(irr_loglev_conv[event.LogEvent.Level],
-				std::string("Irrlicht: ") + (const char*) event.LogEvent.Text);
-			return true;
-		}
-		/* always return false in order to continue processing events */
-		return false;
-	}
+	virtual bool OnEvent(const SEvent& event);
 
 	bool IsKeyDown(const KeyPress &keyCode) const
 	{
@@ -200,7 +192,46 @@ private:
 	KeyList keysListenedFor;
 };
 
+class InputHandler
+{
+public:
+	InputHandler()
+	{
+	}
+	virtual ~InputHandler()
+	{
+	}
 
+	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
+	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
+
+	virtual void listenForKey(const KeyPress &keyCode) {}
+	virtual void dontListenForKeys() {}
+
+	virtual v2s32 getMousePos() = 0;
+	virtual void setMousePos(s32 x, s32 y) = 0;
+
+	virtual bool getLeftState() = 0;
+	virtual bool getRightState() = 0;
+
+	virtual bool getLeftClicked() = 0;
+	virtual bool getRightClicked() = 0;
+	virtual void resetLeftClicked() = 0;
+	virtual void resetRightClicked() = 0;
+
+	virtual bool getLeftReleased() = 0;
+	virtual bool getRightReleased() = 0;
+	virtual void resetLeftReleased() = 0;
+	virtual void resetRightReleased() = 0;
+
+	virtual s32 getMouseWheel() = 0;
+
+	virtual void step(float dtime) {}
+
+	virtual void clear() {}
+
+	JoystickController joystick;
+};
 /*
 	Separated input handler
 */
@@ -456,10 +487,7 @@ public:
 		mousepos += mousespeed;
 	}
 
-	s32 Rand(s32 min, s32 max)
-	{
-		return (myrand()%(max-min+1))+min;
-	}
+	s32 Rand(s32 min, s32 max);
 private:
 	KeyList keydown;
 	v2s32 mousepos;
