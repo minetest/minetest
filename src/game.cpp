@@ -4553,10 +4553,10 @@ void Game::showPauseMenu()
 			GET_KEY_NAME(keymap_chat)
 			);
 
-#endif
-
 	std::string control_text = std::string(control_text_buf);
 	str_formspec_escape(control_text);
+#endif
+
 	float ypos = simple_singleplayer_mode ? 0.7f : 0.1f;
 	std::ostringstream os;
 
