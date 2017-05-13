@@ -83,7 +83,7 @@ public:
 		/*core::list<GUIModalMenu*>::Iterator i = m_stack.getLast();
 		assert(*i == menu);
 		m_stack.erase(i);*/
-		
+
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(true);
 	}
@@ -119,7 +119,7 @@ public:
 
 extern MainMenuManager g_menumgr;
 
-extern bool noMenuActive();
+extern bool isMenuActive();
 
 class MainGameCallback : public IGameCallback
 {
@@ -168,7 +168,7 @@ public:
 		keyconfig_changed = true;
 	}
 
-	
+
 	bool disconnect_requested;
 	bool changepassword_requested;
 	bool changevolume_requested;

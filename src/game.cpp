@@ -2426,7 +2426,7 @@ void Game::updateStats(RunStats *stats, const FpsControl &draw_times,
 void Game::processUserInput(f32 dtime)
 {
 	// Reset input if window not active or some menu is active
-	if (!device->isWindowActive() || !noMenuActive() || guienv->hasFocus(gui_chat_console)) {
+	if (!device->isWindowActive() || isMenuActive() || guienv->hasFocus(gui_chat_console)) {
 		input->clear();
 #ifdef HAVE_TOUCHSCREENGUI
 		g_touchscreengui->hide();
@@ -2956,7 +2956,7 @@ void Game::toggleFullViewRange()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-	if ((device->isWindowActive() && noMenuActive()) || random_input) {
+	if ((device->isWindowActive() && !isMenuActive()) || random_input) {
 
 #ifndef __ANDROID__
 		if (!random_input) {
@@ -4172,7 +4172,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		if (current_formspec->getReferenceCount() == 1) {
 			current_formspec->drop();
 			current_formspec = NULL;
-		} else if (!noMenuActive()) {
+		} else if (isMenuActive()) {
 			guiroot->bringToFront(current_formspec);
 		}
 	}

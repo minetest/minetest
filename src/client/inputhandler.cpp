@@ -27,9 +27,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	/*
 		React to nothing here if a menu is active
 	*/
-	if (!noMenuActive()) {
+	if (isMenuActive()) {
 #ifdef HAVE_TOUCHSCREENGUI
-		if (m_touchscreengui != 0) {
+		if (m_touchscreengui) {
 			m_touchscreengui->Toggle(false);
 		}
 #endif
@@ -52,7 +52,7 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 
 #ifdef HAVE_TOUCHSCREENGUI
 	// case of touchscreengui we have to handle different events
-	if ((m_touchscreengui != 0) && (event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
+	if (m_touchscreengui && event.EventType == irr::EET_TOUCH_INPUT_EVENT) {
 		m_touchscreengui->translateEvent(event);
 		return true;
 	}
@@ -67,7 +67,7 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	}
 	// handle mouse events
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-		if (!noMenuActive()) {
+		if (isMenuActive()) {
 			left_active = false;
 			middle_active = false;
 			right_active = false;
