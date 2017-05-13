@@ -3701,12 +3701,9 @@ PointedThing Game::updatePointedThing(
 		float sin_r = 0.08 * sin(timerf);
 		float sin_g = 0.08 * sin(timerf + irr::core::PI * 0.5);
 		float sin_b = 0.08 * sin(timerf + irr::core::PI);
-		c.setRed(
-			core::clamp(core::round32(c.getRed() * (0.8 + sin_r)), 0, 255));
-		c.setGreen(
-			core::clamp(core::round32(c.getGreen() * (0.8 + sin_g)), 0, 255));
-		c.setBlue(
-			core::clamp(core::round32(c.getBlue() * (0.8 + sin_b)), 0, 255));
+		c.setRed(core::clamp(core::round32(c.getRed() * (0.8 + sin_r)), 0, 255));
+		c.setGreen(core::clamp(core::round32(c.getGreen() * (0.8 + sin_g)), 0, 255));
+		c.setBlue(core::clamp(core::round32(c.getBlue() * (0.8 + sin_b)), 0, 255));
 
 		// Set mesh final color
 		hud->setSelectionMeshColor(c);
