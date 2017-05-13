@@ -3444,7 +3444,15 @@ void Game::updateSound(f32 dtime)
 			      v3f(0, 0, 0), // velocity
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
-	sound->setListenerGain(g_settings->getFloat("sound_volume"));
+
+	// Check if volume is in the proper range, else fix it.
+	float old_volume = g_settings->getFloat("sound_volume");
+	float new_volume = rangelim(old_volume, 0.0f, 1.0f);
+	sound->setListenerGain(new_volume);
+
+	if (old_volume != new_volume) {
+		g_settings->setFloat("sound_volume", new_volume);
+	}
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
