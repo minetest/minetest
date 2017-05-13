@@ -89,6 +89,12 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
 	settings->setDefault("keymap_toggle_force_fog_off", "KEY_F3");
+	settings->setDefault("keymap_rotate_up", "KEY_UP");
+	settings->setDefault("keymap_rotate_down", "KEY_DOWN");
+	settings->setDefault("keymap_rotate_left", "KEY_LEFT");
+	settings->setDefault("keymap_rotate_right", "KEY_RIGHT");
+	settings->setDefault("keymap_mouse_button_alt_left", "KEY_BACK");
+	settings->setDefault("keymap_mouse_button_alt_right", "KEY_RETURN");
 #if DEBUG
 	settings->setDefault("keymap_toggle_update_camera", "KEY_F4");
 #else

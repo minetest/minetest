@@ -49,6 +49,8 @@ public:
 					keyIsDown.set(keyCode);
 					keyWasDown.set(keyCode);
 				} else {
+					if (keyIsDown.get(keyCode))
+						keyWasReleased.set(keyCode);
 					keyIsDown.unset(keyCode);
 				}
 				return true;
@@ -129,6 +131,15 @@ public:
 		return b;
 	}
 
+	// Checks whether a key was released and resets the state
+	bool WasKeyReleased(const KeyPress &keyCode)
+	{
+		bool b = keyWasReleased[keyCode];
+		if (b)
+			keyWasReleased.unset(keyCode);
+		return b;
+	}
+
 	void listenForKey(const KeyPress &keyCode)
 	{
 		keysListenedFor.set(keyCode);
@@ -192,6 +203,8 @@ private:
 	KeyList keyIsDown;
 	// Whether a key has been pressed or not
 	KeyList keyWasDown;
+	// Wether a key has been released or not
+	KeyList keyWasReleased;
 	// List of keys we listen for
 	// TODO perhaps the type of this is not really
 	// performant as KeyList is designed for few but
@@ -222,6 +235,10 @@ public:
 	virtual bool wasKeyDown(const KeyPress &keyCode)
 	{
 		return m_receiver->WasKeyDown(keyCode);
+	}
+	virtual bool wasKeyReleased(const KeyPress &keyCode)
+	{
+		return m_receiver->WasKeyReleased(keyCode);
 	}
 	virtual void listenForKey(const KeyPress &keyCode)
 	{
@@ -327,6 +344,10 @@ public:
 		return keydown[keyCode];
 	}
 	virtual bool wasKeyDown(const KeyPress &keyCode)
+	{
+		return false;
+	}
+	virtual bool wasKeyReleased(const KeyPress &keyCode)
 	{
 		return false;
 	}

@@ -69,6 +69,14 @@ public:
 		super::clear();
 	}
 
+	bool get(const KeyPress &key)
+	{
+		if (find(key) == end())
+			return false;
+		else
+			return true;
+	}
+
 	void set(const KeyPress &key)
 	{
 		if (find(key) == end())
@@ -111,6 +119,7 @@ public:
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
+	virtual bool wasKeyReleased(const KeyPress &keyCode) = 0;
 
 	virtual void listenForKey(const KeyPress &keyCode) {}
 	virtual void dontListenForKeys() {}

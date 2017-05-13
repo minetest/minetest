@@ -82,6 +82,16 @@ public:
 		SCROLL_UP,
 		SCROLL_DOWN,
 
+		// Mouse move alternatives
+		ROTATE_UP,
+		ROTATE_DOWN,
+		ROTATE_LEFT,
+		ROTATE_RIGHT,
+
+		//Mouse button alternatives
+		MOUSE_BUTTON_ALT_LEFT,
+		MOUSE_BUTTON_ALT_RIGHT,
+
 		// Fake keycode for array size and internal checks
 		INTERNAL_ENUM_COUNT
 
