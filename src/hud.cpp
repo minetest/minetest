@@ -545,7 +545,7 @@ void Hud::drawSelectionMesh()
 			driver->draw3DBox(box, video::SColor(255, r, g, b));
 		}
 		driver->setMaterial(oldmaterial);
-	} else if (m_selection_mesh) {
+	} else if (m_mode == HIGHLIGHT_HALO && m_selection_mesh) {
 		// Draw selection mesh
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
