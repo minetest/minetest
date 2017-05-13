@@ -42,9 +42,9 @@ gui::IGUIEnvironment *guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
 MainMenuManager g_menumgr;
 
-bool noMenuActive()
+bool isMenuActive()
 {
-	return g_menumgr.menuCount() == 0;
+	return g_menumgr.menuCount() != 0;
 }
 
 // Passed to menus to allow disconnecting and exiting
@@ -496,7 +496,7 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 
 	infostream << "Waiting for other menus" << std::endl;
 	while (device->run() && *kill == false) {
-		if (noMenuActive())
+		if (!isMenuActive())
 			break;
 		driver->beginScene(true, true, video::SColor(255, 128, 128, 128));
 		guienv->drawAll();
