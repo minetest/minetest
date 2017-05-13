@@ -590,17 +590,24 @@ Helper functions
 * `math.sign(x, tolerance)`
     * Get the sign of a number.
       Optional: Also returns `0` when the absolute value is within the tolerance (default: `0`)
-* `string.split(str, separator=",", include_empty=false, max_splits=-1,
-* sep_is_pattern=false)`
+* `string.split(str, separator=",", include_empty=false, max_splits=-1, sep_is_pattern=false)`
     * If `max_splits` is negative, do not limit splits.
     * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
     * e.g. `string:split("a,b", ",") == {"a","b"}`
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
+* `minetest.wrap_text(str, limit)`: returns a string
+    * Adds new lines to the string to keep it within the specified character limit
+    * limit: Maximal amount of characters in one line
+* `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
+    * Convert position to a printable string
+      Optional: 'decimal_places' will round the x, y and z of the pos to the given decimal place.
+* `minetest.string_to_pos(string)`: returns a position
+    * Same but in reverse. Returns `nil` if the string can't be parsed to a position.
+* `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
+    * Converts a string representing an area box into two positions
 * `minetest.is_yes(arg)`
     * returns whether `arg` can be interpreted as yes
-* `minetest.get_us_time()`
-    * returns time with microsecond precision. May not return wall time.
 * `table.copy(table)`: returns a table
     * returns a deep copy of `table`
 
@@ -649,6 +656,8 @@ Call these functions only at load time!
     * Return `true` to mark the message as handled, which means that it will not be sent to server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
     * Adds definition to minetest.registered_chatcommands
+* `minetest.unregister_chatcommand(name)`
+    * Unregisters a chatcommands registered with register_chatcommand.
 * `minetest.register_on_death(func())`
     * Called when the local player dies
 * `minetest.register_on_hp_modification(func(hp))`
@@ -683,6 +692,12 @@ Call these functions only at load time!
 * `minetest.after(time, func, ...)`
     * Call the function `func` after `time` seconds, may be fractional
     * Optional: Variable number of arguments that are passed to `func`
+* `minetest.get_us_time()`
+    * Returns time with microsecond precision. May not return wall time.
+* `minetest.get_day_count()`
+    * Returns number days elapsed since world was created, accounting for time changes.
+* `minetest.get_timeofday()`
+    * Returns the time of day: `0` for midnight, `0.5` for midday
 
 ### Map
 * `minetest.get_node(pos)`
@@ -691,8 +706,17 @@ Call these functions only at load time!
       for unloaded areas.
 * `minetest.get_node_or_nil(pos)`
     * Same as `get_node` but returns `nil` for unloaded areas.
+* `minetest.find_node_near(pos, radius, nodenames, [search_center])`: returns pos or `nil`
+    * `radius`: using a maximum metric
+    * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * `search_center` is an optional boolean (default: `false`)
+      If true `pos` is also checked for the nodes
 * `minetest.get_meta(pos)`
     * Get a `NodeMetaRef` at that position
+* `minetest.get_node_level(pos)`
+    * get level of leveled node (water, snow)
+* `minetest.get_node_max_level(pos)`
+    * get max available level for leveled node
 
 ### Player
 * `minetest.get_wielded_item()`
@@ -710,6 +734,13 @@ Call these functions only at load time!
     * Take a screenshot.
 * `minetest.get_server_info()`
     * Returns [server info](#server-info).
+* `minetest.send_respawn()`
+    * Sends a respawn request to the server.
+
+### Storage API
+* `minetest.get_mod_storage()`:
+    * returns reference to mod private `StorageRef`
+    * must be called during mod load time
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
@@ -763,6 +794,8 @@ Call these functions only at load time!
     * same as fgettext_ne(), but calls minetest.formspec_escape before returning result
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
     * returns the exact position on the surface of a pointed node
+* `minetest.global_exists(name)`
+    * Checks if a global variable has been set, without triggering a warning.
 
 ### UI
 * `minetest.ui.minimap`

@@ -75,7 +75,7 @@ local function get_formspec(tabview, name, tabdata)
 		if error == nil then
 			local descriptiontext = descriptionfile:read("*all")
 
-			descriptionlines = core.splittext(descriptiontext,42)
+			descriptionlines = core.wrap_text(descriptiontext, 42)
 			descriptionfile:close()
 		else
 			descriptionlines = {}
