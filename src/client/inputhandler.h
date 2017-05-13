@@ -66,10 +66,7 @@ class KeyList : private std::list<KeyPress>
 	}
 
 public:
-	void clear()
-	{
-		super::clear();
-	}
+	void clear() { super::clear(); }
 
 	void set(const KeyPress &key)
 	{
@@ -95,22 +92,16 @@ public:
 			push_back(key);
 	}
 
-	bool operator[](const KeyPress &key) const
-	{
-		return find(key) != end();
-	}
+	bool operator[](const KeyPress &key) const { return find(key) != end(); }
 };
 
 class MyEventReceiver : public IEventReceiver
 {
 public:
 	// This is the one method that we have to implement
-	virtual bool OnEvent(const SEvent& event);
+	virtual bool OnEvent(const SEvent &event);
 
-	bool IsKeyDown(const KeyPress &keyCode) const
-	{
-		return keyIsDown[keyCode];
-	}
+	bool IsKeyDown(const KeyPress &keyCode) const { return keyIsDown[keyCode]; }
 
 	// Checks whether a key was down and resets the state
 	bool WasKeyDown(const KeyPress &keyCode)
@@ -121,14 +112,8 @@ public:
 		return b;
 	}
 
-	void listenForKey(const KeyPress &keyCode)
-	{
-		keysListenedFor.set(keyCode);
-	}
-	void dontListenForKeys()
-	{
-		keysListenedFor.clear();
-	}
+	void listenForKey(const KeyPress &keyCode) { keysListenedFor.set(keyCode); }
+	void dontListenForKeys() { keysListenedFor.clear(); }
 
 	s32 getMouseWheel()
 	{
@@ -176,7 +161,7 @@ public:
 	JoystickController *joystick;
 
 #ifdef HAVE_TOUCHSCREENGUI
-	TouchScreenGUI* m_touchscreengui;
+	TouchScreenGUI *m_touchscreengui;
 #endif
 
 private:
@@ -195,12 +180,8 @@ private:
 class InputHandler
 {
 public:
-	InputHandler()
-	{
-	}
-	virtual ~InputHandler()
-	{
-	}
+	InputHandler() {}
+	virtual ~InputHandler() {}
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
@@ -239,10 +220,8 @@ public:
 class RealInputHandler : public InputHandler
 {
 public:
-	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver):
-		m_device(device),
-		m_receiver(receiver),
-		m_mousepos(0,0)
+	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver)
+	    : m_device(device), m_receiver(receiver), m_mousepos(0, 0)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -258,16 +237,12 @@ public:
 	{
 		m_receiver->listenForKey(keyCode);
 	}
-	virtual void dontListenForKeys()
-	{
-		m_receiver->dontListenForKeys();
-	}
+	virtual void dontListenForKeys() { m_receiver->dontListenForKeys(); }
 	virtual v2s32 getMousePos()
 	{
 		if (m_device->getCursorControl()) {
 			return m_device->getCursorControl()->getPosition();
-		}
-		else {
+		} else {
 			return m_mousepos;
 		}
 	}
@@ -275,69 +250,36 @@ public:
 	{
 		if (m_device->getCursorControl()) {
 			m_device->getCursorControl()->setPosition(x, y);
+		} else {
+			m_mousepos = v2s32(x, y);
 		}
-		else {
-			m_mousepos = v2s32(x,y);
-		}
 	}
 
-	virtual bool getLeftState()
-	{
-		return m_receiver->left_active;
-	}
-	virtual bool getRightState()
-	{
-		return m_receiver->right_active;
-	}
+	virtual bool getLeftState() { return m_receiver->left_active; }
+	virtual bool getRightState() { return m_receiver->right_active; }
 
-	virtual bool getLeftClicked()
-	{
-		return m_receiver->leftclicked;
-	}
-	virtual bool getRightClicked()
-	{
-		return m_receiver->rightclicked;
-	}
-	virtual void resetLeftClicked()
-	{
-		m_receiver->leftclicked = false;
-	}
-	virtual void resetRightClicked()
-	{
-		m_receiver->rightclicked = false;
-	}
+	virtual bool getLeftClicked() { return m_receiver->leftclicked; }
+	virtual bool getRightClicked() { return m_receiver->rightclicked; }
+	virtual void resetLeftClicked() { m_receiver->leftclicked = false; }
+	virtual void resetRightClicked() { m_receiver->rightclicked = false; }
 
-	virtual bool getLeftReleased()
-	{
-		return m_receiver->leftreleased;
-	}
-	virtual bool getRightReleased()
-	{
-		return m_receiver->rightreleased;
-	}
-	virtual void resetLeftReleased()
-	{
-		m_receiver->leftreleased = false;
-	}
-	virtual void resetRightReleased()
-	{
-		m_receiver->rightreleased = false;
-	}
+	virtual bool getLeftReleased() { return m_receiver->leftreleased; }
+	virtual bool getRightReleased() { return m_receiver->rightreleased; }
+	virtual void resetLeftReleased() { m_receiver->leftreleased = false; }
+	virtual void resetRightReleased() { m_receiver->rightreleased = false; }
 
-	virtual s32 getMouseWheel()
-	{
-		return m_receiver->getMouseWheel();
-	}
+	virtual s32 getMouseWheel() { return m_receiver->getMouseWheel(); }
 
 	void clear()
 	{
 		joystick.clear();
 		m_receiver->clearInput();
 	}
+
 private:
-	IrrlichtDevice  *m_device;
+	IrrlichtDevice *m_device;
 	MyEventReceiver *m_receiver;
-	v2s32           m_mousepos;
+	v2s32 m_mousepos;
 };
 
 class RandomInputHandler : public InputHandler
@@ -353,70 +295,25 @@ public:
 		rightreleased = false;
 		keydown.clear();
 	}
-	virtual bool isKeyDown(const KeyPress &keyCode)
-	{
-		return keydown[keyCode];
-	}
-	virtual bool wasKeyDown(const KeyPress &keyCode)
-	{
-		return false;
-	}
-	virtual v2s32 getMousePos()
-	{
-		return mousepos;
-	}
-	virtual void setMousePos(s32 x, s32 y)
-	{
-		mousepos = v2s32(x, y);
-	}
+	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
+	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
+	virtual v2s32 getMousePos() { return mousepos; }
+	virtual void setMousePos(s32 x, s32 y) { mousepos = v2s32(x, y); }
 
-	virtual bool getLeftState()
-	{
-		return leftdown;
-	}
-	virtual bool getRightState()
-	{
-		return rightdown;
-	}
+	virtual bool getLeftState() { return leftdown; }
+	virtual bool getRightState() { return rightdown; }
 
-	virtual bool getLeftClicked()
-	{
-		return leftclicked;
-	}
-	virtual bool getRightClicked()
-	{
-		return rightclicked;
-	}
-	virtual void resetLeftClicked()
-	{
-		leftclicked = false;
-	}
-	virtual void resetRightClicked()
-	{
-		rightclicked = false;
-	}
+	virtual bool getLeftClicked() { return leftclicked; }
+	virtual bool getRightClicked() { return rightclicked; }
+	virtual void resetLeftClicked() { leftclicked = false; }
+	virtual void resetRightClicked() { rightclicked = false; }
 
-	virtual bool getLeftReleased()
-	{
-		return leftreleased;
-	}
-	virtual bool getRightReleased()
-	{
-		return rightreleased;
-	}
-	virtual void resetLeftReleased()
-	{
-		leftreleased = false;
-	}
-	virtual void resetRightReleased()
-	{
-		rightreleased = false;
-	}
+	virtual bool getLeftReleased() { return leftreleased; }
+	virtual bool getRightReleased() { return rightreleased; }
+	virtual void resetLeftReleased() { leftreleased = false; }
+	virtual void resetRightReleased() { rightreleased = false; }
 
-	virtual s32 getMouseWheel()
-	{
-		return 0;
-	}
+	virtual s32 getMouseWheel() { return 0; }
 
 	virtual void step(float dtime)
 	{
@@ -488,6 +385,7 @@ public:
 	}
 
 	s32 Rand(s32 min, s32 max);
+
 private:
 	KeyList keydown;
 	v2s32 mousepos;

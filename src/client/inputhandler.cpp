@@ -30,8 +30,8 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 	if (!noMenuActive()) {
 #ifdef HAVE_TOUCHSCREENGUI
 		if (m_touchscreengui != 0) {
-				m_touchscreengui->Toggle(false);
-			}
+			m_touchscreengui->Toggle(false);
+		}
 #endif
 		return g_menumgr.preprocessEvent(event);
 	}
@@ -52,11 +52,10 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 
 #ifdef HAVE_TOUCHSCREENGUI
 	// case of touchscreengui we have to handle different events
-		if ((m_touchscreengui != 0) &&
-				(event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
-			m_touchscreengui->translateEvent(event);
-			return true;
-		}
+	if ((m_touchscreengui != 0) && (event.EventType == irr::EET_TOUCH_INPUT_EVENT)) {
+		m_touchscreengui->translateEvent(event);
+		return true;
+	}
 #endif
 
 	if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT) {
@@ -95,15 +94,16 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 		}
 	} else if (event.EventType == irr::EET_LOG_TEXT_EVENT) {
 		static const LogLevel irr_loglev_conv[] = {
-			LL_VERBOSE, // ELL_DEBUG
-			LL_INFO,    // ELL_INFORMATION
-			LL_WARNING, // ELL_WARNING
-			LL_ERROR,   // ELL_ERROR
-			LL_NONE,    // ELL_NONE
+				LL_VERBOSE, // ELL_DEBUG
+				LL_INFO,    // ELL_INFORMATION
+				LL_WARNING, // ELL_WARNING
+				LL_ERROR,   // ELL_ERROR
+				LL_NONE,    // ELL_NONE
 		};
 		assert(event.LogEvent.Level < ARRLEN(irr_loglev_conv));
 		g_logger.log(irr_loglev_conv[event.LogEvent.Level],
-			std::string("Irrlicht: ") + (const char*) event.LogEvent.Text);
+				std::string("Irrlicht: ") +
+						(const char *)event.LogEvent.Text);
 		return true;
 	}
 	/* always return false in order to continue processing events */

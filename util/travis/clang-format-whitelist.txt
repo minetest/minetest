@@ -18,7 +18,6 @@ src/clientenvironment.h
 src/client.h
 src/clientiface.cpp
 src/clientiface.h
-src/client/inputhandler.h
 src/client/joystick_controller.cpp
 src/client/joystick_controller.h
 src/clientmap.cpp
