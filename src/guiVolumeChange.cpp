@@ -69,7 +69,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 		Remove stuff
 	*/
 	removeChildren();
-	
+
 	/*
 		Calculate new sizes and positions
 	*/
@@ -79,12 +79,11 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 			screensize.X/2 + 380/2,
 			screensize.Y/2 + 200/2
 	);
-	
+
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
 	v2s32 size = rect.getSize();
-	v2s32 topleft_client(40, 0);
 	int volume = (int)(g_settings->getFloat("sound_volume")*100);
 	/*
 		Add stuff
