@@ -84,14 +84,14 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ANDR_ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5122
+IRRLICHT_REVISION = 5145
 IRRLICHT_DIR = $(ANDR_ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ANDR_ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.2j
+OPENSSL_VERSION = 1.0.2k
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ANDR_ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -99,7 +99,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openssl_timestamp
 OPENSSL_URL = https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.52.0
+CURL_VERSION = 7.54.0
 CURL_DIR = $(ANDR_ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -126,8 +126,8 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ANDR_ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3150200
-SQLITE3_URL = https://www.sqlite.org/2016/$(SQLITE3_FOLDER).zip
+SQLITE3_FOLDER = sqlite-amalgamation-3180000
+SQLITE3_URL = https://www.sqlite.org/2017/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
 ANDROID_NDK = $(shell grep '^ndk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
@@ -680,8 +680,7 @@ deps/${SQLITE3_FOLDER}/sqlite3.c :
 	wget ${SQLITE3_URL};                                                        \
 	unzip ${SQLITE3_FOLDER}.zip;                                                \
 	ln -s ${SQLITE3_FOLDER} sqlite;                                             \
-	cd ${SQLITE3_FOLDER};                                                       \
-	patch sqlite3.c < ${ANDR_ROOT}/patches/sqlite3-readonly-fix.patch
+	cd ${SQLITE3_FOLDER};
 
 clean_sqlite3:
 	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
