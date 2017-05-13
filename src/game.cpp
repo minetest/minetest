@@ -2956,7 +2956,8 @@ void Game::toggleFullViewRange()
 
 void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 {
-	if ((device->isWindowActive() && !isMenuActive()) || random_input) {
+	if ((device->isWindowActive() && device->isWindowFocused()
+			&& !isMenuActive()) || random_input) {
 
 #ifndef __ANDROID__
 		if (!random_input) {
@@ -2981,8 +2982,7 @@ void Game::updateCameraDirection(CameraOrientation *cam, float dtime)
 			device->getCursorControl()->setVisible(true);
 #endif
 
-		if (!m_first_loop_after_window_activation)
-			m_first_loop_after_window_activation = true;
+		m_first_loop_after_window_activation = true;
 
 	}
 }
