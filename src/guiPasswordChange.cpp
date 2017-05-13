@@ -41,7 +41,10 @@ GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
 		Client* client
 ):
 	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client)
+	m_client(client),
+	m_oldpass(L""),
+	m_newpass(L""),
+	m_newpass_confirm(L"")
 {
 }
 
@@ -52,35 +55,24 @@ GUIPasswordChange::~GUIPasswordChange()
 
 void GUIPasswordChange::removeChildren()
 {
-	{
-		gui::IGUIElement *e = getElementFromId(ID_oldPassword);
-		if (e != NULL)
-			e->remove();
+	const core::list<gui::IGUIElement *> &children = getChildren();
+	core::list<gui::IGUIElement *> children_copy;
+	for (core::list<gui::IGUIElement *>::ConstIterator i = children.begin();
+			i != children.end(); i++) {
+		children_copy.push_back(*i);
 	}
-	{
-		gui::IGUIElement *e = getElementFromId(ID_newPassword1);
-		if (e != NULL)
-			e->remove();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(ID_newPassword2);
-		if (e != NULL)
-			e->remove();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(ID_change);
-		if (e != NULL)
-			e->remove();
-	}
-	{
-		gui::IGUIElement *e = getElementFromId(ID_cancel);
-		if (e != NULL)
-			e->remove();
+	for (core::list<gui::IGUIElement *>::Iterator i = children_copy.begin();
+			i != children_copy.end(); i++) {
+		(*i)->remove();
 	}
 }
-
 void GUIPasswordChange::regenerateGui(v2u32 screensize)
 {
+	/*
+		save current input
+	*/
+	acceptInput();
+
 	/*
 		Remove stuff
 	*/
@@ -119,7 +111,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
 		gui::IGUIEditBox *e = Environment->addEditBox(
-				L"", rect, true, this, ID_oldPassword);
+				m_oldpass.c_str(), rect, true, this, ID_oldPassword);
 		Environment->setFocus(e);
 		e->setPasswordBox(true);
 	}
@@ -135,7 +127,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
 		gui::IGUIEditBox *e = Environment->addEditBox(
-				L"", rect, true, this, ID_newPassword1);
+				m_newpass.c_str(), rect, true, this, ID_newPassword1);
 		e->setPasswordBox(true);
 	}
 	ypos += 50;
@@ -150,7 +142,7 @@ void GUIPasswordChange::regenerateGui(v2u32 screensize)
 		core::rect<s32> rect(0, 0, 230, 30);
 		rect += topleft_client + v2s32(160, ypos);
 		gui::IGUIEditBox *e = Environment->addEditBox(
-				L"", rect, true, this, ID_newPassword2);
+				m_newpass_confirm.c_str(), rect, true, this, ID_newPassword2);
 		e->setPasswordBox(true);
 	}
 
@@ -196,25 +188,29 @@ void GUIPasswordChange::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-bool GUIPasswordChange::acceptInput()
+void GUIPasswordChange::acceptInput()
 {
-	std::wstring oldpass;
-	std::wstring newpass;
 	gui::IGUIElement *e;
 	e = getElementFromId(ID_oldPassword);
 	if (e != NULL)
-		oldpass = e->getText();
+		m_oldpass = e->getText();
 	e = getElementFromId(ID_newPassword1);
 	if (e != NULL)
-		newpass = e->getText();
+		m_newpass = e->getText();
 	e = getElementFromId(ID_newPassword2);
-	if (e != NULL && newpass != e->getText()) {
-		e = getElementFromId(ID_message);
+	if (e != NULL)
+		m_newpass_confirm = e->getText();
+}
+
+bool GUIPasswordChange::processInput()
+{
+	if (m_newpass != m_newpass_confirm) {
+		gui::IGUIElement *e = getElementFromId(ID_message);
 		if (e != NULL)
 			e->setVisible(true);
 		return false;
 	}
-	m_client->sendChangePassword(wide_to_utf8(oldpass), wide_to_utf8(newpass));
+	m_client->sendChangePassword(wide_to_utf8(m_oldpass), wide_to_utf8(m_newpass));
 	return true;
 }
 
@@ -226,7 +222,8 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 			return true;
 		}
 		if (event.KeyInput.Key == KEY_RETURN && event.KeyInput.PressedDown) {
-			if (acceptInput())
+			acceptInput();
+			if (processInput())
 				quitMenu();
 			return true;
 		}
@@ -244,7 +241,8 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
 			switch (event.GUIEvent.Caller->getID()) {
 			case ID_change:
-				if (acceptInput())
+				acceptInput();
+				if (processInput())
 					quitMenu();
 				return true;
 			case ID_cancel:
@@ -257,7 +255,8 @@ bool GUIPasswordChange::OnEvent(const SEvent &event)
 			case ID_oldPassword:
 			case ID_newPassword1:
 			case ID_newPassword2:
-				if (acceptInput())
+				acceptInput();
+				if (processInput())
 					quitMenu();
 				return true;
 			}
