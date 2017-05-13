@@ -86,6 +86,14 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 	return 1;
 }
 
+// clear_out_chat_queue()
+int ModApiClient::l_clear_out_chat_queue(lua_State *L)
+{
+	getClient(L)->clearOutChatQueue();
+	lua_pushboolean(L, true);
+	return 1;
+}
+
 // get_player_names()
 int ModApiClient::l_get_player_names(lua_State *L)
 {
@@ -274,6 +282,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_current_modname);
 	API_FCT(display_chat_message);
 	API_FCT(send_chat_message);
+	API_FCT(clear_out_chat_queue);
 	API_FCT(get_player_names);
 	API_FCT(set_last_run_mod);
 	API_FCT(get_last_run_mod);

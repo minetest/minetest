@@ -701,6 +701,8 @@ Call these functions only at load time!
     * Act as if `message` was typed by the player into the terminal.
 * `minetest.run_server_chatcommand(cmd, param)`
     * Alias for `minetest.send_chat_message("/" .. cmd .. " " .. param)`
+* `minetest.clear_out_chat_queue()`
+    * Clears the out chat queue
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 

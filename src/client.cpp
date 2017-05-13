@@ -1205,6 +1205,11 @@ void Client::sendChatMessage(const std::wstring &message)
 	}
 }
 
+void Client::clearOutChatQueue()
+{
+	m_out_chat_queue = std::queue<std::wstring>();
+}
+
 void Client::sendChangePassword(const std::string &oldpassword,
         const std::string &newpassword)
 {

@@ -362,6 +362,7 @@ public:
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void clearOutChatQueue();
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
