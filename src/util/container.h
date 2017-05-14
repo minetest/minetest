@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <queue>
+#include <stdexcept>
 
 /*
 Queue with unique values with fast checking of value existence
@@ -301,6 +302,55 @@ private:
 	cache_type m_map;
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
+};
+
+template <typename T, size_t N>
+class RingBuffer
+{
+public:
+	RingBuffer() : m_offset(0)
+	{
+		for (size_t i = 0; i < N; ++i)
+			m_data[i] = T(); // buffer is always full
+	}
+	
+	T& at(size_t n)
+	{
+		if (n >= N)
+			throw std::out_of_range("RingBuffer::at");
+		if (n + m_offset < N)
+			return m_data[n + m_offset];
+		else
+			return m_data[n + m_offset - N];
+	}
+	
+	size_t size()
+	{
+		return N;
+	}
+	
+	void push(const T& t)
+	{
+		m_data[m_offset] = t;
+		if (++m_offset == N)
+			m_offset = 0; // loops around
+	}
+	
+	bool operator==(const RingBuffer& other) const
+	{
+		for (size_t i = 0; i < N; ++i)
+			if (m_data[i] != other.m_data[i])
+				return false;
+		return true;
+	}
+	
+	bool operator!=(const RingBuffer& other) const
+	{
+		return !(*this == other);
+	}
+private:
+	size_t m_offset;
+	T m_data[N];
 };
 
 #endif
