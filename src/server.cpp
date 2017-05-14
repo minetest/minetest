@@ -1707,13 +1707,25 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 				const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
+	static const float radius =
+			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
+
 	if (peer_id == PEER_ID_INEXISTENT) {
-		// This sucks and should be replaced by a better solution in a refactor:
 		std::vector<u16> clients = m_clients.getClientIDs();
+
 		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
 			RemotePlayer *player = m_env->getPlayer(*i);
 			if (!player)
 				continue;
+
+			PlayerSAO *sao = player->getPlayerSAO();
+			if (!sao)
+				continue;
+
+			// Do not send to distant clients
+			if (sao->getBasePosition().getDistanceFrom(pos * BS) > radius)
+				continue;
+
 			SendSpawnParticle(*i, player->protocol_version,
 					pos, velocity, acceleration,
 					expirationtime, size, collisiondetection,
