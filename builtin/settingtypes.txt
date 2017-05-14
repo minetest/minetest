@@ -344,7 +344,7 @@ enable_clouds (Clouds) bool true
 enable_3d_clouds (3D clouds) bool true
 
 #    Method used to highlight selected object.
-node_highlighting (Node highlighting) enum box box,halo
+node_highlighting (Node highlighting) enum box box,halo,none
 
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true

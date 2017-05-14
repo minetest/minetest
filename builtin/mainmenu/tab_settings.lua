@@ -25,7 +25,8 @@ local labels = {
 	},
 	node_highlighting = {
 		fgettext("Node Outlining"),
-		fgettext("Node Highlighting")
+		fgettext("Node Highlighting"),
+		fgettext("None")
 	},
 	filters = {
 		fgettext("No Filter"),
@@ -52,7 +53,7 @@ local dd_options = {
 	},
 	node_highlighting = {
 		table.concat(labels.node_highlighting, ","),
-		{"box", "halo"}
+		{"box", "halo", "none"}
 	},
 	filters = {
 		table.concat(labels.filters, ","),
