@@ -474,9 +474,9 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, bool n
 
 		MapNode n = getMap().getNodeNoEx(pos);
 
-		if(n.drawtype != NDT_AIRLIKE) {
-			if(nobuild == true) {
-				if(n.buildable_to == false) {
+		if (n.drawtype != NDT_AIRLIKE) {
+			if (nobuild) {
+				if (n.buildable_to == false) {
 					if (p) {
 						*p = pos;
 					}
