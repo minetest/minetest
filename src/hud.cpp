@@ -91,10 +91,10 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 
 	if (mode_setting == "halo") {
 		m_mode = HIGHLIGHT_HALO;
-	} else if (mode_setting == "box") {
-		m_mode = HIGHLIGHT_BOX;
-	} else {
+	} else if (mode_setting == "none") {
 		m_mode = HIGHLIGHT_NONE;
+	} else {
+		m_mode = HIGHLIGHT_BOX;
 	}
 
 	m_selection_material.Lighting = false;
