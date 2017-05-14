@@ -982,7 +982,7 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 		stepsize = lua_tonumber(L, 3);
 	}
 	//read ignore buildable_to from lua
-	bool nobuild = lua_toboolean(L, 4)
+	bool nobuild = lua_toboolean(L, 4);
 
 	v3s16 p;
 	bool success = env->line_of_sight(pos1, pos2, stepsize, nobuild, &p);
