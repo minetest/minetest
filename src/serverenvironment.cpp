@@ -456,7 +456,7 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
+bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, bool nobuild, v3s16 *p)
 {
 	float distance = pos1.getDistanceFrom(pos2);
 
@@ -466,6 +466,7 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 		(pos2.Z - pos1.Z)/distance);
 
 	//find out if there's a node on path between pos1 and pos2
+	//when nobuild is true then buildable_to nodes are ignored
 	for (float i = 1; i < distance; i += stepsize) {
 		v3s16 pos = floatToInt(v3f(normalized_vector.X * i,
 			normalized_vector.Y * i,
@@ -473,11 +474,22 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 
 
 		MapNode n = getMap().getNodeNoEx(pos);
 
-		if(n.param0 != CONTENT_AIR) {
-			if (p) {
-				*p = pos;
+		if(n.drawtype != NDT_AIRLIKE) {
+			if(nobuild == true) {
+				if(n.buildable_to == false) {
+					if (p) {
+						*p = pos;
+					}
+					return false;
+				}
 			}
-			return false;
+			else
+			{
+				if (p) {
+					*p = pos;
+				}
+				return false;
+			}
 		}
 	}
 	return true;
