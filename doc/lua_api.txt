@@ -2710,13 +2710,14 @@ and `minetest.auth_reload` call the authetification handler.
     *   parameter was absent)
 * `minetest.delete_area(pos1, pos2)`
     * delete all mapblocks in the area from pos1 to pos2, inclusive
-* `minetest.line_of_sight(pos1, pos2, stepsize)`: returns `boolean, pos`
+* `minetest.line_of_sight(pos1, pos2, stepsize, nobuild)`: returns `boolean, pos`
     * Check if there is a direct line of sight between `pos1` and `pos2`
     * Returns the position of the blocking node when `false`
     * `pos1`: First position
     * `pos2`: Second position
     * `stepsize`: smaller gives more accurate results but requires more computing
       time. Default is `1`.
+    * `nobuild` : when true buildable_to nodes will be ignored (water, snow, plants)
 * `minetest.raycast(pos1, pos2, objects, liquids)`: returns `Raycast`
     * Creates a `Raycast` object.
     * `pos1`: start of the ray
