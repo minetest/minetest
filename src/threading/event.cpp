@@ -35,6 +35,8 @@ Event::Event()
 	pthread_mutex_init(&mutex, NULL);
 	notified = false;
 #	endif
+#elif USE_CPP11_MUTEX
+	notified = false;
 #endif
 }
 
