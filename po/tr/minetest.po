@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-04-14 19:06+0000\n"
+"PO-Revision-Date: 2017-05-19 10:57+0000\n"
 "Last-Translator: monolifed <monolifed@gmail.com>\n"
 "Language-Team: Turkish "
 "<https://hosted.weblate.org/projects/minetest/minetest/tr/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2.14-dev\n"
+"X-Generator: Weblate 2.14\n"
 "X-Poedit-Language: Turkish\n"
 "X-Poedit-Basepath: \n"
 
@@ -133,7 +133,7 @@ msgstr "etkin"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "A world named \"$1\" already exists"
-msgstr "\"$1\" isimli dünya zaten var"
+msgstr "\"$1\" adlı dünya zaten var"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Create"
@@ -157,7 +157,7 @@ msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "No worldname given or no game selected"
-msgstr "Dünya ismi verilmedi ya da oyun seçilmedi"
+msgstr "Dünya adı verilmedi ya da oyun seçilmedi"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -169,7 +169,7 @@ msgstr "Uyarı : Minimal geliştirici testi geliştiriciler içindir."
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "World name"
-msgstr "Dünya ismi"
+msgstr "Dünya adı"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
@@ -283,7 +283,7 @@ msgstr "Konumu seçin"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
-msgstr "Teknik isimleri göster"
+msgstr "Teknik adları göster"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "The value must be greater than $1."
@@ -311,11 +311,11 @@ msgstr "Mod yükle: dosya: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Mod yükle: $1 için gerçek mod ismi bulunamadı"
+msgstr "Mod yükle: $1 için gerçek mod adı bulunamadı"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "Mod yükle:$1 mod paketi için uygun bir klasör ismi bulunamadı"
+msgstr "Mod yükle:$1 mod paketi için uygun bir dizin adı bulunamadı"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -343,7 +343,7 @@ msgstr "Ara"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
-msgstr "Kısa isim:"
+msgstr "Kısa ad:"
 
 #: builtin/mainmenu/store.lua
 msgid "Successfully installed:"
@@ -435,7 +435,7 @@ msgstr "Favori"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
-msgstr "İsim / Şifre"
+msgstr "Ad / Şifre"
 
 #: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -461,7 +461,7 @@ msgstr "Hasar Etkin"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Name/Password"
-msgstr "İsim/Şifre"
+msgstr "Ad/Şifre"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "New"
@@ -729,7 +729,7 @@ msgstr "Dünya seçilmedi veya adres yok. Yapılacak bir şey yok."
 
 #: src/client/clientlauncher.cpp
 msgid "Player name too long."
-msgstr "Kullanıcı ismi çok uzun."
+msgstr "Kullanıcı adı çok uzun."
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -3305,7 +3305,7 @@ msgstr "Mapgen ısı karıştırma gürültü parametreleri"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr "Mapgen isim"
+msgstr "Mapgen adı"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v5"
@@ -3677,7 +3677,7 @@ msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
 msgstr ""
-"Yeni bir dünya yaratılırken kullanılacak harita oluşturucu ismi.\n"
+"Yeni bir dünya yaratılırken kullanılacak harita oluşturucu adı.\n"
 "Ana menüde bir dünya yaratmak bunu geçersiz kılar."
 
 #: src/settings_translation_file.cpp
@@ -3686,15 +3686,15 @@ msgid ""
 "When running a server, clients connecting with this name are admins.\n"
 "When starting from the main menu, this is overridden."
 msgstr ""
-"Oyuncunun ismi.\n"
-"Bir sunucu çalışırken, bu isimle bağlanan istemciler yöneticidir.\n"
+"Oyuncunun adı.\n"
+"Bir sunucu çalışırken, bu adla bağlanan istemciler yöneticidir.\n"
 "Ana menüden başlatırken, bu geçersiz kılınır."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of the server, to be displayed when players join and in the serverlist."
 msgstr ""
-"Oyuncular katılındığında ve sunucu listesinde görüntülenecek sunucu ismi."
+"Oyuncular katılındığında ve sunucu listesinde görüntülenecek sunucu adı."
 
 #: src/settings_translation_file.cpp
 msgid "Network"
@@ -3835,7 +3835,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Player name"
-msgstr "Oyuncu ismi"
+msgstr "Oyuncu adı"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
@@ -3988,7 +3988,7 @@ msgstr "Ekran yakala"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr "Ekran yakalama klasörü"
+msgstr "Ekran yakalama dizini"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot format"
@@ -4046,7 +4046,7 @@ msgstr "Sunucu açıklaması"
 
 #: src/settings_translation_file.cpp
 msgid "Server name"
-msgstr "Sunucu İsmi"
+msgstr "Sunucu adı"
 
 #: src/settings_translation_file.cpp
 msgid "Server port"
