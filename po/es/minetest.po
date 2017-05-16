@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-05-05 17:03+0000\n"
-"Last-Translator: Erick Sanhueza <laost@openmailbox.org>\n"
+"PO-Revision-Date: 2017-05-16 15:43+0000\n"
+"Last-Translator: Michael Higuera <mineyoshist@protonmail.ch>\n"
 "Language-Team: Spanish "
 "<https://hosted.weblate.org/projects/minetest/minetest/es/>\n"
 "Language: es\n"
@@ -1661,15 +1661,12 @@ msgid "Colored fog"
 msgstr "Niebla colorida"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Comma-separated list of mods that are allowed to access HTTP APIs, which\n"
 "allow them to upload and download data to/from the internet."
 msgstr ""
-"Lista separada por comas de los mods a los que se les permite usar las\n"
-"interfaces de HTTP, las cuales permiten cargar y descargar datos desde/"
-"hacia\n"
-"la Internet."
+"Lista separada por comas de mods que son permitidos de acceder a APIs de "
+"HTTP, las cuales les permiten subir y descargar archivos al/desde internet."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1954,9 +1951,8 @@ msgid "Dump the mapgen debug infos."
 msgstr "Imprimir información de depuración del generador de mapas."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable Joysticks"
-msgstr "Activar Control"
+msgstr "Activar Controles"
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
@@ -2142,13 +2138,12 @@ msgid "Field of view in degrees."
 msgstr "Campo visual en grados."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Movimiento rápido (por medio de tecla de \"Uso\").\n"
-"Requiere privilegio \"fast\" (rápido) en el servidor."
+"Campo de vision mientras se usa el Zoom en grados.\n"
+"Esto requiere el privilegio \"zoom\" en el servidor."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2405,13 +2400,12 @@ msgid "IPv6 support."
 msgstr "soporte IPv6."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
 msgstr ""
-"Si los FPS llegan a ser mas altos que esto, limítelos con interrupciones\n"
-"no gaste recursos del CPU en algo que no tiene beneficio."
+"Si las FPS no van mas alto que esto, limitelas\n"
+"para no gastar poder del CPU para ningun beneficio."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2433,18 +2427,18 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
 "Si esta activiado, las accione son guardadas para un rollback.\n"
-"Esta opciones es de solo lectura cuando el servidor inicia."
+"Esta opcion es de solo lectura cuando el servidor inicia."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr "Si esta habilitado, desactiva la prevención de trampas en multijugador"
+msgstr ""
+"Si esta habilitado, desahabilita la prevencion de trampas y trucos en "
+"multijugador."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2453,7 +2447,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
 "Si esta activado, los nuevos jugadores no pueden unirse con contraseñas "
@@ -2467,7 +2460,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr "Si se activa, los jugadores siempre reaparecerán en la posición dada."
 
@@ -3016,9 +3008,8 @@ msgid "Mapblock unload timeout"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen Valleys"
-msgstr "Generador de mapas"
+msgstr "Valles de Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen biome heat noise parameters"
@@ -3037,19 +3028,16 @@ msgid "Mapgen debug"
 msgstr "Depuración del generador de mapas"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flags"
-msgstr "Generador de mapas"
+msgstr "Banderas de Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat"
-msgstr "Generador de mapas"
+msgstr "Mapgen plano"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat cave width"
-msgstr "Generador de mapas"
+msgstr "Anchura de cuevas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen flat cave1 noise parameters"
@@ -3064,9 +3052,8 @@ msgid "Mapgen flat filler depth noise parameters"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapgen flat flags"
-msgstr "Generador de mapas"
+msgstr "Banderas planas de Mapgen"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
