@@ -83,6 +83,11 @@ MeshUpdateQueue::~MeshUpdateQueue()
 {
 	MutexAutoLock lock(m_mutex);
 
+	for (std::map<v3s16, CachedMapBlockData *>::iterator i = m_cache.begin();
+			i != m_cache.end(); ++i) {
+		delete i->second;
+	}
+
 	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
 			i != m_queue.end(); ++i) {
 		QueuedMeshUpdate *q = *i;
