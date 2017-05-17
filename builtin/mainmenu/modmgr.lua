@@ -238,15 +238,7 @@ function modmgr.render_modlist(render_list)
 	local list = render_list:get_list()
 	local last_modpack = nil
 	local retval = {}
-	local in_game_mods = false
 	for i, v in ipairs(list) do
-		if v.typ == "game_mod" and not in_game_mods then
-			in_game_mods = true
-			retval[#retval + 1] = mt_color_blue
-			retval[#retval + 1] = "0"
-			retval[#retval + 1] = fgettext("Subgame Mods")
-		end
-
 		local color = ""
 		if v.is_modpack then
 			local rawlist = render_list:get_raw_list()
@@ -260,7 +252,7 @@ function modmgr.render_modlist(render_list)
 					break
 				end
 			end
-		elseif v.typ == "game_mod" then
+		elseif v.typ == "game_mod" or v.typ == "game" then
 			color = mt_color_blue
 		elseif v.enabled then
 			color = mt_color_green
@@ -420,6 +412,14 @@ function modmgr.preparemodlist(data)
 	--read game mods
 	local gamespec = gamemgr.find_by_gameid(data.gameid)
 	gamemgr.get_game_mods(gamespec, game_mods)
+
+	if #game_mods > 0 then
+		-- Add title
+		retval[#retval + 1] = {
+			typ = "game",
+			name = fgettext("Subgame Mods")
+		}
+	end
 
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"
