@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-04-26 11:11+0000\n"
-"Last-Translator: chester <chesteran321@yahoo.com.tw>\n"
+"PO-Revision-Date: 2017-05-19 13:07+0000\n"
+"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo.com>"
+"\n"
 "Language-Team: Malay "
 "<https://hosted.weblate.org/projects/minetest/minetest/ms/>\n"
 "Language: ms\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.14-dev\n"
+"X-Generator: Weblate 2.14\n"
 
 #: builtin/fstk/ui.lua
 msgid "The server has requested a reconnect:"
@@ -33,7 +34,7 @@ msgstr "Sambung semula"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr "Terdapat ralat dalam skrip Lua, contohnya mod:"
+msgstr "Terdapat ralat dalam skrip Lua, contohnya mods:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -91,7 +92,7 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod:"
+msgstr "Mods:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Depends:"
@@ -131,7 +132,7 @@ msgid ""
 "Failed to enable mod \"$1\" as it contains disallowed characters. Only "
 "chararacters [a-z0-9_] are allowed."
 msgstr ""
-"Gagal untuk membolehkan mod \"$1\" kerana ia mengandungi aksara yang tidak "
+"Gagal untuk membolehkan mods \"$1\" kerana ia mengandungi aksara yang tidak "
 "dibenarkan. Hanya aksara [a-z0-9_] sahaja yang dibenarkan."
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -190,11 +191,11 @@ msgstr "Padam"
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: failed to delete \"$1\""
-msgstr "Pengurus mod: gagal memadam \"$1\""
+msgstr "Pengurus mods: gagal memadam \"$1\""
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Modmgr: invalid modpath \"$1\""
-msgstr "Pengurus mod: laluan mod tidak sah - \"$1\""
+msgstr "Pengurus mods: laluan mods tidak sah - \"$1\""
 
 #: builtin/mainmenu/dlg_delete_world.lua
 msgid "Delete World \"$1\"?"
@@ -202,7 +203,7 @@ msgstr "Padam Dunia \"$1\"?"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Rename Modpack:"
-msgstr "Menamakan Semula Pek Mod:"
+msgstr "Menamakan semula pek mods:"
 
 #: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
 msgid "Accept"
@@ -214,7 +215,7 @@ msgstr "Permainan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr "Mod"
+msgstr "Mods"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
@@ -298,7 +299,7 @@ msgstr "Tunjukkan nama teknikal"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: file: \"$1\""
-msgstr "Pasang Mod: fail: \"$1\""
+msgstr "Pasang Mods: fail: \"$1\""
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -306,7 +307,7 @@ msgid ""
 "Install Mod: unsupported filetype \"$1\" or broken archive"
 msgstr ""
 "\n"
-"Pasang Mod: jenis fail tidak disokong \"$1\" atau arkib rosak"
+"Pasang Mods: jenis fail tidak disokong \"$1\" atau arkib rosak"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Failed to install $1 to $2"
@@ -314,11 +315,11 @@ msgstr "Gagal memasang $1 pada $2"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find suitable foldername for modpack $1"
-msgstr "Pasang Mod: tidak jumpa nama folder untuk pek mod $1"
+msgstr "Pasang Mods: tidak jumpa nama folder untuk pek mods $1"
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Install Mod: unable to find real modname for: $1"
-msgstr "Pasang Mod: gagal mencari nama mod sebenar untuk: $1"
+msgstr "Pasang Mods: gagal mencari nama mods sebenar untuk: $1"
 
 #: builtin/mainmenu/store.lua
 msgid "Unsorted"
@@ -382,15 +383,15 @@ msgstr "Penyumbang Terdahulu"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
-msgstr "Mod Dipasang:"
+msgstr "Mods Dipasang:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
-msgstr "Tiada perihal mod"
+msgstr "Tiada perihal mods"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
-msgstr "Maklumat Mod:"
+msgstr "Maklumat Mods:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Rename"
@@ -398,15 +399,15 @@ msgstr "Namakan Semula"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected modpack"
-msgstr "Nyahpasangkan pek mod yang dipilih"
+msgstr "Nyahpasangkan pek mods yang dipilih"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Uninstall selected mod"
-msgstr "Nyahpasang mod dipilih"
+msgstr "Nyahpasang mods dipilih"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "Select Mod File:"
-msgstr "Pilih Fail Mod:"
+msgstr "Pilih Fail Mods:"
 
 #: builtin/mainmenu/tab_multiplayer.lua
 msgid "Address / Port"
@@ -450,7 +451,7 @@ msgstr "Buat Baru"
 
 #: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
 msgid "Configure"
-msgstr "Ubah Tetapan"
+msgstr "Konfigurasi"
 
 #: builtin/mainmenu/tab_server.lua
 msgid "Start Game"
@@ -660,7 +661,7 @@ msgstr "Mula Main Seorang"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Config mods"
-msgstr "Tetapkan mod"
+msgstr "Konfigurasi mods"
 
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Main"
@@ -1064,9 +1065,8 @@ msgid "Kana"
 msgstr "Butang Kana"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "Menu"
-msgstr "選擇單"
+msgstr "Butang Menu"
 
 #: src/keycode.cpp
 msgid "Pause"
@@ -1111,7 +1111,7 @@ msgstr "Butang Home"
 
 #: src/keycode.cpp
 msgid "Mode Change"
-msgstr "Penukaran Mod"
+msgstr "Penukaran Mods"
 
 #: src/keycode.cpp
 #, fuzzy
@@ -1433,7 +1433,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Always fly and fast"
-msgstr "Sentiasa terbang dan laju"
+msgstr "Sentiasa terbang dan pantas"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1609,7 +1609,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Kekunci untuk bergerak laju dalam mod pergerakan laju.\n"
+"Kekunci untuk bergerak pantas dalam mod pergerakan pantas.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -1685,7 +1685,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
-msgstr "Kekunci pergerakan laju"
+msgstr "Kekunci pergerakan pantas"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1693,7 +1693,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Kekunci untuk menogol mod pergerakan laju.\n"
+"Kekunci untuk menogol mod pergerakan pantas.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3079,26 +3079,32 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"Membolehkan/melumpuhkan penjalanan pelayan IPv6.  Sebuah pelayan IPv6\n"
+"mungkin hanya melayan klien IPv6, bergantung kepada konfigurasi sistem.\n"
+"Diabaikan jika bind_address (alamat ikatan) ditetapkan."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr ""
+msgstr "Jumlah blok maksimum yang dihantar serentak kepada setiap klien"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent per client."
 msgstr ""
+"Jumlah maksimum untuk blok-blok yang dihantar serentak kepada setiap klien."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends total"
-msgstr ""
+msgstr "Jumlah maksimum kesemua blok yang dihantar serentak"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent in total."
 msgstr ""
+"Jumlah maksimum kesemua blok-blok yang boleh dihantar serentak daripada "
+"pelayan."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Lengah penghantaran blok selepas pembinaan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3107,10 +3113,15 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Untuk mengurangkan lembapnya tindak balas, pemindahan blok diperlahankan "
+"apabila\n"
+"pemain membina sesuatu. Tetapan ini menetapkan berapa lama ianya "
+"diperlahankan\n"
+"setelah meletakkan atau menggali sesebuah nod."
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
-msgstr ""
+msgstr "Bingkisan maksima setiap lelaran"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3118,195 +3129,228 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"Jumlah maksima bingkisan yang dihantar pada setiap langkah penghantaran,\n"
+"jika anda mempunyai sambungan yang perlahan maka cuba kurangkannya,\n"
+"namun jangan kurangkan kepada nilai di bawah ganda dua jumlah klien sasaran."
 
 #: src/settings_translation_file.cpp
 msgid "Default game"
-msgstr ""
+msgstr "Permainan lalai"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Permainan lalai yang akan digunakan ketika mencipta dunia baru.\n"
+"Tetapan ini akan diatasi apabila membuat dunia daripada menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
-msgstr ""
+msgstr "Mesej hari ini"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
-msgstr ""
+msgstr "Mesej hari ini yang akan dipaparkan kepada pemain yang menyambung."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "Had jumlah pengguna"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr ""
+msgstr "Had jumlah pemain maksimum yang boleh menyambung serentak."
 
 #: src/settings_translation_file.cpp
 msgid "Map directory"
-msgstr ""
+msgstr "Direktori peta"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
+"Direktori dunia (semua benda dalam dunia disimpan di sini).\n"
+"Tidak diperlukan jika bermula daripada menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr ""
+msgstr "TTL entiti item"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"Masa untuk entiti item (item yang dijatuhkan) terus hidup dalam unit saat.\n"
+"Tetapkan kepada -1 untuk melumpuhkan sifat tersebut."
 
 #: src/settings_translation_file.cpp
 msgid "Damage"
-msgstr ""
+msgstr "Boleh cedera"
 
 #: src/settings_translation_file.cpp
 msgid "Enable players getting damage and dying."
-msgstr ""
+msgstr "Membolehkan pemain menerima kecederaan dan mati."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
-msgstr ""
+msgstr "Benih peta tetap"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
+"Benih peta yang dipilih untuk peta baru, biarkan kosong untuk benih rawak.\n"
+"Tidak digunapakai sekiranya mencipta dunia baru melalui menu utama."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
-msgstr ""
+msgstr "Kata laluan lalai"
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "Pengguna baru mesti memasukkan kata laluan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Default privileges"
-msgstr ""
+msgstr "Hak lalai"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "The privileges that new users automatically get.\n"
 "See /privs in game for a full list on your server and mod configuration."
 msgstr ""
+"Hak-hak yang pengguna-pengguna baru dapat secara automatik.\n"
+"Lihat /privs dalam permainan untuk senarai penuh hak pelayan dan konfigurasi "
+"mods."
 
 #: src/settings_translation_file.cpp
 msgid "Basic Privileges"
-msgstr ""
+msgstr "Hak asas"
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Hak-hak yang boleh diberikan oleh pemain yang mempunyai hak basic_privs"
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Jarak pemindahan pemain tanpa had"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Tetapkan sama ada pemain ditunjukkan kepada klien tanpa sebarang had jarak.\n"
+"Tetapan ini terkecam, gunakan tetapan player_transfer_distance sebagai ganti."
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Jarak pemindahan pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Mentakrifkan jarak maksimum untuk pemindahan pemain dalam unit blok (0 = "
+"tiada had)."
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
-msgstr ""
+msgstr "Pemain lawan Pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
 msgstr ""
+"Menetapkan sama ada ingin membenarkan pemain untuk mencederakan dan membunuh "
+"satu sama lain."
 
 #: src/settings_translation_file.cpp
 msgid "Static spawnpoint"
-msgstr ""
+msgstr "Titik lahir statik"
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
 msgstr ""
+"Jika tetapan ini ditetapkan, pemain akan sentiasa dilahirkan (semula) dekat "
+"kedudukan yang diberikan."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
-msgstr ""
+msgstr "Menolak kata laluan kosong"
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
+"Jika dibolehkan, pemain-pemain baru tidak boleh masuk dengan kata laluan "
+"yang kosong."
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
+msgstr "Melumpuhkan antitipu"
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
 msgstr ""
+"Jika dibolehkan, ia akan melumpuhkan pencegahan penipuan dalam pemain ramai."
 
 #: src/settings_translation_file.cpp
 msgid "Rollback recording"
-msgstr ""
+msgstr "Rakaman gulung balik"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Jika dibolehkan, semua tindakan akan dirakam untuk gulung balik.\n"
+"Pilihan ini hanya dibaca ketika pelayan bermula."
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "Mesej penutupan"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server shuts down."
-msgstr ""
+msgstr "Mesej yang akan dipaparkan dekat semua klien apabila pelayan ditutup."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
-msgstr ""
+msgstr "Mesej keruntuhan"
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
-msgstr ""
+msgstr "Mesej yang akan dipaparkan kepada semua klien apabila pelayan runtuh."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
-msgstr ""
+msgstr "Minta sambung semula selepas keruntuhan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"Tetapan sama ada untuk meminta klien menyambung semula selepas berlakunya "
+"keruntuhan (Lua).\n"
+"Tetapkan kepada benar jika pelayan anda ditetapkan untuk mula semula secara "
+"automatik."
 
 #: src/settings_translation_file.cpp
 msgid "Active object send range"
-msgstr ""
+msgstr "Jarak penghantaran objek aktif"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"Sejauh manakah klien dapat tahu mengenai objek, dinyatakan dalam unit "
+"blokpeta (16 nod)."
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
-msgstr ""
+msgstr "Jarak blok aktif"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3314,35 +3358,40 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Berapa luas kawasan blok-blok yang tertakluk kepada barangan blok aktif, "
+"dinyatakan dalam unit blokpeta (16 nod).\n"
+"Dalam blok aktif, objek akan dimuatkan dan ABM akan berjalan."
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr ""
+msgstr "Jarak maksimum penghantaran blok"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"Sejauh manakah blok-blok dihantar kepada klien, dinyatakan dalam unit "
+"blokpeta (16 nod)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Jumlah maksimum blok yang dipaksa muat"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Jumlah maksimum blokpeta yang dipaksa muat."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
-msgstr ""
+msgstr "Selang penghantaran masa"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
-msgstr ""
+msgstr "Selang di antara penghantaran maklumat masa pelayan kepada klien."
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "Kelajuan masa"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3350,74 +3399,79 @@ msgid ""
 "Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays "
 "unchanged."
 msgstr ""
+"Mengawal panjang kitaran siang/malam.\n"
+"Contohnya: 72 = 20 minit, 360 = 4 minit, 1 = 24 jam, 0 = siang/malam/lain-"
+"lain kekal tidak berubah."
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr ""
+msgstr "Selang masa penyimpanan peta"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
 msgstr ""
+"Selang masa di antara penyimpanan perubahan penting dalam dunia, dinyatakan "
+"dalam unit saat."
 
 #: src/settings_translation_file.cpp
 msgid "Physics"
-msgstr ""
+msgstr "Ikut fizik"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
-msgstr ""
+msgstr "Pecutan lalai"
 
 #: src/settings_translation_file.cpp
 msgid "Acceleration in air"
-msgstr ""
+msgstr "Pecutan dalam udara"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode acceleration"
-msgstr ""
+msgstr "Pecutan mod pergerakan pantas"
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
-msgstr ""
+msgstr "Kelajuan berjalan"
 
 #: src/settings_translation_file.cpp
 msgid "Crouch speed"
-msgstr ""
+msgstr "Kelajuan mendekam"
 
 #: src/settings_translation_file.cpp
 msgid "Fast mode speed"
-msgstr ""
+msgstr "Kelajuan mod pergerakan pantas"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
-msgstr ""
+msgstr "Kelajuan memanjat"
 
 #: src/settings_translation_file.cpp
 msgid "Jumping speed"
-msgstr ""
+msgstr "Kelajuan melompat"
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
-msgstr ""
+msgstr "Kelajuan turun"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity"
-msgstr ""
+msgstr "Kebendaliran cecair"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid fluidity smoothing"
-msgstr ""
+msgstr "Pelembutan kebendaliran cecair"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
-msgstr ""
+msgstr "Lubuk cecair"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "Graviti"
 
 #: src/settings_translation_file.cpp
 msgid "Deprecated Lua API handling"
-msgstr ""
+msgstr "Pengendalian API Lua terkecam"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3426,10 +3480,17 @@ msgid ""
 "-    log: mimic and log backtrace of deprecated call (default for debug).\n"
 "-    error: abort on usage of deprecated call (suggested for mod developers)."
 msgstr ""
+"Cara pengendalian panggilan API Lua yang terkecam:\n"
+"-    pusaka: (cuba untuk) meniru tingkah laku yang lama (lalai untuk "
+"keluaran).\n"
+"-    log: meniru dan menulis log runut balik kesemua panggilan terkecam ("
+"lalai untuk nyahpepijat).\n"
+"-    ralat: gugurkan penggunaan panggilan terkecam (dicadangkan untuk "
+"pembangun mods)."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Jumlah maksimum blok tambahan bersihobjek"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3437,88 +3498,100 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"Jumlah blok-blok tambahan yang boleh dimuatkan oleh /clearobjects pada "
+"sesuatu masa.\n"
+"Ini adalah keseimbangan antara overhed urus niaga sqlite\n"
+"dan penggunaan memori (Kebiasaannya, 4096=100MB)."
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr ""
+msgstr "Nyahmuat data pelayan yang tidak digunakan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Berapa lama pelayan akan tunggu sebelum menyahmuat blokpeta yang tidak "
+"digunakan.\n"
+"Nilai lebih tinggi lebih lembut, tetapi akan menggunakan lebih banyak RAM."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
-msgstr ""
+msgstr "Jumlah maksimum objek setiap blok"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr ""
+msgstr "Jumlah maksimum objek yang disimpan secara statik di dalam blok."
 
 #: src/settings_translation_file.cpp
 msgid "Synchronous SQLite"
-msgstr ""
+msgstr "SQLite segerak"
 
 #: src/settings_translation_file.cpp
 msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
-msgstr ""
+msgstr "Lihat http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Langkah pelayan khusus"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr ""
+"Penjang setiap detik pelayan dan selang masa ketika mana objek-objek "
+"selalunya dikemaskini menerusi rangkaian."
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Management interval"
-msgstr ""
+msgstr "Selang masa Pengurusan Blok Aktif"
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
-msgstr ""
+msgstr "Selang masa di antara setiap kitaran pengurusan blok aktif"
 
 #: src/settings_translation_file.cpp
 msgid "Active Block Modifier interval"
-msgstr ""
+msgstr "Selang masa pengubah blok aktif"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Panjang masa di antara kitaran pelaksanaan ABM"
 
 #: src/settings_translation_file.cpp
 msgid "NodeTimer interval"
-msgstr ""
+msgstr "Selang masa NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Jumlah masa selangan di antara kitaran pelaksanaan NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid "Ignore world errors"
-msgstr ""
+msgstr "Abaikan ralat dunia"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"Jika dibolehkan, data dunia tidak sah tidak akan menyebabkan pelayan ditutup."
+"\n"
+"Hanya bolehkan tetapan ini jika anda tahu apa yang anda lakukan."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr ""
+msgstr "Jumlah gelung cecair maksimum"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
-msgstr ""
+msgstr "Jumlah maksimum bagi cecair yang diproses pada setiap langkah."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Masa pembersihan giliran cecair"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3526,46 +3599,55 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"Jumlah masa (dalam unit saat) yang dibenarkan untuk giliran cecair "
+"berkembang\n"
+"melebihi kapasiti pemprosesan sehingga percubaan untuk mengurangkan saiznya\n"
+"dibuat dengan membuang giliran item yang lama. Nilai 0 melumpuhkan fungsi "
+"ini."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr ""
+msgstr "Detik kemas kini cecair"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
-msgstr ""
+msgstr "Selamg masa kemas kini cecair dalam unit saat."
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
-msgstr ""
+msgstr "Nama janapeta"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
 msgstr ""
+"Nama penjana peta yang akan digunakan apabila mencipta dunia baru.\n"
+"Mencipta dunia baru melalui menu utama akan mengatasi tetapan ini."
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
-msgstr ""
+msgstr "Aras air"
 
 #: src/settings_translation_file.cpp
 msgid "Water surface level of the world."
-msgstr ""
+msgstr "Aras permukaan air dunia."
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr ""
+msgstr "Jarak penjanaan blok maksimum"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Sejauh manakah blok akan dijana untuk klien, dinyatakan dalam unit blokpeta ("
+"16 nod)."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "Had penjanaan peta"
 
 #: src/settings_translation_file.cpp
 msgid ""
