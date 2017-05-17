@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "mapnode.h"
 #include "client.h"
+#include "settings.h"
 
 /*
 	Utility
@@ -293,6 +294,9 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
 
+	static const float radius =
+			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
+
 	bool unloaded = false;
 	bool is_attached = false;
 	v3f attached_pos = v3f(0,0,0);
@@ -316,11 +320,74 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 			{
 				m_amount--;
 
-				// Pretend to, but don't actually spawn a
-				// particle if it is attached to an unloaded
-				// object.
+				// Pretend to, but don't actually spawn a particle if it is
+				// attached to an unloaded object or distant from player.
 				if (!unloaded) {
+					v3f ppos = m_player->getPosition() / BS;
 					v3f pos = random_v3f(m_minpos, m_maxpos);
+
+					if (pos.getDistanceFrom(ppos) <= radius) {
+						v3f vel = random_v3f(m_minvel, m_maxvel);
+						v3f acc = random_v3f(m_minacc, m_maxacc);
+
+						if (is_attached) {
+							// Apply attachment yaw and position
+							pos.rotateXZBy(attached_yaw);
+							pos += attached_pos;
+							vel.rotateXZBy(attached_yaw);
+							acc.rotateXZBy(attached_yaw);
+						}
+
+						float exptime = rand()/(float)RAND_MAX
+								*(m_maxexptime-m_minexptime)
+								+m_minexptime;
+						float size = rand()/(float)RAND_MAX
+								*(m_maxsize-m_minsize)
+								+m_minsize;
+
+						Particle* toadd = new Particle(
+							m_gamedef,
+							m_smgr,
+							m_player,
+							env,
+							pos,
+							vel,
+							acc,
+							exptime,
+							size,
+							m_collisiondetection,
+							m_collision_removal,
+							m_vertical,
+							m_texture,
+							v2f(0.0, 0.0),
+							v2f(1.0, 1.0),
+							m_animation,
+							m_glow);
+						m_particlemanager->addParticle(toadd);
+					}
+				}
+				i = m_spawntimes.erase(i);
+			}
+			else
+			{
+				++i;
+			}
+		}
+	}
+	else // Spawner exists for an infinity timespan, spawn on a per-second base
+	{
+		// Skip this step if attached to an unloaded object
+		if (unloaded)
+			return;
+		for (int i = 0; i <= m_amount; i++)
+		{
+			if (rand()/(float)RAND_MAX < dtime)
+			{
+				// Do not spawn particle if distant from player
+				v3f ppos = m_player->getPosition() / BS;
+				v3f pos = random_v3f(m_minpos, m_maxpos);
+
+				if (pos.getDistanceFrom(ppos) <= radius) {
 					v3f vel = random_v3f(m_minvel, m_maxvel);
 					v3f acc = random_v3f(m_minacc, m_maxacc);
 
@@ -359,61 +426,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						m_glow);
 					m_particlemanager->addParticle(toadd);
 				}
-				i = m_spawntimes.erase(i);
-			}
-			else
-			{
-				++i;
-			}
-		}
-	}
-	else // Spawner exists for an infinity timespan, spawn on a per-second base
-	{
-		// Skip this step if attached to an unloaded object
-		if (unloaded)
-			return;
-		for (int i = 0; i <= m_amount; i++)
-		{
-			if (rand()/(float)RAND_MAX < dtime)
-			{
-				v3f pos = random_v3f(m_minpos, m_maxpos);
-				v3f vel = random_v3f(m_minvel, m_maxvel);
-				v3f acc = random_v3f(m_minacc, m_maxacc);
-
-				if (is_attached) {
-					// Apply attachment yaw and position
-					pos.rotateXZBy(attached_yaw);
-					pos += attached_pos;
-					vel.rotateXZBy(attached_yaw);
-					acc.rotateXZBy(attached_yaw);
-				}
-
-				float exptime = rand()/(float)RAND_MAX
-						*(m_maxexptime-m_minexptime)
-						+m_minexptime;
-				float size = rand()/(float)RAND_MAX
-						*(m_maxsize-m_minsize)
-						+m_minsize;
-
-				Particle* toadd = new Particle(
-					m_gamedef,
-					m_smgr,
-					m_player,
-					env,
-					pos,
-					vel,
-					acc,
-					exptime,
-					size,
-					m_collisiondetection,
-					m_collision_removal,
-					m_vertical,
-					m_texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0),
-					m_animation,
-					m_glow);
-				m_particlemanager->addParticle(toadd);
 			}
 		}
 	}
