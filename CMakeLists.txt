@@ -26,6 +26,11 @@ elseif(DEVELOPMENT_BUILD)
 	set(VERSION_STRING "${VERSION_STRING}-dev")
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+	# Append "-debug" to version string
+	set(VERSION_STRING "${VERSION_STRING}-debug")
+endif()
+
 message(STATUS "*** Will build version ${VERSION_STRING} ***")
 
 
