@@ -160,7 +160,7 @@ function core.get_node_drops(node, toolname)
 	local nodename = node
 	local param2 = 0
 	-- New format, if node is table
-	if(type(node) == "table") then
+	if (type(node) == "table") then
 		nodename = node.name
 		param2 = node.param2
 	end
