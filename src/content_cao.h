@@ -146,18 +146,7 @@ public:
 
 	scene::ISceneNode *getSceneNode();
 
-	scene::IMeshSceneNode *getMeshSceneNode();
-
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
-
-	WieldMeshSceneNode *getWieldMeshSceneNode();
-
-	scene::IBillboardSceneNode *getSpriteSceneNode();
-
-	inline bool isPlayer() const
-	{
-		return m_is_player;
-	}
 
 	inline bool isLocalPlayer() const
 	{

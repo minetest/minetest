@@ -874,7 +874,6 @@ public:
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
 
-	inline virtual bool getNodeRegistrationStatus() const;
 	inline virtual void setNodeRegistrationStatus(bool completed);
 
 	virtual void pendNodeResolve(NodeResolver *nr);
@@ -1797,13 +1796,6 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		throw SerializationError("unsupported ContentFeatures version");
 	}
 }
-
-
-inline bool CNodeDefManager::getNodeRegistrationStatus() const
-{
-	return m_node_registration_complete;
-}
-
 
 inline void CNodeDefManager::setNodeRegistrationStatus(bool completed)
 {

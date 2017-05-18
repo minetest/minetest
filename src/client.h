@@ -467,8 +467,7 @@ public:
 	Minimap* getMinimap() { return m_minimap; }
 	void setCamera(Camera* camera) { m_camera = camera; }
 
-	Camera* getCamera ()
-	{ return m_camera; }
+	Camera* getCamera () { return m_camera; }
 
 	bool shouldShowMinimap() const;
 

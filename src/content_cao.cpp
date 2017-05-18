@@ -706,24 +706,9 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 	return NULL;
 }
 
-scene::IMeshSceneNode* GenericCAO::getMeshSceneNode()
-{
-	return m_meshnode;
-}
-
 scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 {
 	return m_animated_meshnode;
-}
-
-WieldMeshSceneNode* GenericCAO::getWieldMeshSceneNode()
-{
-	return m_wield_meshnode;
-}
-
-scene::IBillboardSceneNode* GenericCAO::getSpriteSceneNode()
-{
-	return m_spritenode;
 }
 
 void GenericCAO::setChildrenVisible(bool toset)
