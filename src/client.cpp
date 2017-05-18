@@ -93,6 +93,7 @@ Client::Client(
 	m_address_name(address_name),
 	m_device(device),
 	m_camera(NULL),
+	m_minimap(NULL),
 	m_minimap_disabled_by_server(false),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_proto_ver(0),
@@ -127,7 +128,9 @@ Client::Client(
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
-	m_minimap = new Minimap(device, this);
+	if (g_settings->getBool("enable_minimap")) {
+		m_minimap = new Minimap(device, this);
+	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
 	m_modding_enabled = g_settings->getBool("enable_client_modding");
@@ -502,7 +505,7 @@ void Client::step(float dtime)
 				delete r.mesh;
 			}
 
-			if (do_mapper_update)
+			if (m_minimap && do_mapper_update)
 				m_minimap->addBlock(r.p, minimap_mapblock);
 
 			if (r.ack_block_to_server) {

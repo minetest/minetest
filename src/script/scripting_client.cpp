@@ -51,7 +51,8 @@ ClientScripting::ClientScripting(Client *client):
 	InitializeModApi(L, top);
 	lua_pop(L, 1);
 
-	LuaMinimap::create(L, client->getMinimap());
+	if (client->getMinimap())
+		LuaMinimap::create(L, client->getMinimap());
 
 	// Push builtin initialization type
 	lua_pushstring(L, "client");
