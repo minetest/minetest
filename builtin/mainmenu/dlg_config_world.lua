@@ -49,7 +49,7 @@ local function get_formspec(data)
 		"button[3.25,7;2.5,0.5;btn_config_world_save;" .. fgettext("Save") .. "]" ..
 		"button[5.75,7;2.5,0.5;btn_config_world_cancel;" .. fgettext("Cancel") .. "]"
 
-	if mod and mod.name ~= "" and mod.typ ~= "game_mod" then
+	if mod and mod.name ~= "" and not mod.is_game_content then
 		if mod.is_modpack then
 			local rawlist = data.list:get_raw_list()
 
@@ -97,7 +97,7 @@ end
 local function enable_mod(this, toset)
 	local mod = this.data.list:get_list()[this.data.selected_mod]
 
-	if mod.typ == "game_mod" then
+	if mod.is_game_content then
 		-- game mods can't be enabled or disabled
 	elseif not mod.is_modpack then
 		if toset == nil then
@@ -162,7 +162,7 @@ local function handle_buttons(this, fields)
 		local i,mod
 		for i,mod in ipairs(rawlist) do
 			if not mod.is_modpack and
-					mod.typ ~= "game_mod" then
+					not mod.is_game_content then
 				if modname_valid(mod.name) then
 					worldfile:set("load_mod_"..mod.name, tostring(mod.enabled))
 				else
@@ -198,7 +198,8 @@ local function handle_buttons(this, fields)
 		local list = this.data.list:get_raw_list()
 
 		for i = 1, #list do
-			if list[i].typ ~= "game_mod" and not list[i].is_modpack then
+			if not list[i].is_game_content
+					and not list[i].is_modpack then
 				list[i].enabled = true
 			end
 		end
@@ -210,7 +211,8 @@ local function handle_buttons(this, fields)
 		local list = this.data.list:get_raw_list()
 
 		for i = 1, #list do
-			if list[i].typ ~= "game_mod" and not list[i].is_modpack then
+			if not list[i].is_game_content
+					and not list[i].is_modpack then
 				list[i].enabled = false
 			end
 		end
@@ -252,16 +254,16 @@ function create_configure_world_dlg(worldidx)
 						return true
 					end
 				end,
-				function(element,criteria)
+				function(element, criteria)
 					if criteria.hide_game and
-						element.typ == "game_mod" then
-							return false
+							element.is_game_content then
+						return false
 					end
 
 					if criteria.hide_modpackcontents and
-						element.modpack ~= nil then
-							return false
-						end
+							element.modpack ~= nil then
+						return false
+					end
 					return true
 				end, --filter
 				{ worldpath= dlg.data.worldspec.path,

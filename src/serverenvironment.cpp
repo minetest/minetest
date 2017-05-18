@@ -141,7 +141,7 @@ void LBMManager::addLBMDef(LoadingBlockModifierDef *lbm_def)
 	if (!string_allowed(lbm_def->name, LBM_NAME_ALLOWED_CHARS)) {
 		throw ModError("Error adding LBM \"" + lbm_def->name +
 			"\": Does not follow naming conventions: "
-				"Only chararacters [a-z0-9_:] are allowed.");
+				"Only characters [a-z0-9_:] are allowed.");
 	}
 
 	m_lbm_defs[lbm_def->name] = lbm_def;
