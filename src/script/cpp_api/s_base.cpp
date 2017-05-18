@@ -240,7 +240,7 @@ void ScriptApiBase::stackDump(std::ostream &o)
 				break;
 			case LUA_TNUMBER:  /* numbers */ {
 				char buf[10];
-				snprintf(buf, 10, "%g", lua_tonumber(m_luastack, i));
+				snprintf(buf, 10, "%lf", lua_tonumber(m_luastack, i));
 				o << buf;
 				break;
 			}
