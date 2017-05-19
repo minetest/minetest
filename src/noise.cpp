@@ -137,20 +137,30 @@ s32 PcgRandom::range(s32 min, s32 max)
 
 void PcgRandom::bytes(void *out, size_t len)
 {
-	u8 *outb = (u8 *)out;
-	int bytes_left = 0;
-	u32 r;
+	const intptr_t out_int = reinterpret_cast<intptr_t>(out);
+	uint_fast8_t head_len = 0;
+	// Start of 32-bit aligned section
+	intptr_t mid_start = out_int;
+	size_t mid_len = len / sizeof(u32);
 
-	while (len--) {
-		if (bytes_left == 0) {
-			bytes_left = sizeof(u32);
-			r = next();
-		}
+	// Fill the leading unalligned bytes.
+	if (out_int % sizeof(u32)) {
+		mid_start = (out_int & ~(sizeof(u32) - 1)) + sizeof(u32);
+		head_len = mid_start - out_int;
+		mid_len = (len - head_len) / sizeof(u32);
+		int r = next();
+		memcpy(out, &r, head_len);
+	}
 
-		*outb = r & 0xFF;
-		outb++;
-		bytes_left--;
-		r >>= CHAR_BIT;
+	// Fill the middle 32-bit chunks.
+	integers(reinterpret_cast<u32 *>(mid_start), mid_len);
+
+	// Fill the trailing unalligned bytes
+	const uint_fast8_t tail_len = (len - head_len) % sizeof(u32);
+	if (tail_len) {
+		void *tail = reinterpret_cast<void *>(out_int + len - tail_len);
+		int r = next();
+		memcpy(tail, &r, tail_len);
 	}
 }
 
