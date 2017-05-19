@@ -1120,6 +1120,8 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
+	else if (x > CurrentTextRect.LowerRightCorner.X)
+		x = CurrentTextRect.LowerRightCorner.X;
 
 	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
 
@@ -1127,7 +1129,7 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (idx != -1)
 		return idx + startPos;
 
-	// click was off the right edge of the line, go to end.
+	// click was off the right edge of the last line, go to end.
 	return txtLine->size() + startPos;
 }
 
