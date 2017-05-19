@@ -252,7 +252,7 @@ function modmgr.render_modlist(render_list)
 					break
 				end
 			end
-		elseif v.typ == "game_mod" or v.typ == "game" then
+		elseif v.is_game_content then
 			color = mt_color_blue
 		elseif v.enabled then
 			color = mt_color_green
@@ -417,12 +417,14 @@ function modmgr.preparemodlist(data)
 		-- Add title
 		retval[#retval + 1] = {
 			typ = "game",
+			is_game_content = true,
 			name = fgettext("Subgame Mods")
 		}
 	end
 
 	for i=1,#game_mods,1 do
 		game_mods[i].typ = "game_mod"
+		game_mods[i].is_game_content = true
 		retval[#retval + 1] = game_mods[i]
 	end
 

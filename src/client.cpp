@@ -171,7 +171,7 @@ void Client::initMods()
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
 				"\": Mod name does not follow naming conventions: "
-					"Only chararacters [a-z0-9_] are allowed.");
+					"Only characters [a-z0-9_] are allowed.");
 		}
 		std::string script_path = mod.path + DIR_DELIM + "init.lua";
 		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
