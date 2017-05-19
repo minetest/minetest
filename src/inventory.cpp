@@ -267,8 +267,17 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
+		const u16 stackMax = getStackMax(itemdef);
+
 		*this = newitem;
-		newitem.clear();
+
+		// If the item fits fully, delete it
+		if (count <= stackMax) {
+			newitem.clear();
+		} else { // Else the item does not fit fully. Return the rest.
+			count = stackMax;
+			newitem.remove(count);
+		}
 	}
 	// If item name or metadata differs, bail out
 	else if (name != newitem.name
@@ -308,7 +317,14 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
-		newitem.clear();
+		const u16 stackMax = getStackMax(itemdef);
+
+		// If the item fits fully, delete it
+		if (newitem.count <= stackMax) {
+			newitem.clear();
+		} else { // Else the item does not fit fully. Return the rest.
+			newitem.remove(stackMax);
+		}
 	}
 	// If item name or metadata differs, bail out
 	else if (name != newitem.name
@@ -322,7 +338,6 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 		newitem.clear();
 	}
 	// Else the item does not fit fully. Return the rest.
-	// the rest.
 	else
 	{
 		u16 freespace = freeSpace(itemdef);
