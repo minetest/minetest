@@ -469,21 +469,18 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, legacy_wallmounted);
 }
 
-void ContentFeatures::correctAlpha()
+void ContentFeatures::correctAlpha(TileDef *tiles, int length)
 {
+	// alpha == 0 means that the node is using texture alpha
 	if (alpha == 0 || alpha == 255)
 		return;
 
-	for (u32 i = 0; i < 6; i++) {
+	for (int i = 0; i < length; i++) {
+		if (tiles[i].name == "")
+			continue;
 		std::stringstream s;
-		s << tiledef[i].name << "^[noalpha^[opacity:" << ((int)alpha);
-		tiledef[i].name = s.str();
-	}
-
-	for (u32 i = 0; i < CF_SPECIAL_COUNT; i++) {
-		std::stringstream s;
-		s << tiledef_special[i].name << "^[noalpha^[opacity:" << ((int)alpha);
-		tiledef_special[i].name = s.str();
+		s << tiles[i].name << "^[noalpha^[opacity:" << ((int)alpha);
+		tiles[i].name = s.str();
 	}
 }
 
@@ -668,6 +665,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		if (tdef[j].name == "")
 			tdef[j].name = "unknown_node.png";
 	}
+	// also the overlay tiles
+	TileDef tdef_overlay[6];
+	for (u32 j = 0; j < 6; j++)
+		tdef_overlay[j] = tiledef_overlay[j];
+	// also the special tiles
+	TileDef tdef_spec[6];
+	for (u32 j = 0; j < CF_SPECIAL_COUNT; j++)
+		tdef_spec[j] = tiledef_special[j];
 
 	bool is_liquid = false;
 
@@ -720,8 +725,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			visual_solidness = 1;
 		} else if (tsettings.leaves_style == LEAVES_SIMPLE) {
 			for (u32 j = 0; j < 6; j++) {
-				if (tiledef_special[j].name != "")
-					tdef[j].name = tiledef_special[j].name;
+				if (tdef_spec[j].name != "")
+					tdef[j].name = tdef_spec[j].name;
 			}
 			drawtype = NDT_GLASSLIKE;
 			solidness = 0;
@@ -759,12 +764,14 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		break;
 	}
 
-	if (is_liquid)
+	if (is_liquid) {
+		// Vertex alpha is no longer supported, correct if necessary.
+		correctAlpha(tdef, 6);
+		correctAlpha(tdef_overlay, 6);
+		correctAlpha(tdef_spec, CF_SPECIAL_COUNT);
 		material_type = (alpha == 255) ?
 			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
-
-	// Vertex alpha is no longer supported, correct if necessary.
-	correctAlpha();
+	}
 
 	u32 tile_shader[6];
 	for (u16 j = 0; j < 6; j++) {
@@ -776,18 +783,18 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	for (u16 j = 0; j < 6; j++) {
 		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader[j],
 			tsettings.use_normal_texture,
-			tiledef[j].backface_culling, material_type);
-		if (tiledef_overlay[j].name!="")
-			fillTileAttribs(tsrc, &tiles[j].layers[1], &tiledef_overlay[j],
+			tdef[j].backface_culling, material_type);
+		if (tdef_overlay[j].name != "")
+			fillTileAttribs(tsrc, &tiles[j].layers[1], &tdef_overlay[j],
 				tile_shader[j], tsettings.use_normal_texture,
-				tiledef[j].backface_culling, material_type);
+				tdef[j].backface_culling, material_type);
 	}
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
-		fillTileAttribs(tsrc, &special_tiles[j].layers[0], &tiledef_special[j],
+		fillTileAttribs(tsrc, &special_tiles[j].layers[0], &tdef_spec[j],
 			tile_shader[j], tsettings.use_normal_texture,
-			tiledef_special[j].backface_culling, material_type);
+			tdef_spec[j].backface_culling, material_type);
 	}
 
 	if (param_type_2 == CPT2_COLOR ||
