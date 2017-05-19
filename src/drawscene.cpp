@@ -509,7 +509,7 @@ void draw_plain(Camera &camera, bool show_hud,
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		Camera &camera, Client &client, LocalPlayer *player, Hud &hud,
-		Minimap &mapper, gui::IGUIEnvironment *guienv,
+		Minimap *mapper, gui::IGUIEnvironment *guienv,
 		const v2u32 &screensize, const video::SColor &skycolor,
 		bool show_hud, bool show_minimap)
 {
@@ -584,8 +584,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		hud.drawLuaElements(camera.getOffset());
 		camera.drawNametags();
 
-		if (show_minimap)
-			mapper.drawMinimap();
+		if (mapper && show_minimap)
+			mapper->drawMinimap();
 	}
 
 	guienv->drawAll();

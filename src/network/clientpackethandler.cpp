@@ -1150,7 +1150,7 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
 
 	// Hide minimap if it has been disabled by the server
-	if (m_minimap_disabled_by_server && was_minimap_visible) {
+	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible) {
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
 		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);

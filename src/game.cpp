@@ -715,16 +715,19 @@ public:
 		m_eye_position_pixel.set(eye_position_array, services);
 		m_eye_position_vertex.set(eye_position_array, services);
 
-		float minimap_yaw_array[3];
-		v3f minimap_yaw = m_client->getMinimap()->getYawVec();
+		if (m_client->getMinimap()) {
+			float minimap_yaw_array[3];
+			v3f minimap_yaw = m_client->getMinimap()->getYawVec();
 #if (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 8)
-		minimap_yaw_array[0] = minimap_yaw.X;
-		minimap_yaw_array[1] = minimap_yaw.Y;
-		minimap_yaw_array[2] = minimap_yaw.Z;
+			minimap_yaw_array[0] = minimap_yaw.X;
+			minimap_yaw_array[1] = minimap_yaw.Y;
+			minimap_yaw_array[2] = minimap_yaw.Z;
 #else
-		minimap_yaw.getAs3Values(minimap_yaw_array);
+			minimap_yaw.getAs3Values(minimap_yaw_array);
 #endif
-		m_minimap_yaw.set(minimap_yaw_array, services);
+			m_minimap_yaw.set(minimap_yaw_array, services);
+
+		}
 
 		SamplerLayer_t base_tex = 0,
 				normal_tex = 1,
@@ -1948,7 +1951,8 @@ bool Game::createClient(const std::string &playername,
 	}
 
 	mapper = client->getMinimap();
-	mapper->setMinimapMode(MINIMAP_MODE_OFF);
+	if (mapper)
+		mapper->setMinimapMode(MINIMAP_MODE_OFF);
 
 	return true;
 }
@@ -2781,7 +2785,7 @@ void Game::toggleHud()
 
 void Game::toggleMinimap(bool shift_pressed)
 {
-	if (!flags.show_hud || !g_settings->getBool("enable_minimap"))
+	if (!mapper || !flags.show_hud || !g_settings->getBool("enable_minimap"))
 		return;
 
 	if (shift_pressed) {
@@ -4194,7 +4198,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	TimeTaker tt_draw("mainloop: draw");
 	driver->beginScene(true, true, skycolor);
 
-	draw_scene(driver, smgr, *camera, *client, player, *hud, *mapper,
+	draw_scene(driver, smgr, *camera, *client, player, *hud, mapper,
 			guienv, screensize, skycolor, flags.show_hud,
 			flags.show_minimap);
 
@@ -4229,7 +4233,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	/*
 		Update minimap pos and rotation
 	*/
-	if (flags.show_minimap && flags.show_hud) {
+	if (mapper && flags.show_minimap && flags.show_hud) {
 		mapper->setPos(floatToInt(player->getPosition(), BS));
 		mapper->setAngle(player->getYaw());
 	}

@@ -800,6 +800,7 @@ Call these functions only at load time!
 ### UI
 * `minetest.ui.minimap`
     * Reference to the minimap object. See [`Minimap`](#minimap) class reference for methods.
+    * If client disabled minimap (using enable_minimap setting) this reference will be nil.
 * `minetest.camera`
     * Reference to the camera object. See [`Camera`](#camera) class reference for methods.
 * `minetest.show_formspec(formname, formspec)` : returns true on success
