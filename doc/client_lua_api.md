@@ -202,7 +202,7 @@ For helper functions see "Vector helpers".
 ### pointed_thing
 * `{type="nothing"}`
 * `{type="node", under=pos, above=pos}`
-* `{type="object", ref=ObjectRef}`
+* `{type="object", id=ObjectID}`
 
 Flag Specifier Format
 ---------------------

@@ -199,7 +199,7 @@ bool ScriptApiClient::on_placenode(const PointedThing &pointed, const ItemDefini
 	lua_getfield(L, -1, "registered_on_placenode");
 
 	// Push data
-	push_pointed_thing(L, pointed);
+	push_pointed_thing(L, pointed, true);
 	push_item_definition(L, item);
 
 	// Call functions
@@ -217,7 +217,7 @@ bool ScriptApiClient::on_item_use(const ItemStack &item, const PointedThing &poi
 
 	// Push data
 	LuaItemStack::create(L, item);
-	push_pointed_thing(L, pointed);
+	push_pointed_thing(L, pointed, true);
 
 	// Call functions
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);

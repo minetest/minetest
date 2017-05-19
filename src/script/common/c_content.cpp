@@ -1441,7 +1441,7 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 	lua_pop(L, 1); // Pop value
 }
 
-void push_pointed_thing(lua_State *L, const PointedThing &pointed)
+void push_pointed_thing(lua_State *L, const PointedThing &pointed, bool csm)
 {
 	lua_newtable(L);
 	if (pointed.type == POINTEDTHING_NODE) {
@@ -1454,8 +1454,14 @@ void push_pointed_thing(lua_State *L, const PointedThing &pointed)
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		lua_pushstring(L, "object");
 		lua_setfield(L, -2, "type");
-		push_objectRef(L, pointed.object_id);
-		lua_setfield(L, -2, "ref");
+
+		if (csm) {
+			lua_pushinteger(L, pointed.object_id);
+			lua_setfield(L, -2, "id");
+		} else {
+			push_objectRef(L, pointed.object_id);
+			lua_setfield(L, -2, "ref");
+		}
 	} else {
 		lua_pushstring(L, "nothing");
 		lua_setfield(L, -2, "type");
