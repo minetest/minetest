@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <stack>
 #include "util/pointer.h"
 #include "util/numeric.h"
+#include "util/mathconstants.h"
 #include "map.h"
 #include "serverenvironment.h"
 #include "nodedef.h"
