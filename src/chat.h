@@ -86,8 +86,6 @@ public:
 
 	// Get number of lines currently in buffer.
 	u32 getLineCount() const;
-	// Get scrollback size, maximum number of lines in buffer.
-	u32 getScrollback() const;
 	// Get reference to i-th chat line.
 	const ChatLine& getLine(u32 index) const;
 
@@ -162,8 +160,7 @@ public:
 	std::wstring getLine() const { return m_line; }
 
 	// Get section of line that is currently selected
-	std::wstring getSelection() const
-		{ return m_line.substr(m_cursor, m_cursor_len); }
+	std::wstring getSelection() const { return m_line.substr(m_cursor, m_cursor_len); }
 
 	// Clear the current line
 	void clear();

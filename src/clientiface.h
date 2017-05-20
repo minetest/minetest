@@ -345,7 +345,7 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u32 uptime();
+	u32 uptime() const;
 
 	/* set version information */
 	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
@@ -360,7 +360,6 @@ public:
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
 	u8 getPatch() const { return m_version_patch; }
-	std::string getVersion() const { return m_full_version; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version;

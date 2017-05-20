@@ -77,11 +77,6 @@ u32 ChatBuffer::getLineCount() const
 	return m_unformatted.size();
 }
 
-u32 ChatBuffer::getScrollback() const
-{
-	return m_scrollback;
-}
-
 const ChatLine& ChatBuffer::getLine(u32 index) const
 {
 	assert(index < getLineCount());	// pre-condition

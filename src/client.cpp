@@ -1723,7 +1723,7 @@ float Client::getRTT()
 
 float Client::getCurRate()
 {
-	return ( m_con.getLocalStat(con::CUR_INC_RATE) +
+	return (m_con.getLocalStat(con::CUR_INC_RATE) +
 			m_con.getLocalStat(con::CUR_DL_RATE));
 }
 

@@ -432,8 +432,6 @@ public:
 
 	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 
-	virtual bool getNodeRegistrationStatus() const=0;
-
 	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
 	virtual bool nodeboxConnects(const MapNode from, const MapNode to, u8 connect_face)=0;
@@ -491,7 +489,6 @@ public:
 	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 	virtual void deSerialize(std::istream &is)=0;
 
-	virtual bool getNodeRegistrationStatus() const=0;
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
 	virtual void pendNodeResolve(NodeResolver *nr)=0;

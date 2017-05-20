@@ -49,18 +49,13 @@ public:
 	virtual aabb3f *getSelectionBox() { return NULL; }
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
-	virtual v3f getPosition(){return v3f(0,0,0);}
-	virtual float getYaw() const {return 0;}
-	virtual scene::ISceneNode *getSceneNode(){return NULL;}
-	virtual scene::IMeshSceneNode *getMeshSceneNode(){return NULL;}
-	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode(){return NULL;}
-	virtual WieldMeshSceneNode *getWieldMeshSceneNode(){return NULL;}
-	virtual scene::IBillboardSceneNode *getSpriteSceneNode(){return NULL;}
-	virtual bool isPlayer() const {return false;}
+	virtual v3f getPosition(){ return v3f(0,0,0); }
+	virtual float getYaw() const { return 0; }
+	virtual scene::ISceneNode *getSceneNode() { return NULL; }
+	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
 	virtual bool isLocalPlayer() const {return false;}
-	virtual void setAttachments(){}
+	virtual void setAttachments() {}
 	virtual bool doShowSelectionBox(){return true;}
-	virtual void updateCameraOffset(v3s16 camera_offset){};
 
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}
