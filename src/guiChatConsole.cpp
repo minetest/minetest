@@ -661,3 +661,4 @@ void GUIChatConsole::setVisible(bool visible)
 		recalculateConsolePosition();
 	}
 }
+
