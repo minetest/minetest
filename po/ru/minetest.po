@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-30 06:18+0200\n"
-"PO-Revision-Date: 2017-04-07 10:25+0000\n"
-"Last-Translator: Andrey K. <contact@libnaru.so>\n"
+"PO-Revision-Date: 2017-05-20 19:09+0000\n"
+"Last-Translator: weqqr <weqqr@opmbx.org>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
 "4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.13-dev\n"
+"X-Generator: Weblate 2.14.1-dev\n"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -1682,7 +1682,7 @@ msgstr "Непрерывная ходьба"
 
 #: src/settings_translation_file.cpp
 msgid "Continuous forward movement (only used for testing)."
-msgstr ""
+msgstr "Постоянное движение вперёд (используется только для тестирования)."
 
 #: src/settings_translation_file.cpp
 msgid "Controls"
@@ -1708,15 +1708,16 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
-msgstr ""
+msgstr "Регулирует крутизну и глубину впадин в озёрах."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
-msgstr ""
+msgstr "Регулирует крутизну и высоту холмов."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
 msgstr ""
+"Регулирует ширину туннелей, меньшие значения создают более широкие туннели."
 
 #: src/settings_translation_file.cpp
 msgid "Crash message"
@@ -1739,9 +1740,8 @@ msgid "Crosshair alpha"
 msgstr "Прозрачность перекрестия"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Crosshair alpha (opaqueness, between 0 and 255)."
-msgstr "Прозрачность перекрестия (от 0 (прозрачно) до 255 (непрозрачно))."
+msgstr "Прозрачность прицела (от 0 (прозрачно) до 255 (непрозрачно))."
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair color"
@@ -1799,7 +1799,7 @@ msgstr "Стандартные права"
 
 #: src/settings_translation_file.cpp
 msgid "Default report format"
-msgstr ""
+msgstr "Формат отчёта по умолчанию"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1828,9 +1828,8 @@ msgid "Delay showing tooltips, stated in milliseconds."
 msgstr "Задержка показа подсказок, указанная в миллисекундах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Deprecated Lua API handling"
-msgstr "Устаревшее Lua API управление"
+msgstr "Обработка устаревшего Lua API"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
@@ -1909,9 +1908,8 @@ msgid "Enable Joysticks"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enable VBO"
-msgstr "Включить мультиплеер"
+msgstr "Включить VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1956,7 +1954,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables animation of inventory items."
 msgstr "Включить анимацию предметов в инвентаре."
 
@@ -1975,7 +1972,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Включить мини-карту."
+msgstr "Включить тональное отображение."
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2012,7 +2009,6 @@ msgid "FPS in pause menu"
 msgstr "FPS во время паузы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FSAA"
 msgstr "FSAA"
 
@@ -2057,12 +2053,11 @@ msgid "Fast movement"
 msgstr "Быстрое перемещение"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Fast movement (via use key).\n"
 "This requires the \"fast\" privilege on the server."
 msgstr ""
-"Быстрое перемещение (с использованием клавиши).\n"
+"Быстрое перемещение (с помощью клавиши Использовать).\n"
 "Это требует привилегию \"fast\" на сервере."
 
 #: src/settings_translation_file.cpp
@@ -2338,7 +2333,6 @@ msgid "How wide to make rivers"
 msgstr "Установка ширины рек"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "IPv6"
 msgstr "IPv6"
 
@@ -2351,7 +2345,6 @@ msgid "IPv6 support."
 msgstr "IPv6 поддержка."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "If FPS would go higher than this, limit it by sleeping\n"
 "to not waste CPU power for no benefit."
@@ -2365,8 +2358,8 @@ msgid ""
 "If disabled \"use\" key is used to fly fast if both fly and fast mode are "
 "enabled."
 msgstr ""
-"Если выключено, кнопка \"use\"(\"использовать\"?) используется для быстрого "
-"полёта, если одновременно включены быстрый режим и режим полёта."
+"Если выключено, кнопка \"Использовать\" используется для быстрого полёта, "
+"если одновременно включены быстрый режим и режим полёта."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
