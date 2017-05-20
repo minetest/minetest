@@ -488,9 +488,9 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	{
 		// no previous nick completion is active
 		prefix_start = prefix_end = m_cursor;
-		while (prefix_start > 0 && !isspace(m_line[prefix_start-1]))
+		while (prefix_start > 0 && !iswspace(m_line[prefix_start-1]))
 			--prefix_start;
-		while (prefix_end < m_line.size() && !isspace(m_line[prefix_end]))
+		while (prefix_end < m_line.size() && !iswspace(m_line[prefix_end]))
 			++prefix_end;
 		if (prefix_start == prefix_end)
 			return;
@@ -519,7 +519,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 	u32 replacement_index = 0;
 	if (!initial)
 	{
-		while (word_end < m_line.size() && !isspace(m_line[word_end]))
+		while (word_end < m_line.size() && !iswspace(m_line[word_end]))
 			++word_end;
 		std::wstring word = m_line.substr(prefix_start, word_end - prefix_start);
 
@@ -538,7 +538,7 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 		}
 	}
 	std::wstring replacement = completions[replacement_index];
-	if (word_end < m_line.size() && isspace(word_end))
+	if (word_end < m_line.size() && iswspace(m_line[word_end]))
 		++word_end;
 
 	// replace existing word with replacement word,
@@ -593,17 +593,17 @@ void ChatPrompt::cursorOperation(CursorOp op, CursorOpDir dir, CursorOpScope sco
 	case CURSOROP_SCOPE_WORD:
 		if (dir == CURSOROP_DIR_RIGHT) {
 			// skip one word to the right
-			while (new_cursor < length && isspace(m_line[new_cursor]))
+			while (new_cursor < length && iswspace(m_line[new_cursor]))
 				new_cursor++;
-			while (new_cursor < length && !isspace(m_line[new_cursor]))
+			while (new_cursor < length && !iswspace(m_line[new_cursor]))
 				new_cursor++;
-			while (new_cursor < length && isspace(m_line[new_cursor]))
+			while (new_cursor < length && iswspace(m_line[new_cursor]))
 				new_cursor++;
 		} else {
 			// skip one word to the left
-			while (new_cursor >= 1 && isspace(m_line[new_cursor - 1]))
+			while (new_cursor >= 1 && iswspace(m_line[new_cursor - 1]))
 				new_cursor--;
-			while (new_cursor >= 1 && !isspace(m_line[new_cursor - 1]))
+			while (new_cursor >= 1 && !iswspace(m_line[new_cursor - 1]))
 				new_cursor--;
 		}
 		break;
