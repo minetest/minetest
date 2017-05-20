@@ -63,6 +63,15 @@ int ModApiClient::l_set_last_run_mod(lua_State *L)
 	return 1;
 }
 
+// print(text)
+int ModApiClient::l_print(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string text = luaL_checkstring(L, 1);
+	rawstream << text << std::endl;
+	return 0;
+}
+
 // display_chat_message(message)
 int ModApiClient::l_display_chat_message(lua_State *L)
 {
@@ -261,6 +270,7 @@ int ModApiClient::l_take_screenshot(lua_State *L)
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
+	API_FCT(print);
 	API_FCT(display_chat_message);
 	API_FCT(get_player_names);
 	API_FCT(set_last_run_mod);

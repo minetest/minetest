@@ -29,6 +29,9 @@ private:
 	// get_current_modname()
 	static int l_get_current_modname(lua_State *L);
 
+	// print(text)
+	static int l_print(lua_State *L);
+
 	// display_chat_message(message)
 	static int l_display_chat_message(lua_State *L);
 
