@@ -1120,8 +1120,8 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
-	else if (x > CurrentTextRect.LowerRightCorner.X)
-		x = CurrentTextRect.LowerRightCorner.X;
+	else if (x > CurrentTextRect.LowerRightCorner.X + 1)
+		x = CurrentTextRect.LowerRightCorner.X + 1;
 
 	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
 
