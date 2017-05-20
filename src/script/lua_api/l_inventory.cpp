@@ -337,7 +337,7 @@ int InvRef::l_contains_item(lua_State *L)
 	bool match_meta = false;
 	if (lua_isboolean(L, 4))
 		match_meta = lua_toboolean(L, 4);
-	if(list){
+	if (list) {
 		lua_pushboolean(L, list->containsItem(item, match_meta));
 	} else {
 		lua_pushboolean(L, false);
