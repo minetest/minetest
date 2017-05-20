@@ -331,7 +331,7 @@ u32 ChatBuffer::formatChatLine(const ChatLine& line, u32 cols,
 			while (frag_length < remaining_in_input &&
 					frag_length < remaining_in_output)
 			{
-				if (isspace(line.text.getString()[in_pos + frag_length]))
+				if (iswspace(line.text.getString()[in_pos + frag_length]))
 					space_pos = frag_length;
 				++frag_length;
 			}
