@@ -434,7 +434,8 @@ void Server::start(Address bind_addr)
 	m_thread->start();
 
 	// ASCII art for the win!
-	actionstream
+	// http://patorjk.com/software/taag/#p=display&h=1&f=Graffiti&t=minetest
+	std::cout
 	<<"        .__               __                   __   "<<std::endl
 	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
 	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
