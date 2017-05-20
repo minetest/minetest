@@ -327,19 +327,29 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
-		} else if (f.drawtype == NDT_AIRLIKE) {
+		} else switch (f.drawtype) {
+		case NDT_AIRLIKE:
 			changeToMesh(nullptr);
-		} else if (f.drawtype == NDT_PLANTLIKE) {
+			break;
+
+		case NDT_PLANTLIKE:
 			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 				def.wield_scale, tsrc,
 				f.tiles[0].layers[0].animation_frame_count);
-		} else if (f.drawtype == NDT_PLANTLIKE_ROOTED) {
+			break;
+
+		case NDT_PLANTLIKE_ROOTED:
 			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
 				def.wield_scale, tsrc,
 				f.special_tiles[0].layers[0].animation_frame_count);
-		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
+			break;
+
+		case NDT_NORMAL:
+		case NDT_ALLFACES:
 			setCube(f, def.wield_scale);
-		} else {
+			break;
+
+		default:
 			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
