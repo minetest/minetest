@@ -460,16 +460,28 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-		} else if (f.drawtype == NDT_PLANTLIKE) {
+		} else switch (f.drawtype) {
+		case NDT_PLANTLIKE:
 			mesh = getExtrudedMesh(tsrc,
 				tsrc->getTextureName(f.tiles[0].layers[0].texture_id));
-		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES
-			|| f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
+			break;
+
+		case NDT_PLANTLIKE_ROOTED:
+			mesh = getExtrudedMesh(tsrc,
+				tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id));
+			break;
+
+		case NDT_NORMAL:
+		case NDT_ALLFACES:
+		case NDT_LIQUID:
+		case NDT_FLOWINGLIQUID:
 			scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
 			mesh = cloneMesh(cube);
 			cube->drop();
 			scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
-		} else {
+			break;
+
+		default:
 			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
