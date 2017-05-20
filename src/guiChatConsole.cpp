@@ -627,7 +627,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			bool backwards = event.KeyInput.Shift;
 			prompt.nickCompletion(names, backwards);
 			return true;
-		} else if (iswprint(event.KeyInput.Char) && !event.KeyInput.Control) {
+		} else if (!iswcntrl(event.KeyInput.Char) && !event.KeyInput.Control) {
 			#if defined(__linux__) && (IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9)
 				wchar_t wc = L'_';
 				mbtowc( &wc, (char *) &event.KeyInput.Char, sizeof(event.KeyInput.Char) );

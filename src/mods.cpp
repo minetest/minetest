@@ -214,6 +214,55 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 	}
 }
 
+void ModConfiguration::addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods)
+{
+	Settings conf;
+	std::set<std::string> load_mod_names;
+
+	conf.readConfigFile(settings_path.c_str());
+	std::vector<std::string> names = conf.getNames();
+	for (std::vector<std::string>::iterator it = names.begin();
+		it != names.end(); ++it) {
+		std::string name = *it;
+		if (name.compare(0,9,"load_mod_")==0 && conf.getBool(name))
+			load_mod_names.insert(name.substr(9));
+	}
+
+	std::vector<ModSpec> addon_mods;
+	for (std::set<std::string>::const_iterator i = mods.begin();
+			i != mods.end(); ++i) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*i));
+		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
+				it != addon_mods_in_path.end(); ++it) {
+			const ModSpec& mod = *it;
+			if (load_mod_names.count(mod.name) != 0)
+				addon_mods.push_back(mod);
+			else
+				conf.setBool("load_mod_" + mod.name, false);
+		}
+	}
+	conf.updateConfigFile(settings_path.c_str());
+
+	addMods(addon_mods);
+	checkConflictsAndDeps();
+
+	// complain about mods declared to be loaded, but not found
+	for (std::vector<ModSpec>::iterator it = addon_mods.begin();
+			it != addon_mods.end(); ++it)
+		load_mod_names.erase((*it).name);
+	std::vector<ModSpec> UnsatisfiedMods = getUnsatisfiedMods();
+	for (std::vector<ModSpec>::iterator it = UnsatisfiedMods.begin();
+			it != UnsatisfiedMods.end(); ++it)
+		load_mod_names.erase((*it).name);
+	if (!load_mod_names.empty()) {
+		errorstream << "The following mods could not be found:";
+		for (std::set<std::string>::iterator it = load_mod_names.begin();
+				it != load_mod_names.end(); ++it)
+			errorstream << " \"" << (*it) << "\"";
+		errorstream << std::endl;
+	}
+}
+
 void ModConfiguration::checkConflictsAndDeps()
 {
 	// report on name conflicts
@@ -296,53 +345,22 @@ ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
 	addModsInPath(gamespec.gamemods_path);
 	addModsInPath(worldpath + DIR_DELIM + "worldmods");
 
-	// check world.mt file for mods explicitely declared to be
-	// loaded or not by a load_mod_<modname> = ... line.
-	std::string worldmt = worldpath+DIR_DELIM+"world.mt";
-	Settings worldmt_settings;
-	worldmt_settings.readConfigFile(worldmt.c_str());
-	std::vector<std::string> names = worldmt_settings.getNames();
-	std::set<std::string> include_mod_names;
-	for (std::vector<std::string>::const_iterator it = names.begin();
-		it != names.end(); ++it) {
-		std::string name = *it;
-		// for backwards compatibility: exclude only mods which are
-		// explicitely excluded. if mod is not mentioned at all, it is
-		// enabled. So by default, all installed mods are enabled.
-		if (name.compare(0,9,"load_mod_") == 0 &&
-			worldmt_settings.getBool(name)) {
-			include_mod_names.insert(name.substr(9));
-		}
-	}
-
-	// Collect all mods that are also in include_mod_names
-	std::vector<ModSpec> addon_mods;
-	for (std::set<std::string>::const_iterator it_path = gamespec.addon_mods_paths.begin();
-		it_path != gamespec.addon_mods_paths.end(); ++it_path) {
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*it_path));
-		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
-			it != addon_mods_in_path.end(); ++it) {
-			const ModSpec& mod = *it;
-			if (include_mod_names.count(mod.name) != 0)
-				addon_mods.push_back(mod);
-			else
-				worldmt_settings.setBool("load_mod_" + mod.name, false);
-		}
-	}
-	worldmt_settings.updateConfigFile(worldmt.c_str());
-
-	addMods(addon_mods);
-
-	checkConflictsAndDeps();
+	// Load normal mods
+	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
+	addModsFormConfig(worldmt, gamespec.addon_mods_paths);
 }
 
 #ifndef SERVER
 ClientModConfiguration::ClientModConfiguration(const std::string &path):
 	ModConfiguration(path)
 {
-	addModsInPath(path);
-	addModsInPath(porting::path_user + DIR_DELIM + "clientmods");
-	checkConflictsAndDeps();
+	std::set<std::string> paths;
+	std::string path_user = porting::path_user + DIR_DELIM + "clientmods";
+	paths.insert(path);
+	paths.insert(path_user);
+
+	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
+	addModsFormConfig(settings_path, paths);
 }
 #endif
 
