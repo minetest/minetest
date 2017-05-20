@@ -286,6 +286,7 @@ void MeshUpdateQueue::cleanupCache()
 		if (cached_block->refcount_from_queue == 0 &&
 				cached_block->last_used_timestamp < t_now - cache_seconds) {
 			m_cache.erase(it++);
+			delete cached_block;
 		} else {
 			++it;
 		}
