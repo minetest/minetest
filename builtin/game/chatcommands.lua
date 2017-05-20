@@ -938,3 +938,31 @@ core.register_chatcommand("last-login", {
 		return false, "Last login time is unknown"
 	end,
 })
+
+core.register_chatcommand("clearinv", {
+	params = "[name]",
+	description = "Clear the inventory of yourself or another player",
+	func = function(name, param)
+		local player
+		if param and param ~= "" and param ~= name then
+			if not core.check_player_privs(name, {server=true}) then
+				return false, "You don't have permission"
+						.. " to run this command (missing privilege: server)"
+			end
+			player = core.get_player_by_name(param)
+			core.chat_send_player(param, name.." cleared your inventory.")
+		else
+			player = core.get_player_by_name(name)
+		end
+
+		if player then
+			player:get_inventory():set_list("main", {})
+			player:get_inventory():set_list("craft", {})
+			player:get_inventory():set_list("craftpreview", {})
+			core.log("action", name.." clears "..player:get_player_name().."'s inventory")
+			return true, "Cleared "..player:get_player_name().."'s inventory."
+		else
+			return false, "Player must be online to clear inventory!"
+		end
+	end,
+})
