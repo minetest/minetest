@@ -3903,16 +3903,6 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			params = getDigParams(nodedef_manager->get(n).groups, tp);
 	}
 
-	if (!runData.digging) {
-		infostream << "Started digging" << std::endl;
-		runData.dig_instantly = params.time == 0;
-		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
-			return;
-		client->interact(0, pointed);
-		runData.digging = true;
-		runData.ldown_for_dig = true;
-	}
-
 	if (!params.diggable) {
 		// I guess nobody will wait for this long
 		runData.dig_time_complete = 10000000.0;
@@ -3925,6 +3915,16 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			client->getParticleManager()->addPunchingParticles(client, smgr,
 					player, nodepos, n, features);
 		}
+	}
+
+	if (!runData.digging) {
+		infostream << "Started digging" << std::endl;
+		runData.dig_instantly = runData.dig_time_complete == 0;
+		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
+			return;
+		client->interact(0, pointed);
+		runData.digging = true;
+		runData.ldown_for_dig = true;
 	}
 
 	if (!runData.dig_instantly) {
