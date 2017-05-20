@@ -333,7 +333,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 				def.wield_scale, tsrc,
 				f.tiles[0].layers[0].animation_frame_count);
-		} else if (f.drawtype == NDT_PLANTLIKE_WATER) {
+		} else if (f.drawtype == NDT_PLANTLIKE_ROOTED) {
 			setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
 				def.wield_scale, tsrc,
 				f.special_tiles[0].layers[0].animation_frame_count);

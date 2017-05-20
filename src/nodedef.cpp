@@ -772,7 +772,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_RAILLIKE:
 		solidness = 0;
 		break;
-	case NDT_PLANTLIKE_WATER:
+	case NDT_PLANTLIKE_ROOTED:
 		solidness = 2;
 		break;
 	}
@@ -813,7 +813,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tdef[j].backface_culling, overlay_material);
 	}
 
-	if (drawtype == NDT_PLANTLIKE_WATER)
+	if (drawtype == NDT_PLANTLIKE_ROOTED)
 		if (waving == 1)
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		else if (waving == 2)

@@ -131,7 +131,7 @@ public:
 	void drawTorchlikeNode();
 	void drawSignlikeNode();
 	void drawPlantlikeNode();
-	void drawPlantlikeWaterNode();
+	void drawPlantlikeRootedNode();
 	void drawFirelikeNode();
 	void drawFencelikeNode();
 	void drawRaillikeNode();

@@ -188,7 +188,7 @@ enum NodeDrawType
 	// Uses static meshes
 	NDT_MESH,
 	// Combined plantlike-on-solid
-	NDT_PLANTLIKE_WATER,
+	NDT_PLANTLIKE_ROOTED,
 };
 
 // Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS

@@ -619,7 +619,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"NDT_GLASSLIKE_FRAMED",
 		"NDT_FIRELIKE",
 		"NDT_GLASSLIKE_FRAMED_OPTIONAL",
-		"NDT_PLANTLIKE_WATER",
+		"NDT_PLANTLIKE_ROOTED",
 	};
 
 	for (int i = 0; i < 14; i++){

@@ -922,7 +922,7 @@ void MapblockMeshGenerator::drawPlantlikeNode()
 	drawPlantlike();
 }
 
-void MapblockMeshGenerator::drawPlantlikeWaterNode()
+void MapblockMeshGenerator::drawPlantlikeRootedNode()
 {
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
@@ -1295,7 +1295,7 @@ void MapblockMeshGenerator::drawNode()
 		case NDT_TORCHLIKE:         drawTorchlikeNode(); break;
 		case NDT_SIGNLIKE:          drawSignlikeNode(); break;
 		case NDT_PLANTLIKE:         drawPlantlikeNode(); break;
-		case NDT_PLANTLIKE_WATER:   drawPlantlikeWaterNode(); break;
+		case NDT_PLANTLIKE_ROOTED:  drawPlantlikeRootedNode(); break;
 		case NDT_FIRELIKE:          drawFirelikeNode(); break;
 		case NDT_FENCELIKE:         drawFencelikeNode(); break;
 		case NDT_RAILLIKE:          drawRaillikeNode(); break;
