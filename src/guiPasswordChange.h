@@ -39,12 +39,17 @@ public:
 
 	void drawMenu();
 
-	bool acceptInput();
+	void acceptInput();
+
+	bool processInput();
 
 	bool OnEvent(const SEvent &event);
 
 private:
 	Client *m_client;
+	std::wstring m_oldpass;
+	std::wstring m_newpass;
+	std::wstring m_newpass_confirm;
 };
 
 #endif
