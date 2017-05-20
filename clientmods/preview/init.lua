@@ -78,6 +78,10 @@ core.register_chatcommand("test_node", {
 
 local function preview_minimap()
 	local minimap = core.ui.minimap
+	if not minimap then
+		print("[PREVIEW] Minimap is disabled. Skipping.")
+		return
+	end
 	minimap:set_mode(4)
 	minimap:show()
 	minimap:set_pos({x=5, y=50, z=5})
@@ -96,7 +100,9 @@ core.after(2, function()
 end)
 
 core.after(5, function()
-	core.ui.minimap:show()
+	if core.ui.minimap then
+		core.ui.minimap:show()
+	end
 
 	print("[PREVIEW] Day count: " .. core.get_day_count() ..
 		" time of day " .. core.get_timeofday())
