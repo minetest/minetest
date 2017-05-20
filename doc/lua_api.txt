@@ -2834,6 +2834,9 @@ These functions return the leftover itemstack.
     * **DO NOT ALLOW ANY OTHER MODS TO ACCESS THE RETURNED ENVIRONMENT, STORE IT IN
       A LOCAL VARIABLE!**
 
+* `minetest.get_last_run_mod()`
+    * Returns the name of the current mod or "*builtin*"
+
 * `minetest.global_exists(name)`
     * Checks if a global variable has been set, without triggering a warning.
 
