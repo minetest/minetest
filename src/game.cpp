@@ -1281,7 +1281,7 @@ protected:
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
-	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
+	bool handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			const ToolCapabilities &playeritem_toolcap, f32 dtime);
 	void updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 			const CameraOrientation &cam);
@@ -3758,8 +3758,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 	}
 
 	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
-			&& client->checkPrivilege("interact")) {
-		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
+			&& client->checkPrivilege("interact")
+			&& handleDigging(pointed, nodepos, playeritem_toolcap, dtime)) {
+		meta = NULL; // If node is removed, pointer to metadata no longer valid.
 	}
 
 	if ((getRightClicked() ||
@@ -3879,12 +3880,13 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 }
 
 
-void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
+bool Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	ClientMap &map = client->getEnv().getClientMap();
 	MapNode n = client->getEnv().getClientMap().getNodeNoEx(nodepos);
+	bool nodeRemoved = false;
 
 	// NOTE: Similar piece of code exists on the server side for
 	// cheat detection.
@@ -3907,7 +3909,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		infostream << "Started digging" << std::endl;
 		runData.dig_instantly = params.time == 0;
 		if (client->moddingEnabled() && client->getScript()->on_punchnode(nodepos, n))
-			return;
+			return false;
 		client->interact(0, pointed);
 		runData.digging = true;
 		runData.ldown_for_dig = true;
@@ -3979,10 +3981,11 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		if (is_valid_position) {
 			if (client->moddingEnabled()) {
 				if (client->getScript()->on_dignode(nodepos, wasnode)) {
-					return;
+					return false;
 				}
 			}
 			client->removeNode(nodepos);
+			nodeRemoved = true;
 		}
 
 		client->interact(2, pointed);
@@ -4008,6 +4011,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 	}
 
 	camera->setDigging(0);  // left click animation
+	return nodeRemoved;
 }
 
 
