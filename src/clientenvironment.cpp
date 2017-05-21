@@ -237,11 +237,10 @@ void ClientEnvironment::step(float dtime)
 			pre_factor = 1.0 + (float)addp/100.0;
 		}
 		float speed = pre_factor * speed_diff.getLength();
-		if(speed > tolerance)
-		{
-			f32 damage_f = (speed - tolerance)/BS * post_factor;
-			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0){
+		if (speed > tolerance) {
+			f32 damage_f = (speed - tolerance) / BS * post_factor;
+			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
+			if (damage != 0) {
 				damageLocalPlayer(damage, true);
 				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
 				m_client->event()->put(e);
