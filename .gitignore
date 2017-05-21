@@ -43,6 +43,8 @@ gtags.files
 !/mods/minetest/mods_here.txt
 /worlds
 /world/
+/clientmods/mods.conf
+/client/mod_storage/
 
 ## Configuration/log files
 minetest.conf
