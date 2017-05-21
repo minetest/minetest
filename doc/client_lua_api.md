@@ -989,6 +989,96 @@ Can be obtained via `minetest.get_meta(pos)`.
     * `inventory`: `{list1 = {}, ...}}`
 
 -----------------
+### Definitions
+* `minetest.get_node_def(nodename)`
+	* Returns [node definition](#node-definition) table of `nodename`
+* `minetest.get_item_def(itemstring)`
+	* Returns item definition table of `itemstring`
+
+#### Node Definition
+
+```lua
+	{
+		has_on_construct = bool,        -- Whether the node has the on_construct callback defined
+		has_on_destruct = bool,         -- Whether the node has the on_destruct callback defined
+		has_after_destruct = bool,      -- Whether the node has the after_destruct callback defined
+		name = string,                  -- The name of the node e.g. "air", "default:dirt"
+		groups = table,                 -- The groups of the node
+		paramtype = string,             -- Paramtype of the node
+		paramtype2 = string,            -- ParamType2 of the node
+		drawtype = string,              -- Drawtype of the node
+		mesh = <string>,                -- Mesh name if existant
+		minimap_color = <Color>,        -- Color of node on minimap *May not exist*
+		visual_scale = number,          -- Visual scale of node
+		alpha = number,                 -- Alpha of the node. Only used for liquids
+		color = <Color>,                -- Color of node *May not exist*
+		palette_name = <string>,        -- Filename of palette *May not exist*
+		palette = <{                    -- List of colors
+			Color,
+			Color
+		}>,
+		waving = number,                -- 0 of not waving, 1 if waving
+		connect_sides = number,         -- Used for connected nodes
+		connects_to = {                 -- List of nodes to connect to
+			"node1",
+			"node2"
+		},
+		post_effect_color = Color,      -- Color overlayed on the screen when the player is in the node
+		leveled = number,               -- Max level for node
+		sunlight_propogates = bool,     -- Whether light passes through the block
+		light_source = number,          -- Light emitted by the block
+		is_ground_content = bool,       -- Whether caves should cut through the node
+		walkable = bool,                -- Whether the player collides with the node
+		pointable = bool,               -- Whether the player can select the node
+		diggable = bool,                -- Whether the player can dig the node
+		climbable = bool,               -- Whether the player can climb up the node
+		buildable_to = bool,            -- Whether the player can replace the node by placing a node on it
+		rightclickable = bool,          -- Whether the player can place nodes pointing at this node
+		damage_per_second = number,     -- HP of damage per second when the player is in the node
+		liquid_type = <string>,         -- A string containing "none", "flowing", or "source" *May not exist*
+		liquid_alternative_flowing = <string>, -- Alternative node for liquid *May not exist*
+		liquid_alternative_source = <string>, -- Alternative node for liquid *May not exist*
+		liquid_viscosity = <number>,    -- How fast the liquid flows *May not exist*
+		liquid_renewable = <boolean>,   -- Whether the liquid makes an infinite source *May not exist*
+		liquid_range = <number>,        -- How far the liquid flows *May not exist*
+		drowning = bool,                -- Whether the player will drown in the node
+		floodable = bool,               -- Whether nodes will be replaced by liquids (flooded)
+		node_box = table,               -- Nodebox to draw the node with
+		collision_box = table,          -- Nodebox to set the collision area
+		selection_box = table,          -- Nodebox to set the area selected by the player
+		sounds = {                      -- Table of sounds that the block makes
+			sound_footstep = SimpleSoundSpec,
+			sound_dig = SimpleSoundSpec,
+			sound_dug = SimpleSoundSpec
+		},
+		legacy_facedir_simple = bool,   -- Whether to use old facedir
+		legacy_wallmounted = bool       -- Whether to use old wallmounted
+	}
+```
+
+#### Item Definition
+
+```lua
+	{
+		name = string,                  -- Name of the item e.g. "default:stone"
+		description = string,           -- Description of the item e.g. "Stone"
+		type = string,                  -- Item type: "none", "node", "craftitem", "tool"
+		inventory_image = string,       -- Image in the inventory
+		wield_image = string,           -- Image in wieldmesh
+		palette_image = string,         -- Image for palette
+		color = Color,                  -- Color for item
+		wield_scale = Vector,           -- Wieldmesh scale
+		stack_max = number,             -- Number of items stackable together
+		usable = bool,                  -- Has on_use callback defined
+		liquids_pointable = bool,       -- Whether you can point at liquids with the item
+		tool_capabilities = <table>,    -- If the item is a tool, tool capabiltites of the item
+		groups = table,                 -- Groups of the item
+		sound_place = SimpleSoundSpec,  -- Sound played when placed
+		sound_place_failed = SimpleSoundSpec, -- Sound played when placement failed
+		node_placement_prediction = string -- Node placed in client until server catches up
+	}
+```
+-----------------
 
 ### Chat command definition (`register_chatcommand`)
 
@@ -1014,7 +1104,7 @@ Most text can contain escape sequences, that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
 * `minetest.get_color_escape_sequence(color)`:
-    * `color` is a ColorString
+    * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the text color to `color`
 * `minetest.colorize(color, message)`:
     * Equivalent to:
@@ -1022,7 +1112,7 @@ The following functions provide escape sequences:
        message ..
        minetest.get_color_escape_sequence("#ffffff")`
 * `color.get_background_escape_sequence(color)`
-    * `color` is a ColorString
+    * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
 * `color.strip_foreground_colors(str)`
@@ -1047,3 +1137,7 @@ Named colors are also supported and are equivalent to
 To specify the value of the alpha channel, append `#AA` to the end of the color name
 (e.g. `colorname#08`). For named colors the hexadecimal string representing the alpha
 value must (always) be two hexadecimal digits.
+
+`Color`
+-------------
+`{a = alpha, r = red, g = green, b = blue}` defines an ARGB8 color.

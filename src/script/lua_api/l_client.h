@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_CLIENT_H_
 
 #include "lua_api/l_base.h"
+#include "itemdef.h"
+#include "tool.h"
 
 class ModApiClient : public ModApiBase
 {
@@ -38,7 +40,7 @@ private:
 	// get_player_names()
 	static int l_get_player_names(lua_State *L);
 
-	// show_formspec(name, fornspec)
+	// show_formspec(name, formspec)
 	static int l_show_formspec(lua_State *L);
 
 	// send_respawn()
@@ -74,6 +76,12 @@ private:
 
 	// get_server_info()
 	static int l_get_server_info(lua_State *L);
+	
+	// get_item_def(itemstring)
+	static int l_get_item_def(lua_State *L);
+	
+	// get_node_def(nodename)
+	static int l_get_node_def(lua_State *L);
 
 	static int l_take_screenshot(lua_State *L);
 

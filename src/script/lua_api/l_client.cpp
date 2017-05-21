@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "map.h"
 #include "util/string.h"
+#include "nodedef.h"
 
 extern MainGameCallback *g_gamecallback;
 
@@ -260,6 +261,50 @@ int ModApiClient::l_get_server_info(lua_State *L)
 	return 1;
 }
 
+// get_item_def(itemstring)
+int ModApiClient::l_get_item_def(lua_State *L)
+{
+	IGameDef *gdef = getGameDef(L);
+	assert(gdef);
+
+	IItemDefManager *idef = gdef->idef();
+	assert(idef);
+	
+	if (!lua_isstring(L, 1))
+		return 0;
+
+	const std::string &name(lua_tostring(L, 1));
+	if (!idef->isKnown(name))
+		return 0;
+	const ItemDefinition &def = idef->get(name);
+	
+	push_item_definition_full(L, def);	
+
+	return 1;	
+}
+
+// get_node_def(nodename)
+int ModApiClient::l_get_node_def(lua_State *L)
+{
+	IGameDef *gdef = getGameDef(L);
+	assert(gdef);
+	
+	INodeDefManager *ndef = gdef->ndef();
+	assert(ndef);
+	
+	if (!lua_isstring(L, 1))
+		return 0;
+	
+	const std::string &name = lua_tostring(L, 1);
+	const ContentFeatures &cf = ndef->get(ndef->getId(name));
+	if (cf.name != name) // Unknown node. | name = <whatever>, cf.name = ignore
+		return 0;
+	
+	push_content_features(L, cf);
+	
+	return 1;
+}
+
 int ModApiClient::l_take_screenshot(lua_State *L)
 {
 	Client *client = getClient(L);
@@ -286,5 +331,7 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
 	API_FCT(get_server_info);
+	API_FCT(get_item_def);
+	API_FCT(get_node_def);
 	API_FCT(take_screenshot);
 }
