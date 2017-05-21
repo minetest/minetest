@@ -312,6 +312,9 @@ serverlist_url (Serverlist URL) string servers.minetest.net
 #    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
 serverlist_file (Serverlist file) string favoriteservers.txt
 
+#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+max_out_chat_queue_size (Maximum size of the out chat queue) int 20
+
 [*Graphics]
 
 [**In-Game]

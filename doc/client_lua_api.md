@@ -721,6 +721,12 @@ Call these functions only at load time!
 ### Player
 * `minetest.get_wielded_item()`
     * Returns the itemstack the local player is holding
+* `minetest.send_chat_message(message)`
+    * Act as if `message` was typed by the player into the terminal.
+* `minetest.run_server_chatcommand(cmd, param)`
+    * Alias for `minetest.send_chat_message("/" .. cmd .. " " .. param)`
+* `minetest.clear_out_chat_queue()`
+    * Clears the out chat queue
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
@@ -836,7 +842,7 @@ Please do not try to access the reference until the camera is initialized, other
     * Returns with same syntax as above
 * `get_fov()`
     * Returns:
-    
+
 ```lua
      {
          x = number,
@@ -845,7 +851,7 @@ Please do not try to access the reference until the camera is initialized, other
          actual = number
      }
 ```
-    
+
 * `get_pos()`
     * Returns position of camera with view bobbing
 * `get_offset()`
