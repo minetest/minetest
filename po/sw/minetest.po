@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Minetest Translate\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-30 06:18+0200\n"
+"POT-Creation-Date: 2017-05-21 17:40+0200\n"
 "PO-Revision-Date: 2016-10-03 05:13+0000\n"
 "Last-Translator: Eidy <JulianBiddle@practicalcybernetics.com>\n"
 "Language-Team: Swahili <https://hosted.weblate.org/projects/minetest/"
@@ -13,6 +13,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.9-dev\n"
+
+#: builtin/client/init.lua
+msgid "Respawn"
+msgstr "Respawn"
+
+#: builtin/client/init.lua
+msgid "You died."
+msgstr "Alikufa."
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
@@ -70,16 +78,22 @@ msgstr "Tunaunga mkono matoleo ya itifaki kati ya toleo la $1 na $2."
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
 #: builtin/mainmenu/dlg_rename_modpack.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
-#: src/keycode.cpp
+#: src/guiPasswordChange.cpp src/keycode.cpp
 msgid "Cancel"
 msgstr "Katisha"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-msgid "Depends:"
+#, fuzzy
+msgid "Dependencies:"
 msgstr "Inategemea:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
+msgstr "Lemaza MP"
+
+#: builtin/mainmenu/dlg_config_world.lua
+#, fuzzy
+msgid "Disable all"
 msgstr "Lemaza MP"
 
 #: builtin/mainmenu/dlg_config_world.lua
@@ -99,16 +113,12 @@ msgstr ""
 "chararacters [a-z0-9_] wanaruhusiwa."
 
 #: builtin/mainmenu/dlg_config_world.lua
-msgid "Hide Game"
-msgstr "Ficha mchezo"
-
-#: builtin/mainmenu/dlg_config_world.lua
-msgid "Hide mp content"
-msgstr "Ficha maudhui ya mbunge"
-
-#: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
 msgstr "Moduli:"
+
+#: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
+msgid "Optional dependencies:"
+msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -172,8 +182,7 @@ msgid "Are you sure you want to delete \"$1\"?"
 msgstr "Una uhakika unataka kufuta \"$1\"?"
 
 #: builtin/mainmenu/dlg_delete_mod.lua builtin/mainmenu/dlg_delete_world.lua
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-#: src/keycode.cpp
+#: builtin/mainmenu/tab_local.lua src/keycode.cpp
 msgid "Delete"
 msgstr "Futa"
 
@@ -189,7 +198,7 @@ msgstr "Modmgr: batili modpath \"$1\""
 msgid "Delete World \"$1\"?"
 msgstr "Futa ulimwengu \"$1\"?"
 
-#: builtin/mainmenu/dlg_rename_modpack.lua src/keycode.cpp
+#: builtin/mainmenu/dlg_rename_modpack.lua
 msgid "Accept"
 msgstr "Kukubali"
 
@@ -267,6 +276,11 @@ msgstr "Thamani inayofaa ni:"
 msgid "Restore Default"
 msgstr "Rejesha chaguo-msingi"
 
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
+#: builtin/mainmenu/tab_online.lua
+msgid "Search"
+msgstr "Utafutaji"
+
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Select path"
 msgstr "Teua njia"
@@ -276,11 +290,13 @@ msgid "Show technical names"
 msgstr "Onyesha majina ya kiufundi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be greater than $1."
+#, fuzzy
+msgid "The value must be at least $1."
 msgstr "Thamani lazima iwe kubwa kuliko $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "The value must be lower than $1."
+#, fuzzy
+msgid "The value must not be larger than $1."
 msgstr "Thamani lazima iwe chini kuliko $1."
 
 #: builtin/mainmenu/modmgr.lua
@@ -308,6 +324,10 @@ msgid "Install Mod: unable to find suitable foldername for modpack $1"
 msgstr ""
 "Sakinisha Moduli: haiwezi kupata foldername ya kufaa kwa ajili ya modpack $1"
 
+#: builtin/mainmenu/modmgr.lua
+msgid "Subgame Mods"
+msgstr ""
+
 #: builtin/mainmenu/store.lua
 msgid "Close store"
 msgstr "Duka la karibu"
@@ -327,10 +347,6 @@ msgstr "Ukurasa $1 ya $2"
 #: builtin/mainmenu/store.lua
 msgid "Rating"
 msgstr "Makadirio"
-
-#: builtin/mainmenu/store.lua
-msgid "Search"
-msgstr "Utafutaji"
 
 #: builtin/mainmenu/store.lua
 msgid "Shortname:"
@@ -368,6 +384,71 @@ msgstr "Wachangiaji wa awali"
 msgid "Previous Core Developers"
 msgstr "Awali msingi watengenezaji"
 
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Announce Server"
+msgstr "Kutangaza seva"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Bind Address"
+msgstr "Kumfunga anwani"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Configure"
+msgstr "Sanidi"
+
+#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Creative Mode"
+msgstr "Hali ya ubunifu"
+
+#: builtin/mainmenu/tab_local.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Enable Damage"
+msgstr "Wezesha uharibifu"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Host Game"
+msgstr "Ficha mchezo"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Host Server"
+msgstr "Seva"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Local Game"
+msgstr "Anzisha mchezo"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Name/Password"
+msgstr "Jina/nenosiri"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "New"
+msgstr "Mpya"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "No world created or selected!"
+msgstr "Duniani hakuna kuundwa au kuteuliwa!"
+
+#: builtin/mainmenu/tab_local.lua
+#, fuzzy
+msgid "Play Game"
+msgstr "Jina la mchezaji"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Port"
+msgstr "Bandari"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Select World:"
+msgstr "Teua ulimwengu:"
+
+#: builtin/mainmenu/tab_local.lua
+msgid "Server Port"
+msgstr "Kituo tarishi cha seva"
+
 #: builtin/mainmenu/tab_mods.lua
 msgid "Installed Mods:"
 msgstr "Mods zilizosakinishwa:"
@@ -375,6 +456,10 @@ msgstr "Mods zilizosakinishwa:"
 #: builtin/mainmenu/tab_mods.lua
 msgid "Mod information:"
 msgstr "Taarifa Moduli:"
+
+#: builtin/mainmenu/tab_mods.lua
+msgid "No dependencies."
+msgstr ""
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -396,95 +481,46 @@ msgstr "Sakinusha Moduli teuliwa"
 msgid "Uninstall selected modpack"
 msgstr "Sakinusha modpack teuliwa"
 
-#: builtin/mainmenu/tab_multiplayer.lua
+#: builtin/mainmenu/tab_online.lua
 msgid "Address / Port"
 msgstr "Kushughulikia / bandari"
 
-#: builtin/mainmenu/tab_multiplayer.lua src/settings_translation_file.cpp
-msgid "Client"
-msgstr "Mteja"
-
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Connect"
 msgstr "Kuunganisha"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Creative mode"
 msgstr "Hali ya ubunifu"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Damage enabled"
 msgstr "Uharibifu kuwezeshwa"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Del. Favorite"
 msgstr "Del. kipendwa"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Favorite"
 msgstr "Kipendwa"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Name / Password"
 msgstr "Jina / nenosiri"
 
-#: builtin/mainmenu/tab_multiplayer.lua builtin/mainmenu/tab_simple_main.lua
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+msgid "Ping"
+msgstr ""
+
+#: builtin/mainmenu/tab_online.lua
+#, fuzzy
+msgid "Play Online"
+msgstr "Jina la mchezaji"
+
+#: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
 msgstr "PvP kuwezeshwa"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Bind Address"
-msgstr "Kumfunga anwani"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-msgid "Configure"
-msgstr "Sanidi"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
-#: builtin/mainmenu/tab_singleplayer.lua
-msgid "Creative Mode"
-msgstr "Hali ya ubunifu"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_simple_main.lua
-#: builtin/mainmenu/tab_singleplayer.lua
-msgid "Enable Damage"
-msgstr "Wezesha uharibifu"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Name/Password"
-msgstr "Jina/nenosiri"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-msgid "New"
-msgstr "Mpya"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-msgid "No world created or selected!"
-msgstr "Duniani hakuna kuundwa au kuteuliwa!"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Port"
-msgstr "Bandari"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Public"
-msgstr "Umma"
-
-#: builtin/mainmenu/tab_server.lua builtin/mainmenu/tab_singleplayer.lua
-msgid "Select World:"
-msgstr "Teua ulimwengu:"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Server"
-msgstr "Seva"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Server Port"
-msgstr "Kituo tarishi cha seva"
-
-#: builtin/mainmenu/tab_server.lua
-msgid "Start Game"
-msgstr "Anzisha mchezo"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
@@ -513,6 +549,10 @@ msgstr "Antialiasing:"
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
 msgstr "Je, una hakika upya ulimwengu wako singleplayer?"
+
+#: builtin/mainmenu/tab_settings.lua
+msgid "Autosave screen size"
+msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -591,6 +631,11 @@ msgid "Reset singleplayer world"
 msgstr "Weka upya singleplayer ulimwengu"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
+msgid "Screen:"
+msgstr "Screenshot"
+
+#: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
 msgstr "Vipimo vya"
 
@@ -654,14 +699,6 @@ msgstr "Kuu"
 msgid "Start Singleplayer"
 msgstr "Kuanza Singleplayer"
 
-#: builtin/mainmenu/tab_singleplayer.lua src/keycode.cpp
-msgid "Play"
-msgstr "Kucheza"
-
-#: builtin/mainmenu/tab_singleplayer.lua
-msgid "Singleplayer"
-msgstr "Singleplayer"
-
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Hakuna taarifa zilizopo"
@@ -724,6 +761,10 @@ msgid "Player name too long."
 msgstr "Mchezaji jina refu."
 
 #: src/client/clientlauncher.cpp
+msgid "Please choose a name!"
+msgstr ""
+
+#: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
 msgstr "Njia ya dunia iliyotolewa haipo:"
 
@@ -738,6 +779,44 @@ msgid ""
 msgstr ""
 "\n"
 "Angalia debug.txt kwa maelezo."
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Address: "
+msgstr "Kumfunga anwani"
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Creative Mode: "
+msgstr "Hali ya ubunifu"
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Damage: "
+msgstr "Uharibifu"
+
+#: src/game.cpp
+msgid "- Mode: "
+msgstr ""
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Port: "
+msgstr "Bandari"
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Public: "
+msgstr "Umma"
+
+#: src/game.cpp
+msgid "- PvP: "
+msgstr ""
+
+#: src/game.cpp
+#, fuzzy
+msgid "- Server Name: "
+msgstr "Jina la seva"
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -756,26 +835,22 @@ msgid "Continue"
 msgstr "Kuendelea"
 
 #: src/game.cpp
-msgid "Creating client..."
-msgstr "Inaunda mteja..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Inaunda seva..."
-
-#: src/game.cpp
+#, fuzzy, c-format
 msgid ""
-"Default Controls:\n"
-"- WASD: move\n"
-"- Space: jump/climb\n"
-"- Shift: sneak/go down\n"
-"- Q: drop item\n"
-"- I: inventory\n"
+"Controls:\n"
+"- %s: move forwards\n"
+"- %s: move backwards\n"
+"- %s: move left\n"
+"- %s: move right\n"
+"- %s: jump/climb\n"
+"- %s: sneak/go down\n"
+"- %s: drop item\n"
+"- %s: inventory\n"
 "- Mouse: turn/look\n"
 "- Mouse left: dig/punch\n"
 "- Mouse right: place/use\n"
 "- Mouse wheel: select item\n"
-"- T: chat\n"
+"- %s: chat\n"
 msgstr ""
 "Vidhibiti vya chaguo-msingi:\n"
 "-WASD: hoja\n"
@@ -788,6 +863,14 @@ msgstr ""
 "- kipanya kulia: mahali/matumizi\n"
 "- kipanya gurudumu: Teua kipengee\n"
 "- T: mazungumzo\n"
+
+#: src/game.cpp
+msgid "Creating client..."
+msgstr "Inaunda mteja..."
+
+#: src/game.cpp
+msgid "Creating server..."
+msgstr "Inaunda seva..."
 
 #: src/game.cpp
 msgid ""
@@ -824,6 +907,20 @@ msgid "Exit to OS"
 msgstr "Toka kwa OS"
 
 #: src/game.cpp
+msgid "Game info:"
+msgstr ""
+
+#: src/game.cpp
+#, fuzzy
+msgid "Game paused"
+msgstr "Michezo"
+
+#: src/game.cpp
+#, fuzzy
+msgid "Hosting server"
+msgstr "Inaunda seva..."
+
+#: src/game.cpp
 msgid "Item definitions..."
 msgstr "Fasili ya kipengele..."
 
@@ -844,24 +941,46 @@ msgid "Node definitions..."
 msgstr "Fundo Fasili..."
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Kusuluhisha anwani..."
+msgid "Off"
+msgstr ""
 
 #: src/game.cpp
-msgid "Respawn"
-msgstr "Respawn"
+msgid "On"
+msgstr ""
+
+#: src/game.cpp
+#, fuzzy
+msgid "Remote server"
+msgstr "Bandari ya mbali"
+
+#: src/game.cpp
+msgid "Resolving address..."
+msgstr "Kusuluhisha anwani..."
 
 #: src/game.cpp
 msgid "Shutting down..."
 msgstr "Inazima..."
 
 #: src/game.cpp
+msgid "Singleplayer"
+msgstr "Singleplayer"
+
+#: src/game.cpp
 msgid "Sound Volume"
 msgstr "Kiwango cha sauti"
 
 #: src/game.cpp
-msgid "You died."
-msgstr "Alikufa."
+#, c-format
+msgid "Volume changed to %d%%"
+msgstr ""
+
+#: src/game.cpp
+msgid "Volume changed to 0%"
+msgstr ""
+
+#: src/game.cpp
+msgid "Volume changed to 100%"
+msgstr ""
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -896,6 +1015,10 @@ msgid "Console"
 msgstr "Kiweko"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Dec. volume"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
 msgstr "Mara mbili bomba \"Ruka\" hadi Togo kuruka"
 
@@ -906,6 +1029,11 @@ msgstr "Achia"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Mbele"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Inc. volume"
+msgstr "Kiwango cha sauti"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -926,6 +1054,24 @@ msgstr "Keybindings. (Kama Menyu hii screws, Ondoa vitu kutoka minetest.conf)"
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Left"
 msgstr "Kushoto"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Local command"
+msgstr "Amri majadiliano"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Mute"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Next item"
+msgstr "Ijayo"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Prev. item"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
@@ -1004,36 +1150,20 @@ msgid "Apps"
 msgstr "Programu"
 
 #: src/keycode.cpp
-msgid "Attn"
-msgstr "Attn"
-
-#: src/keycode.cpp
 msgid "Back"
 msgstr "Nyuma"
 
 #: src/keycode.cpp
-msgid "Capital"
-msgstr "Mji mkuu"
+msgid "Caps Lock"
+msgstr ""
 
 #: src/keycode.cpp
 msgid "Clear"
 msgstr "Wazi"
 
 #: src/keycode.cpp
-msgid "Comma"
-msgstr "Mkato"
-
-#: src/keycode.cpp
 msgid "Control"
 msgstr "Udhibiti"
-
-#: src/keycode.cpp
-msgid "Convert"
-msgstr "Geuza"
-
-#: src/keycode.cpp
-msgid "CrSel"
-msgstr "CrSel"
 
 #: src/keycode.cpp
 msgid "Down"
@@ -1044,24 +1174,13 @@ msgid "End"
 msgstr "Mwisho"
 
 #: src/keycode.cpp
-msgid "Erase OEF"
+#, fuzzy
+msgid "Erase EOF"
 msgstr "Futa OEF"
-
-#: src/keycode.cpp
-msgid "Escape"
-msgstr "Kutoroka"
-
-#: src/keycode.cpp
-msgid "ExSel"
-msgstr "ExSel"
 
 #: src/keycode.cpp
 msgid "Execute"
 msgstr "Kutekeleza"
-
-#: src/keycode.cpp
-msgid "Final"
-msgstr "Mwisho"
 
 #: src/keycode.cpp
 msgid "Help"
@@ -1072,20 +1191,33 @@ msgid "Home"
 msgstr "Nyumbani"
 
 #: src/keycode.cpp
+#, fuzzy
+msgid "IME Accept"
+msgstr "Kukubali"
+
+#: src/keycode.cpp
+#, fuzzy
+msgid "IME Convert"
+msgstr "Geuza"
+
+#: src/keycode.cpp
+#, fuzzy
+msgid "IME Escape"
+msgstr "Kutoroka"
+
+#: src/keycode.cpp
+#, fuzzy
+msgid "IME Mode Change"
+msgstr "Mabadiliko ya hali ya"
+
+#: src/keycode.cpp
+#, fuzzy
+msgid "IME Nonconvert"
+msgstr "Nonconvert"
+
+#: src/keycode.cpp
 msgid "Insert"
 msgstr "Chomeka"
-
-#: src/keycode.cpp
-msgid "Junja"
-msgstr "Junja"
-
-#: src/keycode.cpp
-msgid "Kana"
-msgstr "Kana"
-
-#: src/keycode.cpp
-msgid "Kanji"
-msgstr "KanJi"
 
 #: src/keycode.cpp
 msgid "Left Button"
@@ -1116,20 +1248,8 @@ msgid "Middle Button"
 msgstr "Kitufe kati"
 
 #: src/keycode.cpp
-msgid "Minus"
-msgstr "Alama ya kutoa"
-
-#: src/keycode.cpp
-msgid "Mode Change"
-msgstr "Mabadiliko ya hali ya"
-
-#: src/keycode.cpp
 msgid "Next"
 msgstr "Ijayo"
-
-#: src/keycode.cpp
-msgid "Nonconvert"
-msgstr "Nonconvert"
 
 #: src/keycode.cpp
 msgid "Num Lock"
@@ -1146,6 +1266,11 @@ msgstr "Kinanda +"
 #: src/keycode.cpp
 msgid "Numpad -"
 msgstr "Numpad-"
+
+#: src/keycode.cpp
+#, fuzzy
+msgid "Numpad ."
+msgstr "Kinanda *"
 
 #: src/keycode.cpp
 msgid "Numpad /"
@@ -1196,20 +1321,12 @@ msgid "OEM Clear"
 msgstr "Wazi ya OEM"
 
 #: src/keycode.cpp
-msgid "PA1"
-msgstr "PA1"
-
-#: src/keycode.cpp
 msgid "Pause"
 msgstr "Sitisha"
 
 #: src/keycode.cpp
-msgid "Period"
-msgstr "Kipindi cha"
-
-#: src/keycode.cpp
-msgid "Plus"
-msgstr "Plus"
+msgid "Play"
+msgstr "Kucheza"
 
 #: src/keycode.cpp
 msgid "Print"
@@ -1316,6 +1433,20 @@ msgid "3D mode"
 msgstr "Hali ya 3D"
 
 #: src/settings_translation_file.cpp
+msgid "3D noise defining giant caverns."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"3D noise defining mountain structure and height.\n"
+"Also defines structure of floatland mountain terrain."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "3D noise defining structure of river canyon walls."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "3D support.\n"
 "Currently supported:\n"
@@ -1390,6 +1521,10 @@ msgstr ""
 "Kumbuka kwamba uga wa anwani katika Menyu kuu Puuza kipimo hiki."
 
 #: src/settings_translation_file.cpp
+msgid "Adds particles when digging a node."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k "
 "screens."
@@ -1398,8 +1533,10 @@ msgstr ""
 "mfano kwa 4 k skrini."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Adjust the gamma encoding for the light tables. Lower numbers are brighter.\n"
+"Adjust the gamma encoding for the light tables. Higher numbers are "
+"brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
 "Rekebisha simbiko gamma kwa majedwali mwanga. Idadi ya chini ni mkali.\n"
@@ -1426,6 +1563,12 @@ msgid "Amplifies the valleys"
 msgstr "Inaangazia mabonde"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Android systems only: Tries to create inventory textures from meshes\n"
+"when no supported render was found."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
 msgstr "Uchujaji wa anisotropic"
 
@@ -1444,12 +1587,29 @@ msgstr ""
 "servers.minetest.net."
 
 #: src/settings_translation_file.cpp
+msgid "Apple trees noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
 msgstr "Kukadiria (X, Y, Z) kipimo cha fractal katika fundo."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
 msgstr "Uliza kuunganisha baada ya ajali"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"At this distance the server will aggressively optimize which blocks are sent "
+"to clients.\n"
+"Small values potentially improve performance a lot, at the expense of "
+"visible rendering glitches.\n"
+"(some blocks will not be rendered under water and in caves, as well as "
+"sometimes on land)\n"
+"Setting this to a value greater than max_block_send_distance disables this "
+"optimization.\n"
+"Stated in mapblocks (16 nodes)"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
@@ -1476,12 +1636,30 @@ msgid "Basic Privileges"
 msgstr "Haki za msingi"
 
 #: src/settings_translation_file.cpp
+msgid "Beach noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Beach noise threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
 msgstr "Uchujaji wa bilinear"
 
 #: src/settings_translation_file.cpp
 msgid "Bind address"
 msgstr "Kumfunga anwani"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Biome API temperature and humidity noise parameters"
+msgstr "Mwandishi ramani v6 unyevu kelele vigezo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Biome noise"
+msgstr "Kelele za mto"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
@@ -1513,6 +1691,11 @@ msgid "Camera update toggle key"
 msgstr "Kibonye guro Usasishaji wa kamera"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
 msgid "Cave noise #1"
 msgstr "Pango kelele #1"
 
@@ -1523,6 +1706,35 @@ msgstr "Pango kelele #2"
 #: src/settings_translation_file.cpp
 msgid "Cave width"
 msgstr "Pango upana"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave1 noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cave2 noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cavern limit"
+msgstr "Pango upana"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cavern noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
+msgid "Cavern taper"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Cavern threshold"
+msgstr "Kilele cha mlima gorofa Mwandishi ramani"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1599,8 +1811,17 @@ msgid "Clean transparent textures"
 msgstr "Unamu angavu safi"
 
 #: src/settings_translation_file.cpp
+msgid "Client"
+msgstr "Mteja"
+
+#: src/settings_translation_file.cpp
 msgid "Client and Server"
 msgstr "Mteja na seva"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Client modding"
+msgstr "Mteja"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -1672,6 +1893,11 @@ msgid "Console color"
 msgstr "Rangi ya Kiweko"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Console height"
+msgstr "Muhimu ya Kiweko"
+
+#: src/settings_translation_file.cpp
 msgid "Console key"
 msgstr "Muhimu ya Kiweko"
 
@@ -1698,20 +1924,18 @@ msgstr ""
 "unchanged."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Controls size of deserts and beaches in Mapgen v6.\n"
-"When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-msgstr ""
-"Vidhibiti ukubwa wa majangwa na fukwe katika Mwandishi ramani v6.\n"
-"Wakati snowbiomes vimewezeshwa 'mgv6_freq_desert' ni kupuuzwa."
-
-#: src/settings_translation_file.cpp
 msgid "Controls steepness/depth of lake depressions."
 msgstr "Udhibiti mwinuko/kina cha ziwa depressions."
 
 #: src/settings_translation_file.cpp
 msgid "Controls steepness/height of hills."
 msgstr "Udhibiti mwinuko/urefu wa milima."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Controls the density of floatland mountain terrain.\n"
+"Is an offset added to the 'np_mountain' noise value."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -1736,6 +1960,11 @@ msgid ""
 msgstr ""
 "Huunda maji haitabiriki sifa katika mapango.\n"
 "Haya kufanya madini vigumu. Sifuri Hulemaza yao. (0-10)"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Creative"
+msgstr "Kuunda"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -1772,6 +2001,11 @@ msgstr "Rekebisha taarifa kibonye"
 #: src/settings_translation_file.cpp
 msgid "Debug log level"
 msgstr "Rekebisha kiwango cha logi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Dec. volume key"
+msgstr "HUD kibonye"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -1815,6 +2049,41 @@ msgstr ""
 "Tu ina athari kama alikusanya na Mkunjo."
 
 #: src/settings_translation_file.cpp
+msgid "Defines areas of 'terrain_higher' (cliff-top terrain)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines areas of floatland smooth terrain.\n"
+"Smooth floatlands occur when noise > 0."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Defines areas of higher (cliff-top) terrain and affects steepness of cliffs."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines areas where trees have apples."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines areas with sandy beaches."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines full size of caverns, smaller values create larger caverns."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines large-scale river channel structure."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Defines location and terrain of optional hills and lakes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
@@ -1826,6 +2095,16 @@ msgstr ""
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
 "Inafasili umbali wa uhamisho wa mchezaji maximal katika vitalu (0 = ukomo)."
+
+#: src/settings_translation_file.cpp
+msgid "Defines tree areas and tree density."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Delay between mesh updates on the client in ms. Increasing this will slow\n"
+"down the rate of mesh updates, thus reducing jitter on slower clients."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
@@ -1860,17 +2139,23 @@ msgstr ""
 "ya."
 
 #: src/settings_translation_file.cpp
+msgid "Desert noise threshold"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Deserts occur when np_biome exceeds this value.\n"
+"When the new biome system is enabled, this is ignored."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
 msgstr "Desynchronize umbo la uhuishaji"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Determines terrain shape.\n"
-"The 3 numbers in brackets control the scale of the\n"
-"terrain, the 3 numbers should be identical."
-msgstr ""
-"Huamua umbo wa ardhi.\n"
-"Namba 3 katika mabano kudhibiti ukubwa wa ardhi, namba 3 lazima kufanana."
+#, fuzzy
+msgid "Digging particles"
+msgstr "Chembe"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
@@ -1920,8 +2205,22 @@ msgid "Enable Joysticks"
 msgstr "Wezesha vifimbocheza"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Enable Lua modding support on client.\n"
+"This support is experimental and API can change."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Enable VBO"
 msgstr "Wezesha VBO"
+
+#: src/settings_translation_file.cpp
+msgid "Enable console window"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Enable creative mode for new created maps."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -1966,6 +2265,20 @@ msgstr ""
 "Kuwezesha matumizi ya seva ya midia ya mbali (kama zinazotolewa na seva).\n"
 "Seva ya mbali kutoa njia kwa kiasi kikubwa kasi ya kupakua midia (k.m unamu) "
 "wakati wa kuunganisha kwenye seva."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Enable view bobbing"
+msgstr "Mwoneko kando"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Enable view bobbing and amount of view bobbing.\n"
+"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
+msgstr ""
+"Mengi kwa ajili ya Mwoneko kando.\n"
+"Kwa mfano: 0 kwa ajili ya Mwoneko hakuna kando; 1.0 kwa ajili ya kawaida; "
+"2.0 kwa mara mbili."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2021,6 +2334,10 @@ msgstr ""
 "Inahitaji shaders kwa kuwezeshwa."
 
 #: src/settings_translation_file.cpp
+msgid "Enables view bobbing when walking."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr "Injini ubainishaji wa data ya uchapaji nafasi"
 
@@ -2045,7 +2362,12 @@ msgid "FSAA"
 msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
-msgid "Fall bobbing"
+msgid "Factor noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Fall bobbing factor"
 msgstr "Kuanguka bobbing"
 
 #: src/settings_translation_file.cpp
@@ -2121,6 +2443,11 @@ msgid "Filler Depth"
 msgstr "Kina ya Filler"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Filler depth noise"
+msgstr "Kina ya Filler"
+
+#: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
 msgstr "Ramani ya toni filmic"
 
@@ -2141,8 +2468,33 @@ msgid "Filtering"
 msgstr "Uchujaji"
 
 #: src/settings_translation_file.cpp
+msgid "First of 2 3D noises that together define tunnels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Fixed map seed"
 msgstr "Mbegu ya ramani fasta"
+
+#: src/settings_translation_file.cpp
+msgid "Floatland base height noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Floatland base noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Floatland level"
+msgstr "Kiwango cha maji"
+
+#: src/settings_translation_file.cpp
+msgid "Floatland mountain density"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Floatland mountain height"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -2155,6 +2507,10 @@ msgstr "Kuruka"
 #: src/settings_translation_file.cpp
 msgid "Fog"
 msgstr "Ukungu"
+
+#: src/settings_translation_file.cpp
+msgid "Fog Start"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Fog toggle key"
@@ -2191,6 +2547,14 @@ msgstr "Umbizo la viwambo."
 #: src/settings_translation_file.cpp
 msgid "Forward key"
 msgstr "Ufunguo wa mbele"
+
+#: src/settings_translation_file.cpp
+msgid "Fractal type"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Fraction of the visible distance at which fog starts to be rendered"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
@@ -2284,8 +2648,17 @@ msgid "Gravity"
 msgstr "Mvutano"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Ground level"
+msgstr "Mwandishi ramani gorofa ngazi ya chini"
+
+#: src/settings_translation_file.cpp
 msgid "HTTP Mods"
 msgstr "HTTP Mods"
+
+#: src/settings_translation_file.cpp
+msgid "HUD scale factor"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2319,20 +2692,58 @@ msgstr ""
 "* Chombo sampler kutumika ili kusasisha takwimu."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Heat blend noise"
+msgstr "Mwandishi ramani joto mchanganyiko kelele vigezo"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Heat noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
 msgstr "Kijenzi cha urefu wa ukubwa cha kidirisha awali."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Height noise"
+msgstr "Windows kulia"
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
 msgstr "Urefu ambayo mawingu ni kuonekana."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Height select noise"
+msgstr "Mwandishi ramani v6 urefu Teua vigezo kelele"
+
+#: src/settings_translation_file.cpp
 msgid "High-precision FPU"
 msgstr "FPU kuu-usahihi"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hill steepness"
+msgstr "Mwandishi ramani gorofa kilima mwinuko"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Hill threshold"
+msgstr "Kilele cha mlima gorofa Mwandishi ramani"
+
+#: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "Homepage ya seva, kuonyeshwa katika serverlist ya."
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar next key"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Hotbar previous key"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
@@ -2361,6 +2772,18 @@ msgid "How wide to make rivers"
 msgstr "Upana gani kufanya mito"
 
 #: src/settings_translation_file.cpp
+msgid "Humidity blend noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Humidity noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Humidity variation for biomes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "IPv6"
 msgstr "IPv6"
 
@@ -2387,6 +2810,15 @@ msgid ""
 msgstr ""
 "Ikiwa kimelemazwa \"kutumia\" ufunguo ni kutumika kwa kuruka haraka kama "
 "hali-tumizi ya kuruka na ya haraka ni kuwezeshwa."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"If enabled the server will perform map block occlusion culling based on\n"
+"on the eye position of the player. This can reduce the number of blocks\n"
+"sent to the client 50-80%. The client will not longer receive most "
+"invisible\n"
+"so that the utility of noclip mode is reduced."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2431,6 +2863,11 @@ msgid "If enabled, new players cannot join with an empty password."
 msgstr "Ikiwa imewezeshwa, wachezaji wapya haiwezi kujiunga na nywila wazi."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "If enabled, show the server status message on player connection."
+msgstr "Ujumbe wa siku ya kuonyeshwa kwa wachezaji kuunganisha."
+
+#: src/settings_translation_file.cpp
 msgid ""
 "If enabled, you can place blocks at the position (feet + eye level) where "
 "you stand.\n"
@@ -2461,6 +2898,18 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "In-game chat console background color (R,G,B)."
 msgstr "Mazungumzo katika mchezo console mandharinyuma rangi (R, G, B)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
+msgstr ""
+"Mazungumzo katika mchezo console mandharinyuma Alfa (opaqueness kati ya 0 na "
+"255)."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Inc. volume key"
+msgstr "Muhimu ya Kiweko"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2510,6 +2959,11 @@ msgid "Interval of sending time of day to clients."
 msgstr "Muda wa kutuma wakati wa siku kwa wateja."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Inventory image hack"
+msgstr "Ufunguo wa hesabu"
+
+#: src/settings_translation_file.cpp
 msgid "Inventory items animations"
 msgstr "Hesabu vitu uhuishaji"
 
@@ -2530,12 +2984,25 @@ msgid "Item entity TTL"
 msgstr "Kipengee chombo TTL"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Iterations"
+msgstr "Instrumentation"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
 msgstr ""
 "Marudiorudio ya kazi recursive.\n"
 "Udhibiti kiasi cha undani faini."
+
+#: src/settings_translation_file.cpp
+msgid "Joystick ID"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Joystick Type"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
@@ -2584,6 +3051,22 @@ msgstr ""
 "Masafa ya takribani-2 hadi 2."
 
 #: src/settings_translation_file.cpp
+msgid "Julia w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia x"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia y"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Julia z"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Jump key"
 msgstr "Ufunguo wa kuruka"
 
@@ -2594,6 +3077,17 @@ msgstr "Kuruka kasi"
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for decreasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kupunguza kiwango cha kuonyesha.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for decreasing the volume.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2614,6 +3108,17 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for increasing the viewing range.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kuongeza kiwango cha kuonyesha.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for increasing the volume.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2682,6 +3187,17 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for muting the game.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kuruka.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the chat console.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
@@ -2694,6 +3210,17 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid ""
 "Key for opening the chat window to type commands.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kufungua dirisha la soga kuchapa amri.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for opening the chat window to type local commands.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -2729,6 +3256,28 @@ msgid ""
 msgstr ""
 "Muhimu kwa ajili ya uchapishaji mipororo rekebishi. Kutumika kwa ajili ya "
 "maendeleo.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for selecting the next item in the hotbar.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kufungua hesabu.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for selecting the previous item in the hotbar.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kufungua hesabu.\n"
 "Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
@@ -2877,6 +3426,17 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key for toggling the display of the large chat console.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya toggling onyesho la kuzungumza.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid ""
 "Key for toggling the display of the profiler. Used for development.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
@@ -2898,8 +3458,29 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Key to use view zoom when possible.\n"
+"See http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+msgstr ""
+"Muhimu kwa ajili ya kuruka.\n"
+"Ona http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
+
+#: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
 msgstr "Matumizi muhimu kwa ajili ya kupanda/kushuka"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lake steepness"
+msgstr "Mwandishi ramani ziwa gorofa mwinuko"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Lake threshold"
+msgstr "Mwandishi ramani ziwa gorofa kizingiti"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
@@ -2908,6 +3489,11 @@ msgstr "Lugha"
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
 msgstr "Kina ya pango kubwa"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Large chat console key"
+msgstr "Muhimu ya Kiweko"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
@@ -2969,6 +3555,13 @@ msgstr "Kikomo ya foleni emerge kwenye diski"
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues to generate"
 msgstr "Kikomo ya foleni emerge kuzalisha"
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).\n"
+"Only mapchunks completely within the mapgen limit are generated.\n"
+"Value is stored per-world."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3054,6 +3647,10 @@ msgid "Makes DirectX work with LuaJIT. Disable if it causes troubles."
 msgstr "Hufanya DirectX kazi na LuaJIT. Lemaza ikiwa husababisha matatizo."
 
 #: src/settings_translation_file.cpp
+msgid "Makes all liquids opaque"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Map directory"
 msgstr "Orodha ya ramani"
 
@@ -3094,10 +3691,26 @@ msgstr ""
 "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid ""
+"Map generation attributes specific to Mapgen v5.\n"
+"Flags that are not specified in the flag string are not modified from the "
+"default.\n"
+"Flags starting with 'no' are used to explicitly disable them."
+msgstr ""
+"Ramani kizazi sifa maalum kwa Mwandishi ramani v7.\n"
+"Bendera ya 'matuta' udhibiti mito.\n"
+"Bendera ambayo haijabainishwa katika Tungo ya bendera ni hayakubadilishwa "
+"kutoka chaguo-msingi.\n"
+"Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
-"When snowbiomes are enabled jungles are automatically enabled, the 'jungles' "
-"flag is ignored.\n"
+"The 'snowbiomes' flag enables the new 5 biome system.\n"
+"When the new biome system is enabled jungles are automatically enabled and\n"
+"the 'jungles' flag is ignored.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -3110,9 +3723,11 @@ msgstr ""
 "Bendera kuanzia na 'hapana' hutumiwa kidhahiri Lemaza yao."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
-"The 'ridges' flag controls the rivers.\n"
+"The 'ridges' flag enables the rivers.\n"
+"Floatlands are currently experimental and subject to change.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
@@ -3136,24 +3751,21 @@ msgid "Mapblock limit"
 msgstr "Kikomo cha Mapblock"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mapblock mesh generation delay"
+msgstr "Kikomo cha kizazi cha ramani"
+
+#: src/settings_translation_file.cpp
+msgid "Mapblock mesh generator's MapBlock cache size MB"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
 msgstr "Mkatiko Muda Mapblock wakipakua"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
 msgstr "Mwandishi ramani mabonde"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen biome heat noise parameters"
-msgstr "Mwandishi ramani biome joto kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen biome humidity blend noise parameters"
-msgstr "Mwandishi ramani biome unyevu mchanganyiko kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen biome humidity noise parameters"
-msgstr "Mwandishi ramani biome unyevu kelele vigezo"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen debug"
@@ -3168,116 +3780,13 @@ msgid "Mapgen flat"
 msgstr "Mwandishi ramani gorofa"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen flat cave width"
-msgstr "Mwandishi ramani pango gorofa upana"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat cave1 noise parameters"
-msgstr "Mwandishi ramani cave1 za gorofa kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat cave2 noise parameters"
-msgstr "Mwandishi ramani cave2 za gorofa kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat filler depth noise parameters"
-msgstr "Filler wa gorofa ya Mwandishi ramani kina kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat flags"
+#, fuzzy
+msgid "Mapgen flat specific flags"
 msgstr "Mwandishi ramani gorofa bendera"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat ground level"
-msgstr "Mwandishi ramani gorofa ngazi ya chini"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat hill steepness"
-msgstr "Mwandishi ramani gorofa kilima mwinuko"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat hill threshold"
-msgstr "Kilele cha mlima gorofa Mwandishi ramani"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat lake steepness"
-msgstr "Mwandishi ramani ziwa gorofa mwinuko"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat lake threshold"
-msgstr "Mwandishi ramani ziwa gorofa kizingiti"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat large cave depth"
-msgstr "Mwandishi ramani pango kubwa gorofa kina"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen flat terrain noise parameters"
-msgstr "Mwandishi ramani ardhi tambarare kelele vigezo"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen fractal"
 msgstr "Fractal ya Mwandishi ramani"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal cave width"
-msgstr "Mwandishi ramani fractal pango upana"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal cave1 noise parameters"
-msgstr "Mwandishi ramani fractal cave1 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal cave2 noise parameters"
-msgstr "Mwandishi ramani fractal cave2 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal filler depth noise parameters"
-msgstr "Mwandishi ramani fractal filler kina kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal fractal"
-msgstr "Mwandishi ramani fractal fractal"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal iterations"
-msgstr "Mwandishi ramani fractal Marudiorudio"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia w"
-msgstr "Mwandishi ramani fractal julia w"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia x"
-msgstr "Mwandishi ramani fractal julia x"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia y"
-msgstr "Mwandishi ramani fractal julia y"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal julia z"
-msgstr "Mwandishi ramani fractal julia z"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal offset"
-msgstr "Mwandishi ramani fractal Sawazisha"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal scale"
-msgstr "Mwandishi ramani fractal kipimo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal seabed noise parameters"
-msgstr "Mwandishi ramani fractal seabed kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen fractal slice w"
-msgstr "Mwandishi ramani fractal kisu w"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen heat blend noise parameters"
-msgstr "Mwandishi ramani joto mchanganyiko kelele vigezo"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen name"
@@ -3288,144 +3797,27 @@ msgid "Mapgen v5"
 msgstr "Mwandishi ramani v5"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen v5 cave width"
-msgstr "Mwandishi ramani v5 pango upana"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v5 cave1 noise parameters"
-msgstr "Mwandishi ramani v5 cave1 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v5 cave2 noise parameters"
-msgstr "Mwandishi ramani v5 cave2 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v5 factor noise parameters"
-msgstr "Mwandishi ramani v5 sababu kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v5 filler depth noise parameters"
-msgstr "Mwandishi ramani v5 filler kina kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v5 height noise parameters"
-msgstr "Mwandishi ramani v5 urefu kelele vigezo"
+#, fuzzy
+msgid "Mapgen v5 specific flags"
+msgstr "Mwandishi ramani v6 bendera"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v6"
 msgstr "Mwandishi ramani v6"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen v6 apple trees noise parameters"
-msgstr "Mwandishi ramani v6 apple miti kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 beach frequency"
-msgstr "Mwandishi ramani v6 pwani marudio"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 beach noise parameters"
-msgstr "Mwandishi ramani v6 pwani kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 biome noise parameters"
-msgstr "Mwandishi ramani v6 biome kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 cave noise parameters"
-msgstr "Mwandishi ramani v6 pango kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 desert frequency"
-msgstr "Mwandishi ramani v6 jangwa marudio"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 flags"
+#, fuzzy
+msgid "Mapgen v6 specific flags"
 msgstr "Mwandishi ramani v6 bendera"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 height select noise parameters"
-msgstr "Mwandishi ramani v6 urefu Teua vigezo kelele"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 humidity noise parameters"
-msgstr "Mwandishi ramani v6 unyevu kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 mud noise parameters"
-msgstr "Mwandishi ramani v6 matope kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 steepness noise parameters"
-msgstr "Mwandishi ramani v6 mwinuko kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 terrain altitude noise parameters"
-msgstr "Mwinuko wa ardhi ya Mwandishi ramani v6 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 terrain base noise parameters"
-msgstr "Mwandishi ramani v6 ardhi kelele msingi vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v6 trees noise parameters"
-msgstr "Mwandishi ramani v6 miti kelele vigezo"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen v7"
 msgstr "Mwandishi ramani v7"
 
 #: src/settings_translation_file.cpp
-msgid "Mapgen v7 cave width"
-msgstr "Mwandishi ramani v7 pango upana"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 cave1 noise parameters"
-msgstr "Mwandishi ramani v7 cave1 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 cave2 noise parameters"
-msgstr "Mwandishi ramani v7 cave2 kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 filler depth noise parameters"
-msgstr "Mwandishi ramani v7 filler kina kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 flags"
+#, fuzzy
+msgid "Mapgen v7 specific flags"
 msgstr "Mwandishi ramani v7 bendera"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 height select noise parameters"
-msgstr "Mwandishi ramani v7 urefu Teua vigezo kelele"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 mount height noise parameters"
-msgstr "Mwandishi ramani v7 mlima urefu kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 mountain noise parameters"
-msgstr "Mwandishi ramani v7 mlima kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 ridge noise parameters"
-msgstr "Mwandishi ramani v7 tuta kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 ridge water noise parameters"
-msgstr "Mwandishi ramani v7 tuta maji kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 terrain altitude noise parameters"
-msgstr "Mwandishi ramani v7 ardhi mwinuko kelele vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 terrain base noise parameters"
-msgstr "Mwandishi ramani v7 ardhi kelele msingi vigezo"
-
-#: src/settings_translation_file.cpp
-msgid "Mapgen v7 terrain persistation noise parameters"
-msgstr "Mwandishi ramani v7 ardhi persistation kelele vigezo"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
@@ -3606,6 +3998,10 @@ msgid "Mipmapping"
 msgstr "Mipmapping"
 
 #: src/settings_translation_file.cpp
+msgid "Modifies the size of the hudbar elements."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Modstore details URL"
 msgstr "Modstore maelezo URL"
 
@@ -3626,12 +4022,25 @@ msgid "Monospace font size"
 msgstr "Ukubwa wa fonti wa Monospace"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Mountain height noise"
+msgstr "Mwandishi ramani v7 mlima urefu kelele vigezo"
+
+#: src/settings_translation_file.cpp
+msgid "Mountain noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
 msgstr "Unyeti wa kipanya"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
 msgstr "Mengi ya unyeti wa kipanya."
+
+#: src/settings_translation_file.cpp
+msgid "Mud noise"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3643,13 +4052,9 @@ msgstr ""
 "2.0 kwa mara mbili."
 
 #: src/settings_translation_file.cpp
-msgid ""
-"Enable view bobbing and amount of view bobbing.\n"
-"For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
-msgstr ""
-"Mengi kwa ajili ya Mwoneko kando.\n"
-"Kwa mfano: 0 kwa ajili ya Mwoneko hakuna kando; 1.0 kwa ajili ya kawaida; "
-"2.0 kwa mara mbili."
+#, fuzzy
+msgid "Mute key"
+msgstr "Ufunguo wa matumizi"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3708,10 +4113,6 @@ msgid "NodeTimer interval"
 msgstr "Nafasi ya NodeTimer"
 
 #: src/settings_translation_file.cpp
-msgid "Noise parameters for biome API temperature, humidity and biome blend."
-msgstr "Kelele vigezo vya biome API joto, unyevu na biome mchanganyiko."
-
-#: src/settings_translation_file.cpp
 msgid "Noises"
 msgstr "Kila"
 
@@ -3754,6 +4155,14 @@ msgid "Number of parallax occlusion iterations."
 msgstr "Idadi ya parallax occlusion Marudiorudio."
 
 #: src/settings_translation_file.cpp
+msgid "Offset"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Opaque liquids"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
 msgstr "Upendeleo wa jumla wa parallax occlusion athari, kawaida kipimo/2."
 
@@ -3792,6 +4201,12 @@ msgstr "Njia ya TrueTypeFont au vitone michoro."
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
 msgstr "Njia ya kuokoa viwambo katika."
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Path to shader directory. If no path is defined, default location will be "
+"used."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -3896,6 +4311,15 @@ msgid "Report path"
 msgstr "Njia ya ripoti"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Ridge noise"
+msgstr "Kelele za mto"
+
+#: src/settings_translation_file.cpp
+msgid "Ridge underwater noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Right key"
 msgstr "Ufunguo sahihi"
 
@@ -3928,12 +4352,20 @@ msgid "Round minimap"
 msgstr "Ramani pande zote"
 
 #: src/settings_translation_file.cpp
+msgid "Sandy beaches occur when np_beach exceeds this value."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Save the map received by the client on disk."
 msgstr "Hifadhi ramani kupokelewa na mteja kwenye diski."
 
 #: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Ramani kuokoa kupokea kutoka seva"
+
+#: src/settings_translation_file.cpp
+msgid "Scale"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3984,6 +4416,15 @@ msgstr ""
 "Tumia 0 kwa ubora wa chaguo-msingi."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Seabed noise"
+msgstr "Pango kelele #1"
+
+#: src/settings_translation_file.cpp
+msgid "Second of 2 3D noises that together define tunnels."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Security"
 msgstr "Usalama"
 
@@ -4028,6 +4469,10 @@ msgid "Server port"
 msgstr "Kituo tarishi cha seva"
 
 #: src/settings_translation_file.cpp
+msgid "Server side occlusion culling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Serverlist URL"
 msgstr "URL ya Serverlist"
 
@@ -4068,14 +4513,25 @@ msgstr ""
 "Inahitaji shaders kwa kuwezeshwa."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Shader path"
+msgstr "Shaders"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
-"Thy only work with the OpenGL video backend."
+"This only works with the OpenGL video backend."
 msgstr ""
 "Shaders kuruhusu athari pevu onekana na inaweza kuongeza utendaji wa baadhi "
 "ya kadi ya video.\n"
 "Kazi yako tu na OpenGL video backend."
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Shadow limit"
+msgstr "Kikomo cha Mapblock"
 
 #: src/settings_translation_file.cpp
 msgid "Shape of the minimap. Enabled = round, disabled = square."
@@ -4102,8 +4558,27 @@ msgstr ""
 "mapblocks (fundo 16)."
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Size of the MapBlock cache of the mesh generator. Increasing this will\n"
+"increase the cache hit %, reducing the data being copied from the main\n"
+"thread, thus reducing jitter."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Slice w"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights"
 msgstr "Mteremko na Jaza kazi pamoja kurekebisha urefu"
+
+#: src/settings_translation_file.cpp
+msgid "Small-scale humidity variation for blending biomes on borders."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Small-scale temperature variation for blending biomes on borders."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
@@ -4152,6 +4627,14 @@ msgid "Static spawnpoint"
 msgstr "Spawnpoint tuli"
 
 #: src/settings_translation_file.cpp
+msgid "Status message on connection"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Steepness noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Strength of generated normalmaps."
 msgstr "Nguvu ya normalmaps inayozalishwa."
 
@@ -4172,7 +4655,30 @@ msgid "Synchronous SQLite"
 msgstr "SQLite Uvingirizi"
 
 #: src/settings_translation_file.cpp
+msgid "Temperature variation for biomes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Terrain Height"
+msgstr "Urefu wa ardhi"
+
+#: src/settings_translation_file.cpp
+msgid "Terrain alt noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Terrain base noise"
+msgstr "Urefu wa ardhi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Terrain higher noise"
+msgstr "Urefu wa ardhi"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Terrain noise"
 msgstr "Urefu wa ardhi"
 
 #: src/settings_translation_file.cpp
@@ -4196,6 +4702,10 @@ msgstr ""
 "Rekebisha kuelekea 0.0 kwa sehemu kubwa."
 
 #: src/settings_translation_file.cpp
+msgid "Terrain persistence noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Texture path"
 msgstr "Njia ya unamu"
 
@@ -4216,11 +4726,15 @@ msgid "The depth of dirt or other filler"
 msgstr "Kina cha uchafu au filler nyingine"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"The file path relative to your worldpath in which profiles will be saved "
-"to.\n"
+"The file path relative to your worldpath in which profiles will be saved to."
 msgstr ""
 "Kijia cha faili jamaa yako worldpath ambayo maumbo utaakibishwa kwenye.\n"
+
+#: src/settings_translation_file.cpp
+msgid "The identifier of the joystick to use"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -4284,6 +4798,10 @@ msgstr ""
 "wakati wa kufanya kitufe cha kulia."
 
 #: src/settings_translation_file.cpp
+msgid "The type of joystick"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "This font will be used for certain languages."
 msgstr "Fonti hii itatumika kwa lugha fulani."
 
@@ -4333,6 +4851,10 @@ msgid "Tooltip delay"
 msgstr "Kidokezozana kuchelewa"
 
 #: src/settings_translation_file.cpp
+msgid "Trees noise"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Trilinear filtering"
 msgstr "Uchujaji wa trilinear"
 
@@ -4350,9 +4872,27 @@ msgid "Trusted mods"
 msgstr "Mods aminifu"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Typical maximum height, above and below midpoint, of floatland mountain "
+"terrain."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr ""
 "URL kwenye orodha ya seva iliyoonyeshwa katika kichupo cha Multiplayer."
+
+#: src/settings_translation_file.cpp
+msgid "Undersampling"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Undersampling is similar to using lower screen resolution, but it applies\n"
+"to the game world only, keeping the GUI intact.\n"
+"It should give significant performance boost at the cost of less detailed "
+"image."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
@@ -4421,6 +4961,43 @@ msgid "Valleys C Flags"
 msgstr "Bendera ya mabonde C"
 
 #: src/settings_translation_file.cpp
+msgid "Variation of biome filler depth."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Variation of hill height and lake depth on floatland smooth terrain."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Variation of maximum mountain height (in nodes)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Variation of number of caves."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Variation of terrain vertical scale.\n"
+"When noise is < -0.55 terrain is near-flat."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Varies depth of biome surface nodes."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Varies roughness of terrain.\n"
+"Defines the 'persistence' value for terrain_base and terrain_alt noises."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Varies steepness of cliffs."
+msgstr "Udhibiti mwinuko/urefu wa milima."
+
+#: src/settings_translation_file.cpp
 msgid "Vertical screen synchronization."
 msgstr "Ulandanishi wa kiwamba wima."
 
@@ -4429,13 +5006,13 @@ msgid "Video driver"
 msgstr "Kiendeshaji video"
 
 #: src/settings_translation_file.cpp
-msgid "View bobbing"
+#, fuzzy
+msgid "View bobbing factor"
 msgstr "Mwoneko kando"
 
 #: src/settings_translation_file.cpp
-msgid ""
-"View distance in nodes.\n"
-"Min = 20"
+#, fuzzy
+msgid "View distance in nodes."
 msgstr ""
 "Onyesha umbali katika fundo.\n"
 "Min = 20"
@@ -4447,6 +5024,10 @@ msgstr "Mwoneko masafa Punguza ufunguo"
 #: src/settings_translation_file.cpp
 msgid "View range increase key"
 msgstr "Mwoneko masafa ongezeko muhimu"
+
+#: src/settings_translation_file.cpp
+msgid "View zoom key"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Viewing range"
@@ -4554,21 +5135,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Where the map generator stops.\n"
-"Please note:\n"
-"-    Limited to 31000 (setting above has no effect)\n"
-"-    The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).\n"
-"-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-"-    Only groups which are within the map_generation_limit are generated"
-msgstr ""
-"Ambapo jenereta ramani hukomesha.\n"
-"Tafadhali kumbuka: - mdogo kwa 31000 (kipimo hapo juu ina athari) - jenereta "
-"ramani kazi katika makundi ya 80 x 80 x 80 fundo (5 x 5 x 5 MapBlocks).\n"
-"-Vikundi hivyo kuwa nje ya uwekaji wa-32,-32 fundo kutoka asili.\n"
-"-Tu vikundi vilivyo ndani ya map_generation_limit ni yanayotokana"
-
-#: src/settings_translation_file.cpp
-msgid ""
 "Whether freetype fonts are used, requires freetype support to be compiled in."
 msgstr ""
 "Kama freetype fonti hutumiwa, inahitaji msaada wa freetype kuwa alikusanya "
@@ -4630,6 +5196,13 @@ msgstr "Upana wa mistari ya selectionbox karibu fundo."
 
 #: src/settings_translation_file.cpp
 msgid ""
+"Windows systems only: Start Minetest with the command line window in the "
+"background.\n"
+"Contains the same information as the file debug.txt (default name)."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
 "World directory (everything in the world is stored here).\n"
 "Not needed if starting from the main menu."
 msgstr ""
@@ -4645,6 +5218,43 @@ msgid "Y of upper limit of large pseudorandom caves."
 msgstr "Y ya upper kikomo ya kubwa pseudorandom cellars."
 
 #: src/settings_translation_file.cpp
+msgid "Y-distance over which caverns expand to full size."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of average terrain surface."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of cavern upper limit."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of floatland midpoint and lake surface."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of higher (cliff-top) terrain."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of lower terrain and lakebeds."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level of seabed."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Y-level to which floatland shadows extend."
+msgstr ""
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "block send optimize distance"
+msgstr "Umbo la Max Tuma umbali"
+
+#: src/settings_translation_file.cpp
 msgid "cURL file download timeout"
 msgstr "cURL muda wa upakuzi wa faili"
 
@@ -4655,3 +5265,233 @@ msgstr "cURL kikomo sambamba"
 #: src/settings_translation_file.cpp
 msgid "cURL timeout"
 msgstr "muda wa kuisha wa cURL"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ficha maudhui ya mbunge"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Capital"
+#~ msgstr "Mji mkuu"
+
+#~ msgid "Comma"
+#~ msgstr "Mkato"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "Final"
+#~ msgstr "Mwisho"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Kanji"
+#~ msgstr "KanJi"
+
+#~ msgid "Minus"
+#~ msgstr "Alama ya kutoa"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Period"
+#~ msgstr "Kipindi cha"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Vidhibiti ukubwa wa majangwa na fukwe katika Mwandishi ramani v6.\n"
+#~ "Wakati snowbiomes vimewezeshwa 'mgv6_freq_desert' ni kupuuzwa."
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Huamua umbo wa ardhi.\n"
+#~ "Namba 3 katika mabano kudhibiti ukubwa wa ardhi, namba 3 lazima kufanana."
+
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Mwandishi ramani biome joto kelele vigezo"
+
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Mwandishi ramani biome unyevu mchanganyiko kelele vigezo"
+
+#~ msgid "Mapgen biome humidity noise parameters"
+#~ msgstr "Mwandishi ramani biome unyevu kelele vigezo"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mwandishi ramani pango gorofa upana"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Mwandishi ramani cave1 za gorofa kelele vigezo"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Mwandishi ramani cave2 za gorofa kelele vigezo"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr "Filler wa gorofa ya Mwandishi ramani kina kelele vigezo"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Mwandishi ramani pango kubwa gorofa kina"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Mwandishi ramani ardhi tambarare kelele vigezo"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mwandishi ramani fractal pango upana"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Mwandishi ramani fractal cave1 kelele vigezo"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Mwandishi ramani fractal cave2 kelele vigezo"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr "Mwandishi ramani fractal filler kina kelele vigezo"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mwandishi ramani fractal fractal"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mwandishi ramani fractal Marudiorudio"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Mwandishi ramani fractal julia w"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Mwandishi ramani fractal julia x"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Mwandishi ramani fractal julia y"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Mwandishi ramani fractal julia z"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mwandishi ramani fractal Sawazisha"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mwandishi ramani fractal kipimo"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Mwandishi ramani fractal seabed kelele vigezo"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Mwandishi ramani fractal kisu w"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Mwandishi ramani v5 pango upana"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Mwandishi ramani v5 cave1 kelele vigezo"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Mwandishi ramani v5 cave2 kelele vigezo"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Mwandishi ramani v5 sababu kelele vigezo"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr "Mwandishi ramani v5 filler kina kelele vigezo"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Mwandishi ramani v5 urefu kelele vigezo"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Mwandishi ramani v6 apple miti kelele vigezo"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Mwandishi ramani v6 pwani marudio"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Mwandishi ramani v6 pwani kelele vigezo"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Mwandishi ramani v6 biome kelele vigezo"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Mwandishi ramani v6 pango kelele vigezo"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Mwandishi ramani v6 jangwa marudio"
+
+#~ msgid "Mapgen v6 mud noise parameters"
+#~ msgstr "Mwandishi ramani v6 matope kelele vigezo"
+
+#~ msgid "Mapgen v6 steepness noise parameters"
+#~ msgstr "Mwandishi ramani v6 mwinuko kelele vigezo"
+
+#~ msgid "Mapgen v6 terrain altitude noise parameters"
+#~ msgstr "Mwinuko wa ardhi ya Mwandishi ramani v6 kelele vigezo"
+
+#~ msgid "Mapgen v6 terrain base noise parameters"
+#~ msgstr "Mwandishi ramani v6 ardhi kelele msingi vigezo"
+
+#~ msgid "Mapgen v6 trees noise parameters"
+#~ msgstr "Mwandishi ramani v6 miti kelele vigezo"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mwandishi ramani v7 pango upana"
+
+#~ msgid "Mapgen v7 cave1 noise parameters"
+#~ msgstr "Mwandishi ramani v7 cave1 kelele vigezo"
+
+#~ msgid "Mapgen v7 cave2 noise parameters"
+#~ msgstr "Mwandishi ramani v7 cave2 kelele vigezo"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Mwandishi ramani v7 filler kina kelele vigezo"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Mwandishi ramani v7 urefu Teua vigezo kelele"
+
+#~ msgid "Mapgen v7 mountain noise parameters"
+#~ msgstr "Mwandishi ramani v7 mlima kelele vigezo"
+
+#~ msgid "Mapgen v7 ridge noise parameters"
+#~ msgstr "Mwandishi ramani v7 tuta kelele vigezo"
+
+#~ msgid "Mapgen v7 ridge water noise parameters"
+#~ msgstr "Mwandishi ramani v7 tuta maji kelele vigezo"
+
+#~ msgid "Mapgen v7 terrain altitude noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi mwinuko kelele vigezo"
+
+#~ msgid "Mapgen v7 terrain base noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi kelele msingi vigezo"
+
+#~ msgid "Mapgen v7 terrain persistation noise parameters"
+#~ msgstr "Mwandishi ramani v7 ardhi persistation kelele vigezo"
+
+#~ msgid ""
+#~ "Noise parameters for biome API temperature, humidity and biome blend."
+#~ msgstr "Kelele vigezo vya biome API joto, unyevu na biome mchanganyiko."
+
+#~ msgid ""
+#~ "Where the map generator stops.\n"
+#~ "Please note:\n"
+#~ "-    Limited to 31000 (setting above has no effect)\n"
+#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
+#~ "MapBlocks).\n"
+#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
+#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ msgstr ""
+#~ "Ambapo jenereta ramani hukomesha.\n"
+#~ "Tafadhali kumbuka: - mdogo kwa 31000 (kipimo hapo juu ina athari) - "
+#~ "jenereta ramani kazi katika makundi ya 80 x 80 x 80 fundo (5 x 5 x 5 "
+#~ "MapBlocks).\n"
+#~ "-Vikundi hivyo kuwa nje ya uwekaji wa-32,-32 fundo kutoka asili.\n"
+#~ "-Tu vikundi vilivyo ndani ya map_generation_limit ni yanayotokana"
