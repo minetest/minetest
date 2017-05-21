@@ -76,10 +76,10 @@ private:
 
 	// get_server_info()
 	static int l_get_server_info(lua_State *L);
-	
+
 	// get_item_def(itemstring)
 	static int l_get_item_def(lua_State *L);
-	
+
 	// get_node_def(nodename)
 	static int l_get_node_def(lua_State *L);
 
