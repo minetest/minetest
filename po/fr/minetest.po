@@ -19,14 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 2.10-dev\n"
 
-#: builtin/client/chatcommands.lua
-msgid "Clear the out chat queue"
-msgstr "Nettoie la file d'attente de discussion en sortie"
-
-#: builtin/client/chatcommands.lua
-msgid "The out chat queue is now empty"
-msgstr "La file d'attente de discussion en sortie a été nettoyée"
-
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
 msgstr "Une erreur est survenue dans un script Lua, il peut s'agir d'un mod :"

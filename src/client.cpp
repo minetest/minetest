@@ -1170,7 +1170,8 @@ bool Client::canSendChatMessage() const
 	u32 now = time(NULL);
 	float time_passed = now - m_last_chat_message_sent;
 
-	float virt_chat_message_allowance = m_chat_message_allowance + time_passed * (CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
+	float virt_chat_message_allowance = m_chat_message_allowance + time_passed *
+			(CLIENT_CHAT_MESSAGE_LIMIT_PER_10S / 8.0f);
 
 	if (virt_chat_message_allowance < 1.0f)
 		return false;
@@ -1200,7 +1201,7 @@ void Client::sendChatMessage(const std::wstring &message)
 	} else if (m_out_chat_queue.size() < (u16) max_queue_size || max_queue_size == -1) {
 		m_out_chat_queue.push(message);
 	} else {
-		infostream << "Coulnd't queue chat message because maximum out chat queue size ("
+		infostream << "Could not queue chat message because maximum out chat queue size ("
 				<< max_queue_size << ") is reached." << std::endl;
 	}
 }

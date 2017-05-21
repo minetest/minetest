@@ -82,16 +82,14 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 		return 0;
 	std::string message = luaL_checkstring(L, 1);
 	getClient(L)->sendChatMessage(utf8_to_wide(message));
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // clear_out_chat_queue()
 int ModApiClient::l_clear_out_chat_queue(lua_State *L)
 {
 	getClient(L)->clearOutChatQueue();
-	lua_pushboolean(L, true);
-	return 1;
+	return 0;
 }
 
 // get_player_names()
