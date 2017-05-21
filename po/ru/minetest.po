@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-05-20 19:09+0000\n"
+"PO-Revision-Date: 2017-05-21 18:54+0000\n"
 "Last-Translator: weqqr <weqqr@opmbx.org>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/minetest/"
-"minetest/ru/>\n"
+"Language-Team: Russian "
+"<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
+"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.14.1-dev\n"
 
 #: builtin/client/init.lua
@@ -90,18 +90,16 @@ msgid "Cancel"
 msgstr "Отменить"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "Зависит от:"
+msgstr "Зависимости:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
 msgstr "Отключить мультиплеер"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Отключить мультиплеер"
+msgstr "Отключить все"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
@@ -126,7 +124,7 @@ msgstr "Мод:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Необязательные зависимости:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -302,14 +300,12 @@ msgid "Show technical names"
 msgstr "Отобразить технические названия"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "The value must be at least $1."
-msgstr "Значение должно быть больше, чем $1."
+msgstr "Значение должно быть больше или равно $1."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "The value must not be larger than $1."
-msgstr "Значение должно быть меньше, чем $1."
+msgstr "Значение не должно быть больше, чем $1."
 
 #: builtin/mainmenu/modmgr.lua
 msgid ""
@@ -397,9 +393,8 @@ msgid "Previous Core Developers"
 msgstr "Разработчики в отставке"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Announce Server"
-msgstr "О сервере"
+msgstr "Публичный сервер"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -447,7 +442,7 @@ msgstr "Не выбран мир!"
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
 msgid "Play Game"
-msgstr "Имя игрока"
+msgstr "Играть"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
@@ -471,7 +466,7 @@ msgstr "Описание мода:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Нет зависимостей."
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -523,12 +518,12 @@ msgstr "Имя / Пароль"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "Ping"
-msgstr ""
+msgstr "Пинг"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Play Online"
-msgstr "Имя игрока"
+msgstr "Играть онлайн"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -563,8 +558,9 @@ msgid "Are you sure to reset your singleplayer world?"
 msgstr "Уверены, что хотите сбросить мир одиночной игры?"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Autosave screen size"
-msgstr ""
+msgstr "Автоматически сохранять размер окна"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -643,9 +639,8 @@ msgid "Reset singleplayer world"
 msgstr "Сброс одиночной игры"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Screen:"
-msgstr "Cкриншот"
+msgstr "Экран:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -773,7 +768,7 @@ msgstr "Имя игрока слишком длинное."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Пожалуйста, выберите имя!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -793,42 +788,37 @@ msgstr ""
 "Подробная информация в debug.txt."
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Адрес"
+msgstr "- Адрес: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "Режим творчества"
+msgstr "- Режим творчества: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "Урон"
+msgstr "- Урон: "
 
 #: src/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Режим: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Port: "
-msgstr "Порт"
+msgstr "- Порт: "
 
 #: src/game.cpp
 #, fuzzy
 msgid "- Public: "
-msgstr "Публичный"
+msgstr "- Публичный: "
 
 #: src/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Server Name: "
-msgstr "Имя сервера"
+msgstr "- Имя сервера: "
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -847,7 +837,7 @@ msgid "Continue"
 msgstr "Продолжить"
 
 #: src/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -864,17 +854,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"Управление по умолчанию:\n"
-"- WASD: движение\n"
-"- Пробел: прыжок/вверх\n"
-"- Shift: красться/вниз\n"
-"- Q: бросить предмет\n"
-"- I: инвентарь\n"
+"Управление:\n"
+"- %s: двигаться вперёд\n"
+"- %s: двигаться назад\n"
+"- %s: двигаться влево\n"
+"- %s: двигаться вправо\n"
+"- %s: прыжок/подъём\n"
+"- %s: красться/спуститься\n"
+"- %s: бросить предмет\n"
+"- %s: инвентарь\n"
 "- Мышка: поворот\n"
 "- ЛКМ: копать/удар\n"
 "- ПКМ: поставить/использовать\n"
 "- Колесико мыши: выбор предмета\n"
-"- T: чат\n"
+"- %s: чат\n"
 
 #: src/game.cpp
 msgid "Creating client..."
@@ -923,12 +916,11 @@ msgstr "Выход в ОС"
 
 #: src/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Информация о игре:"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "Название"
+msgstr "Игра приостановлена"
 
 #: src/game.cpp
 #, fuzzy
@@ -956,17 +948,18 @@ msgid "Node definitions..."
 msgstr "Описания нод..."
 
 #: src/game.cpp
+#, fuzzy
 msgid "Off"
-msgstr ""
-
-#: src/game.cpp
-msgid "On"
-msgstr ""
+msgstr "Выкл."
 
 #: src/game.cpp
 #, fuzzy
+msgid "On"
+msgstr "Вкл."
+
+#: src/game.cpp
 msgid "Remote server"
-msgstr "Удаленный порт"
+msgstr "Удаленный сервер"
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -987,15 +980,15 @@ msgstr "Громкость звука"
 #: src/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Громкость изменена на %d%%"
 
 #: src/game.cpp
 msgid "Volume changed to 0%"
-msgstr ""
+msgstr "Громкость изменена на 0%"
 
 #: src/game.cpp
 msgid "Volume changed to 100%"
-msgstr ""
+msgstr "Громкость изменена на 100%"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -1031,7 +1024,7 @@ msgstr "Консоль"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
-msgstr ""
+msgstr "Уменьш. громкость"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -1046,9 +1039,8 @@ msgid "Forward"
 msgstr "Вперед"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Inc. volume"
-msgstr "Громкость звука"
+msgstr "Увелич. громкость"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1075,20 +1067,20 @@ msgstr "Влево"
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Local command"
-msgstr "Команда"
-
-#: src/guiKeyChangeMenu.cpp
-msgid "Mute"
-msgstr ""
+msgstr "Локальная команда"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
+msgid "Mute"
+msgstr "Выключить звук"
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Next item"
-msgstr "Next"
+msgstr "Следующий предмет"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "Предыдущий предмет"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
@@ -1172,7 +1164,7 @@ msgstr "Назад"
 
 #: src/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/keycode.cpp
 msgid "Clear"
@@ -1193,7 +1185,7 @@ msgstr "End"
 #: src/keycode.cpp
 #, fuzzy
 msgid "Erase EOF"
-msgstr "Стереть ОНС"
+msgstr "Стереть EOF"
 
 #: src/keycode.cpp
 msgid "Execute"
@@ -1443,8 +1435,9 @@ msgid "3D mode"
 msgstr "3D режим"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "3D noise defining giant caverns."
-msgstr ""
+msgstr "3D шум, определяющий огромные пещеры."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1483,9 +1476,8 @@ msgid ""
 "A chosen map seed for a new map, leave empty for random.\n"
 "Will be overridden when creating a new world in the main menu."
 msgstr ""
-"Выбранное зерно для новой карты, оставьте значение пустым для случайной "
-"генерации.\n"
-"Будет отменено при создании нового мира, в главном меню."
+"Выбранное зерно для новой карты, оставьте пустым для случайного.\n"
+"Будет переопределено при создании нового мира в главном меню."
 
 #: src/settings_translation_file.cpp
 msgid "A message to be displayed to all clients when the server crashes."
@@ -1504,9 +1496,8 @@ msgid "Acceleration in air"
 msgstr "Ускорение в воздухе"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Management interval"
-msgstr "Дальность взаимодействия с блоками"
+msgstr "Интервал управления активным блоком"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1514,9 +1505,8 @@ msgid "Active Block Modifier interval"
 msgstr "Дальность взаимодействия с блоками"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Active Block Modifiers"
-msgstr "Дальность взаимодействия с блоками"
+msgstr "Модификаторы активных блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Active block range"
@@ -1576,14 +1566,18 @@ msgid "Ambient occlusion gamma"
 msgstr "Гамма Ambient occlusion"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Amplifies the valleys"
-msgstr ""
+msgstr "Усиливает долины"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Android systems only: Tries to create inventory textures from meshes\n"
 "when no supported render was found."
 msgstr ""
+"Только системы Android: Попытаться создать текстуры инвентаря из мешей,\n"
+"когда поддерживаемый рендер не найден."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1608,15 +1602,15 @@ msgid "Apple trees noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
-msgstr "Приблизительный (X, Y, Z) масштаб рекурсивных в узлах."
+msgstr "Приблизительный (X,Y,Z) масштаб фрактала в узлах."
 
 #: src/settings_translation_file.cpp
 msgid "Ask to reconnect after crash"
 msgstr "Запрос переподключения после дисконнекта"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to clients.\n"
@@ -1628,6 +1622,14 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)"
 msgstr ""
+"На этом расстоянии сервер будет агрессивно оптимизировать то, какие блоки "
+"будут\n"
+"отправлены клиентам. Малые значения возможно увеличат производительностьз за "
+"счет\n"
+"видимых глюков отрисовки (некоторые блоки не будут отрисовываться под водой\n"
+"и в пещерах, а иногда и на суше). Установка этого значения больше, чем "
+"max_block_send_distance\n"
+"отключает оптимизацию. Указывается в блоках (16 узлов)."
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
@@ -1699,7 +1701,6 @@ msgid "Camera smoothing"
 msgstr "Сглаживание камеры"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera smoothing in cinematic mode"
 msgstr "Сглаживание камеры в кинематографическом режиме"
 
@@ -1768,7 +1769,7 @@ msgstr "Кнопка переключения чата"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Chatcommands"
-msgstr "Команда"
+msgstr "Команды в чате"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1820,7 +1821,7 @@ msgstr "Клиент и Сервер"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client modding"
-msgstr "Клиент"
+msgstr "Моддинг клиента"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -1892,9 +1893,8 @@ msgid "Console color"
 msgstr "Цвет в консоли"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Console height"
-msgstr "Кнопка вызова консоли"
+msgstr "Высота консоли"
 
 #: src/settings_translation_file.cpp
 msgid "Console key"
@@ -1960,7 +1960,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Creative"
-msgstr "Создать"
+msgstr "Творческий"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2001,7 +2001,7 @@ msgstr "Отладочный уровень"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Dec. volume key"
-msgstr "Клавиша переключения HUD"
+msgstr "Клавиша уменьшения громкости"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2016,10 +2016,13 @@ msgid "Default game"
 msgstr "Стандартная игра"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Default game when creating a new world.\n"
 "This will be overridden when creating a world from the main menu."
 msgstr ""
+"Игра по умолчанию при создании нового мира.\n"
+"Будет переопределено при создании мира из главного меню."
 
 #: src/settings_translation_file.cpp
 msgid "Default password"
@@ -2057,12 +2060,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines areas where trees have apples."
-msgstr ""
+msgstr "Определяет области, где у деревьев есть яблоки."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas with sandy beaches."
-msgstr ""
+msgstr "Определяет области с песчаными пляжами."
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
@@ -2077,14 +2081,19 @@ msgid "Defines location and terrain of optional hills and lakes."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Defines sampling step of texture.\n"
 "A higher value results in smoother normal maps."
 msgstr ""
+"Определяет шаг дискретизации текстуры.\n"
+"Более высокое значение приводит к более гладким картам нормалей."
 
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
+"Определяет максимальное расстояние перемещения игрока в блоках (0 = "
+"неограниченное)."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2097,8 +2106,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Delay in sending blocks after building"
-msgstr ""
+msgstr "Задержка отправки блоков после строительства"
 
 #: src/settings_translation_file.cpp
 msgid "Delay showing tooltips, stated in milliseconds."
@@ -2110,11 +2120,11 @@ msgstr "Обработка устаревшего Lua API"
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find large caves."
-msgstr ""
+msgstr "Глубина, ниже которой встречаются крупные пещеры."
 
 #: src/settings_translation_file.cpp
 msgid "Depth below which you'll find massive caves."
-msgstr ""
+msgstr "Глубина, ниже которой встречаются огромные пещеры."
 
 #: src/settings_translation_file.cpp
 msgid "Descending speed"
@@ -2139,7 +2149,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Desynchronize block animation"
 msgstr "Рассинхронизировать анимацию блоков"
 
@@ -2154,15 +2163,20 @@ msgstr "Отключить анти-чит"
 
 #: src/settings_translation_file.cpp
 msgid "Disable escape sequences"
-msgstr ""
+msgstr "Отключить escape-последовательности"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Disable escape sequences, e.g. chat coloring.\n"
 "Use this if you want to run a server with pre-0.4.14 clients and you want to "
 "disable\n"
 "the escape sequences generated by mods."
 msgstr ""
+"Отключить escape-последовательности, т. е. цвет в чате.\n"
+"Используйте это, если хотите запустить сервер с клиентами версии ниже 0.4."
+"14\n"
+"и отключить escape-последовательности, генерируемые модами."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2189,14 +2203,17 @@ msgid "Dump the mapgen debug infos."
 msgstr "Дамп отладочной информации генератора мира."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "Включить джойстики"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable Lua modding support on client.\n"
 "This support is experimental and API can change."
 msgstr ""
+"Включить поддержку Lua-моддинга на клиенте.\n"
+"Эта поддержка является экспериментальной и API может измениться."
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
@@ -2204,11 +2221,11 @@ msgstr "Включить VBO"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
-msgstr ""
+msgstr "Включить окно консоли"
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for new created maps."
-msgstr ""
+msgstr "Включить творческий режим для вновь созданных карт."
 
 #: src/settings_translation_file.cpp
 msgid "Enable mod security"
@@ -2220,15 +2237,19 @@ msgstr "Включает получение игроками урона и их 
 
 #: src/settings_translation_file.cpp
 msgid "Enable random user input (only used for testing)."
-msgstr ""
+msgstr "Включить случайный ввод (используется только для тестирования)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable smooth lighting with simple ambient occlusion.\n"
 "Disable for speed or for different looks."
 msgstr ""
+"Включить мягкое освещение с простым Ambient Occlusion.\n"
+"Отключите для более высокой скорости или другого внешнего вида."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable to disallow old clients from connecting.\n"
 "Older clients are compatible in the sense that they will not crash when "
@@ -2236,24 +2257,37 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
+"Включите, чтобы запретить подключение старых клиентов.\n"
+"Старые клиенты совместимы в том смысле, что они не будут сбоить при "
+"подключении\n"
+"к новым серверам, однако они могут не поддерживать всех новых функций, "
+"которые вы ожидаете."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Enable usage of remote media server (if provided by server).\n"
 "Remote servers offer a significantly faster way to download media (e.g. "
 "textures)\n"
 "when connecting to the server."
 msgstr ""
+"Включить использование удалённого медиа-сервера (если предоставляется "
+"сервером).\n"
+"Удалённые сервера позволяют намного быстрее скачивать медиафайлы (напр. "
+"текстуры)\n"
+"во время подключения к серверу."
 
 #: src/settings_translation_file.cpp
 msgid "Enable view bobbing"
-msgstr ""
+msgstr "Включить покачивание камеры"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Включить покачивание камеры и установить его значение.\n"
+"Например: 0 отключает покачивание, 1.0 для обычного, 2.0 для двойного."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2261,6 +2295,9 @@ msgid ""
 "to IPv6 clients, depending on system configuration.\n"
 "Ignored if bind_address is set."
 msgstr ""
+"Включить/отключить запуск IPv6-сервера. Сервер IPv6 может быть\n"
+"ограничен IPv6-клиентами в зависимости от конфигурации системы.\n"
+"Игнорируется, если задан bind_address."
 
 #: src/settings_translation_file.cpp
 msgid "Enables animation of inventory items."
@@ -2273,15 +2310,17 @@ msgid ""
 "or need to be auto-generated.\n"
 "Requires shaders to be enabled."
 msgstr ""
+"Включает бампмаппинг для текстур. Карты нормалей должны быть предоставлены\n"
+"пакетом текстур или сгенерированы автоматически.\n"
+"Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Включает кэширование повёрнутых мешей."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Enables filmic tone mapping"
-msgstr "Включить тональное отображение."
+msgstr "Включить кинематографическое тональное отображение"
 
 #: src/settings_translation_file.cpp
 msgid "Enables minimap."
@@ -2292,6 +2331,8 @@ msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"Включает генерацию карт нормалей \"на лету\" (эффект тиснения).\n"
+"Требует, чтобы бампмаппинг был включен."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2301,21 +2342,23 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables view bobbing when walking."
-msgstr ""
+msgstr "Включает покачивание камеры при ходьбе."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr ""
+msgstr "Интервал печати данных профилирования движка"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "Методы сущностей"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
+"Экспериментальная опция, может привести к видимым зазорам\n"
+"между блоками, когда значение больше, чем 0."
 
 #: src/settings_translation_file.cpp
 msgid "FPS in pause menu"
@@ -2334,24 +2377,20 @@ msgid "Fall bobbing factor"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font"
-msgstr "Fallback шрифт"
+msgstr "Резервный шрифт"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font shadow"
-msgstr "Fallback тень шрифта"
+msgstr "Тень резервного шрифта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font shadow alpha"
-msgstr "Fallback прозрачность тени шрифта"
+msgstr "Прозрачность тени резервного шрифта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fallback font size"
-msgstr "Fallback размер шрифта"
+msgstr "Размер резервного шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
@@ -2391,13 +2430,12 @@ msgid "Field of view in degrees."
 msgstr "Поле зрения в градусах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Field of view while zooming in degrees.\n"
 "This requires the \"zoom\" privilege on the server."
 msgstr ""
-"Быстрое перемещение (с использованием клавиши).\n"
-"Это требует привилегию \"fast\" на сервере."
+"Поле зрения в режиме увеличения в градусах.\n"
+"Требует привилегию «zoom» на сервере."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
