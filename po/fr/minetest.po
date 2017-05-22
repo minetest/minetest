@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: 0.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-05-22 06:15+0000\n"
-"Last-Translator: Loïc Blot <loic.blot@unix-experience.fr>\n"
+"PO-Revision-Date: 2017-05-22 09:52+0000\n"
+"Last-Translator: José <lists.jjorge@free.fr>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/minetest/minetest/fr/>\n"
 "Language: fr\n"
@@ -338,7 +338,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
+msgstr "Mods de sous-jeu"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -835,7 +835,7 @@ msgid "Continue"
 msgstr "Continuer"
 
 #: src/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -853,16 +853,19 @@ msgid ""
 "- %s: chat\n"
 msgstr ""
 "Contrôles:\n"
-"- ZQSD : se déplacer\n"
-"- Espace : sauter/grimper\n"
-"- Maj. : marcher lentement/descendre\n"
-"- A : lâcher l'objet en main\n"
-"- I : inventaire\n"
+"- %s1 : avancer\n"
+"- %s2 : reculer\n"
+"- %s3 : à gauche\n"
+"- %s4 : à droite\n"
+"- %s5 : sauter/grimper\n"
+"- %s6 : marcher lentement/descendre\n"
+"- %s7 : lâcher l'objet en main\n"
+"- %s8 : inventaire\n"
 "- Souris : tourner/regarder\n"
 "- Souris gauche : creuser/attaquer\n"
 "- Souris droite : placer/utiliser\n"
 "- Molette souris : sélectionner objet\n"
-"- T : discuter\n"
+"- %s9 : discuter\n"
 
 #: src/game.cpp
 msgid "Creating client..."
@@ -968,15 +971,15 @@ msgstr "Volume du son"
 #: src/game.cpp
 #, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Volume réglé sur %d%%"
 
 #: src/game.cpp
 msgid "Volume changed to 0%"
-msgstr ""
+msgstr "Volume mis à 0%"
 
 #: src/game.cpp
 msgid "Volume changed to 100%"
-msgstr ""
+msgstr "Volume mis à 100%"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
