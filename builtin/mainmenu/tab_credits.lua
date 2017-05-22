@@ -28,7 +28,7 @@ local core_developers = {
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"Matt Gregory (paramat)",
 	"est31 <MTest31@outlook.com>",
-	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
+	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com> (Listens to ABBA)",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
 }
