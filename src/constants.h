@@ -49,6 +49,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define RESEND_TIMEOUT_FACTOR 4
 
 /*
+	Client
+*/
+// Minimum and maximum fov values for FOV.
+// Zoom FOV setting
+#define ZOOM_FOV_MIN (7)
+#define ZOOM_FOV_MAX (160)
+
+// FOV setting
+#define FOV_MIN (30)
+#define FOV_MAX (160)
+
+// Absolute range
+#define ABSOLUTE_FOV_MIN (7)
+#define ABSOLUTE_FOV_MAX (160)
+
+/*
     Server
 */
 
