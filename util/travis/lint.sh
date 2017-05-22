@@ -9,13 +9,7 @@ function perform_lint() {
 	echo "LINT: Using binary $CLANG_FORMAT"
 	CLANG_FORMAT_WHITELIST="util/travis/clang-format-whitelist.txt"
 
-	if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-		# Get list of every file modified in this pull request
-		files_to_lint="$(git diff --name-only --diff-filter=ACMRTUXB $TRAVIS_COMMIT_RANGE | grep '^src/[^.]*[.]\(cpp\|h\)$' | true)"
-	else
-		# Check everything for branch pushes
-		files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h')"
-	fi
+	files_to_lint="$(find src/ -name '*.cpp' -or -name '*.h')"
 
 	local errorcount=0
 	local fail=0
