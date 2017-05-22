@@ -697,6 +697,12 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// Set to true if wall_mounted used to be set to true
 	getboolfield(L, index, "legacy_wallmounted", f.legacy_wallmounted);
 
+	// Client shall immediately place this node when player digs the node.
+	// Server will update the precise end result a moment later.
+	// "" = no prediction
+	getstringfield(L, index, "node_dig_prediction",
+			f.node_dig_prediction);
+
 	// Sound table
 	lua_getfield(L, index, "sounds");
 	if(lua_istable(L, -1)){
