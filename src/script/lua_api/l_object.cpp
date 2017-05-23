@@ -1732,7 +1732,7 @@ int ObjectRef::l_get_sky(lua_State *L)
 		i++;
 	}
 	lua_pushboolean(L, clouds);
-	return 3;
+	return 4;
 }
 
 // set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
