@@ -44,6 +44,7 @@ local active_contributors = {
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"Rogier <rogier777@gmail.com>",
 	"red-001 <red-001@outlook.ie>",
+	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
 }
 
 local previous_core_developers = {
@@ -56,7 +57,6 @@ local previous_core_developers = {
 }
 
 local previous_contributors = {
-	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
 	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
