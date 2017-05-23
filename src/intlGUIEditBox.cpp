@@ -1129,7 +1129,6 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (cur_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
 		idx++;
 
-	// On last line we should shift 1 char (due to the null string delimiter \0)
 	return rangelim(idx + startPos, 0, S32_MAX);
 }
 
