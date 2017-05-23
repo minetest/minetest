@@ -68,10 +68,10 @@ end
 function gamemgr.gamelist()
 	local retval = ""
 	if #gamemgr.games > 0 then
-		retval = retval .. gamemgr.games[1].name
+		retval = retval .. core.formspec_escape(gamemgr.games[1].name)
 
 		for i=2,#gamemgr.games,1 do
-			retval = retval .. "," .. gamemgr.games[i].name
+			retval = retval .. "," .. core.formspec_escape(gamemgr.games[i].name)
 		end
 	end
 	return retval
