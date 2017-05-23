@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
 "PO-Revision-Date: 2017-05-23 19:55+0000\n"
-"Last-Translator: weqqr <weqqr@opmbx.org>\n"
+"Last-Translator: Sergey <mae_mbllo@mail.ru>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -3934,14 +3934,12 @@ msgid "Mesh cache"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Message of the day"
-msgstr "Фраза дня"
+msgstr "Сообщение дня"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Message of the day displayed to players connecting."
-msgstr "Фраза дня отображаемая подключившимся игрокам."
+msgstr "Сообщение, отображаемое подключившимся игрокам."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
