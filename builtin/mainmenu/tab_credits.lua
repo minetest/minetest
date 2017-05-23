@@ -45,6 +45,7 @@ local active_contributors = {
 	"Rogier <rogier777@gmail.com>",
 	"red-001 <red-001@outlook.ie>",
 	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	"Shara RedCat",
 }
 
 local previous_core_developers = {
