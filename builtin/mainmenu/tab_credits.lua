@@ -38,13 +38,12 @@ local active_contributors = {
 	"SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
-	"Gregory Currie (gregorycu)",
-	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"TeTpaAka",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"Rogier <rogier777@gmail.com>",
+	"red-001 <red-001@outlook.ie>",
 }
 
 local previous_core_developers = {
@@ -58,6 +57,7 @@ local previous_core_developers = {
 
 local previous_contributors = {
 	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
 	"dannydark <the_skeleton_of_a_child@yahoo.co.uk>",
@@ -72,6 +72,7 @@ local previous_contributors = {
 	"JacobF <queatz@gmail.com>",
 	"TriBlade9 <triblade9@mail.com>",
 	"Zefram <zefram@fysh.org>",
+	"Gregory Currie (gregorycu)",
 }
 
 return {
