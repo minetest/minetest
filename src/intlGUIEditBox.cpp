@@ -1096,41 +1096,37 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
-	core::stringw *txtLine=0;
-	s32 startPos=0;
-	x+=3;
+	core::stringw *txtLine = 0;
+	s32 startPos = 0;
+	u32 cur_line_idx = 0;
+	x += 3;
 
-	for (u32 i=0; i < lineCount; ++i)
-	{
-		setTextRect(i);
-		if (i == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
+	for (; cur_line_idx < lineCount; ++cur_line_idx) {
+		setTextRect(cur_line_idx);
+		if (cur_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
 			y = CurrentTextRect.UpperLeftCorner.Y;
-		if (i == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y )
+		if (cur_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
 			y = CurrentTextRect.LowerRightCorner.Y;
 
 		// is it inside this region?
-		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y)
-		{
+		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
 			// we've found the clicked line
-			txtLine = (WordWrap || MultiLine) ? &BrokenText[i] : &Text;
-			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[i] : 0;
+			txtLine = (WordWrap || MultiLine) ? &BrokenText[cur_line_idx] : &Text;
+			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[cur_line_idx] : 0;
 			break;
 		}
 	}
 
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
-	else if (x > CurrentTextRect.LowerRightCorner.X + 1)
-		x = CurrentTextRect.LowerRightCorner.X + 1;
+	else if (x > CurrentTextRect.LowerRightCorner.X)
+		x = CurrentTextRect.LowerRightCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
 
-	// click was on or left of the line
-	if (idx != -1)
-		return idx + startPos;
-
-	// click was off the right edge of the last line, go to end.
-	return txtLine->size() + startPos;
+	// On last line we should shift 1 char (due to the null string delimiter \0)
+	u8 shift_last_char = (cur_line_idx == lineCount - 1) ? 1 : 0;
+	return idx + startPos + shift_last_char;
 }
 
 
