@@ -29,6 +29,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
 #if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
@@ -1123,10 +1124,13 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 		x = CurrentTextRect.LowerRightCorner.X;
 
 	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	// Special handling for last line, if we are on limits, add 1 extra shift because idx
+	// will be the last char, not null char of the wstring
+	if (cur_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
+		idx++;
 
 	// On last line we should shift 1 char (due to the null string delimiter \0)
-	u8 shift_last_char = (cur_line_idx == lineCount - 1) ? 1 : 0;
-	return idx + startPos + shift_last_char;
+	return rangelim(idx + startPos, 0, S32_MAX);
 }
 
 
