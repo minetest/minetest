@@ -48,7 +48,7 @@ local active_contributors = {
 
 local previous_core_developers = {
 	"BlockMen",
-	"Maciej Kasatkin (RealBadAngel) <maciej.kasatkin@o2.pl>",
+	"Maciej Kasatkin (RealBadAngel) <RIP>",
 	"Lisa Milne (darkrose) <lisa@ltmnet.com>",
 	"proller",
 	"Ilya Zhuravlev (xyz) <xyz@minetest.net>",
