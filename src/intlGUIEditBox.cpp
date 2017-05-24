@@ -29,6 +29,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
 #if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
@@ -1096,41 +1097,39 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
-	core::stringw *txtLine=0;
-	s32 startPos=0;
-	x+=3;
+	core::stringw *txtLine = NULL;
+	s32 startPos = 0;
+	u32 curr_line_idx = 0;
+	x += 3;
 
-	for (u32 i=0; i < lineCount; ++i)
-	{
-		setTextRect(i);
-		if (i == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
+	for (; curr_line_idx < lineCount; ++curr_line_idx) {
+		setTextRect(curr_line_idx);
+		if (curr_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
 			y = CurrentTextRect.UpperLeftCorner.Y;
-		if (i == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y )
+		if (curr_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
 			y = CurrentTextRect.LowerRightCorner.Y;
 
 		// is it inside this region?
-		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y)
-		{
+		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
 			// we've found the clicked line
-			txtLine = (WordWrap || MultiLine) ? &BrokenText[i] : &Text;
-			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[i] : 0;
+			txtLine = (WordWrap || MultiLine) ? &BrokenText[curr_line_idx] : &Text;
+			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[curr_line_idx] : 0;
 			break;
 		}
 	}
 
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
-	else if (x > CurrentTextRect.LowerRightCorner.X + 1)
-		x = CurrentTextRect.LowerRightCorner.X + 1;
+	else if (x > CurrentTextRect.LowerRightCorner.X)
+		x = CurrentTextRect.LowerRightCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	// Special handling for last line, if we are on limits, add 1 extra shift because idx
+	// will be the last char, not null char of the wstring
+	if (curr_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
+		idx++;
 
-	// click was on or left of the line
-	if (idx != -1)
-		return idx + startPos;
-
-	// click was off the right edge of the last line, go to end.
-	return txtLine->size() + startPos;
+	return rangelim(idx + startPos, 0, S32_MAX);
 }
 
 
