@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-05-23 19:55+0000\n"
-"Last-Translator: Sergey <mae_mbllo@mail.ru>\n"
+"PO-Revision-Date: 2017-05-24 07:39+0000\n"
+"Last-Translator: weqqr <weqqr@opmbx.org>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -334,7 +334,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
+msgstr "Моды игры"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -1721,7 +1721,7 @@ msgstr "Шум пещеры"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr ""
+msgstr "Конусность пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
@@ -2069,11 +2069,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
-msgstr ""
+msgstr "Определяет крупномасштабную структуру каналов рек."
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
-msgstr ""
+msgstr "Определяет расположение и поверхность дополнительных холмов и озёр."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2091,7 +2091,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
-msgstr ""
+msgstr "Определяет области и плотность деревьев."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2627,6 +2627,12 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Глобальные атрибуты генерации карты.\n"
+"В генераторе карты версии 6 флаг 'decorations' не контролирует деревья\n"
+"и траву в джунглях, в остальных генераторах этот флаг контролирует все "
+"декорации.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' отключают декорации."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2675,6 +2681,10 @@ msgid ""
 "call).\n"
 "* Instrument the sampler being used to update the statistics."
 msgstr ""
+"Профилировать сам профилировщик:\n"
+"* Замерять пустую функцию.\n"
+"Это оценит накладные расходы, добавляемые замерами (+1 вызов функции).\n"
+"* Замерять сэмплер, используемый для обновления статистики."
 
 #: src/settings_translation_file.cpp
 msgid "Heat blend noise"
@@ -2717,12 +2727,10 @@ msgid "Homepage of server, to be displayed in the serverlist."
 msgstr "Домашняя страница сервера, отображаемая в списке серверов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar next key"
 msgstr "Следующий предмет в хотбаре"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Hotbar previous key"
 msgstr "Предыдущий предмет в хотбаре"
 
@@ -2895,34 +2903,38 @@ msgid ""
 "Instrument builtin.\n"
 "This is usually only needed by core/builtin contributors"
 msgstr ""
+"Замерять встроенные функции.\n"
+"Обычно это нужно тем, кто пишет код для движка"
 
 #: src/settings_translation_file.cpp
 msgid "Instrument chatcommands on registration."
-msgstr ""
+msgstr "Замерять регистрируемые команды в чате."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument global callback functions on registration.\n"
 "(anything you pass to a minetest.register_*() function)"
 msgstr ""
+"Замерять глобальные обратные вызовы\n"
+"(всё, что вы передаёте в функции вида minetest.register_*())"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Active Block Modifiers on registration."
-msgstr ""
+msgstr "Замерять действие функции модификаторов активных блоков."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Instrument the action function of Loading Block Modifiers on registration."
-msgstr ""
+msgstr "Замерять действие функции модификатора загружающихся блоков."
 
 #: src/settings_translation_file.cpp
 msgid "Instrument the methods of entities on registration."
-msgstr ""
+msgstr "Замерять методы сущностей."
 
 #: src/settings_translation_file.cpp
 msgid "Instrumentation"
-msgstr ""
+msgstr "Замеры"
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
@@ -3002,6 +3014,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Только множество Жюлиа: Компонент X гиперкомплексной константы, определяющей "
+"форму фрактала.\n"
+"Диапазон примерно от -2 до 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3009,6 +3024,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Только множество Жюлиа: Компонент Y гиперкомплексной константы, определяющей "
+"форму фрактала.\n"
+"Диапазон примерно от -2 до 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3016,6 +3034,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Только множество Жюлиа: Компонент Z гиперкомплексной константы, определяющей "
+"форму фрактала.\n"
+"Диапазон примерно от -2 до 2."
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
@@ -3452,7 +3473,7 @@ msgstr "Кнопка вызова консоли"
 
 #: src/settings_translation_file.cpp
 msgid "Lava Features"
-msgstr ""
+msgstr "Лава"
 
 #: src/settings_translation_file.cpp
 msgid "Leaves style"
@@ -3485,11 +3506,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Время между циклами выполнения модификаторов активных блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Время между циклами выполнения таймеров узлов"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3553,7 +3574,7 @@ msgstr "Сглаживание текучести жидкостей"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid loop max"
-msgstr ""
+msgstr "Максимальное количество зацикленных жидкостей"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
@@ -3561,7 +3582,7 @@ msgstr "Время очистки очереди жидкостей"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
-msgstr ""
+msgstr "Утекание воды"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update interval in seconds."
@@ -3591,7 +3612,7 @@ msgstr "Модификаторы загружающихся блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
-msgstr ""
+msgstr "Менеджер игр в главном меню"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu mod manager"
@@ -3621,7 +3642,6 @@ msgid "Map directory"
 msgstr "Каталог сохранения карт"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen Valleys.\n"
 "'altitude_chill' makes higher elevations colder, which may cause biome "
@@ -3633,19 +3653,16 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Параметры глобального генератора карты.\n"
-"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
-"исключением деревьев\n"
-" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
-"всем оформлением.\n"
-"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
-"light, decorations\n"
-"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
-"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
-"Флаги, начинающиеся с 'no' используются для их явного отключения."
+"Атрибуты генерации карты, относящиеся к Valleys.\n"
+"'altitude_chill' делает высоты холоднее, что может привести к проблемам с "
+"биомами.\n"
+"'humid_rivers' изменяет влажность вокруг рек, и в областях, где скапливается "
+"вода,\n"
+"он может вмешиваться в тонко настроенные биомы.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen flat.\n"
 "Occasional lakes and hills can be added to the flat world.\n"
@@ -3653,38 +3670,23 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Параметры глобального генератора карты.\n"
-"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
-"исключением деревьев\n"
-" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
-"всем оформлением.\n"
-"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
-"light, decorations\n"
-"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
-"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
-"Флаги, начинающиеся с 'no' используются для их явного отключения."
+"Атрибуты генерации карты, относящиеся к генератору плоской карты.\n"
+"Случайные озёра и холмы могут быть добавлены в плоский мир.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v5.\n"
 "Flags that are not specified in the flag string are not modified from the "
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Параметры глобального генератора карты.\n"
-"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
-"исключением деревьев\n"
-" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
-"всем оформлением.\n"
-"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
-"light, decorations\n"
-"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
-"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
-"Флаги, начинающиеся с 'no' используются для их явного отключения."
+"Атрибуты генерации карты, относящиеся к генератору карты версии 5.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v6.\n"
 "The 'snowbiomes' flag enables the new 5 biome system.\n"
@@ -3694,19 +3696,14 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Параметры глобального генератора карты.\n"
-"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
-"исключением деревьев\n"
-" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
-"всем оформлением.\n"
-"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
-"light, decorations\n"
-"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
-"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
-"Флаги, начинающиеся с 'no' используются для их явного отключения."
+"Атрибуты генерации карты, относящиеся к генератору карты версии 6.\n"
+"Флаг 'snowbiomes' включает новую систему биомов.\n"
+"Когда включена новая система биомов, джунгли включаются автоматически\n"
+"и флаг 'jungles' игнорируется.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Map generation attributes specific to Mapgen v7.\n"
 "The 'ridges' flag enables the rivers.\n"
@@ -3715,20 +3712,15 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
-"Параметры глобального генератора карты.\n"
-"В генераторе карт v6 флаг 'decorations' управляет всем оформлением за "
-"исключением деревьев\n"
-" и junglegras(травы джунглей?), в остальных генераторах этот флаг управляет "
-"всем оформлением.\n"
-"Стандартные флаги, установленные в engine(инструменте?) следующие: caves, "
-"light, decorations\n"
-"Строка флагов изменяет стандартные настройки engine(инструмента?).\n"
-"Флаги, не указанные в строке флагов, по умолчанию не изменяются.\n"
-"Флаги, начинающиеся с 'no' используются для их явного отключения."
+"Атрибуты генерации карты, относящиеся к генератору карты версии 7.\n"
+"Флаг 'ridges' включает реки.\n"
+"Парящие острова являются экспериментальными и могут изменяться.\n"
+"Флаги, не указанные в строке флагов, остаются в значении по умолчанию.\n"
+"Флаги с приставкой 'no' явно отключают их."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
-msgstr ""
+msgstr "Предел генерации карты"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
@@ -3736,19 +3728,19 @@ msgstr "Интервал сохранения карты"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
-msgstr ""
+msgstr "Предел блока"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generation delay"
-msgstr ""
+msgstr "Задержка в генерации мешей блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size MB"
-msgstr ""
+msgstr "Размер кэша блоков в генераторе мешей в МБ"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
-msgstr ""
+msgstr "Таймаут выгрузки блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Mapgen Valleys"
@@ -3804,35 +3796,35 @@ msgstr "Флаги генератора карты версии 7"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave depth"
-msgstr ""
+msgstr "Глубина огромных пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Massive cave noise"
-msgstr ""
+msgstr "Шум огромных пещер"
 
 #: src/settings_translation_file.cpp
 msgid "Massive caves form here."
-msgstr ""
+msgstr "Огромные пещеры образуются здесь."
 
 #: src/settings_translation_file.cpp
 msgid "Max block generate distance"
-msgstr ""
+msgstr "Максимальное расстояние генерации блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Max block send distance"
-msgstr ""
+msgstr "Максимальное расстояние отправки блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Max liquids processed per step."
-msgstr ""
+msgstr "Максимальное количество обработанных жидкостей за шаг."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Количество дополнительно загружаемых блоков clearobjects"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
-msgstr ""
+msgstr "Максимальное количество пакетов за итерацию"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
@@ -3844,7 +3836,7 @@ msgstr "Максимальный FPS в режиме паузы."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
-msgstr ""
+msgstr "Максимальное количество принудительно загруженных блоков"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum hotbar width"
@@ -3852,7 +3844,7 @@ msgstr "Максимальная ширина хотбара"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent in total."
-msgstr ""
+msgstr "Максимальное количество одновременно отправляемых блоков."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that are simultaneously sent per client."
@@ -3861,28 +3853,36 @@ msgstr "Количество блоков, передаваемых одновр
 #: src/settings_translation_file.cpp
 msgid "Maximum number of blocks that can be queued for loading."
 msgstr ""
+"Максимальное количество блоков, которые могут быть помещены в очередь для "
+"загрузки."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be generated.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Максимальное количество блоков в очереди на генерацию. Оставьте пустым для "
+"автоматического выбора подходящего значения."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of blocks to be queued that are to be loaded from file.\n"
 "Set to blank for an appropriate amount to be chosen automatically."
 msgstr ""
+"Максимальное количество блоков в очереди на загрузку из файла. Оставьте "
+"пустым для автоматического выбора подходящего значения."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr ""
+msgstr "Максимальное количество принудительно загруженных блоков."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
+"Максимальное количество блоков в памяти клиента.\n"
+"Установите в -1 для бесконечного количества."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3890,18 +3890,22 @@ msgid ""
 "try reducing it, but don't reduce it to a number below double of targeted\n"
 "client number."
 msgstr ""
+"Максимальное количество пакетов, отправляемых за шаг. Если у вас медленное "
+"подключение,\n"
+"попробуйте уменьшить его, но не устанавливайте ниже значения клиента, "
+"умноженного на два."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr ""
+msgstr "Максимальное количество одновременно подключающихся клиентов."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
-msgstr ""
+msgstr "Максимальное количество статически хранимых объектов в блоке."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum objects per block"
-msgstr ""
+msgstr "Максимальное количество объектов на блок"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3911,15 +3915,17 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
-msgstr ""
+msgstr "Максимальное количество одновременных отправлений блоков на клиент"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends total"
-msgstr ""
+msgstr "Максимальное количество одновременных отправлений блоков в общем"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
+"Максимум времени (в миллисекундах), которое может занять загрузка (например, "
+"мода)."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
@@ -3931,7 +3937,7 @@ msgstr "Меню"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Кэш мешей"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -3943,7 +3949,7 @@ msgstr "Сообщение, отображаемое подключившимс�
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
-msgstr ""
+msgstr "Метод подсветки выделенного объекта."
 
 #: src/settings_translation_file.cpp
 msgid "Minimap"
@@ -3954,51 +3960,49 @@ msgid "Minimap key"
 msgstr "Клавиша переключения миникарты"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Minimap scan height"
 msgstr "Высота сканирования миникарты"
 
 #: src/settings_translation_file.cpp
 msgid "Minimum texture size for filters"
-msgstr ""
+msgstr "Минимальный размер текстуры для фильтров"
 
 #: src/settings_translation_file.cpp
 msgid "Mipmapping"
 msgstr "Mip-текстурирование (Мип-маппинг)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
+msgstr "Изменяет размер элементов hudbar."
 
 #: src/settings_translation_file.cpp
 msgid "Modstore details URL"
-msgstr ""
+msgstr "URL информации о модах"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore download URL"
-msgstr ""
+msgstr "URL для скачивания модов"
 
 #: src/settings_translation_file.cpp
 msgid "Modstore mods list URL"
-msgstr ""
+msgstr "URL списка модов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font path"
-msgstr "Путь моноширинного шрифта"
+msgstr "Путь к моноширинному шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Monospace font size"
 msgstr "Размер моноширинного шрифта"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain height noise"
-msgstr ""
+msgstr "Шум высоты гор"
 
 #: src/settings_translation_file.cpp
 msgid "Mountain noise"
-msgstr ""
+msgstr "Шум гор"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
@@ -4010,21 +4014,21 @@ msgstr "Множитель чувствительности мыши."
 
 #: src/settings_translation_file.cpp
 msgid "Mud noise"
-msgstr ""
+msgstr "Шум грязи"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Множитель для покачивания при падении.\n"
+"Например: 0 отключает покачивание; 1.0 для обычного; 2.0 для двойного."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mute key"
-msgstr "нажмите клавишу"
+msgstr "Клавиша отключения звука"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Name of map generator to be used when creating a new world.\n"
 "Creating a world in the main menu will override this."
@@ -4060,17 +4064,14 @@ msgstr ""
 "Этот параметр будет переопределён, если запускать сервер с главного меню."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "New users need to input this password."
 msgstr "Новым пользователям нужно вводить этот пароль."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Noclip"
 msgstr "Отключить столкновения"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Noclip key"
 msgstr "Клавиша отключения столкновений"
 
@@ -4079,9 +4080,8 @@ msgid "Node highlighting"
 msgstr "Подсветка нод"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "NodeTimer interval"
-msgstr "Интервал отправки"
+msgstr "Интервал обновления узлов"
 
 #: src/settings_translation_file.cpp
 msgid "Noises"
@@ -4089,11 +4089,11 @@ msgstr "Шумы"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps sampling"
-msgstr ""
+msgstr "Выборка карт нормалей"
 
 #: src/settings_translation_file.cpp
 msgid "Normalmaps strength"
-msgstr ""
+msgstr "Сила карт нормалей"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
@@ -4114,26 +4114,31 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"Количество дополнительных блоков, которые могут сразу быть загружены "
+"/clearobjects.\n"
+"Это компромисс между накладными расходами на транзакции SQLite и "
+"потреблением\n"
+"памяти (4096=100 MБ, как правило)."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
-msgstr ""
+msgstr "Количество итераций Parallax Occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Offset"
-msgstr ""
+msgstr "Смещение"
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
-msgstr ""
+msgstr "Непрозрачные жидкости"
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
+msgstr "Общее смещение эффекта Parallax Occlusion, обычно масштаб/2."
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr ""
+msgstr "Общее смещение эффекта Parallax Occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
@@ -4161,7 +4166,7 @@ msgstr "Сила параллакса"
 
 #: src/settings_translation_file.cpp
 msgid "Path to TrueTypeFont or bitmap."
-msgstr ""
+msgstr "Путь к шрифту TrueType или картинке со шрифтом."
 
 #: src/settings_translation_file.cpp
 msgid "Path to save screenshots at."
@@ -4172,6 +4177,8 @@ msgid ""
 "Path to shader directory. If no path is defined, default location will be "
 "used."
 msgstr ""
+"Путь к директории с шейдерами. Если не задан, то будет использоваться путь "
+"по умолчанию."
 
 #: src/settings_translation_file.cpp
 msgid "Path to texture directory. All textures are first searched from here."
@@ -4195,7 +4202,6 @@ msgid "Player name"
 msgstr "Имя игрока"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Player transfer distance"
 msgstr "Расстояние передачи игрока"
 
@@ -4223,6 +4229,8 @@ msgid ""
 "Print the engine's profiling data in regular intervals (in seconds). 0 = "
 "disable. Useful for developers."
 msgstr ""
+"Печатать информацию о профилировании через заданные интервалы (в секундах). "
+"0 = отключить. Полезно для разработчиков."
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
@@ -4230,15 +4238,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
-msgstr ""
+msgstr "Профилировщик"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler toggle key"
-msgstr ""
+msgstr "Клавиша переключения профилировщика"
 
 #: src/settings_translation_file.cpp
 msgid "Profiling"
-msgstr ""
+msgstr "Профилирование"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4249,10 +4257,9 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers"
-msgstr ""
+msgstr "Поднимает местность, чтобы образовать долины вдоль рек"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Random input"
 msgstr "Случайный ввод"
 
@@ -4261,7 +4268,6 @@ msgid "Range select key"
 msgstr "Кнопка настройки дальности видимости"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Remote media"
 msgstr "Удалённый медиасервер"
 
@@ -4270,7 +4276,6 @@ msgid "Remote port"
 msgstr "Удаленный порт"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Replaces the default main menu with a custom one."
 msgstr "Заменять главное меню на пользовательское."
 
@@ -4280,12 +4285,10 @@ msgid "Report path"
 msgstr "Путь к шрифту"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge noise"
 msgstr "Шум хребтов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Ridge underwater noise"
 msgstr "Шум подводных хребтов"
 
@@ -4294,32 +4297,26 @@ msgid "Right key"
 msgstr "Правая клавиша меню"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Rightclick repetition interval"
-msgstr "Интервал повторного клика правой кнопкой."
+msgstr "Интервал повторного клика правой кнопкой"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River Depth"
 msgstr "Глубина рек"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River Noise"
 msgstr "Шум рек"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River Size"
 msgstr "Размер рек"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "River noise -- rivers occur close to zero"
 msgstr "Шум рек; реки встречаются ближе к нулю"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Rollback recording"
 msgstr "Запись отката"
 
@@ -4328,7 +4325,6 @@ msgid "Round minimap"
 msgstr "Круглая миникарта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sandy beaches occur when np_beach exceeds this value."
 msgstr "Песчаные пляжи появляются, когда np_beach превышает это значение."
 
@@ -4341,12 +4337,10 @@ msgid "Saving map received from server"
 msgstr "Сохранение карты, полученной с сервера"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Scale"
 msgstr "Масштаб"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Scale gui by a user specified value.\n"
 "Use a nearest-neighbor-anti-alias filter to scale the GUI.\n"
@@ -4378,24 +4372,21 @@ msgid "Screenshot folder"
 msgstr "Каталог со скриншотами"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
 msgstr "Формат скриншота"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
 msgstr "Качество скриншота"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Screenshot quality. Only used for JPEG format.\n"
 "1 means worst quality; 100 means best quality.\n"
 "Use 0 for default quality."
 msgstr ""
 "Качество скриншота. Используется только для изображений в формате JPEG.\n"
-"1 означает плохое качество; 100 означает хорошее качество.\n"
+"1 означает худшее качество; 100 означает лучшее качество.\n"
 "Используйте 0 для настроек по умолчанию."
 
 #: src/settings_translation_file.cpp
@@ -4404,12 +4395,10 @@ msgid "Seabed noise"
 msgstr "Шум пещеры #1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Second of 2 3D noises that together define tunnels."
 msgstr "Второй из двух 3D-шумов, которые вместе определяют туннели."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Security"
 msgstr "Безопасность"
 
@@ -4418,19 +4407,16 @@ msgid "See http://www.sqlite.org/pragma.html#pragma_synchronous"
 msgstr "Смотрите http://www.sqlite.org/pragma.html#pragma_synchronous"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Selection box border color (R,G,B)."
 msgstr "Цвет рамки выделения (R, G, B)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Selection box color"
 msgstr "Цвет выделения"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Selection box width"
-msgstr "Ширина рамки выделения"
+msgstr "Толщина рамки выделения"
 
 #: src/settings_translation_file.cpp
 msgid "Server / Singleplayer"
@@ -4457,7 +4443,6 @@ msgid "Server port"
 msgstr "Порт сервера"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Server side occlusion culling"
 msgstr "Отсечение невидимой геометрии на стороне сервера"
 
@@ -4470,48 +4455,42 @@ msgid "Serverlist file"
 msgstr "Файл списка серверов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set the language. Leave empty to use the system language.\n"
 "A restart is required after changing this."
 msgstr ""
 "Установка языка. Оставьте пустым для использования системного языка.\n"
-"Требует перезапуска после установки."
+"Требует перезапуска после изменения."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true enables waving leaves.\n"
 "Requires shaders to be enabled."
 msgstr ""
 "Установка в true включает покачивание листвы.\n"
-"Это требует включение шейдеров."
+"Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true enables waving plants.\n"
 "Requires shaders to be enabled."
 msgstr ""
 "Установка в true включает покачивание растений.\n"
-"Это требует включение шейдеров."
+"Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Set to true enables waving water.\n"
 "Requires shaders to be enabled."
 msgstr ""
 "Установка в true включает волны на воде.\n"
-"Это требует включение шейдеров."
+"Требует, чтобы шейдеры были включены."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shader path"
-msgstr "Шейдеры"
+msgstr "Путь к шейдерам"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Shaders allow advanced visual effects and may increase performance on some "
 "video cards.\n"
@@ -4519,10 +4498,9 @@ msgid ""
 msgstr ""
 "Шейдеры позволяют использовать дополнительные визуальные эффекты и могут "
 "увеличить производительность на некоторых видеокартах.\n"
-"Они работают только с видео серверной OpenGL."
+"Они работают только с бэкендом OpenGL."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shadow limit"
 msgstr "Лимит теней"
 
@@ -4539,21 +4517,16 @@ msgid "Show entity selection boxes"
 msgstr "Показывать выделение энтити"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Shutdown message"
 msgstr "Сообщение о выключении"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of chunks to be generated at once by mapgen, stated in mapblocks (16 "
 "nodes)."
-msgstr ""
-"Размер чанка, генерируемого за один раз, установленный в мапблоках (16 "
-"кубиков)."
+msgstr "Размер чанка, генерируемого за один раз, указанный в блоках (16 узлов)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Size of the MapBlock cache of the mesh generator. Increasing this will\n"
 "increase the cache hit %, reducing the data being copied from the main\n"
@@ -4572,47 +4545,39 @@ msgid "Slope and fill work together to modify the heights"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Small-scale humidity variation for blending biomes on borders."
 msgstr "Мелкие вариации влажности для смешивания биомов на границах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Small-scale temperature variation for blending biomes on borders."
 msgstr "Мелкие вариации температуры для смешивания биомов на границах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooth lighting"
 msgstr "Мягкое освещение"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Smooths camera when looking around. Also called look or mouse smoothing.\n"
 "Useful for recording videos."
 msgstr ""
-"Сглаживать движения камеры при ходьбе и поворотах.\n"
+"Сглаживать движения камеры при её повороте. Также называется сглаживанием "
+"движений мыши.\n"
 "Это может быть полезно при записи видео."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooths rotation of camera in cinematic mode. 0 to disable."
-msgstr ""
-"Плавное вращение камеры в кинематографическом режиме. 0 для отключения."
+msgstr "Плавное вращение камеры в кинематографическом режиме. 0 для отключения."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Smooths rotation of camera. 0 to disable."
 msgstr "Плавное вращение камеры. 0 для отключения."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sneak key"
 msgstr "Красться"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Sound"
 msgstr "Звук"
 
@@ -4630,32 +4595,26 @@ msgstr ""
 "Файлы, которых не будет, будут скачены обычным путём."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Static spawnpoint"
-msgstr "Постоянное место спавна"
+msgstr "Постоянная точка возрождения"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Status message on connection"
 msgstr "Сообщение статуса при подключении"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Steepness noise"
 msgstr "Шум крутизны"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of generated normalmaps."
-msgstr "Генерировать карты нормалей"
+msgstr "Сила сгенерированных карт нормалей."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strength of parallax."
 msgstr "Сила параллакса."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Strict protocol checking"
 msgstr "Строгая проверка протокола"
 
@@ -4664,12 +4623,10 @@ msgid "Support older servers"
 msgstr "Поддержка старых серверов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Synchronous SQLite"
 msgstr "Синхронный SQLite"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Temperature variation for biomes."
 msgstr "Вариация температур в биомах."
 
@@ -4682,19 +4639,16 @@ msgid "Terrain alt noise"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain base noise"
-msgstr "Высота местности"
+msgstr "Базовый шум поверхности"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain higher noise"
-msgstr "Высота местности"
+msgstr "Шум высокой местности"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Terrain noise"
-msgstr "Высота местности"
+msgstr "Шум поверхности"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4715,12 +4669,10 @@ msgid "Terrain persistence noise"
 msgstr "Шум постоянности ландшафта"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Texture path"
-msgstr "Пакеты текстур"
+msgstr "Путь к текстурам"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The altitude at which temperature drops by 20C"
 msgstr "Высота, на которой температура падает на 20 °C"
 
@@ -4733,12 +4685,10 @@ msgstr ""
 "когда вызывают '/profiler save [формат]' без формата."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The depth of dirt or other filler"
 msgstr "Глубина земли или другого наполнителя"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
 msgstr ""
@@ -4746,9 +4696,8 @@ msgstr ""
 "профили."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The identifier of the joystick to use"
-msgstr "ID используемого джойстика"
+msgstr "Идентификатор используемого джойстика"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -4763,7 +4712,6 @@ msgstr ""
 "Смотрите /privs для получения полного списка привилегий."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The rendering back-end for Irrlicht."
 msgstr "Бэкенд Irrlicht для рендеринга."
 
@@ -4774,14 +4722,13 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The strength (darkness) of node ambient-occlusion shading.\n"
 "Lower is darker, Higher is lighter. The valid range of values for this\n"
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
-"Сила затенения ноды Ambient Occlusion. Чем меньше, тем темнее\n"
+"Сила затенения Ambient Occlusion. Чем меньше, тем темнее,\n"
 "и наоборот. Возможные значения параметра - от 0.25 до 4.0\n"
 "включительно. Если значение находится вне этого диапазона,\n"
 "то оно будет округлено до ближайшего корректного."
@@ -4794,21 +4741,20 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated events\n"
 "when holding down a joystick button combination."
-msgstr "Задержка в секундах между кликами при зажатой правой кнопке мыши."
+msgstr ""
+"Время в секундах между повторяющимися событиями,\n"
+"когда зажата комбинация кнопок на джойстике."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr "Задержка в секундах между кликами при зажатой правой кнопке мыши."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "The type of joystick"
 msgstr "Тип джойстика"
 
@@ -4817,38 +4763,32 @@ msgid "This font will be used for certain languages."
 msgstr "Этот шрифт будет использован для некоторых языков."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Time in between active block management cycles"
 msgstr "Время между циклами управления активными блоками"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
-"Время жизни выброшенных предметов.\n"
+"Время жизни выброшенных предметов в секундах.\n"
 "Установите в -1 для отключения этой функции."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Time send interval"
-msgstr "Интервал отправки"
+msgstr "Интервал отправки времени"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Time speed"
 msgstr "Скорость хода времени"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Timeout for client to remove unused map data from memory."
 msgstr ""
 "Время, после которого клиент удаляет из памяти неиспользуемую информацию о "
 "карте."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "To reduce lag, block transfers are slowed down when a player is building "
 "something.\n"
@@ -4861,27 +4801,22 @@ msgstr ""
 "удаления узла."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Toggle camera mode key"
-msgstr "Клавиша переключения режима камеры."
+msgstr "Клавиша переключения режима камеры"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Tooltip delay"
-msgstr "Задержка подсказки."
+msgstr "Задержка подсказки"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trees noise"
 msgstr "Шум деревьев"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trilinear filtering"
 msgstr "Трилинейная фильтрация"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "True = 256\n"
 "False = 128\n"
@@ -4889,33 +4824,27 @@ msgid ""
 msgstr ""
 "True = 256\n"
 "False = 128\n"
-"Полезно для плавной миникарты на медленных машинах."
+"Полезно для обеспечения плавности миникарты на медленных машинах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Trusted mods"
 msgstr "Доверенные моды"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Typical maximum height, above and below midpoint, of floatland mountain "
 "terrain."
-msgstr ""
-"Типичная максимальная высота, выше и ниже медианы, горной местности парящих "
-"островов."
+msgstr "Типичная максимальная высота горной местности парящих островов."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
 msgstr "URL списка серверов, отображающийся во вкладке Мультиплеер."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Undersampling"
-msgstr "Рендеринг:"
+msgstr "Undersampling"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Undersampling is similar to using lower screen resolution, but it applies\n"
 "to the game world only, keeping the GUI intact.\n"
@@ -4932,58 +4861,48 @@ msgid "Unlimited player transfer distance"
 msgstr "Неограниченное расстояние перемещения игрока"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Unload unused server data"
 msgstr "Выгружать неиспользуемые сервером данные"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use 3D cloud look instead of flat."
 msgstr "Объемные облака вместо плоских."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use a cloud animation for the main menu background."
 msgstr "Анимированные облака в главном меню."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use anisotropic filtering when viewing at textures from an angle."
-msgstr "Использовать анизатропную фильтрацию про взгляде под углом."
+msgstr "Использовать анизотропную фильтрацию про взгляде на текстуры под углом."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use bilinear filtering when scaling textures."
 msgstr "Использовать билинейную фильтрацию для масштабирования текстур."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use key"
-msgstr "нажмите клавишу"
+msgstr "Клавиша Использовать"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use mip mapping to scale textures. May slightly increase performance."
 msgstr ""
-"Использовать мип-маппинг для масштабирования текстур. Может немного "
-"увеличить производительность."
+"Использовать мипмаппинг для масштабирования текстур. Может немного увеличить "
+"производительность."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Use trilinear filtering when scaling textures."
-msgstr "Использовать трилинейную фильтрацию для масштабировании текстур."
+msgstr "Использовать трилинейную фильтрацию для масштабирования текстур."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "V-Sync"
-msgstr "V-Sync"
+msgstr "Вертикальная синхронизация"
 
 #: src/settings_translation_file.cpp
 msgid "VBO"
 msgstr "VBO"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley Depth"
 msgstr "Глубина долин"
 
@@ -4997,7 +4916,6 @@ msgid "Valley Profile"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Valley Slope"
 msgstr "Уклон долин"
 
@@ -5006,28 +4924,23 @@ msgid "Valleys C Flags"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Variation of biome filler depth."
-msgstr "Вариация глубины наполнителя биома"
+msgstr "Вариация глубины наполнителя биома."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Variation of hill height and lake depth on floatland smooth terrain."
 msgstr ""
 "Вариация высоты холмов и глубин озёр на гладкой местности парящих островов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Variation of maximum mountain height (in nodes)."
 msgstr "Вариация максимальной высоты гор (в узлах)."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Variation of number of caves."
 msgstr "Вариация количества пещер."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Variation of terrain vertical scale.\n"
 "When noise is < -0.55 terrain is near-flat."
@@ -5036,12 +4949,10 @@ msgstr ""
 "Поверхность становится почти плоской, когда шум меньше -0.55."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies depth of biome surface nodes."
 msgstr "Варьирует глубину поверхностных узлов биома."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
@@ -5050,56 +4961,44 @@ msgstr ""
 "Определяет значение 'persistence' для шумов terrain_base и terrain_alt."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Varies steepness of cliffs."
-msgstr "Регулирует крутизну и высоту холмов."
+msgstr "Регулирует крутизну утёсов."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Vertical screen synchronization."
 msgstr "Вертикальная синхронизация."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Video driver"
-msgstr "Видео драйвер."
+msgstr "Видеодрайвер"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View bobbing factor"
 msgstr "Коэффициент покачивания"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View distance in nodes."
-msgstr ""
-"Дальность отрисовки в нодах.\n"
-"Минимум = 20"
+msgstr "Дальность отрисовки в узлах."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View range decrease key"
-msgstr "Клавиша уменьшения видимого диапазона."
+msgstr "Клавиша уменьшения видимого диапазона"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View range increase key"
-msgstr "Клавиша увеличения видимого диапазона."
+msgstr "Клавиша увеличения видимого диапазона"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "View zoom key"
 msgstr "Клавиша режима увеличения"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Viewing range"
-msgstr "Максимальная граница дальности отрисовки."
+msgstr "Дистанция отрисовки"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Volume"
-msgstr "Громкость звука"
+msgstr "Громкость"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5114,9 +5013,8 @@ msgid "Walking speed"
 msgstr "Скорость ходьбы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Water Features"
-msgstr "Текстуры предметов..."
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Water level"
@@ -5127,17 +5025,14 @@ msgid "Water surface level of the world."
 msgstr "Уровень поверхности воды мира."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving Nodes"
-msgstr "Покачивание листвы"
+msgstr "Покачивание узлов"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving leaves"
 msgstr "Покачивание листвы"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Waving plants"
 msgstr "Покачивание растений"
 
@@ -5189,12 +5084,10 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Whether node texture animations should be desynchronized per mapblock."
 msgstr "Рассинхронизировать ли анимацию текстур узлов в блоке."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
@@ -5203,23 +5096,20 @@ msgstr ""
 "Устарело, используйте параметр player_transfer_distance."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Whether to allow players to damage and kill each other."
-msgstr "Разрешить игрокам сражаться друг с другом."
+msgstr "Разрешено ли игрокам наносить урон и убивать друг друга."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
-"Опрашивать клиентов для переподключения после падения.\n"
-"Установите это если ваш сервер настроен на автоматический перезапуск."
+"Просить ли клиентов переподключиться после сбоя Lua.\n"
+"Установите это, если ваш сервер настроен на автоматический перезапуск."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Whether to fog out the end of the visible area."
-msgstr "Туман на границе видимого пространства."
+msgstr "Затуманивать ли конец видимой области."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -5240,9 +5130,8 @@ msgid "Width component of the initial window size."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Width of the selectionbox's lines around nodes."
-msgstr "Ширина обводки выбранных блоков."
+msgstr "Толщина обводки выделенных узлов."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -5302,9 +5191,8 @@ msgid "block send optimize distance"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "cURL file download timeout"
-msgstr "Тайм-аут загрузки файла cURL"
+msgstr "Таймаут загрузки файла с помощью cURL"
 
 #: src/settings_translation_file.cpp
 msgid "cURL parallel limit"
