@@ -1099,21 +1099,21 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	core::stringw *txtLine = NULL;
 	s32 startPos = 0;
-	u32 cur_line_idx = 0;
+	u32 curr_line_idx = 0;
 	x += 3;
 
-	for (; cur_line_idx < lineCount; ++cur_line_idx) {
-		setTextRect(cur_line_idx);
-		if (cur_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
+	for (; curr_line_idx < lineCount; ++curr_line_idx) {
+		setTextRect(curr_line_idx);
+		if (curr_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
 			y = CurrentTextRect.UpperLeftCorner.Y;
-		if (cur_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
+		if (curr_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
 			y = CurrentTextRect.LowerRightCorner.Y;
 
 		// is it inside this region?
 		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
 			// we've found the clicked line
-			txtLine = (WordWrap || MultiLine) ? &BrokenText[cur_line_idx] : &Text;
-			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[cur_line_idx] : 0;
+			txtLine = (WordWrap || MultiLine) ? &BrokenText[curr_line_idx] : &Text;
+			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[curr_line_idx] : 0;
 			break;
 		}
 	}
@@ -1126,7 +1126,7 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
 	// Special handling for last line, if we are on limits, add 1 extra shift because idx
 	// will be the last char, not null char of the wstring
-	if (cur_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
+	if (curr_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
 		idx++;
 
 	return rangelim(idx + startPos, 0, S32_MAX);
