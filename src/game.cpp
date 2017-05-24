@@ -1701,6 +1701,8 @@ void Game::shutdown()
 		driver->setRenderTarget(irr::video::ERT_STEREO_BOTH_BUFFERS);
 	}
 #endif
+	if (current_formspec)
+		current_formspec->quitMenu();
 
 	showOverlayMessage(wgettext("Shutting down..."), 0, 0, false);
 
