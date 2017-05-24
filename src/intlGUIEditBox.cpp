@@ -1097,7 +1097,7 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
-	core::stringw *txtLine = 0;
+	core::stringw *txtLine = NULL;
 	s32 startPos = 0;
 	u32 cur_line_idx = 0;
 	x += 3;
