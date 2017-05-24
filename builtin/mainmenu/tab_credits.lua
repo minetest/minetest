@@ -26,16 +26,15 @@ local core_developers = {
 	"ShadowNinja <shadowninja@minetest.net>",
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
-	"Matt Gregory (paramat)",
-	"est31 <MTest31@outlook.com>",
-	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com> (Listens to ABBA)",
+	"paramat",
+	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com> (Dancing Queen)",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
+	"SmallJoker <mk939@ymail.com>",
 }
 
 local active_contributors = {
 	"Duane Robertson <duane@duanerobertson.com>",
-	"SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
 	"TeTpaAka",
@@ -55,6 +54,7 @@ local previous_core_developers = {
 	"proller",
 	"Ilya Zhuravlev (xyz) <xyz@minetest.net>",
 	"PilzAdam <pilzadam@minetest.net>",
+	"est31 <MTest31@outlook.com>",
 }
 
 local previous_contributors = {
