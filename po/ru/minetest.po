@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-05-24 08:17+0000\n"
-"Last-Translator: Alex “XShell” Schekoldin <sa1904sa@gmail.com>\n"
+"PO-Revision-Date: 2017-05-24 08:24+0000\n"
+"Last-Translator: weqqr <weqqr@opmbx.org>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -609,7 +609,7 @@ msgstr "Ничего"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Normal Mapping"
-msgstr "Mip-текстурирование"
+msgstr "Карты нормалей"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Leaves"
@@ -3907,10 +3907,13 @@ msgid "Maximum objects per block"
 msgstr "Максимальное количество объектов на блок"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
 msgstr ""
+"Максимальная доля окна, используемая для хотбара.\n"
+"Полезно, если что-то будет отображаться справа или слева от него."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum simultaneous block sends per client"
@@ -4233,7 +4236,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
-msgstr ""
+msgstr "Привилегии, доступные игрокам с basic_privs"
 
 #: src/settings_translation_file.cpp
 msgid "Profiler"
