@@ -626,7 +626,7 @@ void Hud::resizeHotbar() {
 }
 
 struct MeshTimeInfo {
-	s64 time;
+	u64 time;
 	scene::IMesh *mesh;
 };
 

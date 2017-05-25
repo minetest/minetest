@@ -33,7 +33,7 @@ class TestFailedException : public std::exception {
 
 // Runs a unit test and reports results
 #define TEST(fxn, ...) do {                                                   \
-	u32 t1 = porting::getTime(PRECISION_MILLI);                               \
+	u64 t1 = porting::getTimeMs();                                            \
 	try {                                                                     \
 		fxn(__VA_ARGS__);                                                     \
 		rawstream << "[PASS] ";                                               \
@@ -46,7 +46,7 @@ class TestFailedException : public std::exception {
 		num_tests_failed++;                                                   \
 	}                                                                         \
 	num_tests_run++;                                                          \
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;                       \
+	u64 tdiff = porting::getTimeMs() - t1;                                    \
 	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 } while (0)
 

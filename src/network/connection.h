@@ -769,7 +769,7 @@ class Peer {
 		// Seconds from last receive
 		float m_timeout_counter;
 
-		u32 m_last_timeout_check;
+		u64 m_last_timeout_check;
 };
 
 class UDPPeer : public Peer

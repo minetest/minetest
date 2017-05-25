@@ -229,7 +229,7 @@ bool run_tests()
 {
 	DSTACK(FUNCTION_NAME);
 
-	u32 t1 = porting::getTime(PRECISION_MILLI);
+	u64 t1 = porting::getTimeMs();
 	TestGameDef gamedef;
 
 	g_logger.setLevelSilenced(LL_ERROR, true);
@@ -246,7 +246,7 @@ bool run_tests()
 		num_total_tests_run += testmods[i]->num_tests_run;
 	}
 
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
+	u64 tdiff = porting::getTimeMs() - t1;
 
 	g_logger.setLevelSilenced(LL_ERROR, false);
 
@@ -273,12 +273,12 @@ bool run_tests()
 bool TestBase::testModule(IGameDef *gamedef)
 {
 	rawstream << "======== Testing module " << getName() << std::endl;
-	u32 t1 = porting::getTime(PRECISION_MILLI);
+	u64 t1 = porting::getTimeMs();
 
 
 	runTests(gamedef);
 
-	u32 tdiff = porting::getTime(PRECISION_MILLI) - t1;
+	u64 tdiff = porting::getTimeMs() - t1;
 	rawstream << "======== Module " << getName() << " "
 		<< (num_tests_failed ? "failed" : "passed") << " (" << num_tests_failed
 		<< " failures / " << num_tests_run << " tests) - " << tdiff

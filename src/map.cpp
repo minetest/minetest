@@ -981,7 +981,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 
 	time_until_purge *= 1000;	// seconds -> milliseconds
 
-	u32 curr_time = porting::getTime(PRECISION_MILLI);
+	u64 curr_time = porting::getTimeMs();
 	u32 prev_unprocessed = m_unprocessed_count;
 	m_unprocessed_count = m_transforming_liquid.size();
 
