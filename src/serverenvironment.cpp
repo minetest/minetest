@@ -721,7 +721,7 @@ public:
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
-			if(abm->getSimpleCatchUp()) {
+			if (abm->getSimpleCatchUp()) {
 				float intervals = actual_interval / trigger_interval;
 				if(intervals == 0)
 					continue;
@@ -731,25 +731,23 @@ public:
 			} else {
 				aabm.chance = chance;
 			}
+
 			// Trigger neighbors
-			std::set<std::string> required_neighbors_s
-				= abm->getRequiredNeighbors();
-			for(std::set<std::string>::iterator
-				i = required_neighbors_s.begin();
-				i != required_neighbors_s.end(); ++i)
-			{
-				ndef->getIds(*i, aabm.required_neighbors);
+			const std::set<std::string> &required_neighbors_s =
+				abm->getRequiredNeighbors();
+			for (std::set<std::string>::iterator rn = required_neighbors_s.begin();
+					rn != required_neighbors_s.end(); ++rn) {
+				ndef->getIds(*rn, aabm.required_neighbors);
 			}
+
 			// Trigger contents
-			std::set<std::string> contents_s = abm->getTriggerContents();
-			for(std::set<std::string>::iterator
-				i = contents_s.begin(); i != contents_s.end(); ++i)
-			{
+			const std::set<std::string> &contents_s = abm->getTriggerContents();
+			for (std::set<std::string>::iterator cs = contents_s.begin();
+					cs != contents_s.end(); ++cs) {
 				std::set<content_t> ids;
-				ndef->getIds(*i, ids);
-				for(std::set<content_t>::const_iterator k = ids.begin();
-					k != ids.end(); ++k)
-				{
+				ndef->getIds(*cs, ids);
+				for (std::set<content_t>::const_iterator k = ids.begin();
+						k != ids.end(); ++k) {
 					content_t c = *k;
 					if (c >= m_aabms.size())
 						m_aabms.resize(c + 256, NULL);
