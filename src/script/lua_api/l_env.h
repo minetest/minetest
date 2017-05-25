@@ -203,11 +203,11 @@ public:
 		m_simple_catch_up(simple_catch_up)
 	{
 	}
-	virtual std::set<std::string> getTriggerContents()
+	virtual const std::set<std::string> &getTriggerContents() const
 	{
 		return m_trigger_contents;
 	}
-	virtual std::set<std::string> getRequiredNeighbors()
+	virtual const std::set<std::string> &getRequiredNeighbors() const
 	{
 		return m_required_neighbors;
 	}
