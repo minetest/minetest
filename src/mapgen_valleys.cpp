@@ -1,8 +1,7 @@
 /*
 Minetest Valleys C
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
-Copyright (C) 2016 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
  (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
