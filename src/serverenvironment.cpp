@@ -747,7 +747,7 @@ public:
 				std::set<content_t> ids;
 				ndef->getIds(*cs, ids);
 				for (std::set<content_t>::const_iterator k = ids.begin();
-					k != ids.end(); ++k) {
+						k != ids.end(); ++k) {
 					content_t c = *k;
 					if (c >= m_aabms.size())
 						m_aabms.resize(c + 256, NULL);
