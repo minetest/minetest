@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../log.h"
 #include <ostream>
 
-TimeTaker::TimeTaker(const char *name, u64 *result, TimePrecision prec)
+TimeTaker::TimeTaker(const std::string &name, u64 *result, TimePrecision prec)
 {
 	m_name = name;
 	m_result = result;

@@ -30,8 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class TimeTaker
 {
 public:
-	TimeTaker(const char *name, u64 *result=NULL,
-		TimePrecision=PRECISION_MILLI);
+	TimeTaker(const std::string &name, u64 *result=NULL,
+		TimePrecision prec=PRECISION_MILLI);
 
 	~TimeTaker()
 	{
@@ -43,7 +43,7 @@ public:
 	u64 getTimerTime();
 
 private:
-	const char *m_name;
+	std::string m_name;
 	u64 m_time1;
 	bool m_running;
 	TimePrecision m_precision;

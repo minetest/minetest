@@ -193,48 +193,8 @@ class ScopeProfiler
 {
 public:
 	ScopeProfiler(Profiler *profiler, const std::string &name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	// name is copied
-	ScopeProfiler(Profiler *profiler, const char *name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	~ScopeProfiler()
-	{
-		if(m_timer)
-		{
-			float duration_ms = m_timer->stop(true);
-			float duration = duration_ms / 1000.0;
-			if(m_profiler){
-				switch(m_type){
-				case SPT_ADD:
-					m_profiler->add(m_name, duration);
-					break;
-				case SPT_AVG:
-					m_profiler->avg(m_name, duration);
-					break;
-				case SPT_GRAPH_ADD:
-					m_profiler->graphAdd(m_name, duration);
-					break;
-				}
-			}
-			delete m_timer;
-		}
-	}
+			ScopeProfilerType type = SPT_ADD);
+	~ScopeProfiler();
 private:
 	Profiler *m_profiler;
 	std::string m_name;
