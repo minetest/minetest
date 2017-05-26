@@ -79,6 +79,7 @@ public:
 	u32 m_added_objects;
 
 	IGameDef *getGameDef() { return m_gamedef; }
+
 protected:
 	GenericAtomic<float> m_time_of_day_speed;
 

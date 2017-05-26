@@ -80,6 +80,7 @@ public:
 		return true;
 	}
 	u16 size() const { return m_id_to_name.size(); }
+
 private:
 	UNORDERED_MAP<u16, std::string> m_id_to_name;
 	UNORDERED_MAP<std::string, u16> m_name_to_id;

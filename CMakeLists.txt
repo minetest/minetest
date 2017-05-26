@@ -9,6 +9,8 @@ endif()
 project(minetest)
 set(PROJECT_NAME_CAPITALIZED "Minetest")
 
+# Works only for cmake 3.1 and greater
+set(CMAKE_CXX_STANDARD 11)
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
