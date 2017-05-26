@@ -590,9 +590,9 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	}
 }
 
-u32 RemoteClient::uptime() const
+u64 RemoteClient::uptime() const
 {
-	return porting::getTime(PRECISION_SECONDS) - m_connection_time;
+	return porting::getTimeS() - m_connection_time;
 }
 
 ClientInterface::ClientInterface(con::Connection* con)

@@ -266,7 +266,7 @@ public:
 		m_version_patch(0),
 		m_full_version("unknown"),
 		m_deployed_compression(0),
-		m_connection_time(porting::getTime(PRECISION_SECONDS))
+		m_connection_time(porting::getTimeS())
 	{
 	}
 	~RemoteClient()
@@ -345,7 +345,7 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u32 uptime() const;
+	u64 uptime() const;
 
 	/* set version information */
 	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
@@ -432,7 +432,7 @@ private:
 	/*
 		time this client was created
 	 */
-	const u32 m_connection_time;
+	const u64 m_connection_time;
 };
 
 class ClientInterface {

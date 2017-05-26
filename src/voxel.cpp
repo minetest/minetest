@@ -27,14 +27,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	Debug stuff
 */
-u32 addarea_time = 0;
-u32 emerge_time = 0;
-u32 emerge_load_time = 0;
-u32 clearflag_time = 0;
-//u32 getwaterpressure_time = 0;
-//u32 spreadwaterpressure_time = 0;
-u32 updateareawaterpressure_time = 0;
-u32 flowwater_pre_time = 0;
+u64 addarea_time = 0;
+u64 emerge_time = 0;
+u64 emerge_load_time = 0;
+u64 clearflag_time = 0;
 
 
 VoxelManipulator::VoxelManipulator():

@@ -343,7 +343,7 @@ protected:
 private:
 	f32 m_transforming_liquid_loop_count_multiplier;
 	u32 m_unprocessed_count;
-	u32 m_inc_trending_up_start_time; // milliseconds
+	u64 m_inc_trending_up_start_time; // milliseconds
 	bool m_queue_size_timer_started;
 
 	DISABLE_CLASS_COPY(Map);
