@@ -144,7 +144,8 @@ void ModConfiguration::printUnsatisfiedModsError() const
 		it != m_unsatisfied_mods.end(); ++it) {
 		ModSpec mod = *it;
 		errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
-		for (UNORDERED_SET<std::string>::iterator dep_it = mod.unsatisfied_depends.begin();
+		for (std::unordered_set<std::string>::iterator dep_it =
+			mod.unsatisfied_depends.begin();
 			dep_it != mod.unsatisfied_depends.end(); ++dep_it)
 			errorstream << " \"" << *dep_it << "\"";
 		errorstream << std::endl;
@@ -268,8 +269,8 @@ void ModConfiguration::checkConflictsAndDeps()
 	// report on name conflicts
 	if (!m_name_conflicts.empty()) {
 		std::string s = "Unresolved name conflicts for mods ";
-		for (UNORDERED_SET<std::string>::const_iterator it = m_name_conflicts.begin();
-			it != m_name_conflicts.end(); ++it) {
+		for (std::unordered_set<std::string>::const_iterator it =
+			m_name_conflicts.begin(); it != m_name_conflicts.end(); ++it) {
 			if (it != m_name_conflicts.begin()) s += ", ";
 			s += std::string("\"") + (*it) + "\"";
 		}
@@ -299,7 +300,7 @@ void ModConfiguration::resolveDependencies()
 		ModSpec mod = *it;
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
-		for (UNORDERED_SET<std::string>::iterator it_optdep = mod.optdepends.begin();
+		for (std::unordered_set<std::string>::iterator it_optdep = mod.optdepends.begin();
 				it_optdep != mod.optdepends.end(); ++it_optdep) {
 			std::string optdep = *it_optdep;
 			if (modnames.count(optdep) != 0)

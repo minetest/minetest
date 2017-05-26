@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "threading/mutex.h"
 #include <string>
-#include "util/cpp11_container.h"
 #include <list>
 #include <set>
 
@@ -45,7 +44,7 @@ typedef std::vector<
 	>
 > SettingsCallbackList;
 
-typedef UNORDERED_MAP<std::string, SettingsCallbackList> SettingsCallbackMap;
+typedef std::unordered_map<std::string, SettingsCallbackList> SettingsCallbackMap;
 
 enum ValueType {
 	VALUETYPE_STRING,
@@ -95,7 +94,7 @@ struct SettingsEntry {
 	bool is_group;
 };
 
-typedef UNORDERED_MAP<std::string, SettingsEntry> SettingEntries;
+typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:

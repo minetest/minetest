@@ -427,7 +427,7 @@ private:
 	std::vector<video::ITexture*> m_texture_trash;
 
 	// Maps image file names to loaded palettes.
-	UNORDERED_MAP<std::string, Palette> m_palettes;
+	std::unordered_map<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
@@ -700,7 +700,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	if (name == "")
 		return NULL;
 
-	UNORDERED_MAP<std::string, Palette>::iterator it = m_palettes.find(name);
+	std::unordered_map<std::string, Palette>::iterator it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
 		// Create palette
 		video::IImage *img = generateImage(name);

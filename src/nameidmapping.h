@@ -23,8 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <set>
+#include <unordered_map>
 #include "irrlichttypes_bloated.h"
-#include "util/cpp11_container.h"
+
+typedef std::unordered_map<u16, std::string> IdToNameMap;
+typedef std::unordered_map<std::string, u16> NameToIdMap;
 
 class NameIdMapping
 {
@@ -43,6 +46,7 @@ public:
 		m_id_to_name[id] = name;
 		m_name_to_id[name] = id;
 	}
+
 	void removeId(u16 id)
 	{
 		std::string name;
@@ -63,7 +67,7 @@ public:
 	}
 	bool getName(u16 id, std::string &result) const
 	{
-		UNORDERED_MAP<u16, std::string>::const_iterator i;
+		IdToNameMap::const_iterator i;
 		i = m_id_to_name.find(id);
 		if (i == m_id_to_name.end())
 			return false;
@@ -72,7 +76,7 @@ public:
 	}
 	bool getId(const std::string &name, u16 &result) const
 	{
-		UNORDERED_MAP<std::string, u16>::const_iterator i;
+		NameToIdMap::const_iterator i;
 		i = m_name_to_id.find(name);
 		if (i == m_name_to_id.end())
 			return false;
@@ -82,8 +86,8 @@ public:
 	u16 size() const { return m_id_to_name.size(); }
 
 private:
-	UNORDERED_MAP<u16, std::string> m_id_to_name;
-	UNORDERED_MAP<std::string, u16> m_name_to_id;
+	IdToNameMap m_id_to_name;
+	NameToIdMap m_name_to_id;
 };
 
 #endif

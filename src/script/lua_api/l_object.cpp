@@ -137,8 +137,8 @@ int ObjectRef::l_remove(lua_State *L)
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
 		return 0;
 
-	const UNORDERED_SET<int> &child_ids = co->getAttachmentChildIds();
-	UNORDERED_SET<int>::const_iterator it;
+	const std::unordered_set<int> &child_ids = co->getAttachmentChildIds();
+	std::unordered_set<int>::const_iterator it;
 	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
 		// Child can be NULL if it was deleted earlier
 		if (ServerActiveObject *child = env->getActiveObject(*it))

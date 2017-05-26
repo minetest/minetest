@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODEMETADATA_HEADER
 #define NODEMETADATA_HEADER
 
+#include <unordered_set>
 #include "metadata.h"
-#include "util/cpp11_container.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -63,7 +63,7 @@ private:
 	int countNonPrivate() const;
 
 	Inventory *m_inventory;
-	UNORDERED_SET<std::string> m_privatevars;
+	std::unordered_set<std::string> m_privatevars;
 };
 
 

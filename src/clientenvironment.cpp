@@ -55,8 +55,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 ClientEnvironment::~ClientEnvironment()
 {
 	// delete active objects
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		delete i->second;
 	}
 
@@ -346,8 +346,8 @@ void ClientEnvironment::step(float dtime)
 
 	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		ClientActiveObject* obj = i->second;
 		// Step object
 		obj->step(dtime, this);
@@ -406,14 +406,14 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 {
-	UNORDERED_MAP<u16, ClientActiveObject*>::iterator n = m_active_objects.find(id);
+	ClientActiveObjectMap::iterator n = m_active_objects.find(id);
 	if (n == m_active_objects.end())
 		return NULL;
 	return n->second;
 }
 
 bool isFreeClientActiveObjectId(const u16 id,
-	UNORDERED_MAP<u16, ClientActiveObject*> &objects)
+	ClientActiveObjectMap &objects)
 {
 	if(id == 0)
 		return false;
@@ -421,7 +421,7 @@ bool isFreeClientActiveObjectId(const u16 id,
 	return objects.find(id) == objects.end();
 }
 
-u16 getFreeClientActiveObjectId(UNORDERED_MAP<u16, ClientActiveObject*> &objects)
+u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
 {
 	//try to reuse id's as late as possible
 	static u16 last_used_id = 0;
@@ -583,8 +583,8 @@ void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
 void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	std::vector<DistanceSortedActiveObject> &dest)
 {
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		ClientActiveObject* obj = i->second;
 
 		f32 d = (obj->getPosition() - origin).getLength();

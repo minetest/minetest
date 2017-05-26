@@ -100,7 +100,7 @@ Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
 Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list);
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
@@ -244,7 +244,7 @@ bool read_schematic_def(lua_State *L, int index,
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
-	UNORDERED_MAP<std::string, content_t> name_id_map;
+	std::unordered_map<std::string, content_t> name_id_map;
 
 	u32 i = 0;
 	for (lua_pushnil(L); lua_next(L, -2); i++, lua_pop(L, 1)) {
@@ -266,7 +266,7 @@ bool read_schematic_def(lua_State *L, int index,
 		u8 param2 = getintfield_default(L, -1, "param2", 0);
 
 		//// Find or add new nodename-to-ID mapping
-		UNORDERED_MAP<std::string, content_t>::iterator it = name_id_map.find(name);
+		std::unordered_map<std::string, content_t>::iterator it = name_id_map.find(name);
 		content_t name_index;
 		if (it != name_id_map.end()) {
 			name_index = it->second;
@@ -409,7 +409,7 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 
 
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list)
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;

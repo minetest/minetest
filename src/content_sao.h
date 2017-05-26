@@ -52,7 +52,7 @@ public:
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
-	const UNORDERED_SET<int> &getAttachmentChildIds();
+	const std::unordered_set<int> &getAttachmentChildIds();
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 protected:
@@ -72,11 +72,11 @@ protected:
 	bool m_animation_sent;
 
 	// Stores position and rotation for each bone name
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
+	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
-	UNORDERED_SET<int> m_attachment_child_ids;
+	std::unordered_set<int> m_attachment_child_ids;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -188,7 +188,7 @@ public:
 	}
 };
 
-typedef UNORDERED_MAP<std::string, std::string> PlayerAttributes;
+typedef std::unordered_map<std::string, std::string> PlayerAttributes;
 class RemotePlayer;
 
 class PlayerSAO : public UnitSAO

@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <json/json.h>
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "config.h"
 #include "metadata.h"
 
@@ -38,9 +38,9 @@ struct ModSpec
 	std::string name;
 	std::string path;
 	//if normal mod:
-	UNORDERED_SET<std::string> depends;
-	UNORDERED_SET<std::string> optdepends;
-	UNORDERED_SET<std::string> unsatisfied_depends;
+	std::unordered_set<std::string> depends;
+	std::unordered_set<std::string> optdepends;
+	std::unordered_set<std::string> unsatisfied_depends;
 
 	bool part_of_modpack;
 	bool is_modpack;
@@ -125,7 +125,7 @@ private:
 	// 1. game mod in modpack; 2. game mod;
 	// 3. world mod in modpack; 4. world mod;
 	// 5. addon mod in modpack; 6. addon mod.
-	UNORDERED_SET<std::string> m_name_conflicts;
+	std::unordered_set<std::string> m_name_conflicts;
 
 	// Deleted default constructor
 	ModConfiguration() {}

@@ -634,7 +634,7 @@ void Server::AsyncRunStep(bool initial_step)
 		MutexAutoLock envlock(m_env_mutex);
 
 		m_clients.lock();
-		UNORDERED_MAP<u16, RemoteClient*> clients = m_clients.getClientList();
+		RemoteClientMap clients = m_clients.getClientList();
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
@@ -650,7 +650,7 @@ void Server::AsyncRunStep(bool initial_step)
 		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
 
-		for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = clients.begin();
+		for (RemoteClientMap::iterator i = clients.begin();
 			i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 
@@ -761,7 +761,7 @@ void Server::AsyncRunStep(bool initial_step)
 		if (m_mod_storage_save_timer <= 0.0f) {
 			infostream << "Saving registered mod storages." << std::endl;
 			m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-			for (UNORDERED_MAP<std::string, ModMetadata *>::const_iterator
+			for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 				if (it->second->isModified()) {
 					it->second->save(getModStoragePath());
@@ -779,7 +779,7 @@ void Server::AsyncRunStep(bool initial_step)
 
 		// Key = object id
 		// Value = data sent by object
-		UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* > buffered_messages;
+		std::unordered_map<u16, std::vector<ActiveObjectMessage>*> buffered_messages;
 
 		// Get active object messages from environment
 		for(;;) {
@@ -788,7 +788,7 @@ void Server::AsyncRunStep(bool initial_step)
 				break;
 
 			std::vector<ActiveObjectMessage>* message_list = NULL;
-			UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator n;
+			std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
 			if (n == buffered_messages.end()) {
 				message_list = new std::vector<ActiveObjectMessage>;
@@ -801,15 +801,15 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 
 		m_clients.lock();
-		UNORDERED_MAP<u16, RemoteClient*> clients = m_clients.getClientList();
+		RemoteClientMap clients = m_clients.getClientList();
 		// Route data to every client
-		for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = clients.begin();
-			i != clients.end(); ++i) {
+		for (std::unordered_map<u16, RemoteClient*>::iterator i = clients.begin();
+				i != clients.end(); ++i) {
 			RemoteClient *client = i->second;
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for (UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
+			for (std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator
 					j = buffered_messages.begin();
 					j != buffered_messages.end(); ++j) {
 				// If object is not known by client, skip it
@@ -853,7 +853,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_clients.unlock();
 
 		// Clear buffered_messages
-		for (UNORDERED_MAP<u16, std::vector<ActiveObjectMessage>* >::iterator
+		for (std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator
 				i = buffered_messages.begin();
 				i != buffered_messages.end(); ++i) {
 			delete i->second;
@@ -2112,7 +2112,8 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 void Server::stopSound(s32 handle)
 {
 	// Get sound reference
-	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	std::unordered_map<s32, ServerPlayingSound>::iterator i =
+		m_playing_sounds.find(handle);
 	if (i == m_playing_sounds.end())
 		return;
 	ServerPlayingSound &psound = i->second;
@@ -2120,10 +2121,10 @@ void Server::stopSound(s32 handle)
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
 
-	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
-			i != psound.clients.end(); ++i) {
+	for (std::unordered_set<u16>::const_iterator si = psound.clients.begin();
+			si != psound.clients.end(); ++si) {
 		// Send as reliable
-		m_clients.send(*i, 0, &pkt, true);
+		m_clients.send(*si, 0, &pkt, true);
 	}
 	// Remove sound reference
 	m_playing_sounds.erase(i);
@@ -2132,8 +2133,8 @@ void Server::stopSound(s32 handle)
 void Server::fadeSound(s32 handle, float step, float gain)
 {
 	// Get sound reference
-	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i =
-			m_playing_sounds.find(handle);
+	std::unordered_map<s32, ServerPlayingSound>::iterator i =
+		m_playing_sounds.find(handle);
 	if (i == m_playing_sounds.end())
 		return;
 
@@ -2151,7 +2152,7 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	NetworkPacket compat_pkt(TOCLIENT_STOP_SOUND, 4);
 	compat_pkt << handle;
 
-	for (UNORDERED_SET<u16>::iterator it = psound.clients.begin();
+	for (std::unordered_set<u16>::iterator it = psound.clients.begin();
 			it != psound.clients.end();) {
 		if (m_clients.getProtocolVersion(*it) >= 32) {
 			// Send as reliable
@@ -2460,7 +2461,7 @@ void Server::sendMediaAnnouncement(u16 peer_id)
 	NetworkPacket pkt(TOCLIENT_ANNOUNCE_MEDIA, 0, peer_id);
 	pkt << (u16) m_media.size();
 
-	for (UNORDERED_MAP<std::string, MediaInfo>::iterator i = m_media.begin();
+	for (std::unordered_map<std::string, MediaInfo>::iterator i = m_media.begin();
 			i != m_media.end(); ++i) {
 		pkt << i->first << i->second.sha1_digest;
 	}
@@ -2769,7 +2770,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		/*
 			Clear references to playing sounds
 		*/
-		for (UNORDERED_MAP<s32, ServerPlayingSound>::iterator
+		for (std::unordered_map<s32, ServerPlayingSound>::iterator
 				 i = m_playing_sounds.begin(); i != m_playing_sounds.end();) {
 			ServerPlayingSound &psound = i->second;
 			psound.clients.erase(peer_id);
@@ -3560,7 +3561,7 @@ void Server::requestShutdown(const std::string &msg, bool reconnect, float delay
 	if (delay == 0.0f) {
 	// No delay, shutdown immediately
 		m_shutdown_requested = true;
-		// only print to the infostream, a chat message saying 
+		// only print to the infostream, a chat message saying
 		// "Server Shutting Down" is sent when the server destructs.
 		infostream << "*** Immediate Server shutdown requested." << std::endl;
 	} else if (delay < 0.0f && m_shutdown_timer > 0.0f) {
@@ -3645,7 +3646,7 @@ bool Server::registerModStorage(ModMetadata *storage)
 
 void Server::unregisterModStorage(const std::string &name)
 {
-	UNORDERED_MAP<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
+	std::unordered_map<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
 		it->second->save(getModStoragePath());

@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxel.h"
 #include "mapnode.h"
 #include "util/container.h"
-#include "util/cpp11_container.h"
 
 class Map;
 class ServerMap;

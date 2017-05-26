@@ -818,7 +818,7 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.find(server_id);
+	std::unordered_map<s32, int>::iterator i = m_sounds_server_to_client.find(server_id);
 	if (i != m_sounds_server_to_client.end()) {
 		int client_id = i->second;
 		m_sound->stopSound(client_id);
@@ -833,7 +833,7 @@ void Client::handleCommand_FadeSound(NetworkPacket *pkt)
 
 	*pkt >> sound_id >> step >> gain;
 
-	UNORDERED_MAP<s32, int>::iterator i =
+	std::unordered_map<s32, int>::const_iterator i =
 			m_sounds_server_to_client.find(sound_id);
 
 	if (i != m_sounds_server_to_client.end())

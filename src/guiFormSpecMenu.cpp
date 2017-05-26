@@ -3807,7 +3807,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					if (s.ftype == f_Unknown &&
 							s.fid == event.GUIEvent.Caller->getID()) {
 						current_field_enter_pending = s.fname;
-						UNORDERED_MAP<std::string, bool>::const_iterator it =
+						std::unordered_map<std::string, bool>::const_iterator it =
 							field_close_on_enter.find(s.fname);
 						if (it != field_close_on_enter.end())
 							close_on_enter = (*it).second;

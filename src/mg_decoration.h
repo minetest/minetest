@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_DECORATION_HEADER
 #define MG_DECORATION_HEADER
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -87,9 +87,7 @@ public:
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
 
-	UNORDERED_SET<u8> biomes;
-	//std::list<CutoffData> cutoffs;
-	//Mutex cutoff_mutex;
+	std::unordered_set<u8> biomes;
 };
 
 class DecoSimple : public Decoration {

@@ -38,7 +38,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		writeS16(os, cap->uses);
 		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
-		for (UNORDERED_MAP<int, float>::const_iterator
+		for (std::unordered_map<int, float>::const_iterator
 				j = cap->times.begin(); j != cap->times.end(); ++j) {
 			writeS16(os, j->first);
 			writeF1000(os, j->second);

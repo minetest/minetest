@@ -135,7 +135,7 @@ struct ServerPlayingSound
 {
 	ServerSoundParams params;
 	SimpleSoundSpec spec;
-	UNORDERED_SET<u16> clients; // peer ids
+	std::unordered_set<u16> clients; // peer ids
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -653,12 +653,12 @@ private:
 	u16 m_ignore_map_edit_events_peer_id;
 
 	// media files known to server
-	UNORDERED_MAP<std::string, MediaInfo> m_media;
+	std::unordered_map<std::string, MediaInfo> m_media;
 
 	/*
 		Sounds
 	*/
-	UNORDERED_MAP<s32, ServerPlayingSound> m_playing_sounds;
+	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
 
 	/*
@@ -669,7 +669,7 @@ private:
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
 
-	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
+	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer;
 
 	DISABLE_CLASS_COPY(Server);

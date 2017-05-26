@@ -42,7 +42,7 @@ void MapSector::deleteBlocks()
 	m_block_cache = NULL;
 
 	// Delete all
-	for (UNORDERED_MAP<s16, MapBlock*>::iterator i = m_blocks.begin();
+	for (std::unordered_map<s16, MapBlock*>::iterator i = m_blocks.begin();
 		 	i != m_blocks.end(); ++i) {
 		delete i->second;
 	}
@@ -60,7 +60,7 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 	}
 
 	// If block doesn't exist, return NULL
-	UNORDERED_MAP<s16, MapBlock*>::iterator n = m_blocks.find(y);
+	std::unordered_map<s16, MapBlock*>::const_iterator n = m_blocks.find(y);
 	block = (n != m_blocks.end() ? n->second : NULL);
 
 	// Cache the last result
@@ -127,7 +127,7 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
-	for (UNORDERED_MAP<s16, MapBlock*>::iterator bi = m_blocks.begin();
+	for (std::unordered_map<s16, MapBlock*>::iterator bi = m_blocks.begin();
 		bi != m_blocks.end(); ++bi) {
 		dest.push_back(bi->second);
 	}

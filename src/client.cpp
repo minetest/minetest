@@ -242,7 +242,7 @@ Client::~Client()
 	delete m_inventory_from_server;
 
 	// Delete detached inventories
-	for (UNORDERED_MAP<std::string, Inventory*>::iterator
+	for (std::unordered_map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
 			i != m_detached_inventories.end(); ++i) {
 		delete i->second;
@@ -571,7 +571,7 @@ void Client::step(float dtime)
 		Update positions of sounds attached to objects
 	*/
 	{
-		for(UNORDERED_MAP<int, u16>::iterator i = m_sounds_to_objects.begin();
+		for(std::unordered_map<int, u16>::iterator i = m_sounds_to_objects.begin();
 				i != m_sounds_to_objects.end(); ++i) {
 			int client_id = i->first;
 			u16 object_id = i->second;
@@ -591,7 +591,7 @@ void Client::step(float dtime)
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
 		std::vector<s32> removed_server_ids;
-		for(UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.begin();
+		for (std::unordered_map<s32, int>::iterator i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();) {
 			s32 server_id = i->first;
 			int client_id = i->second;
@@ -614,7 +614,7 @@ void Client::step(float dtime)
 	if (m_mod_storage_save_timer <= 0.0f) {
 		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-		for (UNORDERED_MAP<std::string, ModMetadata *>::const_iterator
+		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
@@ -1959,7 +1959,8 @@ bool Client::registerModStorage(ModMetadata *storage)
 
 void Client::unregisterModStorage(const std::string &name)
 {
-	UNORDERED_MAP<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
+	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
+		m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
 		it->second->save(getModStoragePath());

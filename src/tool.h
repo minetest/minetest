@@ -23,12 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include <string>
 #include <iostream>
-#include "util/cpp11_container.h"
 #include "itemgroup.h"
 
 struct ToolGroupCap
 {
-	UNORDERED_MAP<int, float> times;
+	std::unordered_map<int, float> times;
 	int maxlevel;
 	int uses;
 
@@ -39,7 +38,7 @@ struct ToolGroupCap
 
 	bool getTime(int rating, float *time) const
 	{
-		UNORDERED_MAP<int, float>::const_iterator i = times.find(rating);
+		std::unordered_map<int, float>::const_iterator i = times.find(rating);
 		if (i == times.end()) {
 			*time = 0;
 			return false;
@@ -50,8 +49,8 @@ struct ToolGroupCap
 };
 
 
-typedef UNORDERED_MAP<std::string, struct ToolGroupCap> ToolGCMap;
-typedef UNORDERED_MAP<std::string, s16> DamageGroup;
+typedef std::unordered_map<std::string, struct ToolGroupCap> ToolGCMap;
+typedef std::unordered_map<std::string, s16> DamageGroup;
 
 struct ToolCapabilities
 {

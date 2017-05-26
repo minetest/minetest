@@ -174,7 +174,7 @@ int ModApiUtil::l_get_dig_params(lua_State *L)
 int ModApiUtil::l_get_hit_params(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	UNORDERED_MAP<std::string, int> groups;
+	std::unordered_map<std::string, int> groups;
 	read_groups(L, 1, groups);
 	ToolCapabilities tp = read_tool_capabilities(L, 2);
 	if(lua_isnoneornil(L, 3))

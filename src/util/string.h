@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_STRING_HEADER
 
 #include "irrlichttypes_bloated.h"
-#include "cpp11_container.h"
 #include <stdlib.h>
 #include <string>
 #include <cstring>
@@ -30,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iomanip>
 #include <cctype>
+#include <unordered_map>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	(((unsigned char)(x) < 0xe0) ? 2 :     \
 	(((unsigned char)(x) < 0xf0) ? 3 : 4))
 
-typedef UNORDERED_MAP<std::string, std::string> StringMap;
+typedef std::unordered_map<std::string, std::string> StringMap;
 
 struct FlagDesc {
 	const char *name;

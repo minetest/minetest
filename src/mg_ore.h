@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_ORE_HEADER
 #define MG_ORE_HEADER
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -66,7 +66,7 @@ public:
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
 	Noise *noise;
-	UNORDERED_SET<u8> biomes;
+	std::unordered_set<u8> biomes;
 
 	Ore();
 	virtual ~Ore();
