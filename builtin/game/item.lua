@@ -155,6 +155,14 @@ function core.yaw_to_dir(yaw)
 	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
 end
 
+function core.dir_to_yaw(dir)
+	return -math.atan2(dir.x, dir.z)
+end
+
+function core.yaw_to_dir(yaw)
+	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
+end
+
 function core.get_node_drops(nodename, toolname)
 	local def = core.registered_nodes[nodename]
 	local drop = def and def.drop
