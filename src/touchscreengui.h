@@ -172,7 +172,7 @@ private:
 	IEventReceiver *m_receiver;
 	ISimpleTextureSource *m_texturesource;
 	v2u32 m_screensize;
-	std::map<int, rect<s32> > m_hud_rects;
+	std::map<int, rect<s32>> m_hud_rects;
 	std::map<int, irr::EKEY_CODE> m_hud_ids;
 	bool m_visible; // is the gui visible
 

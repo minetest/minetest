@@ -2,6 +2,7 @@ language: cpp
 before_install: ./util/travis/before_install.sh
 script: ./util/travis/script.sh
 sudo: required
+dist: trusty
 notifications:
   email: false
 matrix:
@@ -10,30 +11,81 @@ matrix:
     - env: PLATFORM=Win32
       compiler: gcc
       os: linux
+      addons:
+        apt:
+          packages: ['gcc-mingw-w64-i686', 'g++-mingw-w64-i686', 'binutils-mingw-w64-i686']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb http://mirrors.kernel.org/ubuntu xenial main universe'
+
     - env: PLATFORM=Win64
       compiler: gcc
       os: linux
-    - env: PLATFORM=Unix COMPILER=clang
+      addons:
+        apt:
+          packages: ['gcc-mingw-w64-x86-64', 'g++-mingw-w64-x86-64', 'binutils-mingw-w64-x86-64']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb http://mirrors.kernel.org/ubuntu xenial main universe'
+
+    - env: PLATFORM=Unix
       compiler: clang
       os: osx
-    - env: PLATFORM=Unix COMPILER=g++
+      osx_image: xcode8
+
+    - env: PLATFORM=Unix COMPILER=gcc-6
       compiler: gcc
       os: linux
-    - env: PLATFORM=Unix COMPILER=clang
-      compiler: clang
-      os: linux
-    - env: PLATFORM=Unix COMPILER=clang VALGRIND=1
-      compiler: clang
-      os: linux
-      dist: trusty
-    - env: COMPILER=none LINT=1
-      compiler: clang
-      os: linux
-      dist: trusty
-    - env: PLATFORM=Unix COMPILER=g++-6
+      addons:
+        apt:
+          packages: ['gcc-6', 'g++-6']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+
+    - env: PLATFORM=Unix COMPILER=gcc-7
       compiler: gcc
       os: linux
-addons:
-  apt:
-    sources: &sources
-      - ubuntu-toolchain-r-test
+      addons:
+        apt:
+          packages: ['gcc-7', 'g++-7']
+          sources: &sources
+            - ubuntu-toolchain-r-test
+
+    - env: PLATFORM=Unix COMPILER=clang-3.6
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages: ['clang-3.6', 'clang++-3.6']
+          sources: &sources
+            - llvm-toolchain-trusty-3.6
+
+    - env: PLATFORM=Unix COMPILER=clang-4.0
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages: ['clang-4.0', 'clang++-4.0']
+          sources: &sources
+            - llvm-toolchain-trusty-4.0
+
+    - env: PLATFORM=Unix COMPILER=clang-4.0 VALGRIND=1
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages: ['valgrind', 'clang-4.0', 'clang++-4.0']
+          sources: &sources
+            - llvm-toolchain-trusty-4.0
+
+    - env: LINT=1
+      compiler: clang
+      os: linux
+      addons:
+        apt:
+          packages: ['clang-format-4.0']
+          sources: &sources
+            - llvm-toolchain-trusty-4.0
+
+
+
