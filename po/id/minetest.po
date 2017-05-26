@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-05-26 10:01+0700\n"
+"PO-Revision-Date: 2017-05-31 23:45+0700\n"
 "Last-Translator: Muhammad Rifqi Priyo Susanto "
 "<muhammadrifqipriyosusanto@gmail.com>\n"
 "Language-Team: Indonesian "
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.13-dev\n"
+"X-Generator: Poedit 2.0.2\n"
 
 #: builtin/client/init.lua
 msgid "Respawn"
-msgstr "Bangkit"
+msgstr "Bangkit kembali"
 
 #: builtin/client/init.lua
 msgid "You died."
@@ -61,7 +61,7 @@ msgstr "Versi protokol tidak sesuai. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr "Server menjalankan protokol versi $1. "
+msgstr "Server mengharuskan protokol versi $1. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
@@ -70,8 +70,8 @@ msgstr "Server mendukung protokol antara versi $1 dan versi $2. "
 #: builtin/mainmenu/common.lua
 msgid "Try reenabling public serverlist and check your internet connection."
 msgstr ""
-"Cobalah untuk mengaktifkan daftar server publik dan cek koneksi internet "
-"Anda."
+"Cobalah untuk mengaktifkan ulang daftar server publik dan periksa sambungan "
+"internet Anda."
 
 #: builtin/mainmenu/common.lua
 msgid "We only support protocol version $1."
@@ -148,7 +148,7 @@ msgstr "Buat"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download a subgame, such as minetest_game, from minetest.net"
-msgstr "Unduh sebuah sub-permainan, misalnya minetest_game, dari minetest.net"
+msgstr "Unduh sebuah subpermainan, misalnya minetest_game, dari minetest.net"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Download one from minetest.net"
@@ -180,7 +180,7 @@ msgstr "Nama dunia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "You have no subgames installed."
-msgstr "Anda tidak punya sub-permainan terpasang."
+msgstr "Anda tidak punya subpermainan terpasang."
 
 #: builtin/mainmenu/dlg_delete_mod.lua
 msgid "Are you sure you want to delete \"$1\"?"
@@ -217,7 +217,7 @@ msgstr "\"$1\" bukan sebuah flag yang sah."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "(No description of setting given)"
-msgstr "(Tidak ada keterangan dari pengaturan yang diberikan)"
+msgstr "(Tidak ada keterangan pengaturan yang diberikan)"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "< Back to Settings page"
@@ -241,15 +241,14 @@ msgstr "Diaktifkan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Format is 3 numbers separated by commas and inside brackets."
-msgstr ""
-"Ditulis dengan 3 angka yang dipisahkan oleh koma dan di dalam tanda kurung."
+msgstr "Ditulis dalam 3 angka yang dipisahkan koma dan diberi tanda kurung."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid ""
 "Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 msgstr ""
-"Penulisan: <offset>, <skala>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"Penulisan: <pergeseran>, <skala>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
 "<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -261,10 +260,9 @@ msgid "Mods"
 msgstr "Mod"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
-"Lacunarity (celah, opsional) dapat ditambahkan dengan awalan tanda koma."
+"Lacunarity (celah, tidak harus) dapat ditambahkan dengan diawali tanda koma."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -335,7 +333,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr "Mod Sub-Permainan"
+msgstr "Mod Subpermainan"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -394,9 +392,8 @@ msgid "Previous Core Developers"
 msgstr "Pengembang Inti Sebelumnya"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Announce Server"
-msgstr "Umumkan server"
+msgstr "Umumkan Server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -415,14 +412,12 @@ msgid "Enable Damage"
 msgstr "Aktifkan Kerusakan"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "Sembunyikan permainan"
+msgstr "Host Permainan"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Server"
-msgstr "Server"
+msgstr "Host Server"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Local Game"
@@ -601,9 +596,8 @@ msgid "No Mipmap"
 msgstr "Tanpa Mipmap"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Node Highlighting"
-msgstr "Node Highlighting"
+msgstr "Sorot Node"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Node Outlining"
@@ -815,7 +809,7 @@ msgstr "- PvP: "
 
 #: src/game.cpp
 msgid "- Server Name: "
-msgstr "- Nama server: "
+msgstr "- Nama Server: "
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -827,7 +821,7 @@ msgstr "Ganti Kata Sandi"
 
 #: src/game.cpp
 msgid "Connecting to server..."
-msgstr "Menghubungkan ke server..."
+msgstr "Menyambung ke server..."
 
 #: src/game.cpp
 msgid "Continue"
@@ -861,9 +855,9 @@ msgstr ""
 "- %s: jatuhkan barang\n"
 "- %s: inventaris\n"
 "- Mouse: belok/lihat\n"
-"- Mouse left: gali/pukul\n"
-"- Mouse right: taruh/pakai\n"
-"- Mouse wheel: pilih barang\n"
+"- Mouse kiri: gali/pukul\n"
+"- Mouse kanan: taruh/pakai\n"
+"- Roda mouse: pilih barang\n"
 "- %s: obrolan\n"
 
 #: src/game.cpp
@@ -919,9 +913,8 @@ msgid "Game paused"
 msgstr "Permainan dijeda"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Hosting server"
-msgstr "Membuat server..."
+msgstr "Membuat server"
 
 #: src/game.cpp
 msgid "Item definitions..."
@@ -952,9 +945,8 @@ msgid "On"
 msgstr "Nyala"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Remote server"
-msgstr "Port server jarak jauh"
+msgstr "Server jarak jauh"
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -1093,7 +1085,7 @@ msgstr "Menyelinap"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr "Mode sinema"
+msgstr "Mode Sinema"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1406,7 +1398,7 @@ msgstr ""
 "Pergeseran (X,Y,Z) fraktal dari tengah dunia dalam satuan 'scale'.\n"
 "Digunakan untuk memindahkan daerah bangkit dataran rendah mendekati (0, 0).\n"
 "Nilai bawaan cocok untuk mandelbrot sets, butuh diganti untuk julia sets.\n"
-"Berjangkauan sekitar -2 ke 2. Kalikan dengan 'scale' untuk pergeseran dalam "
+"Jangkauan sekitar -2 ke 2. Kalikan dengan 'scale' untuk pergeseran dalam\n"
 "node."
 
 #: src/settings_translation_file.cpp
@@ -1427,17 +1419,19 @@ msgstr "Mode 3D"
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining giant caverns."
-msgstr ""
+msgstr "Noise 3D yang mengatur gua besar."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
+"Noise 3D yang mengatur struktur dan ketinggian gunung.\n"
+"Juga mengatur struktur dari medan gunung floatland."
 
 #: src/settings_translation_file.cpp
 msgid "3D noise defining structure of river canyon walls."
-msgstr ""
+msgstr "Noise 3D yang mengatur struktur dari dinding ngarai sungai."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1531,8 +1525,8 @@ msgid ""
 "brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-"Sesuaikan gamma encoding untuk tabel cahaya. Angka yang lebih rendah lebih "
-"terang.\n"
+"Sesuaikan gamma encoding untuk tabel cahaya.\n"
+"Angka yang lebih rendah lebih terang.\n"
 "Pengaturan ini untuk klien saja dan diabaikan oleh server."
 
 #: src/settings_translation_file.cpp
@@ -1578,8 +1572,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Mengumumkan kepada daftar server ini.\n"
-"Jika Anda ingin mengumumkan alamat IPv6 Anda, gunakan serverlist_url = v6."
-"servers.minetest.net."
+"Jika Anda ingin mengumumkan alamat IPv6 Anda,\n"
+"gunakan serverlist_url = v6.servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -1605,6 +1599,14 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)"
 msgstr ""
+"Pada jarak ini server akan melakukan optimasi dengan agresif blok mana yang "
+"dikirim ke klien.\n"
+"Nilai yang kecil dapat meningkatkan banyak performa, dengan harga glitch "
+"pada tampilan.\n"
+"(beberapa blok tidak akan digambar bawah air dan dalam gua, terkadang juga "
+"di darat)\n"
+"Atur ke nilai lebih besar dari max_block_send_distance menonaktifkan ini.\n"
+"Dalam satuan blok peta (16 node)"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
@@ -1648,7 +1650,7 @@ msgstr "Alamat sambungan"
 
 #: src/settings_translation_file.cpp
 msgid "Biome API temperature and humidity noise parameters"
-msgstr ""
+msgstr "Parameter noise suhu dan kelembapan Biome API"
 
 #: src/settings_translation_file.cpp
 msgid "Biome noise"
@@ -1716,7 +1718,7 @@ msgstr "Noise #1 gua besar"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern taper"
-msgstr ""
+msgstr "Gua lancip"
 
 #: src/settings_translation_file.cpp
 msgid "Cavern threshold"
@@ -1778,7 +1780,7 @@ msgstr ""
 "15 = Mandelbrot set 3D \"Cosine Mandelbulb\".\n"
 "16 = Julia set 3D \"Cosine Mandelbulb\".\n"
 "17 = Mandelbrot set 4D \"Mandelbulb\".\n"
-"18 = Julia set 4D \"Mandelbulb\".\n"
+"18 = Julia set 4D \"Mandelbulb\"."
 
 #: src/settings_translation_file.cpp
 msgid "Chunk size"
@@ -1921,6 +1923,8 @@ msgid ""
 "Controls the density of floatland mountain terrain.\n"
 "Is an offset added to the 'np_mountain' noise value."
 msgstr ""
+"Atur kepadatan dari medan gunung floatland.\n"
+"Merupakan pergeseran yang ditambahkan ke nilai noise 'np_mountain'."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -1992,7 +1996,7 @@ msgstr "Tombol turunkan volume"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
-msgstr ""
+msgstr "Langkah server khusus"
 
 #: src/settings_translation_file.cpp
 msgid "Default acceleration"
@@ -2039,11 +2043,15 @@ msgid ""
 "Defines areas of floatland smooth terrain.\n"
 "Smooth floatlands occur when noise > 0."
 msgstr ""
+"Mengatur daerah dari medan halus floatland.\n"
+"Floatland halus muncul saat noise > 0."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Defines areas of higher (cliff-top) terrain and affects steepness of cliffs."
 msgstr ""
+"Mengatur daerah medan yang lebih tinggi (puncak tebing) dan mengatur "
+"kecuraman tebing."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
@@ -2056,6 +2064,8 @@ msgstr "Menetapkan daerah dengan pantai berpasir."
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
 msgstr ""
+"Mengatur ukuran penuh dari gua besar, nilai yang lebih kecil membuat gua "
+"yang lebih besar."
 
 #: src/settings_translation_file.cpp
 msgid "Defines large-scale river channel structure."
@@ -2076,7 +2086,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Defines the maximal player transfer distance in blocks (0 = unlimited)."
 msgstr ""
-"Menentukan jarak maksimal perpindahan pemain dalam blok (0 = tak terbatas)"
+"Menentukan jarak maksimal perpindahan pemain dalam blok (0 = tak terbatas)."
 
 #: src/settings_translation_file.cpp
 msgid "Defines tree areas and tree density."
@@ -2087,6 +2097,9 @@ msgid ""
 "Delay between mesh updates on the client in ms. Increasing this will slow\n"
 "down the rate of mesh updates, thus reducing jitter on slower clients."
 msgstr ""
+"Jeda antara pembaruan mesh di klien dalam milidetik. Menaikkan nilai ini "
+"akan\n"
+"memperlambat pembaruan mesh, sehingga mengurangi jitter pada klien lambat."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
@@ -2129,6 +2142,8 @@ msgid ""
 "Deserts occur when np_biome exceeds this value.\n"
 "When the new biome system is enabled, this is ignored."
 msgstr ""
+"Gurun muncul saat np_biome melebihi nilai ini.\n"
+"Saat sistem bioma baru diaktifkan, ini diabaikan."
 
 #: src/settings_translation_file.cpp
 msgid "Desynchronize block animation"
@@ -2191,7 +2206,7 @@ msgid ""
 "This support is experimental and API can change."
 msgstr ""
 "Aktifkan dukungan Lua modding pada klien.\n"
-"Dukungan ini adalah eksperimen dan API dapat berubah."
+"Dukungan ini masih tahap percobaan dan API dapat berubah."
 
 #: src/settings_translation_file.cpp
 msgid "Enable VBO"
@@ -2233,9 +2248,9 @@ msgid ""
 "to new servers, but they may not support all new features that you are "
 "expecting."
 msgstr ""
-"Aktifkan untuk melarang klien lawas untuk terhubung.\n"
+"Aktifkan untuk melarang klien lawas untuk tersambung.\n"
 "Klien-klien lawas dianggap sesuai jika mereka tidak rusak saat "
-"menghubungkan\n"
+"menyambungkan\n"
 "ke server-server baru, tetapi mereka mungkin tidak mendukung semua fitur "
 "baru\n"
 "yang Anda harapkan."
@@ -2247,21 +2262,23 @@ msgid ""
 "textures)\n"
 "when connecting to the server."
 msgstr ""
-"Membolehkan penggunaan server media jarak jauh (jika diberikan oleh "
-"server).\n"
+"Membolehkan penggunaan server media jarak jauh (jika diberikan oleh server)."
+"\n"
 "Server jarak jauh menawarkan cara lebih cepat untuk mengunduh media (misal: "
 "tekstur)\n"
-"saat terhubung ke server."
+"saat tersambung ke server."
 
 #: src/settings_translation_file.cpp
 msgid "Enable view bobbing"
-msgstr ""
+msgstr "Aktifkan view bobbing"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Mengaktifkan view bobbing dan nilai dari view bobbing\n"
+"Misalkan: 0 untuk tanpa view bobbing; 1.0 untuk normal; 2.0 untuk 2x lipat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2290,7 +2307,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables caching of facedir rotated meshes."
-msgstr ""
+msgstr "Mengaktifkan cache untuk facedir mesh yang diputar."
 
 #: src/settings_translation_file.cpp
 msgid "Enables filmic tone mapping"
@@ -2305,6 +2322,8 @@ msgid ""
 "Enables on the fly normalmap generation (Emboss effect).\n"
 "Requires bumpmapping to be enabled."
 msgstr ""
+"Mengaktifkan pembuatan normalmap secara langsung (efek Emboss).\n"
+"Membutuhkan bumpmapping untuk diaktifkan."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2316,22 +2335,22 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Enables view bobbing when walking."
-msgstr ""
+msgstr "Aktifkan view bobbing saat berjalan."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
-msgstr ""
+msgstr "Jarak pencetakan data profiling mesin"
 
 #: src/settings_translation_file.cpp
 msgid "Entity methods"
-msgstr ""
+msgstr "Metode benda (entity)"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Experimental option, might cause visible spaces between blocks\n"
 "when set to higher number than 0."
 msgstr ""
-"Eksperimental, dapat menyebabkan terlihatnya spasi antara blok\n"
+"Masih tahap percobaan, dapat menyebabkan terlihatnya spasi antara blok\n"
 "saat diatur dengan angka yang lebih besar dari 0."
 
 #: src/settings_translation_file.cpp
@@ -2344,11 +2363,11 @@ msgstr "FSAA"
 
 #: src/settings_translation_file.cpp
 msgid "Factor noise"
-msgstr ""
+msgstr "Noise faktor"
 
 #: src/settings_translation_file.cpp
 msgid "Fall bobbing factor"
-msgstr ""
+msgstr "Faktor fall bobbing"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font"
@@ -2356,15 +2375,15 @@ msgstr "needs_fallback_font"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow"
-msgstr ""
+msgstr "Bayangan font cadangan"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font shadow alpha"
-msgstr ""
+msgstr "Keburaman bayangan font cadangan"
 
 #: src/settings_translation_file.cpp
 msgid "Fallback font size"
-msgstr ""
+msgstr "Ukuran font cadangan"
 
 #: src/settings_translation_file.cpp
 msgid "Fast key"
@@ -2420,11 +2439,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Filler Depth"
-msgstr ""
+msgstr "Kedalaman Isian"
 
 #: src/settings_translation_file.cpp
 msgid "Filler depth noise"
-msgstr ""
+msgstr "Noise kedalaman isian"
 
 #: src/settings_translation_file.cpp
 msgid "Filmic tone mapping"
@@ -2444,7 +2463,7 @@ msgstr "Filtering"
 
 #: src/settings_translation_file.cpp
 msgid "First of 2 3D noises that together define tunnels."
-msgstr ""
+msgstr "Noise 3D pertama dari dua yang bersama-sama mengatur terowongan."
 
 #: src/settings_translation_file.cpp
 msgid "Fixed map seed"
@@ -2452,24 +2471,23 @@ msgstr "Seed peta tetap"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base height noise"
-msgstr ""
+msgstr "Noise ketinggian dasar floatland"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland base noise"
-msgstr ""
+msgstr "Noise dasar floatland"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Floatland level"
-msgstr "Ketinggian air"
+msgstr "Ketinggian floatland"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland mountain density"
-msgstr ""
+msgstr "Kepadatan gunung floatland"
 
 #: src/settings_translation_file.cpp
 msgid "Floatland mountain height"
-msgstr ""
+msgstr "Ketinggian gunung floatland"
 
 #: src/settings_translation_file.cpp
 msgid "Fly key"
@@ -2529,7 +2547,7 @@ msgstr "Jenis fraktal"
 
 #: src/settings_translation_file.cpp
 msgid "Fraction of the visible distance at which fog starts to be rendered"
-msgstr ""
+msgstr "Bagian dari jarak pandang dimana kabut mulai tampak"
 
 #: src/settings_translation_file.cpp
 msgid "Freetype fonts"
@@ -2540,16 +2558,20 @@ msgid ""
 "From how far blocks are generated for clients, stated in mapblocks (16 "
 "nodes)."
 msgstr ""
+"Dari seberapa jauh blok dibuat untuk klien, dalam satuan blok peta (16 node)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far blocks are sent to clients, stated in mapblocks (16 nodes)."
 msgstr ""
+"Dari seberapa jauh blok dikirim ke klien, dalam satuan blok peta (16 node)."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "From how far clients know about objects, stated in mapblocks (16 nodes)."
 msgstr ""
+"Dari seberapa jauh klien tahu tentang objek, dalam satuan blok peta (16 "
+"node)."
 
 #: src/settings_translation_file.cpp
 msgid "Full screen"
@@ -2573,7 +2595,7 @@ msgstr "Filter skala GUI"
 
 #: src/settings_translation_file.cpp
 msgid "GUI scaling filter txr2img"
-msgstr ""
+msgstr "Filter txr2img skala GUI"
 
 #: src/settings_translation_file.cpp
 msgid "Gamma"
@@ -2589,7 +2611,7 @@ msgstr "Hasilkan normalmaps"
 
 #: src/settings_translation_file.cpp
 msgid "Global callbacks"
-msgstr ""
+msgstr "Callback global"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2600,6 +2622,12 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta global.\n"
+"Dalam pembuat peta v6 flag 'decorations' mengatur semua hiasan kecuali "
+"pohon\n"
+"dan rumput rimba, dalam pembuat peta lain flag ini mengatur semua dekorasi.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid "Graphics"
@@ -2619,7 +2647,7 @@ msgstr "Mod HTTP"
 
 #: src/settings_translation_file.cpp
 msgid "HUD scale factor"
-msgstr ""
+msgstr "Faktor skala HUD"
 
 #: src/settings_translation_file.cpp
 msgid "HUD toggle key"
@@ -2658,7 +2686,7 @@ msgstr "Noise panas"
 
 #: src/settings_translation_file.cpp
 msgid "Height component of the initial window size."
-msgstr ""
+msgstr "Tinggi ukuran jendela mula-mula."
 
 #: src/settings_translation_file.cpp
 msgid "Height noise"
@@ -2690,11 +2718,11 @@ msgstr "Halaman awal server, ditampilkan di daftar server."
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar next key"
-msgstr ""
+msgstr "Tombol hotbar selanjutnya"
 
 #: src/settings_translation_file.cpp
 msgid "Hotbar previous key"
-msgstr ""
+msgstr "Tombol hotbar sebelumnya"
 
 #: src/settings_translation_file.cpp
 msgid "How deep to make rivers"
@@ -2706,12 +2734,18 @@ msgid ""
 "mapblocks (16 nodes).\n"
 "In active blocks objects are loaded and ABMs run."
 msgstr ""
+"Seberapa besar daerah blok yang menjadi blok aktif, dalam satuan blok peta ("
+"16 node).\n"
+"Dalam blok aktif objek dimuat dan ABM berjalan."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "How much the server will wait before unloading unused mapblocks.\n"
 "Higher value is smoother, but will use more RAM."
 msgstr ""
+"Seberapa lama server akan menunggu sebelum membongkar blok peta yang tidak "
+"dipakai.\n"
+"Semakin tinggi semakin halus, tetapi menggunakan lebih banyak RAM."
 
 #: src/settings_translation_file.cpp
 msgid "How wide to make rivers"
@@ -2719,15 +2753,15 @@ msgstr "Seberapa lebar sungai yang dibuat"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity blend noise"
-msgstr ""
+msgstr "Noise paduan kelembapan"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity noise"
-msgstr ""
+msgstr "Noise kelembapan"
 
 #: src/settings_translation_file.cpp
 msgid "Humidity variation for biomes."
-msgstr ""
+msgstr "Variasi kelembapan untuk bioma."
 
 #: src/settings_translation_file.cpp
 msgid "IPv6"
@@ -2766,6 +2800,10 @@ msgid ""
 "invisible\n"
 "so that the utility of noclip mode is reduced."
 msgstr ""
+"Jika diaktifkan server akan melakukan occlusion culling blok peta menurut\n"
+"posisi mata pemain. Ini dapat mengurangi jumlah blok yang dikirim ke\n"
+"klien sebesar 50-80%. Klien tidak dapat menerima yang tidak terlihat\n"
+"sehingga kemampuan mode tembus blok berkurang."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2790,24 +2828,30 @@ msgid ""
 "If enabled, actions are recorded for rollback.\n"
 "This option is only read when server starts."
 msgstr ""
+"Jika diaktifkan, perilaku akan direkam untuk cadangan.\n"
+"Pilihan ini hanya dibaca saat server dimulai."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, disable cheat prevention in multiplayer."
-msgstr ""
+msgstr "Jika diaktifkan, menonaktifkan pencegahan curang di multi-pemain."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "If enabled, invalid world data won't cause the server to shut down.\n"
 "Only enable this if you know what you are doing."
 msgstr ""
+"Jika diaktifkan, data dunia yang tidak sah tidak akan menyebabkan server "
+"mati.\n"
+"Hanya aktifkan ini jika Anda tahu yang Anda lakukan."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, new players cannot join with an empty password."
 msgstr ""
+"Jika diaktifkan, pemain baru tidak dapat bergabung dengan kata sandi kosong."
 
 #: src/settings_translation_file.cpp
 msgid "If enabled, show the server status message on player connection."
-msgstr "Pesan hari ini yang ditampilkan ke pemain yang terhubung."
+msgstr "Pesan hari ini yang ditampilkan ke pemain yang tersambung."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2815,6 +2859,10 @@ msgid ""
 "you stand.\n"
 "This is helpful when working with nodeboxes in small areas."
 msgstr ""
+"Jika diaktifkan, Anda dapat menaruh blok pada posisi (kaki + ketinggian mata)"
+"\n"
+"dimana Anda berdiri.\n"
+"Ini berguna saat bekerja dengan nodebox dalam daerah sempit."
 
 #: src/settings_translation_file.cpp
 msgid "If this is set, players will always (re)spawn at the given position."
@@ -2882,7 +2930,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Interval of saving important changes in the world, stated in seconds."
-msgstr ""
+msgstr "Jarak waktu penyimpanan perubahan penting dari dunia, dalam detik."
 
 #: src/settings_translation_file.cpp
 msgid "Interval of sending time of day to clients."
@@ -2902,41 +2950,43 @@ msgstr "Tombol inventaris"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "Balik mouse"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "Balik pergerakan vertikal mouse."
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
-msgstr ""
+msgstr "Umur hidup wujud barang"
 
 #: src/settings_translation_file.cpp
 msgid "Iterations"
-msgstr ""
+msgstr "Perulangan"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Iterations of the recursive function.\n"
 "Controls the amount of fine detail."
 msgstr ""
+"Perulangan dari fungsi rekursif.\n"
+"Mengatur jumlah kehalusan detail."
 
 #: src/settings_translation_file.cpp
 msgid "Joystick ID"
-msgstr ""
+msgstr "ID Joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick Type"
-msgstr ""
+msgstr "Jenis Joystick"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick button repetition interval"
-msgstr ""
+msgstr "Jarak penekanan tombol joystick terus menerus"
 
 #: src/settings_translation_file.cpp
 msgid "Joystick frustum sensitivity"
-msgstr ""
+msgstr "Kepekaan ruang gerak joystick"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2945,6 +2995,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Hanya julia set: Komponen W dari tetapan hiperkompleks yang mengatur bentuk "
+"julia.\n"
+"Tidak berefek pada fraktal 3D.\n"
+"Jangkauan sekitar -2 ke 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2952,6 +3006,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Hanya julia set: Komponen X dari tetapan hiperkompleks yang mengatur bentuk "
+"julia.\n"
+"Jangkauan sekitar -2 ke 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2959,6 +3016,9 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Hanya julia set: Komponen Y dari tetapan hiperkompleks yang mengatur bentuk "
+"julia.\n"
+"Jangkauan sekitar -2 ke 2."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2966,22 +3026,25 @@ msgid ""
 "shape.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Hanya julia set: Komponen Z dari tetapan hiperkompleks yang mengatur bentuk "
+"julia.\n"
+"Jangkauan sekitar -2 ke 2."
 
 #: src/settings_translation_file.cpp
 msgid "Julia w"
-msgstr ""
+msgstr "W Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia x"
-msgstr ""
+msgstr "X Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia y"
-msgstr ""
+msgstr "Y Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Julia z"
-msgstr ""
+msgstr "Z Julia"
 
 #: src/settings_translation_file.cpp
 msgid "Jump key"
@@ -3007,7 +3070,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk mengurangi jarak pandang.\n"
+"Tombol untuk mengurangi volume.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3037,7 +3100,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk menambah jarak pandang.\n"
+"Tombol untuk menambah volume.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3107,7 +3170,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk lompat.\n"
+"Tombol untuk bisukan permainan.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3137,7 +3200,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk membuka jendela obrolan untuk mengetik perintah.\n"
+"Tombol untuk membuka jendela obrolan untuk mengetik perintah lokal.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3167,6 +3230,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk mencetak tumpukan debug. Digunakan untuk pengembangan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3174,7 +3240,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk membuka inventaris.\n"
+"Tombol untuk memilih barang selanjutnya di hotbar.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3184,7 +3250,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk membuka inventaris.\n"
+"Tombol untuk memilih barang sebelumnya di hotbar.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3338,7 +3404,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk beralih tampilan obrolan.\n"
+"Tombol untuk beralih tampilan konsol obrolan besar.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3348,6 +3414,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"Tombol untuk menampilkan profiler. Digunakan untuk pengembangan.\n"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
+"35e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3365,7 +3434,7 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Tombol untuk lompat.\n"
+"Tombol untuk gunakan zoom jika bisa.\n"
 "Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
 "35e3da1b0edf72eb3"
 
@@ -3423,14 +3492,16 @@ msgid ""
 "Length of a server tick and the interval at which objects are generally "
 "updated over network."
 msgstr ""
+"Lama detikan server dan jarak dimana objek secara umum diperbarui ke "
+"jaringan."
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between ABM execution cycles"
-msgstr ""
+msgstr "Jarak waktu antara siklus pelaksanaan ABM"
 
 #: src/settings_translation_file.cpp
 msgid "Length of time between NodeTimer execution cycles"
-msgstr ""
+msgstr "Jarak waktu antara siklus pelaksanaan NodeTimer"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3454,11 +3525,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
-msgstr ""
+msgstr "Batas antrian kemunculan (emerge queue) pada cakram"
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues to generate"
-msgstr ""
+msgstr "Batas antrian kemunculan (emerge queue) untuk dibuat"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3499,7 +3570,7 @@ msgstr "Loop cairan paling banyak"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid queue purge time"
-msgstr ""
+msgstr "Waktu pembersihan antrian cairan"
 
 #: src/settings_translation_file.cpp
 msgid "Liquid sink"
@@ -3511,11 +3582,11 @@ msgstr "Jarak pembaruan cairan dalam detik."
 
 #: src/settings_translation_file.cpp
 msgid "Liquid update tick"
-msgstr ""
+msgstr "Detikan pembaruan cairan"
 
 #: src/settings_translation_file.cpp
 msgid "Load the game profiler"
-msgstr ""
+msgstr "Muat profiler permainan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3523,10 +3594,13 @@ msgid ""
 "Provides a /profiler command to access the compiled profile.\n"
 "Useful for mod developers and server operators."
 msgstr ""
+"Muat game profiler untuk mengumpulkan data game profiling.\n"
+"Menyediakan perintah /profiler untuk akses ke rangkuman profile.\n"
+"Berguna untuk pengembang mod dan operator server."
 
 #: src/settings_translation_file.cpp
 msgid "Loading Block Modifiers"
-msgstr ""
+msgstr "Memuat Pengubah Blok"
 
 #: src/settings_translation_file.cpp
 msgid "Main menu game manager"
@@ -3571,6 +3645,14 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta khusus untuk pembuat peta Valleys.\n"
+"'altitude_chill' menyebabkan semakin tinggi semakin dingin, yang dapat "
+"menyebabkan masalah bioma.\n"
+"'humid_rivers' mengubah kelembapan sekitar sungai dan dalam daerah dimana "
+"air cenderung berkumpul,\n"
+"dapat menabrak dengan bioma yang sudah sesuai.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3580,6 +3662,10 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta khusus untuk pembuat peta flat.\n"
+"Beberapa danau dan bukit dapat ditambahkan ke dunia datar.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3588,6 +3674,9 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta khusus untuk pembuat peta v5.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3599,6 +3688,13 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta khusus untuk pembuat peta v6.\n"
+"Flag 'snowbiomes' mengaktifkan sistem 5 bioma baru.\n"
+"Saat sistem bioma baru diaktifkan hutan rimba secara otomatis akan "
+"diaktifkan dan\n"
+"flag 'jungle' diabaikan.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3609,6 +3705,11 @@ msgid ""
 "default.\n"
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
+"Atribut pembuatan peta khusus untuk pembuat peta v7.\n"
+"Flag 'ridges' mengaktifkan sungai.\n"
+"Floatland masih tahap percobaan dan masih dapat berubah.\n"
+"Flag yang tidak ditulis dalam teks flag tidak akan berubah dari bawaan.\n"
+"Flag dimulai dengan 'no' digunakan untuk mempertegas penonaktifannya."
 
 #: src/settings_translation_file.cpp
 msgid "Map generation limit"
@@ -3616,20 +3717,19 @@ msgstr "Batas pembuatan peta"
 
 #: src/settings_translation_file.cpp
 msgid "Map save interval"
-msgstr "Jarak menyimpan peta"
+msgstr "Selang waktu menyimpan peta"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock limit"
 msgstr "Batas blok peta"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Mapblock mesh generation delay"
-msgstr "Batas generasi peta"
+msgstr "Jarak waktu pembuatan mesh blok peta"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock mesh generator's MapBlock cache size MB"
-msgstr ""
+msgstr "Ukuran cache blok peta dari pembuat mesh blok peta dalam MB"
 
 #: src/settings_translation_file.cpp
 msgid "Mapblock unload timeout"
@@ -3713,7 +3813,7 @@ msgstr "Cairan paling banyak terproses tiap langkah."
 
 #: src/settings_translation_file.cpp
 msgid "Max. clearobjects extra blocks"
-msgstr ""
+msgstr "Blok tambahan paling banyak untuk clearobject"
 
 #: src/settings_translation_file.cpp
 msgid "Max. packets per iteration"
@@ -3765,14 +3865,14 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of forceloaded mapblocks."
-msgstr "Jumlah maksimal blok peta (mapblock) yang dipaksa muat (forceloaded)."
+msgstr "Jumlah maksimal blok peta yang dipaksa muat."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Maximum number of mapblocks for client to be kept in memory.\n"
 "Set to -1 for unlimited amount."
 msgstr ""
-"Jumlah maksimal blok peta (mapblock) yang disimpan di memori klien.\n"
+"Jumlah maksimal blok peta yang disimpan di memori klien.\n"
 "Atur ke -1 untuk tak terbatas."
 
 #: src/settings_translation_file.cpp
@@ -3782,13 +3882,13 @@ msgid ""
 "client number."
 msgstr ""
 "Jumlah maksimal paket dikirim tiap langkah mengirim (send step), jika Anda\n"
-"memiliki koneksi lambat, cobalah untuk menguranginya, tetapi jangan "
+"memiliki sambungan lambat, cobalah untuk menguranginya, tetapi jangan "
 "mengurangi\n"
 "di bawah dua kalinya jumlah klien yang ditargetkan."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of players that can connect simultaneously."
-msgstr "Jumlah maksimal pemain yang dapat terhubung serentak."
+msgstr "Jumlah maksimal pemain yang dapat tersambung serentak."
 
 #: src/settings_translation_file.cpp
 msgid "Maximum number of statically stored objects in a block."
@@ -3829,7 +3929,7 @@ msgstr "Menus"
 
 #: src/settings_translation_file.cpp
 msgid "Mesh cache"
-msgstr ""
+msgstr "Cache mesh"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day"
@@ -3837,7 +3937,7 @@ msgstr "Pesan hari ini"
 
 #: src/settings_translation_file.cpp
 msgid "Message of the day displayed to players connecting."
-msgstr "Pesan hari ini yang ditampilkan ke pemain yang terhubung."
+msgstr "Pesan hari ini yang ditampilkan ke pemain yang tersambung."
 
 #: src/settings_translation_file.cpp
 msgid "Method used to highlight selected object."
@@ -3912,6 +4012,8 @@ msgid ""
 "Multiplier for fall bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
 msgstr ""
+"Pengali untuk fall bobbing.\n"
+"Misalkan: 0 untuk tanpa view bobbing; 1.0 untuk normal; 2.0 untuk 2x lipat."
 
 #: src/settings_translation_file.cpp
 msgid "Mute key"
@@ -3932,7 +4034,8 @@ msgid ""
 "When starting from the main menu, this is overridden."
 msgstr ""
 "Nama pemain.\n"
-"Saat menjalankan server, klien yang terhubung dengan nama ini adalah admin.\n"
+"Saat menjalankan server, klien yang tersambung dengan nama ini adalah admin."
+"\n"
 "Saat menjalankan dari menu utama, nilai ini ditimpa."
 
 #: src/settings_translation_file.cpp
@@ -3986,7 +4089,7 @@ msgstr "Kekuatan normalmap"
 
 #: src/settings_translation_file.cpp
 msgid "Number of emerge threads"
-msgstr ""
+msgstr "Jumlah utas kemunculan"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3996,6 +4099,11 @@ msgid ""
 "speed greatly\n"
 "at the cost of slightly buggy caves."
 msgstr ""
+"Jumlah utas kemunculan untuk dipakai. Kosongkan nilai, atau naikkan angka "
+"ini untuk\n"
+"menggunakan beberapa thread. Pada sistem banyak prosesor, ini akan banyak "
+"menaikkan\n"
+"kecepatan pembuat peta seharga gua yang sedikit salah."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4003,10 +4111,14 @@ msgid ""
 "This is a trade-off between sqlite transaction overhead and\n"
 "memory consumption (4096=100MB, as a rule of thumb)."
 msgstr ""
+"Jumlah dari blok tambahan yang dapat dimuat oleh /clearobjects dalam satu "
+"waktu.\n"
+"Ini adalah pemilihan antara transaksi sqlite dan\n"
+"penggunaan memori (4096=100MB, kasarannya)."
 
 #: src/settings_translation_file.cpp
 msgid "Number of parallax occlusion iterations."
-msgstr ""
+msgstr "Jumlah pengulangan parallax occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Offset"
@@ -4018,11 +4130,11 @@ msgstr "Cairan buram"
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
-msgstr ""
+msgstr "Bias keseluruhan dari efek parallax occlusion, biasanya skala/2."
 
 #: src/settings_translation_file.cpp
 msgid "Overall scale of parallax occlusion effect."
-msgstr ""
+msgstr "Skala keseluruhan dari efek parallax occlusion."
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion"
@@ -4034,11 +4146,11 @@ msgstr "Skala parallax occlusion"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion bias"
-msgstr ""
+msgstr "Pergeseran parallax occlusion"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion iterations"
-msgstr ""
+msgstr "Pengulangan parallax occlusion"
 
 #: src/settings_translation_file.cpp
 msgid "Parallax occlusion mode"
@@ -4085,7 +4197,7 @@ msgstr "Nama pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Player transfer distance"
-msgstr ""
+msgstr "Jarak pemindahan pemain"
 
 #: src/settings_translation_file.cpp
 msgid "Player versus Player"
@@ -4096,7 +4208,7 @@ msgid ""
 "Port to connect to (UDP).\n"
 "Note that the port field in the main menu overrides this setting."
 msgstr ""
-"Port untuk dihubungkan (UDP).\n"
+"Port untuk disambungkan (UDP).\n"
 "Catat bahwa kolom port di menu utama mengubah pengaturan ini."
 
 #: src/settings_translation_file.cpp
@@ -4110,6 +4222,9 @@ msgid ""
 "Print the engine's profiling data in regular intervals (in seconds). 0 = "
 "disable. Useful for developers."
 msgstr ""
+"Cetak data profiling mesin dalam selang waktu tetap (dalam detik). 0 = "
+"menonaktifkan.\n"
+"Berguna untuk pengembang."
 
 #: src/settings_translation_file.cpp
 msgid "Privileges that players with basic_privs can grant"
@@ -4133,6 +4248,8 @@ msgid ""
 "Values larger than 26 will start to produce sharp cutoffs at cloud area "
 "corners."
 msgstr ""
+"Jari-jari daerah awan dalam jumlah dari 64 node awan kotak.\n"
+"Nilai lebih dari 26 akan mulai menghasilkan tepian tajam pada sudut awan."
 
 #: src/settings_translation_file.cpp
 msgid "Raises terrain to make valleys around the rivers"
@@ -4267,7 +4384,7 @@ msgstr "Noise dasar laut"
 
 #: src/settings_translation_file.cpp
 msgid "Second of 2 3D noises that together define tunnels."
-msgstr ""
+msgstr "Noise 3D kedua dari dua yang bersama-sama mengatur terowongan."
 
 #: src/settings_translation_file.cpp
 msgid "Security"
@@ -4315,7 +4432,7 @@ msgstr "Port server"
 
 #: src/settings_translation_file.cpp
 msgid "Server side occlusion culling"
-msgstr ""
+msgstr "Occlusion culling sisi server"
 
 #: src/settings_translation_file.cpp
 msgid "Serverlist URL"
@@ -4385,7 +4502,7 @@ msgstr "Tampilkan info debug"
 
 #: src/settings_translation_file.cpp
 msgid "Show entity selection boxes"
-msgstr ""
+msgstr "Tampilkan kotak pilihan benda"
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
@@ -4397,7 +4514,7 @@ msgid ""
 "nodes)."
 msgstr ""
 "Ukuran chunk yang dibuat dalam satu waktu oleh pembuat peta, dalam satuan "
-"blok peta (mapblock, 16 node)."
+"blok peta (16 node)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4405,6 +4522,9 @@ msgid ""
 "increase the cache hit %, reducing the data being copied from the main\n"
 "thread, thus reducing jitter."
 msgstr ""
+"Ukuran dari cache blok peta dari pembuat mesh. Menaikkan ini akan\n"
+"menambah persentase cache hit, mengurangi data yang disalin dari\n"
+"thread utama, sehingga mengurangi jitter."
 
 #: src/settings_translation_file.cpp
 msgid "Slice w"
@@ -4412,15 +4532,15 @@ msgstr "Irisan w"
 
 #: src/settings_translation_file.cpp
 msgid "Slope and fill work together to modify the heights"
-msgstr ""
+msgstr "Kemiringan dan isian bekerja sama mengatur ketinggian"
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale humidity variation for blending biomes on borders."
-msgstr ""
+msgstr "Variasi kelembapan skala kecil untuk paduan di tepi bioma."
 
 #: src/settings_translation_file.cpp
 msgid "Small-scale temperature variation for blending biomes on borders."
-msgstr ""
+msgstr "Variasi suhu skala kecil untuk paduan di tepi bioma."
 
 #: src/settings_translation_file.cpp
 msgid "Smooth lighting"
@@ -4464,7 +4584,7 @@ msgstr "Titk bangkit tetap"
 
 #: src/settings_translation_file.cpp
 msgid "Status message on connection"
-msgstr "Pesan status saat terhubung"
+msgstr "Pesan status saat tersambung"
 
 #: src/settings_translation_file.cpp
 msgid "Steepness noise"
@@ -4500,7 +4620,7 @@ msgstr "Ketinggian Medan"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain alt noise"
-msgstr ""
+msgstr "Noise medan alt"
 
 #: src/settings_translation_file.cpp
 msgid "Terrain base noise"
@@ -4536,7 +4656,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Terrain persistence noise"
-msgstr ""
+msgstr "Persistence noise medan"
 
 #: src/settings_translation_file.cpp
 msgid "Texture path"
@@ -4551,6 +4671,8 @@ msgid ""
 "The default format in which profiles are being saved,\n"
 "when calling `/profiler save [format]` without format."
 msgstr ""
+"Format bawaan pada berkas untuk menyimpan profile,\n"
+"saat memanggil `/profiler save [format]` tanpa format."
 
 #: src/settings_translation_file.cpp
 msgid "The depth of dirt or other filler"
@@ -4560,10 +4682,12 @@ msgstr "Kedalaman dari tanah atau pengisi lainnya"
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
 msgstr ""
+"Jalur berkas relatif terhadap jalur dunia Anda dimana akan disimpan profile "
+"di dalamnya."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
-msgstr ""
+msgstr "Identitas dari joystick yang digunakan"
 
 #: src/settings_translation_file.cpp
 msgid "The network interface that the server listens on."
@@ -4580,7 +4704,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "The rendering back-end for Irrlicht."
-msgstr ""
+msgstr "Backend rendering untuk Irrlicht."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4597,6 +4721,10 @@ msgid ""
 "setting is 0.25 to 4.0 inclusive. If the value is out of range it will be\n"
 "set to the nearest valid value."
 msgstr ""
+"Kekuatan (kegelapan) dari shade ambient occlusion pada node.\n"
+"Semakin kecil semakin gelap, juga sebaliknya. Jangkauan yang sah\n"
+"berkisar antara 0.25 sampai 4.0 inklusif. Jika nilai di luar jangkauan\n"
+"maka akan diatur ke nilai yang sah terdekat."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4604,6 +4732,10 @@ msgid ""
 "capacity until an attempt is made to decrease its size by dumping old queue\n"
 "items.  A value of 0 disables the functionality."
 msgstr ""
+"Waktu (dalam detik) sehingga antrian cairan dapat bertambah di luar "
+"kapasitas\n"
+"pemrosesan sampai usaha dilakukan untuk mengurangi ukurannya dengan\n"
+"membuang antrian lama. Nilai 0 menonaktifkan ini."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4618,7 +4750,7 @@ msgid ""
 "The time in seconds it takes between repeated right clicks when holding the "
 "right mouse button."
 msgstr ""
-"Waktu dalam detik antara kejadiaan saat menekan tombol kanan terus menerus."
+"Waktu dalam detik antara kejadian saat menekan tombol kanan terus menerus."
 
 #: src/settings_translation_file.cpp
 msgid "The type of joystick"
@@ -4630,13 +4762,15 @@ msgstr "Font ini akan digunakan pada bahasa tertentu."
 
 #: src/settings_translation_file.cpp
 msgid "Time in between active block management cycles"
-msgstr ""
+msgstr "Jarak waktu antara siklus Pengelola Blok Aktif"
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Time in seconds for item entity (dropped items) to live.\n"
 "Setting it to -1 disables the feature."
 msgstr ""
+"Waktu dalam detik bagi benda (yang dijatuhkan) untuk hidup.\n"
+"Atur ke -1 untuk menonaktifkan fitur ini."
 
 #: src/settings_translation_file.cpp
 msgid "Time send interval"
@@ -4659,6 +4793,10 @@ msgid ""
 "This determines how long they are slowed down after placing or removing a "
 "node."
 msgstr ""
+"Untuk mengurangi lag, pengiriman blok diperlambat saat pemain sedang "
+"membangun.\n"
+"Ini menentukan seberapa lama mereka diperlambat setelah menaruh atau "
+"mencopot node."
 
 #: src/settings_translation_file.cpp
 msgid "Toggle camera mode key"
@@ -4695,6 +4833,8 @@ msgid ""
 "Typical maximum height, above and below midpoint, of floatland mountain "
 "terrain."
 msgstr ""
+"Ketinggian paling tinggi umumnya, di atas dan di bawah titik tengah, dari "
+"medan gunung floatland."
 
 #: src/settings_translation_file.cpp
 msgid "URL to the server list displayed in the Multiplayer Tab."
@@ -4714,11 +4854,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Unlimited player transfer distance"
-msgstr ""
+msgstr "Jarak pemindahan pemain tak terbatas"
 
 #: src/settings_translation_file.cpp
 msgid "Unload unused server data"
-msgstr ""
+msgstr "Membongkar data server yang tak terpakai"
 
 #: src/settings_translation_file.cpp
 msgid "Use 3D cloud look instead of flat."
@@ -4800,16 +4940,20 @@ msgid ""
 "Variation of terrain vertical scale.\n"
 "When noise is < -0.55 terrain is near-flat."
 msgstr ""
+"Variasi dari skala vertikal medan.\n"
+"Saat noise < -0,55 medan mendekati datar."
 
 #: src/settings_translation_file.cpp
 msgid "Varies depth of biome surface nodes."
-msgstr ""
+msgstr "Merubah kedalaman dari node permukaan bioma."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Varies roughness of terrain.\n"
 "Defines the 'persistence' value for terrain_base and terrain_alt noises."
 msgstr ""
+"Merubah kekasaran dari medan.\n"
+"Mengatur nilai 'persistence' dari noise terrain_base dan terrain_alt."
 
 #: src/settings_translation_file.cpp
 msgid "Varies steepness of cliffs."
@@ -4825,7 +4969,7 @@ msgstr "Driver video"
 
 #: src/settings_translation_file.cpp
 msgid "View bobbing factor"
-msgstr ""
+msgstr "Faktor view bobbing"
 
 #: src/settings_translation_file.cpp
 msgid "View distance in nodes."
@@ -4858,6 +5002,10 @@ msgid ""
 "Has no effect on 3D fractals.\n"
 "Range roughly -2 to 2."
 msgstr ""
+"Koordinat W dari irisan 3D dari fraktal 4D.\n"
+"Menentukan irisan 3D yang mana dari bangun 4D yang dibuat.\n"
+"Tidak berefek pada fraktal 3D.\n"
+"Jangkauan sekitar -2 ke 2."
 
 #: src/settings_translation_file.cpp
 msgid "Walking speed"
@@ -4909,6 +5057,10 @@ msgid ""
 "filtered in software, but some images are generated directly\n"
 "to hardware (e.g. render-to-texture for nodes in inventory)."
 msgstr ""
+"Saat gui_scaling_filter diatur ke true, semua gambar GUI harus\n"
+"difilter dalam perangkat lunak, tetapi beberapa gambar dibuat\n"
+"langsung ke perangkat keras (misal. render ke tekstur untuk node\n"
+"dalam inventaris)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4938,15 +5090,15 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Whether node texture animations should be desynchronized per mapblock."
-msgstr ""
-"Apakah animasi tekstur node harus ditidaksinkronasikan tiap blok peta "
-"(mapblock)."
+msgstr "Apakah animasi tekstur node harus ditidaksinkronasikan tiap blok peta."
 
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether players are shown to clients without any range limit.\n"
 "Deprecated, use the setting player_transfer_distance instead."
 msgstr ""
+"Apakah para pemain ditampilkan ke klien tanpa batas jangkauan.\n"
+"Usang, gunakan pengaturan player_transfer_distance."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to allow players to damage and kill each other."
@@ -4957,6 +5109,8 @@ msgid ""
 "Whether to ask clients to reconnect after a (Lua) crash.\n"
 "Set this to true if your server is set up to restart automatically."
 msgstr ""
+"Apakah meminta klien untuk menyambung ulang setelah kerusakan (Lua).\n"
+"Atur ke true jika server Anda diatur untuk mulai ulang otomatis."
 
 #: src/settings_translation_file.cpp
 msgid "Whether to fog out the end of the visible area."
@@ -4965,7 +5119,7 @@ msgstr "Apakah harus memberi kabut pada akhir daerah yang terlihat."
 #: src/settings_translation_file.cpp
 msgid ""
 "Whether to show the client debug info (has the same effect as hitting F5)."
-msgstr ""
+msgstr "Apakah menampilkan informasi debug klien (sama dengan menekan F5)."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4974,6 +5128,10 @@ msgid ""
 "Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.\n"
 "Disabling this option will protect your password better."
 msgstr ""
+"Apakah mendukung server lawas sebelum protokol versi 25.\n"
+"Aktifkan jika Anda ingin menyambung ke server 0.4.12 atau sebelumnya.\n"
+"Server versi 0.4.13 ke atas akan bekerja, versi 0.4.12-dev mungkin bekerja.\n"
+"Menonaktifkan pilihan ini akan melindungi kata sandi Anda lebih baik."
 
 #: src/settings_translation_file.cpp
 msgid "Width component of the initial window size."
@@ -5011,7 +5169,7 @@ msgstr "Y dari batas atas dari gua besar semu acak."
 
 #: src/settings_translation_file.cpp
 msgid "Y-distance over which caverns expand to full size."
-msgstr ""
+msgstr "Jarak Y dimana gua besar meluas ke ukuran penuh."
 
 #: src/settings_translation_file.cpp
 msgid "Y-level of average terrain surface."
