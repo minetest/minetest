@@ -33,7 +33,7 @@ struct ToolGroupCap
 	int uses;
 
 	ToolGroupCap():
-		maxlevel(1),
+		maxlevel(0),
 		uses(20)
 	{}
 
