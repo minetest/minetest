@@ -55,6 +55,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Included stuff
+include("${CMAKE_SOURCE_DIR}/cmake/Modules/UseCcache.cmake")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 
