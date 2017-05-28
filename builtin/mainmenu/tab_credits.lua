@@ -19,60 +19,67 @@
 
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
-	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sfan5 <sfan5@live.de>",
-	"kahrl <kahrl@gmx.net>",
-	"sapier",
 	"ShadowNinja <shadowninja@minetest.net>",
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
-	"Matt Gregory (paramat)",
-	"est31 <MTest31@outlook.com>",
+	"paramat",
 	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
-	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
+	"rubenwardy <rw@rubenwardy.com>",
+	"Krock/SmallJoker <mk939@ymail.com>",
 }
 
 local active_contributors = {
-	"Duane Robertson <duane@duanerobertson.com>",
-	"SmallJoker <mk939@ymail.com>",
-	"Lars Hofhansl <larsh@apache.org>",
-	"Jeija <jeija@mesecons.net>",
-	"Gregory Currie (gregorycu)",
-	"Sokomine <wegwerf@anarres.dyndns.org>",
-	"TeTpaAka",
-	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
-	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
-	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
-	"Rogier <rogier777@gmail.com>",
+	"red-001 <red-001@outlook.ie> [CSM & Menu fixes]",
+	"Dániel Juhász (juhdanad) <juhdanad@gmail.com> [Audiovisuals: lighting]",
+	"numberZero [Audiovisuals: meshgen]",
+	"Lars Hofhansl <larsh@apache.org> [Occulusion culling, fixes]",
+	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com> [Audiovisuals]",
+	"Vincent Glize (Dumbeldor) <vincent.glize@live.fr> [CSM]",
+	"bigfoot547 [CSM]",
+	"Rogier <rogier777@gmail.com> [Fixes]",
+	"Wuzzy [Audiovisuals]",
+	"Shara/Ezhh [Settings]",
 }
 
 local previous_core_developers = {
 	"BlockMen",
-	"Maciej Kasatkin (RealBadAngel) <maciej.kasatkin@o2.pl>",
+	"Maciej Kasatkin (RealBadAngel) [RIP]",
 	"Lisa Milne (darkrose) <lisa@ltmnet.com>",
 	"proller",
 	"Ilya Zhuravlev (xyz) <xyz@minetest.net>",
 	"PilzAdam <pilzadam@minetest.net>",
+	"est31 <MTest31@outlook.com>",
+	"kahrl <kahrl@gmx.net>",
+	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
+	"sapier",
 }
 
 local previous_contributors = {
-	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
-	"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
-	"MirceaKitsune <mirceakitsune@gmail.com>",
-	"dannydark <the_skeleton_of_a_child@yahoo.co.uk>",
-	"0gb.us <0gb.us@0gb.us>",
-	"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com>",
-	"Jonathan Neuschafer <j.neuschaefer@gmx.net>",
-	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net>",
-	"Břetislav Štec (t0suj4/TBC_x)",
-	"Aaron Suen <warr1024@gmail.com>",
-	"Constantin Wenger (SpeedProg) <constantin.wenger@googlemail.com>",
-	"matttpt <matttpt@gmail.com>",
-	"JacobF <queatz@gmail.com>",
-	"TriBlade9 <triblade9@mail.com>",
-	"Zefram <zefram@fysh.org>",
+	"Gregory Currie (gregorycu) [optimisation]",
+	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
+	"T4im [Profiler]",
+	"TeTpaAka [Hand overriding, nametag colors]",
+	"HybridDog [Fixes]",
+	"Duane Robertson <duane@duanerobertson.com> [MGValleys]",
+	"neoascetic [OS X Fixes]",
+	"TriBlade9 <triblade9@mail.com> [Audiovisuals]",
+	"Jurgen Doser (doserj) <jurgen.doser@gmail.com> [Fixes]",
+	"MirceaKitsune <mirceakitsune@gmail.com> [Audiovisuals]",
+	"Guiseppe Bilotta (Oblomov) <guiseppe.bilotta@gmail.com> [Fixes]",
+	"matttpt <matttpt@gmail.com> [Fixes]",
+	"Nils Dagsson Moskopp (erlehmann) <nils@dieweltistgarnichtso.net> [Minetest Logo]",
+	"Jeija <jeija@mesecons.net> [HTTP, particles]",
 }
+
+local function buildCreditList(source)
+	ret = {}
+	for i = 1, #source do
+		ret[i] = core.formspec_escape(source[i])
+	end
+	return table.concat(ret, ",,")
+end
 
 return {
 	name = "credits",
@@ -87,13 +94,13 @@ return {
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[3.5,-0.25;8.5,6.05;list_credits;" ..
 			"#FFFF00," .. fgettext("Core Developers") .. ",," ..
-			table.concat(core_developers, ",,") .. ",,," ..
+			buildCreditList(core_developers) .. ",,," ..
 			"#FFFF00," .. fgettext("Active Contributors") .. ",," ..
-			table.concat(active_contributors, ",,") .. ",,," ..
+			buildCreditList(active_contributors) .. ",,," ..
 			"#FFFF00," .. fgettext("Previous Core Developers") ..",," ..
-			table.concat(previous_core_developers, ",,") .. ",,," ..
+			buildCreditList(previous_core_developers) .. ",,," ..
 			"#FFFF00," .. fgettext("Previous Contributors") .. ",," ..
-			table.concat(previous_contributors, ",,") .. "," ..
+			buildCreditList(previous_contributors) .. "," ..
 			";1]"
 	end
 }
