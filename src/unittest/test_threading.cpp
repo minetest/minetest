@@ -39,7 +39,9 @@ static TestThreading g_test_instance;
 
 void TestThreading::runTests(IGameDef *gamedef)
 {
+#if !(defined(__MACH__) && defined(__APPLE__))
 	TEST(testStartStopWait);
+#endif
 	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
 }
