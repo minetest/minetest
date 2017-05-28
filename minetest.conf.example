@@ -1792,7 +1792,7 @@ max_out_chat_queue_size = 20
 #    -    action
 #    -    info
 #    -    verbose
-#    type: enum values: , warning, action, info, verbose
+#    type: enum values: , none, error, warning, action, info, verbose
 # debug_log_level = action
 
 #    IPv6 support.
