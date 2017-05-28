@@ -1468,7 +1468,7 @@ language (Language) enum   ,be,ca,cs,da,de,en,eo,es,et,fr,he,hu,id,it,ja,jbo,ko,
 #    -    action
 #    -    info
 #    -    verbose
-debug_log_level (Debug log level) enum action ,warning,action,info,verbose
+debug_log_level (Debug log level) enum action ,none,error,warning,action,info,verbose
 
 #    IPv6 support.
 enable_ipv6 (IPv6) bool true
