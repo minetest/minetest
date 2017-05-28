@@ -129,6 +129,16 @@ static bool detectSneakLadder(Map *map, INodeDefManager *nodemgr, v3s16 pos)
 	for (u16 i = 0; i < ARRLEN(vecs); i++) {
 		const v2s16 vec = vecs[i];
 
+		// Detect ledge for 2-node pull-up
+		node = GETNODE(map, pos, vec, 1, &is_valid_position);
+		if (is_valid_position && nodemgr->get(node).walkable) {
+			// Ledge exists
+			node = GETNODE(map, pos, vec, 2, &is_valid_position);
+			if (is_valid_position && !nodemgr->get(node).walkable)
+				// Space above ledge exists
+				return true;
+		}
+
 		// walkability of bottom & top node should differ
 		node = GETNODE(map, pos, vec, 0, &is_valid_position);
 		if (!is_valid_position)
