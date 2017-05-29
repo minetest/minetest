@@ -85,6 +85,22 @@ void signal_handler(int sig)
 			dstream << "INFO: signal_handler(): "
 				<< "got SIGTERM, shutting down." << std::endl;
 		}
+		else if (sig == SIGFPE) {
+			dstream << "INFO: signal_handler(): "
+				<< "floating point exception, shutting down." << std::endl;
+		}
+		else if (sig == SIGSEGV) {
+			dstream << "INFO: signal_handler(): "
+				<< "segmentation fault, shutting down." << std::endl;
+		}
+		else if (sig == SIGHUP) {
+			dstream << "INFO: signal_handler(): "
+				<< "terminal hangup, shutting down." << std::endl;
+		}
+		else if (sig == SIGILL) {
+			dstream << "INFO: singal_handler(): "
+				<< "illegal action, shutting down." << std::endl;
+		}
 
 		// Comment out for less clutter when testing scripts
 		/*dstream << "INFO: sigint_handler(): "
@@ -101,6 +117,10 @@ void signal_handler_init(void)
 {
 	(void)signal(SIGINT, signal_handler);
 	(void)signal(SIGTERM, signal_handler);
+	(void)signal(SIGFPE, signal_handler);
+	(void)signal(SIGSEGV, signal_handler);
+	(void)signal(SIGHUP, signal_handler);
+	(void)signal(SIGILL, signal_handler);
 }
 
 #else // _WIN32
