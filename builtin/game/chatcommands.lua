@@ -972,7 +972,7 @@ core.register_chatcommand("lua", {
 	description = "Run lua source code",
 	privs = {lua = true},
 	func = function(player, src)
-		local src = "\nlocal print = function(...) local s = \"\"\nfor i, v in pairs{...} do s = s..\"\t\"..tostring(v) end minetest.chat_send_all(s) end\n"..src
+		local src = "\nlocal print = function(...) local s = \"\"\nfor i, v in ipairs{...} do s = s..\"\t\"..tostring(v) end minetest.chat_send_all(s) end\n"..src
 		local status, err = pcall(function()assert(loadstring(src))()end)
 		if not status then
 			return true, tostring(err)
