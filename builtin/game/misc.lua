@@ -60,6 +60,13 @@ core.register_on_leaveplayer(function(player, timed_out)
 	core.chat_send_all(announcement)
 end)
 
+core.register_on_prejoinplayer(function(name, ip)
+	if #name > 18 then
+		return "Username is too long. "..
+			"Please pick a name with less than 18 letters and try again."
+	end
+end)
+
 function core.get_connected_players()
 	local temp_table = {}
 	for index, value in pairs(player_list) do
