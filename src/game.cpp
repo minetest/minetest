@@ -3851,6 +3851,12 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 
 		if (getLeftClicked())
 			do_punch = true;
+		
+		const ToolCapabilities *toolcap = &playeritem.getToolCapabilities(gamedef->idef());
+		if (runData->time_from_last_punch < toolcap->full_punch_interval) {
+			do_punch = false;
+			do_punch_damage = false;
+		}
 
 		if (do_punch) {
 			infostream << "Left-clicked object" << std::endl;
