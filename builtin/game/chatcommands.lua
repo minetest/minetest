@@ -966,3 +966,16 @@ core.register_chatcommand("clearinv", {
 		end
 	end,
 })
+
+core.register_chatcommand("lua", {
+	params = "<source code>",
+	description = "Run lua source code",
+	privs = {lua = true},
+	func = function(player, src)
+		local src = "\nlocal print = function(...) local s = \"\"\nfor i, v in pairs{...} do s = s..\"\t\"..tostring(v) end minetest.chat_send_all(s) end\n"..src
+		local status, err = pcall(function()assert(loadstring(src))()end)
+		if not status then
+			return true, tostring(err)
+		end
+	end,
+})
