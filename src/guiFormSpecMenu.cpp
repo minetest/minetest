@@ -2398,8 +2398,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				if (!item.name.empty() && tooltip_text.empty())
 					tooltip_text = utf8_to_wide(item.name);
 			}
-			if (tooltip_text != L"") {
-				this->showTooltip(tooltip_text, m_default_tooltip_color,
+			if (!tooltip_text.empty()) {
+				showTooltip(tooltip_text, m_default_tooltip_color,
 					m_default_tooltip_bgcolor);
 			}
 		}
@@ -2652,8 +2652,8 @@ void GUIFormSpecMenu::drawMenu()
 					continue;
 
 				const std::wstring &text = m_tooltips[iter->fname].tooltip;
-				if (text != L"")
-					this->showTooltip(text, m_tooltips[iter->fname].color,
+				if (!text.empty())
+					showTooltip(text, m_tooltips[iter->fname].color,
 						m_tooltips[iter->fname].bgcolor);
 
 				break;
@@ -2715,7 +2715,7 @@ void GUIFormSpecMenu::showTooltip(const std::wstring &text,
 
 	// Display the tooltip
 	m_tooltip_element->setVisible(true);
-	this->bringToFront(m_tooltip_element);
+	bringToFront(m_tooltip_element);
 }
 
 void GUIFormSpecMenu::updateSelectedItem()
