@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:39+0200\n"
-"PO-Revision-Date: 2017-05-31 07:31+0000\n"
-"Last-Translator: metarmask <ihvarfner@gmail.com>\n"
+"PO-Revision-Date: 2017-05-31 07:56+0000\n"
+"Last-Translator: texmex <josefsahlberg+minetest@gmail.com>\n"
 "Language-Team: Swedish "
 "<https://hosted.weblate.org/projects/minetest/minetest/sv/>\n"
 "Language: sv\n"
@@ -124,7 +124,7 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Stödjer:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -521,7 +521,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
 msgid "Play Online"
-msgstr ""
+msgstr "Spela online"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -529,27 +529,27 @@ msgstr "PvP aktiverat"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "2x"
-msgstr ""
+msgstr "2x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "3D Clouds"
-msgstr ""
+msgstr "3D-moln"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "4x"
-msgstr ""
+msgstr "4x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "8x"
-msgstr ""
+msgstr "8x"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Avancerade inställningar"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Antialiasing:"
-msgstr ""
+msgstr "Kantutjämning:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Are you sure to reset your singleplayer world?"
@@ -589,7 +589,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "No Filter"
@@ -621,7 +621,7 @@ msgstr "Ogenomskinliga löv"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Opaque Water"
-msgstr ""
+msgstr "Ogenomskinligt vatten"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Parallax Occlusion"
@@ -641,7 +641,7 @@ msgstr ""
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
-msgstr ""
+msgstr "Inställningar"
 
 #: builtin/mainmenu/tab_settings.lua src/settings_translation_file.cpp
 msgid "Shaders"
