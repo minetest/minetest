@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:39+0200\n"
-"PO-Revision-Date: 2017-04-14 14:33+0000\n"
-"Last-Translator: metarmask <ihvarfner@gmail.com>\n"
-"Language-Team: Swedish <https://hosted.weblate.org/projects/minetest/"
-"minetest/sv/>\n"
+"PO-Revision-Date: 2017-05-31 07:31+0000\n"
+"Last-Translator: texmex <josefsahlberg+minetest@gmail.com>\n"
+"Language-Team: Swedish "
+"<https://hosted.weblate.org/projects/minetest/minetest/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.14-dev\n"
+"X-Generator: Weblate 2.14.1\n"
 
 #: builtin/client/init.lua
 msgid "Respawn"
@@ -25,11 +25,11 @@ msgstr ""
 
 #: builtin/client/init.lua
 msgid "You died."
-msgstr ""
+msgstr "Du dog."
 
 #: builtin/fstk/ui.lua
 msgid "An error occured in a Lua script, such as a mod:"
-msgstr ""
+msgstr "Ett fel uppstod i ett Lua-skript, såsom en mod:"
 
 #: builtin/fstk/ui.lua
 msgid "An error occured:"
@@ -57,7 +57,7 @@ msgstr "Laddar..."
 
 #: builtin/mainmenu/common.lua
 msgid "Protocol version mismatch. "
-msgstr ""
+msgstr "Protokollversionen matchar ej. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
