@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
 "PO-Revision-Date: 2017-05-31 10:16+0000\n"
-"Last-Translator: anonymous <>\n"
+"Last-Translator: Andrew Zyabin <schastlilya@gmail.com>\n"
 "Language-Team: Russian "
 "<https://hosted.weblate.org/projects/minetest/minetest/ru/>\n"
 "Language: ru\n"
@@ -3907,7 +3907,6 @@ msgid "Maximum objects per block"
 msgstr "Максимальное количество объектов на блок"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Maximum proportion of current window to be used for hotbar.\n"
 "Useful if there's something to be displayed right or left of hotbar."
