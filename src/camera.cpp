@@ -558,9 +558,10 @@ void Camera::drawNametags()
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
+			std::string nametag_colorless = unescape_enriched(nametag->nametag_text);
 			core::dimension2d<u32> textsize =
 				g_fontengine->getFont()->getDimension(
-				utf8_to_wide(nametag->nametag_text).c_str());
+				utf8_to_wide(nametag_colorless).c_str());
 			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 				core::reciprocal(transformed_pos[3]);
 			v2u32 screensize = m_driver->getScreenSize();
