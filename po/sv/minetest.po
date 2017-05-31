@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:39+0200\n"
 "PO-Revision-Date: 2017-05-31 07:31+0000\n"
-"Last-Translator: texmex <josefsahlberg+minetest@gmail.com>\n"
+"Last-Translator: metarmask <ihvarfner@gmail.com>\n"
 "Language-Team: Swedish "
 "<https://hosted.weblate.org/projects/minetest/minetest/sv/>\n"
 "Language: sv\n"
@@ -61,7 +61,7 @@ msgstr "Protokollversionen matchar ej. "
 
 #: builtin/mainmenu/common.lua
 msgid "Server enforces protocol version $1. "
-msgstr ""
+msgstr "Servern tvingar protokollversion $1."
 
 #: builtin/mainmenu/common.lua
 msgid "Server supports protocol versions between $1 and $2. "
