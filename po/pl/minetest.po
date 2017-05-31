@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-02-04 14:50+0000\n"
-"Last-Translator: Jakub Mendel <jimikuba@o2.pl>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
-"pl/>\n"
+"PO-Revision-Date: 2017-05-31 19:57+0000\n"
+"Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
+"Language-Team: Polish "
+"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 2.11\n"
+"X-Generator: Weblate 2.15-dev\n"
 
 #: builtin/client/init.lua
 msgid "Respawn"
@@ -93,16 +93,15 @@ msgstr "Anuluj"
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 #, fuzzy
 msgid "Dependencies:"
-msgstr "Zależy od:"
+msgstr "Zależności"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
 msgstr "Wyłącz paczkę modów"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Wyłącz paczkę modów"
+msgstr "Wyłącz wszystko"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
@@ -125,8 +124,9 @@ msgid "Mod:"
 msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
+#, fuzzy
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Dodatkowe zależności:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -336,8 +336,9 @@ msgstr ""
 "Instalacja moda: nie można znaleźć odpowiedniego folderu dla paczki modów $1"
 
 #: builtin/mainmenu/modmgr.lua
+#, fuzzy
 msgid "Subgame Mods"
-msgstr ""
+msgstr "Mody trybów gry"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -419,17 +420,17 @@ msgstr "Włącz obrażenia"
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
 msgid "Host Game"
-msgstr "Ukryj Grę"
+msgstr "Utwórz grę"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
 msgid "Host Server"
-msgstr "Serwer"
+msgstr "Udostępnij serwer"
 
 #: builtin/mainmenu/tab_local.lua
 #, fuzzy
 msgid "Local Game"
-msgstr "Instaluj"
+msgstr "Lokalna gra"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -444,9 +445,8 @@ msgid "No world created or selected!"
 msgstr "Nie wybrano bądź nie utworzono świata!"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Play Game"
-msgstr "Nazwa gracza"
+msgstr "Graj"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
@@ -469,8 +469,9 @@ msgid "Mod information:"
 msgstr "Informacje o modzie:"
 
 #: builtin/mainmenu/tab_mods.lua
+#, fuzzy
 msgid "No dependencies."
-msgstr ""
+msgstr "Brak wymaganych zależności."
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -521,13 +522,14 @@ msgid "Name / Password"
 msgstr "Nazwa gracza / Hasło"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
+#, fuzzy
 msgid "Ping"
-msgstr ""
+msgstr "Ping"
 
 #: builtin/mainmenu/tab_online.lua
 #, fuzzy
 msgid "Play Online"
-msgstr "Nazwa gracza"
+msgstr "Gra przez sieć"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -562,8 +564,9 @@ msgid "Are you sure to reset your singleplayer world?"
 msgstr "Jesteś pewny że chcesz zresetować świat singleplayer?"
 
 #: builtin/mainmenu/tab_settings.lua
+#, fuzzy
 msgid "Autosave screen size"
-msgstr ""
+msgstr "Automatyczny zapis rozmiaru okienka"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -644,7 +647,7 @@ msgstr "Resetuj świat pojedynczego gracza"
 #: builtin/mainmenu/tab_settings.lua
 #, fuzzy
 msgid "Screen:"
-msgstr "Zrzut ekranu"
+msgstr "Ekran:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -771,8 +774,9 @@ msgid "Player name too long."
 msgstr "Nazwa gracza jest za długa."
 
 #: src/client/clientlauncher.cpp
+#, fuzzy
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Wybierz nazwę"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -791,42 +795,39 @@ msgstr ""
 "Sprawdź plik debug.txt by uzyskać więcej informacji."
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "Adres"
+msgstr "Adres "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "Tryb kreatywny"
+msgstr "Tryb kreatywny "
 
 #: src/game.cpp
 #, fuzzy
 msgid "- Damage: "
-msgstr "Włącz obrażenia"
+msgstr "Włącz obrażenia "
 
 #: src/game.cpp
+#, fuzzy
 msgid "- Mode: "
-msgstr ""
+msgstr "Tryb: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Port: "
-msgstr "Port"
+msgstr "Port "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "Publiczne"
+msgstr "Publiczne "
 
 #: src/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "Gracz przeciwko graczowi: "
 
 #: src/game.cpp
 #, fuzzy
 msgid "- Server Name: "
-msgstr "Nazwa serwera"
+msgstr "Nazwa serwera "
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -864,6 +865,10 @@ msgid ""
 msgstr ""
 "Domyślne sterowanie:↵\n"
 "- WASD: ruch↵\n"
+"- W: do przodu\n"
+"- S: do tyłu\n"
+"- A: lewo\n"
+"- D: prawo\n"
 "- Spacja: skok/wspinanie się↵\n"
 "- Shift: skradanie się/schodzenie w dół↵\n"
 "- Q: upuszczenie przedmiotu↵\n"
@@ -920,12 +925,12 @@ msgstr "Wyjście z gry"
 
 #: src/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "Informacje o grze:"
 
 #: src/game.cpp
 #, fuzzy
 msgid "Game paused"
-msgstr "Nazwa Gry"
+msgstr "Gra wstrzymana"
 
 #: src/game.cpp
 #, fuzzy
@@ -953,17 +958,18 @@ msgid "Node definitions..."
 msgstr "Definicje bloków..."
 
 #: src/game.cpp
+#, fuzzy
 msgid "Off"
-msgstr ""
-
-#: src/game.cpp
-msgid "On"
-msgstr ""
+msgstr "Wyłącz"
 
 #: src/game.cpp
 #, fuzzy
+msgid "On"
+msgstr "Włącz"
+
+#: src/game.cpp
 msgid "Remote server"
-msgstr "Port zdalny"
+msgstr "Serwer zdalny"
 
 #: src/game.cpp
 msgid "Resolving address..."
@@ -982,17 +988,19 @@ msgid "Sound Volume"
 msgstr "Głośność"
 
 #: src/game.cpp
-#, c-format
+#, c-format, fuzzy
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "Zmieniono poziom głośności na %d%%"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Volume changed to 0%"
-msgstr ""
+msgstr "Zmieniono poziom głośności na 0%"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Volume changed to 100%"
-msgstr ""
+msgstr "Zmieniono poziom głośności na 100%"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -1027,8 +1035,9 @@ msgid "Console"
 msgstr "Konsola"
 
 #: src/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Dec. volume"
-msgstr ""
+msgstr "Zmniejsz głośność"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -1045,7 +1054,7 @@ msgstr "Przód"
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Inc. volume"
-msgstr "Głośność"
+msgstr "Zwiększ Głośność"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1072,11 +1081,12 @@ msgstr "Lewo"
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Local command"
-msgstr "Komenda"
+msgstr "Główne polecenie"
 
 #: src/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Mute"
-msgstr ""
+msgstr "Wycisz"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1084,8 +1094,9 @@ msgid "Next item"
 msgstr "Następny"
 
 #: src/guiKeyChangeMenu.cpp
+#, fuzzy
 msgid "Prev. item"
-msgstr ""
+msgstr "Poprzedni"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
@@ -1168,8 +1179,9 @@ msgid "Back"
 msgstr "Backspace"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Caps Lock"
-msgstr ""
+msgstr "Klawisz Caps Lock"
 
 #: src/keycode.cpp
 msgid "Clear"
@@ -1190,7 +1202,7 @@ msgstr "End"
 #: src/keycode.cpp
 #, fuzzy
 msgid "Erase EOF"
-msgstr "Erase OEF"
+msgstr "Usuń EOF"
 
 #: src/keycode.cpp
 msgid "Execute"
@@ -1207,12 +1219,12 @@ msgstr "Home"
 #: src/keycode.cpp
 #, fuzzy
 msgid "IME Accept"
-msgstr "Zaakceptuj"
+msgstr "Zaakceptuj IME"
 
 #: src/keycode.cpp
 #, fuzzy
 msgid "IME Convert"
-msgstr "Konwertuj"
+msgstr "Konwertuj IME"
 
 #: src/keycode.cpp
 #, fuzzy
@@ -1225,9 +1237,8 @@ msgid "IME Mode Change"
 msgstr "Zmiana Trybu"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "IME Nonconvert"
-msgstr "Nonconvert"
+msgstr "Niezmienialny"
 
 #: src/keycode.cpp
 msgid "Insert"
@@ -1379,16 +1390,18 @@ msgid "Scroll Lock"
 msgstr "Scroll Lock"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Select"
-msgstr "Select"
+msgstr "Wybierz"
 
 #: src/keycode.cpp
 msgid "Shift"
 msgstr "Shift"
 
 #: src/keycode.cpp
+#, fuzzy
 msgid "Sleep"
-msgstr "Sleep"
+msgstr "Uśpij"
 
 #: src/keycode.cpp
 msgid "Snapshot"
@@ -1447,18 +1460,23 @@ msgid "3D mode"
 msgstr "Modele 3D"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "3D noise defining giant caverns."
-msgstr ""
+msgstr "Szum 3d określający olbrzymie jaskinie."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "3D noise defining mountain structure and height.\n"
 "Also defines structure of floatland mountain terrain."
 msgstr ""
+"Szum 3d określający strukturę i wysokość gór.\n"
+"Określa również strukturę wznoszącego się terenu górzystego."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "3D noise defining structure of river canyon walls."
-msgstr ""
+msgstr "Szum 3d określający strukturę kanionów rzecznych."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1540,7 +1558,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Adds particles when digging a node."
-msgstr ""
+msgstr "Dodaje efekty cząstkowe podczas wykopywania bloków."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -1557,8 +1575,9 @@ msgid ""
 "brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-"Ustaw enkodowanie gamma dla tablic świateł. Niższe wartości są jaśniejsze.\n"
-"Te ustawienie jest tylko dla klientów i jest ignorowane przez serwer."
+"Ustaw kodowanie gamma dla tablic świateł. Niższe wartości to większa jasność."
+"\n"
+"To ustawienie jest tylko dla klientów, ignorowane przez serwer."
 
 #: src/settings_translation_file.cpp
 msgid "Advanced"
@@ -1573,8 +1592,9 @@ msgid "Always fly and fast"
 msgstr "Zawsze lataj oraz poruszaj się szybko"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Ambient occlusion gamma"
-msgstr ""
+msgstr "Ambient occlusion gamma"
 
 #: src/settings_translation_file.cpp
 msgid "Amplifies the valleys"
@@ -1585,6 +1605,8 @@ msgid ""
 "Android systems only: Tries to create inventory textures from meshes\n"
 "when no supported render was found."
 msgstr ""
+"Tylko na systemie Android: próba stworzenia tekstur inwentarza z meshy, "
+"kiedy nie znaleziono wspomaganego renderowania."
 
 #: src/settings_translation_file.cpp
 msgid "Anisotropic filtering"
@@ -1605,8 +1627,9 @@ msgstr ""
 "minetest.net."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Apple trees noise"
-msgstr ""
+msgstr "Szum jabłoni"
 
 #: src/settings_translation_file.cpp
 msgid "Approximate (X,Y,Z) scale of fractal in nodes."
@@ -1617,6 +1640,7 @@ msgid "Ask to reconnect after crash"
 msgstr "Poproś o ponowne połączenie po awarii"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "At this distance the server will aggressively optimize which blocks are sent "
 "to clients.\n"
@@ -1628,6 +1652,15 @@ msgid ""
 "optimization.\n"
 "Stated in mapblocks (16 nodes)"
 msgstr ""
+"Z tej odległości serwer mocno zoptymalizuje, które bloki są wysłane do "
+"klientów.\n"
+"Małe wartości mogą bardzo poprawić działanie, kosztem widocznego "
+"renderowania glitchy.\n"
+"(Niektóre bloki nie będą wygenerowane pod wodą ani w jaskiniach, jak również "
+"na lądzie.\n"
+"Zmiana wartości na wyższą niż max_block_send_distance wyłącza tą "
+"optymalizację.\n"
+"Zapisane w blokach mapy (16 bloków)"
 
 #: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
@@ -1636,7 +1669,7 @@ msgstr "Automatycznie zgłoś do listy serwerów."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Autorun key"
-msgstr "Tryb szybki"
+msgstr "Tryb automatycznego biegania"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1655,12 +1688,14 @@ msgid "Basic Privileges"
 msgstr "Podstawowe uprawnienia"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Beach noise"
-msgstr ""
+msgstr "Szum plaży"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Beach noise threshold"
-msgstr ""
+msgstr "Granica szumu plaży"
 
 #: src/settings_translation_file.cpp
 msgid "Bilinear filtering"
@@ -1673,12 +1708,11 @@ msgstr "Sprawdzanie adresu"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Biome API temperature and humidity noise parameters"
-msgstr "Wilgotność oraz parametry hałasu biomu Mapgen"
+msgstr "Parametry temperatury oraz wilgotności biomu Mapgen"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Biome noise"
-msgstr "Szum rzeki"
+msgstr "Szum biomu"
 
 #: src/settings_translation_file.cpp
 msgid "Bits per pixel (aka color depth) in fullscreen mode."
@@ -1687,7 +1721,7 @@ msgstr "Bity na piksel (głębia koloru) w trybie pełnoekranowym."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Build inside player"
-msgstr "Gra wieloosobowa"
+msgstr "Buduj w pozycji gracza"
 
 #: src/settings_translation_file.cpp
 msgid "Builtin"
@@ -1727,12 +1761,10 @@ msgid "Cave width"
 msgstr "Szerokość jaskini"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave1 noise"
 msgstr "Szum jaskini #1"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cave2 noise"
 msgstr "Szum jaskini #1"
 
@@ -1742,18 +1774,18 @@ msgid "Cavern limit"
 msgstr "Szerokość jaskini"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Cavern noise"
 msgstr "Szum jaskini #1"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Cavern taper"
-msgstr ""
+msgstr "Zwężenie jaskini"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Cavern threshold"
-msgstr "Generator mapy"
+msgstr "Granica jaskinii"
 
 #: src/settings_translation_file.cpp
 msgid "Caves and tunnels form at the intersection of the two noises"
@@ -1840,7 +1872,7 @@ msgstr "Klient i Serwer"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Client modding"
-msgstr "Klient"
+msgstr "Modyfikacja klienta"
 
 #: src/settings_translation_file.cpp
 msgid "Climbing speed"
@@ -1913,7 +1945,7 @@ msgstr "Kolor konsoli"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Console height"
-msgstr "Klawisz konsoli"
+msgstr "Wysokość konsoli"
 
 #: src/settings_translation_file.cpp
 msgid "Console key"
@@ -1950,10 +1982,13 @@ msgid "Controls steepness/height of hills."
 msgstr "Kontroluje stromość/wysokość gór."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Controls the density of floatland mountain terrain.\n"
 "Is an offset added to the 'np_mountain' noise value."
 msgstr ""
+"Kontroluje gęstość wznoszącego się terenu górzystego.\n"
+"Jest to wartość dodana do wartość szumu 'np_mountain'."
 
 #: src/settings_translation_file.cpp
 msgid "Controls width of tunnels, a smaller value creates wider tunnels."
@@ -1982,7 +2017,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Creative"
-msgstr "Utwórz"
+msgstr "Kreatywny"
 
 #: src/settings_translation_file.cpp
 msgid "Crosshair alpha"
@@ -2023,7 +2058,7 @@ msgstr "Poziom logowania debugowania"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Dec. volume key"
-msgstr "Klawisz przełączania HUD"
+msgstr "Klawisz zmniejszania głośności"
 
 #: src/settings_translation_file.cpp
 msgid "Dedicated server step"
@@ -2066,39 +2101,46 @@ msgstr ""
 "Ma znaczenie tylko gdy skompilowane z cURL."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines areas of 'terrain_higher' (cliff-top terrain)."
-msgstr ""
+msgstr "Określa obszary 'terrain_higher' (szczyt wzgórza)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Defines areas of floatland smooth terrain.\n"
 "Smooth floatlands occur when noise > 0."
 msgstr ""
+"Określa obszary wznoszącego się gładkiego terenu.\n"
+"Wygładzone powierzchnie pojawiają się gdy szum > 0."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Defines areas of higher (cliff-top) terrain and affects steepness of cliffs."
-msgstr ""
+msgstr "Określa obszary wyższych terenów oraz wpływa na stromość klifów."
 
 #: src/settings_translation_file.cpp
 msgid "Defines areas where trees have apples."
-msgstr ""
+msgstr "Określa obszary na których drzewa mają jabłka."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines areas with sandy beaches."
-msgstr ""
+msgstr "Określa obszary z piaszczystymi plażami."
 
 #: src/settings_translation_file.cpp
 msgid "Defines full size of caverns, smaller values create larger caverns."
-msgstr ""
+msgstr "Określa wielkość jaskiń, mniejsze wartości tworzą większe jaskinie."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines large-scale river channel structure."
-msgstr ""
+msgstr "Określa strukturę kanałów rzecznych."
 
 #: src/settings_translation_file.cpp
 msgid "Defines location and terrain of optional hills and lakes."
-msgstr ""
+msgstr "Określa położenie oraz teren z dodatkowymi górami i jeziorami."
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2115,14 +2157,19 @@ msgstr ""
 "nieskończoność)."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Defines tree areas and tree density."
-msgstr ""
+msgstr "Określa obszar z drzewami oraz ich gęstość."
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
 "Delay between mesh updates on the client in ms. Increasing this will slow\n"
 "down the rate of mesh updates, thus reducing jitter on slower clients."
 msgstr ""
+"Opóźnienie między aktualizacją meshy na kliencie podawane w milisekundach. "
+"Zwiększenie zredukuje częstość aktualizacji meshy, ograniczając w ten sposób "
+"jitter na wolniejszych klientach."
 
 #: src/settings_translation_file.cpp
 msgid "Delay in sending blocks after building"
@@ -2721,7 +2768,7 @@ msgstr "Wysokość początkowego rozmiaru okna."
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Height noise"
-msgstr "Prawy Windows"
+msgstr "Wysokość szumu"
 
 #: src/settings_translation_file.cpp
 msgid "Height on which clouds are appearing."
@@ -2738,12 +2785,12 @@ msgstr "FPU Wysokiej precyzji"
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Hill steepness"
-msgstr "Generator mapy"
+msgstr "Stromość zbocza"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Hill threshold"
-msgstr "Generator mapy"
+msgstr "Granica zbocza"
 
 #: src/settings_translation_file.cpp
 msgid "Homepage of server, to be displayed in the serverlist."
@@ -3097,9 +3144,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz zmniejszania zasięgu widzenia.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz zmniejszania głośności.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3128,9 +3175,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz zwiększania zasięgu widzenia.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz zwiększania głośności.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3199,9 +3246,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz skakania.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz wyciszania gry.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3271,9 +3318,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz otwierania inwentarza.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz wyboru następnej pozycji na pasku akcji.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3282,9 +3329,9 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz otwierania inwentarza.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz wyboru poprzedniej pozycji na pasku akcji.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3469,23 +3516,21 @@ msgid ""
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
-"Klawisz skakania.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
-"html#a54da2a0e231901735e3da1b0edf72eb3"
+"Klawisz wyświetlania zoom kiedy to możliwe.\n"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
+"735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
 msgstr "Klawisz używany do wspinania"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lake steepness"
-msgstr "Generator mapy"
+msgstr "Stromość jeziora"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Lake threshold"
-msgstr "Generator mapy"
+msgstr "Granica jeziora"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
