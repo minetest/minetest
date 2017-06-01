@@ -440,10 +440,15 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 	scene::SMesh *mesh = NULL;
 
+	// Shading is on by default
+	result->needs_shading = true;
+
 	// If inventory_image is defined, it overrides everything else
 	if (def.inventory_image != "") {
 		mesh = getExtrudedMesh(tsrc, def.inventory_image);
 		result->buffer_colors.push_back(ItemPartColor());
+		// Items with inventory images do not need shading
+		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);

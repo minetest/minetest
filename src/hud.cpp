@@ -698,7 +698,10 @@ void drawItemStack(video::IVideoDriver *driver,
 				if (p->override_base)
 					c = p->color;
 			}
-			colorizeMeshBuffer(buf, &c);
+			if (imesh->needs_shading)
+				colorizeMeshBuffer(buf, &c);
+			else
+				setMeshBufferColor(buf, c);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			material.Lighting = false;
