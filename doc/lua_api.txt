@@ -426,6 +426,167 @@ Result is more like what you'd expect if you put a color on top of another
 color. Meaning white surfaces get a lot of your new color while black parts don't
 change very much.
 
+Hardware coloring
+-----------------
+The goal of hardware coloring is to simplify the creation of
+colorful nodes. If your textures use the same pattern, and they only
+differ in their color (like colored wool blocks), you can use hardware
+coloring instead of creating and managing many texture files.
+All of these methods use color multiplication (so a white-black texture
+with red coloring will result in red-black color).
+
+### Static coloring
+This method is useful if you wish to create nodes/items with
+the same texture, in different colors, each in a new node/item definition.
+
+#### Global color
+When you register an item or node, set its `color` field (which accepts a
+`ColorSpec`) to the desired color.
+
+An `ItemStack`s static color can be overwritten by the `color` metadata
+field. If you set that field to a `ColorString`, that color will be used.
+
+#### Tile color
+Each tile may have an individual static color, which overwrites every
+other coloring methods. To disable the coloring of a face,
+set its color to white (because multiplying with white does nothing).
+You can set the `color` property of the tiles in the node's definition
+if the tile is in table format.
+
+### Palettes
+For nodes and items which can have many colors, a palette is more
+suitable. A palette is a texture, which can contain up to 256 pixels.
+Each pixel is one possible color for the node/item.
+You can register one node/item, which can have up to 256 colors.
+
+#### Palette indexing
+When using palettes, you always provide a pixel index for the given
+node or `ItemStack`. The palette is read from left to right and from
+top to bottom. If the palette has less than 256 pixels, then it is
+stretched to contain exactly 256 pixels (after arranging the pixels
+to one line). The indexing starts from 0.
+
+Examples:
+* 16x16 palette, index = 0: the top left corner
+* 16x16 palette, index = 4: the fifth pixel in the first row
+* 16x16 palette, index = 16: the pixel below the top left corner
+* 16x16 palette, index = 255: the bottom right corner
+* 2 (width)x4 (height) palette, index=31: the top left corner.
+  The palette has 8 pixels, so each pixel is stretched to 32 pixels,
+  to ensure the total 256 pixels.
+* 2x4 palette, index=32: the top right corner
+* 2x4 palette, index=63: the top right corner
+* 2x4 palette, index=64: the pixel below the top left corner
+
+#### Using palettes with items
+When registering an item, set the item definition's `palette` field to
+a texture. You can also use texture modifiers.
+
+The `ItemStack`'s color depends on the `palette_index` field of the
+stack's metadata. `palette_index` is an integer, which specifies the
+index of the pixel to use.
+
+#### Linking palettes with nodes
+When registering a node, set the item definition's `palette` field to
+a texture. You can also use texture modifiers.
+The node's color depends on its `param2`, so you also must set an
+appropriate `drawtype`:
+* `drawtype = "color"` for nodes which use their full `param2` for
+  palette indexing. These nodes can have 256 different colors.
+  The palette should contain 256 pixels.
+* `drawtype = "colorwallmounted"` for nodes which use the first
+  five bits (most significant) of `param2` for palette indexing.
+  The remaining three bits are describing rotation, as in `wallmounted`
+  draw type. Division by 8 yields the palette index (without stretching the
+  palette). These nodes can have 32 different colors, and the palette
+  should contain 32 pixels.
+  Examples:
+  * `param2 = 17` is 2 * 8 + 1, so the rotation is 1 and the third (= 2 + 1)
+    pixel will be picked from the palette.
+  * `param2 = 35` is 4 * 8 + 3, so the rotation is 3 and the fifth (= 4 + 1)
+    pixel will be picked from the palette.
+* `drawtype = "colorfacedir"` for nodes which use the first
+  three bits of `param2` for palette indexing. The remaining
+  five bits are describing rotation, as in `facedir` draw type.
+  Division by 32 yields the palette index (without stretching the
+  palette). These nodes can have 8 different colors, and the
+  palette should contain 8 pixels.
+  Examples:
+  * `param2 = 17` is 0 * 32 + 17, so the rotation is 17 and the
+    first (= 0 + 1) pixel will be picked from the palette.
+  * `param2 = 35` is 1 * 32 + 3, so the rotation is 3 and the
+    second (= 1 + 1) pixel will be picked from the palette.
+
+To colorize a node on the map, set its `param2` value (according
+to the node's draw type).
+
+### Conversion between nodes in the inventory and the on the map
+Static coloring is the same for both cases, there is no need
+for conversion.
+
+If the `ItemStack`'s metadata contains the `color` field, it will be
+lost on placement, because nodes on the map can only use palettes.
+
+If the `ItemStack`'s metadata contains the `palette_index` field, you
+currently must manually convert between it and the node's `param2` with
+custom `on_place` and `on_dig` callbacks.
+
+### Colored items in craft recipes
+Craft recipes only support item strings, but fortunately item strings
+can also contain metadata. Example craft recipe registration:
+
+    local stack = ItemStack("wool:block")
+    dyed:get_meta():set_int("palette_index", 3) -- add index
+    minetest.register_craft({
+        output = dyed:to_string(), -- convert to string
+        type = "shapeless",
+        recipe = {
+            "wool:block",
+            "dye:red",
+        },
+    })
+
+Metadata field filtering in the `recipe` field are not supported yet,
+so the craft output is independent of the color of the ingredients.
+
+Soft texture overlay
+--------------------
+Sometimes hardware coloring is not enough, because it affects the
+whole tile. Soft texture overlays were added to Minetest to allow
+the dynamic coloring of only specific parts of the node's texture.
+For example a grass block may have colored grass, while keeping the
+dirt brown.
+
+These overlays are 'soft', because unlike texture modifiers, the layers
+are not merged in the memory, but they are simply drawn on top of each
+other. This allows different hardware coloring, but also means that
+tiles with overlays are drawn slower. Using too much overlays might
+cause FPS loss.
+
+To define an overlay, simply set the `overlay_tiles` field of the node
+definition. These tiles are defined in the same way as plain tiles:
+they can have a texture name, color etc.
+To skip one face, set that overlay tile to an empty string.
+
+Example (colored grass block):
+
+    minetest.register_node("default:dirt_with_grass", {
+        description = "Dirt with Grass",
+        -- Regular tiles, as usual
+        -- The dirt tile disables palette coloring
+        tiles = {{name = "default_grass.png"}, 
+            {name = "default_dirt.png", color = "white"}},
+        -- Overlay tiles: define them in the same style
+        -- The top and bottom tile does not have overlay
+        overlay_tiles = {"", "",
+            {name = "default_grass_side.png", tileable_vertical = false}},
+        -- Global color, used in inventory
+        color = "green",
+        -- Palette in the world
+        paramtype2 = "color",
+        palette = "default_foilage.png",
+    })
+
 Sounds
 ------
 Only Ogg Vorbis files are supported.
