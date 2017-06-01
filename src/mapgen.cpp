@@ -85,7 +85,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"flat",       true},
 	{"fractal",    true},
 	{"valleys",    true},
-	{"singlenode", false},
+	{"singlenode", true},
 };
 
 STATIC_ASSERT(
