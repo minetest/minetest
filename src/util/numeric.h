@@ -50,6 +50,19 @@ inline v2s16 getContainerPos(v2s16 p, s16 d)
 	);
 }
 
+inline s32 getContainerPos32(s32 p, s32 d)
+{
+	return (p>=0 ? p : p-d+1) / d;
+}
+
+inline v2s32 getContainerPos32(v2s32 p, s32 d)
+{
+	return v2s32(
+		getContainerPos32(p.X, d),
+		getContainerPos32(p.Y, d)
+	);
+}
+
 inline v3s16 getContainerPos(v3s16 p, s16 d)
 {
 	return v3s16(
