@@ -175,6 +175,14 @@ void translateMesh(scene::IMesh *mesh, v3f vec)
 	mesh->setBoundingBox(bbox);
 }
 
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color)
+{
+	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	u32 vertex_count = buf->getVertexCount();
+	u8 *vertices = (u8 *) buf->getVertices();
+	for (u32 i = 0; i < vertex_count; i++)
+		((video::S3DVertex *) (vertices + i * stride))->Color = color;
+}
 
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 {
@@ -182,14 +190,8 @@ void setMeshColor(scene::IMesh *mesh, const video::SColor &color)
 		return;
 
 	u32 mc = mesh->getMeshBufferCount();
-	for (u32 j = 0; j < mc; j++) {
-		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		const u32 stride = getVertexPitchFromType(buf->getVertexType());
-		u32 vertex_count = buf->getVertexCount();
-		u8 *vertices = (u8 *)buf->getVertices();
-		for (u32 i = 0; i < vertex_count; i++)
-			((video::S3DVertex *)(vertices + i * stride))->Color = color;
-	}
+	for (u32 j = 0; j < mc; j++)
+		setMeshBufferColor(mesh->getMeshBuffer(j), color);
 }
 
 void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor)

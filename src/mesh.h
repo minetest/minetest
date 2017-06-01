@@ -49,11 +49,20 @@ void scaleMesh(scene::IMesh *mesh, v3f scale);
 */
 void translateMesh(scene::IMesh *mesh, v3f vec);
 
+/*!
+ * Sets a constant color for all vertices in the mesh buffer.
+ */
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
+
 /*
 	Set a constant color for all vertices in the mesh
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
+/*!
+ * Overwrites the color of a mesh buffer.
+ * The color is darkened based on the normal vector of the vertices.
+ */
 void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
 
 /*

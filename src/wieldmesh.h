@@ -59,8 +59,13 @@ struct ItemMesh
 	 * Stores the color of each mesh buffer.
 	 */
 	std::vector<ItemPartColor> buffer_colors;
+	/*!
+	 * If false, all faces of the item should have the same brightness.
+	 * Disables shading based on normal vectors.
+	 */
+	bool needs_shading;
 
-	ItemMesh() : mesh(NULL), buffer_colors() {}
+	ItemMesh() : mesh(NULL), buffer_colors(), needs_shading(true) {}
 };
 
 /*
