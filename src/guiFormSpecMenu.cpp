@@ -2005,6 +2005,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tooltips.clear();
 	m_inventory_rings.clear();
 	m_static_texts.clear();
+	m_dropdowns.clear();
 
 	// Set default values (fits old formspec values)
 	m_bgcolor = video::SColor(140,0,0,0);
