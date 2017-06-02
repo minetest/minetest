@@ -246,7 +246,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType stone_type = generateBiomes();
+	MgStoneType stone_type = generateBiomes(0);
 
 	// Cave creation.
 	if (flags & MG_CAVES)
