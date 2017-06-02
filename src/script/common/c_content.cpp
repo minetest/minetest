@@ -1688,10 +1688,8 @@ void read_json_value(lua_State *L, Json::Value &root, int index, u8 recursion)
 				throw SerializationError("Lua key to convert to JSON is not a string or number");
 			}
 		}
-	} else if (type == LUA_TNIL) {
-		root = Json::nullValue;
 	} else {
-		throw SerializationError("Can only store booleans, numbers, strings, objects, arrays, and null in JSON");
+		root = Json::nullValue;
 	}
 	lua_pop(L, 1); // Pop value
 }
