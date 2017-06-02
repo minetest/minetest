@@ -593,9 +593,9 @@ They are represented by a table:
 
     {name="name", param1=num, param2=num}
 
-`param1` and `param2` are 8-bit integers. The engine uses them for certain
-automated functions. If you don't use these functions, you can use them to
-store arbitrary values.
+`param1` and `param2` are 8-bit integers ranging from 0 to 255. The engine uses
+them for certain automated functions. If you don't use these functions, you can
+use them to store arbitrary values.
 
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition:
@@ -1123,16 +1123,31 @@ There are three kinds of items: nodes, tools and craftitems.
   things according to `tool_capabilities`.
 * Craftitem (`register_craftitem`): A miscellaneous item.
 
+### Amount and wear
+All item stacks have an amount between 0 to 65535. It is 1 by
+default. Tool item stacks can not have an amount greater than 1.
+Tools use a wear (=damage) value ranging from 0 to 65535. The
+value 0 is the default and used is for unworn tools. The values
+1-65535 are used for worn tools, where a higher value stands for
+a higher wear. Non-tools always have a wear value of 0.
+
 ### Item formats
 Items and item stacks can exist in three formats: Serializes, table format
 and `ItemStack`.
 
 #### Serialized
-This is called "stackstring" or "itemstring":
+This is called "stackstring" or "itemstring". It is a simple string with
+1-3 components: the full item identifier, an optional amount and an optional
+wear value. Syntax:
 
-* e.g. `'default:dirt 5'`
-* e.g. `'default:pick_wood 21323'`
-* e.g. `'default:apple'`
+    <identifier> [<amount>[ <wear>]]
+
+Examples:
+
+* `'default:apple'`: 1 apple
+* `'default:dirt 5'`: 5 dirt
+* `'default:pick_stone'`: a new stone pickaxe
+* `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
 
 #### Table format
 Examples:
@@ -1226,6 +1241,9 @@ Another example: Make red wool from white wool and red dye:
 
 ### Special groups
 * `immortal`: Disables the group damage system for an entity
+* `punch_operable`: For entities; disables the regular damage mechanism for
+  players punching it by hand or a non-tool item, so that it can do something
+  else than take damage.
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
