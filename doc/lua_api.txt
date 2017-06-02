@@ -186,7 +186,11 @@ Naming convention for registered textual names
 ----------------------------------------------
 Registered names should generally be in this format:
 
-    "modname:<whatever>" (<whatever> can have characters a-zA-Z0-9_)
+    `modname:<whatever>`
+
+`<whatever>` can have these characters:
+
+    a-zA-Z0-9_
 
 This is to prevent conflicting names from corrupting maps and is
 enforced by the mod loader.
@@ -209,7 +213,7 @@ The `:` prefix can also be used for maintaining backwards compatibility.
 
 ### Aliases
 Aliases can be added by using `minetest.register_alias(name, convert_to)` or
-`minetest.register_alias_force(name, convert_to).
+`minetest.register_alias_force(name, convert_to)`.
 
 This will make Minetest to convert things called name to things called
 `convert_to`.
@@ -309,10 +313,10 @@ Example:
     default_sandstone.png^[resize:16x16
 
 #### `[opacity:<r>`
-    Makes the base image transparent according to the given ratio.
-    r must be between 0 and 255.
-    0 means totally transparent.
-    255 means totally opaque.
+Makes the base image transparent according to the given ratio.
+
+`r` must be between 0 and 255.
+0 means totally transparent. 255 means totally opaque.
 
 Example:
 
@@ -676,7 +680,7 @@ the global `minetest.registered_*` tables.
 * `minetest.unregister_item(name)`
     * Unregisters the item name from engine, and deletes the entry with key
     * `name` from `minetest.registered_items` and from the associated item
-    * table according to its nature: minetest.registered_nodes[] etc
+    * table according to its nature: `minetest.registered_nodes[]` etc
 
 * `minetest.register_biome(biome definition)`
     * returns an integer uniquely identifying the registered biome
@@ -754,9 +758,9 @@ They are represented by a table:
 
     {name="name", param1=num, param2=num}
 
-`param1` and `param2` are 8-bit integers. The engine uses them for certain
-automated functions. If you don't use these functions, you can use them to
-store arbitrary values.
+`param1` and `param2` are 8-bit integers ranging from 0 to 255. The engine uses
+them for certain automated functions. If you don't use these functions, you can
+use them to store arbitrary values.
 
 The functions of `param1` and `param2` are determined by certain fields in the
 node definition:
@@ -825,15 +829,6 @@ node definition:
     ^ Only valid for "glasslike_framed" or "glasslike_framed_optional" drawtypes.
       param2 defines 64 levels of internal liquid.
       Liquid texture is defined using `special_tiles = {"modname_tilename.png"},`
-    collision_box = {
-      type = "fixed",
-      fixed = {
-                {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-      },
-    },
-    ^ defines list of collision boxes for the node. If empty, collision boxes
-      will be the same as nodeboxes, in case of any other nodes will be full cube
-      as in the example above.
 
 Nodes can also contain extra data. See "Node Metadata".
 
@@ -984,6 +979,7 @@ If no flags are specified (or defaults is), 2D noise is eased and 3D noise is no
 Accumulates the absolute value of each noise gradient result.
 
 Noise parameters format example for 2D or 3D perlin noise or perlin noise maps:
+
     np_terrain = {
         offset = 0,
         scale = 1,
@@ -994,8 +990,8 @@ Noise parameters format example for 2D or 3D perlin noise or perlin noise maps:
         lacunarity = 2.0,
         flags = "defaults, absvalue"
     }
-  ^ A single noise parameter table can be used to get 2D or 3D noise,
-    when getting 2D noise spread.z is ignored.
+    ^ A single noise parameter table can be used to get 2D or 3D noise,
+      when getting 2D noise spread.z is ignored.
 
 
 Ore types
@@ -1067,14 +1063,15 @@ to small changes.  The following is a decent set of parameters to work from:
 	},
 	noise_threshold = 1.6
 
-WARNING:  Use this ore type *very* sparingly since it is ~200x more
+**WARNING**: Use this ore type *very* sparingly since it is ~200x more
 computationally expensive than any other ore.
 
 Ore attributes
 --------------
 See section "Flag Specifier Format".
 
-Currently supported flags: `absheight`
+Currently supported flags:
+`absheight`, `puff_cliffs`, `puff_additive_composition`.
 
 ### `absheight`
 Also produce this same ore between the height range of `-y_max` and `-y_min`.
@@ -1130,6 +1127,7 @@ in the form of a table.  This table specifies the following fields:
      previous contents (default: false)
 
 About probability values:
+
 * A probability value of `0` or `1` means that node will never appear (0% chance).
 * A probability value of `254` or `255` means the node will always appear (100% chance).
 * If the probability value `p` is greater than `1`, then there is a
@@ -1284,16 +1282,32 @@ There are three kinds of items: nodes, tools and craftitems.
   things according to `tool_capabilities`.
 * Craftitem (`register_craftitem`): A miscellaneous item.
 
+### Amount and wear
+All item stacks have an amount between 0 to 65535. It is 1 by
+default. Tool item stacks can not have an amount greater than 1.
+
+Tools use a wear (=damage) value ranging from 0 to 65535. The
+value 0 is the default and used is for unworn tools. The values
+1 to 65535 are used for worn tools, where a higher value stands for
+a higher wear. Non-tools always have a wear value of 0.
+
 ### Item formats
 Items and item stacks can exist in three formats: Serializes, table format
 and `ItemStack`.
 
 #### Serialized
-This is called "stackstring" or "itemstring":
+This is called "stackstring" or "itemstring". It is a simple string with
+1-3 components: the full item identifier, an optional amount and an optional
+wear value. Syntax:
 
-* e.g. `'default:dirt 5'`
-* e.g. `'default:pick_wood 21323'`
-* e.g. `'default:apple'`
+    <identifier> [<amount>[ <wear>]]
+
+Examples:
+
+* `'default:apple'`: 1 apple
+* `'default:dirt 5'`: 5 dirt
+* `'default:pick_stone'`: a new stone pickaxe
+* `'default:pick_wood 1 21323'`: a wooden pickaxe, ca. 1/3 worn out
 
 #### Table format
 Examples:
@@ -1387,6 +1401,9 @@ Another example: Make red wool from white wool and red dye:
 
 ### Special groups
 * `immortal`: Disables the group damage system for an entity
+* `punch_operable`: For entities; disables the regular damage mechanism for
+  players punching it by hand or a non-tool item, so that it can do something
+  else than take damage.
 * `level`: Can be used to give an additional sense of progression in the game.
      * A larger level will cause e.g. a weapon of a lower level make much less
        damage, and get worn out much faster, or not be able to get drops
@@ -1425,6 +1442,7 @@ Another example: Make red wool from white wool and red dye:
 
 ### Examples of custom groups
 Item groups are often used for defining, well, _groups of items_.
+
 * `meat`: any meat-kind of a thing (rating might define the size or healing
   ability or be irrelevant -- it is not defined as of yet)
 * `eatable`: anything that can be eaten. Rating might define HP gain in half
@@ -1645,7 +1663,7 @@ Item metadata only contains a key-value store.
 
 Some of the values in the key-value store are handled specially:
 
-* `description`: Set the itemstack's description. Defaults to idef.description
+* `description`: Set the item stack's description. Defaults to `idef.description`
 * `color`: A `ColorString`, which sets the stack's color.
 * `palette_index`: If the item has a palette, this is used to get the
                   current color from the palette.
@@ -1707,7 +1725,7 @@ examples.
 
 #### `container[<X>,<Y>]`
 * Start of a container block, moves all physical elements in the container by (X, Y)
-* Must have matching container_end
+* Must have matching `container_end`
 * Containers can be nested, in which case the offsets are added
   (child containers are relative to parent containers)
 
@@ -1792,7 +1810,7 @@ examples.
 
 #### `field[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Textual field; will be sent to server when a button is clicked
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
+* When enter is pressed in field, `fields.key_enter_field` will be sent with the name
   of this field.
 * `x` and `y` position the field relative to the top left of the menu
 * `w` and `h` are the size of the field
@@ -1804,16 +1822,16 @@ examples.
     * `default` may contain variable references such as `${text}'` which
       will fill the value from the metadata value `text`
     * **Note**: no extra text or more than a single variable is supported ATM.
-* See field_close_on_enter to stop enter closing the formspec
+* See `field_close_on_enter` to stop enter closing the formspec
 
 #### `field[<name>;<label>;<default>]`
 * As above, but without position/size units
-* When enter is pressed in field, fields.key_enter_field will be sent with the name
+* When enter is pressed in field, `fields.key_enter_field` will be sent with the name
   of this field.
 * Special field for creating simple forms, such as sign text input
 * Must be used without a `size[]` element
 * A "Proceed" button will be added automatically
-* See field_close_on_enter to stop enter closing the formspec
+* See `field_close_on_enter` to stop enter closing the formspec
 
 #### `field_close_on_enter[<name>;<close_on_enter>]`
 * <name> is the name of the field
@@ -2033,6 +2051,7 @@ Escape sequences
 Most text can contain escape sequences, that can for example color the text.
 There are a few exceptions: tab headers, dropdowns and vertical labels can't.
 The following functions provide escape sequences:
+
 * `minetest.get_color_escape_sequence(color)`:
     * `color` is a ColorString
     * The escape sequence sets the text color to `color`
@@ -2127,51 +2146,51 @@ Helper functions
     * Useful for storing custom data
 * `minetest.is_singleplayer()`
 * `minetest.features`: Table containing API feature flags
-      {
-         glasslike_framed = true,
-         nodebox_as_selectionbox = true,
-         chat_send_player_param3 = true,
-         get_all_craft_recipes_works = true,
-         use_texture_alpha = true,
-      -- ^ The transparency channel of textures can be used optionally
-         no_legacy_abms = true,
-      -- ^ Tree and grass ABMs are no longer done from C++
-         texture_names_parens = true,
-      -- ^ Texture grouping is possible using parentheses
-         area_store_custom_ids = true,
-      -- ^ Unique Area ID for AreaStore:insert_area
-         add_entity_with_staticdata = true,
-      -- ^ add_entity supports passing initial staticdata to on_activate
-         no_chat_message_prediction = true,
-      -- ^ Chat messages are no longer predicted
-      }
+
+        {
+           glasslike_framed = true,
+           nodebox_as_selectionbox = true,
+           chat_send_player_param3 = true,
+           get_all_craft_recipes_works = true,
+           use_texture_alpha = true,
+        -- ^ The transparency channel of textures can be used optionally
+           no_legacy_abms = true,
+        -- ^ Tree and grass ABMs are no longer done from C++
+           texture_names_parens = true,
+        -- ^ Texture grouping is possible using parentheses
+           area_store_custom_ids = true,
+        -- ^ Unique Area ID for AreaStore:insert_area
+           add_entity_with_staticdata = true,
+        -- ^ add_entity supports passing initial staticdata to on_activate
+           no_chat_message_prediction = true,
+        -- ^ Chat messages are no longer predicted
+        }
 * `minetest.has_feature(arg)`: returns `boolean, missing_features`
     * `arg`: string or table in format `{foo=true, bar=true}`
     * `missing_features`: `{foo=true, bar=true}`
 * `minetest.get_player_information(player_name)`:
-    * Returns a table containing information about a player
-      Example return value:
-        {
-            address = "127.0.0.1",     -- IP address of client
-            ip_version = 4,            -- IPv4 / IPv6
-            min_rtt = 0.01,            -- minimum round trip time
-            max_rtt = 0.2,             -- maximum round trip time
-            avg_rtt = 0.02,            -- average round trip time
-            min_jitter = 0.01,         -- minimum packet time jitter
-            max_jitter = 0.5,          -- maximum packet time jitter
-            avg_jitter = 0.03,         -- average packet time jitter
-            connection_uptime = 200,   -- seconds since client connected
-            prot_vers = 31,            -- protocol version used by client
+    * Returns a table containing information about a player. Example return value:
 
-            -- following information is available on debug build only!!!
-            -- DO NOT USE IN MODS
-            --ser_vers = 26,             -- serialization version used by client
-            --major = 0,                 -- major version number
-            --minor = 4,                 -- minor version number
-            --patch = 10,                -- patch version number
-            --vers_string = "0.4.9-git", -- full version string
-            --state = "Active"           -- current client state
-        }
+            {
+                address = "127.0.0.1",     -- IP address of client
+                ip_version = 4,            -- IPv4 / IPv6
+                min_rtt = 0.01,            -- minimum round trip time
+                max_rtt = 0.2,             -- maximum round trip time
+                avg_rtt = 0.02,            -- average round trip time
+                min_jitter = 0.01,         -- minimum packet time jitter
+                max_jitter = 0.5,          -- maximum packet time jitter
+                avg_jitter = 0.03,         -- average packet time jitter
+                connection_uptime = 200,   -- seconds since client connected
+                prot_vers = 31,            -- protocol version used by client
+                -- following information is available on debug build only!!!
+                -- DO NOT USE IN MODS
+                --ser_vers = 26,             -- serialization version used by client
+                --major = 0,                 -- major version number
+                --minor = 4,                 -- minor version number
+                --patch = 10,                -- patch version number
+                --vers_string = "0.4.9-git", -- full version string
+                --state = "Active"           -- current client state
+            }
 * `minetest.mkdir(path)`: returns success.
     * Creates a directory specified by `path`, creating parent directories
       if they don't exist.
@@ -2218,7 +2237,7 @@ Call these functions only at load time!
     * Specify either output or input only. If you specify both, input will be ignored. For input use the same recipe table
       syntax as for `minetest.register_craft(recipe)`. For output specify only the item, without a quantity.
     * If no erase candidate could be found, Lua exception will be thrown.
-    * Warning! The type field ("shaped","cooking" or any other) will be ignored if the recipe
+    * **Warning**! The type field ("shaped","cooking" or any other) will be ignored if the recipe
       contains output. Erasing is then done independently from the crafting method.
 * `minetest.register_ore(ore definition)`
 * `minetest.register_biome(biome definition)`
@@ -2273,7 +2292,7 @@ Call these functions only at load time!
     * Called when the player gets damaged or healed
     * `player`: ObjectRef of the player
     * `hp_change`: the amount of change. Negative when it is damage.
-    * `modifier`: when true, the function should return the actual hp_change.
+    * `modifier`: when true, the function should return the actual `hp_change`.
       Note: modifiers only get a temporary hp_change that can be modified by later modifiers.
       modifiers can return true as a second argument to stop the execution of further functions.
       Non-modifiers receive the final hp change calculated by the modifiers.
@@ -2327,16 +2346,16 @@ Call these functions only at load time!
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
-    * Adds definition to minetest.registered_chatcommands
+    * Adds definition to `minetest.registered_chatcommands`
 * `minetest.override_chatcommand(name, redefinition)`
-    * Overrides fields of a chatcommand registered with register_chatcommand.
+    * Overrides fields of a chatcommand registered with `register_chatcommand`.
 * `minetest.unregister_chatcommand(name)`
-    * Unregisters a chatcommands registered with register_chatcommand.
+    * Unregisters a chatcommands registered with `register_chatcommand`.
 * `minetest.register_privilege(name, definition)`
     * `definition`: `"description text"`
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
       the default of `give_to_singleplayer` is true
-    * To allow players with basic_privs to grant, see basic_privs minetest.conf setting.
+    * To allow players with `basic_privs` to grant, see `basic_privs` minetest.conf setting.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
@@ -2364,7 +2383,7 @@ Call these functions only at load time!
     * on comparing the password hash in the database with the password hash
     * from the function, with an externally provided password, as the hash
     * in the db might use the new SRP verifier format.
-    * For this purpose, use minetest.check_password_entry instead.
+    * For this purpose, use `minetest.check_password_entry` instead.
 * `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
 * `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
     * Convert between two privilege representations
@@ -2460,7 +2479,7 @@ and `minetest.auth_reload` call the authetification handler.
     * `flags` is a flag field with the available flags: `dungeon`, `temple`, `cave_begin`,
    `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
    * The second parameter is a list of IDS of decorations which notification is requested for
-* `get_gen_notify()`: returns a flagstring and a table with the deco_ids
+* `get_gen_notify()`: returns a flagstring and a table with the `deco_id`s
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
 * `minetest.get_biome_id(biome_name)`
@@ -2468,9 +2487,9 @@ and `minetest.auth_reload` call the authetification handler.
       given biome_name string.
 * `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
   `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
-  * Deprecated: use minetest.get_mapgen_setting(name) instead
+  * Deprecated: use `minetest.get_mapgen_setting(name)` instead
 * `minetest.set_mapgen_params(MapgenParams)`
-    * Deprecated: use minetest.set_mapgen_setting(name, value, override) instead
+    * Deprecated: use `minetest.set_mapgen_setting(name, value, override)` instead
     * Set map generation parameters
     * Function cannot be called after the registration period; only initialization
       and `on_mapgen_init`
@@ -2495,7 +2514,7 @@ and `minetest.auth_reload` call the authetification handler.
      is not already present in map_meta.txt.
    * `override_meta` is an optional boolean (default: `false`). If this is set to true,
      the setting will become the active setting regardless of the map metafile contents.
-   * Note: to set the seed, use "seed", not "fixed_map_seed"
+   * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`
 * `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
    * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
@@ -2548,8 +2567,6 @@ and `minetest.auth_reload` call the authetification handler.
     * `algorithm`: One of `"A*_noprefetch"` (default), `"A*"`, `"Dijkstra"`
 * `minetest.spawn_tree (pos, {treedef})`
     * spawns L-system tree at given `pos` with definition in `treedef` table
-    * Warning: L-system generation currently creates lighting bugs in the form of mapblock-sized shadows.
-      Often these bugs appear as subtle shadows in water.
 * `minetest.transforming_liquid_add(pos)`
     * add node to liquid update queue
 * `minetest.get_node_max_level(pos)`
@@ -2598,7 +2615,7 @@ and `minetest.auth_reload` call the authetification handler.
     * `{type="detached", name="creative"}`
 * `minetest.create_detached_inventory(name, callbacks, [player_name])`: returns an `InvRef`
     * callbacks: See "Detached inventory callbacks"
-    * player_name: Make detached inventory available to one player exclusively,
+    * `player_name`: Make detached inventory available to one player exclusively,
       by default they will be sent to every player (even if not used).
       Note that this parameter is mostly just a workaround and will be removed in future releases.
     * Creates a detached inventory. If it already exists, it is cleared.
@@ -2614,11 +2631,11 @@ and `minetest.auth_reload` call the authetification handler.
     * `formspec`: formspec to display
 * `minetest.close_formspec(playername, formname)`
     * `playername`: name of player to close formspec
-    * `formname`: has to exactly match the one given in show_formspec, or the formspec will
+    * `formname`: has to exactly match the one given in `show_formspec`, or the formspec will
        not close.
-    * calling show_formspec(playername, formname, "") is equal to this expression
+    * calling `show_formspec(playername, formname, "")` is equal to this expression
     * to close a formspec regardless of the formname, call
-      minetest.close_formspec(playername, ""). USE THIS ONLY WHEN ABSOLUTELY NECESSARY!
+      `minetest.close_formspec(playername, "")`. **USE THIS ONLY WHEN ABSOLUTELY NECESSARY!**
 * `minetest.formspec_escape(string)`: returns a string
     * escapes the characters "[", "]", "\", "," and ";", which can not be used in formspecs
 * `minetest.explode_table_event(string)`: returns a table
@@ -2684,6 +2701,7 @@ and `minetest.auth_reload` call the authetification handler.
     * returns indexed table with all registered recipes for query item (node)
       or `nil` if no recipe was found
     * recipe entry table:
+
             {
                 method = 'normal' or 'cooking' or 'fuel'
                 width = 0-3, 0 means shapeless recipe
@@ -2691,6 +2709,7 @@ and `minetest.auth_reload` call the authetification handler.
                 output = string with item name and quantity
             }
     * Example query for `"default:gold_ingot"` will return table:
+
             {
                 [1]={type = "cooking", width = 3, output = "default:gold_ingot",
                 items = {1 = "default:gold_lump"}},
@@ -2750,7 +2769,7 @@ These functions return the leftover itemstack.
     * `parameters` is a sound parameter table
 * `minetest.sound_stop(handle)`
 * `minetest.sound_fade(handle, step, gain)`
-    * `handle` is a handle returned by minetest.sound_play
+    * `handle` is a handle returned by `minetest.sound_play`
     * `step` determines how fast a sound will fade.
       Negative step will lower the sound volume, positive step will increase the sound volume
     * `gain` the target gain for the fade.
@@ -2795,7 +2814,7 @@ These functions return the leftover itemstack.
       minsize, maxsize,
       collisiondetection, texture, playername)`
 
-* `minetest.delete_particlespawner(id, player)``
+* `minetest.delete_particlespawner(id, player)`
     * Delete `ParticleSpawner` with `id` (return value from `minetest.add_particlespawner`)
     * If playername is specified, only deletes on the player's client,
     * otherwise on all clients
@@ -3062,7 +3081,7 @@ Can be obtained via `minetest.get_meta(pos)`.
 * `mark_as_private(name or {name1, name2, ...})`: Mark specific vars as private
   This will prevent them from being sent to the client. Note that the "private"
   status will only be remembered if an associated key-value pair exists, meaning
-  it's best to call this when initializing all other meta (e.g. on_construct).
+  it's best to call this when initializing all other meta (e.g. `on_construct`).
 
 ### `ItemStackMetaRef`
 ItemStack metadata: reference extra data and functionality stored in a stack.
@@ -3087,7 +3106,7 @@ Can be gotten via `minetest.get_node_timer(pos)`.
     * set a timer's state
     * `timeout` is in seconds, and supports fractional values (0.1 etc)
     * `elapsed` is in seconds, and supports fractional values (0.1 etc)
-    * will trigger the node's `on_timer` function after `timeout`-elapsed seconds
+    * will trigger the node's `on_timer` function after `(timeout - elapsed)` seconds
 * `start(timeout)`
     * start a timer
     * equivalent to `set(timeout,0)`
@@ -3096,7 +3115,7 @@ Can be gotten via `minetest.get_node_timer(pos)`.
 * `get_timeout()`: returns current timeout in seconds
     * if `timeout` equals `0`, timer is inactive
 * `get_elapsed()`: returns current elapsed time in seconds
-    * the node's `on_timer` function will be called after `timeout`-elapsed seconds
+    * the node's `on_timer` function will be called after `(timeout - elapsed)` seconds
 * `is_started()`: returns boolean state of timer
     * returns `true` if timer is started, otherwise `false`
 
@@ -3107,7 +3126,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 #### Methods
 * `remove()`: remove object (after returning from Lua)
-    * Note: Doesn't work on players, use minetest.kick_player instead
+    * Note: Doesn't work on players, use `minetest.kick_player` instead
 * `get_pos()`: returns `{x=num, y=num, z=num}`
 * `set_pos(pos)`; `pos`=`{x=num, y=num, z=num}`
 * `move_to(pos, continuous=false)`: interpolated move
@@ -3126,7 +3145,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
 * `set_animation({x=1,y=1}, frame_speed=15, frame_blend=0, frame_loop=true)`
-* `get_animation()`: returns range, frame_speed, frame_blend and frame_loop
+* `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
@@ -3184,12 +3203,12 @@ This is basically a reference to a C++ `ServerActiveObject`
      * radians - Angle from looking forward, where positive is downwards.
 * `set_look_horizontal(radians)`: sets look yaw
      * radians - Angle from the +z direction, where positive is counter-clockwise.
-* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use get_look_vertical.
+* `get_look_pitch()`: pitch in radians - Deprecated as broken. Use `get_look_vertical`.
      * Angle ranges between -pi/2 and pi/2, which are straight down and up respectively.
-* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use get_look_horizontal.
+* `get_look_yaw()`: yaw in radians - Deprecated as broken. Use `get_look_horizontal`.
      * Angle is counter-clockwise from the +x direction.
-* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use set_look_vertical.
-* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use set_look_horizontal.
+* `set_look_pitch(radians)`: sets look pitch - Deprecated. Use `set_look_vertical`.
+* `set_look_yaw(radians)`: sets look yaw - Deprecated. Use `set_look_horizontal`.
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
      * values:
@@ -3202,7 +3221,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_attribute(attribute)`: returns value for extra attribute. Returns nil if no attribute found.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
-    * Should usually be called in on_joinplayer
+    * Should usually be called in `on_joinplayer`
 * `get_inventory_formspec()`: returns a formspec string
 * `get_player_control()`: returns table with player pressed keys
     * `{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}`
@@ -3219,7 +3238,7 @@ This is basically a reference to a C++ `ServerActiveObject`
           (default: `false`)
         * `new_move`: use new move/sneak code. When `false` the exact old code
           is used for the specific old sneak behaviour (default: `true`)
-* `get_physics_override()`: returns the table given to set_physics_override
+* `get_physics_override()`: returns the table given to `set_physics_override`
 * `hud_add(hud definition)`: add a HUD element described by HUD def, returns ID
    number on success
 * `hud_remove(id)`: remove the HUD element of the specified id
@@ -3274,11 +3293,11 @@ This is basically a reference to a C++ `ServerActiveObject`
             {x=189, y=198}, -- <  dig animation key frames
             {x=200, y=219}, -- <  walk+dig animation key frames
             frame_speed=30): -- <  animation frame speed
-* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and frame_speed
+* `get_local_animation()`: returns stand, walk, dig, dig+walk tables and `frame_speed`
 * `set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})`: defines offset value for camera per player
     * in first person view
     * in third person view (max. values `{x=-10/10,y=-10,15,z=-5/5}`)
-* `get_eye_offset()`: returns offset_first and offset_third
+* `get_eye_offset()`: returns `offset_first` and `offset_third`
 
 ### `InvRef`
 An `InvRef` is a reference to an inventory.
@@ -3411,9 +3430,9 @@ It can be created via `PcgRandom(seed)` or `PcgRandom(seed, sequence)`.
 * `next(min, max)`: return next integer random number [`min`...`max`]
 * `rand_normal_dist(min, max, num_trials=6)`: return normally distributed random number [`min`...`max`]
     * This is only a rough approximation of a normal distribution with:
-    *   mean = (max - min) / 2, and
-    *   variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)
-    * Increasing num_trials improves accuracy of the approximation
+    *   `mean = (max - min) / 2`, and
+    *   `variance = (((max - min + 1) ^ 2) - 1) / (12 * num_trials)`
+    * Increasing `num_trials` improves accuracy of the approximation
 
 ### `SecureRandom`
 Interface for the operating system's crypto-secure PRNG.
@@ -3481,11 +3500,11 @@ destruction callbacks run, and no rollback information is logged.
 
 It is important to note that VoxelManip is designed for speed, and *not* ease of use or flexibility.
 If your mod requires a map manipulation facility that will handle 100% of all edge cases, or the use
-of high level node placement features, perhaps minetest.set_node() is better suited for the job.
+of high level node placement features, perhaps `minetest.set_node()` is better suited for the job.
 
 In addition, VoxelManip might not be faster, or could even be slower, for your specific use case.
 VoxelManip is most effective when setting very large areas of map at once - for example, if only
-setting a 5x5x5 node area, a minetest.set_node() loop may be more optimal.  Always profile code
+setting a 5x5x5 node area, a `minetest.set_node()` loop may be more optimal.  Always profile code
 using both methods of map manipulation to determine which is most appropriate for your usage.
 
 #### Using VoxelManip
@@ -3521,10 +3540,10 @@ otherwise explicitly stated.
 Once the bulk data has been edited to your liking, the internal VoxelManip state can be set using:
 `VoxelManip:set_data()` for node content (in Content ID form, see section 'Content IDs'),
 `VoxelManip:set_light_data()` for node light levels, and
-`VoxelManip:set_param2_data()` for the node type-dependent "param2" values.
+`VoxelManip:set_param2_data()` for the node type-dependent `param2` values.
 
 The parameter to each of the above three functions can use any table at all in the same flat array
-format as produced by get_data() et al. and is *not required* to be a table retrieved from get_data().
+format as produced by `get_data()` et al. and is *not required* to be a table retrieved from `get_data()`.
 
 Once the internal VoxelManip state has been modified to your liking, the changes can be committed back
 to the map by calling `VoxelManip:write_to_map()`.
@@ -3540,6 +3559,7 @@ Then, for a loaded region of p1..p2, this array ranges from `1` up to and includ
 the expression `Nx * Ny * Nz`.
 
 Positions offset from p1 are present in the array with the format of:
+
 ```
 [
     (0, 0, 0),   (1, 0, 0),   (2, 0, 0),   ... (Nx, 0, 0),
@@ -3571,11 +3591,10 @@ After registration of a node, its Content ID will remain the same throughout exe
 Note that the node being queried needs to have already been been registered.
 
 The following builtin node types have their Content IDs defined as constants:
-```
-minetest.CONTENT_UNKNOWN (ID for "unknown" nodes)
-minetest.CONTENT_AIR     (ID for "air" nodes)
-minetest.CONTENT_IGNORE  (ID for "ignore" nodes)
-```
+
+* `minetest.CONTENT_UNKNOWN`:	ID for "unknown" nodes
+* `minetest.CONTENT_AIR`:	ID for "air" nodes
+* `minetest.CONTENT_IGNORE`:	ID for "ignore" nodes
 
 ##### Mapgen VoxelManip objects
 Inside of `on_generated()` callbacks, it is possible to retrieve the same VoxelManip object used by the
