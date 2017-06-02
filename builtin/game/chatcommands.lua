@@ -807,7 +807,7 @@ core.register_chatcommand("days", {
 
 core.register_chatcommand("shutdown", {
 	description = "Shutdown server",
-	params = "[delay_in_seconds(0..inf) or -1 for cancel] [reconnect] [message]",
+	params = "[delay_in_seconds (non-negative number, or -1 to cancel)] [reconnect] [message]",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
