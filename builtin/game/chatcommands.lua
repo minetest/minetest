@@ -275,7 +275,16 @@ core.register_chatcommand("auth_reload", {
 	privs = {server=true},
 	func = function(name, param)
 		local done = core.auth_reload()
-		return done, (done and "Done." or "Failed.")
+		return done, (done and "Loaded." or "Failed.")
+	end,
+})
+
+core.register_chatcommand("auth_commit", {
+	params = "",	description = "write authentication data",
+	privs = {server=true},
+	func = function(name, param)
+		local done = core.auth_commit()
+		return done, (done and "Saved." or "Failed.")
 	end,
 })
 
