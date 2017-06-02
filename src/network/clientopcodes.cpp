@@ -162,7 +162,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x20
 	null_command_factory, // 0x21
 	null_command_factory, // 0x22
-	{ "TOSERVER_PLAYERPOS",          0, false }, // 0x23
+	{ "TOSERVER_PLAYERPOS",          0, true }, // 0x23
 	{ "TOSERVER_GOTBLOCKS",          2, true }, // 0x24
 	{ "TOSERVER_DELETEDBLOCKS",      2, true }, // 0x25
 	null_command_factory, // 0x26

@@ -940,6 +940,9 @@ void Client::interact(u8 action, const PointedThing& pointed)
 		5: perform secondary action of item
 	*/
 
+	// Give the server up-to-date control information for mod use
+	sendPlayerPos();
+
 	NetworkPacket pkt(TOSERVER_INTERACT, 1 + 2 + 0);
 
 	pkt << action;
