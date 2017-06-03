@@ -3597,7 +3597,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	} else if (pointed.type == POINTEDTHING_NODE) {
 		ToolCapabilities playeritem_toolcap =
 				playeritem.getToolCapabilities(itemdef_manager);
-		if (playeritem.name.empty()) {
+		if (playeritem.name.empty() && hand_def.tool_capabilities != NULL) {
 			playeritem_toolcap = *hand_def.tool_capabilities;
 		}
 		handlePointingAtNode(pointed, playeritem_def, playeritem_toolcap, dtime);
