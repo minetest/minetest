@@ -522,8 +522,8 @@ bool ClientLauncher::create_engine_device()
 {
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screenW = g_settings->getU16("screenW");
-	u16 screenH = g_settings->getU16("screenH");
+	u16 screen_w = g_settings->getU16("screen_w");
+	u16 screen_h = g_settings->getU16("screen_h");
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
@@ -553,7 +553,7 @@ bool ClientLauncher::create_engine_device()
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType    = driverType;
-	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
+	params.WindowSize    = core::dimension2d<u32>(screen_w, screen_h);
 	params.Bits          = bits;
 	params.AntiAlias     = fsaa;
 	params.Fullscreen    = fullscreen;
