@@ -86,8 +86,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 	if(!tmp.empty())
 		throw SerializationError("Unexpected text after item name");
 
-	do  // This loop is just to allow "break;"
-	{
+	do { // This loop is just to allow "break;"
 		// The real thing
 
 		// Apply item aliases
@@ -97,8 +96,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		// Read the count
 		std::string count_str;
 		std::getline(is, count_str, ' ');
-		if(count_str.empty())
-		{
+		if (count_str.empty()) {
 			count = 1;
 			break;
 		}
@@ -108,18 +106,13 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		// Read the wear
 		std::string wear_str;
 		std::getline(is, wear_str, ' ');
-		if(wear_str.empty())
+		if (wear_str.empty())
 			break;
 		else
 			wear = stoi(wear_str);
 
 		// Read metadata
 		metadata.deSerialize(is);
-
-		// In case fields are added after metadata, skip space here:
-		//std::getline(is, tmp, ' ');
-		//if(!tmp.empty())
-		//	throw SerializationError("Unexpected text after metadata");
 
 	} while(false);
 
