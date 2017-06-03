@@ -99,9 +99,9 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		if (count_str.empty()) {
 			count = 1;
 			break;
-		}
-		else
+		} else {
 			count = stoi(count_str);
+		}
 
 		// Read the wear
 		std::string wear_str;
