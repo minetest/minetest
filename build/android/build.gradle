@@ -11,10 +11,10 @@ apply plugin: "com.android.application"
 
 android {
 	compileSdkVersion 25
-	buildToolsVersion "25.0.1"
+	buildToolsVersion "25.0.3"
 
 	defaultConfig {
-		versionCode 16
+		versionCode 17
 		versionName "${System.env.VERSION_STR}.${versionCode}"
 		minSdkVersion 9
 		targetSdkVersion 9
