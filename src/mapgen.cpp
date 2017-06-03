@@ -143,8 +143,6 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	biomegen  = NULL;
 	biomemap  = NULL;
 	heightmap = NULL;
-
-	calcMapgenEdges();
 }
 
 
@@ -319,59 +317,7 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 			heightmap[index] = y;
 		}
 	}
-	//printf("updateHeightmap: %dus\n", t.stop());
 }
-
-
-// Calculate edges of outermost generated mapchunks (less than
-// 'mapgen_limit'), and corresponding exact limits for SAO entities.
-void Mapgen::calcMapgenEdges()
-{
-	// Chunksize, in blocks
-	s16 csize_b = csize.X / MAP_BLOCKSIZE;
-	// Central chunk offset, in blocks
-	s16 ccoff_b = -csize_b / 2;
-	// Minp/maxp of central chunk, in nodes
-	s16 ccmin = ccoff_b * MAP_BLOCKSIZE;
-	s16 ccmax = ccmin + csize.X - 1;
-	// Fullminp/fullmaxp of central chunk, in nodes
-	s16 ccfmin = ccmin - MAP_BLOCKSIZE;
-	s16 ccfmax = ccmax + MAP_BLOCKSIZE;
-	// Effective mapgen limit, in blocks
-	// Uses same calculation as ServerMap::blockpos_over_mapgen_limit(v3s16 p)
-	s16 mapgen_limit_b = rangelim(mapgen_limit,
-			0, MAX_MAP_GENERATION_LIMIT) / MAP_BLOCKSIZE;
-	// Effective mapgen limits, in nodes
-	s16 mapgen_limit_min = -mapgen_limit_b * MAP_BLOCKSIZE;
-	s16 mapgen_limit_max = (mapgen_limit_b + 1) * MAP_BLOCKSIZE - 1;
-	// Number of complete chunks from central chunk fullminp/fullmaxp
-	// to effective mapgen limits.
-	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize.X, 0);
-	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize.X, 0);
-	// Mapgen edges, in nodes
-	// These values may be useful later as additional class members
-	s16 mapgen_edge_min = ccmin - numcmin * csize.X;
-	s16 mapgen_edge_max = ccmax + numcmax * csize.X;
-	// SAO position limits, in Irrlicht units
-	sao_limit_min = mapgen_edge_min * BS - 3.0f;
-	sao_limit_max = mapgen_edge_max * BS + 3.0f;
-
-	// For testing only
-	printf("sao limit min: %f\n", sao_limit_min);
-	printf("sao limit max: %f\n", sao_limit_max);
-}
-
-
-bool Mapgen::saoPosOverLimit(const v3f &p) const
-{
-	return p.X < sao_limit_min ||
-		p.X > sao_limit_max ||
-		p.Y < sao_limit_min ||
-		p.Y > sao_limit_max ||
-		p.Z < sao_limit_min ||
-		p.Z > sao_limit_max;
-}
-
 
 inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 {
@@ -1101,4 +1047,55 @@ void MapgenParams::writeParams(Settings *settings) const
 
 	if (bparams)
 		bparams->writeParams(settings);
+}
+
+// Calculate edges of outermost generated mapchunks (less than
+// 'mapgen_limit'), and corresponding exact limits for SAO entities.
+void MapgenParams::calcMapgenEdges()
+{
+	// Central chunk offset, in blocks
+	s16 ccoff_b = -chunksize / 2;
+
+	// Chunksize, in nodes
+	s32 csize_n = chunksize * MAP_BLOCKSIZE;
+
+	// Minp/maxp of central chunk, in nodes
+	s16 ccmin = ccoff_b * MAP_BLOCKSIZE;
+	s16 ccmax = ccmin + csize_n - 1;
+	// Fullminp/fullmaxp of central chunk, in nodes
+	s16 ccfmin = ccmin - MAP_BLOCKSIZE;
+	s16 ccfmax = ccmax + MAP_BLOCKSIZE;
+	// Effective mapgen limit, in blocks
+	// Uses same calculation as ServerMap::blockpos_over_mapgen_limit(v3s16 p)
+	s16 mapgen_limit_b = rangelim(mapgen_limit,
+		0, MAX_MAP_GENERATION_LIMIT) / MAP_BLOCKSIZE;
+	// Effective mapgen limits, in nodes
+	s16 mapgen_limit_min = -mapgen_limit_b * MAP_BLOCKSIZE;
+	s16 mapgen_limit_max = (mapgen_limit_b + 1) * MAP_BLOCKSIZE - 1;
+	// Number of complete chunks from central chunk fullminp/fullmaxp
+	// to effective mapgen limits.
+	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize_n, 0);
+	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize_n, 0);
+	// Mapgen edges, in nodes
+	// These values may be useful later as additional class members
+	s16 mapgen_edge_min = ccmin - numcmin * csize_n;
+	s16 mapgen_edge_max = ccmax + numcmax * csize_n;
+	// SAO position limits, in Irrlicht units
+	m_sao_limit_min = mapgen_edge_min * BS - 3.0f;
+	m_sao_limit_max = mapgen_edge_max * BS + 3.0f;
+}
+
+
+bool MapgenParams::saoPosOverLimit(const v3f &p)
+{
+	if (!m_sao_limit_calculated) {
+		calcMapgenEdges();
+		m_sao_limit_calculated = true;
+	}
+	return p.X < m_sao_limit_min ||
+		p.X > m_sao_limit_max ||
+		p.Y < m_sao_limit_min ||
+		p.Y > m_sao_limit_max ||
+		p.Z < m_sao_limit_min ||
+		p.Z > m_sao_limit_max;
 }

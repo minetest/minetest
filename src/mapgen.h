@@ -138,7 +138,10 @@ struct MapgenParams {
 		water_level(1),
 		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL)
+		bparams(NULL),
+		m_sao_limit_min(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_max(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_calculated(false)
 	{
 	}
 
@@ -146,6 +149,14 @@ struct MapgenParams {
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
+
+	bool saoPosOverLimit(const v3f &p);
+private:
+	void calcMapgenEdges();
+
+	float m_sao_limit_min;
+	float m_sao_limit_max;
+	bool m_sao_limit_calculated;
 };
 
 
@@ -175,9 +186,6 @@ public:
 	biome_t *biomemap;
 	v3s16 csize;
 
-	float sao_limit_min;
-	float sao_limit_max;
-
 	BiomeGen *biomegen;
 	GenerateNotifier gennotify;
 
@@ -193,8 +201,6 @@ public:
 	s16 findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax);
 	s16 findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax);
 	void updateHeightmap(v3s16 nmin, v3s16 nmax);
-	bool saoPosOverLimit(const v3f &p) const;
-
 	void updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax);
 
 	void setLighting(u8 light, v3s16 nmin, v3s16 nmax);
@@ -227,7 +233,6 @@ private:
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.
 	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
-	void calcMapgenEdges();
 	DISABLE_CLASS_COPY(Mapgen);
 };
 

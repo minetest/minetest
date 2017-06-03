@@ -411,9 +411,6 @@ public:
 	*/
 	MapBlock *getBlockOrEmerge(v3s16 p3d);
 
-	// Carries out any initialization necessary before block is sent
-	void prepareBlock(MapBlock *block);
-
 	// Helper for placing objects on ground level
 	s16 findGroundLevel(v2s16 p2d);
 

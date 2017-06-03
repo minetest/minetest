@@ -412,7 +412,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		assert(map);
 		if (!m_pending_deactivation &&
 				map->saoPositionOverLimit(m_base_position)) {
-			warningstream << "Remove SAO " << m_id << "(" << m_init_name
+			infostream << "Remove SAO " << m_id << "(" << m_init_name
 				<< "), outside of limits" << std::endl;
 			m_pending_deactivation = true;
 			m_removed = true;

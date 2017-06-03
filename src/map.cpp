@@ -1380,7 +1380,7 @@ s16 ServerMap::getWaterLevel()
 
 bool ServerMap::saoPositionOverLimit(const v3f &p)
 {
-	return false;//Mapgen::saoPosOverLimit(p);
+	return getMapgenParams()->saoPosOverLimit(p);
 }
 
 bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
@@ -1841,9 +1841,6 @@ MapBlock *ServerMap::getBlockOrEmerge(v3s16 p3d)
 		m_emerge->enqueueBlockEmerge(PEER_ID_INEXISTENT, p3d, false);
 
 	return block;
-}
-
-void ServerMap::prepareBlock(MapBlock *block) {
 }
 
 // N.B.  This requires no synchronization, since data will not be modified unless
