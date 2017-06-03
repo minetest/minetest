@@ -339,19 +339,63 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 			return;
 		}
 
-		// try fallback font
-		errorstream << "FontEngine: failed to load: " << font_path << ", trying to fall back "
-				"to fallback font" << std::endl;
+		if (font_config_prefix == "mono_") {
+#if USE_FREETYPE
+			std::string mono_font_path = porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf");
+#else
+			std::string mono_font_path = porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans");
+#endif
 
-		font_path = g_settings->get(font_config_prefix + "fallback_font_path");
+			if (font_path != mono_font_path) {
+				// try original mono font
+				errorstream << "FontEngine: failed to load custom mono font: " << font_path << ", "
+						"trying to fall back to original mono font" << std::endl;
 
-		font = gui::CGUITTFont::createTTFont(m_env,
-			font_path.c_str(), size, true, true, font_shadow,
-			font_shadow_alpha);
+				font = gui::CGUITTFont::createTTFont(m_env,
+					mono_font_path.c_str(), size, true, true,
+					font_shadow, font_shadow_alpha);
 
-		if (font != NULL) {
-			m_font_cache[mode][basesize] = font;
-			return;
+				if (font != NULL) {
+					m_font_cache[mode][basesize] = font;
+					return;
+				}
+			}
+		} else {
+			// try fallback font
+			errorstream << "FontEngine: failed to load: " << font_path << ", trying to fall back "
+					"to fallback font" << std::endl;
+
+			font_path = g_settings->get(font_config_prefix + "fallback_font_path");
+
+			font = gui::CGUITTFont::createTTFont(m_env,
+				font_path.c_str(), size, true, true, font_shadow,
+				font_shadow_alpha);
+
+			if (font != NULL) {
+				m_font_cache[mode][basesize] = font;
+				return;
+			}
+
+#if USE_FREETYPE
+			std::string fallback_font_path = porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf");
+#else
+			std::string fallback_font_path = porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans");
+#endif
+
+			if (font_path != fallback_font_path) {
+				// try original fallback font
+				errorstream << "FontEngine: failed to load custom fallback font: " << font_path << ", "
+						"trying to fall back to original fallback font" << std::endl;
+
+				font = gui::CGUITTFont::createTTFont(m_env,
+					fallback_font_path.c_str(), size, true, true,
+					font_shadow, font_shadow_alpha);
+
+				if (font != NULL) {
+					m_font_cache[mode][basesize] = font;
+					return;
+				}
+			}
 		}
 
 		// give up
