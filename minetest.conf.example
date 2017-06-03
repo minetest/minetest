@@ -1079,9 +1079,6 @@ max_out_chat_queue_size = 20
 # movement_speed_jump = 6.5
 
 #    type: float
-# movement_speed_descend = 6
-
-#    type: float
 # movement_liquid_fluidity = 1
 
 #    type: float

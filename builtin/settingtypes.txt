@@ -886,7 +886,6 @@ movement_speed_crouch (Crouch speed) float 1.35
 movement_speed_fast (Fast mode speed) float 20
 movement_speed_climb (Climbing speed) float 3
 movement_speed_jump (Jumping speed) float 6.5
-movement_speed_descend (Descending speed) float 6
 movement_liquid_fluidity (Liquid fluidity) float 1
 movement_liquid_fluidity_smooth (Liquid fluidity smoothing) float 0.5
 movement_liquid_sink (Liquid sink) float 10
