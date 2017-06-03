@@ -138,7 +138,10 @@ struct MapgenParams {
 		water_level(1),
 		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL)
+		bparams(NULL),
+		m_sao_limit_min(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_max(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_calculated(false)
 	{
 	}
 
@@ -146,6 +149,14 @@ struct MapgenParams {
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
+
+	bool saoPosOverLimit(const v3f &p);
+private:
+	void calcMapgenEdges();
+
+	float m_sao_limit_min;
+	float m_sao_limit_max;
+	bool m_sao_limit_calculated;
 };
 
 
