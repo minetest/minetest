@@ -2789,6 +2789,7 @@ These functions return the leftover itemstack.
 * `minetest.get_server_status()`: returns server status string
 * `minetest.get_server_uptime()`: returns the server uptime in seconds
 * `minetest.remove_player(name)`: remove player from database (if he is not connected).
+    * Does not remove player authentication data, minetest.player_exists will continue to return true.
     * Returns a code (0: successful, 1: no such player, 2: player is connected)
 
 ### Bans
