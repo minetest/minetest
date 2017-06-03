@@ -141,6 +141,11 @@ struct MapNode
 	MapNode()
 	{ }
 
+	MapNode(const MapNode & n)
+	{
+		*this = n;
+	}
+
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),
 		  param1(a_param1),
@@ -202,7 +207,11 @@ struct MapNode
 	 *
 	 * @return If the light values are equal, returns true; otherwise false
 	 */
+	bool isLightDayNightEq(const ContentFeatures &f) const;
+
 	bool isLightDayNightEq(INodeDefManager *nodemgr) const;
+
+	u8 getLight(enum LightBank bank, const ContentFeatures &f) const;
 
 	u8 getLight(enum LightBank bank, INodeDefManager *nodemgr) const;
 
@@ -230,10 +239,20 @@ struct MapNode
 	 */
 	u8 getLightNoChecks(LightBank bank, const ContentFeatures *f) const;
 
+	bool getLightBanks(u8 &lightday, u8 &lightnight, const ContentFeatures &f) const;
+
 	bool getLightBanks(u8 &lightday, u8 &lightnight, INodeDefManager *nodemgr) const;
 
 	// 0 <= daylight_factor <= 1000
 	// 0 <= return value <= LIGHT_SUN
+	u8 getLightBlend(u32 daylight_factor, const ContentFeatures &f) const
+	{
+		u8 lightday = 0;
+		u8 lightnight = 0;
+		getLightBanks(lightday, lightnight, f);
+		return blend_light(daylight_factor, lightday, lightnight);
+	}
+
 	u8 getLightBlend(u32 daylight_factor, INodeDefManager *nodemgr) const
 	{
 		u8 lightday = 0;
@@ -242,8 +261,11 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
+	u8 getFaceDir(const ContentFeatures &f) const;
 	u8 getFaceDir(INodeDefManager *nodemgr) const;
+	u8 getWallMounted(const ContentFeatures &f) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
+	v3s16 getWallMountedDir(const ContentFeatures &f) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
 
 	void rotateAlongYAxis(INodeDefManager *nodemgr, Rotation rot);
@@ -258,24 +280,34 @@ struct MapNode
 	/*
 		Gets list of node boxes (used for rendering (NDT_NODEBOX))
 	*/
+	void getNodeBoxes(const ContentFeatures &f, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+
 	void getNodeBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Gets list of selection boxes
 	*/
+	void getSelectionBoxes(const ContentFeatures &f, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+
 	void getSelectionBoxes(INodeDefManager *nodemg, std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Gets list of collision boxes
 	*/
+	void getCollisionBoxes(const ContentFeatures &f, std::vector<aabb3f> *boxes, u8 neighbors = 0);
+
 	void getCollisionBoxes(INodeDefManager *nodemgr, std::vector<aabb3f> *boxes, u8 neighbors = 0);
 
 	/*
 		Liquid helpers
 	*/
+	u8 getMaxLevel(const ContentFeatures &f) const;
 	u8 getMaxLevel(INodeDefManager *nodemgr) const;
+	u8 getLevel(const ContentFeatures &f) const;
 	u8 getLevel(INodeDefManager *nodemgr) const;
+	u8 setLevel(const ContentFeatures &f, s8 level = 1);
 	u8 setLevel(INodeDefManager *nodemgr, s8 level = 1);
+	u8 addLevel(const ContentFeatures &f, s8 add = 1);
 	u8 addLevel(INodeDefManager *nodemgr, s8 add = 1);
 
 	/*
