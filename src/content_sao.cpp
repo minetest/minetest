@@ -402,15 +402,27 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_registered){
+	if (m_registered) {
 		m_env->getScriptIface()->luaentity_Step(m_id, dtime);
 	}
 
-	if(send_recommended == false)
+	// Remove LuaEntity outside of mapgen limits
+	{
+		ServerMap *map = dynamic_cast<ServerMap *>(&m_env->getMap());
+		assert(map);
+		if (!m_pending_deactivation && map->sao_pos_over_mapgen_limit(m_base_position)) {
+			errorstream << "Remove SAO " << m_id << "(" << m_init_name
+				<< "), outside of limits" << std::endl;
+			m_pending_deactivation = true;
+			m_removed = true;
+			return;
+		}
+	}
+
+	if (!send_recommended)
 		return;
 
-	if(!isAttached())
-	{
+	if (!isAttached()) {
 		// TODO: force send when acceleration changes enough?
 		float minchange = 0.2*BS;
 		if(m_last_sent_position_timer > 1.0){
@@ -427,7 +439,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_armor_groups_sent == false){
+	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;
 		std::string str = gob_cmd_update_armor_groups(
 				m_armor_groups);
@@ -436,7 +448,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_animation_sent == false){
+	if (!m_animation_sent) {
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
@@ -445,7 +457,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_bone_position_sent == false){
+	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
 		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
@@ -457,7 +469,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_attachment_sent == false){
+	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
 		// create message and add to list

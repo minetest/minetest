@@ -677,6 +677,7 @@ typedef std::vector<MapBlock*> MapBlockVect;
 inline bool objectpos_over_limit(v3f p)
 {
 	const float max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+
 	return p.X < -max_limit_bs ||
 		p.X >  max_limit_bs ||
 		p.Y < -max_limit_bs ||

@@ -1378,6 +1378,11 @@ s16 ServerMap::getWaterLevel()
 	return getMapgenParams()->water_level;
 }
 
+bool ServerMap::sao_pos_over_mapgen_limit(const v3f &p)
+{
+	return blockpos_over_mapgen_limit(floatToInt(p, BS * MAP_BLOCKSIZE - 0.4f));
+}
+
 bool ServerMap::blockpos_over_mapgen_limit(v3s16 p)
 {
 	const s16 mapgen_limit_bp = rangelim(
