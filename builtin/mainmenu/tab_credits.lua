@@ -19,45 +19,46 @@
 
 local core_developers = {
 	"Perttu Ahola (celeron55) <celeron55@gmail.com>",
-	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
 	"sfan5 <sfan5@live.de>",
-	"kahrl <kahrl@gmx.net>",
-	"sapier",
 	"ShadowNinja <shadowninja@minetest.net>",
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
-	"Matt Gregory (paramat)",
-	"est31 <MTest31@outlook.com>",
+	"paramat",
 	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"Andrew Ward (rubenwardy) <rubenwardy@gmail.com>",
+	"SmallJoker <mk939@ymail.com>",
 }
 
 local active_contributors = {
 	"Duane Robertson <duane@duanerobertson.com>",
-	"SmallJoker <mk939@ymail.com>",
 	"Lars Hofhansl <larsh@apache.org>",
 	"Jeija <jeija@mesecons.net>",
-	"Gregory Currie (gregorycu)",
-	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"TeTpaAka",
 	"Jean-Patrick G (kilbith) <jeanpatrick.guerrero@gmail.com>",
 	"Diego Martínez (kaeza) <kaeza@users.sf.net>",
 	"Dániel Juhász (juhdanad) <juhdanad@gmail.com>",
 	"Rogier <rogier777@gmail.com>",
+	"red-001 <red-001@outlook.ie>",
+	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	"Shara RedCat",
 }
 
 local previous_core_developers = {
 	"BlockMen",
-	"Maciej Kasatkin (RealBadAngel) <maciej.kasatkin@o2.pl>",
+	"Maciej Kasatkin (RealBadAngel) <RIP>",
 	"Lisa Milne (darkrose) <lisa@ltmnet.com>",
 	"proller",
 	"Ilya Zhuravlev (xyz) <xyz@minetest.net>",
 	"PilzAdam <pilzadam@minetest.net>",
+	"est31 <MTest31@outlook.com>",
+	"kahrl <kahrl@gmx.net>",
+	"Ryan Kwolek (kwolekr) <kwolekr@minetest.net>",
+	"sapier",
 }
 
 local previous_contributors = {
-	"Vanessa Ezekowitz (VanessaE) <vanessaezekowitz@gmail.com>",
+	"Sokomine <wegwerf@anarres.dyndns.org>",
 	"Jurgen Doser (doserj) <jurgen.doser@gmail.com>",
 	"MirceaKitsune <mirceakitsune@gmail.com>",
 	"dannydark <the_skeleton_of_a_child@yahoo.co.uk>",
@@ -72,6 +73,7 @@ local previous_contributors = {
 	"JacobF <queatz@gmail.com>",
 	"TriBlade9 <triblade9@mail.com>",
 	"Zefram <zefram@fysh.org>",
+	"Gregory Currie (gregorycu)",
 }
 
 return {
