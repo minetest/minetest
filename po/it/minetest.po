@@ -7,16 +7,16 @@ msgstr ""
 "Project-Id-Version: Minetest 0.4.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-04-25 19:08+0000\n"
-"Last-Translator: Michele Mainardi <capopanzone@gmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/minetest/"
-"minetest/it/>\n"
+"PO-Revision-Date: 2017-06-03 10:10+0000\n"
+"Last-Translator: pandaro <padarogames@gmail.com>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/minetest/minetest/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.14-dev\n"
+"X-Generator: Weblate 2.15-dev\n"
 
 #: builtin/client/init.lua
 msgid "Respawn"
@@ -124,7 +124,7 @@ msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "Dipendenze opzionali:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -339,7 +339,7 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
+msgstr "Mods del gioco"
 
 #: builtin/mainmenu/store.lua
 msgid "Close store"
@@ -472,7 +472,7 @@ msgstr "Informazioni sulla mod:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "Nessuna dipendenza."
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -565,7 +565,7 @@ msgstr "Siete certi di volere azzerare il vostro mondo di giocatore singolo?"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave screen size"
-msgstr ""
+msgstr "Salva automaticamente la dimensione dello schermo"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -774,7 +774,7 @@ msgstr "Nome del giocatore troppo lungo."
 
 #: src/client/clientlauncher.cpp
 msgid "Please choose a name!"
-msgstr ""
+msgstr "Prego, scegli un nome!"
 
 #: src/client/clientlauncher.cpp
 msgid "Provided world path doesn't exist: "
@@ -809,7 +809,7 @@ msgstr "Danno"
 
 #: src/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- Modalità: "
 
 #: src/game.cpp
 #, fuzzy
@@ -956,11 +956,11 @@ msgstr "Definizioni del nodo..."
 
 #: src/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "spento"
 
 #: src/game.cpp
 msgid "On"
-msgstr ""
+msgstr "Acceso"
 
 #: src/game.cpp
 #, fuzzy
@@ -990,11 +990,11 @@ msgstr ""
 
 #: src/game.cpp
 msgid "Volume changed to 0%"
-msgstr ""
+msgstr "Volume impostato allo 0%"
 
 #: src/game.cpp
 msgid "Volume changed to 100%"
-msgstr ""
+msgstr "Volume impostato al 100%"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -1078,7 +1078,7 @@ msgstr "Comandi di messaggistica"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "Muto"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
