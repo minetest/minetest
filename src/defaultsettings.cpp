@@ -135,8 +135,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("lighting_alpha", "1.0");
-	settings->setDefault("lighting_beta", "2.0");
+	settings->setDefault("lighting_alpha", "0.0");
+	settings->setDefault("lighting_beta", "0.0");
 	settings->setDefault("display_gamma", "1.0");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
