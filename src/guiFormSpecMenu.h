@@ -517,6 +517,9 @@ private:
 
 	void tryClose();
 
+	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
+		const irr::video::SColor &bgcolor);
+
 	/**
 	 * check if event is part of a double click
 	 * @param event event to evaluate
