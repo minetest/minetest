@@ -3217,8 +3217,11 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `11`: bubbles bar is not shown
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
-    * If value is nil, remove attribute from player.
-* `get_attribute(attribute)`: returns value for extra attribute. Returns nil if no attribute found.
+    * `value` must be a string.
+    * If `value` is `nil`, remove attribute from player.
+* `get_attribute(attribute)`:
+    * Returns value (a string) for extra attribute.
+    * Returns `nil` if no attribute found.
 * `set_inventory_formspec(formspec)`
     * Redefine player's inventory form
     * Should usually be called in `on_joinplayer`
