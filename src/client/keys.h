@@ -20,11 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef KEYS_HEADER
 #define KEYS_HEADER
 
-#include<list>
+#include <list>
 
-class KeyType {
+class KeyType
+{
 public:
-	enum T {
+	enum T
+	{
 		// Player movement
 		FORWARD,
 		BACKWARD,
@@ -42,11 +44,17 @@ public:
 		INVENTORY,
 		CHAT,
 		CMD,
+		CMD_LOCAL,
 		CONSOLE,
 		MINIMAP,
 		FREEMOVE,
 		FASTMOVE,
 		NOCLIP,
+		HOTBAR_PREV,
+		HOTBAR_NEXT,
+		MUTE,
+		INC_VOLUME,
+		DEC_VOLUME,
 		CINEMATIC,
 		SCREENSHOT,
 		TOGGLE_HUD,
@@ -81,6 +89,5 @@ public:
 };
 
 typedef KeyType::T GameKeyType;
-
 
 #endif

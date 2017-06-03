@@ -52,6 +52,8 @@ struct ObjectProperties
 	video::SColor nametag_color;
 	f32 automatic_face_movement_max_rotation_per_sec;
 	std::string infotext;
+	//! For dropped items, this contains item information.
+	std::string wield_item;
 
 	ObjectProperties();
 	std::string dump();

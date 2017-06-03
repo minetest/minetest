@@ -18,6 +18,8 @@ dofile(minetest.get_modpath("default").."/mapgen.lua")
 minetest.register_on_joinplayer(function(player)
 	local cb = function(player)
 		minetest.chat_send_player(player:get_player_name(), "This is the [minimal] \"Minimal Development Test\" game. Use [minetest_game] for the real thing.")
+		player:set_attribute("test_attribute", "test_me")
+		player:set_attribute("remove_this", nil)
 	end
 	minetest.after(2.0, cb, player)
 end)
@@ -39,9 +41,14 @@ minetest.register_item(":", {
 			crumbly = {times={[2]=3.00, [3]=0.70}, uses=0, maxlevel=1},
 			snappy = {times={[3]=0.40}, uses=0, maxlevel=1},
 			oddly_breakable_by_hand = {times={[1]=7.00,[2]=4.00,[3]=1.40}, uses=0, maxlevel=3},
-		}
+		},
+		damage_groups = {fleshy=1},
 	}
 })
+
+--
+-- Picks
+--
 
 minetest.register_tool("default:pick_wood", {
 	description = "Wooden Pickaxe",
@@ -50,7 +57,8 @@ minetest.register_tool("default:pick_wood", {
 		max_drop_level=0,
 		groupcaps={
 			cracky={times={[2]=2.00, [3]=1.20}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:pick_stone", {
@@ -60,7 +68,8 @@ minetest.register_tool("default:pick_stone", {
 		max_drop_level=0,
 		groupcaps={
 			cracky={times={[1]=2.00, [2]=1.20, [3]=0.80}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:pick_steel", {
@@ -70,7 +79,8 @@ minetest.register_tool("default:pick_steel", {
 		max_drop_level=1,
 		groupcaps={
 			cracky={times={[1]=4.00, [2]=1.60, [3]=1.00}, uses=10, maxlevel=2}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
 minetest.register_tool("default:pick_mese", {
@@ -83,9 +93,15 @@ minetest.register_tool("default:pick_mese", {
 			cracky={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 			crumbly={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3},
 			snappy={times={[1]=2.0, [2]=1.0, [3]=0.5}, uses=20, maxlevel=3}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
+
+--
+-- Shovels
+--
+
 minetest.register_tool("default:shovel_wood", {
 	description = "Wooden Shovel",
 	inventory_image = "default_tool_woodshovel.png",
@@ -93,7 +109,8 @@ minetest.register_tool("default:shovel_wood", {
 		max_drop_level=0,
 		groupcaps={
 			crumbly={times={[1]=2.00, [2]=0.80, [3]=0.50}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:shovel_stone", {
@@ -103,7 +120,8 @@ minetest.register_tool("default:shovel_stone", {
 		max_drop_level=0,
 		groupcaps={
 			crumbly={times={[1]=1.20, [2]=0.50, [3]=0.30}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:shovel_steel", {
@@ -113,9 +131,15 @@ minetest.register_tool("default:shovel_steel", {
 		max_drop_level=1,
 		groupcaps={
 			crumbly={times={[1]=1.00, [2]=0.70, [3]=0.60}, uses=10, maxlevel=2}
-		}
+		},
+		damage_groups = {fleshy=4},
 	},
 })
+
+--
+-- Axes
+--
+
 minetest.register_tool("default:axe_wood", {
 	description = "Wooden Axe",
 	inventory_image = "default_tool_woodaxe.png",
@@ -124,7 +148,8 @@ minetest.register_tool("default:axe_wood", {
 		groupcaps={
 			choppy={times={[2]=1.40, [3]=0.80}, uses=10, maxlevel=1},
 			fleshy={times={[2]=1.50, [3]=0.80}, uses=10, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=2},
 	},
 })
 minetest.register_tool("default:axe_stone", {
@@ -135,7 +160,8 @@ minetest.register_tool("default:axe_stone", {
 		groupcaps={
 			choppy={times={[1]=1.50, [2]=1.00, [3]=0.60}, uses=20, maxlevel=1},
 			fleshy={times={[2]=1.30, [3]=0.70}, uses=20, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
 minetest.register_tool("default:axe_steel", {
@@ -146,9 +172,15 @@ minetest.register_tool("default:axe_steel", {
 		groupcaps={
 			choppy={times={[1]=2.00, [2]=1.60, [3]=1.00}, uses=10, maxlevel=2},
 			fleshy={times={[2]=1.10, [3]=0.60}, uses=40, maxlevel=1}
-		}
+		},
+		damage_groups = {fleshy=3},
 	},
 })
+
+--
+-- Swords
+--
+
 minetest.register_tool("default:sword_wood", {
 	description = "Wooden Sword",
 	inventory_image = "default_tool_woodsword.png",
@@ -159,7 +191,8 @@ minetest.register_tool("default:sword_wood", {
 			fleshy={times={[2]=1.10, [3]=0.60}, uses=10, maxlevel=1},
 			snappy={times={[2]=1.00, [3]=0.50}, uses=10, maxlevel=1},
 			choppy={times={[3]=1.00}, uses=20, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=2},
 	}
 })
 minetest.register_tool("default:sword_stone", {
@@ -172,7 +205,8 @@ minetest.register_tool("default:sword_stone", {
 			fleshy={times={[2]=0.80, [3]=0.40}, uses=20, maxlevel=1},
 			snappy={times={[2]=0.80, [3]=0.40}, uses=20, maxlevel=1},
 			choppy={times={[3]=0.90}, uses=20, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=4},
 	}
 })
 minetest.register_tool("default:sword_steel", {
@@ -185,7 +219,8 @@ minetest.register_tool("default:sword_steel", {
 			fleshy={times={[1]=2.00, [2]=0.80, [3]=0.40}, uses=10, maxlevel=2},
 			snappy={times={[2]=0.70, [3]=0.30}, uses=40, maxlevel=1},
 			choppy={times={[3]=0.70}, uses=40, maxlevel=0}
-		}
+		},
+		damage_groups = {fleshy=6},
 	}
 })
 
@@ -957,37 +992,37 @@ minetest.register_node("default:cloud", {
 
 minetest.register_node("default:water_flowing", {
 	description = "Water (flowing)",
-	inventory_image = minetest.inventorycube("default_water.png"),
 	drawtype = "flowingliquid",
-	tiles ={"default_water.png"},
+	tiles = {"default_water.png"},
 	special_tiles = {
-		{name="default_water.png", backface_culling=false},
-		{name="default_water.png", backface_culling=true},
+		{name = "default_water.png", backface_culling = false},
+		{name = "default_water.png", backface_culling = true},
 	},
 	alpha = WATER_ALPHA,
 	paramtype = "light",
+	paramtype2 = "flowingliquid",
 	walkable = false,
 	pointable = false,
 	diggable = false,
 	buildable_to = true,
 	is_ground_content = false,
+	drop = "",
 	drowning = 1,
 	liquidtype = "flowing",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = WATER_VISC,
-	post_effect_color = {a=64, r=100, g=100, b=200},
-	groups = {water=3, liquid=3},
+	post_effect_color = {a = 64, r = 100, g = 100, b = 200},
+	groups = {water = 3, liquid = 3},
 })
 
 minetest.register_node("default:water_source", {
 	description = "Water",
-	inventory_image = minetest.inventorycube("default_water.png"),
 	drawtype = "liquid",
-	tiles ={"default_water.png"},
+	tiles = {"default_water.png"},
 	special_tiles = {
 		-- New-style water source material (mostly unused)
-		{name="default_water.png", backface_culling=false},
+		{name = "default_water.png", backface_culling = false},
 	},
 	alpha = WATER_ALPHA,
 	paramtype = "light",
@@ -996,13 +1031,70 @@ minetest.register_node("default:water_source", {
 	diggable = false,
 	buildable_to = true,
 	is_ground_content = false,
+	drop = "",
 	drowning = 1,
 	liquidtype = "source",
 	liquid_alternative_flowing = "default:water_flowing",
 	liquid_alternative_source = "default:water_source",
 	liquid_viscosity = WATER_VISC,
-	post_effect_color = {a=64, r=100, g=100, b=200},
-	groups = {water=3, liquid=3},
+	post_effect_color = {a = 64, r = 100, g = 100, b = 200},
+	groups = {water = 3, liquid = 3},
+})
+
+minetest.register_node("default:river_water_source", {
+	description = "River Water Source",
+	drawtype = "liquid",
+	tiles = {"default_river_water.png"},
+	special_tiles = {
+		-- New-style water source material (mostly unused)
+		{name = "default_river_water.png", backface_culling = false},
+	},
+	alpha = 160,
+	paramtype = "light",
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drop = "",
+	drowning = 1,
+	liquidtype = "source",
+	liquid_alternative_flowing = "default:river_water_flowing",
+	liquid_alternative_source = "default:river_water_source",
+	liquid_viscosity = 1,
+	liquid_renewable = false,
+	liquid_range = 2,
+	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+	groups = {water = 3, liquid = 3, puts_out_fire = 1, cools_lava = 1},
+})
+
+minetest.register_node("default:river_water_flowing", {
+	description = "Flowing River Water",
+	drawtype = "flowingliquid",
+	tiles = {"default_river_water.png"},
+	special_tiles = {
+		{name = "default_river_water.png", backface_culling = false},
+		{name = "default_river_water.png", backface_culling = true},
+	},
+	alpha = 160,
+	paramtype = "light",
+	paramtype2 = "flowingliquid",
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drop = "",
+	drowning = 1,
+	liquidtype = "flowing",
+	liquid_alternative_flowing = "default:river_water_flowing",
+	liquid_alternative_source = "default:river_water_source",
+	liquid_viscosity = 1,
+	liquid_renewable = false,
+	liquid_range = 2,
+	post_effect_color = {a = 103, r = 30, g = 76, b = 90},
+	groups = {water = 3, liquid = 3, puts_out_fire = 1,
+		not_in_creative_inventory = 1, cools_lava = 1},
 })
 
 minetest.register_node("default:lava_flowing", {
@@ -1044,8 +1136,11 @@ minetest.register_node("default:lava_source", {
 	inventory_image = minetest.inventorycube("default_lava.png"),
 	drawtype = "liquid",
 	--tiles ={"default_lava.png"},
-	tiles ={
-		{name="default_lava_source_animated.png", animation={type="vertical_frames", aspect_w=16, aspect_h=16, length=3.0}}
+	tiles = {
+		{
+			name = "default_lava_source_animated.png",
+			animation = {type="sheet_2d", frames_w=3, frames_h=2, frame_length=0.5}
+		}
 	},
 	special_tiles = {
 		-- New-style lava source material (mostly unused)
@@ -1130,8 +1225,9 @@ minetest.register_node("default:sign_wall", {
 
 minetest.register_node("default:chest", {
 	description = "Chest",
-	tiles ={"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
-		"default_chest_side.png", "default_chest_side.png", "default_chest_front.png"},
+	tiles ={"default_chest.png^[sheet:2x2:0,0", "default_chest.png^[sheet:2x2:0,0",
+		"default_chest.png^[sheet:2x2:1,0", "default_chest.png^[sheet:2x2:1,0",
+		"default_chest.png^[sheet:2x2:1,0", "default_chest.png^[sheet:2x2:0,1"},
 	paramtype2 = "facedir",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
@@ -1164,8 +1260,9 @@ end
 
 minetest.register_node("default:chest_locked", {
 	description = "Locked Chest",
-	tiles ={"default_chest_top.png", "default_chest_top.png", "default_chest_side.png",
-		"default_chest_side.png", "default_chest_side.png", "default_chest_lock.png"},
+	tiles ={"default_chest.png^[sheet:2x2:0,0", "default_chest.png^[sheet:2x2:0,0",
+		"default_chest.png^[sheet:2x2:1,0", "default_chest.png^[sheet:2x2:1,0",
+		"default_chest.png^[sheet:2x2:1,0", "default_chest.png^[sheet:2x2:1,1"},
 	paramtype2 = "facedir",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2},
 	legacy_facedir_simple = true,
@@ -1188,6 +1285,8 @@ minetest.register_node("default:chest_locked", {
 		meta:set_string("owner", "")
 		local inv = meta:get_inventory()
 		inv:set_size("main", 8*4)
+		-- this is not really the intended usage but works for testing purposes:
+		meta:mark_as_private("owner")
 	end,
 	can_dig = function(pos,player)
 		local meta = minetest.get_meta(pos);
@@ -1349,13 +1448,13 @@ minetest.register_abm({
 
 		local srclist = inv:get_list("src")
 		local cooked = nil
-		
+
 		if srclist then
 			cooked = minetest.get_craft_result({method = "cooking", width = 1, items = srclist})
 		end
-		
+
 		local was_active = false
-		
+
 		if meta:get_float("fuel_time") < meta:get_float("fuel_totaltime") then
 			was_active = true
 			meta:set_float("fuel_time", meta:get_float("fuel_time") + 1)
@@ -1375,7 +1474,7 @@ minetest.register_abm({
 				meta:set_string("src_time", 0)
 			end
 		end
-		
+
 		if meta:get_float("fuel_time") < meta:get_float("fuel_totaltime") then
 			local percent = math.floor(meta:get_float("fuel_time") /
 					meta:get_float("fuel_totaltime") * 100)
@@ -1400,7 +1499,7 @@ minetest.register_abm({
 		local cooked = nil
 		local fuellist = inv:get_list("fuel")
 		local srclist = inv:get_list("src")
-		
+
 		if srclist then
 			cooked = minetest.get_craft_result({method = "cooking", width = 1, items = srclist})
 		end
@@ -1426,7 +1525,7 @@ minetest.register_abm({
 
 		meta:set_string("fuel_totaltime", fuel.time)
 		meta:set_string("fuel_time", 0)
-		
+
 		local stack = inv:get_stack("fuel", 1)
 		stack:take_item()
 		inv:set_stack("fuel", 1, stack)
@@ -1533,7 +1632,7 @@ function default.grow_tree(data, a, pos, is_apple_tree, seed)
 	y = y+th-1 -- (x, y, z) is now last piece of trunk
 	local leaves_a = VoxelArea:new{MinEdge={x=-2, y=-1, z=-2}, MaxEdge={x=2, y=2, z=2}}
 	local leaves_buffer = {}
-	
+
 	-- Force leaves near the trunk
 	local d = 1
 	for xi = -d, d do
@@ -1543,14 +1642,14 @@ function default.grow_tree(data, a, pos, is_apple_tree, seed)
 	end
 	end
 	end
-	
+
 	-- Add leaves randomly
 	for iii = 1, 8 do
 		local d = 1
 		local xx = pr:next(leaves_a.MinEdge.x, leaves_a.MaxEdge.x - d)
 		local yy = pr:next(leaves_a.MinEdge.y, leaves_a.MaxEdge.y - d)
 		local zz = pr:next(leaves_a.MinEdge.z, leaves_a.MaxEdge.z - d)
-		
+
 		for xi = 0, d do
 		for yi = 0, d do
 		for zi = 0, d do
@@ -1559,7 +1658,7 @@ function default.grow_tree(data, a, pos, is_apple_tree, seed)
 		end
 		end
 	end
-	
+
 	-- Add the leaves
 	for xi = leaves_a.MinEdge.x, leaves_a.MaxEdge.x do
 	for yi = leaves_a.MinEdge.y, leaves_a.MaxEdge.y do

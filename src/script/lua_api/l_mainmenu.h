@@ -25,7 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class AsyncEngine;
 
 /** Implementation of lua api support for mainmenu */
-class ModApiMainMenu : public ModApiBase {
+class ModApiMainMenu: public ModApiBase
+{
 
 private:
 	/**
@@ -78,10 +79,6 @@ private:
 	static int l_get_favorites(lua_State *L);
 
 	static int l_delete_favorite(lua_State *L);
-
-	static int l_sound_play(lua_State *L);
-
-	static int l_sound_stop(lua_State *L);
 
 	static int l_gettext(lua_State *L);
 
@@ -145,6 +142,7 @@ private:
 	static int l_do_async_callback(lua_State *L);
 
 public:
+
 	/**
 	 * initialize this API module
 	 * @param L lua stack to initialize
@@ -152,7 +150,7 @@ public:
 	 */
 	static void Initialize(lua_State *L, int top);
 
-	static void InitializeAsync(AsyncEngine& engine);
+	static void InitializeAsync(lua_State *L, int top);
 
 };
 

@@ -55,6 +55,10 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 class Server;
+#ifndef SERVER
+class Client;
+#endif
+class IGameDef;
 class Environment;
 class GUIEngine;
 class ServerActiveObject;
@@ -75,7 +79,11 @@ public:
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
 
-	Server* getServer() { return m_server; }
+	IGameDef *getGameDef() { return m_gamedef; }
+	Server* getServer();
+#ifndef SERVER
+	Client* getClient();
+#endif
 
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
@@ -98,7 +106,7 @@ protected:
 	void scriptError(int result, const char *fxn);
 	void stackDump(std::ostream &o);
 
-	void setServer(Server* server) { m_server = server; }
+	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }
 
 	Environment* getEnv() { return m_environment; }
 	void setEnv(Environment* env) { m_environment = env; }
@@ -107,7 +115,6 @@ protected:
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
-	void objectrefGet(lua_State *L, u16 id);
 
 	RecursiveMutex  m_luastackmutex;
 	std::string     m_last_run_mod;
@@ -118,9 +125,11 @@ protected:
 #endif
 
 private:
+	static int luaPanic(lua_State *L);
+
 	lua_State*      m_luastack;
 
-	Server*         m_server;
+	IGameDef*       m_gamedef;
 	Environment*    m_environment;
 	GUIEngine*      m_guiengine;
 };

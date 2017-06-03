@@ -18,9 +18,11 @@ core.register_entity(":__builtin:falling_node", {
 	},
 
 	node = {},
+	meta = {},
 
-	set_node = function(self, node)
+	set_node = function(self, node, meta)
 		self.node = node
+		self.meta = meta or {}
 		self.object:set_properties({
 			is_visible = true,
 			textures = {node.name},
@@ -28,15 +30,21 @@ core.register_entity(":__builtin:falling_node", {
 	end,
 
 	get_staticdata = function(self)
-		return core.serialize(self.node)
+		local ds = {
+			node = self.node,
+			meta = self.meta,
+		}
+		return core.serialize(ds)
 	end,
 
 	on_activate = function(self, staticdata)
 		self.object:set_armor_groups({immortal = 1})
 		
-		local node = core.deserialize(staticdata)
-		if node then
-			self:set_node(node)
+		local ds = core.deserialize(staticdata)
+		if ds and ds.node then
+			self:set_node(ds.node, ds.meta)
+		elseif ds then
+			self:set_node(ds)
 		elseif staticdata ~= "" then
 			self:set_node({name = staticdata})
 		end
@@ -83,7 +91,7 @@ core.register_entity(":__builtin:falling_node", {
 			-- it's drops
 			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
 				core.remove_node(np)
-				if nd.buildable_to == false then
+				if nd and nd.buildable_to == false then
 					-- Add dropped items
 					local drops = core.get_node_drops(n2.name, "")
 					for _, dropped_item in pairs(drops) do
@@ -98,6 +106,10 @@ core.register_entity(":__builtin:falling_node", {
 			-- Create node and remove entity
 			if core.registered_nodes[self.node.name] then
 				core.add_node(np, self.node)
+				if self.meta then
+					local meta = core.get_meta(np)
+					meta:from_table(self.meta)
+				end
 			end
 			self.object:remove()
 			core.check_for_falling(np)
@@ -111,11 +123,25 @@ core.register_entity(":__builtin:falling_node", {
 	end
 })
 
-local function spawn_falling_node(p, node)
+local function spawn_falling_node(p, node, meta)
 	local obj = core.add_entity(p, "__builtin:falling_node")
 	if obj then
-		obj:get_luaentity():set_node(node)
+		obj:get_luaentity():set_node(node, meta)
 	end
+end
+
+function core.spawn_falling_node(pos)
+	local node = core.get_node(pos)
+	if node.name == "air" or node.name == "ignore" then
+		return false
+	end
+	local obj = core.add_entity(pos, "__builtin:falling_node")
+	if obj then
+		obj:get_luaentity():set_node(node)
+		core.remove_node(pos)
+		return true
+	end
+	return false
 end
 
 local function drop_attached_node(p)
@@ -134,7 +160,8 @@ end
 function builtin_shared.check_attached_node(p, n)
 	local def = core.registered_nodes[n.name]
 	local d = {x = 0, y = 0, z = 0}
-	if def.paramtype2 == "wallmounted" then
+	if def.paramtype2 == "wallmounted" or
+			def.paramtype2 == "colorwallmounted" then
 		-- The fallback vector here is in case 'wallmounted to dir' is nil due
 		-- to voxelmanip placing a wallmounted node without resetting a
 		-- pre-existing param2 value that is out-of-range for wallmounted.
@@ -174,8 +201,13 @@ function core.check_single_for_falling(p)
 
 				(not d_bottom.walkable or d_bottom.buildable_to) then
 			n.level = core.get_node_level(p)
+			local meta = core.get_meta(p)
+			local metatable = {}
+			if meta ~= nil then
+				metatable = meta:to_table()
+			end
 			core.remove_node(p)
-			spawn_falling_node(p, n)
+			spawn_falling_node(p, n, metatable)
 			return true
 		end
 	end

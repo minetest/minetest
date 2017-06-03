@@ -354,6 +354,55 @@ std::string deSerializeJsonString(std::istream &is)
 	return os.str();
 }
 
+std::string serializeJsonStringIfNeeded(const std::string &s)
+{
+	for (size_t i = 0; i < s.size(); ++i) {
+		if (s[i] <= 0x1f || s[i] >= 0x7f || s[i] == ' ' || s[i] == '\"')
+			return serializeJsonString(s);
+	}
+	return s;
+}
+
+std::string deSerializeJsonStringIfNeeded(std::istream &is)
+{
+	std::ostringstream tmp_os;
+	bool expect_initial_quote = true;
+	bool is_json = false;
+	bool was_backslash = false;
+	for (;;) {
+		char c = is.get();
+		if (is.eof())
+			break;
+
+		if (expect_initial_quote && c == '"') {
+			tmp_os << c;
+			is_json = true;
+		} else if(is_json) {
+			tmp_os << c;
+			if (was_backslash)
+				was_backslash = false;
+			else if (c == '\\')
+				was_backslash = true;
+			else if (c == '"')
+				break; // Found end of string
+		} else {
+			if (c == ' ') {
+				// Found end of word
+				is.unget();
+				break;
+			} else {
+				tmp_os << c;
+			}
+		}
+		expect_initial_quote = false;
+	}
+	if (is_json) {
+		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
+		return deSerializeJsonString(tmp_is);
+	} else
+		return tmp_os.str();
+}
+
 ////
 //// String/Struct conversions
 ////

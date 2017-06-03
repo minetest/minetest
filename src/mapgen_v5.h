@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2014-2017 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -25,20 +25,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define MGV5_LARGE_CAVE_DEPTH -256
 
+///////// Mapgen V5 flags
+#define MGV5_CAVERNS 0x01
+
 class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_v5[];
 
-
-struct MapgenV5Params : public MapgenParams {
+struct MapgenV5Params : public MapgenParams
+{
 	u32 spflags;
 	float cave_width;
+	s16 cavern_limit;
+	s16 cavern_taper;
+	float cavern_threshold;
+
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
 	NoiseParams np_height;
+	NoiseParams np_ground;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
-	NoiseParams np_ground;
+	NoiseParams np_cavern;
 
 	MapgenV5Params();
 	~MapgenV5Params() {}
@@ -47,8 +55,8 @@ struct MapgenV5Params : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
-
-class MapgenV5 : public MapgenBasic {
+class MapgenV5 : public MapgenBasic
+{
 public:
 	MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge);
 	~MapgenV5();

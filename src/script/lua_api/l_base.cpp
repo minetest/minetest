@@ -37,6 +37,18 @@ Server *ModApiBase::getServer(lua_State *L)
 	return getScriptApiBase(L)->getServer();
 }
 
+#ifndef SERVER
+Client *ModApiBase::getClient(lua_State *L)
+{
+	return getScriptApiBase(L)->getClient();
+}
+#endif
+
+IGameDef *ModApiBase::getGameDef(lua_State *L)
+{
+	return getScriptApiBase(L)->getGameDef();
+}
+
 Environment *ModApiBase::getEnv(lua_State *L)
 {
 	return getScriptApiBase(L)->getEnv();
@@ -62,17 +74,13 @@ std::string ModApiBase::getCurrentModPath(lua_State *L)
 }
 
 
-bool ModApiBase::registerFunction(
-	lua_State *L,
-	const char *name,
-	lua_CFunction fct,
-	int top)
+bool ModApiBase::registerFunction(lua_State *L, const char *name,
+		lua_CFunction func, int top)
 {
-	//TODO check presence first!
+	// TODO: Check presence first!
 
-	lua_pushstring(L,name);
-	lua_pushcfunction(L,fct);
-	lua_settable(L, top);
+	lua_pushcfunction(L, func);
+	lua_setfield(L, top, name);
 
 	return true;
 }

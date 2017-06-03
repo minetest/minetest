@@ -405,6 +405,13 @@ std::string serializeJsonString(const std::string &plain);
 // Reads a string encoded in JSON format
 std::string deSerializeJsonString(std::istream &is);
 
+// If the string contains spaces, quotes or control characters, encodes as JSON.
+// Else returns the string unmodified.
+std::string serializeJsonStringIfNeeded(const std::string &s);
+
+// Parses a string serialized by serializeJsonStringIfNeeded.
+std::string deSerializeJsonStringIfNeeded(std::istream &is);
+
 // Creates a string consisting of the hexadecimal representation of `data`
 std::string serializeHexString(const std::string &data, bool insert_spaces=false);
 

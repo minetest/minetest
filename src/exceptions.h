@@ -27,10 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BaseException : public std::exception
 {
 public:
-	BaseException(const std::string &s) throw()
-	{
-		m_s = s;
-	}
+	BaseException(const std::string &s) throw(): m_s(s) {}
 	~BaseException() throw() {}
 	virtual const char * what() const throw()
 	{
@@ -122,12 +119,12 @@ public:
 
 class ClientStateError : public BaseException {
 public:
-	ClientStateError(std::string s): BaseException(s) {}
+	ClientStateError(const std::string &s): BaseException(s) {}
 };
 
 class PrngException : public BaseException {
 public:
-	PrngException(std::string s): BaseException(s) {}
+	PrngException(const std::string &s): BaseException(s) {}
 };
 
 class ModError : public BaseException {

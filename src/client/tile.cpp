@@ -134,9 +134,8 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from texture_path
 	*/
-	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "")
-	{
+	const std::string &texture_path = g_settings->get("texture_path");
+	if (texture_path != "") {
 		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
@@ -342,6 +341,8 @@ public:
 	*/
 	video::ITexture* getTextureForMesh(const std::string &name, u32 *id);
 
+	virtual Palette* getPalette(const std::string &name);
+
 	// Returns a pointer to the irrlicht device
 	virtual IrrlichtDevice* getDevice()
 	{
@@ -378,11 +379,6 @@ public:
 	video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params);
 
-	// Generates an image from a full string like
-	// "stone.png^mineral_coal.png^[crack:1:0".
-	// Shall be called from the main thread.
-	video::IImage* generateImage(const std::string &name);
-
 	video::ITexture* getNormalTexture(const std::string &name);
 	video::SColor getTextureAverageColor(const std::string &name);
 	video::ITexture *getShaderFlagsTexture(bool normamap_present);
@@ -405,6 +401,13 @@ private:
 	// if baseimg is NULL, it is created. Otherwise stuff is made on it.
 	bool generateImagePart(std::string part_of_name, video::IImage *& baseimg);
 
+	/*! Generates an image from a full string like
+	 * "stone.png^mineral_coal.png^[crack:1:0".
+	 * Shall be called from the main thread.
+	 * The returned Image should be dropped.
+	 */
+	video::IImage* generateImage(const std::string &name);
+
 	// Thread-safe cache of what source images are known (true = known)
 	MutexedMap<std::string, bool> m_source_image_existence;
 
@@ -422,6 +425,9 @@ private:
 	// Textures that have been overwritten with other ones
 	// but can't be deleted because the ITexture* might still be used
 	std::vector<video::ITexture*> m_texture_trash;
+
+	// Maps image file names to loaded palettes.
+	UNORDERED_MAP<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
@@ -558,7 +564,11 @@ static void blit_with_alpha_overlay(video::IImage *src, video::IImage *dst,
 // color alpha with the destination alpha.
 // Otherwise, any pixels that are not fully transparent get the color alpha.
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		video::SColor color, int ratio, bool keep_alpha);
+		const video::SColor &color, int ratio, bool keep_alpha);
+
+// paint a texture using the given color
+static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color);
 
 // Apply a mask to an image
 static void apply_mask(video::IImage *mask, video::IImage *dst,
@@ -682,6 +692,61 @@ video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *
 	return getTexture(name + "^[applyfiltersformesh", id);
 }
 
+Palette* TextureSource::getPalette(const std::string &name)
+{
+	// Only the main thread may load images
+	sanity_check(thr_is_current_thread(m_main_thread));
+
+	if (name == "")
+		return NULL;
+
+	UNORDERED_MAP<std::string, Palette>::iterator it = m_palettes.find(name);
+	if (it == m_palettes.end()) {
+		// Create palette
+		video::IImage *img = generateImage(name);
+		if (!img) {
+			warningstream << "TextureSource::getPalette(): palette \"" << name
+				<< "\" could not be loaded." << std::endl;
+			return NULL;
+		}
+		Palette new_palette;
+		u32 w = img->getDimension().Width;
+		u32 h = img->getDimension().Height;
+		// Real area of the image
+		u32 area = h * w;
+		if (area == 0)
+			return NULL;
+		if (area > 256) {
+			warningstream << "TextureSource::getPalette(): the specified"
+				<< " palette image \"" << name << "\" is larger than 256"
+				<< " pixels, using the first 256." << std::endl;
+			area = 256;
+		} else if (256 % area != 0)
+			warningstream << "TextureSource::getPalette(): the "
+				<< "specified palette image \"" << name << "\" does not "
+				<< "contain power of two pixels." << std::endl;
+		// We stretch the palette so it will fit 256 values
+		// This many param2 values will have the same color
+		u32 step = 256 / area;
+		// For each pixel in the image
+		for (u32 i = 0; i < area; i++) {
+			video::SColor c = img->getPixel(i % w, i / w);
+			// Fill in palette with 'step' colors
+			for (u32 j = 0; j < step; j++)
+				new_palette.push_back(c);
+		}
+		img->drop();
+		// Fill in remaining elements
+		while (new_palette.size() < 256)
+			new_palette.push_back(video::SColor(0xFFFFFFFF));
+		m_palettes[name] = new_palette;
+		it = m_palettes.find(name);
+	}
+	if (it != m_palettes.end())
+		return &((*it).second);
+	return NULL;
+}
+
 void TextureSource::processQueue()
 {
 	/*
@@ -725,8 +790,6 @@ void TextureSource::rebuildImagesAndTextures()
 		video::IImage *img = generateImage(ti->name);
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
-		sanity_check(img->getDimension().Height == npot2(img->getDimension().Height));
-		sanity_check(img->getDimension().Width == npot2(img->getDimension().Width));
 #endif
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
@@ -938,7 +1001,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	smgr->drop();
 
 	// Unset render target
-	driver->setRenderTarget(0, false, true, 0);
+	driver->setRenderTarget(0, false, true, video::SColor(0,0,0,0));
 
 	if (params.delete_texture_on_shutdown)
 		m_texture_trash.push_back(rtt);
@@ -1059,6 +1122,13 @@ video::IImage* TextureSource::generateImage(const std::string &name)
  * @param driver driver to use for image operations
  * @return image or copy of image aligned to npot2
  */
+
+inline u16 get_GL_major_version()
+{
+	const GLubyte *gl_version = glGetString(GL_VERSION);
+	return (u16) (gl_version[0] - '0');
+}
+
 video::IImage * Align2Npot2(video::IImage * image,
 		video::IVideoDriver* driver)
 {
@@ -1069,7 +1139,10 @@ video::IImage * Align2Npot2(video::IImage * image,
 	core::dimension2d<u32> dim = image->getDimension();
 
 	std::string extensions = (char*) glGetString(GL_EXTENSIONS);
-	if (extensions.find("GL_OES_texture_npot") != std::string::npos) {
+
+	// Only GLES2 is trusted to correctly report npot support
+	if (get_GL_major_version() > 1 &&
+			extensions.find("GL_OES_texture_npot") != std::string::npos) {
 		return image;
 	}
 
@@ -1135,17 +1208,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 #endif
 		if (image == NULL) {
 			if (part_of_name != "") {
-				if (part_of_name.find("_normal.png") == std::string::npos){
-					errorstream<<"generateImage(): Could not load image \""
-						<<part_of_name<<"\""<<" while building texture"<<std::endl;
-					errorstream<<"generateImage(): Creating a dummy"
-						<<" image for \""<<part_of_name<<"\""<<std::endl;
-				} else {
-					infostream<<"generateImage(): Could not load normal map \""
-						<<part_of_name<<"\""<<std::endl;
-					infostream<<"generateImage(): Creating a dummy"
-						<<" normal map for \""<<part_of_name<<"\""<<std::endl;
+
+				// Do not create normalmap dummies
+				if (part_of_name.find("_normal.png") != std::string::npos) {
+					warningstream << "generateImage(): Could not load normal map \""
+						<< part_of_name << "\"" << std::endl;
+					return true;
 				}
+
+				errorstream << "generateImage(): Could not load image \""
+					<< part_of_name << "\" while building texture; "
+					"Creating a dummy image" << std::endl;
 			}
 
 			// Just create a dummy image
@@ -1660,6 +1733,30 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 		}
 		/*
+		[multiply:color
+			multiplys a given color to any pixel of an image
+			color = color as ColorString
+		*/
+		else if (str_starts_with(part_of_name, "[multiply:")) {
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			std::string color_str = sf.next(":");
+
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			video::SColor color;
+
+			if (!parseColorString(color_str, color, false))
+				return false;
+
+			apply_multiplication(baseimg, v2u32(0, 0), baseimg->getDimension(), color);
+		}
+		/*
 			[colorize:color
 			Overlays image with given color
 			color = color as ColorString
@@ -1716,6 +1813,12 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				 * equal to the target minimum.  If e.g. this is a vertical frames
 				 * animation, the short dimension will be the real size.
 				 */
+				if ((dim.Width == 0) || (dim.Height == 0)) {
+					errorstream << "generateImagePart(): Illegal 0 dimension "
+						<< "for part_of_name=\""<< part_of_name
+						<< "\", cancelling." << std::endl;
+					return false;
+				}
 				u32 xscale = scaleto / dim.Width;
 				u32 yscale = scaleto / dim.Height;
 				u32 scale = (xscale > yscale) ? xscale : yscale;
@@ -1823,9 +1926,52 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			for (u32 x = 0; x < dim.Width; x++)
 			{
 				video::SColor c = baseimg->getPixel(x, y);
-				c.color ^= mask;	
+				c.color ^= mask;
 				baseimg->setPixel(x, y, c);
 			}
+		}
+		/*
+			[sheet:WxH:X,Y
+			Retrieves a tile at position X,Y (in tiles)
+			from the base image it assumes to be a
+			tilesheet with dimensions W,H (in tiles).
+		*/
+		else if (part_of_name.substr(0,7) == "[sheet:") {
+			if (baseimg == NULL) {
+				errorstream << "generateImagePart(): baseimg != NULL "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			Strfnd sf(part_of_name);
+			sf.next(":");
+			u32 w0 = stoi(sf.next("x"));
+			u32 h0 = stoi(sf.next(":"));
+			u32 x0 = stoi(sf.next(","));
+			u32 y0 = stoi(sf.next(":"));
+
+			core::dimension2d<u32> img_dim = baseimg->getDimension();
+			core::dimension2d<u32> tile_dim(v2u32(img_dim) / v2u32(w0, h0));
+
+			video::IImage *img = driver->createImage(
+					video::ECF_A8R8G8B8, tile_dim);
+			if (!img) {
+				errorstream << "generateImagePart(): Could not create image "
+						<< "for part_of_name=\"" << part_of_name
+						<< "\", cancelling." << std::endl;
+				return false;
+			}
+
+			img->fill(video::SColor(0,0,0,0));
+			v2u32 vdim(tile_dim);
+			core::rect<s32> rect(v2s32(x0 * vdim.X, y0 * vdim.Y), tile_dim);
+			baseimg->copyToWithAlpha(img, v2s32(0), rect,
+					video::SColor(255,255,255,255), NULL);
+
+			// Replace baseimg
+			baseimg->drop();
+			baseimg = img;
 		}
 		else
 		{
@@ -1920,7 +2066,7 @@ static void blit_with_interpolate_overlay(video::IImage *src, video::IImage *dst
 	Apply color to destination
 */
 static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
-		video::SColor color, int ratio, bool keep_alpha)
+		const video::SColor &color, int ratio, bool keep_alpha)
 {
 	u32 alpha = color.getAlpha();
 	video::SColor dst_c;
@@ -1951,6 +2097,27 @@ static void apply_colorize(video::IImage *dst, v2u32 dst_pos, v2u32 size,
 				dst->setPixel(x, y, dst_c);
 			}
 		}
+	}
+}
+
+/*
+	Apply color to destination
+*/
+static void apply_multiplication(video::IImage *dst, v2u32 dst_pos, v2u32 size,
+		const video::SColor &color)
+{
+	video::SColor dst_c;
+
+	for (u32 y = dst_pos.Y; y < dst_pos.Y + size.Y; y++)
+	for (u32 x = dst_pos.X; x < dst_pos.X + size.X; x++) {
+		dst_c = dst->getPixel(x, y);
+		dst_c.set(
+				dst_c.getAlpha(),
+				(dst_c.getRed() * color.getRed()) / 255,
+				(dst_c.getGreen() * color.getGreen()) / 255,
+				(dst_c.getBlue() * color.getBlue()) / 255
+				);
+		dst->setPixel(x, y, dst_c);
 	}
 }
 
@@ -2171,7 +2338,8 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 	if (isKnownSourceImage("override_normal.png"))
 		return getTexture("override_normal.png");
 	std::string fname_base = name;
-	std::string normal_ext = "_normal.png";
+	static const char *normal_ext = "_normal.png";
+	static const u32 normal_ext_size = strlen(normal_ext);
 	size_t pos = fname_base.find(".");
 	std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
 	if (isKnownSourceImage(fname_normal)) {
@@ -2179,10 +2347,10 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 		size_t i = 0;
 		while ((i = fname_base.find(".", i)) != std::string::npos) {
 			fname_base.replace(i, 4, normal_ext);
-			i += normal_ext.length();
+			i += normal_ext_size;
 		}
 		return getTexture(fname_base);
-		}
+	}
 	return NULL;
 }
 

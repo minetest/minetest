@@ -50,6 +50,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		ContentFeatures and NodeDefManager use a different serialization
 		    format; better for future version cross-compatibility
 		Many things
+		Obsolete TOCLIENT_PLAYERITEM
 	PROTOCOL_VERSION 10:
 		TOCLIENT_PRIVILEGES
 		Version raised to force 'fly' and 'fast' privileges into effect.
@@ -104,7 +105,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL_VERSION 22:
 		add swap_node
 	PROTOCOL_VERSION 23:
-		TOSERVER_CLIENT_READY
+		Obsolete TOSERVER_RECEIVED_MEDIA
+		Server: Stop using TOSERVER_CLIENT_READY
 	PROTOCOL_VERSION 24:
 		ContentFeatures version 7
 		ContentFeatures: change number of special tiles to 6 (CF_SPECIAL_COUNT)
@@ -138,19 +140,34 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add nodedef v3 - connected nodeboxes
 	PROTOCOL_VERSION 28:
 		CPT2_MESHOPTIONS
+	PROTOCOL_VERSION 29:
+		Server doesn't accept TOSERVER_BREATH anymore
+		serialization of TileAnimation params changed
+		TAT_SHEET_2D
+		Removed client-sided chat perdiction
+	PROTOCOL VERSION 30:
+		New ContentFeatures serialization version
+		Add node and tile color and palette
+		Fix plantlike visual_scale being applied squared and add compatibility
+			with pre-30 clients by sending sqrt(visual_scale)
+	PROTOCOL VERSION 31:
+		Add tile overlay
+		Stop sending TOSERVER_CLIENT_READY
+	PROTOCOL VERSION 32:
+		Add fading sounds
 */
 
-#define LATEST_PROTOCOL_VERSION 28
+#define LATEST_PROTOCOL_VERSION 32
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 13
+#define SERVER_PROTOCOL_VERSION_MIN 24
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
 #define CLIENT_PROTOCOL_VERSION_MIN 25
-#define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 13
+#define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 24
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
@@ -567,6 +584,7 @@ enum ToClientCommand
 		foreach count:
 			u8 len
 			u8[len] param
+		u8 clouds (boolean)
 	*/
 
 	TOCLIENT_OVERRIDE_DAY_NIGHT_RATIO = 0x50,
@@ -593,6 +611,23 @@ enum ToClientCommand
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
 	/*
 		u32 id
+	*/
+
+	TOCLIENT_CLOUD_PARAMS = 0x54,
+	/*
+		f1000 density
+		u8[4] color_diffuse (ARGB)
+		u8[4] color_ambient (ARGB)
+		f1000 height
+		f1000 thickness
+		v2f1000 speed
+	*/
+
+	TOCLIENT_FADE_SOUND = 0x55,
+	/*
+		s32 sound_id
+		float step
+		float gain
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
@@ -833,7 +868,7 @@ enum ToServerCommand
 		<no payload data>
 	*/
 
-	TOSERVER_BREATH = 0x42,
+	TOSERVER_BREATH = 0x42, // Obsolete
 	/*
 		u16 breath
 	*/

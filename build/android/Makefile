@@ -35,7 +35,7 @@ TARGET_CXXFLAGS_ADDON = $(TARGET_CFLAGS_ADDON)
 TARGET_ARCH = armv7
 CROSS_PREFIX = arm-linux-androideabi-
 COMPILER_VERSION = 4.9
-HAVE_LEVELDB = 1
+HAVE_LEVELDB = 0
 
 ################################################################################
 # toolchain config for little endian mips
@@ -59,7 +59,7 @@ HAVE_LEVELDB = 1
 #CROSS_PREFIX = i686-linux-android-
 #TARGET_ARCH = x86
 #COMPILER_VERSION = 4.9
-#HAVE_LEVELDB = 1
+#HAVE_LEVELDB = 0
 
 ################################################################################
 ASSETS_TIMESTAMP = deps/assets_timestamp
@@ -84,14 +84,14 @@ OGG_TIMESTAMP = $(OGG_DIR)timestamp
 OGG_TIMESTAMP_INT = $(ANDR_ROOT)/deps/ogg_timestamp
 OGG_URL_GIT = https://github.com/vincentjames501/libvorbis-libogg-android
 
-IRRLICHT_REVISION = 5122
+IRRLICHT_REVISION = 5145
 IRRLICHT_DIR = $(ANDR_ROOT)/deps/irrlicht/
 IRRLICHT_LIB = $(IRRLICHT_DIR)lib/Android/libIrrlicht.a
 IRRLICHT_TIMESTAMP = $(IRRLICHT_DIR)timestamp
 IRRLICHT_TIMESTAMP_INT = $(ANDR_ROOT)/deps/irrlicht_timestamp
 IRRLICHT_URL_SVN = https://svn.code.sf.net/p/irrlicht/code/branches/ogl-es@$(IRRLICHT_REVISION)
 
-OPENSSL_VERSION = 1.0.2j
+OPENSSL_VERSION = 1.0.2k
 OPENSSL_BASEDIR = openssl-$(OPENSSL_VERSION)
 OPENSSL_DIR = $(ANDR_ROOT)/deps/$(OPENSSL_BASEDIR)/
 OPENSSL_LIB = $(OPENSSL_DIR)/libssl.so.1.0.0
@@ -99,7 +99,7 @@ OPENSSL_TIMESTAMP = $(OPENSSL_DIR)timestamp
 OPENSSL_TIMESTAMP_INT = $(ANDR_ROOT)/deps/openssl_timestamp
 OPENSSL_URL = https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz
 
-CURL_VERSION = 7.52.0
+CURL_VERSION = 7.54.0
 CURL_DIR = $(ANDR_ROOT)/deps/curl-$(CURL_VERSION)
 CURL_LIB = $(CURL_DIR)/lib/.libs/libcurl.a
 CURL_TIMESTAMP = $(CURL_DIR)/timestamp
@@ -126,8 +126,8 @@ ICONV_TIMESTAMP = $(ICONV_DIR)timestamp
 ICONV_TIMESTAMP_INT = $(ANDR_ROOT)/deps/iconv_timestamp
 ICONV_URL_HTTP = https://ftp.gnu.org/pub/gnu/libiconv/libiconv-$(ICONV_VERSION).tar.gz
 
-SQLITE3_FOLDER = sqlite-amalgamation-3150200
-SQLITE3_URL = https://www.sqlite.org/2016/$(SQLITE3_FOLDER).zip
+SQLITE3_FOLDER = sqlite-amalgamation-3180000
+SQLITE3_URL = https://www.sqlite.org/2017/$(SQLITE3_FOLDER).zip
 
 ANDROID_SDK = $(shell grep '^sdk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
 ANDROID_NDK = $(shell grep '^ndk\.dir' local.properties | sed 's/^.*=[[:space:]]*//')
@@ -352,7 +352,7 @@ leveldb_download :
 	fi
 
 leveldb : $(LEVELDB_LIB)
-
+ifeq ($(HAVE_LEVELDB),1)
 $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	@REFRESH=0;                                                                \
 	if [ ! -e ${LEVELDB_TIMESTAMP_INT} ] ; then                                \
@@ -384,6 +384,7 @@ $(LEVELDB_LIB): $(LEVELDB_TIMESTAMP)
 	else                                                                       \
 		echo "nothing to be done for leveldb";                                 \
 	fi
+endif
 
 clean_leveldb :
 	$(RM) -rf deps/leveldb
@@ -679,8 +680,7 @@ deps/${SQLITE3_FOLDER}/sqlite3.c :
 	wget ${SQLITE3_URL};                                                        \
 	unzip ${SQLITE3_FOLDER}.zip;                                                \
 	ln -s ${SQLITE3_FOLDER} sqlite;                                             \
-	cd ${SQLITE3_FOLDER};                                                       \
-	patch sqlite3.c < ${ANDR_ROOT}/patches/sqlite3-readonly-fix.patch
+	cd ${SQLITE3_FOLDER};
 
 clean_sqlite3:
 	cd deps && $(RM) -rf ${SQLITE3_FOLDER} && $(RM) -f ${SQLITE3_FOLDER}.zip && \
@@ -781,7 +781,7 @@ apk: local.properties assets $(ICONV_LIB) $(IRRLICHT_LIB) $(CURL_LIB) $(GMP_LIB)
 	fi;                                                                        \
 	export VERSION_STR="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}" && \
 	export BUILD_TYPE_C=$$(echo "$${BUILD_TYPE}" | sed 's/./\U&/') &&          \
-	gradle assemble$$BUILD_TYPE_C &&                                           \
+	./gradlew assemble$$BUILD_TYPE_C &&                                           \
 	echo "APK stored at: build/outputs/apk/Minetest-$$BUILD_TYPE.apk" &&       \
 	echo "You can install it with \`make install_$$BUILD_TYPE\`"
 
@@ -795,11 +795,14 @@ install_release:
 
 prep_srcdir :
 	@if [ ! -e ${ANDR_ROOT}/jni/src ]; then                                    \
-		ln -s ${PROJ_ROOT}/src ${ANDR_ROOT}/jni/src;                           \
+		ln -s ${PROJ_ROOT}/src ${ANDR_ROOT}/jni/src;                       \
+	fi;                                                                        \
+	if [ ! -e ${ANDR_ROOT}/jni/lib ]; then                                     \
+		ln -s ${PROJ_ROOT}/lib ${ANDR_ROOT}/jni/lib;                       \
 	fi
 
 clean_apk :
-	gradle clean
+	./gradlew clean
 
 clean_all :
 	@$(MAKE) clean_apk;                                                        \

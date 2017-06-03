@@ -23,6 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "nodedef.h"
 
+/*!
+ * Applies shading to a color based on the surface's
+ * normal vector.
+ */
+void applyFacesShading(video::SColor &color, const v3f &normal);
+
 /*
 	Create a new cube mesh.
 	Vertices are at (+-scale.X/2, +-scale.Y/2, +-scale.Z/2).
@@ -43,16 +49,21 @@ void scaleMesh(scene::IMesh *mesh, v3f scale);
 */
 void translateMesh(scene::IMesh *mesh, v3f vec);
 
+/*!
+ * Sets a constant color for all vertices in the mesh buffer.
+ */
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
+
 /*
 	Set a constant color for all vertices in the mesh
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
-/*
-	Shade mesh faces according to their normals
-*/
-
-void shadeMeshFaces(scene::IMesh *mesh);
+/*!
+ * Overwrites the color of a mesh buffer.
+ * The color is darkened based on the normal vector of the vertices.
+ */
+void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
 
 /*
 	Set the color of all vertices in the mesh.
@@ -80,14 +91,20 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
+
+/*
+ *  Clone the mesh buffer.
+ *  The returned pointer should be dropped.
+ */
+scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
  
 /*
 	Clone the mesh.
 */
-scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
+scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
-	Convert nodeboxes to mesh.
+	Convert nodeboxes to mesh. Each tile goes into a different buffer.
 	boxes - set of nodeboxes to be converted into cuboids
 	uv_coords[24] - table of texture uv coords for each cuboid face
 	expand - factor by which cuboids will be resized

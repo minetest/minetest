@@ -28,9 +28,9 @@ enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_TEST = 1,
 // Deprecated stuff
 	ACTIVEOBJECT_TYPE_ITEM = 2,
-	ACTIVEOBJECT_TYPE_RAT = 3,
-	ACTIVEOBJECT_TYPE_OERKKI1 = 4,
-	ACTIVEOBJECT_TYPE_FIREFLY = 5,
+//	ACTIVEOBJECT_TYPE_RAT = 3,
+//	ACTIVEOBJECT_TYPE_OERKKI1 = 4,
+//	ACTIVEOBJECT_TYPE_FIREFLY = 5,
 	ACTIVEOBJECT_TYPE_MOBV2 = 6,
 // End deprecated stuff
 	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
@@ -43,7 +43,7 @@ enum ActiveObjectType {
 
 struct ActiveObjectMessage
 {
-	ActiveObjectMessage(u16 id_, bool reliable_=true, std::string data_=""):
+	ActiveObjectMessage(u16 id_, bool reliable_=true, const std::string &data_ = "") :
 		id(id_),
 		reliable(reliable_),
 		datastring(data_)
@@ -64,7 +64,7 @@ public:
 		m_id(id)
 	{
 	}
-	
+
 	u16 getId()
 	{
 		return m_id;
@@ -76,8 +76,8 @@ public:
 	}
 
 	virtual ActiveObjectType getType() const = 0;
-	virtual bool getCollisionBox(aabb3f *toset) = 0;
-	virtual bool collideWithObjects() = 0;
+	virtual bool getCollisionBox(aabb3f *toset) const = 0;
+	virtual bool collideWithObjects() const = 0;
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };

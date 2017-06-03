@@ -38,30 +38,30 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline u8 diminish_light(u8 light)
 {
-	if(light == 0)
+	if (light == 0)
 		return 0;
-	if(light >= LIGHT_MAX)
+	if (light >= LIGHT_MAX)
 		return LIGHT_MAX - 1;
-		
+
 	return light - 1;
 }
 
 inline u8 diminish_light(u8 light, u8 distance)
 {
-	if(distance >= light)
+	if (distance >= light)
 		return 0;
-	return  light - distance;
+	return light - distance;
 }
 
 inline u8 undiminish_light(u8 light)
 {
 	// We don't know if light should undiminish from this particular 0.
 	// Thus, keep it at 0.
-	if(light == 0)
+	if (light == 0)
 		return 0;
-	if(light == LIGHT_MAX)
+	if (light == LIGHT_MAX)
 		return light;
-	
+
 	return light + 1;
 }
 
@@ -85,9 +85,9 @@ extern const u8 *light_decode_table;
 // 0 <= return value <= 255
 inline u8 decode_light(u8 light)
 {
-	if(light > LIGHT_MAX)
+	if (light > LIGHT_MAX)
 		light = LIGHT_MAX;
-	
+
 	return light_decode_table[light];
 }
 
@@ -97,12 +97,12 @@ inline float decode_light_f(float light_f)
 {
 	s32 i = (u32)(light_f * LIGHT_MAX + 0.5);
 
-	if(i <= 0)
+	if (i <= 0)
 		return (float)light_decode_table[0] / 255.0;
-	if(i >= LIGHT_MAX)
+	if (i >= LIGHT_MAX)
 		return (float)light_decode_table[LIGHT_MAX] / 255.0;
 
-	float v1 = (float)light_decode_table[i-1] / 255.0;
+	float v1 = (float)light_decode_table[i - 1] / 255.0;
 	float v2 = (float)light_decode_table[i] / 255.0;
 	float f0 = (float)i - 0.5;
 	float f = light_f * LIGHT_MAX - f0;
@@ -119,11 +119,10 @@ void set_light_table(float gamma);
 inline u8 blend_light(u32 daylight_factor, u8 lightday, u8 lightnight)
 {
 	u32 c = 1000;
-	u32 l = ((daylight_factor * lightday + (c-daylight_factor) * lightnight))/c;
-	if(l > LIGHT_SUN)
+	u32 l = ((daylight_factor * lightday + (c - daylight_factor) * lightnight)) / c;
+	if (l > LIGHT_SUN)
 		l = LIGHT_SUN;
 	return l;
 }
 
 #endif
-

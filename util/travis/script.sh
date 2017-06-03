@@ -1,30 +1,49 @@
 #!/bin/bash -e
 . util/travis/common.sh
+. util/travis/lint.sh
 
 needs_compile || exit 0
+
+if [[ "$LINT" == "1" ]]; then
+	# Lint with exit CI
+	perform_lint
+	exit 0
+fi
 
 if [[ $PLATFORM == "Unix" ]]; then
 	mkdir -p travisbuild
 	cd travisbuild || exit 1
+
 	CMAKE_FLAGS=''
 	if [[ $COMPILER == "g++-6" ]]; then
 		export CC=gcc-6
 		export CXX=g++-6
 	fi
+
 	# Clang builds with FreeType fail on Travis
 	if [[ $CC == "clang" ]]; then
 		CMAKE_FLAGS+=' -DENABLE_FREETYPE=FALSE'
 	fi
+
 	if [[ $TRAVIS_OS_NAME == "osx" ]]; then
 		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
 	fi
+
 	cmake -DCMAKE_BUILD_TYPE=Debug \
 		-DRUN_IN_PLACE=TRUE \
 		-DENABLE_GETTEXT=TRUE \
+		-DBUILD_SERVER=TRUE \
 		$CMAKE_FLAGS ..
 	make -j2
+
 	echo "Running unit tests."
-	../bin/minetest --run-unittests && exit 0
+	CMD="../bin/minetest --run-unittests"
+	if [[ "$VALGRIND" == "1" ]]; then
+		valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ${CMD} && exit 0
+	else
+		${CMD} && exit 0
+	fi
+
 elif [[ $PLATFORM == Win* ]]; then
 	[[ $CC == "clang" ]] && exit 1 # Not supposed to happen
 	# We need to have our build directory outside of the minetest directory because

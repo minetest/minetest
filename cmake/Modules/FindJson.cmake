@@ -20,8 +20,7 @@ endif()
 
 if(NOT JSONCPP_FOUND)
 	message(STATUS "Using bundled JSONCPP library.")
-	set(JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/jsoncpp)
+	set(JSON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib/jsoncpp)
 	set(JSON_LIBRARY jsoncpp)
-	add_subdirectory(jsoncpp/json)
+	add_subdirectory(lib/jsoncpp)
 endif()
-

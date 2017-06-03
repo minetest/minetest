@@ -87,6 +87,14 @@
 #    type: bool
 # enable_joysticks = false
 
+#    The identifier of the joystick to use
+#    type: int
+# joystick_id = 0
+
+#    The type of joystick
+#    type: enum values: auto, generic, xbox
+# joystick_type = auto
+
 #    The time in seconds it takes between repeated events
 #    when holding down a joystick button combination.
 #    type: float
@@ -148,6 +156,11 @@
 #    type: key
 # keymap_cmd = /
 
+#    Key for opening the chat window to type local commands.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_cmd_local = .
+
 #    Key for opening the chat console.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -172,6 +185,31 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_noclip = KEY_KEY_H
+
+#    Key for selecting the next item in the hotbar.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_hotbar_next = KEY_KEY_N
+
+#    Key for selecting the previous item in the hotbar.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_hotbar_previous = KEY_KEY_B
+
+#    Key for muting the game.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_mute = KEY_KEY_M
+
+#    Key for increasing the volume.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_increase_volume =
+
+#    Key for decreasing the volume.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_decrease_volume =
 
 #    Key for toggling autorun.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -198,6 +236,11 @@
 #    type: key
 # keymap_drop = KEY_KEY_Q
 
+#    Key to use view zoom when possible.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_zoom = KEY_KEY_Z
+
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -207,6 +250,11 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_toggle_chat = KEY_F2
+
+#    Key for toggling the display of the large chat console.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_console = KEY_F10
 
 #    Key for toggling the display of the fog.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
@@ -282,6 +330,11 @@
 #    type: bool
 # enable_remote_media_server = true
 
+#    Enable Lua modding support on client.
+#    This support is experimental and API can change.
+#    type: bool
+# enable_client_modding = false
+
 #    URL to the server list displayed in the Multiplayer Tab.
 #    type: string
 # serverlist_url = servers.minetest.net
@@ -289,6 +342,10 @@
 #    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
 #    type: string
 # serverlist_file = favoriteservers.txt
+
+#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+#    type: int min: -1
+max_out_chat_queue_size = 20
 
 ## Graphics
 
@@ -329,8 +386,12 @@
 # enable_3d_clouds = true
 
 #    Method used to highlight selected object.
-#    type: enum values: box, halo
+#    type: enum values: box, halo, none
 # node_highlighting = box
+
+#    Adds particles when digging a node.
+#    type: bool
+# enable_particles = true
 
 #### Filtering
 
@@ -372,12 +433,22 @@
 #    type: enum values: 0, 1, 2, 4, 8, 16
 # fsaa = 0
 
+#    Undersampling is similar to using lower screen resolution, but it applies
+#    to the game world only, keeping the GUI intact.
+#    It should give significant performance boost at the cost of less detailed image.
+#    type: enum values: 0, 2, 3, 4
+# undersampling = 0
+
 #### Shaders
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
-#    Thy only work with the OpenGL video backend.
+#    This only works with the OpenGL video backend.
 #    type: bool
 # enable_shaders = true
+
+#    Path to shader directory. If no path is defined, default location will be used.
+#    type: path
+# shader_path =
 
 ##### Tone Mapping
 
@@ -421,7 +492,7 @@
 
 #    Strength of parallax.
 #    type: float
-# 3d_parallax_strength = 0.025
+# 3d_paralax_strength = 0.025
 
 #    Number of parallax occlusion iterations.
 #    type: int
@@ -484,6 +555,10 @@
 #    type: int
 # screenH = 600
 
+#    Save the window size automatically when modified.
+#    type: bool
+# autosave_screensize = true
+
 #    Fullscreen mode.
 #    type: bool
 # fullscreen = false
@@ -502,13 +577,13 @@
 
 #    Field of view while zooming in degrees.
 #    This requires the "zoom" privilege on the server.
-#    type: int min: 15 max: 160
+#    type: int min: 7 max: 160
 # zoom_fov = 15
 
-#    Adjust the gamma encoding for the light tables. Lower numbers are brighter.
+#    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
 #    type: float min: 1 max: 3
-# display_gamma = 1.8
+# display_gamma = 2.2
 
 #    Path to texture directory. All textures are first searched from here.
 #    type: path
@@ -527,7 +602,7 @@
 #    type: int
 # cloud_radius = 12
 
-#    Multiplier for view bobbing.
+#    Enable view bobbing and amount of view bobbing.
 #    For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double.
 #    type: float
 # view_bobbing_amount = 1.0
@@ -547,6 +622,10 @@
 #    -    pageflip: quadbuffer based 3d.
 #    type: enum values: none, anaglyph, interlaced, topbottom, sidebyside, pageflip
 # 3d_mode = none
+
+#    In-game chat console height, between 0.1 (10%) and 1.0 (100%).
+#    type: float min: 0.1 max: 1
+# console_height = 1.0
 
 #    In-game chat console background color (R,G,B).
 #    type: string
@@ -581,9 +660,24 @@
 #    type: float
 # hud_hotbar_max_width = 1.0
 
+#    Modifies the size of the hudbar elements.
+#    type: float
+# hud_scaling = 1.0
+
 #    Enables caching of facedir rotated meshes.
 #    type: bool
 # enable_mesh_cache = false
+
+#    Delay between mesh updates on the client in ms. Increasing this will slow
+#    down the rate of mesh updates, thus reducing jitter on slower clients.
+#    type: int min: 0 max: 50
+# mesh_generation_interval = 0
+
+#    Size of the MapBlock cache of the mesh generator. Increasing this will
+#    increase the cache hit %, reducing the data being copied from the main
+#    thread, thus reducing jitter.
+#    type: int min: 0 max: 1000
+# meshgen_block_cache_size = 20
 
 #    Enables minimap.
 #    type: bool
@@ -614,9 +708,18 @@
 #    type: bool
 # inventory_items_animations = false
 
+#    Android systems only: Tries to create inventory textures from meshes
+#    when no supported render was found.
+#    type: bool
+# inventory_image_hack = false
+
 #    Fraction of the visible distance at which fog starts to be rendered
 #    type: float min: 0 max: 0.99
 # fog_start = 0.4
+
+#    Makes all liquids opaque
+#    type: bool
+# opaque_water = false
 
 ### Menus
 
@@ -706,6 +809,11 @@
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 #    type: int
 # screen_dpi = 72
+
+#    Windows systems only: Start Minetest with the command line window in the background.
+#    Contains the same information as the file debug.txt (default name).
+#    type: bool
+# enable_console = false
 
 ## Sound
 
@@ -841,9 +949,17 @@
 #    type: int
 # item_entity_ttl = 900
 
+#    If enabled, show the server status message on player connection.
+#    type: bool
+# show_statusline_on_connect = true
+
 #    Enable players getting damage and dying.
 #    type: bool
 # enable_damage = false
+
+#    Enable creative mode for new created maps.
+#    type: bool
+# creative_mode = false
 
 #    A chosen map seed for a new map, leave empty for random.
 #    Will be overridden when creating a new world in the main menu.
@@ -913,7 +1029,7 @@
 #    How large area of blocks are subject to the active block stuff, stated in mapblocks (16 nodes).
 #    In active blocks objects are loaded and ABMs run.
 #    type: int
-# active_block_range = 2
+# active_block_range = 3
 
 #    From how far blocks are sent to clients, stated in mapblocks (16 nodes).
 #    type: int
@@ -957,13 +1073,10 @@
 # movement_speed_fast = 20
 
 #    type: float
-# movement_speed_climb = 2
+# movement_speed_climb = 3
 
 #    type: float
 # movement_speed_jump = 6.5
-
-#    type: float
-# movement_speed_descend = 6
 
 #    type: float
 # movement_liquid_fluidity = 1
@@ -1019,7 +1132,7 @@
 
 #    Length of time between NodeTimer execution cycles
 #    type: float
-# nodetimer_interval = 1.0
+# nodetimer_interval = 0.2
 
 #    If enabled, invalid world data won't cause the server to shut down.
 #    Only enable this if you know what you are doing.
@@ -1048,6 +1161,13 @@
 #    type: int min: 2
 # block_send_optimize_distance = 4
 
+#    If enabled the server will perform map block occlusion culling based on
+#    on the eye position of the player. This can reduce the number of blocks
+#    sent to the client 50-80%. The client will not longer receive most invisible
+#    so that the utility of noclip mode is reduced.
+#    type: bool
+# server_side_occlusion_culling = true
+
 ## Mapgen
 
 #    Name of map generator to be used when creating a new world.
@@ -1063,14 +1183,11 @@
 #    type: int
 # max_block_generate_distance = 6
 
-#    Where the map generator stops.
-#    Please note:
-#    -    Limited to 31000 (setting above has no effect)
-#    -    The map generator works in groups of 80x80x80 nodes (5x5x5 MapBlocks).
-#    -    Those groups have an offset of -32, -32 nodes from the origin.
-#    -    Only groups which are within the map_generation_limit are generated
+#    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
+#    Only mapchunks completely within the mapgen limit are generated.
+#    Value is stored per-world.
 #    type: int min: 0 max: 31000
-# map_generation_limit = 31000
+# mapgen_limit = 31000
 
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
@@ -1110,120 +1227,134 @@
 #    type: int
 # num_emerge_threads = 1
 
-#### Noise parameters and formats
+#### Biome API temperature and humidity noise parameters
 
-#    Noise parameters can be specified as a set of positional values, for example:
-#    Offset, scale, (spread factors), seed offset, number of octaves, persistence, lacunarity
-# mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
-#    Or the group format can be used instead, for example:
-# mgv6_np_terrain_base = {
-#    offset      = -4,
-#    scale       = 20,
-#    spread      = (250, 250, 250),
-#    seed        = 82341,
-#    octaves     = 5,
-#    persistence = 0.6,
-#    lacunarity  = 2.0,
-#    flags       = "defaults"
-# }
-#    Only the group format supports noise flags which are needed for eased noise.
-#    Mgv5 uses eased noise for np_ground so this is shown in group format below.
-
-#    Noise parameters for biome API temperature, humidity and biome blend.
+#    Temperature variation for biomes.
 #    type: noise_params
-# mg_biome_np_heat = 50, 50, (750, 750, 750), 5349, 3, 0.5, 2.0
+# mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
 
+#    Small-scale temperature variation for blending biomes on borders.
 #    type: noise_params
 # mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
 
+#    Humidity variation for biomes.
 #    type: noise_params
-# mg_biome_np_humidity = 50, 50, (750, 750, 750), 842, 3, 0.5, 2.0
+# mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
 
+#    Small-scale humidity variation for blending biomes on borders.
 #    type: noise_params
 # mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
 
 #### Mapgen v5
 
+#    Map generation attributes specific to Mapgen v5.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: caverns, nocaverns
+# mgv5_spflags = caverns
+
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
 # mgv5_cave_width = 0.125
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv5_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv5_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv5_cavern_threshold = 0.7
+
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
 
+#    Variation of terrain vertical scale.
+#    When noise is < -0.55 terrain is near-flat.
 #    type: noise_params
 # mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
 
+#    Y-level of average terrain surface.
 #    type: noise_params
 # mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
 
-#    Noise parameters in group format, unsupported by advanced settings
-#    menu but settable in minetest.conf.
-#    See documentation of noise parameter formats above.
-# mgv5_np_ground = {
-#    offset      = 0,
-#    scale       = 40,
-#    spread      = (80, 80, 80),
-#    seed        = 983240,
-#    octaves     = 4,
-#    persistence = 0.55,
-#    lacunarity  = 2.0,
-#    flags       = "eased"
-# }
+#    3D noise defining giant caverns.
+#    type: noise_params
+# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #### Mapgen v6
 
 #    Map generation attributes specific to Mapgen v6.
-#    When snowbiomes are enabled jungles are automatically enabled, the 'jungles' flag is ignored.
+#    The 'snowbiomes' flag enables the new 5 biome system.
+#    When the new biome system is enabled jungles are automatically enabled and
+#    the 'jungles' flag is ignored.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 #    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
 # mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
 
-#    Controls size of deserts and beaches in Mapgen v6.
-#    When snowbiomes are enabled 'mgv6_freq_desert' is ignored.
+#    Deserts occur when np_biome exceeds this value.
+#    When the new biome system is enabled, this is ignored.
 #    type: float
 # mgv6_freq_desert = 0.45
 
+#    Sandy beaches occur when np_beach exceeds this value.
 #    type: float
 # mgv6_freq_beach = 0.15
 
+#    Y-level of lower terrain and lakebeds.
 #    type: noise_params
 # mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
 
+#    Y-level of higher (cliff-top) terrain.
 #    type: noise_params
 # mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
 
+#    Varies steepness of cliffs.
 #    type: noise_params
 # mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
 
+#    Defines areas of 'terrain_higher' (cliff-top terrain).
 #    type: noise_params
 # mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
 
+#    Varies depth of biome surface nodes.
 #    type: noise_params
 # mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
 
+#    Defines areas with sandy beaches.
 #    type: noise_params
 # mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
 
+#    Temperature variation for biomes.
 #    type: noise_params
 # mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
 
+#    Variation of number of caves.
 #    type: noise_params
 # mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
 
+#    Humidity variation for biomes.
 #    type: noise_params
 # mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
 
+#    Defines tree areas and tree density.
 #    type: noise_params
 # mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
 
+#    Defines areas where trees have apples.
 #    type: noise_params
 # mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
 
@@ -1234,8 +1365,8 @@
 #    Floatlands are currently experimental and subject to change.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, nomountains, noridges, nofloatlands
-# mgv7_spflags = mountains,ridges
+#    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -1258,42 +1389,74 @@
 #    type: int
 # mgv7_shadow_limit = 1024
 
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv7_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv7_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv7_cavern_threshold = 0.7
+
+#    Y-level of higher (cliff-top) terrain.
 #    type: noise_params
 # mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
 
+#    Y-level of lower terrain and lakebeds.
 #    type: noise_params
 # mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
 
+#    Varies roughness of terrain.
+#    Defines the 'persistence' value for terrain_base and terrain_alt noises.
 #    type: noise_params
 # mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
 
+#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
 #    type: noise_params
 # mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    Variation of maximum mountain height (in nodes).
 #    type: noise_params
 # mgv7_np_mount_height = 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
 
+#    Defines large-scale river channel structure.
 #    type: noise_params
 # mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
 
+#    Defines areas of floatland smooth terrain.
+#    Smooth floatlands occur when noise > 0.
 #    type: noise_params
 # mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
 
+#    Variation of hill height and lake depth on floatland smooth terrain.
 #    type: noise_params
 # mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
 
+#    3D noise defining mountain structure and height.
+#    Also defines structure of floatland mountain terrain.
 #    type: noise_params
 # mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 
+#    3D noise defining structure of river canyon walls.
 #    type: noise_params
 # mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
+#    3D noise defining giant caverns.
+#    type: noise_params
+# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
@@ -1303,8 +1466,8 @@
 #    Occasional lakes and hills can be added to the flat world.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: lakes, hills, , nolakes, nohills
-# mgflat_spflags =
+#    type: flags possible values: lakes, hills, nolakes, nohills
+# mgflat_spflags = nolakes,nohills
 
 #    Y of flat ground.
 #    type: int
@@ -1338,18 +1501,19 @@
 #    type: float
 # mgflat_hill_steepness = 64.0
 
-#    Determines terrain shape.
-#    The 3 numbers in brackets control the scale of the
-#    terrain, the 3 numbers should be identical.
+#    Defines location and terrain of optional hills and lakes.
 #    type: noise_params
 # mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
@@ -1425,15 +1589,19 @@
 #    type: float
 # mgfractal_julia_w = 0.33
 
+#    Y-level of seabed.
 #    type: noise_params
 # mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
 
+#    Variation of biome filler depth.
 #    type: noise_params
 # mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
 
+#    First of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
+#    Second of 2 3D noises that together define tunnels.
 #    type: noise_params
 # mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
@@ -1530,7 +1698,7 @@
 
 #    Prevent mods from doing insecure things like running shell commands.
 #    type: bool
-# secure.enable_security = false
+# secure.enable_security = true
 
 #    Comma-separated list of trusted mods that are allowed to access insecure
 #    functions even when mod security is on (via request_insecure_environment()).
@@ -1558,7 +1726,6 @@
 # profiler.default_report_format = txt
 
 #    The file path relative to your worldpath in which profiles will be saved to.
-#    
 #    type: string
 # profiler.report_path = ""
 
@@ -1622,7 +1789,7 @@
 #    -    action
 #    -    info
 #    -    verbose
-#    type: enum values: , warning, action, info, verbose
+#    type: enum values: , none, error, warning, action, info, verbose
 # debug_log_level = action
 
 #    IPv6 support.
@@ -1674,4 +1841,3 @@
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
-

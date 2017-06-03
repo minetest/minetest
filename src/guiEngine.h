@@ -80,7 +80,7 @@ public:
 	 * receive text/events transmitted by guiFormSpecMenu
 	 * @param text textual representation of event
 	 */
-	void gotText(std::wstring text);
+	void gotText(const std::wstring &text);
 
 private:
 	/** target to transmit data to */
@@ -139,6 +139,7 @@ private:
 class GUIEngine {
 	/** grant ModApiMainMenu access to private members */
 	friend class ModApiMainMenu;
+	friend class ModApiSound;
 
 public:
 	/**
@@ -177,7 +178,8 @@ public:
 	}
 
 	/** pass async callback to scriptengine **/
-	unsigned int queueAsync(std::string serialized_fct,std::string serialized_params);
+	unsigned int queueAsync(const std::string &serialized_fct,
+			const std::string &serialized_params);
 
 private:
 
@@ -186,9 +188,6 @@ private:
 
 	/** run main menu loop */
 	void run();
-
-	/** handler to limit frame rate within main menu */
-	void limitFrameRate();
 
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
@@ -261,13 +260,10 @@ private:
 	 * @param url url to download
 	 * @param target file to store to
 	 */
-	static bool downloadFile(std::string url,std::string target);
+	static bool downloadFile(const std::string &url, const std::string &target);
 
 	/** array containing pointers to current specified texture layers */
 	image_definition m_textures[TEX_LAYER_MAX];
-
-	/** draw version string in topleft corner */
-	void drawVersion();
 
 	/**
 	 * specify text to appear as top left string

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "player.h"
 #include "log.h"
+#include <algorithm>
 
 // request_shutdown()
 int ModApiServer::l_request_shutdown(lua_State *L)
@@ -33,7 +34,8 @@ int ModApiServer::l_request_shutdown(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	const char *msg = lua_tolstring(L, 1, NULL);
 	bool reconnect = lua_toboolean(L, 2);
-	getServer(L)->requestShutdown(msg ? msg : "", reconnect);
+	float seconds_before_shutdown = lua_tonumber(L, 3);
+	getServer(L)->requestShutdown(msg ? msg : "", reconnect, seconds_before_shutdown);
 	return 0;
 }
 
@@ -102,7 +104,7 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	int table = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
 	for(std::set<std::string>::const_iterator
-			i = privs_s.begin(); i != privs_s.end(); i++){
+			i = privs_s.begin(); i != privs_s.end(); ++i){
 		lua_pushboolean(L, true);
 		lua_setfield(L, table, i->c_str());
 	}
@@ -136,7 +138,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	}
 }
 
-// get_player_information()
+// get_player_information(name)
 int ModApiServer::l_get_player_information(lua_State *L)
 {
 
@@ -230,13 +232,13 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushnumber(L, uptime);
 	lua_settable(L, table);
 
+	lua_pushstring(L,"protocol_version");
+	lua_pushnumber(L, prot_vers);
+	lua_settable(L, table);
+	
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, ser_vers);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"protocol_version");
-	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
 
 	lua_pushstring(L,"major");
@@ -333,6 +335,22 @@ int ModApiServer::l_kick_player(lua_State *L)
 	return 1;
 }
 
+int ModApiServer::l_remove_player(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	std::string name = luaL_checkstring(L, 1);
+	ServerEnvironment *s_env = dynamic_cast<ServerEnvironment *>(getEnv(L));
+	assert(s_env);
+
+	RemotePlayer *player = s_env->getPlayer(name.c_str());
+	if (!player)
+		lua_pushinteger(L, s_env->removePlayerFromDatabase(name) ? 0 : 1);
+	else
+		lua_pushinteger(L, 2);
+
+	return 1;
+}
+
 // unban_player_or_ip()
 int ModApiServer::l_unban_player_or_ip(lua_State *L)
 {
@@ -400,7 +418,7 @@ int ModApiServer::l_get_modnames(lua_State *L)
 	// Package them up for Lua
 	lua_createtable(L, modlist.size(), 0);
 	std::vector<std::string>::iterator iter = modlist.begin();
-	for (u16 i = 0; iter != modlist.end(); iter++) {
+	for (u16 i = 0; iter != modlist.end(); ++iter) {
 		lua_pushstring(L, iter->c_str());
 		lua_rawseti(L, -2, ++i);
 	}
@@ -435,6 +453,16 @@ int ModApiServer::l_sound_stop(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	int handle = luaL_checkinteger(L, 1);
 	getServer(L)->stopSound(handle);
+	return 0;
+}
+
+int ModApiServer::l_sound_fade(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	s32 handle = luaL_checkinteger(L, 1);
+	float step = luaL_checknumber(L, 2);
+	float gain = luaL_checknumber(L, 3);
+	getServer(L)->fadeSound(handle, step, gain);
 	return 0;
 }
 
@@ -482,36 +510,6 @@ int ModApiServer::l_set_last_run_mod(lua_State *L)
 	return 0;
 }
 
-#ifndef NDEBUG
-// cause_error(type_of_error)
-int ModApiServer::l_cause_error(lua_State *L)
-{
-	NO_MAP_LOCK_REQUIRED;
-	std::string type_of_error = "none";
-	if(lua_isstring(L, 1))
-		type_of_error = lua_tostring(L, 1);
-
-	errorstream << "Error handler test called, errortype=" << type_of_error << std::endl;
-
-	if(type_of_error == "segv") {
-		volatile int* some_pointer = 0;
-		errorstream << "Cause a sigsegv now: " << (*some_pointer) << std::endl;
-
-	} else if (type_of_error == "zerodivision") {
-
-		unsigned int some_number = porting::getTimeS();
-		unsigned int zerovalue = 0;
-		unsigned int result = some_number / zerovalue;
-		errorstream << "Well this shouldn't ever be shown: " << result << std::endl;
-
-	} else if (type_of_error == "exception") {
-		throw BaseException("Errorhandler test fct called");
-	}
-
-	return 0;
-}
-#endif
-
 void ModApiServer::Initialize(lua_State *L, int top)
 {
 	API_FCT(request_shutdown);
@@ -531,6 +529,7 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(show_formspec);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_fade);
 
 	API_FCT(get_player_information);
 	API_FCT(get_player_privs);
@@ -539,12 +538,10 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(get_ban_description);
 	API_FCT(ban_player);
 	API_FCT(kick_player);
+	API_FCT(remove_player);
 	API_FCT(unban_player_or_ip);
 	API_FCT(notify_authentication_modified);
 
 	API_FCT(get_last_run_mod);
 	API_FCT(set_last_run_mod);
-#ifndef NDEBUG
-	API_FCT(cause_error);
-#endif
 }

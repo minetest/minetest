@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -31,8 +31,8 @@ class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_flat[];
 
-
-struct MapgenFlatParams : public MapgenParams {
+struct MapgenFlatParams : public MapgenParams
+{
 	u32 spflags;
 	s16 ground_level;
 	s16 large_cave_depth;
@@ -53,7 +53,8 @@ struct MapgenFlatParams : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenFlat : public MapgenBasic {
+class MapgenFlat : public MapgenBasic
+{
 public:
 	MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge);
 	~MapgenFlat();

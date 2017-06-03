@@ -15,10 +15,18 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+local function get_bool_default(name, default)
+	local val = core.settings:get_bool(name)
+	if val == nil then
+		return default
+	end
+	return val
+end
+
 local profiler_path = core.get_builtin_path()..DIR_DELIM.."profiler"..DIR_DELIM
 local profiler = {}
 local sampler = assert(loadfile(profiler_path .. "sampling.lua"))(profiler)
-local instrumentation  = assert(loadfile(profiler_path .. "instrumentation.lua"))(profiler, sampler)
+local instrumentation  = assert(loadfile(profiler_path .. "instrumentation.lua"))(profiler, sampler, get_bool_default)
 local reporter = dofile(profiler_path .. "reporter.lua")
 profiler.instrument = instrumentation.instrument
 
@@ -27,7 +35,7 @@ profiler.instrument = instrumentation.instrument
 -- Is called later, after `core.register_chatcommand` was set up.
 --
 function profiler.init_chatcommand()
-	local instrument_profiler = core.setting_getbool("instrument.profiler") or false
+	local instrument_profiler = get_bool_default("instrument.profiler", false)
 	if instrument_profiler then
 		instrumentation.init_chatcommand()
 	end

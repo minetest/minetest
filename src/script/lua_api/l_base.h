@@ -22,11 +22,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "common/c_types.h"
 #include "common/c_internal.h"
+#include "gamedef.h"
 
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
 }
+
+#ifndef SERVER
+#include "client.h"
+#endif
 
 class ScriptApiBase;
 class Server;
@@ -38,6 +43,12 @@ class ModApiBase {
 public:
 	static ScriptApiBase*   getScriptApiBase(lua_State *L);
 	static Server*          getServer(lua_State *L);
+	#ifndef SERVER
+	static Client*          getClient(lua_State *L);
+	#endif // !SERVER
+
+	static IGameDef*        getGameDef(lua_State *L);
+
 	static Environment*     getEnv(lua_State *L);
 	static GUIEngine*       getGuiEngine(lua_State *L);
 	// When we are not loading the mod, this function returns "."
@@ -57,9 +68,8 @@ public:
 
 	static bool registerFunction(lua_State *L,
 			const char* name,
-			lua_CFunction fct,
-			int top
-			);
+			lua_CFunction func,
+			int top);
 };
 
 #endif /* L_BASE_H_ */

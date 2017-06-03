@@ -232,7 +232,7 @@ inline std::vector<std::basic_string<T> > str_split(
  */
 inline std::string lowercase(const std::string &str)
 {
-	std::string s2;
+	std::string s2 = "";
 
 	s2.reserve(str.size());
 
@@ -420,6 +420,18 @@ inline void str_replace(std::string &str, const std::string &pattern,
 		str.replace(start, pattern.size(), replacement);
 		start = str.find(pattern, start + replacement.size());
 	}
+}
+
+/**
+ * Escapes characters [ ] \ , ; that can not be used in formspecs
+ */
+inline void str_formspec_escape(std::string &str)
+{
+	str_replace(str, "\\", "\\\\");
+	str_replace(str, "]", "\\]");
+	str_replace(str, "[", "\\[");
+	str_replace(str, ";", "\\;");
+	str_replace(str, ",", "\\,");
 }
 
 /**
@@ -613,5 +625,29 @@ inline const char *bool_to_cstr(bool val)
 {
 	return val ? "true" : "false";
 }
+
+inline const std::string duration_to_string(int sec)
+{
+	int min = sec / 60;
+	sec %= 60;
+	int hour = min / 60;
+	min %= 60;
+
+	std::stringstream ss;
+	if (hour > 0) {
+		ss << hour << "h ";
+	}
+
+	if (min > 0) {
+		ss << min << "m ";
+	}
+
+	if (sec > 0) {
+		ss << sec << "s ";
+	}
+
+	return ss.str();
+}
+
 
 #endif

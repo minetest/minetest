@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
+#include "itemstackmetadata.h"
 #include <istream>
 #include <ostream>
 #include <string>
@@ -32,10 +33,10 @@ struct ToolCapabilities;
 
 struct ItemStack
 {
-	ItemStack(): name(""), count(0), wear(0), metadata("") {}
-	ItemStack(std::string name_, u16 count_,
-			u16 wear, std::string metadata_,
-			IItemDefManager *itemdef);
+	ItemStack(): name(""), count(0), wear(0) {}
+	ItemStack(const std::string &name_, u16 count_,
+			u16 wear, IItemDefManager *itemdef);
+
 	~ItemStack() {}
 
 	// Serialization
@@ -61,7 +62,7 @@ struct ItemStack
 		name = "";
 		count = 0;
 		wear = 0;
-		metadata = "";
+		metadata.clear();
 	}
 
 	void add(u16 n)
@@ -166,13 +167,13 @@ struct ItemStack
 	std::string name;
 	u16 count;
 	u16 wear;
-	std::string metadata;
+	ItemStackMetadata metadata;
 };
 
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size, IItemDefManager *itemdef);
+	InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef);
 	~InventoryList();
 	void clearItems();
 	void setSize(u32 newsize);
@@ -238,9 +239,6 @@ public:
 	// Returns empty item if couldn't take any.
 	ItemStack takeItem(u32 i, u32 takecount);
 
-	// Similar to takeItem, but keeps the slot intact.
-	ItemStack peekItem(u32 i, u32 peekcount) const;
-
 	// Move an item to a different list (or a different stack in the same list)
 	// count is the maximum number of items to move (0 for everything)
 	// returns number of moved items
@@ -253,8 +251,8 @@ public:
 
 private:
 	std::vector<ItemStack> m_items;
-	u32 m_size, m_width;
 	std::string m_name;
+	u32 m_size, m_width;
 	IItemDefManager *m_itemdef;
 };
 
@@ -313,4 +311,3 @@ private:
 };
 
 #endif
-

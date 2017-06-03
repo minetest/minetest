@@ -99,7 +99,6 @@ void ScriptApiSecurity::initializeSecurity()
 		"clock",
 		"date",
 		"difftime",
-		"exit",
 		"getenv",
 		"setlocale",
 		"time",
@@ -124,6 +123,7 @@ void ScriptApiSecurity::initializeSecurity()
 		"path",
 		"searchpath",
 	};
+#if USE_LUAJIT
 	static const char *jit_whitelist[] = {
 		"arch",
 		"flush",
@@ -135,37 +135,13 @@ void ScriptApiSecurity::initializeSecurity()
 		"version",
 		"version_num",
 	};
-
+#endif
 	m_secure = true;
 
 	lua_State *L = getStack();
 
-	// Backup globals to the registry
-	lua_getglobal(L, "_G");
-	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 
-	// Replace the global environment with an empty one
-#if LUA_VERSION_NUM <= 501
-	int is_main = lua_pushthread(L);  // Push the main thread
-	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
-			"isn't the main Lua thread!");
-#endif
-	lua_newtable(L);  // Create new environment
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "_G");  // Set _G of new environment
-#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
-	// Set the global environment
-	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
-#else  // Lua <= 5.1
-	// Set the environment of the main thread
-	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
-			"environment of the main Lua thread!");
-	lua_pop(L, 1);  // Pop thread
-#endif
-
-	// Get old globals
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
-	int old_globals = lua_gettop(L);
+	int old_globals = backupGlobals(L);
 
 
 	// Copy safe base functions
@@ -224,7 +200,7 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_setglobal(L, "package");
 	lua_pop(L, 1);  // Pop old package
 
-
+#if USE_LUAJIT
 	// Copy safe jit functions, if they exist
 	lua_getfield(L, -1, "jit");
 	if (!lua_isnil(L, -1)) {
@@ -233,10 +209,146 @@ void ScriptApiSecurity::initializeSecurity()
 		lua_setglobal(L, "jit");
 	}
 	lua_pop(L, 1);  // Pop old jit
+#endif
 
 	lua_pop(L, 1); // Pop globals_backup
 }
 
+void ScriptApiSecurity::initializeSecurityClient()
+{
+	static const char *whitelist[] = {
+		"assert",
+		"core",
+		"collectgarbage",
+		"DIR_DELIM",
+		"error",
+		"getfenv",
+		"ipairs",
+		"next",
+		"pairs",
+		"pcall",
+		"print",
+		"rawequal",
+		"rawget",
+		"rawset",
+		"select",
+		"setfenv",
+		"setmetatable",
+		"tonumber",
+		"tostring",
+		"type",
+		"unpack",
+		"_VERSION",
+		"xpcall",
+		// Completely safe libraries
+		"coroutine",
+		"string",
+		"table",
+		"math",
+	};
+	static const char *os_whitelist[] = {
+		"clock",
+		"date",
+		"difftime",	
+		"time",
+		"setlocale",
+	};
+	static const char *debug_whitelist[] = {
+		"getinfo",
+	};
+
+#if USE_LUAJIT
+	static const char *jit_whitelist[] = {
+		"arch",
+		"flush",
+		"off",
+		"on",
+		"opt",
+		"os",
+		"status",
+		"version",
+		"version_num",
+	};
+#endif
+
+	m_secure = true;
+
+	lua_State *L = getStack();
+
+
+	int old_globals = backupGlobals(L);
+
+
+	// Copy safe base functions
+	lua_getglobal(L, "_G");
+	copy_safe(L, whitelist, sizeof(whitelist));
+
+	// And replace unsafe ones
+	SECURE_API(g, dofile);
+	SECURE_API(g, loadstring);
+	SECURE_API(g, require);
+	lua_pop(L, 1);
+
+
+
+	// Copy safe OS functions
+	lua_getfield(L, old_globals, "os");
+	lua_newtable(L);
+	copy_safe(L, os_whitelist, sizeof(os_whitelist));
+	lua_setglobal(L, "os");
+	lua_pop(L, 1);  // Pop old OS
+
+
+	// Copy safe debug functions
+	lua_getfield(L, old_globals, "debug");
+	lua_newtable(L);
+	copy_safe(L, debug_whitelist, sizeof(debug_whitelist));
+	lua_setglobal(L, "debug");
+	lua_pop(L, 1);  // Pop old debug
+
+#if USE_LUAJIT
+	// Copy safe jit functions, if they exist
+	lua_getfield(L, -1, "jit");
+	if (!lua_isnil(L, -1)) {
+		lua_newtable(L);
+		copy_safe(L, jit_whitelist, sizeof(jit_whitelist));
+		lua_setglobal(L, "jit");
+	}
+	lua_pop(L, 1);  // Pop old jit
+#endif
+
+	lua_pop(L, 1); // Pop globals_backup
+}
+
+int ScriptApiSecurity::backupGlobals(lua_State *L)
+{
+	// Backup globals to the registry
+	lua_getglobal(L, "_G");
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+
+	// Replace the global environment with an empty one
+#if LUA_VERSION_NUM <= 501
+	int is_main = lua_pushthread(L);  // Push the main thread
+	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
+		"isn't the main Lua thread!");
+#endif
+	lua_newtable(L);  // Create new environment
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "_G");  // Set _G of new environment
+#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
+	// Set the global environment
+	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+#else  // Lua <= 5.1
+	// Set the environment of the main thread
+	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
+		"environment of the main Lua thread!");
+	lua_pop(L, 1);  // Pop thread
+#endif
+
+	// Get old globals
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	return lua_gettop(L);
+}
 
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
@@ -294,7 +406,14 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 
 	// Read the file
 	int ret = std::fseek(fp, 0, SEEK_END);
-	CHECK_FILE_ERR(ret, fp);
+	if (ret) {
+		lua_pushfstring(L, "%s: %s", path, strerror(errno));
+		std::fclose(fp);
+		if (path) {
+			delete [] chunk_name;
+		}
+		return false;
+	}
 
 	size_t size = std::ftell(fp) - start;
 	char *code = new char[size];
@@ -383,9 +502,9 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
 	lua_pop(L, 1);
-	const Server *server = script->getServer();
-
-	if (!server) return false;
+	const IGameDef *gamedef = script->getGameDef();
+	if (!gamedef)
+		return false;
 
 	// Get mod name
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
@@ -401,7 +520,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		// Allow paths in mod path
 		// Don't bother if write access isn't important, since it will be handled later
 		if (write_required || write_allowed != NULL) {
-			const ModSpec *mod = server->getModSpec(mod_name);
+			const ModSpec *mod = gamedef->getModSpec(mod_name);
 			if (mod) {
 				str = fs::AbsolutePath(mod->path);
 				if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
@@ -415,7 +534,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	// Allow read-only access to all mod directories
 	if (!write_required) {
-		const std::vector<ModSpec> mods = server->getMods();
+		const std::vector<ModSpec> mods = gamedef->getMods();
 		for (size_t i = 0; i < mods.size(); ++i) {
 			str = fs::AbsolutePath(mods[i].path);
 			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
@@ -424,7 +543,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 		}
 	}
 
-	str = fs::AbsolutePath(server->getWorldPath());
+	str = fs::AbsolutePath(gamedef->getWorldPath());
 	if (!str.empty()) {
 		// Don't allow access to other paths in the world mod/game path.
 		// These have to be blocked so you can't override a trusted mod

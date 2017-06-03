@@ -20,17 +20,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTENT_SAO_HEADER
 #define CONTENT_SAO_HEADER
 
+#include <util/numeric.h>
 #include "serverobject.h"
 #include "itemgroup.h"
 #include "object_properties.h"
-#include "constants.h"
 
 class UnitSAO: public ServerActiveObject
 {
 public:
-	UnitSAO(ServerEnvironment *env, v3f pos):
-			ServerActiveObject(env, pos),
-			m_hp(-1), m_yaw(0) {}
+	UnitSAO(ServerEnvironment *env, v3f pos);
 	virtual ~UnitSAO() {}
 
 	virtual void setYaw(const float yaw) { m_yaw = yaw; }
@@ -42,9 +40,47 @@ public:
 	s16 getHP() const { return m_hp; }
 	// Use a function, if isDead can be defined by other conditions
 	bool isDead() const { return m_hp == 0; }
+
+	bool isAttached() const;
+	void setArmorGroups(const ItemGroupList &armor_groups);
+	const ItemGroupList &getArmorGroups();
+	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
+	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
+	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
+	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
+	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
+	void addAttachmentChild(int child_id);
+	void removeAttachmentChild(int child_id);
+	const UNORDERED_SET<int> &getAttachmentChildIds();
+	ObjectProperties* accessObjectProperties();
+	void notifyObjectPropertiesModified();
 protected:
 	s16 m_hp;
 	float m_yaw;
+
+	bool m_properties_sent;
+	struct ObjectProperties m_prop;
+
+	ItemGroupList m_armor_groups;
+	bool m_armor_groups_sent;
+
+	v2f m_animation_range;
+	float m_animation_speed;
+	float m_animation_blend;
+	bool m_animation_loop;
+	bool m_animation_sent;
+
+	// Stores position and rotation for each bone name
+	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
+	bool m_bone_position_sent;
+
+	int m_attachment_parent_id;
+	UNORDERED_SET<int> m_attachment_child_ids;
+	std::string m_attachment_bone;
+	v3f m_attachment_position;
+	v3f m_attachment_rotation;
+	bool m_attachment_sent;
 };
 
 /*
@@ -64,10 +100,9 @@ public:
 	virtual void addedToEnvironment(u32 dtime_s);
 	static ServerActiveObject* create(ServerEnvironment *env, v3f pos,
 			const std::string &data);
-	bool isAttached();
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData();
+	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
 			ServerActiveObject *puncher=NULL,
@@ -79,19 +114,6 @@ public:
 	std::string getDescription();
 	void setHP(s16 hp);
 	s16 getHP() const;
-	void setArmorGroups(const ItemGroupList &armor_groups);
-	ItemGroupList getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
-	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	UNORDERED_SET<int> getAttachmentChildIds();
-	ObjectProperties* accessObjectProperties();
-	void notifyObjectPropertiesModified();
 	/* LuaEntitySAO-specific */
 	void setVelocity(v3f velocity);
 	v3f getVelocity();
@@ -99,11 +121,12 @@ public:
 	v3f getAcceleration();
 
 	void setTextureMod(const std::string &mod);
+	std::string getTextureMod() const;
 	void setSprite(v2s16 p, int num_frames, float framelength,
 			bool select_horiz_by_yawpitch);
 	std::string getName();
-	bool getCollisionBox(aabb3f *toset);
-	bool collideWithObjects();
+	bool getCollisionBox(aabb3f *toset) const;
+	bool collideWithObjects() const;
 private:
 	std::string getPropertyPacket();
 	void sendPosition(bool do_interpolate, bool is_movement_end);
@@ -111,36 +134,16 @@ private:
 	std::string m_init_name;
 	std::string m_init_state;
 	bool m_registered;
-	struct ObjectProperties m_prop;
 
 	v3f m_velocity;
 	v3f m_acceleration;
 
-	ItemGroupList m_armor_groups;
-
-	bool m_properties_sent;
 	float m_last_sent_yaw;
 	v3f m_last_sent_position;
 	v3f m_last_sent_velocity;
 	float m_last_sent_position_timer;
 	float m_last_sent_move_precision;
-	bool m_armor_groups_sent;
-
-	v2f m_animation_range;
-	float m_animation_speed;
-	float m_animation_blend;
-	bool m_animation_loop;
-	bool m_animation_sent;
-
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
-	bool m_bone_position_sent;
-
-	int m_attachment_parent_id;
-	UNORDERED_SET<int> m_attachment_child_ids;
-	std::string m_attachment_bone;
-	v3f m_attachment_position;
-	v3f m_attachment_rotation;
-	bool m_attachment_sent;
+	std::string m_current_texture_modifier;
 };
 
 /*
@@ -154,18 +157,26 @@ class LagPool
 public:
 	LagPool(): m_pool(15), m_max(15)
 	{}
+
 	void setMax(float new_max)
 	{
 		m_max = new_max;
 		if(m_pool > new_max)
 			m_pool = new_max;
 	}
+
 	void add(float dtime)
 	{
 		m_pool -= dtime;
 		if(m_pool < 0)
 			m_pool = 0;
 	}
+
+	void empty()
+	{
+		m_pool = m_max;
+	}
+
 	bool grab(float dtime)
 	{
 		if(dtime <= 0)
@@ -177,12 +188,13 @@ public:
 	}
 };
 
+typedef UNORDERED_MAP<std::string, std::string> PlayerAttributes;
 class RemotePlayer;
 
 class PlayerSAO : public UnitSAO
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer);
+	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_, bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -196,10 +208,9 @@ public:
 
 	void addedToEnvironment(u32 dtime_s);
 	void removingFromEnvironment();
-	bool isStaticAllowed() const;
+	bool isStaticAllowed() const { return false; }
 	std::string getClientInitializationData(u16 protocol_version);
-	std::string getStaticData();
-	bool isAttached();
+	void getStaticData(std::string *result) const;
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
@@ -227,25 +238,12 @@ public:
 		const ToolCapabilities *toolcap,
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
-	void rightClick(ServerActiveObject *clicker);
+	void rightClick(ServerActiveObject *clicker) {}
 	void setHP(s16 hp);
 	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
-	void setBreath(const u16 breath);
-	void setArmorGroups(const ItemGroupList &armor_groups);
-	ItemGroupList getArmorGroups();
-	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
-	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
-	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
-	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
-	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
-	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
-	void addAttachmentChild(int child_id);
-	void removeAttachmentChild(int child_id);
-	UNORDERED_SET<int> getAttachmentChildIds();
-	ObjectProperties* accessObjectProperties();
-	void notifyObjectPropertiesModified();
+	void setBreath(const u16 breath, bool send = true);
 
 	/*
 		Inventory interface
@@ -256,9 +254,53 @@ public:
 	InventoryLocation getInventoryLocation() const;
 	std::string getWieldList() const;
 	ItemStack getWieldedItem() const;
+	ItemStack getWieldedItemOrHand() const;
 	bool setWieldedItem(const ItemStack &item);
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
+
+	/*
+		Modding interface
+	*/
+	inline void setExtendedAttribute(const std::string &attr, const std::string &value)
+	{
+		m_extra_attributes[attr] = value;
+		m_extended_attributes_modified = true;
+	}
+
+	inline bool getExtendedAttribute(const std::string &attr, std::string *value)
+	{
+		if (m_extra_attributes.find(attr) == m_extra_attributes.end())
+			return false;
+
+		*value = m_extra_attributes[attr];
+		return true;
+	}
+
+	inline void removeExtendedAttribute(const std::string &attr)
+	{
+		PlayerAttributes::iterator it = m_extra_attributes.find(attr);
+		if (it == m_extra_attributes.end())
+			return;
+
+		m_extra_attributes.erase(it);
+		m_extended_attributes_modified = true;
+	}
+
+	inline const PlayerAttributes &getExtendedAttributes()
+	{
+		return m_extra_attributes;
+	}
+
+	inline bool extendedAttributesModified() const
+	{
+		return m_extended_attributes_modified;
+	}
+
+	inline void setExtendedAttributeModified(bool v)
+	{
+		m_extended_attributes_modified = v;
+	}
 
 	/*
 		PlayerSAO-specific
@@ -314,13 +356,13 @@ public:
 		m_is_singleplayer = is_singleplayer;
 	}
 
-	bool getCollisionBox(aabb3f *toset);
-	bool collideWithObjects();
+	bool getCollisionBox(aabb3f *toset) const;
+	bool collideWithObjects() const { return true; }
 
-	void initialize(RemotePlayer *player, const std::set<std::string> &privs);
+	void finalize(RemotePlayer *player, const std::set<std::string> &privs);
 
 	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
-	v3f getEyeOffset() const { return v3f(0, BS * 1.625f, 0); }
+	v3f getEyeOffset() const;
 
 private:
 	std::string getPropertyPacket();
@@ -335,47 +377,37 @@ private:
 	LagPool m_dig_pool;
 	LagPool m_move_pool;
 	v3f m_last_good_position;
+	float m_time_from_last_teleport;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;
 
+	// Timers
+	IntervalLimiter m_breathing_interval;
+	IntervalLimiter m_drowning_interval;
+	IntervalLimiter m_node_hurt_interval;
+
 	int m_wield_index;
 	bool m_position_not_sent;
-	ItemGroupList m_armor_groups;
-	bool m_armor_groups_sent;
 
-	bool m_properties_sent;
-	struct ObjectProperties m_prop;
 	// Cached privileges for enforcement
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
-	v2f m_animation_range;
-	float m_animation_speed;
-	float m_animation_blend;
-	bool m_animation_loop;
-	bool m_animation_sent;
-
-	// Stores position and rotation for each bone name
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
-	bool m_bone_position_sent;
-
-	int m_attachment_parent_id;
-	UNORDERED_SET<int> m_attachment_child_ids;
-	std::string m_attachment_bone;
-	v3f m_attachment_position;
-	v3f m_attachment_rotation;
-	bool m_attachment_sent;
 	u16 m_breath;
 	f32 m_pitch;
 	f32 m_fov;
 	s16 m_wanted_range;
+
+	PlayerAttributes m_extra_attributes;
+	bool m_extended_attributes_modified;
 public:
 	float m_physics_override_speed;
 	float m_physics_override_jump;
 	float m_physics_override_gravity;
 	bool m_physics_override_sneak;
 	bool m_physics_override_sneak_glitch;
+	bool m_physics_override_new_move;
 	bool m_physics_override_sent;
 };
 

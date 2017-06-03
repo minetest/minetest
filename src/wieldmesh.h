@@ -20,41 +20,78 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef WIELDMESH_HEADER
 #define WIELDMESH_HEADER
 
-#include "irrlichttypes_extrabloated.h"
 #include <string>
+#include "irrlichttypes_extrabloated.h"
 
 struct ItemStack;
-class IGameDef;
+class Client;
 class ITextureSource;
-struct TileSpec;
+struct ContentFeatures;
+
+/*!
+ * Holds color information of an item mesh's buffer.
+ */
+struct ItemPartColor
+{
+	/*!
+	 * If this is false, the global base color of the item
+	 * will be used instead of the specific color of the
+	 * buffer.
+	 */
+	bool override_base;
+	/*!
+	 * The color of the buffer.
+	 */
+	video::SColor color;
+
+	ItemPartColor() : override_base(false), color(0) {}
+
+	ItemPartColor(bool override, video::SColor color)
+	    : override_base(override), color(color)
+	{
+	}
+};
+
+struct ItemMesh
+{
+	scene::IMesh *mesh;
+	/*!
+	 * Stores the color of each mesh buffer.
+	 */
+	std::vector<ItemPartColor> buffer_colors;
+	/*!
+	 * If false, all faces of the item should have the same brightness.
+	 * Disables shading based on normal vectors.
+	 */
+	bool needs_shading;
+
+	ItemMesh() : mesh(NULL), buffer_colors(), needs_shading(true) {}
+};
 
 /*
 	Wield item scene node, renders the wield mesh of some item
 */
-class WieldMeshSceneNode: public scene::ISceneNode
+class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
 	WieldMeshSceneNode(scene::ISceneNode *parent, scene::ISceneManager *mgr,
 			s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const TileSpec tiles[6],
-			v3f wield_scale, ITextureSource *tsrc);
-	void setExtruded(const std::string &imagename,
-			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
-	void setItem(const ItemStack &item, IGameDef *gamedef);
+	void setCube(const ContentFeatures &f, v3f wield_scale, ITextureSource *tsrc);
+	void setExtruded(const std::string &imagename, v3f wield_scale,
+			ITextureSource *tsrc, u8 num_frames);
+	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
 	// Must only be used if the constructor was called with lighting = false
 	void setColor(video::SColor color);
 
-	scene::IMesh *getMesh()
-	{ return m_meshnode->getMesh(); }
+	scene::IMesh *getMesh() { return m_meshnode->getMesh(); }
 
 	virtual void render();
 
-	virtual const aabb3f &getBoundingBox() const
-	{ return m_bounding_box; }
+	virtual const aabb3f &getBoundingBox() const { return m_bounding_box; }
 
 private:
 	void changeToMesh(scene::IMesh *mesh);
@@ -70,6 +107,16 @@ private:
 	bool m_anisotropic_filter;
 	bool m_bilinear_filter;
 	bool m_trilinear_filter;
+	/*!
+	 * Stores the colors of the mesh's mesh buffers.
+	 * This does not include lighting.
+	 */
+	std::vector<ItemPartColor> m_colors;
+	/*!
+	 * The base color of this mesh. This is the default
+	 * for all mesh buffers.
+	 */
+	video::SColor m_base_color;
 
 	// Bounding box culling is disabled for this type of scene node,
 	// so this variable is just required so we can implement
@@ -77,8 +124,18 @@ private:
 	aabb3f m_bounding_box;
 };
 
-scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item);
+void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);
 
-scene::IMesh *getExtrudedMesh(ITextureSource *tsrc,
-		const std::string &imagename);
+scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename);
+
+/*!
+ * Applies overlays, textures and optionally materials to the given mesh and
+ * extracts tile colors for colorization.
+ * \param mattype overrides the buffer's material type, but can also
+ * be NULL to leave the original material.
+ * \param colors returns the colors of the mesh buffers in the mesh.
+ */
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
+		bool set_material, video::E_MATERIAL_TYPE *mattype,
+		std::vector<ItemPartColor> *colors);
 #endif

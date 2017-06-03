@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 
 class Camera;
+class Client;
 struct Nametag;
 
 /*
@@ -68,7 +69,7 @@ private:
 	//
 	scene::ISceneManager *m_smgr;
 	IrrlichtDevice *m_irr;
-	IGameDef *m_gamedef;
+	Client *m_client;
 	aabb3f m_selection_box;
 	scene::IMeshSceneNode *m_meshnode;
 	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
@@ -101,6 +102,8 @@ private:
 	float m_anim_timer;
 	ItemGroupList m_armor_groups;
 	float m_reset_textures_timer;
+	std::string m_previous_texture_modifier; // stores texture modifier before punch update
+	std::string m_current_texture_modifier;  // last applied texture modifier
 	bool m_visuals_expired;
 	float m_step_distance_counter;
 	u8 m_last_light;
@@ -109,13 +112,13 @@ private:
 	std::vector<u16> m_children;
 
 public:
-	GenericCAO(IGameDef *gamedef, ClientEnvironment *env);
+	GenericCAO(Client *client, ClientEnvironment *env);
 
 	~GenericCAO();
 
-	static ClientActiveObject* create(IGameDef *gamedef, ClientEnvironment *env)
+	static ClientActiveObject* create(Client *client, ClientEnvironment *env)
 	{
-		return new GenericCAO(gamedef, env);
+		return new GenericCAO(client, env);
 	}
 
 	inline ActiveObjectType getType() const
@@ -129,9 +132,9 @@ public:
 
 	ClientActiveObject *getParent();
 
-	bool getCollisionBox(aabb3f *toset);
+	bool getCollisionBox(aabb3f *toset) const;
 
-	bool collideWithObjects();
+	bool collideWithObjects() const;
 
 	aabb3f *getSelectionBox();
 
@@ -143,18 +146,7 @@ public:
 
 	scene::ISceneNode *getSceneNode();
 
-	scene::IMeshSceneNode *getMeshSceneNode();
-
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
-
-	WieldMeshSceneNode *getWieldMeshSceneNode();
-
-	scene::IBillboardSceneNode *getSpriteSceneNode();
-
-	inline bool isPlayer() const
-	{
-		return m_is_player;
-	}
 
 	inline bool isLocalPlayer() const
 	{
@@ -197,7 +189,9 @@ public:
 
 	void updateTexturePos();
 
-	void updateTextures(const std::string &mod);
+	// std::string copy is mandatory as mod can be a class member and there is a swap
+	// on those class members
+	void updateTextures(std::string mod);
 
 	void updateAnimation();
 

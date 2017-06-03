@@ -29,15 +29,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #ifdef USE_UNORDERED_CONTAINERS
-	#include <unordered_map>
-	#include <unordered_set>
-	#define UNORDERED_MAP std::unordered_map
-	#define UNORDERED_SET std::unordered_set
+#include <unordered_map>
+#include <unordered_set>
+#define UNORDERED_MAP std::unordered_map
+#define UNORDERED_SET std::unordered_set
 #else
-	#include <map>
-	#include <set>
-	#define UNORDERED_MAP std::map
-	#define UNORDERED_SET std::set
+#include <map>
+#include <set>
+#define UNORDERED_MAP std::map
+#define UNORDERED_SET std::set
 #endif
 
 #endif

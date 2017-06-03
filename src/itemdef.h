@@ -28,7 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemgroup.h"
 #include "sound.h"
 class IGameDef;
+class Client;
 struct ToolCapabilities;
+#ifndef SERVER
+#include "client/tile.h"
+struct ItemMesh;
+struct ItemStack;
+#endif
 
 /*
 	Base item definition
@@ -56,6 +62,8 @@ struct ItemDefinition
 	*/
 	std::string inventory_image; // Optional for nodes, mandatory for tools/craftitems
 	std::string wield_image; // If empty, inventory_image or mesh (only nodes) is used
+	std::string palette_image; // If specified, the item will be colorized based on this
+	video::SColor color; // The fallback color of the node.
 	v3f wield_scale;
 
 	/*
@@ -99,18 +107,25 @@ public:
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
 	// Get alias definition
-	virtual std::string getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
-	virtual std::set<std::string> getAll() const=0;
+	virtual void getAll(std::set<std::string> &result) const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+	virtual ItemMesh* getWieldMesh(const std::string &name,
+		Client *client) const=0;
+	// Get item palette
+	virtual Palette* getPalette(const std::string &name,
+		Client *client) const = 0;
+	// Returns the base color of an item stack: the color of all
+	// tiles that do not define their own color.
+	virtual video::SColor getItemstackColor(const ItemStack &stack,
+		Client *client) const = 0;
 #endif
 
 	virtual void serialize(std::ostream &os, u16 protocol_version)=0;
@@ -125,18 +140,18 @@ public:
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
 	// Get alias definition
-	virtual std::string getAlias(const std::string &name) const=0;
+	virtual const std::string &getAlias(const std::string &name) const=0;
 	// Get set of all defined item names and aliases
-	virtual std::set<std::string> getAll() const=0;
+	virtual void getAll(std::set<std::string> &result) const=0;
 	// Check if item is known
 	virtual bool isKnown(const std::string &name) const=0;
 #ifndef SERVER
 	// Get item inventory texture
 	virtual video::ITexture* getInventoryTexture(const std::string &name,
-			IGameDef *gamedef) const=0;
+			Client *client) const=0;
 	// Get item wield mesh
-	virtual scene::IMesh* getWieldMesh(const std::string &name,
-		IGameDef *gamedef) const=0;
+	virtual ItemMesh* getWieldMesh(const std::string &name,
+		Client *client) const=0;
 #endif
 
 	// Remove all registered item and node definitions and aliases

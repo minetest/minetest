@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "util/numeric.h"
 #include "util/string.h"
+#include "mapblock.h"
 #include <math.h>
 
 
@@ -104,7 +105,7 @@ void MinimapUpdateThread::doUpdate()
 			// Swap two values in the map using single lookup
 			std::pair<std::map<v3s16, MinimapMapblock*>::iterator, bool>
 			    result = m_blocks_cache.insert(std::make_pair(update.pos, update.data));
-			if (result.second == false) {
+			if (!result.second) {
 				delete result.first->second;
 				result.first->second = update.data;
 			}
@@ -119,89 +120,63 @@ void MinimapUpdateThread::doUpdate()
 	}
 
 	if (data->map_invalidated && data->mode != MINIMAP_MODE_OFF) {
-		getMap(data->pos, data->map_size, data->scan_height, data->is_radar);
+		getMap(data->pos, data->map_size, data->scan_height);
 		data->map_invalidated = false;
 	}
 }
 
-MinimapPixel *MinimapUpdateThread::getMinimapPixel(v3s16 pos,
-	s16 scan_height, s16 *pixel_height)
+void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 {
-	s16 height = scan_height - MAP_BLOCKSIZE;
-	v3s16 blockpos_max, blockpos_min, relpos;
+	v3s16 region(size, 0, size);
+	v3s16 pos_min(pos.X - size / 2, pos.Y - height / 2, pos.Z - size / 2);
+	v3s16 pos_max(pos_min.X + size - 1, pos.Y + height / 2, pos_min.Z + size - 1);
+	v3s16 blockpos_min = getNodeBlockPos(pos_min);
+	v3s16 blockpos_max = getNodeBlockPos(pos_max);
 
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y - scan_height / 2, pos.Z),
-		blockpos_min, relpos);
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y + scan_height / 2, pos.Z),
-		blockpos_max, relpos);
-
-	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		std::map<v3s16, MinimapMapblock *>::iterator it =
-			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
-		if (it != m_blocks_cache.end()) {
-			MinimapMapblock *mmblock = it->second;
-			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
-			if (pixel->id != CONTENT_AIR) {
-				*pixel_height = height + pixel->height;
-				return pixel;
-			}
-		}
-
-		height -= MAP_BLOCKSIZE;
+// clear the map
+	for (int z = 0; z < size; z++)
+	for (int x = 0; x < size; x++) {
+		MinimapPixel &mmpixel = data->minimap_scan[x + z * size];
+		mmpixel.air_count = 0;
+		mmpixel.height = 0;
+		mmpixel.n = MapNode(CONTENT_AIR);
 	}
 
-	return NULL;
-}
+// draw the map
+	v3s16 blockpos;
+	for (blockpos.Z = blockpos_min.Z; blockpos.Z <= blockpos_max.Z; ++blockpos.Z)
+	for (blockpos.Y = blockpos_min.Y; blockpos.Y <= blockpos_max.Y; ++blockpos.Y)
+	for (blockpos.X = blockpos_min.X; blockpos.X <= blockpos_max.X; ++blockpos.X) {
+		std::map<v3s16, MinimapMapblock *>::const_iterator pblock =
+			m_blocks_cache.find(blockpos);
+		if (pblock == m_blocks_cache.end())
+			continue;
+		const MinimapMapblock &block = *pblock->second;
 
-s16 MinimapUpdateThread::getAirCount(v3s16 pos, s16 height)
-{
-	s16 air_count = 0;
-	v3s16 blockpos_max, blockpos_min, relpos;
+		v3s16 block_node_min(blockpos * MAP_BLOCKSIZE);
+		v3s16 block_node_max(block_node_min + MAP_BLOCKSIZE - 1);
+		// clip
+		v3s16 range_min = componentwise_max(block_node_min, pos_min);
+		v3s16 range_max = componentwise_min(block_node_max, pos_max);
 
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y - height / 2, pos.Z),
-		blockpos_min, relpos);
-	getNodeBlockPosWithOffset(
-		v3s16(pos.X, pos.Y + height / 2, pos.Z),
-		blockpos_max, relpos);
+		v3s16 pos;
+		pos.Y = range_min.Y;
+		for (pos.Z = range_min.Z; pos.Z <= range_max.Z; ++pos.Z)
+		for (pos.X = range_min.X; pos.X <= range_max.X; ++pos.X) {
+			v3s16 inblock_pos = pos - block_node_min;
+			const MinimapPixel &in_pixel =
+				block.data[inblock_pos.Z * MAP_BLOCKSIZE + inblock_pos.X];
 
-	for (s16 i = blockpos_max.Y; i > blockpos_min.Y - 1; i--) {
-		std::map<v3s16, MinimapMapblock *>::iterator it =
-			m_blocks_cache.find(v3s16(blockpos_max.X, i, blockpos_max.Z));
-		if (it != m_blocks_cache.end()) {
-			MinimapMapblock *mmblock = it->second;
-			MinimapPixel *pixel = &mmblock->data[relpos.Z * MAP_BLOCKSIZE + relpos.X];
-			air_count += pixel->air_count;
-		}
-	}
+			v3s16 inmap_pos = pos - pos_min;
+			MinimapPixel &out_pixel =
+				data->minimap_scan[inmap_pos.X + inmap_pos.Z * size];
 
-	return air_count;
-}
-
-void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
-{
-	v3s16 p = v3s16(pos.X - size / 2, pos.Y, pos.Z - size / 2);
-
-	for (s16 x = 0; x < size; x++)
-	for (s16 z = 0; z < size; z++) {
-		u16 id = CONTENT_AIR;
-		MinimapPixel *mmpixel = &data->minimap_scan[x + z * size];
-
-		if (!is_radar) {
-			s16 pixel_height = 0;
-			MinimapPixel *cached_pixel =
-				getMinimapPixel(v3s16(p.X + x, p.Y, p.Z + z), height, &pixel_height);
-			if (cached_pixel) {
-				id = cached_pixel->id;
-				mmpixel->height = pixel_height;
+			out_pixel.air_count += in_pixel.air_count;
+			if (in_pixel.n.param0 != CONTENT_AIR) {
+				out_pixel.n = in_pixel.n;
+				out_pixel.height = inmap_pos.Y + in_pixel.height;
 			}
-		} else {
-			mmpixel->air_count = getAirCount(v3s16(p.X + x, p.Y, p.Z + z), height);
 		}
-
-		mmpixel->id = id;
 	}
 }
 
@@ -209,7 +184,7 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height, bool is_radar)
 //// Mapper
 ////
 
-Mapper::Mapper(IrrlichtDevice *device, Client *client)
+Minimap::Minimap(IrrlichtDevice *device, Client *client)
 {
 	this->client    = client;
 	this->driver    = device->getVideoDriver();
@@ -263,7 +238,7 @@ Mapper::Mapper(IrrlichtDevice *device, Client *client)
 	m_minimap_update_thread->start();
 }
 
-Mapper::~Mapper()
+Minimap::~Minimap()
 {
 	m_minimap_update_thread->stop();
 	m_minimap_update_thread->wait();
@@ -283,17 +258,12 @@ Mapper::~Mapper()
 	delete m_minimap_update_thread;
 }
 
-void Mapper::addBlock(v3s16 pos, MinimapMapblock *data)
+void Minimap::addBlock(v3s16 pos, MinimapMapblock *data)
 {
 	m_minimap_update_thread->enqueueBlock(pos, data);
 }
 
-MinimapMode Mapper::getMinimapMode()
-{
-	return data->mode;
-}
-
-void Mapper::toggleMinimapShape()
+void Minimap::toggleMinimapShape()
 {
 	MutexAutoLock lock(m_mutex);
 
@@ -302,7 +272,29 @@ void Mapper::toggleMinimapShape()
 	m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setMinimapMode(MinimapMode mode)
+void Minimap::setMinimapShape(MinimapShape shape)
+{
+	MutexAutoLock lock(m_mutex);
+	
+	if (shape == MINIMAP_SHAPE_SQUARE)
+		data->minimap_shape_round = false;
+	else if (shape == MINIMAP_SHAPE_ROUND)
+		data->minimap_shape_round = true;
+	
+	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
+	m_minimap_update_thread->deferUpdate();	
+}
+
+MinimapShape Minimap::getMinimapShape()
+{
+	if (data->minimap_shape_round) {
+		return MINIMAP_SHAPE_ROUND;
+	} else {
+		return MINIMAP_SHAPE_SQUARE;
+	}
+}
+
+void Minimap::setMinimapMode(MinimapMode mode)
 {
 	static const MinimapModeDef modedefs[MINIMAP_MODE_COUNT] = {
 		{false, 0, 0},
@@ -327,7 +319,7 @@ void Mapper::setMinimapMode(MinimapMode mode)
 	m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setPos(v3s16 pos)
+void Minimap::setPos(v3s16 pos)
 {
 	bool do_update = false;
 
@@ -345,36 +337,51 @@ void Mapper::setPos(v3s16 pos)
 		m_minimap_update_thread->deferUpdate();
 }
 
-void Mapper::setAngle(f32 angle)
+void Minimap::setAngle(f32 angle)
 {
 	m_angle = angle;
 }
 
-void Mapper::blitMinimapPixelsToImageRadar(video::IImage *map_image)
+void Minimap::blitMinimapPixelsToImageRadar(video::IImage *map_image)
 {
+	video::SColor c(240, 0, 0, 0);
 	for (s16 x = 0; x < data->map_size; x++)
 	for (s16 z = 0; z < data->map_size; z++) {
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
 
-		video::SColor c(240, 0, 0, 0);
 		if (mmpixel->air_count > 0)
 			c.setGreen(core::clamp(core::round32(32 + mmpixel->air_count * 8), 0, 255));
+		else
+			c.setGreen(0);
 
 		map_image->setPixel(x, data->map_size - z - 1, c);
 	}
 }
 
-void Mapper::blitMinimapPixelsToImageSurface(
+void Minimap::blitMinimapPixelsToImageSurface(
 	video::IImage *map_image, video::IImage *heightmap_image)
 {
+	// This variable creation/destruction has a 1% cost on rendering minimap
+	video::SColor tilecolor;
 	for (s16 x = 0; x < data->map_size; x++)
 	for (s16 z = 0; z < data->map_size; z++) {
 		MinimapPixel *mmpixel = &data->minimap_scan[x + z * data->map_size];
 
-		video::SColor c = m_ndef->get(mmpixel->id).minimap_color;
-		c.setAlpha(240);
+		const ContentFeatures &f = m_ndef->get(mmpixel->n);
+		const TileDef *tile = &f.tiledef[0];
 
-		map_image->setPixel(x, data->map_size - z - 1, c);
+		// Color of the 0th tile (mostly this is the topmost)
+		if(tile->has_color)
+			tilecolor = tile->color;
+		else
+			mmpixel->n.getColor(f, &tilecolor);
+
+		tilecolor.setRed(tilecolor.getRed() * f.minimap_color.getRed() / 255);
+		tilecolor.setGreen(tilecolor.getGreen() * f.minimap_color.getGreen() / 255);
+		tilecolor.setBlue(tilecolor.getBlue() * f.minimap_color.getBlue() / 255);
+		tilecolor.setAlpha(240);
+
+		map_image->setPixel(x, data->map_size - z - 1, tilecolor);
 
 		u32 h = mmpixel->height;
 		heightmap_image->setPixel(x,data->map_size - z - 1,
@@ -382,7 +389,7 @@ void Mapper::blitMinimapPixelsToImageSurface(
 	}
 }
 
-video::ITexture *Mapper::getMinimapTexture()
+video::ITexture *Minimap::getMinimapTexture()
 {
 	// update minimap textures when new scan is ready
 	if (data->map_invalidated)
@@ -410,7 +417,7 @@ video::ITexture *Mapper::getMinimapTexture()
 	if (minimap_mask) {
 		for (s16 y = 0; y < MINIMAP_MAX_SY; y++)
 		for (s16 x = 0; x < MINIMAP_MAX_SX; x++) {
-			video::SColor mask_col = minimap_mask->getPixel(x, y);
+			const video::SColor &mask_col = minimap_mask->getPixel(x, y);
 			if (!mask_col.getAlpha())
 				minimap_image->setPixel(x, y, video::SColor(0,0,0,0));
 		}
@@ -432,7 +439,7 @@ video::ITexture *Mapper::getMinimapTexture()
 	return data->texture;
 }
 
-v3f Mapper::getYawVec()
+v3f Minimap::getYawVec()
 {
 	if (data->minimap_shape_round) {
 		return v3f(
@@ -444,12 +451,12 @@ v3f Mapper::getYawVec()
 	}
 }
 
-scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
+scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
 {
 	scene::SMeshBuffer *buf = new scene::SMeshBuffer();
 	buf->Vertices.set_used(4);
 	buf->Indices.set_used(6);
-	video::SColor c(255, 255, 255, 255);
+	static const video::SColor c(255, 255, 255, 255);
 
 	buf->Vertices[0] = video::S3DVertex(-1, -1, 0, 0, 0, 1, c, 0, 1);
 	buf->Vertices[1] = video::S3DVertex(-1,  1, 0, 0, 0, 1, c, 0, 0);
@@ -466,7 +473,7 @@ scene::SMeshBuffer *Mapper::getMinimapMeshBuffer()
 	return buf;
 }
 
-void Mapper::drawMinimap()
+void Minimap::drawMinimap()
 {
 	video::ITexture *minimap_texture = getMinimapTexture();
 	if (!minimap_texture)
@@ -564,20 +571,18 @@ void Mapper::drawMinimap()
 	}
 }
 
-void Mapper::updateActiveMarkers ()
+void Minimap::updateActiveMarkers()
 {
 	video::IImage *minimap_mask = data->minimap_shape_round ?
 		data->minimap_mask_round : data->minimap_mask_square;
 
-	std::list<Nametag *> *nametags = client->getCamera()->getNametags();
+	const std::list<Nametag *> &nametags = client->getCamera()->getNametags();
 
 	m_active_markers.clear();
 
-	for (std::list<Nametag *>::const_iterator
-			i = nametags->begin();
-			i != nametags->end(); ++i) {
-		Nametag *nametag = *i;
-		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
+	for (std::list<Nametag *>::const_iterator i = nametags.begin();
+			i != nametags.end(); ++i) {
+		v3s16 pos = floatToInt((*i)->parent_node->getPosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,
@@ -589,7 +594,7 @@ void Mapper::updateActiveMarkers ()
 		}
 		pos.X = ((float)pos.X / data->map_size) * MINIMAP_MAX_SX;
 		pos.Z = ((float)pos.Z / data->map_size) * MINIMAP_MAX_SY;
-		video::SColor mask_col = minimap_mask->getPixel(pos.X, pos.Z);
+		const video::SColor &mask_col = minimap_mask->getPixel(pos.X, pos.Z);
 		if (!mask_col.getAlpha()) {
 			continue;
 		}
@@ -616,7 +621,7 @@ void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
 			MapNode n = vmanip->getNodeNoEx(pos + p);
 			if (!surface_found && n.getContent() != CONTENT_AIR) {
 				mmpixel->height = y;
-				mmpixel->id = n.getContent();
+				mmpixel->n = n;
 				surface_found = true;
 			} else if (n.getContent() == CONTENT_AIR) {
 				air_count++;
@@ -624,7 +629,7 @@ void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
 		}
 
 		if (!surface_found)
-			mmpixel->id = CONTENT_AIR;
+			mmpixel->n = MapNode(CONTENT_AIR);
 
 		mmpixel->air_count = air_count;
 	}

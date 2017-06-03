@@ -25,7 +25,6 @@ If you are planning to start some significant coding, you would benefit from ask
         - Have a title which begins with a capital letter
         - Be descriptive. (e.g. no `Update init.lua` or `Fix a problem`)
         - Have a first line with less than *80 characters* and have a second line that is *empty*
-    - Do **not** [sign your commits](https://git-scm.com/book/uz/v2/Git-Tools-Signing-Your-Work), as Minetest offers automatically built ppas over launchpad and it [would break](https://bugs.launchpad.net/bzr-git/+bug/1084403) if there were signed commits in master
 
 4. Once you are happy with your changes, submit a pull request.
      - Open the [pull-request form](https://github.com/minetest/minetest/pull/new/master)

@@ -1,7 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -84,7 +85,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"flat",       true},
 	{"fractal",    true},
 	{"valleys",    true},
-	{"singlenode", false},
+	{"singlenode", true},
 };
 
 STATIC_ASSERT(
@@ -97,11 +98,12 @@ STATIC_ASSERT(
 
 Mapgen::Mapgen()
 {
-	generating  = false;
-	id          = -1;
-	seed        = 0;
-	water_level = 0;
-	flags       = 0;
+	generating   = false;
+	id           = -1;
+	seed         = 0;
+	water_level  = 0;
+	mapgen_limit = 0;
+	flags        = 0;
 
 	vm        = NULL;
 	ndef      = NULL;
@@ -114,11 +116,12 @@ Mapgen::Mapgen()
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
-	generating  = false;
-	id          = mapgenid;
-	water_level = params->water_level;
-	flags       = params->flags;
-	csize       = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
+	generating   = false;
+	id           = mapgenid;
+	water_level  = params->water_level;
+	mapgen_limit = params->mapgen_limit;
+	flags        = params->flags;
+	csize        = v3s16(1, 1, 1) * (params->chunksize * MAP_BLOCKSIZE);
 
 	/*
 		We are losing half our entropy by doing this, but it is necessary to
@@ -314,7 +317,6 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 			heightmap[index] = y;
 		}
 	}
-	//printf("updateHeightmap: %dus\n", t.stop());
 }
 
 inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
@@ -587,35 +589,39 @@ MapgenBasic::MapgenBasic(int mapgenid, MapgenParams *params, EmergeManager *emer
 
 	//// Look up some commonly used content
 	c_stone              = ndef->getId("mapgen_stone");
-	c_water_source       = ndef->getId("mapgen_water_source");
 	c_desert_stone       = ndef->getId("mapgen_desert_stone");
 	c_sandstone          = ndef->getId("mapgen_sandstone");
+	c_water_source       = ndef->getId("mapgen_water_source");
 	c_river_water_source = ndef->getId("mapgen_river_water_source");
+	c_lava_source        = ndef->getId("mapgen_lava_source");
 
 	// Fall back to more basic content if not defined
+	// river_water_source cannot fallback to water_source because river water
+	// needs to be non-renewable and have a short flow range.
 	if (c_desert_stone == CONTENT_IGNORE)
 		c_desert_stone = c_stone;
 	if (c_sandstone == CONTENT_IGNORE)
 		c_sandstone = c_stone;
-	if (c_river_water_source == CONTENT_IGNORE)
-		c_river_water_source = c_water_source;
 
 	//// Content used for dungeon generation
-	c_cobble               = ndef->getId("mapgen_cobble");
-	c_stair_cobble         = ndef->getId("mapgen_stair_cobble");
-	c_mossycobble          = ndef->getId("mapgen_mossycobble");
-	c_sandstonebrick       = ndef->getId("mapgen_sandstonebrick");
-	c_stair_sandstonebrick = ndef->getId("mapgen_stair_sandstonebrick");
+	c_cobble                = ndef->getId("mapgen_cobble");
+	c_mossycobble           = ndef->getId("mapgen_mossycobble");
+	c_stair_cobble          = ndef->getId("mapgen_stair_cobble");
+	c_stair_desert_stone    = ndef->getId("mapgen_stair_desert_stone");
+	c_sandstonebrick        = ndef->getId("mapgen_sandstonebrick");
+	c_stair_sandstone_block = ndef->getId("mapgen_stair_sandstone_block");
 
 	// Fall back to more basic content if not defined
 	if (c_mossycobble == CONTENT_IGNORE)
 		c_mossycobble = c_cobble;
 	if (c_stair_cobble == CONTENT_IGNORE)
 		c_stair_cobble = c_cobble;
+	if (c_stair_desert_stone == CONTENT_IGNORE)
+		c_stair_desert_stone = c_desert_stone;
 	if (c_sandstonebrick == CONTENT_IGNORE)
 		c_sandstonebrick = c_sandstone;
-	if (c_stair_sandstonebrick == CONTENT_IGNORE)
-		c_stair_sandstonebrick = c_sandstone;
+	if (c_stair_sandstone_block == CONTENT_IGNORE)
+		c_stair_sandstone_block = c_sandstonebrick;
 }
 
 
@@ -835,6 +841,18 @@ void MapgenBasic::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 }
 
 
+bool MapgenBasic::generateCaverns(s16 max_stone_y)
+{
+	if (node_min.Y > max_stone_y || node_min.Y > cavern_limit)
+		return false;
+
+	CavernsNoise caverns_noise(ndef, csize, &np_cavern,
+		seed, cavern_limit, cavern_taper, cavern_threshold);
+
+	return caverns_noise.generateCaverns(vm, node_min, node_max);
+}
+
+
 void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 {
 	if (max_stone_y < node_min.Y)
@@ -842,47 +860,61 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 
 	DungeonParams dp;
 
-	dp.seed          = seed;
-	dp.c_water       = c_water_source;
-	dp.c_river_water = c_river_water_source;
-	dp.rooms_min     = 2;
-	dp.rooms_max     = 16;
-	dp.y_min         = -MAX_MAP_GENERATION_LIMIT;
-	dp.y_max         = MAX_MAP_GENERATION_LIMIT;
-	dp.np_density    = nparams_dungeon_density;
-	dp.np_alt_wall   = nparams_dungeon_alt_wall;
+	dp.seed             = seed;
+	dp.c_water          = c_water_source;
+	dp.c_river_water    = c_river_water_source;
+
+	dp.only_in_ground   = true;
+	dp.corridor_len_min = 1;
+	dp.corridor_len_max = 13;
+	dp.rooms_min        = 2;
+	dp.rooms_max        = 16;
+	dp.y_min            = -MAX_MAP_GENERATION_LIMIT;
+	dp.y_max            = MAX_MAP_GENERATION_LIMIT;
+
+	dp.np_density       = nparams_dungeon_density;
+	dp.np_alt_wall      = nparams_dungeon_alt_wall;
 
 	switch (stone_type) {
 	default:
 	case MGSTONE_STONE:
-		dp.c_wall     = c_cobble;
-		dp.c_alt_wall = c_mossycobble;
-		dp.c_stair    = c_stair_cobble;
+		dp.c_wall              = c_cobble;
+		dp.c_alt_wall          = c_mossycobble;
+		dp.c_stair             = c_stair_cobble;
 
-		dp.diagonal_dirs = false;
-		dp.holesize      = v3s16(1, 2, 1);
-		dp.roomsize      = v3s16(0, 0, 0);
-		dp.notifytype    = GENNOTIFY_DUNGEON;
+		dp.diagonal_dirs       = false;
+		dp.holesize            = v3s16(1, 2, 1);
+		dp.room_size_min       = v3s16(4, 4, 4);
+		dp.room_size_max       = v3s16(8, 6, 8);
+		dp.room_size_large_min = v3s16(8, 8, 8);
+		dp.room_size_large_max = v3s16(16, 16, 16);
+		dp.notifytype          = GENNOTIFY_DUNGEON;
 		break;
 	case MGSTONE_DESERT_STONE:
-		dp.c_wall     = c_desert_stone;
-		dp.c_alt_wall = CONTENT_IGNORE;
-		dp.c_stair    = c_desert_stone;
+		dp.c_wall              = c_desert_stone;
+		dp.c_alt_wall          = CONTENT_IGNORE;
+		dp.c_stair             = c_stair_desert_stone;
 
-		dp.diagonal_dirs = true;
-		dp.holesize      = v3s16(2, 3, 2);
-		dp.roomsize      = v3s16(2, 5, 2);
-		dp.notifytype    = GENNOTIFY_TEMPLE;
+		dp.diagonal_dirs       = true;
+		dp.holesize            = v3s16(2, 3, 2);
+		dp.room_size_min       = v3s16(6, 9, 6);
+		dp.room_size_max       = v3s16(10, 11, 10);
+		dp.room_size_large_min = v3s16(10, 13, 10);
+		dp.room_size_large_max = v3s16(18, 21, 18);
+		dp.notifytype          = GENNOTIFY_TEMPLE;
 		break;
 	case MGSTONE_SANDSTONE:
-		dp.c_wall     = c_sandstonebrick;
-		dp.c_alt_wall = CONTENT_IGNORE;
-		dp.c_stair    = c_sandstonebrick;
+		dp.c_wall              = c_sandstonebrick;
+		dp.c_alt_wall          = CONTENT_IGNORE;
+		dp.c_stair             = c_stair_sandstone_block;
 
-		dp.diagonal_dirs = false;
-		dp.holesize      = v3s16(2, 2, 2);
-		dp.roomsize      = v3s16(2, 0, 2);
-		dp.notifytype    = GENNOTIFY_DUNGEON;
+		dp.diagonal_dirs       = false;
+		dp.holesize            = v3s16(2, 2, 2);
+		dp.room_size_min       = v3s16(6, 4, 6);
+		dp.room_size_max       = v3s16(10, 6, 10);
+		dp.room_size_large_min = v3s16(10, 8, 10);
+		dp.room_size_large_max = v3s16(18, 16, 18);
+		dp.notifytype          = GENNOTIFY_DUNGEON;
 		break;
 	}
 
@@ -984,10 +1016,14 @@ void MapgenParams::readParams(const Settings *settings)
 	}
 
 	std::string mg_name;
-	if (settings->getNoEx("mg_name", mg_name))
-		this->mgtype = Mapgen::getMapgenType(mg_name);
+	if (settings->getNoEx("mg_name", mg_name)) {
+		mgtype = Mapgen::getMapgenType(mg_name);
+		if (mgtype == MAPGEN_INVALID)
+			mgtype = MAPGEN_DEFAULT;
+	}
 
 	settings->getS16NoEx("water_level", water_level);
+	settings->getS16NoEx("mapgen_limit", mapgen_limit);
 	settings->getS16NoEx("chunksize", chunksize);
 	settings->getFlagStrNoEx("mg_flags", flags, flagdesc_mapgen);
 
@@ -1005,9 +1041,61 @@ void MapgenParams::writeParams(Settings *settings) const
 	settings->set("mg_name", Mapgen::getMapgenName(mgtype));
 	settings->setU64("seed", seed);
 	settings->setS16("water_level", water_level);
+	settings->setS16("mapgen_limit", mapgen_limit);
 	settings->setS16("chunksize", chunksize);
 	settings->setFlagStr("mg_flags", flags, flagdesc_mapgen, U32_MAX);
 
 	if (bparams)
 		bparams->writeParams(settings);
+}
+
+// Calculate edges of outermost generated mapchunks (less than
+// 'mapgen_limit'), and corresponding exact limits for SAO entities.
+void MapgenParams::calcMapgenEdges()
+{
+	// Central chunk offset, in blocks
+	s16 ccoff_b = -chunksize / 2;
+
+	// Chunksize, in nodes
+	s32 csize_n = chunksize * MAP_BLOCKSIZE;
+
+	// Minp/maxp of central chunk, in nodes
+	s16 ccmin = ccoff_b * MAP_BLOCKSIZE;
+	s16 ccmax = ccmin + csize_n - 1;
+	// Fullminp/fullmaxp of central chunk, in nodes
+	s16 ccfmin = ccmin - MAP_BLOCKSIZE;
+	s16 ccfmax = ccmax + MAP_BLOCKSIZE;
+	// Effective mapgen limit, in blocks
+	// Uses same calculation as ServerMap::blockpos_over_mapgen_limit(v3s16 p)
+	s16 mapgen_limit_b = rangelim(mapgen_limit,
+		0, MAX_MAP_GENERATION_LIMIT) / MAP_BLOCKSIZE;
+	// Effective mapgen limits, in nodes
+	s16 mapgen_limit_min = -mapgen_limit_b * MAP_BLOCKSIZE;
+	s16 mapgen_limit_max = (mapgen_limit_b + 1) * MAP_BLOCKSIZE - 1;
+	// Number of complete chunks from central chunk fullminp/fullmaxp
+	// to effective mapgen limits.
+	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize_n, 0);
+	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize_n, 0);
+	// Mapgen edges, in nodes
+	// These values may be useful later as additional class members
+	s16 mapgen_edge_min = ccmin - numcmin * csize_n;
+	s16 mapgen_edge_max = ccmax + numcmax * csize_n;
+	// SAO position limits, in Irrlicht units
+	m_sao_limit_min = mapgen_edge_min * BS - 3.0f;
+	m_sao_limit_max = mapgen_edge_max * BS + 3.0f;
+}
+
+
+bool MapgenParams::saoPosOverLimit(const v3f &p)
+{
+	if (!m_sao_limit_calculated) {
+		calcMapgenEdges();
+		m_sao_limit_calculated = true;
+	}
+	return p.X < m_sao_limit_min ||
+		p.X > m_sao_limit_max ||
+		p.Y < m_sao_limit_min ||
+		p.Y > m_sao_limit_max ||
+		p.Z < m_sao_limit_min ||
+		p.Z > m_sao_limit_max;
 }

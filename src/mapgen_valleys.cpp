@@ -1,8 +1,7 @@
 /*
 Minetest Valleys C
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
-Copyright (C) 2016 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
  (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
@@ -37,7 +36,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h" // For g_settings
 #include "emerge.h"
 #include "dungeongen.h"
-#include "treegen.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"
@@ -69,9 +67,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
 	this->m_bgen = (BiomeGenOriginal *)biomegen;
-
-	this->map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-			g_settings->getU16("map_generation_limit"));
 
 	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
@@ -110,9 +105,6 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
 	tcave_cache = new float[csize.Y + 2];
-
-	// Resolve content to be used
-	c_lava_source = ndef->getId("mapgen_lava_source");
 }
 
 
@@ -238,16 +230,20 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Generate noise maps and base terrain height.
-	calculateNoise();
-
 	// Generate biome noises.  Note this must be executed strictly before
 	// generateTerrain, because generateTerrain depends on intermediate
 	// biome-related noises.
 	m_bgen->calcBiomeNoise(node_min);
 
+	// Generate noise maps and base terrain height.
+	// Modify heat and humidity maps.
+	calculateNoise();
+
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
+
+	// Recalculate heightmap
+	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
 	MgStoneType stone_type = generateBiomes();
@@ -549,10 +545,6 @@ int MapgenValleys::generateTerrain()
 			index_3d += ystride;
 		}
 
-		// This happens if we're generating a chunk that doesn't
-		// contain the terrain surface, in which case, we need
-		// to set heightmap to a value outside of the chunk,
-		// to avoid confusing lua mods that use heightmap.
 		if (heightmap[index_2d] == -MAX_MAP_GENERATION_LIMIT) {
 			s16 surface_y_int = myround(surface_y);
 			if (surface_y_int > node_max.Y + 1 || surface_y_int < node_min.Y - 1) {
@@ -621,7 +613,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	const float massive_cave_threshold = 0.6f;
 	// mct: 1 = small rare caves, 0.5 1/3rd ground volume, 0 = 1/2 ground volume.
 
-	float yblmin = -map_gen_limit + massive_cave_blend * 1.5f;
+	float yblmin = -mapgen_limit + massive_cave_blend * 1.5f;
 	float yblmax = massive_cave_depth - massive_cave_blend * 1.5f;
 	bool made_a_big_one = false;
 
@@ -646,11 +638,11 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 
 	// lava_depth varies between one and ten as you approach
 	//  the bottom of the world.
-	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / map_gen_limit);
+	s16 lava_depth = ceil((lava_max_height - node_min.Y + 1) * 10.f / mapgen_limit);
 	// This allows random lava spawns to be less common at the surface.
 	s16 lava_chance = MYCUBE(lava_features_lim) * lava_depth;
 	// water_depth varies between ten and one on the way down.
-	s16 water_depth = ceil((map_gen_limit - abs(node_min.Y) + 1) * 10.f / map_gen_limit);
+	s16 water_depth = ceil((mapgen_limit - abs(node_min.Y) + 1) * 10.f / mapgen_limit);
 	// This allows random water spawns to be more common at the surface.
 	s16 water_chance = MYCUBE(water_features_lim) * water_depth;
 

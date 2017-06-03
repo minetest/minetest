@@ -45,6 +45,11 @@ enum MinimapMode {
 	MINIMAP_MODE_COUNT,
 };
 
+enum MinimapShape {
+	MINIMAP_SHAPE_SQUARE,
+	MINIMAP_SHAPE_ROUND,
+};
+
 struct MinimapModeDef {
 	bool is_radar;
 	u16 scan_height;
@@ -52,10 +57,10 @@ struct MinimapModeDef {
 };
 
 struct MinimapPixel {
-	u16 id;
+	//! The topmost node that the minimap displays.
+	MapNode n;
 	u16 height;
 	u16 air_count;
-	u16 light;
 };
 
 struct MinimapMapblock {
@@ -96,13 +101,8 @@ public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
 
-	void getMap(v3s16 pos, s16 size, s16 height, bool radar);
-	MinimapPixel *getMinimapPixel(v3s16 pos, s16 height, s16 *pixel_height);
-	s16 getAirCount(v3s16 pos, s16 height);
-	video::SColor getColorFromId(u16 id);
-
+	void getMap(v3s16 pos, s16 size, s16 height);
 	void enqueueBlock(v3s16 pos, MinimapMapblock *data);
-
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
@@ -117,20 +117,24 @@ private:
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
-class Mapper {
+class Minimap {
 public:
-	Mapper(IrrlichtDevice *device, Client *client);
-	~Mapper();
+	Minimap(IrrlichtDevice *device, Client *client);
+	~Minimap();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);
 
 	v3f getYawVec();
-	MinimapMode getMinimapMode();
 
 	void setPos(v3s16 pos);
+	v3s16 getPos() const { return data->pos; }
 	void setAngle(f32 angle);
+	f32 getAngle() const { return m_angle; }
 	void setMinimapMode(MinimapMode mode);
+	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape();
+	void setMinimapShape(MinimapShape shape);
+	MinimapShape getMinimapShape();
 
 
 	video::ITexture *getMinimapTexture();

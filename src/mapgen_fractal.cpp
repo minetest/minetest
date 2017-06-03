@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "dungeongen.h"
 #include "cavegen.h"
-#include "treegen.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"

@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <vector>
+#include "util/cpp11_container.h"
 
 class Client;
 struct HTTPFetchResult;
@@ -58,10 +59,10 @@ public:
 	}
 
 	// Add a file to the list of required file (but don't fetch it yet)
-	void addFile(std::string name, std::string sha1);
+	void addFile(const std::string &name, const std::string &sha1);
 
 	// Add a remote server to the list; ignored if not built with cURL
-	void addRemoteServer(std::string baseurl);
+	void addRemoteServer(const std::string &baseurl);
 
 	// Steps the media downloader:
 	// - May load media into client by calling client->loadMedia()
@@ -137,7 +138,7 @@ private:
 	s32 m_httpfetch_active;
 	s32 m_httpfetch_active_limit;
 	s32 m_outstanding_hash_sets;
-	std::map<unsigned long, std::string> m_remote_file_transfers;
+	UNORDERED_MAP<unsigned long, std::string> m_remote_file_transfers;
 
 	// All files up to this name have either been received from a
 	// remote server or failed on all remote servers, so those files

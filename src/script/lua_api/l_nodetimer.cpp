@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_internal.h"
-#include "environment.h"
+#include "serverenvironment.h"
 #include "map.h"
 
 
@@ -162,7 +162,7 @@ void NodeTimerRef::Register(lua_State *L)
 }
 
 const char NodeTimerRef::className[] = "NodeTimerRef";
-const luaL_reg NodeTimerRef::methods[] = {
+const luaL_Reg NodeTimerRef::methods[] = {
 	luamethod(NodeTimerRef, start),
 	luamethod(NodeTimerRef, set),
 	luamethod(NodeTimerRef, stop),

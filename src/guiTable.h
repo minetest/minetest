@@ -74,11 +74,10 @@ public:
 		std::string name;
 		std::string value;
 
-		Option(const std::string &name_, const std::string &value_)
-		{
-			name = name_;
-			value = value_;
-		}
+		Option(const std::string &name_, const std::string &value_) :
+			name(name_),
+			value(value_)
+		{}
 	};
 
 	/*
@@ -197,7 +196,7 @@ protected:
 	bool m_sel_doubleclick;
 
 	// Keyboard navigation stuff
-	s32 m_keynav_time;
+	u64 m_keynav_time;
 	core::stringw m_keynav_buffer;
 
 	// Drawing and geometry information

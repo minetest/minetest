@@ -22,11 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "nodedef.h"
 #include "gamedef.h"
-#include "log.h"
-#include "environment.h"
+#ifndef SERVER
+#include "clientenvironment.h"
+#endif
+#include "serverenvironment.h"
 #include "serverobject.h"
-#include <vector>
-#include <set>
 #include "util/timetaker.h"
 #include "profiler.h"
 

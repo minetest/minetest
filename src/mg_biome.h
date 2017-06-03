@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "noise.h"
 
+class Server;
 class Settings;
 class BiomeManager;
 
@@ -186,7 +188,7 @@ private:
 
 class BiomeManager : public ObjDefManager {
 public:
-	BiomeManager(IGameDef *gamedef);
+	BiomeManager(Server *server);
 	virtual ~BiomeManager();
 
 	const char *getObjectTitle() const
@@ -223,7 +225,7 @@ public:
 	virtual void clear();
 
 private:
-	IGameDef *m_gamedef;
+	Server *m_server;
 
 };
 

@@ -175,7 +175,7 @@ struct BufferedPacket
 	Buffer<u8> data; // Data of the packet, including headers
 	float time; // Seconds from buffering the packet or re-sending
 	float totaltime; // Seconds from buffering the packet
-	unsigned int absolute_send_time;
+	u64 absolute_send_time;
 	Address address; // Sender or destination
 	unsigned int resend_count;
 };
@@ -383,7 +383,7 @@ struct OutgoingPacket
 	bool reliable;
 	bool ack;
 
-	OutgoingPacket(u16 peer_id_, u8 channelnum_, SharedBuffer<u8> data_,
+	OutgoingPacket(u16 peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_,
 			bool reliable_,bool ack_=false):
 		peer_id(peer_id_),
 		channelnum(channelnum_),
@@ -448,7 +448,7 @@ struct ConnectionCommand
 		reliable = reliable_;
 	}
 
-	void ack(u16 peer_id_, u8 channelnum_, SharedBuffer<u8> data_)
+	void ack(u16 peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_ACK;
 		peer_id = peer_id_;
@@ -457,7 +457,7 @@ struct ConnectionCommand
 		reliable = false;
 	}
 
-	void createPeer(u16 peer_id_, SharedBuffer<u8> data_)
+	void createPeer(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_CREATE_PEER;
 		peer_id = peer_id_;
@@ -467,7 +467,7 @@ struct ConnectionCommand
 		raw = true;
 	}
 
-	void disableLegacy(u16 peer_id_, SharedBuffer<u8> data_)
+	void disableLegacy(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONCMD_DISABLE_LEGACY;
 		peer_id = peer_id_;
@@ -732,8 +732,8 @@ class Peer {
 		virtual void reportRTT(float rtt) {};
 
 		void RTTStatistics(float rtt,
-							std::string profiler_id="",
-							unsigned int num_samples=1000);
+							const std::string &profiler_id = "",
+							unsigned int num_samples = 1000);
 
 		bool IncUseCount();
 		void DecUseCount();
@@ -769,7 +769,7 @@ class Peer {
 		// Seconds from last receive
 		float m_timeout_counter;
 
-		u32 m_last_timeout_check;
+		u64 m_last_timeout_check;
 };
 
 class UDPPeer : public Peer
@@ -874,7 +874,7 @@ struct ConnectionEvent
 		return "Invalid ConnectionEvent";
 	}
 
-	void dataReceived(u16 peer_id_, SharedBuffer<u8> data_)
+	void dataReceived(u16 peer_id_, const SharedBuffer<u8> &data_)
 	{
 		type = CONNEVENT_DATA_RECEIVED;
 		peer_id = peer_id_;

@@ -60,7 +60,7 @@ void TextDestGuiEngine::gotText(const StringMap &fields)
 }
 
 /******************************************************************************/
-void TextDestGuiEngine::gotText(std::wstring text)
+void TextDestGuiEngine::gotText(const std::wstring &text)
 {
 	m_engine->getScriptIface()->handleMainMenuEvent(wide_to_utf8(text));
 }
@@ -194,11 +194,9 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 			-1,
 			m_menumanager,
 			NULL /* &client */,
-			NULL /* gamedef */,
 			m_texture_source,
 			m_formspecgui,
 			m_buttonhandler,
-			NULL,
 			false);
 
 	m_menu->allowClose(false);
@@ -215,13 +213,13 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 		m_data->script_data.errormessage = "";
 
 		if (!loadMainMenuScript()) {
-			errorstream << "No future without mainmenu" << std::endl;
+			errorstream << "No future without main menu!" << std::endl;
 			abort();
 		}
 
 		run();
 	} catch (LuaError &e) {
-		errorstream << "MAINMENU ERROR: " << e.what() << std::endl;
+		errorstream << "Main menu error: " << e.what() << std::endl;
 		m_data->script_data.errormessage = e.what();
 	}
 
@@ -233,13 +231,13 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 /******************************************************************************/
 bool GUIEngine::loadMainMenuScript()
 {
-	// Try custom menu script (main_menu_path)
-
+	// Set main menu path (for core.get_mainmenu_path())
 	m_scriptdir = g_settings->get("main_menu_path");
 	if (m_scriptdir.empty()) {
-		m_scriptdir = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "mainmenu";
+		m_scriptdir = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM + "mainmenu";
 	}
 
+	// Load builtin (which will load the main menu script)
 	std::string script = porting::path_share + DIR_DELIM "builtin" + DIR_DELIM "init.lua";
 	try {
 		m_script->loadScript(script);
@@ -264,8 +262,24 @@ void GUIEngine::run()
 
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	while(m_device->run() && (!m_startgame) && (!m_kill))
-	{
+	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screenW"),
+		g_settings->getU16("screenH"));
+
+	while (m_device->run() && (!m_startgame) && (!m_kill)) {
+
+		const irr::core::dimension2d<u32> &current_screen_size =
+			m_device->getVideoDriver()->getScreenSize();
+		// Verify if window size has changed and save it if it's the case
+		// Ensure evaluating settings->getBool after verifying screensize
+		// First condition is cheaper
+		if (previous_screen_size != current_screen_size &&
+				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
+				g_settings->getBool("autosave_screensize")) {
+			g_settings->setU16("screenW", current_screen_size.Width);
+			g_settings->setU16("screenH", current_screen_size.Height);
+			previous_screen_size = current_screen_size;
+		}
+
 		//check if we need to update the "upper left corner"-text
 		if (text_height != g_fontengine->getTextHeight()) {
 			updateTopLeftTextSize();
@@ -542,7 +556,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 }
 
 /******************************************************************************/
-bool GUIEngine::downloadFile(std::string url, std::string target)
+bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 {
 #if USE_CURL
 	std::ofstream target_file(target.c_str(), std::ios::out | std::ios::binary);
@@ -604,8 +618,8 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
-unsigned int GUIEngine::queueAsync(std::string serialized_func,
-		std::string serialized_params)
+unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
+		const std::string &serialized_params)
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }

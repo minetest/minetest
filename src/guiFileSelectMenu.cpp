@@ -18,19 +18,16 @@
  */
 
 #include "guiFileSelectMenu.h"
-#include "util/string.h"
-#include <locale.h>
 
 GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
-				gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
-				std::string title, std::string formname) :
-GUIModalMenu(env, parent, id, menumgr)
+		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
+		const std::string &title, const std::string &formname) :
+	GUIModalMenu(env, parent, id, menumgr),
+	m_title(utf8_to_wide(title)),
+	m_accepted(false),
+	m_text_dst(NULL),
+	m_formname(formname)
 {
-	m_title = utf8_to_wide(title);
-	m_parent = parent;
-	m_formname = formname;
-	m_text_dst = 0;
-	m_accepted = false;
 }
 
 GUIFileSelectMenu::~GUIFileSelectMenu()
@@ -107,16 +104,12 @@ bool GUIFileSelectMenu::OnEvent(const SEvent& event)
 				acceptInput();
 				quitMenu();
 				return true;
-				break;
-
 			case gui::EGET_DIRECTORY_SELECTED:
 			case gui::EGET_FILE_SELECTED:
 				m_accepted=true;
 				acceptInput();
 				quitMenu();
 				return true;
-				break;
-
 			default:
 				//ignore this event
 				break;

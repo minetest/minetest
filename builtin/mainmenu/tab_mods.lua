@@ -28,7 +28,8 @@ local function get_formspec(tabview, name, tabdata)
 
 	local retval =
 		"label[0.05,-0.25;".. fgettext("Installed Mods:") .. "]" ..
-		"textlist[0,0.25;5.1,5;modlist;" ..
+		"tablecolumns[color;tree;text]" ..
+		"table[0,0.25;5.1,5;modlist;" ..
 		modmgr.render_modlist(modmgr.global_mods) ..
 		";" .. tabdata.selected_mod .. "]"
 
@@ -74,7 +75,7 @@ local function get_formspec(tabview, name, tabdata)
 		if error == nil then
 			local descriptiontext = descriptionfile:read("*all")
 
-			descriptionlines = core.splittext(descriptiontext,42)
+			descriptionlines = core.wrap_text(descriptiontext, 42)
 			descriptionfile:close()
 		else
 			descriptionlines = {}
@@ -127,8 +128,8 @@ end
 --------------------------------------------------------------------------------
 local function handle_buttons(tabview, fields, tabname, tabdata)
 	if fields["modlist"] ~= nil then
-		local event = core.explode_textlist_event(fields["modlist"])
-		tabdata.selected_mod = event.index
+		local event = core.explode_table_event(fields["modlist"])
+		tabdata.selected_mod = event.row
 		return true
 	end
 

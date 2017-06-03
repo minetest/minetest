@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 #include <string>
+#include <vector>
 #include "irrlichttypes.h"
 
 class IItemDefManager;
@@ -33,12 +34,14 @@ class MtEventManager;
 class IRollbackManager;
 class EmergeManager;
 class Camera;
+class ModMetadata;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
 	class ISceneManager;
 }}
 
+struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
 	mapnode properties
@@ -53,47 +56,29 @@ public:
 	virtual INodeDefManager* getNodeDefManager()=0;
 	virtual ICraftDefManager* getCraftDefManager()=0;
 
-	// This is always thread-safe, but referencing the irrlicht texture
-	// pointers in other threads than main thread will make things explode.
-	virtual ITextureSource* getTextureSource()=0;
-
-	virtual IShaderSource* getShaderSource()=0;
-
 	// Used for keeping track of names/ids of unknown nodes
 	virtual u16 allocateUnknownNodeId(const std::string &name)=0;
 
-	// Only usable on the client
-	virtual ISoundManager* getSoundManager()=0;
 	virtual MtEventManager* getEventManager()=0;
-	virtual scene::IAnimatedMesh* getMesh(const std::string &filename)
-	{ return NULL; }
-	virtual scene::ISceneManager* getSceneManager()=0;
-
-	virtual Camera* getCamera()
-	{ return NULL; }
-	virtual void setCamera(Camera *camera) {}
 
 	// Only usable on the server, and NOT thread-safe. It is usable from the
 	// environment thread.
-	virtual IRollbackManager* getRollbackManager(){return NULL;}
-
-	// Only usable on the server. Thread safe if not written while running threads.
-	virtual EmergeManager *getEmergeManager() { return NULL; }
-
-	// Used on the client
-	virtual bool checkLocalPrivilege(const std::string &priv)
-	{ return false; }
+	virtual IRollbackManager* getRollbackManager() { return NULL; }
 
 	// Shorthands
 	IItemDefManager  *idef()     { return getItemDefManager(); }
 	INodeDefManager  *ndef()     { return getNodeDefManager(); }
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
-	ITextureSource   *tsrc()     { return getTextureSource(); }
-	ISoundManager    *sound()    { return getSoundManager(); }
-	IShaderSource    *shsrc()    { return getShaderSource(); }
+
 	MtEventManager   *event()    { return getEventManager(); }
-	IRollbackManager *rollback() { return getRollbackManager();}
-	EmergeManager    *emerge()   { return getEmergeManager(); }
+	IRollbackManager *rollback() { return getRollbackManager(); }
+
+	virtual const std::vector<ModSpec> &getMods() const = 0;
+	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
+	virtual std::string getWorldPath() const { return ""; }
+	virtual std::string getModStoragePath() const = 0;
+	virtual bool registerModStorage(ModMetadata *storage) = 0;
+	virtual void unregisterModStorage(const std::string &name) = 0;
 };
 
 #endif

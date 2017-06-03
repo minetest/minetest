@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define L_ENV_H_
 
 #include "lua_api/l_base.h"
-#include "environment.h"
+#include "serverenvironment.h"
 
 class ModApiEnvMod : public ModApiBase {
 private:
@@ -116,7 +116,7 @@ private:
 	// get_day_count() -> int
 	static int l_get_day_count(lua_State *L);
 
-	// find_node_near(pos, radius, nodenames) -> pos or nil
+	// find_node_near(pos, radius, nodenames, search_center) -> pos or nil
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_node_near(lua_State *L);
 
@@ -127,6 +127,9 @@ private:
 	// find_surface_nodes_in_area(minp, maxp, nodenames) -> list of positions
 	// nodenames: eg. {"ignore", "group:tree"} or "default:dirt"
 	static int l_find_nodes_in_area_under_air(lua_State *L);
+
+	// fix_light(p1, p2) -> true/false
+	static int l_fix_light(lua_State *L);
 
 	// emerge_area(p1, p2)
 	static int l_emerge_area(lua_State *L);
@@ -173,6 +176,7 @@ private:
 
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeClient(lua_State *L, int top);
 
 	static struct EnumString es_ClearObjectsMode[];
 };
@@ -199,11 +203,11 @@ public:
 		m_simple_catch_up(simple_catch_up)
 	{
 	}
-	virtual std::set<std::string> getTriggerContents()
+	virtual const std::set<std::string> &getTriggerContents() const
 	{
 		return m_trigger_contents;
 	}
-	virtual std::set<std::string> getRequiredNeighbors()
+	virtual const std::set<std::string> &getRequiredNeighbors() const
 	{
 		return m_required_neighbors;
 	}
@@ -242,7 +246,7 @@ public:
 };
 
 struct ScriptCallbackState {
-	GameScripting *script;
+	ServerScripting *script;
 	int callback_ref;
 	int args_ref;
 	unsigned int refcount;

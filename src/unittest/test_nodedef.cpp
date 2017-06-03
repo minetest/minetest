@@ -25,7 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "network/networkprotocol.h"
 
-class TestNodeDef : public TestBase {
+class TestNodeDef : public TestBase
+{
 public:
 	TestNodeDef() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestNodeDef"; }
@@ -55,7 +56,7 @@ void TestNodeDef::testContentFeaturesSerialization()
 
 	std::ostringstream os(std::ios::binary);
 	f.serialize(os, LATEST_PROTOCOL_VERSION);
-	//verbosestream<<"Test ContentFeatures size: "<<os.str().size()<<std::endl;
+	// verbosestream<<"Test ContentFeatures size: "<<os.str().size()<<std::endl;
 
 	std::istringstream is(os.str(), std::ios::binary);
 	ContentFeatures f2;

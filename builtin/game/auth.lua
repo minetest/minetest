@@ -106,7 +106,7 @@ core.builtin_auth_handler = {
 				end
 			end
 		-- For the admin, give everything
-		elseif name == core.setting_get("name") then
+		elseif name == core.settings:get("name") then
 			for priv, def in pairs(core.registered_privileges) do
 				privileges[priv] = true
 			end
@@ -125,7 +125,7 @@ core.builtin_auth_handler = {
 		core.log('info', "Built-in authentication handler adding player '"..name.."'")
 		core.auth_table[name] = {
 			password = password,
-			privileges = core.string_to_privs(core.setting_get("default_privs")),
+			privileges = core.string_to_privs(core.settings:get("default_privs")),
 			last_login = os.time(),
 		}
 		save_auth_file()
@@ -148,7 +148,7 @@ core.builtin_auth_handler = {
 		if not core.auth_table[name] then
 			core.builtin_auth_handler.create_auth(name,
 				core.get_password_hash(name,
-					core.setting_get("default_password")))
+					core.settings:get("default_password")))
 		end
 		core.auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)

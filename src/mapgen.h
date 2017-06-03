@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -124,6 +126,7 @@ struct MapgenParams {
 	s16 chunksize;
 	u64 seed;
 	s16 water_level;
+	s16 mapgen_limit;
 	u32 flags;
 
 	BiomeParams *bparams;
@@ -133,8 +136,12 @@ struct MapgenParams {
 		chunksize(5),
 		seed(0),
 		water_level(1),
+		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
 		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL)
+		bparams(NULL),
+		m_sao_limit_min(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_max(MAX_MAP_GENERATION_LIMIT * BS),
+		m_sao_limit_calculated(false)
 	{
 	}
 
@@ -142,6 +149,14 @@ struct MapgenParams {
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
+
+	bool saoPosOverLimit(const v3f &p);
+private:
+	void calcMapgenEdges();
+
+	float m_sao_limit_min;
+	float m_sao_limit_max;
+	bool m_sao_limit_calculated;
 };
 
 
@@ -158,6 +173,7 @@ class Mapgen {
 public:
 	s32 seed;
 	int water_level;
+	int mapgen_limit;
 	u32 flags;
 	bool generating;
 	int id;
@@ -240,6 +256,7 @@ public:
 	virtual ~MapgenBasic();
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
+	virtual bool generateCaverns(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
 	virtual MgStoneType generateBiomes();
 	virtual void dustTopNodes();
@@ -257,17 +274,19 @@ protected:
 
 	// Content required for generateBiomes
 	content_t c_stone;
-	content_t c_water_source;
-	content_t c_river_water_source;
 	content_t c_desert_stone;
 	content_t c_sandstone;
+	content_t c_water_source;
+	content_t c_river_water_source;
+	content_t c_lava_source;
 
 	// Content required for generateDungeons
 	content_t c_cobble;
 	content_t c_stair_cobble;
 	content_t c_mossycobble;
+	content_t c_stair_desert_stone;
 	content_t c_sandstonebrick;
-	content_t c_stair_sandstonebrick;
+	content_t c_stair_sandstone_block;
 
 	int ystride;
 	int zstride;
@@ -278,7 +297,11 @@ protected:
 
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
+	NoiseParams np_cavern;
 	float cave_width;
+	float cavern_limit;
+	float cavern_taper;
+	float cavern_threshold;
 };
 
 #endif

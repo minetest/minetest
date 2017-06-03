@@ -43,10 +43,10 @@ end
 local function configure_selected_world_params(idx)
 	local worldconfig = modmgr.get_worldconfig(menudata.worldlist:get_list()[idx].path)
 	if worldconfig.creative_mode then
-		core.setting_set("creative_mode", worldconfig.creative_mode)
+		core.settings:set("creative_mode", worldconfig.creative_mode)
 	end
 	if worldconfig.enable_damage then
-		core.setting_set("enable_damage", worldconfig.enable_damage)
+		core.settings:set("enable_damage", worldconfig.enable_damage)
 	end
 end
 
@@ -54,7 +54,12 @@ end
 function image_column(tooltip, flagname)
 	return "image,tooltip=" .. core.formspec_escape(tooltip) .. "," ..
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
-		"1=" .. core.formspec_escape(defaulttexturedir .. "server_flags_" .. flagname .. ".png")
+		"1=" .. core.formspec_escape(defaulttexturedir ..
+			(flagname and "server_flags_" .. flagname .. ".png" or "blank.png")) .. "," ..
+		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
+		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
+		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
+		"5=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png")
 end
 
 --------------------------------------------------------------------------------
@@ -77,7 +82,7 @@ function order_favorite_list(list)
 end
 
 --------------------------------------------------------------------------------
-function render_favorite(spec, is_favorite)
+function render_serverlist_row(spec, is_favorite)
 	local text = ""
 	if spec.name then
 		text = text .. core.formspec_escape(spec.name:trim())
@@ -95,6 +100,21 @@ function render_favorite(spec, is_favorite)
 		details = "1,"
 	else
 		details = "0,"
+	end
+
+	if spec.ping then
+		local ping = spec.ping * 1000
+		if ping <= 50 then
+			details = details .. "2,"
+		elseif ping <= 100 then
+			details = details .. "3,"
+		elseif ping <= 250 then
+			details = details .. "4,"
+		else
+			details = details .. "5,"
+		end
+	else
+		details = details .. "0,"
 	end
 
 	if spec.clients and spec.clients_max then
@@ -144,8 +164,8 @@ end
 
 --------------------------------------------------------------------------------
 os.tempfolder = function()
-	if core.setting_get("TMPFolder") then
-		return core.setting_get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
+	if core.settings:get("TMPFolder") then
+		return core.settings:get("TMPFolder") .. DIR_DELIM .. "MT_" .. math.random(0,10000)
 	end
 
 	local filetocheck = os.tmpname()
@@ -186,7 +206,7 @@ function menu_handle_key_up_down(fields, textlist, settingname)
 				oldidx < menudata.worldlist:size() then
 			newidx = oldidx + 1
 		end
-		core.setting_set(settingname, menudata.worldlist:get_raw_index(newidx))
+		core.settings:set(settingname, menudata.worldlist:get_raw_index(newidx))
 		configure_selected_world_params(newidx)
 		return true
 	end
@@ -230,7 +250,7 @@ end
 
 --------------------------------------------------------------------------------
 function text2textlist(xpos, ypos, width, height, tl_name, textlen, text, transparency)
-	local textlines = core.splittext(text, textlen)
+	local textlines = core.wrap_text(text, textlen)
 	local retval = "textlist[" .. xpos .. "," .. ypos .. ";" .. width ..
 			"," .. height .. ";" .. tl_name .. ";"
 
@@ -308,9 +328,9 @@ function menu_worldmt_legacy(selected)
 	for _, mode_name in pairs(modes_names) do
 		local mode_val = menu_worldmt(selected, mode_name)
 		if mode_val then
-			core.setting_set(mode_name, mode_val)
+			core.settings:set(mode_name, mode_val)
 		else
-			menu_worldmt(selected, mode_name, core.setting_get(mode_name))
+			menu_worldmt(selected, mode_name, core.settings:get(mode_name))
 		end
 	end
 end

@@ -30,7 +30,8 @@
 #include <string>
 #include <vector>
 
-struct key_setting {
+struct key_setting
+{
 	int id;
 	const wchar_t *button_name;
 	KeyPress key;
@@ -38,12 +39,11 @@ struct key_setting {
 	gui::IGUIButton *button;
 };
 
-
-class GUIKeyChangeMenu: public GUIModalMenu
+class GUIKeyChangeMenu : public GUIModalMenu
 {
 public:
-	GUIKeyChangeMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
-			s32 id, IMenuManager *menumgr);
+	GUIKeyChangeMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			IMenuManager *menumgr);
 	~GUIKeyChangeMenu();
 
 	void removeChildren();
@@ -56,10 +56,9 @@ public:
 
 	bool acceptInput();
 
-	bool OnEvent(const SEvent& event);
+	bool OnEvent(const SEvent &event);
 
 private:
-
 	void init_keys();
 
 	bool resetMenu();
@@ -67,13 +66,12 @@ private:
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
 	bool shift_down;
-	
+
 	s32 activeKey;
-	
+
 	std::vector<KeyPress> key_used;
 	gui::IGUIStaticText *key_used_text;
 	std::vector<key_setting *> key_settings;
 };
 
 #endif
-

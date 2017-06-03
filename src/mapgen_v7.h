@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -23,10 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-////////////// Mapgen V7 flags
-#define MGV7_MOUNTAINS    0x01
-#define MGV7_RIDGES       0x02
-#define MGV7_FLOATLANDS   0x04
+//////////// Mapgen V7 flags
+#define MGV7_MOUNTAINS  0x01
+#define MGV7_RIDGES     0x02
+#define MGV7_FLOATLANDS 0x04
+#define MGV7_CAVERNS    0x08
 
 class BiomeManager;
 
@@ -40,6 +41,9 @@ struct MapgenV7Params : public MapgenParams {
 	float float_mount_height;
 	s16 floatland_level;
 	s16 shadow_limit;
+	s16 cavern_limit;
+	s16 cavern_taper;
+	float cavern_threshold;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
@@ -52,6 +56,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_float_base_height;
 	NoiseParams np_mountain;
 	NoiseParams np_ridge;
+	NoiseParams np_cavern;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 

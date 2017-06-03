@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/timetaker.h"
 #include "fontengine.h"
 #include "guiscalingfilter.h"
+#include "filesys.h"
 
 typedef enum {
 	LEFT = -1,
@@ -383,6 +384,10 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 		bool draw_wield_tool, Client& client, gui::IGUIEnvironment* guienv,
 		video::SColor skycolor)
 {
+#if IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR > 8
+	errorstream << "Pageflip 3D mode is not supported"
+		<< " with your Irrlicht version!" << std::endl;
+#else
 	/* preserve old setup*/
 	irr::core::vector3df oldPosition = camera.getCameraNode()->getPosition();
 	irr::core::vector3df oldTarget   = camera.getCameraNode()->getTarget();
@@ -451,12 +456,40 @@ void draw_pageflip_3d_mode(Camera& camera, bool show_hud,
 
 	camera.getCameraNode()->setPosition(oldPosition);
 	camera.getCameraNode()->setTarget(oldTarget);
+#endif
 }
 
-void draw_plain(Camera &camera, bool show_hud, Hud &hud,
-		video::IVideoDriver *driver, bool draw_wield_tool,
-		Client &client, gui::IGUIEnvironment *guienv)
+// returns (size / coef), rounded upwards
+inline int scaledown(int coef, int size)
 {
+	return (size + coef - 1) / coef;
+}
+
+void draw_plain(Camera &camera, bool show_hud,
+		Hud &hud, video::IVideoDriver *driver,
+		scene::ISceneManager *smgr, const v2u32 &screensize,
+		bool draw_wield_tool, Client &client, gui::IGUIEnvironment *guienv,
+		video::SColor skycolor)
+{
+	// Undersampling-specific stuff
+	static video::ITexture *image = NULL;
+	static v2u32 last_pixelated_size = v2u32(0, 0);
+	int undersampling = g_settings->getU16("undersampling");
+	v2u32 pixelated_size;
+	v2u32 dest_size;
+	if (undersampling > 0) {
+		pixelated_size = v2u32(scaledown(undersampling, screensize.X),
+				scaledown(undersampling, screensize.Y));
+		dest_size = v2u32(undersampling * pixelated_size.X, undersampling * pixelated_size.Y);
+		if (pixelated_size != last_pixelated_size) {
+			init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
+			last_pixelated_size = pixelated_size;
+		}
+		driver->setRenderTarget(image, true, true, skycolor);
+	}
+
+	// Render
+	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
 		hud.drawSelectionMesh();
@@ -464,11 +497,19 @@ void draw_plain(Camera &camera, bool show_hud, Hud &hud,
 			camera.drawWieldedTool();
 		}
 	}
+
+	// Upscale lowres render
+	if (undersampling > 0) {
+		driver->setRenderTarget(0, true, true);
+		driver->draw2DImage(image,
+				irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+				irr::core::rect<s32>(0, 0, pixelated_size.X, pixelated_size.Y));
+	}
 }
 
 void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
-		Camera &camera, Client& client, LocalPlayer *player, Hud &hud,
-		Mapper &mapper, gui::IGUIEnvironment *guienv,
+		Camera &camera, Client &client, LocalPlayer *player, Hud &hud,
+		Minimap *mapper, gui::IGUIEnvironment *guienv,
 		const v2u32 &screensize, const video::SColor &skycolor,
 		bool show_hud, bool show_minimap)
 {
@@ -488,9 +529,7 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	catch(SettingNotFoundException) {}
 #endif
 
-	std::string draw_mode = g_settings->get("3d_mode");
-
-	smgr->drawAll();
+	const std::string &draw_mode = g_settings->get("3d_mode");
 
 	if (draw_mode == "anaglyph")
 	{
@@ -525,7 +564,7 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	}
 	else {
 		draw_plain(camera, show_hud, hud, driver,
-				draw_wield_tool, client, guienv);
+				smgr, screensize, draw_wield_tool, client, guienv, skycolor);
 	}
 
 	/*
@@ -545,8 +584,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 		hud.drawLuaElements(camera.getOffset());
 		camera.drawNametags();
 
-		if (show_minimap)
-			mapper.drawMinimap();
+		if (mapper && show_minimap)
+			mapper->drawMinimap();
 	}
 
 	guienv->drawAll();
@@ -560,7 +599,8 @@ void draw_scene(video::IVideoDriver *driver, scene::ISceneManager *smgr,
 	Additionally, a progressbar can be drawn when percent is set between 0 and 100.
 */
 void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
-		gui::IGUIEnvironment* guienv, float dtime, int percent, bool clouds )
+		gui::IGUIEnvironment* guienv, ITextureSource *tsrc,
+		float dtime, int percent, bool clouds)
 {
 	video::IVideoDriver* driver    = device->getVideoDriver();
 	v2u32 screensize               = porting::getWindowSize();
@@ -585,30 +625,49 @@ void draw_load_screen(const std::wstring &text, IrrlichtDevice* device,
 		driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
 	// draw progress bar
-	if ((percent >= 0) && (percent <= 100))
-	{
-		v2s32 barsize(
-				// 342 is (approximately) 256/0.75 to keep bar on same size as
-				// before with default settings
-				342 * porting::getDisplayDensity() *
-				g_settings->getFloat("gui_scaling"),
-				g_fontengine->getTextHeight() * 2);
+	if ((percent >= 0) && (percent <= 100)) {
+		video::ITexture *progress_img = tsrc->getTexture("progress_bar.png");
+		video::ITexture *progress_img_bg = tsrc->getTexture("progress_bar_bg.png");
 
-		core::rect<s32> barrect(center - barsize / 2, center + barsize / 2);
-		driver->draw2DRectangle(video::SColor(255, 255, 255, 255),barrect, NULL); // border
-		driver->draw2DRectangle(video::SColor(255, 64, 64, 64), core::rect<s32> (
-				barrect.UpperLeftCorner + 1,
-				barrect.LowerRightCorner-1), NULL); // black inside the bar
-		driver->draw2DRectangle(video::SColor(255, 128, 128, 128), core::rect<s32> (
-				barrect.UpperLeftCorner + 1,
-				core::vector2d<s32>(
-						barrect.LowerRightCorner.X -
-						(barsize.X - 1) + percent * (barsize.X - 2) / 100,
-						barrect.LowerRightCorner.Y - 1)), NULL); // the actual progress
+		if (progress_img && progress_img_bg) {
+#ifndef __ANDROID__
+			const core::dimension2d<u32> &img_size = progress_img_bg->getSize();
+			u32 imgW = rangelim(img_size.Width, 200, 600);
+			u32 imgH = rangelim(img_size.Height, 24, 72);
+#else
+			const core::dimension2d<u32> img_size(256, 48);
+			float imgRatio = (float) img_size.Height / img_size.Width;
+			u32 imgW = screensize.X / 2.2f;
+			u32 imgH = floor(imgW * imgRatio);
+#endif
+			v2s32 img_pos((screensize.X - imgW) / 2, (screensize.Y - imgH) / 2);
+
+			draw2DImageFilterScaled(
+				driver, progress_img_bg,
+				core::rect<s32>(img_pos.X,
+						img_pos.Y,
+						img_pos.X + imgW,
+						img_pos.Y + imgH),
+				core::rect<s32>(0, 0,
+						img_size.Width,
+						img_size.Height),
+				0, 0, true);
+
+			draw2DImageFilterScaled(
+				driver, progress_img,
+				core::rect<s32>(img_pos.X,
+						img_pos.Y,
+						img_pos.X + (percent * imgW) / 100,
+						img_pos.Y + imgH),
+				core::rect<s32>(0, 0,
+						(percent * img_size.Width) / 100,
+						img_size.Height),
+				0, 0, true);
+		}
 	}
+
 	guienv->drawAll();
 	driver->endScene();
-
 	guitext->remove();
 
 	//return guitext;

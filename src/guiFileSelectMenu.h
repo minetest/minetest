@@ -26,14 +26,12 @@
 #include "IGUIFileOpenDialog.h"
 #include "guiFormSpecMenu.h" //required because of TextDest only !!!
 
-
-class GUIFileSelectMenu: public GUIModalMenu
+class GUIFileSelectMenu : public GUIModalMenu
 {
 public:
-	GUIFileSelectMenu(gui::IGUIEnvironment* env, gui::IGUIElement* parent,
-			s32 id, IMenuManager *menumgr,
-			std::string title,
-			std::string formid);
+	GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
+			IMenuManager *menumgr, const std::string &title,
+			const std::string &formid);
 	~GUIFileSelectMenu();
 
 	void removeChildren();
@@ -45,34 +43,21 @@ public:
 
 	void drawMenu();
 
-	bool OnEvent(const SEvent& event);
+	bool OnEvent(const SEvent &event);
 
-	bool isRunning() {
-		return m_running;
-	}
-
-	void setTextDest(TextDest * dest) {
-		m_text_dst = dest;
-	}
+	void setTextDest(TextDest *dest) { m_text_dst = dest; }
 
 private:
 	void acceptInput();
 
 	std::wstring m_title;
 	bool m_accepted;
-	gui::IGUIElement* m_parent;
 
-	std::string m_selectedPath;
-
-	gui::IGUIFileOpenDialog* m_fileOpenDialog;
-
-	bool m_running;
+	gui::IGUIFileOpenDialog *m_fileOpenDialog;
 
 	TextDest *m_text_dst;
 
 	std::string m_formname;
 };
-
-
 
 #endif /* GUIFILESELECTMENU_H_ */

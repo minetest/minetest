@@ -1,27 +1,28 @@
--- Minetest: builtin/chatcommands.lua
+-- Minetest: builtin/game/chatcommands.lua
 
 --
 -- Chat command handler
 --
 
-core.chatcommands = {}
-function core.register_chatcommand(cmd, def)
-	def = def or {}
-	def.params = def.params or ""
-	def.description = def.description or ""
-	def.privs = def.privs or {}
-	def.mod_origin = core.get_current_modname() or "??"
-	core.chatcommands[cmd] = def
-end
+core.chatcommands = core.registered_chatcommands -- BACKWARDS COMPATIBILITY
 
 core.register_on_chat_message(function(name, message)
-	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
-	if not param then
-		param = ""
+	if message:sub(1,1) ~= "/" then
+		return
 	end
-	local cmd_def = core.chatcommands[cmd]
+
+	local cmd, param = string.match(message, "^/([^ ]+) *(.*)")
+	if not cmd then
+		core.chat_send_player(name, "-!- Empty command")
+		return true
+	end
+
+	param = param or ""
+
+	local cmd_def = core.registered_chatcommands[cmd]
 	if not cmd_def then
-		return false
+		core.chat_send_player(name, "-!- Invalid command: " .. cmd)
+		return true
 	end
 	local has_privs, missing_privs = core.check_player_privs(name, cmd_def.privs)
 	if has_privs then
@@ -38,7 +39,7 @@ core.register_on_chat_message(function(name, message)
 	return true  -- Handled chat message
 end)
 
-if core.setting_getbool("profiler.load") then
+if core.settings:get_bool("profiler.load") then
 	-- Run after register_chatcommand and its register_on_chat_message
 	-- Before any chattcommands that should be profiled
 	profiler.init_chatcommand()
@@ -70,7 +71,8 @@ end
 --
 core.register_chatcommand("me", {
 	params = "<action>",
-	description = "chat action (eg. /me orders a pizza)",
+	description = "Display chat action (e.g., '/me orders a pizza' displays"
+			.. " '<player name> orders a pizza')",
 	privs = {shout=true},
 	func = function(name, param)
 		core.chat_send_all("* " .. name .. " " .. param)
@@ -80,7 +82,7 @@ core.register_chatcommand("me", {
 core.register_chatcommand("admin", {
 	description = "Show the name of the server owner",
 	func = function(name)
-		local admin = minetest.setting_get("name")
+		local admin = minetest.settings:get("name")
 		if admin then
 			return true, "The administrator of this server is "..admin.."."
 		else
@@ -89,64 +91,9 @@ core.register_chatcommand("admin", {
 	end,
 })
 
-core.register_chatcommand("help", {
-	privs = {},
-	params = "[all/privs/<cmd>]",
-	description = "Get help for commands or list privileges",
-	func = function(name, param)
-		local function format_help_line(cmd, def)
-			local msg = core.colorize("#00ffff", "/"..cmd)
-			if def.params and def.params ~= "" then
-				msg = msg .. " " .. def.params
-			end
-			if def.description and def.description ~= "" then
-				msg = msg .. ": " .. def.description
-			end
-			return msg
-		end
-		if param == "" then
-			local msg = ""
-			local cmds = {}
-			for cmd, def in pairs(core.chatcommands) do
-				if core.check_player_privs(name, def.privs) then
-					cmds[#cmds + 1] = cmd
-				end
-			end
-			table.sort(cmds)
-			return true, "Available commands: " .. table.concat(cmds, " ") .. "\n"
-					.. "Use '/help <cmd>' to get more information,"
-					.. " or '/help all' to list everything."
-		elseif param == "all" then
-			local cmds = {}
-			for cmd, def in pairs(core.chatcommands) do
-				if core.check_player_privs(name, def.privs) then
-					cmds[#cmds + 1] = format_help_line(cmd, def)
-				end
-			end
-			table.sort(cmds)
-			return true, "Available commands:\n"..table.concat(cmds, "\n")
-		elseif param == "privs" then
-			local privs = {}
-			for priv, def in pairs(core.registered_privileges) do
-				privs[#privs + 1] = priv .. ": " .. def.description
-			end
-			table.sort(privs)
-			return true, "Available privileges:\n"..table.concat(privs, "\n")
-		else
-			local cmd = param
-			local def = core.chatcommands[cmd]
-			if not def then
-				return false, "Command not available: "..cmd
-			else
-				return true, format_help_line(cmd, def)
-			end
-		end
-	end,
-})
-
 core.register_chatcommand("privs", {
 	params = "<name>",
-	description = "print out privileges of player",
+	description = "Print privileges of player",
 	func = function(caller, param)
 		param = param:trim()
 		local name = (param ~= "" and param or caller)
@@ -161,8 +108,8 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if not (caller_privs.privs or caller_privs.basic_privs) then
 		return false, "Your privileges are insufficient."
 	end
-	
-	if not core.auth_table[grantname] then
+
+	if not core.get_auth_handler().get_auth(grantname) then
 		return false, "Player " .. grantname .. " does not exist."
 	end
 	local grantprivs = core.string_to_privs(grantprivstr)
@@ -172,7 +119,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	local privs = core.get_player_privs(grantname)
 	local privs_unknown = ""
 	local basic_privs =
-		core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
+		core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 	for priv, _ in pairs(grantprivs) do
 		if not basic_privs[priv] and not caller_privs.privs then
 			return false, "Your privileges are insufficient."
@@ -204,7 +151,7 @@ core.register_chatcommand("grant", {
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
 		if not grantname or not grantprivstr then
 			return false, "Invalid parameters (see /help grant)"
-		end	
+		end
 		return handle_grant_command(name, grantname, grantprivstr)
 	end,
 })
@@ -215,7 +162,7 @@ core.register_chatcommand("grantme", {
 	func = function(name, param)
 		if param == "" then
 			return false, "Invalid parameters (see /help grantme)"
-		end	
+		end
 		return handle_grant_command(name, name, param)
 	end,
 })
@@ -232,13 +179,13 @@ core.register_chatcommand("revoke", {
 		local revoke_name, revoke_priv_str = string.match(param, "([^ ]+) (.+)")
 		if not revoke_name or not revoke_priv_str then
 			return false, "Invalid parameters (see /help revoke)"
-		elseif not core.auth_table[revoke_name] then
+		elseif not core.get_auth_handler().get_auth(revoke_name) then
 			return false, "Player " .. revoke_name .. " does not exist."
 		end
 		local revoke_privs = core.string_to_privs(revoke_priv_str)
 		local privs = core.get_player_privs(revoke_name)
 		local basic_privs =
-			core.string_to_privs(core.setting_get("basic_privs") or "interact,shout")
+			core.string_to_privs(core.settings:get("basic_privs") or "interact,shout")
 		for priv, _ in pairs(revoke_privs) do
 			if not basic_privs[priv] and
 					not core.check_player_privs(name, {privs=true}) then
@@ -269,7 +216,7 @@ core.register_chatcommand("revoke", {
 
 core.register_chatcommand("setpassword", {
 	params = "<name> <password>",
-	description = "set given password",
+	description = "Set player's password",
 	privs = {password=true},
 	func = function(name, param)
 		local toname, raw_password = string.match(param, "^([^ ]+) +(.+)$")
@@ -307,7 +254,7 @@ core.register_chatcommand("setpassword", {
 
 core.register_chatcommand("clearpassword", {
 	params = "<name>",
-	description = "set empty password",
+	description = "Set empty password",
 	privs = {password=true},
 	func = function(name, param)
 		local toname = param
@@ -324,7 +271,7 @@ core.register_chatcommand("clearpassword", {
 
 core.register_chatcommand("auth_reload", {
 	params = "",
-	description = "reload authentication data",
+	description = "Reload authentication data",
 	privs = {server=true},
 	func = function(name, param)
 		local done = core.auth_reload()
@@ -332,9 +279,34 @@ core.register_chatcommand("auth_reload", {
 	end,
 })
 
+core.register_chatcommand("remove_player", {
+	params = "<name>",
+	description = "Remove player data",
+	privs = {server=true},
+	func = function(name, param)
+		local toname = param
+		if toname == "" then
+			return false, "Name field required"
+		end
+
+		local rc = core.remove_player(toname)
+
+		if rc == 0 then
+			core.log("action", name .. " removed player data of " .. toname .. ".")
+			return true, "Player \"" .. toname .. "\" removed."
+		elseif rc == 1 then
+			return true, "No such player \"" .. toname .. "\" to remove."
+		elseif rc == 2 then
+			return true, "Player \"" .. toname .. "\" is connected, cannot remove."
+		end
+
+		return false, "Unhandled remove_player return code " .. rc .. ""
+	end,
+})
+
 core.register_chatcommand("teleport", {
 	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
-	description = "teleport to given position",
+	description = "Teleport to player or position",
 	privs = {teleport=true},
 	func = function(name, param)
 		-- Returns (pos, true) if found, otherwise (pos, false)
@@ -365,7 +337,7 @@ core.register_chatcommand("teleport", {
 		p.y = tonumber(p.y)
 		p.z = tonumber(p.z)
 		if p.x and p.y and p.z then
-			local lm = tonumber(minetest.setting_get("map_generation_limit") or 31000)
+			local lm = 31000
 			if p.x < -lm or p.x > lm or p.y < -lm or p.y > lm or p.z < -lm or p.z > lm then
 				return false, "Cannot teleport out of map bounds!"
 			end
@@ -442,25 +414,25 @@ core.register_chatcommand("teleport", {
 
 core.register_chatcommand("set", {
 	params = "[-n] <name> <value> | <name>",
-	description = "set or read server configuration setting",
+	description = "Set or read server configuration setting",
 	privs = {server=true},
 	func = function(name, param)
 		local arg, setname, setvalue = string.match(param, "(-[n]) ([^ ]+) (.+)")
 		if arg and arg == "-n" and setname and setvalue then
-			core.setting_set(setname, setvalue)
+			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 		local setname, setvalue = string.match(param, "([^ ]+) (.+)")
 		if setname and setvalue then
-			if not core.setting_get(setname) then
+			if not core.settings:get(setname) then
 				return false, "Failed. Use '/set -n <name> <value>' to create a new setting."
 			end
-			core.setting_set(setname, setvalue)
+			core.settings:set(setname, setvalue)
 			return true, setname .. " = " .. setvalue
 		end
 		local setname = string.match(param, "([^ ]+)")
 		if setname then
-			local setvalue = core.setting_get(setname)
+			local setvalue = core.settings:get(setname)
 			if not setvalue then
 				setvalue = "<not set>"
 			end
@@ -497,7 +469,7 @@ end
 
 core.register_chatcommand("emergeblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "starts loading (or generating, if inexistent) map blocks "
+	description = "Load (or, if nonexistent, generate) map blocks "
 		.. "contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
@@ -523,7 +495,7 @@ core.register_chatcommand("emergeblocks", {
 
 core.register_chatcommand("deleteblocks", {
 	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "delete map blocks contained in area pos1 to pos2",
+	description = "Delete map blocks contained in area pos1 to pos2",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -536,6 +508,25 @@ core.register_chatcommand("deleteblocks", {
 				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
 		else
 			return false, "Failed to clear one or more blocks in area"
+		end
+	end,
+})
+
+core.register_chatcommand("fixlight", {
+	params = "(here [radius]) | (<pos1> <pos2>)",
+	description = "Resets lighting in the area between pos1 and pos2",
+	privs = {server = true},
+	func = function(name, param)
+		local p1, p2 = parse_range_str(name, param)
+		if p1 == false then
+			return false, p2
+		end
+
+		if core.fix_light(p1, p2) then
+			return true, "Successfully reset light in the area ranging from " ..
+				core.pos_to_string(p1, 1) .. " to " .. core.pos_to_string(p2, 1)
+		else
+			return false, "Failed to load one or more blocks in area"
 		end
 	end,
 })
@@ -587,7 +578,7 @@ end
 
 core.register_chatcommand("give", {
 	params = "<name> <ItemString>",
-	description = "give item to player",
+	description = "Give item to player",
 	privs = {give=true},
 	func = function(name, param)
 		local toname, itemstring = string.match(param, "^([^ ]+) +(.+)$")
@@ -600,7 +591,7 @@ core.register_chatcommand("give", {
 
 core.register_chatcommand("giveme", {
 	params = "<ItemString>",
-	description = "give item to yourself",
+	description = "Give item to yourself",
 	privs = {give=true},
 	func = function(name, param)
 		local itemstring = string.match(param, "(.+)$")
@@ -671,12 +662,12 @@ end)
 
 core.register_chatcommand("rollback_check", {
 	params = "[<range>] [<seconds>] [limit]",
-	description = "Check who has last touched a node or near it,"
-			.. " max. <seconds> ago (default range=0,"
-			.. " seconds=86400=24h, limit=5)",
+	description = "Check who last touched a node or a node near it"
+			.. " within the time specified by <seconds>. Default: range = 0,"
+			.. " seconds = 86400 = 24h, limit = 5",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local range, seconds, limit =
@@ -724,10 +715,10 @@ core.register_chatcommand("rollback_check", {
 
 core.register_chatcommand("rollback", {
 	params = "<player name> [<seconds>] | :<actor> [<seconds>]",
-	description = "revert actions of a player; default for <seconds> is 60",
+	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
-		if not core.setting_getbool("enable_rollback_recording") then
+		if not core.settings:get_bool("enable_rollback_recording") then
 			return false, "Rollback functions are disabled."
 		end
 		local target_name, seconds = string.match(param, ":([^ ]+) *(%d*)")
@@ -769,7 +760,7 @@ core.register_chatcommand("status", {
 
 core.register_chatcommand("time", {
 	params = "<0..23>:<0..59> | <0..24000>",
-	description = "set time of day",
+	description = "Set time of day",
 	privs = {},
 	func = function(name, param)
 		if param == "" then
@@ -815,12 +806,21 @@ core.register_chatcommand("days", {
 })
 
 core.register_chatcommand("shutdown", {
-	description = "shutdown server",
+	description = "Shutdown server",
+	params = "[delay_in_seconds (non-negative number, or -1 to cancel)] [reconnect] [message]",
 	privs = {server=true},
 	func = function(name, param)
-		core.log("action", name .. " shuts down server")
-		core.request_shutdown()
-		core.chat_send_all("*** Server shutting down (operator request).")
+		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
+		message = message or ""
+
+		if delay ~= "" then
+			delay = tonumber(param) or 0
+		else
+			delay = 0
+			core.log("action", name .. " shuts down server")
+			core.chat_send_all("*** Server shutting down (operator request).")
+		end
+		core.request_shutdown(message:trim(), core.is_yes(reconnect), delay)
 	end,
 })
 
@@ -846,7 +846,7 @@ core.register_chatcommand("ban", {
 
 core.register_chatcommand("unban", {
 	params = "<name/ip>",
-	description = "remove IP ban",
+	description = "Remove IP ban",
 	privs = {ban=true},
 	func = function(name, param)
 		if not core.unban_player_or_ip(param) then
@@ -859,7 +859,7 @@ core.register_chatcommand("unban", {
 
 core.register_chatcommand("kick", {
 	params = "<name> [reason]",
-	description = "kick a player",
+	description = "Kick a player",
 	privs = {kick=true},
 	func = function(name, param)
 		local tokick, reason = param:match("([^ ]+) (.+)")
@@ -878,7 +878,7 @@ core.register_chatcommand("kick", {
 
 core.register_chatcommand("clearobjects", {
 	params = "[full|quick]",
-	description = "clear all objects in world",
+	description = "Clear all objects in world",
 	privs = {server=true},
 	func = function(name, param)
 		local options = {}
@@ -936,5 +936,33 @@ core.register_chatcommand("last-login", {
 				os.date("!%Y-%m-%dT%H:%M:%SZ", pauth.last_login)
 		end
 		return false, "Last login time is unknown"
+	end,
+})
+
+core.register_chatcommand("clearinv", {
+	params = "[name]",
+	description = "Clear the inventory of yourself or another player",
+	func = function(name, param)
+		local player
+		if param and param ~= "" and param ~= name then
+			if not core.check_player_privs(name, {server=true}) then
+				return false, "You don't have permission"
+						.. " to run this command (missing privilege: server)"
+			end
+			player = core.get_player_by_name(param)
+			core.chat_send_player(param, name.." cleared your inventory.")
+		else
+			player = core.get_player_by_name(name)
+		end
+
+		if player then
+			player:get_inventory():set_list("main", {})
+			player:get_inventory():set_list("craft", {})
+			player:get_inventory():set_list("craftpreview", {})
+			core.log("action", name.." clears "..player:get_player_name().."'s inventory")
+			return true, "Cleared "..player:get_player_name().."'s inventory."
+		else
+			return false, "Player must be online to clear inventory!"
+		end
 	end,
 })

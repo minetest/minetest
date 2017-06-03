@@ -1,0 +1,63 @@
+#    This file contains information (some of which was previously stored in
+#    minetest.conf.example) that cannot be automatically generated from
+#    builtin/settingtypes.txt.
+#    This file contains a list of settings and their default value for minetest.conf
+
+#    By default, all the settings are commented and not functional.
+#    Uncomment settings by removing the preceding #.
+
+#    minetest.conf is read by default from:
+#    ../minetest.conf
+#    ../../minetest.conf
+#    Any other path can be chosen by passing the path as a parameter
+#    to the program, eg. "minetest.exe --config ../minetest.conf.example".
+
+#    Further documentation:
+#    http://wiki.minetest.net/
+
+
+# Mapgen
+
+# Noise parameters and formats
+
+#    Noise parameters can be specified as a set of positional values, for example:
+#
+#    Offset, scale, (x, y, z spread factors), seed offset, octaves, persistence, lacunarity
+# mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+#
+#    Or the group format can be used instead, for example:
+#
+# mgv6_np_terrain_base = {
+#    offset      = -4,
+#    scale       = 20,
+#    spread      = (250, 250, 250),
+#    seed        = 82341,
+#    octaves     = 5,
+#    persistence = 0.6,
+#    lacunarity  = 2.0,
+#    flags       = "defaults"
+# }
+#
+#    The advanced settings menu does not yet support the group format.
+#    Only the group format supports noise flags which are needed for eased noise.
+#    Mgv5 uses eased noise for np_ground so this is shown in group format below
+#    and is not present in the advanced settings menu.
+
+# Mapgen v5
+
+#    Noise parameter in group format, unsupported by advanced settings menu but
+#    settable in minetest.conf.
+#    See documentation of noise parameter formats above.
+#
+#    3D noise defining terrain.
+#    type: noise_params
+# mgv5_np_ground = {
+#    offset      = 0,
+#    scale       = 40,
+#    spread      = (80, 80, 80),
+#    seed        = 983240,
+#    octaves     = 4,
+#    persistence = 0.55,
+#    lacunarity  = 2.0,
+#    flags       = "eased"
+# }

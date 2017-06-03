@@ -19,12 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "remoteplayer.h"
+#include <json/json.h>
 #include "content_sao.h"
 #include "filesys.h"
 #include "gamedef.h"
 #include "porting.h"  // strlcpy
+#include "server.h"
 #include "settings.h"
-
 
 /*
 	RemotePlayer
@@ -64,56 +65,30 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_liquid_fluidity_smooth = g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
 	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
+
+	// copy defaults
+	m_cloud_params.density = 0.4f;
+	m_cloud_params.color_bright = video::SColor(229, 240, 240, 255);
+	m_cloud_params.color_ambient = video::SColor(255, 0, 0, 0);
+	m_cloud_params.height = 120.0f;
+	m_cloud_params.thickness = 16.0f;
+	m_cloud_params.speed = v2f(0.0f, -2.0f);
 }
 
-void RemotePlayer::save(std::string savedir, IGameDef *gamedef)
+void RemotePlayer::serializeExtraAttributes(std::string &output)
 {
-	/*
-	 * We have to open all possible player files in the players directory
-	 * and check their player names because some file systems are not
-	 * case-sensitive and player names are case-sensitive.
-	 */
-
-	// A player to deserialize files into to check their names
-	RemotePlayer testplayer("", gamedef->idef());
-
-	savedir += DIR_DELIM;
-	std::string path = savedir + m_name;
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		if (!fs::PathExists(path)) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			infostream << "Failed to open " << path << std::endl;
-			return;
-		}
-		testplayer.deSerialize(is, path, NULL);
-		is.close();
-		if (strcmp(testplayer.getName(), m_name) == 0) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		path = savedir + m_name + itos(i);
+	assert(m_sao);
+	Json::Value json_root;
+	const PlayerAttributes &attrs = m_sao->getExtendedAttributes();
+	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
+		json_root[(*it).first] = (*it).second;
 	}
 
-	infostream << "Didn't find free file for player " << m_name << std::endl;
-	return;
+	Json::FastWriter writer;
+	output = writer.write(json_root);
+	m_sao->setExtendedAttributeModified(false);
 }
+
 
 void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		PlayerSAO *sao)
@@ -126,7 +101,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	m_dirty = true;
 	//args.getS32("version"); // Version field value not used
-	std::string name = args.get("name");
+	const std::string &name = args.get("name");
 	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
 
 	if (sao) {
@@ -148,7 +123,21 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 
 		try {
-			sao->setBreath(args.getS32("breath"));
+			sao->setBreath(args.getS32("breath"), false);
+		} catch (SettingNotFoundException &e) {}
+
+		try {
+			const std::string &extended_attributes = args.get("extended_attributes");
+			Json::Reader reader;
+			Json::Value attr_root;
+			reader.parse(extended_attributes, attr_root);
+
+			const Json::Value::Members attr_list = attr_root.getMemberNames();
+			for (Json::Value::Members::const_iterator it = attr_list.begin();
+					it != attr_list.end(); ++it) {
+				Json::Value attr_value = attr_root[*it];
+				sao->setExtendedAttribute(*it, attr_value.asString());
+			}
 		} catch (SettingNotFoundException &e) {}
 	}
 
@@ -175,7 +164,6 @@ void RemotePlayer::serialize(std::ostream &os)
 	Settings args;
 	args.setS32("version", 1);
 	args.set("name", m_name);
-	//args.set("password", m_password);
 
 	// This should not happen
 	assert(m_sao);
@@ -184,6 +172,10 @@ void RemotePlayer::serialize(std::ostream &os)
 	args.setFloat("pitch", m_sao->getPitch());
 	args.setFloat("yaw", m_sao->getYaw());
 	args.setS32("breath", m_sao->getBreath());
+
+	std::string extended_attrs = "";
+	serializeExtraAttributes(extended_attrs);
+	args.set("extended_attributes", extended_attrs);
 
 	args.writeLines(os);
 

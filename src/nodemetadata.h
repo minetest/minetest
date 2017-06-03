@@ -20,10 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NODEMETADATA_HEADER
 #define NODEMETADATA_HEADER
 
-#include "irr_v3d.h"
-#include <iostream>
-#include <vector>
-#include "util/string.h"
+#include "metadata.h"
+#include "util/cpp11_container.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -37,27 +35,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class NodeMetadata
+class NodeMetadata : public Metadata
 {
 public:
 	NodeMetadata(IItemDefManager *item_def_mgr);
 	~NodeMetadata();
 
-	void serialize(std::ostream &os) const;
-	void deSerialize(std::istream &is);
+	void serialize(std::ostream &os, u8 version, bool disk=true) const;
+	void deSerialize(std::istream &is, u8 version);
 
 	void clear();
 	bool empty() const;
-
-	// Generic key/value store
-	std::string getString(const std::string &name, unsigned short recursion = 0) const;
-	void setString(const std::string &name, const std::string &var);
-	// Support variable names in values
-	std::string resolveString(const std::string &str, unsigned short recursion = 0) const;
-	StringMap getStrings() const
-	{
-		return m_stringvars;
-	}
 
 	// The inventory
 	Inventory *getInventory()
@@ -65,9 +53,17 @@ public:
 		return m_inventory;
 	}
 
+	inline bool isPrivate(const std::string &name) const
+	{
+		return m_privatevars.count(name) != 0;
+	}
+	void markPrivate(const std::string &name, bool set);
+
 private:
-	StringMap m_stringvars;
+	int countNonPrivate() const;
+
 	Inventory *m_inventory;
+	UNORDERED_SET<std::string> m_privatevars;
 };
 
 
@@ -80,7 +76,7 @@ class NodeMetadataList
 public:
 	~NodeMetadataList();
 
-	void serialize(std::ostream &os) const;
+	void serialize(std::ostream &os, u8 blockver, bool disk=true) const;
 	void deSerialize(std::istream &is, IItemDefManager *item_def_mgr);
 
 	// Add all keys in this list to the vector keys
@@ -101,4 +97,3 @@ private:
 };
 
 #endif
-

@@ -343,11 +343,31 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 
 		if (font != NULL) {
 			m_font_cache[mode][basesize] = font;
+			return;
 		}
-		else {
-			errorstream << "FontEngine: failed to load freetype font: "
-					<< font_path << std::endl;
+
+		// try fallback font
+		errorstream << "FontEngine: failed to load: " << font_path << ", trying to fall back "
+				"to fallback font" << std::endl;
+
+		font_path = g_settings->get(font_config_prefix + "fallback_font_path");
+
+		font = gui::CGUITTFont::createTTFont(m_env,
+			font_path.c_str(), size, true, true, font_shadow,
+			font_shadow_alpha);
+
+		if (font != NULL) {
+			m_font_cache[mode][basesize] = font;
+			return;
 		}
+
+		// give up
+		errorstream << "FontEngine: failed to load freetype font: "
+				<< font_path << std::endl;
+		errorstream << "minetest can not continue without a valid font. Please correct "
+				"the 'font_path' setting or install the font file in the proper "
+				"location" << std::endl;
+		abort();
 	}
 #endif
 }

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "wieldmesh.h"
 #include "inventory.h"
-#include "gamedef.h"
+#include "client.h"
 #include "itemdef.h"
 #include "nodedef.h"
 #include "mesh.h"
@@ -235,27 +235,16 @@ WieldMeshSceneNode::~WieldMeshSceneNode()
 		g_extrusion_mesh_cache = NULL;
 }
 
-void WieldMeshSceneNode::setCube(const TileSpec tiles[6],
+void WieldMeshSceneNode::setCube(const ContentFeatures &f,
 			v3f wield_scale, ITextureSource *tsrc)
 {
 	scene::IMesh *cubemesh = g_extrusion_mesh_cache->createCube();
-	changeToMesh(cubemesh);
+	scene::SMesh *copy = cloneMesh(cubemesh);
 	cubemesh->drop();
-
+	postProcessNodeMesh(copy, f, false, true, &m_material_type, &m_colors);
+	changeToMesh(copy);
+	copy->drop();
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR);
-
-	// Customize materials
-	for (u32 i = 0; i < m_meshnode->getMaterialCount(); ++i) {
-		assert(i < 6);
-		video::SMaterial &material = m_meshnode->getMaterial(i);
-		if (tiles[i].animation_frame_count == 1) {
-			material.setTexture(0, tiles[i].texture);
-		} else {
-			FrameSpec animation_frame = tiles[i].frames[0];
-			material.setTexture(0, animation_frame.texture);
-		}
-		tiles[i].applyMaterialOptions(material);
-	}
 }
 
 void WieldMeshSceneNode::setExtruded(const std::string &imagename,
@@ -274,8 +263,10 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		dim = core::dimension2d<u32>(dim.Width, frame_height);
 	}
 	scene::IMesh *mesh = g_extrusion_mesh_cache->create(dim);
-	changeToMesh(mesh);
+	scene::SMesh *copy = cloneMesh(mesh);
 	mesh->drop();
+	changeToMesh(copy);
+	copy->drop();
 
 	m_meshnode->setScale(wield_scale * WIELD_SCALE_FACTOR_EXTRUDED);
 
@@ -283,7 +274,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	video::SMaterial &material = m_meshnode->getMaterial(0);
 	material.setTexture(0, tsrc->getTextureForMesh(imagename));
 	material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
-	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE; 
+	material.TextureLayer[0].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	material.MaterialType = m_material_type;
 	material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	// Enable bi/trilinear filtering only for high resolution textures
@@ -304,12 +295,12 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 	}
 }
 
-void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
+void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 {
-	ITextureSource *tsrc = gamedef->getTextureSource();
-	IItemDefManager *idef = gamedef->getItemDefManager();
-	IShaderSource *shdrsrc = gamedef->getShaderSource();
-	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	ITextureSource *tsrc = client->getTextureSource();
+	IItemDefManager *idef = client->getItemDefManager();
+	IShaderSource *shdrsrc = client->getShaderSource();
+	INodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -319,9 +310,14 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
 	}
 
+	// Color-related
+	m_colors.clear();
+	m_base_color = idef->getItemstackColor(item, client);
+
 	// If wield_image is defined, it overrides everything else
 	if (def.wield_image != "") {
 		setExtruded(def.wield_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(ItemPartColor());
 		return;
 	}
 	// Handle nodes
@@ -329,63 +325,50 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 	else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			// e.g. mesh nodes and nodeboxes
-			changeToMesh(f.mesh_ptr[0]);
-			// mesh_ptr[0] is pre-scaled by BS * f->visual_scale
+			scene::SMesh *mesh = cloneMesh(f.mesh_ptr[0]);
+			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
+				&m_material_type, &m_colors);
+			changeToMesh(mesh);
+			mesh->drop();
+			// mesh is pre-scaled by BS * f->visual_scale
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
 		} else if (f.drawtype == NDT_AIRLIKE) {
 			changeToMesh(NULL);
 		} else if (f.drawtype == NDT_PLANTLIKE) {
-			setExtruded(tsrc->getTextureName(f.tiles[0].texture_id), def.wield_scale, tsrc, f.tiles[0].animation_frame_count);
+			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
+				def.wield_scale, tsrc,
+				f.tiles[0].layers[0].animation_frame_count);
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
-			setCube(f.tiles, def.wield_scale, tsrc);
+			setCube(f, def.wield_scale, tsrc);
 		} else {
-			MeshMakeData mesh_make_data(gamedef, false);
+			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-			changeToMesh(mapblock_mesh.getMesh());
-			translateMesh(m_meshnode->getMesh(), v3f(-BS, -BS, -BS));
+			scene::SMesh *mesh = cloneMesh(mapblock_mesh.getMesh());
+			translateMesh(mesh, v3f(-BS, -BS, -BS));
+			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
+				&m_material_type, &m_colors);
+			changeToMesh(mesh);
+			mesh->drop();
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
-		if (material_count > 6) {
-			errorstream << "WieldMeshSceneNode::setItem: Invalid material "
-				"count " << material_count << ", truncating to 6" << std::endl;
-			material_count = 6;
-		}
 		for (u32 i = 0; i < material_count; ++i) {
 			video::SMaterial &material = m_meshnode->getMaterial(i);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_BILINEAR_FILTER, m_bilinear_filter);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, m_trilinear_filter);
-			bool animated = (f.tiles[i].animation_frame_count > 1);
-			if (animated) {
-				FrameSpec animation_frame = f.tiles[i].frames[0];
-				material.setTexture(0, animation_frame.texture);
-			} else {
-				material.setTexture(0, f.tiles[i].texture);
-			}
-			material.MaterialType = m_material_type;
-			if (m_enable_shaders) {
-				if (f.tiles[i].normal_texture) {
-					if (animated) {
-						FrameSpec animation_frame = f.tiles[i].frames[0];
-						material.setTexture(1, animation_frame.normal_texture);
-					} else {
-						material.setTexture(1, f.tiles[i].normal_texture);
-					}
-				}
-				material.setTexture(2, f.tiles[i].flags_texture);
-			}
 		}
 		return;
 	}
 	else if (def.inventory_image != "") {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
+		m_colors.push_back(ItemPartColor());
 		return;
 	}
 
@@ -393,11 +376,28 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, IGameDef *gamedef)
 	changeToMesh(NULL);
 }
 
-void WieldMeshSceneNode::setColor(video::SColor color)
+void WieldMeshSceneNode::setColor(video::SColor c)
 {
 	assert(!m_lighting);
-	setMeshColor(m_meshnode->getMesh(), color);
-	shadeMeshFaces(m_meshnode->getMesh());
+	scene::IMesh *mesh=m_meshnode->getMesh();
+	if (mesh == NULL)
+		return;
+
+	u8 red = c.getRed();
+	u8 green = c.getGreen();
+	u8 blue = c.getBlue();
+	u32 mc = mesh->getMeshBufferCount();
+	for (u32 j = 0; j < mc; j++) {
+		video::SColor bc(m_base_color);
+		if ((m_colors.size() > j) && (m_colors[j].override_base))
+			bc = m_colors[j].color;
+		video::SColor buffercolor(255,
+			bc.getRed() * red / 255,
+			bc.getGreen() * green / 255,
+			bc.getBlue() * blue / 255);
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+		colorizeMeshBuffer(buf, &buffercolor);
+	}
 }
 
 void WieldMeshSceneNode::render()
@@ -414,19 +414,7 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 		m_meshnode->setMesh(dummymesh);
 		dummymesh->drop();  // m_meshnode grabbed it
 	} else {
-		if (m_lighting) {
-			m_meshnode->setMesh(mesh);
-		} else {
-			/*
-				Lighting is disabled, this means the caller can (and probably will)
-				call setColor later. We therefore need to clone the mesh so that
-				setColor will only modify this scene node's mesh, not others'.
-			*/
-			scene::IMeshManipulator *meshmanip = SceneManager->getMeshManipulator();
-			scene::IMesh *new_mesh = meshmanip->createMeshCopy(mesh);
-			m_meshnode->setMesh(new_mesh);
-			new_mesh->drop();  // m_meshnode grabbed it
-		}
+		m_meshnode->setMesh(mesh);
 	}
 
 	m_meshnode->setMaterialFlag(video::EMF_LIGHTING, m_lighting);
@@ -435,11 +423,11 @@ void WieldMeshSceneNode::changeToMesh(scene::IMesh *mesh)
 	m_meshnode->setVisible(true);
 }
 
-scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
+void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 {
-	ITextureSource *tsrc = gamedef->getTextureSource();
-	IItemDefManager *idef = gamedef->getItemDefManager();
-	INodeDefManager *ndef = gamedef->getNodeDefManager();
+	ITextureSource *tsrc = client->getTextureSource();
+	IItemDefManager *idef = client->getItemDefManager();
+	INodeDefManager *ndef = client->getNodeDefManager();
 	const ItemDefinition &def = item.getDefinition(idef);
 	const ContentFeatures &f = ndef->get(def.name);
 	content_t id = ndef->getId(def.name);
@@ -450,35 +438,38 @@ scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
 		g_extrusion_mesh_cache->grab();
 	}
 
-	scene::IMesh *mesh;
+	scene::SMesh *mesh = NULL;
+
+	// Shading is on by default
+	result->needs_shading = true;
 
 	// If inventory_image is defined, it overrides everything else
 	if (def.inventory_image != "") {
 		mesh = getExtrudedMesh(tsrc, def.inventory_image);
-		return mesh;
+		result->buffer_colors.push_back(ItemPartColor());
+		// Items with inventory images do not need shading
+		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-			setMeshColor(mesh, video::SColor (255, 255, 255, 255));
 		} else if (f.drawtype == NDT_PLANTLIKE) {
 			mesh = getExtrudedMesh(tsrc,
-				tsrc->getTextureName(f.tiles[0].texture_id));
-			return mesh;
+				tsrc->getTextureName(f.tiles[0].layers[0].texture_id));
 		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES
 			|| f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
-			mesh = cloneMesh(g_extrusion_mesh_cache->createCube());
+			scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
+			mesh = cloneMesh(cube);
+			cube->drop();
 			scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 		} else {
-			MeshMakeData mesh_make_data(gamedef, false);
+			MeshMakeData mesh_make_data(client, false);
 			MapNode mesh_make_node(id, 255, 0);
 			mesh_make_data.fillSingleNode(&mesh_make_node);
 			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
 			mesh = cloneMesh(mapblock_mesh.getMesh());
 			translateMesh(mesh, v3f(-BS, -BS, -BS));
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-			rotateMeshXZby(mesh, -45);
-			rotateMeshYZby(mesh, -30);
 
 			u32 mc = mesh->getMeshBufferCount();
 			for (u32 i = 0; i < mc; ++i) {
@@ -492,34 +483,31 @@ scene::IMesh *getItemMesh(IGameDef *gamedef, const ItemStack &item)
 				material1.setTexture(3, material2.getTexture(3));
 				material1.MaterialType = material2.MaterialType;
 			}
-			return mesh;
 		}
-
-		shadeMeshFaces(mesh);
-		rotateMeshXZby(mesh, -45);
-		rotateMeshYZby(mesh, -30);
 
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 i = 0; i < mc; ++i) {
-			video::SMaterial &material = mesh->getMeshBuffer(i)->getMaterial();
+			scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			material.setFlag(video::EMF_BILINEAR_FILTER, false);
 			material.setFlag(video::EMF_TRILINEAR_FILTER, false);
 			material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 			material.setFlag(video::EMF_LIGHTING, false);
-			if (f.tiles[i].animation_frame_count > 1) {
-				FrameSpec animation_frame = f.tiles[i].frames[0];
-				material.setTexture(0, animation_frame.texture);
-			} else {
-				material.setTexture(0, f.tiles[i].texture);
-			}
 		}
-		return mesh;
+
+		rotateMeshXZby(mesh, -45);
+		rotateMeshYZby(mesh, -30);
+
+		postProcessNodeMesh(mesh, f, false, false, NULL,
+			&result->buffer_colors);
 	}
-	return NULL;
+	result->mesh = mesh;
 }
 
-scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,
+
+
+scene::SMesh * getExtrudedMesh(ITextureSource *tsrc,
 		const std::string &imagename)
 {
 	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
@@ -528,7 +516,9 @@ scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,
 	}
 
 	core::dimension2d<u32> dim = texture->getSize();
-	scene::IMesh *mesh = cloneMesh(g_extrusion_mesh_cache->create(dim));
+	scene::IMesh *original = g_extrusion_mesh_cache->create(dim);
+	scene::SMesh *mesh = cloneMesh(original);
+	original->drop();
 
 	// Customize material
 	video::SMaterial &material = mesh->getMeshBuffer(0)->getMaterial();
@@ -543,4 +533,58 @@ scene::IMesh * getExtrudedMesh(ITextureSource *tsrc,
 	scaleMesh(mesh, v3f(2.0, 2.0, 2.0));
 
 	return mesh;
+}
+
+void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
+	bool use_shaders, bool set_material, video::E_MATERIAL_TYPE *mattype,
+	std::vector<ItemPartColor> *colors)
+{
+	u32 mc = mesh->getMeshBufferCount();
+	// Allocate colors for existing buffers
+	colors->clear();
+	for (u32 i = 0; i < mc; ++i)
+		colors->push_back(ItemPartColor());
+
+	for (u32 i = 0; i < mc; ++i) {
+		const TileSpec *tile = &(f.tiles[i]);
+		scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+		for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
+			const TileLayer *layer = &tile->layers[layernum];
+			if (layer->texture_id == 0)
+				continue;
+			if (layernum != 0) {
+				scene::IMeshBuffer *copy = cloneMeshBuffer(buf);
+				copy->getMaterial() = buf->getMaterial();
+				mesh->addMeshBuffer(copy);
+				copy->drop();
+				buf = copy;
+				colors->push_back(
+					ItemPartColor(layer->has_color, layer->color));
+			} else {
+				(*colors)[i] = ItemPartColor(layer->has_color, layer->color);
+			}
+			video::SMaterial &material = buf->getMaterial();
+			if (set_material)
+				layer->applyMaterialOptions(material);
+			if (mattype) {
+				material.MaterialType = *mattype;
+			}
+			if (layer->animation_frame_count > 1) {
+				FrameSpec animation_frame = layer->frames[0];
+				material.setTexture(0, animation_frame.texture);
+			} else {
+				material.setTexture(0, layer->texture);
+			}
+			if (use_shaders) {
+				if (layer->normal_texture) {
+					if (layer->animation_frame_count > 1) {
+						FrameSpec animation_frame = layer->frames[0];
+						material.setTexture(1, animation_frame.normal_texture);
+					} else
+						material.setTexture(1, layer->normal_texture);
+				}
+				material.setTexture(2, layer->flags_texture);
+			}
+		}
+	}
 }

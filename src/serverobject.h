@@ -119,10 +119,10 @@ public:
 		when it is created (converted from static to active - actually
 		the data is the static form)
 	*/
-	virtual std::string getStaticData()
+	virtual void getStaticData(std::string *result) const
 	{
 		assert(isStaticAllowed());
-		return "";
+		*result = "";
 	}
 	/*
 		Return false in here to never save and instead remove object
@@ -146,8 +146,8 @@ public:
 
 	virtual void setArmorGroups(const ItemGroupList &armor_groups)
 	{}
-	virtual ItemGroupList getArmorGroups()
-	{ return ItemGroupList(); }
+	virtual const ItemGroupList &getArmorGroups()
+	{ static const ItemGroupList rv; return rv; }
 	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
 	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
@@ -166,8 +166,8 @@ public:
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
-	virtual UNORDERED_SET<int> getAttachmentChildIds()
-	{ return UNORDERED_SET<int>(); }
+	virtual const UNORDERED_SET<int> &getAttachmentChildIds()
+	{ static const UNORDERED_SET<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()

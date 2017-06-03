@@ -512,9 +512,11 @@ CGUITTGlyphPage* CGUITTFont::createGlyphPage(const u8& pixel_mode)
 	if (page_texture_size.Width > max_texture_size.Width || page_texture_size.Height > max_texture_size.Height)
 		page_texture_size = max_texture_size;
 
-	if (!page->createPageTexture(pixel_mode, page_texture_size))
+	if (!page->createPageTexture(pixel_mode, page_texture_size)) {
 		// TODO: add error message?
+		delete page;
 		return 0;
+	}
 
 	if (page)
 	{

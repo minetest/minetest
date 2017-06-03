@@ -38,9 +38,9 @@ public:
 	void luaentity_GetProperties(u16 id,
 			ObjectProperties *prop);
 	void luaentity_Step(u16 id, float dtime);
-	void luaentity_Punch(u16 id,
+	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
-			const ToolCapabilities *toolcap, v3f dir);
+			const ToolCapabilities *toolcap, v3f dir, s16 damage);
 	void luaentity_Rightclick(u16 id,
 			ServerActiveObject *clicker);
 };

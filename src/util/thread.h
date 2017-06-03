@@ -26,11 +26,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../threading/mutex_auto_lock.h"
 #include "porting.h"
 #include "log.h"
+#include "container.h"
 
 template<typename T>
-class MutexedVariable {
+class MutexedVariable
+{
 public:
-	MutexedVariable(T value):
+	MutexedVariable(const T &value):
 		m_value(value)
 	{}
 
@@ -40,21 +42,14 @@ public:
 		return m_value;
 	}
 
-	void set(T value)
+	void set(const T &value)
 	{
 		MutexAutoLock lock(m_mutex);
 		m_value = value;
 	}
 
-	// You'll want to grab this in a SharedPtr
-	MutexAutoLock *getLock()
-	{
-		return new MutexAutoLock(m_mutex);
-	}
-
 	// You pretty surely want to grab the lock when accessing this
 	T m_value;
-
 private:
 	Mutex m_mutex;
 };
@@ -88,8 +83,8 @@ public:
 	GetRequest() {}
 	~GetRequest() {}
 
-	GetRequest(Key a_key) {
-		key = a_key;
+	GetRequest(const Key &a_key): key(a_key)
+	{
 	}
 
 	Key key;
@@ -111,7 +106,7 @@ public:
 		return m_queue.empty();
 	}
 
-	void add(Key key, Caller caller, CallerData callerdata,
+	void add(const Key &key, Caller caller, CallerData callerdata,
 		ResultQueue<Key, T, Caller, CallerData> *dest)
 	{
 		typename std::deque<GetRequest<Key, T, Caller, CallerData> >::iterator i;

@@ -828,7 +828,7 @@ bool GUITable::OnEvent(const SEvent &event)
 		}
 		else if (event.KeyInput.PressedDown && event.KeyInput.Char) {
 			// change selection based on text as it is typed
-			s32 now = getTimeMs();
+			u64 now = porting::getTimeMs();
 			if (now - m_keynav_time >= 500)
 				m_keynav_buffer = L"";
 			m_keynav_time = now;

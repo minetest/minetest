@@ -89,8 +89,8 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
-	{ "TOSERVER_RECEIVED_MEDIA",           TOSERVER_STATE_STARTUP, &Server::handleCommand_ReceivedMedia }, // 0x41
-	{ "TOSERVER_BREATH",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Breath }, // 0x42
+	{ "TOSERVER_RECEIVED_MEDIA",           TOSERVER_STATE_STARTUP, &Server::handleCommand_Deprecated }, // 0x41 not used by the server since protocol version 23
+	{ "TOSERVER_BREATH",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x42 Old breath model which is now deprecated for anticheating
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
 	null_command_handler, // 0x44
 	null_command_handler, // 0x45
@@ -197,8 +197,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_LOCAL_PLAYER_ANIMATIONS",  0, true }, // 0x51
 	{ "TOCLIENT_EYE_OFFSET",               0, true }, // 0x52
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
-	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
+	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "debug.h"
 #include "util/hex.h"
 #include "util/string.h"
+#include "util/basic_macros.h"
 
 class UnknownKeycode : public BaseException
 {
@@ -242,11 +243,10 @@ static const struct table_key table[] = {
 
 #undef N_
 
-#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 struct table_key lookup_keyname(const char *name)
 {
-	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+	for (u16 i = 0; i < ARRLEN(table); i++) {
 		if (strcmp(table[i].Name, name) == 0)
 			return table[i];
 	}
@@ -256,7 +256,7 @@ struct table_key lookup_keyname(const char *name)
 
 struct table_key lookup_keykey(irr::EKEY_CODE key)
 {
-	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+	for (u16 i = 0; i < ARRLEN(table); i++) {
 		if (table[i].Key == key)
 			return table[i];
 	}
@@ -268,7 +268,7 @@ struct table_key lookup_keykey(irr::EKEY_CODE key)
 
 struct table_key lookup_keychar(wchar_t Char)
 {
-	for (u16 i = 0; i < ARRAYSIZE(table); i++) {
+	for (u16 i = 0; i < ARRLEN(table); i++) {
 		if (table[i].Char == Char)
 			return table[i];
 	}

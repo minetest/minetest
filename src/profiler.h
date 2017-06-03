@@ -119,39 +119,34 @@ public:
 		u32 minindex, maxindex;
 		paging(m_data.size(), page, pagecount, minindex, maxindex);
 
-		for(std::map<std::string, float>::iterator
-				i = m_data.begin();
-				i != m_data.end(); ++i)
-		{
-			if(maxindex == 0)
+		for (std::map<std::string, float>::const_iterator i = m_data.begin();
+				i != m_data.end(); ++i) {
+			if (maxindex == 0)
 				break;
 			maxindex--;
 
-			if(minindex != 0)
-			{
+			if (minindex != 0) {
 				minindex--;
 				continue;
 			}
 
-			std::string name = i->first;
 			int avgcount = 1;
-			std::map<std::string, int>::iterator n = m_avgcounts.find(name);
-			if(n != m_avgcounts.end()){
+			std::map<std::string, int>::const_iterator n = m_avgcounts.find(i->first);
+			if (n != m_avgcounts.end()) {
 				if(n->second >= 1)
 					avgcount = n->second;
 			}
-			o<<"  "<<name<<": ";
+			o << "  " << i->first << ": ";
 			s32 clampsize = 40;
-			s32 space = clampsize - name.size();
-			for(s32 j=0; j<space; j++)
-			{
-				if(j%2 == 0 && j < space - 1)
-					o<<"-";
+			s32 space = clampsize - i->first.size();
+			for(s32 j = 0; j < space; j++) {
+				if (j % 2 == 0 && j < space - 1)
+					o << "-";
 				else
-					o<<" ";
+					o << " ";
 			}
-			o<<(i->second / avgcount);
-			o<<std::endl;
+			o << (i->second / avgcount);
+			o << std::endl;
 		}
 	}
 
@@ -198,48 +193,8 @@ class ScopeProfiler
 {
 public:
 	ScopeProfiler(Profiler *profiler, const std::string &name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	// name is copied
-	ScopeProfiler(Profiler *profiler, const char *name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	~ScopeProfiler()
-	{
-		if(m_timer)
-		{
-			float duration_ms = m_timer->stop(true);
-			float duration = duration_ms / 1000.0;
-			if(m_profiler){
-				switch(m_type){
-				case SPT_ADD:
-					m_profiler->add(m_name, duration);
-					break;
-				case SPT_AVG:
-					m_profiler->avg(m_name, duration);
-					break;
-				case SPT_GRAPH_ADD:
-					m_profiler->graphAdd(m_name, duration);
-					break;
-				}
-			}
-			delete m_timer;
-		}
-	}
+			ScopeProfilerType type = SPT_ADD);
+	~ScopeProfiler();
 private:
 	Profiler *m_profiler;
 	std::string m_name;

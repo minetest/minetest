@@ -27,7 +27,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <json/json.h>
+#include "util/cpp11_container.h"
 #include "config.h"
+#include "metadata.h"
 
 #define MODNAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_"
 
@@ -36,9 +38,9 @@ struct ModSpec
 	std::string name;
 	std::string path;
 	//if normal mod:
-	std::set<std::string> depends;
-	std::set<std::string> optdepends;
-	std::set<std::string> unsatisfied_depends;
+	UNORDERED_SET<std::string> depends;
+	UNORDERED_SET<std::string> optdepends;
+	UNORDERED_SET<std::string> unsatisfied_depends;
 
 	bool part_of_modpack;
 	bool is_modpack;
@@ -61,12 +63,6 @@ void parseModContents(ModSpec &mod);
 
 std::map<std::string,ModSpec> getModsInPath(std::string path, bool part_of_modpack = false);
 
-// If failed, returned modspec has name==""
-ModSpec findCommonMod(const std::string &modname);
-
-// expands modpack contents, but does not replace them.
-std::map<std::string, ModSpec> flattenModTree(std::map<std::string, ModSpec> mods);
-
 // replaces modpack Modspecs with their content
 std::vector<ModSpec> flattenMods(std::map<std::string,ModSpec> mods);
 
@@ -76,17 +72,8 @@ std::vector<ModSpec> flattenMods(std::map<std::string,ModSpec> mods);
 class ModConfiguration
 {
 public:
-	ModConfiguration():
-		m_unsatisfied_mods(),
-		m_sorted_mods(),
-		m_name_conflicts()
-	{}
-
-
-	ModConfiguration(std::string worldpath);
-
 	// checks if all dependencies are fullfilled.
-	bool isConsistent()
+	bool isConsistent() const
 	{
 		return m_unsatisfied_mods.empty();
 	}
@@ -96,19 +83,26 @@ public:
 		return m_sorted_mods;
 	}
 
-	std::vector<ModSpec> getUnsatisfiedMods()
+	const std::vector<ModSpec> &getUnsatisfiedMods() const
 	{
 		return m_unsatisfied_mods;
 	}
 
-private:
+	void printUnsatisfiedModsError() const;
+
+protected:
+	ModConfiguration(const std::string &worldpath);
 	// adds all mods in the given path. used for games, modpacks
 	// and world-specific mods (worldmods-folders)
-	void addModsInPath(std::string path);
+	void addModsInPath(const std::string &path);
 
 	// adds all mods in the set.
-	void addMods(std::vector<ModSpec> new_mods);
+	void addMods(const std::vector<ModSpec> &new_mods);
 
+	void addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods);
+
+	void checkConflictsAndDeps();
+private:
 	// move mods from m_unsatisfied_mods to m_sorted_mods
 	// in an order that satisfies dependencies
 	void resolveDependencies();
@@ -131,14 +125,33 @@ private:
 	// 1. game mod in modpack; 2. game mod;
 	// 3. world mod in modpack; 4. world mod;
 	// 5. addon mod in modpack; 6. addon mod.
-	std::set<std::string> m_name_conflicts;
+	UNORDERED_SET<std::string> m_name_conflicts;
+
+	// Deleted default constructor
+	ModConfiguration() {}
 
 };
 
+class ServerModConfiguration: public ModConfiguration
+{
+public:
+	ServerModConfiguration(const std::string &worldpath);
+
+};
+
+#ifndef SERVER
+class ClientModConfiguration: public ModConfiguration
+{
+public:
+	ClientModConfiguration(const std::string &path);
+};
+#endif
+
 #if USE_CURL
-Json::Value getModstoreUrl(std::string url);
+Json::Value getModstoreUrl(const std::string &url);
 #else
-inline Json::Value getModstoreUrl(std::string url) {
+inline Json::Value getModstoreUrl(const std::string &url)
+{
 	return Json::Value();
 }
 #endif
@@ -203,6 +216,26 @@ struct ModStoreModDetails {
 	std::string screenshot_url;
 	std::vector<ModStoreVersionEntry> versions;
 	bool valid;
+};
+
+class ModMetadata: public Metadata
+{
+public:
+	ModMetadata(const std::string &mod_name);
+	~ModMetadata() {}
+
+	virtual void clear();
+
+	bool save(const std::string &root_path);
+	bool load(const std::string &root_path);
+
+	bool isModified() const { return m_modified; }
+	const std::string &getModName() const { return m_mod_name; }
+
+	virtual bool setString(const std::string &name, const std::string &var);
+private:
+	std::string m_mod_name;
+	bool m_modified;
 };
 
 #endif

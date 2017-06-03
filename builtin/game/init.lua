@@ -13,15 +13,17 @@ dofile(gamepath.."constants.lua")
 assert(loadfile(gamepath.."item.lua"))(builtin_shared)
 dofile(gamepath.."register.lua")
 
-if core.setting_getbool("profiler.load") then
+if core.settings:get_bool("profiler.load") then
 	profiler = dofile(scriptpath.."profiler"..DIR_DELIM.."init.lua")
 end
 
+dofile(commonpath .. "after.lua")
 dofile(gamepath.."item_entity.lua")
 dofile(gamepath.."deprecated.lua")
 dofile(gamepath.."misc.lua")
 dofile(gamepath.."privileges.lua")
 dofile(gamepath.."auth.lua")
+dofile(commonpath .. "chatcommands.lua")
 dofile(gamepath.."chatcommands.lua")
 dofile(gamepath.."static_spawn.lua")
 dofile(gamepath.."detached_inventory.lua")

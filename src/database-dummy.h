@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "irrlichttypes.h"
 
-class Database_Dummy : public Database
+class Database_Dummy : public MapDatabase, public PlayerDatabase
 {
 public:
 	bool saveBlock(const v3s16 &pos, const std::string &data);
@@ -33,9 +33,15 @@ public:
 	bool deleteBlock(const v3s16 &pos);
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
+	void savePlayer(RemotePlayer *player) {}
+	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) { return true; }
+	bool removePlayer(const std::string &name) { return true; }
+	void listPlayers(std::vector<std::string> &) {}
+
+	void beginSave() {}
+	void endSave() {}
 private:
 	std::map<s64, std::string> m_database;
 };
 
 #endif
-

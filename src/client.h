@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_HEADER
 
 #include "network/connection.h"
-#include "environment.h"
+#include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
 #include "threading/mutex.h"
 #include <ostream>
@@ -34,7 +34,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "hud.h"
 #include "particles.h"
-#include "network/networkpacket.h"
+#include "mapnode.h"
+#include "tileanimation.h"
+#include "mesh_generator_thread.h"
+
+#define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
 struct MeshMakeData;
 class MapBlockMesh;
@@ -47,90 +51,16 @@ class ClientMediaDownloader;
 struct MapDrawControl;
 class MtEventManager;
 struct PointedThing;
-class Database;
-class Mapper;
+class MapDatabase;
+class Minimap;
 struct MinimapMapblock;
 class Camera;
-
-struct QueuedMeshUpdate
-{
-	v3s16 p;
-	MeshMakeData *data;
-	bool ack_block_to_server;
-
-	QueuedMeshUpdate();
-	~QueuedMeshUpdate();
-};
+class NetworkPacket;
 
 enum LocalClientState {
 	LC_Created,
 	LC_Init,
 	LC_Ready
-};
-
-/*
-	A thread-safe queue of mesh update tasks
-*/
-class MeshUpdateQueue
-{
-public:
-	MeshUpdateQueue();
-
-	~MeshUpdateQueue();
-
-	/*
-		peer_id=0 adds with nobody to send to
-	*/
-	void addBlock(v3s16 p, MeshMakeData *data,
-			bool ack_block_to_server, bool urgent);
-
-	// Returned pointer must be deleted
-	// Returns NULL if queue is empty
-	QueuedMeshUpdate * pop();
-
-	u32 size()
-	{
-		MutexAutoLock lock(m_mutex);
-		return m_queue.size();
-	}
-
-private:
-	std::vector<QueuedMeshUpdate*> m_queue;
-	std::set<v3s16> m_urgents;
-	Mutex m_mutex;
-};
-
-struct MeshUpdateResult
-{
-	v3s16 p;
-	MapBlockMesh *mesh;
-	bool ack_block_to_server;
-
-	MeshUpdateResult():
-		p(-1338,-1338,-1338),
-		mesh(NULL),
-		ack_block_to_server(false)
-	{
-	}
-};
-
-class MeshUpdateThread : public UpdateThread
-{
-private:
-	MeshUpdateQueue m_queue_in;
-
-protected:
-	virtual void doUpdate();
-
-public:
-
-	MeshUpdateThread() : UpdateThread("Mesh") {}
-
-	void enqueueUpdate(v3s16 p, MeshMakeData *data,
-			bool ack_block_to_server, bool urgent);
-	MutexedQueue<MeshUpdateResult> m_queue_out;
-
-	v3s16 m_camera_offset;
 };
 
 enum ClientEventType
@@ -140,6 +70,7 @@ enum ClientEventType
 	CE_PLAYER_FORCE_MOVE,
 	CE_DEATHSCREEN,
 	CE_SHOW_FORMSPEC,
+	CE_SHOW_LOCAL_FORMSPEC,
 	CE_SPAWN_PARTICLE,
 	CE_ADD_PARTICLESPAWNER,
 	CE_DELETE_PARTICLESPAWNER,
@@ -148,6 +79,7 @@ enum ClientEventType
 	CE_HUDCHANGE,
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
+	CE_CLOUD_PARAMS,
 };
 
 struct ClientEvent
@@ -185,6 +117,8 @@ struct ClientEvent
 			bool collision_removal;
 			bool vertical;
 			std::string *texture;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} spawn_particle;
 		struct{
 			u16 amount;
@@ -205,6 +139,8 @@ struct ClientEvent
 			bool vertical;
 			std::string *texture;
 			u32 id;
+			struct TileAnimationParams animation;
+			u8 glow;
 		} add_particlespawner;
 		struct{
 			u32 id;
@@ -240,11 +176,21 @@ struct ClientEvent
 			video::SColor *bgcolor;
 			std::string *type;
 			std::vector<std::string> *params;
+			bool clouds;
 		} set_sky;
 		struct{
 			bool do_override;
 			float ratio_f;
 		} override_day_night_ratio;
+		struct {
+			f32 density;
+			u32 color_bright;
+			u32 color_ambient;
+			f32 height;
+			f32 thickness;
+			f32 speed_x;
+			f32 speed_y;
+		} cloud_params;
 	};
 };
 
@@ -299,6 +245,9 @@ private:
 	std::map<u16, u16> m_packets;
 };
 
+class ClientScripting;
+struct GameUIFlags;
+
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
 public:
@@ -309,7 +258,8 @@ public:
 	Client(
 			IrrlichtDevice *device,
 			const char *playername,
-			std::string password,
+			const std::string &password,
+			const std::string &address_name,
 			MapDrawControl &control,
 			IWritableTextureSource *tsrc,
 			IWritableShaderSource *shsrc,
@@ -317,10 +267,13 @@ public:
 			IWritableNodeDefManager *nodedef,
 			ISoundManager *sound,
 			MtEventManager *event,
-			bool ipv6
+			bool ipv6,
+			GameUIFlags *game_ui_flags
 	);
 
 	~Client();
+
+	void initMods();
 
 	/*
 	 request all threads managed by client to be stopped
@@ -334,9 +287,7 @@ public:
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address,
-			const std::string &address_name,
-			bool is_local_server);
+	void connect(Address address, bool is_local_server);
 
 	/*
 		Stuff that references the environment is valid only as
@@ -372,16 +323,14 @@ public:
 	void handleCommand_HP(NetworkPacket* pkt);
 	void handleCommand_Breath(NetworkPacket* pkt);
 	void handleCommand_MovePlayer(NetworkPacket* pkt);
-	void handleCommand_PlayerItem(NetworkPacket* pkt);
 	void handleCommand_DeathScreen(NetworkPacket* pkt);
 	void handleCommand_AnnounceMedia(NetworkPacket* pkt);
 	void handleCommand_Media(NetworkPacket* pkt);
-	void handleCommand_ToolDef(NetworkPacket* pkt);
 	void handleCommand_NodeDef(NetworkPacket* pkt);
-	void handleCommand_CraftItemDef(NetworkPacket* pkt);
 	void handleCommand_ItemDef(NetworkPacket* pkt);
 	void handleCommand_PlaySound(NetworkPacket* pkt);
 	void handleCommand_StopSound(NetworkPacket* pkt);
+	void handleCommand_FadeSound(NetworkPacket *pkt);
 	void handleCommand_Privileges(NetworkPacket* pkt);
 	void handleCommand_InventoryFormSpec(NetworkPacket* pkt);
 	void handleCommand_DetachedInventory(NetworkPacket* pkt);
@@ -395,6 +344,7 @@ public:
 	void handleCommand_HudSetFlags(NetworkPacket* pkt);
 	void handleCommand_HudSetParam(NetworkPacket* pkt);
 	void handleCommand_HudSetSky(NetworkPacket* pkt);
+	void handleCommand_CloudParams(NetworkPacket* pkt);
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
@@ -402,9 +352,6 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
-	// Returns true if something was received
-	bool AsyncProcessPacket();
-	bool AsyncProcessData();
 	void Send(NetworkPacket* pkt);
 
 	void interact(u8 action, const PointedThing& pointed);
@@ -415,6 +362,7 @@ public:
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void clearOutChatQueue();
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
@@ -422,11 +370,18 @@ public:
 	void sendRespawn();
 	void sendReady();
 
-	ClientEnvironment& getEnv()
-	{ return m_env; }
+	ClientEnvironment& getEnv() { return m_env; }
+	ITextureSource *tsrc() { return getTextureSource(); }
+	ISoundManager *sound() { return getSoundManager(); }
+	static const std::string &getBuiltinLuaPath();
+	static const std::string &getClientModsLuaPath();
+
+	virtual const std::vector<ModSpec> &getMods() const;
+	virtual const ModSpec* getModSpec(const std::string &modname) const;
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
+	MapNode getNode(v3s16 p, bool *is_valid_position);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
 	void setPlayerControl(PlayerControl &control);
@@ -445,14 +400,6 @@ public:
 	Inventory* getInventory(const InventoryLocation &loc);
 	void inventoryAction(InventoryAction *a);
 
-	// Gets closest object pointed by the shootline
-	// Returns NULL if not found
-	ClientActiveObject * getSelectedActiveObject(
-			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
-	);
-
 	const std::list<std::string> &getConnectedPlayerNames()
 	{
 		return m_env.getPlayerNames();
@@ -461,6 +408,7 @@ public:
 	float getAnimationTime();
 
 	int getCrackLevel();
+	v3s16 getCrackPos();
 	void setCrack(int level, v3s16 pos);
 
 	u16 getHP();
@@ -481,16 +429,23 @@ public:
 	void updateCameraOffset(v3s16 camera_offset)
 	{ m_mesh_update_thread.m_camera_offset = camera_offset; }
 
-	// Get event from queue. CE_NONE is returned if queue is empty.
+	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
+	// Get event from queue. If queue is empty, it triggers an assertion failure.
 	ClientEvent getClientEvent();
 
-	bool accessDenied()
-	{ return m_access_denied; }
+	bool accessDenied() const { return m_access_denied; }
 
-	bool reconnectRequested() { return m_access_denied_reconnect; }
+	bool reconnectRequested() const { return m_access_denied_reconnect; }
 
-	std::string accessDeniedReason()
-	{ return m_access_denied_reason; }
+	void setFatalError(const std::string &reason)
+	{
+		m_access_denied = true;
+		m_access_denied_reason = reason;
+	}
+
+	// Renaming accessDeniedReason to better name could be good as it's used to
+	// disconnect client when CSM failed.
+	const std::string &accessDeniedReason() const { return m_access_denied_reason; }
 
 	bool itemdefReceived()
 	{ return m_itemdef_received; }
@@ -509,48 +464,77 @@ public:
 
 	void afterContentReceived(IrrlichtDevice *device);
 
-	float getRTT(void);
-	float getCurRate(void);
-	float getAvgRate(void);
+	float getRTT();
+	float getCurRate();
 
-	Mapper* getMapper ()
-	{ return m_mapper; }
+	Minimap* getMinimap() { return m_minimap; }
+	void setCamera(Camera* camera) { m_camera = camera; }
 
-	void setCamera(Camera* camera)
-	{ m_camera = camera; }
+	Camera* getCamera () { return m_camera; }
 
-	Camera* getCamera ()
-	{ return m_camera; }
-
-	bool isMinimapDisabledByServer()
-	{ return m_minimap_disabled_by_server; }
+	bool shouldShowMinimap() const;
 
 	// IGameDef interface
 	virtual IItemDefManager* getItemDefManager();
 	virtual INodeDefManager* getNodeDefManager();
 	virtual ICraftDefManager* getCraftDefManager();
-	virtual ITextureSource* getTextureSource();
+	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
-	virtual scene::ISceneManager* getSceneManager();
+	IShaderSource *shsrc() { return getShaderSource(); }
+	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
 	virtual ParticleManager* getParticleManager();
-	virtual bool checkLocalPrivilege(const std::string &priv)
+	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
+
+	virtual std::string getModStoragePath() const;
+	virtual bool registerModStorage(ModMetadata *meta);
+	virtual void unregisterModStorage(const std::string &name);
 
 	// The following set of functions is used by ClientMediaDownloader
 	// Insert a media file appropriately into the appropriate manager
 	bool loadMedia(const std::string &data, const std::string &filename);
 	// Send a request for conventional media transfer
 	void request_media(const std::vector<std::string> &file_requests);
-	// Send a notification that no conventional media transfer is needed
-	void received_media();
 
 	LocalClientState getState() { return m_state; }
 
 	void makeScreenshot(IrrlichtDevice *device);
+
+	inline void pushToChatQueue(const std::wstring &input)
+	{
+		m_chat_queue.push(input);
+	}
+
+	ClientScripting *getScript() { return m_script; }
+	const bool moddingEnabled() const { return m_modding_enabled; }
+
+	inline void pushToEventQueue(const ClientEvent &event)
+	{
+		m_client_event_queue.push(event);
+	}
+
+	void showGameChat(const bool show = true);
+	void showGameHud(const bool show = true);
+	void showMinimap(const bool show = true);
+	void showProfiler(const bool show = true);
+	void showGameFog(const bool show = true);
+	void showGameDebug(const bool show = true);
+
+	IrrlichtDevice *getDevice() const { return m_device; }
+
+	const Address getServerAddress()
+	{
+		return m_con.GetPeerAddress(PEER_ID_SERVER);
+	}
+
+	const std::string &getAddressName() const
+	{
+		return m_address_name;
+	}
 
 private:
 
@@ -584,6 +568,8 @@ private:
 	inline std::string getPlayerName()
 	{ return m_env.getLocalPlayer()->getName(); }
 
+	bool canSendChatMessage() const;
+
 	float m_packetcounter_timer;
 	float m_connection_reinit_timer;
 	float m_avg_rtt_timer;
@@ -603,9 +589,10 @@ private:
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
 	con::Connection m_con;
+	std::string m_address_name;
 	IrrlichtDevice *m_device;
 	Camera *m_camera;
-	Mapper *m_mapper;
+	Minimap *m_minimap;
 	bool m_minimap_disabled_by_server;
 	// Server serialization version
 	u8 m_server_ser_ver;
@@ -630,6 +617,9 @@ private:
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
 	std::queue<std::wstring> m_chat_queue;
+	std::queue<std::wstring> m_out_chat_queue;
+	u32 m_last_chat_message_sent;
+	float m_chat_message_allowance;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;
@@ -686,15 +676,17 @@ private:
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	Database *m_localdb;
+	MapDatabase *m_localdb;
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
-	// TODO: Add callback to update these when g_settings changes
-	bool m_cache_smooth_lighting;
-	bool m_cache_enable_shaders;
-	bool m_cache_use_tangent_vertices;
+	ClientScripting *m_script;
+	bool m_modding_enabled;
+	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer;
+	GameUIFlags *m_game_ui_flags;
 
+	bool m_shutdown;
 	DISABLE_CLASS_COPY(Client);
 };
 

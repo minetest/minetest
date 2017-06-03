@@ -3,7 +3,7 @@ Minetest
 
 An InfiniMiner/Minecraft inspired game.
 
-Copyright (c) 2010-2013 Perttu Ahola <celeron55@gmail.com>
+Copyright (c) 2010-2017 Perttu Ahola <celeron55@gmail.com>
 and contributors (see source file comments and the version control log)
 
 In case you downloaded the source code:
@@ -43,7 +43,7 @@ Default controls
 - 0-9: Select item
 - Z: Zoom (needs zoom privilege)
 - T: Chat
-- /: Commad
+- /: Command
 
 - Esc: Pause menu/abort/exit (pauses only singleplayer game)
 - R: Enable/disable full range view
@@ -85,7 +85,7 @@ $bin   = /usr/bin
 $share = /usr/share/minetest
 $user  = ~/.minetest
 
-OS X:
+macOS:
 $bin   = Contents/MacOS
 $share = Contents/Resources
 $user  = Contents/User OR ~/Library/Application Support/minetest
@@ -101,7 +101,9 @@ Configuration file:
     $user/minetest.conf
 - It is created by Minetest when it is ran the first time.
 - A specific file can be specified on the command line:
-	--config <path-to-file>
+    --config <path-to-file>
+- A run-in-place build will look for the configuration file in
+    $location_of_exe/../minetest.conf and also $location_of_exe/../../minetest.conf
 
 Command-line options:
 ---------------------
@@ -117,7 +119,7 @@ For Fedora users:
 $ sudo dnf install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
 
 You can install git for easily keeping your copy up to date.
-If you dont want git, read below on how to get the source without git.
+If you don’t want git, read below on how to get the source without git.
 This is an example for installing git on Debian/Ubuntu:
 $ sudo apt-get install git
 
@@ -178,7 +180,7 @@ ENABLE_FREETYPE     - Build with FreeType2; Allows using TTF fonts
 ENABLE_GETTEXT      - Build with Gettext; Allows using translations
 ENABLE_GLES         - Search for Open GLES headers & libraries and use them
 ENABLE_LEVELDB      - Build with LevelDB; Enables use of LevelDB map backend
-ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater required)
+ENABLE_POSTGRESQL   - Build with libpq; Enables use of PostgreSQL map backend (PostgreSQL 9.5 or greater recommended)
 ENABLE_REDIS        - Build with libhiredis; Enables use of Redis map backend
 ENABLE_SPATIAL      - Build with LibSpatial; Speeds up AreaStores
 ENABLE_SOUND        - Build with OpenAL, libogg & libvorbis; in-game Sounds
@@ -212,7 +214,7 @@ IRRLICHT_LIBRARY                - Path to libIrrlicht.a/libIrrlicht.so/libIrrlic
 LEVELDB_INCLUDE_DIR             - Only when building with LevelDB; directory that contains db.h
 LEVELDB_LIBRARY                 - Only when building with LevelDB; path to libleveldb.a/libleveldb.so/libleveldb.dll.a
 LEVELDB_DLL                     - Only when building with LevelDB on Windows; path to libleveldb.dll
-POSTGRESQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
+PostgreSQL_INCLUDE_DIR          - Only when building with PostgreSQL; directory that contains libpq-fe.h
 POSTGRESQL_LIBRARY              - Only when building with PostgreSQL; path to libpq.a/libpq.so
 REDIS_INCLUDE_DIR               - Only when building with Redis; directory that contains hiredis.h
 REDIS_LIBRARY                   - Only when building with Redis; path to libhiredis.a/libhiredis.so
@@ -427,7 +429,7 @@ License of Minetest source code
 -------------------------------
 
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2017 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -502,7 +504,7 @@ Lua is licensed under the terms of the MIT license reproduced below.
 This means that Lua is free software and can be used for both academic
 and commercial purposes at absolutely no cost.
 
-For details and rationale, see http://www.lua.org/license.html .
+For details and rationale, see https://www.lua.org/license.html .
 
 Copyright (C) 1994-2008 Lua.org, PUC-Rio.
 
@@ -527,25 +529,18 @@ THE SOFTWARE.
 Fonts
 ---------------
 
-DejaVu Sans Mono:
-
-  Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
-  Glyphs imported from Arev fonts are (c) Tavmjong Bah (see below)
-
 Bitstream Vera Fonts Copyright:
 
   Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
   a trademark of Bitstream, Inc.
 
-Arev Fonts Copyright:
+Arimo - Apache License, version 2.0
+  Digitized data copyright (c) 2010-2012 Google Corporation.
 
-  Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
+Cousine - Apache License, version 2.0
+  Digitized data copyright (c) 2010-2012 Google Corporation.
 
-Liberation Fonts Copyright:
-
-  Copyright (c) 2007 Red Hat, Inc. All rights reserved. LIBERATION is a trademark of Red Hat, Inc.
-
-DroidSansFallback:
+DroidSansFallBackFull:
 
   Copyright (C) 2008 The Android Open Source Project
 

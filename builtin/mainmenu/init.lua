@@ -16,9 +16,9 @@
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 mt_color_grey  = "#AAAAAA"
-mt_color_blue  = "#0000DD"
-mt_color_green = "#00DD00"
-mt_color_dark_green = "#003300"
+mt_color_blue  = "#6389FF"
+mt_color_green = "#72FF63"
+mt_color_dark_green = "#25C191"
 
 --for all other colors ask sfan5 to complete his work!
 
@@ -56,9 +56,8 @@ tabs.credits = dofile(menupath .. DIR_DELIM .. "tab_credits.lua")
 if PLATFORM == "Android" then
 	tabs.simple_main = dofile(menupath .. DIR_DELIM .. "tab_simple_main.lua")
 else
-	tabs.singleplayer = dofile(menupath .. DIR_DELIM .. "tab_singleplayer.lua")
-	tabs.multiplayer = dofile(menupath .. DIR_DELIM .. "tab_multiplayer.lua")
-	tabs.server = dofile(menupath .. DIR_DELIM .. "tab_server.lua")
+	tabs.local_game = dofile(menupath .. DIR_DELIM .. "tab_local.lua")
+	tabs.play_online = dofile(menupath .. DIR_DELIM .. "tab_online.lua")
 	tabs.texturepacks = dofile(menupath .. DIR_DELIM .. "tab_texturepacks.lua")
 end
 
@@ -119,25 +118,24 @@ local function init_globals()
 		menudata.worldlist:add_sort_mechanism("alphabetic", sort_worlds_alphabetic)
 		menudata.worldlist:set_sortmode("alphabetic")
 
-		if not core.setting_get("menu_last_game") then
-			local default_game = core.setting_get("default_game") or "minetest"
-			core.setting_set("menu_last_game", default_game)
+		if not core.settings:get("menu_last_game") then
+			local default_game = core.settings:get("default_game") or "minetest"
+			core.settings:set("menu_last_game", default_game)
 		end
 
 		mm_texture.init()
 	end
 
 	-- Create main tabview
-	local tv_main = tabview_create("maintab", {x = 12, y = 5.2}, {x = 0, y = 0})
+	local tv_main = tabview_create("maintab", {x = 12, y = 5.4}, {x = 0, y = 0})
 
 	if PLATFORM == "Android" then
 		tv_main:add(tabs.simple_main)
 		tv_main:add(tabs.settings)
 	else
 		tv_main:set_autosave_tab(true)
-		tv_main:add(tabs.singleplayer)
-		tv_main:add(tabs.multiplayer)
-		tv_main:add(tabs.server)
+		tv_main:add(tabs.local_game)
+		tv_main:add(tabs.play_online)
 		tv_main:add(tabs.settings)
 		tv_main:add(tabs.texturepacks)
 	end
@@ -149,7 +147,7 @@ local function init_globals()
 	tv_main:set_fixed_size(false)
 
 	if PLATFORM ~= "Android" then
-		tv_main:set_tab(core.setting_get("maintab_LAST"))
+		tv_main:set_tab(core.settings:get("maintab_LAST"))
 	end
 	ui.set_default("maintab")
 	tv_main:show()
@@ -167,4 +165,3 @@ local function init_globals()
 end
 
 init_globals()
-

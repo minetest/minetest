@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "server.h"
 #include "mapgen.h"
+#include "voxelalgorithms.h"
 
 // garbage collector
 int LuaVoxelManip::gc_object(lua_State *L)
@@ -109,10 +110,25 @@ int LuaVoxelManip::l_write_to_map(lua_State *L)
 	MAP_LOCK_REQUIRED;
 
 	LuaVoxelManip *o = checkobject(L, 1);
-	MMVManip *vm = o->vm;
+	bool update_light = lua_isboolean(L, 2) ? lua_toboolean(L, 2) : true;
+	GET_ENV_PTR;
+	ServerMap *map = &(env->getServerMap());
+	if (o->is_mapgen_vm || !update_light) {
+		o->vm->blitBackAll(&(o->modified_blocks));
+	} else {
+		voxalgo::blit_back_with_light(map, o->vm,
+			&(o->modified_blocks));
+	}
 
-	vm->blitBackAll(&o->modified_blocks);
+	MapEditEvent event;
+	event.type = MEET_OTHER;
+	for (std::map<v3s16, MapBlock *>::iterator it = o->modified_blocks.begin();
+			it != o->modified_blocks.end(); ++it)
+		event.modified_blocks.insert(it->first);
 
+	map->dispatchEvent(&event);
+
+	o->modified_blocks.clear();
 	return 0;
 }
 
@@ -322,33 +338,6 @@ int LuaVoxelManip::l_set_param2_data(lua_State *L)
 
 int LuaVoxelManip::l_update_map(lua_State *L)
 {
-	GET_ENV_PTR;
-
-	LuaVoxelManip *o = checkobject(L, 1);
-	if (o->is_mapgen_vm)
-		return 0;
-
-	Map *map = &(env->getMap());
-
-	// TODO: Optimize this by using Mapgen::calcLighting() instead
-	std::map<v3s16, MapBlock *> lighting_mblocks;
-	std::map<v3s16, MapBlock *> *mblocks = &o->modified_blocks;
-
-	lighting_mblocks.insert(mblocks->begin(), mblocks->end());
-
-	map->updateLighting(lighting_mblocks, *mblocks);
-
-	MapEditEvent event;
-	event.type = MEET_OTHER;
-	for (std::map<v3s16, MapBlock *>::iterator
-		it = mblocks->begin();
-		it != mblocks->end(); ++it)
-		event.modified_blocks.insert(it->first);
-
-	map->dispatchEvent(&event);
-
-	mblocks->clear();
-
 	return 0;
 }
 
@@ -464,7 +453,7 @@ void LuaVoxelManip::Register(lua_State *L)
 }
 
 const char LuaVoxelManip::className[] = "VoxelManip";
-const luaL_reg LuaVoxelManip::methods[] = {
+const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, read_from_map),
 	luamethod(LuaVoxelManip, get_data),
 	luamethod(LuaVoxelManip, set_data),

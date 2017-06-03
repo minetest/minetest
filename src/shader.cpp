@@ -340,7 +340,7 @@ IWritableShaderSource* createShaderSource(IrrlichtDevice *device)
 /*
 	Generate shader given the shader name.
 */
-ShaderInfo generate_shader(std::string name,
+ShaderInfo generate_shader(const std::string &name,
 		u8 material_type, u8 drawtype,
 		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
@@ -525,7 +525,7 @@ void ShaderSource::rebuildShaders()
 }
 
 
-ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
+ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
 		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
 		SourceShaderCache *sourcecache)
@@ -543,7 +543,7 @@ ShaderInfo generate_shader(std::string name, u8 material_type, u8 drawtype,
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
 			shaderinfo.base_material = video::EMT_SOLID;

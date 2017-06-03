@@ -4,50 +4,6 @@
 -- Misc. API functions
 --
 
-local jobs = {}
-local time = 0.0
-local last = core.get_us_time() / 1000000
-
-core.register_globalstep(function(dtime)
-	local new = core.get_us_time() / 1000000
-	if new > last then
-		time = time + (new - last)
-	else
-		-- Overflow, we may lose a little bit of time here but
-		-- only 1 tick max, potentially running timers slightly
-		-- too early.
-		time = time + new
-	end
-	last = new
-
-	if #jobs < 1 then
-		return
-	end
-
-	-- Iterate backwards so that we miss any new timers added by
-	-- a timer callback, and so that we don't skip the next timer
-	-- in the list if we remove one.
-	for i = #jobs, 1, -1 do
-		local job = jobs[i]
-		if time >= job.expire then
-			core.set_last_run_mod(job.mod_origin)
-			job.func(unpack(job.arg))
-			table.remove(jobs, i)
-		end
-	end
-end)
-
-function core.after(after, func, ...)
-	assert(tonumber(after) and type(func) == "function",
-			"Invalid core.after invocation")
-	jobs[#jobs + 1] = {
-		func = func,
-		expire = time + after,
-		arg = {...},
-		mod_origin = core.get_last_run_mod()
-	}
-end
-
 function core.check_player_privs(name, ...)
 	local arg_type = type(name)
 	if (arg_type == "userdata" or arg_type == "table") and
@@ -56,11 +12,11 @@ function core.check_player_privs(name, ...)
 	elseif arg_type ~= "string" then
 		error("Invalid core.check_player_privs argument type: " .. arg_type, 2)
 	end
-	
+
 	local requested_privs = {...}
 	local player_privs = core.get_player_privs(name)
 	local missing_privileges = {}
-	
+
 	if type(requested_privs[1]) == "table" then
 		-- We were provided with a table like { privA = true, privB = true }.
 		for priv, value in pairs(requested_privs[1]) do
@@ -76,11 +32,11 @@ function core.check_player_privs(name, ...)
 			end
 		end
 	end
-	
+
 	if #missing_privileges > 0 then
 		return false, missing_privileges
 	end
-	
+
 	return true, ""
 end
 
@@ -112,6 +68,10 @@ function core.get_connected_players()
 		end
 	end
 	return temp_table
+end
+
+function minetest.player_exists(name)
+	return minetest.get_auth_handler().get_auth(name) ~= nil
 end
 
 -- Returns two position vectors representing a box of `radius` in each
@@ -161,7 +121,7 @@ function core.get_node_group(name, group)
 end
 
 function core.setting_get_pos(name)
-	local value = core.setting_get(name)
+	local value = core.settings:get(name)
 	if not value then
 		return nil
 	end
@@ -210,38 +170,11 @@ function core.http_add_fetch(httpenv)
 	return httpenv
 end
 
-if minetest.setting_getbool("disable_escape_sequences") then
-
-	function core.get_color_escape_sequence(color)
-		return ""
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ""
-	end
-
-	function core.colorize(color, message)
-		return message
-	end
-
-else
-
-	local ESCAPE_CHAR = string.char(0x1b)
-	function core.get_color_escape_sequence(color)
-		return ESCAPE_CHAR .. "(c@" .. color .. ")"
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ESCAPE_CHAR .. "(b@" .. color .. ")"
-	end
-
-	function core.colorize(color, message)
-		return core.get_color_escape_sequence(color) .. message .. core.get_color_escape_sequence("#ffffff")
-	end
-
-end
-
 function core.close_formspec(player_name, formname)
 	return minetest.show_formspec(player_name, formname, "")
+end
+
+function core.cancel_shutdown_requests()
+	core.request_shutdown("", false, -1)
 end
 

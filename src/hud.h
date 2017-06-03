@@ -95,7 +95,7 @@ struct HudElement {
 #include <IGUIFont.h>
 #include "irr_aabb3d.h"
 
-class IGameDef;
+class Client;
 class ITextureSource;
 class Inventory;
 class InventoryList;
@@ -107,7 +107,7 @@ public:
 	video::IVideoDriver *driver;
 	scene::ISceneManager* smgr;
 	gui::IGUIEnvironment *guienv;
-	IGameDef *gamedef;
+	Client *client;
 	LocalPlayer *player;
 	Inventory *inventory;
 	ITextureSource *tsrc;
@@ -121,7 +121,7 @@ public:
 	bool use_hotbar_selected_image;
 
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, IGameDef *gamedef, LocalPlayer *player,
+		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory);
 	~Hud();
 
@@ -175,7 +175,11 @@ private:
 	v3f m_selected_face_normal;
 
 	video::SMaterial m_selection_material;
-	bool m_use_selection_mesh;
+
+	enum {
+		HIGHLIGHT_BOX,
+		HIGHLIGHT_HALO,
+		HIGHLIGHT_NONE } m_mode;
 };
 
 enum ItemRotationKind {
@@ -190,7 +194,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		const ItemStack &item,
 		const core::rect<s32> &rect,
 		const core::rect<s32> *clip,
-		IGameDef *gamedef,
+		Client *client,
 		ItemRotationKind rotation_kind);
 
 #endif

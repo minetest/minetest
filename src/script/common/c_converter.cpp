@@ -26,15 +26,17 @@ extern "C" {
 #include "util/serialize.h"
 #include "util/string.h"
 #include "common/c_converter.h"
+#include "common/c_internal.h"
 #include "constants.h"
 
 
 #define CHECK_TYPE(index, name, type) do { \
 		int t = lua_type(L, (index)); \
 		if (t != (type)) { \
+			std::string traceback = script_get_backtrace(L); \
 			throw LuaError(std::string("Invalid ") + (name) + \
 				" (expected " + lua_typename(L, (type)) + \
-				" got " + lua_typename(L, t) + ")."); \
+				" got " + lua_typename(L, t) + ").\n" + traceback); \
 		} \
 	} while(0)
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)

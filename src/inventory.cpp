@@ -45,82 +45,15 @@ static content_t content_translate_from_19_to_internal(content_t c_from)
 	return c_from;
 }
 
-// If the string contains spaces, quotes or control characters, encodes as JSON.
-// Else returns the string unmodified.
-static std::string serializeJsonStringIfNeeded(const std::string &s)
+ItemStack::ItemStack(const std::string &name_, u16 count_,
+		u16 wear_, IItemDefManager *itemdef) :
+	name(itemdef->getAlias(name_)),
+	count(count_),
+	wear(wear_)
 {
-	for(size_t i = 0; i < s.size(); ++i)
-	{
-		if(s[i] <= 0x1f || s[i] >= 0x7f || s[i] == ' ' || s[i] == '\"')
-			return serializeJsonString(s);
-	}
-	return s;
-}
-
-// Parses a string serialized by serializeJsonStringIfNeeded.
-static std::string deSerializeJsonStringIfNeeded(std::istream &is)
-{
-	std::ostringstream tmp_os;
-	bool expect_initial_quote = true;
-	bool is_json = false;
-	bool was_backslash = false;
-	for(;;)
-	{
-		char c = is.get();
-		if(is.eof())
-			break;
-		if(expect_initial_quote && c == '"')
-		{
-			tmp_os << c;
-			is_json = true;
-		}
-		else if(is_json)
-		{
-			tmp_os << c;
-			if(was_backslash)
-				was_backslash = false;
-			else if(c == '\\')
-				was_backslash = true;
-			else if(c == '"')
-				break; // Found end of string
-		}
-		else
-		{
-			if(c == ' ')
-			{
-				// Found end of word
-				is.unget();
-				break;
-			}
-			else
-			{
-				tmp_os << c;
-			}
-		}
-		expect_initial_quote = false;
-	}
-	if(is_json)
-	{
-		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
-		return deSerializeJsonString(tmp_is);
-	}
-	else
-		return tmp_os.str();
-}
-
-
-ItemStack::ItemStack(std::string name_, u16 count_,
-		u16 wear_, std::string metadata_,
-		IItemDefManager *itemdef)
-{
-	name = itemdef->getAlias(name_);
-	count = count_;
-	wear = wear_;
-	metadata = metadata_;
-
-	if(name.empty() || count == 0)
+	if (name.empty() || count == 0)
 		clear();
-	else if(itemdef->get(name).type == ITEM_TOOL)
+	else if (itemdef->get(name).type == ITEM_TOOL)
 		count = 1;
 }
 
@@ -137,7 +70,7 @@ void ItemStack::serialize(std::ostream &os) const
 		parts = 2;
 	if(wear != 0)
 		parts = 3;
-	if(metadata != "")
+	if (!metadata.empty())
 		parts = 4;
 
 	os<<serializeJsonStringIfNeeded(name);
@@ -145,8 +78,10 @@ void ItemStack::serialize(std::ostream &os) const
 		os<<" "<<count;
 	if(parts >= 3)
 		os<<" "<<wear;
-	if(parts >= 4)
-		os<<" "<<serializeJsonStringIfNeeded(metadata);
+	if (parts >= 4) {
+		os << " ";
+		metadata.serialize(os);
+	}
 }
 
 void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
@@ -289,7 +224,7 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 				wear = stoi(wear_str);
 
 			// Read metadata
-			metadata = deSerializeJsonStringIfNeeded(is);
+			metadata.deSerialize(is);
 
 			// In case fields are added after metadata, skip space here:
 			//std::getline(is, tmp, ' ');
@@ -335,7 +270,7 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 		*this = newitem;
 		newitem.clear();
 	}
-	// If item name or metadata differs, bail out 
+	// If item name or metadata differs, bail out
 	else if (name != newitem.name
 		|| metadata != newitem.metadata)
 	{
@@ -375,7 +310,7 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	{
 		newitem.clear();
 	}
-	// If item name or metadata differs, bail out 
+	// If item name or metadata differs, bail out
 	else if (name != newitem.name
 		|| metadata != newitem.metadata)
 	{
@@ -434,14 +369,13 @@ ItemStack ItemStack::peekItem(u32 peekcount) const
 	Inventory
 */
 
-InventoryList::InventoryList(std::string name, u32 size, IItemDefManager *itemdef)
+InventoryList::InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef):
+	m_name(name),
+	m_size(size),
+	m_width(0),
+	m_itemdef(itemdef)
 {
-	m_name = name;
-	m_size = size;
-	m_width = 0;
-	m_itemdef = itemdef;
 	clearItems();
-	//m_dirty = false;
 }
 
 InventoryList::~InventoryList()
@@ -774,14 +708,6 @@ ItemStack InventoryList::takeItem(u32 i, u32 takecount)
 	//if(!taken.empty())
 	//	setDirty(true);
 	return taken;
-}
-
-ItemStack InventoryList::peekItem(u32 i, u32 peekcount) const
-{
-	if(i >= m_items.size())
-		return ItemStack();
-
-	return m_items[i].peekItem(peekcount);
 }
 
 void InventoryList::moveItemSomewhere(u32 i, InventoryList *dest, u32 count)

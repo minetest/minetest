@@ -20,14 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef BASICMACROS_HEADER
 #define BASICMACROS_HEADER
 
-#include <algorithm>
-
 #define ARRLEN(x) (sizeof(x) / sizeof((x)[0]))
 
 #define MYMIN(a, b) ((a) < (b) ? (a) : (b))
 
 #define MYMAX(a, b) ((a) > (b) ? (a) : (b))
 
+// Requires <algorithm>
 #define CONTAINS(c, v) (std::find((c).begin(), (c).end(), (v)) != (c).end())
 
 // To disable copy constructors and assignment operations for some class
@@ -49,5 +48,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // STATIC_ASSERT(sizeof(foobar_t) == 40), foobar_t_is_wrong_size);
 #define STATIC_ASSERT(expr, msg) \
 	UNUSED_ATTRIBUTE typedef char msg[!!(expr) * 2 - 1]
+
+// Macros to facilitate writing position vectors to a stream
+// Usage:
+//	v3s16 pos(1,2,3);
+//	mystream << "message " << PP(pos) << std::endl;
+
+#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
+
+#define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
 
 #endif

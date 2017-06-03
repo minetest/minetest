@@ -23,12 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_object.h"
 #include "common/c_converter.h"
 #include "serverobject.h"
-#include "debug.h"
 #include "filesys.h"
-#include "log.h"
 #include "mods.h"
 #include "porting.h"
 #include "util/string.h"
+#include "server.h"
+#ifndef SERVER
+#include "client.h"
+#endif
 
 
 extern "C" {
@@ -40,6 +42,8 @@ extern "C" {
 
 #include <stdio.h>
 #include <cstdarg>
+#include "script/common/c_content.h"
+#include <sstream>
 
 
 class ModNameStorer
@@ -68,7 +72,8 @@ public:
 */
 
 ScriptApiBase::ScriptApiBase() :
-	m_luastackmutex()
+	m_luastackmutex(),
+	m_gamedef(NULL)
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	m_lock_recursion_count = 0;
@@ -76,6 +81,8 @@ ScriptApiBase::ScriptApiBase() :
 
 	m_luastack = luaL_newstate();
 	FATAL_ERROR_IF(!m_luastack, "luaL_newstate() failed");
+
+	lua_atpanic(m_luastack, &luaPanic);
 
 	luaL_openlibs(m_luastack);
 
@@ -110,7 +117,6 @@ ScriptApiBase::ScriptApiBase() :
 	// Default to false otherwise
 	m_secure = false;
 
-	m_server = NULL;
 	m_environment = NULL;
 	m_guiengine = NULL;
 }
@@ -118,6 +124,16 @@ ScriptApiBase::ScriptApiBase() :
 ScriptApiBase::~ScriptApiBase()
 {
 	lua_close(m_luastack);
+}
+
+int ScriptApiBase::luaPanic(lua_State *L)
+{
+	std::ostringstream oss;
+	oss << "LUA PANIC: unprotected error in call to Lua API ("
+		<< lua_tostring(L, -1) << ")";
+	FATAL_ERROR(oss.str().c_str());
+	// NOTREACHED
+	return 0;
 }
 
 void ScriptApiBase::loadMod(const std::string &script_path,
@@ -224,7 +240,7 @@ void ScriptApiBase::stackDump(std::ostream &o)
 				break;
 			case LUA_TNUMBER:  /* numbers */ {
 				char buf[10];
-				snprintf(buf, 10, "%g", lua_tonumber(m_luastack, i));
+				snprintf(buf, 10, "%lf", lua_tonumber(m_luastack, i));
 				o << buf;
 				break;
 			}
@@ -305,18 +321,17 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 	if (cobj == NULL || cobj->getId() == 0) {
 		ObjectRef::create(L, cobj);
 	} else {
-		objectrefGet(L, cobj->getId());
+		push_objectRef(L, cobj->getId());
 	}
 }
 
-void ScriptApiBase::objectrefGet(lua_State *L, u16 id)
+Server* ScriptApiBase::getServer()
 {
-	// Get core.object_refs[i]
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "object_refs");
-	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_pushnumber(L, id);
-	lua_gettable(L, -2);
-	lua_remove(L, -2); // object_refs
-	lua_remove(L, -2); // core
+	return dynamic_cast<Server *>(m_gamedef);
 }
+#ifndef SERVER
+Client* ScriptApiBase::getClient()
+{
+	return dynamic_cast<Client *>(m_gamedef);
+}
+#endif

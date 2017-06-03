@@ -23,10 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_abm.h"
 #include "content_sao.h"
 #include "emerge.h"
+#include "mapblock.h"
 #include "nodedef.h"
 #include "player.h"
 #include "rollback_interface.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "settings.h"
 #include "tool.h"
 #include "version.h"
@@ -613,20 +614,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
 
-	///// begin compatibility code
-	PlayerSAO* playersao = NULL;
-	if (protocol_version <= 22) {
-		playersao = StageTwoClientInit(pkt->getPeerId());
-
-		if (playersao == NULL) {
-			actionstream
-				<< "TOSERVER_INIT2 stage 2 client init failed for peer "
-				<< pkt->getPeerId() << std::endl;
-			return;
-		}
-	}
-	///// end compatibility code
-
 	/*
 		Send some initialization data
 	*/
@@ -655,13 +642,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 time = m_env->getTimeOfDay();
 	float time_speed = g_settings->getFloat("time_speed");
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
-
-	///// begin compatibility code
-	if (protocol_version <= 22) {
-		m_clients.event(pkt->getPeerId(), CSE_SetClientReady);
-		m_script->on_joinplayer(playersao);
-	}
-	///// end compatibility code
 
 	// Warnings about protocol version can be issued here
 	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
@@ -692,10 +672,6 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	}
 
 	sendRequestedMedia(pkt->getPeerId(), tosend);
-}
-
-void Server::handleCommand_ReceivedMedia(NetworkPacket* pkt)
-{
 }
 
 void Server::handleCommand_ClientReady(NetworkPacket* pkt)
@@ -742,6 +718,13 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 
 	m_clients.event(peer_id, CSE_SetClientReady);
 	m_script->on_joinplayer(playersao);
+	// Send shutdown timer if shutdown has been scheduled
+	if (m_shutdown_timer > 0.0f) {
+		std::wstringstream ws;
+		ws << L"*** Server shutting down in "
+				<< duration_to_string(myround(m_shutdown_timer)).c_str() << ".";
+		SendChatMessage(pkt->getPeerId(), ws.str());
+	}
 }
 
 void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
@@ -810,7 +793,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
 
 	pitch = modulo360f(pitch);
-	yaw = modulo360f(yaw);
+	yaw = wrapDegrees_0_360(yaw);
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
@@ -1021,6 +1004,15 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 			delete a;
 			return;
 		}
+
+		// Disallow dropping items if dead
+		if (playersao->isDead()) {
+			infostream << "Ignoring IDropAction from "
+					<< (da->from_inv.dump()) << ":" << da->from_list
+					<< " because player is dead." << std::endl;
+			delete a;
+			return;
+		}
 	}
 	/*
 		Handle restrictions and special cases of the craft action
@@ -1118,6 +1110,13 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 
 	if (g_settings->getBool("enable_damage")) {
+		if (playersao->isDead()) {
+			verbosestream << "Server::ProcessData(): Info: "
+				"Ignoring damage as player " << player->getName()
+				<< " is already dead." << std::endl;
+			return;
+		}
+
 		actionstream << player->getName() << " damaged by "
 				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
@@ -1125,46 +1124,6 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		playersao->setHP(playersao->getHP() - damage);
 		SendPlayerHPOrDie(playersao);
 	}
-}
-
-void Server::handleCommand_Breath(NetworkPacket* pkt)
-{
-	u16 breath;
-
-	*pkt >> breath;
-
-	RemotePlayer *player = m_env->getPlayer(pkt->getPeerId());
-
-	if (player == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-
-	PlayerSAO *playersao = player->getPlayerSAO();
-	if (playersao == NULL) {
-		errorstream << "Server::ProcessData(): Canceling: "
-				"No player object for peer_id=" << pkt->getPeerId()
-				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
-		return;
-	}
-
-	/*
-	 * If player is dead, we don't need to update the breath
-	 * He is dead !
-	 */
-	if (playersao->isDead()) {
-		verbosestream << "TOSERVER_BREATH: " << player->getName()
-				<< " is dead. Ignoring packet";
-		return;
-	}
-
-	playersao->setBreath(breath);
-	SendPlayerBreath(pkt->getPeerId());
 }
 
 void Server::handleCommand_Password(NetworkPacket* pkt)
@@ -1313,6 +1272,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		2: digging completed
 		3: place block or item (to abovesurface)
 		4: use item
+		5: rightclick air ("activate")
 	*/
 	u8 action;
 	u16 item_i;
@@ -1345,8 +1305,16 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	if (playersao->isDead()) {
-		verbosestream << "TOSERVER_INTERACT: " << player->getName()
-				<< " is dead. Ignoring packet";
+		actionstream << "Server: NoCheat: " << player->getName()
+				<< " tried to interact while dead; ignoring." << std::endl;
+		if (pointed.type == POINTEDTHING_NODE) {
+			// Re-send block to revert change on client-side
+			RemoteClient *client = getClient(pkt->getPeerId());
+			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
+			client->SetBlockNotSent(blockpos);
+		}
+		// Call callbacks
+		m_script->on_cheat(playersao, "interacted_while_dead");
 		return;
 	}
 
@@ -1385,32 +1353,6 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	/*
-		Check that target is reasonably close
-		(only when digging or placing things)
-	*/
-	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
-	if ((action == 0 || action == 2 || action == 3) &&
-			(enable_anticheat && !isSingleplayer())) {
-		float d = player_pos.getDistanceFrom(pointed_pos_under);
-		float max_d = BS * 14; // Just some large enough value
-		if (d > max_d) {
-			actionstream << "Player " << player->getName()
-					<< " tried to access " << pointed.dump()
-					<< " from too far: "
-					<< "d=" << d <<", max_d=" << max_d
-					<< ". ignoring." << std::endl;
-			// Re-send block to revert change on client-side
-			RemoteClient *client = getClient(pkt->getPeerId());
-			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-			client->SetBlockNotSent(blockpos);
-			// Call callbacks
-			m_script->on_cheat(playersao, "interacted_too_far");
-			// Do nothing else
-			return;
-		}
-	}
-
-	/*
 		Make sure the player is allowed to do it
 	*/
 	if (!checkPriv(player->getName(), "interact")) {
@@ -1433,6 +1375,43 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	}
 
 	/*
+		Check that target is reasonably close
+		(only when digging or placing things)
+	*/
+	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
+	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
+			(enable_anticheat && !isSingleplayer())) {
+		float d = player_pos.getDistanceFrom(pointed_pos_under);
+		const ItemDefinition &playeritem_def =
+			playersao->getWieldedItem().getDefinition(m_itemdef);
+		float max_d = BS * playeritem_def.range;
+		InventoryList *hlist = playersao->getInventory()->getList("hand");
+		const ItemDefinition &hand_def =
+			hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
+		float max_d_hand = BS * hand_def.range;
+		if (max_d < 0 && max_d_hand >= 0)
+			max_d = max_d_hand;
+		else if (max_d < 0)
+			max_d = BS * 4.0;
+		// cube diagonal: sqrt(3) = 1.73
+		if (d > max_d * 1.73) {
+			actionstream << "Player " << player->getName()
+					<< " tried to access " << pointed.dump()
+					<< " from too far: "
+					<< "d=" << d <<", max_d=" << max_d
+					<< ". ignoring." << std::endl;
+			// Re-send block to revert change on client-side
+			RemoteClient *client = getClient(pkt->getPeerId());
+			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
+			client->SetBlockNotSent(blockpos);
+			// Call callbacks
+			m_script->on_cheat(playersao, "interacted_too_far");
+			// Do nothing else
+			return;
+		}
+	}
+
+	/*
 		If something goes wrong, this player is to blame
 	*/
 	RollbackScopeActor rollback_scope(m_rollback,
@@ -1443,11 +1422,6 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 	*/
 	if (action == 0) {
 		if (pointed.type == POINTEDTHING_NODE) {
-			/*
-				NOTE: This can be used in the future to check if
-				somebody is cheating, by checking the timing.
-			*/
-
 			MapNode n(CONTENT_IGNORE);
 			bool pos_ok;
 
@@ -1475,7 +1449,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					<<pointed.object_id<<": "
 					<<pointed_object->getDescription()<<std::endl;
 
-			ItemStack punchitem = playersao->getWieldedItem();
+			ItemStack punchitem = playersao->getWieldedItemOrHand();
 			ToolCapabilities toolcap =
 					punchitem.getToolCapabilities(m_itemdef);
 			v3f dir = (pointed_object->getBasePosition() -
@@ -1542,7 +1516,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					m_script->on_cheat(playersao, "finished_unknown_dig");
 				}
 				// Get player's wielded item
-				ItemStack playeritem = playersao->getWieldedItem();
+				ItemStack playeritem = playersao->getWieldedItemOrHand();
 				ToolCapabilities playeritem_toolcap =
 						playeritem.getToolCapabilities(m_itemdef);
 				// Get diggability and expected digging time
@@ -1550,7 +1524,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 						&playeritem_toolcap);
 				// If can't dig, try hand
 				if (!params.diggable) {
-					const ItemDefinition &hand = m_itemdef->get("");
+					InventoryList *hlist = playersao->getInventory()->getList("hand");
+					const ItemDefinition &hand =
+						hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
 					const ToolCapabilities *tp = hand.tool_capabilities;
 					if (tp)
 						params = getDigParams(m_nodedef->get(n).groups, tp);

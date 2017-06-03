@@ -408,7 +408,7 @@ bool setSystemPaths()
 #endif
 
 	for (std::list<std::string>::const_iterator
-			i = trylist.begin(); i != trylist.end(); i++) {
+			i = trylist.begin(); i != trylist.end(); ++i) {
 		const std::string &trypath = *i;
 		if (!fs::PathExists(trypath) ||
 			!fs::PathExists(trypath + DIR_DELIM + "builtin")) {
@@ -611,9 +611,9 @@ void setXorgClassHint(const video::SExposedVideoData &video_data,
 #endif
 }
 
-bool setXorgWindowIcon(IrrlichtDevice *device)
+bool setWindowIcon(IrrlichtDevice *device)
 {
-#ifdef XORG_USED
+#if defined(XORG_USED)
 #	if RUN_IN_PLACE
 	return setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
@@ -627,6 +627,36 @@ bool setXorgWindowIcon(IrrlichtDevice *device)
 		setXorgWindowIconFromPath(device,
 			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #	endif
+#elif defined(_WIN32)
+	const video::SExposedVideoData exposedData = device->getVideoDriver()->getExposedVideoData();
+	HWND hWnd; // Window handle
+
+	switch (device->getVideoDriver()->getDriverType()) {
+	case video::EDT_DIRECT3D8:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D8.HWnd);
+		break;
+	case video::EDT_DIRECT3D9:
+		hWnd = reinterpret_cast<HWND>(exposedData.D3D9.HWnd);
+		break;
+	case video::EDT_OPENGL:
+		hWnd = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd);
+		break;
+	default:
+		return false;
+	}
+
+	// Load the ICON from resource file
+	const HICON hicon = LoadIcon(
+		GetModuleHandle(NULL),
+		MAKEINTRESOURCE(130) // The ID of the ICON defined in winresource.rc
+	);
+
+	if (hicon) {
+		SendMessage(hWnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(hicon));
+		SendMessage(hWnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hicon));
+		return true;
+	}
+	return false;
 #else
 	return false;
 #endif
@@ -896,6 +926,33 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 	fclose(fp);
 	return success;
 }
+
+#endif
+
+void attachOrCreateConsole(void)
+{
+#ifdef _WIN32
+	static bool consoleAllocated = false;
+	const bool redirected = (_fileno(stdout) == -2 || _fileno(stdout) == -1); // If output is redirected to e.g a file
+	if (!consoleAllocated && redirected && (AttachConsole(ATTACH_PARENT_PROCESS) || AllocConsole())) {
+		freopen("CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stderr);
+		consoleAllocated = true;
+	}
+#endif
+}
+
+// Load performance counter frequency only once at startup
+#ifdef _WIN32
+
+inline double get_perf_freq()
+{
+	LARGE_INTEGER freq;
+	QueryPerformanceFrequency(&freq);
+	return freq.QuadPart;
+}
+
+double perf_freq = get_perf_freq();
 
 #endif
 

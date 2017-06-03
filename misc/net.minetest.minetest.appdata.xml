@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>net.minetest.minetest.desktop</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>LGPL-2.1+ and CC-BY-SA-3.0 and MIT and Apache-2.0</project_license>
+	<name>Minetest</name>
+	<summary>Multiplayer infinite-world block sandbox game</summary>
+	<description>
+		<p>
+			Minetest is an infinite-world block sandbox game and game engine.
+		</p><p>
+			Players can create and destroy various types of blocks in a
+			three-dimensional open world. This allows forming structures in
+			every possible creation, on multiplayer servers or in singleplayer.
+		</p><p>
+			Minetest is designed to be simple, stable, and portable.
+			It is lightweight enough to run on fairly old hardware.
+		</p><p>
+			Minetest has many features, including:
+		</p>
+		<ul>
+			<li>Ability to walk around, dig, and build in a near-infinite voxel world</li>
+			<li>Crafting of items from raw materials</li>
+			<li>Fast and able to run on old and slow hardware</li>
+			<li>A simple modding API that supports many additions and modifications to the game</li>
+			<li>Multiplayer support via servers hosted by users</li>
+			<li>Beautiful lightning-fast map generator</li>
+		</ul>
+	</description>
+	<screenshots>
+		<screenshot type="default">
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/1.jpg</image>
+		</screenshot>
+		<screenshot>
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/3.jpg</image>
+		</screenshot>
+		<screenshot>
+			<image width="1920" height="1080">http://www.minetest.net/media/gallery/5.jpg</image>
+		</screenshot>
+	</screenshots>
+	<keywords>
+		<keyword>sandbox</keyword>
+		<keyword>world</keyword>
+		<keyword>mining</keyword>
+		<keyword>multiplayer</keyword>
+	</keywords>
+	<url type="homepage">http://minetest.net</url>
+	<url type="bugtracker">http://www.minetest.net/development/#reporting-issues</url>
+	<url type="translate">http://dev.minetest.net/Translation</url>
+	<url type="donation">http://www.minetest.net/development/#donate</url>
+	<url type="faq">http://wiki.minetest.net/FAQ</url>
+	<url type="help">http://wiki.minetest.net</url>
+	<provides>
+		<binary>minetest</binary>
+	</provides>
+	<translation type="gettext">minetest</translation>
+	<update_contact>sfan5@live.de</update_contact>
+</component>

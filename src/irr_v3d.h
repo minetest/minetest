@@ -30,4 +30,3 @@ typedef core::vector3d<u16> v3u16;
 typedef core::vector3d<s32> v3s32;
 
 #endif
-

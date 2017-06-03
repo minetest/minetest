@@ -1,3 +1,5 @@
+-- cache setting
+local enable_damage = core.settings:get_bool("enable_damage")
 
 local health_bar_definition =
 {
@@ -42,9 +44,8 @@ local function initialize_builtin_statbars(player)
 		player:hud_set_flags(player:hud_get_flags())
 	end
 
-	if player:hud_get_flags().healthbar and
-			core.is_yes(core.setting_get("enable_damage")) then
-		if hud_ids[name].id_healthbar == nil then
+	if player:hud_get_flags().healthbar and enable_damage then
+ 		if hud_ids[name].id_healthbar == nil then
 			health_bar_definition.number = player:get_hp()
 			hud_ids[name].id_healthbar  = player:hud_add(health_bar_definition)
 		end
@@ -56,8 +57,7 @@ local function initialize_builtin_statbars(player)
 	end
 
 	if (player:get_breath() < 11) then
-		if player:hud_get_flags().breathbar and
-			core.is_yes(core.setting_get("enable_damage")) then
+		if player:hud_get_flags().breathbar and enable_damage then
 			if hud_ids[name].id_breathbar == nil then
 				hud_ids[name].id_breathbar = player:hud_add(breath_bar_definition)
 			end

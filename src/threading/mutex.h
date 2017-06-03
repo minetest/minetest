@@ -56,6 +56,8 @@ public:
 	void lock();
 	void unlock();
 
+	bool try_lock();
+
 protected:
 	Mutex(bool recursive);
 	void init_mutex(bool recursive);

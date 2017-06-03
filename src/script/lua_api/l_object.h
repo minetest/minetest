@@ -37,7 +37,7 @@ private:
 	ServerActiveObject *m_object;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 public:
 	static ObjectRef *checkobject(lua_State *L, int narg);
 
@@ -57,15 +57,15 @@ private:
 	// remove(self)
 	static int l_remove(lua_State *L);
 
-	// getpos(self)
+	// get_pos(self)
 	// returns: {x=num, y=num, z=num}
-	static int l_getpos(lua_State *L);
+	static int l_get_pos(lua_State *L);
 
-	// setpos(self, pos)
-	static int l_setpos(lua_State *L);
+	// set_pos(self, pos)
+	static int l_set_pos(lua_State *L);
 
-	// moveto(self, pos, continuous=false)
-	static int l_moveto(lua_State *L);
+	// move_to(self, pos, continuous=false)
+	static int l_move_to(lua_State *L);
 
 	// punch(self, puncher, time_from_last_punch, tool_capabilities, dir)
 	static int l_punch(lua_State *L);
@@ -105,7 +105,7 @@ private:
 	static int l_get_armor_groups(lua_State *L);
 
 	// set_physics_override(self, physics_override_speed, physics_override_jump,
-	//                      physics_override_gravity, sneak, sneak_glitch)
+	//                      physics_override_gravity, sneak, sneak_glitch, new_move)
 	static int l_set_physics_override(lua_State *L);
 
 	// get_physics_override(self)
@@ -143,30 +143,33 @@ private:
 
 	/* LuaEntitySAO-only */
 
-	// setvelocity(self, {x=num, y=num, z=num})
-	static int l_setvelocity(lua_State *L);
+	// set_velocity(self, {x=num, y=num, z=num})
+	static int l_set_velocity(lua_State *L);
 
-	// getvelocity(self)
-	static int l_getvelocity(lua_State *L);
+	// get_velocity(self)
+	static int l_get_velocity(lua_State *L);
 
-	// setacceleration(self, {x=num, y=num, z=num})
-	static int l_setacceleration(lua_State *L);
+	// set_acceleration(self, {x=num, y=num, z=num})
+	static int l_set_acceleration(lua_State *L);
 
-	// getacceleration(self)
-	static int l_getacceleration(lua_State *L);
+	// get_acceleration(self)
+	static int l_get_acceleration(lua_State *L);
 
-	// setyaw(self, radians)
-	static int l_setyaw(lua_State *L);
+	// set_yaw(self, radians)
+	static int l_set_yaw(lua_State *L);
 
-	// getyaw(self)
-	static int l_getyaw(lua_State *L);
+	// get_yaw(self)
+	static int l_get_yaw(lua_State *L);
 
-	// settexturemod(self, mod)
-	static int l_settexturemod(lua_State *L);
+	// set_texture_mod(self, mod)
+	static int l_set_texture_mod(lua_State *L);
 
-	// setsprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
+	// l_get_texture_mod(self)
+	static int l_get_texture_mod(lua_State *L);
+
+	// set_sprite(self, p={x=0,y=0}, num_frames=1, framelength=0.2,
 	//           select_horiz_by_yawpitch=false)
-	static int l_setsprite(lua_State *L);
+	static int l_set_sprite(lua_State *L);
 
 	// DEPRECATED
 	// get_entity_name(self)
@@ -223,6 +226,12 @@ private:
 	// get_breath(self, breath)
 	static int l_get_breath(lua_State *L);
 
+	// set_attribute(self, attribute, value)
+	static int l_set_attribute(lua_State *L);
+
+	// get_attribute(self, attribute)
+	static int l_get_attribute(lua_State *L);
+
 	// set_inventory_formspec(self, formspec)
 	static int l_set_inventory_formspec(lua_State *L);
 
@@ -274,11 +283,17 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, type, list)
+	// set_sky(self, bgcolor, type, list, clouds = true)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self, type, list)
+	// get_sky(self)
 	static int l_get_sky(lua_State *L);
+
+	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+	static int l_set_clouds(lua_State *L);
+
+	// get_clouds(self)
+	static int l_get_clouds(lua_State *L);
 
 	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);

@@ -19,11 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "scripting_mainmenu.h"
 #include "mods.h"
-#include "porting.h"
-#include "log.h"
 #include "cpp_api/s_internal.h"
 #include "lua_api/l_base.h"
 #include "lua_api/l_mainmenu.h"
+#include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
 #include "lua_api/l_settings.h"
 
@@ -60,16 +59,16 @@ MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 /******************************************************************************/
 void MainMenuScripting::initializeModApi(lua_State *L, int top)
 {
+	registerLuaClasses(L, top);
+
 	// Initialize mod API modules
 	ModApiMainMenu::Initialize(L, top);
 	ModApiUtil::Initialize(L, top);
+	ModApiSound::Initialize(L, top);
 
-	// Register reference classes (userdata)
-	LuaSettings::Register(L);
-
-	// Register functions to async environment
-	ModApiMainMenu::InitializeAsync(asyncEngine);
-	ModApiUtil::InitializeAsync(asyncEngine);
+	asyncEngine.registerStateInitializer(registerLuaClasses);
+	asyncEngine.registerStateInitializer(ModApiMainMenu::InitializeAsync);
+	asyncEngine.registerStateInitializer(ModApiUtil::InitializeAsync);
 
 	// Initialize async environment
 	//TODO possibly make number of async threads configurable
@@ -77,13 +76,21 @@ void MainMenuScripting::initializeModApi(lua_State *L, int top)
 }
 
 /******************************************************************************/
-void MainMenuScripting::step() {
+void MainMenuScripting::registerLuaClasses(lua_State *L, int top)
+{
+	LuaSettings::Register(L);
+}
+
+/******************************************************************************/
+void MainMenuScripting::step()
+{
 	asyncEngine.step(getStack());
 }
 
 /******************************************************************************/
-unsigned int MainMenuScripting::queueAsync(std::string serialized_func,
-		std::string serialized_param) {
+unsigned int MainMenuScripting::queueAsync(const std::string &serialized_func,
+		const std::string &serialized_param)
+{
 	return asyncEngine.queueAsyncJob(serialized_func, serialized_param);
 }
 

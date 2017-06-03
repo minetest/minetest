@@ -22,24 +22,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define REMOTEPLAYER_HEADER
 
 #include "player.h"
+#include "cloudparams.h"
 
 class PlayerSAO;
 
-enum RemotePlayerChatResult {
+enum RemotePlayerChatResult
+{
 	RPLAYER_CHATRESULT_OK,
 	RPLAYER_CHATRESULT_FLOODING,
 	RPLAYER_CHATRESULT_KICK,
 };
+
 /*
 	Player on the server
 */
 class RemotePlayer : public Player
 {
+	friend class PlayerDatabaseFiles;
+
 public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
 	virtual ~RemotePlayer() {}
 
-	void save(std::string savedir, IGameDef *gamedef);
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
 
 	PlayerSAO *getPlayerSAO() { return m_sao; }
@@ -66,15 +70,9 @@ public:
 		*ratio = m_day_night_ratio;
 	}
 
-	void setHotbarImage(const std::string &name)
-	{
-		hud_hotbar_image = name;
-	}
+	void setHotbarImage(const std::string &name) { hud_hotbar_image = name; }
 
-	std::string getHotbarImage() const
-	{
-		return hud_hotbar_image;
-	}
+	std::string getHotbarImage() const { return hud_hotbar_image; }
 
 	void setHotbarSelectedImage(const std::string &name)
 	{
@@ -87,20 +85,29 @@ public:
 	}
 
 	void setSky(const video::SColor &bgcolor, const std::string &type,
-				const std::vector<std::string> &params)
+			const std::vector<std::string> &params, bool &clouds)
 	{
 		m_sky_bgcolor = bgcolor;
 		m_sky_type = type;
 		m_sky_params = params;
+		m_sky_clouds = clouds;
 	}
 
 	void getSky(video::SColor *bgcolor, std::string *type,
-				std::vector<std::string> *params)
+			std::vector<std::string> *params, bool *clouds)
 	{
 		*bgcolor = m_sky_bgcolor;
 		*type = m_sky_type;
 		*params = m_sky_params;
+		*clouds = m_sky_clouds;
 	}
+
+	void setCloudParams(const CloudParams &cloud_params)
+	{
+		m_cloud_params = cloud_params;
+	}
+
+	const CloudParams &getCloudParams() const { return m_cloud_params; }
 
 	bool checkModified() const { return m_dirty || inventory.checkModified(); }
 
@@ -128,6 +135,7 @@ public:
 	void setDirty(bool dirty) { m_dirty = true; }
 
 	u16 protocol_version;
+
 private:
 	/*
 		serialize() writes a bunch of text that can contain
@@ -135,6 +143,7 @@ private:
 		deSerialize stops reading exactly at the right point.
 	*/
 	void serialize(std::ostream &os);
+	void serializeExtraAttributes(std::string &output);
 
 	PlayerSAO *m_sao;
 	bool m_dirty;
@@ -155,6 +164,9 @@ private:
 	std::string m_sky_type;
 	video::SColor m_sky_bgcolor;
 	std::vector<std::string> m_sky_params;
+	bool m_sky_clouds;
+
+	CloudParams m_cloud_params;
 };
 
 #endif

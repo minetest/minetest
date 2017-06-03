@@ -21,10 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "exceptions.h"
 #include "util/serialize.h"
+#include "util/basic_macros.h"
 #include <sstream>
-
-#define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
-#define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
 
 ObjectProperties::ObjectProperties():
 	hp_max(1),
@@ -119,6 +117,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeARGB8(os, nametag_color);
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
+	os << serializeString(wield_item);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -161,6 +160,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			nametag_color = readARGB8(is);
 			automatic_face_movement_max_rotation_per_sec = readF1000(is);
 			infotext = deSerializeString(is);
+			wield_item = deSerializeString(is);
 		}catch(SerializationError &e){}
 	}
 	else

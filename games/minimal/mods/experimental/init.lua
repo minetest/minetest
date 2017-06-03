@@ -28,7 +28,7 @@ minetest.after(1.0, switch_player_visual)
 ]]
 
 minetest.register_node("experimental:soundblock", {
-	tile_images = {"unknown_node.png", "default_tnt_bottom.png",
+	tiles = {"unknown_node.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("unknown_node.png",
@@ -120,7 +120,7 @@ minetest.register_craft({
 })
 
 minetest.register_node("experimental:tnt", {
-	tile_images = {"default_tnt_top.png", "default_tnt_bottom.png",
+	tiles = {"default_tnt_top.png", "default_tnt_bottom.png",
 			"default_tnt_side.png", "default_tnt_side.png",
 			"default_tnt_side.png", "default_tnt_side.png"},
 	inventory_image = minetest.inventorycube("default_tnt_top.png",
@@ -453,7 +453,7 @@ minetest.register_abm({
 
 minetest.register_node("experimental:tester_node_1", {
 	description = "Tester Node 1 (construct/destruct/timer)",
-	tile_images = {"wieldhand.png"},
+	tiles = {"wieldhand.png"},
 	groups = {oddly_breakable_by_hand=2},
 	sounds = default.node_sound_wood_defaults(),
 	-- This was known to cause a bug in minetest.item_place_node() when used
@@ -502,10 +502,16 @@ minetest.register_craftitem("experimental:tester_tool_1", {
     on_use = function(itemstack, user, pointed_thing)
 		--print(dump(pointed_thing))
 		if pointed_thing.type == "node" then
-			if minetest.get_node(pointed_thing.under).name == "experimental:tester_node_1" then
+			local node = minetest.get_node(pointed_thing.under)
+			if node.name == "experimental:tester_node_1" or node.name == "default:chest" then
 				local p = pointed_thing.under
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
-				minetest.dig_node(p)
+				if node.name == "experimental:tester_node_1" then
+					minetest.dig_node(p)
+				else
+					minetest.get_meta(p):mark_as_private({"infotext", "formspec"})
+					minetest.chat_send_player(user:get_player_name(), "Verify that chest is unusable now.")
+				end
 			else
 				local p = pointed_thing.above
 				minetest.log("action", "Tester tool used at "..minetest.pos_to_string(p))
@@ -520,6 +526,43 @@ minetest.register_craft({
 	recipe = {
 		{'group:crumbly'},
 		{'group:crumbly'},
+	}
+})
+
+minetest.register_craftitem("experimental:tester_tool_2", {
+	description = "Tester Tool 2",
+	inventory_image = "experimental_tester_tool_1.png^[invert:g",
+	on_use = function(itemstack, user, pointed_thing)
+		local pos = minetest.get_pointed_thing_position(pointed_thing, true)
+		if pos == nil then return end
+		pos = vector.add(pos, {x=0, y=0.5, z=0})
+		local tex, anim
+		if math.random(0, 1) == 0 then
+			tex = "default_lava_source_animated.png"
+			anim = {type="sheet_2d", frames_w=3, frames_h=2, frame_length=0.5}
+		else
+			tex = "default_lava_flowing_animated.png"
+			anim = {type="vertical_frames", aspect_w=16, aspect_h=16, length=3.3}
+		end
+
+		minetest.add_particle({
+			pos = pos,
+			velocity = {x=0, y=0, z=0},
+			acceleration = {x=0, y=0.04, z=0},
+			expirationtime = 6,
+			collisiondetection = true,
+			texture = tex,
+			animation = anim,
+			size = 4,
+			glow = math.random(0, 5),
+		})
+	end,
+})
+
+minetest.register_craft({
+	output = 'experimental:tester_tool_2',
+	recipe = {
+		{'group:crumbly','group:crumbly'},
 	}
 })
 

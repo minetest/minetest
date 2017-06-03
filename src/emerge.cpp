@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_schematic.h"
 #include "nodedef.h"
 #include "profiler.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "serverobject.h"
 #include "settings.h"
@@ -89,13 +89,13 @@ private:
 //// EmergeManager
 ////
 
-EmergeManager::EmergeManager(IGameDef *gamedef)
+EmergeManager::EmergeManager(Server *server)
 {
-	this->ndef      = gamedef->getNodeDefManager();
-	this->biomemgr  = new BiomeManager(gamedef);
-	this->oremgr    = new OreManager(gamedef);
-	this->decomgr   = new DecorationManager(gamedef);
-	this->schemmgr  = new SchematicManager(gamedef);
+	this->ndef      = server->getNodeDefManager();
+	this->biomemgr  = new BiomeManager(server);
+	this->oremgr    = new OreManager(server);
+	this->decomgr   = new DecorationManager(server);
+	this->schemmgr  = new SchematicManager(server);
 	this->gen_notify_on = 0;
 
 	// Note that accesses to this variable are not synchronized.
@@ -128,7 +128,7 @@ EmergeManager::EmergeManager(IGameDef *gamedef)
 		m_qlimit_generate = 1;
 
 	for (s16 i = 0; i < nthreads; i++)
-		m_threads.push_back(new EmergeThread((Server *)gamedef, i));
+		m_threads.push_back(new EmergeThread(server, i));
 
 	infostream << "EmergeManager: using " << nthreads << " threads" << std::endl;
 }
@@ -174,6 +174,9 @@ bool EmergeManager::initMapgens(MapgenParams *params)
 
 Mapgen *EmergeManager::getCurrentMapgen()
 {
+	if (!m_threads_active)
+		return NULL;
+
 	for (u32 i = 0; i != m_threads.size(); i++) {
 		if (m_threads[i]->isCurrentThread())
 			return m_threads[i]->m_mapgen;
@@ -564,7 +567,7 @@ MapBlock *EmergeThread::finishGen(v3s16 pos, BlockMakeData *bmdata,
 		m_server->getScriptIface()->environment_OnGenerated(
 			minp, maxp, m_mapgen->blockseed);
 	} catch (LuaError &e) {
-		m_server->setAsyncFatalError("Lua: " + std::string(e.what()));
+		m_server->setAsyncFatalError("Lua: finishGen" + std::string(e.what()));
 	}
 
 	EMERGE_DBG_OUT("ended up with: " << analyze_block(block));
@@ -603,7 +606,7 @@ void *EmergeThread::run()
 			continue;
 		}
 
-		if (blockpos_over_limit(pos))
+		if (blockpos_over_max_limit(pos))
 			continue;
 
 		bool allow_gen = bedata.flags & BLOCK_EMERGE_ALLOW_GEN;
