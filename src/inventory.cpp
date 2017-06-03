@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "itemdef.h"
 #include "util/strfnd.h"
-#include "content_mapnode.h" // For loading legacy MaterialItems
 #include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
@@ -32,18 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	ItemStack
 */
-
-static content_t content_translate_from_19_to_internal(content_t c_from)
-{
-	for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
-	{
-		if(trans_table_19[i][1] == c_from)
-		{
-			return trans_table_19[i][0];
-		}
-	}
-	return c_from;
-}
 
 ItemStack::ItemStack(const std::string &name_, u16 count_,
 		u16 wear_, IItemDefManager *itemdef) :
@@ -107,14 +94,10 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 		is>>material;
 		u16 materialcount;
 		is>>materialcount;
-		// Convert old materials
-		if(material <= 0xff)
-			material = content_translate_from_19_to_internal(material);
 		if(material > 0xfff)
 			throw SerializationError("Too large material number");
 		// Convert old id to name
 		NameIdMapping legacy_nimap;
-		content_mapnode_get_name_id_mapping(&legacy_nimap);
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";
@@ -134,7 +117,6 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 			throw SerializationError("Too large material number");
 		// Convert old id to name
 		NameIdMapping legacy_nimap;
-		content_mapnode_get_name_id_mapping(&legacy_nimap);
 		legacy_nimap.getName(material, name);
 		if(name == "")
 			name = "unknown_block";

@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "nodedef.h"
 #include "map.h"
-#include "content_mapnode.h" // For mapnode_translate_*_internal
 #include "serialization.h" // For ser_ver_supported
 #include "util/serialize.h"
 #include "log.h"
@@ -631,25 +630,19 @@ void MapNode::serialize(u8 *dest, u8 version)
 }
 void MapNode::deSerialize(u8 *source, u8 version)
 {
-	if(!ser_ver_supported(version))
+	if (!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	if(version <= 21)
-	{
-		deSerialize_pre22(source, version);
-		return;
-	}
-
-	if(version >= 24){
-		param0 = readU16(source+0);
-		param1 = readU8(source+2);
-		param2 = readU8(source+3);
-	}else{
-		param0 = readU8(source+0);
-		param1 = readU8(source+1);
-		param2 = readU8(source+2);
-		if(param0 > 0x7F){
-			param0 |= ((param2&0xF0)<<4);
+	if (version >= 24) {
+		param0 = readU16(source + 0);
+		param1 = readU8(source + 2);
+		param2 = readU8(source + 3);
+	} else {
+		param0 = readU8(source + 0);
+		param1 = readU8(source + 1);
+		param2 = readU8(source + 2);
+		if (param0 > 0x7F) {
+			param0 |= ((param2 & 0xF0) << 4);
 			param2 &= 0x0F;
 		}
 	}
@@ -771,44 +764,3 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 	}
 }
 
-/*
-	Legacy serialization
-*/
-void MapNode::deSerialize_pre22(u8 *source, u8 version)
-{
-	if(version <= 1)
-	{
-		param0 = source[0];
-	}
-	else if(version <= 9)
-	{
-		param0 = source[0];
-		param1 = source[1];
-	}
-	else
-	{
-		param0 = source[0];
-		param1 = source[1];
-		param2 = source[2];
-		if(param0 > 0x7f){
-			param0 <<= 4;
-			param0 |= (param2&0xf0)>>4;
-			param2 &= 0x0f;
-		}
-	}
-
-	// Convert special values from old version to new
-	if(version <= 19)
-	{
-		// In these versions, CONTENT_IGNORE and CONTENT_AIR
-		// are 255 and 254
-		// Version 19 is fucked up with sometimes the old values and sometimes not
-		if(param0 == 255)
-			param0 = CONTENT_IGNORE;
-		else if(param0 == 254)
-			param0 = CONTENT_AIR;
-	}
-
-	// Translate to our known version
-	*this = mapnode_translate_to_internal(*this, version);
-}

@@ -128,7 +128,6 @@ LOCAL_SRC_FILES := \
 		jni/src/content_cao.cpp                   \
 		jni/src/content_cso.cpp                   \
 		jni/src/content_mapblock.cpp              \
-		jni/src/content_mapnode.cpp               \
 		jni/src/content_nodemeta.cpp              \
 		jni/src/content_sao.cpp                   \
 		jni/src/convert_json.cpp                  \
