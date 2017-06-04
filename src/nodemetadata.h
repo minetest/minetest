@@ -83,6 +83,8 @@ public:
 	std::vector<v3s16> getAllKeys();
 	// Get pointer to data
 	NodeMetadata *get(v3s16 p);
+	// Get pointer to all data
+	std::map<v3s16, NodeMetadata*>* getAll();
 	// Deletes data
 	void remove(v3s16 p);
 	// Deletes old data and sets a new one
