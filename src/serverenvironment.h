@@ -190,7 +190,7 @@ enum ClearObjectsMode {
 	This is not thread-safe. Server uses an environment mutex.
 */
 
-typedef UNORDERED_MAP<u16, ServerActiveObject *> ActiveObjectMap;
+typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
 
 class ServerEnvironment : public Environment
 {
@@ -395,7 +395,7 @@ private:
 	// World path
 	const std::string m_path_world;
 	// Active object list
-	ActiveObjectMap m_active_objects;
+	ServerActiveObjectMap m_active_objects;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -431,8 +431,8 @@ private:
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;
-	UNORDERED_MAP<u32, float> m_particle_spawners;
-	UNORDERED_MAP<u32, u16> m_particle_spawner_attachments;
+	std::unordered_map<u32, float> m_particle_spawners;
+	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 };
 
 #endif

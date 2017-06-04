@@ -999,9 +999,10 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos, float radius)
+void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos,
+	float radius)
 {
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
 		u16 id = i->first;
@@ -1017,7 +1018,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
 	std::vector<u16> objects_to_remove;
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
@@ -1395,7 +1396,7 @@ void ServerEnvironment::step(float dtime)
 			send_recommended = true;
 		}
 
-		for(ActiveObjectMap::iterator i = m_active_objects.begin();
+		for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 			i != m_active_objects.end(); ++i) {
 			ServerActiveObject* obj = i->second;
 			// Don't step if is to be removed or stored statically
@@ -1429,7 +1430,7 @@ void ServerEnvironment::step(float dtime)
 		Manage particle spawner expiration
 	*/
 	if (m_particle_management_interval.step(dtime, 1.0)) {
-		for (UNORDERED_MAP<u32, float>::iterator i = m_particle_spawners.begin();
+		for (std::unordered_map<u32, float>::iterator i = m_particle_spawners.begin();
 			i != m_particle_spawners.end(); ) {
 			//non expiring spawners
 			if (i->second == PARTICLE_SPAWNER_NO_EXPIRY) {
@@ -1454,7 +1455,7 @@ u32 ServerEnvironment::addParticleSpawner(float exptime)
 	u32 id = 0;
 	for (;;) { // look for unused particlespawner id
 		id++;
-		UNORDERED_MAP<u32, float>::iterator f = m_particle_spawners.find(id);
+		std::unordered_map<u32, float>::iterator f = m_particle_spawners.find(id);
 		if (f == m_particle_spawners.end()) {
 			m_particle_spawners[id] = time;
 			break;
@@ -1476,7 +1477,7 @@ u32 ServerEnvironment::addParticleSpawner(float exptime, u16 attached_id)
 void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 {
 	m_particle_spawners.erase(id);
-	UNORDERED_MAP<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
+	std::unordered_map<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
 	if (it != m_particle_spawner_attachments.end()) {
 		u16 obj_id = (*it).second;
 		ServerActiveObject *sao = getActiveObject(obj_id);
@@ -1489,11 +1490,11 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 {
-	ActiveObjectMap::iterator n = m_active_objects.find(id);
+	ServerActiveObjectMap::const_iterator n = m_active_objects.find(id);
 	return (n != m_active_objects.end() ? n->second : NULL);
 }
 
-bool isFreeServerActiveObjectId(u16 id, ActiveObjectMap &objects)
+bool isFreeServerActiveObjectId(u16 id, ServerActiveObjectMap &objects)
 {
 	if (id == 0)
 		return false;
@@ -1501,7 +1502,7 @@ bool isFreeServerActiveObjectId(u16 id, ActiveObjectMap &objects)
 	return objects.find(id) == objects.end();
 }
 
-u16 getFreeServerActiveObjectId(ActiveObjectMap &objects)
+u16 getFreeServerActiveObjectId(ServerActiveObjectMap &objects)
 {
 	//try to reuse id's as late as possible
 	static u16 last_used_id = 0;
@@ -1546,7 +1547,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		- discard objects that are found in current_objects.
 		- add remaining objects to added_objects
 	*/
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
 
@@ -1642,7 +1643,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 		so_it = block->m_static_objects.m_active.begin();
 		so_it != block->m_static_objects.m_active.end(); ++so_it) {
 		// Get the ServerActiveObject counterpart to this StaticObject
-		ActiveObjectMap::iterator ao_it = m_active_objects.find(so_it->first);
+		ServerActiveObjectMap::const_iterator ao_it = m_active_objects.find(so_it->first);
 		if (ao_it == m_active_objects.end()) {
 			// If this ever happens, there must be some kind of nasty bug.
 			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
@@ -1761,7 +1762,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 void ServerEnvironment::removeRemovedObjects()
 {
 	std::vector<u16> objects_to_remove;
-	for(ActiveObjectMap::iterator i = m_active_objects.begin();
+	for(ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
 		ServerActiveObject* obj = i->second;
@@ -1979,7 +1980,7 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
 	std::vector<u16> objects_to_remove;
-	for(ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		// force_delete might be overriden per object
 		bool force_delete = _force_delete;

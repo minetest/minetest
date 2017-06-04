@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "nodedef.h"
 #include "util/timetaker.h"
-#include "util/cpp11.h"
 
 
 ReflowScan::ReflowScan(Map *map, INodeDefManager *ndef) :

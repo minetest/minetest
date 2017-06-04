@@ -64,6 +64,7 @@ struct ClientEnvEvent
 	};
 };
 
+typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
@@ -181,7 +182,7 @@ private:
 	Client *m_client;
 	ClientScripting *m_script;
 	IrrlichtDevice *m_irr;
-	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
+	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

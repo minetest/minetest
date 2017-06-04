@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <vector>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 class Client;
 struct HTTPFetchResult;
@@ -138,7 +138,7 @@ private:
 	s32 m_httpfetch_active;
 	s32 m_httpfetch_active_limit;
 	s32 m_outstanding_hash_sets;
-	UNORDERED_MAP<unsigned long, std::string> m_remote_file_transfers;
+	std::unordered_map<unsigned long, std::string> m_remote_file_transfers;
 
 	// All files up to this name have either been received from a
 	// remote server or failed on all remote servers, so those files

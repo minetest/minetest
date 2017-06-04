@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 #include <set>
 #include <vector>
+#include <unordered_set>
 #include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
@@ -656,18 +657,18 @@ private:
 	// Sounds
 	float m_removed_sounds_check_timer;
 	// Mapping from server sound ids to our sound ids
-	UNORDERED_MAP<s32, int> m_sounds_server_to_client;
+	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
-	UNORDERED_MAP<int, s32> m_sounds_client_to_server;
+	std::unordered_map<int, s32> m_sounds_client_to_server;
 	// And relations to objects
-	UNORDERED_MAP<int, u16> m_sounds_to_objects;
+	std::unordered_map<int, u16> m_sounds_to_objects;
 
 	// Privileges
-	UNORDERED_SET<std::string> m_privileges;
+	std::unordered_set<std::string> m_privileges;
 
 	// Detached inventories
 	// key = name
-	UNORDERED_MAP<std::string, Inventory*> m_detached_inventories;
+	std::unordered_map<std::string, Inventory*> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;
@@ -682,7 +683,7 @@ private:
 
 	ClientScripting *m_script;
 	bool m_modding_enabled;
-	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
+	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer;
 	GameUIFlags *m_game_ui_flags;
 

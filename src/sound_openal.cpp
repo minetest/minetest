@@ -43,7 +43,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include <vector>
 #include <fstream>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 #define BUFFER_SIZE 30000
 
@@ -271,8 +271,8 @@ private:
 	ALCdevice *m_device;
 	ALCcontext *m_context;
 	int m_next_id;
-	UNORDERED_MAP<std::string, std::vector<SoundBuffer*> > m_buffers;
-	UNORDERED_MAP<int, PlayingSound*> m_sounds_playing;
+	std::unordered_map<std::string, std::vector<SoundBuffer*>> m_buffers;
+	std::unordered_map<int, PlayingSound*> m_sounds_playing;
 	v3f m_listener_pos;
 	struct FadeState {
 		FadeState() {}
@@ -285,7 +285,7 @@ private:
 		float target_gain;
 	};
 
-	UNORDERED_MAP<int, FadeState> m_sounds_fading;
+	std::unordered_map<int, FadeState> m_sounds_fading;
 	float m_fade_delay;
 public:
 	bool m_is_initialized;
@@ -351,8 +351,8 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 
-		for (UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i = m_buffers.begin();
-				i != m_buffers.end(); ++i) {
+		for (std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+				m_buffers.begin(); i != m_buffers.end(); ++i) {
 			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
 					iter != (*i).second.end(); ++iter) {
 				delete *iter;
@@ -370,7 +370,7 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i != m_buffers.end()){
 			i->second.push_back(buf);
@@ -384,7 +384,7 @@ public:
 
 	SoundBuffer* getBuffer(const std::string &name)
 	{
-		UNORDERED_MAP<std::string, std::vector<SoundBuffer*> >::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
 				m_buffers.find(name);
 		if(i == m_buffers.end())
 			return NULL;
@@ -461,7 +461,7 @@ public:
 
 	void deleteSound(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if(i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -501,7 +501,7 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
+		for(std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
 				i != m_sounds_playing.end(); ++i) {
 			int id = i->first;
 			PlayingSound *sound = i->second;
@@ -615,7 +615,7 @@ public:
 			return;
 
 		float chkGain = 0;
-		for (UNORDERED_MAP<int, FadeState>::iterator i = m_sounds_fading.begin();
+		for (std::unordered_map<int, FadeState>::iterator i = m_sounds_fading.begin();
 				i != m_sounds_fading.end();) {
 			if (i->second.step < 0.f)
 				chkGain = -(i->second.current_gain);
@@ -646,7 +646,7 @@ public:
 
 	void updateSoundPosition(int id, v3f pos)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = i->second;
@@ -659,7 +659,7 @@ public:
 
 	bool updateSoundGain(int id, float gain)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return false;
 
@@ -670,7 +670,7 @@ public:
 
 	float getSoundGain(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
 		if (i == m_sounds_playing.end())
 			return 0;
 

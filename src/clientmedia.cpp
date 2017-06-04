@@ -348,7 +348,7 @@ void ClientMediaDownloader::remoteMediaReceived(
 
 	std::string name;
 	{
-		UNORDERED_MAP<unsigned long, std::string>::iterator it =
+		std::unordered_map<unsigned long, std::string>::iterator it =
 			m_remote_file_transfers.find(fetch_result.request_id);
 		assert(it != m_remote_file_transfers.end());
 		name = it->second;

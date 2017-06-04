@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVEROBJECT_HEADER
 #define SERVEROBJECT_HEADER
 
+#include <unordered_set>
 #include "irrlichttypes_bloated.h"
 #include "activeobject.h"
 #include "inventorymanager.h"
@@ -166,8 +167,8 @@ public:
 	{}
 	virtual void removeAttachmentChild(int child_id)
 	{}
-	virtual const UNORDERED_SET<int> &getAttachmentChildIds()
-	{ static const UNORDERED_SET<int> rv; return rv; }
+	virtual const std::unordered_set<int> &getAttachmentChildIds()
+	{ static const std::unordered_set<int> rv; return rv; }
 	virtual ObjectProperties* accessObjectProperties()
 	{ return NULL; }
 	virtual void notifyObjectPropertiesModified()
@@ -251,7 +252,7 @@ protected:
 
 	ServerEnvironment *m_env;
 	v3f m_base_position;
-	UNORDERED_SET<u32> m_attached_particle_spawners;
+	std::unordered_set<u32> m_attached_particle_spawners;
 
 private:
 	// Used for creating objects based on type

@@ -91,7 +91,8 @@ private:
 	int m_animation_speed;
 	int m_animation_blend;
 	bool m_animation_loop;
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
+	// stores position and rotation for each bone name
+	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
