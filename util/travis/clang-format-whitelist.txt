@@ -39,7 +39,6 @@ src/content_cso.cpp
 src/content_cso.h
 src/content_mapblock.cpp
 src/content_mapblock.h
-src/content_mapnode.cpp
 src/content_nodemeta.cpp
 src/content_nodemeta.h
 src/content_sao.cpp
