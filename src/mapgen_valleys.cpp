@@ -233,7 +233,10 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate biome noises.  Note this must be executed strictly before
 	// generateTerrain, because generateTerrain depends on intermediate
 	// biome-related noises.
-	m_bgen->calcBiomeNoise(node_min);
+	// mgvalleys calls calcBiomeNoise() before it creates the heightmap,
+	// so it passes 0 for the heightmap argument to set y = 0 in
+	// calcBiomeNoise() and avoid it accessing a NULL heightmap.
+	m_bgen->calcBiomeNoise(node_min, 0);
 
 	// Generate noise maps and base terrain height.
 	// Modify heat and humidity maps.

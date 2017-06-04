@@ -97,6 +97,8 @@ void BiomeParamsOriginal::readParams(const Settings *settings)
 	settings->getNoiseParams("mg_biome_np_heat_blend",     np_heat_blend);
 	settings->getNoiseParams("mg_biome_np_humidity",       np_humidity);
 	settings->getNoiseParams("mg_biome_np_humidity_blend", np_humidity_blend);
+	settings->getFloatNoEx("mg_biome_heat_gradient",       heat_gradient);
+	settings->getFloatNoEx("mg_biome_humidity_gradient",   humidity_gradient);
 }
 
 
@@ -106,6 +108,8 @@ void BiomeParamsOriginal::writeParams(Settings *settings) const
 	settings->setNoiseParams("mg_biome_np_heat_blend",     np_heat_blend);
 	settings->setNoiseParams("mg_biome_np_humidity",       np_humidity);
 	settings->setNoiseParams("mg_biome_np_humidity_blend", np_humidity_blend);
+	settings->setFloat("mg_biome_heat_gradient",           heat_gradient);
+	settings->setFloat("mg_biome_humidity_gradient",       humidity_gradient);
 }
 
 
@@ -126,6 +130,8 @@ BiomeGenOriginal::BiomeGenOriginal(BiomeManager *biomemgr,
 									params->seed, m_csize.X, m_csize.Z);
 	noise_humidity_blend = new Noise(&params->np_humidity_blend,
 									params->seed, m_csize.X, m_csize.Z);
+	this->heat_gradient     = params->heat_gradient;
+	this->humidity_gradient = params->humidity_gradient;
 
 	heatmap  = noise_heat->result;
 	humidmap = noise_humidity->result;
@@ -145,18 +151,23 @@ BiomeGenOriginal::~BiomeGenOriginal()
 
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
-	float heat =
+	float heat = rangelim(
 		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
-	float humidity =
+		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed) +
+		pos.Y * heat_gradient,
+		-50.0f, 150.0f);
+	// Humidity gradient is disabled underground.
+	float humidity = rangelim(
 		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
+		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed) +
+		MYMAX(pos.Y, 0) * humidity_gradient,
+		-50.0f, 150.0f);
 
 	return calcBiomeFromNoise(heat, humidity, pos.Y);
 }
 
 
-void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin)
+void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin, s16 *heightmap)
 {
 	m_pmin = pmin;
 
@@ -166,8 +177,22 @@ void BiomeGenOriginal::calcBiomeNoise(v3s16 pmin)
 	noise_humidity_blend->perlinMap2D(pmin.X, pmin.Z);
 
 	for (s32 i = 0; i < m_csize.X * m_csize.Z; i++) {
-		noise_heat->result[i]     += noise_heat_blend->result[i];
-		noise_humidity->result[i] += noise_humidity_blend->result[i];
+		// mgvalleys calls calcBiomeNoise() before it creates the heightmap,
+		// so it passes 0 for the heightmap argument to set y = 0 and avoid
+		// accessing a NULL heightmap.
+		// y is limited to a minimum of mapchunk minp.Y due to the heightmap
+		// containing -MAX_MAP_GENERATION_LIMIT if no terrain is found in a
+		// mapchunk node column.
+		s16 y = (!heightmap) ? 0 : MYMAX(heightmap[i], pmin.Y);
+		noise_heat->result[i] = rangelim(
+			noise_heat->result[i] + noise_heat_blend->result[i] +
+			y * heat_gradient,
+			-50.0f, 150.0f);
+		// Humidity gradient is disabled underground.
+		noise_humidity->result[i] = rangelim(
+			noise_humidity->result[i] + noise_humidity_blend->result[i] +
+			MYMAX(y, 0) * humidity_gradient,
+			-50.0f, 150.0f);
 	}
 }
 
