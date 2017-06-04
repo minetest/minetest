@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "itemdef.h"
 #include "util/strfnd.h"
-#include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
 
