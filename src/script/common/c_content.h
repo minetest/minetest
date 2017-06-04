@@ -39,6 +39,7 @@ extern "C" {
 #include "util/string.h"
 #include "itemgroup.h"
 #include "itemdef.h"
+#include "nodedef.h"
 #include "c_types.h"
 
 namespace Json { class Value; }
@@ -54,7 +55,6 @@ struct SimpleSoundSpec;
 struct ServerSoundParams;
 class Inventory;
 struct NodeBox;
-struct ContentFeatures;
 struct TileDef;
 class Server;
 struct DigParams;
@@ -64,7 +64,7 @@ struct NoiseParams;
 class Schematic;
 
 
-ContentFeatures    read_content_features     (lua_State *L, int index);
+ContentFeatures    read_content_features     (lua_State *L, int index, ContentFeatures f_base = ContentFeatures());
 void               push_content_features     (lua_State *L,
                                               const ContentFeatures &c);
 
@@ -138,6 +138,12 @@ int                getenumfield              (lua_State *L, int table,
                                               const EnumString *spec,
                                               int default_);
 
+void               setenumfield              (lua_State *L,
+                                              int table,
+                                              const char *fieldname,
+                                              const EnumString *spec,
+                                              int num);
+
 bool               getflagsfield             (lua_State *L, int table,
                                               const char *fieldname,
                                               FlagDesc *flagdesc,
@@ -169,6 +175,9 @@ void               push_soundspec            (lua_State *L,
 bool               string_to_enum            (const EnumString *spec,
                                               int &result,
                                               const std::string &str);
+
+const char*        enum_to_string            (const EnumString *spec,
+                                              const int num);
 
 bool               read_noiseparams          (lua_State *L, int index,
                                               NoiseParams *np);

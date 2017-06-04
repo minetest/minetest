@@ -297,7 +297,7 @@ void Map::setNodeDef(v3s16 p, const ContentFeatures *def)
 	block->setNodeDefNoCheck(relpos, def);
 }
 
-void Map::addNodeAndUpdate(v3s16 p, MapNode n,
+void Map::addNodeAndUpdate(v3s16 p, NodeWithDef nd,
 		std::map<v3s16, MapBlock*> &modified_blocks,
 		bool remove_metadata)
 {
@@ -312,11 +312,13 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		removeNodeMetadata(p);
 	}
 
+	MapNode n = nd.node();
+
 	// Set the node on the map
 	// Ignore light (because calling voxalgo::update_lighting_nodes)
 	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
 	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	setNode(p, n);
+	setNode(p, nd);
 
 	// Update lighting
 	std::vector<std::pair<v3s16, MapNode> > oldnodes;
@@ -365,23 +367,29 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 }
 
+void Map::addNodeAndUpdate(v3s16 p, MapNode n,
+		std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata)
+{
+	addNodeAndUpdate(p, NodeWithDef(n, m_gamedef->ndef()), modified_blocks, remove_metadata);
+}
+
 void Map::removeNodeAndUpdate(v3s16 p,
 		std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
 }
 
-bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
+bool Map::addNodeWithEvent(v3s16 p, NodeWithDef nd, bool remove_metadata)
 {
 	MapEditEvent event;
 	event.type = remove_metadata ? MEET_ADDNODE : MEET_SWAPNODE;
 	event.p = p;
-	event.n = n;
+	event.n = nd.node();
 
 	bool succeeded = true;
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+		addNodeAndUpdate(p, nd, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator
@@ -397,7 +405,21 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 
 	dispatchEvent(&event);
 
+	// Report metadata update if special definition is used
+	if (nd.def_is_global() == false) {
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapEditEvent event;
+		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+		event.p = blockpos;
+		dispatchEvent(&event);
+	}
+
 	return succeeded;
+}
+
+bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
+{
+	return addNodeWithEvent(p, NodeWithDef(n, m_gamedef->ndef()), remove_metadata);
 }
 
 bool Map::removeNodeWithEvent(v3s16 p)
