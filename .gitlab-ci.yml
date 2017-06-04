@@ -64,8 +64,13 @@ build:debian-8:
   <<: *build_definition
   image: debian:8
   before_script:
+    - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
+    - apt-key adv --keyserver keyserver.ubuntu.com --recv BA9EF27F
     - apt-get update -y
-    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+    - apt-get -y install build-essential gcc-6 g++-6 libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  variables:
+    CC: gcc-6
+    CXX: g++-6
 
 package:debian-8:
   image: debian:8
@@ -115,11 +120,16 @@ deploy:debian-9:
 # Trusty
 
 build:ubuntu-14.04:
- <<: *build_definition
- image: ubuntu:trusty
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  <<: *build_definition
+  image: ubuntu:trusty
+  before_script:
+    - echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" > /etc/apt/sources.list.d/uptodate-toolchain.list
+    - apt-key adv --keyserver keyserver.ubuntu.com --recv BA9EF27F
+    - apt-get update -y
+    - apt-get -y install build-essential gcc-6 g++-6 libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  variables:
+    CC: gcc-6
+    CXX: g++-6
 
 package:ubuntu-14.04:
   image: ubuntu:trusty
@@ -140,11 +150,11 @@ deploy:ubuntu-14.04:
 # Xenial
 
 build:ubuntu-16.04:
- <<: *build_definition
- image: ubuntu:xenial
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  <<: *build_definition
+  image: ubuntu:xenial
+  before_script:
+    - apt-get update -y
+    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-16.04:
   image: ubuntu:xenial
@@ -165,11 +175,11 @@ deploy:ubuntu-16.04:
 # Yakkety
 
 build:ubuntu-16.10:
- <<: *build_definition
- image: ubuntu:yakkety
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  <<: *build_definition
+  image: ubuntu:yakkety
+  before_script:
+    - apt-get update -y
+    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-16.10:
   image: ubuntu:yakkety
@@ -190,11 +200,11 @@ deploy:ubuntu-16.10:
 # Zesty
 
 build:ubuntu-17.04:
- <<: *build_definition
- image: ubuntu:zesty
- before_script:
-   - apt-get update -y
-   - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
+  <<: *build_definition
+  image: ubuntu:zesty
+  before_script:
+    - apt-get update -y
+    - apt-get -y install build-essential libirrlicht-dev cmake libbz2-dev libpng-dev libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev libogg-dev libvorbis-dev libopenal-dev libcurl4-gnutls-dev libfreetype6-dev zlib1g-dev libgmp-dev libjsoncpp-dev
 
 package:ubuntu-17.04:
   image: ubuntu:zesty
