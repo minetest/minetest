@@ -40,8 +40,7 @@ CachedMapBlockData::~CachedMapBlockData()
 {
 	assert(refcount_from_queue == 0);
 
-	if (data)
-		delete[] data;
+	delete[] data;
 }
 
 /*
@@ -60,8 +59,7 @@ QueuedMeshUpdate::QueuedMeshUpdate():
 
 QueuedMeshUpdate::~QueuedMeshUpdate()
 {
-	if (data)
-		delete data;
+	delete data;
 }
 
 /*

@@ -3231,8 +3231,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			{
 				HudElement *e = player->removeHud(event.hudrm.id);
 
-				if (e != NULL)
-					delete e;
+				delete e;
 			}
 			break;
 

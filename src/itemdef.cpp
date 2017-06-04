@@ -112,11 +112,8 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	if(tool_capabilities)
-	{
-		delete tool_capabilities;
-		tool_capabilities = NULL;
-	}
+	delete tool_capabilities;
+	tool_capabilities = NULL;
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();

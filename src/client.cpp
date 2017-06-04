@@ -490,10 +490,8 @@ void Client::step(float dtime)
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if (block) {
 				// Delete the old mesh
-				if (block->mesh != NULL) {
-					delete block->mesh;
-					block->mesh = NULL;
-				}
+				delete block->mesh;
+				block->mesh = NULL;
 
 				if (r.mesh) {
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
