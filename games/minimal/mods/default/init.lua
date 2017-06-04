@@ -1097,6 +1097,60 @@ minetest.register_node("default:river_water_flowing", {
 		not_in_creative_inventory = 1, cools_lava = 1},
 })
 
+minetest.register_node("default:river_water_flowing", {
+	description = "River water (flowing)",
+	inventory_image = minetest.inventorycube("default_river_water.png"),
+	drawtype = "flowingliquid",
+	tiles ={"default_river_water.png"},
+	special_tiles = {
+		{name="default_river_water.png", backface_culling=false},
+		{name="default_river_water.png", backface_culling=true},
+	},
+	alpha = WATER_ALPHA,
+	paramtype = "light",
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drowning = 1,
+	liquidtype = "flowing",
+	liquid_alternative_flowing = "default:river_water_flowing",
+	liquid_alternative_source = "default:river_water_source",
+	liquid_viscosity = WATER_VISC,
+	liquid_renewable = false,
+	liquid_range = 2,
+	post_effect_color = {a=64, r=100, g=100, b=200},
+	groups = {water=3, liquid=3},
+})
+
+minetest.register_node("default:river_water_source", {
+	description = "Water",
+	inventory_image = minetest.inventorycube("default_river_water.png"),
+	drawtype = "liquid",
+	tiles ={"default_river_water.png"},
+	special_tiles = {
+		-- New-style river_water source material (mostly unused)
+		{name="default_river_water.png", backface_culling=false},
+	},
+	alpha = WATER_ALPHA,
+	paramtype = "light",
+	walkable = false,
+	pointable = false,
+	diggable = false,
+	buildable_to = true,
+	is_ground_content = false,
+	drowning = 1,
+	liquidtype = "source",
+	liquid_alternative_flowing = "default:river_water_flowing",
+	liquid_alternative_source = "default:river_water_source",
+	liquid_viscosity = WATER_VISC,
+	liquid_renewable = false,
+	liquid_range = 2,
+	post_effect_color = {a=64, r=100, g=100, b=200},
+	groups = {river_water=3, liquid=3},
+})
+
 minetest.register_node("default:lava_flowing", {
 	description = "Lava (flowing)",
 	inventory_image = minetest.inventorycube("default_lava.png"),
