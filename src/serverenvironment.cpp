@@ -579,7 +579,8 @@ PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
 		// If the player exists, ensure that they respawn inside legal bounds
 		// This fixes an assert crash when the player can't be added
 		// to the environment
-		if (objectpos_over_limit(playersao->getBasePosition())) {
+		ServerMap &map = getServerMap();
+		if (map.getMapgenParams()->saoPosOverLimit(playersao->getBasePosition())) {
 			actionstream << "Respawn position for player \""
 				<< player->getName() << "\" outside limits, resetting" << std::endl;
 			playersao->setBasePosition(m_server->findSpawnPos());
