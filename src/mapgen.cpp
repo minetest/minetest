@@ -1053,12 +1053,13 @@ void MapgenParams::writeParams(Settings *settings) const
 // 'mapgen_limit'), and corresponding exact limits for SAO entities.
 void MapgenParams::calcMapgenEdges()
 {
+	if (m_mapgen_edges_calculated)
+		return;
+
 	// Central chunk offset, in blocks
 	s16 ccoff_b = -chunksize / 2;
-
 	// Chunksize, in nodes
 	s32 csize_n = chunksize * MAP_BLOCKSIZE;
-
 	// Minp/maxp of central chunk, in nodes
 	s16 ccmin = ccoff_b * MAP_BLOCKSIZE;
 	s16 ccmax = ccmin + csize_n - 1;
@@ -1077,25 +1078,33 @@ void MapgenParams::calcMapgenEdges()
 	s16 numcmin = MYMAX((ccfmin - mapgen_limit_min) / csize_n, 0);
 	s16 numcmax = MYMAX((mapgen_limit_max - ccfmax) / csize_n, 0);
 	// Mapgen edges, in nodes
-	// These values may be useful later as additional class members
-	s16 mapgen_edge_min = ccmin - numcmin * csize_n;
-	s16 mapgen_edge_max = ccmax + numcmax * csize_n;
+	mapgen_edge_min = ccmin - numcmin * csize_n;
+	mapgen_edge_max = ccmax + numcmax * csize_n;
 	// SAO position limits, in Irrlicht units
 	m_sao_limit_min = mapgen_edge_min * BS - 3.0f;
 	m_sao_limit_max = mapgen_edge_max * BS + 3.0f;
+
+	m_mapgen_edges_calculated = true;
 }
 
 
 bool MapgenParams::saoPosOverLimit(const v3f &p)
 {
-	if (!m_sao_limit_calculated) {
+	if (!m_mapgen_edges_calculated)
 		calcMapgenEdges();
-		m_sao_limit_calculated = true;
-	}
+
 	return p.X < m_sao_limit_min ||
 		p.X > m_sao_limit_max ||
 		p.Y < m_sao_limit_min ||
 		p.Y > m_sao_limit_max ||
 		p.Z < m_sao_limit_min ||
 		p.Z > m_sao_limit_max;
+}
+
+
+s32 MapgenParams::getSpawnRangeMax()
+{
+	calcMapgenEdges();
+
+	return MYMIN(-mapgen_edge_min, mapgen_edge_max);
 }
