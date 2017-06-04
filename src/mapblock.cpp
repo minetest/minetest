@@ -97,16 +97,12 @@ MapBlock::~MapBlock()
 	{
 		//MutexAutoLock lock(mesh_mutex);
 
-		if(mesh)
-		{
-			delete mesh;
-			mesh = NULL;
-		}
+		delete mesh;
+		mesh = NULL;
 	}
 #endif
 
-	if(data)
-		delete[] data;
+	delete[] data;
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)
