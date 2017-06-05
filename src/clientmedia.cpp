@@ -19,7 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "clientmedia.h"
 #include "httpfetch.h"
+#ifndef SERVER
 #include "client.h"
+#endif
 #include "filecache.h"
 #include "filesys.h"
 #include "debug.h"
@@ -483,7 +485,10 @@ void ClientMediaDownloader::startRemoteMediaTransfers()
 
 void ClientMediaDownloader::startConventionalTransfers(Client *client)
 {
-	assert(m_httpfetch_active == 0);	// pre-condition
+#ifdef SERVER
+  throw "fail";
+#else
+  assert(m_httpfetch_active == 0);	// pre-condition
 
 	if (m_uncached_received_count != m_uncached_count) {
 		// Some media files have not been received yet, use the
@@ -499,6 +504,7 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 				m_uncached_count - m_uncached_received_count);
 		client->request_media(file_requests);
 	}
+#endif
 }
 
 void ClientMediaDownloader::conventionalTransferDone(
@@ -542,6 +548,9 @@ bool ClientMediaDownloader::checkAndLoad(
 		const std::string &name, const std::string &sha1,
 		const std::string &data, bool is_from_cache, Client *client)
 {
+#ifdef SERVER
+  throw "fail";
+#else
 	const char *cached_or_received = is_from_cache ? "cached" : "received";
 	const char *cached_or_received_uc = is_from_cache ? "Cached" : "Received";
 	std::string sha1_hex = hex_encode(sha1);
@@ -587,6 +596,7 @@ bool ClientMediaDownloader::checkAndLoad(
 		m_media_cache.update(sha1_hex, data);
 
 	return true;
+#endif
 }
 
 

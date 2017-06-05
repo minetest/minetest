@@ -108,6 +108,7 @@ private:
 			const std::string &data, bool is_from_cache,
 			Client *client);
 
+	public:
 	std::string serializeRequiredHashSet();
 	static void deSerializeHashSet(const std::string &data,
 			std::set<std::string> &result);
