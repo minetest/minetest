@@ -325,11 +325,6 @@ else()
 		endif(HAVE_LIBRT)
 	endif(APPLE)
 
-	# This way Xxf86vm is found on OpenBSD too
-	find_library(XXF86VM_LIBRARY Xxf86vm)
-	mark_as_advanced(XXF86VM_LIBRARY)
-	set(CLIENT_PLATFORM_LIBS ${CLIENT_PLATFORM_LIBS} ${XXF86VM_LIBRARY})
-
 	# Prefer local iconv if installed
 	find_library(ICONV_LIBRARY iconv)
 	mark_as_advanced(ICONV_LIBRARY)
