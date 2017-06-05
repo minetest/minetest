@@ -101,7 +101,7 @@ repeat_rightclick_time (Rightclick repetition interval) float 0.25
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 
-#    Continuous forward movement (only used for testing).
+#    Continuous forward movement, toggled by autoforward key.
 continuous_forward (Continuous forward) bool false
 
 #    Enable Joysticks
@@ -206,9 +206,9 @@ keymap_increase_volume (Inc. volume key) key
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_decrease_volume (Dec. volume key) key
 
-#    Key for toggling autorun.
+#    Key for toggling autoforward.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_autorun (Autorun key) key
+keymap_autoforward (Automatic forwards key) key
 
 #    Key for toggling cinematic mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
