@@ -549,11 +549,11 @@ max_out_chat_queue_size = 20
 
 #    Width component of the initial window size.
 #    type: int
-# screenW = 800
+# screen_w = 800
 
 #    Height component of the initial window size.
 #    type: int
-# screenH = 600
+# screen_h = 600
 
 #    Save the window size automatically when modified.
 #    type: bool
