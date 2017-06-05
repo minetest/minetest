@@ -111,16 +111,14 @@ void draw_anaglyph_3d_mode(Camera& camera, bool show_hud, Hud& hud,
 	camera.getCameraNode()->setTarget(oldTarget);
 }
 
-void init_texture(video::IVideoDriver* driver, const v2u32& screensize,
-		video::ITexture** texture, const char* name)
+void init_texture(video::IVideoDriver *driver, const v2u32 &screensize,
+		video::ITexture **texture, const char *name,
+		video::ECOLOR_FORMAT format = video::ECF_A8R8G8B8)
 {
 	if (*texture != NULL)
-	{
 		driver->removeTexture(*texture);
-	}
 	*texture = driver->addRenderTargetTexture(
-			core::dimension2d<u32>(screensize.X, screensize.Y), name,
-			irr::video::ECF_A8R8G8B8);
+			core::dimension2d<u32>(screensize.X, screensize.Y), name, format);
 }
 
 video::ITexture* draw_image(const v2u32 &screensize,
@@ -474,6 +472,7 @@ void draw_plain(Camera &camera, bool show_hud,
 	// Undersampling-specific stuff
 	static video::ITexture *image = NULL;
 	static video::ITexture *image2 = NULL;
+	static video::ITexture *zbuffer = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
 	int pixel_size = g_settings->getU16("undersampling");
 	bool undersampling = pixel_size > 1;
@@ -492,9 +491,13 @@ void draw_plain(Camera &camera, bool show_hud,
 			init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
 			if (undersampling && postprocessing)
 				init_texture(driver, pixelated_size, &image2, "mt_drawimage_img2");
+			init_texture(driver, pixelated_size, &zbuffer, "mt_z_copy", video::ECF_R16F);
 			last_pixelated_size = pixelated_size;
 		}
-		driver->setRenderTarget(image, true, true, skycolor);
+		core::array<video::IRenderTarget> rts;
+		rts.push_back(image);
+		rts.push_back(zbuffer);
+		driver->setRenderTarget(rts, true, true, skycolor);
 	}
 
 	// Render
@@ -502,7 +505,7 @@ void draw_plain(Camera &camera, bool show_hud,
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
 		hud.drawSelectionMesh();
-		if (draw_wield_tool) {
+		if (draw_wield_tool && !postprocessing) {
 			camera.drawWieldedTool();
 		}
 	}
@@ -535,12 +538,16 @@ void draw_plain(Camera &camera, bool show_hud,
 		if (postprocessing) {
 			u32 shader = s->getShader("postprocessing", TILE_MATERIAL_BASIC, 0);
 			mat.MaterialType = s->getShaderInfo(shader).material;
-			mat.TextureLayer[0].BilinearFilter = false;
+			mat.TextureLayer[0].BilinearFilter = true;
 			mat.TextureLayer[0].Texture = image;
+			mat.TextureLayer[2].BilinearFilter = true;
+			mat.TextureLayer[2].Texture = zbuffer;
 			if (undersampling)
 				driver->setRenderTarget(image2, false, false);
 			driver->setMaterial(mat);
 			driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
+			if (draw_wield_tool)
+				camera.drawWieldedTool();
 			if (undersampling)
 				driver->setRenderTarget(0, false, false);
 		}

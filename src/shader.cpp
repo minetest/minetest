@@ -210,11 +210,15 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 {
 	CachedVertexShaderSetting<float, 16> m_world_view_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
+	CachedPixelShaderSetting<s32, 2> m_render_target_size;
+	CachedPixelShaderSetting<f32, 2> m_pixel_size;
 
 public:
 	MainShaderConstantSetter() :
 		m_world_view_proj("mWorldViewProj"),
-		m_world("mWorld")
+		m_world("mWorld"),
+		m_render_target_size("renderTargetSize"),
+		m_pixel_size("pixelSize")
 	{}
 	~MainShaderConstantSetter() {}
 
@@ -241,6 +245,17 @@ public:
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
 
+		if (is_highlevel) {
+			core::dimension2d<u32> size = driver->getCurrentRenderTargetSize();
+			s32 s[2];
+			f32 p[2];
+			s[0] = size.Width;
+			s[1] = size.Height;
+			p[0] = 1.0 / s[0];
+			p[1] = 1.0 / s[1];
+			m_render_target_size.set(s, services);
+			m_pixel_size.set(p, services);
+		}
 	}
 };
 
