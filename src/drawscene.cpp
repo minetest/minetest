@@ -509,13 +509,13 @@ void draw_plain(Camera &camera, bool show_hud,
 	// Post-process
 	if (undersampling || postprocessing) {
 		driver->setRenderTarget(0, false, false);
-		static video::S3DVertex vertices[4] = {
+		static const video::S3DVertex vertices[4] = {
 			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 0, 255, 255), 1.0, 0.0),
 			video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 0, 255), 0.0, 0.0),
 			video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 0), 0.0, 1.0),
 			video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 255), 1.0, 1.0),
 		};
-		static u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
+		static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
 		IShaderSource *s = client.getShaderSource();
 		video::SMaterial mat;
 		mat.UseMipMaps = false;
