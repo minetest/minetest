@@ -542,10 +542,13 @@ void tree_trunk_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 	if (vmanip.m_area.contains(p1) == false)
 		return;
 	u32 vi = vmanip.m_area.index(p1);
-	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
-			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+	content_t current_node = vmanip.m_data[vi].getContent();
+	if (current_node != CONTENT_AIR && current_node != CONTENT_IGNORE
+			&& current_node != tree_definition.leavesnode.getContent()
+			&& current_node != tree_definition.leaves2node.getContent()
+			&& current_node != tree_definition.fruitnode.getContent())
 		return;
-	vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.trunknode;
+	vmanip.m_data[vi] = tree_definition.trunknode;
 }
 
 
