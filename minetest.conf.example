@@ -440,6 +440,7 @@ max_out_chat_queue_size = 20
 # undersampling = 0
 
 #    Whether to use filter with undersampling.
+#    Requires shaders to be enabled.
 #    type: bool
 # undersampling_filter = false
 
@@ -455,6 +456,7 @@ max_out_chat_queue_size = 20
 # shader_path =
 
 #    This option allows to use certain full-screen effects.
+#    Requires shaders to be enabled.
 #    type: bool
 # postprocessing = true
 

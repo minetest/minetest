@@ -477,7 +477,8 @@ void draw_plain(Camera &camera, bool show_hud,
 	static v2u32 last_pixelated_size = v2u32(0, 0);
 	int pixel_size = g_settings->getU16("undersampling");
 	bool undersampling = pixel_size > 1;
-	bool postprocessing = g_settings->getBool("postprocessing");
+	bool enable_shaders = g_settings->getBool("enable_shaders");
+	bool postprocessing = enable_shaders && g_settings->getBool("postprocessing");
 	bool filter = g_settings->getBool("undersampling_filter");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
@@ -509,6 +510,12 @@ void draw_plain(Camera &camera, bool show_hud,
 	// Post-process
 	if (undersampling || postprocessing) {
 		driver->setRenderTarget(0, false, false);
+		if (!enable_shaders) {
+			driver->draw2DImage(image,
+					irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+					irr::core::rect<s32>(0, 0, pixelated_size.X, pixelated_size.Y));
+			return;
+		}
 		static const video::S3DVertex vertices[4] = {
 			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 0, 255, 255), 1.0, 0.0),
 			video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 0, 255), 0.0, 0.0),
