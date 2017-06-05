@@ -199,7 +199,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_DELETE_PARTICLESPAWNER",   0, true }, // 0x53
 	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
-	null_command_factory,
+	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

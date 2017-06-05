@@ -1270,6 +1270,28 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
 }
 
+void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
+{
+	u16 num_players;
+	*pkt >> num_players;
+
+	for (u8 i = 0; i < num_players; i++) {
+		u8 type;
+		std::string name;
+		*pkt >> type >> name;
+		PlayerListModifer notice_type = (PlayerListModifer) type;
+		switch (notice_type) {
+		case PLAYER_ADD_INIT:
+		case PLAYER_ADD:
+			m_env.addPlayerName(name);
+			continue;
+		case PLAYER_REMOVE:
+			m_env.removePlayerName(name);
+			continue;
+		}
+	}
+}
+
 void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 {
 	if ((m_chosen_auth_mech != AUTH_MECHANISM_LEGACY_PASSWORD)

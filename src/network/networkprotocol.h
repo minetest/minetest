@@ -155,9 +155,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Stop sending TOSERVER_CLIENT_READY
 	PROTOCOL VERSION 32:
 		Add fading sounds
+	PROTOCOL VERSION 33:
+		Add TOCLIENT_UPDATE_PLAYER_LIST and send the player list to the client,
+			instead of guessing based on the active object list.
+
 */
 
-#define LATEST_PROTOCOL_VERSION 32
+#define LATEST_PROTOCOL_VERSION 33
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24
@@ -629,6 +633,11 @@ enum ToClientCommand
 		float step
 		float gain
 	*/
+	TOCLIENT_UPDATE_PLAYER_LIST = 0x56,
+	/*
+	 	 enum type;
+	 	 std::string name;
+	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
@@ -964,5 +973,13 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 	"Server shutting down.",
 	"This server has experienced an internal error. You will now be disconnected."
 };
+
+enum PlayerListModifer: u8
+{
+	PLAYER_ADD_INIT,
+	PLAYER_ADD,
+	PLAYER_REMOVE,
+};
+
 
 #endif

@@ -2786,6 +2786,11 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
+			// inform connected clients
+			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+			notice << (u16) 1 << (u8) PLAYER_REMOVE << std::string(playersao->getPlayer()->getName());
+			m_clients.sendToAll(&notice);
+			// run scripts
 			m_script->on_leaveplayer(playersao, reason == CDR_TIMEOUT);
 
 			playersao->disconnected();

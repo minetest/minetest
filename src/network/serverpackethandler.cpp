@@ -716,6 +716,18 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 			peer_id, major_ver, minor_ver, patch_ver,
 			full_ver);
 
+	std::vector<std::string> players = m_clients.getPlayerNames();
+	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
+	list_pkt << (u16) players.size();
+	for (const std::string &player: players) {
+		list_pkt << (u8) PLAYER_ADD_INIT <<  player;
+	}
+	m_clients.send(peer_id, 0, &list_pkt, true);
+
+	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+	notice_pkt << (u16) 1 << (u8) PLAYER_ADD << std::string(playersao->getPlayer()->getName());
+	m_clients.sendToAll(&notice_pkt);
+
 	m_clients.event(peer_id, CSE_SetClientReady);
 	m_script->on_joinplayer(playersao);
 	// Send shutdown timer if shutdown has been scheduled

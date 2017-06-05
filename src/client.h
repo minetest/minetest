@@ -349,6 +349,7 @@ public:
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
+	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
