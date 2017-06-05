@@ -1129,7 +1129,7 @@ ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 
 		// BACKWARDS COMPATIBLITY
 		std::string value = getstringfield_default(L, index, "metadata", "");
-		istack.metadata.setString("", value);
+		istack.metadata.legacy_metadata = value;
 
 		// Get meta
 		lua_getfield(L, index, "meta");
