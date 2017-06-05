@@ -648,10 +648,10 @@ Call these functions only at load time!
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_connect(func())`
     * Called at the end of client connection (when player is loaded onto map)
-* `minetest.register_on_receiving_chat_message(func(name, message))`
+* `minetest.register_on_receiving_chat_messages(func(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
-* `minetest.register_on_sending_chat_message(func(name, message))`
+* `minetest.register_on_sending_chat_messages(func(message))`
     * Called always when a client send a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
