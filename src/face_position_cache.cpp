@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 std::unordered_map<u16, std::vector<v3s16>> FacePositionCache::cache;
-Mutex FacePositionCache::cache_mutex;
+std::mutex FacePositionCache::cache_mutex;
 
 // Calculate the borders of a "d-radius" cube
 const std::vector<v3s16> &FacePositionCache::getFacePositions(u16 d)

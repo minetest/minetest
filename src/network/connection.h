@@ -349,7 +349,7 @@ private:
 
 	u16 m_oldest_non_answered_ack;
 
-	Mutex m_list_mutex;
+	std::mutex m_list_mutex;
 };
 
 /*
@@ -372,7 +372,7 @@ private:
 	// Key is seqnum
 	std::map<u16, IncomingSplitPacket*> m_buf;
 
-	Mutex m_map_mutex;
+	std::mutex m_map_mutex;
 };
 
 struct OutgoingPacket
@@ -544,7 +544,7 @@ public:
 
 	void setWindowSize(unsigned int size) { window_size = size; };
 private:
-	Mutex m_internal_mutex;
+	std::mutex m_internal_mutex;
 	int window_size;
 
 	u16 next_incoming_seqnum;
@@ -738,7 +738,7 @@ class Peer {
 		bool IncUseCount();
 		void DecUseCount();
 
-		Mutex m_exclusive_access_mutex;
+		std::mutex m_exclusive_access_mutex;
 
 		bool m_pending_deletion;
 
@@ -1064,12 +1064,12 @@ private:
 
 	std::map<u16, Peer*> m_peers;
 	std::list<u16> m_peer_ids;
-	Mutex m_peers_mutex;
+	std::mutex m_peers_mutex;
 
 	ConnectionSendThread m_sendThread;
 	ConnectionReceiveThread m_receiveThread;
 
-	Mutex m_info_mutex;
+	std::mutex m_info_mutex;
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;

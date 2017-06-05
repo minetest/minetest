@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../irrlichttypes.h"
 #include "../threading/thread.h"
-#include "../threading/mutex.h"
 #include "../threading/mutex_auto_lock.h"
 #include "porting.h"
 #include "log.h"
@@ -51,7 +50,7 @@ public:
 	// You pretty surely want to grab the lock when accessing this
 	T m_value;
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 };
 
 /*

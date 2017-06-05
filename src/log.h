@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <string>
 #include <fstream>
+#include <mutex>
 #include "threads.h"
 #include "irrlichttypes.h"
 
@@ -79,7 +80,7 @@ private:
 	// Works on all known architectures (x86, ARM, MIPS).
 	volatile bool m_silenced_levels[LL_MAX];
 	std::map<threadid_t, std::string> m_thread_names;
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 	bool m_trace_enabled;
 };
 

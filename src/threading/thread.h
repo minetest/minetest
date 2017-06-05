@@ -27,11 +27,11 @@ DEALINGS IN THE SOFTWARE.
 #define THREADING_THREAD_H
 
 #include "util/basic_macros.h"
-#include "threading/mutex.h"
 #include "threads.h"
 
 #include <string>
 #include <atomic>
+#include <mutex>
 
 #ifdef _AIX
 	#include <sys/thread.h> // for tid_t
@@ -153,8 +153,8 @@ private:
 	bool m_joinable;
 	std::atomic<bool> m_request_stop;
 	std::atomic<bool> m_running;
-	Mutex m_mutex;
-	Mutex m_start_finished_mutex;
+	std::mutex m_mutex;
+	std::mutex m_start_finished_mutex;
 
 #if USE_CPP11_THREADS
 	std::thread *m_thread_obj;

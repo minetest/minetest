@@ -29,7 +29,6 @@ extern "C" {
 
 #include "irrlichttypes.h"
 #include "threads.h"
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
@@ -116,7 +115,7 @@ protected:
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	RecursiveMutex  m_luastackmutex;
+	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;
 	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG

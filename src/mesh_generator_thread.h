@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MESH_GENERATOR_THREAD_HEADER
 #define MESH_GENERATOR_THREAD_HEADER
 
+#include <mutex>
 #include "mapblock_mesh.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
@@ -83,7 +84,7 @@ private:
 	std::vector<QueuedMeshUpdate *> m_queue;
 	std::set<v3s16> m_urgents;
 	std::map<v3s16, CachedMapBlockData *> m_cache;
-	Mutex m_mutex;
+	std::mutex m_mutex;
 
 	// TODO: Add callback to update these when g_settings changes
 	bool m_cache_enable_shaders;
