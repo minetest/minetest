@@ -21,11 +21,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define FACE_POSITION_CACHE_HEADER
 
 #include "irr_v3d.h"
-#include "threading/mutex.h"
 
 #include <map>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
 
 /*
  * This class permits caching getFacePosition call results.
@@ -38,7 +38,7 @@ public:
 private:
 	static const std::vector<v3s16> &generateFacePosition(u16 d);
 	static std::unordered_map<u16, std::vector<v3s16>> cache;
-	static Mutex cache_mutex;
+	static std::mutex cache_mutex;
 };
 
 #endif

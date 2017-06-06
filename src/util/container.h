@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "../irrlichttypes.h"
 #include "../exceptions.h"
-#include "../threading/mutex.h"
 #include "../threading/mutex_auto_lock.h"
 #include "../threading/semaphore.h"
 #include <list>
@@ -117,7 +116,7 @@ public:
 
 private:
 	std::map<Key, Value> m_values;
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 };
 
 
@@ -225,12 +224,12 @@ public:
 	}
 
 protected:
-	Mutex &getMutex() { return m_mutex; }
+	std::mutex &getMutex() { return m_mutex; }
 
 	std::deque<T> &getQueue() { return m_queue; }
 
 	std::deque<T> m_queue;
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 	Semaphore m_signal;
 };
 

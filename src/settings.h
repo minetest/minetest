@@ -22,10 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
-#include "threading/mutex.h"
 #include <string>
 #include <list>
 #include <set>
+#include <mutex>
 
 class Settings;
 struct NoiseParams;
@@ -232,10 +232,10 @@ private:
 
 	SettingsCallbackMap m_callbacks;
 
-	mutable Mutex m_callback_mutex;
+	mutable std::mutex m_callback_mutex;
 
 	// All methods that access m_settings/m_defaults directly should lock this.
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 
 };
 

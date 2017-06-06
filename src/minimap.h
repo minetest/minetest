@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client.h"
 #include "voxel.h"
-#include "threading/mutex.h"
 #include "threading/semaphore.h"
 #include <map>
 #include <string>
@@ -112,7 +111,7 @@ protected:
 	virtual void doUpdate();
 
 private:
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::deque<QueuedMinimapUpdate> m_update_queue;
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
@@ -161,7 +160,7 @@ private:
 	bool m_enable_shaders;
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::list<v2f> m_active_markers;
 };
 

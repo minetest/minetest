@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
-#include "threading/mutex.h"
 #include <ostream>
 #include <map>
 #include <set>

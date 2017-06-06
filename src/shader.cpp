@@ -320,7 +320,7 @@ private:
 	// The first position contains a dummy shader.
 	std::vector<ShaderInfo> m_shaderinfo_cache;
 	// The former container is behind this mutex
-	Mutex m_shaderinfo_cache_mutex;
+	std::mutex m_shaderinfo_cache_mutex;
 
 	// Queued shader fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_shader_queue;

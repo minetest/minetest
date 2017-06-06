@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define EMERGE_HEADER
 
 #include <map>
+#include <mutex>
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "mapgen.h" // for MapgenParams
@@ -155,7 +156,7 @@ private:
 	std::vector<EmergeThread *> m_threads;
 	bool m_threads_active;
 
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
 	std::unordered_map<u16, u16> m_peer_queue_count;
 

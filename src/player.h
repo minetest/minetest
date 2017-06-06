@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
-#include "threading/mutex.h"
 #include <list>
+#include <mutex>
 
 #define PLAYERNAME_SIZE 20
 
@@ -186,7 +186,7 @@ private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
 	// and ServerThread
-	Mutex m_mutex;
+	std::mutex m_mutex;
 };
 
 #endif

@@ -25,67 +25,19 @@ DEALINGS IN THE SOFTWARE.
 
 #include "threading/event.h"
 
-Event::Event()
-{
-#ifndef USE_CPP11_MUTEX
-#	if USE_WIN_MUTEX
-	event = CreateEvent(NULL, false, false, NULL);
-#	else
-	pthread_cond_init(&cv, NULL);
-	pthread_mutex_init(&mutex, NULL);
-	notified = false;
-#	endif
-#elif USE_CPP11_MUTEX
-	notified = false;
-#endif
-}
-
-#ifndef USE_CPP11_MUTEX
-Event::~Event()
-{
-#if USE_WIN_MUTEX
-	CloseHandle(event);
-#else
-	pthread_cond_destroy(&cv);
-	pthread_mutex_destroy(&mutex);
-#endif
-}
-#endif
-
-
 void Event::wait()
 {
-#if USE_CPP11_MUTEX
 	MutexAutoLock lock(mutex);
 	while (!notified) {
 		cv.wait(lock);
 	}
 	notified = false;
-#elif USE_WIN_MUTEX
-	WaitForSingleObject(event, INFINITE);
-#else
-	pthread_mutex_lock(&mutex);
-	while (!notified) {
-		pthread_cond_wait(&cv, &mutex);
-	}
-	notified = false;
-	pthread_mutex_unlock(&mutex);
-#endif
 }
 
 
 void Event::signal()
 {
-#if USE_CPP11_MUTEX
 	MutexAutoLock lock(mutex);
 	notified = true;
 	cv.notify_one();
-#elif USE_WIN_MUTEX
-	SetEvent(event);
-#else
-	pthread_mutex_lock(&mutex);
-	notified = true;
-	pthread_cond_signal(&cv);
-	pthread_mutex_unlock(&mutex);
-#endif
 }

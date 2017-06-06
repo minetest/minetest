@@ -54,8 +54,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <windows.h>
 #endif
 
-#include "threading/mutex.h"
-
 //
 // threadid_t, threadhandle_t
 //

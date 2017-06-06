@@ -34,10 +34,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <map>
 #include <atomic>
+#include <mutex>
 #include "irr_v3d.h"
 #include "activeobject.h"
 #include "util/numeric.h"
-#include "threading/mutex.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
 
 class IGameDef;
@@ -120,7 +120,7 @@ protected:
 	IGameDef *m_gamedef;
 
 private:
-	Mutex m_time_lock;
+	std::mutex m_time_lock;
 
 	DISABLE_CLASS_COPY(Environment);
 };

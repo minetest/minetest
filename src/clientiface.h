@@ -23,13 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "threading/mutex.h"
 #include "network/networkpacket.h"
 #include "porting.h"
 
 #include <list>
 #include <vector>
 #include <set>
+#include <mutex>
 
 class MapBlock;
 class ServerEnvironment;
@@ -508,14 +508,14 @@ private:
 
 	// Connection
 	con::Connection* m_con;
-	Mutex m_clients_mutex;
+	std::mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;
 	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Environment
 	ServerEnvironment *m_env;
-	Mutex m_env_mutex;
+	std::mutex m_env_mutex;
 
 	float m_print_info_timer;
 

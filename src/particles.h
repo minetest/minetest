@@ -213,8 +213,8 @@ private:
 	std::map<u32, ParticleSpawner*> m_particle_spawners;
 
 	ClientEnvironment* m_env;
-	Mutex m_particle_list_lock;
-	Mutex m_spawner_list_lock;
+	std::mutex m_particle_list_lock;
+	std::mutex m_spawner_list_lock;
 };
 
 #endif
