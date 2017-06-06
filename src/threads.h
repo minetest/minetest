@@ -20,18 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-//
-// Determine which threading APIs we will use
-//
-#if defined(_WIN32)
-	// Prefer critical section API because std::mutex is much slower on Windows
-	#define USE_WIN_MUTEX 1
-#elif __cplusplus >= 201103L
-	#define USE_CPP11_MUTEX 1
-#else
-	#define USE_POSIX_MUTEX 1
-#endif
-
 ///////////////
 #include <thread>
 

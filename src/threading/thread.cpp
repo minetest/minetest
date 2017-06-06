@@ -45,8 +45,6 @@ DEALINGS IN THE SOFTWARE.
 // for bindToProcessor
 #if __FreeBSD_version >= 702106
 	typedef cpuset_t cpu_set_t;
-#elif defined(__linux__)
-	#include <sched.h>
 #elif defined(__sun) || defined(sun)
 	#include <sys/types.h>
 	#include <sys/processor.h>
@@ -150,8 +148,9 @@ bool Thread::kill()
 	m_running = false;
 
 #if defined(_WIN32)
-	TerminateThread(m_thread_handle, 0);
-	CloseHandle(m_thread_handle);
+	// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
+	TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
+	CloseHandle((HANDLE) m_thread_obj->native_handle());
 #else
 	// We need to pthread_kill instead on Android since NDKv5's pthread
 	// implementation is incomplete.
