@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "log.h"
 #include "nameidmapping.h"
+#include "content_mapnode.h" // For legacy name-id mapping
 #include "content_nodemeta.h" // For legacy deserialization
 #include "serialization.h"
 #ifndef SERVER
@@ -930,7 +931,12 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 		// Dynamically re-set ids based on node names
 		NameIdMapping nimap;
 		// If supported, read node definition id mapping
-		nimap.deSerialize(is);
+		if (version >= 21) {
+			nimap.deSerialize(is);
+		// Else set the legacy mapping
+		} else {
+			content_mapnode_get_name_id_mapping(&nimap);
+		}
 		correctBlockNodeIds(&nimap, data, m_gamedef);
 	}
 
