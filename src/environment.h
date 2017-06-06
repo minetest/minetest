@@ -33,11 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <queue>
 #include <map>
+#include <atomic>
 #include "irr_v3d.h"
 #include "activeobject.h"
 #include "util/numeric.h"
 #include "threading/mutex.h"
-#include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
 
 class IGameDef;
@@ -81,7 +81,7 @@ public:
 	IGameDef *getGameDef() { return m_gamedef; }
 
 protected:
-	GenericAtomic<float> m_time_of_day_speed;
+	std::atomic<float> m_time_of_day_speed;
 
 	/*
 	 * Below: values managed by m_time_lock
@@ -98,7 +98,7 @@ protected:
 	u32 m_day_night_ratio_override;
 	// Days from the server start, accounts for time shift
 	// in game (e.g. /time or bed usage)
-	Atomic<u32> m_day_count;
+	std::atomic<u32> m_day_count;
 	/*
 	 * Above: values managed by m_time_lock
 	*/
