@@ -976,9 +976,9 @@ const static std::string accessDeniedStrings[SERVER_ACCESSDENIED_MAX] = {
 
 enum PlayerListModifer: u8
 {
-	PLAYER_ADD_INIT,
-	PLAYER_ADD,
-	PLAYER_REMOVE,
+	PLAYER_LIST_INIT,
+	PLAYER_LIST_ADD,
+	PLAYER_LIST_REMOVE,
 };
 
 

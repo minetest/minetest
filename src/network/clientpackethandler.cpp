@@ -1272,20 +1272,20 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 
 void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
 {
+	u8 type;
 	u16 num_players;
-	*pkt >> num_players;
+	*pkt >> type >> num_players;
+	PlayerListModifer notice_type = (PlayerListModifer) type;
 
-	for (u8 i = 0; i < num_players; i++) {
-		u8 type;
+	for (u16 i = 0; i < num_players; i++) {
 		std::string name;
-		*pkt >> type >> name;
-		PlayerListModifer notice_type = (PlayerListModifer) type;
+		*pkt >> name;
 		switch (notice_type) {
-		case PLAYER_ADD_INIT:
-		case PLAYER_ADD:
+		case PLAYER_LIST_INIT:
+		case PLAYER_LIST_ADD:
 			m_env.addPlayerName(name);
 			continue;
-		case PLAYER_REMOVE:
+		case PLAYER_LIST_REMOVE:
 			m_env.removePlayerName(name);
 			continue;
 		}
