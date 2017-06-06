@@ -478,6 +478,8 @@ void draw_plain(Camera &camera, bool show_hud,
 	bool undersampling = pixel_size > 1;
 	bool enable_shaders = g_settings->getBool("enable_shaders");
 	bool postprocessing = enable_shaders && g_settings->getBool("postprocessing");
+	bool dof = g_settings->getBool("postprocessing_dof");
+	bool capture_z = postprocessing && dof;
 	bool filter = g_settings->getBool("undersampling_filter");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
@@ -491,13 +493,18 @@ void draw_plain(Camera &camera, bool show_hud,
 			init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
 			if (undersampling && postprocessing)
 				init_texture(driver, pixelated_size, &image2, "mt_drawimage_img2");
-			init_texture(driver, pixelated_size, &zbuffer, "mt_z_copy", video::ECF_R16F);
+			if (capture_z)
+				init_texture(driver, pixelated_size, &zbuffer, "mt_z_copy", video::ECF_R16F);
 			last_pixelated_size = pixelated_size;
 		}
-		core::array<video::IRenderTarget> rts;
-		rts.push_back(image);
-		rts.push_back(zbuffer);
-		driver->setRenderTarget(rts, true, true, skycolor);
+		if (capture_z) {
+			core::array<video::IRenderTarget> rts;
+			rts.push_back(image);
+			rts.push_back(zbuffer);
+			driver->setRenderTarget(rts, true, true, skycolor);
+		} else {
+			driver->setRenderTarget(image, true, true, skycolor);
+		}
 	}
 
 	// Render
@@ -540,8 +547,10 @@ void draw_plain(Camera &camera, bool show_hud,
 			mat.MaterialType = s->getShaderInfo(shader).material;
 			mat.TextureLayer[0].BilinearFilter = true;
 			mat.TextureLayer[0].Texture = image;
-			mat.TextureLayer[2].BilinearFilter = true;
-			mat.TextureLayer[2].Texture = zbuffer;
+			if (capture_z) {
+				mat.TextureLayer[2].BilinearFilter = true;
+				mat.TextureLayer[2].Texture = zbuffer;
+			}
 			if (undersampling)
 				driver->setRenderTarget(image2, false, false);
 			driver->setMaterial(mat);
