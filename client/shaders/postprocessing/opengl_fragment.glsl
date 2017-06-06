@@ -2,8 +2,6 @@ uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D textureFlags;
 
-#define ENABLE_DOF 1
-
 #if ENABLE_TONE_MAPPING
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
@@ -35,7 +33,15 @@ vec4 applyToneMapping(vec4 color) {
 
 #if ENABLE_DOF
 uniform vec2 pixelSize;
-vec2 off = 1.5 * pixelSize;
+vec2 off = 2.0 * pixelSize;
+
+#if DOF_LIMIT >= 5
+#define EXTENDED_DOF_LIMIT
+#endif
+
+#if DOF_LIMIT >= 10
+#define INSANE_DOF_LIMIT
+#endif
 
 vec4 blur(sampler2D image, vec2 position, float sharpness)
 {
@@ -104,10 +110,29 @@ vec4 blur(sampler2D image, vec2 position, float sharpness)
 	color += texture2D(image, pos + vec2(off.x * +2.0, off.y * -1.0)) * bc5;
 	color += texture2D(image, pos + vec2(off.x * +2.0, off.y * +1.0)) * bc5;
 #endif
+
+#ifdef INSANE_DOF_LIMIT
+	color += texture2D(image, pos + vec2(off.x * -2.0, off.y * -2.0)) * bc8;
+	color += texture2D(image, pos + vec2(off.x * -2.0, off.y * +2.0)) * bc8;
+	color += texture2D(image, pos + vec2(off.x * +2.0, off.y * -2.0)) * bc8;
+	color += texture2D(image, pos + vec2(off.x * +2.0, off.y * +2.0)) * bc8;
+
+	color += texture2D(image, pos + vec2(off.x * -3.0, off.y *  0.0)) * bc9;
+	color += texture2D(image, pos + vec2(off.x *  0.0, off.y * -3.0)) * bc9;
+	color += texture2D(image, pos + vec2(off.x *  0.0, off.y * +3.0)) * bc9;
+	color += texture2D(image, pos + vec2(off.x * +3.0, off.y *  0.0)) * bc9;
+
+	color += texture2D(image, pos + vec2(off.x * -3.0, off.y * -1.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * -3.0, off.y * +1.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * -1.0, off.y * -3.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * -1.0, off.y * +3.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * +1.0, off.y * -3.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * +1.0, off.y * +3.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * +3.0, off.y * -1.0)) * bc10;
+	color += texture2D(image, pos + vec2(off.x * +3.0, off.y * +1.0)) * bc10;
+#endif
 	return color;
 }
-
-uniform float dofstrength = 0.1;
 
 const float fNear = 2.5e-4;
 const float fFar = 1.0e-1;
@@ -121,7 +146,7 @@ void main(void)
 	float depth = texture2D(textureFlags, uv).r;
 	float fDepth = texture2D(textureFlags, vec2(0.5, 0.5)).x;
 	float b = log(clamp(depth, fNear, fFar)) - log(clamp(fDepth, fNear, fFar));
-	color = blur(baseTexture, uv, 0.5 / (dofstrength * b * b));
+	color = blur(baseTexture, uv, 0.5 / (DOF_STRENGTH * b * b));
 #else
 	color = texture2D(baseTexture, uv).rgba;
 #endif

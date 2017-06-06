@@ -118,6 +118,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("undersampling", "0");
 	settings->setDefault("undersampling_filter", "false");
 	settings->setDefault("postprocessing", "true");
+	settings->setDefault("postprocessing_dof", "true");
+	settings->setDefault("postprocessing_dof_strength", "0.1");
+	settings->setDefault("postprocessing_dof_limit", "2");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");

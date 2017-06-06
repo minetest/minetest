@@ -407,6 +407,17 @@ shader_path (Shader path) path
 #    Requires shaders to be enabled.
 postprocessing (Postprocessing) bool true
 
+#    This effect blurs too far and too near objects.
+#    It is a part of postprocessing.
+postprocessing_dof (Depth of field) bool true
+
+#    Bluring strength. Note that large values may need larger DoF limit to work properly.
+postprocessing_dof_strength (DoF strength) float 0.1 0.01 1.0
+
+#    This option may affect DoF quality, but should not affect its strength.
+#    Try using a larger value if the blur looks strangely.
+postprocessing_dof_limit (DoF limit) enum 2 2,5,10
+
 [****Tone Mapping]
 
 #    Enables filmic tone mapping

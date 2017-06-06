@@ -760,6 +760,17 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += "#define POSTPROCESSING_ENABLED ";
 	shaders_header += g_settings->getBool("postprocessing") ? "1\n" : "0\n";
 
+	shaders_header += "#define ENABLE_DOF ";
+	shaders_header += g_settings->getBool("postprocessing_dof") ? "1\n" : "0\n";
+
+	shaders_header += "#define DOF_STRENGTH ";
+	shaders_header += ftos(g_settings->getFloat("postprocessing_dof_strength"));
+	shaders_header += "\n";
+
+	shaders_header += "#define DOF_LIMIT ";
+	shaders_header += itos(g_settings->getU16("postprocessing_dof_limit"));
+	shaders_header += "\n";
+
 	shaders_header += "#define ENABLE_TONE_MAPPING ";
 	shaders_header += g_settings->getBool("tone_mapping") ? "1\n" : "0\n";
 

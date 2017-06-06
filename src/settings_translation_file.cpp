@@ -187,6 +187,12 @@ fake_function() {
 	gettext("Path to shader directory. If no path is defined, default location will be used.");
 	gettext("Postprocessing");
 	gettext("This option allows to use certain full-screen effects.\nRequires shaders to be enabled.");
+	gettext("Depth of field");
+	gettext("This effect blurs too far and too near objects.\nIt is a part of postprocessing.");
+	gettext("DoF strength");
+	gettext("Bluring strength. Note that large values may need larger DoF limit to work properly.");
+	gettext("DoF limit");
+	gettext("This option may affect DoF quality, but should not affect its strength.\nTry using a larger value if the blur looks strangely.");
 	gettext("Tone Mapping");
 	gettext("Filmic tone mapping");
 	gettext("Enables filmic tone mapping");
