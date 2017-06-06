@@ -89,7 +89,11 @@ private:
 	// get_node_def(nodename)
 	static int l_get_node_def(lua_State *L);
 
+	// take_screenshot()
 	static int l_take_screenshot(lua_State *L);
+
+	// get_privilege_list()
+	static int l_get_privilege_list(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
