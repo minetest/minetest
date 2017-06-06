@@ -364,6 +364,7 @@ public:
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -552,6 +553,11 @@ public:
 		return m_address_name;
 	}
 
+	u64 getCSMFlavourLimits() const
+	{
+		return m_csm_flavour_limits;
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -705,6 +711,9 @@ private:
 	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown = false;
+
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FBL_NONE;
 };
 
 #endif // !CLIENT_HEADER

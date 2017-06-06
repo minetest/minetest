@@ -91,6 +91,11 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 {
 	if (!lua_isstring(L, 1))
 		return 0;
+
+	// If server disable this API, discard
+	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FBL_CHAT_MESSAGES)
+		return 0;
+
 	std::string message = luaL_checkstring(L, 1);
 	getClient(L)->sendChatMessage(utf8_to_wide(message));
 	return 0;
@@ -170,6 +175,11 @@ int ModApiClient::l_get_node(lua_State *L)
 {
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
+
+	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FBL_LOOKUP_NODES) {
+		// TODO
+	}
+
 	// Do it
 	bool pos_ok;
 	MapNode n = getClient(L)->getNode(pos, &pos_ok);
@@ -184,6 +194,10 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
+	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FBL_LOOKUP_NODES) {
+		// TODO
+	}
+
 	// Do it
 	bool pos_ok;
 	MapNode n = getClient(L)->getNode(pos, &pos_ok);

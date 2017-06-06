@@ -708,6 +708,12 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		return 0;
 	}
 
+	// Client API limitations
+	if (getClient(L) &&
+			getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FBL_LOOKUP_NODES) {
+		// TODO
+	}
+
 	INodeDefManager *ndef = getGameDef(L)->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);

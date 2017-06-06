@@ -2017,7 +2017,13 @@ void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas, boo
 	m_clients.send(pkt.getPeerId(),
 			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
 			&pkt, reliable);
+}
 
+void Server::SendCSMFlavourLimits(u16 peer_id)
+{
+	NetworkPacket pkt(TOCLIENT_CSM_FLAVOUR_LIMITS, sizeof(m_csm_flavour_limits), peer_id);
+	pkt << m_csm_flavour_limits;
+	Send(&pkt);
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,

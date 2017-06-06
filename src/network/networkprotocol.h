@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NETWORKPROTOCOL_HEADER
-#define NETWORKPROTOCOL_HEADER
+#pragma once
+
 #include "util/string.h"
 
 /*
@@ -312,6 +312,11 @@ enum ToClientCommand
 		Added in a later version:
 		f1000 time_speed
 	*/
+
+	TOCLIENT_CSM_FLAVOUR_LIMITS = 0x2A,
+	/*
+		u32 CSMFlavourLimits byteflag
+	 */
 
 	// (oops, there is some gap here)
 
@@ -1003,5 +1008,10 @@ enum PlayerListModifer: u8
 	PLAYER_LIST_REMOVE,
 };
 
+enum CSMFlavourLimit : u64 {
+	CSM_FBL_NONE = 0x00000000,
+	CSM_FBL_LOOKUP_NODES = 0x00000001, // Limit node lookups
+	CSM_FBL_CHAT_MESSAGES = 0x00000002, // Disable chat message sending from CSM
+	CSM_FBL_ALL = 0xFFFFFFFF,
+};
 
-#endif
