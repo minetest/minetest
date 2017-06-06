@@ -757,6 +757,10 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
 	shaders_header += g_settings->getBool("enable_waving_plants") ? "1\n" : "0\n";
 
+	shaders_header += "#define UNDERSAMPLING ";
+	shaders_header += itos(g_settings->getU16("undersampling"));
+	shaders_header += "\n";
+
 	shaders_header += "#define POSTPROCESSING_ENABLED ";
 	shaders_header += g_settings->getBool("postprocessing") ? "1\n" : "0\n";
 

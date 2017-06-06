@@ -33,7 +33,11 @@ vec4 applyToneMapping(vec4 color) {
 
 #if ENABLE_DOF
 uniform vec2 pixelSize;
+#if UNDERSAMPLING > 1
+vec2 off = 1.5 * pixelSize;
+#else
 vec2 off = 2.0 * pixelSize;
+#endif
 
 #if DOF_LIMIT >= 5
 #define EXTENDED_DOF_LIMIT
@@ -81,7 +85,11 @@ vec4 blur(sampler2D image, vec2 position, float sharpness)
 #endif
 
 	vec4 color = vec4(0.0);
+#if UNDERSAMPLING > 1
+	vec2 pos = position;
+#else
 	vec2 pos = position - vec2(pixelSize.x * 0.5, pixelSize.y * 0.5);
+#endif
 
 	color += texture2D(image, pos + vec2(off.x *  0.0, off.y *  0.0)) * bc0;
 
