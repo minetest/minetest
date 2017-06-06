@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen.h"
 #include "mg_biome.h"
+#include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content_abm.h"
 #include "content_sao.h"
