@@ -735,6 +735,15 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
+{
+	std::string modpath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "clientmods" + DIR_DELIM);
+	lua_pushstring(L, modpath.c_str());
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_gamepath(lua_State *L)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
@@ -1120,6 +1129,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
@@ -1150,6 +1160,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_favorites);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
@@ -1162,4 +1173,3 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_modstore_list);
 	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }
-

@@ -108,6 +108,8 @@ private:
 
 	static int l_get_modpath(lua_State *L);
 
+	static int l_get_clientmodpath(lua_State *L);
+
 	static int l_get_gamepath(lua_State *L);
 
 	static int l_get_texturepath(lua_State *L);
