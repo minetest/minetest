@@ -299,7 +299,8 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
 
-		conf.updateConfigFile(worldmt_path.c_str());
+		if (!conf.updateConfigFile(worldmt_path.c_str()))
+			return false;
 	}
 
 	// Create map_meta.txt if does not already exist
