@@ -1072,8 +1072,8 @@ NodeMetadata *Map::getNodeMetadata(v3s16 p)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::getNodeMetadata(): Block not found"
-				<<std::endl;
+		infostream << "Map::getNodeMetadata(): Block not found"
+				<< std::endl;
 		return NULL;
 	}
 	NodeMetadata *meta = block->m_node_metadata.get(p_rel);
@@ -1091,8 +1091,8 @@ bool Map::setNodeMetadata(v3s16 p, NodeMetadata *meta)
 		block = emergeBlock(blockpos, false);
 	}
 	if(!block){
-		warningstream<<"Map::setNodeMetadata(): Block not found"
-				<<std::endl;
+		infostream << "Map::setNodeMetadata(): Block not found"
+				<< std::endl;
 		return false;
 	}
 	block->m_node_metadata.set(p_rel, meta);
@@ -1106,8 +1106,8 @@ void Map::removeNodeMetadata(v3s16 p)
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if(block == NULL)
 	{
-		warningstream<<"Map::removeNodeMetadata(): Block not found"
-				<<std::endl;
+		infostream << "Map::removeNodeMetadata(): Block not found"
+				<< std::endl;
 		return;
 	}
 	block->m_node_metadata.remove(p_rel);
