@@ -90,3 +90,7 @@ core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
 	give_to_singleplayer = false,
 })
+minetest.register_privilege("lua", {
+	description = "Can run lua source code",
+	give_to_singleplayer = false,
+})
