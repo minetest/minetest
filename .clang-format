@@ -3,6 +3,7 @@ IndentWidth: 8
 UseTab: Always
 BreakBeforeBraces: Custom
 Standard: Cpp11
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: false
