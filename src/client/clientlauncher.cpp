@@ -80,6 +80,9 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		return false;
 	}
 
+	// Create time getter
+	g_timegetter = new IrrlichtTimeGetter(device);
+
 	// Speed tests (done after irrlicht is loaded to get timer)
 	if (cmd_args.getFlag("speedtests")) {
 		dstream << "Running speed tests" << std::endl;
