@@ -479,6 +479,9 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(decode_base64);
 
 	API_FCT(get_version);
+
+	LuaSettings::create(L, g_settings, g_settings_path);
+	lua_setfield(L, top, "settings");
 }
 
 void ModApiUtil::InitializeAsync(lua_State *L, int top)

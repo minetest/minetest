@@ -97,8 +97,8 @@ The main Lua script. Running this script should register everything it
 wants to register. Subsequent execution depends on minetest calling the
 registered callbacks.
 
-`minetest.setting_get(name)` and `minetest.setting_getbool(name)` can be used
-to read custom or existing settings at load time, if necessary.
+`minetest.settings` can be used to read custom or existing settings at load
+time, if necessary. (See `Settings`)
 
 ### `sounds`
 Media files (sounds) that will be transferred to the
@@ -749,6 +749,8 @@ Call these functions only at load time!
     * Returns [server info](#server-info).
 * `minetest.send_respawn()`
     * Sends a respawn request to the server.
+* `minetest.settings`: Settings object containing all of the settings from the
+  main config file (`minetest.conf`).
 
 ### Storage API
 * `minetest.get_mod_storage()`:
@@ -979,14 +981,20 @@ An interface to read config files in the format of `minetest.conf`.
 
 It can be created via `Settings(filename)`.
 
+**Note:** `client.` is prepended to names of all client-sided settings internally.
+
 #### Methods
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
 * `set(key, value)`
+    * Setting names can't contain whitespace or any of `="{}#`.
+    * Setting values can't contain the sequence `\n"""`.
+* `set_bool(key, value)`
+    * See documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `write()`: returns a boolean (`true` for success)
-    * write changes to file
+    * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
 
 ### NodeMetaRef
