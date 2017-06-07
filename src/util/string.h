@@ -272,7 +272,7 @@ inline bool is_yes(const std::string &str)
 {
 	std::string s2 = lowercase(trim(str));
 
-	return s2 == "y" || s2 == "yes" || s2 == "true" || atoi(s2.c_str()) != 0;
+	return s2 == "y" || s2 == "yes" || s2 == "true" || s2 == "on" || atoi(s2.c_str()) != 0;
 }
 
 
