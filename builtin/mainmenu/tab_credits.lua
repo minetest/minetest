@@ -74,7 +74,7 @@ local previous_contributors = {
 }
 
 local function buildCreditList(source)
-	ret = {}
+	local ret = {}
 	for i = 1, #source do
 		ret[i] = core.formspec_escape(source[i])
 	end
