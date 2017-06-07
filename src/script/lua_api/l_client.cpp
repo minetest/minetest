@@ -329,6 +329,16 @@ int ModApiClient::l_take_screenshot(lua_State *L)
 	return 0;
 }
 
+int ModApiClient::l_get_privilege_list(lua_State *L)
+{
+	const Client *client = getClient(L);
+	lua_newtable(L);
+	for (const std::string &priv : client->getPrivilegeList()) {
+		lua_pushboolean(L, true);
+		lua_setfield(L, -2, priv.c_str());
+	}
+	return 1;
+}
 void ModApiClient::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_current_modname);
@@ -353,4 +363,5 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(get_item_def);
 	API_FCT(get_node_def);
 	API_FCT(take_screenshot);
+	API_FCT(get_privilege_list);
 }

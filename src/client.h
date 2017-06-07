@@ -416,6 +416,9 @@ public:
 	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
 
+	const std::unordered_set<std::string> &getPrivilegeList() const
+	{ return m_privileges; }
+
 	bool getChatMessage(std::wstring &message);
 	void typeChatMessage(const std::wstring& message);
 

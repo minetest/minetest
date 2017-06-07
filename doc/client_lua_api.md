@@ -730,6 +730,13 @@ Call these functions only at load time!
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
+### Privileges
+* `minetest.get_privilege_list()`
+    * Returns a list of privileges the currect player has in the format `{priv1=true,...}`
+* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
+* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
+    * Convert between two privilege representations
+
 ### Client Environment
 * `minetest.get_player_names()`
     * Returns list of player names on server
