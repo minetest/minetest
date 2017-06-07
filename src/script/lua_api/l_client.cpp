@@ -331,7 +331,7 @@ int ModApiClient::l_take_screenshot(lua_State *L)
 
 int ModApiClient::l_get_privilege_list(lua_State *L)
 {
-	Client *client = getClient(L);
+	const Client *client = getClient(L);
 	lua_newtable(L);
 	for (const std::string &priv : client->getPrivilegeList()) {
 		lua_pushboolean(L, true);
