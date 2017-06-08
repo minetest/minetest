@@ -716,7 +716,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 			peer_id, major_ver, minor_ver, patch_ver,
 			full_ver);
 
-	std::vector<std::string> players = m_clients.getPlayerNames();
+	const std::vector<std::string> &players = m_clients.getPlayerNames();
 	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
 	list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
 	for (const std::string &player: players) {
@@ -725,6 +725,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	m_clients.send(peer_id, 0, &list_pkt, true);
 
 	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+	// (u16) 1 + std::string represents a pseudo vector serialization representation
 	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
 	m_clients.sendToAll(&notice_pkt);
 
