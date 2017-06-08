@@ -635,8 +635,11 @@ enum ToClientCommand
 	*/
 	TOCLIENT_UPDATE_PLAYER_LIST = 0x56,
 	/*
-	 	 enum type;
-	 	 std::string name;
+	 	u8 type
+	 	u16 number of players
+		for each player
+			u16 len
+			u8[len] player name
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
