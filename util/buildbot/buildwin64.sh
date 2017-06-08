@@ -150,6 +150,8 @@ cmake .. \
 	-DLEVELDB_LIBRARY=$libdir/leveldb/lib/libleveldb.dll.a \
 	-DLEVELDB_DLL=$libdir/leveldb/bin/libleveldb.dll
 
-make package -j2
+make -j2
+
+[ "x$NO_PACKAGE" = "x" ] && make package
 
 # EOF
