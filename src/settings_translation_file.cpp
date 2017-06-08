@@ -34,7 +34,7 @@ fake_function() {
 	gettext("Random input");
 	gettext("Enable random user input (only used for testing).");
 	gettext("Continuous forward");
-	gettext("Continuous forward movement (only used for testing).");
+	gettext("Continuous forward movement, toggled by autoforward key.");
 	gettext("Enable Joysticks");
 	gettext("Enable Joysticks");
 	gettext("Joystick ID");
@@ -87,8 +87,8 @@ fake_function() {
 	gettext("Key for increasing the volume.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Dec. volume key");
 	gettext("Key for decreasing the volume.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
-	gettext("Autorun key");
-	gettext("Key for toggling autorun.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
+	gettext("Autoforward key");
+	gettext("Key for toggling autoforward.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Cinematic mode key");
 	gettext("Key for toggling cinematic mode.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Minimap key");
