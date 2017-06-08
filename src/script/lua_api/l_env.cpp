@@ -710,7 +710,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 
 	// Client API limitations
 	if (getClient(L) &&
-			getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FBL_LOOKUP_NODES) {
+			getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
 		// TODO
 	}
 

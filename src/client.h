@@ -713,7 +713,7 @@ private:
 	bool m_shutdown = false;
 
 	// CSM flavour limits byteflag
-	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FBL_NONE;
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 };
 
 #endif // !CLIENT_HEADER

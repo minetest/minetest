@@ -668,7 +668,7 @@ private:
 	float m_mod_storage_save_timer = 10.0f;
 
 	// CSM flavour limits byteflag
-	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FBL_NONE;
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 };
 
 /*
