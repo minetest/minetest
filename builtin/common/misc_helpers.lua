@@ -373,32 +373,31 @@ if INIT == "game" then
 				infinitestacks, orient_flags)
 		orient_flags = orient_flags or {}
 
-		local unode = core.get_node_or_nil(pointed_thing.under)
-		if not unode then
-			return
-		end
-		local undef = core.registered_nodes[unode.name]
-		if undef and undef.on_rightclick then
-			undef.on_rightclick(pointed_thing.under, unode, placer,
-					itemstack, pointed_thing)
-			return
-		end
-		local fdir = core.dir_to_facedir(placer:get_look_dir())
-		local wield_name = itemstack:get_name()
-
 		local above = pointed_thing.above
 		local under = pointed_thing.under
+
+		local unode = core.get_node_or_nil(under)
+		if not unode then
+			return
+	end
+		local undef = core.get_nodedef(under)
+		if undef and undef.on_rightclick then
+			undef.on_rightclick(under, unode, placer, itemstack, pointed_thing)
+			return
+	end
+		local fdir = core.dir_to_facedir(placer:get_look_dir())
+		local wield_name = itemstack:get_name()
 		local iswall = (above.y == under.y)
 		local isceiling = not iswall and (above.y < under.y)
 		local anode = core.get_node_or_nil(above)
 		if not anode then
 			return
 		end
-		local pos = pointed_thing.above
+		local pos = above
 		local node = anode
 
 		if undef and undef.buildable_to then
-			pos = pointed_thing.under
+			pos = under
 			node = unode
 			iswall = false
 		end
@@ -409,7 +408,7 @@ if INIT == "game" then
 			return
 		end
 
-		local ndef = core.registered_nodes[node.name]
+		local ndef = core.get_nodedef(pos)
 		if not ndef or not ndef.buildable_to then
 			return
 		end
