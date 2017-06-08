@@ -288,7 +288,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes();
+	MgStoneType stone_type = generateBiomes(0);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
