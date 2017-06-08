@@ -152,8 +152,6 @@ cmake .. \
 
 make -j2
 
-if [ "x$NO_PACKAGE" = "x" ]; then
-	make package
-fi
+[ "x$NO_PACKAGE" = "x" ] && make package
 
 # EOF
