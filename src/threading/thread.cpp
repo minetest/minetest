@@ -28,31 +28,6 @@ DEALINGS IN THE SOFTWARE.
 #include "log.h"
 #include "porting.h"
 
-#define UNUSED(expr) do { (void)(expr); } while (0)
-
-#if USE_CPP11_THREADS
-	#include <chrono>
-	#include <system_error>
-#elif USE_WIN_THREADS
-	#ifndef _WIN32_WCE
-		#include <process.h>
-	#endif
-#elif USE_POSIX_THREADS
-	#include <time.h>
-	#include <assert.h>
-	#include <stdlib.h>
-	#include <unistd.h>
-	#include <sys/time.h>
-
-	#if defined(__FreeBSD__) || defined(__APPLE__)
-		#include <sys/types.h>
-		#include <sys/sysctl.h>
-	#elif defined(_GNU_SOURCE)
-		#include <sys/sysinfo.h>
-	#endif
-#endif
-
-
 // for setName
 #if defined(__linux__)
 	#include <sys/prctl.h>
@@ -70,8 +45,6 @@ DEALINGS IN THE SOFTWARE.
 // for bindToProcessor
 #if __FreeBSD_version >= 702106
 	typedef cpuset_t cpu_set_t;
-#elif defined(__linux__)
-	#include <sched.h>
 #elif defined(__sun) || defined(sun)
 	#include <sys/types.h>
 	#include <sys/processor.h>
@@ -121,27 +94,11 @@ bool Thread::start()
 	// The mutex may already be locked if the thread is being restarted
 	m_start_finished_mutex.try_lock();
 
-#if USE_CPP11_THREADS
-
 	try {
 		m_thread_obj = new std::thread(threadProc, this);
 	} catch (const std::system_error &e) {
 		return false;
 	}
-
-#elif USE_WIN_THREADS
-
-	m_thread_handle = CreateThread(NULL, 0, threadProc, this, 0, &m_thread_id);
-	if (!m_thread_handle)
-		return false;
-
-#elif USE_POSIX_THREADS
-
-	int status = pthread_create(&m_thread_handle, NULL, threadProc, this);
-	if (status)
-		return false;
-
-#endif
 
 	// Allow spawned thread to continue
 	m_start_finished_mutex.unlock();
@@ -169,30 +126,11 @@ bool Thread::wait()
 	if (!m_joinable)
 		return false;
 
-#if USE_CPP11_THREADS
 
 	m_thread_obj->join();
 
 	delete m_thread_obj;
 	m_thread_obj = NULL;
-
-#elif USE_WIN_THREADS
-
-	int ret = WaitForSingleObject(m_thread_handle, INFINITE);
-	assert(ret == WAIT_OBJECT_0);
-	UNUSED(ret);
-
-	CloseHandle(m_thread_handle);
-	m_thread_handle = NULL;
-	m_thread_id = -1;
-
-#elif USE_POSIX_THREADS
-
-	int ret = pthread_join(m_thread_handle, NULL);
-	assert(ret == 0);
-	UNUSED(ret);
-
-#endif
 
 	assert(m_running == false);
 	m_joinable = false;
@@ -209,9 +147,10 @@ bool Thread::kill()
 
 	m_running = false;
 
-#if USE_WIN_THREADS
-	TerminateThread(m_thread_handle, 0);
-	CloseHandle(m_thread_handle);
+#if defined(_WIN32)
+	// See https://msdn.microsoft.com/en-us/library/hh920601.aspx#thread__native_handle_method
+	TerminateThread((HANDLE) m_thread_obj->native_handle(), 0);
+	CloseHandle((HANDLE) m_thread_obj->native_handle());
 #else
 	// We need to pthread_kill instead on Android since NDKv5's pthread
 	// implementation is incomplete.
@@ -241,13 +180,7 @@ bool Thread::getReturnValue(void **ret)
 }
 
 
-#if USE_CPP11_THREADS || USE_POSIX_THREADS
 void *Thread::threadProc(void *param)
-#elif defined(_WIN32_WCE)
-DWORD Thread::threadProc(LPVOID param)
-#elif defined(_WIN32)
-DWORD WINAPI Thread::threadProc(LPVOID param)
-#endif
 {
 	Thread *thr = (Thread *)param;
 
@@ -325,46 +258,7 @@ void Thread::setName(const std::string &name)
 
 unsigned int Thread::getNumberOfProcessors()
 {
-#if USE_CPP11_THREADS
-
 	return std::thread::hardware_concurrency();
-
-#elif USE_WIN_THREADS
-
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	return sysinfo.dwNumberOfProcessors;
-
-#elif defined(_SC_NPROCESSORS_ONLN)
-
-	return sysconf(_SC_NPROCESSORS_ONLN);
-
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || \
-	defined(__DragonFly__) || defined(__APPLE__)
-
-	unsigned int num_cpus = 1;
-	size_t len = sizeof(num_cpus);
-
-	int mib[2];
-	mib[0] = CTL_HW;
-	mib[1] = HW_NCPU;
-
-	sysctl(mib, 2, &num_cpus, &len, NULL, 0);
-	return num_cpus;
-
-#elif defined(_GNU_SOURCE)
-
-	return get_nprocs();
-
-#elif defined(PTW32_VERSION) || defined(__hpux)
-
-	return pthread_num_processors_np();
-
-#else
-
-	return 1;
-
-#endif
 }
 
 
