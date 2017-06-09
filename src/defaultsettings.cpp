@@ -252,6 +252,7 @@ void set_default_settings(Settings *settings)
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
+	settings->setDefault("strip_color_codes", "false");
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
