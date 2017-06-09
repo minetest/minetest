@@ -642,43 +642,25 @@ end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
--- Client-side mods don't have access to settings
-if core.settings and core.settings:get_bool("disable_escape_sequences") then
-
-	function core.get_color_escape_sequence(color)
-		return ""
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ""
-	end
-
-	function core.colorize(color, message)
-		return message
-	end
-
-else
-
-	function core.get_color_escape_sequence(color)
-		return ESCAPE_CHAR .. "(c@" .. color .. ")"
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ESCAPE_CHAR .. "(b@" .. color .. ")"
-	end
-
-	function core.colorize(color, message)
-		local lines = tostring(message):split("\n", true)
-		local color_code = core.get_color_escape_sequence(color)
-
-		for i, line in ipairs(lines) do
-			lines[i] = color_code .. line
-		end
-
-		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
-	end
-
+function core.get_color_escape_sequence(color)
+	return ESCAPE_CHAR .. "(c@" .. color .. ")"
 end
+
+function core.get_background_escape_sequence(color)
+	return ESCAPE_CHAR .. "(b@" .. color .. ")"
+end
+
+function core.colorize(color, message)
+	local lines = tostring(message):split("\n", true)
+	local color_code = core.get_color_escape_sequence(color)
+
+	for i, line in ipairs(lines) do
+		lines[i] = color_code .. line
+	end
+
+	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
+end
+
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
