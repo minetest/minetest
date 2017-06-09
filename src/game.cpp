@@ -1033,7 +1033,7 @@ void KeyCache::populate()
 	key[KeyType::SPECIAL1]     = getKeySetting("keymap_special1");
 	key[KeyType::SNEAK]        = getKeySetting("keymap_sneak");
 
-	key[KeyType::AUTORUN]      = getKeySetting("keymap_autorun");
+	key[KeyType::AUTOFORWARD]  = getKeySetting("keymap_autoforward");
 
 	key[KeyType::DROP]         = getKeySetting("keymap_drop");
 	key[KeyType::INVENTORY]    = getKeySetting("keymap_inventory");
@@ -1238,7 +1238,7 @@ protected:
 	void toggleFast();
 	void toggleNoClip();
 	void toggleCinematic();
-	void toggleAutorun();
+	void toggleAutoforward();
 
 	void toggleChat();
 	void toggleHud();
@@ -2473,8 +2473,8 @@ void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
 		dropSelectedItem();
-	} else if (wasKeyDown(KeyType::AUTORUN)) {
-		toggleAutorun();
+	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
+		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
 		openInventory();
 	} else if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
@@ -2755,15 +2755,15 @@ void Game::toggleCinematic()
 	m_statustext = msg[cinematic];
 }
 
-// Add WoW-style autorun by toggling continuous forward.
-void Game::toggleAutorun()
+// Autoforward by toggling continuous forward.
+void Game::toggleAutoforward()
 {
-	static const wchar_t *msg[] = { L"autorun disabled", L"autorun enabled" };
-	bool autorun_enabled = !g_settings->getBool("continuous_forward");
-	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
+	static const wchar_t *msg[] = { L"autoforward disabled", L"autoforward enabled" };
+	bool autoforward_enabled = !g_settings->getBool("continuous_forward");
+	g_settings->set("continuous_forward", bool_to_cstr(autoforward_enabled));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[autorun_enabled ? 1 : 0];
+	m_statustext = msg[autoforward_enabled ? 1 : 0];
 }
 
 void Game::toggleChat()

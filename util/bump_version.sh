@@ -95,7 +95,9 @@ sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/lua_api.txt || die "Fa
 
 sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/menu_lua_api.txt || die "Failed to update doc/menu_lua_api.txt"
 
-git add -f CMakeLists.txt build/android/build.gradle doc/lua_api.txt doc/menu_lua_api.txt || die "git add failed"
+sed -i -re "1s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" doc/client_lua_api.md || die "Failed to update doc/client_lua_api.md"
+
+git add -f CMakeLists.txt build/android/build.gradle doc/lua_api.txt doc/menu_lua_api.txt doc/client_lua_api.md || die "git add failed"
 
 git commit -m "Bump version to $NEW_VERSION" || die "git commit failed"
 

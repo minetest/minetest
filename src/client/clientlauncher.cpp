@@ -657,7 +657,7 @@ void ClientLauncher::speed_tests()
 		infostream << "Around 5000/ms should do well here." << std::endl;
 		TimeTaker timer("Testing mutex speed");
 
-		Mutex m;
+		std::mutex m;
 		u32 n = 0;
 		u32 i = 0;
 		do {

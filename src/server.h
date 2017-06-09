@@ -375,7 +375,7 @@ public:
 	Address m_bind_addr;
 
 	// Environment mutex (envlock)
-	Mutex m_env_mutex;
+	std::mutex m_env_mutex;
 
 private:
 
@@ -578,7 +578,7 @@ private:
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime;
-	Mutex m_step_dtime_mutex;
+	std::mutex m_step_dtime_mutex;
 
 	// current server step lag counter
 	float m_lag;

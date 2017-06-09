@@ -42,7 +42,7 @@ namespace con
 #undef DEBUG_CONNECTION_KBPS
 #else
 /* this mutex is used to achieve log message consistency */
-Mutex log_message_mutex;
+std::mutex log_message_mutex;
 #define LOG(a)                                                                 \
 	{                                                                          \
 	MutexAutoLock loglock(log_message_mutex);                                 \

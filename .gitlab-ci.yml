@@ -22,7 +22,7 @@ variables:
     - make install
   artifacts:
     when: on_success
-    expire_in: 1h
+    expire_in: 2h
     paths:
       - artifact/*
 
@@ -39,12 +39,12 @@ variables:
     - rm -Rf build/deb/minetest/usr/share/minetest/games/minetest/.git
     - sed -i 's/DATEPLACEHOLDER/'$(date +%y.%m.%d)'/g' build/deb/minetest/DEBIAN/control
     - sed -i 's/LEVELDB_PLACEHOLDER/'$LEVELDB_PKG'/g' build/deb/minetest/DEBIAN/control
-    - cd build/deb/ && dpkg-deb -b minetest/
+    - cd build/deb/ && dpkg-deb -b minetest/ && mv minetest.deb ../../
   artifacts:
     when: on_success
-    expire_in: 30 day
+    expire_in: 90 day
     paths:
-      - build/deb/*.deb
+      - ./*.deb
 
 .debpkg_install: &debpkg_install
   stage: deploy
@@ -52,7 +52,7 @@ variables:
     - apt-get update -y
     - apt-get install -y libc6 libcurl3-gnutls libfreetype6 libirrlicht1.8 $LEVELDB_PKG liblua5.1-0 libluajit-5.1-2 libopenal1 libstdc++6 libvorbisfile3 libx11-6 zlib1g
   script:
-    - dpkg -i build/deb/*.deb
+    - dpkg -i ./*.deb
 
 ##
 ## Debian
@@ -231,3 +231,80 @@ build:fedora-24:
   image: fedora:24
   before_script:
     - dnf -y install make automake gcc gcc-c++ kernel-devel cmake libcurl* openal* libvorbis* libXxf86vm-devel libogg-devel freetype-devel mesa-libGL-devel zlib-devel jsoncpp-devel irrlicht-devel bzip2-libs gmp-devel sqlite-devel luajit-devel leveldb-devel ncurses-devel doxygen spatialindex-devel bzip2-devel
+
+
+##
+## Mingw for Windows
+##
+
+.generic_win_template: &generic_win_template
+  image: ubuntu:xenial
+  before_script:
+    - apt-get update -y
+    - apt-get install -y p7zip-full wget unzip git cmake gettext
+    - wget http://minetest.kitsunemimi.pw/mingw-w64-${WIN_ARCH}_7.1.1_ubuntu14.04.7z -O mingw.7z > /dev/null
+    - sed -e "s|%PREFIX%|${WIN_ARCH}-w64-mingw32|" -e "s|%ROOTPATH%|/usr/${WIN_ARCH}-w64-mingw32|" < util/travis/toolchain_mingw.cmake.in > ${TOOLCHAIN_OUTPUT}
+    - 7z x -y -o/usr mingw.7z > /dev/null
+
+.build_win_template: &build_win_template
+  <<: *generic_win_template
+  stage: build
+  artifacts:
+    when: on_success
+    expire_in: 2h
+    paths:
+      - build/*
+
+.package_win_template: &package_win_template
+  <<: *generic_win_template
+  stage: package
+  script:
+    - cd build/minetest/_build
+    - make package
+    - cd ../../../
+    - mkdir minetest-win-${WIN_ARCH}
+    - unzip build/minetest/_build/minetest-*-win*.zip -d minetest-win-${WIN_ARCH}
+    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libgcc*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
+    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libstdc++*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
+    - cp /usr/${WIN_ARCH}-w64-mingw32/bin/libwinpthread*.dll minetest-win-${WIN_ARCH}/minetest-*-win*/bin
+  artifacts:
+    when: on_success
+    expire_in: 90 day
+    paths:
+      - minetest-win-*/*
+
+build:win32:
+  <<: *build_win_template
+  script:
+    - ./util/buildbot/buildwin32.sh build
+  variables:
+    NO_PACKAGE: "1"
+    WIN_ARCH: "i686"
+    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
+
+package:win32:
+  <<: *package_win_template
+  dependencies:
+    - build:win32
+  variables:
+    NO_PACKAGE: "1"
+    WIN_ARCH: "i686"
+    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw.cmake"
+
+build:win64:
+  <<: *build_win_template
+  script:
+    - ./util/buildbot/buildwin64.sh build
+  variables:
+    NO_PACKAGE: "1"
+    WIN_ARCH: "x86_64"
+    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"
+
+package:win64:
+  <<: *package_win_template
+  dependencies:
+    - build:win64
+  variables:
+    NO_PACKAGE: "1"
+    WIN_ARCH: "x86_64"
+    TOOLCHAIN_OUTPUT: "util/buildbot/toolchain_mingw64.cmake"

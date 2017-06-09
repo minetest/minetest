@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
@@ -177,7 +176,7 @@ public:
 	}
 
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::map<std::string, float> m_data;
 	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;

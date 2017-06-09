@@ -149,3 +149,9 @@ core.register_on_punchnode(function(pos, node)
 	print("node:" .. dump(node))
 	return false
 end)
+
+core.register_chatcommand("privs", {
+	func = function(param)
+		return true, core.privs_to_string(minetest.get_privilege_list())
+	end,
+})

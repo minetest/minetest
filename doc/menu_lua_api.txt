@@ -35,6 +35,8 @@ core.get_builtin_path()
 ^ returns path to builtin root
 core.get_modpath() (possible in async calls)
 ^ returns path to global modpath
+core.get_clientmodpath() (possible in async calls)
+^ returns path to global client-side modpath
 core.get_modstore_details(modid) (possible in async calls)
 ^ modid numeric id of mod in modstore
 ^ returns {
@@ -234,7 +236,7 @@ Limitations of Async operations
  -Limited set of available functions
 	e.g. No access to functions modifying menu like core.start,core.close,
 	core.file_open_dialog
-			
+
 
 Class reference
 ----------------

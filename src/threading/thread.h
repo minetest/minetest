@@ -23,15 +23,15 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef THREADING_THREAD_H
-#define THREADING_THREAD_H
+#pragma once
 
 #include "util/basic_macros.h"
-#include "threading/atomic.h"
-#include "threading/mutex.h"
 #include "threads.h"
 
 #include <string>
+#include <atomic>
+#include <mutex>
+
 #ifdef _AIX
 	#include <sys/thread.h> // for tid_t
 #endif
@@ -92,17 +92,8 @@ public:
 	inline bool isRunning() { return m_running; }
 	inline bool stopRequested() { return m_request_stop; }
 
-#if USE_CPP11_THREADS
 	inline threadid_t getThreadId() { return m_thread_obj->get_id(); }
 	inline threadhandle_t getThreadHandle() { return m_thread_obj->native_handle(); }
-#else
-#  if USE_WIN_THREADS
-	inline threadid_t getThreadId() { return m_thread_id; }
-#  else
-	inline threadid_t getThreadId() { return m_thread_handle; }
-#  endif
-	inline threadhandle_t getThreadHandle() { return m_thread_handle; }
-#endif
 
 	/*
 	 * Gets the thread return value.
@@ -150,19 +141,12 @@ protected:
 private:
 	void *m_retval;
 	bool m_joinable;
-	Atomic<bool> m_request_stop;
-	Atomic<bool> m_running;
-	Mutex m_mutex;
-	Mutex m_start_finished_mutex;
+	std::atomic<bool> m_request_stop;
+	std::atomic<bool> m_running;
+	std::mutex m_mutex;
+	std::mutex m_start_finished_mutex;
 
-#if USE_CPP11_THREADS
 	std::thread *m_thread_obj;
-#else
-	threadhandle_t m_thread_handle;
-#   if USE_WIN_THREADS
-        threadid_t m_thread_id;
-#   endif
-#endif
 
 	static ThreadStartFunc threadProc;
 
@@ -171,9 +155,6 @@ private:
 	// available to us, so we maintain one ourselves.  This is set on thread start.
 	tid_t m_kernel_thread_id;
 #endif
-
-	DISABLE_CLASS_COPY(Thread);
+	Thread(const Thread &) = delete;
 };
-
-#endif
 

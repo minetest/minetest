@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2015 Nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,28 +17,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef FACE_POSITION_CACHE_HEADER
-#define FACE_POSITION_CACHE_HEADER
+#ifndef CONTENT_MAPNODE_HEADER
+#define CONTENT_MAPNODE_HEADER
 
-#include "irr_v3d.h"
-
-#include <map>
-#include <vector>
-#include <unordered_map>
-#include <mutex>
+#include "mapnode.h"
 
 /*
- * This class permits caching getFacePosition call results.
- * This reduces CPU usage and vector calls.
- */
-class FacePositionCache {
-public:
-	static const std::vector<v3s16> &getFacePositions(u16 d);
+	Legacy node definitions
+*/
 
-private:
-	static const std::vector<v3s16> &generateFacePosition(u16 d);
-	static std::unordered_map<u16, std::vector<v3s16>> cache;
-	static std::mutex cache_mutex;
-};
+// Backwards compatibility for non-extended content types in v19
+extern content_t trans_table_19[21][2];
+MapNode mapnode_translate_to_internal(MapNode n_from, u8 version);
+
+// Get legacy node name mapping for loading old blocks
+class NameIdMapping;
+void content_mapnode_get_name_id_mapping(NameIdMapping *nimap);
 
 #endif

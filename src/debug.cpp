@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 #include <map>
 #include <sstream>
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "config.h"
 
@@ -152,7 +151,7 @@ void DebugStack::print(std::ostream &os, bool everything)
 // pthread_t, but it isn't too important since none of our supported platforms
 // implement pthread_t as a non-ordinal type.
 std::map<threadid_t, DebugStack*> g_debug_stacks;
-Mutex g_debug_stacks_mutex;
+std::mutex g_debug_stacks_mutex;
 
 void debug_stacks_init()
 {

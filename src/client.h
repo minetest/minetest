@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
-#include "threading/mutex.h"
 #include <ostream>
 #include <map>
 #include <set>
@@ -349,6 +348,7 @@ public:
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
+	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 
 	void ProcessData(NetworkPacket *pkt);
@@ -416,6 +416,9 @@ public:
 
 	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
+
+	const std::unordered_set<std::string> &getPrivilegeList() const
+	{ return m_privileges; }
 
 	bool getChatMessage(std::wstring &message);
 	void typeChatMessage(const std::wstring& message);

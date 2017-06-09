@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 0.4.15
+Minetest Lua Client Modding API Reference 0.4.16
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -730,6 +730,13 @@ Call these functions only at load time!
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
 
+### Privileges
+* `minetest.get_privilege_list()`
+    * Returns a list of privileges the currect player has in the format `{priv1=true,...}`
+* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
+* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
+    * Convert between two privilege representations
+
 ### Client Environment
 * `minetest.get_player_names()`
     * Returns list of player names on server
@@ -1117,15 +1124,15 @@ The following functions provide escape sequences:
       `minetest.get_color_escape_sequence(color) ..
        message ..
        minetest.get_color_escape_sequence("#ffffff")`
-* `color.get_background_escape_sequence(color)`
+* `minetest.get_background_escape_sequence(color)`
     * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
-* `color.strip_foreground_colors(str)`
+* `minetest.strip_foreground_colors(str)`
     * Removes foreground colors added by `get_color_escape_sequence`.
-* `color.strip_background_colors(str)`
+* `minetest.strip_background_colors(str)`
     * Removes background colors added by `get_background_escape_sequence`.
-* `color.strip_colors(str)`
+* `minetest.strip_colors(str)`
     * Removes all color escape sequences.
 
 `ColorString`

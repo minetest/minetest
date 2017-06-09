@@ -24,12 +24,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "itemdef.h"
 #include "util/strfnd.h"
+#include "content_mapnode.h" // For loading legacy MaterialItems
+#include "nameidmapping.h" // For loading legacy MaterialItems
 #include "util/serialize.h"
 #include "util/string.h"
 
 /*
 	ItemStack
 */
+
+static content_t content_translate_from_19_to_internal(content_t c_from)
+{
+	for(u32 i=0; i<sizeof(trans_table_19)/sizeof(trans_table_19[0]); i++)
+	{
+		if(trans_table_19[i][1] == c_from)
+		{
+			return trans_table_19[i][0];
+		}
+	}
+	return c_from;
+}
 
 ItemStack::ItemStack(const std::string &name_, u16 count_,
 		u16 wear_, IItemDefManager *itemdef) :
@@ -85,35 +99,140 @@ void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 	if(!tmp.empty())
 		throw SerializationError("Unexpected text after item name");
 
-	do { // This loop is just to allow "break;"
-		// The real thing
+	if(name == "MaterialItem")
+	{
+		// Obsoleted on 2011-07-30
 
-		// Apply item aliases
+		u16 material;
+		is>>material;
+		u16 materialcount;
+		is>>materialcount;
+		// Convert old materials
+		if(material <= 0xff)
+			material = content_translate_from_19_to_internal(material);
+		if(material > 0xfff)
+			throw SerializationError("Too large material number");
+		// Convert old id to name
+		NameIdMapping legacy_nimap;
+		content_mapnode_get_name_id_mapping(&legacy_nimap);
+		legacy_nimap.getName(material, name);
+		if(name == "")
+			name = "unknown_block";
 		if (itemdef)
 			name = itemdef->getAlias(name);
+		count = materialcount;
+	}
+	else if(name == "MaterialItem2")
+	{
+		// Obsoleted on 2011-11-16
 
-		// Read the count
-		std::string count_str;
-		std::getline(is, count_str, ' ');
-		if (count_str.empty()) {
-			count = 1;
-			break;
-		} else {
-			count = stoi(count_str);
+		u16 material;
+		is>>material;
+		u16 materialcount;
+		is>>materialcount;
+		if(material > 0xfff)
+			throw SerializationError("Too large material number");
+		// Convert old id to name
+		NameIdMapping legacy_nimap;
+		content_mapnode_get_name_id_mapping(&legacy_nimap);
+		legacy_nimap.getName(material, name);
+		if(name == "")
+			name = "unknown_block";
+		if (itemdef)
+			name = itemdef->getAlias(name);
+		count = materialcount;
+	}
+	else if(name == "node" || name == "NodeItem" || name == "MaterialItem3"
+			|| name == "craft" || name == "CraftItem")
+	{
+		// Obsoleted on 2012-01-07
+
+		std::string all;
+		std::getline(is, all, '\n');
+		// First attempt to read inside ""
+		Strfnd fnd(all);
+		fnd.next("\"");
+		// If didn't skip to end, we have ""s
+		if(!fnd.at_end()){
+			name = fnd.next("\"");
+		} else { // No luck, just read a word then
+			fnd.start(all);
+			name = fnd.next(" ");
 		}
+		fnd.skip_over(" ");
+		if (itemdef)
+			name = itemdef->getAlias(name);
+		count = stoi(trim(fnd.next("")));
+		if(count == 0)
+			count = 1;
+	}
+	else if(name == "MBOItem")
+	{
+		// Obsoleted on 2011-10-14
+		throw SerializationError("MBOItem not supported anymore");
+	}
+	else if(name == "tool" || name == "ToolItem")
+	{
+		// Obsoleted on 2012-01-07
 
-		// Read the wear
-		std::string wear_str;
-		std::getline(is, wear_str, ' ');
-		if (wear_str.empty())
-			break;
-		else
-			wear = stoi(wear_str);
+		std::string all;
+		std::getline(is, all, '\n');
+		// First attempt to read inside ""
+		Strfnd fnd(all);
+		fnd.next("\"");
+		// If didn't skip to end, we have ""s
+		if(!fnd.at_end()){
+			name = fnd.next("\"");
+		} else { // No luck, just read a word then
+			fnd.start(all);
+			name = fnd.next(" ");
+		}
+		count = 1;
+		// Then read wear
+		fnd.skip_over(" ");
+		if (itemdef)
+			name = itemdef->getAlias(name);
+		wear = stoi(trim(fnd.next("")));
+	}
+	else
+	{
+		do  // This loop is just to allow "break;"
+		{
+			// The real thing
 
-		// Read metadata
-		metadata.deSerialize(is);
+			// Apply item aliases
+			if (itemdef)
+				name = itemdef->getAlias(name);
 
-	} while(false);
+			// Read the count
+			std::string count_str;
+			std::getline(is, count_str, ' ');
+			if(count_str.empty())
+			{
+				count = 1;
+				break;
+			}
+			else
+				count = stoi(count_str);
+
+			// Read the wear
+			std::string wear_str;
+			std::getline(is, wear_str, ' ');
+			if(wear_str.empty())
+				break;
+			else
+				wear = stoi(wear_str);
+
+			// Read metadata
+			metadata.deSerialize(is);
+
+			// In case fields are added after metadata, skip space here:
+			//std::getline(is, tmp, ' ');
+			//if(!tmp.empty())
+			//	throw SerializationError("Unexpected text after metadata");
+
+		} while(false);
+	}
 
 	if (name.empty() || count == 0)
 		clear();

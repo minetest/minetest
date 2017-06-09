@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #include "threading/thread.h"
-#include "threading/mutex.h"
 #include "threading/semaphore.h"
 #include "debug.h"
 #include "lua.h"
@@ -147,13 +146,13 @@ private:
 	unsigned int jobIdCounter;
 
 	// Mutex to protect job queue
-	Mutex jobQueueMutex;
+	std::mutex jobQueueMutex;
 
 	// Job queue
 	std::deque<LuaJobInfo> jobQueue;
 
 	// Mutex to protect result queue
-	Mutex resultQueueMutex;
+	std::mutex resultQueueMutex;
 	// Result queue
 	std::deque<LuaJobInfo> resultQueue;
 

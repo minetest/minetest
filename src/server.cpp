@@ -45,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "mapgen.h"
 #include "mg_biome.h"
+#include "content_mapnode.h"
 #include "content_nodemeta.h"
 #include "content_abm.h"
 #include "content_sao.h"
@@ -2786,6 +2787,12 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
+			// inform connected clients
+			NetworkPacket notice(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+			// (u16) 1 + std::string represents a vector serialization representation
+			notice << (u8) PLAYER_LIST_REMOVE  << (u16) 1 << std::string(playersao->getPlayer()->getName());
+			m_clients.sendToAll(&notice);
+			// run scripts
 			m_script->on_leaveplayer(playersao, reason == CDR_TIMEOUT);
 
 			playersao->disconnected();

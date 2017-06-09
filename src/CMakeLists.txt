@@ -371,6 +371,7 @@ set(common_SRCS
 	clientiface.cpp
 	collision.cpp
 	content_abm.cpp
+	content_mapnode.cpp
 	content_nodemeta.cpp
 	content_sao.cpp
 	convert_json.cpp
