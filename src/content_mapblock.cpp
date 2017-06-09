@@ -836,7 +836,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
-		offset.Y = BS * ((yrng.next() % 16 / 16.0) * 0.125);
+		offset.Y = -BS * ((yrng.next() % 16 / 16.0) * 0.125);
 	}
 	int offset_count = offset_top_only ? 2 : 4;
 	for (int i = 0; i < offset_count; i++)
