@@ -1644,14 +1644,13 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 {
 	DSTACK(FUNCTION_NAME);
 	if (peer_id != PEER_ID_INEXISTENT) {
-		std::wstring processed_message;
-		if (m_clients.getProtocolVersion(peer_id) < 27)
-			processed_message = unescape_enriched(message);
-		else
-			processed_message = message;
-
 		NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
-		pkt << processed_message;
+
+		if (m_clients.getProtocolVersion(peer_id) < 27)
+			pkt << unescape_enriched(message);
+		else
+			pkt << message;
+
 		Send(&pkt);
 	}
 	else {
