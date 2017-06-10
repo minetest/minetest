@@ -89,7 +89,8 @@ src/guiChatConsole.cpp
 src/guiChatConsole.h
 src/guiEngine.cpp
 src/guiEngine.h
-src/guiFileSelectMenu.cpp
+src/guiPathSelectMenu.cpp
+src/guiPathSelectMenu.h
 src/guiFormSpecMenu.cpp
 src/guiFormSpecMenu.h
 src/guiKeyChangeMenu.cpp

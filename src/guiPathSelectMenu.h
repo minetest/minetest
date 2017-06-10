@@ -31,10 +31,8 @@ class GUIFileSelectMenu : public GUIModalMenu
 public:
 	GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr, const std::string &title,
-			const std::string &formid);
+			const std::string &formid, bool is_file_select);
 	~GUIFileSelectMenu();
-
-	void removeChildren();
 
 	/*
 	 Remove and re-add (or reposition) stuff
@@ -58,6 +56,7 @@ private:
 	TextDest *m_text_dst;
 
 	std::string m_formname;
+	bool m_file_select_dialog;
 };
 
 #endif /* GUIFILESELECTMENU_H_ */

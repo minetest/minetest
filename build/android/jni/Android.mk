@@ -152,7 +152,7 @@ LOCAL_SRC_FILES := \
 		jni/src/gettext.cpp                       \
 		jni/src/guiChatConsole.cpp                \
 		jni/src/guiEngine.cpp                     \
-		jni/src/guiFileSelectMenu.cpp             \
+		jni/src/guiPathSelectMenu.cpp             \
 		jni/src/guiFormSpecMenu.cpp               \
 		jni/src/guiKeyChangeMenu.cpp              \
 		jni/src/guiPasswordChange.cpp             \

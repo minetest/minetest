@@ -344,8 +344,8 @@
 # serverlist_file = favoriteservers.txt
 
 #    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
-#    type: int min: -1
-max_out_chat_queue_size = 20
+#    type: int
+# max_out_chat_queue_size = 20
 
 ## Graphics
 
@@ -555,7 +555,7 @@ max_out_chat_queue_size = 20
 #    type: int
 # screen_h = 600
 
-#    Save the window size automatically when modified.
+#    Save window size automatically when modified.
 #    type: bool
 # autosave_screensize = true
 
@@ -757,7 +757,7 @@ max_out_chat_queue_size = 20
 # freetype = true
 
 #    Path to TrueTypeFont or bitmap.
-#    type: path
+#    type: filepath
 # font_path = fonts/liberationsans.ttf
 
 #    type: int
@@ -771,14 +771,14 @@ max_out_chat_queue_size = 20
 #    type: int min: 0 max: 255
 # font_shadow_alpha = 127
 
-#    type: path
+#    type: filepath
 # mono_font_path = fonts/liberationmono.ttf
 
 #    type: int
 # mono_font_size = 15
 
 #    This font will be used for certain languages.
-#    type: path
+#    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
 #    type: int
@@ -1841,3 +1841,4 @@ max_out_chat_queue_size = 20
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
+

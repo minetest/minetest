@@ -509,7 +509,7 @@ set(client_SRCS
 	game.cpp
 	guiChatConsole.cpp
 	guiEngine.cpp
-	guiFileSelectMenu.cpp
+	guiPathSelectMenu.cpp
 	guiFormSpecMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiPasswordChange.cpp

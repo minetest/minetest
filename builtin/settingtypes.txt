@@ -12,6 +12,7 @@
 #    - float
 #    - enum
 #    - path
+#    - filepath
 #    - key (will be ignored in GUI, since a special key change dialog exists)
 #    - flags
 #    - noise_params
@@ -30,6 +31,8 @@
 #   * enum:
 #            - default value1,value2,...
 #   * path:
+#            - default (if default is not specified then "" is set)
+#   * filepath:
 #            - default (if default is not specified then "" is set)
 #   * key:
 #            - default
@@ -642,7 +645,7 @@ tooltip_show_delay (Tooltip delay) int 400
 freetype (Freetype fonts) bool true
 
 #    Path to TrueTypeFont or bitmap.
-font_path (Font path) path fonts/liberationsans.ttf
+font_path (Font path) filepath fonts/liberationsans.ttf
 
 font_size (Font size) int 16
 
@@ -652,12 +655,12 @@ font_shadow (Font shadow) int 1
 #    Font shadow alpha (opaqueness, between 0 and 255).
 font_shadow_alpha (Font shadow alpha) int 127 0 255
 
-mono_font_path (Monospace font path) path fonts/liberationmono.ttf
+mono_font_path (Monospace font path) filepath fonts/liberationmono.ttf
 
 mono_font_size (Monospace font size) int 15
 
 #    This font will be used for certain languages.
-fallback_font_path (Fallback font) path fonts/DroidSansFallbackFull.ttf
+fallback_font_path (Fallback font) filepath fonts/DroidSansFallbackFull.ttf
 fallback_font_size (Fallback font size) int 15
 fallback_font_shadow (Fallback font shadow) int 1
 fallback_font_shadow_alpha (Fallback font shadow alpha) int 128 0 255

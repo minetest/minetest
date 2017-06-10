@@ -17,16 +17,18 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "guiFileSelectMenu.h"
+#include "guiPathSelectMenu.h"
 
 GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
-		const std::string &title, const std::string &formname) :
+		const std::string &title, const std::string &formname,
+		bool is_file_select) :
 	GUIModalMenu(env, parent, id, menumgr),
 	m_title(utf8_to_wide(title)),
 	m_accepted(false),
 	m_text_dst(NULL),
-	m_formname(formname)
+	m_formname(formname),
+	m_file_select_dialog(is_file_select)
 {
 }
 
@@ -36,83 +38,77 @@ GUIFileSelectMenu::~GUIFileSelectMenu()
 	setlocale(LC_NUMERIC, "C");
 }
 
-void GUIFileSelectMenu::removeChildren()
-{
-	const core::list<gui::IGUIElement*> &children = getChildren();
-	core::list<gui::IGUIElement*> children_copy;
-	for (core::list<gui::IGUIElement*>::ConstIterator i = children.begin(); i
-		 != children.end(); i++)
-	{
-		children_copy.push_back(*i);
-	}
-	for (core::list<gui::IGUIElement*>::Iterator i = children_copy.begin(); i
-		 != children_copy.end(); i++)
-	{
-		(*i)->remove();
-	}
-}
-
 void GUIFileSelectMenu::regenerateGui(v2u32 screensize)
 {
 	removeChildren();
 	m_fileOpenDialog = 0;
 
-	core::dimension2du size(600,400);
-	core::rect < s32 > rect(0,0,screensize.X,screensize.Y);
+	core::dimension2du size(600, 400);
+	core::rect<s32> rect(0, 0, screensize.X, screensize.Y);
 
 	DesiredRect = rect;
 	recalculateAbsolutePosition(false);
 
 	m_fileOpenDialog =
-			Environment->addFileOpenDialog(m_title.c_str(),false,this,-1);
+			Environment->addFileOpenDialog(m_title.c_str(), false, this, -1);
 
-	core::position2di pos = core::position2di(screensize.X/2 - size.Width/2,screensize.Y/2 -size.Height/2);
+	core::position2di pos = core::position2di(screensize.X / 2 - size.Width / 2,
+			screensize.Y / 2 - size.Height / 2);
 	m_fileOpenDialog->setRelativePosition(pos);
 	m_fileOpenDialog->setMinSize(size);
 }
 
 void GUIFileSelectMenu::drawMenu()
 {
-	gui::IGUISkin* skin = Environment->getSkin();
+	gui::IGUISkin *skin = Environment->getSkin();
 	if (!skin)
 		return;
 
 	gui::IGUIElement::draw();
 }
 
-void GUIFileSelectMenu::acceptInput() {
-	if ((m_text_dst != 0) && (this->m_formname != "")){
+void GUIFileSelectMenu::acceptInput()
+{
+	if ((m_text_dst != 0) && (this->m_formname != "")) {
 		StringMap fields;
-
-		if (m_accepted)
-			fields[m_formname + "_accepted"] = wide_to_utf8(m_fileOpenDialog->getFileName());
-		else
+		if (m_accepted) {
+			std::string path;
+			if (!m_file_select_dialog) {
+				core::string<fschar_t> string =
+						m_fileOpenDialog->getDirectoryName();
+				path = std::string(string.c_str());
+			} else {
+				path = wide_to_utf8(m_fileOpenDialog->getFileName());
+			}
+			fields[m_formname + "_accepted"] = path;
+		} else {
 			fields[m_formname + "_canceled"] = m_formname;
-
+		}
 		this->m_text_dst->gotText(fields);
 	}
+	quitMenu();
 }
 
-bool GUIFileSelectMenu::OnEvent(const SEvent& event)
+bool GUIFileSelectMenu::OnEvent(const SEvent &event)
 {
-
 	if (event.EventType == irr::EET_GUI_EVENT) {
 		switch (event.GUIEvent.EventType) {
-			case gui::EGET_ELEMENT_CLOSED:
-			case gui::EGET_FILE_CHOOSE_DIALOG_CANCELLED:
-				m_accepted=false;
-				acceptInput();
-				quitMenu();
-				return true;
-			case gui::EGET_DIRECTORY_SELECTED:
-			case gui::EGET_FILE_SELECTED:
-				m_accepted=true;
-				acceptInput();
-				quitMenu();
-				return true;
-			default:
-				//ignore this event
-				break;
+		case gui::EGET_ELEMENT_CLOSED:
+		case gui::EGET_FILE_CHOOSE_DIALOG_CANCELLED:
+			m_accepted = false;
+			acceptInput();
+			return true;
+		case gui::EGET_DIRECTORY_SELECTED:
+			m_accepted = !m_file_select_dialog;
+			acceptInput();
+			return true;
+		case gui::EGET_FILE_SELECTED:
+			m_accepted = m_file_select_dialog;
+			acceptInput();
+			return true;
+		default:
+			// ignore this event
+			break;
 		}
 	}
 	return Parent ? Parent->OnEvent(event) : false;
