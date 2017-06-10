@@ -3523,10 +3523,12 @@ v3f Server::findSpawnPos()
 	}
 
 	bool is_good = false;
+	// Limit spawn range to mapgen edges (determined by 'mapgen_limit')
+	s32 range_max = map.getMapgenParams()->getSpawnRangeMax();
 
 	// Try to find a good place a few times
 	for(s32 i = 0; i < 4000 && !is_good; i++) {
-		s32 range = 1 + i;
+		s32 range = MYMIN(1 + i, range_max);
 		// We're going to try to throw the player to this position
 		v2s16 nodepos2d = v2s16(
 			-range + (myrand() % (range * 2)),
