@@ -59,6 +59,7 @@ class ObjDefManager {
 public:
 	ObjDefManager(IGameDef *gamedef, ObjDefType type);
 	virtual ~ObjDefManager();
+	DISABLE_CLASS_COPY(ObjDefManager);
 
 	virtual const char *getObjectTitle() const { return "ObjDef"; }
 
@@ -91,9 +92,6 @@ protected:
 	INodeDefManager *m_ndef;
 	std::vector<ObjDef *> m_objects;
 	ObjDefType m_objtype;
-
-private:
-	DISABLE_CLASS_COPY(ObjDefManager);
 };
 
 #endif

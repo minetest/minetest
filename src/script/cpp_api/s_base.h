@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <string>
+#include "util/basic_macros.h"
 
 extern "C" {
 #include <lua.h>
@@ -66,6 +67,7 @@ class ScriptApiBase {
 public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
+	DISABLE_CLASS_COPY(ScriptApiBase);
 
 	// These throw a ModError on failure
 	void loadMod(const std::string &script_path, const std::string &mod_name);

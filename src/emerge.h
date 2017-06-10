@@ -119,6 +119,7 @@ public:
 	// Methods
 	EmergeManager(Server *server);
 	~EmergeManager();
+	DISABLE_CLASS_COPY(EmergeManager);
 
 	bool initMapgens(MapgenParams *mgparams);
 
@@ -144,7 +145,6 @@ public:
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
-	Biome *getBiomeAtPoint(v3s16 p);
 	int getSpawnLevelAtPoint(v2s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
@@ -178,8 +178,6 @@ private:
 	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
-
-	DISABLE_CLASS_COPY(EmergeManager);
 };
 
 #endif

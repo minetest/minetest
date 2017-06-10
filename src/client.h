@@ -272,6 +272,7 @@ public:
 	);
 
 	~Client();
+	DISABLE_CLASS_COPY(Client);
 
 	void initMods();
 
@@ -691,7 +692,6 @@ private:
 	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown;
-	DISABLE_CLASS_COPY(Client);
 };
 
 #endif // !CLIENT_HEADER
