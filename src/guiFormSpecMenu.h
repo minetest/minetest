@@ -367,6 +367,8 @@ public:
 
 #ifdef __ANDROID__
 	bool getAndroidUIInput();
+#else
+	bool hasCustomCursor() const { return m_custom_cursor; }
 #endif
 
 protected:
@@ -542,6 +544,9 @@ private:
 #ifdef __ANDROID__
 	v2s32 m_down_pos;
 	std::string m_JavaDialogFieldName;
+#else
+	video::ITexture *m_cursor_img;
+	bool m_custom_cursor;
 #endif
 
 	/* If true, remap a double-click (or double-tap) action to ESC. This is so

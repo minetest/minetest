@@ -62,6 +62,8 @@ by texture packs. All existing fallback textures can be found in the directory
       `crosshair_color` and `crosshair_alpha` are used to create a cross
       when no texture was found
 
+* `cursor.png`: mouse pointer texture
+
 * `halo.png`: used for the node highlighting mesh
 
 * `heart.png`: used to display the health points of the player
