@@ -2711,9 +2711,9 @@ and `minetest.auth_reload` call the authetification handler.
     * Example query for `"default:gold_ingot"` will return table:
 
             {
-                [1]={type = "cooking", width = 3, output = "default:gold_ingot",
+                [1]={method = "cooking", width = 3, output = "default:gold_ingot",
                 items = {1 = "default:gold_lump"}},
-                [2]={type = "normal", width = 1, output = "default:gold_ingot 9",
+                [2]={method = "normal", width = 1, output = "default:gold_ingot 9",
                 items = {1 = "default:goldblock"}}
             }
 * `minetest.handle_node_drops(pos, drops, digger)`
