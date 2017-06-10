@@ -49,6 +49,7 @@ public:
 	// Environment will delete the map passed to the constructor
 	Environment(IGameDef *gamedef);
 	virtual ~Environment();
+	DISABLE_CLASS_COPY(Environment);
 
 	/*
 		Step everything in environment.
@@ -121,8 +122,6 @@ protected:
 
 private:
 	std::mutex m_time_lock;
-
-	DISABLE_CLASS_COPY(Environment);
 };
 
 #endif

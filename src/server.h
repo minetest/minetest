@@ -155,6 +155,8 @@ public:
 		ChatInterface *iface = NULL
 	);
 	~Server();
+	DISABLE_CLASS_COPY(Server);
+
 	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -671,8 +673,6 @@ private:
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer;
-
-	DISABLE_CLASS_COPY(Server);
 };
 
 /*

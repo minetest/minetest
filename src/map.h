@@ -142,11 +142,7 @@ public:
 
 	Map(std::ostream &dout, IGameDef *gamedef);
 	virtual ~Map();
-
-	/*virtual u16 nodeContainerId() const
-	{
-		return NODECONTAINER_ID_MAP;
-	}*/
+	DISABLE_CLASS_COPY(Map);
 
 	virtual s32 mapType() const
 	{
@@ -344,8 +340,6 @@ private:
 	u32 m_unprocessed_count;
 	u64 m_inc_trending_up_start_time; // milliseconds
 	bool m_queue_size_timer_started;
-
-	DISABLE_CLASS_COPY(Map);
 };
 
 /*

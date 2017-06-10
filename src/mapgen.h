@@ -192,6 +192,7 @@ public:
 	Mapgen();
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
 	virtual ~Mapgen();
+	DISABLE_CLASS_COPY(Mapgen);
 
 	virtual MapgenType getType() const { return MAPGEN_INVALID; }
 
@@ -233,7 +234,6 @@ private:
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.
 	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
-	DISABLE_CLASS_COPY(Mapgen);
 };
 
 /*
