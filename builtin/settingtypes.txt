@@ -721,6 +721,10 @@ server_announce (Announce server) bool false
 #    If you want to announce your ipv6 address, use  serverlist_url = v6.servers.minetest.net.
 serverlist_url (Serverlist URL) string servers.minetest.net
 
+# Remove color codes from incoming chat messages
+# Use this to stop players from being able to use color in their messages
+strip_color_codes (Strip color codes) bool false
+
 [*Network]
 
 #    Network port to listen (UDP).
