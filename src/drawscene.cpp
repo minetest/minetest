@@ -474,7 +474,7 @@ void draw_plain(Camera &camera, bool show_hud,
 	// Undersampling-specific stuff
 	static video::ITexture *image = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
-	int undersampling = g_settings->getU16("undersampling");
+	static thread_local int undersampling = g_settings->getU16("undersampling");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
 	if (undersampling > 0) {

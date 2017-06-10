@@ -639,7 +639,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		ItemRotationKind rotation_kind)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
-	static bool enable_animations =
+	static thread_local bool enable_animations =
 		g_settings->getBool("inventory_items_animations");
 
 	if (item.empty()) {

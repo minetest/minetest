@@ -1380,7 +1380,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
+	static thread_local const bool enable_anticheat =
+			!g_settings->getBool("disable_anticheat");
+
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			(enable_anticheat && !isSingleplayer())) {
 		float d = player_pos.getDistanceFrom(pointed_pos_under);
