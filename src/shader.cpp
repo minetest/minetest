@@ -308,7 +308,7 @@ public:
 private:
 
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
+	std::thread::id m_main_thread;
 	// The irrlicht device
 	IrrlichtDevice *m_device;
 
@@ -359,7 +359,7 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 {
 	assert(m_device); // Pre-condition
 
-	m_main_thread = thr_get_current_thread_id();
+	m_main_thread = std::this_thread::get_id();
 
 	// Add a dummy ShaderInfo as the first index, named ""
 	m_shaderinfo_cache.push_back(ShaderInfo());
@@ -387,7 +387,7 @@ u32 ShaderSource::getShader(const std::string &name,
 		Get shader
 	*/
 
-	if (thr_is_current_thread(m_main_thread)) {
+	if (std::this_thread::get_id() == m_main_thread) {
 		return getShaderIdDirect(name, material_type, drawtype);
 	} else {
 		/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
@@ -446,7 +446,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	/*
 		Calling only allowed from main thread
 	*/
-	if (!thr_is_current_thread(m_main_thread)) {
+	if (std::this_thread::get_id() != m_main_thread) {
 		errorstream<<"ShaderSource::getShaderIdDirect() "
 				"called not from main thread"<<std::endl;
 		return 0;
@@ -494,7 +494,7 @@ void ShaderSource::insertSourceShader(const std::string &name_of_shader,
 			"name_of_shader=\""<<name_of_shader<<"\", "
 			"filename=\""<<filename<<"\""<<std::endl;*/
 
-	sanity_check(thr_is_current_thread(m_main_thread));
+	sanity_check(std::this_thread::get_id() == m_main_thread);
 
 	m_sourcecache.insert(name_of_shader, filename, program, true);
 }

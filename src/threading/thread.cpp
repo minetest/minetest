@@ -180,10 +180,8 @@ bool Thread::getReturnValue(void **ret)
 }
 
 
-void *Thread::threadProc(void *param)
+void Thread::threadProc(Thread *thr)
 {
-	Thread *thr = (Thread *)param;
-
 #ifdef _AIX
 	thr->m_kernel_thread_id = thread_self();
 #endif
@@ -201,9 +199,6 @@ void *Thread::threadProc(void *param)
 
 	thr->m_running = false;
 	g_logger.deregisterThread();
-
-	// 0 is returned here to avoid an unnecessary ifdef clause
-	return 0;
 }
 
 

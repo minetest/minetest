@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <string>
+#include <thread>
 #include "util/basic_macros.h"
 
 extern "C" {
@@ -29,7 +30,6 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "threads.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
@@ -122,7 +122,7 @@ protected:
 	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	int             m_lock_recursion_count;
-	threadid_t      m_owning_thread;
+	std::thread::id m_owning_thread;
 #endif
 
 private:

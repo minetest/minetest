@@ -26,10 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef THREADING_EVENT_H
 #define THREADING_EVENT_H
 
-#include "threads.h"
-
 #include <condition_variable>
-#include "threading/mutex_auto_lock.h"
 
 /** A syncronization primitive that will wake up one waiting thread when signaled.
  * Calling @c signal() multiple times before a waiting thread has had a chance
