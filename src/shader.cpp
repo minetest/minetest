@@ -537,15 +537,18 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaderinfo.material = video::EMT_SOLID;
 	switch(material_type){
 		case TILE_MATERIAL_BASIC:
+		case TILE_MATERIAL_WAVING_WATER_BASIC:
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			break;
 		case TILE_MATERIAL_ALPHA:
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		case TILE_MATERIAL_WAVING_WATER_TRANSPARENT:
 			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		case TILE_MATERIAL_LIQUID_OPAQUE:
+		case TILE_MATERIAL_WAVING_WATER_OPAQUE:
 			shaderinfo.base_material = video::EMT_SOLID;
 			break;
 		case TILE_MATERIAL_WAVING_LEAVES:
@@ -646,10 +649,13 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"TILE_MATERIAL_LIQUID_TRANSPARENT",
 		"TILE_MATERIAL_LIQUID_OPAQUE",
 		"TILE_MATERIAL_WAVING_LEAVES",
-		"TILE_MATERIAL_WAVING_PLANTS"
+		"TILE_MATERIAL_WAVING_PLANTS",
+		"TILE_MATERIAL_WAVING_WATER_BASIC",
+		"TILE_MATERIAL_WAVING_WATER_TRANSPARENT",
+		"TILE_MATERIAL_WAVING_WATER_OPAQUE"
 	};
 
-	for (int i = 0; i < 6; i++){
+	for (int i = 0; i < 9; i++){
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";
