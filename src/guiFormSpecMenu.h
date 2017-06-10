@@ -310,18 +310,14 @@ public:
 	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
-		if (m_form_src != NULL) {
-			delete m_form_src;
-		}
+		delete m_form_src;
 		m_form_src = form_src;
 	}
 
 	// text_dst is deleted by this GUIFormSpecMenu
 	void setTextDest(TextDest *text_dst)
 	{
-		if (m_text_dst != NULL) {
-			delete m_text_dst;
-		}
+		delete m_text_dst;
 		m_text_dst = text_dst;
 	}
 

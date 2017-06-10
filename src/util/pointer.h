@@ -97,8 +97,7 @@ public:
 private:
 	void drop()
 	{
-		if(data)
-			delete[] data;
+		delete[] data;
 	}
 	T *data;
 	unsigned int m_size;
@@ -214,8 +213,7 @@ private:
 		(*refcount)--;
 		if(*refcount == 0)
 		{
-			if(data)
-				delete[] data;
+			delete[] data;
 			delete refcount;
 		}
 	}

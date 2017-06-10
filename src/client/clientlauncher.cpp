@@ -53,14 +53,11 @@ MainGameCallback *g_gamecallback = NULL;
 
 ClientLauncher::~ClientLauncher()
 {
-	if (receiver)
-		delete receiver;
+	delete receiver;
 
-	if (input)
-		delete input;
+	delete input;
 
-	if (g_fontengine)
-		delete g_fontengine;
+	delete g_fontengine;
 
 	if (device)
 		device->drop();

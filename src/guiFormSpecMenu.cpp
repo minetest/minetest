@@ -135,12 +135,9 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 
 	delete m_selected_item;
 
-	if (m_form_src != NULL) {
-		delete m_form_src;
-	}
-	if (m_text_dst != NULL) {
-		delete m_text_dst;
-	}
+	delete m_form_src;
+	
+	delete m_text_dst;
 }
 
 void GUIFormSpecMenu::removeChildren()
