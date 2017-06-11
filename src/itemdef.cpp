@@ -245,7 +245,7 @@ public:
 	{
 
 #ifndef SERVER
-		m_main_thread = thr_get_current_thread_id();
+		m_main_thread = std::this_thread::get_id();
 #endif
 		clear();
 	}
@@ -320,7 +320,7 @@ public:
 				<<name<<"\""<<std::endl;
 
 		// This is not thread-safe
-		sanity_check(thr_is_current_thread(m_main_thread));
+		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
 		ClientCached *cc = NULL;
@@ -356,15 +356,12 @@ public:
 	{
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
-		if(cc)
+		if (cc)
 			return cc;
 
-		if(thr_is_current_thread(m_main_thread))
-		{
+		if (std::this_thread::get_id() == m_main_thread) {
 			return createClientCachedDirect(name, client);
-		}
-		else
-		{
+		} else {
 			// We're gonna ask the result to be put into here
 			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
@@ -580,7 +577,7 @@ private:
 	StringMap m_aliases;
 #ifndef SERVER
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
+	std::thread::id m_main_thread;
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes

@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "threading/event.h"
+#include "threading/mutex_auto_lock.h"
 
 void Event::wait()
 {

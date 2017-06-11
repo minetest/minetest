@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef S_INTERNAL_H_
 #define S_INTERNAL_H_
 
+#include <thread>
 #include "common/c_internal.h"
 #include "cpp_api/s_base.h"
 
@@ -35,23 +36,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class LockChecker {
 public:
-	LockChecker(int *recursion_counter, threadid_t *owning_thread)
+	LockChecker(int *recursion_counter, std::thread::id *owning_thread)
 	{
 		m_lock_recursion_counter = recursion_counter;
 		m_owning_thread          = owning_thread;
 		m_original_level         = *recursion_counter;
 
-		if (*m_lock_recursion_counter > 0)
-			assert(thr_is_current_thread(*m_owning_thread));
-		else
-			*m_owning_thread = thr_get_current_thread_id();
+		if (*m_lock_recursion_counter > 0) {
+			assert(*m_owning_thread == std::this_thread::get_id());
+		} else {
+			*m_owning_thread = std::this_thread::get_id();
+		}
 
 		(*m_lock_recursion_counter)++;
 	}
 
 	~LockChecker()
 	{
-		assert(thr_is_current_thread(*m_owning_thread));
+		assert(*m_owning_thread == std::this_thread::get_id());
 		assert(*m_lock_recursion_counter > 0);
 
 		(*m_lock_recursion_counter)--;
@@ -62,7 +64,7 @@ public:
 private:
 	int *m_lock_recursion_counter;
 	int m_original_level;
-	threadid_t *m_owning_thread;
+	std::thread::id *m_owning_thread;
 };
 
 #define SCRIPTAPI_LOCK_CHECK           \
