@@ -79,13 +79,5 @@ matrix:
             - llvm-toolchain-trusty-4.0
 
     - env: LINT=1
-      compiler: clang
+      compiler: gcc
       os: linux
-      addons:
-        apt:
-          packages: ['clang-format-4.0']
-          sources: &sources
-            - llvm-toolchain-trusty-4.0
-
-
-

@@ -1,12 +1,10 @@
 #!/bin/bash -e
 . util/travis/common.sh
-. util/travis/lint.sh
 
 needs_compile || exit 0
 
 if [[ "$LINT" == "1" ]]; then
-	# Lint with exit CI
-	perform_lint
+	. util/lint.sh
 	exit 0
 fi
 
