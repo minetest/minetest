@@ -252,11 +252,13 @@ static void serializeSimpleSoundSpec(const SimpleSoundSpec &ss,
 {
 	os<<serializeString(ss.name);
 	writeF1000(os, ss.gain);
+	writeF1000(os, ss.pitch);
 }
 static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is)
 {
 	ss.name = deSerializeString(is);
 	ss.gain = readF1000(is);
+	ss.pitch = readF1000(is);
 }
 
 void TextureSettings::readSettings()
