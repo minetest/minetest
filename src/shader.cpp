@@ -737,19 +737,16 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	shaders_header += "#define ENABLE_WAVING_LEAVES ";
-	if (g_settings->getBool("enable_waving_leaves"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_leaves") ? "1\n" : "0\n";
 
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
-	if (g_settings->getBool("enable_waving_plants"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_plants") ? "1\n" : "0\n";
 
-	if (g_settings->getBool("tone_mapping"))
-		shaders_header += "#define ENABLE_TONE_MAPPING\n";
+	shaders_header += "#define POSTPROCESSING_ENABLED ";
+	shaders_header += g_settings->getBool("postprocessing") ? "1\n" : "0\n";
+
+	shaders_header += "#define ENABLE_TONE_MAPPING ";
+	shaders_header += g_settings->getBool("tone_mapping") ? "1\n" : "0\n";
 
 	shaders_header += "#define FOG_START ";
 	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));

@@ -473,16 +473,25 @@ void draw_plain(Camera &camera, bool show_hud,
 {
 	// Undersampling-specific stuff
 	static video::ITexture *image = NULL;
+	static video::ITexture *image2 = NULL;
 	static v2u32 last_pixelated_size = v2u32(0, 0);
-	int undersampling = g_settings->getU16("undersampling");
+	int pixel_size = g_settings->getU16("undersampling");
+	bool undersampling = pixel_size > 1;
+	bool enable_shaders = g_settings->getBool("enable_shaders");
+	bool postprocessing = enable_shaders && g_settings->getBool("postprocessing");
+	bool filter = g_settings->getBool("undersampling_filter");
 	v2u32 pixelated_size;
 	v2u32 dest_size;
-	if (undersampling > 0) {
-		pixelated_size = v2u32(scaledown(undersampling, screensize.X),
-				scaledown(undersampling, screensize.Y));
-		dest_size = v2u32(undersampling * pixelated_size.X, undersampling * pixelated_size.Y);
+	if (!undersampling)
+		pixel_size = 1;
+	if (undersampling || postprocessing) {
+		pixelated_size = v2u32(scaledown(pixel_size, screensize.X),
+				scaledown(pixel_size, screensize.Y));
+		dest_size = v2u32(pixel_size * pixelated_size.X, pixel_size * pixelated_size.Y);
 		if (pixelated_size != last_pixelated_size) {
 			init_texture(driver, pixelated_size, &image, "mt_drawimage_img1");
+			if (undersampling && postprocessing)
+				init_texture(driver, pixelated_size, &image2, "mt_drawimage_img2");
 			last_pixelated_size = pixelated_size;
 		}
 		driver->setRenderTarget(image, true, true, skycolor);
@@ -498,12 +507,51 @@ void draw_plain(Camera &camera, bool show_hud,
 		}
 	}
 
-	// Upscale lowres render
-	if (undersampling > 0) {
-		driver->setRenderTarget(0, true, true);
-		driver->draw2DImage(image,
-				irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
-				irr::core::rect<s32>(0, 0, pixelated_size.X, pixelated_size.Y));
+	// Post-process
+	if (undersampling || postprocessing) {
+		driver->setRenderTarget(0, false, false);
+		if (!enable_shaders) {
+			driver->draw2DImage(image,
+					irr::core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+					irr::core::rect<s32>(0, 0, pixelated_size.X, pixelated_size.Y));
+			return;
+		}
+		static const video::S3DVertex vertices[4] = {
+			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 0, 255, 255), 1.0, 0.0),
+			video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 0, 255), 0.0, 0.0),
+			video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 0), 0.0, 1.0),
+			video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 255), 1.0, 1.0),
+		};
+		static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
+		IShaderSource *s = client.getShaderSource();
+		video::SMaterial mat;
+		mat.UseMipMaps = false;
+		mat.ZBuffer = false;
+		mat.ZWriteEnable = false;
+		mat.TextureLayer[0].AnisotropicFilter = false;
+		mat.TextureLayer[0].TrilinearFilter = false;
+		mat.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
+		mat.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
+		if (postprocessing) {
+			u32 shader = s->getShader("postprocessing", TILE_MATERIAL_BASIC, 0);
+			mat.MaterialType = s->getShaderInfo(shader).material;
+			mat.TextureLayer[0].BilinearFilter = false;
+			mat.TextureLayer[0].Texture = image;
+			if (undersampling)
+				driver->setRenderTarget(image2, false, false);
+			driver->setMaterial(mat);
+			driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
+			if (undersampling)
+				driver->setRenderTarget(0, false, false);
+		}
+		if (undersampling) {
+			u32 shader = s->getShader("merging", TILE_MATERIAL_BASIC, 0);
+			mat.MaterialType = s->getShaderInfo(shader).material;
+			mat.TextureLayer[0].BilinearFilter = filter;
+			mat.TextureLayer[0].Texture = postprocessing ? image2 : image;
+			driver->setMaterial(mat);
+			driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
+		}
 	}
 }
 
