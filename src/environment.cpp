@@ -21,18 +21,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "collision.h"
 #include "serverobject.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "daynightratio.h"
 #include "emerge.h"
 
-Environment::Environment():
+
+Environment::Environment(IGameDef *gamedef):
 	m_time_of_day_speed(0),
 	m_time_of_day(9000),
 	m_time_of_day_f(9000./24000),
 	m_time_conversion_skew(0.0f),
 	m_enable_day_night_ratio_override(false),
-	m_day_night_ratio_override(0.0f)
+	m_day_night_ratio_override(0.0f),
+	m_gamedef(gamedef)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");
 	m_cache_active_block_mgmt_interval = g_settings->getFloat("active_block_mgmt_interval");
@@ -68,7 +70,7 @@ void Environment::setTimeOfDay(u32 time)
 {
 	MutexAutoLock lock(this->m_time_lock);
 	if (m_time_of_day > time)
-		m_day_count++;
+		++m_day_count;
 	m_time_of_day = time;
 	m_time_of_day_f = (float)time / 24000.0;
 }
@@ -101,7 +103,7 @@ void Environment::stepTimeOfDay(float dtime)
 		// Sync at overflow
 		if (m_time_of_day + units >= 24000) {
 			sync_f = true;
-			m_day_count++;
+			++m_day_count;
 		}
 		m_time_of_day = (m_time_of_day + units) % 24000;
 		if (sync_f)

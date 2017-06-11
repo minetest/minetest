@@ -22,14 +22,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include "util/basic_macros.h"
 
 extern "C" {
 #include <lua.h>
 }
 
 #include "irrlichttypes.h"
-#include "threads.h"
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
@@ -55,6 +55,10 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 class Server;
+#ifndef SERVER
+class Client;
+#endif
+class IGameDef;
 class Environment;
 class GUIEngine;
 class ServerActiveObject;
@@ -63,6 +67,7 @@ class ScriptApiBase {
 public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
+	DISABLE_CLASS_COPY(ScriptApiBase);
 
 	// These throw a ModError on failure
 	void loadMod(const std::string &script_path, const std::string &mod_name);
@@ -75,7 +80,11 @@ public:
 	void addObjectReference(ServerActiveObject *cobj);
 	void removeObjectReference(ServerActiveObject *cobj);
 
-	Server* getServer() { return m_server; }
+	IGameDef *getGameDef() { return m_gamedef; }
+	Server* getServer();
+#ifndef SERVER
+	Client* getClient();
+#endif
 
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
@@ -98,7 +107,7 @@ protected:
 	void scriptError(int result, const char *fxn);
 	void stackDump(std::ostream &o);
 
-	void setServer(Server* server) { m_server = server; }
+	void setGameDef(IGameDef* gamedef) { m_gamedef = gamedef; }
 
 	Environment* getEnv() { return m_environment; }
 	void setEnv(Environment* env) { m_environment = env; }
@@ -107,14 +116,13 @@ protected:
 	void setGuiEngine(GUIEngine* guiengine) { m_guiengine = guiengine; }
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
-	void objectrefGet(lua_State *L, u16 id);
 
-	RecursiveMutex  m_luastackmutex;
+	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;
 	bool            m_secure;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	int             m_lock_recursion_count;
-	threadid_t      m_owning_thread;
+	std::thread::id m_owning_thread;
 #endif
 
 private:
@@ -122,7 +130,7 @@ private:
 
 	lua_State*      m_luastack;
 
-	Server*         m_server;
+	IGameDef*       m_gamedef;
 	Environment*    m_environment;
 	GUIEngine*      m_guiengine;
 };

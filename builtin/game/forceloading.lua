@@ -40,7 +40,7 @@ function core.forceload_block(pos, transient)
 	elseif other_table[hash] ~= nil then
 		relevant_table[hash] = 1
 	else
-		if total_forceloaded >= (tonumber(core.setting_get("max_forceloaded_blocks")) or 16) then
+		if total_forceloaded >= (tonumber(core.settings:get("max_forceloaded_blocks")) or 16) then
 			return false
 		end
 		total_forceloaded = total_forceloaded+1

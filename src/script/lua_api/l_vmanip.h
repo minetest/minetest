@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_VMANIP_H_
 #define L_VMANIP_H_
 
-#include "lua_api/l_base.h"
-#include "irr_v3d.h"
 #include <map>
+#include "irr_v3d.h"
+#include "lua_api/l_base.h"
 
 class Map;
 class MapBlock;
@@ -31,13 +31,14 @@ class MMVManip;
 /*
   VoxelManip
  */
-class LuaVoxelManip : public ModApiBase {
+class LuaVoxelManip : public ModApiBase
+{
 private:
 	std::map<v3s16, MapBlock *> modified_blocks;
 	bool is_mapgen_vm;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static int gc_object(lua_State *L);
 

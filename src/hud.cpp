@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "fontengine.h"
 #include "guiscalingfilter.h"
 #include "mesh.h"
+#include "wieldmesh.h"
 #include <IGUIStaticText.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -86,24 +87,31 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	m_halo_boxes.clear();
 
 	m_selection_pos = v3f(0.0, 0.0, 0.0);
-	std::string mode = g_settings->get("node_highlighting");
+	std::string mode_setting = g_settings->get("node_highlighting");
+
+	if (mode_setting == "halo") {
+		m_mode = HIGHLIGHT_HALO;
+	} else if (mode_setting == "none") {
+		m_mode = HIGHLIGHT_NONE;
+	} else {
+		m_mode = HIGHLIGHT_BOX;
+	}
+
 	m_selection_material.Lighting = false;
 
 	if (g_settings->getBool("enable_shaders")) {
 		IShaderSource *shdrsrc = client->getShaderSource();
 		u16 shader_id = shdrsrc->getShader(
-			mode == "halo" ? "selection_shader" : "default_shader", 1, 1);
+			m_mode == HIGHLIGHT_HALO ? "selection_shader" : "default_shader", 1, 1);
 		m_selection_material.MaterialType = shdrsrc->getShaderInfo(shader_id).material;
 	} else {
 		m_selection_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 	}
 
-	if (mode == "box") {
-		m_use_selection_mesh = false;
+	if (m_mode == HIGHLIGHT_BOX) {
 		m_selection_material.Thickness =
 			rangelim(g_settings->getS16("selectionbox_width"), 1, 5);
-	} else if (mode == "halo") {
-		m_use_selection_mesh = true;
+	} else if (m_mode == HIGHLIGHT_HALO) {
 		m_selection_material.setTexture(0, tsrc->getTextureForMesh("halo.png"));
 		m_selection_material.setFlag(video::EMF_BACK_FACE_CULLING, true);
 	} else {
@@ -517,7 +525,7 @@ void Hud::setSelectionPos(const v3f &pos, const v3s16 &camera_offset)
 
 void Hud::drawSelectionMesh()
 {
-	if (!m_use_selection_mesh) {
+	if (m_mode == HIGHLIGHT_BOX) {
 		// Draw 3D selection boxes
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
@@ -537,7 +545,7 @@ void Hud::drawSelectionMesh()
 			driver->draw3DBox(box, video::SColor(255, r, g, b));
 		}
 		driver->setMaterial(oldmaterial);
-	} else if (m_selection_mesh) {
+	} else if (m_mode == HIGHLIGHT_HALO && m_selection_mesh) {
 		// Draw selection mesh
 		video::SMaterial oldmaterial = driver->getMaterial2D();
 		driver->setMaterial(m_selection_material);
@@ -563,7 +571,7 @@ void Hud::drawSelectionMesh()
 void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 {
 	m_camera_offset = camera_offset;
-	if (!m_use_selection_mesh)
+	if (m_mode != HIGHLIGHT_HALO)
 		return;
 
 	if (m_selection_mesh) {
@@ -618,7 +626,7 @@ void Hud::resizeHotbar() {
 }
 
 struct MeshTimeInfo {
-	s32 time;
+	u64 time;
 	scene::IMesh *mesh;
 };
 
@@ -631,7 +639,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		ItemRotationKind rotation_kind)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
-	static bool enable_animations =
+	static thread_local bool enable_animations =
 		g_settings->getBool("inventory_items_animations");
 
 	if (item.empty()) {
@@ -642,18 +650,19 @@ void drawItemStack(video::IVideoDriver *driver,
 	}
 
 	const ItemDefinition &def = item.getDefinition(client->idef());
-	scene::IMesh* mesh = client->idef()->getWieldMesh(def.name, client);
+	ItemMesh *imesh = client->idef()->getWieldMesh(def.name, client);
 
-	if (mesh) {
+	if (imesh && imesh->mesh) {
+		scene::IMesh *mesh = imesh->mesh;
 		driver->clearZBuffer();
 		s32 delta = 0;
 		if (rotation_kind < IT_ROT_NONE) {
 			MeshTimeInfo &ti = rotation_time_infos[rotation_kind];
 			if (mesh != ti.mesh) {
 				ti.mesh = mesh;
-				ti.time = getTimeMs();
+				ti.time = porting::getTimeMs();
 			} else {
-				delta = porting::getDeltaMs(ti.time, getTimeMs()) % 100000;
+				delta = porting::getDeltaMs(ti.time, porting::getTimeMs()) % 100000;
 			}
 		}
 		core::rect<s32> oldViewPort = driver->getViewPort();
@@ -667,16 +676,32 @@ void drawItemStack(video::IVideoDriver *driver,
 		matrix.makeIdentity();
 
 		if (enable_animations) {
-			float timer_f = (float)delta / 5000.0;
+			float timer_f = (float) delta / 5000.0;
 			matrix.setRotationDegrees(core::vector3df(0, 360 * timer_f, 0));
 		}
 
 		driver->setTransform(video::ETS_WORLD, matrix);
 		driver->setViewPort(rect);
 
+		video::SColor basecolor =
+			client->idef()->getItemstackColor(item, client);
+
 		u32 mc = mesh->getMeshBufferCount();
 		for (u32 j = 0; j < mc; ++j) {
 			scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
+			// we can modify vertices relatively fast,
+			// because these meshes are not buffered.
+			assert(buf->getHardwareMappingHint_Vertex() == scene::EHM_NEVER);
+			video::SColor c = basecolor;
+			if (imesh->buffer_colors.size() > j) {
+				ItemPartColor *p = &imesh->buffer_colors[j];
+				if (p->override_base)
+					c = p->color;
+			}
+			if (imesh->needs_shading)
+				colorizeMeshBuffer(buf, &c);
+			else
+				setMeshBufferColor(buf, c);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			material.Lighting = false;

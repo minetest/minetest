@@ -26,9 +26,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "mapblock.h" // For getNodeBlockPos
 #include "map.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "log.h"
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef) {
-
+void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef)
+{
 }

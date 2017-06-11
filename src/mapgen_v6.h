@@ -1,6 +1,8 @@
 /*
 Minetest
 Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -123,6 +125,7 @@ public:
 	content_t c_cobble;
 	content_t c_mossycobble;
 	content_t c_stair_cobble;
+	content_t c_stair_desert_stone;
 
 	MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge);
 	~MapgenV6();

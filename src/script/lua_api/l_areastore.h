@@ -22,14 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-
 class AreaStore;
 
-class LuaAreaStore : public ModApiBase {
+class LuaAreaStore : public ModApiBase
+{
 private:
-
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 
 	static int gc_object(lua_State *L);
 

@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
-#include "guiFileSelectMenu.h"
+#include "guiPathSelectMenu.h"
 #include "subgame.h"
 #include "version.h"
 #include "porting.h"
@@ -32,13 +32,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "convert_json.h"
 #include "serverlist.h"
 #include "mapgen.h"
-#include "sound.h"
 #include "settings.h"
-#include "log.h"
 #include "EDriverTypes.h"
 
 #include <IFileArchive.h>
 #include <IFileSystem.h>
+
 
 /******************************************************************************/
 std::string ModApiMainMenu::getTextData(lua_State *L, std::string name)
@@ -299,7 +298,7 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 		int table2 = lua_gettop(L);
 		int internal_index=1;
 		for (std::set<std::string>::iterator iter = games[i].addon_mods_paths.begin();
-				iter != games[i].addon_mods_paths.end(); iter++) {
+				iter != games[i].addon_mods_paths.end(); ++iter) {
 			lua_pushnumber(L,internal_index);
 			lua_pushstring(L,(*iter).c_str());
 			lua_settable(L, table2);
@@ -577,6 +576,13 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_settable(L, top_lvl2);
 		}
 
+		if (servers[i].isMember("ping")) {
+			float ping = servers[i]["ping"].asFloat();
+			lua_pushstring(L, "ping");
+			lua_pushnumber(L, ping);
+			lua_settable(L, top_lvl2);
+		}
+
 		lua_settable(L, top);
 		index++;
 	}
@@ -724,6 +730,15 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 {
 	std::string modpath = fs::RemoveRelativePathComponents(
 		porting::path_user + DIR_DELIM + "mods" + DIR_DELIM);
+	lua_pushstring(L, modpath.c_str());
+	return 1;
+}
+
+/******************************************************************************/
+int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
+{
+	std::string modpath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "clientmods" + DIR_DELIM);
 	lua_pushstring(L, modpath.c_str());
 	return 1;
 }
@@ -935,13 +950,14 @@ bool ModApiMainMenu::isMinetestPath(std::string path)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
+int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
+	bool is_file_select = lua_toboolean(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
 		new GUIFileSelectMenu(engine->m_device->getGUIEnvironment(),
@@ -949,61 +965,12 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 								-1,
 								engine->m_menumanager,
 								title,
-								formname);
+								formname,
+								is_file_select);
 	fileOpenMenu->setTextDest(engine->m_buttonhandler);
 	fileOpenMenu->drop();
 	return 0;
 }
-
-/******************************************************************************/
-int ModApiMainMenu::l_sound_play(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	SimpleSoundSpec spec;
-	read_soundspec(L, 1, spec);
-	bool looped = lua_toboolean(L, 2);
-
-	u32 handle = engine->playSound(spec, looped);
-
-	lua_pushinteger(L, handle);
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_sound_stop(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	u32 handle = luaL_checkinteger(L, 1);
-	engine->stopSound(handle);
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_sound_pause(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	u32 handle = luaL_checkinteger(L, 1);
-	engine->pauseSound(handle);
-
-	return 1;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_sound_resume(lua_State *L)
-{
-	GUIEngine* engine = getGuiEngine(L);
-
-	u32 handle = luaL_checkinteger(L, 1);
-	engine->resumeSound(handle);
-
-	return 1;
-}
-
 
 /******************************************************************************/
 int ModApiMainMenu::l_download_file(lua_State *L)
@@ -1164,6 +1131,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
@@ -1172,12 +1140,10 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(copy_dir);
 	API_FCT(extract_zip);
 	API_FCT(get_mainmenu_path);
-	API_FCT(show_file_open_dialog);
+	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
 	API_FCT(get_modstore_details);
 	API_FCT(get_modstore_list);
-	API_FCT(sound_play);
-	API_FCT(sound_stop);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_video_modes);
@@ -1188,23 +1154,24 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 }
 
 /******************************************************************************/
-void ModApiMainMenu::InitializeAsync(AsyncEngine& engine)
+void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 {
 
-	ASYNC_API_FCT(get_worlds);
-	ASYNC_API_FCT(get_games);
-	ASYNC_API_FCT(get_favorites);
-	ASYNC_API_FCT(get_mapgen_names);
-	ASYNC_API_FCT(get_modpath);
-	ASYNC_API_FCT(get_gamepath);
-	ASYNC_API_FCT(get_texturepath);
-	ASYNC_API_FCT(get_texturepath_share);
-	ASYNC_API_FCT(create_dir);
-	ASYNC_API_FCT(delete_dir);
-	ASYNC_API_FCT(copy_dir);
-	//ASYNC_API_FCT(extract_zip); //TODO remove dependency to GuiEngine
-	ASYNC_API_FCT(download_file);
-	ASYNC_API_FCT(get_modstore_details);
-	ASYNC_API_FCT(get_modstore_list);
-	//ASYNC_API_FCT(gettext); (gettext lib isn't threadsafe)
+	API_FCT(get_worlds);
+	API_FCT(get_games);
+	API_FCT(get_favorites);
+	API_FCT(get_mapgen_names);
+	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
+	API_FCT(get_gamepath);
+	API_FCT(get_texturepath);
+	API_FCT(get_texturepath_share);
+	API_FCT(create_dir);
+	API_FCT(delete_dir);
+	API_FCT(copy_dir);
+	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
+	API_FCT(download_file);
+	API_FCT(get_modstore_details);
+	API_FCT(get_modstore_list);
+	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }

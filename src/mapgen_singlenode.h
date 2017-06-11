@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -22,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-struct MapgenSinglenodeParams : public MapgenParams {
+struct MapgenSinglenodeParams : public MapgenParams
+{
 	MapgenSinglenodeParams() {}
 	~MapgenSinglenodeParams() {}
 
@@ -30,7 +33,8 @@ struct MapgenSinglenodeParams : public MapgenParams {
 	void writeParams(Settings *settings) const {}
 };
 
-class MapgenSinglenode : public Mapgen {
+class MapgenSinglenode : public Mapgen
+{
 public:
 	u32 flags;
 	content_t c_node;

@@ -17,9 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "irrlichttypes_extrabloated.h"
 #include <ISceneNode.h>
 #include "camera.h"
+#include "irrlichttypes_extrabloated.h"
 
 #ifndef SKY_HEADER
 #define SKY_HEADER
@@ -34,7 +34,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
+	Sky(scene::ISceneNode *parent, scene::ISceneManager *mgr, s32 id,
 			ITextureSource *tsrc);
 
 	virtual void OnRegisterSceneNode();
@@ -42,35 +42,37 @@ public:
 	//! renders the node.
 	virtual void render();
 
-	virtual const aabb3f &getBoundingBox() const
-	{ return m_box; }
+	virtual const aabb3f &getBoundingBox() const { return m_box; }
 
 	// Used by Irrlicht for optimizing rendering
-	virtual video::SMaterial& getMaterial(u32 i)
-	{ return m_materials[i]; }
+	virtual video::SMaterial &getMaterial(u32 i) { return m_materials[i]; }
 
 	// Used by Irrlicht for optimizing rendering
-	virtual u32 getMaterialCount() const
-	{ return SKY_MATERIAL_COUNT; }
+	virtual u32 getMaterialCount() const { return SKY_MATERIAL_COUNT; }
 
-	void update(float m_time_of_day, float time_brightness,
-			float direct_brightness, bool sunlight_seen, CameraMode cam_mode,
-			float yaw, float pitch);
-	
-	float getBrightness(){ return m_brightness; }
+	void update(float m_time_of_day, float time_brightness, float direct_brightness,
+			bool sunlight_seen, CameraMode cam_mode, float yaw, float pitch);
 
-	video::SColor getBgColor(){
+	float getBrightness() { return m_brightness; }
+
+	const video::SColor &getBgColor() const
+	{
 		return m_visible ? m_bgcolor : m_fallback_bg_color;
 	}
-	video::SColor getSkyColor(){
+
+	const video::SColor &getSkyColor() const
+	{
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
-	
-	bool getCloudsVisible(){ return m_clouds_visible && m_visible; }
-	video::SColorf getCloudColor(){ return m_cloudcolor_f; }
 
-	void setVisible(bool visible){ m_visible = visible; }
-	void setFallbackBgColor(const video::SColor &fallback_bg_color){
+	bool getCloudsVisible() { return m_clouds_visible && m_clouds_enabled; }
+	const video::SColorf &getCloudColor() { return m_cloudcolor_f; }
+
+	void setVisible(bool visible) { m_visible = visible; }
+	// Set only from set_sky API
+	void setCloudsEnabled(bool clouds_enabled) { m_clouds_enabled = clouds_enabled; }
+	void setFallbackBgColor(const video::SColor &fallback_bg_color)
+	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
 
@@ -83,7 +85,8 @@ private:
 	{
 		if (!m_sunlight_seen)
 			return 0;
-		float x = m_time_of_day >= 0.5 ? (1 - m_time_of_day) * 2 : m_time_of_day * 2;
+		float x = m_time_of_day >= 0.5 ? (1 - m_time_of_day) * 2
+					       : m_time_of_day * 2;
 
 		if (x <= 0.3)
 			return 0;
@@ -98,19 +101,19 @@ private:
 	video::SColor m_mix_scolor(video::SColor col1, video::SColor col2, f32 factor)
 	{
 		video::SColor result = video::SColor(
-			col1.getAlpha() * (1 - factor) + col2.getAlpha() * factor,
-			col1.getRed() * (1 - factor) + col2.getRed() * factor,
-			col1.getGreen() * (1 - factor) + col2.getGreen() * factor,
-			col1.getBlue() * (1 - factor) + col2.getBlue() * factor);
+				col1.getAlpha() * (1 - factor) + col2.getAlpha() * factor,
+				col1.getRed() * (1 - factor) + col2.getRed() * factor,
+				col1.getGreen() * (1 - factor) + col2.getGreen() * factor,
+				col1.getBlue() * (1 - factor) + col2.getBlue() * factor);
 		return result;
 	}
 	video::SColorf m_mix_scolorf(video::SColorf col1, video::SColorf col2, f32 factor)
 	{
-		video::SColorf result = video::SColorf(
-			col1.r * (1 - factor) + col2.r * factor,
-			col1.g * (1 - factor) + col2.g * factor,
-			col1.b * (1 - factor) + col2.b * factor,
-			col1.a * (1 - factor) + col2.a * factor);
+		video::SColorf result =
+				video::SColorf(col1.r * (1 - factor) + col2.r * factor,
+						col1.g * (1 - factor) + col2.g * factor,
+						col1.b * (1 - factor) + col2.b * factor,
+						col1.a * (1 - factor) + col2.a * factor);
 		return result;
 	}
 
@@ -122,7 +125,8 @@ private:
 	bool m_sunlight_seen;
 	float m_brightness;
 	float m_cloud_brightness;
-	bool m_clouds_visible;
+	bool m_clouds_visible; // Whether clouds are disabled due to player underground
+	bool m_clouds_enabled; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
 	video::SColorf m_bgcolor_bright_f;
 	video::SColorf m_skycolor_bright_f;
@@ -131,12 +135,11 @@ private:
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
-	video::S3DVertex m_star_vertices[SKY_STAR_COUNT*4];
-	video::ITexture* m_sun_texture;
-	video::ITexture* m_moon_texture;
-	video::ITexture* m_sun_tonemap;
-	video::ITexture* m_moon_tonemap;
+	video::S3DVertex m_star_vertices[SKY_STAR_COUNT * 4];
+	video::ITexture *m_sun_texture;
+	video::ITexture *m_moon_texture;
+	video::ITexture *m_sun_tonemap;
+	video::ITexture *m_moon_tonemap;
 };
 
 #endif
-

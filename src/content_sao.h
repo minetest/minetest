@@ -52,7 +52,7 @@ public:
 	void getAttachment(int *parent_id, std::string *bone, v3f *position, v3f *rotation);
 	void addAttachmentChild(int child_id);
 	void removeAttachmentChild(int child_id);
-	const UNORDERED_SET<int> &getAttachmentChildIds();
+	const std::unordered_set<int> &getAttachmentChildIds();
 	ObjectProperties* accessObjectProperties();
 	void notifyObjectPropertiesModified();
 protected:
@@ -72,11 +72,11 @@ protected:
 	bool m_animation_sent;
 
 	// Stores position and rotation for each bone name
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position;
+	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 	bool m_bone_position_sent;
 
 	int m_attachment_parent_id;
-	UNORDERED_SET<int> m_attachment_child_ids;
+	std::unordered_set<int> m_attachment_child_ids;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -157,18 +157,26 @@ class LagPool
 public:
 	LagPool(): m_pool(15), m_max(15)
 	{}
+
 	void setMax(float new_max)
 	{
 		m_max = new_max;
 		if(m_pool > new_max)
 			m_pool = new_max;
 	}
+
 	void add(float dtime)
 	{
 		m_pool -= dtime;
 		if(m_pool < 0)
 			m_pool = 0;
 	}
+
+	void empty()
+	{
+		m_pool = m_max;
+	}
+
 	bool grab(float dtime)
 	{
 		if(dtime <= 0)
@@ -180,13 +188,13 @@ public:
 	}
 };
 
-typedef UNORDERED_MAP<std::string, std::string> PlayerAttributes;
+typedef std::unordered_map<std::string, std::string> PlayerAttributes;
 class RemotePlayer;
 
 class PlayerSAO : public UnitSAO
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, u16 peer_id_, bool is_singleplayer);
+	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_, bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -246,6 +254,7 @@ public:
 	InventoryLocation getInventoryLocation() const;
 	std::string getWieldList() const;
 	ItemStack getWieldedItem() const;
+	ItemStack getWieldedItemOrHand() const;
 	bool setWieldedItem(const ItemStack &item);
 	int getWieldIndex() const;
 	void setWieldIndex(int i);
@@ -266,6 +275,16 @@ public:
 
 		*value = m_extra_attributes[attr];
 		return true;
+	}
+
+	inline void removeExtendedAttribute(const std::string &attr)
+	{
+		PlayerAttributes::iterator it = m_extra_attributes.find(attr);
+		if (it == m_extra_attributes.end())
+			return;
+
+		m_extra_attributes.erase(it);
+		m_extended_attributes_modified = true;
 	}
 
 	inline const PlayerAttributes &getExtendedAttributes()
@@ -340,7 +359,7 @@ public:
 	bool getCollisionBox(aabb3f *toset) const;
 	bool collideWithObjects() const { return true; }
 
-	void initialize(RemotePlayer *player, const std::set<std::string> &privs);
+	void finalize(RemotePlayer *player, const std::set<std::string> &privs);
 
 	v3f getEyePosition() const { return m_base_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
@@ -358,6 +377,7 @@ private:
 	LagPool m_dig_pool;
 	LagPool m_move_pool;
 	v3f m_last_good_position;
+	float m_time_from_last_teleport;
 	float m_time_from_last_punch;
 	v3s16 m_nocheat_dig_pos;
 	float m_nocheat_dig_time;
@@ -365,6 +385,7 @@ private:
 	// Timers
 	IntervalLimiter m_breathing_interval;
 	IntervalLimiter m_drowning_interval;
+	IntervalLimiter m_node_hurt_interval;
 
 	int m_wield_index;
 	bool m_position_not_sent;
@@ -386,6 +407,7 @@ public:
 	float m_physics_override_gravity;
 	bool m_physics_override_sneak;
 	bool m_physics_override_sneak_glitch;
+	bool m_physics_override_new_move;
 	bool m_physics_override_sent;
 };
 

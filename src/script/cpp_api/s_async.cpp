@@ -46,26 +46,26 @@ AsyncEngine::~AsyncEngine()
 
 	// Request all threads to stop
 	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); it++) {
+			it != workerThreads.end(); ++it) {
 		(*it)->stop();
 	}
 
 
 	// Wake up all threads
 	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); it++) {
+			it != workerThreads.end(); ++it) {
 		jobQueueCounter.post();
 	}
 
 	// Wait for threads to finish
 	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); it++) {
+			it != workerThreads.end(); ++it) {
 		(*it)->wait();
 	}
 
 	// Force kill all threads
 	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); it++) {
+			it != workerThreads.end(); ++it) {
 		delete *it;
 	}
 
@@ -76,14 +76,9 @@ AsyncEngine::~AsyncEngine()
 }
 
 /******************************************************************************/
-bool AsyncEngine::registerFunction(const char* name, lua_CFunction func)
+void AsyncEngine::registerStateInitializer(StateInitializer func)
 {
-	if (initDone) {
-		return false;
-	}
-
-	functionList[name] = func;
-	return true;
+	stateInitializers.push_back(func);
 }
 
 /******************************************************************************/
@@ -100,7 +95,8 @@ void AsyncEngine::initialize(unsigned int numEngines)
 }
 
 /******************************************************************************/
-unsigned int AsyncEngine::queueAsyncJob(std::string func, std::string params)
+unsigned int AsyncEngine::queueAsyncJob(const std::string &func,
+		const std::string &params)
 {
 	jobQueueMutex.lock();
 	LuaJobInfo toAdd;
@@ -124,7 +120,6 @@ LuaJobInfo AsyncEngine::getJob()
 	jobQueueMutex.lock();
 
 	LuaJobInfo retval;
-	retval.valid = false;
 
 	if (!jobQueue.empty()) {
 		retval = jobQueue.front();
@@ -137,7 +132,7 @@ LuaJobInfo AsyncEngine::getJob()
 }
 
 /******************************************************************************/
-void AsyncEngine::putJobResult(LuaJobInfo result)
+void AsyncEngine::putJobResult(const LuaJobInfo &result)
 {
 	resultQueueMutex.lock();
 	resultQueue.push_back(result);
@@ -204,11 +199,9 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 /******************************************************************************/
 void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
-	for (UNORDERED_MAP<std::string, lua_CFunction>::iterator it = functionList.begin();
-			it != functionList.end(); it++) {
-		lua_pushstring(L, it->first.c_str());
-		lua_pushcfunction(L, it->second);
-		lua_settable(L, top);
+	for (std::vector<StateInitializer>::iterator it = stateInitializers.begin();
+			it != stateInitializers.end(); it++) {
+		(*it)(L, top);
 	}
 }
 
@@ -264,7 +257,7 @@ void* AsyncWorkerThread::run()
 		// Wait for job
 		LuaJobInfo toProcess = jobDispatcher->getJob();
 
-		if (toProcess.valid == false || stopRequested()) {
+		if (!toProcess.valid || stopRequested()) {
 			continue;
 		}
 

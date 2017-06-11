@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "log.h"
 #include "util/numeric.h"
+#include <algorithm>
+
 
 FlagDesc flagdesc_deco[] = {
 	{"place_center_x",  DECO_PLACE_CENTER_X},
@@ -205,14 +208,11 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 #endif
 			}
 
-			if (mg->biomemap) {
-				UNORDERED_SET<u8>::iterator iter;
-
-				if (!biomes.empty()) {
-					iter = biomes.find(mg->biomemap[mapindex]);
-					if (iter == biomes.end())
-						continue;
-				}
+			if (mg->biomemap && !biomes.empty()) {
+				std::unordered_set<u8>::const_iterator iter =
+					biomes.find(mg->biomemap[mapindex]);
+				if (iter == biomes.end())
+					continue;
 			}
 
 			v3s16 pos(x, y, z);

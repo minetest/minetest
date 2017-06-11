@@ -90,33 +90,6 @@ bool Settings::checkValueValid(const std::string &value)
 	return true;
 }
 
-
-std::string Settings::sanitizeName(const std::string &name)
-{
-	std::string n = trim(name);
-
-	for (const char *s = "=\"{}#"; *s; s++)
-		n.erase(std::remove(n.begin(), n.end(), *s), n.end());
-
-	return n;
-}
-
-
-std::string Settings::sanitizeValue(const std::string &value)
-{
-	std::string v(value);
-	size_t p = 0;
-
-	if (v.substr(0, 3) == "\"\"\"")
-		v.erase(0, 3);
-
-	while ((p = v.find("\n\"\"\"")) != std::string::npos)
-		v.erase(p, 4);
-
-	return v;
-}
-
-
 std::string Settings::getMultiline(std::istream &is, size_t *num_lines)
 {
 	size_t lines = 1;
@@ -398,7 +371,7 @@ Settings *Settings::getGroup(const std::string &name) const
 }
 
 
-std::string Settings::get(const std::string &name) const
+const std::string &Settings::get(const std::string &name) const
 {
 	const SettingsEntry &entry = getEntry(name);
 	if (entry.is_group)

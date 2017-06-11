@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 
 #include "clientiface.h"
-#include "util/numeric.h"
 #include "remoteplayer.h"
 #include "settings.h"
 #include "mapblock.h"
@@ -30,7 +29,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "content_sao.h"              // TODO this is used for cleanup of only
 #include "log.h"
+#include "network/serveropcodes.h"
 #include "util/srp.h"
+#include "face_position_cache.h"
 
 const char *ClientInterface::statenames[] = {
 	"Invalid",
@@ -197,6 +198,9 @@ void RemoteClient::GetNextBlocks (
 	s32 nearest_sent_d = -1;
 	//bool queue_is_full = false;
 
+	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
+	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
+
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
 		/*
@@ -235,9 +239,9 @@ void RemoteClient::GetNextBlocks (
 				continue;
 
 			/*
-				Do not go over-limit
+				Do not go over max mapgen limit
 			*/
-			if (blockpos_over_limit(p))
+			if (blockpos_over_max_limit(p))
 				continue;
 
 			// If this is true, inexistent block will be made from scratch
@@ -249,8 +253,8 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			if(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight) == false)
-			{
+			f32 dist;
+			if (!isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist)) {
 				continue;
 			}
 
@@ -283,12 +287,6 @@ void RemoteClient::GetNextBlocks (
 					surely_not_found_on_disk = true;
 				}
 
-				// Block is valid if lighting is up-to-date and data exists
-				if(block->isValid() == false)
-				{
-					block_is_invalid = true;
-				}
-
 				if(block->isGenerated() == false)
 					block_is_invalid = true;
 
@@ -303,6 +301,11 @@ void RemoteClient::GetNextBlocks (
 				{
 					if(block->getDayNightDiff() == false)
 						continue;
+				}
+
+				if (occ_cull && !block_is_invalid &&
+						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
+					continue;
 				}
 			}
 
@@ -340,7 +343,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Add block to send queue
 			*/
-			PrioritySortedBlockTransfer q((float)d, p, peer_id);
+			PrioritySortedBlockTransfer q((float)dist, p, peer_id);
 
 			dest.push_back(q);
 
@@ -587,9 +590,9 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 	}
 }
 
-u32 RemoteClient::uptime()
+u64 RemoteClient::uptime() const
 {
-	return getTime(PRECISION_SECONDS) - m_connection_time;
+	return porting::getTimeS() - m_connection_time;
 }
 
 ClientInterface::ClientInterface(con::Connection* con)
@@ -608,7 +611,7 @@ ClientInterface::~ClientInterface()
 	{
 		MutexAutoLock clientslock(m_clients_mutex);
 
-		for (UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
+		for (RemoteClientMap::iterator i = m_clients.begin();
 			i != m_clients.end(); ++i) {
 			// Delete client
 			delete i->second;
@@ -621,7 +624,7 @@ std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 	std::vector<u16> reply;
 	MutexAutoLock clientslock(m_clients_mutex);
 
-	for(UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
+	for (RemoteClientMap::iterator i = m_clients.begin();
 		i != m_clients.end(); ++i) {
 		if (i->second->getState() >= min_state)
 			reply.push_back(i->second->peer_id);
@@ -676,16 +679,17 @@ void ClientInterface::send(u16 peer_id, u8 channelnum,
 	m_con->Send(peer_id, channelnum, pkt, reliable);
 }
 
-void ClientInterface::sendToAll(u16 channelnum,
-		NetworkPacket* pkt, bool reliable)
+void ClientInterface::sendToAll(NetworkPacket *pkt)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	for(UNORDERED_MAP<u16, RemoteClient*>::iterator i = m_clients.begin();
-		i != m_clients.end(); ++i) {
+	for (RemoteClientMap::iterator i = m_clients.begin();
+			i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
 
 		if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id, channelnum, pkt, reliable);
+			m_con->Send(client->peer_id,
+					clientCommandFactoryTable[pkt->getCommand()].channel, pkt,
+					clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}
 }
@@ -693,7 +697,7 @@ void ClientInterface::sendToAll(u16 channelnum,
 RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
@@ -707,7 +711,7 @@ RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 
 RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState state_min)
 {
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
@@ -722,7 +726,7 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState stat
 ClientState ClientInterface::getClientState(u16 peer_id)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::const_iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
@@ -734,7 +738,7 @@ ClientState ClientInterface::getClientState(u16 peer_id)
 void ClientInterface::setPlayerName(u16 peer_id,std::string name)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n != m_clients.end())
@@ -746,7 +750,7 @@ void ClientInterface::DeleteClient(u16 peer_id)
 	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::iterator n = m_clients.find(peer_id);
 	// The client may not exist; clients are immediately removed if their
 	// access is denied, and this event occurs later then.
 	if (n == m_clients.end())
@@ -758,10 +762,8 @@ void ClientInterface::DeleteClient(u16 peer_id)
 	//TODO this should be done by client destructor!!!
 	RemoteClient *client = n->second;
 	// Handle objects
-	for(std::set<u16>::iterator
-			i = client->m_known_objects.begin();
-			i != client->m_known_objects.end(); ++i)
-	{
+	for (std::set<u16>::iterator i = client->m_known_objects.begin();
+			i != client->m_known_objects.end(); ++i) {
 		// Get object
 		u16 id = *i;
 		ServerActiveObject* obj = m_env->getActiveObject(id);
@@ -780,7 +782,7 @@ void ClientInterface::CreateClient(u16 peer_id)
 	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::iterator n = m_clients.find(peer_id);
 	// The client shouldn't already exist
 	if (n != m_clients.end()) return;
 
@@ -796,7 +798,7 @@ void ClientInterface::event(u16 peer_id, ClientStateEvent event)
 		MutexAutoLock clientlock(m_clients_mutex);
 
 		// Error check
-		UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+		RemoteClientMap::iterator n = m_clients.find(peer_id);
 
 		// No client to deliver event
 		if (n == m_clients.end())
@@ -817,7 +819,7 @@ u16 ClientInterface::getProtocolVersion(u16 peer_id)
 	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::iterator n = m_clients.find(peer_id);
 
 	// No client to get version
 	if (n == m_clients.end())
@@ -831,7 +833,7 @@ void ClientInterface::setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch
 	MutexAutoLock conlock(m_clients_mutex);
 
 	// Error check
-	UNORDERED_MAP<u16, RemoteClient*>::iterator n = m_clients.find(peer_id);
+	RemoteClientMap::iterator n = m_clients.find(peer_id);
 
 	// No client to set versions
 	if (n == m_clients.end())

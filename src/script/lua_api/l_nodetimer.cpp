@@ -162,7 +162,7 @@ void NodeTimerRef::Register(lua_State *L)
 }
 
 const char NodeTimerRef::className[] = "NodeTimerRef";
-const luaL_reg NodeTimerRef::methods[] = {
+const luaL_Reg NodeTimerRef::methods[] = {
 	luamethod(NodeTimerRef, start),
 	luamethod(NodeTimerRef, set),
 	luamethod(NodeTimerRef, stop),

@@ -33,21 +33,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <queue>
 #include <map>
+#include <atomic>
+#include <mutex>
 #include "irr_v3d.h"
 #include "activeobject.h"
 #include "util/numeric.h"
-#include "threading/mutex.h"
-#include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
 
+class IGameDef;
 class Map;
 
 class Environment
 {
 public:
 	// Environment will delete the map passed to the constructor
-	Environment();
+	Environment(IGameDef *gamedef);
 	virtual ~Environment();
+	DISABLE_CLASS_COPY(Environment);
 
 	/*
 		Step everything in environment.
@@ -57,7 +59,7 @@ public:
 	*/
 	virtual void step(f32 dtime) = 0;
 
-	virtual Map & getMap() = 0;
+	virtual Map &getMap() = 0;
 
 	u32 getDayNightRatio();
 
@@ -77,8 +79,10 @@ public:
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
+	IGameDef *getGameDef() { return m_gamedef; }
+
 protected:
-	GenericAtomic<float> m_time_of_day_speed;
+	std::atomic<float> m_time_of_day_speed;
 
 	/*
 	 * Below: values managed by m_time_lock
@@ -95,7 +99,7 @@ protected:
 	u32 m_day_night_ratio_override;
 	// Days from the server start, accounts for time shift
 	// in game (e.g. /time or bed usage)
-	Atomic<u32> m_day_count;
+	std::atomic<u32> m_day_count;
 	/*
 	 * Above: values managed by m_time_lock
 	*/
@@ -114,11 +118,10 @@ protected:
 	float m_cache_abm_interval;
 	float m_cache_nodetimer_interval;
 
-private:
-	Mutex m_time_lock;
+	IGameDef *m_gamedef;
 
-	DISABLE_CLASS_COPY(Environment);
+private:
+	std::mutex m_time_lock;
 };
 
 #endif
-

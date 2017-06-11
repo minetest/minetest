@@ -42,41 +42,22 @@ gui::IGUIEnvironment *guienv = NULL;
 gui::IGUIStaticText *guiroot = NULL;
 MainMenuManager g_menumgr;
 
-bool noMenuActive()
+bool isMenuActive()
 {
-	return g_menumgr.menuCount() == 0;
+	return g_menumgr.menuCount() != 0;
 }
 
 // Passed to menus to allow disconnecting and exiting
 MainGameCallback *g_gamecallback = NULL;
 
 
-// Instance of the time getter
-static TimeGetter *g_timegetter = NULL;
-
-u32 getTimeMs()
-{
-	if (g_timegetter == NULL)
-		return 0;
-	return g_timegetter->getTime(PRECISION_MILLI);
-}
-
-u32 getTime(TimePrecision prec) {
-	if (g_timegetter == NULL)
-		return 0;
-	return g_timegetter->getTime(prec);
-}
-
 ClientLauncher::~ClientLauncher()
 {
-	if (receiver)
-		delete receiver;
+	delete receiver;
 
-	if (input)
-		delete input;
+	delete input;
 
-	if (g_fontengine)
-		delete g_fontengine;
+	delete g_fontengine;
 
 	if (device)
 		device->drop();
@@ -96,9 +77,6 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 		return false;
 	}
 
-	// Create time getter
-	g_timegetter = new IrrlichtTimeGetter(device);
-
 	// Speed tests (done after irrlicht is loaded to get timer)
 	if (cmd_args.getFlag("speedtests")) {
 		dstream << "Running speed tests" << std::endl;
@@ -114,7 +92,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	porting::setXorgClassHint(video_driver->getExposedVideoData(), PROJECT_NAME_C);
 
-	porting::setXorgWindowIcon(device);
+	porting::setWindowIcon(device);
 
 	/*
 		This changes the minimum allowed number of vertices in a VBO.
@@ -127,10 +105,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 
 	device->setResizable(true);
 
-	if (random_input)
-		input = new RandomInputHandler();
-	else
-		input = new RealInputHandler(device, receiver);
+	init_input();
 
 	smgr = device->getSceneManager();
 	smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
@@ -337,6 +312,33 @@ bool ClientLauncher::init_engine()
 	return device != NULL;
 }
 
+void ClientLauncher::init_input()
+{
+	if (random_input)
+		input = new RandomInputHandler();
+	else
+		input = new RealInputHandler(device, receiver);
+
+	if (g_settings->getBool("enable_joysticks")) {
+		irr::core::array<irr::SJoystickInfo> infos;
+		std::vector<irr::SJoystickInfo> joystick_infos;
+
+		// Make sure this is called maximum once per
+		// irrlicht device, otherwise it will give you
+		// multiple events for the same joystick.
+		if (device->activateJoysticks(infos)) {
+			infostream << "Joystick support enabled" << std::endl;
+			joystick_infos.reserve(infos.size());
+			for (u32 i = 0; i < infos.size(); i++) {
+				joystick_infos.push_back(infos[i]);
+			}
+			input->joystick.onJoystickConnect(joystick_infos);
+		} else {
+			errorstream << "Could not activate joystick support." << std::endl;
+		}
+	}
+}
+
 bool ClientLauncher::launch_game(std::string &error_message,
 		bool reconnect_requested, GameParams &game_params,
 		const Settings &cmd_args)
@@ -403,14 +405,13 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		return false;
 	}
 
-	if (menudata.name == "")
-		menudata.name = std::string("Guest") + itos(myrand_range(1000, 9999));
-	else
-		playername = menudata.name;
+	if (menudata.name == "" && !simple_singleplayer_mode) {
+		error_message = gettext("Please choose a name!");
+		return false;
+	}
 
+	playername = menudata.name;
 	password = menudata.password;
-
-	g_settings->set("name", playername);
 
 	current_playername = playername;
 	current_password   = password;
@@ -424,13 +425,16 @@ bool ClientLauncher::launch_game(std::string &error_message,
 		current_password = "";
 		current_address = "";
 		current_port = myrand_range(49152, 65535);
-	} else if (address != "") {
-		ServerListSpec server;
-		server["name"] = menudata.servername;
-		server["address"] = menudata.address;
-		server["port"] = menudata.port;
-		server["description"] = menudata.serverdescription;
-		ServerList::insert(server);
+	} else {
+		g_settings->set("name", playername);
+		if (address != "") {
+			ServerListSpec server;
+			server["name"] = menudata.servername;
+			server["address"] = menudata.address;
+			server["port"] = menudata.port;
+			server["description"] = menudata.serverdescription;
+			ServerList::insert(server);
+		}
 	}
 
 	infostream << "Selected world: " << worldspec.name
@@ -489,7 +493,7 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 
 	infostream << "Waiting for other menus" << std::endl;
 	while (device->run() && *kill == false) {
-		if (noMenuActive())
+		if (!isMenuActive())
 			break;
 		driver->beginScene(true, true, video::SColor(255, 128, 128, 128));
 		guienv->drawAll();
@@ -515,8 +519,8 @@ bool ClientLauncher::create_engine_device()
 {
 	// Resolution selection
 	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screenW = g_settings->getU16("screenW");
-	u16 screenH = g_settings->getU16("screenH");
+	u16 screen_w = g_settings->getU16("screen_w");
+	u16 screen_h = g_settings->getU16("screen_h");
 
 	// bpp, fsaa, vsync
 	bool vsync = g_settings->getBool("vsync");
@@ -528,7 +532,7 @@ bool ClientLauncher::create_engine_device()
 
 	// Determine driver
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
-	std::string driverstring = g_settings->get("video_driver");
+	const std::string &driverstring = g_settings->get("video_driver");
 	std::vector<video::E_DRIVER_TYPE> drivers
 		= porting::getSupportedVideoDrivers();
 	u32 i;
@@ -546,7 +550,7 @@ bool ClientLauncher::create_engine_device()
 
 	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
 	params.DriverType    = driverType;
-	params.WindowSize    = core::dimension2d<u32>(screenW, screenH);
+	params.WindowSize    = core::dimension2d<u32>(screen_w, screen_h);
 	params.Bits          = bits;
 	params.AntiAlias     = fsaa;
 	params.Fullscreen    = fullscreen;
@@ -564,25 +568,8 @@ bool ClientLauncher::create_engine_device()
 
 	device = createDeviceEx(params);
 
-	if (device) {
-		if (g_settings->getBool("enable_joysticks")) {
-			irr::core::array<irr::SJoystickInfo> infos;
-			std::vector<irr::SJoystickInfo> joystick_infos;
-			// Make sure this is called maximum once per
-			// irrlicht device, otherwise it will give you
-			// multiple events for the same joystick.
-			if (device->activateJoysticks(infos)) {
-				infostream << "Joystick support enabled" << std::endl;
-				joystick_infos.reserve(infos.size());
-				for (u32 i = 0; i < infos.size(); i++) {
-					joystick_infos.push_back(infos[i]);
-				}
-			} else {
-				errorstream << "Could not activate joystick support." << std::endl;
-			}
-		}
+	if (device)
 		porting::initIrrlicht(device);
-	}
 
 	return device != NULL;
 }
@@ -667,7 +654,7 @@ void ClientLauncher::speed_tests()
 		infostream << "Around 5000/ms should do well here." << std::endl;
 		TimeTaker timer("Testing mutex speed");
 
-		Mutex m;
+		std::mutex m;
 		u32 n = 0;
 		u32 i = 0;
 		do {

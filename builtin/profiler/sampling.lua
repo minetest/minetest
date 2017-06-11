@@ -185,7 +185,7 @@ end
 function sampler.init()
 	sampler.reset()
 
-	if core.setting_getbool("instrument.profiler") then
+	if core.settings:get_bool("instrument.profiler") then
 		core.register_globalstep(function()
 			if logged_time == 0 then
 				return

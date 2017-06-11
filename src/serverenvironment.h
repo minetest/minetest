@@ -27,13 +27,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class IGameDef;
 class ServerMap;
+struct GameParams;
 class RemotePlayer;
+class PlayerDatabase;
 class PlayerSAO;
 class ServerEnvironment;
 class ActiveBlockModifier;
 class ServerActiveObject;
 class Server;
-class GameScripting;
+class ServerScripting;
 
 /*
 	{Active, Loading} block modifier interface.
@@ -49,11 +51,10 @@ public:
 	virtual ~ActiveBlockModifier(){};
 
 	// Set of contents to trigger on
-	virtual std::set<std::string> getTriggerContents()=0;
+	virtual const std::set<std::string> &getTriggerContents() const = 0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
 	// Empty = do not check neighbors
-	virtual std::set<std::string> getRequiredNeighbors()
-	{ return std::set<std::string>(); }
+	virtual const std::set<std::string> &getRequiredNeighbors() const = 0;
 	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
@@ -189,12 +190,12 @@ enum ClearObjectsMode {
 	This is not thread-safe. Server uses an environment mutex.
 */
 
-typedef UNORDERED_MAP<u16, ServerActiveObject *> ActiveObjectMap;
+typedef std::unordered_map<u16, ServerActiveObject *> ServerActiveObjectMap;
 
 class ServerEnvironment : public Environment
 {
 public:
-	ServerEnvironment(ServerMap *map, GameScripting *scriptIface,
+	ServerEnvironment(ServerMap *map, ServerScripting *scriptIface,
 		Server *server, const std::string &path_world);
 	~ServerEnvironment();
 
@@ -203,7 +204,7 @@ public:
 	ServerMap & getServerMap();
 
 	//TODO find way to remove this fct!
-	GameScripting* getScriptIface()
+	ServerScripting* getScriptIface()
 	{ return m_script; }
 
 	Server *getGameDef()
@@ -217,9 +218,11 @@ public:
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
-	RemotePlayer *loadPlayer(const std::string &playername, PlayerSAO *sao);
+	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, u16 peer_id,
+		bool is_singleplayer);
 	void addPlayer(RemotePlayer *player);
 	void removePlayer(RemotePlayer *player);
+	bool removePlayerFromDatabase(const std::string &name);
 
 	/*
 		Save and load time of day and game timer
@@ -320,7 +323,7 @@ public:
 	//check if there's a line of sight between two positions
 	bool line_of_sight(v3f pos1, v3f pos2, float stepsize=1.0, v3s16 *p=NULL);
 
-	u32 getGameTime() { return m_game_time; }
+	u32 getGameTime() const { return m_game_time; }
 
 	void reportMaxLagEstimate(float f) { m_max_lag_estimate = f; }
 	float getMaxLagEstimate() { return m_max_lag_estimate; }
@@ -334,8 +337,13 @@ public:
 
 	RemotePlayer *getPlayer(const u16 peer_id);
 	RemotePlayer *getPlayer(const char* name);
+
+	static bool migratePlayersDatabase(const GameParams &game_params,
+			const Settings &cmd_args);
 private:
 
+	static PlayerDatabase *openPlayerDatabase(const std::string &name,
+			const std::string &savedir, const Settings &conf);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------
@@ -381,13 +389,13 @@ private:
 	// The map
 	ServerMap *m_map;
 	// Lua state
-	GameScripting* m_script;
+	ServerScripting* m_script;
 	// Server definition
 	Server *m_server;
 	// World path
 	const std::string m_path_world;
 	// Active object list
-	ActiveObjectMap m_active_objects;
+	ServerActiveObjectMap m_active_objects;
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
@@ -419,10 +427,12 @@ private:
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;
 
+	PlayerDatabase *m_player_database;
+
 	// Particles
 	IntervalLimiter m_particle_management_interval;
-	UNORDERED_MAP<u32, float> m_particle_spawners;
-	UNORDERED_MAP<u32, u16> m_particle_spawner_attachments;
+	std::unordered_map<u32, float> m_particle_spawners;
+	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 };
 
 #endif

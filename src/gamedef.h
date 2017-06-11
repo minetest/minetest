@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GAMEDEF_HEADER
 
 #include <string>
+#include <vector>
 #include "irrlichttypes.h"
 
 class IItemDefManager;
@@ -33,12 +34,14 @@ class MtEventManager;
 class IRollbackManager;
 class EmergeManager;
 class Camera;
+class ModMetadata;
 
 namespace irr { namespace scene {
 	class IAnimatedMesh;
 	class ISceneManager;
 }}
 
+struct ModSpec;
 /*
 	An interface for fetching game-global definitions like tool and
 	mapnode properties
@@ -68,7 +71,14 @@ public:
 	ICraftDefManager *cdef()     { return getCraftDefManager(); }
 
 	MtEventManager   *event()    { return getEventManager(); }
-	IRollbackManager *rollback() { return getRollbackManager();}
+	IRollbackManager *rollback() { return getRollbackManager(); }
+
+	virtual const std::vector<ModSpec> &getMods() const = 0;
+	virtual const ModSpec* getModSpec(const std::string &modname) const = 0;
+	virtual std::string getWorldPath() const { return ""; }
+	virtual std::string getModStoragePath() const = 0;
+	virtual bool registerModStorage(ModMetadata *storage) = 0;
+	virtual void unregisterModStorage(const std::string &name) = 0;
 };
 
 #endif

@@ -22,10 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "util/string.h"
 #include "threading/thread.h"
-#include "threading/mutex.h"
 #include "exceptions.h"
 #include <map>
 #include <string>
+#include <mutex>
 
 class BanManager
 {
@@ -41,12 +41,12 @@ public:
 	void add(const std::string &ip, const std::string &name);
 	void remove(const std::string &ip_or_name);
 	bool isModified();
+
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::string m_banfilepath;
 	StringMap m_ips;
 	bool m_modified;
-
 };
 
 #endif

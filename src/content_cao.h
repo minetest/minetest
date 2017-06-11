@@ -91,7 +91,8 @@ private:
 	int m_animation_speed;
 	int m_animation_blend;
 	bool m_animation_loop;
-	UNORDERED_MAP<std::string, core::vector2d<v3f> > m_bone_position; // stores position and rotation for each bone name
+	// stores position and rotation for each bone name
+	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
 	std::string m_attachment_bone;
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
@@ -146,18 +147,7 @@ public:
 
 	scene::ISceneNode *getSceneNode();
 
-	scene::IMeshSceneNode *getMeshSceneNode();
-
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
-
-	WieldMeshSceneNode *getWieldMeshSceneNode();
-
-	scene::IBillboardSceneNode *getSpriteSceneNode();
-
-	inline bool isPlayer() const
-	{
-		return m_is_player;
-	}
 
 	inline bool isLocalPlayer() const
 	{
@@ -200,7 +190,9 @@ public:
 
 	void updateTexturePos();
 
-	void updateTextures(const std::string mod);
+	// std::string copy is mandatory as mod can be a class member and there is a swap
+	// on those class members
+	void updateTextures(std::string mod);
 
 	void updateAnimation();
 

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ClientSimpleObject;
 class ClientMap;
+class ClientScripting;
 class ClientActiveObject;
 class GenericCAO;
 class LocalPlayer;
@@ -63,6 +64,7 @@ struct ClientEnvEvent
 	};
 };
 
+typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
@@ -75,6 +77,7 @@ public:
 	ClientMap & getClientMap();
 
 	Client *getGameDef() { return m_client; }
+	void setScript(ClientScripting *script) { m_script = script; }
 
 	void step(f32 dtime);
 
@@ -124,8 +127,9 @@ public:
 	void getActiveObjects(v3f origin, f32 max_d,
 		std::vector<DistanceSortedActiveObject> &dest);
 
-	// Get event from queue. CEE_NONE is returned if queue is empty.
-	ClientEnvEvent getClientEvent();
+	bool hasClientEnvEvents() const { return !m_client_event_queue.empty(); }
+	// Get event from queue. If queue is empty, it triggers an assertion failure.
+	ClientEnvEvent getClientEnvEvent();
 
 	/*!
 	 * Gets closest object pointed by the shootline.
@@ -176,8 +180,9 @@ private:
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
+	ClientScripting *m_script;
 	IrrlichtDevice *m_irr;
-	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
+	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

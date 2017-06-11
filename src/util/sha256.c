@@ -30,11 +30,6 @@ static void OPENSSL_cleanse(void *ptr, size_t len)
     cleanse_ctr = (unsigned char)ctr;
 }
 
-# define fips_md_init(alg) fips_md_init_ctx(alg, alg)
-#  define fips_md_init_ctx(alg, cx) \
-        int alg##_Init(cx##_CTX *c)
-#  define fips_cipher_abort(alg) while(0)
-
 fips_md_init_ctx(SHA224, SHA256)
 {
     memset(c, 0, sizeof(*c));

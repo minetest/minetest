@@ -53,7 +53,7 @@ class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
 class EmergeManager;
-class GameScripting;
+class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
@@ -104,27 +104,19 @@ struct MediaInfo
 
 struct ServerSoundParams
 {
-	float gain;
-	std::string to_player;
-	enum Type{
-		SSP_LOCAL=0,
-		SSP_POSITIONAL=1,
-		SSP_OBJECT=2
-	} type;
-	v3f pos;
-	u16 object;
-	float max_hear_distance;
-	bool loop;
-
-	ServerSoundParams():
-		gain(1.0),
-		to_player(""),
-		type(SSP_LOCAL),
-		pos(0,0,0),
-		object(0),
-		max_hear_distance(32*BS),
-		loop(false)
-	{}
+	enum Type {
+		SSP_LOCAL,
+		SSP_POSITIONAL,
+		SSP_OBJECT
+	} type = SSP_LOCAL;
+	float gain = 1.0f;
+	float fade = 0.0f;
+	float pitch = 1.0f;
+	bool loop = false;
+	float max_hear_distance = 32*BS;
+	v3f pos = v3f(0, 0, 0);
+	u16 object = 0;
+	std::string to_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
@@ -132,7 +124,8 @@ struct ServerSoundParams
 struct ServerPlayingSound
 {
 	ServerSoundParams params;
-	UNORDERED_SET<u16> clients; // peer ids
+	SimpleSoundSpec spec;
+	std::unordered_set<u16> clients; // peer ids
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -148,9 +141,12 @@ public:
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
 		bool ipv6,
+		bool dedicated,
 		ChatInterface *iface = NULL
 	);
 	~Server();
+	DISABLE_CLASS_COPY(Server);
+
 	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -173,7 +169,6 @@ public:
 	void handleCommand_Init_Legacy(NetworkPacket* pkt);
 	void handleCommand_Init2(NetworkPacket* pkt);
 	void handleCommand_RequestMedia(NetworkPacket* pkt);
-	void handleCommand_ReceivedMedia(NetworkPacket* pkt);
 	void handleCommand_ClientReady(NetworkPacket* pkt);
 	void handleCommand_GotBlocks(NetworkPacket* pkt);
 	void handleCommand_PlayerPos(NetworkPacket* pkt);
@@ -225,19 +220,18 @@ public:
 	inline bool getShutdownRequested() const { return m_shutdown_requested; }
 
 	// request server to shutdown
-	void requestShutdown(const std::string &msg, bool reconnect)
-	{
-		m_shutdown_requested = true;
-		m_shutdown_msg = msg;
-		m_shutdown_ask_reconnect = reconnect;
-	}
+	void requestShutdown(const std::string &msg, bool reconnect, float delay = 0.0f);
 
 	// Returns -1 if failed, sound handle on success
 	// Envlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
+
 	void pauseSound(s32 handle);
 	void resumeSound(s32 handle);
+
+	void fadeSound(s32 handle, float step, float gain);
+
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -276,7 +270,7 @@ public:
 	Inventory* createDetachedInventory(const std::string &name, const std::string &player="");
 
 	// Envlock and conlock should be locked when using scriptapi
-	GameScripting *getScriptIface(){ return m_script; }
+	ServerScripting *getScriptIface(){ return m_script; }
 
 	// actions: time-reversed list
 	// Return value: success/failure
@@ -297,11 +291,12 @@ public:
 	IWritableNodeDefManager* getWritableNodeDefManager();
 	IWritableCraftDefManager* getWritableCraftDefManager();
 
-	const std::vector<ModSpec> &getMods() const { return m_mods; }
-	const ModSpec* getModSpec(const std::string &modname) const;
+	virtual const std::vector<ModSpec> &getMods() const { return m_mods; }
+	virtual const ModSpec* getModSpec(const std::string &modname) const;
 	void getModNames(std::vector<std::string> &modlist);
 	std::string getBuiltinLuaPath();
-	inline std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getWorldPath() const { return m_path_world; }
+	virtual std::string getModStoragePath() const;
 
 	inline bool isSingleplayer()
 			{ return m_simple_singleplayer_mode; }
@@ -312,6 +307,7 @@ public:
 	bool showFormspec(const char *name, const std::string &formspec, const std::string &formname);
 	Map & getMap() { return m_env->getMap(); }
 	ServerEnvironment & getEnv() { return *m_env; }
+	v3f findSpawnPos();
 
 	u32 hudAdd(RemotePlayer *player, HudElement *element);
 	bool hudRemove(RemotePlayer *player, u32 id);
@@ -336,7 +332,14 @@ public:
 	bool setPlayerEyeOffset(RemotePlayer *player, v3f first, v3f third);
 
 	bool setSky(RemotePlayer *player, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
+	bool setClouds(RemotePlayer *player, float density,
+			const video::SColor &color_bright,
+			const video::SColor &color_ambient,
+			float height,
+			float thickness,
+			const v2f &speed);
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
@@ -362,11 +365,14 @@ public:
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(u16 peer_id);
 
+	virtual bool registerModStorage(ModMetadata *storage);
+	virtual void unregisterModStorage(const std::string &name);
+
 	// Bind address
 	Address m_bind_addr;
 
 	// Environment mutex (envlock)
-	Mutex m_env_mutex;
+	std::mutex m_env_mutex;
 
 private:
 
@@ -402,7 +408,14 @@ private:
 	void SendHUDSetFlags(u16 peer_id, u32 flags, u32 mask);
 	void SendHUDSetParam(u16 peer_id, u16 param, const std::string &value);
 	void SendSetSky(u16 peer_id, const video::SColor &bgcolor,
-			const std::string &type, const std::vector<std::string> &params);
+			const std::string &type, const std::vector<std::string> &params,
+			bool &clouds);
+	void SendCloudParams(u16 peer_id, float density,
+			const video::SColor &color_bright,
+			const video::SColor &color_ambient,
+			float height,
+			float thickness,
+			const v2f &speed);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
 
 	/*
@@ -470,12 +483,10 @@ private:
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		const std::wstring &wmessage,
+		std::wstring wmessage_input,
 		bool check_shout_priv = false,
 		RemotePlayer *player = NULL);
 	void handleAdminChat(const ChatEventChat *evt);
-
-	v3f findSpawnPos();
 
 	// When called, connection mutex should be locked
 	RemoteClient* getClient(u16 peer_id,ClientState state_min=CS_Active);
@@ -508,6 +519,8 @@ private:
 	// functionality
 	bool m_simple_singleplayer_mode;
 	u16 m_max_chatmessage_length;
+	// For "dedicated" server list flag
+	bool m_dedicated;
 
 	// Thread can set; step() will throw as ServerError
 	MutexedVariable<std::string> m_async_fatal_error;
@@ -538,7 +551,7 @@ private:
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	GameScripting *m_script;
+	ServerScripting *m_script;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -562,7 +575,7 @@ private:
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
 	float m_step_dtime;
-	Mutex m_step_dtime_mutex;
+	std::mutex m_step_dtime_mutex;
 
 	// current server step lag counter
 	float m_lag;
@@ -598,6 +611,7 @@ private:
 	bool m_shutdown_requested;
 	std::string m_shutdown_msg;
 	bool m_shutdown_ask_reconnect;
+	float m_shutdown_timer;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
@@ -637,12 +651,12 @@ private:
 	u16 m_ignore_map_edit_events_peer_id;
 
 	// media files known to server
-	UNORDERED_MAP<std::string, MediaInfo> m_media;
+	std::unordered_map<std::string, MediaInfo> m_media;
 
 	/*
 		Sounds
 	*/
-	UNORDERED_MAP<s32, ServerPlayingSound> m_playing_sounds;
+	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
 	s32 m_next_sound_id;
 
 	/*
@@ -653,7 +667,8 @@ private:
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
 
-	DISABLE_CLASS_COPY(Server);
+	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer;
 };
 
 /*

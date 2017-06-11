@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -33,7 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "dungeongen.h"
 #include "cavegen.h"
-#include "treegen.h"
 #include "mg_biome.h"
 #include "mg_ore.h"
 #include "mg_decoration.h"
@@ -61,10 +60,12 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 	this->hill_threshold   = params->hill_threshold;
 	this->hill_steepness   = params->hill_steepness;
 
-	//// 2D noise
-	noise_terrain      = new Noise(&params->np_terrain,      seed, csize.X, csize.Z);
+	// 2D noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
 
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		noise_terrain = new Noise(&params->np_terrain, seed, csize.X, csize.Z);
+	// 3D noise
 	MapgenBasic::np_cave1 = params->np_cave1;
 	MapgenBasic::np_cave2 = params->np_cave2;
 }
@@ -72,8 +73,10 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 
 MapgenFlat::~MapgenFlat()
 {
-	delete noise_terrain;
 	delete noise_filler_depth;
+
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		delete noise_terrain;
 }
 
 
@@ -137,7 +140,9 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 {
 	s16 level_at_point = ground_level;
-	float n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
+	float n_terrain = 0.0f;
+	if ((spflags & MGFLAT_LAKES) || (spflags & MGFLAT_HILLS))
+		n_terrain = NoisePerlin2D(&noise_terrain->np, p.X, p.Y, seed);
 
 	if ((spflags & MGFLAT_LAKES) && n_terrain < lake_threshold) {
 		level_at_point = ground_level -

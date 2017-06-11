@@ -34,4 +34,3 @@ enum ModifiedState
 };
 
 #endif
-

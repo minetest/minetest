@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "test.h"
 
-#include "threading/atomic.h"
+#include <atomic>
 #include "threading/semaphore.h"
 #include "threading/thread.h"
 
@@ -39,9 +39,7 @@ static TestThreading g_test_instance;
 
 void TestThreading::runTests(IGameDef *gamedef)
 {
-#if !(defined(__MACH__) && defined(__APPLE__))
 	TEST(testStartStopWait);
-#endif
 	TEST(testThreadKill);
 	TEST(testAtomicSemaphoreThread);
 }
@@ -139,7 +137,7 @@ void TestThreading::testThreadKill()
 
 class AtomicTestThread : public Thread {
 public:
-	AtomicTestThread(Atomic<u32> &v, Semaphore &trigger) :
+	AtomicTestThread(std::atomic<u32> &v, Semaphore &trigger) :
 		Thread("AtomicTest"),
 		val(v),
 		trigger(trigger)
@@ -155,14 +153,14 @@ private:
 		return NULL;
 	}
 
-	Atomic<u32> &val;
+	std::atomic<u32> &val;
 	Semaphore &trigger;
 };
 
 
 void TestThreading::testAtomicSemaphoreThread()
 {
-	Atomic<u32> val;
+	std::atomic<u32> val;
 	val = 0;
 	Semaphore trigger;
 	static const u8 num_threads = 4;

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
+#include "voxelalgorithms.h"
 
 namespace treegen
 {
@@ -56,7 +57,6 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-2, -1, -2), v3s16(2, 2, 2));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
@@ -112,7 +112,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 
 // L-System tree LUA spawner
 treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
-		INodeDefManager *ndef, TreeDef tree_definition)
+		INodeDefManager *ndef, const TreeDef &tree_definition)
 {
 	ServerMap *map = &env->getServerMap();
 	std::map<v3s16, MapBlock*> modified_blocks;
@@ -125,12 +125,8 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	if (e != SUCCESS)
 		return e;
 
-	vmanip.blitBackAll(&modified_blocks);
+	voxalgo::blit_back_with_light(map, &vmanip, &modified_blocks);
 
-	// update lighting
-	std::map<v3s16, MapBlock*> lighting_modified_blocks;
-	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
-	map->updateLighting(lighting_modified_blocks, modified_blocks);
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
@@ -783,7 +779,6 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -6, -3), v3s16(3, 3, 3));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;

@@ -49,3 +49,24 @@ setmetatable(core.env, {
 function core.rollback_get_last_node_actor(pos, range, seconds)
 	return core.rollback_get_node_actions(pos, range, seconds, 1)[1]
 end
+
+--
+-- core.setting_*
+--
+
+local settings = core.settings
+
+local function setting_proxy(name)
+	return function(...)
+		core.log("deprecated", "WARNING: minetest.setting_* "..
+			"functions are deprecated.  "..
+			"Use methods on the minetest.settings object.")
+		return settings[name](settings, ...)
+	end
+end
+
+core.setting_set = setting_proxy("set")
+core.setting_get = setting_proxy("get")
+core.setting_setbool = setting_proxy("set_bool")
+core.setting_getbool = setting_proxy("get_bool")
+core.setting_save = setting_proxy("write")

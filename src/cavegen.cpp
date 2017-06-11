@@ -74,19 +74,23 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
 	v3s16 em = vm->m_area.getExtent();
-	u32 index2d = 0;
+	u32 index2d = 0;  // Biomemap index
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
 	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
 		bool column_is_open = false;  // Is column open to overground
 		bool is_under_river = false;  // Is column under river water
-		bool is_tunnel = false;  // Is tunnel or tunnel floor
+		bool is_under_tunnel = false;  // Is tunnel or is under tunnel
+		// Indexes at column top
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
-			(x - nmin.X);
+			(x - nmin.X);  // 3D noise index
 		// Biome of column
 		Biome *biome = (Biome *)m_bmgr->getRaw(biomemap[index2d]);
-
+		u16 depth_top = biome->depth_top;
+		u16 base_filler = depth_top + biome->depth_filler;
+		u16 depth_riverbed = biome->depth_riverbed;
+		u16 nplaced = 0;
 		// Don't excavate the overgenerated stone at nmax.Y + 1,
 		// this creates a 'roof' over the tunnel, preventing light in
 		// tunnels at mapchunk borders when generating mapchunks upwards.
@@ -112,23 +116,135 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 			if (d1 * d2 > m_cave_width && m_ndef->get(c).is_ground_content) {
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
-				is_tunnel = true;
-			} else {
-				// Not in tunnel or not ground content
-				if (is_tunnel && column_is_open &&
-						(c == biome->c_filler || c == biome->c_stone)) {
-					// Tunnel entrance floor
-					if (is_under_river)
+				is_under_tunnel = true;
+			} else if (column_is_open && is_under_tunnel &&
+					(c == biome->c_stone || c == biome->c_filler)) {
+				// Tunnel entrance floor, place biome surface nodes
+				if (is_under_river) {
+					if (nplaced < depth_riverbed) {
 						vm->m_data[vi] = MapNode(biome->c_riverbed);
-					else
-						vm->m_data[vi] = MapNode(biome->c_top);
+						nplaced++;
+					} else {
+						// Disable top/filler placement
+						column_is_open = false;
+						is_under_river = false;
+						is_under_tunnel = false;
+					}
+				} else if (nplaced < depth_top) {
+					vm->m_data[vi] = MapNode(biome->c_top);
+					nplaced++;
+				} else if (nplaced < base_filler) {
+					vm->m_data[vi] = MapNode(biome->c_filler);
+					nplaced++;
+				} else {
+					// Disable top/filler placement
+					column_is_open = false;
+					is_under_tunnel = false;
 				}
-
+			} else {
+				// Not tunnel or tunnel entrance floor
 				column_is_open = false;
-				is_tunnel = false;
 			}
 		}
 	}
+}
+
+
+////
+//// CavernsNoise
+////
+
+CavernsNoise::CavernsNoise(
+	INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
+	s32 seed, float cavern_limit, float cavern_taper, float cavern_threshold)
+{
+	assert(nodedef);
+
+	m_ndef  = nodedef;
+
+	m_csize            = chunksize;
+	m_cavern_limit     = cavern_limit;
+	m_cavern_taper     = cavern_taper;
+	m_cavern_threshold = cavern_threshold;
+
+	m_ystride = m_csize.X;
+	m_zstride_1d = m_csize.X * (m_csize.Y + 1);
+
+	// Noise is created using 1-down overgeneration
+	// A Nx-by-1-by-Nz-sized plane is at the bottom of the desired for
+	// re-carving the solid overtop placed for blocking sunlight
+	noise_cavern = new Noise(np_cavern, seed, m_csize.X, m_csize.Y + 1, m_csize.Z);
+
+	c_water_source = m_ndef->getId("mapgen_water_source");
+	if (c_water_source == CONTENT_IGNORE)
+		c_water_source = CONTENT_AIR;
+
+	c_lava_source = m_ndef->getId("mapgen_lava_source");
+	if (c_lava_source == CONTENT_IGNORE)
+		c_lava_source = CONTENT_AIR;
+}
+
+
+CavernsNoise::~CavernsNoise()
+{
+	delete noise_cavern;
+}
+
+
+bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
+{
+	assert(vm);
+
+	// Calculate noise
+	noise_cavern->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
+
+	// Cache cavern_amp values
+	float *cavern_amp = new float[m_csize.Y + 1];
+	u8 cavern_amp_index = 0;  // Index zero at column top
+	for (s16 y = nmax.Y; y >= nmin.Y - 1; y--, cavern_amp_index++) {
+		cavern_amp[cavern_amp_index] =
+			MYMIN((m_cavern_limit - y) / (float)m_cavern_taper, 1.0f);
+	}
+
+	//// Place nodes
+	bool near_cavern = false;
+	v3s16 em = vm->m_area.getExtent();
+	u32 index2d = 0;
+
+	for (s16 z = nmin.Z; z <= nmax.Z; z++)
+	for (s16 x = nmin.X; x <= nmax.X; x++, index2d++) {
+		// Reset cave_amp index to column top
+		cavern_amp_index = 0;
+		// Initial voxelmanip index at column top
+		u32 vi = vm->m_area.index(x, nmax.Y, z);
+		// Initial 3D noise index at column top
+		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
+			(x - nmin.X);
+		// Don't excavate the overgenerated stone at node_max.Y + 1,
+		// this creates a 'roof' over the cavern, preventing light in
+		// caverns at mapchunk borders when generating mapchunks upwards.
+		// This 'roof' is excavated when the mapchunk above is generated.
+		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
+				index3d -= m_ystride,
+				vm->m_area.add_y(em, vi, -1),
+				cavern_amp_index++) {
+			content_t c = vm->m_data[vi].getContent();
+			float n_absamp_cavern = fabs(noise_cavern->result[index3d]) *
+				cavern_amp[cavern_amp_index];
+			// Disable CavesRandomWalk at a safe distance from caverns
+			// to avoid excessively spreading liquids in caverns.
+			if (n_absamp_cavern > m_cavern_threshold - 0.1f) {
+				near_cavern = true;
+				if (n_absamp_cavern > m_cavern_threshold &&
+						m_ndef->get(c).is_ground_content)
+					vm->m_data[vi] = MapNode(CONTENT_AIR);
+			}
+		}
+	}
+
+	delete[] cavern_amp;
+
+	return near_cavern;
 }
 
 

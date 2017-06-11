@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "serialization.h"
 #include "filesys.h"
+#include "voxelalgorithms.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -202,7 +204,7 @@ bool Schematic::placeOnVManip(MMVManip *vm, v3s16 p, u32 flags,
 	return vm->m_area.contains(VoxelArea(p, p + s - v3s16(1,1,1)));
 }
 
-void Schematic::placeOnMap(Map *map, v3s16 p, u32 flags,
+void Schematic::placeOnMap(ServerMap *map, v3s16 p, u32 flags,
 	Rotation rot, bool force_place)
 {
 	std::map<v3s16, MapBlock *> lighting_modified_blocks;
@@ -238,14 +240,9 @@ void Schematic::placeOnMap(Map *map, v3s16 p, u32 flags,
 
 	blitToVManip(&vm, p, rot, force_place);
 
-	vm.blitBackAll(&modified_blocks);
+	voxalgo::blit_back_with_light(map, &vm, &modified_blocks);
 
 	//// Carry out post-map-modification actions
-
-	//// Update lighting
-	// TODO: Optimize this by using Mapgen::calcLighting() instead
-	lighting_modified_blocks.insert(modified_blocks.begin(), modified_blocks.end());
-	map->updateLighting(lighting_modified_blocks, modified_blocks);
 
 	//// Create & dispatch map modification events to observers
 	MapEditEvent event;
@@ -564,14 +561,14 @@ void Schematic::applyProbabilities(v3s16 p0,
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
 	std::vector<std::string> *usednodes, INodeDefManager *ndef)
 {
-	UNORDERED_MAP<content_t, content_t> nodeidmap;
+	std::unordered_map<content_t, content_t> nodeidmap;
 	content_t numids = 0;
 
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;
 		content_t c = nodes[i].getContent();
 
-		UNORDERED_MAP<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		std::unordered_map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
 		if (it == nodeidmap.end()) {
 			id = numids;
 			numids++;

@@ -109,35 +109,6 @@ void ClientMap::OnRegisterSceneNode()
 	ISceneNode::OnRegisterSceneNode();
 }
 
-static bool isOccluded(Map *map, v3s16 p0, v3s16 p1, float step, float stepfac,
-		float start_off, float end_off, u32 needed_count, INodeDefManager *nodemgr)
-{
-	float d0 = (float)BS * p0.getDistanceFrom(p1);
-	v3s16 u0 = p1 - p0;
-	v3f uf = v3f(u0.X, u0.Y, u0.Z) * BS;
-	uf.normalize();
-	v3f p0f = v3f(p0.X, p0.Y, p0.Z) * BS;
-	u32 count = 0;
-	for(float s=start_off; s<d0+end_off; s+=step){
-		v3f pf = p0f + uf * s;
-		v3s16 p = floatToInt(pf, BS);
-		MapNode n = map->getNodeNoEx(p);
-		bool is_transparent = false;
-		const ContentFeatures &f = nodemgr->get(n);
-		if(f.solidness == 0)
-			is_transparent = (f.visual_solidness != 2);
-		else
-			is_transparent = (f.solidness != 2);
-		if(!is_transparent){
-			count++;
-			if(count >= needed_count)
-				return true;
-		}
-		step *= stepfac;
-	}
-	return false;
-}
-
 void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max)
 {
@@ -273,43 +244,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			/*
 				Occlusion culling
 			*/
-			v3s16 cpn = block->getPos() * MAP_BLOCKSIZE;
-			cpn += v3s16(MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2, MAP_BLOCKSIZE / 2);
-			float step = BS * 1;
-			float stepfac = 1.1;
-			float startoff = BS * 1;
-			// The occlusion search of 'isOccluded()' must stop short of the target
-			// point by distance 'endoff' (end offset) to not enter the target mapblock.
-			// For the 8 mapblock corners 'endoff' must therefore be the maximum diagonal
-			// of a mapblock, because we must consider all view angles.
-			// sqrt(1^2 + 1^2 + 1^2) = 1.732
-			float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
-			v3s16 spn = cam_pos_nodes;
-			s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
-			// to reduce the likelihood of falsely occluded blocks
-			// require at least two solid blocks
-			// this is a HACK, we should think of a more precise algorithm
-			u32 needed_count = 2;
-			if (occlusion_culling_enabled &&
-					// For the central point of the mapblock 'endoff' can be halved
-					isOccluded(this, spn, cpn,
-						step, stepfac, startoff, endoff / 2.0f, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef) &&
-					isOccluded(this, spn, cpn + v3s16(-bs2,-bs2,-bs2),
-						step, stepfac, startoff, endoff, needed_count, m_nodedef)) {
+			if (occlusion_culling_enabled && isBlockOccluded(block, cam_pos_nodes)) {
 				blocks_occlusion_culled++;
 				continue;
 			}
@@ -355,6 +290,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 struct MeshBufList
 {
+	/*!
+	 * Specifies in which layer the list is.
+	 * All lists which are in a lower layer are rendered before this list.
+	 */
+	u8 layer;
 	video::SMaterial m;
 	std::vector<scene::IMeshBuffer*> bufs;
 };
@@ -368,7 +308,7 @@ struct MeshBufListList
 		lists.clear();
 	}
 
-	void add(scene::IMeshBuffer *buf)
+	void add(scene::IMeshBuffer *buf, u8 layer)
 	{
 		const video::SMaterial &m = buf->getMaterial();
 		for(std::vector<MeshBufList>::iterator i = lists.begin();
@@ -380,12 +320,16 @@ struct MeshBufListList
 			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
 				continue;
 
+			if(l.layer != layer)
+				continue;
+
 			if (l.m == m) {
 				l.bufs.push_back(buf);
 				return;
 			}
 		}
 		MeshBufList l;
+		l.layer = layer;
 		l.m = m;
 		l.bufs.push_back(buf);
 		lists.push_back(l);
@@ -470,7 +414,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			continue;
 
 		// Mesh animation
-		{
+		if (pass == scene::ESNRP_SOLID) {
 			//MutexAutoLock lock(block->mesh_mutex);
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
@@ -499,29 +443,34 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			MapBlockMesh *mapBlockMesh = block->mesh;
 			assert(mapBlockMesh);
 
-			scene::IMesh *mesh = mapBlockMesh->getMesh();
-			assert(mesh);
+			for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+				scene::IMesh *mesh = mapBlockMesh->getMesh(layer);
+				assert(mesh);
 
-			u32 c = mesh->getMeshBufferCount();
-			for (u32 i = 0; i < c; i++)
-			{
-				scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
+				u32 c = mesh->getMeshBufferCount();
+				for (u32 i = 0; i < c; i++) {
+					scene::IMeshBuffer *buf = mesh->getMeshBuffer(i);
 
-				video::SMaterial& material = buf->getMaterial();
-				video::IMaterialRenderer* rnd =
+					video::SMaterial& material = buf->getMaterial();
+					video::IMaterialRenderer* rnd =
 						driver->getMaterialRenderer(material.MaterialType);
-				bool transparent = (rnd && rnd->isTransparent());
-				if (transparent == is_transparent_pass) {
-					if (buf->getVertexCount() == 0)
-						errorstream << "Block [" << analyze_block(block)
-							 << "] contains an empty meshbuf" << std::endl;
+					bool transparent = (rnd && rnd->isTransparent());
+					if (transparent == is_transparent_pass) {
+						if (buf->getVertexCount() == 0)
+							errorstream << "Block [" << analyze_block(block)
+								<< "] contains an empty meshbuf" << std::endl;
 
-					material.setFlag(video::EMF_TRILINEAR_FILTER, m_cache_trilinear_filter);
-					material.setFlag(video::EMF_BILINEAR_FILTER, m_cache_bilinear_filter);
-					material.setFlag(video::EMF_ANISOTROPIC_FILTER, m_cache_anistropic_filter);
-					material.setFlag(video::EMF_WIREFRAME, m_control.show_wireframe);
+						material.setFlag(video::EMF_TRILINEAR_FILTER,
+							m_cache_trilinear_filter);
+						material.setFlag(video::EMF_BILINEAR_FILTER,
+							m_cache_bilinear_filter);
+						material.setFlag(video::EMF_ANISOTROPIC_FILTER,
+							m_cache_anistropic_filter);
+						material.setFlag(video::EMF_WIREFRAME,
+							m_control.show_wireframe);
 
-					drawbufs.add(buf);
+						drawbufs.add(buf, layer);
+					}
 				}
 			}
 		}

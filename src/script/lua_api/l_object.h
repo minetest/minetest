@@ -37,7 +37,7 @@ private:
 	ServerActiveObject *m_object;
 
 	static const char className[];
-	static const luaL_reg methods[];
+	static const luaL_Reg methods[];
 public:
 	static ObjectRef *checkobject(lua_State *L, int narg);
 
@@ -105,7 +105,7 @@ private:
 	static int l_get_armor_groups(lua_State *L);
 
 	// set_physics_override(self, physics_override_speed, physics_override_jump,
-	//                      physics_override_gravity, sneak, sneak_glitch)
+	//                      physics_override_gravity, sneak, sneak_glitch, new_move)
 	static int l_set_physics_override(lua_State *L);
 
 	// get_physics_override(self)
@@ -283,11 +283,17 @@ private:
 	// hud_get_hotbar_selected_image(self)
 	static int l_hud_get_hotbar_selected_image(lua_State *L);
 
-	// set_sky(self, type, list)
+	// set_sky(self, bgcolor, type, list, clouds = true)
 	static int l_set_sky(lua_State *L);
 
-	// get_sky(self, type, list)
+	// get_sky(self)
 	static int l_get_sky(lua_State *L);
+
+	// set_clouds(self, {density=, color=, ambient=, height=, thickness=, speed=})
+	static int l_set_clouds(lua_State *L);
+
+	// get_clouds(self)
+	static int l_get_clouds(lua_State *L);
 
 	// override_day_night_ratio(self, type)
 	static int l_override_day_night_ratio(lua_State *L);

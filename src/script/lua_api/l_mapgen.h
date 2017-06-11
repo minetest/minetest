@@ -22,7 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "lua_api/l_base.h"
 
-class ModApiMapgen : public ModApiBase {
+class ModApiMapgen : public ModApiBase
+{
 private:
 	// get_biome_id(biomename)
 	// returns the biome id used in biomemap

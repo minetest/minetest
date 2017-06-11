@@ -49,8 +49,8 @@ class INodeDefManager;
 /*
 	Debug stuff
 */
-extern u32 emerge_time;
-extern u32 emerge_load_time;
+extern u64 emerge_time;
+extern u64 emerge_load_time;
 
 /*
 	This class resembles aabbox3d<s16> a lot, but has inclusive

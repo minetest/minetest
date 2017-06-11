@@ -26,14 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef THREADING_EVENT_H
 #define THREADING_EVENT_H
 
-#include "threads.h"
-
-#if USE_CPP11_MUTEX
-	#include <condition_variable>
-	#include "threading/mutex.h"
-	#include "threading/mutex_auto_lock.h"
-#endif
-
+#include <condition_variable>
 
 /** A syncronization primitive that will wake up one waiting thread when signaled.
  * Calling @c signal() multiple times before a waiting thread has had a chance
@@ -41,27 +34,16 @@ DEALINGS IN THE SOFTWARE.
  * are waiting on the event when it is signaled, the next call to @c wait()
  * will return (almost) immediately.
  */
-class Event {
+class Event
+{
 public:
-	Event();
-#ifndef USE_CPP11_MUTEX
-	~Event();
-#endif
 	void wait();
 	void signal();
 
 private:
-#if USE_CPP11_MUTEX
 	std::condition_variable cv;
-	Mutex mutex;
-	bool notified;
-#elif USE_WIN_MUTEX
-	HANDLE event;
-#else
-	pthread_cond_t cv;
-	pthread_mutex_t mutex;
-	bool notified;
-#endif
+	std::mutex mutex;
+	bool notified = false;
 };
 
 #endif

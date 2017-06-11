@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define UTIL_STRING_HEADER
 
 #include "irrlichttypes_bloated.h"
-#include "cpp11_container.h"
 #include <stdlib.h>
 #include <string>
 #include <cstring>
@@ -30,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iomanip>
 #include <cctype>
+#include <unordered_map>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -55,7 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	(((unsigned char)(x) < 0xe0) ? 2 :     \
 	(((unsigned char)(x) < 0xf0) ? 3 : 4))
 
-typedef UNORDERED_MAP<std::string, std::string> StringMap;
+typedef std::unordered_map<std::string, std::string> StringMap;
 
 struct FlagDesc {
 	const char *name;
@@ -232,7 +232,7 @@ inline std::vector<std::basic_string<T> > str_split(
  */
 inline std::string lowercase(const std::string &str)
 {
-	std::string s2;
+	std::string s2 = "";
 
 	s2.reserve(str.size());
 
@@ -420,6 +420,18 @@ inline void str_replace(std::string &str, const std::string &pattern,
 		str.replace(start, pattern.size(), replacement);
 		start = str.find(pattern, start + replacement.size());
 	}
+}
+
+/**
+ * Escapes characters [ ] \ , ; that can not be used in formspecs
+ */
+inline void str_formspec_escape(std::string &str)
+{
+	str_replace(str, "\\", "\\\\");
+	str_replace(str, "]", "\\]");
+	str_replace(str, "[", "\\[");
+	str_replace(str, ";", "\\;");
+	str_replace(str, ",", "\\,");
 }
 
 /**
@@ -613,5 +625,29 @@ inline const char *bool_to_cstr(bool val)
 {
 	return val ? "true" : "false";
 }
+
+inline const std::string duration_to_string(int sec)
+{
+	int min = sec / 60;
+	sec %= 60;
+	int hour = min / 60;
+	min %= 60;
+
+	std::stringstream ss;
+	if (hour > 0) {
+		ss << hour << "h ";
+	}
+
+	if (min > 0) {
+		ss << min << "m ";
+	}
+
+	if (sec > 0) {
+		ss << sec << "s ";
+	}
+
+	return ss.str();
+}
+
 
 #endif

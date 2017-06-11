@@ -186,6 +186,10 @@ local safe_env = {
 }
 
 function core.deserialize(str, safe)
+	if type(str) ~= "string" then
+		return nil, "Cannot deserialize type '"..type(str)
+			.."'. Argument must be a string."
+	end
 	if str:byte(1) == 0x1B then
 		return nil, "Bytecode prohibited"
 	end

@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -20,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_ore.h"
 #include "mapgen.h"
 #include "noise.h"
-#include "util/numeric.h"
 #include "map.h"
 #include "log.h"
+#include <algorithm>
+
 
 FlagDesc flagdesc_ore[] = {
 	{"absheight",                 OREFLAG_ABSHEIGHT},
@@ -148,7 +150,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 index = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -202,7 +204,7 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -270,7 +272,7 @@ void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -338,7 +340,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -422,7 +424,7 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z - nmin.Z) + (x - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}

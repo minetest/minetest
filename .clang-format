@@ -1,0 +1,28 @@
+BasedOnStyle: LLVM
+IndentWidth: 8
+UseTab: Always
+BreakBeforeBraces: Custom
+Standard: Cpp11
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: false
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: false
+  BeforeElse: false
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+AccessModifierOffset: -8
+ColumnLimit: 90
+AllowShortFunctionsOnASingleLine: Inline
+SortIncludes: false
+IncludeCategories:
+  - Regex:           '^".*'
+    Priority:        2
+  - Regex:           '^<.*'
+    Priority:        1
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 16

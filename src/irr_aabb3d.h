@@ -27,4 +27,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 typedef core::aabbox3d<f32> aabb3f;
 
 #endif
-

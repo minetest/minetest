@@ -40,7 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_schematic.h"
 #include "nodedef.h"
 #include "profiler.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "serverobject.h"
 #include "settings.h"
@@ -174,6 +174,9 @@ bool EmergeManager::initMapgens(MapgenParams *params)
 
 Mapgen *EmergeManager::getCurrentMapgen()
 {
+	if (!m_threads_active)
+		return NULL;
+
 	for (u32 i = 0; i != m_threads.size(); i++) {
 		if (m_threads[i]->isCurrentThread())
 			return m_threads[i]->m_mapgen;
@@ -372,7 +375,7 @@ bool EmergeManager::pushBlockEmergeData(
 bool EmergeManager::popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata)
 {
 	std::map<v3s16, BlockEmergeData>::iterator it;
-	UNORDERED_MAP<u16, u16>::iterator it2;
+	std::unordered_map<u16, u16>::iterator it2;
 
 	it = m_blocks_enqueued.find(pos);
 	if (it == m_blocks_enqueued.end())
@@ -603,7 +606,7 @@ void *EmergeThread::run()
 			continue;
 		}
 
-		if (blockpos_over_limit(pos))
+		if (blockpos_over_max_limit(pos))
 			continue;
 
 		bool allow_gen = bedata.flags & BLOCK_EMERGE_ALLOW_GEN;

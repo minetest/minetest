@@ -414,7 +414,7 @@ static void push_craft_recipe(lua_State *L, IGameDef *gdef,
 
 	lua_newtable(L); // items
 	std::vector<ItemStack>::const_iterator iter = input.items.begin();
-	for (u16 j = 1; iter != input.items.end(); iter++, j++) {
+	for (u16 j = 1; iter != input.items.end(); ++iter, j++) {
 		if (iter->empty())
 			continue;
 		lua_pushstring(L, iter->name.c_str());

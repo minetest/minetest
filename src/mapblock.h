@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modifiedstate.h"
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
+#include "mapgen.h"
 
 class Map;
 class NodeMetadataList;
@@ -105,7 +106,7 @@ public:
 #define MOD_REASON_INITIAL                   (1 << 0)
 #define MOD_REASON_REALLOCATE                (1 << 1)
 #define MOD_REASON_SET_IS_UNDERGROUND        (1 << 2)
-#define MOD_REASON_SET_LIGHTING_EXPIRED      (1 << 3)
+#define MOD_REASON_SET_LIGHTING_COMPLETE     (1 << 3)
 #define MOD_REASON_SET_GENERATED             (1 << 4)
 #define MOD_REASON_SET_NODE                  (1 << 5)
 #define MOD_REASON_SET_NODE_NO_CHECK         (1 << 6)
@@ -151,6 +152,11 @@ public:
 			data[i] = MapNode(CONTENT_IGNORE);
 
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_REALLOCATE);
+	}
+
+	MapNode* getData()
+	{
+		return data;
 	}
 
 	////
@@ -213,17 +219,42 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_IS_UNDERGROUND);
 	}
 
-	inline void setLightingExpired(bool expired)
+	inline void setLightingComplete(u16 newflags)
 	{
-		if (expired != m_lighting_expired){
-			m_lighting_expired = expired;
-			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_EXPIRED);
+		if (newflags != m_lighting_complete) {
+			m_lighting_complete = newflags;
+			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_LIGHTING_COMPLETE);
 		}
 	}
 
-	inline bool getLightingExpired()
+	inline u16 getLightingComplete()
 	{
-		return m_lighting_expired;
+		return m_lighting_complete;
+	}
+
+	inline void setLightingComplete(LightBank bank, u8 direction,
+		bool is_complete)
+	{
+		assert(direction >= 0 && direction <= 5);
+		if (bank == LIGHTBANK_NIGHT) {
+			direction += 6;
+		}
+		u16 newflags = m_lighting_complete;
+		if (is_complete) {
+			newflags |= 1 << direction;
+		} else {
+			newflags &= ~(1 << direction);
+		}
+		setLightingComplete(newflags);
+	}
+
+	inline bool isLightingComplete(LightBank bank, u8 direction)
+	{
+		assert(direction >= 0 && direction <= 5);
+		if (bank == LIGHTBANK_NIGHT) {
+			direction += 6;
+		}
+		return (m_lighting_complete & (1 << direction)) != 0;
 	}
 
 	inline bool isGenerated()
@@ -237,15 +268,6 @@ public:
 			raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_GENERATED);
 			m_generated = b;
 		}
-	}
-
-	inline bool isValid()
-	{
-		if (m_lighting_expired)
-			return false;
-		if (data == NULL)
-			return false;
-		return true;
 	}
 
 	////
@@ -525,7 +547,7 @@ public:
 	// unknown blocks from id-name mapping to wndef
 	void deSerialize(std::istream &is, u8 version, bool disk);
 
-	void serializeNetworkSpecific(std::ostream &os, u16 net_proto_version);
+	void serializeNetworkSpecific(std::ostream &os);
 	void deSerializeNetworkSpecific(std::istream &is);
 private:
 	/*
@@ -613,14 +635,15 @@ private:
 	*/
 	bool is_underground;
 
-	/*
-		Set to true if changes has been made that make the old lighting
-		values wrong but the lighting hasn't been actually updated.
-
-		If this is false, lighting is exactly right.
-		If this is true, lighting might be wrong or right.
+	/*!
+	 * Each bit indicates if light spreading was finished
+	 * in a direction. (Because the neighbor could also be unloaded.)
+	 * Bits (most significant first):
+	 * nothing,  nothing,  nothing,  nothing,
+	 * night X-, night Y-, night Z-, night Z+, night Y+, night X+,
+	 * day X-,   day Y-,   day Z-,   day Z+,   day Y+,   day X+.
 	*/
-	bool m_lighting_expired;
+	u16 m_lighting_complete;
 
 	// Whether day and night lighting differs
 	bool m_day_night_differs;
@@ -653,37 +676,24 @@ typedef std::vector<MapBlock*> MapBlockVect;
 
 inline bool objectpos_over_limit(v3f p)
 {
-	const float map_gen_limit_bs = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit")) * BS;
-	return (p.X < -map_gen_limit_bs
-		|| p.X > map_gen_limit_bs
-		|| p.Y < -map_gen_limit_bs
-		|| p.Y > map_gen_limit_bs
-		|| p.Z < -map_gen_limit_bs
-		|| p.Z > map_gen_limit_bs);
+	const float max_limit_bs = MAX_MAP_GENERATION_LIMIT * BS;
+	return p.X < -max_limit_bs ||
+		p.X >  max_limit_bs ||
+		p.Y < -max_limit_bs ||
+		p.Y >  max_limit_bs ||
+		p.Z < -max_limit_bs ||
+		p.Z >  max_limit_bs;
 }
 
-/*
-	We are checking for any node of the mapblock being beyond the limit.
-
-	At the negative limit we are checking for
-		block minimum nodepos < -mapgenlimit.
-	At the positive limit we are checking for
-		block maximum nodepos > mapgenlimit.
-
-	Block minimum nodepos = blockpos * mapblocksize.
-	Block maximum nodepos = (blockpos + 1) * mapblocksize - 1.
-*/
-inline bool blockpos_over_limit(v3s16 p)
+inline bool blockpos_over_max_limit(v3s16 p)
 {
-	const u16 map_gen_limit = MYMIN(MAX_MAP_GENERATION_LIMIT,
-		g_settings->getU16("map_generation_limit"));
-	return (p.X * MAP_BLOCKSIZE < -map_gen_limit 
-		|| (p.X + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Y * MAP_BLOCKSIZE < -map_gen_limit 
-		|| (p.Y + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit
-		|| p.Z * MAP_BLOCKSIZE < -map_gen_limit 
-		|| (p.Z + 1) * MAP_BLOCKSIZE - 1 > map_gen_limit);
+	const s16 max_limit_bp = MAX_MAP_GENERATION_LIMIT / MAP_BLOCKSIZE;
+	return p.X < -max_limit_bp ||
+		p.X >  max_limit_bp ||
+		p.Y < -max_limit_bp ||
+		p.Y >  max_limit_bp ||
+		p.Z < -max_limit_bp ||
+		p.Z >  max_limit_bp;
 }
 
 /*

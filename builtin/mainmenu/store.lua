@@ -233,14 +233,14 @@ function modstore.handle_buttons(parent, fields, name, data)
 
 					if not core.handle_async(
 						function(param)
-							local fullurl = core.setting_get("modstore_download_url") ..
+							local fullurl = core.settings:get("modstore_download_url") ..
 											param.moddetails.download_url
 
 							if param.version ~= nil then
 								local found = false
 								for i=1,#param.moddetails.versions, 1 do
 									if param.moddetails.versions[i].date:sub(1,10) == param.version then
-										fullurl = core.setting_get("modstore_download_url") ..
+										fullurl = core.settings:get("modstore_download_url") ..
 														param.moddetails.versions[i].download_url
 										found = true
 									end
@@ -400,7 +400,7 @@ function modstore.getscreenshot(ypos,listentry)
 		listentry.texturename = "in progress"
 
 		--prepare url and filename
-		local fullurl = core.setting_get("modstore_download_url") ..
+		local fullurl = core.settings:get("modstore_download_url") ..
 					listentry.details.screenshot_url
 		local filename = os.tempfolder() .. "_MID_" .. listentry.id
 

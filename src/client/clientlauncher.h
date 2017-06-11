@@ -24,42 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/inputhandler.h"
 #include "gameparams.h"
 
-// A small helper class
-class TimeGetter
-{
-public:
-	virtual u32 getTime(TimePrecision prec) = 0;
-};
-
-// A precise irrlicht one
-class IrrlichtTimeGetter: public TimeGetter
-{
-public:
-	IrrlichtTimeGetter(IrrlichtDevice *device):
-		m_device(device)
-	{}
-	u32 getTime(TimePrecision prec)
-	{
-		if (prec == PRECISION_MILLI) {
-			if (m_device == NULL)
-				return 0;
-			return m_device->getTimer()->getRealTime();
-		} else {
-			return porting::getTime(prec);
-		}
-	}
-private:
-	IrrlichtDevice *m_device;
-};
-// Not so precise one which works without irrlicht
-class SimpleTimeGetter: public TimeGetter
-{
-public:
-	u32 getTime(TimePrecision prec)
-	{
-		return porting::getTime(prec);
-	}
-};
 
 class ClientLauncher
 {
@@ -91,6 +55,7 @@ public:
 protected:
 	void init_args(GameParams &game_params, const Settings &cmd_args);
 	bool init_engine();
+	void init_input();
 
 	bool launch_game(std::string &error_message, bool reconnect_requested,
 		GameParams &game_params, const Settings &cmd_args);

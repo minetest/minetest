@@ -23,13 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "constants.h"
 #include "serialization.h"             // for SER_FMT_VER_INVALID
-#include "threading/mutex.h"
 #include "network/networkpacket.h"
-#include "util/cpp11_container.h"
+#include "porting.h"
 
 #include <list>
 #include <vector>
 #include <set>
+#include <mutex>
 
 class MapBlock;
 class ServerEnvironment;
@@ -165,7 +165,6 @@ namespace con {
 	class Connection;
 }
 
-#define CI_ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 // Also make sure to update the ClientInterface::statenames
 // array when modifying these enums
@@ -266,7 +265,7 @@ public:
 		m_version_patch(0),
 		m_full_version("unknown"),
 		m_deployed_compression(0),
-		m_connection_time(getTime(PRECISION_SECONDS))
+		m_connection_time(porting::getTimeS())
 	{
 	}
 	~RemoteClient()
@@ -325,14 +324,11 @@ public:
 	*/
 	std::set<u16> m_known_objects;
 
-	ClientState getState()
-		{ return m_state; }
+	ClientState getState() const { return m_state; }
 
-	std::string getName()
-		{ return m_name; }
+	std::string getName() const { return m_name; }
 
-	void setName(std::string name)
-		{ m_name = name; }
+	void setName(const std::string &name) { m_name = name; }
 
 	/* update internal client state */
 	void notifyEvent(ClientStateEvent event);
@@ -348,10 +344,11 @@ public:
 		{ serialization_version = m_pending_serialization_version; }
 
 	/* get uptime */
-	u32 uptime();
+	u64 uptime() const;
 
 	/* set version information */
-	void setVersionInfo(u8 major, u8 minor, u8 patch, std::string full) {
+	void setVersionInfo(u8 major, u8 minor, u8 patch, const std::string &full)
+	{
 		m_version_major = major;
 		m_version_minor = minor;
 		m_version_patch = patch;
@@ -359,10 +356,9 @@ public:
 	}
 
 	/* read version information */
-	u8 getMajor() { return m_version_major; }
-	u8 getMinor() { return m_version_minor; }
-	u8 getPatch() { return m_version_patch; }
-	std::string getVersion() { return m_full_version; }
+	u8 getMajor() const { return m_version_major; }
+	u8 getMinor() const { return m_version_minor; }
+	u8 getPatch() const { return m_version_patch; }
 private:
 	// Version is stored in here after INIT before INIT2
 	u8 m_pending_serialization_version;
@@ -435,8 +431,10 @@ private:
 	/*
 		time this client was created
 	 */
-	const u32 m_connection_time;
+	const u64 m_connection_time;
 };
+
+typedef std::unordered_map<u16, RemoteClient*> RemoteClientMap;
 
 class ClientInterface {
 public:
@@ -459,7 +457,7 @@ public:
 	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
 
 	/* send to all clients */
-	void sendToAll(u16 channelnum, NetworkPacket* pkt, bool reliable);
+	void sendToAll(NetworkPacket *pkt);
 
 	/* delete a client */
 	void DeleteClient(u16 peer_id);
@@ -502,7 +500,7 @@ protected:
 	void lock() { m_clients_mutex.lock(); }
 	void unlock() { m_clients_mutex.unlock(); }
 
-	UNORDERED_MAP<u16, RemoteClient*>& getClientList() { return m_clients; }
+	RemoteClientMap& getClientList() { return m_clients; }
 
 private:
 	/* update internal player list */
@@ -510,14 +508,14 @@ private:
 
 	// Connection
 	con::Connection* m_con;
-	Mutex m_clients_mutex;
+	std::mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
-	UNORDERED_MAP<u16, RemoteClient*> m_clients;
+	RemoteClientMap m_clients;
 	std::vector<std::string> m_clients_names; //for announcing masterserver
 
 	// Environment
 	ServerEnvironment *m_env;
-	Mutex m_env_mutex;
+	std::mutex m_env_mutex;
 
 	float m_print_info_timer;
 

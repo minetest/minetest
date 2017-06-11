@@ -196,7 +196,7 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 
 
 #if USE_CURL
-void sendAnnounce(const std::string &action,
+void sendAnnounce(AnnounceAction action,
 		const u16 port,
 		const std::vector<std::string> &clients_names,
 		const double uptime,
@@ -204,15 +204,17 @@ void sendAnnounce(const std::string &action,
 		const float lag,
 		const std::string &gameid,
 		const std::string &mg_name,
-		const std::vector<ModSpec> &mods)
+		const std::vector<ModSpec> &mods,
+		bool dedicated)
 {
+	static const char *aa_names[] = {"start", "update", "delete"};
 	Json::Value server;
-	server["action"] = action;
+	server["action"] = aa_names[action];
 	server["port"] = port;
 	if (g_settings->exists("server_address")) {
 		server["address"] = g_settings->get("server_address");
 	}
-	if (action != "delete") {
+	if (action != AA_DELETE) {
 		bool strict_checking = g_settings->getBool("strict_protocol_version_checking");
 		server["name"]         = g_settings->get("server_name");
 		server["description"]  = g_settings->get("server_description");
@@ -237,20 +239,19 @@ void sendAnnounce(const std::string &action,
 		if (gameid != "") server["gameid"] = gameid;
 	}
 
-	if (action == "start") {
-		server["dedicated"]         = g_settings->getBool("server_dedicated");
+	if (action == AA_START) {
+		server["dedicated"]         = dedicated;
 		server["rollback"]          = g_settings->getBool("enable_rollback_recording");
 		server["mapgen"]            = mg_name;
 		server["privs"]             = g_settings->get("default_privs");
 		server["can_see_far_names"] = g_settings->getS16("player_transfer_distance") <= 0;
 		server["mods"]              = Json::Value(Json::arrayValue);
 		for (std::vector<ModSpec>::const_iterator it = mods.begin();
-				it != mods.end();
-				++it) {
+				it != mods.end(); ++it) {
 			server["mods"].append(it->name);
 		}
 		actionstream << "Announcing to " << g_settings->get("serverlist_url") << std::endl;
-	} else {
+	} else if (action == AA_UPDATE) {
 		if (lag)
 			server["lag"] = lag;
 	}
@@ -264,4 +265,5 @@ void sendAnnounce(const std::string &action,
 }
 #endif
 
-} //namespace ServerList
+} // namespace ServerList
+

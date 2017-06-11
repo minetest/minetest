@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "profiler.h"
 #include "raycast.h"
 #include "remoteplayer.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "server.h"
 #include "voxelalgorithms.h"
 #include "util/serialize.h"
@@ -36,6 +36,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "threading/mutex_auto_lock.h"
 #include "filesys.h"
+#include "gameparams.h"
+#include "database-dummy.h"
+#include "database-files.h"
+#include "database-sqlite3.h"
+#if USE_POSTGRESQL
+#include "database-postgresql.h"
+#endif
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
@@ -134,7 +141,7 @@ void LBMManager::addLBMDef(LoadingBlockModifierDef *lbm_def)
 	if (!string_allowed(lbm_def->name, LBM_NAME_ALLOWED_CHARS)) {
 		throw ModError("Error adding LBM \"" + lbm_def->name +
 			"\": Does not follow naming conventions: "
-				"Only chararacters [a-z0-9_:] are allowed.");
+				"Only characters [a-z0-9_:] are allowed.");
 	}
 
 	m_lbm_defs[lbm_def->name] = lbm_def;
@@ -352,8 +359,9 @@ void ActiveBlockList::update(std::vector<v3s16> &active_positions,
 */
 
 ServerEnvironment::ServerEnvironment(ServerMap *map,
-	GameScripting *scriptIface, Server *server,
-	const std::string &path_world) :
+	ServerScripting *scriptIface, Server *server,
+	const std::string &path_world):
+	Environment(server),
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),
@@ -364,8 +372,30 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_game_time_fraction_counter(0),
 	m_last_clear_objects_time(0),
 	m_recommended_send_interval(0.1),
-	m_max_lag_estimate(0.1)
+	m_max_lag_estimate(0.1),
+	m_player_database(NULL)
 {
+	// Determine which database backend to use
+	std::string conf_path = path_world + DIR_DELIM + "world.mt";
+	Settings conf;
+	bool succeeded = conf.readConfigFile(conf_path.c_str());
+	if (!succeeded || !conf.exists("player_backend")) {
+		// fall back to files
+		conf.set("player_backend", "files");
+		warningstream << "/!\\ You are using old player file backend. "
+				<< "This backend is deprecated and will be removed in next release /!\\"
+				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
+				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+
+		if (!conf.updateConfigFile(conf_path.c_str())) {
+			errorstream << "ServerEnvironment::ServerEnvironment(): "
+				<< "Failed to update world.mt!" << std::endl;
+		}
+	}
+
+	std::string name = "";
+	conf.getNoEx("player_backend", name);
+	m_player_database = openPlayerDatabase(name, path_world, conf);
 }
 
 ServerEnvironment::~ServerEnvironment()
@@ -391,6 +421,8 @@ ServerEnvironment::~ServerEnvironment()
 		i != m_players.end(); ++i) {
 		delete (*i);
 	}
+
+	delete m_player_database;
 }
 
 Map & ServerEnvironment::getMap()
@@ -454,6 +486,11 @@ void ServerEnvironment::removePlayer(RemotePlayer *player)
 	}
 }
 
+bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
+{
+	return m_player_database->removePlayer(name);
+}
+
 bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, v3s16 *p)
 {
 	float distance = pos1.getDistanceFrom(pos2);
@@ -494,7 +531,7 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 
 void ServerEnvironment::saveLoadedPlayers()
 {
-	std::string players_path = m_path_world + DIR_DELIM "players";
+	std::string players_path = m_path_world + DIR_DELIM + "players";
 	fs::CreateDir(players_path);
 
 	for (std::vector<RemotePlayer *>::iterator it = m_players.begin();
@@ -502,63 +539,64 @@ void ServerEnvironment::saveLoadedPlayers()
 		++it) {
 		if ((*it)->checkModified() ||
 			((*it)->getPlayerSAO() && (*it)->getPlayerSAO()->extendedAttributesModified())) {
-			(*it)->save(players_path, m_server);
+			try {
+				m_player_database->savePlayer(*it);
+			} catch (DatabaseException &e) {
+				errorstream << "Failed to save player " << (*it)->getName() << " exception: "
+					<< e.what() << std::endl;
+				throw;
+			}
 		}
 	}
 }
 
 void ServerEnvironment::savePlayer(RemotePlayer *player)
 {
-	std::string players_path = m_path_world + DIR_DELIM "players";
-	fs::CreateDir(players_path);
-
-	player->save(players_path, m_server);
+	try {
+		m_player_database->savePlayer(player);
+	} catch (DatabaseException &e) {
+		errorstream << "Failed to save player " << player->getName() << " exception: "
+			<< e.what() << std::endl;
+		throw;
+	}
 }
 
-RemotePlayer *ServerEnvironment::loadPlayer(const std::string &playername, PlayerSAO *sao)
+PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
+	u16 peer_id, bool is_singleplayer)
 {
-	bool newplayer = false;
-	bool found = false;
-	std::string players_path = m_path_world + DIR_DELIM "players" DIR_DELIM;
-	std::string path = players_path + playername;
+	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
+	// Create player if it doesn't exist
+	if (!m_player_database->loadPlayer(player, playersao)) {
+		*new_player = true;
+		// Set player position
+		infostream << "Server: Finding spawn place for player \""
+			<< player->getName() << "\"" << std::endl;
+		playersao->setBasePosition(m_server->findSpawnPos());
 
-	RemotePlayer *player = getPlayer(playername.c_str());
-	if (!player) {
-		player = new RemotePlayer("", m_server->idef());
-		newplayer = true;
-	}
-
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		//// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good())
-			continue;
-
-		player->deSerialize(is, path, sao);
-		is.close();
-
-		if (player->getName() == playername) {
-			found = true;
-			break;
+		// Make sure the player is saved
+		player->setModified(true);
+	} else {
+		// If the player exists, ensure that they respawn inside legal bounds
+		// This fixes an assert crash when the player can't be added
+		// to the environment
+		ServerMap &map = getServerMap();
+		if (map.getMapgenParams()->saoPosOverLimit(playersao->getBasePosition())) {
+			actionstream << "Respawn position for player \""
+				<< player->getName() << "\" outside limits, resetting" << std::endl;
+			playersao->setBasePosition(m_server->findSpawnPos());
 		}
-
-		path = players_path + playername + itos(i);
 	}
 
-	if (!found) {
-		infostream << "Player file for player " << playername
-			<< " not found" << std::endl;
-		if (newplayer)
-			delete player;
+	// Add player to environment
+	addPlayer(player);
 
-		return NULL;
-	}
+	/* Clean up old HUD elements from previous sessions */
+	player->clearHud();
 
-	if (newplayer) {
-		addPlayer(player);
-	}
-	player->setModified(false);
-	return player;
+	/* Add object to environment */
+	addActiveObject(playersao);
+
+	return playersao;
 }
 
 void ServerEnvironment::saveMeta()
@@ -684,7 +722,7 @@ public:
 				chance = 1;
 			ActiveABM aabm;
 			aabm.abm = abm;
-			if(abm->getSimpleCatchUp()) {
+			if (abm->getSimpleCatchUp()) {
 				float intervals = actual_interval / trigger_interval;
 				if(intervals == 0)
 					continue;
@@ -694,25 +732,23 @@ public:
 			} else {
 				aabm.chance = chance;
 			}
+
 			// Trigger neighbors
-			std::set<std::string> required_neighbors_s
-				= abm->getRequiredNeighbors();
-			for(std::set<std::string>::iterator
-				i = required_neighbors_s.begin();
-				i != required_neighbors_s.end(); ++i)
-			{
-				ndef->getIds(*i, aabm.required_neighbors);
+			const std::set<std::string> &required_neighbors_s =
+				abm->getRequiredNeighbors();
+			for (std::set<std::string>::iterator rn = required_neighbors_s.begin();
+					rn != required_neighbors_s.end(); ++rn) {
+				ndef->getIds(*rn, aabm.required_neighbors);
 			}
+
 			// Trigger contents
-			std::set<std::string> contents_s = abm->getTriggerContents();
-			for(std::set<std::string>::iterator
-				i = contents_s.begin(); i != contents_s.end(); ++i)
-			{
+			const std::set<std::string> &contents_s = abm->getTriggerContents();
+			for (std::set<std::string>::iterator cs = contents_s.begin();
+					cs != contents_s.end(); ++cs) {
 				std::set<content_t> ids;
-				ndef->getIds(*i, ids);
-				for(std::set<content_t>::const_iterator k = ids.begin();
-					k != ids.end(); ++k)
-				{
+				ndef->getIds(*cs, ids);
+				for (std::set<content_t>::const_iterator k = ids.begin();
+						k != ids.end(); ++k) {
 					content_t c = *k;
 					if (c >= m_aabms.size())
 						m_aabms.resize(c + 256, NULL);
@@ -964,9 +1000,10 @@ bool ServerEnvironment::swapNode(v3s16 p, const MapNode &n)
 	return true;
 }
 
-void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos, float radius)
+void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f pos,
+	float radius)
 {
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
 		u16 id = i->first;
@@ -982,7 +1019,7 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	infostream << "ServerEnvironment::clearObjects(): "
 		<< "Removing all active objects" << std::endl;
 	std::vector<u16> objects_to_remove;
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
 		if (obj->getType() == ACTIVEOBJECT_TYPE_PLAYER)
@@ -1132,7 +1169,8 @@ void ServerEnvironment::step(float dtime)
 	// Update this one
 	// NOTE: This is kind of funny on a singleplayer game, but doesn't
 	// really matter that much.
-	static const float server_step = g_settings->getFloat("dedicated_server_step");
+	static thread_local const float server_step =
+			g_settings->getFloat("dedicated_server_step");
 	m_recommended_send_interval = server_step;
 
 	/*
@@ -1193,7 +1231,8 @@ void ServerEnvironment::step(float dtime)
 		/*
 			Update list of active blocks, collecting changes
 		*/
-		static const s16 active_block_range = g_settings->getS16("active_block_range");
+		static thread_local const s16 active_block_range =
+				g_settings->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
@@ -1360,7 +1399,7 @@ void ServerEnvironment::step(float dtime)
 			send_recommended = true;
 		}
 
-		for(ActiveObjectMap::iterator i = m_active_objects.begin();
+		for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 			i != m_active_objects.end(); ++i) {
 			ServerActiveObject* obj = i->second;
 			// Don't step if is to be removed or stored statically
@@ -1394,7 +1433,7 @@ void ServerEnvironment::step(float dtime)
 		Manage particle spawner expiration
 	*/
 	if (m_particle_management_interval.step(dtime, 1.0)) {
-		for (UNORDERED_MAP<u32, float>::iterator i = m_particle_spawners.begin();
+		for (std::unordered_map<u32, float>::iterator i = m_particle_spawners.begin();
 			i != m_particle_spawners.end(); ) {
 			//non expiring spawners
 			if (i->second == PARTICLE_SPAWNER_NO_EXPIRY) {
@@ -1419,7 +1458,7 @@ u32 ServerEnvironment::addParticleSpawner(float exptime)
 	u32 id = 0;
 	for (;;) { // look for unused particlespawner id
 		id++;
-		UNORDERED_MAP<u32, float>::iterator f = m_particle_spawners.find(id);
+		std::unordered_map<u32, float>::iterator f = m_particle_spawners.find(id);
 		if (f == m_particle_spawners.end()) {
 			m_particle_spawners[id] = time;
 			break;
@@ -1441,7 +1480,7 @@ u32 ServerEnvironment::addParticleSpawner(float exptime, u16 attached_id)
 void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 {
 	m_particle_spawners.erase(id);
-	UNORDERED_MAP<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
+	std::unordered_map<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
 	if (it != m_particle_spawner_attachments.end()) {
 		u16 obj_id = (*it).second;
 		ServerActiveObject *sao = getActiveObject(obj_id);
@@ -1454,11 +1493,11 @@ void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 
 ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
 {
-	ActiveObjectMap::iterator n = m_active_objects.find(id);
+	ServerActiveObjectMap::const_iterator n = m_active_objects.find(id);
 	return (n != m_active_objects.end() ? n->second : NULL);
 }
 
-bool isFreeServerActiveObjectId(u16 id, ActiveObjectMap &objects)
+bool isFreeServerActiveObjectId(u16 id, ServerActiveObjectMap &objects)
 {
 	if (id == 0)
 		return false;
@@ -1466,7 +1505,7 @@ bool isFreeServerActiveObjectId(u16 id, ActiveObjectMap &objects)
 	return objects.find(id) == objects.end();
 }
 
-u16 getFreeServerActiveObjectId(ActiveObjectMap &objects)
+u16 getFreeServerActiveObjectId(ServerActiveObjectMap &objects)
 {
 	//try to reuse id's as late as possible
 	static u16 last_used_id = 0;
@@ -1511,7 +1550,7 @@ void ServerEnvironment::getAddedActiveObjects(PlayerSAO *playersao, s16 radius,
 		- discard objects that are found in current_objects.
 		- add remaining objects to added_objects
 	*/
-	for (ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
 
@@ -1607,7 +1646,7 @@ void ServerEnvironment::setStaticForActiveObjectsInBlock(
 		so_it = block->m_static_objects.m_active.begin();
 		so_it != block->m_static_objects.m_active.end(); ++so_it) {
 		// Get the ServerActiveObject counterpart to this StaticObject
-		ActiveObjectMap::iterator ao_it = m_active_objects.find(so_it->first);
+		ServerActiveObjectMap::const_iterator ao_it = m_active_objects.find(so_it->first);
 		if (ao_it == m_active_objects.end()) {
 			// If this ever happens, there must be some kind of nasty bug.
 			errorstream << "ServerEnvironment::setStaticForObjectsInBlock(): "
@@ -1667,7 +1706,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 
 	if (objectpos_over_limit(object->getBasePosition())) {
 		v3f p = object->getBasePosition();
-		errorstream << "ServerEnvironment::addActiveObjectRaw(): "
+		warningstream << "ServerEnvironment::addActiveObjectRaw(): "
 			<< "object position (" << p.X << "," << p.Y << "," << p.Z
 			<< ") outside maximum range" << std::endl;
 		if (object->environmentDeletes())
@@ -1726,7 +1765,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 void ServerEnvironment::removeRemovedObjects()
 {
 	std::vector<u16> objects_to_remove;
-	for(ActiveObjectMap::iterator i = m_active_objects.begin();
+	for(ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
 		u16 id = i->first;
 		ServerActiveObject* obj = i->second;
@@ -1941,11 +1980,14 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 
 	If block wasn't generated (not in memory or on disk),
 */
-void ServerEnvironment::deactivateFarObjects(bool force_delete)
+void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 {
 	std::vector<u16> objects_to_remove;
-	for(ActiveObjectMap::iterator i = m_active_objects.begin();
+	for (ServerActiveObjectMap::iterator i = m_active_objects.begin();
 		i != m_active_objects.end(); ++i) {
+		// force_delete might be overriden per object
+		bool force_delete = _force_delete;
+
 		ServerActiveObject* obj = i->second;
 		assert(obj);
 
@@ -2087,9 +2129,7 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 
 			if(block)
 			{
-				// Force delete object if mapblock is full, but ignore players
-				if (obj->getType() != ACTIVEOBJECT_TYPE_PLAYER &&
-					block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
+				if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
 					warningstream << "ServerEnv: Trying to store id = " << obj->getId()
 						<< " statically but block " << PP(blockpos)
 						<< " already contains "
@@ -2170,4 +2210,112 @@ void ServerEnvironment::deactivateFarObjects(bool force_delete)
 		i != objects_to_remove.end(); ++i) {
 		m_active_objects.erase(*i);
 	}
+}
+
+PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
+		const std::string &savedir, const Settings &conf)
+{
+
+	if (name == "sqlite3")
+		return new PlayerDatabaseSQLite3(savedir);
+	else if (name == "dummy")
+		return new Database_Dummy();
+#if USE_POSTGRESQL
+	else if (name == "postgresql") {
+		std::string connect_string = "";
+		conf.getNoEx("pgsql_player_connection", connect_string);
+		return new PlayerDatabasePostgreSQL(connect_string);
+	}
+#endif
+	else if (name == "files")
+		return new PlayerDatabaseFiles(savedir + DIR_DELIM + "players");
+	else
+		throw BaseException(std::string("Database backend ") + name + " not supported.");
+}
+
+bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
+		const Settings &cmd_args)
+{
+	std::string migrate_to = cmd_args.get("migrate-players");
+	Settings world_mt;
+	std::string world_mt_path = game_params.world_path + DIR_DELIM + "world.mt";
+	if (!world_mt.readConfigFile(world_mt_path.c_str())) {
+		errorstream << "Cannot read world.mt!" << std::endl;
+		return false;
+	}
+
+	if (!world_mt.exists("player_backend")) {
+		errorstream << "Please specify your current backend in world.mt:"
+			<< std::endl
+			<< "	player_backend = {files|sqlite3|postgresql}"
+			<< std::endl;
+		return false;
+	}
+
+	std::string backend = world_mt.get("player_backend");
+	if (backend == migrate_to) {
+		errorstream << "Cannot migrate: new backend is same"
+			<< " as the old one" << std::endl;
+		return false;
+	}
+
+	const std::string players_backup_path = game_params.world_path + DIR_DELIM
+		+ "players.bak";
+
+	if (backend == "files") {
+		// Create backup directory
+		fs::CreateDir(players_backup_path);
+	}
+
+	try {
+		PlayerDatabase *srcdb = ServerEnvironment::openPlayerDatabase(backend,
+			game_params.world_path, world_mt);
+		PlayerDatabase *dstdb = ServerEnvironment::openPlayerDatabase(migrate_to,
+			game_params.world_path, world_mt);
+
+		std::vector<std::string> player_list;
+		srcdb->listPlayers(player_list);
+		for (std::vector<std::string>::const_iterator it = player_list.begin();
+			it != player_list.end(); ++it) {
+			actionstream << "Migrating player " << it->c_str() << std::endl;
+			RemotePlayer player(it->c_str(), NULL);
+			PlayerSAO playerSAO(NULL, &player, 15000, false);
+
+			srcdb->loadPlayer(&player, &playerSAO);
+
+			playerSAO.finalize(&player, std::set<std::string>());
+			player.setPlayerSAO(&playerSAO);
+
+			dstdb->savePlayer(&player);
+
+			// For files source, move player files to backup dir
+			if (backend == "files") {
+				fs::Rename(
+					game_params.world_path + DIR_DELIM + "players" + DIR_DELIM + (*it),
+					players_backup_path + DIR_DELIM + (*it));
+			}
+		}
+
+		actionstream << "Successfully migrated " << player_list.size() << " players"
+			<< std::endl;
+		world_mt.set("player_backend", migrate_to);
+		if (!world_mt.updateConfigFile(world_mt_path.c_str()))
+			errorstream << "Failed to update world.mt!" << std::endl;
+		else
+			actionstream << "world.mt updated" << std::endl;
+
+		// When migration is finished from file backend, remove players directory if empty
+		if (backend == "files") {
+			fs::DeleteSingleFileOrEmptyDirectory(game_params.world_path + DIR_DELIM
+				+ "players");
+		}
+
+		delete srcdb;
+		delete dstdb;
+
+	} catch (BaseException &e) {
+		errorstream << "An error occured during migration: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
 }

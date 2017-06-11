@@ -1,8 +1,7 @@
 /*
 Minetest Valleys C
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
-Copyright (C) 2016 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
  (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
@@ -101,8 +100,6 @@ public:
 private:
 	BiomeGenOriginal *m_bgen;
 
-	float map_gen_limit;
-
 	bool humid_rivers;
 	bool use_altitude_chill;
 	float humidity_adjust;
@@ -125,8 +122,6 @@ private:
 	Noise *noise_terrain_height;
 	Noise *noise_valley_depth;
 	Noise *noise_valley_profile;
-
-	content_t c_lava_source;
 
 	float terrainLevelAtPoint(s16 x, s16 z);
 

@@ -100,7 +100,7 @@ Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
 Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list);
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
@@ -244,7 +244,7 @@ bool read_schematic_def(lua_State *L, int index,
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
-	UNORDERED_MAP<std::string, content_t> name_id_map;
+	std::unordered_map<std::string, content_t> name_id_map;
 
 	u32 i = 0;
 	for (lua_pushnil(L); lua_next(L, -2); i++, lua_pop(L, 1)) {
@@ -266,7 +266,7 @@ bool read_schematic_def(lua_State *L, int index,
 		u8 param2 = getintfield_default(L, -1, "param2", 0);
 
 		//// Find or add new nodename-to-ID mapping
-		UNORDERED_MAP<std::string, content_t>::iterator it = name_id_map.find(name);
+		std::unordered_map<std::string, content_t>::iterator it = name_id_map.find(name);
 		content_t name_index;
 		if (it != name_id_map.end()) {
 			name_index = it->second;
@@ -325,14 +325,22 @@ void read_schematic_replacements(lua_State *L, int index, StringMap *replace_nam
 
 		if (lua_istable(L, -1)) { // Old {{"x", "y"}, ...} format
 			lua_rawgeti(L, -1, 1);
+			if (!lua_isstring(L, -1))
+				throw LuaError("schematics: replace_from field is not a string");
 			replace_from = lua_tostring(L, -1);
 			lua_pop(L, 1);
 
 			lua_rawgeti(L, -1, 2);
+			if (!lua_isstring(L, -1))
+				throw LuaError("schematics: replace_to field is not a string");
 			replace_to = lua_tostring(L, -1);
 			lua_pop(L, 1);
 		} else { // New {x = "y", ...} format
+			if (!lua_isstring(L, -2))
+				throw LuaError("schematics: replace_from field is not a string");
 			replace_from = lua_tostring(L, -2);
+			if (!lua_isstring(L, -1))
+				throw LuaError("schematics: replace_to field is not a string");
 			replace_to = lua_tostring(L, -1);
 		}
 
@@ -401,7 +409,7 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 
 
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list)
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -419,7 +427,7 @@ size_t get_biome_list(lua_State *L, int index,
 	if (is_single) {
 		Biome *biome = get_or_load_biome(L, index, biomemgr);
 		if (!biome) {
-			errorstream << "get_biome_list: failed to get biome '"
+			infostream << "get_biome_list: failed to get biome '"
 				<< (lua_isstring(L, index) ? lua_tostring(L, index) : "")
 				<< "'." << std::endl;
 			return 1;
@@ -438,7 +446,7 @@ size_t get_biome_list(lua_State *L, int index,
 		Biome *biome = get_or_load_biome(L, -1, biomemgr);
 		if (!biome) {
 			fail_count++;
-			errorstream << "get_biome_list: failed to get biome '"
+			infostream << "get_biome_list: failed to get biome '"
 				<< (lua_isstring(L, -1) ? lua_tostring(L, -1) : "")
 				<< "'" << std::endl;
 			continue;
@@ -927,7 +935,7 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
 	if (get_biome_list(L, -1, biomemgr, &deco->biomes))
-		errorstream << "register_decoration: couldn't get all biomes " << std::endl;
+		infostream << "register_decoration: couldn't get all biomes " << std::endl;
 	lua_pop(L, 1);
 
 	//// Get node name(s) to 'spawn by'
@@ -1092,7 +1100,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	//// Get biomes associated with this decoration (if any)
 	lua_getfield(L, index, "biomes");
 	if (get_biome_list(L, -1, bmgr, &ore->biomes))
-		errorstream << "register_ore: couldn't get all biomes " << std::endl;
+		infostream << "register_ore: couldn't get all biomes " << std::endl;
 	lua_pop(L, 1);
 
 	//// Get noise parameters if needed
@@ -1357,7 +1365,9 @@ int ModApiMapgen::l_place_schematic(lua_State *L)
 {
 	MAP_LOCK_REQUIRED;
 
-	Map *map = &(getEnv(L)->getMap());
+	GET_ENV_PTR;
+
+	ServerMap *map = &(env->getServerMap());
 	SchematicManager *schemmgr = getServer(L)->getEmergeManager()->schemmgr;
 
 	//// Read position

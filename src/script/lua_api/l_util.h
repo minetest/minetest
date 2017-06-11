@@ -24,7 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class AsyncEngine;
 
-class ModApiUtil : public ModApiBase {
+class ModApiUtil : public ModApiBase
+{
 private:
 	/*
 		NOTE:
@@ -43,21 +44,6 @@ private:
 
 	// get us precision time
 	static int l_get_us_time(lua_State *L);
-
-	// setting_set(name, value)
-	static int l_setting_set(lua_State *L);
-
-	// setting_get(name)
-	static int l_setting_get(lua_State *L);
-
-	// setting_setbool(name, value)
-	static int l_setting_setbool(lua_State *L);
-
-	// setting_getbool(name)
-	static int l_setting_getbool(lua_State *L);
-
-	// setting_save()
-	static int l_setting_save(lua_State *L);
 
 	// parse_json(str[, nullvalue])
 	static int l_parse_json(lua_State *L);
@@ -109,10 +95,10 @@ private:
 
 public:
 	static void Initialize(lua_State *L, int top);
+	static void InitializeAsync(lua_State *L, int top);
+	static void InitializeClient(lua_State *L, int top);
 
-	static void InitializeAsync(AsyncEngine& engine);
-
+	static void InitializeAsync(AsyncEngine &engine);
 };
 
 #endif /* L_UTIL_H_ */
-

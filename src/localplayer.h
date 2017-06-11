@@ -30,7 +30,13 @@ class GenericCAO;
 class ClientActiveObject;
 class IGameDef;
 
-enum LocalPlayerAnimations {NO_ANIM, WALK_ANIM, DIG_ANIM, WD_ANIM};  // no local animation, walking, digging, both
+enum LocalPlayerAnimations
+{
+	NO_ANIM,
+	WALK_ANIM,
+	DIG_ANIM,
+	WD_ANIM
+}; // no local animation, walking, digging, both
 
 class LocalPlayer : public Player
 {
@@ -41,7 +47,6 @@ public:
 	ClientActiveObject *parent;
 
 	u16 hp;
-	bool got_teleported;
 	bool isAttached;
 	bool touching_ground;
 	// This oscillates so that the player jumps a bit above the surface
@@ -58,16 +63,22 @@ public:
 	float physics_override_gravity;
 	bool physics_override_sneak;
 	bool physics_override_sneak_glitch;
+	// Temporary option for old move code
+	bool physics_override_new_move;
 
 	v3f overridePosition;
 
 	void move(f32 dtime, Environment *env, f32 pos_max_d);
 	void move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
+	// Temporary option for old move code
+	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
+			std::vector<CollisionInfo> *collision_info);
 
 	void applyControl(float dtime);
 
 	v3s16 getStandingNodePos();
+	v3s16 getFootstepNodePos();
 
 	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
@@ -80,6 +91,8 @@ public:
 
 	float camera_impact;
 
+	bool makes_footstep_sound;
+
 	int last_animation;
 	float last_animation_speed;
 
@@ -91,12 +104,11 @@ public:
 	float hurt_tilt_timer;
 	float hurt_tilt_strength;
 
-	GenericCAO* getCAO() const {
-		return m_cao;
-	}
+	GenericCAO *getCAO() const { return m_cao; }
 
-	void setCAO(GenericCAO* toset) {
-		assert( m_cao == NULL ); // Pre-condition
+	void setCAO(GenericCAO *toset)
+	{
+		assert(m_cao == NULL); // Pre-condition
 		m_cao = toset;
 	}
 
@@ -107,42 +119,47 @@ public:
 
 	v3s16 getLightPosition() const;
 
-	void setYaw(f32 yaw)
-	{
-		m_yaw = yaw;
-	}
+	void setYaw(f32 yaw) { m_yaw = yaw; }
 
 	f32 getYaw() const { return m_yaw; }
 
-	void setPitch(f32 pitch)
-	{
-		m_pitch = pitch;
-	}
+	void setPitch(f32 pitch) { m_pitch = pitch; }
 
 	f32 getPitch() const { return m_pitch; }
 
-	void setPosition(const v3f &position)
+	inline void setPosition(const v3f &position)
 	{
 		m_position = position;
+		m_sneak_node_exists = false;
 	}
 
 	v3f getPosition() const { return m_position; }
 	v3f getEyePosition() const { return m_position + getEyeOffset(); }
 	v3f getEyeOffset() const;
+
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 
 	v3f m_position;
-	// This is used for determining the sneaking range
+
 	v3s16 m_sneak_node;
+	// Stores the max player uplift by m_sneak_node
+	// To support temporary option for old move code
+	f32 m_sneak_node_bb_ymax;
+	// Stores the top bounding box of m_sneak_node
+	aabb3f m_sneak_node_bb_top;
 	// Whether the player is allowed to sneak
 	bool m_sneak_node_exists;
-	// Whether recalculation of the sneak node is needed
+	// Whether recalculation of m_sneak_node and its top bbox is needed
 	bool m_need_to_get_new_sneak_node;
-	// Stores the max player uplift by m_sneak_node and is updated
-	// when m_need_to_get_new_sneak_node == true
-	f32 m_sneak_node_bb_ymax;
+	// Whether a "sneak ladder" structure is detected at the players pos
+	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
+	bool m_sneak_ladder_detected;
+	// Whether a 2-node-up ledge is detected at the players pos,
+	// see detectLedge() in the .cpp for more info (always false if disabled).
+	bool m_ledge_detected;
+
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
 	v3s16 m_old_node_below;
@@ -154,9 +171,8 @@ private:
 	bool camera_barely_in_ceiling;
 	aabb3f m_collisionbox;
 
-	GenericCAO* m_cao;
+	GenericCAO *m_cao;
 	Client *m_client;
 };
 
 #endif
-

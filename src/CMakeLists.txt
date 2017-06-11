@@ -156,26 +156,6 @@ if(ENABLE_FREETYPE)
 	endif()
 endif(ENABLE_FREETYPE)
 
-# LuaJIT
-option(ENABLE_LUAJIT "Enable LuaJIT support" TRUE)
-set(USE_LUAJIT FALSE)
-if(ENABLE_LUAJIT)
-	find_package(LuaJIT)
-	if(LUAJIT_FOUND)
-		set(USE_LUAJIT TRUE)
-	endif(LUAJIT_FOUND)
-else()
-	message (STATUS "LuaJIT detection disabled! (ENABLE_LUAJIT=0)")
-endif()
-if(NOT USE_LUAJIT)
-	message(STATUS "LuaJIT not found, using bundled Lua.")
-	set(LUA_LIBRARY "lua")
-	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua/src")
-	add_subdirectory(lua)
-endif()
-
-find_package(GMP REQUIRED)
-
 option(ENABLE_CURSES "Enable ncurses console" TRUE)
 set(USE_CURSES FALSE)
 
@@ -253,7 +233,6 @@ endif(ENABLE_REDIS)
 
 
 find_package(SQLite3 REQUIRED)
-find_package(Json REQUIRED)
 
 OPTION(ENABLE_SPATIAL "Enable SpatialIndex AreaStore backend" TRUE)
 set(USE_SPATIAL FALSE)
@@ -398,6 +377,7 @@ set(common_SRCS
 	convert_json.cpp
 	craftdef.cpp
 	database-dummy.cpp
+	database-files.cpp
 	database-leveldb.cpp
 	database-postgresql.cpp
 	database-redis.cpp
@@ -408,6 +388,7 @@ set(common_SRCS
 	dungeongen.cpp
 	emerge.cpp
 	environment.cpp
+	face_position_cache.cpp
 	filesys.cpp
 	genericobject.cpp
 	gettext.cpp
@@ -415,6 +396,7 @@ set(common_SRCS
 	inventory.cpp
 	inventorymanager.cpp
 	itemdef.cpp
+	itemstackmetadata.cpp
 	light.cpp
 	log.cpp
 	map.cpp
@@ -430,6 +412,7 @@ set(common_SRCS
 	mapgen_valleys.cpp
 	mapnode.cpp
 	mapsector.cpp
+	metadata.cpp
 	mg_biome.cpp
 	mg_decoration.cpp
 	mg_ore.cpp
@@ -526,7 +509,7 @@ set(client_SRCS
 	game.cpp
 	guiChatConsole.cpp
 	guiEngine.cpp
-	guiFileSelectMenu.cpp
+	guiPathSelectMenu.cpp
 	guiFormSpecMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiPasswordChange.cpp
@@ -541,6 +524,7 @@ set(client_SRCS
 	main.cpp
 	mapblock_mesh.cpp
 	mesh.cpp
+	mesh_generator_thread.cpp
 	minimap.cpp
 	particles.cpp
 	shader.cpp
@@ -724,11 +708,15 @@ include(CheckCXXCompilerFlag)
 
 if(MSVC)
 	# Visual Studio
-
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++11")
 	# EHa enables SEH exceptions (used for catching segfaults)
 	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MT /GS- /Zi /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
 	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /DEBUG /OPT:REF /OPT:ICF")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+
+
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
 
 	set(CMAKE_CXX_FLAGS_SEMIDEBUG "/MDd /Zi /Ob0 /O1 /RTC1")
 
@@ -740,9 +728,10 @@ if(MSVC)
 	# /MT = Link statically with standard library stuff
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
 else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	# Probably GCC
 	if(APPLE)
-		SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
 	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
@@ -766,17 +755,21 @@ else()
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
 	endif()
 
-	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -ffast-math -Wall -pipe -funroll-loops")
-	if(APPLE)
+	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
+	if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Os")
 	else()
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fomit-frame-pointer")
-	endif(APPLE)
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math -fomit-frame-pointer")
+	endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
 	set(CMAKE_CXX_FLAGS_SEMIDEBUG "-g -O1 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -Wabi ${WARNING_FLAGS} ${OTHER_FLAGS}")
 
 	if(USE_GPROF)
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -pg")
+	endif()
+
+	if(MINGW)
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
 	endif()
 endif()
 
@@ -893,4 +886,3 @@ endif()
 if (BUILD_CLIENT AND USE_FREETYPE)
 	add_subdirectory(cguittfont)
 endif()
-

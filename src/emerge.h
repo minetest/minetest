@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define EMERGE_HEADER
 
 #include <map>
+#include <mutex>
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "mapgen.h" // for MapgenParams
@@ -118,6 +119,7 @@ public:
 	// Methods
 	EmergeManager(Server *server);
 	~EmergeManager();
+	DISABLE_CLASS_COPY(EmergeManager);
 
 	bool initMapgens(MapgenParams *mgparams);
 
@@ -143,7 +145,6 @@ public:
 	Mapgen *getCurrentMapgen();
 
 	// Mapgen helpers methods
-	Biome *getBiomeAtPoint(v3s16 p);
 	int getSpawnLevelAtPoint(v2s16 p);
 	int getGroundLevelAtPoint(v2s16 p);
 	bool isBlockUnderground(v3s16 blockpos);
@@ -155,9 +156,9 @@ private:
 	std::vector<EmergeThread *> m_threads;
 	bool m_threads_active;
 
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;
-	UNORDERED_MAP<u16, u16> m_peer_queue_count;
+	std::unordered_map<u16, u16> m_peer_queue_count;
 
 	u16 m_qlimit_total;
 	u16 m_qlimit_diskonly;
@@ -177,8 +178,6 @@ private:
 	bool popBlockEmergeData(v3s16 pos, BlockEmergeData *bedata);
 
 	friend class EmergeThread;
-
-	DISABLE_CLASS_COPY(EmergeManager);
 };
 
 #endif

@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <map>
 
 #include "threading/thread.h"
-#include "threading/mutex.h"
 #include "threading/semaphore.h"
 #include "debug.h"
 #include "lua.h"
@@ -38,7 +37,16 @@ class AsyncEngine;
 // Declarations
 
 // Data required to queue a job
-struct LuaJobInfo {
+struct LuaJobInfo
+{
+	LuaJobInfo() :
+		serializedFunction(""),
+		serializedParams(""),
+		serializedResult(""),
+		id(0),
+		valid(false)
+	{}
+
 	// Function to be called in async environment
 	std::string serializedFunction;
 	// Parameter to be passed to function
@@ -66,16 +74,16 @@ private:
 // Asynchornous thread and job management
 class AsyncEngine {
 	friend class AsyncWorkerThread;
+	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
 	AsyncEngine();
 	~AsyncEngine();
 
 	/**
-	 * Register function to be used within engine
-	 * @param name Function name to be used within Lua environment
+	 * Register function to be called on new states
 	 * @param func C function to be called
 	 */
-	bool registerFunction(const char* name, lua_CFunction func);
+	void registerStateInitializer(StateInitializer func);
 
 	/**
 	 * Create async engine tasks and lock function registration
@@ -89,7 +97,7 @@ public:
 	 * @param params Serialized parameters
 	 * @return jobid The job is queued
 	 */
-	unsigned int queueAsyncJob(std::string func, std::string params);
+	unsigned int queueAsyncJob(const std::string &func, const std::string &params);
 
 	/**
 	 * Engine step to process finished jobs
@@ -116,7 +124,7 @@ protected:
 	 * Put a Job result back to result queue
 	 * @param result result of completed job
 	 */
-	void putJobResult(LuaJobInfo result);
+	void putJobResult(const LuaJobInfo &result);
 
 	/**
 	 * Initialize environment with current registred functions
@@ -131,20 +139,20 @@ private:
 	// Variable locking the engine against further modification
 	bool initDone;
 
-	// Internal store for registred functions
-	UNORDERED_MAP<std::string, lua_CFunction> functionList;
+	// Internal store for registred state initializers
+	std::vector<StateInitializer> stateInitializers;
 
 	// Internal counter to create job IDs
 	unsigned int jobIdCounter;
 
 	// Mutex to protect job queue
-	Mutex jobQueueMutex;
+	std::mutex jobQueueMutex;
 
 	// Job queue
 	std::deque<LuaJobInfo> jobQueue;
 
 	// Mutex to protect result queue
-	Mutex resultQueueMutex;
+	std::mutex resultQueueMutex;
 	// Result queue
 	std::deque<LuaJobInfo> resultQueue;
 

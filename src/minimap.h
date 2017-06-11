@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client.h"
 #include "voxel.h"
-#include "threading/mutex.h"
 #include "threading/semaphore.h"
 #include <map>
 #include <string>
@@ -43,6 +42,11 @@ enum MinimapMode {
 	MINIMAP_MODE_RADARx2,
 	MINIMAP_MODE_RADARx4,
 	MINIMAP_MODE_COUNT,
+};
+
+enum MinimapShape {
+	MINIMAP_SHAPE_SQUARE,
+	MINIMAP_SHAPE_ROUND,
 };
 
 struct MinimapModeDef {
@@ -96,13 +100,8 @@ public:
 	MinimapUpdateThread() : UpdateThread("Minimap") {}
 	virtual ~MinimapUpdateThread();
 
-	void getMap(v3s16 pos, s16 size, s16 height, bool radar);
-	MinimapPixel *getMinimapPixel(v3s16 pos, s16 height, s16 *pixel_height);
-	s16 getAirCount(v3s16 pos, s16 height);
-	video::SColor getColorFromId(u16 id);
-
+	void getMap(v3s16 pos, s16 size, s16 height);
 	void enqueueBlock(v3s16 pos, MinimapMapblock *data);
-
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
@@ -112,25 +111,29 @@ protected:
 	virtual void doUpdate();
 
 private:
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::deque<QueuedMinimapUpdate> m_update_queue;
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
-class Mapper {
+class Minimap {
 public:
-	Mapper(IrrlichtDevice *device, Client *client);
-	~Mapper();
+	Minimap(IrrlichtDevice *device, Client *client);
+	~Minimap();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);
 
 	v3f getYawVec();
-	MinimapMode getMinimapMode();
 
 	void setPos(v3s16 pos);
+	v3s16 getPos() const { return data->pos; }
 	void setAngle(f32 angle);
+	f32 getAngle() const { return m_angle; }
 	void setMinimapMode(MinimapMode mode);
+	MinimapMode getMinimapMode() const { return data->mode; }
 	void toggleMinimapShape();
+	void setMinimapShape(MinimapShape shape);
+	MinimapShape getMinimapShape();
 
 
 	video::ITexture *getMinimapTexture();
@@ -157,7 +160,7 @@ private:
 	bool m_enable_shaders;
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::list<v2f> m_active_markers;
 };
 

@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 
 
+// Should be ordered exactly like enum NodeDrawType in nodedef.h
 struct EnumString ScriptApiNode::es_DrawType[] =
 	{
 		{NDT_NORMAL, "normal"},
@@ -34,17 +35,17 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_LIQUID, "liquid"},
 		{NDT_FLOWINGLIQUID, "flowingliquid"},
 		{NDT_GLASSLIKE, "glasslike"},
-		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
-		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_ALLFACES, "allfaces"},
 		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 		{NDT_TORCHLIKE, "torchlike"},
 		{NDT_SIGNLIKE, "signlike"},
 		{NDT_PLANTLIKE, "plantlike"},
-		{NDT_FIRELIKE, "firelike"},
 		{NDT_FENCELIKE, "fencelike"},
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
+		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_FIRELIKE, "firelike"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_MESH, "mesh"},
 		{0, NULL},
 	};
@@ -62,6 +63,7 @@ struct EnumString ScriptApiNode::es_ContentParamType2[] =
 		{CPT2_COLOR, "color"},
 		{CPT2_COLORED_FACEDIR, "colorfacedir"},
 		{CPT2_COLORED_WALLMOUNTED, "colorwallmounted"},
+		{CPT2_GLASSLIKE_LIQUID_LEVEL, "glasslikeliquidlevel"},
 		{0, NULL},
 	};
 
@@ -177,6 +179,27 @@ void ScriptApiNode::node_on_destruct(v3s16 p, MapNode node)
 	lua_pop(L, 1);  // Pop error handler
 }
 
+bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	INodeDefManager *ndef = getServer()->ndef();
+
+	// Push callback function on stack
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood"))
+		return false;
+
+	// Call function
+	push_v3s16(L, p);
+	pushnode(L, node, ndef);
+	pushnode(L, newnode, ndef);
+	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
+	lua_remove(L, error_handler);
+	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
+}
+
 void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 {
 	SCRIPTAPI_PRECHECKHEADER
@@ -241,7 +264,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 	lua_pushstring(L, formname.c_str()); // formname
 	lua_newtable(L);                     // fields
 	StringMap::const_iterator it;
-	for (it = fields.begin(); it != fields.end(); it++) {
+	for (it = fields.begin(); it != fields.end(); ++it) {
 		const std::string &name = it->first;
 		const std::string &value = it->second;
 		lua_pushstring(L, name.c_str());

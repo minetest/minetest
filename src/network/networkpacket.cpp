@@ -105,7 +105,7 @@ NetworkPacket& NetworkPacket::operator>>(std::string& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(std::string src)
+NetworkPacket& NetworkPacket::operator<<(const std::string &src)
 {
 	u16 msgsize = src.size();
 	if (msgsize > STRING_MAX_LEN) {
@@ -119,7 +119,7 @@ NetworkPacket& NetworkPacket::operator<<(std::string src)
 	return *this;
 }
 
-void NetworkPacket::putLongString(std::string src)
+void NetworkPacket::putLongString(const std::string &src)
 {
 	u32 msgsize = src.size();
 	if (msgsize > LONG_STRING_MAX_LEN) {
@@ -155,7 +155,7 @@ NetworkPacket& NetworkPacket::operator>>(std::wstring& dst)
 	return *this;
 }
 
-NetworkPacket& NetworkPacket::operator<<(std::wstring src)
+NetworkPacket& NetworkPacket::operator<<(const std::wstring &src)
 {
 	u16 msgsize = src.size();
 	if (msgsize > WIDE_STRING_MAX_LEN) {

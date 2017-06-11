@@ -38,6 +38,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
 	settings->setDefault("enable_mesh_cache", "false");
+	settings->setDefault("mesh_generation_interval", "0");
+	settings->setDefault("meshgen_block_cache_size", "20");
 	settings->setDefault("enable_vbo", "true");
 	settings->setDefault("free_move", "false");
 	settings->setDefault("fast_move", "false");
@@ -54,11 +56,13 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("curl_file_download_timeout", "300000");
 	settings->setDefault("curl_verify_cert", "true");
 	settings->setDefault("enable_remote_media_server", "true");
+	settings->setDefault("enable_client_modding", "false");
+	settings->setDefault("max_out_chat_queue_size", "20");
 
 	// Keymap
 	settings->setDefault("remote_port", "30000");
 	settings->setDefault("keymap_forward", "KEY_KEY_W");
-	settings->setDefault("keymap_autorun", "");
+	settings->setDefault("keymap_autoforward", "");
 	settings->setDefault("keymap_backward", "KEY_KEY_S");
 	settings->setDefault("keymap_left", "KEY_KEY_A");
 	settings->setDefault("keymap_right", "KEY_KEY_D");
@@ -70,12 +74,18 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_special1", "KEY_KEY_E");
 	settings->setDefault("keymap_chat", "KEY_KEY_T");
 	settings->setDefault("keymap_cmd", "/");
+	settings->setDefault("keymap_cmd_local", ".");
 	settings->setDefault("keymap_minimap", "KEY_F9");
 	settings->setDefault("keymap_console", "KEY_F10");
 	settings->setDefault("keymap_rangeselect", "KEY_KEY_R");
 	settings->setDefault("keymap_freemove", "KEY_KEY_K");
 	settings->setDefault("keymap_fastmove", "KEY_KEY_J");
 	settings->setDefault("keymap_noclip", "KEY_KEY_H");
+	settings->setDefault("keymap_hotbar_next", "KEY_KEY_N");
+	settings->setDefault("keymap_hotbar_previous", "KEY_KEY_B");
+	settings->setDefault("keymap_mute", "KEY_KEY_M");
+	settings->setDefault("keymap_increase_volume", "");
+	settings->setDefault("keymap_decrease_volume", "");
 	settings->setDefault("keymap_cinematic", "");
 	settings->setDefault("keymap_toggle_hud", "KEY_F1");
 	settings->setDefault("keymap_toggle_chat", "KEY_F2");
@@ -105,6 +115,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");
+	settings->setDefault("undersampling", "0");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
@@ -114,8 +125,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
-	settings->setDefault("screenW", "800");
-	settings->setDefault("screenH", "600");
+	settings->setDefault("screen_w", "800");
+	settings->setDefault("screen_h", "600");
+	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("fullscreen_bpp", "24");
 	settings->setDefault("vsync", "false");
@@ -138,6 +150,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
+	settings->setDefault("console_height", "1.0");
 	settings->setDefault("console_color", "(0,0,0)");
 	settings->setDefault("console_alpha", "200");
 	settings->setDefault("selectionbox_color", "(0,0,0)");
@@ -165,7 +178,6 @@ void set_default_settings(Settings *settings)
 
 	// Effects
 	settings->setDefault("directional_colored_fog", "true");
-	settings->setDefault("view_bobbing", "true");
 	settings->setDefault("inventory_items_animations", "false");
 	settings->setDefault("mip_map", "false");
 	settings->setDefault("anisotropic_filter", "false");
@@ -199,6 +211,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("always_fly_fast", "true");
 	settings->setDefault("continuous_forward", "false");
 	settings->setDefault("enable_joysticks", "false");
+	settings->setDefault("joystick_id", "0");
+	settings->setDefault("joystick_type", "");
 	settings->setDefault("repeat_joystick_button_time", "0.17");
 	settings->setDefault("joystick_frustum_sensitivity", "170");
 
@@ -213,10 +227,10 @@ void set_default_settings(Settings *settings)
 
 #if USE_FREETYPE
 	settings->setDefault("freetype", "true");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "liberationsans.ttf"));
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "Arimo-Regular.ttf"));
 	settings->setDefault("font_shadow", "1");
 	settings->setDefault("font_shadow_alpha", "127");
-	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "liberationmono.ttf"));
+	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "Cousine-Regular.ttf"));
 	settings->setDefault("fallback_font_path", porting::getDataPath("fonts" DIR_DELIM "DroidSansFallbackFull.ttf"));
 
 	settings->setDefault("fallback_font_shadow", "1");
@@ -227,7 +241,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fallback_font_size", font_size_str);
 #else
 	settings->setDefault("freetype", "false");
-	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "lucida_sans"));
+	settings->setDefault("font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
 	settings->setDefault("mono_font_path", porting::getDataPath("fonts" DIR_DELIM "mono_dejavu_sans"));
 
 	std::string font_size_str = std::to_string(DEFAULT_FONT_SIZE);
@@ -238,6 +252,7 @@ void set_default_settings(Settings *settings)
 
 	// Server
 	settings->setDefault("disable_escape_sequences", "false");
+	settings->setDefault("strip_color_codes", "false");
 
 	// Network
 	settings->setDefault("enable_ipv6", "true");
@@ -257,7 +272,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("creative_mode", "false");
 	settings->setDefault("show_statusline_on_connect", "true");
 	settings->setDefault("enable_damage", "true");
-	settings->setDefault("give_initial_stuff", "false");
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("enable_pvp", "true");
@@ -281,6 +295,7 @@ void set_default_settings(Settings *settings)
 	// This causes frametime jitter on client side, or does it?
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
+	settings->setDefault("server_side_occlusion_culling", "true");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
@@ -294,7 +309,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("dedicated_server_step", "0.1");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
-	settings->setDefault("nodetimer_interval", "1.0");
+	settings->setDefault("nodetimer_interval", "0.2");
 	settings->setDefault("ignore_world_load_errors", "false");
 	settings->setDefault("remote_media", "");
 	settings->setDefault("debug_log_level", "action");
@@ -313,7 +328,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("movement_speed_walk", "4");
 	settings->setDefault("movement_speed_crouch", "1.35");
 	settings->setDefault("movement_speed_fast", "20");
-	settings->setDefault("movement_speed_climb", "2");
+	settings->setDefault("movement_speed_climb", "3");
 	settings->setDefault("movement_speed_jump", "6.5");
 	settings->setDefault("movement_liquid_fluidity", "1");
 	settings->setDefault("movement_liquid_fluidity_smooth", "0.5");
@@ -328,10 +343,10 @@ void set_default_settings(Settings *settings)
 	// Mapgen
 	settings->setDefault("mg_name", "v7");
 	settings->setDefault("water_level", "1");
+	settings->setDefault("mapgen_limit", "31000");
 	settings->setDefault("chunksize", "5");
 	settings->setDefault("mg_flags", "dungeons");
 	settings->setDefault("fixed_map_seed", "");
-	settings->setDefault("map_generation_limit", "31000");
 	settings->setDefault("max_block_generate_distance", "7");
 	settings->setDefault("enable_mapgen_debug_info", "false");
 
@@ -343,10 +358,11 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("server_description", "");
 
 	settings->setDefault("high_precision_fpu", "true");
+	settings->setDefault("enable_console", "false");
 
 #ifdef __ANDROID__
-	settings->setDefault("screenW", "0");
-	settings->setDefault("screenH", "0");
+	settings->setDefault("screen_w", "0");
+	settings->setDefault("screen_h", "0");
 	settings->setDefault("enable_shaders", "false");
 	settings->setDefault("fullscreen", "true");
 	settings->setDefault("video_driver", "ogles1");

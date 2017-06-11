@@ -65,54 +65,14 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	movement_liquid_fluidity_smooth = g_settings->getFloat("movement_liquid_fluidity_smooth") * BS;
 	movement_liquid_sink            = g_settings->getFloat("movement_liquid_sink")            * BS;
 	movement_gravity                = g_settings->getFloat("movement_gravity")                * BS;
-}
 
-void RemotePlayer::save(std::string savedir, IGameDef *gamedef)
-{
-	/*
-	 * We have to open all possible player files in the players directory
-	 * and check their player names because some file systems are not
-	 * case-sensitive and player names are case-sensitive.
-	 */
-
-	// A player to deserialize files into to check their names
-	RemotePlayer testplayer("", gamedef->idef());
-
-	savedir += DIR_DELIM;
-	std::string path = savedir + m_name;
-	for (u32 i = 0; i < PLAYER_FILE_ALTERNATE_TRIES; i++) {
-		if (!fs::PathExists(path)) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		// Open file and deserialize
-		std::ifstream is(path.c_str(), std::ios_base::binary);
-		if (!is.good()) {
-			infostream << "Failed to open " << path << std::endl;
-			return;
-		}
-		testplayer.deSerialize(is, path, NULL);
-		is.close();
-		if (strcmp(testplayer.getName(), m_name) == 0) {
-			// Open file and serialize
-			std::ostringstream ss(std::ios_base::binary);
-			serialize(ss);
-			if (!fs::safeWriteToFile(path, ss.str())) {
-				infostream << "Failed to write " << path << std::endl;
-			}
-			setModified(false);
-			return;
-		}
-		path = savedir + m_name + itos(i);
-	}
-
-	infostream << "Didn't find free file for player " << m_name << std::endl;
+	// copy defaults
+	m_cloud_params.density = 0.4f;
+	m_cloud_params.color_bright = video::SColor(229, 240, 240, 255);
+	m_cloud_params.color_ambient = video::SColor(255, 0, 0, 0);
+	m_cloud_params.height = 120.0f;
+	m_cloud_params.thickness = 16.0f;
+	m_cloud_params.speed = v2f(0.0f, -2.0f);
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)
@@ -141,7 +101,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 	m_dirty = true;
 	//args.getS32("version"); // Version field value not used
-	std::string name = args.get("name");
+	const std::string &name = args.get("name");
 	strlcpy(m_name, name.c_str(), PLAYERNAME_SIZE);
 
 	if (sao) {
@@ -167,14 +127,14 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		} catch (SettingNotFoundException &e) {}
 
 		try {
-			std::string extended_attributes = args.get("extended_attributes");
+			const std::string &extended_attributes = args.get("extended_attributes");
 			Json::Reader reader;
 			Json::Value attr_root;
 			reader.parse(extended_attributes, attr_root);
 
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
 			for (Json::Value::Members::const_iterator it = attr_list.begin();
-				 it != attr_list.end(); ++it) {
+					it != attr_list.end(); ++it) {
 				Json::Value attr_value = attr_root[*it];
 				sao->setExtendedAttribute(*it, attr_value.asString());
 			}

@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "network/clientopcodes.h"
+#include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
 #include "tileanimation.h"
@@ -141,7 +142,7 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 }
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
-	m_chat_queue.push(L"Password change denied. Password NOT changed.");
+	pushToChatQueue(L"Password change denied. Password NOT changed.");
 	// reset everything and be sad
 	deleteAuthData();
 }
@@ -411,7 +412,10 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 		message += (wchar_t)read_wchar;
 	}
 
-	m_chat_queue.push(message);
+	// If chat message not consummed by client lua API
+	if (!moddingEnabled() || !m_script->on_receiving_message(wide_to_utf8(message))) {
+		pushToChatQueue(message);
+	}
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)
@@ -522,6 +526,10 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 
 	player->hp = hp;
 
+	if (moddingEnabled()) {
+		m_script->on_hp_modification(hp);
+	}
+
 	if (hp < oldhp) {
 		// Add to ClientEvent queue
 		ClientEvent event;
@@ -553,7 +561,6 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 
 	*pkt >> pos >> pitch >> yaw;
 
-	player->got_teleported = true;
 	player->setPosition(pos);
 
 	infostream << "Client got TOCLIENT_MOVE_PLAYER"
@@ -577,11 +584,6 @@ void Client::handleCommand_MovePlayer(NetworkPacket* pkt)
 	// Ignore damage for a few seconds, so that the player doesn't
 	// get damage from falling on ground
 	m_ignore_damage_timer = 3.0;
-}
-
-void Client::handleCommand_PlayerItem(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_PLAYERITEM" << std::endl;
 }
 
 void Client::handleCommand_DeathScreen(NetworkPacket* pkt)
@@ -710,11 +712,6 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	}
 }
 
-void Client::handleCommand_ToolDef(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_TOOLDEF" << std::endl;
-}
-
 void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 {
 	infostream << "Client: Received node definitions: packet size: "
@@ -725,9 +722,7 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_thread.isRunning());
 
 	// Decompress node definitions
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
-	std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	std::ostringstream tmp_os;
 	decompressZlib(tmp_is, tmp_os);
 
@@ -735,11 +730,6 @@ void Client::handleCommand_NodeDef(NetworkPacket* pkt)
 	std::istringstream tmp_is2(tmp_os.str());
 	m_nodedef->deSerialize(tmp_is2);
 	m_nodedef_received = true;
-}
-
-void Client::handleCommand_CraftItemDef(NetworkPacket* pkt)
-{
-	warningstream << "Client: Ignoring TOCLIENT_CRAFTITEMDEF" << std::endl;
 }
 
 void Client::handleCommand_ItemDef(NetworkPacket* pkt)
@@ -752,9 +742,7 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 	sanity_check(!m_mesh_update_thread.isRunning());
 
 	// Decompress item definitions
-	std::string datastring(pkt->getString(0), pkt->getSize());
-	std::istringstream is(datastring, std::ios_base::binary);
-	std::istringstream tmp_is(deSerializeLongString(is), std::ios::binary);
+	std::istringstream tmp_is(pkt->readLongString(), std::ios::binary);
 	std::ostringstream tmp_os;
 	decompressZlib(tmp_is, tmp_os);
 
@@ -766,31 +754,52 @@ void Client::handleCommand_ItemDef(NetworkPacket* pkt)
 
 void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 {
+	/*
+		[0] u32 server_id
+		[4] u16 name length
+		[6] char name[len]
+		[ 6 + len] f32 gain
+		[10 + len] u8 type
+		[11 + len] (f32 * 3) pos
+		[23 + len] u16 object_id
+		[25 + len] bool loop
+		[26 + len] f32 fade
+		[30 + len] f32 pitch
+	*/
+
 	s32 server_id;
 	std::string name;
+
 	float gain;
 	u8 type; // 0=local, 1=positional, 2=object
 	v3f pos;
 	u16 object_id;
 	bool loop;
+	float fade = 0.0f;
+	float pitch = 1.0f;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
+
+	try {
+		*pkt >> fade;
+		*pkt >> pitch;
+	} catch (PacketError &e) {};
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain);
+			client_id = m_sound->playSound(name, loop, gain, fade, pitch);
 			break;
 		case 1: // positional
-			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
 			break;
 		case 2:
 		{ // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
 			// TODO: Set up sound to move with object
 			break;
 		}
@@ -812,14 +821,13 @@ void Client::handleCommand_StopSound(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	UNORDERED_MAP<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
+	std::unordered_map<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
 	if (it != m_sounds_server_to_client.end()) {
 		int client_id = it->second;
+
 		m_sound->stopSound(client_id);
 	}
 }
-
-
 
 void Client::handleCommand_PauseSound(NetworkPacket* pkt)
 {
@@ -847,7 +855,20 @@ void Client::handleCommand_ResumeSound(NetworkPacket* pkt)
 	}
 }
 
+void Client::handleCommand_FadeSound(NetworkPacket *pkt)
+{
+	s32 sound_id;
+	float step;
+	float gain;
 
+	*pkt >> sound_id >> step >> gain;
+
+	std::unordered_map<s32, int>::const_iterator i =
+			m_sounds_server_to_client.find(sound_id);
+
+	if (i != m_sounds_server_to_client.end())
+		m_sound->fadeSound(i->second, step, gain);
+}
 
 void Client::handleCommand_Privileges(NetworkPacket* pkt)
 {
@@ -1159,10 +1180,10 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
 
 	// Hide minimap if it has been disabled by the server
-	if (m_minimap_disabled_by_server && was_minimap_visible) {
+	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible) {
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
-		m_mapper->setMinimapMode(MINIMAP_MODE_OFF);
+		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);
 	}
 }
 
@@ -1201,11 +1222,45 @@ void Client::handleCommand_HudSetSky(NetworkPacket* pkt)
 	for (size_t i = 0; i < count; i++)
 		params->push_back(deSerializeString(is));
 
+	bool clouds = true;
+	try {
+		clouds = readU8(is);
+	} catch (...) {}
+
 	ClientEvent event;
 	event.type            = CE_SET_SKY;
 	event.set_sky.bgcolor = bgcolor;
 	event.set_sky.type    = type;
 	event.set_sky.params  = params;
+	event.set_sky.clouds  = clouds;
+	m_client_event_queue.push(event);
+}
+
+void Client::handleCommand_CloudParams(NetworkPacket* pkt)
+{
+	f32 density;
+	video::SColor color_bright;
+	video::SColor color_ambient;
+	f32 height;
+	f32 thickness;
+	v2f speed;
+
+	*pkt >> density >> color_bright >> color_ambient
+			>> height >> thickness >> speed;
+
+	ClientEvent event;
+	event.type                       = CE_CLOUD_PARAMS;
+	event.cloud_params.density       = density;
+	// use the underlying u32 representation, because we can't
+	// use struct members with constructors here, and this way
+	// we avoid using new() and delete() for no good reason
+	event.cloud_params.color_bright  = color_bright.color;
+	event.cloud_params.color_ambient = color_ambient.color;
+	event.cloud_params.height        = height;
+	event.cloud_params.thickness     = thickness;
+	// same here: deconstruct to skip constructor
+	event.cloud_params.speed_x       = speed.X;
+	event.cloud_params.speed_y       = speed.Y;
 	m_client_event_queue.push(event);
 }
 
@@ -1243,6 +1298,28 @@ void Client::handleCommand_EyeOffset(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	*pkt >> player->eye_offset_first >> player->eye_offset_third;
+}
+
+void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
+{
+	u8 type;
+	u16 num_players;
+	*pkt >> type >> num_players;
+	PlayerListModifer notice_type = (PlayerListModifer) type;
+
+	for (u16 i = 0; i < num_players; i++) {
+		std::string name;
+		*pkt >> name;
+		switch (notice_type) {
+		case PLAYER_LIST_INIT:
+		case PLAYER_LIST_ADD:
+			m_env.addPlayerName(name);
+			continue;
+		case PLAYER_LIST_REMOVE:
+			m_env.removePlayerName(name);
+			continue;
+		}
+	}
 }
 
 void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)

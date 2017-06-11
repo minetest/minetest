@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 Fractal formulas from http://www.bugman123.com/Hypercomplex/index.html
 by Paul Nylander, and from http://www.fractalforums.com, thank you.
@@ -32,8 +32,8 @@ class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_fractal[];
 
-
-struct MapgenFractalParams : public MapgenParams {
+struct MapgenFractalParams : public MapgenParams
+{
 	u32 spflags;
 	float cave_width;
 	u16 fractal;
@@ -57,7 +57,8 @@ struct MapgenFractalParams : public MapgenParams {
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenFractal : public MapgenBasic {
+class MapgenFractal : public MapgenBasic
+{
 public:
 	MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge);
 	~MapgenFractal();

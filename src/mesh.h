@@ -49,11 +49,20 @@ void scaleMesh(scene::IMesh *mesh, v3f scale);
 */
 void translateMesh(scene::IMesh *mesh, v3f vec);
 
+/*!
+ * Sets a constant color for all vertices in the mesh buffer.
+ */
+void setMeshBufferColor(scene::IMeshBuffer *buf, const video::SColor &color);
+
 /*
 	Set a constant color for all vertices in the mesh
 */
 void setMeshColor(scene::IMesh *mesh, const video::SColor &color);
 
+/*!
+ * Overwrites the color of a mesh buffer.
+ * The color is darkened based on the normal vector of the vertices.
+ */
 void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
 
 /*
@@ -82,11 +91,17 @@ void rotateMeshBy6dFacedir(scene::IMesh *mesh, int facedir);
 void rotateMeshXYby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshXZby (scene::IMesh *mesh, f64 degrees);
 void rotateMeshYZby (scene::IMesh *mesh, f64 degrees); 
+
+/*
+ *  Clone the mesh buffer.
+ *  The returned pointer should be dropped.
+ */
+scene::IMeshBuffer* cloneMeshBuffer(scene::IMeshBuffer *mesh_buffer);
  
 /*
 	Clone the mesh.
 */
-scene::IMesh* cloneMesh(scene::IMesh *src_mesh);
+scene::SMesh* cloneMesh(scene::IMesh *src_mesh);
 
 /*
 	Convert nodeboxes to mesh. Each tile goes into a different buffer.

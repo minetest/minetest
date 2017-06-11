@@ -44,11 +44,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
 #include "log.h"
+#include <algorithm>
 
 class Settings;
 struct ToolCapabilities;
 
-UNORDERED_MAP<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
+std::unordered_map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
 SmoothTranslator::SmoothTranslator():
 	vect_old(0,0,0),
@@ -564,7 +565,7 @@ GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
 		m_animation_speed(15),
 		m_animation_blend(0),
 		m_animation_loop(true),
-		m_bone_position(UNORDERED_MAP<std::string, core::vector2d<v3f> >()),
+		m_bone_position(),
 		m_attachment_bone(""),
 		m_attachment_position(v3f(0,0,0)),
 		m_attachment_rotation(v3f(0,0,0)),
@@ -623,7 +624,8 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_visible = false;
 			player->setCAO(this);
 		}
-		m_env->addPlayerName(m_name.c_str());
+		if (m_client->getProtoVersion() < 33)
+			m_env->addPlayerName(m_name.c_str());
 	}
 }
 
@@ -666,7 +668,7 @@ void GenericCAO::processInitData(const std::string &data)
 
 GenericCAO::~GenericCAO()
 {
-	if (m_is_player) {
+	if (m_is_player && m_client->getProtoVersion() < 33) {
 		m_env->removePlayerName(m_name.c_str());
 	}
 	removeFromScene(true);
@@ -705,24 +707,9 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 	return NULL;
 }
 
-scene::IMeshSceneNode* GenericCAO::getMeshSceneNode()
-{
-	return m_meshnode;
-}
-
 scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 {
 	return m_animated_meshnode;
-}
-
-WieldMeshSceneNode* GenericCAO::getWieldMeshSceneNode()
-{
-	return m_wield_meshnode;
-}
-
-scene::IBillboardSceneNode* GenericCAO::getSpriteSceneNode()
-{
-	return m_spritenode;
 }
 
 void GenericCAO::setChildrenVisible(bool toset)
@@ -933,23 +920,30 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr,
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
 	}
 	else if(m_prop.visual == "wielditem") {
-		infostream<<"GenericCAO::addToScene(): wielditem"<<std::endl;
-		infostream<<"textures: "<<m_prop.textures.size()<<std::endl;
-		if(m_prop.textures.size() >= 1){
-			infostream<<"textures[0]: "<<m_prop.textures[0]<<std::endl;
-			IItemDefManager *idef = m_client->idef();
-			ItemStack item(m_prop.textures[0], 1, 0, "", idef);
-
-			m_wield_meshnode = new WieldMeshSceneNode(
-					smgr->getRootSceneNode(), smgr, -1);
-			m_wield_meshnode->setItem(item, m_client);
-
-			m_wield_meshnode->setScale(v3f(m_prop.visual_size.X/2,
-					m_prop.visual_size.Y/2,
-					m_prop.visual_size.X/2));
-			u8 li = m_last_light;
-			m_wield_meshnode->setColor(video::SColor(255,li,li,li));
+		ItemStack item;
+		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
+		if (m_prop.wield_item == "") {
+			// Old format, only textures are specified.
+			infostream << "textures: " << m_prop.textures.size() << std::endl;
+			if (m_prop.textures.size() >= 1) {
+				infostream << "textures[0]: " << m_prop.textures[0]
+					<< std::endl;
+				IItemDefManager *idef = m_client->idef();
+				item = ItemStack(m_prop.textures[0], 1, 0, idef);
+			}
+		} else {
+			infostream << "serialized form: " << m_prop.wield_item << std::endl;
+			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
+		m_wield_meshnode = new WieldMeshSceneNode(smgr->getRootSceneNode(),
+			smgr, -1);
+		m_wield_meshnode->setItem(item, m_client);
+
+		m_wield_meshnode->setScale(
+			v3f(m_prop.visual_size.X / 2, m_prop.visual_size.Y / 2,
+				m_prop.visual_size.X / 2));
+		u8 li = m_last_light;
+		m_wield_meshnode->setColor(video::SColor(255, li, li, li));
 	} else {
 		infostream<<"GenericCAO::addToScene(): \""<<m_prop.visual
 				<<"\" not supported"<<std::endl;
@@ -1034,12 +1028,9 @@ void GenericCAO::updateNodePos()
 void GenericCAO::step(float dtime, ClientEnvironment *env)
 {
 	// Handel model of local player instantly to prevent lags
-	if(m_is_local_player)
-	{
+	if (m_is_local_player) {
 		LocalPlayer *player = m_env->getLocalPlayer();
-
-		if (m_is_visible)
-		{
+		if (m_is_visible) {
 			int old_anim = player->last_animation;
 			float old_anim_speed = player->last_animation_speed;
 			m_position = player->getPosition() + v3f(0,BS,0);
@@ -1047,7 +1038,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			m_acceleration = v3f(0,0,0);
 			pos_translator.vect_show = m_position;
 			m_yaw = player->getYaw();
-			PlayerControl controls = player->getPlayerControl();
+			const PlayerControl &controls = player->getPlayerControl();
 
 			bool walking = false;
 			if (controls.up || controls.down || controls.left || controls.right ||
@@ -1068,11 +1059,10 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 					m_client->checkLocalPrivilege("fly"))))
 					new_speed *= 1.5;
 			// slowdown speed if sneeking
-			if(controls.sneak && walking)
+			if (controls.sneak && walking)
 				new_speed /= 2;
 
-			if(walking && (controls.LMB || controls.RMB))
-			{
+			if (walking && (controls.LMB || controls.RMB)) {
 				new_anim = player->local_animations[3];
 				player->last_animation = WD_ANIM;
 			} else if(walking) {
@@ -1085,8 +1075,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Apply animations if input detected and not attached
 			// or set idle animation
-			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached)
-			{
+			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached) {
 				allow_update = true;
 				m_animation_range = new_anim;
 				m_animation_speed = new_speed;
@@ -1094,8 +1083,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			} else {
 				player->last_animation = NO_ANIM;
 
-				if (old_anim != NO_ANIM)
-				{
+				if (old_anim != NO_ANIM) {
 					m_animation_range = player->local_animations[0];
 					updateAnimation();
 				}
@@ -1306,7 +1294,7 @@ void GenericCAO::updateTexturePos()
 	}
 }
 
-void GenericCAO::updateTextures(const std::string mod)
+void GenericCAO::updateTextures(std::string mod)
 {
 	ITextureSource *tsrc = m_client->tsrc();
 
@@ -1506,7 +1494,7 @@ void GenericCAO::updateBonePosition()
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
-	for(UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+	for(std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		std::string bone_name = (*ii).first;
 		v3f bone_pos = (*ii).second.X;
@@ -1582,6 +1570,10 @@ void GenericCAO::processMessage(const std::string &data)
 			m_initial_tx_basepos_set = true;
 			m_tx_basepos = m_prop.initial_sprite_basepos;
 		}
+		if (m_is_local_player) {
+			LocalPlayer *player = m_env->getLocalPlayer();
+			player->makes_footstep_sound = m_prop.makes_footstep_sound;
+		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")
 			m_prop.nametag = m_name;
@@ -1645,6 +1637,7 @@ void GenericCAO::processMessage(const std::string &data)
 		// these are sent inverted so we get true when the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
+		bool new_move = !readU8(is);
 
 
 		if(m_is_local_player)
@@ -1655,6 +1648,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->physics_override_gravity = override_gravity;
 			player->physics_override_sneak = sneak;
 			player->physics_override_sneak_glitch = sneak_glitch;
+			player->physics_override_new_move = new_move;
 		}
 	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
@@ -1742,7 +1736,7 @@ void GenericCAO::processMessage(const std::string &data)
 						m_smgr, m_env, m_position,
 						m_prop.visual_size * BS);
 				m_env->addSimpleObject(simple);
-			} else {
+			} else if (m_reset_textures_timer < 0) {
 				// TODO: Execute defined fast response
 				// Flashing shall suffice as there is no definition
 				m_reset_textures_timer = 0.05;
@@ -1813,10 +1807,12 @@ bool GenericCAO::directReportPunch(v3f dir, const ItemStack *punchitem,
 		}
 		// TODO: Execute defined fast response
 		// Flashing shall suffice as there is no definition
-		m_reset_textures_timer = 0.05;
-		if(result.damage >= 2)
-			m_reset_textures_timer += 0.05 * result.damage;
-		updateTextures(m_current_texture_modifier + "^[brighten");
+		if (m_reset_textures_timer < 0) {
+			m_reset_textures_timer = 0.05;
+			if (result.damage >= 2)
+				m_reset_textures_timer += 0.05 * result.damage;
+			updateTextures(m_current_texture_modifier + "^[brighten");
+		}
 	}
 
 	return false;

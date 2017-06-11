@@ -38,14 +38,14 @@ struct ChatLine
 	// message text
 	EnrichedString text;
 
-	ChatLine(std::wstring a_name, std::wstring a_text):
+	ChatLine(const std::wstring &a_name, const std::wstring &a_text):
 		age(0.0),
 		name(a_name),
 		text(a_text)
 	{
 	}
 
-	ChatLine(EnrichedString a_name, EnrichedString a_text):
+	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text):
 		age(0.0),
 		name(a_name),
 		text(a_text)
@@ -86,8 +86,6 @@ public:
 
 	// Get number of lines currently in buffer.
 	u32 getLineCount() const;
-	// Get scrollback size, maximum number of lines in buffer.
-	u32 getScrollback() const;
 	// Get reference to i-th chat line.
 	const ChatLine& getLine(u32 index) const;
 
@@ -148,7 +146,7 @@ private:
 class ChatPrompt
 {
 public:
-	ChatPrompt(std::wstring prompt, u32 history_limit);
+	ChatPrompt(const std::wstring &prompt, u32 history_limit);
 	~ChatPrompt();
 
 	// Input character or string
@@ -162,8 +160,7 @@ public:
 	std::wstring getLine() const { return m_line; }
 
 	// Get section of line that is currently selected
-	std::wstring getSelection() const
-		{ return m_line.substr(m_cursor, m_cursor_len); }
+	std::wstring getSelection() const { return m_line.substr(m_cursor, m_cursor_len); }
 
 	// Clear the current line
 	void clear();

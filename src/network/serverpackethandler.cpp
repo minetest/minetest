@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "player.h"
 #include "rollback_interface.h"
-#include "scripting_game.h"
+#include "scripting_server.h"
 #include "settings.h"
 #include "tool.h"
 #include "version.h"
@@ -614,20 +614,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
 
-	///// begin compatibility code
-	PlayerSAO* playersao = NULL;
-	if (protocol_version <= 22) {
-		playersao = StageTwoClientInit(pkt->getPeerId());
-
-		if (playersao == NULL) {
-			actionstream
-				<< "TOSERVER_INIT2 stage 2 client init failed for peer "
-				<< pkt->getPeerId() << std::endl;
-			return;
-		}
-	}
-	///// end compatibility code
-
 	/*
 		Send some initialization data
 	*/
@@ -656,13 +642,6 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	u16 time = m_env->getTimeOfDay();
 	float time_speed = g_settings->getFloat("time_speed");
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
-
-	///// begin compatibility code
-	if (protocol_version <= 22) {
-		m_clients.event(pkt->getPeerId(), CSE_SetClientReady);
-		m_script->on_joinplayer(playersao);
-	}
-	///// end compatibility code
 
 	// Warnings about protocol version can be issued here
 	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
@@ -695,24 +674,9 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 	sendRequestedMedia(pkt->getPeerId(), tosend);
 }
 
-void Server::handleCommand_ReceivedMedia(NetworkPacket* pkt)
-{
-}
-
 void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 {
 	u16 peer_id = pkt->getPeerId();
-	u16 peer_proto_ver = getClient(peer_id, CS_InitDone)->net_proto_version;
-
-	// clients <= protocol version 22 did not send ready message,
-	// they're already initialized
-	if (peer_proto_ver <= 22) {
-		infostream << "Client sent message not expected by a "
-			<< "client using protocol version <= 22,"
-			<< "disconnecting peer_id: " << peer_id << std::endl;
-		m_con.DisconnectPeer(peer_id);
-		return;
-	}
 
 	PlayerSAO* playersao = StageTwoClientInit(peer_id);
 
@@ -741,8 +705,28 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 			peer_id, major_ver, minor_ver, patch_ver,
 			full_ver);
 
+	const std::vector<std::string> &players = m_clients.getPlayerNames();
+	NetworkPacket list_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, peer_id);
+	list_pkt << (u8) PLAYER_LIST_INIT << (u16) players.size();
+	for (const std::string &player: players) {
+		list_pkt <<  player;
+	}
+	m_clients.send(peer_id, 0, &list_pkt, true);
+
+	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
+	// (u16) 1 + std::string represents a pseudo vector serialization representation
+	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
+	m_clients.sendToAll(&notice_pkt);
+
 	m_clients.event(peer_id, CSE_SetClientReady);
 	m_script->on_joinplayer(playersao);
+	// Send shutdown timer if shutdown has been scheduled
+	if (m_shutdown_timer > 0.0f) {
+		std::wstringstream ws;
+		ws << L"*** Server shutting down in "
+				<< duration_to_string(myround(m_shutdown_timer)).c_str() << ".";
+		SendChatMessage(pkt->getPeerId(), ws.str());
+	}
 }
 
 void Server::handleCommand_GotBlocks(NetworkPacket* pkt)
@@ -1128,6 +1112,13 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 	}
 
 	if (g_settings->getBool("enable_damage")) {
+		if (playersao->isDead()) {
+			verbosestream << "Server::ProcessData(): Info: "
+				"Ignoring damage as player " << player->getName()
+				<< " is already dead." << std::endl;
+			return;
+		}
+
 		actionstream << player->getName() << " damaged by "
 				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
@@ -1389,14 +1380,19 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	static const bool enable_anticheat = !g_settings->getBool("disable_anticheat");
+	static thread_local const bool enable_anticheat =
+			!g_settings->getBool("disable_anticheat");
+
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			(enable_anticheat && !isSingleplayer())) {
 		float d = player_pos.getDistanceFrom(pointed_pos_under);
 		const ItemDefinition &playeritem_def =
 			playersao->getWieldedItem().getDefinition(m_itemdef);
 		float max_d = BS * playeritem_def.range;
-		float max_d_hand = BS * m_itemdef->get("").range;
+		InventoryList *hlist = playersao->getInventory()->getList("hand");
+		const ItemDefinition &hand_def =
+			hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
+		float max_d_hand = BS * hand_def.range;
 		if (max_d < 0 && max_d_hand >= 0)
 			max_d = max_d_hand;
 		else if (max_d < 0)
@@ -1457,7 +1453,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					<<pointed.object_id<<": "
 					<<pointed_object->getDescription()<<std::endl;
 
-			ItemStack punchitem = playersao->getWieldedItem();
+			ItemStack punchitem = playersao->getWieldedItemOrHand();
 			ToolCapabilities toolcap =
 					punchitem.getToolCapabilities(m_itemdef);
 			v3f dir = (pointed_object->getBasePosition() -
@@ -1524,7 +1520,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 					m_script->on_cheat(playersao, "finished_unknown_dig");
 				}
 				// Get player's wielded item
-				ItemStack playeritem = playersao->getWieldedItem();
+				ItemStack playeritem = playersao->getWieldedItemOrHand();
 				ToolCapabilities playeritem_toolcap =
 						playeritem.getToolCapabilities(m_itemdef);
 				// Get diggability and expected digging time
@@ -1532,7 +1528,9 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 						&playeritem_toolcap);
 				// If can't dig, try hand
 				if (!params.diggable) {
-					const ItemDefinition &hand = m_itemdef->get("");
+					InventoryList *hlist = playersao->getInventory()->getList("hand");
+					const ItemDefinition &hand =
+						hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
 					const ToolCapabilities *tp = hand.tool_capabilities;
 					if (tp)
 						params = getDigParams(m_nodedef->get(n).groups, tp);
@@ -1701,7 +1699,8 @@ void Server::handleCommand_RemovedSounds(NetworkPacket* pkt)
 
 		*pkt >> id;
 
-		UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(id);
+		std::unordered_map<s32, ServerPlayingSound>::iterator i =
+			m_playing_sounds.find(id);
 		if (i == m_playing_sounds.end())
 			continue;
 

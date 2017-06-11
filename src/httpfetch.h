@@ -61,7 +61,7 @@ struct HTTPFetchRequest
 	// If not empty, should contain entries such as "Accept: text/html"
 	std::vector<std::string> extra_headers;
 
-	//useragent to use
+	// useragent to use
 	std::string useragent;
 
 	HTTPFetchRequest();
@@ -78,25 +78,16 @@ struct HTTPFetchResult
 	unsigned long request_id;
 
 	HTTPFetchResult()
+	    : succeeded(false), timeout(false), response_code(0), data(""),
+	      caller(HTTPFETCH_DISCARD), request_id(0)
 	{
-		succeeded = false;
-		timeout = false;
-		response_code = 0;
-		data = "";
-		caller = HTTPFETCH_DISCARD;
-		request_id = 0;
 	}
 
 	HTTPFetchResult(const HTTPFetchRequest &fetch_request)
+	    : succeeded(false), timeout(false), response_code(0), data(""),
+	      caller(fetch_request.caller), request_id(fetch_request.request_id)
 	{
-		succeeded = false;
-		timeout = false;
-		response_code = 0;
-		data = "";
-		caller = fetch_request.caller;
-		request_id = fetch_request.request_id;
 	}
-
 };
 
 // Initializes the httpfetch module
@@ -126,8 +117,6 @@ void httpfetch_caller_free(unsigned long caller);
 
 // Performs a synchronous HTTP request. This blocks and therefore should
 // only be used from background threads.
-void httpfetch_sync(const HTTPFetchRequest &fetch_request,
-		HTTPFetchResult &fetch_result);
-
+void httpfetch_sync(const HTTPFetchRequest &fetch_request, HTTPFetchResult &fetch_result);
 
 #endif // !HTTPFETCH_HEADER

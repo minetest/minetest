@@ -74,7 +74,9 @@ enum ContentParamType2
 	// 3 bits of palette index, then facedir
 	CPT2_COLORED_FACEDIR,
 	// 5 bits of palette index, then wallmounted
-	CPT2_COLORED_WALLMOUNTED
+	CPT2_COLORED_WALLMOUNTED,
+	// Glasslike framed drawtype internal liquid level, param2 values 0 to 63
+	CPT2_GLASSLIKE_LIQUID_LEVEL,
 };
 
 enum LiquidType
@@ -144,26 +146,59 @@ public:
 
 enum NodeDrawType
 {
-	NDT_NORMAL, // A basic solid block
-	NDT_AIRLIKE, // Nothing is drawn
-	NDT_LIQUID, // Do not draw face towards same kind of flowing/source liquid
-	NDT_FLOWINGLIQUID, // A very special kind of thing
-	NDT_GLASSLIKE, // Glass-like, don't draw faces towards other glass
-	NDT_ALLFACES, // Leaves-like, draw all faces no matter what
-	NDT_ALLFACES_OPTIONAL, // Fancy -> allfaces, fast -> normal
+	// A basic solid block
+	NDT_NORMAL,
+	// Nothing is drawn
+	NDT_AIRLIKE,
+	// Do not draw face towards same kind of flowing/source liquid
+	NDT_LIQUID,
+	// A very special kind of thing
+	NDT_FLOWINGLIQUID,
+	// Glass-like, don't draw faces towards other glass
+	NDT_GLASSLIKE,
+	// Leaves-like, draw all faces no matter what
+	NDT_ALLFACES,
+	// Enabled -> ndt_allfaces, disabled -> ndt_normal
+	NDT_ALLFACES_OPTIONAL,
+	// Single plane perpendicular to a surface
 	NDT_TORCHLIKE,
+	// Single plane parallel to a surface
 	NDT_SIGNLIKE,
+	// 2 vertical planes in a 'X' shape diagonal to XZ axes.
+	// paramtype2 = "meshoptions" allows various forms, sizes and
+	// vertical and horizontal random offsets.
 	NDT_PLANTLIKE,
+	// Fenceposts that connect to neighbouring fenceposts with horizontal bars
 	NDT_FENCELIKE,
+	// Selects appropriate junction texture to connect like rails to
+	// neighbouring raillikes.
 	NDT_RAILLIKE,
+	// Custom Lua-definable structure of multiple cuboids
 	NDT_NODEBOX,
-	NDT_GLASSLIKE_FRAMED, // Glass-like, draw connected frames and all all
-	                      // visible faces
-						  // uses 2 textures, one for frames, second for faces
-	NDT_FIRELIKE, // Draw faces slightly rotated and only on connecting nodes,
-	NDT_GLASSLIKE_FRAMED_OPTIONAL,	// enabled -> connected, disabled -> Glass-like
-									// uses 2 textures, one for frames, second for faces
-	NDT_MESH, // Uses static meshes
+	// Glass-like, draw connected frames and all visible faces.
+	// param2 > 0 defines 64 levels of internal liquid
+	// Uses 3 textures, one for frames, second for faces,
+	// optional third is a 'special tile' for the liquid.
+	NDT_GLASSLIKE_FRAMED,
+	// Draw faces slightly rotated and only on neighbouring nodes
+	NDT_FIRELIKE,
+	// Enabled -> ndt_glasslike_framed, disabled -> ndt_glasslike
+	NDT_GLASSLIKE_FRAMED_OPTIONAL,
+	// Uses static meshes
+	NDT_MESH,
+};
+
+// Mesh options for NDT_PLANTLIKE with CPT2_MESHOPTIONS
+static const u8 MO_MASK_STYLE          = 0x07;
+static const u8 MO_BIT_RANDOM_OFFSET   = 0x08;
+static const u8 MO_BIT_SCALE_SQRT2     = 0x10;
+static const u8 MO_BIT_RANDOM_OFFSET_Y = 0x20;
+enum PlantlikeStyle {
+	PLANT_STYLE_CROSS,
+	PLANT_STYLE_CROSS2,
+	PLANT_STYLE_STAR,
+	PLANT_STYLE_HASH,
+	PLANT_STYLE_HASH2,
 };
 
 /*
@@ -183,14 +218,14 @@ struct TileDef
 
 	struct TileAnimationParams animation;
 
-	TileDef()
+	TileDef() :
+		name(""),
+		backface_culling(true),
+		tileable_horizontal(true),
+		tileable_vertical(true),
+		has_color(false),
+		color(video::SColor(0xFFFFFFFF))
 	{
-		name = "";
-		backface_culling = true;
-		tileable_horizontal = true;
-		tileable_vertical = true;
-		has_color = false;
-		color = video::SColor(0xFFFFFFFF);
 		animation.type = TAT_NONE;
 	}
 
@@ -245,6 +280,8 @@ struct ContentFeatures
 #endif
 	float visual_scale; // Misc. scale parameter
 	TileDef tiledef[6];
+	// These will be drawn over the base tiles.
+	TileDef tiledef_overlay[6];
 	TileDef tiledef_special[CF_SPECIAL_COUNT]; // eg. flowing liquid
 	// If 255, the node is opaque.
 	// Otherwise it uses texture alpha.
@@ -345,13 +382,13 @@ struct ContentFeatures
 	void serializeOld(std::ostream &os, u16 protocol_version) const;
 	void deSerializeOld(std::istream &is, int version);
 	/*!
-	 * Since vertex alpha is no lnger supported, this method
-	 * adds instructions to the texture names to blend alpha there.
+	 * Since vertex alpha is no longer supported, this method
+	 * adds opacity directly to the texture pixels.
 	 *
-	 * tiledef, tiledef_special and alpha must be initialized
-	 * before calling this.
+	 * \param tiles array of the tile definitions.
+	 * \param length length of tiles
 	 */
-	void correctAlpha();
+	void correctAlpha(TileDef *tiles, int length);
 
 	/*
 		Some handy methods
@@ -364,8 +401,13 @@ struct ContentFeatures
 		return (liquid_alternative_flowing == f.liquid_alternative_flowing);
 	}
 
+	int getGroup(const std::string &group) const
+	{
+		return itemgroup_get(groups, group);
+	}
+
 #ifndef SERVER
-	void fillTileAttribs(ITextureSource *tsrc, TileSpec *tile, TileDef *tiledef,
+	void fillTileAttribs(ITextureSource *tsrc, TileLayer *tile, TileDef *tiledef,
 		u32 shader_id, bool use_normal_texture, bool backface_culling,
 		u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
@@ -389,8 +431,6 @@ public:
 	virtual const ContentFeatures &get(const std::string &name) const=0;
 
 	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
-
-	virtual bool getNodeRegistrationStatus() const=0;
 
 	virtual void pendNodeResolve(NodeResolver *nr)=0;
 	virtual bool cancelNodeResolveCallback(NodeResolver *nr)=0;
@@ -449,7 +489,6 @@ public:
 	virtual void serialize(std::ostream &os, u16 protocol_version) const=0;
 	virtual void deSerialize(std::istream &is)=0;
 
-	virtual bool getNodeRegistrationStatus() const=0;
 	virtual void setNodeRegistrationStatus(bool completed)=0;
 
 	virtual void pendNodeResolve(NodeResolver *nr)=0;

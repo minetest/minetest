@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientenvironment.h"
 #include "clientsimpleobject.h"
 #include "clientmap.h"
+#include "scripting_client.h"
 #include "mapblock_mesh.h"
 #include "event.h"
 #include "collision.h"
@@ -29,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "voxelalgorithms.h"
 #include "settings.h"
+#include <algorithm>
 
 /*
 	ClientEnvironment
@@ -37,11 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	ITextureSource *texturesource, Client *client,
 	IrrlichtDevice *irr):
+	Environment(client),
 	m_map(map),
 	m_local_player(NULL),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_client(client),
+	m_script(NULL),
 	m_irr(irr)
 {
 	char zero = 0;
@@ -51,8 +55,8 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 ClientEnvironment::~ClientEnvironment()
 {
 	// delete active objects
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		delete i->second;
 	}
 
@@ -63,6 +67,8 @@ ClientEnvironment::~ClientEnvironment()
 
 	// Drop/delete map
 	m_map->drop();
+
+	delete m_local_player;
 }
 
 Map & ClientEnvironment::getMap()
@@ -231,11 +237,10 @@ void ClientEnvironment::step(float dtime)
 			pre_factor = 1.0 + (float)addp/100.0;
 		}
 		float speed = pre_factor * speed_diff.getLength();
-		if(speed > tolerance)
-		{
-			f32 damage_f = (speed - tolerance)/BS * post_factor;
-			u16 damage = (u16)(damage_f+0.5);
-			if(damage != 0){
+		if (speed > tolerance) {
+			f32 damage_f = (speed - tolerance) / BS * post_factor;
+			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
+			if (damage != 0) {
 				damageLocalPlayer(damage, true);
 				MtEvent *e = new SimpleTriggerEvent("PlayerFallingDamage");
 				m_client->event()->put(e);
@@ -243,37 +248,35 @@ void ClientEnvironment::step(float dtime)
 		}
 	}
 
-	/*
-		A quick draft of lava damage
-	*/
-	if(m_lava_hurt_interval.step(dtime, 1.0))
-	{
-		v3f pf = lplayer->getPosition();
-
-		// Feet, middle and head
-		v3s16 p1 = floatToInt(pf + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_map->getNodeNoEx(p1);
-		v3s16 p2 = floatToInt(pf + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_map->getNodeNoEx(p2);
-		v3s16 p3 = floatToInt(pf + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_map->getNodeNoEx(p3);
-
-		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_client->ndef()->get(n3).damage_per_second);
-
-		if(damage_per_second != 0)
-		{
-			damageLocalPlayer(damage_per_second, true);
-		}
+	if (m_client->moddingEnabled()) {
+		m_script->environment_step(dtime);
 	}
 
 	// Protocol v29 make this behaviour obsolete
 	if (getGameDef()->getProtoVersion() < 29) {
+		if (m_lava_hurt_interval.step(dtime, 1.0)) {
+			v3f pf = lplayer->getPosition();
+
+			// Feet, middle and head
+			v3s16 p1 = floatToInt(pf + v3f(0, BS * 0.1, 0), BS);
+			MapNode n1 = m_map->getNodeNoEx(p1);
+			v3s16 p2 = floatToInt(pf + v3f(0, BS * 0.8, 0), BS);
+			MapNode n2 = m_map->getNodeNoEx(p2);
+			v3s16 p3 = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
+			MapNode n3 = m_map->getNodeNoEx(p3);
+
+			u32 damage_per_second = 0;
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n1).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n2).damage_per_second);
+			damage_per_second = MYMAX(damage_per_second,
+				m_client->ndef()->get(n3).damage_per_second);
+
+			if (damage_per_second != 0)
+				damageLocalPlayer(damage_per_second, true);
+		}
+
 		/*
 			Drowning
 		*/
@@ -343,8 +346,8 @@ void ClientEnvironment::step(float dtime)
 
 	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		ClientActiveObject* obj = i->second;
 		// Step object
 		obj->step(dtime, this);
@@ -403,14 +406,14 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 {
-	UNORDERED_MAP<u16, ClientActiveObject*>::iterator n = m_active_objects.find(id);
+	ClientActiveObjectMap::iterator n = m_active_objects.find(id);
 	if (n == m_active_objects.end())
 		return NULL;
 	return n->second;
 }
 
 bool isFreeClientActiveObjectId(const u16 id,
-	UNORDERED_MAP<u16, ClientActiveObject*> &objects)
+	ClientActiveObjectMap &objects)
 {
 	if(id == 0)
 		return false;
@@ -418,7 +421,7 @@ bool isFreeClientActiveObjectId(const u16 id,
 	return objects.find(id) == objects.end();
 }
 
-u16 getFreeClientActiveObjectId(UNORDERED_MAP<u16, ClientActiveObject*> &objects)
+u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
 {
 	//try to reuse id's as late as possible
 	static u16 last_used_id = 0;
@@ -580,8 +583,8 @@ void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
 void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	std::vector<DistanceSortedActiveObject> &dest)
 {
-	for (UNORDERED_MAP<u16, ClientActiveObject*>::iterator i = m_active_objects.begin();
-		i != m_active_objects.end(); ++i) {
+	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
+			i != m_active_objects.end(); ++i) {
 		ClientActiveObject* obj = i->second;
 
 		f32 d = (obj->getPosition() - origin).getLength();
@@ -595,15 +598,13 @@ void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	}
 }
 
-ClientEnvEvent ClientEnvironment::getClientEvent()
+ClientEnvEvent ClientEnvironment::getClientEnvEvent()
 {
-	ClientEnvEvent event;
-	if(m_client_event_queue.empty())
-		event.type = CEE_NONE;
-	else {
-		event = m_client_event_queue.front();
-		m_client_event_queue.pop();
-	}
+	FATAL_ERROR_IF(m_client_event_queue.empty(),
+			"ClientEnvironment::getClientEnvEvent(): queue is empty");
+
+	ClientEnvEvent event = m_client_event_queue.front();
+	m_client_event_queue.pop();
 	return event;
 }
 

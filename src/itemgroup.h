@@ -21,18 +21,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define ITEMGROUP_HEADER
 
 #include <string>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
-typedef UNORDERED_MAP<std::string, int> ItemGroupList;
+typedef std::unordered_map<std::string, int> ItemGroupList;
 
-static inline int itemgroup_get(const ItemGroupList &groups,
-		const std::string &name)
+static inline int itemgroup_get(const ItemGroupList &groups, const std::string &name)
 {
 	ItemGroupList::const_iterator i = groups.find(name);
-	if(i == groups.end())
+	if (i == groups.end())
 		return 0;
 	return i->second;
 }
 
 #endif
-

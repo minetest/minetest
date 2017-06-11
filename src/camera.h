@@ -64,22 +64,6 @@ public:
 			Client *client);
 	~Camera();
 
-	// Get player scene node.
-	// This node is positioned at the player's torso (without any view bobbing),
-	// as given by Player::m_position. Yaw is applied but not pitch.
-	inline scene::ISceneNode* getPlayerNode() const
-	{
-		return m_playernode;
-	}
-
-	// Get head scene node.
-	// It has the eye transformation and pitch applied,
-	// but no view bobbing.
-	inline scene::ISceneNode* getHeadNode() const
-	{
-		return m_headnode;
-	}
-
 	// Get camera scene node.
 	// It has the eye transformation, pitch and view bobbing applied.
 	inline scene::ICameraSceneNode* getCameraNode() const
@@ -161,6 +145,12 @@ public:
 			m_camera_mode = CAMERA_MODE_FIRST;
 	}
 
+	// Set the current camera mode
+	inline void setCameraMode(CameraMode mode)
+	{
+		m_camera_mode = mode;
+	}
+
 	//read the current camera mode
 	inline CameraMode getCameraMode()
 	{
@@ -172,8 +162,7 @@ public:
 
 	void removeNametag(Nametag *nametag);
 
-	std::list<Nametag *> *getNametags()
-	{ return &m_nametags; }
+	const std::list<Nametag *> &getNametags() { return m_nametags; }
 
 	void drawNametags();
 
@@ -232,7 +221,6 @@ private:
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
 	f32 m_cache_zoom_fov;
-	bool m_cache_view_bobbing;
 
 	std::list<Nametag *> m_nametags;
 };
