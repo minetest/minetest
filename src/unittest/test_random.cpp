@@ -34,7 +34,6 @@ public:
 	void testPseudoRandomRange();
 	void testPcgRandom();
 	void testPcgRandomRange();
-	void testPcgRandomBytes();
 	void testPcgRandomNormalDist();
 
 	static const int expected_pseudorandom_results[256];
@@ -51,7 +50,6 @@ void TestRandom::runTests(IGameDef *gamedef)
 	TEST(testPseudoRandomRange);
 	TEST(testPcgRandom);
 	TEST(testPcgRandomRange);
-	TEST(testPcgRandomBytes);
 	TEST(testPcgRandomNormalDist);
 }
 
@@ -114,23 +112,6 @@ void TestRandom::testPcgRandomRange()
 		UASSERT(randval >= min);
 		UASSERT(randval <= max);
 	}
-}
-
-
-void TestRandom::testPcgRandomBytes()
-{
-	char buf[32];
-	PcgRandom r(1538, 877);
-
-	memset(buf, 0, sizeof(buf));
-	r.bytes(buf + 5, 23);
-	UASSERT(memcmp(buf + 5, expected_pcgrandom_bytes_result,
-		sizeof(expected_pcgrandom_bytes_result)) == 0);
-
-	memset(buf, 0, sizeof(buf));
-	r.bytes(buf, 17);
-	UASSERT(memcmp(buf, expected_pcgrandom_bytes_result2,
-		sizeof(expected_pcgrandom_bytes_result2)) == 0);
 }
 
 

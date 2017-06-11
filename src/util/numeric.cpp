@@ -19,35 +19,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "numeric.h"
 
-#include "log.h"
+#include <random>
 #include "../constants.h" // BS, MAP_BLOCKSIZE
 #include "../noise.h" // PseudoRandom, PcgRandom
-#include "../threading/mutex_auto_lock.h"
-#include <string.h>
 
 
 // myrand
 
-PcgRandom g_pcgrand;
+std::mt19937 g_random(std::time(NULL));
 
 u32 myrand()
 {
-	return g_pcgrand.next();
+	return g_random();
 }
 
 void mysrand(unsigned int seed)
 {
-	g_pcgrand.seed(seed);
-}
-
-void myrand_bytes(void *out, size_t len)
-{
-	g_pcgrand.bytes(out, len);
+	g_random.seed(seed);
 }
 
 int myrand_range(int min, int max)
 {
-	return g_pcgrand.range(min, max);
+	std::uniform_int_distribution<int> rnd(min, max);
+	return rnd(g_random);
 }
 
 

@@ -1011,8 +1011,9 @@ void MapgenParams::readParams(const Settings *settings)
 	if (settings->getNoEx(seed_name, seed_str)) {
 		if (!seed_str.empty())
 			seed = read_seed(seed_str.c_str());
-		else
-			myrand_bytes(&seed, sizeof(seed));
+		else {
+			seed = myrand() | (myrand() << sizeof(s32));
+		}
 	}
 
 	std::string mg_name;

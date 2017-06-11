@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "util/numeric.h"
 #include <algorithm>
+#include <random>
 
 
 FlagDesc flagdesc_deco[] = {
@@ -140,7 +141,7 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 
 size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
-	PcgRandom ps(blockseed + 53);
+	std::mt19937 ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
 	// Divide area into parts
@@ -150,6 +151,8 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 	s16 divlen = carea_size / sidelen;
 	int area = sidelen * sidelen;
+
+	std::uniform_int_distribution<s16> rndRange(0,1000);
 
 	for (s16 z0 = 0; z0 < divlen; z0++)
 	for (s16 x0 = 0; x0 < divlen; x0++) {
@@ -176,13 +179,17 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			deco_count = deco_count_f;
 		} else if (deco_count_f > 0.f) {
 			// For low density decorations calculate a chance for 1 decoration
-			if (ps.range(1000) <= deco_count_f * 1000.f)
+			if (rndRange(ps) <= deco_count_f * 1000.f)
 				deco_count = 1;
 		}
 
+		std::uniform_int_distribution<s16> rndX(p2d_min.X,p2d_max.X);
+		std::uniform_int_distribution<s16> rndY(p2d_min.Y,p2d_max.Y);
+
+
 		for (u32 i = 0; i < deco_count; i++) {
-			s16 x = ps.range(p2d_min.X, p2d_max.X);
-			s16 z = ps.range(p2d_min.Y, p2d_max.Y);
+			s16 x = rndX(ps);
+			s16 z = rndY(ps);
 
 			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
 
@@ -200,12 +207,6 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 
 			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y) {
 				continue;
-#if 0
-				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
-				//add to queue
-				MutexAutoLock cutofflock(cutoff_mutex);
-				cutoffs.push_back(CutoffData(x, y, z, height));
-#endif
 			}
 
 			if (mg->biomemap && !biomes.empty()) {
@@ -216,67 +217,13 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			}
 
 			v3s16 pos(x, y, z);
-			if (generate(mg->vm, &ps, pos))
+			if (generate(mg->vm, ps, pos))
 				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
 		}
 	}
 
 	return 0;
 }
-
-
-#if 0
-void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
-{
-	PcgRandom pr(blockseed + 53);
-	std::vector<CutoffData> handled_cutoffs;
-
-	// Copy over the cutoffs we're interested in so we don't needlessly hold a lock
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-			CutoffData cutoff = *i;
-			v3s16 p    = cutoff.p;
-			s16 height = cutoff.height;
-			if (p.X < nmin.X || p.X > nmax.X ||
-				p.Z < nmin.Z || p.Z > nmax.Z)
-				continue;
-			if (p.Y + height < nmin.Y || p.Y > nmax.Y)
-				continue;
-
-			handled_cutoffs.push_back(cutoff);
-		}
-	}
-
-	// Generate the cutoffs
-	for (size_t i = 0; i != handled_cutoffs.size(); i++) {
-		v3s16 p    = handled_cutoffs[i].p;
-		s16 height = handled_cutoffs[i].height;
-
-		if (p.Y + height > nmax.Y) {
-			//printf("Decoration at (%d %d %d) cut off again!\n", p.X, p.Y, p.Z);
-			cuttoffs.push_back(v3s16(p.X, p.Y, p.Z));
-		}
-
-		generate(mg, &pr, nmax.Y, nmin.Y - p.Y, v3s16(p.X, nmin.Y, p.Z));
-	}
-
-	// Remove cutoffs that were handled from the cutoff list
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-
-			for (size_t j = 0; j != handled_cutoffs.size(); j++) {
-				CutoffData coff = *i;
-				if (coff.p == handled_cutoffs[j].p)
-					i = cutoffs.erase(i);
-			}
-		}
-	}
-}
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -289,7 +236,7 @@ void DecoSimple::resolveNodeNames()
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSimple::generate(MMVManip *vm, std::mt19937 &pr, v3s16 p)
 {
 	// Don't bother if there aren't any decorations to place
 	if (c_decos.size() == 0)
@@ -298,10 +245,13 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
-	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
+	std::uniform_int_distribution<s16> rnd(0, c_decos.size() - 1);
+	std::uniform_int_distribution<s16> rndHeight(deco_height, deco_height_max);
 
-	s16 height = (deco_height_max > 0) ?
-		pr->range(deco_height, deco_height_max) : deco_height;
+
+	content_t c_place = c_decos[rnd(pr)];
+
+	s16 height = (deco_height_max > 0) ? rndHeight(pr) : deco_height;
 
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
@@ -337,7 +287,7 @@ DecoSchematic::DecoSchematic()
 }
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSchematic::generate(MMVManip *vm, std::mt19937 &pr, v3s16 p)
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)
@@ -354,8 +304,9 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z - 1) / 2;
 
-	Rotation rot = (rotation == ROTATE_RAND) ?
-		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
+	std::uniform_int_distribution<u16> rndRot(ROTATE_0, ROTATE_270);
+
+	Rotation rot = (rotation == ROTATE_RAND) ? (Rotation) rndRot(pr) : rotation;
 
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 

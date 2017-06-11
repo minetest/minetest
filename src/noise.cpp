@@ -134,27 +134,6 @@ s32 PcgRandom::range(s32 min, s32 max)
 	return range(bound) + min;
 }
 
-
-void PcgRandom::bytes(void *out, size_t len)
-{
-	u8 *outb = (u8 *)out;
-	int bytes_left = 0;
-	u32 r;
-
-	while (len--) {
-		if (bytes_left == 0) {
-			bytes_left = sizeof(u32);
-			r = next();
-		}
-
-		*outb = r & 0xFF;
-		outb++;
-		bytes_left--;
-		r >>= CHAR_BIT;
-	}
-}
-
-
 s32 PcgRandom::randNormalDist(s32 min, s32 max, int num_trials)
 {
 	s32 accum = 0;
