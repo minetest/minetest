@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
-#include "guiFileSelectMenu.h"
+#include "guiPathSelectMenu.h"
 #include "subgame.h"
 #include "version.h"
 #include "porting.h"
@@ -950,13 +950,14 @@ bool ModApiMainMenu::isMinetestPath(std::string path)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
+int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
+	bool is_file_select = lua_toboolean(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
 		new GUIFileSelectMenu(engine->m_device->getGUIEnvironment(),
@@ -964,7 +965,8 @@ int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
 								-1,
 								engine->m_menumanager,
 								title,
-								formname);
+								formname,
+								is_file_select);
 	fileOpenMenu->setTextDest(engine->m_buttonhandler);
 	fileOpenMenu->drop();
 	return 0;
@@ -1138,7 +1140,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(copy_dir);
 	API_FCT(extract_zip);
 	API_FCT(get_mainmenu_path);
-	API_FCT(show_file_open_dialog);
+	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
 	API_FCT(get_modstore_details);
 	API_FCT(get_modstore_list);

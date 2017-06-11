@@ -757,7 +757,7 @@
 # freetype = true
 
 #    Path to TrueTypeFont or bitmap.
-#    type: path
+#    type: filepath
 # font_path = fonts/liberationsans.ttf
 
 #    type: int
@@ -771,14 +771,14 @@
 #    type: int min: 0 max: 255
 # font_shadow_alpha = 127
 
-#    type: path
+#    type: filepath
 # mono_font_path = fonts/liberationmono.ttf
 
 #    type: int
 # mono_font_size = 15
 
 #    This font will be used for certain languages.
-#    type: path
+#    type: filepath
 # fallback_font_path = fonts/DroidSansFallbackFull.ttf
 
 #    type: int
