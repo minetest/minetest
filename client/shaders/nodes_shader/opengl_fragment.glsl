@@ -22,8 +22,15 @@ const float BS = 10.0;
 const float fogStart = FOG_START;
 const float fogShadingParameter = 1 / ( 1 - fogStart);
 
-#ifdef ENABLE_TONE_MAPPING
+float linearizeDepth(float depth)
+{
+	float NEAR = 1.0;
+	float FAR = 20000.0;
+	depth = depth * 2.0 - 1.0;
+	return  (-NEAR * FAR) / (depth * (FAR - NEAR) - FAR) / 2450.0;
+}
 
+#if ENABLE_TONE_MAPPING && !POSTPROCESSING_ENABLED
 /* Hable's UC2 Tone mapping parameters
 	A = 0.22;
 	B = 0.30;
@@ -46,7 +53,7 @@ vec4 applyToneMapping(vec4 color)
 	const float gamma = 1.6;
 	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
-	// Precalculated white_scale from 
+	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
@@ -197,7 +204,7 @@ void main(void)
 
 	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
 	
-#ifdef ENABLE_TONE_MAPPING
+#if ENABLE_TONE_MAPPING && !POSTPROCESSING_ENABLED
 	col = applyToneMapping(col);
 #endif
 
@@ -215,5 +222,6 @@ void main(void)
 	col = mix(skyBgColor, col, clarity);
 	col = vec4(col.rgb, base.a);
 
-	gl_FragColor = col;
+	gl_FragData[0] = col;
+	gl_FragData[1].r = linearizeDepth(gl_FragCoord.z);
 }

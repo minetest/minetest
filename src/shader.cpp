@@ -210,11 +210,15 @@ class MainShaderConstantSetter : public IShaderConstantSetter
 {
 	CachedVertexShaderSetting<float, 16> m_world_view_proj;
 	CachedVertexShaderSetting<float, 16> m_world;
+	CachedPixelShaderSetting<s32, 2> m_render_target_size;
+	CachedPixelShaderSetting<f32, 2> m_pixel_size;
 
 public:
 	MainShaderConstantSetter() :
 		m_world_view_proj("mWorldViewProj"),
-		m_world("mWorld")
+		m_world("mWorld"),
+		m_render_target_size("renderTargetSize"),
+		m_pixel_size("pixelSize")
 	{}
 	~MainShaderConstantSetter() {}
 
@@ -241,6 +245,17 @@ public:
 		else
 			services->setVertexShaderConstant(world.pointer(), 4, 4);
 
+		if (is_highlevel) {
+			core::dimension2d<u32> size = driver->getCurrentRenderTargetSize();
+			s32 s[2];
+			f32 p[2];
+			s[0] = size.Width;
+			s[1] = size.Height;
+			p[0] = 1.0 / s[0];
+			p[1] = 1.0 / s[1];
+			m_render_target_size.set(s, services);
+			m_pixel_size.set(p, services);
+		}
 	}
 };
 
@@ -737,19 +752,31 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	shaders_header += "#define ENABLE_WAVING_LEAVES ";
-	if (g_settings->getBool("enable_waving_leaves"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_leaves") ? "1\n" : "0\n";
 
 	shaders_header += "#define ENABLE_WAVING_PLANTS ";
-	if (g_settings->getBool("enable_waving_plants"))
-		shaders_header += "1\n";
-	else
-		shaders_header += "0\n";
+	shaders_header += g_settings->getBool("enable_waving_plants") ? "1\n" : "0\n";
 
-	if (g_settings->getBool("tone_mapping"))
-		shaders_header += "#define ENABLE_TONE_MAPPING\n";
+	shaders_header += "#define UNDERSAMPLING ";
+	shaders_header += itos(g_settings->getU16("undersampling"));
+	shaders_header += "\n";
+
+	shaders_header += "#define POSTPROCESSING_ENABLED ";
+	shaders_header += g_settings->getBool("postprocessing") ? "1\n" : "0\n";
+
+	shaders_header += "#define ENABLE_DOF ";
+	shaders_header += g_settings->getBool("postprocessing_dof") ? "1\n" : "0\n";
+
+	shaders_header += "#define DOF_STRENGTH ";
+	shaders_header += ftos(g_settings->getFloat("postprocessing_dof_strength"));
+	shaders_header += "\n";
+
+	shaders_header += "#define DOF_LIMIT ";
+	shaders_header += itos(g_settings->getU16("postprocessing_dof_limit"));
+	shaders_header += "\n";
+
+	shaders_header += "#define ENABLE_TONE_MAPPING ";
+	shaders_header += g_settings->getBool("tone_mapping") ? "1\n" : "0\n";
 
 	shaders_header += "#define FOG_START ";
 	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
