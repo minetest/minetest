@@ -638,14 +638,15 @@ void Server::AsyncRunStep(bool initial_step)
 		ScopeProfiler sp(g_profiler, "Server: checking added and deleted objs");
 
 		// Radius inside which objects are active
-		static const s16 radius =
+		static thread_local const s16 radius =
 			g_settings->getS16("active_object_send_range_blocks") * MAP_BLOCKSIZE;
 
 		// Radius inside which players are active
-		static const bool is_transfer_limited =
+		static thread_local const bool is_transfer_limited =
 			g_settings->exists("unlimited_player_transfer_distance") &&
 			!g_settings->getBool("unlimited_player_transfer_distance");
-		static const s16 player_transfer_dist = g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
+		static thread_local const s16 player_transfer_dist =
+			g_settings->getS16("player_transfer_distance") * MAP_BLOCKSIZE;
 		s16 player_radius = player_transfer_dist;
 		if (player_radius == 0 && is_transfer_limited)
 			player_radius = radius;
@@ -982,7 +983,7 @@ void Server::AsyncRunStep(bool initial_step)
 	{
 		float &counter = m_savemap_timer;
 		counter += dtime;
-		static const float save_interval =
+		static thread_local const float save_interval =
 			g_settings->getFloat("server_map_save_interval");
 		if (counter >= save_interval) {
 			counter = 0.0;
@@ -1684,7 +1685,7 @@ void Server::SendSpawnParticle(u16 peer_id, u16 protocol_version,
 				const struct TileAnimationParams &animation, u8 glow)
 {
 	DSTACK(FUNCTION_NAME);
-	static const float radius =
+	static thread_local const float radius =
 			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
@@ -3676,8 +3677,9 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 	IntervalLimiter m_profiler_interval;
 
-	static const float steplen = g_settings->getFloat("dedicated_server_step");
-	static const float profiler_print_interval =
+	static thread_local const float steplen =
+			g_settings->getFloat("dedicated_server_step");
+	static thread_local const float profiler_print_interval =
 			g_settings->getFloat("profiler_print_interval");
 
 	for(;;) {

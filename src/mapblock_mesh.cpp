@@ -271,7 +271,7 @@ static u16 getSmoothLightCombined(v3s16 p, MeshMakeData *data)
 
 	if (ambient_occlusion > 4)
 	{
-		static const float ao_gamma = rangelim(
+		static thread_local const float ao_gamma = rangelim(
 			g_settings->getFloat("ambient_occlusion_gamma"), 0.25, 4.0);
 
 		// Table of gamma space multiply factors.
