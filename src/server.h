@@ -104,29 +104,19 @@ struct MediaInfo
 
 struct ServerSoundParams
 {
-	float gain;
-	std::string to_player;
-	enum Type{
-		SSP_LOCAL=0,
-		SSP_POSITIONAL=1,
-		SSP_OBJECT=2
-	} type;
-	v3f pos;
-	u16 object;
-	float max_hear_distance;
-	bool loop;
-	float fade;
-
-	ServerSoundParams():
-		gain(1.0),
-		to_player(""),
-		type(SSP_LOCAL),
-		pos(0,0,0),
-		object(0),
-		max_hear_distance(32*BS),
-		loop(false),
-		fade(0)
-	{}
+	enum Type {
+		SSP_LOCAL,
+		SSP_POSITIONAL,
+		SSP_OBJECT
+	} type = SSP_LOCAL;
+	float gain = 1.0f;
+	float fade = 0.0f;
+	float pitch = 1.0f;
+	bool loop = false;
+	float max_hear_distance = 32*BS;
+	v3f pos = v3f(0, 0, 0);
+	u16 object = 0;
+	std::string to_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };

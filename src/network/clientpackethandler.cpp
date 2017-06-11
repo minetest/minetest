@@ -764,6 +764,7 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 		[23 + len] u16 object_id
 		[25 + len] bool loop
 		[26 + len] f32 fade
+		[30 + len] f32 pitch
 	*/
 
 	s32 server_id;
@@ -774,29 +775,31 @@ void Client::handleCommand_PlaySound(NetworkPacket* pkt)
 	v3f pos;
 	u16 object_id;
 	bool loop;
-	float fade = 0;
+	float fade = 0.0f;
+	float pitch = 1.0f;
 
 	*pkt >> server_id >> name >> gain >> type >> pos >> object_id >> loop;
 
 	try {
 		*pkt >> fade;
+		*pkt >> pitch;
 	} catch (PacketError &e) {};
 
 	// Start playing
 	int client_id = -1;
 	switch(type) {
 		case 0: // local
-			client_id = m_sound->playSound(name, loop, gain, fade);
+			client_id = m_sound->playSound(name, loop, gain, fade, pitch);
 			break;
 		case 1: // positional
-			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
 			break;
 		case 2:
 		{ // object
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
 			if (cao)
 				pos = cao->getPosition();
-			client_id = m_sound->playSoundAt(name, loop, gain, pos);
+			client_id = m_sound->playSoundAt(name, loop, gain, pos, pitch);
 			// TODO: Set up sound to move with object
 			break;
 		}

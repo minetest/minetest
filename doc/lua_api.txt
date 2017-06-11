@@ -622,12 +622,14 @@ Examples of sound parameter tables:
     {
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
+        pitch = 1.0, -- default
     }
     -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
+        pitch = 1.0, -- default
     }
     -- Play locationless to one player, looped
     {
@@ -658,6 +660,7 @@ one player using `to_player = name,`
 * e.g. `{}`
 * e.g. `{name = "default_place_node"}`
 * e.g. `{name = "default_place_node", gain = 1.0}`
+* e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
 
 Registered definitions of stuff
 -------------------------------

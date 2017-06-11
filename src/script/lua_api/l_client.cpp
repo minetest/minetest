@@ -227,12 +227,14 @@ int ModApiClient::l_sound_play(lua_State *L)
 
 	SimpleSoundSpec spec;
 	read_soundspec(L, 1, spec);
-	float gain = 1.0;
+	float gain = 1.0f;
+	float pitch = 1.0f;
 	bool looped = false;
 	s32 handle;
 
 	if (lua_istable(L, 2)) {
 		getfloatfield(L, 2, "gain", gain);
+		getfloatfield(L, 2, "pitch", pitch);
 		getboolfield(L, 2, "loop", looped);
 
 		lua_getfield(L, 2, "pos");
@@ -240,13 +242,13 @@ int ModApiClient::l_sound_play(lua_State *L)
 			v3f pos = read_v3f(L, -1) * BS;
 			lua_pop(L, 1);
 			handle = sound->playSoundAt(
-					spec.name, looped, gain * spec.gain, pos);
+					spec.name, looped, gain * spec.gain, pos, pitch);
 			lua_pushinteger(L, handle);
 			return 1;
 		}
 	}
 
-	handle = sound->playSound(spec.name, looped, gain * spec.gain);
+	handle = sound->playSound(spec.name, looped, gain * spec.gain, 0.0f, pitch);
 	lua_pushinteger(L, handle);
 
 	return 1;
