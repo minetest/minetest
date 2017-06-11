@@ -158,10 +158,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 33:
 		Add TOCLIENT_UPDATE_PLAYER_LIST and send the player list to the client,
 			instead of guessing based on the active object list.
-
+	PROTOCOL VERSION 34:
+		Add sound pitch
 */
 
-#define LATEST_PROTOCOL_VERSION 33
+#define LATEST_PROTOCOL_VERSION 34
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24
