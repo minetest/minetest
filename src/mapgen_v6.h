@@ -162,6 +162,8 @@ public:
 	int generateGround();
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
+	void moveMud(MapNode *n, MapNode *n2, MapNode *n3,
+			v2s16 p2d, u32 i3, v3s16 em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

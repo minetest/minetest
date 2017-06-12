@@ -886,35 +886,43 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					vm->m_area.add_y(em, i2, 1);
 					n2 = &vm->m_data[i2];
 
-					// Move mud to new place
-					if (!dropped_to_unknown) {
-						*n2 = *n;
-						// Set old place to be air (or water)
-						*n = MapNode(CONTENT_AIR);
-						// Upper (n3) is not walkable or is NULL. If it is
-						// not NULL and not air it is a decoration that
-						// needs removing, to avoid unsupported decorations.
-						// This only happens outside the mapchunk.
-						if ((p2d.X > node_max.X || p2d.X < node_min.X ||
-								p2d.Y > node_max.Z || p2d.Y < node_min.Z) &&
-								n3 && n3->getContent() != CONTENT_AIR) {
-							*n3 = MapNode(CONTENT_AIR);
-							// Check above for a stacked decoration
-							u32 i4 = i3;
-							vm->m_area.add_y(em, i4, 1);
-							while (vm->m_area.contains(i4) &&
-									vm->m_data[i4].getContent() != CONTENT_AIR) {
-								vm->m_data[i4] = MapNode(CONTENT_AIR);
-								vm->m_area.add_y(em, i4, 1);
-							}
-						}
-					}
+					// Move mud to new place. Outside mapchunk
+					// remove any decorations above removed mud.
+					if (!dropped_to_unknown)
+						moveMud(n, n2, n3, p2d, i3, em);
 
 					// Done
 					break;
 				}
 			}
 			}
+		}
+	}
+}
+
+
+void MapgenV6::moveMud(MapNode *n, MapNode *n2, MapNode *n3,
+	v2s16 p2d, u32 i3, v3s16 em)
+{
+	// Move mud to new place
+	*n2 = *n;
+	// Set old place to be air
+	*n = MapNode(CONTENT_AIR);
+	// Upper (n3) is not walkable or is NULL. If it is
+	// not NULL and not air it is a decoration that
+	// needs removing to avoid unsupported decorations.
+	// This only happens outside the mapchunk.
+	if ((p2d.X > node_max.X || p2d.X < node_min.X ||
+			p2d.Y > node_max.Z || p2d.Y < node_min.Z) &&
+			n3 && n3->getContent() != CONTENT_AIR) {
+		*n3 = MapNode(CONTENT_AIR);
+		// Check above for a stacked decoration and remove nodes
+		u32 i4 = i3;
+		vm->m_area.add_y(em, i4, 1);
+		while (vm->m_area.contains(i4) &&
+				vm->m_data[i4].getContent() != CONTENT_AIR) {
+			vm->m_data[i4] = MapNode(CONTENT_AIR);
+			vm->m_area.add_y(em, i4, 1);
 		}
 	}
 }
