@@ -20,8 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "numeric.h"
 
 #include <random>
+#include <ctime>
+#include <cstring>
 #include "../constants.h" // BS, MAP_BLOCKSIZE
-#include "../noise.h" // PseudoRandom, PcgRandom
 
 
 // myrand
