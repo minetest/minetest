@@ -884,32 +884,52 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					} while (ndef->get(*n2).walkable == false);
 					// Loop one up so that we're in air
 					vm->m_area.add_y(em, i2, 1);
-					n2 = &vm->m_data[i2];
 
-					bool old_is_water = (n->getContent() == c_water_source);
-					// Move mud to new place
-					if (!dropped_to_unknown) {
-						*n2 = *n;
-						// Set old place to be air (or water)
-						if (old_is_water) {
-							*n = MapNode(c_water_source);
-						} else {
-							*n = MapNode(CONTENT_AIR);
-							// Upper (n3) is not walkable or is NULL. If it is
-							// not NULL and not air and not water it is a
-							// decoration that needs removing, to avoid
-							// unsupported decorations.
-							if (n3 && n3->getContent() != CONTENT_AIR &&
-									n3->getContent() != c_water_source)
-								*n3 = MapNode(CONTENT_AIR);
-						}
-					}
+					// Move mud to new place. Outside mapchunk remove
+					// any decorations above removed or placed mud.
+					if (!dropped_to_unknown)
+						moveMud(i, i2, i3, p2d, em);
 
 					// Done
 					break;
 				}
 			}
 			}
+		}
+	}
+}
+
+
+void MapgenV6::moveMud(u32 remove_index, u32 place_index,
+	u32 above_remove_index, v2s16 pos, v3s16 em)
+{
+	MapNode n_air(CONTENT_AIR);
+	// Copy mud from old place to new place
+	vm->m_data[place_index] = vm->m_data[remove_index];
+	// Set old place to be air
+	vm->m_data[remove_index] = n_air;
+	// Outside the mapchunk decorations may need to be removed if above removed
+	// mud or if half-buried in placed mud. Placed mud is to the side of pos so
+	// use 'pos.X >= node_max.X' etc.
+	if (pos.X >= node_max.X || pos.X <= node_min.X ||
+			pos.Y >= node_max.Z || pos.Y <= node_min.Z) {
+		// 'above remove' node is above removed mud. If it is not air and not
+		// water it is a decoration that needs removing. Also search upwards
+		// for a possible stacked decoration.
+		while (vm->m_area.contains(above_remove_index) &&
+				vm->m_data[above_remove_index].getContent() != CONTENT_AIR &&
+				vm->m_data[above_remove_index].getContent() != c_water_source) {
+			vm->m_data[above_remove_index] = n_air;
+			vm->m_area.add_y(em, above_remove_index, 1);
+		}
+		// Mud placed may have half-buried a tall decoration, search above and
+		// remove.
+		vm->m_area.add_y(em, place_index, 1);
+		while (vm->m_area.contains(place_index) &&
+				vm->m_data[place_index].getContent() != CONTENT_AIR &&
+				vm->m_data[place_index].getContent() != c_water_source) {
+			vm->m_data[place_index] = n_air;
+			vm->m_area.add_y(em, place_index, 1);
 		}
 	}
 }
