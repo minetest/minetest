@@ -2421,12 +2421,12 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				if (m_pointer.X > (s32)screenSize.X / 2)
 					tooltip_offset_x = (tooltip_offset_x + tooltip_width) * -1;
 #endif
-				s32 tooltip_x = m_pointer.X + tooltip_offset_x;
-				s32 tooltip_y = m_pointer.Y + tooltip_offset_y;
-				if (tooltip_x + tooltip_width > (s32)screenSize.X)
-					tooltip_x = (s32)screenSize.X - tooltip_width  - m_btn_height;
-				if (tooltip_y + tooltip_height > (s32)screenSize.Y)
-					tooltip_y = (s32)screenSize.Y - tooltip_height - m_btn_height;
+				s32 tooltip_x = rect.UpperLeftCorner.X - tooltip_width; //m_pointer.X + tooltip_offset_x;
+				s32 tooltip_y = rect.UpperLeftCorner.Y - tooltip_height; //m_pointer.Y + tooltip_offset_y;
+				if (tooltip_x < 0)
+					tooltip_x = 0;
+				if (tooltip_y < 0)
+					tooltip_y = 0;
 				m_tooltip_element->setRelativePosition(core::rect<s32>(
 						core::position2d<s32>(tooltip_x, tooltip_y),
 						core::dimension2d<s32>(tooltip_width, tooltip_height)));
