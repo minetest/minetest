@@ -2421,8 +2421,8 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				if (m_pointer.X > (s32)screenSize.X / 2)
 					tooltip_offset_x = (tooltip_offset_x + tooltip_width) * -1;
 #endif
-				s32 tooltip_x = rect.UpperLeftCorner.X - tooltip_width; //m_pointer.X + tooltip_offset_x;
-				s32 tooltip_y = rect.UpperLeftCorner.Y - tooltip_height; //m_pointer.Y + tooltip_offset_y;
+				s32 tooltip_x = rect.UpperLeftCorner.X - tooltip_width;
+				s32 tooltip_y = rect.UpperLeftCorner.Y - tooltip_height;
 				if (tooltip_x < 0)
 					tooltip_x = 0;
 				if (tooltip_y < 0)
