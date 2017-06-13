@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "tool.h"
 
-class ModApiClient : public ModApiBase
-{
+class ModApiClient : public ModApiBase {
 private:
 	// get_current_modname()
 	static int l_get_current_modname(lua_State *L);

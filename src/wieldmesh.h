@@ -31,8 +31,7 @@ struct ContentFeatures;
 /*!
  * Holds color information of an item mesh's buffer.
  */
-struct ItemPartColor
-{
+struct ItemPartColor {
 	/*!
 	 * If this is false, the global base color of the item
 	 * will be used instead of the specific color of the
@@ -46,14 +45,13 @@ struct ItemPartColor
 
 	ItemPartColor() : override_base(false), color(0) {}
 
-	ItemPartColor(bool override, video::SColor color)
-	    : override_base(override), color(color)
+	ItemPartColor(bool override, video::SColor color) :
+		override_base(override), color(color)
 	{
 	}
 };
 
-struct ItemMesh
-{
+struct ItemMesh {
 	scene::IMesh *mesh;
 	/*!
 	 * Stores the color of each mesh buffer.
@@ -71,8 +69,7 @@ struct ItemMesh
 /*
 	Wield item scene node, renders the wield mesh of some item
 */
-class WieldMeshSceneNode : public scene::ISceneNode
-{
+class WieldMeshSceneNode : public scene::ISceneNode {
 public:
 	WieldMeshSceneNode(scene::ISceneNode *parent, scene::ISceneManager *mgr,
 			s32 id = -1, bool lighting = false);

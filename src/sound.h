@@ -24,19 +24,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_bloated.h"
 
-class OnDemandSoundFetcher
-{
+class OnDemandSoundFetcher {
 public:
 	virtual void fetchSounds(const std::string &name,
 			std::set<std::string> &dst_paths,
 			std::set<std::string> &dst_datas) = 0;
 };
 
-struct SimpleSoundSpec
-{
+struct SimpleSoundSpec {
 	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f,
-			float fade = 0.0f, float pitch = 1.0f)
-	    : name(name), gain(gain), fade(fade), pitch(pitch)
+			float fade = 0.0f, float pitch = 1.0f) :
+		name(name), gain(gain), fade(fade), pitch(pitch)
 	{
 	}
 
@@ -48,8 +46,7 @@ struct SimpleSoundSpec
 	float pitch = 1.0f;
 };
 
-class ISoundManager
-{
+class ISoundManager {
 public:
 	virtual ~ISoundManager() {}
 	// Multiple sounds can be loaded per name; when played, the sound
@@ -87,8 +84,7 @@ public:
 	}
 };
 
-class DummySoundManager : public ISoundManager
-{
+class DummySoundManager : public ISoundManager {
 public:
 	virtual bool loadSoundFile(const std::string &name, const std::string &filepath)
 	{

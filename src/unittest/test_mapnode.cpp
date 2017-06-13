@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "content_mapnode.h"
 
-class TestMapNode : public TestBase
-{
+class TestMapNode : public TestBase {
 public:
 	TestMapNode() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestMapNode"; }

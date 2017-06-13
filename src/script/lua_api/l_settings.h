@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 
-class LuaSettings : public ModApiBase
-{
+class LuaSettings : public ModApiBase {
 private:
 	static const char className[];
 	static const luaL_Reg methods[];

@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <mutex>
 
-class BanManager
-{
+class BanManager {
 public:
 	BanManager(const std::string &bannfilepath);
 	~BanManager();

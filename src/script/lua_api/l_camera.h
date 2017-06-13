@@ -5,8 +5,7 @@
 
 class Camera;
 
-class LuaCamera : public ModApiBase
-{
+class LuaCamera : public ModApiBase {
 private:
 	static const char className[];
 	static const luaL_Reg methods[];

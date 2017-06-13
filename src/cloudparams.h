@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLOUDPARAMS_HEADER
 #define CLOUDPARAMS_HEADER
 
-struct CloudParams
-{
+struct CloudParams {
 	float density;
 	video::SColor color_bright;
 	video::SColor color_ambient;

@@ -37,8 +37,7 @@ class GenerateNotifier;
 	TODO(hmmmm): Remove dependency on biomes
 	TODO(hmmmm): Find alternative to overgeneration as solution for sunlight issue
 */
-class CavesNoiseIntersection
-{
+class CavesNoiseIntersection {
 public:
 	CavesNoiseIntersection(INodeDefManager *nodedef, BiomeManager *biomemgr,
 			v3s16 chunksize, NoiseParams *np_cave1, NoiseParams *np_cave2,
@@ -66,8 +65,7 @@ private:
 /*
 	CavernsNoise is a cave digging algorithm
 */
-class CavernsNoise
-{
+class CavernsNoise {
 public:
 	CavernsNoise(INodeDefManager *nodedef, v3s16 chunksize, NoiseParams *np_cavern,
 			s32 seed, float cavern_limit, float cavern_taper,
@@ -108,8 +106,7 @@ private:
 	This algorithm is very fast, executing in less than 1ms on average for an
 	80x80x80 chunk of map on a modern processor.
 */
-class CavesRandomWalk
-{
+class CavesRandomWalk {
 public:
 	MMVManip *vm;
 	INodeDefManager *ndef;
@@ -185,8 +182,7 @@ private:
 	tl;dr,
 	*** DO NOT TOUCH THIS CLASS UNLESS YOU KNOW WHAT YOU ARE DOING ***
 */
-class CavesV6
-{
+class CavesV6 {
 public:
 	MMVManip *vm;
 	INodeDefManager *ndef;

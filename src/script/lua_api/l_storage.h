@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class ModMetadata;
 
-class ModApiStorage : public ModApiBase
-{
+class ModApiStorage : public ModApiBase {
 protected:
 	static int l_get_mod_storage(lua_State *L);
 
@@ -35,8 +34,7 @@ public:
 	static void Initialize(lua_State *L, int top);
 };
 
-class StorageRef : public MetaDataRef
-{
+class StorageRef : public MetaDataRef {
 private:
 	ModMetadata *m_object;
 

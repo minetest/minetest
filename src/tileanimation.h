@@ -23,28 +23,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include "irrlichttypes_bloated.h"
 
-enum TileAnimationType
-{
+enum TileAnimationType {
 	TAT_NONE = 0,
 	TAT_VERTICAL_FRAMES = 1,
 	TAT_SHEET_2D = 2,
 };
 
-struct TileAnimationParams
-{
+struct TileAnimationParams {
 	enum TileAnimationType type;
-	union
-	{
+	union {
 		// struct {
 		// } none;
-		struct
-		{
+		struct {
 			int aspect_w; // width for aspect ratio
 			int aspect_h; // height for aspect ratio
 			float length; // seconds
 		} vertical_frames;
-		struct
-		{
+		struct {
 			int frames_w;       // number of frames left-to-right
 			int frames_h;       // number of frames top-to-bottom
 			float frame_length; // seconds

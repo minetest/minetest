@@ -26,16 +26,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"
 
-class Database
-{
+class Database {
 public:
 	virtual void beginSave() = 0;
 	virtual void endSave() = 0;
 	virtual bool initialized() const { return true; }
 };
 
-class MapDatabase : public Database
-{
+class MapDatabase : public Database {
 public:
 	virtual ~MapDatabase() {}
 
@@ -52,8 +50,7 @@ public:
 class PlayerSAO;
 class RemotePlayer;
 
-class PlayerDatabase
-{
+class PlayerDatabase {
 public:
 	virtual ~PlayerDatabase() {}
 	virtual void savePlayer(RemotePlayer *player) = 0;

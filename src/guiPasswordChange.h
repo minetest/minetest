@@ -24,8 +24,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "client.h"
 #include <string>
 
-class GUIPasswordChange : public GUIModalMenu
-{
+class GUIPasswordChange : public GUIModalMenu {
 public:
 	GUIPasswordChange(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr, Client *client);

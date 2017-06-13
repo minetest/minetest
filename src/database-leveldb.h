@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "leveldb/db.h"
 
-class Database_LevelDB : public MapDatabase
-{
+class Database_LevelDB : public MapDatabase {
 public:
 	Database_LevelDB(const std::string &savedir);
 	~Database_LevelDB();

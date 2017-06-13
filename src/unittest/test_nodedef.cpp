@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "network/networkprotocol.h"
 
-class TestNodeDef : public TestBase
-{
+class TestNodeDef : public TestBase {
 public:
 	TestNodeDef() { TestManager::registerTestModule(this); }
 	const char *getName() { return "TestNodeDef"; }

@@ -32,8 +32,7 @@ class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_fractal[];
 
-struct MapgenFractalParams : public MapgenParams
-{
+struct MapgenFractalParams : public MapgenParams {
 	u32 spflags;
 	float cave_width;
 	u16 fractal;
@@ -57,8 +56,7 @@ struct MapgenFractalParams : public MapgenParams
 	void writeParams(Settings *settings) const;
 };
 
-class MapgenFractal : public MapgenBasic
-{
+class MapgenFractal : public MapgenBasic {
 public:
 	MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge);
 	~MapgenFractal();

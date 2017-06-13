@@ -29,8 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 typedef std::unordered_map<u16, std::string> IdToNameMap;
 typedef std::unordered_map<std::string, u16> NameToIdMap;
 
-class NameIdMapping
-{
+class NameIdMapping {
 public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

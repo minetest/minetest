@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct ToolCapabilities;
 
-class ScriptApiPlayer : virtual public ScriptApiBase
-{
+class ScriptApiPlayer : virtual public ScriptApiBase {
 public:
 	virtual ~ScriptApiPlayer();
 

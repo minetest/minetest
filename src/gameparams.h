@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct SubgameSpec;
 
-struct GameParams
-{
+struct GameParams {
 	u16 socket_port;
 	std::string world_path;
 	SubgameSpec game_spec;

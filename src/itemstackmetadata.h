@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Inventory;
 class IItemDefManager;
 
-class ItemStackMetadata : public Metadata
-{
+class ItemStackMetadata : public Metadata {
 public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

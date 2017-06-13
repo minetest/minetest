@@ -30,16 +30,14 @@ class GenericCAO;
 class ClientActiveObject;
 class IGameDef;
 
-enum LocalPlayerAnimations
-{
+enum LocalPlayerAnimations {
 	NO_ANIM,
 	WALK_ANIM,
 	DIG_ANIM,
 	WD_ANIM
 }; // no local animation, walking, digging, both
 
-class LocalPlayer : public Player
-{
+class LocalPlayer : public Player {
 public:
 	LocalPlayer(Client *client, const char *name);
 	virtual ~LocalPlayer();

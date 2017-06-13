@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 #include "util/thread.h"
 
-struct CachedMapBlockData
-{
+struct CachedMapBlockData {
 	v3s16 p;
 	MapNode *data; // A copy of the MapBlock's data member
 	int refcount_from_queue;
@@ -36,8 +35,7 @@ struct CachedMapBlockData
 	~CachedMapBlockData();
 };
 
-struct QueuedMeshUpdate
-{
+struct QueuedMeshUpdate {
 	v3s16 p;
 	bool ack_block_to_server;
 	bool urgent;
@@ -52,10 +50,8 @@ struct QueuedMeshUpdate
 /*
 	A thread-safe queue of mesh update tasks and a cache of MapBlock data
 */
-class MeshUpdateQueue
-{
-	enum UpdateMode
-	{
+class MeshUpdateQueue {
+	enum UpdateMode {
 		FORCE_UPDATE,
 		SKIP_UPDATE_IF_ALREADY_CACHED,
 	};
@@ -99,20 +95,18 @@ private:
 	void cleanupCache();
 };
 
-struct MeshUpdateResult
-{
+struct MeshUpdateResult {
 	v3s16 p;
 	MapBlockMesh *mesh;
 	bool ack_block_to_server;
 
-	MeshUpdateResult()
-	    : p(-1338, -1338, -1338), mesh(NULL), ack_block_to_server(false)
+	MeshUpdateResult() :
+		p(-1338, -1338, -1338), mesh(NULL), ack_block_to_server(false)
 	{
 	}
 };
 
-class MeshUpdateThread : public UpdateThread
-{
+class MeshUpdateThread : public UpdateThread {
 public:
 	MeshUpdateThread(Client *client);
 
