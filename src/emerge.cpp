@@ -96,12 +96,10 @@ EmergeManager::EmergeManager(Server *server)
 	this->oremgr    = new OreManager(server);
 	this->decomgr   = new DecorationManager(server);
 	this->schemmgr  = new SchematicManager(server);
-	this->gen_notify_on = 0;
 
 	// Note that accesses to this variable are not synchronized.
 	// This is because the *only* thread ever starting or stopping
 	// EmergeThreads should be the ServerThread.
-	this->m_threads_active = false;
 
 	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 

@@ -114,12 +114,8 @@ int Database_SQLite3::busyHandler(void *data, int count)
 
 
 Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string &dbname) :
-	m_database(NULL),
-	m_initialized(false),
 	m_savedir(savedir),
-	m_dbname(dbname),
-	m_stmt_begin(NULL),
-	m_stmt_end(NULL)
+	m_dbname(dbname)
 {
 }
 
@@ -203,13 +199,8 @@ Database_SQLite3::~Database_SQLite3()
 
 MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir):
 	Database_SQLite3(savedir, "map"),
-	MapDatabase(),
-	m_stmt_read(NULL),
-	m_stmt_write(NULL),
-	m_stmt_list(NULL),
-	m_stmt_delete(NULL)
+	MapDatabase()
 {
-
 }
 
 MapDatabaseSQLite3::~MapDatabaseSQLite3()
@@ -334,24 +325,10 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 
 PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir):
 	Database_SQLite3(savedir, "players"),
-	PlayerDatabase(),
-	m_stmt_player_load(NULL),
-	m_stmt_player_add(NULL),
-	m_stmt_player_update(NULL),
-	m_stmt_player_remove(NULL),
-	m_stmt_player_list(NULL),
-	m_stmt_player_load_inventory(NULL),
-	m_stmt_player_load_inventory_items(NULL),
-	m_stmt_player_add_inventory(NULL),
-	m_stmt_player_add_inventory_items(NULL),
-	m_stmt_player_remove_inventory(NULL),
-	m_stmt_player_remove_inventory_items(NULL),
-	m_stmt_player_metadata_load(NULL),
-	m_stmt_player_metadata_remove(NULL),
-	m_stmt_player_metadata_add(NULL)
+	PlayerDatabase()
 {
-
 }
+
 PlayerDatabaseSQLite3::~PlayerDatabaseSQLite3()
 {
 	FINALIZE_STATEMENT(m_stmt_player_load)

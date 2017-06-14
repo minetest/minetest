@@ -144,10 +144,6 @@ void DebugStack::print(std::ostream &os, bool everything)
 std::map<std::thread::id, DebugStack*> g_debug_stacks;
 std::mutex g_debug_stacks_mutex;
 
-void debug_stacks_init()
-{
-}
-
 void debug_stacks_print_to(std::ostream &os)
 {
 	MutexAutoLock lock(g_debug_stacks_mutex);

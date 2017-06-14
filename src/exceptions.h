@@ -37,16 +37,6 @@ protected:
 	std::string m_s;
 };
 
-class AsyncQueuedException : public BaseException {
-public:
-	AsyncQueuedException(const std::string &s): BaseException(s) {}
-};
-
-class NotImplementedException : public BaseException {
-public:
-	NotImplementedException(const std::string &s): BaseException(s) {}
-};
-
 class AlreadyExistsException : public BaseException {
 public:
 	AlreadyExistsException(const std::string &s): BaseException(s) {}
@@ -77,16 +67,6 @@ public:
 	PacketError(const std::string &s): BaseException(s) {}
 };
 
-class LoadError : public BaseException {
-public:
-	LoadError(const std::string &s): BaseException(s) {}
-};
-
-class ContainerFullException : public BaseException {
-public:
-	ContainerFullException(const std::string &s): BaseException(s) {}
-};
-
 class SettingNotFoundException : public BaseException {
 public:
 	SettingNotFoundException(const std::string &s): BaseException(s) {}
@@ -95,16 +75,6 @@ public:
 class InvalidFilenameException : public BaseException {
 public:
 	InvalidFilenameException(const std::string &s): BaseException(s) {}
-};
-
-class ProcessingLimitException : public BaseException {
-public:
-	ProcessingLimitException(const std::string &s): BaseException(s) {}
-};
-
-class CommandLineError : public BaseException {
-public:
-	CommandLineError(const std::string &s): BaseException(s) {}
 };
 
 class ItemNotFoundException : public BaseException {
@@ -158,22 +128,6 @@ public:
 	InvalidPositionException(const std::string &s):
 		BaseException(s)
 	{}
-};
-
-class TargetInexistentException : public std::exception
-{
-	virtual const char * what() const throw()
-	{
-		return "Somebody tried to refer to something that doesn't exist.";
-	}
-};
-
-class NullPointerException : public std::exception
-{
-	virtual const char * what() const throw()
-	{
-		return "NullPointerException";
-	}
 };
 
 #endif

@@ -104,8 +104,8 @@ private:
 
 	// Attributes
 	std::string m_connect_string;
-	PGconn *m_conn;
-	int m_pgversion;
+	PGconn *m_conn = nullptr;
+	int m_pgversion = 0;
 };
 
 class MapDatabasePostgreSQL : private Database_PostgreSQL, public MapDatabase

@@ -92,7 +92,6 @@ void debug_set_exception_handler();
 #define DEBUG_STACK_SIZE 50
 #define DEBUG_STACK_TEXT_SIZE 300
 
-extern void debug_stacks_init();
 extern void debug_stacks_print_to(std::ostream &os);
 extern void debug_stacks_print();
 

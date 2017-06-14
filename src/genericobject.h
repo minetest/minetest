@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "irrlichttypes_bloated.h"
 #include <iostream>
+#include "itemgroup.h"
 
 enum GenericCMD {
 	GENERIC_CMD_SET_PROPERTIES,
@@ -64,7 +65,6 @@ std::string gob_cmd_set_sprite(
 
 std::string gob_cmd_punched(s16 damage, s16 result_hp);
 
-#include "itemgroup.h"
 std::string gob_cmd_update_armor_groups(const ItemGroupList &armor_groups);
 
 std::string gob_cmd_update_physics_override(float physics_override_speed,

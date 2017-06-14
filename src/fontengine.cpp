@@ -43,12 +43,7 @@ static void font_setting_changed(const std::string &name, void *userdata)
 /******************************************************************************/
 FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_settings(main_settings),
-	m_env(env),
-	m_font_cache(),
-	m_currentMode(FM_Standard),
-	m_lastMode(),
-	m_lastSize(0),
-	m_lastFont(NULL)
+	m_env(env)
 {
 
 	for (unsigned int i = 0; i < FM_MaxMode; i++) {

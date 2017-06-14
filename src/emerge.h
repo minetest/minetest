@@ -47,20 +47,15 @@ class Server;
 
 // Structure containing inputs/outputs for chunk generation
 struct BlockMakeData {
-	MMVManip *vmanip;
-	u64 seed;
+	MMVManip *vmanip = nullptr;
+	u64 seed = 0;
 	v3s16 blockpos_min;
 	v3s16 blockpos_max;
 	v3s16 blockpos_requested;
 	UniqueQueue<v3s16> transforming_liquid;
-	INodeDefManager *nodedef;
+	INodeDefManager *nodedef = nullptr;
 
-	BlockMakeData():
-		vmanip(NULL),
-		seed(0),
-		nodedef(NULL)
-	{}
-
+	BlockMakeData() {}
 	~BlockMakeData() { delete vmanip; }
 };
 
@@ -96,7 +91,7 @@ public:
 	bool enable_mapgen_debug_info;
 
 	// Generation Notify
-	u32 gen_notify_on;
+	u32 gen_notify_on = 0;
 	std::set<u32> gen_notify_on_deco_ids;
 
 	// Parameters passed to mapgens owned by ServerMap
@@ -154,7 +149,7 @@ public:
 private:
 	std::vector<Mapgen *> m_mapgens;
 	std::vector<EmergeThread *> m_threads;
-	bool m_threads_active;
+	bool m_threads_active = false;
 
 	std::mutex m_queue_mutex;
 	std::map<v3s16, BlockEmergeData> m_blocks_enqueued;

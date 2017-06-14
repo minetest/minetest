@@ -26,13 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class SmokePuffCSO: public ClientSimpleObject
 {
-	float m_age;
-	scene::IBillboardSceneNode *m_spritenode;
+	float m_age = 0.0f;
+	scene::IBillboardSceneNode *m_spritenode = nullptr;
 public:
 	SmokePuffCSO(scene::ISceneManager *smgr,
-			ClientEnvironment *env, v3f pos, v2f size):
-		m_age(0),
-		m_spritenode(NULL)
+			ClientEnvironment *env, v3f pos, v2f size)
 	{
 		infostream<<"SmokePuffCSO: constructing"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(

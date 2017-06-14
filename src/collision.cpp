@@ -468,7 +468,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 							d));
 
 			// Get bounce multiplier
-			bool bouncy = (nearest_info.bouncy >= 1);
 			float bounce = -(float)nearest_info.bouncy / 100.0;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime

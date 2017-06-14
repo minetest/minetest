@@ -51,16 +51,6 @@ struct ToolCapabilities;
 
 std::unordered_map<u16, ClientActiveObject::Factory> ClientActiveObject::m_types;
 
-SmoothTranslator::SmoothTranslator():
-	vect_old(0,0,0),
-	vect_show(0,0,0),
-	vect_aim(0,0,0),
-	anim_counter(0),
-	anim_time(0),
-	anim_time_counter(0),
-	aim_is_end(true)
-{}
-
 void SmoothTranslator::init(v3f vect)
 {
 	vect_old = vect;
@@ -70,11 +60,6 @@ void SmoothTranslator::init(v3f vect)
 	anim_time = 0;
 	anim_time_counter = 0;
 	aim_is_end = true;
-}
-
-void SmoothTranslator::sharpen()
-{
-	init(vect_show);
 }
 
 void SmoothTranslator::update(v3f vect_new, bool is_end_position, float update_interval)
@@ -111,11 +96,6 @@ void SmoothTranslator::translate(f32 dtime)
 	if(moveratio > move_end)
 		moveratio = move_end;
 	vect_show = vect_old + vect_move * moveratio;
-}
-
-bool SmoothTranslator::is_moving()
-{
-	return ((anim_time_counter / anim_time) < 1.4);
 }
 
 /*
@@ -324,8 +304,6 @@ private:
 	std::string m_itemstring;
 	std::string m_infotext;
 };
-
-#include "inventory.h"
 
 // Prototype
 ItemCAO proto_ItemCAO(NULL, NULL);
@@ -538,49 +516,7 @@ void ItemCAO::initialize(const std::string &data)
 #include "genericobject.h"
 
 GenericCAO::GenericCAO(Client *client, ClientEnvironment *env):
-		ClientActiveObject(0, client, env),
-		//
-		m_is_player(false),
-		m_is_local_player(false),
-		//
-		m_smgr(NULL),
-		m_irr(NULL),
-		m_client(NULL),
-		m_selection_box(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.),
-		m_meshnode(NULL),
-		m_animated_meshnode(NULL),
-		m_wield_meshnode(NULL),
-		m_spritenode(NULL),
-		m_nametag(NULL),
-		m_position(v3f(0,10*BS,0)),
-		m_velocity(v3f(0,0,0)),
-		m_acceleration(v3f(0,0,0)),
-		m_yaw(0),
-		m_hp(1),
-		m_tx_size(1,1),
-		m_tx_basepos(0,0),
-		m_initial_tx_basepos_set(false),
-		m_tx_select_horiz_by_yawpitch(false),
-		m_animation_range(v2s32(0,0)),
-		m_animation_speed(15),
-		m_animation_blend(0),
-		m_animation_loop(true),
-		m_bone_position(),
-		m_attachment_bone(""),
-		m_attachment_position(v3f(0,0,0)),
-		m_attachment_rotation(v3f(0,0,0)),
-		m_attached_to_local(false),
-		m_anim_frame(0),
-		m_anim_num_frames(1),
-		m_anim_framelength(0.2),
-		m_anim_timer(0),
-		m_reset_textures_timer(-1),
-		m_previous_texture_modifier(""),
-		m_current_texture_modifier(""),
-		m_visuals_expired(false),
-		m_step_distance_counter(0),
-		m_last_light(255),
-		m_is_visible(false)
+		ClientActiveObject(0, client, env)
 {
 	if (client == NULL) {
 		ClientActiveObject::registerType(getType(), create);
@@ -639,7 +575,7 @@ void GenericCAO::processInitData(const std::string &data)
 	if (version == 1) { // In PROTOCOL_VERSION 14
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
-		m_id = readS16(is);
+		m_id = readU16(is);
 		m_position = readV3F1000(is);
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
