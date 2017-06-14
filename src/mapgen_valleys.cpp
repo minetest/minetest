@@ -236,7 +236,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType stone_type = generateBiomes();
+	MgStoneType stone_type = generateBiomes(water_level - 1);
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -248,10 +248,12 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+		m_emerge->decomgr->placeAllDecos(this, blockseed,
+			node_min, node_max, water_level - 1);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed,
+		node_min, node_max, water_level - 1);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();
