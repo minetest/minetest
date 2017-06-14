@@ -576,7 +576,7 @@ public:
 		}
 		int handle = -1;
 		if (fade > 0) {
-			handle = playSoundRaw(buf, loop, 0.0f, 0.0f);
+			handle = playSoundRaw(buf, loop, 0.0f, pitch);
 			fadeSound(handle, fade, volume);
 		} else {
 			handle = playSoundRaw(buf, loop, volume, pitch);
