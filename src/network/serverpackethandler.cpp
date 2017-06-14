@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "log.h"
 
-#include "content_abm.h"
 #include "content_sao.h"
 #include "emerge.h"
 #include "mapblock.h"

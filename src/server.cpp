@@ -47,7 +47,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mg_biome.h"
 #include "content_mapnode.h"
 #include "content_nodemeta.h"
-#include "content_abm.h"
 #include "content_sao.h"
 #include "mods.h"
 #include "event_manager.h"
@@ -317,9 +316,6 @@ Server::Server(
 	} else {
 		m_env->loadDefaultMeta();
 	}
-
-	// Add some test ActiveBlockModifiers to environment
-	add_legacy_abms(m_env, m_nodedef);
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");

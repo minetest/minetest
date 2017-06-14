@@ -370,7 +370,6 @@ set(common_SRCS
 	chat.cpp
 	clientiface.cpp
 	collision.cpp
-	content_abm.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
 	content_sao.cpp

@@ -124,7 +124,6 @@ LOCAL_SRC_FILES := \
 		jni/src/clientobject.cpp                  \
 		jni/src/clouds.cpp                        \
 		jni/src/collision.cpp                     \
-		jni/src/content_abm.cpp                   \
 		jni/src/content_cao.cpp                   \
 		jni/src/content_cso.cpp                   \
 		jni/src/content_mapblock.cpp              \
