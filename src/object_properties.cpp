@@ -85,40 +85,43 @@ std::string ObjectProperties::dump()
 
 void ObjectProperties::serialize(std::ostream &os) const
 {
-	writeU8(os, 1); // version
-	writeS16(os, hp_max);
-	writeU8(os, physical);
-	writeF1000(os, weight);
-	writeV3F1000(os, collisionbox.MinEdge);
-	writeV3F1000(os, collisionbox.MaxEdge);
-	os<<serializeString(visual);
-	writeV2F1000(os, visual_size);
-	writeU16(os, textures.size());
-	for(u32 i=0; i<textures.size(); i++){
-		os<<serializeString(textures[i]);
+	try {
+		writeU8(os, 1); // version
+		writeS16(os, hp_max);
+		writeU8(os, physical);
+		writeF1000(os, weight);
+		writeV3F1000(os, collisionbox.MinEdge);
+		writeV3F1000(os, collisionbox.MaxEdge);
+		os<<serializeString(visual);
+		writeV2F1000(os, visual_size);
+		writeU16(os, textures.size());
+		for(u32 i=0; i<textures.size(); i++){
+			os<<serializeString(textures[i]);
+		}
+		writeV2S16(os, spritediv);
+		writeV2S16(os, initial_sprite_basepos);
+		writeU8(os, is_visible);
+		writeU8(os, makes_footstep_sound);
+		writeF1000(os, automatic_rotate);
+		// Added in protocol version 14
+		os<<serializeString(mesh);
+		writeU16(os, colors.size());
+		for(u32 i=0; i<colors.size(); i++){
+			writeARGB8(os, colors[i]);
+		}
+		writeU8(os, collideWithObjects);
+		writeF1000(os,stepheight);
+		writeU8(os, automatic_face_movement_dir);
+		writeF1000(os, automatic_face_movement_dir_offset);
+		writeU8(os, backface_culling);
+		os << serializeString(nametag);
+		writeARGB8(os, nametag_color);
+		writeF1000(os, automatic_face_movement_max_rotation_per_sec);
+		os << serializeString(infotext);
+		os << serializeString(wield_item);
+	} catch(SerializationError &e) {
+		errorstream << "Failed to serialize object: " << e.what() << std::endl;
 	}
-	writeV2S16(os, spritediv);
-	writeV2S16(os, initial_sprite_basepos);
-	writeU8(os, is_visible);
-	writeU8(os, makes_footstep_sound);
-	writeF1000(os, automatic_rotate);
-	// Added in protocol version 14
-	os<<serializeString(mesh);
-	writeU16(os, colors.size());
-	for(u32 i=0; i<colors.size(); i++){
-		writeARGB8(os, colors[i]);
-	}
-	writeU8(os, collideWithObjects);
-	writeF1000(os,stepheight);
-	writeU8(os, automatic_face_movement_dir);
-	writeF1000(os, automatic_face_movement_dir_offset);
-	writeU8(os, backface_culling);
-	os << serializeString(nametag);
-	writeARGB8(os, nametag_color);
-	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
-	os << serializeString(infotext);
-	os << serializeString(wield_item);
-
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
 }
@@ -128,7 +131,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 	int version = readU8(is);
 	if(version == 1)
 	{
-		try{
+		try {
 			hp_max = readS16(is);
 			physical = readU8(is);
 			weight = readF1000(is);
@@ -161,7 +164,9 @@ void ObjectProperties::deSerialize(std::istream &is)
 			automatic_face_movement_max_rotation_per_sec = readF1000(is);
 			infotext = deSerializeString(is);
 			wield_item = deSerializeString(is);
-		}catch(SerializationError &e){}
+		} catch(SerializationError &e) {
+			errorstream << "Failed to deserialize object: " << e.what() << std::endl;
+		}
 	}
 	else
 	{
