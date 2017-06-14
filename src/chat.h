@@ -32,21 +32,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ChatLine
 {
 	// age in seconds
-	f32 age;
+	f32 age = 0.0f;
 	// name of sending player, or empty if sent by server
 	EnrichedString name;
 	// message text
 	EnrichedString text;
 
 	ChatLine(const std::wstring &a_name, const std::wstring &a_text):
-		age(0.0),
 		name(a_name),
 		text(a_text)
 	{
 	}
 
 	ChatLine(const EnrichedString &a_name, const EnrichedString &a_text):
-		age(0.0),
 		name(a_name),
 		text(a_text)
 	{
@@ -132,11 +130,11 @@ private:
 	std::vector<ChatLine> m_unformatted;
 
 	// Number of character columns in console
-	u32 m_cols;
+	u32 m_cols = 0;
 	// Number of character rows in console
-	u32 m_rows;
+	u32 m_rows = 0;
 	// Scroll position (console's top line index into m_formatted)
-	s32 m_scroll;
+	s32 m_scroll = 0;
 	// Array of formatted lines
 	std::vector<ChatFormattedLine> m_formatted;
 	// Empty formatted line, for error returns
@@ -225,29 +223,29 @@ protected:
 
 private:
 	// Prompt prefix
-	std::wstring m_prompt;
+	std::wstring m_prompt = L"";
 	// Currently edited line
-	std::wstring m_line;
+	std::wstring m_line = L"";
 	// History buffer
 	std::vector<std::wstring> m_history;
 	// History index (0 <= m_history_index <= m_history.size())
-	u32 m_history_index;
+	u32 m_history_index = 0;
 	// Maximum number of history entries
 	u32 m_history_limit;
 
 	// Number of columns excluding columns reserved for the prompt
-	s32 m_cols;
+	s32 m_cols = 0;
 	// Start of visible portion (index into m_line)
-	s32 m_view;
+	s32 m_view = 0;
 	// Cursor (index into m_line)
-	s32 m_cursor;
+	s32 m_cursor = 0;
 	// Cursor length (length of selected portion of line)
-	s32 m_cursor_len;
+	s32 m_cursor_len = 0;
 
 	// Last nick completion start (index into m_line)
-	s32 m_nick_completion_start;
+	s32 m_nick_completion_start = 0;
 	// Last nick completion start (index into m_line)
-	s32 m_nick_completion_end;
+	s32 m_nick_completion_end = 0;
 };
 
 class ChatBackend

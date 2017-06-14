@@ -41,36 +41,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		Client *client):
-	m_playernode(NULL),
-	m_headnode(NULL),
-	m_cameranode(NULL),
-
-	m_wieldmgr(NULL),
-	m_wieldnode(NULL),
-
 	m_draw_control(draw_control),
-	m_client(client),
-
-	m_camera_position(0,0,0),
-	m_camera_direction(0,0,0),
-	m_camera_offset(0,0,0),
-
-	m_aspect(1.0),
-	m_fov_x(1.0),
-	m_fov_y(1.0),
-
-	m_view_bobbing_anim(0),
-	m_view_bobbing_state(0),
-	m_view_bobbing_speed(0),
-	m_view_bobbing_fall(0),
-
-	m_digging_anim(0),
-	m_digging_button(-1),
-
-	m_wield_change_timer(0.125),
-	m_wield_item_next(),
-
-	m_camera_mode(CAMERA_MODE_FIRST)
+	m_client(client)
 {
 	//dstream<<FUNCTION_NAME<<std::endl;
 
