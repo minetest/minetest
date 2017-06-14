@@ -4420,6 +4420,9 @@ Definition tables
     --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
         y_min = -31000,
         y_max = 64,
+    --  ^ Lower and upper limits for ore.
+    --  ^ Limits are relative to y = water_level - 1 for core mapgen, or
+    --  ^ relative to y = 0 for minetest.generate_ores().
         flags = "",
     --  ^ Attributes for this ore generation
         noise_threshold = 0.5,
@@ -4429,7 +4432,7 @@ Definition tables
     --  ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
         random_factor = 1.0,
     --  ^ Multiplier of the randomness contribution to the noise value at any
-    --   given point to decide if ore should be placed.  Set to 0 for solid veins.
+    --  ^ given point to decide if ore should be placed.  Set to 0 for solid veins.
     --  ^ This parameter is only valid for ore_type == "vein".
         biomes = {"desert", "rainforest"}
     --  ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
@@ -4467,6 +4470,7 @@ The Biome API is still in an experimental phase and subject to change.
         y_min = 1,
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
+    --  ^ Limits are relative to y = water_level - 1.
     --  ^ Because biome is not recalculated for every node in a node column
     --  ^ some biome materials can exceed their limits, especially stone.
     --  ^ For each node column in a mapchunk, biome is only recalculated at column
@@ -4509,9 +4513,11 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
         y_min = -31000
         y_max = 31000
-    -- ^ Minimum and maximum `y` positions these decorations can be generated at.
-    -- ^ This parameter refers to the `y` position of the decoration base, so
-    --   the actual maximum height would be `height_max + size.Y`.
+    --  ^ Lower and upper limits for decoration.
+    --  ^ Limits are relative to y = water_level - 1 for core mapgen, or
+    --  ^ relative to y = 0 for minetest.generate_decorations().
+    --  ^ This parameter refers to the `y` position of the decoration base, so
+    --    the actual maximum height would be `height_max + size.Y`.
         spawn_by = "default:water",
     --  ^ Node (or list of nodes) that the decoration only spawns next to.
     --  ^ Checks two horizontal planes of neighbouring nodes (including diagonal neighbours),

@@ -619,10 +619,12 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+		m_emerge->decomgr->placeAllDecos(this, blockseed,
+			node_min, node_max, water_level - 1);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed,
+		node_min, node_max, water_level - 1);
 
 	// Calculate lighting
 	if (flags & MG_LIGHT)

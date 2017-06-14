@@ -251,7 +251,7 @@ public:
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
-	virtual MgStoneType generateBiomes();
+	virtual MgStoneType generateBiomes(s16 biome_zero_level = 0);
 	virtual void dustTopNodes();
 
 protected:
