@@ -913,21 +913,25 @@ void MapgenV6::moveMud(u32 remove_index, u32 place_index,
 	// use 'pos.X >= node_max.X' etc.
 	if (pos.X >= node_max.X || pos.X <= node_min.X ||
 			pos.Y >= node_max.Z || pos.Y <= node_min.Z) {
-		// 'above remove' node is above removed mud. If it is not air and not
-		// water it is a decoration that needs removing. Also search upwards
-		// for a possible stacked decoration.
+		// 'above remove' node is above removed mud. If it is not air, water or
+		// 'ignore' it is a decoration that needs removing. Also search upwards
+		// to remove a possible stacked decoration.
+		// Check for 'ignore' because stacked decorations can penetrate into
+		// 'ignore' nodes above the mapchunk.
 		while (vm->m_area.contains(above_remove_index) &&
 				vm->m_data[above_remove_index].getContent() != CONTENT_AIR &&
-				vm->m_data[above_remove_index].getContent() != c_water_source) {
+				vm->m_data[above_remove_index].getContent() != c_water_source &&
+				vm->m_data[above_remove_index].getContent() != CONTENT_IGNORE) {
 			vm->m_data[above_remove_index] = n_air;
 			vm->m_area.add_y(em, above_remove_index, 1);
 		}
-		// Mud placed may have half-buried a tall decoration, search above and
-		// remove.
+		// Mud placed may have partially-buried a stacked decoration, search
+		// above and remove.
 		vm->m_area.add_y(em, place_index, 1);
 		while (vm->m_area.contains(place_index) &&
 				vm->m_data[place_index].getContent() != CONTENT_AIR &&
-				vm->m_data[place_index].getContent() != c_water_source) {
+				vm->m_data[place_index].getContent() != c_water_source &&
+				vm->m_data[place_index].getContent() != CONTENT_IGNORE) {
 			vm->m_data[place_index] = n_air;
 			vm->m_area.add_y(em, place_index, 1);
 		}
