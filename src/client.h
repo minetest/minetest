@@ -639,7 +639,7 @@ private:
 	std::string m_new_password;
 	// Usable by auth mechanisms.
 	AuthMechanism m_chosen_auth_mech;
-	void * m_auth_data = nullptr;
+	void *m_auth_data = nullptr;
 
 
 	bool m_access_denied = false;

@@ -236,7 +236,7 @@ public:
 	std::string enc_pwd = "";
 	bool create_player_on_auth_success = false;
 	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
-	void * auth_data = nullptr;
+	void *auth_data = nullptr;
 	u32 allowed_auth_mechs = 0;
 	u32 allowed_sudo_mechs = 0;
 

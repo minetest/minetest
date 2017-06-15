@@ -168,12 +168,12 @@ public:
 
 private:
 	// Nodes
-	scene::ISceneNode* m_playernode = nullptr;
-	scene::ISceneNode* m_headnode = nullptr;
-	scene::ICameraSceneNode* m_cameranode = nullptr;
+	scene::ISceneNode *m_playernode = nullptr;
+	scene::ISceneNode *m_headnode = nullptr;
+	scene::ICameraSceneNode *m_cameranode = nullptr;
 
-	scene::ISceneManager* m_wieldmgr = nullptr;
-	WieldMeshSceneNode* m_wieldnode = nullptr;
+	scene::ISceneManager *m_wieldmgr = nullptr;
+	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
 	MapDrawControl& m_draw_control;
