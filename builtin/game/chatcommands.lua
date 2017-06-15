@@ -468,9 +468,9 @@ local function emergeblocks_progress_update(ctx)
 end
 
 core.register_chatcommand("emergeblocks", {
-	params = "(here [<radius>]) | ((<pos1>) (<pos2>))",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-		.. "contained in area pos1 to pos2",
+		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -494,8 +494,9 @@ core.register_chatcommand("emergeblocks", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "(here [<radius>]) | ((<pos1>) (<pos2>))",
-	description = "Delete map blocks contained in area pos1 to pos2",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
+	description = "Delete map blocks contained in area pos1 to pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -513,8 +514,9 @@ core.register_chatcommand("deleteblocks", {
 })
 
 core.register_chatcommand("fixlight", {
-	params = "(here [<radius>]) | ((<pos1>) (<pos2>))",
-	description = "Resets lighting in the area between pos1 and pos2",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
+	description = "Resets lighting in the area between pos1 and pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
