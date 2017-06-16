@@ -209,7 +209,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 		sound_place.name = deSerializeString(is);
 		sound_place.gain = readF1000(is);
 	}
-	if(version == 3) {
+	if(version >= 3) {
 		range = readF1000(is);
 	}
 	// If you add anything here, insert it primarily inside the try-catch
