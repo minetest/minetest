@@ -33,14 +33,14 @@ extern FlagDesc flagdesc_mapgen_flat[];
 
 struct MapgenFlatParams : public MapgenParams
 {
-	u32 spflags;
-	s16 ground_level;
-	s16 large_cave_depth;
-	float cave_width;
-	float lake_threshold;
-	float lake_steepness;
-	float hill_threshold;
-	float hill_steepness;
+	u32 spflags = 0;
+	s16 ground_level = 8;
+	s16 large_cave_depth = -33;
+	float cave_width = 0.09f;
+	float lake_threshold = -0.45f;
+	float lake_steepness = 48.0f;
+	float hill_threshold = 0.45f;
+	float hill_steepness = 64.0f;
 	NoiseParams np_terrain;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;

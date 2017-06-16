@@ -102,7 +102,7 @@ public:
 	std::string hotbar_image = "";
 	std::string hotbar_selected_image = "";
 
-	video::SColor light_color = video::SColor(255,255,255,255);
+	video::SColor light_color = video::SColor(255, 255, 255, 255);
 
 	float hurt_tilt_timer = 0.0f;
 	float hurt_tilt_strength = 0.0f;
@@ -111,7 +111,7 @@ public:
 
 	void setCAO(GenericCAO *toset)
 	{
-		assert(m_cao == NULL); // Pre-condition
+		assert(!m_cao); // Pre-condition
 		m_cao = toset;
 	}
 
@@ -146,7 +146,7 @@ private:
 
 	v3f m_position;
 
-	v3s16 m_sneak_node = v3s16(32767,32767,32767);
+	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
 	// Stores the max player uplift by m_sneak_node
 	// To support temporary option for old move code
 	f32 m_sneak_node_bb_ymax = 0.0f;

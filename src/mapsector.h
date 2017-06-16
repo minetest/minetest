@@ -66,7 +66,7 @@ public:
 	bool empty() const { return m_blocks.empty(); }
 
 	// Always false at the moment, because sector contains no metadata.
-	bool differs_from_disk;
+	bool differs_from_disk = false;
 
 protected:
 
@@ -80,8 +80,8 @@ protected:
 	IGameDef *m_gamedef;
 
 	// Last-used block is cached here for quicker access.
-	// Be sure to set this to NULL when the cached block is deleted
-	MapBlock *m_block_cache;
+	// Be sure to set this to nullptr when the cached block is deleted
+	MapBlock *m_block_cache = nullptr;
 	s16 m_block_cache_y;
 
 	/*

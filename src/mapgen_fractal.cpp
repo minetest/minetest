@@ -82,18 +82,6 @@ MapgenFractal::~MapgenFractal()
 
 MapgenFractalParams::MapgenFractalParams()
 {
-	spflags    = 0;
-	cave_width = 0.09;
-	fractal    = 1;
-	iterations = 11;
-	scale      = v3f(4096.0, 1024.0, 4096.0);
-	offset     = v3f(1.79, 0.0, 0.0);
-	slice_w    = 0.0;
-	julia_x    = 0.33;
-	julia_y    = 0.33;
-	julia_z    = 0.33;
-	julia_w    = 0.33;
-
 	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
 	np_cave1        = NoiseParams(0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);

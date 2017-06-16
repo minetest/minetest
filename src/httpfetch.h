@@ -79,8 +79,8 @@ struct HTTPFetchResult
 
 	HTTPFetchResult() {}
 
-	HTTPFetchResult(const HTTPFetchRequest &fetch_request) :
-		caller(fetch_request.caller), request_id(fetch_request.request_id)
+	HTTPFetchResult(const HTTPFetchRequest &fetch_request)
+	    : caller(fetch_request.caller), request_id(fetch_request.request_id)
 	{
 	}
 };

@@ -147,12 +147,6 @@ MapgenV6::~MapgenV6()
 
 MapgenV6Params::MapgenV6Params()
 {
-	spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
-		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
-
-	freq_desert = 0.45;
-	freq_beach  = 0.15;
-
 	np_terrain_base   = NoiseParams(-4,   20.0, v3f(250.0, 250.0, 250.0), 82341,  5, 0.6,  2.0);
 	np_terrain_higher = NoiseParams(20,   16.0, v3f(500.0, 500.0, 500.0), 85039,  5, 0.6,  2.0);
 	np_steepness      = NoiseParams(0.85, 0.5,  v3f(125.0, 125.0, 125.0), -932,   5, 0.7,  2.0);

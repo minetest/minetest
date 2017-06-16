@@ -76,12 +76,9 @@ GUIChatConsole::GUIChatConsole(
 
 	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
 
-	if (m_font == NULL)
-	{
+	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font ";
-	}
-	else
-	{
+	} else {
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
 		m_font->grab();
@@ -353,7 +350,7 @@ void GUIChatConsole::drawText()
 
 void GUIChatConsole::drawPrompt()
 {
-	if (m_font == NULL)
+	if (!m_font)
 		return;
 
 	u32 row = m_chat_backend->getConsoleBuffer().getRows();

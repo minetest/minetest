@@ -127,16 +127,6 @@ MapgenValleys::~MapgenValleys()
 
 MapgenValleysParams::MapgenValleysParams()
 {
-	spflags            = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
-	large_cave_depth   = -33;
-	lava_features      = 0;  // How often water will occur in caves.
-	massive_cave_depth = -256;  // highest altitude of massive caves
-	river_depth        = 4;  // How deep to carve river channels.
-	river_size         = 5;  // How wide to make rivers.
-	water_features     = 0;  // How often water will occur in caves.
-	cave_width         = 0.09;
-
 	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
 	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
 	np_filler_depth       = NoiseParams(0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f);

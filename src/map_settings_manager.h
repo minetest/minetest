@@ -45,12 +45,12 @@ struct MapgenParams;
 */
 class MapSettingsManager {
 public:
-	// Finalized map generation parameters
-	MapgenParams *mapgen_params;
-
 	MapSettingsManager(Settings *user_settings,
 		const std::string &map_meta_path);
 	~MapSettingsManager();
+
+	// Finalized map generation parameters
+	MapgenParams *mapgen_params = nullptr;
 
 	bool getMapSetting(const std::string &name, std::string *value_out);
 

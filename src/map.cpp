@@ -65,12 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 Map::Map(std::ostream &dout, IGameDef *gamedef):
 	m_dout(dout),
 	m_gamedef(gamedef),
-	m_sector_cache(NULL),
-	m_nodedef(gamedef->ndef()),
-	m_transforming_liquid_loop_count_multiplier(1.0f),
-	m_unprocessed_count(0),
-	m_inc_trending_up_start_time(0),
-	m_queue_size_timer_started(false)
+	m_nodedef(gamedef->ndef())
 {
 }
 
@@ -1240,8 +1235,7 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		EmergeManager *emerge):
 	Map(dout_server, gamedef),
 	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
-	m_emerge(emerge),
-	m_map_metadata_changed(true)
+	m_emerge(emerge)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
 
@@ -2618,8 +2612,6 @@ bool ServerMap::repairBlockLight(v3s16 blockpos,
 
 MMVManip::MMVManip(Map *map):
 		VoxelManipulator(),
-		m_is_dirty(false),
-		m_create_area(false),
 		m_map(map)
 {
 }

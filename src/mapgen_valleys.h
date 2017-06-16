@@ -46,15 +46,15 @@ class BiomeGenOriginal;
 
 
 struct MapgenValleysParams : public MapgenParams {
-	u32 spflags;
-	s16 large_cave_depth;
-	s16 massive_cave_depth;
-	u16 altitude_chill;
-	u16 lava_features;
-	u16 river_depth;
-	u16 river_size;
-	u16 water_features;
-	float cave_width;
+	u32 spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
+	s16 large_cave_depth = -33;
+	s16 massive_cave_depth = -256; // highest altitude of massive caves
+	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C.
+	u16 lava_features = 0; // How often water will occur in caves.
+	u16 river_depth = 4; // How deep to carve river channels.
+	u16 river_size = 5; // How wide to make rivers.
+	u16 water_features = 0; // How often water will occur in caves.
+	float cave_width = 0.09f;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;

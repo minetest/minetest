@@ -79,11 +79,11 @@ void RemoteClient::GetNextBlocks (
 
 	RemotePlayer *player = env->getPlayer(peer_id);
 	// This can happen sometimes; clients and players are not in perfect sync.
-	if (player == NULL)
+	if (!player)
 		return;
 
 	PlayerSAO *sao = player->getPlayerSAO();
-	if (sao == NULL)
+	if (!sao)
 		return;
 
 	// Won't send anything if already sending
@@ -275,8 +275,7 @@ void RemoteClient::GetNextBlocks (
 
 			bool surely_not_found_on_disk = false;
 			bool block_is_invalid = false;
-			if(block != NULL)
-			{
+			if (block) {
 				// Reset usage timer, this block will be of use in the future.
 				block->resetUsageTimer();
 
@@ -645,7 +644,7 @@ void ClientInterface::step(float dtime)
 
 void ClientInterface::UpdatePlayerList()
 {
-	if (m_env != NULL) {
+	if (m_env) {
 		std::vector<u16> clients = getClientIDs();
 		m_clients_names.clear();
 
@@ -664,7 +663,7 @@ void ClientInterface::UpdatePlayerList()
 			{
 				MutexAutoLock clientslock(m_clients_mutex);
 				RemoteClient* client = lockedGetClientNoEx(*i);
-				if(client != NULL)
+				if (client)
 					client->PrintInfo(infostream);
 			}
 

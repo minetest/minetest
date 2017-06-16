@@ -319,7 +319,7 @@ static void print_allowed_options(const OptionList &allowed_options)
 
 		std::cout << padStringRight(os1.str(), 30);
 
-		if (i->second.help != NULL)
+		if (i->second.help)
 			std::cout << i->second.help;
 
 		std::cout << std::endl;

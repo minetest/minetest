@@ -212,11 +212,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				if not seen on display
 			*/
 
-			if (block->mesh != NULL)
+			if (block->mesh)
 				block->mesh->updateCameraOffset(m_camera_offset);
 
 			float range = 100000 * BS;
-			if (m_control.range_all == false)
+			if (!m_control.range_all)
 				range = m_control.wanted_range * BS;
 
 			float d = 0.0;
@@ -229,7 +229,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			/*
 				Ignore if mesh doesn't exist
 			*/
-			if (block->mesh == NULL) {
+			if (!block->mesh) {
 				blocks_in_range_without_mesh++;
 				continue;
 			}
@@ -398,7 +398,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		MapBlock *block = i->second;
 
 		// If the mesh of the block happened to get deleted, ignore it
-		if (block->mesh == NULL)
+		if (!block->mesh)
 			continue;
 
 		float d = 0.0;
