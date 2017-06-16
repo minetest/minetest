@@ -357,8 +357,6 @@ bool ClientLauncher::launch_game(std::string &error_message,
 	if (cmd_args.exists("password"))
 		menudata.password = cmd_args.get("password");
 
-	menudata.enable_public = g_settings->getBool("server_announce");
-
 	// If a world was commanded, append and select it
 	if (game_params.world_path != "") {
 		worldspec.gameid = getWorldGameId(game_params.world_path, true);

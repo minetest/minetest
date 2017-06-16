@@ -41,10 +41,7 @@ GUIPasswordChange::GUIPasswordChange(gui::IGUIEnvironment* env,
 		Client* client
 ):
 	GUIModalMenu(env, parent, id, menumgr),
-	m_client(client),
-	m_oldpass(L""),
-	m_newpass(L""),
-	m_newpass_confirm(L"")
+	m_client(client)
 {
 }
 
