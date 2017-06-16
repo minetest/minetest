@@ -209,9 +209,9 @@ int main(int argc, char *argv[])
 
 #ifndef SERVER
 	ClientLauncher launcher;
-	retval = launcher.run(game_params, cmd_args) ? 0 : 1;
+	retval = launcher.run(game_params, cmd_args) ? porting::ret_val : 1;
 #else
-	retval = 0;
+	retval = porting::ret_val;
 #endif
 
 	// Update configuration file

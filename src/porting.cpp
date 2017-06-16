@@ -66,6 +66,7 @@ namespace porting
 */
 
 bool g_killed = false;
+int ret_val = 0;
 
 bool * signal_handler_killstatus(void)
 {
@@ -84,6 +85,10 @@ void signal_handler(int sig)
 		} else if (sig == SIGTERM) {
 			dstream << "INFO: signal_handler(): "
 				<< "got SIGTERM, shutting down." << std::endl;
+		} else if (sig == SIGUSR1) {
+			dstream << "INFO: signal_handler(): "
+				<< "got SIGUSR1, shutting down with return code 2." << std::endl;
+			ret_val = 2;
 		}
 
 		// Comment out for less clutter when testing scripts
@@ -101,6 +106,7 @@ void signal_handler_init(void)
 {
 	(void)signal(SIGINT, signal_handler);
 	(void)signal(SIGTERM, signal_handler);
+	(void)signal(SIGUSR1, signal_handler);
 }
 
 #else // _WIN32

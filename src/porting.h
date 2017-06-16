@@ -61,7 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// Use standard Posix macro for Linux
 	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
-		#define __linux__ 
+		#define __linux__
 	#endif
 	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
@@ -131,6 +131,8 @@ void signal_handler_init(void);
 // Returns a pointer to a bool.
 // When the bool is true, program should quit.
 bool * signal_handler_killstatus(void);
+// Suggested program return value.
+extern int ret_val;
 
 /*
 	Path of static data directory.
