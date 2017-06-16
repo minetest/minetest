@@ -372,7 +372,6 @@ ItemStack ItemStack::peekItem(u32 peekcount) const
 InventoryList::InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef):
 	m_name(name),
 	m_size(size),
-	m_width(0),
 	m_itemdef(itemdef)
 {
 	clearItems();

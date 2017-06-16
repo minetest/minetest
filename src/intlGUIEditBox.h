@@ -145,29 +145,36 @@ namespace gui
 		bool processMouse(const SEvent& event);
 		s32 getCursorPos(s32 x, s32 y);
 
-		bool MouseMarking;
+		bool MouseMarking = false;
 		bool Border;
-		bool OverrideColorEnabled;
-		s32 MarkBegin;
-		s32 MarkEnd;
+		bool OverrideColorEnabled = false;
+		s32 MarkBegin = 0;
+		s32 MarkEnd = 0;
 
-		video::SColor OverrideColor;
-		gui::IGUIFont *OverrideFont, *LastBreakFont;
-		IOSOperator* Operator;
+		video::SColor OverrideColor = video::SColor(101,255,255,255);
+		gui::IGUIFont *OverrideFont = nullptr;
+		gui::IGUIFont *LastBreakFont = nullptr;
+		IOSOperator *Operator = nullptr;
 
-		u64 BlinkStartTime;
-		s32 CursorPos;
-		s32 HScrollPos, VScrollPos; // scroll position in characters
-		u32 Max;
+		u64 BlinkStartTime = 0;
+		s32 CursorPos = 0;
+		s32 HScrollPos = 0;
+		s32 VScrollPos = 0; // scroll position in characters
+		u32 Max = 0;
 
-		bool WordWrap, MultiLine, AutoScroll, PasswordBox;
-		wchar_t PasswordChar;
-		EGUI_ALIGNMENT HAlign, VAlign;
+		bool WordWrap = false;
+		bool MultiLine = false;
+		bool AutoScroll = true;
+		bool PasswordBox = false;
+		wchar_t PasswordChar = L'*';
+		EGUI_ALIGNMENT HAlign = EGUIA_UPPERLEFT;
+		EGUI_ALIGNMENT VAlign = EGUIA_CENTER;
 
-		core::array< core::stringw > BrokenText;
-		core::array< s32 > BrokenTextPositions;
+		core::array<core::stringw> BrokenText;
+		core::array<s32> BrokenTextPositions;
 
-		core::rect<s32> CurrentTextRect, FrameRect; // temporary values
+		core::rect<s32> CurrentTextRect = core::rect<s32>(0,0,1,1);
+		core::rect<s32> FrameRect; // temporary values
 	};
 
 

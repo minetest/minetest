@@ -33,7 +33,7 @@ struct ToolCapabilities;
 
 struct ItemStack
 {
-	ItemStack(): name(""), count(0), wear(0) {}
+	ItemStack() {}
 	ItemStack(const std::string &name_, u16 count_,
 			u16 wear, IItemDefManager *itemdef);
 
@@ -164,9 +164,9 @@ struct ItemStack
 	/*
 		Properties
 	*/
-	std::string name;
-	u16 count;
-	u16 wear;
+	std::string name = "";
+	u16 count = 0;
+	u16 wear = 0;
 	ItemStackMetadata metadata;
 };
 
@@ -252,7 +252,8 @@ public:
 private:
 	std::vector<ItemStack> m_items;
 	std::string m_name;
-	u32 m_size, m_width;
+	u32 m_size;
+	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 };
 
@@ -307,7 +308,7 @@ private:
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;
-	bool m_dirty;
+	bool m_dirty = false;
 };
 
 #endif

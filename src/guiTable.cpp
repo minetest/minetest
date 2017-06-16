@@ -47,22 +47,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 		ISimpleTextureSource *tsrc
 ):
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_tsrc(tsrc),
-	m_is_textlist(false),
-	m_has_tree_column(false),
-	m_selected(-1),
-	m_sel_column(0),
-	m_sel_doubleclick(false),
-	m_keynav_time(0),
-	m_keynav_buffer(L""),
-	m_border(true),
-	m_color(255, 255, 255, 255),
-	m_background(255, 0, 0, 0),
-	m_highlight(255, 70, 100, 50),
-	m_highlight_text(255, 255, 255, 255),
-	m_rowheight(1),
-	m_font(NULL),
-	m_scrollbar(NULL)
+	m_tsrc(tsrc)
 {
 	assert(tsrc != NULL);
 
@@ -109,7 +94,7 @@ GUITable::~GUITable()
 
 	if (m_font)
 		m_font->drop();
-	
+
 	m_scrollbar->remove();
 }
 

@@ -278,12 +278,6 @@ struct table_key lookup_keychar(wchar_t Char)
 	throw UnknownKeycode(os.str().c_str());
 }
 
-KeyPress::KeyPress() :
-	Key(irr::KEY_KEY_CODES_COUNT),
-	Char(L'\0'),
-	m_name("")
-{}
-
 KeyPress::KeyPress(const char *name)
 {
 	if (strlen(name) == 0) {

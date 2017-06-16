@@ -49,11 +49,11 @@ private:
 	void acceptInput();
 
 	std::wstring m_title;
-	bool m_accepted;
+	bool m_accepted = false;
 
-	gui::IGUIFileOpenDialog *m_fileOpenDialog;
+	gui::IGUIFileOpenDialog *m_fileOpenDialog = nullptr;
 
-	TextDest *m_text_dst;
+	TextDest *m_text_dst = nullptr;
 
 	std::string m_formname;
 	bool m_file_select_dialog;

@@ -25,8 +25,6 @@ GUIFileSelectMenu::GUIFileSelectMenu(gui::IGUIEnvironment* env,
 		bool is_file_select) :
 	GUIModalMenu(env, parent, id, menumgr),
 	m_title(utf8_to_wide(title)),
-	m_accepted(false),
-	m_text_dst(NULL),
 	m_formname(formname),
 	m_file_select_dialog(is_file_select)
 {
