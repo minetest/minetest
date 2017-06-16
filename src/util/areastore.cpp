@@ -58,7 +58,7 @@ const Area *AreaStore::getArea(u32 id) const
 {
 	AreaMap::const_iterator it = areas_map.find(id);
 	if (it == areas_map.end())
-		return NULL;
+		return nullptr;
 	return &it->second;
 }
 
@@ -239,7 +239,7 @@ bool SpatialAreaStore::insertArea(Area *a)
 	if (!areas_map.insert(std::make_pair(a->id, *a)).second)
 		// ID is not unique
 		return false;
-	m_tree->insertData(0, NULL, get_spatial_region(a->minedge, a->maxedge), a->id);
+	m_tree->insertData(0, nullptr, get_spatial_region(a->minedge, a->maxedge), a->id);
 	invalidateCache();
 	return true;
 }

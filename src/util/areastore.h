@@ -38,14 +38,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() : id(U32_MAX) {}
+	Area() {}
 	Area(const v3s16 &mine, const v3s16 &maxe) :
-		id(U32_MAX), minedge(mine), maxedge(maxe)
+		minedge(mine), maxedge(maxe)
 	{
 		sortBoxVerticies(minedge, maxedge);
 	}
 
-	u32 id;
+	u32 id = U32_MAX;
 	v3s16 minedge, maxedge;
 	std::string data;
 };
@@ -54,10 +54,7 @@ struct Area {
 class AreaStore {
 public:
 	AreaStore() :
-		m_cache_enabled(true),
-		m_cacheblock_radius(64),
-		m_res_cache(1000, &cacheMiss, this),
-		m_next_id(0)
+		m_res_cache(1000, &cacheMiss, this)
 	{}
 
 	virtual ~AreaStore() {}
@@ -123,13 +120,13 @@ private:
 	/// Called by the cache when a value isn't found in the cache.
 	static void cacheMiss(void *data, const v3s16 &mpos, std::vector<Area *> *dest);
 
-	bool m_cache_enabled;
+	bool m_cache_enabled = true;
 	/// Range, in nodes, of the getAreasForPos cache.
 	/// If you modify this, call invalidateCache()
-	u8 m_cacheblock_radius;
+	u8 m_cacheblock_radius = 64;
 	LRUCache<v3s16, std::vector<Area *> > m_res_cache;
 
-	u32 m_next_id;
+	u32 m_next_id = 0;
 };
 
 
@@ -165,8 +162,8 @@ protected:
 	virtual void getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos);
 
 private:
-	SpatialIndex::ISpatialIndex *m_tree;
-	SpatialIndex::IStorageManager *m_storagemanager;
+	SpatialIndex::ISpatialIndex *m_tree = nullptr;
+	SpatialIndex::IStorageManager *m_storagemanager = nullptr;
 
 	class VectorResultVisitor : public SpatialIndex::IVisitor {
 	public:
@@ -194,8 +191,8 @@ private:
 		}
 
 	private:
-		SpatialAreaStore *m_store;
-		std::vector<Area *> *m_result;
+		SpatialAreaStore *m_store = nullptr;
+		std::vector<Area *> *m_result = nullptr;
 	};
 };
 

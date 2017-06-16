@@ -32,7 +32,6 @@ void Event::wait()
 	while (!notified) {
 		cv.wait(lock);
 	}
-	notified = false;
 }
 
 

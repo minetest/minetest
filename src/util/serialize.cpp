@@ -422,7 +422,7 @@ bool deSerializeStringToStruct(std::string valstr,
 
 	char *fmtpos, *fmt = &format[0];
 	while ((f = strtok_r(fmt, ",", &fmtpos)) && s) {
-		fmt = NULL;
+		fmt = nullptr;
 
 		bool is_unsigned = false;
 		int width = 0;
@@ -510,7 +510,7 @@ bool deSerializeStringToStruct(std::string valstr,
 				bufpos += sizeof(std::string *);
 				strs_alloced.push_back(str);
 
-				s = *snext ? snext + 1 : NULL;
+				s = *snext ? snext + 1 : nullptr;
 				break;
 			case 'v':
 				while (*s == ' ' || *s == '\t')
@@ -582,7 +582,7 @@ bool serializeStructToString(std::string *out,
 	char *bufpos = (char *) value;
 	char *fmtpos, *fmt = &format[0];
 	while ((f = strtok_r(fmt, ",", &fmtpos))) {
-		fmt = NULL;
+		fmt = nullptr;
 		bool is_unsigned = false;
 		int width = 0;
 		char valtype = *f;

@@ -36,7 +36,7 @@ enum PointedThingType
 struct PointedThing
 {
 	//! The type of the pointed object.
-	PointedThingType type;
+	PointedThingType type = POINTEDTHING_NOTHING;
 	/*!
 	 * Only valid if type is POINTEDTHING_NODE.
 	 * The coordinates of the node which owns the
@@ -74,9 +74,9 @@ struct PointedThing
 	 * Only valid if type is POINTEDTHING_OBJECT.
 	 * The ID of the object the ray hit.
 	 */
-	s16 object_id;
+	s16 object_id = -1;
 
-	PointedThing();
+	PointedThing() {};
 	std::string dump() const;
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);

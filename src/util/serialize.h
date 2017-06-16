@@ -454,8 +454,7 @@ class BufReader {
 public:
 	BufReader(const u8 *data_, size_t size_) :
 		data(data_),
-		size(size_),
-		pos(0)
+		size(size_)
 	{
 	}
 
@@ -513,9 +512,9 @@ public:
 		return size - pos;
 	}
 
-	const u8 *data;
+	const u8 *data = nullptr;
 	size_t size;
-	size_t pos;
+	size_t pos = 0;
 };
 
 #undef MAKE_BUFREADER_GET_FXN
