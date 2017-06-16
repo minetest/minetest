@@ -56,6 +56,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database-postgresql.h"
 #endif
+#if USE_GDBM
+#include "database-gdbm.h"
+#endif
 
 
 /*
@@ -2311,6 +2314,10 @@ MapDatabase *ServerMap::createDatabase(
 		conf.getNoEx("pgsql_connection", connect_string);
 		return new MapDatabasePostgreSQL(connect_string);
 	}
+	#endif
+	#if USE_GDBM
+	else if (name == "gdbm")
+		return new Database_Gdbm(savedir);
 	#endif
 	else
 		throw BaseException(std::string("Database backend ") + name + " not supported.");
