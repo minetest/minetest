@@ -39,24 +39,18 @@ class AsyncEngine;
 // Data required to queue a job
 struct LuaJobInfo
 {
-	LuaJobInfo() :
-		serializedFunction(""),
-		serializedParams(""),
-		serializedResult(""),
-		id(0),
-		valid(false)
-	{}
+	LuaJobInfo() {};
 
 	// Function to be called in async environment
-	std::string serializedFunction;
+	std::string serializedFunction = "";
 	// Parameter to be passed to function
-	std::string serializedParams;
+	std::string serializedParams = "";
 	// Result of function call
-	std::string serializedResult;
+	std::string serializedResult = "";
 	// JobID used to identify a job and match it to callback
-	unsigned int id;
+	unsigned int id = 0;
 
-	bool valid;
+	bool valid = false;
 };
 
 // Asynchronous working environment
@@ -68,7 +62,7 @@ public:
 	void *run();
 
 private:
-	AsyncEngine *jobDispatcher;
+	AsyncEngine *jobDispatcher = nullptr;
 };
 
 // Asynchornous thread and job management
@@ -76,7 +70,7 @@ class AsyncEngine {
 	friend class AsyncWorkerThread;
 	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
-	AsyncEngine();
+	AsyncEngine() {};
 	~AsyncEngine();
 
 	/**
@@ -137,13 +131,13 @@ protected:
 
 private:
 	// Variable locking the engine against further modification
-	bool initDone;
+	bool initDone = false;
 
 	// Internal store for registred state initializers
 	std::vector<StateInitializer> stateInitializers;
 
 	// Internal counter to create job IDs
-	unsigned int jobIdCounter;
+	unsigned int jobIdCounter = 0;
 
 	// Mutex to protect job queue
 	std::mutex jobQueueMutex;
