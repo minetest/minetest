@@ -26,11 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "keycode.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
-#include "touchscreengui.h"
+	#include "touchscreengui.h"
 #endif
 
-class KeyList : private std::list<KeyPress>
-{
+class KeyList : private std::list<KeyPress> {
 	typedef std::list<KeyPress> super;
 	typedef super::iterator iterator;
 	typedef super::const_iterator const_iterator;
@@ -95,8 +94,7 @@ public:
 	bool operator[](const KeyPress &key) const { return find(key) != end(); }
 };
 
-class MyEventReceiver : public IEventReceiver
-{
+class MyEventReceiver : public IEventReceiver {
 public:
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent &event);
@@ -177,8 +175,7 @@ private:
 	KeyList keysListenedFor;
 };
 
-class InputHandler
-{
+class InputHandler {
 public:
 	InputHandler() {}
 	virtual ~InputHandler() {}
@@ -217,11 +214,10 @@ public:
 	Separated input handler
 */
 
-class RealInputHandler : public InputHandler
-{
+class RealInputHandler : public InputHandler {
 public:
-	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver)
-	    : m_device(device), m_receiver(receiver), m_mousepos(0, 0)
+	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver) :
+		m_device(device), m_receiver(receiver), m_mousepos(0, 0)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -282,8 +278,7 @@ private:
 	v2s32 m_mousepos;
 };
 
-class RandomInputHandler : public InputHandler
-{
+class RandomInputHandler : public InputHandler {
 public:
 	RandomInputHandler()
 	{

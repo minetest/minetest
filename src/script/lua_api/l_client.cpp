@@ -241,8 +241,8 @@ int ModApiClient::l_sound_play(lua_State *L)
 		if (!lua_isnil(L, -1)) {
 			v3f pos = read_v3f(L, -1) * BS;
 			lua_pop(L, 1);
-			handle = sound->playSoundAt(
-					spec.name, looped, gain * spec.gain, pos, pitch);
+			handle = sound->playSoundAt(spec.name, looped,
+					gain * spec.gain, pos, pitch);
 			lua_pushinteger(L, handle);
 			return 1;
 		}

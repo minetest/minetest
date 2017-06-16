@@ -4,13 +4,17 @@ echo "Preparing for $TRAVIS_COMMIT_RANGE"
 
 . util/travis/common.sh
 
-if [[ "${LINT}" == "1" ]]; then
-	exit 0
-fi
-
 needs_compile || exit 0
 
-if [[ $PLATFORM == "Unix" ]]; then
+if [[ "${LINT}" == "1" ]]; then
+	# We need to build astyle ourselves since Debian includes an outdated version.
+	# Fourtunately, astyle is very small and should build in less than ten seconds.
+	wget https://sourceforge.net/projects/astyle/files/astyle/astyle%203.0.1/astyle_3.0.1_linux.tar.gz -O astyle.tgz
+	tar -xzf astyle.tgz
+	cd astyle/build/gcc
+	make -j2 release
+	sudo make install
+elif [[ $PLATFORM == "Unix" ]]; then
 	if [[ $TRAVIS_OS_NAME == "linux" ]]; then
 		install_linux_deps
 	else

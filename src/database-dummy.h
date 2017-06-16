@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "irrlichttypes.h"
 
-class Database_Dummy : public MapDatabase, public PlayerDatabase
-{
+class Database_Dummy : public MapDatabase, public PlayerDatabase {
 public:
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);

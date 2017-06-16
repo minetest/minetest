@@ -70,8 +70,7 @@ typedef enum {
 
 extern const char **touchgui_button_imagenames;
 
-struct button_info
-{
+struct button_info {
 	float repeatcounter;
 	float repeatdelay;
 	irr::EKEY_CODE keycode;
@@ -80,8 +79,7 @@ struct button_info
 	bool immediate_release;
 };
 
-class AutoHideButtonBar
-{
+class AutoHideButtonBar {
 public:
 	AutoHideButtonBar(IrrlichtDevice *device, IEventReceiver *receiver);
 
@@ -137,8 +135,7 @@ private:
 	autohide_button_bar_dir m_dir;
 };
 
-class TouchScreenGUI
-{
+class TouchScreenGUI {
 public:
 	TouchScreenGUI(IrrlichtDevice *device, IEventReceiver *receiver);
 	~TouchScreenGUI();
@@ -209,8 +206,7 @@ private:
 	/* load texture */
 	void loadButtonTexture(button_info *btn, const char *path, rect<s32> button_rect);
 
-	struct id_status
-	{
+	struct id_status {
 		int id;
 		int X;
 		int Y;
@@ -238,8 +234,7 @@ private:
 	int getGuiButtonSize();
 
 	/* doubleclick detection variables */
-	struct key_event
-	{
+	struct key_event {
 		unsigned int down_time;
 		s32 x;
 		s32 y;

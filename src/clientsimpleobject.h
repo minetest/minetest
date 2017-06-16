@@ -23,8 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 class ClientEnvironment;
 
-class ClientSimpleObject
-{
+class ClientSimpleObject {
 protected:
 public:
 	bool m_to_be_removed = false;

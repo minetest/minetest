@@ -90,7 +90,6 @@ src/guiChatConsole.h
 src/guiEngine.cpp
 src/guiEngine.h
 src/guiPathSelectMenu.cpp
-src/guiPathSelectMenu.h
 src/guiFormSpecMenu.cpp
 src/guiFormSpecMenu.h
 src/guiKeyChangeMenu.cpp
@@ -248,6 +247,7 @@ src/script/cpp_api/s_server.h
 src/script/lua_api/l_areastore.cpp
 src/script/lua_api/l_base.cpp
 src/script/lua_api/l_base.h
+src/script/lua_api/l_client.cpp
 src/script/lua_api/l_craft.cpp
 src/script/lua_api/l_craft.h
 src/script/lua_api/l_env.cpp
@@ -305,6 +305,7 @@ src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
 src/sky.cpp
+src/sky.h
 src/socket.cpp
 src/socket.h
 src/sound.cpp
@@ -316,15 +317,11 @@ src/subgame.cpp
 src/subgame.h
 src/terminal_chat_console.cpp
 src/terminal_chat_console.h
-src/threading/atomic.h
 src/threading/event.cpp
 src/threading/mutex_auto_lock.h
-src/threading/mutex.cpp
-src/threading/mutex.h
 src/threading/semaphore.cpp
 src/threading/thread.cpp
 src/threading/thread.h
-src/threads.h
 src/tileanimation.cpp
 src/tool.cpp
 src/tool.h
@@ -373,6 +370,9 @@ src/util/pointer.h
 src/util/serialize.cpp
 src/util/serialize.h
 src/util/sha1.cpp
+src/util/sha1.h
+src/util/sha2.h
+src/util/sha256.c
 src/util/srp.cpp
 src/util/srp.h
 src/util/strfnd.h

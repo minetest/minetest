@@ -43,8 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class IGameDef;
 class Map;
 
-class Environment
-{
+class Environment {
 public:
 	// Environment will delete the map passed to the constructor
 	Environment(IGameDef *gamedef);

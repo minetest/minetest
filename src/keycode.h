@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /* A key press, consisting of either an Irrlicht keycode
    or an actual char */
 
-class KeyPress
-{
+class KeyPress {
 public:
 	KeyPress();
 	KeyPress(const char *name);

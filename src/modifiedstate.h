@@ -20,8 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MODIFIEDSTATE_HEADER
 #define MODIFIEDSTATE_HEADER
 
-enum ModifiedState
-{
+enum ModifiedState {
 	// Has not been modified.
 	MOD_STATE_CLEAN = 0,
 	MOD_RESERVED1 = 1,

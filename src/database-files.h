@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "database.h"
 
-class PlayerDatabaseFiles : public PlayerDatabase
-{
+class PlayerDatabaseFiles : public PlayerDatabase {
 public:
 	PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir) {}
 	virtual ~PlayerDatabaseFiles() {}

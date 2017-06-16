@@ -27,8 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	LuaPerlinNoise
 */
-class LuaPerlinNoise : public ModApiBase
-{
+class LuaPerlinNoise : public ModApiBase {
 private:
 	NoiseParams np;
 	static const char className[];
@@ -58,8 +57,7 @@ public:
 /*
 	LuaPerlinNoiseMap
 */
-class LuaPerlinNoiseMap : public ModApiBase
-{
+class LuaPerlinNoiseMap : public ModApiBase {
 	NoiseParams np;
 	Noise *noise;
 	bool m_is3d;
@@ -97,8 +95,7 @@ public:
 /*
 	LuaPseudoRandom
 */
-class LuaPseudoRandom : public ModApiBase
-{
+class LuaPseudoRandom : public ModApiBase {
 private:
 	PseudoRandom m_pseudo;
 
@@ -128,8 +125,7 @@ public:
 /*
 	LuaPcgRandom
 */
-class LuaPcgRandom : public ModApiBase
-{
+class LuaPcgRandom : public ModApiBase {
 private:
 	PcgRandom m_rnd;
 
@@ -164,8 +160,7 @@ public:
 /*
 	LuaSecureRandom
 */
-class LuaSecureRandom : public ModApiBase
-{
+class LuaSecureRandom : public ModApiBase {
 private:
 	static const size_t RAND_BUF_SIZE = 2048;
 	static const char className[];

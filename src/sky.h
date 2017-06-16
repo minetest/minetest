@@ -30,8 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ITextureSource;
 
 // Skybox, rendered with zbuffer turned off, before all other nodes.
-class Sky : public scene::ISceneNode
-{
+class Sky : public scene::ISceneNode {
 public:
 	//! constructor
 	Sky(scene::ISceneNode *parent, scene::ISceneManager *mgr, s32 id,
@@ -86,7 +85,7 @@ private:
 		if (!m_sunlight_seen)
 			return 0;
 		float x = m_time_of_day >= 0.5 ? (1 - m_time_of_day) * 2
-					       : m_time_of_day * 2;
+				: m_time_of_day * 2;
 
 		if (x <= 0.3)
 			return 0;
@@ -100,21 +99,20 @@ private:
 	// Mix two colors by a given amount
 	video::SColor m_mix_scolor(video::SColor col1, video::SColor col2, f32 factor)
 	{
-		video::SColor result = video::SColor(
+		return video::SColor(
 				col1.getAlpha() * (1 - factor) + col2.getAlpha() * factor,
 				col1.getRed() * (1 - factor) + col2.getRed() * factor,
 				col1.getGreen() * (1 - factor) + col2.getGreen() * factor,
 				col1.getBlue() * (1 - factor) + col2.getBlue() * factor);
-		return result;
 	}
+
 	video::SColorf m_mix_scolorf(video::SColorf col1, video::SColorf col2, f32 factor)
 	{
-		video::SColorf result =
-				video::SColorf(col1.r * (1 - factor) + col2.r * factor,
-						col1.g * (1 - factor) + col2.g * factor,
-						col1.b * (1 - factor) + col2.b * factor,
-						col1.a * (1 - factor) + col2.a * factor);
-		return result;
+		return video::SColorf(
+				col1.r * (1 - factor) + col2.r * factor,
+				col1.g * (1 - factor) + col2.g * factor,
+				col1.b * (1 - factor) + col2.b * factor,
+				col1.a * (1 - factor) + col2.a * factor);
 	}
 
 	bool m_visible;

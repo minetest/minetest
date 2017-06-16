@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class PlayerSAO;
 
-enum RemotePlayerChatResult
-{
+enum RemotePlayerChatResult {
 	RPLAYER_CHATRESULT_OK,
 	RPLAYER_CHATRESULT_FLOODING,
 	RPLAYER_CHATRESULT_KICK,
@@ -36,8 +35,7 @@ enum RemotePlayerChatResult
 /*
 	Player on the server
 */
-class RemotePlayer : public Player
-{
+class RemotePlayer : public Player {
 	friend class PlayerDatabaseFiles;
 
 public:

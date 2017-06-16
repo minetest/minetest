@@ -26,8 +26,7 @@
 #include "IGUIFileOpenDialog.h"
 #include "guiFormSpecMenu.h" //required because of TextDest only !!!
 
-class GUIFileSelectMenu : public GUIModalMenu
-{
+class GUIFileSelectMenu : public GUIModalMenu {
 public:
 	GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr, const std::string &title,

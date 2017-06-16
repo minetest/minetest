@@ -191,12 +191,13 @@ void LuaCamera::Register(lua_State *L)
 }
 
 const char LuaCamera::className[] = "Camera";
-const luaL_Reg LuaCamera::methods[] = {luamethod(LuaCamera, set_camera_mode),
-		luamethod(LuaCamera, get_camera_mode), luamethod(LuaCamera, get_fov),
-		luamethod(LuaCamera, get_pos), luamethod(LuaCamera, get_offset),
-		luamethod(LuaCamera, get_look_dir),
-		luamethod(LuaCamera, get_look_vertical),
-		luamethod(LuaCamera, get_look_horizontal),
-		luamethod(LuaCamera, get_aspect_ratio),
-
-		{0, 0}};
+const luaL_Reg LuaCamera::methods[] = {
+	luamethod(LuaCamera, set_camera_mode),
+	luamethod(LuaCamera, get_camera_mode), luamethod(LuaCamera, get_fov),
+	luamethod(LuaCamera, get_pos), luamethod(LuaCamera, get_offset),
+	luamethod(LuaCamera, get_look_dir),
+	luamethod(LuaCamera, get_look_vertical),
+	luamethod(LuaCamera, get_look_horizontal),
+	luamethod(LuaCamera, get_aspect_ratio),
+	{0, 0}
+};

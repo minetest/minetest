@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class AreaStore;
 
-class LuaAreaStore : public ModApiBase
-{
+class LuaAreaStore : public ModApiBase {
 private:
 	static const char className[];
 	static const luaL_Reg methods[];

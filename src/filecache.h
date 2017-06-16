@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <string>
 
-class FileCache
-{
+class FileCache {
 public:
 	/*
 		'dir' is the file cache directory to use.

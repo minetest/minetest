@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class AsyncEngine;
 
-class ModApiUtil : public ModApiBase
-{
+class ModApiUtil : public ModApiBase {
 private:
 	/*
 		NOTE:
