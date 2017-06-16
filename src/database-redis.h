@@ -45,8 +45,8 @@ public:
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
-	redisContext *ctx;
-	std::string hash;
+	redisContext *ctx = nullptr;
+	std::string hash = "";
 };
 
 #endif // USE_REDIS

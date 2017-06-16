@@ -44,11 +44,7 @@ Clouds::Clouds(
 		s16 cloudheight
 ):
 	scene::ISceneNode(parent, mgr, id),
-	m_seed(seed),
-	m_camera_pos(0.0f, 0.0f),
-	m_origin(0.0f, 0.0f),
-	m_camera_offset(0.0f, 0.0f, 0.0f),
-	m_color(1.0f, 1.0f, 1.0f, 1.0f)
+	m_seed(seed)
 {
 	m_material.setFlag(video::EMF_LIGHTING, false);
 	//m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);

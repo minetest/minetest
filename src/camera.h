@@ -168,12 +168,12 @@ public:
 
 private:
 	// Nodes
-	scene::ISceneNode* m_playernode;
-	scene::ISceneNode* m_headnode;
-	scene::ICameraSceneNode* m_cameranode;
+	scene::ISceneNode *m_playernode = nullptr;
+	scene::ISceneNode *m_headnode = nullptr;
+	scene::ICameraSceneNode *m_cameranode = nullptr;
 
-	scene::ISceneManager* m_wieldmgr;
-	WieldMeshSceneNode* m_wieldnode;
+	scene::ISceneManager *m_wieldmgr = nullptr;
+	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
 	MapDrawControl& m_draw_control;
@@ -189,33 +189,33 @@ private:
 	v3s16 m_camera_offset;
 
 	// Field of view and aspect ratio stuff
-	f32 m_aspect;
-	f32 m_fov_x;
-	f32 m_fov_y;
+	f32 m_aspect = 1.0f;
+	f32 m_fov_x = 1.0f;
+	f32 m_fov_y = 1.0f;
 
 	// View bobbing animation frame (0 <= m_view_bobbing_anim < 1)
-	f32 m_view_bobbing_anim;
+	f32 m_view_bobbing_anim = 0.0f;
 	// If 0, view bobbing is off (e.g. player is standing).
 	// If 1, view bobbing is on (player is walking).
 	// If 2, view bobbing is getting switched off.
-	s32 m_view_bobbing_state;
+	s32 m_view_bobbing_state = 0;
 	// Speed of view bobbing animation
-	f32 m_view_bobbing_speed;
+	f32 m_view_bobbing_speed = 0.0f;
 	// Fall view bobbing
-	f32 m_view_bobbing_fall;
+	f32 m_view_bobbing_fall = 0.0f;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
-	f32 m_digging_anim;
+	f32 m_digging_anim = 0.0f;
 	// If -1, no digging animation
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
-	s32 m_digging_button;
+	s32 m_digging_button = -1;
 
 	// Animation when changing wielded item
-	f32 m_wield_change_timer;
+	f32 m_wield_change_timer = 0.125f;
 	ItemStack m_wield_item_next;
 
-	CameraMode m_camera_mode;
+	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;

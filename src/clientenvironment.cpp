@@ -41,11 +41,9 @@ ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
 	IrrlichtDevice *irr):
 	Environment(client),
 	m_map(map),
-	m_local_player(NULL),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_client(client),
-	m_script(NULL),
 	m_irr(irr)
 {
 	char zero = 0;

@@ -54,22 +54,7 @@ GUIChatConsole::GUIChatConsole(
 	m_chat_backend(backend),
 	m_client(client),
 	m_menumgr(menumgr),
-	m_screensize(v2u32(0,0)),
-	m_animate_time_old(porting::getTimeMs()),
-	m_open(false),
-	m_close_on_enter(false),
-	m_height(0),
-	m_desired_height(0),
-	m_desired_height_fraction(0.0),
-	m_height_speed(5.0),
-	m_open_inhibited(0),
-	m_cursor_blink(0.0),
-	m_cursor_blink_speed(0.0),
-	m_cursor_height(0.0),
-	m_background(NULL),
-	m_background_color(255, 0, 0, 0),
-	m_font(NULL),
-	m_fontsize(0, 0)
+	m_animate_time_old(porting::getTimeMs())
 {
 	// load background settings
 	s32 console_alpha = g_settings->getS32("console_alpha");

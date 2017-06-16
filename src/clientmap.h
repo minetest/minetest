@@ -28,30 +28,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapDrawControl
 {
-	MapDrawControl():
-		range_all(false),
-		wanted_range(0),
-		wanted_max_blocks(0),
-		show_wireframe(false),
-		blocks_drawn(0),
-		blocks_would_have_drawn(0),
-		farthest_drawn(0)
-	{
-	}
 	// Overrides limits by drawing everything
-	bool range_all;
+	bool range_all = false;
 	// Wanted drawing range
-	float wanted_range;
+	float wanted_range = 0.0f;
 	// Maximum number of blocks to draw
-	u32 wanted_max_blocks;
+	u32 wanted_max_blocks = 0;
 	// show a wire frame for debugging
-	bool show_wireframe;
+	bool show_wireframe = false;
 	// Number of blocks rendered is written here by the renderer
-	u32 blocks_drawn;
+	u32 blocks_drawn = 0;
 	// Number of blocks that would have been drawn in wanted_range
-	u32 blocks_would_have_drawn;
+	u32 blocks_would_have_drawn = 0;
 	// Distance to the farthest block drawn
-	float farthest_drawn;
+	float farthest_drawn = 0;
 };
 
 class Client;
@@ -137,13 +127,14 @@ public:
 private:
 	Client *m_client;
 
-	aabb3f m_box;
+	aabb3f m_box = aabb3f(-BS * 1000000, -BS * 1000000, -BS * 1000000,
+		BS * 1000000, BS * 1000000, BS * 1000000);
 
 	MapDrawControl &m_control;
 
 	v3f m_camera_position;
-	v3f m_camera_direction;
-	f32 m_camera_fov;
+	v3f m_camera_direction = v3f(0,0,1);
+	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock*> m_drawlist;

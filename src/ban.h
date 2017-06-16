@@ -44,9 +44,9 @@ public:
 
 private:
 	std::mutex m_mutex;
-	std::string m_banfilepath;
+	std::string m_banfilepath = "";
 	StringMap m_ips;
-	bool m_modified;
+	bool m_modified = false;
 };
 
 #endif

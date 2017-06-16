@@ -226,51 +226,27 @@ public:
 	// NOTE: If client is made allowed to exist while peer doesn't,
 	//       this has to be set to 0 when there is no peer.
 	//       Also, the client must be moved to some other container.
-	u16 peer_id;
+	u16 peer_id = PEER_ID_INEXISTENT;
 	// The serialization version to use with the client
-	u8 serialization_version;
+	u8 serialization_version = SER_FMT_VER_INVALID;
 	//
-	u16 net_proto_version;
+	u16 net_proto_version = 0;
 
 	/* Authentication information */
-	std::string enc_pwd;
-	bool create_player_on_auth_success;
-	AuthMechanism chosen_mech;
-	void * auth_data;
-	u32 allowed_auth_mechs;
-	u32 allowed_sudo_mechs;
+	std::string enc_pwd = "";
+	bool create_player_on_auth_success = false;
+	AuthMechanism chosen_mech  = AUTH_MECHANISM_NONE;
+	void *auth_data = nullptr;
+	u32 allowed_auth_mechs = 0;
+	u32 allowed_sudo_mechs = 0;
 
 	bool isSudoMechAllowed(AuthMechanism mech)
 	{ return allowed_sudo_mechs & mech; }
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
 
-	RemoteClient():
-		peer_id(PEER_ID_INEXISTENT),
-		serialization_version(SER_FMT_VER_INVALID),
-		net_proto_version(0),
-		create_player_on_auth_success(false),
-		chosen_mech(AUTH_MECHANISM_NONE),
-		auth_data(NULL),
-		m_time_from_building(9999),
-		m_pending_serialization_version(SER_FMT_VER_INVALID),
-		m_state(CS_Created),
-		m_nearest_unsent_d(0),
-		m_nearest_unsent_reset_timer(0.0),
-		m_excess_gotblocks(0),
-		m_nothing_to_send_pause_timer(0.0),
-		m_name(""),
-		m_version_major(0),
-		m_version_minor(0),
-		m_version_patch(0),
-		m_full_version("unknown"),
-		m_deployed_compression(0),
-		m_connection_time(porting::getTimeS())
-	{
-	}
-	~RemoteClient()
-	{
-	}
+	RemoteClient() {}
+	~RemoteClient() {}
 
 	/*
 		Finds block that should be sent next to the client.
@@ -317,7 +293,7 @@ public:
 	}
 
 	// Time from last placing or removing blocks
-	float m_time_from_building;
+	float m_time_from_building = 9999;
 
 	/*
 		List of active objects that the client knows of.
@@ -361,10 +337,10 @@ public:
 	u8 getPatch() const { return m_version_patch; }
 private:
 	// Version is stored in here after INIT before INIT2
-	u8 m_pending_serialization_version;
+	u8 m_pending_serialization_version = SER_FMT_VER_INVALID;
 
 	/* current state of client */
-	ClientState m_state;
+	ClientState m_state = CS_Created;
 
 	/*
 		Blocks that have been sent to client.
@@ -376,9 +352,9 @@ private:
 		No MapBlock* is stored here because the blocks can get deleted.
 	*/
 	std::set<v3s16> m_blocks_sent;
-	s16 m_nearest_unsent_d;
+	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
-	float m_nearest_unsent_reset_timer;
+	float m_nearest_unsent_reset_timer = 0.0f;
 
 	/*
 		Blocks that are currently on the line.
@@ -407,31 +383,31 @@ private:
 		and the client then sends two GOTBLOCKs.
 		This is resetted by PrintInfo()
 	*/
-	u32 m_excess_gotblocks;
+	u32 m_excess_gotblocks = 0;
 
 	// CPU usage optimization
-	float m_nothing_to_send_pause_timer;
+	float m_nothing_to_send_pause_timer = 0.0f;
 
 	/*
 		name of player using this client
 	*/
-	std::string m_name;
+	std::string m_name = "";
 
 	/*
 		client information
 	 */
-	u8 m_version_major;
-	u8 m_version_minor;
-	u8 m_version_patch;
+	u8 m_version_major = 0;
+	u8 m_version_minor = 0;
+	u8 m_version_patch = 0;
 
-	std::string m_full_version;
+	std::string m_full_version = "unknown";
 
-	u16 m_deployed_compression;
+	u16 m_deployed_compression = 0;
 
 	/*
 		time this client was created
 	 */
-	const u64 m_connection_time;
+	const u64 m_connection_time = porting::getTimeS();
 };
 
 typedef std::unordered_map<u16, RemoteClient*> RemoteClientMap;

@@ -43,9 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 
 Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
-	m_connect_string(connect_string),
-	m_conn(NULL),
-	m_pgversion(0)
+	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
 		throw SettingNotFoundException(

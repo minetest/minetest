@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientobject.h"
 #include "object_properties.h"
 #include "itemgroup.h"
+#include "constants.h"
 
 class Camera;
 class Client;
@@ -39,76 +40,74 @@ struct SmoothTranslator
 	v3f vect_old;
 	v3f vect_show;
 	v3f vect_aim;
-	f32 anim_counter;
+	f32 anim_counter = 0;
 	f32 anim_time;
-	f32 anim_time_counter;
-	bool aim_is_end;
+	f32 anim_time_counter = 0;
+	bool aim_is_end = true;
 
-	SmoothTranslator();
+	SmoothTranslator() {};
 
 	void init(v3f vect);
-
-	void sharpen();
 
 	void update(v3f vect_new, bool is_end_position=false, float update_interval=-1);
 
 	void translate(f32 dtime);
-
-	bool is_moving();
 };
 
 class GenericCAO : public ClientActiveObject
 {
 private:
 	// Only set at initialization
-	std::string m_name;
-	bool m_is_player;
-	bool m_is_local_player;
+	std::string m_name = "";
+	bool m_is_player = false;
+	bool m_is_local_player = false;
 	// Property-ish things
 	ObjectProperties m_prop;
 	//
-	scene::ISceneManager *m_smgr;
-	IrrlichtDevice *m_irr;
-	Client *m_client;
-	aabb3f m_selection_box;
-	scene::IMeshSceneNode *m_meshnode;
-	scene::IAnimatedMeshSceneNode *m_animated_meshnode;
-	WieldMeshSceneNode *m_wield_meshnode;
-	scene::IBillboardSceneNode *m_spritenode;
-	Nametag* m_nametag;
-	v3f m_position;
+	scene::ISceneManager *m_smgr = nullptr;
+	IrrlichtDevice *m_irr = nullptr;
+	Client *m_client = nullptr;
+	aabb3f m_selection_box = aabb3f(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.);
+	scene::IMeshSceneNode *m_meshnode = nullptr;
+	scene::IAnimatedMeshSceneNode *m_animated_meshnode = nullptr;
+	WieldMeshSceneNode *m_wield_meshnode = nullptr;
+	scene::IBillboardSceneNode *m_spritenode = nullptr;
+	Nametag *m_nametag = nullptr;
+	v3f m_position = v3f(0.0f, 10.0f * BS, 0);
 	v3f m_velocity;
 	v3f m_acceleration;
-	float m_yaw;
-	s16 m_hp;
+	float m_yaw = 0.0f;
+	s16 m_hp = 1;
 	SmoothTranslator pos_translator;
 	// Spritesheet/animation stuff
-	v2f m_tx_size;
+	v2f m_tx_size = v2f(1,1);
 	v2s16 m_tx_basepos;
-	bool m_initial_tx_basepos_set;
-	bool m_tx_select_horiz_by_yawpitch;
+	bool m_initial_tx_basepos_set = false;
+	bool m_tx_select_horiz_by_yawpitch = false;
 	v2s32 m_animation_range;
-	int m_animation_speed;
-	int m_animation_blend;
-	bool m_animation_loop;
+	int m_animation_speed = 15;
+	int m_animation_blend = 0;
+	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
-	std::string m_attachment_bone;
+	std::string m_attachment_bone = "";
 	v3f m_attachment_position;
 	v3f m_attachment_rotation;
-	bool m_attached_to_local;
-	int m_anim_frame;
-	int m_anim_num_frames;
-	float m_anim_framelength;
-	float m_anim_timer;
+	bool m_attached_to_local = false;
+	int m_anim_frame = 0;
+	int m_anim_num_frames = 1;
+	float m_anim_framelength = 0.2f;
+	float m_anim_timer = 0.0f;
 	ItemGroupList m_armor_groups;
-	float m_reset_textures_timer;
-	std::string m_previous_texture_modifier; // stores texture modifier before punch update
-	std::string m_current_texture_modifier;  // last applied texture modifier
-	bool m_visuals_expired;
-	float m_step_distance_counter;
-	u8 m_last_light;
-	bool m_is_visible;
+	float m_reset_textures_timer = -1.0f;
+	// stores texture modifier before punch update
+	std::string m_previous_texture_modifier = "";
+	// last applied texture modifier
+	std::string m_current_texture_modifier = "";
+	bool m_visuals_expired = false;
+	float m_step_distance_counter = 0.0f;
+	u8 m_last_light = 255;
+	bool m_is_visible = false;
 
 	std::vector<u16> m_children;
 

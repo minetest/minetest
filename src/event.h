@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MtEvent
 {
 public:
-	virtual ~MtEvent(){};
+	virtual ~MtEvent() {};
 	//virtual MtEvent* clone(){ return new IEvent; }
 	virtual const char* getType() const = 0;
 

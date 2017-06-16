@@ -67,13 +67,6 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	/*MutexAutoLock lock(mesh_mutex);
-
-	if(mesh != NULL)
-	{
-		mesh->drop();
-		mesh = NULL;
-	}*/
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)

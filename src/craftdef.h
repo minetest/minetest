@@ -70,17 +70,17 @@ const int craft_hash_type_max = (int) CRAFT_HASH_TYPE_UNHASHED;
 */
 struct CraftInput
 {
-	CraftMethod method;
-	unsigned int width;
+	CraftMethod method = CRAFT_METHOD_NORMAL;
+	unsigned int width = 0;
 	std::vector<ItemStack> items;
 
-	CraftInput():
-		method(CRAFT_METHOD_NORMAL), width(0), items()
-	{}
+	CraftInput() {}
+
 	CraftInput(CraftMethod method_, unsigned int width_,
 			const std::vector<ItemStack> &items_):
 		method(method_), width(width_), items(items_)
 	{}
+
 	std::string dump() const;
 };
 
@@ -90,13 +90,12 @@ struct CraftInput
 struct CraftOutput
 {
 	// Used for normal crafting and cooking, itemstring
-	std::string item;
+	std::string item = "";
 	// Used for cooking (cook time) and fuel (burn time), seconds
-	float time;
+	float time = 0.0f;
 
-	CraftOutput():
-		item(""), time(0)
-	{}
+	CraftOutput() {}
+
 	CraftOutput(const std::string &item_, float time_):
 		item(item_), time(time_)
 	{}
@@ -171,16 +170,15 @@ public:
 class CraftDefinitionShaped: public CraftDefinition
 {
 public:
-	CraftDefinitionShaped():
-		output(""), width(1), recipe(), hash_inited(false), replacements()
-	{}
+	CraftDefinitionShaped() {}
+
 	CraftDefinitionShaped(
 			const std::string &output_,
 			unsigned int width_,
 			const std::vector<std::string> &recipe_,
 			const CraftReplacements &replacements_):
 		output(output_), width(width_), recipe(recipe_),
-		hash_inited(false), replacements(replacements_)
+		replacements(replacements_)
 	{}
 	virtual ~CraftDefinitionShaped(){}
 
@@ -200,15 +198,15 @@ public:
 
 private:
 	// Output itemstring
-	std::string output;
+	std::string output = "";
 	// Width of recipe
-	unsigned int width;
+	unsigned int width = 1;
 	// Recipe matrix (itemstrings)
 	std::vector<std::string> recipe;
 	// Recipe matrix (item names)
 	std::vector<std::string> recipe_names;
 	// bool indicating if initHash has been called already
-	bool hash_inited;
+	bool hash_inited = false;
 	// Replacement items for decrementInput()
 	CraftReplacements replacements;
 };

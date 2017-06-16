@@ -28,14 +28,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 
 BanManager::BanManager(const std::string &banfilepath):
-		m_banfilepath(banfilepath),
-		m_modified(false)
+		m_banfilepath(banfilepath)
 {
-	try{
+	try {
 		load();
-	}
-	catch(SerializationError &e)
-	{
+	} catch(SerializationError &e) {
 		warningstream<<"BanManager: creating "
 				<<m_banfilepath<<std::endl;
 	}

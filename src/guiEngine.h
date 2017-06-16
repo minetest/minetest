@@ -203,28 +203,28 @@ private:
 	/** pointer to data beeing transfered back to main game handling */
 	MainMenuData*            m_data;
 	/** pointer to texture source */
-	ISimpleTextureSource*    m_texture_source;
+	ISimpleTextureSource    *m_texture_source = nullptr;
 	/** pointer to soundmanager*/
-	ISoundManager*           m_sound_manager;
+	ISoundManager           *m_sound_manager = nullptr;
 
 	/** representation of form source to be used in mainmenu formspec */
-	FormspecFormSource*      m_formspecgui;
+	FormspecFormSource      *m_formspecgui = nullptr;
 	/** formspec input receiver */
-	TextDestGuiEngine*       m_buttonhandler;
+	TextDestGuiEngine       *m_buttonhandler = nullptr;
 	/** the formspec menu */
-	GUIFormSpecMenu*         m_menu;
+	GUIFormSpecMenu         *m_menu = nullptr;
 
 	/** reference to kill variable managed by SIGINT handler */
 	bool&                    m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
-	bool                     m_startgame;
+	bool                     m_startgame = false;
 
 	/** scripting interface */
-	MainMenuScripting*       m_script;
+	MainMenuScripting       *m_script = nullptr;
 
 	/** script basefolder */
-	std::string              m_scriptdir;
+	std::string              m_scriptdir = "";
 
 	/**
 	 * draw background layer
@@ -272,7 +272,7 @@ private:
 	void setTopleftText(const std::string &text);
 
 	/** pointer to gui element shown at topleft corner */
-	irr::gui::IGUIStaticText*	m_irr_toplefttext;
+	irr::gui::IGUIStaticText *m_irr_toplefttext = nullptr;
 	/** and text that is in it */
 	EnrichedString m_toplefttext;
 
@@ -296,7 +296,7 @@ private:
 	};
 
 	/** is drawing of clouds enabled atm */
-	bool        m_clouds_enabled;
+	bool        m_clouds_enabled = true;
 	/** data used to draw clouds */
 	clouddata   m_cloud;
 
@@ -307,7 +307,5 @@ private:
 
 
 };
-
-
 
 #endif /* GUI_ENGINE_H_ */

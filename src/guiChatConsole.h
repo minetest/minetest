@@ -101,35 +101,35 @@ private:
 	u64 m_animate_time_old;
 
 	// should the console be opened or closed?
-	bool m_open;
+	bool m_open = false;
 	// should it close after you press enter?
-	bool m_close_on_enter;
+	bool m_close_on_enter = false;
 	// current console height [pixels]
-	s32 m_height;
+	s32 m_height = 0;
 	// desired height [pixels]
-	f32 m_desired_height;
+	f32 m_desired_height = 0.0f;
 	// desired height [screen height fraction]
-	f32 m_desired_height_fraction;
+	f32 m_desired_height_fraction = 0.0f;
 	// console open/close animation speed [screen height fraction / second]
-	f32 m_height_speed;
+	f32 m_height_speed = 5.0f;
 	// if nonzero, opening the console is inhibited [milliseconds]
-	u32 m_open_inhibited;
+	u32 m_open_inhibited = 0;
 
 	// cursor blink frame (16-bit value)
 	// cursor is off during [0,32767] and on during [32768,65535]
-	u32 m_cursor_blink;
+	u32 m_cursor_blink = 0;
 	// cursor blink speed [on/off toggles / second]
-	f32 m_cursor_blink_speed;
+	f32 m_cursor_blink_speed = 0.0f;
 	// cursor height [line height]
-	f32 m_cursor_height;
+	f32 m_cursor_height = 0.0f;
 
 	// background texture
-	video::ITexture* m_background;
+	video::ITexture *m_background = nullptr;
 	// background color (including alpha)
-	video::SColor m_background_color;
+	video::SColor m_background_color = video::SColor(255, 0, 0, 0);
 
 	// font
-	gui::IGUIFont* m_font;
+	gui::IGUIFont *m_font = nullptr;
 	v2u32 m_fontsize;
 };
 

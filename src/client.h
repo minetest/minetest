@@ -575,11 +575,11 @@ private:
 
 	bool canSendChatMessage() const;
 
-	float m_packetcounter_timer;
-	float m_connection_reinit_timer;
-	float m_avg_rtt_timer;
-	float m_playerpos_send_timer;
-	float m_ignore_damage_timer; // Used after server moves player
+	float m_packetcounter_timer = 0.0f;
+	float m_connection_reinit_timer = 0.1f;
+	float m_avg_rtt_timer = 0.0f;
+	float m_playerpos_send_timer = 0.0f;
+	float m_ignore_damage_timer = 0.0f; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
@@ -596,9 +596,9 @@ private:
 	con::Connection m_con;
 	std::string m_address_name;
 	IrrlichtDevice *m_device;
-	Camera *m_camera;
-	Minimap *m_minimap;
-	bool m_minimap_disabled_by_server;
+	Camera *m_camera = nullptr;
+	Minimap *m_minimap = nullptr;
+	bool m_minimap_disabled_by_server = false;
 	// Server serialization version
 	u8 m_server_ser_ver;
 
@@ -607,16 +607,16 @@ private:
 	// and aren't accurate. We simply just don't know, because
 	// the server didn't send the version back then.
 	// If 0, server init hasn't been received yet.
-	u8 m_proto_ver;
+	u8 m_proto_ver = 0;
 
-	u16 m_playeritem;
-	bool m_inventory_updated;
-	Inventory *m_inventory_from_server;
-	float m_inventory_from_server_age;
+	u16 m_playeritem = 0;
+	bool m_inventory_updated = false;
+	Inventory *m_inventory_from_server = nullptr;
+	float m_inventory_from_server_age = 0.0f;
 	PacketCounter m_packetcounter;
 	// Block mesh animation parameters
-	float m_animation_time;
-	int m_crack_level;
+	float m_animation_time = 0.0f;
+	int m_crack_level = -1;
 	v3s16 m_crack_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
@@ -624,13 +624,13 @@ private:
 	std::queue<std::wstring> m_chat_queue;
 	std::queue<std::wstring> m_out_chat_queue;
 	u32 m_last_chat_message_sent;
-	float m_chat_message_allowance;
+	float m_chat_message_allowance = 5.0f;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;
 
 	// The seed returned by the server in TOCLIENT_INIT is stored here
-	u64 m_map_seed;
+	u64 m_map_seed = 0;
 
 	// Auth data
 	std::string m_playername;
@@ -639,27 +639,27 @@ private:
 	std::string m_new_password;
 	// Usable by auth mechanisms.
 	AuthMechanism m_chosen_auth_mech;
-	void * m_auth_data;
+	void *m_auth_data = nullptr;
 
 
-	bool m_access_denied;
-	bool m_access_denied_reconnect;
-	std::string m_access_denied_reason;
+	bool m_access_denied = false;
+	bool m_access_denied_reconnect = false;
+	std::string m_access_denied_reason = "";
 	std::queue<ClientEvent> m_client_event_queue;
-	bool m_itemdef_received;
-	bool m_nodedef_received;
+	bool m_itemdef_received = false;
+	bool m_nodedef_received = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol
-	bool m_time_of_day_set;
-	float m_last_time_of_day_f;
-	float m_time_of_day_update_timer;
+	bool m_time_of_day_set = false;
+	float m_last_time_of_day_f = -1.0f;
+	float m_time_of_day_update_timer = 0.0f;
 
 	// An interval for generally sending object positions and stuff
-	float m_recommended_send_interval;
+	float m_recommended_send_interval = 0.1f;
 
 	// Sounds
-	float m_removed_sounds_check_timer;
+	float m_removed_sounds_check_timer = 0.0f;
 	// Mapping from server sound ids to our sound ids
 	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
@@ -681,17 +681,17 @@ private:
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	MapDatabase *m_localdb;
+	MapDatabase *m_localdb = nullptr;
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
-	ClientScripting *m_script;
+	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
-	float m_mod_storage_save_timer;
+	float m_mod_storage_save_timer = 10.0f;
 	GameUIFlags *m_game_ui_flags;
 
-	bool m_shutdown;
+	bool m_shutdown = false;
 };
 
 #endif // !CLIENT_HEADER

@@ -176,11 +176,11 @@ public:
 	v3s16 getCameraOffset() const { return m_camera_offset; }
 private:
 	ClientMap *m_map;
-	LocalPlayer *m_local_player;
+	LocalPlayer *m_local_player = nullptr;
 	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
-	ClientScripting *m_script;
+	ClientScripting *m_script = nullptr;
 	IrrlichtDevice *m_irr;
 	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
