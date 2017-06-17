@@ -813,10 +813,11 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	player->control.LMB = (keyPressed & 128);
 	player->control.RMB = (keyPressed & 256);
 
-	if (playersao->checkMovementCheat()) {
-		// Call callbacks
-		m_script->on_cheat(playersao, "moved_too_fast");
+	if (m_script->anticheat_check_moved_too_fast(player, playersao)) {
+		playersao->setBasePosition(playersao->getLastGoodPosition());
 		SendMovePlayer(pkt->getPeerId());
+	} else {
+		playersao->resetLastGoodPosition();
 	}
 }
 
@@ -1305,23 +1306,19 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		return;
 	}
 
-	if (playersao->isDead()) {
-		actionstream << "Server: NoCheat: " << player->getName()
-				<< " tried to interact while dead; ignoring." << std::endl;
+	if (m_script->anticheat_check_interacted_while_dead(playersao)) {
 		if (pointed.type == POINTEDTHING_NODE) {
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(pkt->getPeerId());
 			v3s16 blockpos = getNodeBlockPos(pointed.node_undersurface);
 			client->SetBlockNotSent(blockpos);
 		}
-		// Call callbacks
-		m_script->on_cheat(playersao, "interacted_while_dead");
 		return;
 	}
 
 	process_PlayerPos(player, playersao, pkt);
 
-	v3f player_pos = playersao->getLastGoodPosition();
+	v3f player_pos = playersao->getBasePosition();
 
 	// Update wielded item
 	playersao->setWieldIndex(item_i);
@@ -1379,36 +1376,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		Check that target is reasonably close
 		(only when digging or placing things)
 	*/
-	static thread_local const bool enable_anticheat =
-			!g_settings->getBool("disable_anticheat");
-
-	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
-			(enable_anticheat && !isSingleplayer())) {
-		float d = player_pos.getDistanceFrom(pointed_pos_under);
-		const ItemDefinition &playeritem_def =
-			playersao->getWieldedItem().getDefinition(m_itemdef);
-		float max_d = BS * playeritem_def.range;
-		InventoryList *hlist = playersao->getInventory()->getList("hand");
-		const ItemDefinition &hand_def =
-			hlist ? (hlist->getItem(0).getDefinition(m_itemdef)) : (m_itemdef->get(""));
-		float max_d_hand = BS * hand_def.range;
-		if (max_d < 0 && max_d_hand >= 0)
-			max_d = max_d_hand;
-		else if (max_d < 0)
-			max_d = BS * 4.0;
-		// cube diagonal: sqrt(3) = 1.73
-		if (d > max_d * 1.73) {
-			actionstream << "Player " << player->getName()
-					<< " tried to access " << pointed.dump()
-					<< " from too far: "
-					<< "d=" << d <<", max_d=" << max_d
-					<< ". ignoring." << std::endl;
+	if (action == 0 || action == 2 || action == 3 || action == 4) {
+		if (m_script->anticheat_check_interacted_too_far(playersao, floatToInt(pointed_pos_under, BS))) {
 			// Re-send block to revert change on client-side
 			RemoteClient *client = getClient(pkt->getPeerId());
 			v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
 			client->SetBlockNotSent(blockpos);
-			// Call callbacks
-			m_script->on_cheat(playersao, "interacted_too_far");
 			// Do nothing else
 			return;
 		}
@@ -1504,72 +1477,26 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 
 			/* Cheat prevention */
 			bool is_valid_dig = true;
-			if (enable_anticheat && !isSingleplayer()) {
-				v3s16 nocheat_p = playersao->getNoCheatDigPos();
-				float nocheat_t = playersao->getNoCheatDigTime();
-				playersao->noCheatDigEnd();
-				// If player didn't start digging this, ignore dig
-				if (nocheat_p != p_under) {
-					infostream << "Server: NoCheat: " << player->getName()
-							<< " started digging "
-							<< PP(nocheat_p) << " and completed digging "
-							<< PP(p_under) << "; not digging." << std::endl;
+
+			v3s16 nocheat_p = playersao->getNoCheatDigPos();
+			float nocheat_t = playersao->getNoCheatDigTime();
+			playersao->noCheatDigEnd();
+
+			// If player didn't start digging this, ignore dig
+			if (m_script->anticheat_check_finished_unknown_dig(playersao, nocheat_p, p_under))
+				is_valid_dig = false;
+
+			// Check if node is diggable with tool
+			if (m_script->anticheat_check_dug_unbreakable(playersao, p_under))
+				is_valid_dig = false;
+
+			// Check digging time
+			// If already invalidated, we don't have to
+			if (is_valid_dig) {
+				if (m_script->anticheat_check_dug_too_fast(playersao, p_under, nocheat_t))
 					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "finished_unknown_dig");
-				}
-				// Get player's wielded item
-				ItemStack playeritem = playersao->getWieldedItemOrHand();
-				ToolCapabilities playeritem_toolcap =
-						playeritem.getToolCapabilities(m_itemdef);
-				// Get diggability and expected digging time
-				DigParams params = getDigParams(m_nodedef->get(n).groups,
-						&playeritem_toolcap);
-				// If can't dig, try hand
-				if (!params.diggable) {
-					InventoryList *hlist = playersao->getInventory()->getList("hand");
-					const ItemDefinition &hand =
-						hlist ? hlist->getItem(0).getDefinition(m_itemdef) : m_itemdef->get("");
-					const ToolCapabilities *tp = hand.tool_capabilities;
-					if (tp)
-						params = getDigParams(m_nodedef->get(n).groups, tp);
-				}
-				// If can't dig, ignore dig
-				if (!params.diggable) {
-					infostream << "Server: NoCheat: " << player->getName()
-							<< " completed digging " << PP(p_under)
-							<< ", which is not diggable with tool. not digging."
-							<< std::endl;
-					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "dug_unbreakable");
-				}
-				// Check digging time
-				// If already invalidated, we don't have to
-				if (!is_valid_dig) {
-					// Well not our problem then
-				}
-				// Clean and long dig
-				else if (params.time > 2.0 && nocheat_t * 1.2 > params.time) {
-					// All is good, but grab time from pool; don't care if
-					// it's actually available
-					playersao->getDigPool().grab(params.time);
-				}
-				// Short or laggy dig
-				// Try getting the time from pool
-				else if (playersao->getDigPool().grab(params.time)) {
-					// All is good
-				}
-				// Dig not possible
-				else {
-					infostream << "Server: NoCheat: " << player->getName()
-							<< " completed digging " << PP(p_under)
-							<< "too fast; not digging." << std::endl;
-					is_valid_dig = false;
-					// Call callbacks
-					m_script->on_cheat(playersao, "dug_too_fast");
-				}
 			}
+
 
 			/* Actually dig node */
 

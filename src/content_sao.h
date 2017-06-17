@@ -317,6 +317,10 @@ public:
 	{
 		return m_last_good_position;
 	}
+	void resetLastGoodPosition()
+	{
+		m_last_good_position = m_base_position;
+	}
 	float resetTimeFromLastPunch()
 	{
 		float r = m_time_from_last_punch;
@@ -344,8 +348,14 @@ public:
 	{
 		return m_dig_pool;
 	}
-	// Returns true if cheated
-	bool checkMovementCheat();
+	LagPool& getMovePool()
+	{
+		return m_move_pool;
+	}
+	float getTimeFromLastTeleport()
+	{
+		return m_time_from_last_teleport;
+	}
 
 	// Other
 
