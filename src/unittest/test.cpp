@@ -70,16 +70,16 @@ public:
 	virtual void unregisterModStorage(const std::string &name) {}
 
 private:
-	IItemDefManager *m_itemdef;
-	INodeDefManager *m_nodedef;
-	ICraftDefManager *m_craftdef;
-	ITextureSource *m_texturesrc;
-	IShaderSource *m_shadersrc;
-	ISoundManager *m_soundmgr;
-	MtEventManager *m_eventmgr;
-	scene::ISceneManager *m_scenemgr;
-	IRollbackManager *m_rollbackmgr;
-	EmergeManager *m_emergemgr;
+	IItemDefManager *m_itemdef = nullptr;
+	INodeDefManager *m_nodedef = nullptr;
+	ICraftDefManager *m_craftdef = nullptr;
+	ITextureSource *m_texturesrc = nullptr;
+	IShaderSource *m_shadersrc = nullptr;
+	ISoundManager *m_soundmgr = nullptr;
+	MtEventManager *m_eventmgr = nullptr;
+	scene::ISceneManager *m_scenemgr = nullptr;
+	IRollbackManager *m_rollbackmgr = nullptr;
+	EmergeManager *m_emergemgr = nullptr;
 };
 
 
