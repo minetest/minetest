@@ -171,14 +171,12 @@ bool NodeMetaRef::handleFromTable(lua_State *L, int table, Metadata *_meta)
 
 NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 	m_p(p),
-	m_env(env),
-	m_is_local(false)
+	m_env(env)
 {
 }
 
 NodeMetaRef::NodeMetaRef(Metadata *meta):
-	m_meta(meta),
-	m_is_local(true)
+	m_meta(meta)
 {
 }
 

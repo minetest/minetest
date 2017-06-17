@@ -100,7 +100,7 @@ int LuaAreaStore::l_get_area(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	u32 id = luaL_checknumber(L, 2);
 
@@ -125,7 +125,7 @@ int LuaAreaStore::l_get_areas_for_pos(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	v3s16 pos = check_v3s16(L, 2);
 
@@ -147,7 +147,7 @@ int LuaAreaStore::l_get_areas_in_area(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	v3s16 minedge = check_v3s16(L, 2);
 	v3s16 maxedge = check_v3s16(L, 3);
@@ -173,7 +173,7 @@ int LuaAreaStore::l_insert_area(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	Area a(check_v3s16(L, 2), check_v3s16(L, 3));
 
@@ -198,7 +198,7 @@ int LuaAreaStore::l_reserve(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	size_t count = luaL_checknumber(L, 2);
 	ast->reserve(count);
@@ -211,7 +211,7 @@ int LuaAreaStore::l_remove_area(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	u32 id = luaL_checknumber(L, 2);
 	bool success = ast->removeArea(id);
@@ -226,7 +226,7 @@ int LuaAreaStore::l_set_cache_params(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	luaL_checktype(L, 2, LUA_TTABLE);
 
@@ -247,7 +247,7 @@ int LuaAreaStore::l_to_string(lua_State *L)
 	LuaAreaStore *o = checkobject(L, 1);
 
 	std::ostringstream os(std::ios_base::binary);
-	o->as->serialize(os);
+	o->m_as->serialize(os);
 	std::string str = os.str();
 
 	lua_pushlstring(L, str.c_str(), str.length());
@@ -260,7 +260,7 @@ int LuaAreaStore::l_to_file(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaAreaStore *o = checkobject(L, 1);
-	AreaStore *ast = o->as;
+	AreaStore *ast = o->m_as;
 
 	const char *filename = luaL_checkstring(L, 2);
 	CHECK_SECURE_PATH(L, filename, true);
@@ -283,7 +283,7 @@ int LuaAreaStore::l_from_string(lua_State *L)
 	const char *str = luaL_checklstring(L, 2, &len);
 
 	std::istringstream is(std::string(str, len), std::ios::binary);
-	return deserialization_helper(L, o->as, is);
+	return deserialization_helper(L, o->m_as, is);
 }
 
 // from_file(filename)
@@ -297,29 +297,28 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	CHECK_SECURE_PATH(L, filename, false);
 
 	std::ifstream is(filename, std::ios::binary);
-	return deserialization_helper(L, o->as, is);
+	return deserialization_helper(L, o->m_as, is);
 }
 
-LuaAreaStore::LuaAreaStore()
+LuaAreaStore::LuaAreaStore() : m_as(AreaStore::getOptimalImplementation())
 {
-	this->as = AreaStore::getOptimalImplementation();
 }
 
 LuaAreaStore::LuaAreaStore(const std::string &type)
 {
 #if USE_SPATIAL
 	if (type == "LibSpatial") {
-		this->as = new SpatialAreaStore();
+		m_as = new SpatialAreaStore();
 	} else
 #endif
 	{
-		this->as = new VectorAreaStore();
+		m_as = new VectorAreaStore();
 	}
 }
 
 LuaAreaStore::~LuaAreaStore()
 {
-	delete as;
+	delete m_as;
 }
 
 // LuaAreaStore()

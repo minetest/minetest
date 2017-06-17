@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ItemStackMetaRef : public MetaDataRef
 {
 private:
-	ItemStack *istack;
+	ItemStack *istack = nullptr;
 
 	static const char className[];
 	static const luaL_Reg methods[];

@@ -67,7 +67,7 @@ private:
 
 	static int l_get_movement(lua_State *L);
 
-	LocalPlayer *m_localplayer;
+	LocalPlayer *m_localplayer = nullptr;
 
 public:
 	LuaLocalPlayer(LocalPlayer *m);
