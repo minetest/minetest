@@ -72,14 +72,6 @@ void OreManager::clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-Ore::Ore()
-{
-	flags = 0;
-	noise = NULL;
-}
-
-
 Ore::~Ore()
 {
 	delete noise;
@@ -232,8 +224,6 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 OrePuff::OrePuff() :
 	Ore()
 {
-	noise_puff_top    = NULL;
-	noise_puff_bottom = NULL;
 }
 
 
@@ -385,7 +375,6 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 OreVein::OreVein() :
 	Ore()
 {
-	noise2 = NULL;
 }
 
 

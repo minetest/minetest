@@ -70,7 +70,7 @@ public:
 struct ABMWithState
 {
 	ActiveBlockModifier *abm;
-	float timer;
+	float timer = 0.0f;
 
 	ABMWithState(ActiveBlockModifier *abm_);
 };
@@ -80,7 +80,7 @@ struct LoadingBlockModifierDef
 	// Set of contents to trigger on
 	std::set<std::string> trigger_contents;
 	std::string name;
-	bool run_at_every_load;
+	bool run_at_every_load = false;
 
 	virtual ~LoadingBlockModifierDef() {}
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
@@ -104,10 +104,7 @@ struct LBMContentMapping
 class LBMManager
 {
 public:
-	LBMManager():
-		m_query_mode(false)
-	{}
-
+	LBMManager() {}
 	~LBMManager();
 
 	// Don't call this after loadIntroductionTimes() ran.
@@ -128,7 +125,7 @@ public:
 private:
 	// Once we set this to true, we can only query,
 	// not modify
-	bool m_query_mode;
+	bool m_query_mode = false;
 
 	// For m_query_mode == false:
 	// The key of the map is the LBM def's name.
@@ -399,35 +396,35 @@ private:
 	// Outgoing network message buffer for active objects
 	std::queue<ActiveObjectMessage> m_active_object_messages;
 	// Some timers
-	float m_send_recommended_timer;
+	float m_send_recommended_timer = 0.0f;
 	IntervalLimiter m_object_management_interval;
 	// List of active blocks
 	ActiveBlockList m_active_blocks;
 	IntervalLimiter m_active_blocks_management_interval;
 	IntervalLimiter m_active_block_modifier_interval;
 	IntervalLimiter m_active_blocks_nodemetadata_interval;
-	int m_active_block_interval_overload_skip;
+	int m_active_block_interval_overload_skip = 0;
 	// Time from the beginning of the game in seconds.
 	// Incremented in step().
-	u32 m_game_time;
+	u32 m_game_time = 0;
 	// A helper variable for incrementing the latter
-	float m_game_time_fraction_counter;
+	float m_game_time_fraction_counter = 0.0f;
 	// Time of last clearObjects call (game time).
 	// When a mapblock older than this is loaded, its objects are cleared.
-	u32 m_last_clear_objects_time;
+	u32 m_last_clear_objects_time = 0;
 	// Active block modifiers
 	std::vector<ABMWithState> m_abms;
 	LBMManager m_lbm_mgr;
 	// An interval for generally sending object positions and stuff
-	float m_recommended_send_interval;
+	float m_recommended_send_interval = 0.1f;
 	// Estimate for general maximum lag as determined by server.
 	// Can raise to high values like 15s with eg. map generation mods.
-	float m_max_lag_estimate;
+	float m_max_lag_estimate = 0.1f;
 
 	// peer_ids in here should be unique, except that there may be many 0s
 	std::vector<RemotePlayer*> m_players;
 
-	PlayerDatabase *m_player_database;
+	PlayerDatabase *m_player_database = nullptr;
 
 	// Particles
 	IntervalLimiter m_particle_management_interval;

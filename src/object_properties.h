@@ -29,28 +29,28 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ObjectProperties
 {
 	// Values are BS=1
-	s16 hp_max;
-	bool physical;
-	bool collideWithObjects;
-	float weight;
-	aabb3f collisionbox;
-	std::string visual;
-	std::string mesh;
-	v2f visual_size;
+	s16 hp_max = 1;
+	bool physical = false;
+	bool collideWithObjects = true;
+	float weight = 5.0f;
+	aabb3f collisionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+	std::string visual = "sprite";
+	std::string mesh = "";
+	v2f visual_size = v2f(1, 1);
 	std::vector<std::string> textures;
 	std::vector<video::SColor> colors;
-	v2s16 spritediv;
+	v2s16 spritediv = v2s16(1, 1);
 	v2s16 initial_sprite_basepos;
-	bool is_visible;
-	bool makes_footstep_sound;
-	float automatic_rotate;
-	f32 stepheight;
-	bool automatic_face_movement_dir;
-	f32 automatic_face_movement_dir_offset;
-	bool backface_culling;
-	std::string nametag;
-	video::SColor nametag_color;
-	f32 automatic_face_movement_max_rotation_per_sec;
+	bool is_visible = true;
+	bool makes_footstep_sound = false;
+	float automatic_rotate = 0.0f;
+	f32 stepheight = 0.0f;
+	bool automatic_face_movement_dir = false;
+	f32 automatic_face_movement_dir_offset = 0.0f;
+	bool backface_culling = true;
+	std::string nametag = "";
+	video::SColor nametag_color = video::SColor(255, 255, 255, 255);
+	f32 automatic_face_movement_max_rotation_per_sec = -1.0f;
 	std::string infotext;
 	//! For dropped items, this contains item information.
 	std::string wield_item;

@@ -385,10 +385,8 @@ Json::Value getModstoreUrl(const std::string &url)
 #endif
 
 ModMetadata::ModMetadata(const std::string &mod_name):
-	m_mod_name(mod_name),
-	m_modified(false)
+	m_mod_name(mod_name)
 {
-	m_stringvars.clear();
 }
 
 void ModMetadata::clear()

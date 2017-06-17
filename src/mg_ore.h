@@ -62,13 +62,13 @@ public:
 	s16 y_min;
 	s16 y_max;
 	u8 ore_param2;		// to set node-specific attributes
-	u32 flags;          // attributes for this ore
+	u32 flags = 0;          // attributes for this ore
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
-	Noise *noise;
+	Noise *noise = nullptr;
 	std::unordered_set<u8> biomes;
 
-	Ore();
+	Ore() {};
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -104,8 +104,8 @@ public:
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
-	Noise *noise_puff_top;
-	Noise *noise_puff_bottom;
+	Noise *noise_puff_top = nullptr;
+	Noise *noise_puff_bottom = nullptr;
 
 	OrePuff();
 	virtual ~OrePuff();
@@ -127,7 +127,7 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	float random_factor;
-	Noise *noise2;
+	Noise *noise2 = nullptr;
 
 	OreVein();
 	virtual ~OreVein();
@@ -160,7 +160,7 @@ public:
 		case ORE_VEIN:
 			return new OreVein;
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 

@@ -54,8 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 ABMWithState::ABMWithState(ActiveBlockModifier *abm_):
-	abm(abm_),
-	timer(0)
+	abm(abm_)
 {
 	// Initialize timer to random value to spread processing
 	float itv = abm->getTriggerInterval();
@@ -365,15 +364,7 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_map(map),
 	m_script(scriptIface),
 	m_server(server),
-	m_path_world(path_world),
-	m_send_recommended_timer(0),
-	m_active_block_interval_overload_skip(0),
-	m_game_time(0),
-	m_game_time_fraction_counter(0),
-	m_last_clear_objects_time(0),
-	m_recommended_send_interval(0.1),
-	m_max_lag_estimate(0.1),
-	m_player_database(NULL)
+	m_path_world(path_world)
 {
 	// Determine which database backend to use
 	std::string conf_path = path_world + DIR_DELIM + "world.mt";

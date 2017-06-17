@@ -24,27 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/basic_macros.h"
 #include <sstream>
 
-ObjectProperties::ObjectProperties():
-	hp_max(1),
-	physical(false),
-	collideWithObjects(true),
-	weight(5),
-	collisionbox(-0.5,-0.5,-0.5, 0.5,0.5,0.5),
-	visual("sprite"),
-	mesh(""),
-	visual_size(1,1),
-	spritediv(1,1),
-	initial_sprite_basepos(0,0),
-	is_visible(true),
-	makes_footstep_sound(false),
-	automatic_rotate(0),
-	stepheight(0),
-	automatic_face_movement_dir(false),
-	automatic_face_movement_dir_offset(0.0),
-	backface_culling(true),
-	nametag(""),
-	nametag_color(255, 255, 255, 255),
-	automatic_face_movement_max_rotation_per_sec(-1)
+ObjectProperties::ObjectProperties()
 {
 	textures.push_back("unknown_object.png");
 	colors.push_back(video::SColor(255,255,255,255));

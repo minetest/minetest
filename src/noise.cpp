@@ -433,10 +433,6 @@ Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 	this->sy   = sy;
 	this->sz   = sz;
 
-	this->persist_buf  = NULL;
-	this->gradient_buf = NULL;
-	this->result       = NULL;
-
 	allocBuffers();
 }
 

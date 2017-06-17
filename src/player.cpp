@@ -30,11 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 Player::Player(const char *name, IItemDefManager *idef):
-	inventory(idef),
-	peer_id(PEER_ID_INEXISTENT),
-	keyPressed(0),
-// protected
-	m_speed(0,0,0)
+	inventory(idef)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
 

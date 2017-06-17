@@ -27,25 +27,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct CachedMapBlockData
 {
-	v3s16 p;
-	MapNode *data; // A copy of the MapBlock's data member
-	int refcount_from_queue;
-	int last_used_timestamp;
+	v3s16 p = v3s16(-1337, -1337, -1337);
+	MapNode *data = nullptr; // A copy of the MapBlock's data member
+	int refcount_from_queue = 0;
+	int last_used_timestamp = std::time(0);
 
-	CachedMapBlockData();
+	CachedMapBlockData() {}
 	~CachedMapBlockData();
 };
 
 struct QueuedMeshUpdate
 {
-	v3s16 p;
-	bool ack_block_to_server;
-	bool urgent;
-	int crack_level;
+	v3s16 p = v3s16(-1337, -1337, -1337);
+	bool ack_block_to_server = false;
+	bool urgent = false;
+	int crack_level = -1;
 	v3s16 crack_pos;
-	MeshMakeData *data; // This is generated in MeshUpdateQueue::pop()
+	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
-	QueuedMeshUpdate();
+	QueuedMeshUpdate(){};
 	~QueuedMeshUpdate();
 };
 
@@ -101,14 +101,11 @@ private:
 
 struct MeshUpdateResult
 {
-	v3s16 p;
-	MapBlockMesh *mesh;
-	bool ack_block_to_server;
+	v3s16 p = v3s16(-1338, -1338, -1338);
+	MapBlockMesh *mesh = nullptr;
+	bool ack_block_to_server = false;
 
-	MeshUpdateResult()
-	    : p(-1338, -1338, -1338), mesh(NULL), ack_block_to_server(false)
-	{
-	}
+	MeshUpdateResult() {}
 };
 
 class MeshUpdateThread : public UpdateThread

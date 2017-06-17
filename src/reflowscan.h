@@ -39,10 +39,10 @@ private:
 	void scanColumn(int x, int z);
 
 private:
-	Map *m_map;
-	INodeDefManager *m_ndef;
+	Map *m_map = nullptr;
+	INodeDefManager *m_ndef = nullptr;
 	v3s16 m_block_pos, m_rel_block_pos;
-	UniqueQueue<v3s16> *m_liquid_queue;
+	UniqueQueue<v3s16> *m_liquid_queue = nullptr;
 	MapBlock *m_lookup[3 * 3 * 3];
 	u32 m_lookup_state_bitset;
 };

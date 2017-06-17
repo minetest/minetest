@@ -48,11 +48,7 @@ public:
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0,0,100,100))
 	{
-		//m_force_regenerate_gui = false;
-
 		m_menumgr = menumgr;
-		m_allow_focus_removal = false;
-		m_screensize_old = v2u32(0,0);
 
 		setVisible(true);
 		Environment->setFocus(this);
@@ -142,7 +138,7 @@ private:
 	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
-	bool m_allow_focus_removal;
+	bool m_allow_focus_removal = false;
 };
 
 

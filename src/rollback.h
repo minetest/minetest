@@ -80,10 +80,10 @@ private:
 		time_t suspect_t, v3s16 action_p, time_t action_t);
 
 
-	IGameDef * gamedef;
+	IGameDef *gamedef = nullptr;
 
 	std::string current_actor;
-	bool current_actor_is_guess;
+	bool current_actor_is_guess = false;
 
 	std::list<RollbackAction> action_todisk_buffer;
 	std::list<RollbackAction> action_latest_buffer;

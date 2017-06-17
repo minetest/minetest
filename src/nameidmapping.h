@@ -56,6 +56,7 @@ public:
 		m_id_to_name.erase(id);
 		m_name_to_id.erase(name);
 	}
+
 	void eraseName(const std::string &name)
 	{
 		u16 id;

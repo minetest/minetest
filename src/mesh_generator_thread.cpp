@@ -28,14 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	CachedMapBlockData
 */
 
-CachedMapBlockData::CachedMapBlockData():
-	p(-1337,-1337,-1337),
-	data(NULL),
-	refcount_from_queue(0),
-	last_used_timestamp(time(0))
-{
-}
-
 CachedMapBlockData::~CachedMapBlockData()
 {
 	assert(refcount_from_queue == 0);
@@ -46,16 +38,6 @@ CachedMapBlockData::~CachedMapBlockData()
 /*
 	QueuedMeshUpdate
 */
-
-QueuedMeshUpdate::QueuedMeshUpdate():
-	p(-1337,-1337,-1337),
-	ack_block_to_server(false),
-	urgent(false),
-	crack_level(-1),
-	crack_pos(0,0,0),
-	data(NULL)
-{
-}
 
 QueuedMeshUpdate::~QueuedMeshUpdate()
 {

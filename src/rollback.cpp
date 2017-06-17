@@ -91,8 +91,7 @@ struct Entity {
 
 RollbackManager::RollbackManager(const std::string & world_path,
 		IGameDef * gamedef_) :
-	gamedef(gamedef_),
-	current_actor_is_guess(false)
+	gamedef(gamedef_)
 {
 	verbosestream << "RollbackManager::RollbackManager(" << world_path
 		<< ")" << std::endl;

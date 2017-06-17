@@ -42,9 +42,7 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler()
-	{
-	}
+	Profiler() {}
 
 	void add(const std::string &name, float value)
 	{
@@ -195,9 +193,9 @@ public:
 			ScopeProfilerType type = SPT_ADD);
 	~ScopeProfiler();
 private:
-	Profiler *m_profiler;
+	Profiler *m_profiler = nullptr;
 	std::string m_name;
-	TimeTaker *m_timer;
+	TimeTaker *m_timer = nullptr;
 	enum ScopeProfilerType m_type;
 };
 
