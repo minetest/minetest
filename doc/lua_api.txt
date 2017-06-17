@@ -578,7 +578,7 @@ Example (colored grass block):
         description = "Dirt with Grass",
         -- Regular tiles, as usual
         -- The dirt tile disables palette coloring
-        tiles = {{name = "default_grass.png"}, 
+        tiles = {{name = "default_grass.png"},
             {name = "default_dirt.png", color = "white"}},
         -- Overlay tiles: define them in the same style
         -- The top and bottom tile does not have overlay
@@ -719,6 +719,20 @@ the global `minetest.registered_*` tables.
 
 * `minetest.clear_registered_schematics()`
     * clears all schematics currently registered
+
+* `minetest.register_anticheat_object(name, def)`
+    * registers an anticheat object (see `AnticheatObject`)
+    * `name`: name of the object (cheat type)
+    * `def`: table containing the object methods. This table *must not* contain
+      methods named `enable` and `disable`.
+    * Special methods (optional):
+      * `on_enable()`: called when enabling the object. Should return `false`
+        to indicate that the object cannot be enabled.
+      * `on_disable()`: called when disabling the object. Should return `false`
+        to indicate that the object cannot be disabled.
+      * `init()`: called when the object is created (= accessed for the first time).
+      * `deinit()`: called when the object is destroyed (= when its attached player
+        leaves the game).
 
 Note that in some cases you will stumble upon things that are not contained
 in these tables (e.g. when a mod has been removed). Always check for
@@ -2252,6 +2266,7 @@ Call these functions only at load time!
 * `minetest.clear_registered_ores()`
 * `minetest.clear_registered_biomes()`
 * `minetest.clear_registered_decorations()`
+* `minetest.register_anticheat_object(name, def)`
 
 ### Global callback registration functions
 Call these functions only at load time!
@@ -2313,13 +2328,21 @@ Call these functions only at load time!
     * `timed_out`: True for timeout, false for other reasons.
 * `minetest.register_on_cheat(func(ObjectRef, cheat))`
     * Called when a player cheats
-    * `cheat`: `{type=<cheat_type>}`, where `<cheat_type>` is one of:
+    * `cheat`: `{type=<cheat_type>}`. Built-in cheat types:
         * `moved_too_fast`
         * `interacted_too_far`
         * `interacted_while_dead`
         * `finished_unknown_dig`
         * `dug_unbreakable`
         * `dug_too_fast`
+   * Additional parameters can be passed in the cheat table, depending on the
+     cheat type.
+   * For non-built-in anticheat objects, the callbacks must be manually run
+     using `minetest.run_anticheat_callbacks(player, cheat_type, params)` where:
+     * `player`: an `ObjectRef`
+     * `cheat_type`: the name of the `AnticheatObject`
+     * `params`: an optional table of additional parameters. It must not
+       contain a key named `type`.
 * `minetest.register_on_chat_message(func(name, message))`
     * Called always when a player says something
     * Return `true` to mark the message as handled, which means that it will not be sent to other players
@@ -3736,6 +3759,32 @@ It can be created via `Settings(filename)`.
 * `write()`: returns a boolean (`true` for success)
     * Writes changes to file.
 * `to_table()`: returns `{[key1]=value1,...}`
+
+### `AnticheatObject`
+An interface to the anticheat mechanisms.
+It can be created and accessed via `minetest.get_anticheat_object(player, type)`.
+
+#### Methods
+* `disable()`: disables the anticheat object
+* `enable()`: enables the anticheat object
+Other methods specific to the type can be registered.
+
+#### Attributes
+* `player`: `ObjectRef` to which the `AnticheatObject` is attached
+* `enabled`: whether the `AnticheatObject` is enabled.
+Other attributes specific to the type can be registered.
+
+#### Built-in type-specific methods
+
+##### `"interacted_too_far"`
+* `set_max_distance(max_distance)`: sets the maximum interaction distance.
+  If `max_distance` is nil, sets back to default value.
+* `get_max_distance()`: returns the maximum interaction distance
+
+##### `"moved_too_fast"`
+* `set_max_speed(max_speed)`: sets the maximum speed.
+  If `max_distance` is nil, sets back to default value.
+* `get_max_distance()`: returns the maximum speed
 
 Mapgen objects
 --------------

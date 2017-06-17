@@ -17,11 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cstring>
+
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "util/string.h"
+#include "server.h"
+#include "lua_api/l_base.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 {
@@ -149,20 +153,122 @@ void ScriptApiPlayer::on_leaveplayer(ServerActiveObject *player,
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiPlayer::on_cheat(ServerActiveObject *player,
-		const std::string &cheat_type)
+inline void ScriptApiPlayer::prepare_anticheat_check(ServerActiveObject *player,
+		const std::string &cheat_type,
+		int &error_handler)
+{
+	lua_State *L = getStack();
+
+	// Insert error handler
+	error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get core.get_anticheat_object
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "get_anticheat_object");
+	lua_remove(L, -2);
+
+	// Push parameters
+	objectrefGetOrCreate(L, player);
+	lua_pushlstring(L, cheat_type.c_str(), cheat_type.size());
+
+	PCALL_RES(lua_pcall(L, 2, 1, error_handler)); // Call it.
+
+	// Stack now looks like this: ... <error handler> <CheatObject>
+	// We don't pop the error handler, the calling function will use it
+
+	lua_getfield(L, -1, "check"); // Push function
+	lua_pushvalue(L, -2); // Push "self" parameter
+	lua_remove(L, -3); // Remove CheatObject
+}
+
+bool ScriptApiPlayer::anticheat_check_interacted_too_far(ServerActiveObject *player,
+		v3s16 node_pos)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_cheats
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_cheats");
-	// Call callbacks
-	objectrefGetOrCreate(L, player);
-	lua_newtable(L);
-	lua_pushlstring(L, cheat_type.c_str(), cheat_type.size());
-	lua_setfield(L, -2, "type");
-	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
+	ANTICHEAT_CHECK_HEADER("interacted_too_far")
+
+	push_v3s16(L, node_pos);
+
+	ANTICHEAT_CHECK_FOOTER(1)
+}
+
+bool ScriptApiPlayer::anticheat_check_finished_unknown_dig(ServerActiveObject *player,
+		v3s16 started_pos, v3s16 completed_pos)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	ANTICHEAT_CHECK_HEADER("finished_unknown_dig")
+
+	push_v3s16(L, started_pos);
+	push_v3s16(L, completed_pos);
+
+	ANTICHEAT_CHECK_FOOTER(2)
+}
+
+bool ScriptApiPlayer::anticheat_check_dug_unbreakable(ServerActiveObject *player,
+		v3s16 node_pos)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	ANTICHEAT_CHECK_HEADER("dug_unbreakable")
+
+	push_v3s16(L, node_pos);
+
+	ANTICHEAT_CHECK_FOOTER(1)
+}
+
+bool ScriptApiPlayer::anticheat_check_interacted_while_dead(ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	ANTICHEAT_CHECK_HEADER("interacted_while_dead")
+
+	ANTICHEAT_CHECK_FOOTER(0)
+}
+
+// This interface is needed by the dug_too_fast and moved_too_fast anticheat check function
+static int grab_lag_pool(lua_State *L)
+{
+	lua_Number dtime = luaL_checknumber(L, 1);
+	const char *name = luaL_checkstring(L, 2);
+	const char *pool_type = luaL_checkstring(L, 3);
+	RemotePlayer *remote_player = dynamic_cast<ServerEnvironment *>(ModApiBase::getEnv(L))->getPlayer(name);
+	// We assume that the player exists, and make no check
+	if (strcmp(pool_type, "dig") == 0)
+		lua_pushboolean(L, remote_player->getPlayerSAO()->getDigPool().grab(dtime));
+	else // pool_type = "move"
+		lua_pushboolean(L, remote_player->getPlayerSAO()->getMovePool().grab(dtime));
+	return 1;
+}
+
+bool ScriptApiPlayer::anticheat_check_dug_too_fast(ServerActiveObject *player,
+		v3s16 node_pos, float nocheat_time)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	ANTICHEAT_CHECK_HEADER("dug_too_fast")
+
+	push_v3s16(L, node_pos);
+	lua_pushnumber(L, nocheat_time);
+	lua_pushcfunction(L, grab_lag_pool);
+
+	ANTICHEAT_CHECK_FOOTER(3)
+}
+
+bool ScriptApiPlayer::anticheat_check_moved_too_fast(RemotePlayer *remote_player, ServerActiveObject *player)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	ANTICHEAT_CHECK_HEADER("moved_too_fast")
+
+	push_v3s16(L, floatToInt(player->getBasePosition(), BS));
+	lua_pushnumber(L, dynamic_cast<ServerEnvironment *>(getEnv())->getMaxLagEstimate());
+	lua_pushnumber(L, remote_player->getPlayerSAO()->getTimeFromLastTeleport());
+	push_v3s16(L, floatToInt(remote_player->getPlayerSAO()->getLastGoodPosition(), BS));
+	lua_pushcfunction(L, grab_lag_pool);
+
+	ANTICHEAT_CHECK_FOOTER(5)
 }
 
 void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
@@ -195,5 +301,3 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 ScriptApiPlayer::~ScriptApiPlayer()
 {
 }
-
-
