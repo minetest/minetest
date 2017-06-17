@@ -512,7 +512,7 @@ public:
 		return size - pos;
 	}
 
-	const u8 *data = nullptr;
+	const u8 *data;
 	size_t size;
 	size_t pos = 0;
 };

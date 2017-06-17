@@ -152,7 +152,7 @@ private:
 	std::mutex m_mutex;
 	std::mutex m_start_finished_mutex;
 
-	std::thread *m_thread_obj = nullptr;
+	std::thread *m_thread_obj;
 
 
 #ifdef _AIX

@@ -59,7 +59,9 @@ DEALINGS IN THE SOFTWARE.
 
 
 Thread::Thread(const std::string &name) :
-	m_name(name)
+	m_name(name),
+	m_request_stop(false),
+	m_running(false)
 {
 #ifdef _AIX
 	m_kernel_thread_id = -1;
