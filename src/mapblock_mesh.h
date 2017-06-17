@@ -39,10 +39,10 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
-	v3s16 m_blockpos;
-	v3s16 m_crack_pos_relative;
-	bool m_smooth_lighting;
-	bool m_show_hud;
+	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
+	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	bool m_smooth_lighting = false;
+	bool m_show_hud = false;
 
 	Client *m_client;
 	bool m_use_shaders;

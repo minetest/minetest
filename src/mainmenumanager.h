@@ -125,12 +125,6 @@ class MainGameCallback : public IGameCallback
 {
 public:
 	MainGameCallback(IrrlichtDevice *a_device):
-		disconnect_requested(false),
-		changepassword_requested(false),
-		changevolume_requested(false),
-		keyconfig_requested(false),
-		shutdown_requested(false),
-		keyconfig_changed(false),
 		device(a_device)
 	{
 	}
@@ -169,13 +163,13 @@ public:
 	}
 
 
-	bool disconnect_requested;
-	bool changepassword_requested;
-	bool changevolume_requested;
-	bool keyconfig_requested;
-	bool shutdown_requested;
+	bool disconnect_requested = false;
+	bool changepassword_requested = false;
+	bool changevolume_requested = false;
+	bool keyconfig_requested = false;
+	bool shutdown_requested = false;
 
-	bool keyconfig_changed;
+	bool keyconfig_changed = false;
 
 	IrrlichtDevice *device;
 };

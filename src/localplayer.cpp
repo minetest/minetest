@@ -34,62 +34,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 LocalPlayer::LocalPlayer(Client *client, const char *name):
 	Player(name, client->idef()),
-	parent(0),
-	hp(PLAYER_MAX_HP),
-	isAttached(false),
-	touching_ground(false),
-	in_liquid(false),
-	in_liquid_stable(false),
-	liquid_viscosity(0),
-	is_climbing(false),
-	swimming_vertical(false),
-	// Movement overrides are multipliers and must be 1 by default
-	physics_override_speed(1.0f),
-	physics_override_jump(1.0f),
-	physics_override_gravity(1.0f),
-	physics_override_sneak(true),
-	physics_override_sneak_glitch(false),
-	physics_override_new_move(true),  // Temporary option for old move code
-	overridePosition(v3f(0,0,0)),
-	last_position(v3f(0,0,0)),
-	last_speed(v3f(0,0,0)),
-	last_pitch(0),
-	last_yaw(0),
-	last_keyPressed(0),
-	last_camera_fov(0),
-	last_wanted_range(0),
-	camera_impact(0.f),
-	makes_footstep_sound(true),
-	last_animation(NO_ANIM),
-	hotbar_image(""),
-	hotbar_selected_image(""),
-	light_color(255,255,255,255),
-	hurt_tilt_timer(0.0f),
-	hurt_tilt_strength(0.0f),
-	m_position(0,0,0),
-	m_sneak_node(32767,32767,32767),
-	m_sneak_node_bb_ymax(0),  // To support temporary option for old move code
-	m_sneak_node_bb_top(0,0,0,0,0,0),
-	m_sneak_node_exists(false),
-	m_need_to_get_new_sneak_node(true),
-	m_sneak_ladder_detected(false),
-	m_ledge_detected(false),
-	m_old_node_below(32767,32767,32767),
-	m_old_node_below_type("air"),
-	m_can_jump(false),
-	m_breath(PLAYER_MAX_BREATH),
-	m_yaw(0),
-	m_pitch(0),
-	camera_barely_in_ceiling(false),
-	m_collisionbox(-BS * 0.30, 0.0, -BS * 0.30, BS * 0.30, BS * 1.75, BS * 0.30),
-	m_cao(NULL),
 	m_client(client)
 {
-	// Initialize hp to 0, so that no hearts will be shown if server
-	// doesn't support health points
-	hp = 0;
-	eye_offset_first = v3f(0,0,0);
-	eye_offset_third = v3f(0,0,0);
 }
 
 LocalPlayer::~LocalPlayer()

@@ -2643,7 +2643,7 @@ void Game::openInventory()
 	 */
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	if (player == NULL || player->getCAO() == NULL)
+	if (!player || !player->getCAO())
 		return;
 
 	infostream << "the_game: " << "Launching inventory" << std::endl;
@@ -3402,7 +3402,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 		GenericCAO *playercao = player->getCAO();
 
 		// If playercao not loaded, don't change camera
-		if (playercao == NULL)
+		if (!playercao)
 			return;
 
 		camera->toggleCameraMode();

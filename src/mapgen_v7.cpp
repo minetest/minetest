@@ -122,16 +122,6 @@ MapgenV7::~MapgenV7()
 
 MapgenV7Params::MapgenV7Params()
 {
-	spflags             = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
-	cave_width          = 0.09;
-	float_mount_density = 0.6;
-	float_mount_height  = 128.0;
-	floatland_level     = 1280;
-	shadow_limit        = 1024;
-	cavern_limit        = -256;
-	cavern_taper        = 256;
-	cavern_threshold    = 0.7;
-
 	np_terrain_base      = NoiseParams(4,    70,   v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
 	np_terrain_alt       = NoiseParams(4,    25,   v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
 	np_terrain_persist   = NoiseParams(0.6,  0.1,  v3f(2000, 2000, 2000), 539,   3, 0.6,  2.0);

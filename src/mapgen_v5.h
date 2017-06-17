@@ -34,11 +34,11 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenParams
 {
-	u32 spflags;
-	float cave_width;
-	s16 cavern_limit;
-	s16 cavern_taper;
-	float cavern_threshold;
+	u32 spflags = MGV5_CAVERNS;
+	float cave_width = 0.125f;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 256;
+	float cavern_threshold = 0.7f;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;

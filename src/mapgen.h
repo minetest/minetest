@@ -105,7 +105,7 @@ public:
 		bool peek_events=false);
 
 private:
-	u32 m_notify_on;
+	u32 m_notify_on = 0;
 	std::set<u32> *m_notify_on_deco_ids;
 	std::list<GenNotifyEvent> m_notify_events;
 };
@@ -122,36 +122,20 @@ enum MapgenType {
 };
 
 struct MapgenParams {
-	MapgenType mgtype;
-	s16 chunksize;
-	u64 seed;
-	s16 water_level;
-	s16 mapgen_limit;
-	u32 flags;
-
-	BiomeParams *bparams;
-
-	s16 mapgen_edge_min;
-	s16 mapgen_edge_max;
-
-	MapgenParams() :
-		mgtype(MAPGEN_DEFAULT),
-		chunksize(5),
-		seed(0),
-		water_level(1),
-		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
-		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL),
-
-		mapgen_edge_min(-MAX_MAP_GENERATION_LIMIT),
-		mapgen_edge_max(MAX_MAP_GENERATION_LIMIT),
-		m_sao_limit_min(-MAX_MAP_GENERATION_LIMIT * BS),
-		m_sao_limit_max(MAX_MAP_GENERATION_LIMIT * BS),
-		m_mapgen_edges_calculated(false)
-	{
-	}
-
+	MapgenParams() {}
 	virtual ~MapgenParams();
+
+	MapgenType mgtype = MAPGEN_DEFAULT;
+	s16 chunksize = 5;
+	u64 seed = 0;
+	s16 water_level = 1;
+	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
+	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS;
+
+	BiomeParams *bparams = nullptr;
+
+	s16 mapgen_edge_min = -MAX_MAP_GENERATION_LIMIT;
+	s16 mapgen_edge_max = MAX_MAP_GENERATION_LIMIT;
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
@@ -162,9 +146,9 @@ struct MapgenParams {
 private:
 	void calcMapgenEdges();
 
-	float m_sao_limit_min;
-	float m_sao_limit_max;
-	bool m_mapgen_edges_calculated;
+	float m_sao_limit_min = -MAX_MAP_GENERATION_LIMIT * BS;
+	float m_sao_limit_max = MAX_MAP_GENERATION_LIMIT * BS;
+	bool m_mapgen_edges_calculated = false;
 };
 
 
@@ -179,22 +163,22 @@ private:
 */
 class Mapgen {
 public:
-	s32 seed;
-	int water_level;
-	int mapgen_limit;
-	u32 flags;
-	bool generating;
-	int id;
+	s32 seed = 0;
+	int water_level = 0;
+	int mapgen_limit = 0;
+	u32 flags = 0;
+	bool generating = false;
+	int id = -1;
 
-	MMVManip *vm;
-	INodeDefManager *ndef;
+	MMVManip *vm = nullptr;
+	INodeDefManager *ndef = nullptr;
 
 	u32 blockseed;
-	s16 *heightmap;
-	biome_t *biomemap;
+	s16 *heightmap = nullptr;
+	biome_t *biomemap = nullptr;
 	v3s16 csize;
 
-	BiomeGen *biomegen;
+	BiomeGen *biomegen = nullptr;
 	GenerateNotifier gennotify;
 
 	Mapgen();

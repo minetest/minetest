@@ -323,7 +323,7 @@ GUIEngine::~GUIEngine()
 
 	//clean up texture pointers
 	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
-		if (m_textures[i].texture != NULL)
+		if (m_textures[i].texture)
 			driver->removeTexture(m_textures[i].texture);
 	}
 

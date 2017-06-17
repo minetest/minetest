@@ -2004,7 +2004,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 
 	// Add tooltip
 	{
-		assert(m_tooltip_element == NULL);
+		assert(!m_tooltip_element);
 		// Note: parent != this so that the tooltip isn't clipped by the menu rectangle
 		m_tooltip_element = addStaticText(Environment, L"",core::rect<s32>(0,0,110,18));
 		m_tooltip_element->enableOverrideColor(true);
@@ -2157,7 +2157,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_tooltip_element->setOverrideFont(m_font);
 
 	gui::IGUISkin* skin = Environment->getSkin();
-	sanity_check(skin != NULL);
+	sanity_check(skin);
 	gui::IGUIFont *old_font = skin->getFont();
 	skin->setFont(m_font);
 

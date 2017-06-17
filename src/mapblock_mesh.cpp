@@ -38,11 +38,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MeshMakeData::MeshMakeData(Client *client, bool use_shaders,
 		bool use_tangent_vertices):
-	m_vmanip(),
-	m_blockpos(-1337,-1337,-1337),
-	m_crack_pos_relative(-1337, -1337, -1337),
-	m_smooth_lighting(false),
-	m_show_hud(false),
 	m_client(client),
 	m_use_shaders(use_shaders),
 	m_use_tangent_vertices(use_tangent_vertices)
@@ -1073,7 +1068,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 			const u16 indices[] = {0,1,2,2,3,0};
 			const u16 indices_alternate[] = {0,1,3,2,3,1};
 
-			if (f.layer.texture == NULL)
+			if (!f.layer.texture)
 				continue;
 
 			const u16 *indices_p =

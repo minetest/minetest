@@ -35,15 +35,15 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 
 struct MapgenV7Params : public MapgenParams {
-	u32 spflags;
-	float cave_width;
-	float float_mount_density;
-	float float_mount_height;
-	s16 floatland_level;
-	s16 shadow_limit;
-	s16 cavern_limit;
-	s16 cavern_taper;
-	float cavern_threshold;
+	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
+	float cave_width = 0.09f;
+	float float_mount_density = 0.6f;
+	float float_mount_height = 128.0f;
+	s16 floatland_level = 1280;
+	s16 shadow_limit = 1024;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 256;
+	float cavern_threshold = 0.7f;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;

@@ -42,12 +42,8 @@ std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
 PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest() :
-	url(""),
-	caller(HTTPFETCH_DISCARD),
-	request_id(0),
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(timeout),
-	multipart(false),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {
 }

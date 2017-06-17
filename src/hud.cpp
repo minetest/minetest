@@ -51,8 +51,6 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
-	m_screensize       = v2u32(0, 0);
-	m_displaycenter    = v2s32(0, 0);
 	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
 	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
@@ -77,16 +75,9 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 
-	hotbar_image = "";
-	use_hotbar_image = false;
-	hotbar_selected_image = "";
-	use_hotbar_selected_image = false;
-
-	m_selection_mesh = NULL;
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
 
-	m_selection_pos = v3f(0.0, 0.0, 0.0);
 	std::string mode_setting = g_settings->get("node_highlighting");
 
 	if (mode_setting == "halo") {

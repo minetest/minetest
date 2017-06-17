@@ -683,8 +683,7 @@ void Client::handleCommand_Media(NetworkPacket* pkt)
 	if (num_files == 0)
 		return;
 
-	if (m_media_downloader == NULL ||
-			!m_media_downloader->isStarted()) {
+	if (!m_media_downloader || !m_media_downloader->isStarted()) {
 		const char *problem = m_media_downloader ?
 			"media has not been requested" :
 			"all media has been received already";

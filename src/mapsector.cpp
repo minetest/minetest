@@ -23,11 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serialization.h"
 
 MapSector::MapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
-		differs_from_disk(false),
 		m_parent(parent),
 		m_pos(pos),
-		m_gamedef(gamedef),
-		m_block_cache(NULL)
+		m_gamedef(gamedef)
 {
 }
 
@@ -39,7 +37,7 @@ MapSector::~MapSector()
 void MapSector::deleteBlocks()
 {
 	// Clear cache
-	m_block_cache = NULL;
+	m_block_cache = nullptr;
 
 	// Delete all
 	for (std::unordered_map<s16, MapBlock*>::iterator i = m_blocks.begin();
@@ -55,13 +53,13 @@ MapBlock * MapSector::getBlockBuffered(s16 y)
 {
 	MapBlock *block;
 
-	if (m_block_cache != NULL && y == m_block_cache_y) {
+	if (m_block_cache && y == m_block_cache_y) {
 		return m_block_cache;
 	}
 
 	// If block doesn't exist, return NULL
 	std::unordered_map<s16, MapBlock*>::const_iterator n = m_blocks.find(y);
-	block = (n != m_blocks.end() ? n->second : NULL);
+	block = (n != m_blocks.end() ? n->second : nullptr);
 
 	// Cache the last result
 	m_block_cache_y = y;
@@ -100,7 +98,7 @@ void MapSector::insertBlock(MapBlock *block)
 	s16 block_y = block->getPos().Y;
 
 	MapBlock *block2 = getBlockBuffered(block_y);
-	if(block2 != NULL){
+	if (block2) {
 		throw AlreadyExistsException("Block already exists");
 	}
 
@@ -116,7 +114,7 @@ void MapSector::deleteBlock(MapBlock *block)
 	s16 block_y = block->getPos().Y;
 
 	// Clear from cache
-	m_block_cache = NULL;
+	m_block_cache = nullptr;
 
 	// Remove from container
 	m_blocks.erase(block_y);

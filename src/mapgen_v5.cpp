@@ -80,12 +80,6 @@ MapgenV5::~MapgenV5()
 
 MapgenV5Params::MapgenV5Params()
 {
-	spflags          = MGV5_CAVERNS;
-	cave_width       = 0.125;
-	cavern_limit     = -256;
-	cavern_taper     = 256;
-	cavern_threshold = 0.7;
-
 	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
 	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
 	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);

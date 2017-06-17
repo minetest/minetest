@@ -221,7 +221,7 @@ Client::~Client()
 		scene::IAnimatedMesh *mesh =
 			m_device->getSceneManager()->getMeshCache()->getMeshByIndex(0);
 
-		if (mesh != NULL)
+		if (mesh)
 			m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
 	}
 
@@ -383,7 +383,7 @@ void Client::step(float dtime)
 	*/
 	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	player->applyControl(dtime);
 
 	// Step environment
@@ -459,7 +459,7 @@ void Client::step(float dtime)
 			if (block) {
 				// Delete the old mesh
 				delete block->mesh;
-				block->mesh = NULL;
+				block->mesh = nullptr;
 
 				if (r.mesh) {
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
@@ -1370,7 +1370,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 void Client::setPlayerControl(PlayerControl &control)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	player->control = control;
 }
 
@@ -1394,7 +1394,7 @@ bool Client::getLocalInventoryUpdated()
 void Client::getLocalInventory(Inventory &dst)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	dst = player->inventory;
 }
 
@@ -1407,7 +1407,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	case InventoryLocation::CURRENT_PLAYER:
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player != NULL);
+		assert(player);
 		return &player->inventory;
 	}
 	break;
@@ -1496,7 +1496,7 @@ void Client::setCrack(int level, v3s16 pos)
 u16 Client::getHP()
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	return player->hp;
 }
 
@@ -1529,7 +1529,7 @@ void Client::typeChatMessage(const std::wstring &message)
 		// compatibility code
 		if (m_proto_ver < 29) {
 			LocalPlayer *player = m_env.getLocalPlayer();
-			assert(player != NULL);
+			assert(player);
 			std::wstring name = narrow_to_wide(player->getName());
 			pushToChatQueue((std::wstring)L"<" + name + L"> " + message);
 		}

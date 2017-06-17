@@ -457,7 +457,7 @@ public:
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
 	bool mediaReceived()
-	{ return m_media_downloader == NULL; }
+	{ return !m_media_downloader; }
 
 	u8 getProtoVersion()
 	{ return m_proto_ver; }

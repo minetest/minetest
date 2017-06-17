@@ -202,7 +202,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 void TestCAO::removeFromScene(bool permanent)
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->remove();
@@ -220,7 +220,7 @@ v3s16 TestCAO::getLightPosition()
 
 void TestCAO::updateNodePos()
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->setPosition(m_position);
@@ -377,16 +377,16 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
 
 void ItemCAO::removeFromScene(bool permanent)
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->remove();
-	m_node = NULL;
+	m_node = nullptr;
 }
 
 void ItemCAO::updateLight(u8 light_at_pos)
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	u8 li = decode_light(light_at_pos);
@@ -401,7 +401,7 @@ v3s16 ItemCAO::getLightPosition()
 
 void ItemCAO::updateNodePos()
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	m_node->setPosition(m_position);
@@ -428,7 +428,7 @@ void ItemCAO::updateInfoText()
 
 void ItemCAO::updateTexture()
 {
-	if(m_node == NULL)
+	if (!m_node)
 		return;
 
 	// Create an inventory item to see what is its image
@@ -1155,13 +1155,13 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 			updateTextures(m_previous_texture_modifier);
 		}
 	}
-	if(getParent() == NULL && fabs(m_prop.automatic_rotate) > 0.001)
+	if(!getParent() && fabs(m_prop.automatic_rotate) > 0.001)
 	{
 		m_yaw += dtime * m_prop.automatic_rotate * 180 / M_PI;
 		updateNodePos();
 	}
 
-	if (getParent() == NULL && m_prop.automatic_face_movement_dir &&
+	if (!getParent() && m_prop.automatic_face_movement_dir &&
 			(fabs(m_velocity.Z) > 0.001 || fabs(m_velocity.X) > 0.001))
 	{
 		float optimal_yaw = atan2(m_velocity.Z,m_velocity.X) * 180 / M_PI
@@ -1408,7 +1408,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 void GenericCAO::updateAnimation()
 {
-	if(m_animated_meshnode == NULL)
+	if (!m_animated_meshnode)
 		return;
 
 	if (m_animated_meshnode->getStartFrame() != m_animation_range.X ||
@@ -1426,7 +1426,7 @@ void GenericCAO::updateAnimation()
 
 void GenericCAO::updateBonePosition()
 {
-	if(m_bone_position.empty() || m_animated_meshnode == NULL)
+	if(m_bone_position.empty() || !m_animated_meshnode)
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
@@ -1447,7 +1447,7 @@ void GenericCAO::updateBonePosition()
 void GenericCAO::updateAttachments()
 {
 
-	if (getParent() == NULL) { // Detach or don't attach
+	if (!getParent()) { // Detach or don't attach
 		scene::ISceneNode *node = getSceneNode();
 		if (node) {
 			v3f old_position = node->getAbsolutePosition();

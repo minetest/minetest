@@ -72,17 +72,13 @@ enum MapEditEventType{
 
 struct MapEditEvent
 {
-	MapEditEventType type;
+	MapEditEventType type = MEET_OTHER;
 	v3s16 p;
-	MapNode n;
+	MapNode n = CONTENT_AIR;
 	std::set<v3s16> modified_blocks;
-	u16 already_known_by_peer;
+	u16 already_known_by_peer = 0;
 
-	MapEditEvent():
-		type(MEET_OTHER),
-		n(CONTENT_AIR),
-		already_known_by_peer(0)
-	{ }
+	MapEditEvent() {}
 
 	MapEditEvent * clone()
 	{
@@ -323,7 +319,7 @@ protected:
 	std::map<v2s16, MapSector*> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted
-	MapSector *m_sector_cache;
+	MapSector *m_sector_cache = nullptr;
 	v2s16 m_sector_cache_p;
 
 	// Queued transforming water nodes
@@ -336,10 +332,10 @@ protected:
 			float start_off, float end_off, u32 needed_count);
 
 private:
-	f32 m_transforming_liquid_loop_count_multiplier;
-	u32 m_unprocessed_count;
-	u64 m_inc_trending_up_start_time; // milliseconds
-	bool m_queue_size_timer_started;
+	f32 m_transforming_liquid_loop_count_multiplier = 1.0f;
+	u32 m_unprocessed_count = 0;
+	u64 m_inc_trending_up_start_time = 0; // milliseconds
+	bool m_queue_size_timer_started = false;
 };
 
 /*
@@ -501,8 +497,8 @@ private:
 		Metadata is re-written on disk only if this is true.
 		This is reset to false when written on disk.
 	*/
-	bool m_map_metadata_changed;
-	MapDatabase *dbase;
+	bool m_map_metadata_changed = true;
+	MapDatabase *dbase = nullptr;
 };
 
 
@@ -521,9 +517,6 @@ public:
 		m_loaded_blocks.clear();
 	}
 
-	void setMap(Map *map)
-	{m_map = map;}
-
 	void initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 		bool load_if_inexistent = true);
 
@@ -531,10 +524,9 @@ public:
 	void blitBackAll(std::map<v3s16, MapBlock*> * modified_blocks,
 		bool overwrite_generated = true);
 
-	bool m_is_dirty;
+	bool m_is_dirty = false;
 
 protected:
-	bool m_create_area;
 	Map *m_map;
 	/*
 		key = blockpos
