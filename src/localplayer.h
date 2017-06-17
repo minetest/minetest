@@ -172,8 +172,8 @@ private:
 	f32 m_yaw = 0.0f;
 	f32 m_pitch = 0.0f;
 	bool camera_barely_in_ceiling = false;
-	aabb3f m_collisionbox =
-		aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f, BS * 1.75f, BS * 0.30f);
+	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
+			BS * 1.75f, BS * 0.30f);
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
