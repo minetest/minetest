@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef L_NOISE_H_
 #define L_NOISE_H_
 
+#include <random>
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
 #include "noise.h"
@@ -131,7 +132,7 @@ public:
 class LuaPcgRandom : public ModApiBase
 {
 private:
-	PcgRandom m_rnd;
+	std::mt19937 m_rnd;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -150,7 +151,8 @@ private:
 
 public:
 	LuaPcgRandom(u64 seed) : m_rnd(seed) {}
-	LuaPcgRandom(u64 seed, u64 seq) : m_rnd(seed, seq) {}
+	// @TODO: set seq
+	LuaPcgRandom(u64 seed, u64 seq) : m_rnd(seed) {}
 
 	// LuaPcgRandom(seed)
 	// Creates an LuaPcgRandom and leaves it on top of stack

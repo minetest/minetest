@@ -74,25 +74,6 @@ private:
 	int m_next;
 };
 
-class PcgRandom {
-public:
-	const static s32 RANDOM_MIN   = -0x7fffffff - 1;
-	const static s32 RANDOM_MAX   = 0x7fffffff;
-	const static u32 RANDOM_RANGE = 0xffffffff;
-
-	PcgRandom(u64 state=0x853c49e6748fea9bULL, u64 seq=0xda3e39cb94b95bdbULL);
-	void seed(u64 state, u64 seq=0xda3e39cb94b95bdbULL);
-	u32 next();
-	u32 range(u32 bound);
-	s32 range(s32 min, s32 max);
-	void bytes(void *out, size_t len);
-	s32 randNormalDist(s32 min, s32 max, int num_trials=6);
-
-private:
-	u64 m_state;
-	u64 m_inc;
-};
-
 #define NOISE_FLAG_DEFAULTS    0x01
 #define NOISE_FLAG_EASED       0x02
 #define NOISE_FLAG_ABSVALUE    0x04

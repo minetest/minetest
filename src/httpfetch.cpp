@@ -20,26 +20,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "socket.h" // for select()
 #include "porting.h" // for sleep_ms(), get_sysinfo(), secure_rand_fill_buf()
 #include "httpfetch.h"
-#include <iostream>
-#include <sstream>
 #include <list>
 #include <map>
 #include <errno.h>
 #include <mutex>
+#include <random>
 #include "threading/event.h"
 #include "config.h"
-#include "exceptions.h"
 #include "debug.h"
 #include "log.h"
 #include "util/container.h"
 #include "util/thread.h"
 #include "version.h"
 #include "settings.h"
-#include "noise.h"
 
 std::mutex g_httpfetch_mutex;
 std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
-PcgRandom g_callerid_randomness;
+std::mt19937 g_callerid_randomness(std::time(NULL));
 
 HTTPFetchRequest::HTTPFetchRequest() :
 	timeout(g_settings->getS32("curl_timeout")),
@@ -93,8 +90,8 @@ unsigned long httpfetch_caller_alloc_secure()
 	unsigned long caller;
 
 	do {
-		caller = (((u64) g_callerid_randomness.next()) << 32) |
-				g_callerid_randomness.next();
+		caller = (((u64) g_callerid_randomness()) << 32) |
+				g_callerid_randomness();
 
 		if (--tries < 1) {
 			FATAL_ERROR("httpfetch_caller_alloc_secure: ran out of caller IDs");
@@ -739,9 +736,7 @@ void httpfetch_init(int parallel_limit)
 	g_httpfetch_thread = new CurlFetchThread(parallel_limit);
 
 	// Initialize g_callerid_randomness for httpfetch_caller_alloc_secure
-	u64 randbuf[2];
-	porting::secure_rand_fill_buf(randbuf, sizeof(u64) * 2);
-	g_callerid_randomness = PcgRandom(randbuf[0], randbuf[1]);
+	g_callerid_randomness = std::mt19937(time(0));
 }
 
 void httpfetch_cleanup()

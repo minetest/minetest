@@ -228,7 +228,8 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	// Generate noise maps and base terrain height.
 	// Modify heat and humidity maps.
 	calculateNoise();
-
+std::mt19937 gen;
+	gen();
 	// Generate base terrain with initial heightmaps
 	s16 stone_surface_max_y = generateTerrain();
 

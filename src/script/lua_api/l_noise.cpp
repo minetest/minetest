@@ -513,10 +513,11 @@ int LuaPcgRandom::l_next(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPcgRandom *o = checkobject(L, 1);
-	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.RANDOM_MIN;
-	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.RANDOM_MAX;
+	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.min();
+	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.max();
 
-	lua_pushinteger(L, o->m_rnd.range(min, max));
+	std::uniform_int_distribution<u32> rndRange(min, max);
+	lua_pushinteger(L, rndRange(o->m_rnd));
 	return 1;
 }
 
@@ -526,11 +527,18 @@ int LuaPcgRandom::l_rand_normal_dist(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 
 	LuaPcgRandom *o = checkobject(L, 1);
-	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.RANDOM_MIN;
-	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.RANDOM_MAX;
+	u32 min = lua_isnumber(L, 2) ? lua_tointeger(L, 2) : o->m_rnd.min();
+	u32 max = lua_isnumber(L, 3) ? lua_tointeger(L, 3) : o->m_rnd.max();
 	int num_trials = lua_isnumber(L, 4) ? lua_tointeger(L, 4) : 6;
 
-	lua_pushinteger(L, o->m_rnd.randNormalDist(min, max, num_trials));
+	std::uniform_int_distribution<u32> rndRange(min, max);
+	u32 result = 0;
+	do {
+		result = rndRange(o->m_rnd);
+	}
+	while (num_trials-- > 0);
+
+	lua_pushinteger(L, result);
 	return 1;
 }
 

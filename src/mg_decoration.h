@@ -22,13 +22,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MG_DECORATION_HEADER
 
 #include <unordered_set>
+#include <random>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
 
 class Mapgen;
 class MMVManip;
-class PcgRandom;
 class Schematic;
 
 enum DecorationType {
@@ -46,22 +46,6 @@ enum DecorationType {
 
 extern FlagDesc flagdesc_deco[];
 
-
-#if 0
-struct CutoffData {
-	VoxelArea a;
-	Decoration *deco;
-	//v3s16 p;
-	//v3s16 size;
-	//s16 height;
-
-	CutoffData(s16 x, s16 y, s16 z, s16 h) {
-		p = v3s16(x, y, z);
-		height = h;
-	}
-};
-#endif
-
 class Decoration : public ObjDef, public NodeResolver {
 public:
 	Decoration();
@@ -73,7 +57,7 @@ public:
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
+	virtual size_t generate(MMVManip *vm, std::mt19937 &pr, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 
 	u32 flags;
@@ -93,7 +77,7 @@ public:
 class DecoSimple : public Decoration {
 public:
 	virtual void resolveNodeNames();
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, std::mt19937 &pr, v3s16 p);
 	virtual int getHeight();
 
 	std::vector<content_t> c_decos;
@@ -106,7 +90,7 @@ class DecoSchematic : public Decoration {
 public:
 	DecoSchematic();
 
-	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
+	virtual size_t generate(MMVManip *vm, std::mt19937 &pr, v3s16 p);
 	virtual int getHeight();
 
 	Rotation rotation;
