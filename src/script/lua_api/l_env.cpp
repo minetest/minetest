@@ -651,13 +651,15 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
 	v3s16 cube = maxp - minp + 1;
 
 	/* Limit for too large areas, assume default values
 	 * and give tolerances of 1 node on each side
 	 * (chunksize * MAP_BLOCKSIZE + 2)^3 = 551368
 	*/
-	if (cube.X * cube.Y * cube.Z > 551368) {
+	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 551368) {
 		luaL_error(L, "find_nodes_in_area(): area volume"
 				" exceeds allowed value of 551368");
 		return 0;
@@ -677,7 +679,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	UNORDERED_MAP<content_t, u32> individual_count;
+	std::unordered_map<content_t, u32> individual_count;
 
 	lua_newtable(L);
 	u64 i = 0;
@@ -717,13 +719,15 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	INodeDefManager *ndef = getServer(L)->ndef();
 	v3s16 minp = read_v3s16(L, 1);
 	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
 	v3s16 cube = maxp - minp + 1;
 
 	/* Limit for too large areas, assume default values
 	 * and give tolerances of 1 node on each side
 	 * (chunksize * MAP_BLOCKSIZE + 2)^3 = 551368
 	*/
-	if (cube.X * cube.Y * cube.Z > 551368) {
+	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 551368) {
 		luaL_error(L, "find_nodes_in_area_under_air(): area volume"
 				" exceeds allowed value of 551368");
 		return 0;
