@@ -128,8 +128,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -165,8 +164,7 @@ ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 	return new TestCAO(client, env);
 }
 
-void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr)
+void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -272,8 +270,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -329,8 +326,7 @@ ClientActiveObject* ItemCAO::create(Client *client, ClientEnvironment *env)
 	return new ItemCAO(client, env);
 }
 
-void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr)
+void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -721,11 +717,9 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::addToScene(scene::ISceneManager *smgr,
-		ITextureSource *tsrc, IrrlichtDevice *irr)
+void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 {
 	m_smgr = smgr;
-	m_irr = irr;
 
 	if (getSceneNode() != NULL) {
 		return;
@@ -1034,7 +1028,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 	}
 
-	if(m_visuals_expired && m_smgr && m_irr){
+	if (m_visuals_expired && m_smgr) {
 		m_visuals_expired = false;
 
 		// Attachments, part 1: All attached objects must be unparented first,
@@ -1056,7 +1050,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 
 		removeFromScene(false);
-		addToScene(m_smgr, m_client->tsrc(), m_irr);
+		addToScene(m_smgr, m_client->tsrc());
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {

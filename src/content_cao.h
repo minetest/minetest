@@ -65,7 +65,6 @@ private:
 	ObjectProperties m_prop;
 	//
 	scene::ISceneManager *m_smgr = nullptr;
-	IrrlichtDevice *m_irr = nullptr;
 	Client *m_client = nullptr;
 	aabb3f m_selection_box = aabb3f(-BS/3.,-BS/3.,-BS/3., BS/3.,BS/3.,BS/3.);
 	scene::IMeshSceneNode *m_meshnode = nullptr;
@@ -169,8 +168,7 @@ public:
 
 	void removeFromScene(bool permanent);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr);
+	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
 
 	inline void expireVisuals()
 	{

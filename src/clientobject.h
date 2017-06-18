@@ -39,9 +39,8 @@ public:
 	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr){}
-	virtual void removeFromScene(bool permanent){}
+	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc) {};
+	virtual void removeFromScene(bool permanent) {}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
 	virtual void updateLightNoCheck(u8 light_at_pos){}
