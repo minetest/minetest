@@ -3282,7 +3282,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			return true;
 		} else if (m_client != NULL && event.KeyInput.PressedDown &&
 				(kp == getKeySetting("keymap_screenshot"))) {
-			m_client->makeScreenshot(m_device);
+			m_client->makeScreenshot();
 		}
 		if (event.KeyInput.PressedDown &&
 			(event.KeyInput.Key==KEY_RETURN ||

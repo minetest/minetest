@@ -2524,7 +2524,7 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
 	} else if (wasKeyDown(KeyType::SCREENSHOT)) {
-		client->makeScreenshot(device);
+		client->makeScreenshot();
 	} else if (wasKeyDown(KeyType::TOGGLE_HUD)) {
 		toggleHud();
 	} else if (wasKeyDown(KeyType::MINIMAP)) {

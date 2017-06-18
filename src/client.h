@@ -507,7 +507,7 @@ public:
 
 	LocalClientState getState() { return m_state; }
 
-	void makeScreenshot(IrrlichtDevice *device);
+	void makeScreenshot();
 
 	inline void pushToChatQueue(const std::wstring &input)
 	{
@@ -528,8 +528,6 @@ public:
 	void showProfiler(const bool show = true);
 	void showGameFog(const bool show = true);
 	void showGameDebug(const bool show = true);
-
-	IrrlichtDevice *getDevice() const { return m_device; }
 
 	const Address getServerAddress()
 	{

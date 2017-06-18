@@ -1740,9 +1740,9 @@ float Client::getCurRate()
 			m_con.getLocalStat(con::CUR_DL_RATE));
 }
 
-void Client::makeScreenshot(IrrlichtDevice *device)
+void Client::makeScreenshot()
 {
-	irr::video::IVideoDriver *driver = device->getVideoDriver();
+	irr::video::IVideoDriver *driver = m_device->getVideoDriver();
 	irr::video::IImage* const raw_image = driver->createScreenShot();
 
 	if (!raw_image)
