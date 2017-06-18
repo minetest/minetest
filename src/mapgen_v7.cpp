@@ -519,7 +519,8 @@ int MapgenV7::generateTerrain()
 
 void MapgenV7::generateRidgeTerrain()
 {
-	if ((node_max.Y < water_level - 16) || (node_max.Y > shadow_limit))
+	if (node_max.Y < water_level - 16 ||
+			((spflags & MGV7_FLOATLANDS) && node_max.Y > shadow_limit))
 		return;
 
 	noise_ridge->perlinMap3D(node_min.X, node_min.Y - 1, node_min.Z);
