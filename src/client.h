@@ -256,7 +256,6 @@ public:
 	*/
 
 	Client(
-			IrrlichtDevice *device,
 			const char *playername,
 			const std::string &password,
 			const std::string &address_name,
@@ -467,7 +466,7 @@ public:
 
 	float mediaReceiveProgress();
 
-	void afterContentReceived(IrrlichtDevice *device);
+	void afterContentReceived();
 
 	float getRTT();
 	float getCurRate();
@@ -486,7 +485,6 @@ public:
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
 	IShaderSource *shsrc() { return getShaderSource(); }
-	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
@@ -593,7 +591,6 @@ private:
 	ParticleManager m_particle_manager;
 	con::Connection m_con;
 	std::string m_address_name;
-	IrrlichtDevice *m_device;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;
 	bool m_minimap_disabled_by_server = false;

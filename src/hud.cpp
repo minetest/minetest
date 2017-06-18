@@ -34,6 +34,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "wieldmesh.h"
 #include <IGUIStaticText.h>
+#include <client/renderingengine.h>
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
@@ -449,7 +450,8 @@ void Hud::drawHotbar(u16 playeritem) {
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
-	if ( (float) width / (float) porting::getWindowSize().X <=
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	if ( (float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
@@ -607,11 +609,13 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 }
 
 void Hud::resizeHotbar() {
-	if (m_screensize != porting::getWindowSize()) {
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+
+	if (m_screensize != window_size) {
 		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
 		m_hotbar_imagesize *= m_hud_scaling;
 		m_padding = m_hotbar_imagesize / 12;
-		m_screensize = porting::getWindowSize();
+		m_screensize = window_size;
 		m_displaycenter = v2s32(m_screensize.X/2,m_screensize.Y/2);
 	}
 }

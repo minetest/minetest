@@ -36,9 +36,7 @@ extern irr::scene::ISceneManager *g_menucloudsmgr;
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
+	Clouds(scene::ISceneManager* mgr,
 			s32 id,
 			u32 seed,
 			s16 cloudheight=0

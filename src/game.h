@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef GAME_HEADER
 #define GAME_HEADER
 
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes.h"
 #include <string>
 
 class InputHandler;
@@ -42,7 +42,6 @@ struct GameUIFlags
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,
-		IrrlichtDevice *device,
 		const std::string &map_dir,
 		const std::string &playername,
 		const std::string &password,

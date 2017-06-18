@@ -39,7 +39,6 @@ public:
 	MeshCollector *collector;
 
 	INodeDefManager *nodedef;
-	scene::ISceneManager *smgr;
 	scene::IMeshManipulator *meshmanip;
 
 // options

@@ -124,17 +124,12 @@ extern bool isMenuActive();
 class MainGameCallback : public IGameCallback
 {
 public:
-	MainGameCallback(IrrlichtDevice *a_device):
-		device(a_device)
-	{
-	}
+	MainGameCallback() {}
+	virtual ~MainGameCallback() {}
 
 	virtual void exitToOS()
 	{
 		shutdown_requested = true;
-#ifndef __ANDROID__
-		device->closeDevice();
-#endif
 	}
 
 	virtual void disconnect()
@@ -170,8 +165,6 @@ public:
 	bool shutdown_requested = false;
 
 	bool keyconfig_changed = false;
-
-	IrrlichtDevice *device;
 };
 
 extern MainGameCallback *g_gamecallback;

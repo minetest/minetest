@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/inputhandler.h"
 #include "gameparams.h"
 
+class RenderingEngine;
 
 class ClientLauncher
 {
@@ -46,7 +47,6 @@ protected:
 	bool create_engine_device();
 
 	void speed_tests();
-	bool print_video_modes();
 
 	bool list_video_modes = false;
 	bool skip_main_menu = false;
@@ -55,12 +55,10 @@ protected:
 	std::string address = "";
 	std::string playername = "";
 	std::string password = "";
-	IrrlichtDevice *device = nullptr;
 	InputHandler *input = nullptr;
 	MyEventReceiver *receiver = nullptr;
 	gui::IGUISkin *skin = nullptr;
 	gui::IGUIFont *font = nullptr;
-	scene::ISceneManager *smgr = nullptr;
 	SubgameSpec gamespec;
 	WorldSpec worldspec;
 	bool simple_singleplayer_mode;

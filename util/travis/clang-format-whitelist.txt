@@ -57,8 +57,6 @@ src/daynightratio.h
 src/debug.cpp
 src/debug.h
 src/defaultsettings.cpp
-src/drawscene.cpp
-src/drawscene.h
 src/dungeongen.cpp
 src/dungeongen.h
 src/emerge.cpp

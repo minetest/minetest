@@ -138,7 +138,6 @@ LOCAL_SRC_FILES := \
 		jni/src/database.cpp                      \
 		jni/src/debug.cpp                         \
 		jni/src/defaultsettings.cpp               \
-		jni/src/drawscene.cpp                     \
 		jni/src/dungeongen.cpp                    \
 		jni/src/emerge.cpp                        \
 		jni/src/environment.cpp                   \

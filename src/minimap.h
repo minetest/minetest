@@ -116,7 +116,7 @@ private:
 
 class Minimap {
 public:
-	Minimap(IrrlichtDevice *device, Client *client);
+	Minimap(Client *client);
 	~Minimap();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);

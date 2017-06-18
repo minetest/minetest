@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "mapnode.h"
 #include <fstream> // Used in applyTextureOverrides()
+#include <client/renderingengine.h>
 
 /*
 	NodeBox
@@ -1427,8 +1428,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	Client *client = (Client *)gamedef;
 	ITextureSource *tsrc = client->tsrc();
 	IShaderSource *shdsrc = client->getShaderSource();
-	scene::ISceneManager* smgr = client->getSceneManager();
-	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
+	scene::IMeshManipulator* meshmanip =
+		RenderingEngine::get_scene_manager()->getMeshManipulator();
 	TextureSettings tsettings;
 	tsettings.readSettings();
 

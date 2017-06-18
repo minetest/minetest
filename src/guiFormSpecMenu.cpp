@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
 #include <IGUIComboBox.h>
+#include <client/renderingengine.h>
 #include "log.h"
 #include "client/tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
@@ -78,14 +79,12 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 	return font->getDimension(L"Ay").Height + font->getKerningHeight();
 }
 
-GUIFormSpecMenu::GUIFormSpecMenu(irr::IrrlichtDevice* dev,
-		JoystickController *joystick,
+GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
 		Client *client,
 		ISimpleTextureSource *tsrc, IFormSource* fsrc, TextDest* tdst,
 		bool remap_dbl_click) :
-	GUIModalMenu(dev->getGUIEnvironment(), parent, id, menumgr),
-	m_device(dev),
+	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),
 	m_tsrc(tsrc),
 	m_client(client),
@@ -2054,7 +2053,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	if (mydata.explicit_size) {
 		// compute scaling for specified form size
 		if (m_lock) {
-			v2u32 current_screensize = m_device->getVideoDriver()->getScreenSize();
+			v2u32 current_screensize = RenderingEngine::get_video_driver()->getScreenSize();
 			v2u32 delta = current_screensize - m_lockscreensize;
 
 			if (current_screensize.Y > m_lockscreensize.Y)
@@ -2579,7 +2578,7 @@ void GUIFormSpecMenu::drawMenu()
 
 /* TODO find way to show tooltips on touchscreen */
 #ifndef HAVE_TOUCHSCREENGUI
-	m_pointer = m_device->getCursorControl()->getPosition();
+	m_pointer = RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
 #endif
 
 	/*

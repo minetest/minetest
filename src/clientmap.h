@@ -59,8 +59,6 @@ public:
 	ClientMap(
 			Client *client,
 			MapDrawControl &control,
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
 			s32 id
 	);
 

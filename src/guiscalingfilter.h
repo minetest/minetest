@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *value);
 
 // Manually clear the cache, e.g. when switching to different worlds.
-void guiScalingCacheClear(video::IVideoDriver *driver);
+void guiScalingCacheClear();
 
 /* Get a cached, high-quality pre-scaled texture for display purposes.  If the
  * texture is not already cached, attempt to create it.  Returns a pre-scaled texture,
