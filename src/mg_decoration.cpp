@@ -67,21 +67,6 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-Decoration::Decoration()
-{
-	mapseed    = 0;
-	fill_ratio = 0;
-	sidelen    = 1;
-	flags      = 0;
-}
-
-
-Decoration::~Decoration()
-{
-}
-
-
 void Decoration::resolveNodeNames()
 {
 	getIdsFromNrBacklog(&c_place_on);
@@ -329,13 +314,6 @@ int DecoSimple::getHeight()
 
 
 ///////////////////////////////////////////////////////////////////////////////
-
-
-DecoSchematic::DecoSchematic()
-{
-	schematic = NULL;
-}
-
 
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {

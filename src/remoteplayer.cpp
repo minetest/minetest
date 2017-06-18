@@ -36,15 +36,7 @@ float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
 RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
-	Player(name, idef),
-	protocol_version(0),
-	m_sao(NULL),
-	m_dirty(false),
-	m_last_chat_message_sent(time(NULL)),
-	m_chat_message_allowance(5.0f),
-	m_message_rate_overhead(0),
-	hud_hotbar_image(""),
-	hud_hotbar_selected_image("")
+	Player(name, idef)
 {
 	if (!RemotePlayer::m_setting_cache_loaded) {
 		RemotePlayer::m_setting_chat_message_limit_per_10sec =

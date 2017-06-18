@@ -1923,11 +1923,6 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 
 NodeResolver::NodeResolver()
 {
-	m_ndef            = NULL;
-	m_nodenames_idx   = 0;
-	m_nnlistsizes_idx = 0;
-	m_resolve_done    = false;
-
 	m_nodenames.reserve(16);
 	m_nnlistsizes.reserve(4);
 }

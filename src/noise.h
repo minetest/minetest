@@ -102,26 +102,16 @@ private:
 #define NOISE_FLAG_SIMPLEX     0x10
 
 struct NoiseParams {
-	float offset;
-	float scale;
-	v3f spread;
-	s32 seed;
-	u16 octaves;
-	float persist;
-	float lacunarity;
-	u32 flags;
+	float offset = 0.0f;
+	float scale = 1.0f;
+	v3f spread = v3f(250, 250, 250);
+	s32 seed = 12345;
+	u16 octaves = 3;
+	float persist = 0.6f;
+	float lacunarity = 2.0f;
+	u32 flags = NOISE_FLAG_DEFAULTS;
 
-	NoiseParams()
-	{
-		offset     = 0.0f;
-		scale      = 1.0f;
-		spread     = v3f(250, 250, 250);
-		seed       = 12345;
-		octaves    = 3;
-		persist    = 0.6f;
-		lacunarity = 2.0f;
-		flags      = NOISE_FLAG_DEFAULTS;
-	}
+	NoiseParams() {}
 
 	NoiseParams(float offset_, float scale_, v3f spread_, s32 seed_,
 		u16 octaves_, float persist_, float lacunarity_,
@@ -138,13 +128,6 @@ struct NoiseParams {
 	}
 };
 
-
-// Convenience macros for getting/setting NoiseParams in Settings as a string
-// WARNING:  Deprecated, use Settings::getNoiseParamsFromValue() instead
-#define NOISEPARAMS_FMT_STR "f,f,v3,s32,u16,f"
-//#define getNoiseParams(x, y) getStruct((x), NOISEPARAMS_FMT_STR, &(y), sizeof(y))
-//#define setNoiseParams(x, y) setStruct((x), NOISEPARAMS_FMT_STR, &(y))
-
 class Noise {
 public:
 	NoiseParams np;
@@ -152,10 +135,10 @@ public:
 	u32 sx;
 	u32 sy;
 	u32 sz;
-	float *noise_buf;
-	float *gradient_buf;
-	float *persist_buf;
-	float *result;
+	float *noise_buf = nullptr;
+	float *gradient_buf = nullptr;
+	float *persist_buf = nullptr;
+	float *result = nullptr;
 
 	Noise(NoiseParams *np, s32 seed, u32 sx, u32 sy, u32 sz=1);
 	~Noise();

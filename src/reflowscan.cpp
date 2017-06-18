@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ReflowScan::ReflowScan(Map *map, INodeDefManager *ndef) :
 	m_map(map),
-	m_ndef(ndef),
-	m_liquid_queue(nullptr)
+	m_ndef(ndef)
 {
 }
 

@@ -156,41 +156,19 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_env(NULL),
 	m_con(PROTOCOL_ID,
 			512,
 			CONNECTION_TIMEOUT,
 			ipv6,
 			this),
-	m_banmanager(NULL),
-	m_rollback(NULL),
-	m_enable_rollback_recording(false),
-	m_emerge(NULL),
-	m_script(NULL),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
-	m_thread(NULL),
-	m_time_of_day_send_timer(0),
 	m_uptime(0),
 	m_clients(&m_con),
-	m_shutdown_requested(false),
-	m_shutdown_ask_reconnect(false),
-	m_shutdown_timer(0.0f),
-	m_admin_chat(iface),
-	m_ignore_map_edit_events(false),
-	m_ignore_map_edit_events_peer_id(0),
-	m_next_sound_id(0),
-	m_mod_storage_save_timer(10.0f)
+	m_admin_chat(iface)
 {
-	m_liquid_transform_timer = 0.0;
-	m_liquid_transform_every = 1.0;
-	m_masterserver_timer = 0.0;
-	m_emergethread_trigger_timer = 0.0;
-	m_savemap_timer = 0.0;
-
-	m_step_dtime = 0.0;
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
 	if(path_world == "")

@@ -117,10 +117,10 @@ public:
 		std::vector<std::pair<s16, u8> > *splist);
 
 	std::vector<content_t> c_nodes;
-	u32 flags;
+	u32 flags = 0;
 	v3s16 size;
-	MapNode *schemdata;
-	u8 *slice_probs;
+	MapNode *schemdata = nullptr;
+	u8 *slice_probs = nullptr;
 };
 
 class SchematicManager : public ObjDefManager {

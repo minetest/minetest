@@ -86,7 +86,7 @@ private:
 	void updateVertices();
 
 	video::S3DVertex m_vertices[4];
-	float m_time;
+	float m_time = 0.0f;
 	float m_expiration;
 
 	ClientEnvironment *m_env;
@@ -110,8 +110,8 @@ private:
 	bool m_vertical;
 	v3s16 m_camera_offset;
 	struct TileAnimationParams m_animation;
-	float m_animation_time;
-	int m_animation_frame;
+	float m_animation_time = 0.0f;
+	int m_animation_frame = 0;
 	u8 m_glow;
 };
 

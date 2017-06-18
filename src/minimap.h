@@ -78,21 +78,19 @@ struct MinimapData {
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
-	video::IImage *minimap_image;
-	video::IImage *heightmap_image;
-	video::IImage *minimap_mask_round;
-	video::IImage *minimap_mask_square;
-	video::ITexture *texture;
-	video::ITexture *heightmap_texture;
-	video::ITexture *minimap_overlay_round;
-	video::ITexture *minimap_overlay_square;
-	video::ITexture *player_marker;
-	video::ITexture *object_marker_red;
+	video::IImage *minimap_mask_round = nullptr;
+	video::IImage *minimap_mask_square = nullptr;
+	video::ITexture *texture = nullptr;
+	video::ITexture *heightmap_texture = nullptr;
+	video::ITexture *minimap_overlay_round = nullptr;
+	video::ITexture *minimap_overlay_square = nullptr;
+	video::ITexture *player_marker = nullptr;
+	video::ITexture *object_marker_red = nullptr;
 };
 
 struct QueuedMinimapUpdate {
 	v3s16 pos;
-	MinimapMapblock *data;
+	MinimapMapblock *data = nullptr;
 };
 
 class MinimapUpdateThread : public UpdateThread {
@@ -105,7 +103,7 @@ public:
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
-	MinimapData *data;
+	MinimapData *data = nullptr;
 
 protected:
 	virtual void doUpdate();

@@ -76,8 +76,6 @@ Particle::Particle(
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = anim;
-	m_animation_frame = 0;
-	m_animation_time = 0.0;
 
 	// Color
 	m_base_color = color;
@@ -88,7 +86,6 @@ Particle::Particle(
 	m_velocity = velocity;
 	m_acceleration = acceleration;
 	m_expiration = expirationtime;
-	m_time = 0;
 	m_player = player;
 	m_size = size;
 	m_collisiondetection = collisiondetection;

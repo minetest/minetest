@@ -37,9 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 SchematicManager::SchematicManager(Server *server) :
-	ObjDefManager(server, OBJDEF_SCHEMATIC)
+	ObjDefManager(server, OBJDEF_SCHEMATIC),
+	m_server(server)
 {
-	m_server = server;
 }
 
 
@@ -69,10 +69,6 @@ void SchematicManager::clear()
 
 Schematic::Schematic()
 {
-	schemdata   = NULL;
-	slice_probs = NULL;
-	flags       = 0;
-	size        = v3s16(0, 0, 0);
 }
 
 

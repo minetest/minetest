@@ -23,7 +23,7 @@ static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 ScopeProfiler::ScopeProfiler(
 		Profiler *profiler, const std::string &name, ScopeProfilerType type)
-    : m_profiler(profiler), m_name(name), m_timer(NULL), m_type(type)
+    : m_profiler(profiler), m_name(name), m_type(type)
 {
 	if (m_profiler)
 		m_timer = new TimeTaker(m_name);

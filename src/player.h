@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
+#include "constants.h"
 #include <list>
 #include <mutex>
 
@@ -32,22 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct PlayerControl
 {
-	PlayerControl()
-	{
-		up = false;
-		down = false;
-		left = false;
-		right = false;
-		jump = false;
-		aux1 = false;
-		sneak = false;
-		LMB = false;
-		RMB = false;
-		pitch = 0;
-		yaw = 0;
-		sidew_move_joystick_axis = .0f;
-		forw_move_joystick_axis = .0f;
-	}
+	PlayerControl() {}
 
 	PlayerControl(
 		bool a_up,
@@ -81,20 +67,20 @@ struct PlayerControl
 		sidew_move_joystick_axis = a_sidew_move_joystick_axis;
 		forw_move_joystick_axis = a_forw_move_joystick_axis;
 	}
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	bool jump;
-	bool aux1;
-	bool sneak;
-	bool zoom;
-	bool LMB;
-	bool RMB;
-	float pitch;
-	float yaw;
-	float sidew_move_joystick_axis;
-	float forw_move_joystick_axis;
+	bool up = false;
+	bool down = false;
+	bool left = false;
+	bool right = false;
+	bool jump = false;
+	bool aux1 = false;
+	bool sneak = false;
+	bool zoom = false;
+	bool LMB = false;
+	bool RMB = false;
+	float pitch = 0.0f;
+	float yaw = 0.0f;
+	float sidew_move_joystick_axis = 0.0f;
+	float forw_move_joystick_axis = 0.0f;
 };
 
 class Map;
@@ -161,14 +147,14 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	u16 peer_id;
+	u16 peer_id = PEER_ID_INEXISTENT;
 
 	std::string inventory_formspec;
 
 	PlayerControl control;
 	const PlayerControl& getPlayerControl() { return control; }
 
-	u32 keyPressed;
+	u32 keyPressed = 0;
 
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);

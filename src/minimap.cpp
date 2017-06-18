@@ -204,8 +204,6 @@ Minimap::Minimap(IrrlichtDevice *device, Client *client)
 	data->mode              = MINIMAP_MODE_OFF;
 	data->is_radar          = false;
 	data->map_invalidated   = true;
-	data->heightmap_image   = NULL;
-	data->minimap_image     = NULL;
 	data->texture           = NULL;
 	data->heightmap_texture = NULL;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
@@ -275,14 +273,14 @@ void Minimap::toggleMinimapShape()
 void Minimap::setMinimapShape(MinimapShape shape)
 {
 	MutexAutoLock lock(m_mutex);
-	
+
 	if (shape == MINIMAP_SHAPE_SQUARE)
 		data->minimap_shape_round = false;
 	else if (shape == MINIMAP_SHAPE_ROUND)
 		data->minimap_shape_round = true;
-	
+
 	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
-	m_minimap_update_thread->deferUpdate();	
+	m_minimap_update_thread->deferUpdate();
 }
 
 MinimapShape Minimap::getMinimapShape()
