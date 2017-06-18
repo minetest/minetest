@@ -141,24 +141,23 @@ public:
 
 	MyEventReceiver()
 	{
-		clearInput();
 #ifdef HAVE_TOUCHSCREENGUI
 		m_touchscreengui = NULL;
 #endif
 	}
 
-	bool leftclicked;
-	bool rightclicked;
-	bool leftreleased;
-	bool rightreleased;
+	bool leftclicked = false;
+	bool rightclicked = false;
+	bool leftreleased = false;
+	bool rightreleased = false;
 
-	bool left_active;
-	bool middle_active;
-	bool right_active;
+	bool left_active = false;
+	bool middle_active = false;
+	bool right_active = false;
 
-	s32 mouse_wheel;
+	s32 mouse_wheel = 0;
 
-	JoystickController *joystick;
+	JoystickController *joystick = nullptr;
 
 #ifdef HAVE_TOUCHSCREENGUI
 	TouchScreenGUI *m_touchscreengui;
@@ -166,9 +165,9 @@ public:
 
 private:
 	// The current state of keys
-	KeyList keyIsDown;
+	KeyList keyIsDown = {};
 	// Whether a key has been pressed or not
-	KeyList keyWasDown;
+	KeyList keyWasDown = {};
 	// List of keys we listen for
 	// TODO perhaps the type of this is not really
 	// performant as KeyList is designed for few but
@@ -221,7 +220,7 @@ class RealInputHandler : public InputHandler
 {
 public:
 	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver)
-	    : m_device(device), m_receiver(receiver), m_mousepos(0, 0)
+	    : m_device(device), m_receiver(receiver)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -277,24 +276,15 @@ public:
 	}
 
 private:
-	IrrlichtDevice *m_device;
-	MyEventReceiver *m_receiver;
-	v2s32 m_mousepos;
+	IrrlichtDevice *m_device = nullptr;
+	MyEventReceiver *m_receiver = nullptr;
+	v2s32 m_mousepos = v2s32();
 };
 
 class RandomInputHandler : public InputHandler
 {
 public:
-	RandomInputHandler()
-	{
-		leftdown = false;
-		rightdown = false;
-		leftclicked = false;
-		rightclicked = false;
-		leftreleased = false;
-		rightreleased = false;
-		keydown.clear();
-	}
+	RandomInputHandler(){}
 	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
@@ -387,15 +377,15 @@ public:
 	s32 Rand(s32 min, s32 max);
 
 private:
-	KeyList keydown;
+	KeyList keydown = {};
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	bool leftdown;
-	bool rightdown;
-	bool leftclicked;
-	bool rightclicked;
-	bool leftreleased;
-	bool rightreleased;
+	bool leftdown = false;
+	bool rightdown = false;
+	bool leftclicked = false;
+	bool rightclicked = false;
+	bool leftreleased = false;
+	bool rightreleased = false;
 };
 
 #endif
