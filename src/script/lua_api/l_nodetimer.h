@@ -29,7 +29,7 @@ class NodeTimerRef : public ModApiBase
 {
 private:
 	v3s16 m_p;
-	ServerEnvironment *m_env;
+	ServerEnvironment *m_env = nullptr;
 
 	static const char className[];
 	static const luaL_Reg methods[];

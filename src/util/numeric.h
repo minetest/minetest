@@ -282,7 +282,7 @@ inline aabb3f getNodeBox(v3s16 p, float d)
 class IntervalLimiter
 {
 public:
-	IntervalLimiter() : m_accumulator(0) {}
+	IntervalLimiter() {}
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -300,7 +300,7 @@ public:
 	}
 
 private:
-	float m_accumulator;
+	float m_accumulator = 0.0f;
 };
 
 

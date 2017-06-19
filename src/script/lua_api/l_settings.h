@@ -57,10 +57,10 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State *L);
 
-	Settings *m_settings;
+	Settings *m_settings = nullptr;
 	std::string m_filename;
-	bool m_is_own_settings;
-	bool m_write_allowed;
+	bool m_is_own_settings = false;
+	bool m_write_allowed = true;
 
 public:
 	LuaSettings(Settings *settings, const std::string &filename);

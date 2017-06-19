@@ -60,8 +60,6 @@ DEALINGS IN THE SOFTWARE.
 
 Thread::Thread(const std::string &name) :
 	m_name(name),
-	m_retval(NULL),
-	m_joinable(false),
 	m_request_stop(false),
 	m_running(false)
 {
@@ -130,7 +128,7 @@ bool Thread::wait()
 	m_thread_obj->join();
 
 	delete m_thread_obj;
-	m_thread_obj = NULL;
+	m_thread_obj = nullptr;
 
 	assert(m_running == false);
 	m_joinable = false;
@@ -162,7 +160,7 @@ bool Thread::kill()
 	wait();
 #endif
 
-	m_retval       = NULL;
+	m_retval       = nullptr;
 	m_joinable     = false;
 	m_request_stop = false;
 

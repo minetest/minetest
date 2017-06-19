@@ -71,9 +71,7 @@ public:
 	ScriptApiBase
 */
 
-ScriptApiBase::ScriptApiBase() :
-	m_luastackmutex(),
-	m_gamedef(NULL)
+ScriptApiBase::ScriptApiBase()
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	m_lock_recursion_count = 0;
@@ -111,14 +109,6 @@ ScriptApiBase::ScriptApiBase() :
 
 	lua_pushstring(m_luastack, porting::getPlatformName());
 	lua_setglobal(m_luastack, "PLATFORM");
-
-	// m_secure gets set to true inside
-	// ScriptApiSecurity::initializeSecurity(), if neccessary.
-	// Default to false otherwise
-	m_secure = false;
-
-	m_environment = NULL;
-	m_guiengine = NULL;
 }
 
 ScriptApiBase::~ScriptApiBase()

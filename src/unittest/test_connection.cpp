@@ -53,12 +53,7 @@ void TestConnection::runTests(IGameDef *gamedef)
 
 struct Handler : public con::PeerHandler
 {
-	Handler(const char *a_name)
-	{
-		count = 0;
-		last_id = 0;
-		name = a_name;
-	}
+	Handler(const char *a_name) : name(a_name) {}
 
 	void peerAdded(con::Peer *peer)
 	{
@@ -76,8 +71,8 @@ struct Handler : public con::PeerHandler
 		count--;
 	}
 
-	s32 count;
-	u16 last_id;
+	s32 count = 0;
+	u16 last_id = 0;
 	const char *name;
 };
 

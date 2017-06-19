@@ -33,16 +33,29 @@ class RemotePlayer;
 */
 
 class ObjectRef : public ModApiBase {
-private:
-	ServerActiveObject *m_object;
-
-	static const char className[];
-	static const luaL_Reg methods[];
 public:
+	ObjectRef(ServerActiveObject *object);
+
+	~ObjectRef();
+
+	// Creates an ObjectRef and leaves it on top of stack
+	// Not callable from Lua; all references are created on the C side.
+	static void create(lua_State *L, ServerActiveObject *object);
+
+	static void set_null(lua_State *L);
+
+	static void Register(lua_State *L);
+
 	static ObjectRef *checkobject(lua_State *L, int narg);
 
 	static ServerActiveObject* getobject(ObjectRef *ref);
 private:
+	ServerActiveObject *m_object = nullptr;
+
+	static const char className[];
+	static const luaL_Reg methods[];
+
+
 	static LuaEntitySAO* getluaobject(ObjectRef *ref);
 
 	static PlayerSAO* getplayersao(ObjectRef *ref);
@@ -319,18 +332,6 @@ private:
 	// get_nametag_attributes(self)
 	static int l_get_nametag_attributes(lua_State *L);
 
-public:
-	ObjectRef(ServerActiveObject *object);
-
-	~ObjectRef();
-
-	// Creates an ObjectRef and leaves it on top of stack
-	// Not callable from Lua; all references are created on the C side.
-	static void create(lua_State *L, ServerActiveObject *object);
-
-	static void set_null(lua_State *L);
-
-	static void Register(lua_State *L);
 };
 
 #endif /* L_OBJECT_H_ */

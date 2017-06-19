@@ -145,8 +145,8 @@ private:
 
 	static void threadProc(Thread *thr);
 
-	void *m_retval;
-	bool m_joinable;
+	void *m_retval = nullptr;
+	bool m_joinable = false;
 	std::atomic<bool> m_request_stop;
 	std::atomic<bool> m_running;
 	std::mutex m_mutex;

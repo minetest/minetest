@@ -31,10 +31,14 @@ class SHA1
 {
 private:
 	// fields
-	Uint32 H0, H1, H2, H3, H4;
+	Uint32 H0 = 0x67452301;
+	Uint32 H1 = 0xefcdab89;
+	Uint32 H2 = 0x98badcfe;
+	Uint32 H3 = 0x10325476;
+	Uint32 H4 = 0xc3d2e1f0;
 	unsigned char bytes[64];
-	int unprocessedBytes;
-	Uint32 size;
+	int unprocessedBytes = 0;
+	Uint32 size = 0;
 	void process();
 
 public:

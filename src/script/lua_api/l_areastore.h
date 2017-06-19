@@ -49,7 +49,7 @@ private:
 	static int l_from_file(lua_State *L);
 
 public:
-	AreaStore *as;
+	AreaStore *as = nullptr;
 
 	LuaAreaStore();
 	LuaAreaStore(const std::string &type);

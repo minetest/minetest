@@ -71,7 +71,7 @@ std::string generate_srp_verifier(const std::string &name,
 	// get modified if &salt_ptr isn't NULL.
 	char *salt_ptr = (char *)salt.c_str();
 
-	char *bytes_v = NULL;
+	char *bytes_v = nullptr;
 	size_t verifier_len = 0;
 	gen_srp_v(name, password, &salt_ptr, &salt_len, &bytes_v, &verifier_len);
 	std::string verifier = std::string(bytes_v, verifier_len);
@@ -84,9 +84,9 @@ void generate_srp_verifier_and_salt(const std::string &name,
 	const std::string &password, std::string *verifier,
 	std::string *salt)
 {
-	char *bytes_v = NULL;
+	char *bytes_v = nullptr;
 	size_t verifier_len;
-	char *salt_ptr = NULL;
+	char *salt_ptr = nullptr;
 	size_t salt_len;
 	gen_srp_v(name, password, &salt_ptr, &salt_len, &bytes_v, &verifier_len);
 	*verifier = std::string(bytes_v, verifier_len);

@@ -365,22 +365,17 @@ int LuaVoxelManip::l_get_emerged_area(lua_State *L)
 	return 2;
 }
 
-LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm)
+LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm) : vm(mmvm), is_mapgen_vm(is_mg_vm)
 {
-	this->vm           = mmvm;
-	this->is_mapgen_vm = is_mg_vm;
 }
 
-LuaVoxelManip::LuaVoxelManip(Map *map)
+LuaVoxelManip::LuaVoxelManip(Map *map) : vm(new MMVManip(map))
 {
-	this->vm = new MMVManip(map);
-	this->is_mapgen_vm = false;
 }
 
 LuaVoxelManip::LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2)
 {
-	this->vm = new MMVManip(map);
-	this->is_mapgen_vm = false;
+	vm = new MMVManip(map);
 
 	v3s16 bp1 = getNodeBlockPos(p1);
 	v3s16 bp2 = getNodeBlockPos(p2);

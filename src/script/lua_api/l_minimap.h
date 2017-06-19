@@ -48,7 +48,7 @@ private:
 	static int l_set_shape(lua_State *L);
 	static int l_get_shape(lua_State *L);
 
-	Minimap *m_minimap;
+	Minimap *m_minimap = nullptr;
 
 public:
 	LuaMinimap(Minimap *m);

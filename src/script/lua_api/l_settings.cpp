@@ -32,9 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
 	m_settings(settings),
-	m_filename(filename),
-	m_is_own_settings(false),
-	m_write_allowed(true)
+	m_filename(filename)
 {
 }
 

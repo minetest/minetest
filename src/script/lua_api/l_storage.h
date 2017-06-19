@@ -38,7 +38,7 @@ public:
 class StorageRef : public MetaDataRef
 {
 private:
-	ModMetadata *m_object;
+	ModMetadata *m_object = nullptr;
 
 	static const char className[];
 	static const luaL_Reg methods[];
