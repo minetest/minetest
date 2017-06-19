@@ -81,7 +81,7 @@ Client::Client(
 			device->getSceneManager()->getRootSceneNode(),
 			device->getSceneManager(), 666),
 		device->getSceneManager(),
-		tsrc, this, device
+		tsrc, this
 	),
 	m_particle_manager(&m_env),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),

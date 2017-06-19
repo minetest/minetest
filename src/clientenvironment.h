@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_ENVIRONMENT_HEADER
 #define CLIENT_ENVIRONMENT_HEADER
 
-#include <IrrlichtDevice.h>
 #include <ISceneManager.h>
 #include "environment.h"
 #include "clientobject.h"
@@ -69,8 +68,7 @@ class ClientEnvironment : public Environment
 {
 public:
 	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, Client *client,
-		IrrlichtDevice *device);
+		ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
 	Map & getMap();
@@ -181,7 +179,6 @@ private:
 	ITextureSource *m_texturesource;
 	Client *m_client;
 	ClientScripting *m_script = nullptr;
-	IrrlichtDevice *m_irr;
 	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;

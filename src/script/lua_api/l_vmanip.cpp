@@ -365,7 +365,9 @@ int LuaVoxelManip::l_get_emerged_area(lua_State *L)
 	return 2;
 }
 
-LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm) : vm(mmvm), is_mapgen_vm(is_mg_vm)
+LuaVoxelManip::LuaVoxelManip(MMVManip *mmvm, bool is_mg_vm) :
+	is_mapgen_vm(is_mg_vm),
+	vm(mmvm)
 {
 }
 

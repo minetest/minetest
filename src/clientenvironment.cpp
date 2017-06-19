@@ -37,14 +37,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-	ITextureSource *texturesource, Client *client,
-	IrrlichtDevice *irr):
+	ITextureSource *texturesource, Client *client):
 	Environment(client),
 	m_map(map),
 	m_smgr(smgr),
 	m_texturesource(texturesource),
-	m_client(client),
-	m_irr(irr)
+	m_client(client)
 {
 	char zero = 0;
 	memset(attachement_parent_ids, zero, sizeof(attachement_parent_ids));
