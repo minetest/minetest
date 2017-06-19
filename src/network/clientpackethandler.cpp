@@ -1176,8 +1176,8 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	else if (param == HUD_PARAM_HOTBAR_IMAGE) {
 		// If value not empty verify image exists in texture source
 		if (value != "" && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar image (found value: '"
-				<< value << "'" << std::endl;
+			errorstream << "Server sent wrong Hud hotbar image (sent value: '"
+				<< value << "')" << std::endl;
 			return;
 		}
 		player->hotbar_image = value;
@@ -1185,8 +1185,8 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	else if (param == HUD_PARAM_HOTBAR_SELECTED_IMAGE) {
 		// If value not empty verify image exists in texture source
 		if (value != "" && !getTextureSource()->isKnownSourceImage(value)) {
-			errorstream << "Server sent wrong Hud hotbar selected image (found value: '"
-					<< value << "'" << std::endl;
+			errorstream << "Server sent wrong Hud hotbar selected image (sent value: '"
+					<< value << "')" << std::endl;
 			return;
 		}
 		player->hotbar_selected_image = value;
