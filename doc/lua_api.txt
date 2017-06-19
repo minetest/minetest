@@ -531,9 +531,11 @@ for conversion.
 If the `ItemStack`'s metadata contains the `color` field, it will be
 lost on placement, because nodes on the map can only use palettes.
 
-If the `ItemStack`'s metadata contains the `palette_index` field, you
-currently must manually convert between it and the node's `param2` with
-custom `on_place` and `on_dig` callbacks.
+If the `ItemStack`'s metadata contains the `palette_index` field, it is
+automatically transferred between node and item forms by the engine,
+when a player digs or places a colored node.
+You can disable this feature by setting the `drop` field of the node
+to itself (without metadata).
 
 ### Colored items in craft recipes
 Craft recipes only support item strings, but fortunately item strings
