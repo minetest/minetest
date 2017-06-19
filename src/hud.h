@@ -118,7 +118,7 @@ public:
 	std::string hotbar_image = "";
 	bool use_hotbar_image = false;
 	std::string hotbar_selected_image = "";
-	bool use_hotbar_selected_image;
+	bool use_hotbar_selected_image = false;
 
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
