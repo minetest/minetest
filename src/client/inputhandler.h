@@ -165,9 +165,9 @@ public:
 
 private:
 	// The current state of keys
-	KeyList keyIsDown = {};
+	KeyList keyIsDown;
 	// Whether a key has been pressed or not
-	KeyList keyWasDown = {};
+	KeyList keyWasDown;
 	// List of keys we listen for
 	// TODO perhaps the type of this is not really
 	// performant as KeyList is designed for few but
@@ -278,13 +278,13 @@ public:
 private:
 	IrrlichtDevice *m_device = nullptr;
 	MyEventReceiver *m_receiver = nullptr;
-	v2s32 m_mousepos = v2s32();
+	v2s32 m_mousepos;
 };
 
 class RandomInputHandler : public InputHandler
 {
 public:
-	RandomInputHandler(){}
+	RandomInputHandler() {}
 	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
@@ -377,7 +377,7 @@ public:
 	s32 Rand(s32 min, s32 max);
 
 private:
-	KeyList keydown = {};
+	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
 	bool leftdown = false;

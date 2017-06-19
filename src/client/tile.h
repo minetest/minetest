@@ -180,7 +180,7 @@ enum MaterialType{
 */
 struct FrameSpec
 {
-	FrameSpec()	{}
+	FrameSpec() {}
 	u32 texture_id = 0;
 	video::ITexture *texture = nullptr;
 	video::ITexture *normal_texture = nullptr;
@@ -192,7 +192,7 @@ struct FrameSpec
 //! Defines a layer of a tile.
 struct TileLayer
 {
-	TileLayer()	{}
+	TileLayer() {}
 
 	/*!
 	 * Two layers are equal if they can be merged.
@@ -275,16 +275,16 @@ struct TileLayer
 	u8 animation_frame_count = 1;
 
 	u8 material_type = TILE_MATERIAL_BASIC;
-	u8 material_flags = (
+	u8 material_flags =
 		//0 // <- DEBUG, Use the one below
 		MATERIAL_FLAG_BACKFACE_CULLING |
 		MATERIAL_FLAG_TILEABLE_HORIZONTAL|
-		MATERIAL_FLAG_TILEABLE_VERTICAL);
+		MATERIAL_FLAG_TILEABLE_VERTICAL;
 
 	//! If true, the tile has its own color.
 	bool has_color = false;
 
-	std::vector<FrameSpec> frames = {};
+	std::vector<FrameSpec> frames;
 
 	/*!
 	 * The color of the tile, or if the tile does not own
