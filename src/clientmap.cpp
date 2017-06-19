@@ -307,10 +307,7 @@ struct MeshBufListList
 		// Append to the correct layer
 		std::vector<MeshBufList> &list = lists[layer];
 		const video::SMaterial &m = buf->getMaterial();
-		for(std::vector<MeshBufList>::iterator i = list.begin();
-				i != list.end(); ++i){
-			MeshBufList &l = *i;
-
+		for (MeshBufList &l : list) {
 			// comparing a full material is quite expensive so we don't do it if
 			// not even first texture is equal
 			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
@@ -473,8 +470,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		std::vector<MeshBufList> &lists = drawbufs.lists[layer];
 
 		int timecheck_counter = 0;
-		for (std::vector<MeshBufList>::iterator i = lists.begin();
-				i != lists.end(); ++i) {
+		for (MeshBufList &list : lists) {
 			timecheck_counter++;
 			if (timecheck_counter > 50) {
 				timecheck_counter = 0;
@@ -487,18 +483,13 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 				}
 			}
 
-			MeshBufList &list = *i;
-
 			driver->setMaterial(list.m);
 
-			for (std::vector<scene::IMeshBuffer*>::iterator j = list.bufs.begin();
-					j != list.bufs.end(); ++j) {
-				scene::IMeshBuffer *buf = *j;
+			for (scene::IMeshBuffer *buf : list.bufs) {
 				driver->drawMeshBuffer(buf);
 				vertex_count += buf->getVertexCount();
 				meshbuffer_count++;
 			}
-
 		}
 	}
 	} // ScopeProfiler
