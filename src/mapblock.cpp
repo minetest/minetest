@@ -971,8 +971,8 @@ std::string analyze_block(MapBlock *block)
 	std::ostringstream desc;
 
 	v3s16 p = block->getPos();
-	char spos[20];
-	snprintf(spos, 20, "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
+	char spos[25];
+	snprintf(spos, sizeof(spos), "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
 	desc<<spos;
 
 	switch(block->getModified())
