@@ -7,18 +7,13 @@
 #include "static_text.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
-#include <vector>
-#include <string>
-#include <iostream>
-#include <IGUISkin.h>
-#include <IGUIEnvironment.h>
 #include <IGUIFont.h>
 #include <IVideoDriver.h>
 #include <rect.h>
 #include <SColor.h>
 
 #if USE_FREETYPE
-	#include "cguittfont/xCGUITTFont.h"
+	#include "CGUITTFont.h"
 #endif
 #ifndef _IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX
 	// newer Irrlicht versions no longer have this
