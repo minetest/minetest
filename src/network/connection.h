@@ -628,7 +628,7 @@ public:
 	bool          operator!=(void* ptr);
 
 private:
-	Peer* m_peer = 0;
+	Peer *m_peer = nullptr;
 };
 
 class Connection;
@@ -742,17 +742,14 @@ class Peer {
 	private:
 
 		struct rttstats {
-			float jitter_min;
-			float jitter_max;
-			float jitter_avg;
-			float min_rtt;
-			float max_rtt;
-			float avg_rtt;
+			float jitter_min = FLT_MAX;
+			float jitter_max = 0.0f;
+			float jitter_avg = -1.0f;
+			float min_rtt = FLT_MAX;
+			float max_rtt = 0.0f;
+			float avg_rtt = -1.0f;
 
-			rttstats(float jitter_min_ = FLT_MAX, float jitter_max_ = 0.0f, float jitter_avg_ = -1.0f,
-					float min_rtt_ = FLT_MAX, float max_rtt_ = 0.0f, float avg_rtt_ = -1.0f) :
-					jitter_min(jitter_min_), jitter_max(jitter_max_), jitter_avg(jitter_avg_),
-					min_rtt(min_rtt_), max_rtt(max_rtt_), avg_rtt(avg_rtt_) {}
+			rttstats() {};
 		};
 
 		rttstats m_rtt;

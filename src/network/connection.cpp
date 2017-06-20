@@ -812,7 +812,7 @@ void Channel::UpdateTimers(float dtime,bool legacy_peer)
 PeerHelper::PeerHelper(Peer* peer) :
 	m_peer(peer)
 {
-	if (peer != NULL)
+	if (peer)
 	{
 		if (!peer->IncUseCount())
 		{
@@ -832,7 +832,7 @@ PeerHelper::~PeerHelper()
 PeerHelper& PeerHelper::operator=(Peer* peer)
 {
 	m_peer = peer;
-	if (peer != NULL)
+	if (peer)
 	{
 		if (!peer->IncUseCount())
 		{
