@@ -41,6 +41,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <cstddef>
+
 #ifdef _WIN32
 #define __BYTE_ORDER 0
 #define __LITTLE_ENDIAN 0

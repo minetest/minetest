@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_FREETYPE
 #include "gettext.h"
-#include "xCGUITTFont.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 /** maximum size distance for getting a "similar" font size */
