@@ -93,7 +93,7 @@ core.register_entity(":__builtin:falling_node", {
 				core.remove_node(np)
 				if nd and nd.buildable_to == false then
 					-- Add dropped items
-					local drops = core.get_node_drops(n2.name, "")
+					local drops = core.get_node_drops(n2, "")
 					for _, dropped_item in pairs(drops) do
 						core.add_item(np, dropped_item)
 					end
@@ -145,9 +145,9 @@ function core.spawn_falling_node(pos)
 end
 
 local function drop_attached_node(p)
-	local nn = core.get_node(p).name
+	local n = core.get_node(p)
 	core.remove_node(p)
-	for _, item in pairs(core.get_node_drops(nn, "")) do
+	for _, item in pairs(core.get_node_drops(n, "")) do
 		local pos = {
 			x = p.x + math.random()/2 - 0.25,
 			y = p.y + math.random()/2 - 0.25,

@@ -531,9 +531,11 @@ for conversion.
 If the `ItemStack`'s metadata contains the `color` field, it will be
 lost on placement, because nodes on the map can only use palettes.
 
-If the `ItemStack`'s metadata contains the `palette_index` field, you
-currently must manually convert between it and the node's `param2` with
-custom `on_place` and `on_dig` callbacks.
+If the `ItemStack`'s metadata contains the `palette_index` field, it is
+automatically transferred between node and item forms by the engine,
+when a player digs or places a colored node.
+You can disable this feature by setting the `drop` field of the node
+to itself (without metadata).
 
 ### Colored items in craft recipes
 Craft recipes only support item strings, but fortunately item strings
@@ -3326,8 +3328,9 @@ An `InvRef` is a reference to an inventory.
 * `add_item(listname, stack)`: add item somewhere in list, returns leftover `ItemStack`
 * `room_for_item(listname, stack):` returns `true` if the stack of items
   can be fully added to the list
-* `contains_item(listname, stack)`: returns `true` if the stack of items
-  can be fully taken from the list
+* `contains_item(listname, stack, [match_meta])`: returns `true` if
+  the stack of items can be fully taken from the list.
+  If `match_meta` is false, only the items' names are compared (default: `false`).
 * `remove_item(listname, stack)`: take as many items as specified from the list,
   returns the items that were actually removed (as an `ItemStack`) -- note that
   any item metadata is ignored, so attempting to remove a specific unique

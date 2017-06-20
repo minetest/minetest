@@ -774,8 +774,8 @@ public:
 };
 
 
-bool nodePlacementPrediction(Client &client,
-		const ItemDefinition &playeritem_def, v3s16 nodepos, v3s16 neighbourpos)
+bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_def,
+	const ItemStack &playeritem, v3s16 nodepos, v3s16 neighbourpos)
 {
 	std::string prediction = playeritem_def.node_placement_prediction;
 	INodeDefManager *nodedef = client.ndef();
@@ -818,11 +818,13 @@ bool nodePlacementPrediction(Client &client,
 			return false;
 		}
 
+		const ContentFeatures &predicted_f = nodedef->get(id);
+
 		// Predict param2 for facedir and wallmounted nodes
 		u8 param2 = 0;
 
-		if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED ||
-				nodedef->get(id).param_type_2 == CPT2_COLORED_WALLMOUNTED) {
+		if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+				predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED) {
 			v3s16 dir = nodepos - neighbourpos;
 
 			if (abs(dir.Y) > MYMAX(abs(dir.X), abs(dir.Z))) {
@@ -834,8 +836,8 @@ bool nodePlacementPrediction(Client &client,
 			}
 		}
 
-		if (nodedef->get(id).param_type_2 == CPT2_FACEDIR ||
-				nodedef->get(id).param_type_2 == CPT2_COLORED_FACEDIR) {
+		if (predicted_f.param_type_2 == CPT2_FACEDIR ||
+				predicted_f.param_type_2 == CPT2_COLORED_FACEDIR) {
 			v3s16 dir = nodepos - floatToInt(client.getEnv().getLocalPlayer()->getPosition(), BS);
 
 			if (abs(dir.X) > abs(dir.Z)) {
@@ -848,7 +850,7 @@ bool nodePlacementPrediction(Client &client,
 		assert(param2 <= 5);
 
 		//Check attachment if node is in group attached_node
-		if (((ItemGroupList) nodedef->get(id).groups)["attached_node"] != 0) {
+		if (((ItemGroupList) predicted_f.groups)["attached_node"] != 0) {
 			static v3s16 wallmounted_dirs[8] = {
 				v3s16(0, 1, 0),
 				v3s16(0, -1, 0),
@@ -859,14 +861,36 @@ bool nodePlacementPrediction(Client &client,
 			};
 			v3s16 pp;
 
-			if (nodedef->get(id).param_type_2 == CPT2_WALLMOUNTED ||
-					nodedef->get(id).param_type_2 == CPT2_COLORED_WALLMOUNTED)
+			if (predicted_f.param_type_2 == CPT2_WALLMOUNTED ||
+					predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)
 				pp = p + wallmounted_dirs[param2];
 			else
 				pp = p + v3s16(0, -1, 0);
 
 			if (!nodedef->get(map.getNodeNoEx(pp)).walkable)
 				return false;
+		}
+
+		// Apply color
+		if ((predicted_f.param_type_2 == CPT2_COLOR
+				|| predicted_f.param_type_2 == CPT2_COLORED_FACEDIR
+				|| predicted_f.param_type_2 == CPT2_COLORED_WALLMOUNTED)) {
+			const std::string &indexstr = playeritem.metadata.getString(
+				"palette_index", 0);
+			if (!indexstr.empty()) {
+				s32 index = mystoi(indexstr);
+				if (predicted_f.param_type_2 == CPT2_COLOR) {
+					param2 = index;
+				} else if (predicted_f.param_type_2
+						== CPT2_COLORED_WALLMOUNTED) {
+					// param2 = pure palette index + other
+					param2 = (index & 0xf8) | (param2 & 0x07);
+				} else if (predicted_f.param_type_2
+						== CPT2_COLORED_FACEDIR) {
+					// param2 = pure palette index + other
+					param2 = (index & 0xe0) | (param2 & 0x1f);
+				}
+			}
 		}
 
 		// Add node to client map
@@ -1277,8 +1301,9 @@ protected:
 			const core::line3d<f32> &shootline, bool liquids_pointable,
 			bool look_for_object, const v3s16 &camera_offset);
 	void handlePointingAtNothing(const ItemStack &playerItem);
-	void handlePointingAtNode(const PointedThing &pointed, const ItemDefinition &playeritem_def,
-			const ToolCapabilities &playeritem_toolcap, f32 dtime);
+	void handlePointingAtNode(const PointedThing &pointed,
+		const ItemDefinition &playeritem_def, const ItemStack &playeritem,
+		const ToolCapabilities &playeritem_toolcap, f32 dtime);
 	void handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 			const v3f &player_position, bool show_debug);
 	void handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
@@ -3599,7 +3624,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		if (playeritem.name.empty() && hand_def.tool_capabilities != NULL) {
 			playeritem_toolcap = *hand_def.tool_capabilities;
 		}
-		handlePointingAtNode(pointed, playeritem_def, playeritem_toolcap, dtime);
+		handlePointingAtNode(pointed, playeritem_def, playeritem,
+			playeritem_toolcap, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
 	} else if (isLeftPressed()) {
@@ -3734,8 +3760,9 @@ void Game::handlePointingAtNothing(const ItemStack &playerItem)
 }
 
 
-void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinition &playeritem_def,
-		const ToolCapabilities &playeritem_toolcap, f32 dtime)
+void Game::handlePointingAtNode(const PointedThing &pointed,
+	const ItemDefinition &playeritem_def, const ItemStack &playeritem,
+	const ToolCapabilities &playeritem_toolcap, f32 dtime)
 {
 	v3s16 nodepos = pointed.node_undersurface;
 	v3s16 neighbourpos = pointed.node_abovesurface;
@@ -3795,7 +3822,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed, const ItemDefinitio
 			// If the wielded item has node placement prediction,
 			// make that happen
 			bool placed = nodePlacementPrediction(*client,
-					playeritem_def,
+					playeritem_def, playeritem,
 					nodepos, neighbourpos);
 
 			if (placed) {
