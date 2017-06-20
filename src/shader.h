@@ -44,16 +44,13 @@ std::string getShaderPath(const std::string &name_of_shader,
 		const std::string &filename);
 
 struct ShaderInfo {
-	std::string name;
-	video::E_MATERIAL_TYPE base_material;
-	video::E_MATERIAL_TYPE material;
-	u8 drawtype;
-	u8 material_type;
-	s32 user_data;
+	std::string name = "";
+	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
+	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
+	u8 drawtype = 0;
+	u8 material_type = 0;
 
-	ShaderInfo(): name(""), base_material(video::EMT_SOLID),
-		material(video::EMT_SOLID),
-		drawtype(0), material_type(0) {}
+	ShaderInfo() {}
 	virtual ~ShaderInfo() {}
 };
 
@@ -85,11 +82,11 @@ template <typename T, std::size_t count=1>
 class CachedShaderSetting {
 	const char *m_name;
 	T m_sent[count];
-	bool has_been_set;
+	bool has_been_set = false;
 	bool is_pixel;
 protected:
 	CachedShaderSetting(const char *name, bool is_pixel) :
-		m_name(name), has_been_set(false), is_pixel(is_pixel)
+		m_name(name), is_pixel(is_pixel)
 	{}
 public:
 	void set(const T value[count], video::IMaterialRendererServices *services)

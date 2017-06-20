@@ -28,13 +28,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 struct ToolGroupCap
 {
 	std::unordered_map<int, float> times;
-	int maxlevel;
-	int uses;
+	int maxlevel = 1;
+	int uses = 20;
 
-	ToolGroupCap():
-		maxlevel(1),
-		uses(20)
-	{}
+	ToolGroupCap() {}
 
 	bool getTime(int rating, float *time) const
 	{
@@ -118,15 +115,11 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 
 struct PunchDamageResult
 {
-	bool did_punch;
-	int damage;
-	int wear;
+	bool did_punch = false;
+	int damage = 0;
+	int wear = 0;
 
-	PunchDamageResult():
-		did_punch(false),
-		damage(0),
-		wear(0)
-	{}
+	PunchDamageResult() {}
 };
 
 struct ItemStack;

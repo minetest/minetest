@@ -204,7 +204,7 @@ public:
 		deleted until this is 0 to keep the id preserved for the right
 		object.
 	*/
-	u16 m_known_by_count;
+	u16 m_known_by_count = 0;
 
 	/*
 		- Whether this object is to be removed when nobody knows about
@@ -215,7 +215,7 @@ public:
 		  to be deleted.
 		- This can be set to true by anything else too.
 	*/
-	bool m_removed;
+	bool m_removed = false;
 
 	/*
 		This is set to true when an object should be removed from the active
@@ -226,17 +226,17 @@ public:
 		m_known_by_count is true, object is deleted from the active object
 		list.
 	*/
-	bool m_pending_deactivation;
+	bool m_pending_deactivation = false;
 
 	/*
 		Whether the object's static data has been stored to a block
 	*/
-	bool m_static_exists;
+	bool m_static_exists = false;
 	/*
 		The block from which the object was loaded from, and in which
 		a copy of the static data resides.
 	*/
-	v3s16 m_static_block;
+	v3s16 m_static_block = v3s16(1337,1337,1337);
 
 	/*
 		Queue of messages to be sent to the client

@@ -90,9 +90,7 @@ void sockets_cleanup()
 
 Address::Address()
 {
-	m_addr_family = 0;
 	memset(&m_address, 0, sizeof(m_address));
-	m_port = 0;
 }
 
 Address::Address(u32 address, u16 port)

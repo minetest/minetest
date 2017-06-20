@@ -117,25 +117,25 @@ private:
 		return result;
 	}
 
-	bool m_visible;
-	video::SColor m_fallback_bg_color; // Used when m_visible=false
-	bool m_first_update;
+	bool m_visible = true;
+	// Used when m_visible=false
+	video::SColor m_fallback_bg_color = video::SColor(255, 255, 255, 255);
+	bool m_first_update = true;
 	float m_time_of_day;
 	float m_time_brightness;
 	bool m_sunlight_seen;
-	float m_brightness;
-	float m_cloud_brightness;
+	float m_brightness = 0.5f;
+	float m_cloud_brightness = 0.5f;
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
-	bool m_clouds_enabled; // Initialised to true, reset only by set_sky API
+	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
-	video::SColorf m_bgcolor_bright_f;
-	video::SColorf m_skycolor_bright_f;
-	video::SColorf m_cloudcolor_bright_f;
+	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
-	video::S3DVertex m_star_vertices[SKY_STAR_COUNT * 4];
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;

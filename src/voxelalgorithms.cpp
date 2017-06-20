@@ -1402,14 +1402,9 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 		modified_blocks);
 }
 
-VoxelLineIterator::VoxelLineIterator(
-	const v3f &start_position,
-	const v3f &line_vector) :
+VoxelLineIterator::VoxelLineIterator(const v3f &start_position, const v3f &line_vector) :
 	m_start_position(start_position),
-	m_line_vector(line_vector),
-	m_next_intersection_multi(10000.0f, 10000.0f, 10000.0f),
-	m_intersection_multi_inc(10000.0f, 10000.0f, 10000.0f),
-	m_step_directions(1.0f, 1.0f, 1.0f)
+	m_line_vector(line_vector)
 {
 	m_current_node_pos = floatToInt(m_start_position, 1);
 
