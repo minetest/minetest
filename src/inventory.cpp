@@ -267,13 +267,15 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
+		const u16 stackMax = getStackMax(itemdef);
+
 		*this = newitem;
 
 		// If the item fits fully, delete it
-		if (count <= getStackMax(itemdef)) {
+		if (count <= stackMax) {
 			newitem.clear();
 		} else { // Else the item does not fit fully. Return the rest.
-			count = getStackMax(itemdef);
+			count = stackMax;
 			newitem.remove(count);
 		}
 	}
@@ -315,11 +317,13 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
+		const u16 stackMax = getStackMax(itemdef);
+
 		// If the item fits fully, delete it
-		if (newitem.count <= getStackMax(itemdef)) {
+		if (newitem.count <= stackMax) {
 			newitem.clear();
 		} else { // Else the item does not fit fully. Return the rest.
-			newitem.remove(getStackMax(itemdef));
+			newitem.remove(stackMax);
 		}
 	}
 	// If item name or metadata differs, bail out
