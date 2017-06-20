@@ -3,6 +3,7 @@ before_install: ./util/travis/before_install.sh
 script: ./util/travis/script.sh
 sudo: required
 dist: trusty
+group: edge
 notifications:
   email: false
 matrix:
