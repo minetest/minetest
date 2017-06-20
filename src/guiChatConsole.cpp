@@ -213,6 +213,7 @@ void GUIChatConsole::reformatConsole()
 	s32 rows = m_desired_height / m_fontsize.Y - 1; // make room for the input prompt
 	if (cols <= 0 || rows <= 0)
 		cols = rows = 0;
+	recalculateConsolePosition();
 	m_chat_backend->reformat(cols, rows);
 }
 
