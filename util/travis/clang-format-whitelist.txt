@@ -3,10 +3,6 @@ src/ban.cpp
 src/camera.cpp
 src/camera.h
 src/cavegen.cpp
-src/cguittfont/CGUITTFont.cpp
-src/cguittfont/CGUITTFont.h
-src/cguittfont/irrUString.h
-src/cguittfont/xCGUITTFont.h
 src/chat.cpp
 src/chat.h
 src/chat_interface.h
@@ -113,6 +109,9 @@ src/inventory.cpp
 src/inventory.h
 src/inventorymanager.cpp
 src/inventorymanager.h
+src/irrlicht_changes/CGUITTFont.cpp
+src/irrlicht_changes/CGUITTFont.h
+src/irrlicht_changes/irrUString.h
 src/irrlicht_changes/static_text.cpp
 src/irrlicht_changes/static_text.h
 src/irrlichttypes.h
