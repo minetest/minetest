@@ -93,7 +93,7 @@ private:
 	// Returns true if the item completely fits into the list
 	static int l_room_for_item(lua_State *L);
 
-	// contains_item(self, listname, itemstack or itemstring or table or nil) -> true/false
+	// contains_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> true/false
 	// Returns true if the list contains the given count of the given item name
 	static int l_contains_item(lua_State *L);
 
