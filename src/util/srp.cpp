@@ -26,6 +26,8 @@
  *
  */
 
+#include <cstddef>
+
 // clang-format off
 #ifdef WIN32
 	#include <windows.h>
