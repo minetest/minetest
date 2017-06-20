@@ -37,6 +37,7 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
 	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
 	float float_mount_density = 0.6f;
 	float float_mount_height = 128.0f;
 	s16 floatland_level = 1280;
@@ -88,6 +89,7 @@ public:
 	void generateRidgeTerrain();
 
 private:
+	s16 large_cave_depth;
 	float float_mount_density;
 	float float_mount_height;
 	s16 floatland_level;
