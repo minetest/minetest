@@ -155,12 +155,35 @@ function core.yaw_to_dir(yaw)
 	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
 end
 
-function core.get_node_drops(nodename, toolname)
+function core.get_node_drops(node, toolname)
+	-- Compatibility, if node is string
+	local nodename = node
+	local param2 = 0
+	-- New format, if node is table
+	if (type(node) == "table") then
+		nodename = node.name
+		param2 = node.param2
+	end
 	local def = core.registered_nodes[nodename]
 	local drop = def and def.drop
 	if drop == nil then
 		-- default drop
-		return {nodename}
+		local stack = ItemStack(nodename)
+		if def then
+			local type = def.paramtype2
+			if (type == "color") or (type == "colorfacedir") or
+					(type == "colorwallmounted") then
+				local meta = stack:get_meta()
+				local color_part = param2
+				if (type == "colorfacedir") then
+					color_part = math.floor(color_part / 32) * 32;
+				elseif (type == "colorwallmounted") then
+					color_part = math.floor(color_part / 8) * 8;
+				end
+				meta:set_int("palette_index", color_part)
+			end
+		end
+		return {stack:to_string()}
 	elseif type(drop) == "string" then
 		-- itemstring drop
 		return {drop}
@@ -258,7 +281,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	local oldnode = core.get_node(place_to)
-	local newnode = {name = def.name, param1 = 0, param2 = param2}
+	local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
 	if def.place_param2 ~= nil then
@@ -283,6 +306,25 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 			}
 			newnode.param2 = core.dir_to_facedir(dir)
 			core.log("action", "facedir: " .. newnode.param2)
+		end
+	end
+
+	local metatable = itemstack:get_meta():to_table().fields
+
+	-- Transfer color information
+	if metatable.palette_index and not def.place_param2 then
+		local color_divisor = nil
+		if def.paramtype2 == "color" then
+			color_divisor = 1
+		elseif def.paramtype2 == "colorwallmounted" then
+			color_divisor = 8
+		elseif def.paramtype2 == "colorfacedir" then
+			color_divisor = 32
+		end
+		if color_divisor then
+			local color = math.floor(metatable.palette_index / color_divisor)
+			local other = newnode.param2 % color_divisor
+			newnode.param2 = color * color_divisor + other
 		end
 	end
 
@@ -474,7 +516,7 @@ function core.node_dig(pos, node, digger)
 		.. node.name .. " at " .. core.pos_to_string(pos))
 
 	local wielded = digger:get_wielded_item()
-	local drops = core.get_node_drops(node.name, wielded:get_name())
+	local drops = core.get_node_drops(node, wielded:get_name())
 
 	local wdef = wielded:get_definition()
 	local tp = wielded:get_tool_capabilities()

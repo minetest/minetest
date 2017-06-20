@@ -659,7 +659,7 @@ bool InventoryList::roomForItem(const ItemStack &item_) const
 	return false;
 }
 
-bool InventoryList::containsItem(const ItemStack &item) const
+bool InventoryList::containsItem(const ItemStack &item, bool match_meta) const
 {
 	u32 count = item.count;
 	if(count == 0)
@@ -670,9 +670,9 @@ bool InventoryList::containsItem(const ItemStack &item) const
 	{
 		if(count == 0)
 			break;
-		if(i->name == item.name)
-		{
-			if(i->count >= count)
+		if (i->name == item.name
+				&& (!match_meta || (i->metadata == item.metadata))) {
+			if (i->count >= count)
 				return true;
 			else
 				count -= i->count;
