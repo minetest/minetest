@@ -151,7 +151,6 @@ if(ENABLE_FREETYPE)
 	if(FREETYPE_FOUND)
 		message(STATUS "Freetype enabled.")
 		set(USE_FREETYPE TRUE)
-		set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
 	endif()
 endif(ENABLE_FREETYPE)
 
@@ -559,7 +558,7 @@ include_directories(
 
 
 if(USE_FREETYPE)
-	include_directories(${FREETYPE_INCLUDE_DIRS} ${CGUITTFONT_INCLUDE_DIR})
+	include_directories(${FREETYPE_INCLUDE_DIRS})
 endif()
 
 if(USE_CURL)
