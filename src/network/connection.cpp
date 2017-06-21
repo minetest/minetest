@@ -812,33 +812,23 @@ void Channel::UpdateTimers(float dtime,bool legacy_peer)
 PeerHelper::PeerHelper(Peer* peer) :
 	m_peer(peer)
 {
-	if (peer)
-	{
-		if (!peer->IncUseCount())
-		{
-			m_peer = 0;
-		}
-	}
+	if (peer && !peer->IncUseCount())
+		m_peer = nullptr;
 }
 
 PeerHelper::~PeerHelper()
 {
-	if (m_peer != 0)
+	if (m_peer != nullptr)
 		m_peer->DecUseCount();
 
-	m_peer = 0;
+	m_peer = nullptr;
 }
 
 PeerHelper& PeerHelper::operator=(Peer* peer)
 {
 	m_peer = peer;
-	if (peer)
-	{
-		if (!peer->IncUseCount())
-		{
-			m_peer = 0;
-		}
-	}
+	if (peer && !peer->IncUseCount())
+		m_peer = nullptr;
 	return *this;
 }
 
@@ -865,8 +855,7 @@ bool Peer::IncUseCount()
 {
 	MutexAutoLock lock(m_exclusive_access_mutex);
 
-	if (!m_pending_deletion)
-	{
+	if (!m_pending_deletion) {
 		this->m_usage++;
 		return true;
 	}
