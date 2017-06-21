@@ -38,13 +38,13 @@ struct ItemPartColor
 	 * will be used instead of the specific color of the
 	 * buffer.
 	 */
-	bool override_base;
+	bool override_base = false;
 	/*!
 	 * The color of the buffer.
 	 */
-	video::SColor color;
+	video::SColor color = 0;
 
-	ItemPartColor() : override_base(false), color(0) {}
+	ItemPartColor() {}
 
 	ItemPartColor(bool override, video::SColor color)
 	    : override_base(override), color(color)
@@ -54,7 +54,7 @@ struct ItemPartColor
 
 struct ItemMesh
 {
-	scene::IMesh *mesh;
+	scene::IMesh *mesh = nullptr;
 	/*!
 	 * Stores the color of each mesh buffer.
 	 */
@@ -63,9 +63,9 @@ struct ItemMesh
 	 * If false, all faces of the item should have the same brightness.
 	 * Disables shading based on normal vectors.
 	 */
-	bool needs_shading;
+	bool needs_shading = true;
 
-	ItemMesh() : mesh(NULL), buffer_colors(), needs_shading(true) {}
+	ItemMesh() {}
 };
 
 /*
@@ -78,7 +78,7 @@ public:
 			s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const ContentFeatures &f, v3f wield_scale, ITextureSource *tsrc);
+	void setCube(const ContentFeatures &f, v3f wield_scale);
 	void setExtruded(const std::string &imagename, v3f wield_scale,
 			ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client);
@@ -97,7 +97,7 @@ private:
 	void changeToMesh(scene::IMesh *mesh);
 
 	// Child scene node with the current wield mesh
-	scene::IMeshSceneNode *m_meshnode;
+	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
 
 	// True if EMF_LIGHTING should be enabled.

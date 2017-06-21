@@ -14,15 +14,7 @@
 
 Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
 		ITextureSource *tsrc):
-		scene::ISceneNode(parent, mgr, id),
-		m_visible(true),
-		m_fallback_bg_color(255, 255, 255, 255),
-		m_first_update(true),
-		m_brightness(0.5),
-		m_cloud_brightness(0.5),
-		m_bgcolor_bright_f(1, 1, 1, 1),
-		m_skycolor_bright_f(1, 1, 1, 1),
-		m_cloudcolor_bright_f(1, 1, 1, 1)
+		scene::ISceneNode(parent, mgr, id)
 {
 	setAutomaticCulling(scene::EAC_OFF);
 	m_box.MaxEdge.set(0, 0, 0);
@@ -85,8 +77,6 @@ Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
 	}
 
 	m_directional_colored_fog = g_settings->getBool("directional_colored_fog");
-
-	m_clouds_enabled = true;
 }
 
 
@@ -109,7 +99,7 @@ void Sky::render()
 
 	if (!camera || !driver)
 		return;
-	
+
 	ScopeProfiler sp(g_profiler, "Sky::render()", SPT_AVG);
 
 	// Draw perspective skybox
@@ -138,7 +128,7 @@ void Sky::render()
 		float moonsize = 0.04;
 		video::SColorf mooncolor_f(0.50, 0.57, 0.65, 1);
 		video::SColorf mooncolor2_f(0.85, 0.875, 0.9, 1);
-		
+
 		float nightlength = 0.415;
 		float wn = nightlength / 2;
 		float wicked_time_of_day = 0;
@@ -181,11 +171,11 @@ void Sky::render()
 		const f32 o = 0.0f;
 		static const u16 indices[4] = {0, 1, 2, 3};
 		video::S3DVertex vertices[4];
-		
+
 		driver->setMaterial(m_materials[1]);
-		
+
 		video::SColor cloudyfogcolor = m_bgcolor;
-		
+
 		// Draw far cloudy fog thing blended with skycolor
 		for (u32 j = 0; j < 4; j++) {
 			video::SColor c = cloudyfogcolor.getInterpolated(m_skycolor, 0.45);
@@ -361,7 +351,7 @@ void Sky::render()
 					vertices[i].Pos.rotateXYBy(wicked_time_of_day * 360 - 90);
 				}
 				driver->drawIndexedTriangleFan(&vertices[0], 4, indices, 2);
-			
+
 				d = moonsize * 1.3;
 				c = mooncolor;
 				c.setAlpha(0.15 * 255);
@@ -466,7 +456,7 @@ void Sky::render()
 				indices, SKY_STAR_COUNT, video::EVT_STANDARD,
 				scene::EPT_QUADS, video::EIT_16BIT);
 		} while(0);
-		
+
 		// Draw far cloudy fog thing below east and west horizons
 		for (u32 j = 0; j < 2; j++) {
 			video::SColor c = cloudyfogcolor;
@@ -510,7 +500,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	m_time_of_day = time_of_day;
 	m_time_brightness = time_brightness;
 	m_sunlight_seen = sunlight_seen;
-	
+
 	bool is_dawn = (time_brightness >= 0.20 && time_brightness < 0.35);
 
 	/*
@@ -535,7 +525,7 @@ void Sky::update(float time_of_day, float time_brightness,
 	video::SColorf skycolor_bright_normal_f = video::SColor(255, 140, 186, 250);
 	video::SColorf skycolor_bright_dawn_f = video::SColor(255, 180, 186, 250);
 	video::SColorf skycolor_bright_night_f = video::SColor(255, 0, 107, 255);
-	
+
 	// pure white: becomes "diffuse light component" for clouds
 	video::SColorf cloudcolor_bright_normal_f = video::SColor(255, 255, 255, 255);
 	// dawn-factoring version of pure white (note: R is above 1.0)
@@ -555,7 +545,7 @@ void Sky::update(float time_of_day, float time_brightness,
 		else
 			m_brightness = m_brightness * 0.98 + direct_brightness * 0.02;
 	}
-	
+
 	m_clouds_visible = true;
 	float color_change_fraction = 0.98;
 	if (sunlight_seen) {

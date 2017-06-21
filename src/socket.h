@@ -103,13 +103,13 @@ public:
 	void print(std::ostream *s) const;
 	std::string serializeString() const;
 private:
-	unsigned int m_addr_family;
+	unsigned int m_addr_family = 0;
 	union
 	{
 		struct sockaddr_in  ipv4;
 		struct sockaddr_in6 ipv6;
 	} m_address;
-	u16 m_port; // Port is separate from sockaddr structures
+	u16 m_port = 0; // Port is separate from sockaddr structures
 };
 
 class UDPSocket

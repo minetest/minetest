@@ -76,7 +76,7 @@ struct button_info
 	float repeatdelay;
 	irr::EKEY_CODE keycode;
 	std::vector<int> ids;
-	IGUIButton *guibutton = NULL;
+	IGUIButton *guibutton = nullptr;
 	bool immediate_release;
 };
 
@@ -114,11 +114,10 @@ public:
 	void show();
 
 private:
-	ISimpleTextureSource *m_texturesource;
+	ISimpleTextureSource *m_texturesource = nullptr;
 	irr::video::IVideoDriver *m_driver;
 	IGUIEnvironment *m_guienv;
 	IEventReceiver *m_receiver;
-	v2u32 m_screensize;
 	button_info m_starter;
 	std::vector<button_info *> m_buttons;
 
@@ -126,15 +125,15 @@ private:
 	v2s32 m_lower_right;
 
 	/* show settings bar */
-	bool m_active;
+	bool m_active = false;
 
-	bool m_visible;
+	bool m_visible = true;
 
 	/* settings bar timeout */
-	float m_timeout;
-	float m_timeout_value;
-	bool m_initialized;
-	autohide_button_bar_dir m_dir;
+	float m_timeout = 0.0f;
+	float m_timeout_value = 3.0f;
+	bool m_initialized = false;
+	autohide_button_bar_dir m_dir = AHBB_Dir_Right_Left;
 };
 
 class TouchScreenGUI
@@ -177,18 +176,16 @@ private:
 	bool m_visible; // is the gui visible
 
 	/* value in degree */
-	double m_camera_yaw_change;
-	double m_camera_pitch;
+	double m_camera_yaw_change = 0.0;
+	double m_camera_pitch = 0.0;
 
 	line3d<f32> m_shootline;
 
-	rect<s32> m_control_pad_rect;
-
-	int m_move_id;
-	bool m_move_has_really_moved;
-	s64 m_move_downtime;
-	bool m_move_sent_as_mouse_event;
-	v2s32 m_move_downlocation;
+	int m_move_id = -1;
+	bool m_move_has_really_moved = false;
+	s64 m_move_downtime = 0;
+	bool m_move_sent_as_mouse_event = false;
+	v2s32 m_move_downlocation = v2s32(-10000, -10000);
 
 	button_info m_buttons[after_last_element_id];
 
@@ -205,9 +202,6 @@ private:
 	void initButton(touch_gui_button_id id, rect<s32> button_rect,
 			std::wstring caption, bool immediate_release,
 			float repeat_delay = BUTTON_REPEAT_DELAY);
-
-	/* load texture */
-	void loadButtonTexture(button_info *btn, const char *path, rect<s32> button_rect);
 
 	struct id_status
 	{

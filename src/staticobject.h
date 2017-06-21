@@ -29,15 +29,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct StaticObject
 {
-	u8 type;
+	u8 type = 0;
 	v3f pos;
 	std::string data;
 
-	StaticObject():
-		type(0),
-		pos(0,0,0)
-	{
-	}
+	StaticObject() {}
 	StaticObject(u8 type_, v3f pos_, const std::string &data_):
 		type(type_),
 		pos(pos_),
@@ -88,7 +84,7 @@ public:
 
 	void serialize(std::ostream &os);
 	void deSerialize(std::istream &is);
-	
+
 	/*
 		NOTE: When an object is transformed to active, it is removed
 		from m_stored and inserted to m_active.
