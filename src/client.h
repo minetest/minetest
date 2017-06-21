@@ -278,8 +278,8 @@ public:
 
 	// Load local mods into memory
 	void loadMods();
-	void loadModIntoMemory(const std::string &mod_name, const std::string &mod_path);
-	void loadModSubfolder(const std::string &mod_name, const std::string &mod_path,
+	void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path);
+	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 				std::string mod_subpath);
 
 	// Initizle the mods

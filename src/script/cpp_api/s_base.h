@@ -77,7 +77,6 @@ public:
 
 #ifndef SERVER
 	void loadModFromMemory(const std::string &mod_name);
-	void loadScriptFromMemory(const std::string *script_string, const std::string &script_name);
 #endif
 
 	void runCallbacksRaw(int nargs,

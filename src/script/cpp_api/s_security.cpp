@@ -141,8 +141,32 @@ void ScriptApiSecurity::initializeSecurity()
 
 	lua_State *L = getStack();
 
+	// Backup globals to the registry
+	lua_getglobal(L, "_G");
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 
-	int old_globals = backupGlobals(L);
+	// Replace the global environment with an empty one
+#if LUA_VERSION_NUM <= 501
+	int is_main = lua_pushthread(L);  // Push the main thread
+	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
+		"isn't the main Lua thread!");
+#endif
+	lua_newtable(L);  // Create new environment
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "_G");  // Set _G of new environment
+#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
+	// Set the global environment
+	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+#else  // Lua <= 5.1
+	// Set the environment of the main thread
+	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
+		"environment of the main Lua thread!");
+	lua_pop(L, 1);  // Pop thread
+#endif
+
+	// Get old globals
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
+	int old_globals = lua_gettop(L);
 
 
 	// Copy safe base functions
@@ -339,36 +363,6 @@ void ScriptApiSecurity::initializeSecurityClient()
 #endif
 }
 
-int ScriptApiSecurity::backupGlobals(lua_State *L)
-{
-	// Backup globals to the registry
-	lua_getglobal(L, "_G");
-	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
-
-	// Replace the global environment with an empty one
-#if LUA_VERSION_NUM <= 501
-	int is_main = lua_pushthread(L);  // Push the main thread
-	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
-		"isn't the main Lua thread!");
-#endif
-	lua_newtable(L);  // Create new environment
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "_G");  // Set _G of new environment
-#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
-	// Set the global environment
-	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
-#else  // Lua <= 5.1
-	// Set the environment of the main thread
-	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
-		"environment of the main Lua thread!");
-	lua_pop(L, 1);  // Pop thread
-#endif
-
-	// Get old globals
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
-	return lua_gettop(L);
-}
-
 bool ScriptApiSecurity::isSecure(lua_State *L)
 {
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
@@ -386,10 +380,12 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 	}
 
 
-bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
+bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char *display_name)
 {
 	FILE *fp;
 	char *chunk_name;
+	if (display_name == NULL)
+		display_name = path;
 	if (path == NULL) {
 		fp = stdin;
 		chunk_name = const_cast<char *>("=stdin");
@@ -399,10 +395,10 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 			lua_pushfstring(L, "%s: %s", path, strerror(errno));
 			return false;
 		}
-		chunk_name = new char[strlen(path) + 2];
+		chunk_name = new char[strlen(display_name) + 2];
 		chunk_name[0] = '@';
 		chunk_name[1] = '\0';
-		strcat(chunk_name, path);
+		strcat(chunk_name, display_name);
 	}
 
 	size_t start = 0;
@@ -459,7 +455,6 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path)
 		}
 		return false;
 	}
-
 	if (luaL_loadbuffer(L, code, size, chunk_name)) {
 		delete [] code;
 		return false;
@@ -651,24 +646,18 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 	lua_pop(L, 1);
 
 	if (script->getType() == ScriptingType::Client) {
-		std:: string path = lua_tostring(L, 1);
-		std::string chunk_name = "@/0" + path;
-		const std::string *file = script->getClient()->getModFile(path);
-		if (file == NULL) {
-			std::string error_msg = "Coudln't find script called:" + path;
+		std:: string display_path = lua_tostring(L, 1);
+		const std::string *path = script->getClient()->getModFile(display_path);
+		if (path == NULL) {
+			std::string error_msg = "Coudln't find script called:" + display_path;
 			lua_pushnil(L);
 			lua_pushstring(L, error_msg.c_str());
 			return 2;
 		}
-
-		if(file->at(0) == LUA_SIGNATURE[0]) {
-			lua_pushliteral(L, "Bytecode prohibited when mod security is enabled.");
-		} else {
-			if (luaL_loadbuffer(L, file->c_str(), file->length(), path.c_str())) {
-				lua_pushnil(L);
-				lua_insert(L, -2);
-				return 2;
-			}
+		if (!safeLoadFile(L, path->c_str(), display_path.c_str())) {
+			lua_pushnil(L);
+			lua_insert(L, -2);
+			return 2;
 		}
 		return 1;
 	}

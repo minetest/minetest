@@ -112,7 +112,7 @@ Client::Client(
 void Client::loadMods()
 {
 	// Load builtin
-	loadModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
+	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 
 	// If modding is not enabled, don't load mods, just builtin
 	if (!m_modding_enabled) {
@@ -143,27 +143,24 @@ void Client::loadMods()
 				"\": Mod name does not follow naming conventions: "
 					"Only characters [a-z0-9_] are allowed.");
 		}
-		loadModIntoMemory(mod.name, mod.path);
+		scanModIntoMemory(mod.name, mod.path);
 	}
 }
 
-void Client::loadModIntoMemory(const std::string &mod_name, const std::string &mod_path)
+void Client::scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
 {
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(mod_path);
 	for (unsigned int j=0; j < mod.size(); j++){
 		std::string filename = mod[j].name;
 		if (mod[j].dir) {
-			loadModSubfolder(mod_name, mod_path, filename + DIR_DELIM);
+			scanModSubfolder(mod_name, mod_path, filename + DIR_DELIM);
 			continue;
 		}
-		std::ifstream file (mod_path + DIR_DELIM + filename);
-		std::stringstream data;
-		data << file.rdbuf();
-		m_mod_files[mod_name + ":" + filename] = data.str();
+		m_mod_files[mod_name + ":" + filename] = mod_path + DIR_DELIM + filename;
 	}
 }
 
-void Client::loadModSubfolder(const std::string &mod_name, const std::string &mod_path,
+void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 			std::string mod_subpath)
 {
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
@@ -171,15 +168,12 @@ void Client::loadModSubfolder(const std::string &mod_name, const std::string &mo
 	for (unsigned int j=0; j < mod.size(); j++){
 		std::string filename = mod[j].name;
 		if (mod[j].dir) {
-			loadModSubfolder(mod_name, mod_path, mod_subpath
+			scanModSubfolder(mod_name, mod_path, mod_subpath
 					+ filename + DIR_DELIM);
 			continue;
 		}
-		std::ifstream file (full_path + DIR_DELIM + filename);
-		std::stringstream data;
-		data << file.rdbuf();
 		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
-		m_mod_files[mod_name + ":" + mod_subpath + filename] = data.str();
+		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path + DIR_DELIM + filename;
 	}
 }
 
