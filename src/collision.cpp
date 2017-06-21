@@ -314,10 +314,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-			for (std::vector<aabb3f>::iterator
-					i = nodeboxes.begin();
-					i != nodeboxes.end(); ++i) {
-				aabb3f box = *i;
+			for (aabb3f &box : nodeboxes) {
 				box.MinEdge += v3f(x, y, z) * BS;
 				box.MaxEdge += v3f(x, y, z) * BS;
 				cinfo.push_back(NearbyCollisionInfo(false,
