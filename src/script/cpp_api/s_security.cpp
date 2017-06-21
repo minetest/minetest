@@ -146,23 +146,9 @@ void ScriptApiSecurity::initializeSecurity()
 	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
 
 	// Replace the global environment with an empty one
-#if LUA_VERSION_NUM <= 501
-	int is_main = lua_pushthread(L);  // Push the main thread
-	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
-		"isn't the main Lua thread!");
-#endif
-	lua_newtable(L);  // Create new environment
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "_G");  // Set _G of new environment
-#if LUA_VERSION_NUM >= 502  // Lua >= 5.2
-	// Set the global environment
-	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
-#else  // Lua <= 5.1
-	// Set the environment of the main thread
-	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
-		"environment of the main Lua thread!");
-	lua_pop(L, 1);  // Pop thread
-#endif
+	int thread = getThread(L);
+	createEmptyEnv(L);
+	setLuaEnv(L, thread);
 
 	// Get old globals
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_GLOBALS_BACKUP);
@@ -299,16 +285,10 @@ void ScriptApiSecurity::initializeSecurityClient()
 	m_secure = true;
 
 	lua_State *L = getStack();
+	int thread = getThread(L);
 
-	// Replace the global environment with a new one
-#if LUA_VERSION_NUM <= 501
-	int is_main = lua_pushthread(L);  // Push the main thread
-	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
-		"isn't the main Lua thread!");
-#endif
-	lua_newtable(L);  // Create new environment
-	lua_pushvalue(L, -1);
-	lua_setfield(L, -2, "_G");  // Set _G of new environment
+	// create an empty environment
+	createEmptyEnv(L);
 
 	// Copy safe base functions
 	lua_getglobal(L, "_G");
@@ -349,14 +329,36 @@ void ScriptApiSecurity::initializeSecurityClient()
 	lua_pop(L, 1);  // Pop old jit
 #endif
 
-	//lua_pop(L, 1); // Pop globals_backup
+	// Set the environment to the one we created earlier
+	setLuaEnv(L, thread);
+}
 
+int ScriptApiSecurity::getThread(lua_State *L)
+{
+#if LUA_VERSION_NUM <= 501
+	int is_main = lua_pushthread(L);  // Push the main thread
+	FATAL_ERROR_IF(!is_main, "Security: ScriptApi's Lua state "
+		"isn't the main Lua thread!");
+	return lua_gettop(L);
+#endif
+	return 0;
+}
+
+void ScriptApiSecurity::createEmptyEnv(lua_State *L)
+{
+	lua_newtable(L);  // Create new environment
+	lua_pushvalue(L, -1);
+	lua_setfield(L, -2, "_G");  // Create the _G loop
+}
+
+void ScriptApiSecurity::setLuaEnv(lua_State *L, int thread)
+{
 #if LUA_VERSION_NUM >= 502  // Lua >= 5.2
 	// Set the global environment
 	lua_rawseti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
 #else  // Lua <= 5.1
 	// Set the environment of the main thread
-	FATAL_ERROR_IF(!lua_setfenv(L, -2), "Security: Unable to set "
+	FATAL_ERROR_IF(!lua_setfenv(L, thread), "Security: Unable to set "
 		"environment of the main Lua thread!");
 	lua_pop(L, 1);  // Pop thread
 #endif
@@ -454,6 +456,7 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 		}
 		return false;
 	}
+
 	if (luaL_loadbuffer(L, code, size, chunk_name)) {
 		delete [] code;
 		return false;

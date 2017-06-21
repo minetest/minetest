@@ -54,7 +54,11 @@ extern "C" {
 #define setOriginFromTable(index) \
 	setOriginFromTableRaw(index, __FUNCTION__)
 
-enum class ScriptingType: u8 { Client, Server, MainMenu};
+enum class ScriptingType: u8 {
+	Client,
+	Server,
+	MainMenu
+};
 
 class Server;
 #ifndef SERVER

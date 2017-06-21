@@ -147,19 +147,6 @@ void Client::loadMods()
 	}
 }
 
-void Client::scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
-{
-	std::vector<fs::DirListNode> mod = fs::GetDirListing(mod_path);
-	for (unsigned int j=0; j < mod.size(); j++){
-		std::string filename = mod[j].name;
-		if (mod[j].dir) {
-			scanModSubfolder(mod_name, mod_path, filename + DIR_DELIM);
-			continue;
-		}
-		m_mod_files[mod_name + ":" + filename] = mod_path + DIR_DELIM + filename;
-	}
-}
-
 void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
 			std::string mod_subpath)
 {
@@ -173,7 +160,7 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 			continue;
 		}
 		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
-		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path + DIR_DELIM + filename;
+		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
 	}
 }
 

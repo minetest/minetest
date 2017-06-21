@@ -41,7 +41,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ScriptApiSecurity : virtual public ScriptApiBase
 {
 public:
-	int backupGlobals(lua_State *L);
+	int getThread(lua_State *L);
+	// creates an empty Lua environment
+	void createEmptyEnv(lua_State *L);
+	// sets the enviroment to the table thats on top of the stack
+	void setLuaEnv(lua_State *L, int thread);
 	// Sets up security on the ScriptApi's Lua state
 	void initializeSecurity();
 	void initializeSecurityClient();

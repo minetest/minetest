@@ -177,7 +177,8 @@ void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
 	bool ok = ScriptApiSecurity::safeLoadFile(L, init_filename->c_str(), display_filename.c_str());
-	ok = ok && !lua_pcall(L, 0, 0, error_handler);
+	if (ok)
+		ok = !lua_pcall(L, 0, 0, error_handler);
 	if (!ok) {
 		std::string error_msg = luaL_checkstring(L, -1);
 		lua_pop(L, 2); // Pop error message and error handler
