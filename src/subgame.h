@@ -35,12 +35,12 @@ struct SubgameSpec
 	std::string name;
 	std::string menuicon_path;
 
-	SubgameSpec(const std::string &id_="",
-			const std::string &path_="",
-			const std::string &gamemods_path_="",
-			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
-			const std::string &name_="",
-			const std::string &menuicon_path_=""):
+	SubgameSpec(const std::string &id_ = "",
+			const std::string &path_ = "",
+			const std::string &gamemods_path_ = "",
+			const std::set<std::string> &addon_mods_paths_ = std::set<std::string>(),
+			const std::string &name_ = "",
+			const std::string &menuicon_path_ = ""):
 		id(id_),
 		path(path_),
 		gamemods_path(gamemods_path_),
