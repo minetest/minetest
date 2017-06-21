@@ -91,8 +91,7 @@ ScriptApiBase::ScriptApiBase()
 	// Add and save an error handler
 	lua_getglobal(m_luastack, "debug");
 	lua_getfield(m_luastack, -1, "traceback");
-	//lua_pushcfunction(m_luastack, script_error_handler);
-	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
 	lua_pop(m_luastack, 1);
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
