@@ -60,14 +60,6 @@ static inline float CALC_DTIME(u64 lasttime, u64 curtime)
 	return MYMAX(MYMIN(value,0.1),0.0);
 }
 
-/* maximum window size to use, 0xFFFF is theoretical maximum  don't think about
- * touching it, the less you're away from it the more likely data corruption
- * will occur
- */
-#define MAX_RELIABLE_WINDOW_SIZE 0x8000
- /* starting value for window size */
-#define MIN_RELIABLE_WINDOW_SIZE 0x40
-
 #define MAX_UDP_PEERS 65535
 
 #define PING_TIMEOUT 5.0
@@ -208,8 +200,6 @@ SharedBuffer<u8> makeReliablePacket(
 /*
 	ReliablePacketBuffer
 */
-
-ReliablePacketBuffer::ReliablePacketBuffer(): m_list_size(0) {}
 
 void ReliablePacketBuffer::print()
 {
@@ -577,36 +567,6 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 	Channel
 */
 
-Channel::Channel() :
-		window_size(MIN_RELIABLE_WINDOW_SIZE),
-		next_incoming_seqnum(SEQNUM_INITIAL),
-		next_outgoing_seqnum(SEQNUM_INITIAL),
-		next_outgoing_split_seqnum(SEQNUM_INITIAL),
-		current_packet_loss(0),
-		current_packet_too_late(0),
-		current_packet_successfull(0),
-		packet_loss_counter(0),
-		current_bytes_transfered(0),
-		current_bytes_received(0),
-		current_bytes_lost(0),
-		max_kbps(0.0),
-		cur_kbps(0.0),
-		avg_kbps(0.0),
-		max_incoming_kbps(0.0),
-		cur_incoming_kbps(0.0),
-		avg_incoming_kbps(0.0),
-		max_kbps_lost(0.0),
-		cur_kbps_lost(0.0),
-		avg_kbps_lost(0.0),
-		bpm_counter(0.0),
-		rate_samples(0)
-{
-}
-
-Channel::~Channel()
-{
-}
-
 u16 Channel::readNextIncomingSeqNum()
 {
 	MutexAutoLock internal(m_internal_mutex);
@@ -849,40 +809,26 @@ void Channel::UpdateTimers(float dtime,bool legacy_peer)
 	Peer
 */
 
-PeerHelper::PeerHelper() :
-	m_peer(0)
-{}
-
 PeerHelper::PeerHelper(Peer* peer) :
 	m_peer(peer)
 {
-	if (peer != NULL)
-	{
-		if (!peer->IncUseCount())
-		{
-			m_peer = 0;
-		}
-	}
+	if (peer && !peer->IncUseCount())
+		m_peer = nullptr;
 }
 
 PeerHelper::~PeerHelper()
 {
-	if (m_peer != 0)
+	if (m_peer)
 		m_peer->DecUseCount();
 
-	m_peer = 0;
+	m_peer = nullptr;
 }
 
 PeerHelper& PeerHelper::operator=(Peer* peer)
 {
 	m_peer = peer;
-	if (peer != NULL)
-	{
-		if (!peer->IncUseCount())
-		{
-			m_peer = 0;
-		}
-	}
+	if (peer && !peer->IncUseCount())
+		m_peer = nullptr;
 	return *this;
 }
 
@@ -909,8 +855,7 @@ bool Peer::IncUseCount()
 {
 	MutexAutoLock lock(m_exclusive_access_mutex);
 
-	if (!m_pending_deletion)
-	{
+	if (!m_pending_deletion) {
 		this->m_usage++;
 		return true;
 	}
@@ -1014,10 +959,7 @@ void Peer::Drop()
 }
 
 UDPPeer::UDPPeer(u16 a_id, Address a_address, Connection* connection) :
-	Peer(a_address,a_id,connection),
-	m_pending_disconnect(false),
-	resend_timeout(0.5),
-	m_legacy_peer(true)
+	Peer(a_address,a_id,connection)
 {
 }
 
@@ -1261,12 +1203,9 @@ SharedBuffer<u8> UDPPeer::addSpiltPacket(u8 channel,
 ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
 		float timeout) :
 	Thread("ConnectionSend"),
-	m_connection(NULL),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
-	m_max_commands_per_iteration(1),
-	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration")),
-	m_max_packets_requeued(256)
+	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
 {
 }
 
@@ -2031,8 +1970,7 @@ void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
 }
 
 ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
-	Thread("ConnectionReceive"),
-	m_connection(NULL)
+	Thread("ConnectionReceive")
 {
 }
 
@@ -2676,17 +2614,10 @@ SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
 		bool ipv6, PeerHandler *peerhandler) :
 	m_udpSocket(ipv6),
-	m_command_queue(),
-	m_event_queue(),
-	m_peer_id(0),
 	m_protocol_id(protocol_id),
 	m_sendThread(max_packet_size, timeout),
 	m_receiveThread(max_packet_size),
-	m_info_mutex(),
-	m_bc_peerhandler(peerhandler),
-	m_bc_receive_timeout(0),
-	m_shutting_down(false),
-	m_next_remote_peer_id(2)
+	m_bc_peerhandler(peerhandler)
 
 {
 	m_udpSocket.setTimeoutMs(5);

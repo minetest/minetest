@@ -30,8 +30,7 @@ class NetworkPacket
 public:
 		NetworkPacket(u16 command, u32 datasize, u16 peer_id);
 		NetworkPacket(u16 command, u32 datasize);
-		NetworkPacket(): m_datasize(0), m_read_offset(0), m_command(0),
-				m_peer_id(0) {}
+		NetworkPacket() {}
 		~NetworkPacket();
 
 		void putRawPacket(u8 *data, u32 datasize, u16 peer_id);
@@ -126,10 +125,10 @@ private:
 		}
 
 		std::vector<u8> m_data;
-		u32 m_datasize;
-		u32 m_read_offset;
-		u16 m_command;
-		u16 m_peer_id;
+		u32 m_datasize = 0;
+		u32 m_read_offset = 0;
+		u16 m_command = 0;
+		u16 m_peer_id = 0;
 };
 
 #endif
