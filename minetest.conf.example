@@ -1256,9 +1256,13 @@
 #    type: float
 # mgv5_cave_width = 0.125
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 #    type: int
 # mgv5_large_cave_depth = -256
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgv5_lava_depth = -256
 
 #    Y-level of cavern upper limit.
 #    type: int
@@ -1375,9 +1379,13 @@
 #    type: float
 # mgv7_cave_width = 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 #    type: int
 # mgv7_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgv7_lava_depth = -256
 
 #    Controls the density of floatland mountain terrain.
 #    Is an offset added to the 'np_mountain' noise value.
@@ -1480,9 +1488,13 @@
 #    type: int
 # mgflat_ground_level = 8
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 #    type: int
 # mgflat_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgflat_lava_depth = -256
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -1530,9 +1542,13 @@
 #    type: float
 # mgfractal_cave_width = 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 #    type: int
 # mgfractal_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgfractal_lava_depth = -256
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.

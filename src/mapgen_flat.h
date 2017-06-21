@@ -36,6 +36,7 @@ struct MapgenFlatParams : public MapgenParams
 	u32 spflags = 0;
 	s16 ground_level = 8;
 	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
 	float cave_width = 0.09f;
 	float lake_threshold = -0.45f;
 	float lake_steepness = 48.0f;

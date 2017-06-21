@@ -258,7 +258,8 @@ CavesRandomWalk::CavesRandomWalk(
 	s32 seed,
 	int water_level,
 	content_t water_source,
-	content_t lava_source)
+	content_t lava_source,
+	int lava_depth)
 {
 	assert(ndef);
 
@@ -267,7 +268,7 @@ CavesRandomWalk::CavesRandomWalk(
 	this->seed           = seed;
 	this->water_level    = water_level;
 	this->np_caveliquids = &nparams_caveliquids;
-	this->lava_depth     = DEFAULT_LAVA_DEPTH;
+	this->lava_depth     = lava_depth;
 
 	c_water_source = water_source;
 	if (c_water_source == CONTENT_IGNORE)

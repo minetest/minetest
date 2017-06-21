@@ -294,6 +294,7 @@ protected:
 	float cavern_limit;
 	float cavern_taper;
 	float cavern_threshold;
+	int lava_depth;
 };
 
 #endif

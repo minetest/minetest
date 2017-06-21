@@ -57,6 +57,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	this->spflags             = params->spflags;
 	this->cave_width          = params->cave_width;
 	this->large_cave_depth    = params->large_cave_depth;
+	this->lava_depth          = params->lava_depth;
 	this->float_mount_density = params->float_mount_density;
 	this->float_mount_height  = params->float_mount_height;
 	this->floatland_level     = params->floatland_level;
@@ -145,6 +146,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgv7_spflags",           spflags, flagdesc_mapgen_v7);
 	settings->getFloatNoEx("mgv7_cave_width",          cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",      large_cave_depth);
+	settings->getS16NoEx("mgv7_lava_depth",            lava_depth);
 	settings->getFloatNoEx("mgv7_float_mount_density", float_mount_density);
 	settings->getFloatNoEx("mgv7_float_mount_height",  float_mount_height);
 	settings->getS16NoEx("mgv7_floatland_level",       floatland_level);
@@ -175,6 +177,7 @@ void MapgenV7Params::writeParams(Settings *settings) const
 	settings->setFlagStr("mgv7_spflags",           spflags, flagdesc_mapgen_v7, U32_MAX);
 	settings->setFloat("mgv7_cave_width",          cave_width);
 	settings->setS16("mgv7_large_cave_depth",      large_cave_depth);
+	settings->setS16("mgv7_lava_depth",            lava_depth);
 	settings->setFloat("mgv7_float_mount_density", float_mount_density);
 	settings->setFloat("mgv7_float_mount_height",  float_mount_height);
 	settings->setS16("mgv7_floatland_level",       floatland_level);

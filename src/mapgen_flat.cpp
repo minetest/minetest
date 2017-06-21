@@ -54,6 +54,7 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 	this->spflags          = params->spflags;
 	this->ground_level     = params->ground_level;
 	this->large_cave_depth = params->large_cave_depth;
+	this->lava_depth       = params->lava_depth;
 	this->cave_width       = params->cave_width;
 	this->lake_threshold   = params->lake_threshold;
 	this->lake_steepness   = params->lake_steepness;
@@ -94,6 +95,7 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgflat_spflags",      spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",     ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgflat_lava_depth",       lava_depth);
 	settings->getFloatNoEx("mgflat_cave_width",     cave_width);
 	settings->getFloatNoEx("mgflat_lake_threshold", lake_threshold);
 	settings->getFloatNoEx("mgflat_lake_steepness", lake_steepness);
@@ -112,6 +114,7 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgflat_spflags",      spflags, flagdesc_mapgen_flat, U32_MAX);
 	settings->setS16("mgflat_ground_level",     ground_level);
 	settings->setS16("mgflat_large_cave_depth", large_cave_depth);
+	settings->setS16("mgflat_lava_depth",       lava_depth);
 	settings->setFloat("mgflat_cave_width",     cave_width);
 	settings->setFloat("mgflat_lake_threshold", lake_threshold);
 	settings->setFloat("mgflat_lake_steepness", lake_steepness);
