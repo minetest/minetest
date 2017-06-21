@@ -818,7 +818,7 @@ PeerHelper::PeerHelper(Peer* peer) :
 
 PeerHelper::~PeerHelper()
 {
-	if (m_peer != nullptr)
+	if (m_peer)
 		m_peer->DecUseCount();
 
 	m_peer = nullptr;
