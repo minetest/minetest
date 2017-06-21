@@ -349,7 +349,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Measuring time is very useful for long delays when the
 		machine is swapping a lot.
 	*/
-	int time1 = time(0);
+	std::time_t time1 = time(0);
 
 	/*
 		Get animation parameters
@@ -474,7 +474,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 			timecheck_counter++;
 			if (timecheck_counter > 50) {
 				timecheck_counter = 0;
-				int time2 = time(0);
+				std::time_t time2 = time(0);
 				if (time2 > time1 + 4) {
 					infostream << "ClientMap::renderMap(): "
 						"Rendering takes ages, returning."
