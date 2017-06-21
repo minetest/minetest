@@ -155,7 +155,7 @@ private:
 
 	s16 m_axes_vals[JA_COUNT];
 
-	u8 m_joystick_id;
+	u8 m_joystick_id = 0;
 
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_pressed_keys;
 

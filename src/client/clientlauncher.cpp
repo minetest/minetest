@@ -38,8 +38,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* mainmenumanager.h
  */
-gui::IGUIEnvironment *guienv = NULL;
-gui::IGUIStaticText *guiroot = NULL;
+gui::IGUIEnvironment *guienv = nullptr;
+gui::IGUIStaticText *guiroot = nullptr;
 MainMenuManager g_menumgr;
 
 bool isMenuActive()
@@ -48,7 +48,7 @@ bool isMenuActive()
 }
 
 // Passed to menus to allow disconnecting and exiting
-MainGameCallback *g_gamecallback = NULL;
+MainGameCallback *g_gamecallback = nullptr;
 
 
 ClientLauncher::~ClientLauncher()
