@@ -580,7 +580,7 @@ Example (colored grass block):
         description = "Dirt with Grass",
         -- Regular tiles, as usual
         -- The dirt tile disables palette coloring
-        tiles = {{name = "default_grass.png"}, 
+        tiles = {{name = "default_grass.png"},
             {name = "default_dirt.png", color = "white"}},
         -- Overlay tiles: define them in the same style
         -- The top and bottom tile does not have overlay
@@ -2958,6 +2958,10 @@ These functions return the leftover itemstack.
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+    * Each argument is a 8 Bit unsigned integer
+    * Returns the ColorString from rgb or rgba values
+    * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
