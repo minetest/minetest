@@ -1,6 +1,7 @@
 local modname = core.get_current_modname() or "??"
 local modstorage = core.get_mod_storage()
 
+dofile("preview:example.lua")
 -- This is an example function to ensure it's working properly, should be removed before merge
 core.register_on_shutdown(function()
 	print("[PREVIEW] shutdown client")

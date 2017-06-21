@@ -44,12 +44,12 @@ int script_error_handler(lua_State *L) {
 	lua_getglobal(L, "debug");
 	if (!lua_istable(L, -1)) {
 		lua_pop(L, 1);
-		return 1;
+		return 0;
 	}
 	lua_getfield(L, -1, "traceback");
 	if (!lua_isfunction(L, -1)) {
 		lua_pop(L, 2);
-		return 1;
+		return 0;
 	}
 	lua_pushvalue(L, 1);
 	lua_pushinteger(L, 2);

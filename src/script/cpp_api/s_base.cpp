@@ -89,8 +89,11 @@ ScriptApiBase::ScriptApiBase()
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
 
 	// Add and save an error handler
-	lua_pushcfunction(m_luastack, script_error_handler);
+	lua_getglobal(m_luastack, "debug");
+	lua_getfield(m_luastack, -1, "traceback");
+	//lua_pushcfunction(m_luastack, script_error_handler);
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
+	lua_pop(m_luastack, 1);
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
@@ -157,6 +160,40 @@ void ScriptApiBase::loadScript(const std::string &script_path)
 	}
 	lua_pop(L, 1); // Pop error handler
 }
+
+#ifndef SERVER
+void ScriptApiBase::loadModFromMemory(const std::string &mod_name)
+{
+	ModNameStorer mod_name_storer(getStack(), mod_name);
+
+	const std::string *script_string = getClient()->getModFile(mod_name + ":init.lua");
+	if(script_string == NULL)
+		throw ModError("Mod:\"" + mod_name + "\" lacks init.lua");
+
+	loadScriptFromMemory(script_string, mod_name + ":init.lua");
+}
+
+void ScriptApiBase::loadScriptFromMemory(const std::string *script_string, const std::string &script_name)
+{
+	verbosestream << "Loading and running script " << script_name << std::endl;
+	if(script_string->at(0) == LUA_SIGNATURE[0])
+		throw ModError("Bytecode is prohibited on the client!");
+
+	lua_State *L = getStack();
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	bool ok = !luaL_loadbuffer(L, script_string->c_str(), script_string->length(), script_name.c_str());
+	ok = ok && !lua_pcall(L, 0, 0, error_handler);
+	if (!ok) {
+		std::string error_msg = luaL_checkstring(L, -1);
+		lua_pop(L, 2); // Pop error message and error handler
+		throw ModError("Failed to load and run script " +
+				script_name + ":\n" + error_msg);
+	}
+	lua_pop(L, 1); // Pop error handler
+}
+#endif
 
 // Push the list of callbacks (a lua table).
 // Then push nargs arguments.

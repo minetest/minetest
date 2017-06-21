@@ -36,6 +36,7 @@ ClientScripting::ClientScripting(Client *client):
 	ScriptApiBase()
 {
 	setGameDef(client);
+	setType(ScriptingType::Client);
 
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -57,6 +58,9 @@ ClientScripting::ClientScripting(Client *client):
 	// Push builtin initialization type
 	lua_pushstring(L, "client");
 	lua_setglobal(L, "INIT");
+
+	lua_pushstring(L, "/");
+	lua_setglobal(L, "DIR_DELIM");
 
 	infostream << "SCRIPTAPI: Initialized client game modules" << std::endl;
 }
