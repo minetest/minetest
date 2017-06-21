@@ -202,7 +202,7 @@ private:
 	void initButton(touch_gui_button_id id, rect<s32> button_rect,
 			std::wstring caption, bool immediate_release,
 			float repeat_delay = BUTTON_REPEAT_DELAY);
-	
+
 	struct id_status
 	{
 		int id;
