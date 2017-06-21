@@ -327,17 +327,17 @@ public:
 };
 
 // unused
-#define VOXELFLAG_UNUSED   (1<<0)
+#define VOXELFLAG_UNUSED   (1 << 0)
 // no data about that node
-#define VOXELFLAG_NO_DATA  (1<<1)
+#define VOXELFLAG_NO_DATA  (1 << 1)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED1 (1<<2)
+#define VOXELFLAG_CHECKED1 (1 << 2)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED2 (1<<3)
+#define VOXELFLAG_CHECKED2 (1 << 3)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED3 (1<<4)
+#define VOXELFLAG_CHECKED3 (1 << 4)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED4 (1<<5)
+#define VOXELFLAG_CHECKED4 (1 << 5)
 
 enum VoxelPrintMode
 {
