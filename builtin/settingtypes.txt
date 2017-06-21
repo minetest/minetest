@@ -1028,8 +1028,11 @@ mgv5_spflags (Mapgen v5 specific flags) flags caverns caverns,nocaverns
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv5_cave_width (Cave width) float 0.125
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 mgv5_large_cave_depth (Large cave depth) int -256
+
+#    Y of upper limit of lava in large caves.
+mgv5_lava_depth (Lava depth) int -256
 
 #    Y-level of cavern upper limit.
 mgv5_cavern_limit (Cavern limit) int -256
@@ -1137,8 +1140,11 @@ mgv7_spflags (Mapgen v7 specific flags) flags mountains,ridges,nofloatlands,cave
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv7_cave_width (Cave width) float 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 mgv7_large_cave_depth (Large cave depth) int -33
+
+#    Y of upper limit of lava in large caves.
+mgv7_lava_depth (Lava depth) int -256
 
 #    Controls the density of floatland mountain terrain.
 #    Is an offset added to the 'np_mountain' noise value.
@@ -1218,8 +1224,11 @@ mgflat_spflags (Mapgen flat specific flags) flags nolakes,nohills lakes,hills,no
 #    Y of flat ground.
 mgflat_ground_level (Ground level) int 8
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 mgflat_large_cave_depth (Large cave depth) int -33
+
+#    Y of upper limit of lava in large caves.
+mgflat_lava_depth (Lava depth) int -256
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgflat_cave_width (Cave width) float 0.09
@@ -1257,8 +1266,11 @@ mgflat_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgfractal_cave_width (Cave width) float 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 mgfractal_large_cave_depth (Large cave depth) int -33
+
+#    Y of upper limit of lava in large caves.
+mgfractal_lava_depth (Lava depth) int -256
 
 #    Choice of 18 fractals from 9 formulas.
 #    1 = 4D "Roundy" mandelbrot set.

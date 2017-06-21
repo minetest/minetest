@@ -21,7 +21,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CAVEGEN_HEADER
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
-#define DEFAULT_LAVA_DEPTH (-256)
 
 class GenerateNotifier;
 
@@ -157,7 +156,8 @@ public:
 	CavesRandomWalk(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
 			s32 seed = 0, int water_level = 1,
 			content_t water_source = CONTENT_IGNORE,
-			content_t lava_source = CONTENT_IGNORE);
+			content_t lava_source = CONTENT_IGNORE,
+			int lava_depth = -256);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to

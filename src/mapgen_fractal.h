@@ -35,6 +35,7 @@ struct MapgenFractalParams : public MapgenParams
 	u32 spflags = 0;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
 	u16 fractal = 1;
 	u16 iterations = 11;
 	v3f scale = v3f(4096.0, 1024.0, 4096.0);

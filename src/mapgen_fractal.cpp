@@ -52,6 +52,7 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeMa
 	this->spflags          = params->spflags;
 	this->cave_width       = params->cave_width;
 	this->large_cave_depth = params->large_cave_depth;
+	this->lava_depth       = params->lava_depth;
 	this->fractal          = params->fractal;
 	this->iterations       = params->iterations;
 	this->scale            = params->scale;
@@ -95,6 +96,7 @@ void MapgenFractalParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal);
 	settings->getFloatNoEx("mgfractal_cave_width",     cave_width);
 	settings->getS16NoEx("mgfractal_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgfractal_lava_depth",       lava_depth);
 	settings->getU16NoEx("mgfractal_fractal",          fractal);
 	settings->getU16NoEx("mgfractal_iterations",       iterations);
 	settings->getV3FNoEx("mgfractal_scale",            scale);
@@ -117,6 +119,7 @@ void MapgenFractalParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal, U32_MAX);
 	settings->setFloat("mgfractal_cave_width",     cave_width);
 	settings->setS16("mgfractal_large_cave_depth", large_cave_depth);
+	settings->setS16("mgfractal_lava_depth",       lava_depth);
 	settings->setU16("mgfractal_fractal",          fractal);
 	settings->setU16("mgfractal_iterations",       iterations);
 	settings->setV3F("mgfractal_scale",            scale);
