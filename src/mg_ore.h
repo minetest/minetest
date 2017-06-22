@@ -32,13 +32,10 @@ class MMVManip;
 
 /////////////////// Ore generation flags
 
-#define OREFLAG_ABSHEIGHT     0x01
+#define OREFLAG_ABSHEIGHT     0x01 // Non-functional but kept to not break flags
 #define OREFLAG_PUFF_CLIFFS   0x02
 #define OREFLAG_PUFF_ADDITIVE 0x04
 #define OREFLAG_USE_NOISE     0x08
-
-#define ORE_RANGE_ACTUAL 1
-#define ORE_RANGE_MIRROR 2
 
 enum OreType {
 	ORE_SCATTER,
