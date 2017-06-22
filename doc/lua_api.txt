@@ -1076,12 +1076,7 @@ Ore attributes
 See section "Flag Specifier Format".
 
 Currently supported flags:
-`absheight`, `puff_cliffs`, `puff_additive_composition`.
-
-### `absheight`
-Also produce this same ore between the height range of `-y_max` and `-y_min`.
-
-Useful for having ore in sky realms without having to duplicate ore entries.
+`puff_cliffs`, `puff_additive_composition`.
 
 ### `puff_cliffs`
 If set, puff ore generation will not taper down large differences in displacement
