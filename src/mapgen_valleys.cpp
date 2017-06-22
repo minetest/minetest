@@ -733,7 +733,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
 			CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-				c_water_source, c_lava_source);
+				c_water_source, c_lava_source, lava_max_height);
 
 			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 		}
