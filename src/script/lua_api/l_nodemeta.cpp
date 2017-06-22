@@ -176,7 +176,8 @@ NodeMetaRef::NodeMetaRef(v3s16 p, ServerEnvironment *env):
 }
 
 NodeMetaRef::NodeMetaRef(Metadata *meta):
-	m_meta(meta)
+	m_meta(meta),
+	m_is_local(true)
 {
 }
 
