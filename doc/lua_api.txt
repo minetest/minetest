@@ -47,47 +47,41 @@ Paths
 Games
 -----
 Games are looked up from:
+  * `$path_share/games/gameid/`
+  * `$path_user/games/gameid/`
+Where `gameid` is unique to each game.
 
-* `$path_share/games/gameid/`
-* `$path_user/games/gameid/`
-
-where `gameid` is unique to each game.
-
-The game directory contains the file `game.conf`, which contains:
-
-    name = <Human-readable full name of the game>
-
-e.g.
-
-    name = Minetest
-
-Optionally, game.conf can also contain:
-
-    disallowed_mapgens = <comma-separated mapgens>
-
-e.g.
-
-    disallowed_mapgens = v5,v6,flat
-
-These mapgens are removed from the list of mapgens for the game.
-
-The game directory can contain the file minetest.conf, which will be used
-to set default settings when running the particular game.
-It can also contain a settingtypes.txt in the same format as the one in builtin.
-This settingtypes.txt will be parsed by the menu and the settings will be displayed
-in the "Games" category in the settings tab.
+The game directory can contain the following files:
+  * `game.conf`
+    Which contains:
+      * name = <Human-readable full name of the game>
+        e.g.
+        name = Minetest
+      * Optionally, game.conf can also contain:
+        disallowed_mapgens = <comma-separated mapgens>
+        e.g.
+        disallowed_mapgens = v5,v6,flat
+        These mapgens are removed from the list of mapgens for the game.
+  * minetest.conf
+    Used to set default settings when running this game.
+  * settingtypes.txt
+    In the same format as the one in builtin.
+    This settingtypes.txt will be parsed by the menu and the settings will be
+    displayed in the "Games" category in the advanced settings tab.
+  * If the subgame contains a folder called `textures` the server will load it
+    as a texturepack, overriding mod textures.
+    Any server texturepack will override mod textures and the game texturepack.
 
 ### Menu images
 
-Games can provide custom main menu images. They are put inside a `menu` directory
-inside the game directory.
+Games can provide custom main menu images. They are put inside a `menu`
+directory inside the game directory.
 
-The images are named `$identifier.png`, where `$identifier` is
-one of `overlay,background,footer,header`.
-If you want to specify multiple images for one identifier, add additional images named
-like `$identifier.$n.png`, with an ascending number $n starting with 1, and a random
-image will be chosen from the provided ones.
-
+The images are named `$identifier.png`, where `$identifier` is one of
+`overlay`, `background`, `footer`, `header`.
+If you want to specify multiple images for one identifier, add additional
+images named like `$identifier.$n.png`, with an ascending number $n starting
+with 1, and a random image will be chosen from the provided ones.
 
 Mod load path
 -------------
