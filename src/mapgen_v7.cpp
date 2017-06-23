@@ -59,7 +59,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	this->large_cave_depth    = params->large_cave_depth;
 	this->lava_depth          = params->lava_depth;
 	this->float_mount_density = params->float_mount_density;
-	this->float_mount_height  = params->float_mount_height;
+	float_mount_height_lim    = MYMAX(params->float_mount_height, 1.0f);
 	this->floatland_level     = params->floatland_level;
 	this->shadow_limit        = params->shadow_limit;
 	this->cavern_limit        = params->cavern_limit;
@@ -382,7 +382,8 @@ float MapgenV7::baseTerrainLevelFromMap(int index)
 
 bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 {
-	float mnt_h_n = NoisePerlin2D(&noise_mount_height->np, x, z, seed);
+	float mnt_h_n =
+			MYMAX(NoisePerlin2D(&noise_mount_height->np, x, z, seed), 1.0f);
 	float density_gradient = -((float)y / mnt_h_n);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
 
@@ -392,7 +393,7 @@ bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
-	float mounthn = noise_mount_height->result[idx_xz];
+	float mounthn = MYMAX(noise_mount_height->result[idx_xz], 1.0f);
 	float density_gradient = -((float)y / mounthn);
 	float mountn = noise_mountain->result[idx_xyz];
 
@@ -404,8 +405,8 @@ bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	// Make rim 2 nodes thick to match floatland base terrain
 	float density_gradient = (y >= floatland_level) ?
-		-pow((float)(y - floatland_level) / float_mount_height, 0.75f) :
-		-pow((float)(floatland_level - 1 - y) / float_mount_height, 0.75f);
+		-pow((float)(y - floatland_level) / float_mount_height_lim, 0.75f) :
+		-pow((float)(floatland_level - 1 - y) / float_mount_height_lim, 0.75f);
 
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
 
@@ -421,7 +422,8 @@ void MapgenV7::floatBaseExtentFromMap(s16 *float_base_min, s16 *float_base_max, 
 
 	float n_base = noise_floatland_base->result[idx_xz];
 	if (n_base > 0.0f) {
-		float n_base_height = noise_float_base_height->result[idx_xz];
+		float n_base_height =
+				MYMAX(noise_float_base_height->result[idx_xz], 1.0f);
 		float amp = n_base * n_base_height;
 		float ridge = n_base_height / 3.0f;
 		base_min = floatland_level - amp / 1.5f;
