@@ -75,7 +75,8 @@ The game directory can contain the file minetest.conf, which will be used
 to set default settings when running the particular game.
 It can also contain a settingtypes.txt in the same format as the one in builtin.
 This settingtypes.txt will be parsed by the menu and the settings will be displayed
-in the "Games" category in the settings tab.
+in the "Games" category in the settings tab. If the subgame contains a folder called `textures`
+the engine will attempt to load it as a texturepack.
 
 ### Menu images
 
