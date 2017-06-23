@@ -106,6 +106,8 @@ private:
 	Noise *noise_float_base_height;
 	Noise *noise_mountain;
 	Noise *noise_ridge;
+
+	float float_mount_height_lim;
 };
 
 #endif
