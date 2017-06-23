@@ -4303,17 +4303,17 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 		   << PROJECT_NAME_C " " << g_version_hash
-		   << " FPS = " << fps
-		   << " (R: range_all=" << draw_control->range_all << ")"
+		   << "; " << fps << " FPS"
+		   << ", (R: range_all=" << draw_control->range_all << ")"
 		   << std::setprecision(0)
-		   << " drawtime = " << drawtime_avg
+		   << ", drawtime = " << drawtime_avg << " ms"
 		   << std::setprecision(1)
 		   << ", dtime_jitter = "
 		   << (stats.dtime_jitter.max_fraction * 100.0) << " %"
 		   << std::setprecision(1)
 		   << ", v_range = " << draw_control->wanted_range
 		   << std::setprecision(3)
-		   << ", RTT = " << client->getRTT();
+		   << ", RTT = " << client->getRTT() << " s";
 		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
@@ -4334,7 +4334,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		   << "(" << (player_position.X / BS)
 		   << ", " << (player_position.Y / BS)
 		   << ", " << (player_position.Z / BS)
-		   << ") (yaw=" << (wrapDegrees_0_360(cam.camera_yaw))
+		   << ") (yaw=" << (wrapDegrees_0_360(cam.camera_yaw)) << "°"
 		   << " " << yawToDirectionString(cam.camera_yaw)
 		   << ") (seed = " << ((u64)client->getMapSeed())
 		   << ")";
@@ -4345,9 +4345,11 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
 			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
 				const ContentFeatures &features = nodedef->get(n);
-				os << " (pointing_at = " << nodedef->get(n).name
-				   << " - " << features.tiledef[0].name.c_str()
-				   << ")";
+				os << " (pointing_at = \"" << nodedef->get(n).name
+				   << "\", param1 = " << (u64) n.getParam1()
+				   << ", param2 = " << (u64) n.getParam2()
+				   << ", tiledef[0] = \"" << features.tiledef[0].name.c_str()
+				   << "\")";
 			}
 		}
 
