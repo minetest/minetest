@@ -4346,8 +4346,8 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
 				const ContentFeatures &features = nodedef->get(n);
 				os << " (pointing_at = \"" << nodedef->get(n).name
-				   << "\", param1 = " << (u64) n.param1
-				   << ", param2 = " << (u64) n.param2
+				   << "\", param1 = " << (u64) n.getParam1()
+				   << ", param2 = " << (u64) n.getParam2()
 				   << ", tiledef[0] = \"" << features.tiledef[0].name.c_str()
 				   << "\")";
 			}
