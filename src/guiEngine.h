@@ -156,7 +156,7 @@ public:
 			IMenuManager *menumgr,
 			scene::ISceneManager *smgr,
 			MainMenuData *data,
-			bool& kill);
+			bool &kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
