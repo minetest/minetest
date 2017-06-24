@@ -155,6 +155,24 @@ function core.yaw_to_dir(yaw)
 	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
 end
 
+function core.is_colored_paramtype(ptype)
+	return (ptype == "color") or (ptype == "colorfacedir") or
+		(ptype == "colorwallmounted")
+end
+
+function core.strip_param2_color(param2, paramtype2)
+	if not core.is_colored_paramtype(paramtype2) then
+		return nil
+	end
+	if paramtype2 == "colorfacedir" then
+		param2 = math.floor(param2 / 32) * 32
+	elseif paramtype2 == "colorwallmounted" then
+		param2 = math.floor(param2 / 8) * 8
+	end
+	-- paramtype2 == "color" requires no modification.
+	return param2
+end
+
 function core.get_node_drops(node, toolname)
 	-- Compatibility, if node is string
 	local nodename = node
@@ -166,24 +184,17 @@ function core.get_node_drops(node, toolname)
 	end
 	local def = core.registered_nodes[nodename]
 	local drop = def and def.drop
+	local ptype = def and def.paramtype2
+	-- get color, if there is color (otherwise nil)
+	local palette_index = core.strip_param2_color(param2, ptype)
 	if drop == nil then
 		-- default drop
-		local stack = ItemStack(nodename)
-		if def then
-			local type = def.paramtype2
-			if (type == "color") or (type == "colorfacedir") or
-					(type == "colorwallmounted") then
-				local meta = stack:get_meta()
-				local color_part = param2
-				if (type == "colorfacedir") then
-					color_part = math.floor(color_part / 32) * 32;
-				elseif (type == "colorwallmounted") then
-					color_part = math.floor(color_part / 8) * 8;
-				end
-				meta:set_int("palette_index", color_part)
-			end
+		if palette_index then
+			local stack = ItemStack(nodename)
+			stack:get_meta():set_int("palette_index", palette_index)
+			return {stack:to_string()}
 		end
-		return {stack:to_string()}
+		return {nodename}
 	elseif type(drop) == "string" then
 		-- itemstring drop
 		return {drop}
@@ -218,6 +229,12 @@ function core.get_node_drops(node, toolname)
 		if good_rarity and good_tool then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do
+				-- add color, if necessary
+				if item.inherit_color and palette_index then
+					local stack = ItemStack(add_item)
+					stack:get_meta():set_int("palette_index", palette_index)
+					add_item = stack:to_string()
+				end
 				got_items[#got_items+1] = add_item
 			end
 			if drop.max_items ~= nil and got_count == drop.max_items then
