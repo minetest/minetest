@@ -46,14 +46,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /******************************************************************************/
-/** TextDestGuiEngine                                                         */
-/******************************************************************************/
-TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
-{
-	m_engine = engine;
-}
-
-/******************************************************************************/
 void TextDestGuiEngine::gotText(const StringMap &fields)
 {
 	m_engine->getScriptIface()->handleMainMenuButtons(fields);
@@ -63,14 +55,6 @@ void TextDestGuiEngine::gotText(const StringMap &fields)
 void TextDestGuiEngine::gotText(const std::wstring &text)
 {
 	m_engine->getScriptIface()->handleMainMenuEvent(wide_to_utf8(text));
-}
-
-/******************************************************************************/
-/** MenuTextureSource                                                         */
-/******************************************************************************/
-MenuTextureSource::MenuTextureSource(video::IVideoDriver *driver)
-{
-	m_driver = driver;
 }
 
 /******************************************************************************/
@@ -85,7 +69,7 @@ MenuTextureSource::~MenuTextureSource()
 }
 
 /******************************************************************************/
-video::ITexture* MenuTextureSource::getTexture(const std::string &name, u32 *id)
+video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 {
 	if(id)
 		*id = 0;
@@ -130,13 +114,13 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 /** GUIEngine                                                                 */
 /******************************************************************************/
-GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
-						JoystickController *joystick,
-						gui::IGUIElement* parent,
-						IMenuManager *menumgr,
-						scene::ISceneManager* smgr,
-						MainMenuData* data,
-						bool& kill) :
+GUIEngine::GUIEngine(irr::IrrlichtDevice *dev,
+		JoystickController *joystick,
+		gui::IGUIElement *parent,
+		IMenuManager *menumgr,
+		scene::ISceneManager *smgr,
+		MainMenuData *data,
+		bool &kill) :
 	m_device(dev),
 	m_parent(parent),
 	m_menumanager(menumgr),
@@ -388,7 +372,7 @@ void GUIEngine::cloudPostProcess()
 }
 
 /******************************************************************************/
-void GUIEngine::drawBackground(video::IVideoDriver* driver)
+void GUIEngine::drawBackground(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
@@ -430,7 +414,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawOverlay(video::IVideoDriver* driver)
+void GUIEngine::drawOverlay(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
@@ -449,7 +433,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawHeader(video::IVideoDriver* driver)
+void GUIEngine::drawHeader(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
@@ -483,7 +467,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawFooter(video::IVideoDriver* driver)
+void GUIEngine::drawFooter(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
