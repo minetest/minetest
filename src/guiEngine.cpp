@@ -114,13 +114,13 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 /** GUIEngine                                                                 */
 /******************************************************************************/
-GUIEngine::GUIEngine(	irr::IrrlichtDevice *dev,
-						JoystickController *joystick,
-						gui::IGUIElement *parent,
-						IMenuManager *menumgr,
-						scene::ISceneManager *smgr,
-						MainMenuData *data,
-						bool& kill) :
+GUIEngine::GUIEngine(irr::IrrlichtDevice *dev,
+		JoystickController *joystick,
+		gui::IGUIElement *parent,
+		IMenuManager *menumgr,
+		scene::ISceneManager *smgr,
+		MainMenuData *data,
+		bool &kill) :
 	m_device(dev),
 	m_parent(parent),
 	m_menumanager(menumgr),
