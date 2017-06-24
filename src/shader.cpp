@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMaterialRenderer.h>
 #include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "EShaderTypes.h"
 #include "log.h"
 #include "gamedef.h"
@@ -178,7 +178,7 @@ class ShaderCallback : public video::IShaderConstantSetCallBack
 	std::vector<IShaderConstantSetter*> m_setters;
 
 public:
-	ShaderCallback(const std::vector<IShaderConstantSetterFactory*> &factories)
+	ShaderCallback(const std::vector<IShaderConstantSetterFactory *> &factories)
 	{
 		for (u32 i = 0; i < factories.size(); ++i)
 			m_setters.push_back(factories[i]->create());
@@ -331,7 +331,7 @@ private:
 	std::vector<ShaderCallback *> m_callbacks;
 };
 
-IWritableShaderSource* createShaderSource()
+IWritableShaderSource *createShaderSource()
 {
 	return new ShaderSource();
 }
@@ -341,7 +341,7 @@ IWritableShaderSource* createShaderSource()
 */
 ShaderInfo generate_shader(const std::string &name,
 		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
+		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache);
 
 /*
@@ -522,7 +522,7 @@ void ShaderSource::rebuildShaders()
 
 ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
 		std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
+		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache)
 {
 	ShaderInfo shaderinfo;
@@ -557,7 +557,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (!enable_shaders)
 		return shaderinfo;
 
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 	if(!gpu){

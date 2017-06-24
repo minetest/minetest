@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "scripting_mainmenu.h"
 #include "util/numeric.h"
 #include "config.h"
@@ -115,9 +115,9 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /** GUIEngine                                                                 */
 /******************************************************************************/
 GUIEngine::GUIEngine(JoystickController *joystick,
-		gui::IGUIElement* parent,
+		gui::IGUIElement *parent,
 		IMenuManager *menumgr,
-		MainMenuData* data,
+		MainMenuData *data,
 		bool &kill) :
 	m_parent(parent),
 	m_menumanager(menumgr),
@@ -225,7 +225,7 @@ void GUIEngine::run()
 {
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	cloudInit();
 
@@ -494,7 +494,7 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		bool tile_image, unsigned int minsize)
 {
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);

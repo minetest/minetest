@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "mesh.h"
 #include <IMeshManipulator.h>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "client.h"
 #include "log.h"
 #include "noise.h"

@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "settings.h"
 #include "util/directiontables.h"
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 
 /*
 	MeshMakeData

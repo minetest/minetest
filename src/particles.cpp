@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "collision.h"
 #include <stdlib.h>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "environment.h"
@@ -245,7 +245,7 @@ void Particle::updateVertices()
 	ParticleSpawner
 */
 
-ParticleSpawner::ParticleSpawner(IGameDef* gamedef, LocalPlayer *player,
+ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
@@ -531,7 +531,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
-			ParticleSpawner* toadd = new ParticleSpawner(client, player,
+			ParticleSpawner *toadd = new ParticleSpawner(client, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
 					*event->add_particlespawner.minpos,
@@ -576,7 +576,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
-			Particle* toadd = new Particle(client, player, m_env,
+			Particle *toadd = new Particle(client, player, m_env,
 					*event->spawn_particle.pos,
 					*event->spawn_particle.vel,
 					*event->spawn_particle.acc,

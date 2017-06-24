@@ -36,7 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUIFont.h>
 #include <IGUITabControl.h>
 #include <IGUIComboBox.h>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "log.h"
 #include "client/tile.h" // ITextureSource
 #include "hud.h" // drawItemStack
@@ -80,9 +80,8 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 }
 
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
-		gui::IGUIElement* parent, s32 id, IMenuManager *menumgr,
-		Client *client,
-		ISimpleTextureSource *tsrc, IFormSource* fsrc, TextDest* tdst,
+		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
+		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
 		bool remap_dbl_click) :
 	GUIModalMenu(RenderingEngine::get_gui_env(), parent, id, menumgr),
 	m_invmgr(client),

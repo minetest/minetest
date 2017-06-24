@@ -8,7 +8,7 @@
 #include "profiler.h"
 #include "util/numeric.h"
 #include <cmath>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "camera.h"  // CameraModes
 

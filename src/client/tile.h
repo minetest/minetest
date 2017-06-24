@@ -144,7 +144,7 @@ public:
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
 
-IWritableTextureSource* createTextureSource();
+IWritableTextureSource *createTextureSource();
 
 #ifdef __ANDROID__
 video::IImage * Align2Npot2(video::IImage * image, video::IVideoDriver* driver);

@@ -151,9 +151,9 @@ public:
 	 * @param data struct to transfer data to main game handling
 	 */
 	GUIEngine(JoystickController *joystick,
-			gui::IGUIElement* parent,
+			gui::IGUIElement *parent,
 			IMenuManager *menumgr,
-			MainMenuData* data,
+			MainMenuData *data,
 			bool &kill);
 
 	/** default destructor */

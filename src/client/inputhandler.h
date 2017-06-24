@@ -220,8 +220,7 @@ public:
 class RealInputHandler : public InputHandler
 {
 public:
-	RealInputHandler(MyEventReceiver *receiver)
-	    : m_receiver(receiver)
+	RealInputHandler(MyEventReceiver *receiver) : m_receiver(receiver)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -241,7 +240,9 @@ public:
 	virtual v2s32 getMousePos()
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {
-			return RenderingEngine::get_raw_device()->getCursorControl()->getPosition();
+			return RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->getPosition();
 		} else {
 			return m_mousepos;
 		}
@@ -249,7 +250,9 @@ public:
 	virtual void setMousePos(s32 x, s32 y)
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {
-			RenderingEngine::get_raw_device()->getCursorControl()->setPosition(x, y);
+			RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->setPosition(x, y);
 		} else {
 			m_mousepos = v2s32(x, y);
 		}

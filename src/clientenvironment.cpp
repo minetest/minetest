@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "settings.h"
 #include <algorithm>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 
 /*
 	ClientEnvironment

@@ -839,7 +839,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 	if (ModApiMainMenu::isMinetestPath(absolute_destination)) {
 		fs::CreateAllDirs(absolute_destination);
 
-		io::IFileSystem* fs = RenderingEngine::get_filesystem();
+		io::IFileSystem *fs = RenderingEngine::get_filesystem();
 
 		if (!fs->addFileArchive(zipfile,true,false,io::EFAT_ZIP)) {
 			lua_pushboolean(L,false);

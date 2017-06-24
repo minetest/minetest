@@ -184,13 +184,13 @@ public:
 	void handleParticleEvent(ClientEvent *event, Client *client,
 			LocalPlayer *player);
 
-	void addDiggingParticles(IGameDef* gamedef, LocalPlayer *player, v3s16 pos,
+	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	void addPunchingParticles(IGameDef* gamedef, LocalPlayer *player, v3s16 pos,
+	void addPunchingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	void addNodeParticle(IGameDef* gamedef, LocalPlayer *player, v3s16 pos,
+	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
 protected:

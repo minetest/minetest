@@ -239,7 +239,7 @@ public:
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
-	video::IImage* getOrLoad(const std::string &name)
+	video::IImage *getOrLoad(const std::string &name)
 	{
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -247,7 +247,7 @@ public:
 			n->second->grab(); // Grab for caller
 			return n->second;
 		}
-		video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 		std::string path = getTexturePath(name);
 		if (path == ""){
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
@@ -428,7 +428,7 @@ private:
 	bool m_setting_anisotropic_filter;
 };
 
-IWritableTextureSource* createTextureSource()
+IWritableTextureSource *createTextureSource()
 {
 	return new TextureSource();
 }
@@ -451,7 +451,7 @@ TextureSource::TextureSource()
 
 TextureSource::~TextureSource()
 {
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	unsigned int textures_before = driver->getTextureCount();
 
@@ -771,7 +771,7 @@ void TextureSource::rebuildImagesAndTextures()
 {
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Recreate textures
@@ -1181,7 +1181,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		video::IImage *& baseimg)
 {
 	const char escape = '\\'; // same as in generateImage()
-	video::IVideoDriver* driver = RenderingEngine::get_video_driver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Stuff starting with [ are special commands
@@ -1260,7 +1260,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
 			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
 				// Upscale overlying image
-				video::IImage* scaled_image = RenderingEngine::get_video_driver()->
+				video::IImage *scaled_image = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim_dst);
 				image->copyToScaling(scaled_image);
 
@@ -1268,7 +1268,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				scaled_image->drop();
 			} else {
 				// Upscale base image
-				video::IImage* scaled_base = RenderingEngine::get_video_driver()->
+				video::IImage *scaled_base = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->copyToScaling(scaled_base);
 				baseimg->drop();
@@ -1840,7 +1840,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 height = stoi(sf.next(""));
 			core::dimension2d<u32> dim(width, height);
 
-			video::IImage* image = RenderingEngine::get_video_driver()->
+			video::IImage *image = RenderingEngine::get_video_driver()->
 				createImage(video::ECF_A8R8G8B8, dim);
 			baseimg->copyToScaling(image);
 			baseimg->drop();

@@ -43,7 +43,7 @@ public:
 
 	video::IVideoDriver *getVideoDriver();
 	static void setXorgClassHint(const video::SExposedVideoData &video_data,
-		const std::string &name);
+			const std::string &name);
 	bool setWindowIcon();
 	bool setXorgWindowIconFromPath(const std::string &icon_file);
 	static bool print_video_modes();
@@ -82,8 +82,8 @@ public:
 
 	static u32 get_timer_time()
 	{
-		sanity_check(s_singleton && s_singleton->m_device
-			&& s_singleton->m_device->getTimer());
+		sanity_check(s_singleton && s_singleton->m_device &&
+				s_singleton->m_device->getTimer());
 		return s_singleton->m_device->getTimer()->getTime();
 	}
 
@@ -93,19 +93,20 @@ public:
 		return s_singleton->m_device->getGUIEnvironment();
 	}
 	static void draw_load_screen(const std::wstring &text,
-		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime = 0,
-		int percent = 0, bool clouds = true)
+			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
+			float dtime = 0, int percent = 0, bool clouds = true)
 	{
-		s_singleton->_draw_load_screen(text, guienv, tsrc, dtime, percent, clouds);
+		s_singleton->_draw_load_screen(
+				text, guienv, tsrc, dtime, percent, clouds);
 	}
 
 	inline static void draw_scene(Camera *camera, Client *client, LocalPlayer *player,
-		Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
-		const v2u32 &screensize, const video::SColor &skycolor,
-		bool show_hud, bool show_minimap)
+			Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
+			const v2u32 &screensize, const video::SColor &skycolor,
+			bool show_hud, bool show_minimap)
 	{
-		s_singleton->_draw_scene(camera, client, player, hud, mapper, guienv, screensize,
-			skycolor, show_hud, show_minimap);
+		s_singleton->_draw_scene(camera, client, player, hud, mapper, guienv,
+				screensize, skycolor, show_hud, show_minimap);
 	}
 
 	static bool run()
@@ -116,59 +117,61 @@ public:
 
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
+
 private:
-	enum paralax_sign {
+	enum paralax_sign
+	{
 		LEFT = -1,
 		RIGHT = 1,
 		EYECOUNT = 2
 	};
 
-	void _draw_load_screen(const std::wstring &text,
-		gui::IGUIEnvironment *guienv, ITextureSource *tsrc, float dtime = 0,
-		int percent = 0, bool clouds = true);
+	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
+			ITextureSource *tsrc, float dtime = 0, int percent = 0,
+			bool clouds = true);
 
-	void _draw_scene(Camera *camera, Client *client, LocalPlayer *player,
-		Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
-		const v2u32 &screensize, const video::SColor &skycolor,
-		bool show_hud, bool show_minimap);
+	void _draw_scene(Camera *camera, Client *client, LocalPlayer *player, Hud *hud,
+			Minimap *mapper, gui::IGUIEnvironment *guienv,
+			const v2u32 &screensize, const video::SColor &skycolor,
+			bool show_hud, bool show_minimap);
 
 	void draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-		bool draw_wield_tool, Client *client, gui::IGUIEnvironment *guienv);
+			bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv);
 
-	void draw_interlaced_3d_mode(Camera *camera, bool show_hud,
-		Hud *hud, const v2u32& screensize,
-		bool draw_wield_tool, Client *client, gui::IGUIEnvironment *guienv,
-		const video::SColor &skycolor);
+	void draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud *hud,
+			const v2u32 &screensize, bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
-	void draw_sidebyside_3d_mode(Camera *camera, bool show_hud,
-		Hud *hud, const v2u32 &screensize,
-		bool draw_wield_tool, Client *client, gui::IGUIEnvironment *guienv,
-		const video::SColor &skycolor);
+	void draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud *hud,
+			const v2u32 &screensize, bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
-	void draw_top_bottom_3d_mode(Camera *camera, bool show_hud,
-		Hud *hud, const v2u32& screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
+	void draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud *hud,
+			const v2u32 &screensize, bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
-	void draw_pageflip_3d_mode(Camera *camera, bool show_hud,
-		Hud *hud, const v2u32 &screensize, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment* guienv, const video::SColor &skycolor);
+	void draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *hud,
+			const v2u32 &screensize, bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
 	void draw_plain(Camera *camera, bool show_hud, Hud *hud, const v2u32 &screensize,
-		bool draw_wield_tool, Client *client, gui::IGUIEnvironment *guienv,
-		const video::SColor &skycolor);
+			bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
-	void init_texture(const v2u32& screensize,
-		video::ITexture** texture, const char* name);
+	void init_texture(const v2u32 &screensize, video::ITexture **texture,
+			const char *name);
 
-	video::ITexture* draw_image(const v2u32 &screensize,
-		paralax_sign psign, const irr::core::matrix4 &startMatrix,
-		const irr::core::vector3df &focusPoint, bool show_hud,
-		Camera *camera, Hud *hud, bool draw_wield_tool, Client *client,
-		gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
+	video::ITexture *draw_image(const v2u32 &screensize, paralax_sign psign,
+			const irr::core::matrix4 &startMatrix,
+			const irr::core::vector3df &focusPoint, bool show_hud,
+			Camera *camera, Hud *hud, bool draw_wield_tool, Client *client,
+			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
 
-	video::ITexture* draw_hud(const v2u32 &screensize,
-		bool show_hud, Hud *hud, Client *client, bool draw_crosshair,
-		const video::SColor &skycolor, gui::IGUIEnvironment* guienv, Camera *camera);
+	video::ITexture *draw_hud(const v2u32 &screensize, bool show_hud, Hud *hud,
+			Client *client, bool draw_crosshair,
+			const video::SColor &skycolor, gui::IGUIEnvironment *guienv,
+			Camera *camera);
 
 	irr::IrrlichtDevice *m_device = nullptr;
 	static RenderingEngine *s_singleton;

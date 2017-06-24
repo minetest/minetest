@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
 #include <cmath>
-#include <client/renderingengine.h>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
