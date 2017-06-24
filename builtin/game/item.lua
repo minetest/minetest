@@ -572,6 +572,18 @@ function core.node_dig(pos, node, digger)
 	end
 end
 
+function core.itemstring_with_palette(item, palette_index)
+	local stack = ItemStack(item) -- convert to ItemStack
+	stack:get_meta():set_int("palette_index", palette_index)
+	return stack:to_string()
+end
+
+function core.itemstring_with_color(item, colorstring)
+	local stack = ItemStack(item) -- convert to ItemStack
+	stack:get_meta():set_string("color", colorstring)
+	return stack:to_string()
+end
+
 -- This is used to allow mods to redefine core.item_place and so on
 -- NOTE: This is not the preferred way. Preferred way is to provide enough
 --       callbacks to not require redefining global functions. -celeron55

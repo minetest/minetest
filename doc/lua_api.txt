@@ -541,16 +541,16 @@ to itself (without metadata).
 Craft recipes only support item strings, but fortunately item strings
 can also contain metadata. Example craft recipe registration:
 
-    local stack = ItemStack("wool:block")
-    dyed:get_meta():set_int("palette_index", 3) -- add index
     minetest.register_craft({
-        output = dyed:to_string(), -- convert to string
+        output = minetest.itemstring_with_palette("wool:block", 3),
         type = "shapeless",
         recipe = {
             "wool:block",
             "dye:red",
         },
     })
+
+To set the `color` field, you can use `minetest.itemstring_with_color`.
 
 Metadata field filtering in the `recipe` field are not supported yet,
 so the craft output is independent of the color of the ingredients.
@@ -2728,6 +2728,21 @@ and `minetest.auth_reload` call the authetification handler.
       digger's inventory
     * Can be overridden to get different functionality (e.g. dropping items on
       ground)
+* `minetest.itemstring_with_palette(item, palette_index)`: returns an item string
+    * Creates an item string which contains palette index information
+      for hardware colorization. You can use the returned string
+      as an output in a craft recipe.
+    * `item`: the item stack which becomes colored. Can be in string,
+      table and native form.
+    * `palette_index`: this index is added to the item stack
+* `minetest.itemstring_with_color(item, colorstring)`: returns an item string
+    * Creates an item string which contains static color information
+      for hardware colorization. Use this method if you wish to colorize
+      an item that does not own a palette. You can use the returned string
+      as an output in a craft recipe.
+    * `item`: the item stack which becomes colored. Can be in string,
+      table and native form.
+    * `colorstring`: the new color of the item stack
 
 ### Rollback
 * `minetest.rollback_get_node_actions(pos, range, seconds, limit)`:
