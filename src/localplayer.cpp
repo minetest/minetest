@@ -723,6 +723,9 @@ v3s16 LocalPlayer::getStandingNodePos()
 
 v3s16 LocalPlayer::getFootstepNodePos()
 {
+	if (in_liquid_stable)
+		// Emit swimming sound if the player is in liquid
+		return floatToInt(getPosition(), BS);
 	if (touching_ground)
 		// BS * 0.05 below the player's feet ensures a 1/16th height
 		// nodebox is detected instead of the node below it.
