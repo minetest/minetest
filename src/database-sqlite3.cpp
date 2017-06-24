@@ -565,7 +565,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->addItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
+				invList->changeItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
 			}
 		}
 		sqlite3_reset(m_stmt_player_load_inventory_items);

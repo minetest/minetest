@@ -267,7 +267,7 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
-		const u16 stackMax = getStackMax(itemdef);
+		const u16 stackMax = newitem_.getStackMax(itemdef);
 
 		*this = newitem;
 
