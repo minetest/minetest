@@ -966,7 +966,7 @@ int ModApiEnvMod::l_clear_objects(lua_State *L)
 	return 0;
 }
 
-// line_of_sight(pos1, pos2, stepsize, nobuild) -> true/false, pos
+// line_of_sight(pos1, pos2, stepsize, ignore_buildable_to) -> true/false, pos
 int ModApiEnvMod::l_line_of_sight(lua_State *L)
 {
 	float stepsize = 1.0;
@@ -977,15 +977,15 @@ int ModApiEnvMod::l_line_of_sight(lua_State *L)
 	v3f pos1 = checkFloatPos(L, 1);
 	// read position 2 from lua
 	v3f pos2 = checkFloatPos(L, 2);
-	//read step size from lua
+	// read step size from lua
 	if (lua_isnumber(L, 3)) {
 		stepsize = lua_tonumber(L, 3);
 	}
-	//read ignore buildable_to from lua
-	bool nobuild = lua_toboolean(L, 4);
+
+	bool ignore_buildable_to = lua_toboolean(L, 4);
 
 	v3s16 p;
-	bool success = env->line_of_sight(pos1, pos2, stepsize, nobuild, &p);
+	bool success = env->line_of_sight(pos1, pos2, stepsize, ignore_buildable_to, &p);
 	lua_pushboolean(L, success);
 	if (!success) {
 		push_v3s16(L, p);

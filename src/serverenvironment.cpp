@@ -456,7 +456,8 @@ bool ServerEnvironment::removePlayerFromDatabase(const std::string &name)
 	return m_player_database->removePlayer(name);
 }
 
-bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, bool nobuild, v3s16 *p)
+bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize,
+	bool ignore_buildable_to, v3s16 *p)
 {
 	float distance = pos1.getDistanceFrom(pos2);
 
@@ -465,29 +466,20 @@ bool ServerEnvironment::line_of_sight(v3f pos1, v3f pos2, float stepsize, bool n
 		(pos2.Y - pos1.Y)/distance,
 		(pos2.Z - pos1.Z)/distance);
 
-	//find out if there's a node on path between pos1 and pos2
-	//when nobuild is true then buildable_to nodes are ignored
+	// find out if there's a node on path between pos1 and pos2
 	for (float i = 1; i < distance; i += stepsize) {
 		v3s16 pos = floatToInt(v3f(normalized_vector.X * i,
 			normalized_vector.Y * i,
 			normalized_vector.Z * i) +pos1,BS);
 
 		MapNode n = getMap().getNodeNoEx(pos);
+		const ContentFeatures &cf = m_gamedef->ndef()->get(n);
 
-		if (m_gamedef->ndef()->get(n).drawtype != NDT_AIRLIKE) {
-			if (nobuild) {
-				if (m_gamedef->ndef()->get(n).buildable_to == false) {
-					if (p) {
-						*p = pos;
-					}
-					return false;
-				}
-			}
-			else
-			{
-				if (p) {
+		if (cf.drawtype != NDT_AIRLIKE) {
+			if (!ignore_buildable_to || !cf.buildable_to) {
+				if (p)
 					*p = pos;
-				}
+
 				return false;
 			}
 		}
