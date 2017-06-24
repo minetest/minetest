@@ -536,6 +536,21 @@ automatically transferred between node and item forms by the engine,
 when a player digs or places a colored node.
 You can disable this feature by setting the `drop` field of the node
 to itself (without metadata).
+To transfer the color to a special drop, you need a drop table.
+Example:
+
+    minetest.register_node("mod:stone", {
+        description = "Stone",
+        tiles = {"default_stone.png"},
+        paramtype2 = "color",
+        palette = "palette.png",
+        drop = {
+            items = {
+                -- assume that mod:cobblestone also has the same palette
+                {items = {"mod:cobblestone"}, inherit_color = true },
+            }
+        }
+    })
 
 ### Colored items in craft recipes
 Craft recipes only support item strings, but fortunately item strings
@@ -2688,6 +2703,13 @@ and `minetest.auth_reload` call the authetification handler.
     * Convert a vector into a yaw (angle)
 * `minetest.yaw_to_dir(yaw)`
     * Convert yaw (angle) to a vector
+* `minetest.is_colored_paramtype(ptype)`
+    * Returns a boolean. Returns `true` if the given `paramtype2` contains color
+      information (`color`, `colorwallmounted` or `colorfacedir`).
+* `minetest.strip_param2_color(param2, paramtype2)`
+    * Removes everything but the color information from the
+      given `param2` value.
+    * Returns `nil` if the given `paramtype2` does not contain color information
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
@@ -4275,6 +4297,7 @@ Definition tables
                 {
                     items = {"foo:bar", "baz:frob"},  -- Items to drop.
                     rarity = 1,  -- Probability of dropping is 1 / rarity.
+                    inherit_color = true, -- To inherit palette color from the node
                 },
             },
         },
