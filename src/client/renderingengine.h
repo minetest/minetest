@@ -126,7 +126,7 @@ public:
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
-	enum paralax_sign
+	enum parallax_sign
 	{
 		LEFT = -1,
 		RIGHT = 1,
@@ -169,7 +169,7 @@ private:
 	void init_texture(const v2u32 &screensize, video::ITexture **texture,
 			const char *name);
 
-	video::ITexture *draw_image(const v2u32 &screensize, paralax_sign psign,
+	video::ITexture *draw_image(const v2u32 &screensize, parallax_sign psign,
 			const irr::core::matrix4 &startMatrix,
 			const irr::core::vector3df &focusPoint, bool show_hud,
 			Camera *camera, Hud *hud, bool draw_wield_tool, Client *client,

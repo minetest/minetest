@@ -596,7 +596,7 @@ void RenderingEngine::init_texture(
 			irr::video::ECF_A8R8G8B8);
 }
 
-video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, paralax_sign psign,
+video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_sign psign,
 		const irr::core::matrix4 &startMatrix,
 		const irr::core::vector3df &focusPoint, bool show_hud, Camera *camera,
 		Hud *hud, bool draw_wield_tool, Client *client,
