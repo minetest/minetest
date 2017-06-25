@@ -469,6 +469,10 @@ enable_waving_plants (Waving plants) bool false
 
 [***Advanced]
 
+#    Arm inertia, gives a more realistic movement of
+#    the arm when the camera moves.
+arm_inertia (Arm inertia) bool true
+
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 fps_max (Maximum FPS) int 60

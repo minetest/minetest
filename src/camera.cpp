@@ -75,6 +75,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
+	m_arm_inertia		    = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
 
@@ -190,6 +191,82 @@ void Camera::step(f32 dtime)
 				m_client->event()->put(e);
 			}
 		}
+	}
+}
+
+void Camera::add_arm_inertia(f32 player_yaw, f32 frametime)
+{
+	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
+	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
+
+	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
+		/*
+		   the arm moves when the camera moves fast enough.
+		*/
+
+		if (m_cam_vel.X > 1.0f) {
+			m_timer.X = 0.0f;
+			m_timer.X += frametime;
+
+			if (m_cam_vel.X > m_cam_vel_old.X)
+				m_cam_vel_old.X = m_cam_vel.X;
+
+			if (m_last_cam_pos.X > player_yaw)
+				// right
+				m_wieldmesh_offset.X -= (0.1f + frametime) * m_cam_vel.X;
+			else
+				// left
+				m_wieldmesh_offset.X += (0.1f + frametime) * m_cam_vel.X;
+
+			if (m_last_cam_pos.X != player_yaw)
+				m_last_cam_pos.X = player_yaw;
+
+			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X, 48.0f, 62.0f);
+		}
+
+		if (m_cam_vel.Y > 1.0f) {
+			m_timer.Y = 0.0f;
+			m_timer.Y += frametime;
+
+			if (m_cam_vel.Y > m_cam_vel_old.Y)
+				m_cam_vel_old.Y = m_cam_vel.Y;
+
+			if (m_last_cam_pos.Y > m_camera_direction.Y)
+				// down
+				m_wieldmesh_offset.Y += (0.1f + frametime) * m_cam_vel.Y;
+			else
+				// up
+				m_wieldmesh_offset.Y -= (0.1f + frametime) * m_cam_vel.Y;
+
+			if (m_last_cam_pos.Y != m_camera_direction.Y)
+				m_last_cam_pos.Y = m_camera_direction.Y;
+
+			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y, -45.0f, -30.0f);
+		}
+	} else {
+		/*
+		   the arm now gets back to its default position when the camera stops.
+		*/
+
+		if (floor(m_wieldmesh_offset.X) == 55.0f) {
+			m_cam_vel_old.X = 0.0f;
+			m_wieldmesh_offset.X = 55.0f;
+		}
+
+		if (m_wieldmesh_offset.X > 55.0f)
+			m_wieldmesh_offset.X -= (0.05f + frametime) * m_cam_vel_old.X;
+		if (m_wieldmesh_offset.X < 55.0f)
+			m_wieldmesh_offset.X += (0.05f + frametime) * m_cam_vel_old.X;
+
+		if (floor(m_wieldmesh_offset.Y) == -35.0f) {
+			m_cam_vel_old.Y = 0.0f;
+			m_wieldmesh_offset.Y = -35.0f;
+		}
+
+		if (m_wieldmesh_offset.Y > -35.0f)
+			m_wieldmesh_offset.Y -= (0.05f + frametime) * m_cam_vel_old.Y;
+		if (m_wieldmesh_offset.Y < -35.0f)
+			m_wieldmesh_offset.Y += (0.05f + frametime) * m_cam_vel_old.Y;
 	}
 }
 
@@ -380,12 +457,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
-	float wieldmesh_offset_Y = -35 + player->getPitch() * 0.05;
-	wieldmesh_offset_Y = rangelim(wieldmesh_offset_Y, -52, -32);
+	if (m_arm_inertia)
+		add_arm_inertia(player->getYaw(), frametime);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(55, wieldmesh_offset_Y, 65);
+	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;
