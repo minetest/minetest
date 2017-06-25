@@ -16,11 +16,11 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 #include "fontengine.h"
-#include "log.h"
+#include "client/renderingengine.h"
 #include "config.h"
 #include "porting.h"
-#include "constants.h"
 #include "filesys.h"
 
 #if USE_FREETYPE
@@ -314,10 +314,8 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		if (! is_yes(m_settings->get("freetype"))) {
 			return;
 		}
-		unsigned int size = floor(
-				porting::getDisplayDensity() *
-				m_settings->getFloat("gui_scaling") *
-				basesize);
+		unsigned int size = floor(RenderingEngine::getDisplayDensity() *
+				m_settings->getFloat("gui_scaling") * basesize);
 		u32 font_shadow       = 0;
 		u32 font_shadow_alpha = 0;
 
@@ -395,7 +393,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		basesize = DEFAULT_FONT_SIZE;
 
 	unsigned int size = floor(
-			porting::getDisplayDensity() *
+			RenderingEngine::getDisplayDensity() *
 			m_settings->getFloat("gui_scaling") *
 			basesize);
 

@@ -41,14 +41,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define _PSTAT64
 	#include <sys/pstat.h>
 #endif
-#if !defined(_WIN32) && !defined(__APPLE__) && \
-	!defined(__ANDROID__) && !defined(SERVER)
-	#define XORG_USED
-#endif
-#ifdef XORG_USED
-	#include <X11/Xlib.h>
-	#include <X11/Xutil.h>
-#endif
 
 #include "config.h"
 #include "debug.h"
@@ -591,100 +583,6 @@ void initializePaths()
 	}
 #endif  // USE_GETTEXT
 }
-
-////
-//// Video/Display Information (Client-only)
-////
-
-#ifndef SERVER
-
-const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type)
-{
-	static const char *driver_ids[] = {
-		"null",
-		"software",
-		"burningsvideo",
-		"direct3d8",
-		"direct3d9",
-		"opengl",
-		"ogles1",
-		"ogles2",
-	};
-
-	return driver_ids[type];
-}
-
-
-const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
-{
-	static const char *driver_names[] = {
-		"NULL Driver",
-		"Software Renderer",
-		"Burning's Video",
-		"Direct3D 8",
-		"Direct3D 9",
-		"OpenGL",
-		"OpenGL ES1",
-		"OpenGL ES2",
-	};
-
-	return driver_names[type];
-}
-
-#	ifndef __ANDROID__
-#		ifdef XORG_USED
-
-static float calcDisplayDensity()
-{
-	const char *current_display = getenv("DISPLAY");
-
-	if (current_display != NULL) {
-		Display *x11display = XOpenDisplay(current_display);
-
-		if (x11display != NULL) {
-			/* try x direct */
-			float dpi_height = floor(DisplayHeight(x11display, 0) /
-							(DisplayHeightMM(x11display, 0) * 0.039370) + 0.5);
-			float dpi_width = floor(DisplayWidth(x11display, 0) /
-							(DisplayWidthMM(x11display, 0) * 0.039370) + 0.5);
-
-			XCloseDisplay(x11display);
-
-			return std::max(dpi_height,dpi_width) / 96.0;
-		}
-	}
-
-	/* return manually specified dpi */
-	return g_settings->getFloat("screen_dpi")/96.0;
-}
-
-
-float getDisplayDensity()
-{
-	static float cached_display_density = calcDisplayDensity();
-	return cached_display_density;
-}
-
-
-#		else // XORG_USED
-float getDisplayDensity()
-{
-	return g_settings->getFloat("screen_dpi")/96.0;
-}
-#		endif // XORG_USED
-
-v2u32 getDisplaySize()
-{
-	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
-
-	core::dimension2d<u32> deskres = nulldevice->getVideoModeList()->getDesktopResolution();
-	nulldevice -> drop();
-
-	return deskres;
-}
-#	endif // __ANDROID__
-#endif // SERVER
-
 
 ////
 //// OS-specific Secure Random

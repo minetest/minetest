@@ -154,7 +154,7 @@ bool ClientLauncher::run(GameParams &game_params, const Settings &cmd_args)
 	bool retval = true;
 	bool *kill = porting::signal_handler_killstatus();
 
-	while (RenderingEngine::get_raw_device()->run() && !*kill &&
+	while (RenderingEngine::run() && !*kill &&
 		!g_gamecallback->shutdown_requested) {
 		// Set the window caption
 		const wchar_t *text = wgettext("Main Menu");
@@ -304,7 +304,7 @@ void ClientLauncher::init_args(GameParams &game_params, const Settings &cmd_args
 bool ClientLauncher::init_engine()
 {
 	receiver = new MyEventReceiver();
-	create_engine_device();
+	new RenderingEngine(receiver);
 	return RenderingEngine::get_raw_device() != nullptr;
 }
 
@@ -507,65 +507,6 @@ void ClientLauncher::main_menu(MainMenuData *menudata)
 
 	/* leave scene manager in a clean state */
 	RenderingEngine::get_scene_manager()->clear();
-}
-
-bool ClientLauncher::create_engine_device()
-{
-	// Resolution selection
-	bool fullscreen = g_settings->getBool("fullscreen");
-	u16 screen_w = g_settings->getU16("screen_w");
-	u16 screen_h = g_settings->getU16("screen_h");
-
-	// bpp, fsaa, vsync
-	bool vsync = g_settings->getBool("vsync");
-	u16 bits = g_settings->getU16("fullscreen_bpp");
-	u16 fsaa = g_settings->getU16("fsaa");
-
-	// stereo buffer required for pageflip stereo
-	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
-
-	// Determine driver
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
-	const std::string &driverstring = g_settings->get("video_driver");
-	std::vector<video::E_DRIVER_TYPE> drivers = RenderingEngine::getSupportedVideoDrivers();
-	u32 i;
-	for (i = 0; i != drivers.size(); i++) {
-		if (!strcasecmp(driverstring.c_str(),
-			porting::getVideoDriverName(drivers[i]))) {
-			driverType = drivers[i];
-			break;
-		}
-	}
-	if (i == drivers.size()) {
-		errorstream << "Invalid video_driver specified; "
-			"defaulting to opengl" << std::endl;
-	}
-
-	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
-	params.DriverType    = driverType;
-	params.WindowSize    = core::dimension2d<u32>(screen_w, screen_h);
-	params.Bits          = bits;
-	params.AntiAlias     = fsaa;
-	params.Fullscreen    = fullscreen;
-	params.Stencilbuffer = false;
-	params.Stereobuffer  = stereo_buffer;
-	params.Vsync         = vsync;
-	params.EventReceiver = receiver;
-	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
-	params.ZBufferBits   = 24;
-#ifdef __ANDROID__
-	params.PrivateData = porting::app_global;
-	params.OGLES2ShaderPath = std::string(porting::path_user + DIR_DELIM +
-			"media" + DIR_DELIM + "Shaders" + DIR_DELIM).c_str();
-#endif
-
-	IrrlichtDevice *irrlichtDevice = createDeviceEx(params);
-
-	if (irrlichtDevice) {
-		new RenderingEngine(irrlichtDevice);
-	}
-
-	return (irrlichtDevice != NULL);
 }
 
 void ClientLauncher::speed_tests()

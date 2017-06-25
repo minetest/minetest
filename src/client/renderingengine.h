@@ -35,13 +35,19 @@ class Minimap;
 class RenderingEngine
 {
 public:
-	RenderingEngine(IrrlichtDevice *device_);
+	RenderingEngine(IEventReceiver *eventReceiver);
 	~RenderingEngine();
 
 	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
 	video::IVideoDriver *getVideoDriver();
+
+	static const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
+	static const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
+	static float getDisplayDensity();
+	static v2u32 getDisplaySize();
+
 	static void setXorgClassHint(const video::SExposedVideoData &video_data,
 			const std::string &name);
 	bool setWindowIcon();
@@ -92,6 +98,7 @@ public:
 		sanity_check(s_singleton && s_singleton->m_device);
 		return s_singleton->m_device->getGUIEnvironment();
 	}
+
 	static void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
 			float dtime = 0, int percent = 0, bool clouds = true)

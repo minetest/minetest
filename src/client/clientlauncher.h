@@ -44,7 +44,6 @@ protected:
 		GameParams &game_params, const Settings &cmd_args);
 
 	void main_menu(MainMenuData *menudata);
-	bool create_engine_device();
 
 	void speed_tests();
 

@@ -2073,7 +2073,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 		}
 
 		double gui_scaling = g_settings->getFloat("gui_scaling");
-		double screen_dpi = porting::getDisplayDensity() * 96;
+		double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 
 		double use_imgsize;
 		if (m_lock) {
@@ -2106,7 +2106,7 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 				((5.0/4.0) * (0.5 + mydata.invsize.X));
 			double fity_imgsize = mydata.screensize.Y /
 				((15.0/13.0) * (0.85 * mydata.invsize.Y));
-			double screen_dpi = porting::getDisplayDensity() * 96;
+			double screen_dpi = RenderingEngine::getDisplayDensity() * 96;
 			double min_imgsize = 0.3 * screen_dpi * gui_scaling;
 			use_imgsize = MYMAX(min_imgsize, MYMIN(prefer_imgsize,
 				MYMIN(fitx_imgsize, fity_imgsize)));

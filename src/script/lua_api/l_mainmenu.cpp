@@ -997,8 +997,8 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 
 	lua_newtable(L);
 	for (u32 i = 0; i != drivers.size(); i++) {
-		const char *name  = porting::getVideoDriverName(drivers[i]);
-		const char *fname = porting::getVideoDriverFriendlyName(drivers[i]);
+		const char *name  = RenderingEngine::getVideoDriverName(drivers[i]);
+		const char *fname = RenderingEngine::getVideoDriverFriendlyName(drivers[i]);
 
 		lua_newtable(L);
 		lua_pushstring(L, name);
@@ -1049,15 +1049,15 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 	lua_newtable(L);
 	int top = lua_gettop(L);
 	lua_pushstring(L,"density");
-	lua_pushnumber(L,porting::getDisplayDensity());
+	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
 	lua_settable(L, top);
 
 	lua_pushstring(L,"display_width");
-	lua_pushnumber(L,porting::getDisplaySize().X);
+	lua_pushnumber(L,RenderingEngine::getDisplaySize().X);
 	lua_settable(L, top);
 
 	lua_pushstring(L,"display_height");
-	lua_pushnumber(L,porting::getDisplaySize().Y);
+	lua_pushnumber(L,RenderingEngine::getDisplaySize().Y);
 	lua_settable(L, top);
 
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();

@@ -1651,7 +1651,7 @@ void Game::run()
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);
 
-	draw_times.last_time = device->getTimer()->getTime();
+	draw_times.last_time = RenderingEngine::get_timer_time();
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
@@ -2119,7 +2119,7 @@ bool Game::connectToServer(const std::string &playername,
 		f32 dtime;
 		f32 wait_time = 0; // in seconds
 
-		fps_control.last_time = device->getTimer()->getTime();
+		fps_control.last_time = RenderingEngine::get_timer_time();
 
 		client->initMods();
 
@@ -2200,9 +2200,9 @@ bool Game::getServerContent(bool *aborted)
 	FpsControl fps_control = { 0 };
 	f32 dtime; // in seconds
 
-	fps_control.last_time = device->getTimer()->getTime();
+	fps_control.last_time = RenderingEngine::get_timer_time();
 
-	while (device->run()) {
+	while (RenderingEngine::run()) {
 
 		limitFps(&fps_control, &dtime);
 

@@ -52,7 +52,8 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
-	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
+	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
+		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
 
@@ -214,8 +215,8 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Position of upper left corner of bar
 	v2s32 pos = screen_offset;
-	pos.X *= m_hud_scaling * porting::getDisplayDensity();
-	pos.Y *= m_hud_scaling * porting::getDisplayDensity();
+	pos.X *= m_hud_scaling * RenderingEngine::getDisplayDensity();
+	pos.Y *= m_hud_scaling * RenderingEngine::getDisplayDensity();
 	pos += upperleftpos;
 
 	// Store hotbar_image in member variable, used by drawItem()
@@ -385,7 +386,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	if (size == v2s32()) {
 		dstd = srcd;
 	} else {
-		float size_factor = m_hud_scaling * porting::getDisplayDensity();
+		float size_factor = m_hud_scaling * RenderingEngine::getDisplayDensity();
 		dstd.Height = size.Y * size_factor;
 		dstd.Width  = size.X * size_factor;
 		offset.X *= size_factor;
@@ -612,7 +613,8 @@ void Hud::resizeHotbar() {
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 
 	if (m_screensize != window_size) {
-		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
+		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
+			RenderingEngine::getDisplayDensity() + 0.5);
 		m_hotbar_imagesize *= m_hud_scaling;
 		m_padding = m_hotbar_imagesize / 12;
 		m_screensize = window_size;

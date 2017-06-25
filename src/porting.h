@@ -279,16 +279,6 @@ inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 	}
 }
 
-
-#ifndef SERVER
-float getDisplayDensity();
-
-v2u32 getDisplaySize();
-
-const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
-const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
-#endif
-
 inline const char *getPlatformName()
 {
 	return

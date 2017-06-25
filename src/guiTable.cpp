@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUISkin.h>
 #include <IGUIFont.h>
 #include <IGUIScrollBar.h>
+#include "client/renderingengine.h"
 #include "debug.h"
 #include "log.h"
 #include "client/tile.h"
@@ -79,7 +80,8 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	updateAbsolutePosition();
 
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth()/(2.0/3.0)) * porting::getDisplayDensity() *
+	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
+			RenderingEngine::getDisplayDensity() *
 			g_settings->getFloat("gui_scaling");
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,

@@ -32,11 +32,72 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inputhandler.h"
 #include "gettext.h"
 
+#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__) && !defined(SERVER)
+#define XORG_USED
+#endif
+#ifdef XORG_USED
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#endif
+
 RenderingEngine *RenderingEngine::s_singleton = nullptr;
 
-RenderingEngine::RenderingEngine(IrrlichtDevice *device_) : m_device(device_)
+RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 {
 	sanity_check(!s_singleton);
+
+	// Resolution selection
+	bool fullscreen = g_settings->getBool("fullscreen");
+	u16 screen_w = g_settings->getU16("screen_w");
+	u16 screen_h = g_settings->getU16("screen_h");
+
+	// bpp, fsaa, vsync
+	bool vsync = g_settings->getBool("vsync");
+	u16 bits = g_settings->getU16("fullscreen_bpp");
+	u16 fsaa = g_settings->getU16("fsaa");
+
+	// stereo buffer required for pageflip stereo
+	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
+
+	// Determine driver
+	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	const std::string &driverstring = g_settings->get("video_driver");
+	std::vector<video::E_DRIVER_TYPE> drivers =
+			RenderingEngine::getSupportedVideoDrivers();
+	u32 i;
+	for (i = 0; i != drivers.size(); i++) {
+		if (!strcasecmp(driverstring.c_str(),
+				    RenderingEngine::getVideoDriverName(drivers[i]))) {
+			driverType = drivers[i];
+			break;
+		}
+	}
+	if (i == drivers.size()) {
+		errorstream << "Invalid video_driver specified; "
+			       "defaulting to opengl"
+			    << std::endl;
+	}
+
+	SIrrlichtCreationParameters params = SIrrlichtCreationParameters();
+	params.DriverType = driverType;
+	params.WindowSize = core::dimension2d<u32>(screen_w, screen_h);
+	params.Bits = bits;
+	params.AntiAlias = fsaa;
+	params.Fullscreen = fullscreen;
+	params.Stencilbuffer = false;
+	params.Stereobuffer = stereo_buffer;
+	params.Vsync = vsync;
+	params.EventReceiver = receiver;
+	params.HighPrecisionFPU = g_settings->getBool("high_precision_fpu");
+	params.ZBufferBits = 24;
+#ifdef __ANDROID__
+	params.PrivateData = porting::app_global;
+	params.OGLES2ShaderPath = std::string(
+			porting::path_user + DIR_DELIM + "media" + DIR_DELIM + "Shaders" +
+			DIR_DELIM).c_str();
+#endif
+
+	m_device = createDeviceEx(params);
 	s_singleton = this;
 }
 
@@ -136,16 +197,16 @@ bool RenderingEngine::setWindowIcon()
 {
 #if defined(XORG_USED)
 #if RUN_IN_PLACE
-	return setXorgWindowIconFromPath(m_device,
-			path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
+	return setXorgWindowIconFromPath(
+			porting::path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
 #else
 	// We have semi-support for reading in-place data if we are
 	// compiled with RUN_IN_PLACE. Don't break with this and
 	// also try the path_share location.
-	return setXorgWindowIconFromPath(m_device,
+	return setXorgWindowIconFromPath(
 			       ICON_DIR "/hicolor/128x128/apps/" PROJECT_NAME ".png") ||
-	       setXorgWindowIconFromPath(m_device,
-			       path_share + "/misc/" PROJECT_NAME "-xorg-icon-128.png");
+	       setXorgWindowIconFromPath(porting::path_share + "/misc/" PROJECT_NAME
+							       "-xorg-icon-128.png");
 #endif
 #elif defined(_WIN32)
 	const video::SExposedVideoData exposedData =
@@ -931,3 +992,81 @@ void RenderingEngine::draw_plain(Camera *camera, bool show_hud, Hud *hud,
 						pixelated_size.Y));
 	}
 }
+
+const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)
+{
+	static const char *driver_ids[] = {
+			"null", "software", "burningsvideo", "direct3d8", "direct3d9",
+			"opengl", "ogles1", "ogles2",
+	};
+
+	return driver_ids[type];
+}
+
+const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type)
+{
+	static const char *driver_names[] = {
+			"NULL Driver", "Software Renderer", "Burning's Video",
+			"Direct3D 8", "Direct3D 9", "OpenGL", "OpenGL ES1", "OpenGL ES2",
+	};
+
+	return driver_names[type];
+}
+
+#ifndef __ANDROID__
+#ifdef XORG_USED
+
+static float calcDisplayDensity()
+{
+	const char *current_display = getenv("DISPLAY");
+
+	if (current_display != NULL) {
+		Display *x11display = XOpenDisplay(current_display);
+
+		if (x11display != NULL) {
+			/* try x direct */
+			float dpi_height = floor(
+					DisplayHeight(x11display, 0) /
+							(DisplayHeightMM(x11display, 0) *
+									0.039370) +
+					0.5);
+			float dpi_width = floor(
+					DisplayWidth(x11display, 0) /
+							(DisplayWidthMM(x11display, 0) *
+									0.039370) +
+					0.5);
+
+			XCloseDisplay(x11display);
+
+			return std::max(dpi_height, dpi_width) / 96.0;
+		}
+	}
+
+	/* return manually specified dpi */
+	return g_settings->getFloat("screen_dpi") / 96.0;
+}
+
+float RenderingEngine::getDisplayDensity()
+{
+	static float cached_display_density = calcDisplayDensity();
+	return cached_display_density;
+}
+
+#else  // XORG_USED
+float RenderingEngine::getDisplayDensity()
+{
+	return g_settings->getFloat("screen_dpi") / 96.0;
+}
+#endif // XORG_USED
+
+v2u32 RenderingEngine::getDisplaySize()
+{
+	IrrlichtDevice *nulldevice = createDevice(video::EDT_NULL);
+
+	core::dimension2d<u32> deskres =
+			nulldevice->getVideoModeList()->getDesktopResolution();
+	nulldevice->drop();
+
+	return deskres;
+}
+#endif // __ANDROID__
