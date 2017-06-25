@@ -57,12 +57,15 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	this->spflags             = params->spflags;
 	this->cave_width          = params->cave_width;
 	this->float_mount_density = params->float_mount_density;
-	float_mount_height_lim    = MYMAX(params->float_mount_height, 1.0f);
 	this->floatland_level     = params->floatland_level;
 	this->shadow_limit        = params->shadow_limit;
 	this->cavern_limit        = params->cavern_limit;
 	this->cavern_taper        = params->cavern_taper;
 	this->cavern_threshold    = params->cavern_threshold;
+
+	// This is to avoid a divide-by-zero.
+	// Parameter will be saved to map_meta.txt in limited form.
+	params->float_mount_height = MYMAX(params->float_mount_height, 1.0f);
 
 	// 2D noise
 	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
@@ -399,8 +402,8 @@ bool MapgenV7::getFloatlandMountainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	// Make rim 2 nodes thick to match floatland base terrain
 	float density_gradient = (y >= floatland_level) ?
-		-pow((float)(y - floatland_level) / float_mount_height_lim, 0.75f) :
-		-pow((float)(floatland_level - 1 - y) / float_mount_height_lim, 0.75f);
+		-pow((float)(y - floatland_level) / float_mount_height, 0.75f) :
+		-pow((float)(floatland_level - 1 - y) / float_mount_height, 0.75f);
 
 	float floatn = noise_mountain->result[idx_xyz] + float_mount_density;
 
