@@ -99,7 +99,7 @@ public:
 		return s_singleton->m_device->getGUIEnvironment();
 	}
 
-	static void draw_load_screen(const std::wstring &text,
+	inline static void draw_load_screen(const std::wstring &text,
 			gui::IGUIEnvironment *guienv, ITextureSource *tsrc,
 			float dtime = 0, int percent = 0, bool clouds = true)
 	{
