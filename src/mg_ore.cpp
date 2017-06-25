@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_ore[] = {
-	{"absheight",                 OREFLAG_ABSHEIGHT}, // Non-functional
+	{"absheight",                 OREFLAG_ABSHEIGHT},
 	{"puff_cliffs",               OREFLAG_PUFF_CLIFFS},
 	{"puff_additive_composition", OREFLAG_PUFF_ADDITIVE},
 	{NULL,                        0}
@@ -87,11 +87,22 @@ void Ore::resolveNodeNames()
 
 size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
-	if (!(nmin.Y <= y_max && nmax.Y >= y_min))
+	int in_range = 0;
+
+	in_range |= (nmin.Y <= y_max && nmax.Y >= y_min);
+	if (flags & OREFLAG_ABSHEIGHT)
+		in_range |= (nmin.Y >= -y_max && nmax.Y <= -y_min) << 1;
+	if (!in_range)
 		return 0;
 
-	int actual_ymin = MYMAX(nmin.Y, y_min);
-	int actual_ymax = MYMIN(nmax.Y, y_max);
+	int actual_ymin, actual_ymax;
+	if (in_range & ORE_RANGE_MIRROR) {
+		actual_ymin = MYMAX(nmin.Y, -y_max);
+		actual_ymax = MYMIN(nmax.Y, -y_min);
+	} else {
+		actual_ymin = MYMAX(nmin.Y, y_min);
+		actual_ymax = MYMIN(nmax.Y, y_max);
+	}
 	if (clust_size >= actual_ymax - actual_ymin + 1)
 		return 0;
 
