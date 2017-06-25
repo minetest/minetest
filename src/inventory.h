@@ -143,13 +143,12 @@ struct ItemStack
 	// If cannot be added at all, returns the item back.
 	// If can be added partly, decremented item is returned back.
 	// If can be added fully, empty item is returned.
-	ItemStack addItem(const ItemStack &newitem,
-			IItemDefManager *itemdef);
+	ItemStack addItem(ItemStack newitem, IItemDefManager *itemdef);
 
 	// Checks whether newitem could be added.
 	// If restitem is non-NULL, it receives the part of newitem that
 	// would be left over after adding.
-	bool itemFits(const ItemStack &newitem,
+	bool itemFits(ItemStack newitem,
 			ItemStack *restitem,  // may be NULL
 			IItemDefManager *itemdef) const;
 

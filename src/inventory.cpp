@@ -254,11 +254,8 @@ std::string ItemStack::getItemString() const
 }
 
 
-ItemStack ItemStack::addItem(const ItemStack &newitem_,
-		IItemDefManager *itemdef)
+ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {
-	ItemStack newitem = newitem_;
-
 	// If the item is empty or the position invalid, bail out
 	if(newitem.empty())
 	{
@@ -267,7 +264,7 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
-		const u16 stackMax = getStackMax(itemdef);
+		const u16 stackMax = newitem.getStackMax(itemdef);
 
 		*this = newitem;
 
@@ -303,11 +300,10 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	return newitem;
 }
 
-bool ItemStack::itemFits(const ItemStack &newitem_,
+bool ItemStack::itemFits(ItemStack newitem,
 		ItemStack *restitem,
 		IItemDefManager *itemdef) const
 {
-	ItemStack newitem = newitem_;
 
 	// If the item is empty or the position invalid, bail out
 	if(newitem.empty())
@@ -317,7 +313,7 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
-		const u16 stackMax = getStackMax(itemdef);
+		const u16 stackMax = newitem.getStackMax(itemdef);
 
 		// If the item fits fully, delete it
 		if (newitem.count <= stackMax) {

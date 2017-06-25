@@ -584,7 +584,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->addItem(pg_to_uint(results2, row2, 0), stack);
+				invList->changeItem(pg_to_uint(results2, row2, 0), stack);
 			}
 		}
 		PQclear(results2);
