@@ -984,6 +984,9 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
 
+#    Whether dungeons occasionally project from the terrain.
+projecting_dungeons (Projecting dungeons) bool true
+
 [**Advanced]
 
 #    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
