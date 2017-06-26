@@ -197,8 +197,8 @@ void Camera::step(f32 dtime)
 
 void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 {
-	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
-	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
+	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / (m_timer.X + 0.001f)) * 0.01f;
+	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / (m_timer.Y + 0.001f));
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
