@@ -294,27 +294,13 @@ function sort_mod_list(self)
 			end
 			return b.typ == "game_mod"
 		end
-		-- If in same or no modpack, sort by name
-		if a.modpack == b.modpack then
-			if a.name:lower() == b.name:lower() then
-				return a.name < b.name
-			end
-			return a.name:lower() < b.name:lower()
-		-- Else compare name to modpack name
-		else
-			-- Always show modpack pseudo-mod on top of modpack mod list
-			if a.name == b.modpack then
-				return true
-			elseif b.name == a.modpack then
-				return false
-			end
-			
-			local name_a = a.modpack or a.name
-			local name_b = b.modpack or b.name
-			if name_a:lower() == name_b:lower() then
-				return  name_a < name_b
-			end
-			return name_a:lower() < name_b:lower()
+		-- full_name contains the modpack/mod path, so sorting by this does not require any modpack checks
+		-- see also modmgr.lua
+		local name_a = a.full_name
+		local name_b = b.full_name
+		if name_a:lower() == name_b:lower() then
+			return  name_a < name_b
 		end
+		return name_a:lower() < name_b:lower()
 	end)
 end

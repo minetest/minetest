@@ -31,6 +31,18 @@ local function create_world_formspec(dialogdata)
 		i = i + 1
 		mglist = mglist .. v .. ","
 	end
+	local mods = {}
+	get_mods(core.get_modpath(), mods)
+	local function recursive_add_mapgen_mods(mods, mp_name)
+		for _, mod in ipairs(mods) do
+			if mod.modpack == mp_name then
+				recursive_add_mapgen_mods(mods, mod.full_name)
+			elseif mod.is_standalone_mapgen then
+				mglist = mglist .. "Mod: " .. mod.name .. ","
+			end
+		end
+	end
+	recursive_add_mapgen_mods(mods, "")
 	mglist = mglist:sub(1, -2)
 	
 	local gameid = core.settings:get("menu_last_game")
@@ -92,8 +104,14 @@ local function create_world_buttonhandler(this, fields)
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
 
+			local mapgen_mod
 			if not menudata.worldlist:uid_exists_raw(worldname) then
-				core.settings:set("mg_name",fields["dd_mapgen"])
+				local mapgen = fields["dd_mapgen"]
+				mapgen_mod = string.match(mapgen, "^Mod: (.+)$")
+				if mapgen_mod then
+					mapgen = "singlenode"
+				end
+				core.settings:set("mg_name",mapgen)
 				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
@@ -108,8 +126,14 @@ local function create_world_buttonhandler(this, fields)
 					mm_texture.update("singleplayer", gamemgr.games[gameindex].id)
 				end
 				menudata.worldlist:refresh()
-				core.settings:set("mainmenu_last_selected_world",
-									menudata.worldlist:raw_index_by_uid(worldname))
+
+				local new_world_id = menudata.worldlist:raw_index_by_uid(worldname)
+				core.settings:set("mainmenu_last_selected_world", new_world_id)
+				-- if a mapgen mod was specified, enable it now.
+				if mapgen_mod then
+					menu_worldmt(new_world_id, "mapgen_mod", mapgen_mod)
+					menu_worldmt(new_world_id, "load_mod_"..mapgen_mod, "true")
+				end
 			end
 		else
 			gamedata.errormessage =
