@@ -534,6 +534,11 @@
 
 #### Advanced
 
+#    Arm inertia, gives a more realistic movement of
+#    the arm when the camera moves.
+#    type: bool
+# arm_inertia = true
+
 #    If FPS would go higher than this, limit it by sleeping
 #    to not waste CPU power for no benefit.
 #    type: int
