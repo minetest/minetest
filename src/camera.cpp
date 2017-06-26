@@ -194,7 +194,7 @@ void Camera::step(f32 dtime)
 	}
 }
 
-void Camera::add_arm_inertia(f32 player_yaw, f32 frametime)
+void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 {
 	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
 	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
@@ -458,7 +458,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setFOV(m_fov_y);
 
 	if (m_arm_inertia)
-		add_arm_inertia(player->getYaw(), frametime);
+		addArmInertia(player->getYaw(), frametime);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
