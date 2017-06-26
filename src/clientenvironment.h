@@ -67,8 +67,7 @@ typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
-	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, Client *client);
+	ClientEnvironment(ClientMap *map, ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
 	Map & getMap();
@@ -175,7 +174,6 @@ public:
 private:
 	ClientMap *m_map;
 	LocalPlayer *m_local_player = nullptr;
-	scene::ISceneManager *m_smgr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
 	ClientScripting *m_script = nullptr;

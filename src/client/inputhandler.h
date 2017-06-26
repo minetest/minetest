@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "joystick_controller.h"
 #include <list>
 #include "keycode.h"
+#include "renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
@@ -219,8 +220,7 @@ public:
 class RealInputHandler : public InputHandler
 {
 public:
-	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver)
-	    : m_device(device), m_receiver(receiver)
+	RealInputHandler(MyEventReceiver *receiver) : m_receiver(receiver)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -239,16 +239,20 @@ public:
 	virtual void dontListenForKeys() { m_receiver->dontListenForKeys(); }
 	virtual v2s32 getMousePos()
 	{
-		if (m_device->getCursorControl()) {
-			return m_device->getCursorControl()->getPosition();
+		if (RenderingEngine::get_raw_device()->getCursorControl()) {
+			return RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->getPosition();
 		} else {
 			return m_mousepos;
 		}
 	}
 	virtual void setMousePos(s32 x, s32 y)
 	{
-		if (m_device->getCursorControl()) {
-			m_device->getCursorControl()->setPosition(x, y);
+		if (RenderingEngine::get_raw_device()->getCursorControl()) {
+			RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->setPosition(x, y);
 		} else {
 			m_mousepos = v2s32(x, y);
 		}
@@ -276,7 +280,6 @@ public:
 	}
 
 private:
-	IrrlichtDevice *m_device = nullptr;
 	MyEventReceiver *m_receiver = nullptr;
 	v2s32 m_mousepos;
 };

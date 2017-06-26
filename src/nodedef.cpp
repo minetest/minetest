@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #ifndef SERVER
-#include "client/tile.h"
 #include "mesh.h"
 #include "client.h"
+#include "client/renderingengine.h"
+#include "client/tile.h"
 #include <IMeshManipulator.h>
 #endif
 #include "log.h"
@@ -1427,8 +1428,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	Client *client = (Client *)gamedef;
 	ITextureSource *tsrc = client->tsrc();
 	IShaderSource *shdsrc = client->getShaderSource();
-	scene::ISceneManager* smgr = client->getSceneManager();
-	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
+	scene::IMeshManipulator *meshmanip =
+		RenderingEngine::get_scene_manager()->getMeshManipulator();
 	TextureSettings tsettings;
 	tsettings.readSettings();
 

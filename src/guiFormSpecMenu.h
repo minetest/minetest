@@ -287,8 +287,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 public:
-	GUIFormSpecMenu(irr::IrrlichtDevice* dev,
-			JoystickController *joystick,
+	GUIFormSpecMenu(JoystickController *joystick,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			Client *client,
@@ -378,14 +377,12 @@ protected:
 	v2s32 pos_offset;
 	std::stack<v2s32> container_stack;
 
-	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
 	Client *m_client;
 
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
-
 
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;

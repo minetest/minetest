@@ -150,11 +150,9 @@ public:
 	 * @param smgr scene manager to add scene elements to
 	 * @param data struct to transfer data to main game handling
 	 */
-	GUIEngine(irr::IrrlichtDevice *dev,
-			JoystickController *joystick,
+	GUIEngine(JoystickController *joystick,
 			gui::IGUIElement *parent,
 			IMenuManager *menumgr,
-			scene::ISceneManager *smgr,
 			MainMenuData *data,
 			bool &kill);
 
@@ -192,8 +190,6 @@ private:
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
 
-	/** device to draw at */
-	irr::IrrlichtDevice     *m_device = nullptr;
 	/** parent gui element */
 	gui::IGUIElement        *m_parent = nullptr;
 	/** manager to add menus to */

@@ -114,7 +114,6 @@ public:
 	 * Should be called from the main thread.
 	 */
 	virtual Palette* getPalette(const std::string &name) = 0;
-	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
@@ -133,7 +132,6 @@ public:
 	virtual video::ITexture* getTexture(u32 id)=0;
 	virtual video::ITexture* getTexture(
 			const std::string &name, u32 *id = nullptr)=0;
-	virtual IrrlichtDevice* getDevice()=0;
 	virtual bool isKnownSourceImage(const std::string &name)=0;
 	virtual video::ITexture* generateTextureFromMesh(
 			const TextureFromMeshParams &params)=0;
@@ -146,7 +144,7 @@ public:
 	virtual video::ITexture *getShaderFlagsTexture(bool normalmap_present)=0;
 };
 
-IWritableTextureSource* createTextureSource(IrrlichtDevice *device);
+IWritableTextureSource *createTextureSource();
 
 #ifdef __ANDROID__
 video::IImage * Align2Npot2(video::IImage * image, video::IVideoDriver* driver);
@@ -302,7 +300,7 @@ struct TileSpec
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
 			layers[layer] = TileLayer();
 	}
-	
+
 	/*!
 	 * Returns true if this tile can be merged with the other tile.
 	 */

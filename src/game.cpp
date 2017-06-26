@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "game.h"
 
 #include <iomanip>
+#include "client/renderingengine.h"
 #include "camera.h"
 #include "client.h"
 #include "client/inputhandler.h"
@@ -30,7 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clouds.h"
 #include "config.h"
 #include "content_cao.h"
-#include "drawscene.h"
 #include "event_manager.h"
 #include "fontengine.h"
 #include "itemdef.h"
@@ -44,6 +44,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiVolumeChange.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
+#include "minimap.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
@@ -152,6 +153,9 @@ struct LocalFormspecHandler : public TextDest
 
 			if (fields.find("btn_exit_os") != fields.end()) {
 				g_gamecallback->exitToOS();
+#ifndef __ANDROID__
+				RenderingEngine::get_raw_device()->closeDevice();
+#endif
 				return;
 			}
 
@@ -726,7 +730,6 @@ public:
 			minimap_yaw.getAs3Values(minimap_yaw_array);
 #endif
 			m_minimap_yaw.set(minimap_yaw_array, services);
-
 		}
 
 		SamplerLayer_t base_tex = 0,
@@ -924,14 +927,13 @@ bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_de
 }
 
 static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
-		Client *client, IrrlichtDevice *device, JoystickController *joystick,
+		Client *client, JoystickController *joystick,
 		IFormSource *fs_src, TextDest *txt_dest)
 {
 
 	if (*cur_formspec == 0) {
-		*cur_formspec = new GUIFormSpecMenu(device, joystick,
-			guiroot, -1, &g_menumgr, client, client->getTextureSource(),
-			fs_src, txt_dest);
+		*cur_formspec = new GUIFormSpecMenu(joystick, guiroot, -1, &g_menumgr,
+			client, client->getTextureSource(), fs_src, txt_dest);
 		(*cur_formspec)->doPause = false;
 
 		/*
@@ -996,9 +998,10 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 		chat_y += 2 * line_height;
 
 	// first pass to calculate height of text to be set
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	s32 width = std::min(g_fontengine->getTextWidth(recent_chat.c_str()) + 10,
-			     porting::getWindowSize().X - 20);
-	core::rect<s32> rect(10, chat_y, width, chat_y + porting::getWindowSize().Y);
+			window_size.X - 20);
+	core::rect<s32> rect(10, chat_y, width, chat_y + window_size.Y);
 	guitext_chat->setRelativePosition(rect);
 
 	//now use real height of text and adjust rect according to this size
@@ -1200,7 +1203,6 @@ public:
 	bool startup(bool *kill,
 			bool random_input,
 			InputHandler *input,
-			IrrlichtDevice *device,
 			const std::string &map_dir,
 			const std::string &playername,
 			const std::string &password,
@@ -1584,7 +1586,6 @@ Game::~Game()
 bool Game::startup(bool *kill,
 		bool random_input,
 		InputHandler *input,
-		IrrlichtDevice *device,
 		const std::string &map_dir,
 		const std::string &playername,
 		const std::string &password,
@@ -1597,7 +1598,7 @@ bool Game::startup(bool *kill,
 		bool simple_singleplayer_mode)
 {
 	// "cache"
-	this->device              = device;
+	this->device              = RenderingEngine::get_raw_device();
 	this->kill                = kill;
 	this->error_message       = &error_message;
 	this->reconnect_requested = reconnect;
@@ -1609,10 +1610,11 @@ bool Game::startup(bool *kill,
 	keycache.handler = input;
 	keycache.populate();
 
-	driver              = device->getVideoDriver();
-	smgr                = device->getSceneManager();
+	driver = device->getVideoDriver();
+	smgr = RenderingEngine::get_scene_manager();
 
-	smgr->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
+	RenderingEngine::get_scene_manager()->getParameters()->
+		setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
 
 	memset(&runData, 0, sizeof(runData));
 	runData.time_from_last_punch = 10.0;
@@ -1649,7 +1651,7 @@ void Game::run()
 	Profiler::GraphValues dummyvalues;
 	g_profiler->graphGet(dummyvalues);
 
-	draw_times.last_time = device->getTimer()->getTime();
+	draw_times.last_time = RenderingEngine::get_timer_time();
 
 	set_light_table(g_settings->getFloat("display_gamma"));
 
@@ -1661,12 +1663,12 @@ void Game::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
-	while (device->run()
+	while (RenderingEngine::run()
 			&& !(*kill || g_gamecallback->shutdown_requested
 			|| (server && server->getShutdownRequested()))) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
-			device->getVideoDriver()->getScreenSize();
+			RenderingEngine::get_video_driver()->getScreenSize();
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
@@ -1779,11 +1781,11 @@ bool Game::init(
 		u16 port,
 		const SubgameSpec &gamespec)
 {
-	texture_src = createTextureSource(device);
+	texture_src = createTextureSource();
 
 	showOverlayMessage("Loading...", 0, 0);
 
-	shader_src = createShaderSource(device);
+	shader_src = createShaderSource();
 
 	itemdef_manager = createItemDefManager();
 	nodedef_manager = createNodeDefManager();
@@ -1908,7 +1910,7 @@ bool Game::createClient(const std::string &playername,
 	shader_src->addShaderConstantSetterFactory(scsf);
 
 	// Update cached textures, meshes and materials
-	client->afterContentReceived(device);
+	client->afterContentReceived();
 
 	/* Camera
 	 */
@@ -1920,7 +1922,7 @@ bool Game::createClient(const std::string &playername,
 	/* Clouds
 	 */
 	if (m_cache_enable_clouds) {
-		clouds = new Clouds(smgr->getRootSceneNode(), smgr, -1, time(0));
+		clouds = new Clouds(smgr, -1, time(0));
 		if (!clouds) {
 			*error_message = "Memory allocation error (clouds)";
 			errorstream << *error_message << std::endl;
@@ -1930,7 +1932,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Skybox
 	 */
-	sky = new Sky(smgr->getRootSceneNode(), smgr, -1, texture_src);
+	sky = new Sky(-1, texture_src);
 	scsf->setSky(sky);
 	skybox = NULL;	// This is used/set later on in the main run loop
 
@@ -2091,8 +2093,7 @@ bool Game::connectToServer(const std::string &playername,
 		return false;
 	}
 
-	client = new Client(device,
-			playername.c_str(), password, *address,
+	client = new Client(playername.c_str(), password, *address,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
 			connect_address.isIPv6(), &flags);
@@ -2118,11 +2119,11 @@ bool Game::connectToServer(const std::string &playername,
 		f32 dtime;
 		f32 wait_time = 0; // in seconds
 
-		fps_control.last_time = device->getTimer()->getTime();
+		fps_control.last_time = RenderingEngine::get_timer_time();
 
 		client->initMods();
 
-		while (device->run()) {
+		while (RenderingEngine::run()) {
 
 			limitFps(&fps_control, &dtime);
 
@@ -2199,9 +2200,9 @@ bool Game::getServerContent(bool *aborted)
 	FpsControl fps_control = { 0 };
 	f32 dtime; // in seconds
 
-	fps_control.last_time = device->getTimer()->getTime();
+	fps_control.last_time = RenderingEngine::get_timer_time();
 
-	while (device->run()) {
+	while (RenderingEngine::run()) {
 
 		limitFps(&fps_control, &dtime);
 
@@ -2239,13 +2240,13 @@ bool Game::getServerContent(bool *aborted)
 		if (!client->itemdefReceived()) {
 			const wchar_t *text = wgettext("Item definitions...");
 			progress = 25;
-			draw_load_screen(text, device, guienv, texture_src,
+			RenderingEngine::draw_load_screen(text, guienv, texture_src,
 				dtime, progress);
 			delete[] text;
 		} else if (!client->nodedefReceived()) {
 			const wchar_t *text = wgettext("Node definitions...");
 			progress = 30;
-			draw_load_screen(text, device, guienv, texture_src,
+			RenderingEngine::draw_load_screen(text, guienv, texture_src,
 				dtime, progress);
 			delete[] text;
 		} else {
@@ -2269,8 +2270,8 @@ bool Game::getServerContent(bool *aborted)
 			}
 
 			progress = 30 + client->mediaReceiveProgress() * 35 + 0.5;
-			draw_load_screen(utf8_to_wide(message.str()), device,
-					guienv, texture_src, dtime, progress);
+			RenderingEngine::draw_load_screen(utf8_to_wide(message.str()), guienv,
+				texture_src, dtime, progress);
 		}
 	}
 
@@ -2676,7 +2677,7 @@ void Game::openInventory()
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
 	TextDest *txt_dst = new TextDestPlayerInventory(client);
 
-	create_formspec_menu(&current_formspec, client, device, &input->joystick, fs_src, txt_dst);
+	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
 	cur_formname = "";
 
 	InventoryLocation inventoryloc;
@@ -3178,7 +3179,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 				TextDestPlayerInventory *txt_dst =
 					new TextDestPlayerInventory(client, *(event.show_formspec.formname));
 
-				create_formspec_menu(&current_formspec, client, device, &input->joystick,
+				create_formspec_menu(&current_formspec, client, &input->joystick,
 					fs_src, txt_dst);
 				cur_formname = *(event.show_formspec.formname);
 			}
@@ -3191,7 +3192,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			{
 				FormspecFormSource *fs_src = new FormspecFormSource(*event.show_formspec.formspec);
 				LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event.show_formspec.formname, client);
-				create_formspec_menu(&current_formspec, client, device, &input->joystick,
+				create_formspec_menu(&current_formspec, client, &input->joystick,
 					fs_src, txt_dst);
 			}
 			delete event.show_formspec.formspec;
@@ -3201,8 +3202,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 		case CE_SPAWN_PARTICLE:
 		case CE_ADD_PARTICLESPAWNER:
 		case CE_DELETE_PARTICLESPAWNER:
-			client->getParticleManager()->handleParticleEvent(&event, client,
-					smgr, player);
+			client->getParticleManager()->handleParticleEvent(&event, client, player);
 			break;
 
 		case CE_HUDADD:
@@ -3343,7 +3343,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			} else if (*event.set_sky.type == "skybox" &&
 					event.set_sky.params->size() == 6) {
 				sky->setFallbackBgColor(*event.set_sky.bgcolor);
-				skybox = smgr->addSkyBoxSceneNode(
+				skybox = RenderingEngine::get_scene_manager()->addSkyBoxSceneNode(
 						 texture_src->getTextureForMesh((*event.set_sky.params)[0]),
 						 texture_src->getTextureForMesh((*event.set_sky.params)[1]),
 						 texture_src->getTextureForMesh((*event.set_sky.params)[2]),
@@ -3810,7 +3810,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 			TextDest *txt_dst = new TextDestNodeMetadata(nodepos, client);
 
 			create_formspec_menu(&current_formspec, client,
-					device, &input->joystick, fs_src, txt_dst);
+				&input->joystick, fs_src, txt_dst);
 			cur_formname = "";
 
 			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
@@ -3940,9 +3940,8 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		runData.dig_time_complete = params.time;
 
 		if (m_cache_enable_particles) {
-			const ContentFeatures &features =
-					client->getNodeDefManager()->get(n);
-			client->getParticleManager()->addPunchingParticles(client, smgr,
+			const ContentFeatures &features = client->getNodeDefManager()->get(n);
+			client->getParticleManager()->addPunchingParticles(client,
 					player, nodepos, n, features);
 		}
 	}
@@ -4019,7 +4018,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features =
 				client->getNodeDefManager()->get(wasnode);
-			client->getParticleManager()->addDiggingParticles(client, smgr,
+			client->getParticleManager()->addDiggingParticles(client,
 				player, nodepos, wasnode, features);
 		}
 
@@ -4227,7 +4226,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 	TimeTaker tt_draw("mainloop: draw");
 	driver->beginScene(true, true, skycolor);
 
-	draw_scene(driver, smgr, *camera, *client, player, *hud, mapper,
+	RenderingEngine::draw_scene(camera, client, player, hud, mapper,
 			guienv, screensize, skycolor, flags.show_hud,
 			flags.show_minimap);
 
@@ -4466,11 +4465,10 @@ inline void Game::limitFps(FpsControl *fps_timings, f32 *dtime)
 	fps_timings->last_time = time;
 }
 
-void Game::showOverlayMessage(const char *msg, float dtime,
-		int percent, bool draw_clouds)
+void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool draw_clouds)
 {
 	const wchar_t *wmsg = wgettext(msg);
-	draw_load_screen(wmsg, device, guienv, texture_src, dtime, percent,
+	RenderingEngine::draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
 		draw_clouds);
 	delete[] wmsg;
 }
@@ -4519,7 +4517,7 @@ void Game::extendedResourceCleanup()
 	// Extended resource accounting
 	infostream << "Irrlicht resources after cleanup:" << std::endl;
 	infostream << "\tRemaining meshes   : "
-	           << device->getSceneManager()->getMeshCache()->getMeshCount() << std::endl;
+	           << RenderingEngine::get_mesh_cache()->getMeshCount() << std::endl;
 	infostream << "\tRemaining textures : "
 	           << driver->getTextureCount() << std::endl;
 
@@ -4656,7 +4654,7 @@ void Game::showPauseMenu()
 	FormspecFormSource *fs_src = new FormspecFormSource(os.str());
 	LocalFormspecHandler *txt_dst = new LocalFormspecHandler("MT_PAUSE_MENU");
 
-	create_formspec_menu(&current_formspec, client, device, &input->joystick, fs_src, txt_dst);
+	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
 	current_formspec->setFocus("btn_continue");
 	current_formspec->doPause = true;
 }
@@ -4670,8 +4668,6 @@ void Game::showPauseMenu()
 void the_game(bool *kill,
 		bool random_input,
 		InputHandler *input,
-		IrrlichtDevice *device,
-
 		const std::string &map_dir,
 		const std::string &playername,
 		const std::string &password,
@@ -4694,7 +4690,7 @@ void the_game(bool *kill,
 
 	try {
 
-		if (game.startup(kill, random_input, input, device, map_dir,
+		if (game.startup(kill, random_input, input, map_dir,
 				playername, password, &server_address, port, error_message,
 				reconnect_requested, &chat_backend, gamespec,
 				simple_singleplayer_mode)) {

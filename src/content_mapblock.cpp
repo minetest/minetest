@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "mesh.h"
 #include <IMeshManipulator.h>
+#include "client/renderingengine.h"
 #include "client.h"
 #include "log.h"
 #include "noise.h"
@@ -64,8 +65,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	collector = output;
 
 	nodedef   = data->m_client->ndef();
-	smgr      = data->m_client->getSceneManager();
-	meshmanip = smgr->getMeshManipulator();
+	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
 
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting

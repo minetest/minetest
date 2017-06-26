@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/numeric.h"
 #include <stdio.h>
+#include "client/renderingengine.h"
 
 /* Maintain a static cache to store the images that correspond to textures
  * in a format that's manipulable by code.  Some platforms exhibit issues
@@ -48,18 +49,18 @@ void guiScalingCache(io::path key, video::IVideoDriver *driver, video::IImage *v
 }
 
 // Manually clear the cache, e.g. when switching to different worlds.
-void guiScalingCacheClear(video::IVideoDriver *driver)
+void guiScalingCacheClear()
 {
 	for (std::map<io::path, video::IImage *>::iterator it = g_imgCache.begin();
 			it != g_imgCache.end(); ++it) {
-		if (it->second != NULL)
+		if (it->second)
 			it->second->drop();
 	}
 	g_imgCache.clear();
 	for (std::map<io::path, video::ITexture *>::iterator it = g_txrCache.begin();
 			it != g_txrCache.end(); ++it) {
-		if (it->second != NULL)
-			driver->removeTexture(it->second);
+		if (it->second)
+			RenderingEngine::get_video_driver()->removeTexture(it->second);
 	}
 	g_txrCache.clear();
 }

@@ -500,7 +500,6 @@ set(client_SRCS
 	content_cso.cpp
 	content_mapblock.cpp
 	convert_json.cpp
-	drawscene.cpp
 	filecache.cpp
 	fontengine.cpp
 	game.cpp

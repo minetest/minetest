@@ -8,13 +8,14 @@
 #include "profiler.h"
 #include "util/numeric.h"
 #include <cmath>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "camera.h"  // CameraModes
 
 
-Sky::Sky(scene::ISceneNode* parent, scene::ISceneManager* mgr, s32 id,
-		ITextureSource *tsrc):
-		scene::ISceneNode(parent, mgr, id)
+Sky::Sky(s32 id, ITextureSource *tsrc):
+		scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+			RenderingEngine::get_scene_manager(), id)
 {
 	setAutomaticCulling(scene::EAC_OFF);
 	m_box.MaxEdge.set(0, 0, 0);

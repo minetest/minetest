@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
 #include <cmath>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
@@ -99,7 +100,7 @@ bool Camera::successfullyCreated(std::string &error_message)
 	} else {
 		error_message.clear();
 	}
-	
+
 	if (g_settings->getBool("enable_client_modding")) {
 		m_client->getScript()->on_camera_ready(this);
 	}
@@ -449,7 +450,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
 
 	// FOV and aspect ratio
-	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));

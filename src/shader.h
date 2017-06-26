@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define SHADER_HEADER
 
 #include <IMaterialRendererServices.h>
-#include "irrlichttypes_extrabloated.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 
 class IGameDef;
@@ -149,7 +149,7 @@ public:
 	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 
-IWritableShaderSource* createShaderSource(IrrlichtDevice *device);
+IWritableShaderSource *createShaderSource();
 
 void dumpShaderProgram(std::ostream &output_stream,
 	const std::string &program_type, const std::string &program);

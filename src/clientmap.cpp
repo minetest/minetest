@@ -31,16 +31,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
 #include <algorithm>
+#include "client/renderingengine.h"
 
 ClientMap::ClientMap(
 		Client *client,
 		MapDrawControl &control,
-		scene::ISceneNode* parent,
-		scene::ISceneManager* mgr,
 		s32 id
 ):
 	Map(dout_client, client),
-	scene::ISceneNode(parent, mgr, id),
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+		RenderingEngine::get_scene_manager(), id),
 	m_client(client),
 	m_control(control),
 	m_camera_position(0,0,0),

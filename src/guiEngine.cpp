@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
-#include <fstream>
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
+#include "client/renderingengine.h"
 #include "scripting_mainmenu.h"
 #include "util/numeric.h"
 #include "config.h"
@@ -114,17 +114,14 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 /** GUIEngine                                                                 */
 /******************************************************************************/
-GUIEngine::GUIEngine(irr::IrrlichtDevice *dev,
-		JoystickController *joystick,
+GUIEngine::GUIEngine(JoystickController *joystick,
 		gui::IGUIElement *parent,
 		IMenuManager *menumgr,
-		scene::ISceneManager *smgr,
 		MainMenuData *data,
 		bool &kill) :
-	m_device(dev),
 	m_parent(parent),
 	m_menumanager(menumgr),
-	m_smgr(smgr),
+	m_smgr(RenderingEngine::get_scene_manager()),
 	m_data(data),
 	m_kill(kill)
 {
@@ -136,7 +133,7 @@ GUIEngine::GUIEngine(irr::IrrlichtDevice *dev,
 	m_buttonhandler = new TextDestGuiEngine(this);
 
 	//create texture source
-	m_texture_source = new MenuTextureSource(m_device->getVideoDriver());
+	m_texture_source = new MenuTextureSource(RenderingEngine::get_video_driver());
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
@@ -154,15 +151,14 @@ GUIEngine::GUIEngine(irr::IrrlichtDevice *dev,
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext =
-		addStaticText(m_device->getGUIEnvironment(), m_toplefttext,
+		addStaticText(RenderingEngine::get_gui_env(), m_toplefttext,
 			rect, false, true, 0, -1);
 
 	//create formspecsource
 	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
-	m_menu = new GUIFormSpecMenu(m_device,
-			joystick,
+	m_menu = new GUIFormSpecMenu(joystick,
 			m_parent,
 			-1,
 			m_menumanager,
@@ -229,7 +225,7 @@ void GUIEngine::run()
 {
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	cloudInit();
 
@@ -238,10 +234,10 @@ void GUIEngine::run()
 	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
 		g_settings->getU16("screen_h"));
 
-	while (m_device->run() && (!m_startgame) && (!m_kill)) {
+	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
-			m_device->getVideoDriver()->getScreenSize();
+			RenderingEngine::get_video_driver()->getScreenSize();
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
@@ -272,7 +268,7 @@ void GUIEngine::run()
 		drawHeader(driver);
 		drawFooter(driver);
 
-		m_device->getGUIEnvironment()->drawAll();
+		RenderingEngine::get_gui_env()->drawAll();
 
 		driver->endScene();
 
@@ -292,10 +288,7 @@ void GUIEngine::run()
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
-
-	if(m_sound_manager != &dummySoundManager){
+	if (m_sound_manager != &dummySoundManager){
 		delete m_sound_manager;
 		m_sound_manager = NULL;
 	}
@@ -308,7 +301,7 @@ GUIEngine::~GUIEngine()
 	//clean up texture pointers
 	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
 		if (m_textures[i].texture)
-			driver->removeTexture(m_textures[i].texture);
+			RenderingEngine::get_video_driver()->removeTexture(m_textures[i].texture);
 	}
 
 	delete m_texture_source;
@@ -320,21 +313,20 @@ GUIEngine::~GUIEngine()
 /******************************************************************************/
 void GUIEngine::cloudInit()
 {
-	m_cloud.clouds = new Clouds(m_smgr->getRootSceneNode(),
-			m_smgr, -1, rand(), 100);
+	m_cloud.clouds = new Clouds(m_smgr, -1, rand(), 100);
 	m_cloud.clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
 
 	m_cloud.camera = m_smgr->addCameraSceneNode(0,
 				v3f(0,0,0), v3f(0, 60, 100));
 	m_cloud.camera->setFarValue(10000);
 
-	m_cloud.lasttime = m_device->getTimer()->getTime();
+	m_cloud.lasttime = RenderingEngine::get_timer_time();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudPreProcess()
 {
-	u32 time = m_device->getTimer()->getTime();
+	u32 time = RenderingEngine::get_timer_time();
 
 	if(time > m_cloud.lasttime)
 		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
@@ -356,7 +348,7 @@ void GUIEngine::cloudPostProcess()
 	u32 busytime_u32;
 
 	// not using getRealTime is necessary for wine
-	u32 time = m_device->getTimer()->getTime();
+	u32 time = RenderingEngine::get_timer_time();
 	if(time > m_cloud.lasttime)
 		busytime_u32 = time - m_cloud.lasttime;
 	else
@@ -365,9 +357,9 @@ void GUIEngine::cloudPostProcess()
 	// FPS limiter
 	u32 frametime_min = 1000./fps_max;
 
-	if(busytime_u32 < frametime_min) {
+	if (busytime_u32 < frametime_min) {
 		u32 sleeptime = frametime_min - busytime_u32;
-		m_device->sleep(sleeptime);
+		RenderingEngine::get_raw_device()->sleep(sleeptime);
 	}
 }
 
@@ -502,17 +494,14 @@ void GUIEngine::drawFooter(video::IVideoDriver *driver)
 bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		bool tile_image, unsigned int minsize)
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
-	if (m_textures[layer].texture != NULL)
-	{
+	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);
 		m_textures[layer].texture = NULL;
 	}
 
-	if ((texturepath == "") || !fs::PathExists(texturepath))
-	{
+	if ((texturepath == "") || !fs::PathExists(texturepath)) {
 		return false;
 	}
 
@@ -520,8 +509,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 	m_textures[layer].tile    = tile_image;
 	m_textures[layer].minsize = minsize;
 
-	if (m_textures[layer].texture == NULL)
-	{
+	if (m_textures[layer].texture == NULL) {
 		return false;
 	}
 
@@ -573,7 +561,7 @@ void GUIEngine::updateTopLeftTextSize()
 
 	m_irr_toplefttext->remove();
 	m_irr_toplefttext =
-		addStaticText(m_device->getGUIEnvironment(), m_toplefttext,
+		addStaticText(RenderingEngine::get_gui_env(), m_toplefttext,
 			rect, false, true, 0, -1);
 }
 

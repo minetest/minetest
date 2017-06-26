@@ -61,7 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 	// Use standard Posix macro for Linux
 	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
-		#define __linux__ 
+		#define __linux__
 	#endif
 	#if (defined(__linux__) || defined(__GNU__)) && !defined(_GNU_SOURCE)
 		#define _GNU_SOURCE
@@ -178,8 +178,6 @@ void initializePaths();
 */
 std::string get_sysinfo();
 
-void initIrrlicht(irr::IrrlichtDevice * );
-
 
 // Monotonic counter getters.
 
@@ -281,19 +279,6 @@ inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 	}
 }
 
-
-#ifndef SERVER
-float getDisplayDensity();
-
-v2u32 getDisplaySize();
-v2u32 getWindowSize();
-
-std::vector<core::vector3d<u32> > getSupportedVideoModes();
-std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
-const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
-const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
-#endif
-
 inline const char *getPlatformName()
 {
 	return
@@ -337,18 +322,6 @@ inline const char *getPlatformName()
 #endif
 	;
 }
-
-void setXorgClassHint(const video::SExposedVideoData &video_data,
-	const std::string &name);
-
-bool setWindowIcon(IrrlichtDevice *device);
-
-bool setXorgWindowIconFromPath(IrrlichtDevice *device,
-	const std::string &icon_file);
-
-// This only needs to be called at the start of execution, since all future
-// threads in the process inherit this exception handler
-void setWin32ExceptionHandler();
 
 bool secure_rand_fill_buf(void *buf, size_t len);
 

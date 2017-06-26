@@ -38,7 +38,6 @@ class Particle : public scene::ISceneNode
 	public:
 	Particle(
 		IGameDef* gamedef,
-		scene::ISceneManager* mgr,
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		v3f pos,
@@ -119,7 +118,6 @@ class ParticleSpawner
 {
 	public:
 	ParticleSpawner(IGameDef* gamedef,
-		scene::ISceneManager *smgr,
 		LocalPlayer *player,
 		u16 amount,
 		float time,
@@ -148,7 +146,6 @@ class ParticleSpawner
 	ParticleManager* m_particlemanager;
 	float m_time;
 	IGameDef *m_gamedef;
-	scene::ISceneManager *m_smgr;
 	LocalPlayer *m_player;
 	u16 m_amount;
 	float m_spawntime;
@@ -185,19 +182,16 @@ public:
 	void step (float dtime);
 
 	void handleParticleEvent(ClientEvent *event, Client *client,
-			scene::ISceneManager* smgr, LocalPlayer *player);
+			LocalPlayer *player);
 
-	void addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
+	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f);
 
-	void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
+	void addPunchingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f);
 
-	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
+	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f);
 
 protected:
 	void addParticle(Particle* toadd);

@@ -36,6 +36,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
 #include "nodedef.h"
+#include "renderingengine.h"
 
 
 #ifdef __ANDROID__
@@ -198,8 +199,7 @@ public:
 		}
 		m_images.clear();
 	}
-	void insert(const std::string &name, video::IImage *img,
-			bool prefer_local, video::IVideoDriver *driver)
+	void insert(const std::string &name, video::IImage *img, bool prefer_local)
 	{
 		assert(img); // Pre-condition
 		// Remove old image
@@ -217,7 +217,8 @@ public:
 		if (prefer_local){
 			std::string path = getTexturePath(name);
 			if (path != ""){
-				video::IImage *img2 = driver->createImageFromFile(path.c_str());
+				video::IImage *img2 = RenderingEngine::get_video_driver()->
+					createImageFromFile(path.c_str());
 				if (img2){
 					toadd = img2;
 					need_to_grab = false;
@@ -238,7 +239,7 @@ public:
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
-	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
+	video::IImage *getOrLoad(const std::string &name)
 	{
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -246,7 +247,7 @@ public:
 			n->second->grab(); // Grab for caller
 			return n->second;
 		}
-		video::IVideoDriver* driver = device->getVideoDriver();
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 		std::string path = getTexturePath(name);
 		if (path == ""){
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
@@ -274,7 +275,7 @@ private:
 class TextureSource : public IWritableTextureSource
 {
 public:
-	TextureSource(IrrlichtDevice *device);
+	TextureSource();
 	virtual ~TextureSource();
 
 	/*
@@ -343,12 +344,6 @@ public:
 
 	virtual Palette* getPalette(const std::string &name);
 
-	// Returns a pointer to the irrlicht device
-	virtual IrrlichtDevice* getDevice()
-	{
-		return m_device;
-	}
-
 	bool isKnownSourceImage(const std::string &name)
 	{
 		bool is_known = false;
@@ -387,8 +382,6 @@ private:
 
 	// The id of the thread that is allowed to use irrlicht directly
 	std::thread::id m_main_thread;
-	// The irrlicht device
-	IrrlichtDevice *m_device;
 
 	// Cache of source images
 	// This should be only accessed from the main thread
@@ -435,16 +428,13 @@ private:
 	bool m_setting_anisotropic_filter;
 };
 
-IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
+IWritableTextureSource *createTextureSource()
 {
-	return new TextureSource(device);
+	return new TextureSource();
 }
 
-TextureSource::TextureSource(IrrlichtDevice *device):
-		m_device(device)
+TextureSource::TextureSource()
 {
-	assert(m_device); // Pre-condition
-
 	m_main_thread = std::this_thread::get_id();
 
 	// Add a NULL TextureInfo as the first index, named ""
@@ -461,7 +451,7 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 
 TextureSource::~TextureSource()
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	unsigned int textures_before = driver->getTextureCount();
 
@@ -622,7 +612,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 		return 0;
 	}
 
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	video::IImage *img = generateImage(name);
@@ -773,7 +763,7 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 
 	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
+	m_sourcecache.insert(name, img, true);
 	m_source_image_existence.set(name, true);
 }
 
@@ -781,7 +771,7 @@ void TextureSource::rebuildImagesAndTextures()
 {
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Recreate textures
@@ -810,7 +800,7 @@ void TextureSource::rebuildImagesAndTextures()
 video::ITexture* TextureSource::generateTextureFromMesh(
 		const TextureFromMeshParams &params)
 {
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 #ifdef __ANDROID__
@@ -935,8 +925,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	}
 #endif
 
-	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
-	{
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
 		static bool warned = false;
 		if (!warned)
 		{
@@ -967,7 +956,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	}
 
 	// Get a scene manager
-	scene::ISceneManager *smgr_main = m_device->getSceneManager();
+	scene::ISceneManager *smgr_main = RenderingEngine::get_scene_manager();
 	assert(smgr_main);
 	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
 	assert(smgr);
@@ -1064,10 +1053,6 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	if (last_separator_pos != -1) {
 		baseimg = generateImage(name.substr(0, last_separator_pos));
 	}
-
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	sanity_check(driver);
 
 	/*
 		Parse out the last part of the name of the image and act
@@ -1196,13 +1181,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		video::IImage *& baseimg)
 {
 	const char escape = '\\'; // same as in generateImage()
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Stuff starting with [ are special commands
 	if (part_of_name.size() == 0 || part_of_name[0] != '[')
 	{
-		video::IImage *image = m_sourcecache.getOrLoad(part_of_name, m_device);
+		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
 #ifdef __ANDROID__
 		image = Align2Npot2(image, driver);
 #endif
@@ -1275,7 +1260,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
 			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
 				// Upscale overlying image
-				video::IImage* scaled_image = m_device->getVideoDriver()->
+				video::IImage *scaled_image = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim_dst);
 				image->copyToScaling(scaled_image);
 
@@ -1283,7 +1268,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				scaled_image->drop();
 			} else {
 				// Upscale base image
-				video::IImage* scaled_base = m_device->getVideoDriver()->
+				video::IImage *scaled_base = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->copyToScaling(scaled_base);
 				baseimg->drop();
@@ -1333,7 +1318,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					horizontally tiled.
 				*/
 				video::IImage *img_crack = m_sourcecache.getOrLoad(
-					"crack_anylength.png", m_device);
+					"crack_anylength.png");
 
 				if (img_crack) {
 					draw_crack(img_crack, baseimg,
@@ -1855,7 +1840,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 height = stoi(sf.next(""));
 			core::dimension2d<u32> dim(width, height);
 
-			video::IImage* image = m_device->getVideoDriver()->
+			video::IImage *image = RenderingEngine::get_video_driver()->
 				createImage(video::ECF_A8R8G8B8, dim);
 			baseimg->copyToScaling(image);
 			baseimg->drop();
@@ -2356,7 +2341,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 
 video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 {
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::SColor c(0, 0, 0, 0);
 	video::ITexture *texture = getTexture(name);
 	video::IImage *image = driver->createImage(texture,
@@ -2400,7 +2385,7 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 	if (isKnownSourceImage(tname)) {
 		return getTexture(tname);
 	} else {
-		video::IVideoDriver *driver = m_device->getVideoDriver();
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 		video::IImage *flags_image = driver->createImage(
 			video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
 		sanity_check(flags_image != NULL);

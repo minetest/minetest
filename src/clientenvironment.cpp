@@ -31,16 +31,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "voxelalgorithms.h"
 #include "settings.h"
 #include <algorithm>
+#include "client/renderingengine.h"
 
 /*
 	ClientEnvironment
 */
 
-ClientEnvironment::ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
+ClientEnvironment::ClientEnvironment(ClientMap *map,
 	ITextureSource *texturesource, Client *client):
 	Environment(client),
 	m_map(map),
-	m_smgr(smgr),
 	m_texturesource(texturesource),
 	m_client(client)
 {
@@ -456,7 +456,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	infostream<<"ClientEnvironment::addActiveObject(): "
 		<<"added (id="<<object->getId()<<")"<<std::endl;
 	m_active_objects[object->getId()] = object;
-	object->addToScene(m_smgr, m_texturesource);
+	object->addToScene(RenderingEngine::get_scene_manager(), m_texturesource);
 	{ // Update lighting immediately
 		u8 light = 0;
 		bool pos_ok;

@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "settings.h"
 #include "util/directiontables.h"
-#include <IMeshManipulator.h>
+#include "client/renderingengine.h"
 
 /*
 	MeshMakeData
@@ -1008,15 +1008,11 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 
 MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 	m_minimap_mapblock(NULL),
-	m_client(data->m_client),
-	m_driver(m_client->tsrc()->getDevice()->getVideoDriver()),
-	m_tsrc(m_client->getTextureSource()),
-	m_shdrsrc(m_client->getShaderSource()),
+	m_tsrc(data->m_client->getTextureSource()),
+	m_shdrsrc(data->m_client->getShaderSource()),
 	m_animation_force_timer(0), // force initial animation
 	m_last_crack(-1),
-	m_crack_materials(),
-	m_last_daynight_ratio((u32) -1),
-	m_daynight_diffs()
+	m_last_daynight_ratio((u32) -1)
 {
 	for (int m = 0; m < MAX_TILE_LAYERS; m++)
 		m_mesh[m] = new scene::SMesh();
@@ -1219,7 +1215,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 
 		if (m_use_tangent_vertices) {
 			scene::IMeshManipulator* meshmanip =
-				m_client->getSceneManager()->getMeshManipulator();
+				RenderingEngine::get_scene_manager()->getMeshManipulator();
 			meshmanip->recalculateTangents(m_mesh[layer], true, false, false);
 		}
 
@@ -1254,7 +1250,7 @@ MapBlockMesh::~MapBlockMesh()
 		if (m_enable_vbo && m_mesh[m])
 			for (u32 i = 0; i < m_mesh[m]->getMeshBufferCount(); i++) {
 				scene::IMeshBuffer *buf = m_mesh[m]->getMeshBuffer(i);
-				m_driver->removeHardwareBuffer(buf);
+				RenderingEngine::get_video_driver()->removeHardwareBuffer(buf);
 			}
 		m_mesh[m]->drop();
 		m_mesh[m] = NULL;
