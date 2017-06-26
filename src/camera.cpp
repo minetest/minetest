@@ -197,8 +197,15 @@ void Camera::step(f32 dtime)
 
 void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 {
-	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
-	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
+	if (m_timer.X == 0.0f)
+		m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw)) * 0.01f;
+	else
+		m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
+
+	if (m_timer.Y == 0.0f)
+		m_cam_vel.Y = std::fabs(m_last_cam_pos.Y - m_camera_direction.Y);
+	else
+		m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
@@ -206,8 +213,7 @@ void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 		*/
 
 		if (m_cam_vel.X > 1.0f) {
-			m_timer.X = 0.0f;
-			m_timer.X += frametime;
+			m_timer.X = frametime;
 
 			if (m_cam_vel.X > m_cam_vel_old.X)
 				m_cam_vel_old.X = m_cam_vel.X;
@@ -226,8 +232,7 @@ void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 		}
 
 		if (m_cam_vel.Y > 1.0f) {
-			m_timer.Y = 0.0f;
-			m_timer.Y += frametime;
+			m_timer.Y = frametime;
 
 			if (m_cam_vel.Y > m_cam_vel_old.Y)
 				m_cam_vel_old.Y = m_cam_vel.Y;
