@@ -1201,6 +1201,10 @@
 #    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
 # mg_flags = caves,dungeons,light,decorations
 
+#    Whether dungeons occasionally project from the terrain.
+#    type: bool
+# projecting_dungeons = true
+
 ### Advanced
 
 #    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
