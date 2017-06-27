@@ -223,7 +223,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 
 	data->fillBlockDataBegin(q->p);
 
-	int t_now = time(0);
+	std::time_t t_now = std::time(0);
 
 	// Collect data for 3*3*3 blocks from cache
 	v3s16 dp;

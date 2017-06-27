@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MESH_GENERATOR_THREAD_HEADER
 #define MESH_GENERATOR_THREAD_HEADER
 
+#include <ctime>
 #include <mutex>
 #include "mapblock_mesh.h"
 #include "threading/mutex_auto_lock.h"
@@ -30,7 +31,7 @@ struct CachedMapBlockData
 	v3s16 p = v3s16(-1337, -1337, -1337);
 	MapNode *data = nullptr; // A copy of the MapBlock's data member
 	int refcount_from_queue = 0;
-	int last_used_timestamp = std::time(0);
+	std::time_t last_used_timestamp = std::time(0);
 
 	CachedMapBlockData() {}
 	~CachedMapBlockData();

@@ -26,8 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gettime.h"
 #include "log.h"
 
-#if (defined(WIN32) || defined(_WIN32_WCE))
-	#define WIN32_LEAN_AND_MEAN
+#ifdef _WIN32
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
 	#endif
