@@ -813,11 +813,12 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 				tdef[j].backface_culling, overlay_material);
 	}
 
-	if (drawtype == NDT_PLANTLIKE_ROOTED)
+	if (drawtype == NDT_PLANTLIKE_ROOTED) {
 		if (waving == 1)
 			material_type = TILE_MATERIAL_WAVING_PLANTS;
 		else if (waving == 2)
 			material_type = TILE_MATERIAL_WAVING_LEAVES;
+	}
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
