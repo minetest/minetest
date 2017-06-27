@@ -1013,6 +1013,30 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 	return driver_names[type];
 }
 
+bool RenderingEngine::take_screenshot(const std::string &filename)
+{
+	video::IVideoDriver *driver = get_video_driver();
+	irr::video::IImage *const raw_image = driver->createScreenShot();
+
+	if (!raw_image)
+		return false;
+
+	u32 quality = (u32)g_settings->getS32("screenshot_quality");
+	quality = MYMIN(MYMAX(quality, 0), 100) / 100.0 * 255;
+	irr::video::IImage *const image =
+			driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
+
+	bool succeed = false;
+	if (image) {
+		raw_image->copyTo(image);
+		succeed = driver->writeImageToFile(image, filename.c_str(), quality);
+		image->drop();
+	}
+
+	raw_image->drop();
+	return succeed;
+}
+
 #ifndef __ANDROID__
 #ifdef XORG_USED
 
