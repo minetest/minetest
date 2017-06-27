@@ -308,59 +308,43 @@ function core.formspec_escape(text)
 end
 
 
-function core.wrap_text(text, charlimit)
-	local retval = {}
-
-	local current_idx = 1
-
-	local start,stop = string_find(text, " ", current_idx)
-	local nl_start,nl_stop = string_find(text, "\n", current_idx)
-	local gotnewline = false
-	if nl_start ~= nil and (start == nil or nl_start < start) then
-		start = nl_start
-		stop = nl_stop
-		gotnewline = true
-	end
-	local last_line = ""
-	while start ~= nil do
-		if string.len(last_line) + (stop-start) > charlimit then
-			retval[#retval + 1] = last_line
-			last_line = ""
+function core.wrap_text(text, limit)
+	local new_text = ""
+	local x = 1
+	if text:len() > limit then
+		while x == 1 do
+			local s = text:sub(1,limit)
+			local space = s:reverse():find(" ")
+			if limit == 1 then
+				local letter = s:sub(1,1)
+				new_text = new_text .. letter .. "\n"
+				text = text:sub(2, text:len())
+			else
+				if space == nil then
+					local split = s:sub(1,(limit - 1))
+					new_text = new_text .. split .. "-\n"
+					text = text:sub(split:len() + 1, 
+					text:len())
+				else
+					local last_space = (limit - space) + 1
+					new_text = new_text .. 
+					text:sub(1,last_space) .. "\n"
+					text = text:sub(last_space + 1, 
+					text:len())
+				end
+				if text:len() < limit then
+					new_text = new_text .. text
+					text = ""
+				end
+			end
+			if text == "" then
+				x = 0
+			end
 		end
-
-		if last_line ~= "" then
-			last_line = last_line .. " "
-		end
-
-		last_line = last_line .. string_sub(text, current_idx, stop - 1)
-
-		if gotnewline then
-			retval[#retval + 1] = last_line
-			last_line = ""
-			gotnewline = false
-		end
-		current_idx = stop+1
-
-		start,stop = string_find(text, " ", current_idx)
-		nl_start,nl_stop = string_find(text, "\n", current_idx)
-
-		if nl_start ~= nil and (start == nil or nl_start < start) then
-			start = nl_start
-			stop = nl_stop
-			gotnewline = true
-		end
-	end
-
-	--add last part of text
-	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			retval[#retval + 1] = last_line
-			retval[#retval + 1] = string_sub(text, current_idx)
 	else
-		last_line = last_line .. " " .. string_sub(text, current_idx)
-		retval[#retval + 1] = last_line
+		new_text = text
 	end
-
-	return retval
+	return new_text
 end
 
 --------------------------------------------------------------------------------
@@ -512,12 +496,6 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
-function core.rgba(r, g, b, a)
-	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
-			string.format("#%02X%02X%02X", r, g, b)
-end
-
---------------------------------------------------------------------------------
 function core.pos_to_string(pos, decimal_places)
 	local x = pos.x
 	local y = pos.y
@@ -648,25 +626,43 @@ end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
-function core.get_color_escape_sequence(color)
-	return ESCAPE_CHAR .. "(c@" .. color .. ")"
-end
+-- Client-side mods don't have access to settings
+if core.settings and core.settings:get_bool("disable_escape_sequences") then
 
-function core.get_background_escape_sequence(color)
-	return ESCAPE_CHAR .. "(b@" .. color .. ")"
-end
-
-function core.colorize(color, message)
-	local lines = tostring(message):split("\n", true)
-	local color_code = core.get_color_escape_sequence(color)
-
-	for i, line in ipairs(lines) do
-		lines[i] = color_code .. line
+	function core.get_color_escape_sequence(color)
+		return ""
 	end
 
-	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
-end
+	function core.get_background_escape_sequence(color)
+		return ""
+	end
 
+	function core.colorize(color, message)
+		return message
+	end
+
+else
+
+	function core.get_color_escape_sequence(color)
+		return ESCAPE_CHAR .. "(c@" .. color .. ")"
+	end
+
+	function core.get_background_escape_sequence(color)
+		return ESCAPE_CHAR .. "(b@" .. color .. ")"
+	end
+
+	function core.colorize(color, message)
+		local lines = tostring(message):split("\n", true)
+		local color_code = core.get_color_escape_sequence(color)
+
+		for i, line in ipairs(lines) do
+			lines[i] = color_code .. line
+		end
+
+		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
+	end
+
+end
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
@@ -711,28 +707,3 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 	return fine_pos
 end
-
-function core.string_to_privs(str, delim)
-	assert(type(str) == "string")
-	delim = delim or ','
-	local privs = {}
-	for _, priv in pairs(string.split(str, delim)) do
-		privs[priv:trim()] = true
-	end
-	return privs
-end
-
-function core.privs_to_string(privs, delim)
-	assert(type(privs) == "table")
-	delim = delim or ','
-	local list = {}
-	for priv, bool in pairs(privs) do
-		if bool then
-			list[#list + 1] = priv
-		end
-	end
-	return table.concat(list, delim)
-end
-
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")
