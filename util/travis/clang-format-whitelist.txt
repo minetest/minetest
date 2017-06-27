@@ -3,10 +3,6 @@ src/ban.cpp
 src/camera.cpp
 src/camera.h
 src/cavegen.cpp
-src/cguittfont/CGUITTFont.cpp
-src/cguittfont/CGUITTFont.h
-src/cguittfont/irrUString.h
-src/cguittfont/xCGUITTFont.h
 src/chat.cpp
 src/chat.h
 src/chat_interface.h
@@ -61,8 +57,6 @@ src/daynightratio.h
 src/debug.cpp
 src/debug.h
 src/defaultsettings.cpp
-src/drawscene.cpp
-src/drawscene.h
 src/dungeongen.cpp
 src/dungeongen.h
 src/emerge.cpp
@@ -89,7 +83,8 @@ src/guiChatConsole.cpp
 src/guiChatConsole.h
 src/guiEngine.cpp
 src/guiEngine.h
-src/guiFileSelectMenu.cpp
+src/guiPathSelectMenu.cpp
+src/guiPathSelectMenu.h
 src/guiFormSpecMenu.cpp
 src/guiFormSpecMenu.h
 src/guiKeyChangeMenu.cpp
@@ -112,6 +107,9 @@ src/inventory.cpp
 src/inventory.h
 src/inventorymanager.cpp
 src/inventorymanager.h
+src/irrlicht_changes/CGUITTFont.cpp
+src/irrlicht_changes/CGUITTFont.h
+src/irrlicht_changes/irrUString.h
 src/irrlicht_changes/static_text.cpp
 src/irrlicht_changes/static_text.h
 src/irrlichttypes.h

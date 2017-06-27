@@ -66,15 +66,6 @@ SHA1::SHA1()
 {
 	// make sure that the data type is the right size
 	assert( sizeof( Uint32 ) * 5 == 20 );
-	
-	// initialize
-	H0 = 0x67452301;
-	H1 = 0xefcdab89;
-	H2 = 0x98badcfe;
-	H3 = 0x10325476;
-	H4 = 0xc3d2e1f0;
-	unprocessedBytes = 0;
-	size = 0;
 }
 
 // Destructor ********************************************************

@@ -26,25 +26,25 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-#define MGFRACTAL_LARGE_CAVE_DEPTH -33
-
 class BiomeManager;
 
 extern FlagDesc flagdesc_mapgen_fractal[];
 
 struct MapgenFractalParams : public MapgenParams
 {
-	u32 spflags;
-	float cave_width;
-	u16 fractal;
-	u16 iterations;
-	v3f scale;
-	v3f offset;
-	float slice_w;
-	float julia_x;
-	float julia_y;
-	float julia_z;
-	float julia_w;
+	u32 spflags = 0;
+	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
+	u16 fractal = 1;
+	u16 iterations = 11;
+	v3f scale = v3f(4096.0, 1024.0, 4096.0);
+	v3f offset = v3f(1.79, 0.0, 0.0);
+	float slice_w = 0.0f;
+	float julia_x = 0.33f;
+	float julia_y = 0.33f;
+	float julia_z = 0.33f;
+	float julia_w = 0.33f;
 	NoiseParams np_seabed;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
@@ -74,6 +74,7 @@ private:
 	u16 formula;
 	bool julia;
 
+	s16 large_cave_depth;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;

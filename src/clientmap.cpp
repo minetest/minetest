@@ -31,16 +31,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"               // CameraModes
 #include "util/basic_macros.h"
 #include <algorithm>
+#include "client/renderingengine.h"
 
 ClientMap::ClientMap(
 		Client *client,
 		MapDrawControl &control,
-		scene::ISceneNode* parent,
-		scene::ISceneManager* mgr,
 		s32 id
 ):
 	Map(dout_client, client),
-	scene::ISceneNode(parent, mgr, id),
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+		RenderingEngine::get_scene_manager(), id),
 	m_client(client),
 	m_control(control),
 	m_camera_position(0,0,0),
@@ -67,13 +67,6 @@ ClientMap::ClientMap(
 
 ClientMap::~ClientMap()
 {
-	/*MutexAutoLock lock(mesh_mutex);
-
-	if(mesh != NULL)
-	{
-		mesh->drop();
-		mesh = NULL;
-	}*/
 }
 
 MapSector * ClientMap::emergeSector(v2s16 p2d)
@@ -219,11 +212,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 				if not seen on display
 			*/
 
-			if (block->mesh != NULL)
+			if (block->mesh)
 				block->mesh->updateCameraOffset(m_camera_offset);
 
 			float range = 100000 * BS;
-			if (m_control.range_all == false)
+			if (!m_control.range_all)
 				range = m_control.wanted_range * BS;
 
 			float d = 0.0;
@@ -236,7 +229,7 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			/*
 				Ignore if mesh doesn't exist
 			*/
-			if (block->mesh == NULL) {
+			if (!block->mesh) {
 				blocks_in_range_without_mesh++;
 				continue;
 			}
@@ -290,37 +283,34 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 struct MeshBufList
 {
-	/*!
-	 * Specifies in which layer the list is.
-	 * All lists which are in a lower layer are rendered before this list.
-	 */
-	u8 layer;
 	video::SMaterial m;
 	std::vector<scene::IMeshBuffer*> bufs;
 };
 
 struct MeshBufListList
 {
-	std::vector<MeshBufList> lists;
+	/*!
+	 * Stores the mesh buffers of the world.
+	 * The array index is the material's layer.
+	 * The vector part groups vertices by material.
+	 */
+	std::vector<MeshBufList> lists[MAX_TILE_LAYERS];
 
 	void clear()
 	{
-		lists.clear();
+		for (int l = 0; l < MAX_TILE_LAYERS; l++)
+			lists[l].clear();
 	}
 
 	void add(scene::IMeshBuffer *buf, u8 layer)
 	{
+		// Append to the correct layer
+		std::vector<MeshBufList> &list = lists[layer];
 		const video::SMaterial &m = buf->getMaterial();
-		for(std::vector<MeshBufList>::iterator i = lists.begin();
-				i != lists.end(); ++i){
-			MeshBufList &l = *i;
-
+		for (MeshBufList &l : list) {
 			// comparing a full material is quite expensive so we don't do it if
 			// not even first texture is equal
 			if (l.m.TextureLayer[0].Texture != m.TextureLayer[0].Texture)
-				continue;
-
-			if(l.layer != layer)
 				continue;
 
 			if (l.m == m) {
@@ -329,10 +319,9 @@ struct MeshBufListList
 			}
 		}
 		MeshBufList l;
-		l.layer = layer;
 		l.m = m;
 		l.bufs.push_back(buf);
-		lists.push_back(l);
+		list.push_back(l);
 	}
 };
 
@@ -360,7 +349,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		Measuring time is very useful for long delays when the
 		machine is swapping a lot.
 	*/
-	int time1 = time(0);
+	std::time_t time1 = time(0);
 
 	/*
 		Get animation parameters
@@ -405,7 +394,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		MapBlock *block = i->second;
 
 		// If the mesh of the block happened to get deleted, ignore it
-		if (block->mesh == NULL)
+		if (!block->mesh)
 			continue;
 
 		float d = 0.0;
@@ -476,35 +465,32 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 		}
 	}
 
-	std::vector<MeshBufList> &lists = drawbufs.lists;
+	// Render all layers in order
+	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
+		std::vector<MeshBufList> &lists = drawbufs.lists[layer];
 
-	int timecheck_counter = 0;
-	for (std::vector<MeshBufList>::iterator i = lists.begin();
-			i != lists.end(); ++i) {
-		timecheck_counter++;
-		if (timecheck_counter > 50) {
-			timecheck_counter = 0;
-			int time2 = time(0);
-			if (time2 > time1 + 4) {
-				infostream << "ClientMap::renderMap(): "
-					"Rendering takes ages, returning."
-					<< std::endl;
-				return;
+		int timecheck_counter = 0;
+		for (MeshBufList &list : lists) {
+			timecheck_counter++;
+			if (timecheck_counter > 50) {
+				timecheck_counter = 0;
+				std::time_t time2 = time(0);
+				if (time2 > time1 + 4) {
+					infostream << "ClientMap::renderMap(): "
+						"Rendering takes ages, returning."
+						<< std::endl;
+					return;
+				}
+			}
+
+			driver->setMaterial(list.m);
+
+			for (scene::IMeshBuffer *buf : list.bufs) {
+				driver->drawMeshBuffer(buf);
+				vertex_count += buf->getVertexCount();
+				meshbuffer_count++;
 			}
 		}
-
-		MeshBufList &list = *i;
-
-		driver->setMaterial(list.m);
-
-		for (std::vector<scene::IMeshBuffer*>::iterator j = list.bufs.begin();
-				j != list.bufs.end(); ++j) {
-			scene::IMeshBuffer *buf = *j;
-			driver->drawMeshBuffer(buf);
-			vertex_count += buf->getVertexCount();
-			meshbuffer_count++;
-		}
-
 	}
 	} // ScopeProfiler
 

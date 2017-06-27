@@ -22,11 +22,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
-#include "threading/mutex.h"
 #include <string>
-#include "util/cpp11_container.h"
 #include <list>
 #include <set>
+#include <mutex>
 
 class Settings;
 struct NoiseParams;
@@ -45,7 +44,7 @@ typedef std::vector<
 	>
 > SettingsCallbackList;
 
-typedef UNORDERED_MAP<std::string, SettingsCallbackList> SettingsCallbackMap;
+typedef std::unordered_map<std::string, SettingsCallbackList> SettingsCallbackMap;
 
 enum ValueType {
 	VALUETYPE_STRING,
@@ -74,15 +73,10 @@ struct ValueSpec {
 };
 
 struct SettingsEntry {
-	SettingsEntry() :
-		group(NULL),
-		is_group(false)
-	{}
+	SettingsEntry() {}
 
 	SettingsEntry(const std::string &value_) :
-		value(value_),
-		group(NULL),
-		is_group(false)
+		value(value_)
 	{}
 
 	SettingsEntry(Settings *group_) :
@@ -90,12 +84,12 @@ struct SettingsEntry {
 		is_group(true)
 	{}
 
-	std::string value;
-	Settings *group;
-	bool is_group;
+	std::string value = "";
+	Settings *group = nullptr;
+	bool is_group = false;
 };
 
-typedef UNORDERED_MAP<std::string, SettingsEntry> SettingEntries;
+typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
@@ -233,10 +227,10 @@ private:
 
 	SettingsCallbackMap m_callbacks;
 
-	mutable Mutex m_callback_mutex;
+	mutable std::mutex m_callback_mutex;
 
 	// All methods that access m_settings/m_defaults directly should lock this.
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 
 };
 

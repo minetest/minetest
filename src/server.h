@@ -104,29 +104,19 @@ struct MediaInfo
 
 struct ServerSoundParams
 {
-	float gain;
-	std::string to_player;
-	enum Type{
-		SSP_LOCAL=0,
-		SSP_POSITIONAL=1,
-		SSP_OBJECT=2
-	} type;
+	enum Type {
+		SSP_LOCAL,
+		SSP_POSITIONAL,
+		SSP_OBJECT
+	} type = SSP_LOCAL;
+	float gain = 1.0f;
+	float fade = 0.0f;
+	float pitch = 1.0f;
+	bool loop = false;
+	float max_hear_distance = 32 * BS;
 	v3f pos;
-	u16 object;
-	float max_hear_distance;
-	bool loop;
-	float fade;
-
-	ServerSoundParams():
-		gain(1.0),
-		to_player(""),
-		type(SSP_LOCAL),
-		pos(0,0,0),
-		object(0),
-		max_hear_distance(32*BS),
-		loop(false),
-		fade(0)
-	{}
+	u16 object = 0;
+	std::string to_player = "";
 
 	v3f getPos(ServerEnvironment *env, bool *pos_exists) const;
 };
@@ -135,7 +125,7 @@ struct ServerPlayingSound
 {
 	ServerSoundParams params;
 	SimpleSoundSpec spec;
-	UNORDERED_SET<u16> clients; // peer ids
+	std::unordered_set<u16> clients; // peer ids
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -152,9 +142,11 @@ public:
 		bool simple_singleplayer_mode,
 		bool ipv6,
 		bool dedicated,
-		ChatInterface *iface = NULL
+		ChatInterface *iface = nullptr
 	);
 	~Server();
+	DISABLE_CLASS_COPY(Server);
+
 	void start(Address bind_addr);
 	void stop();
 	// This is mainly a way to pass the time to the server.
@@ -375,7 +367,7 @@ public:
 	Address m_bind_addr;
 
 	// Environment mutex (envlock)
-	Mutex m_env_mutex;
+	std::mutex m_env_mutex;
 
 private:
 
@@ -486,7 +478,7 @@ private:
 
 	// This returns the answer to the sender of wmessage, or "" if there is none
 	std::wstring handleChat(const std::string &name, const std::wstring &wname,
-		const std::wstring &wmessage,
+		std::wstring wmessage_input,
 		bool check_shout_priv = false,
 		RemotePlayer *player = NULL);
 	void handleAdminChat(const ChatEventChat *evt);
@@ -529,32 +521,32 @@ private:
 	MutexedVariable<std::string> m_async_fatal_error;
 
 	// Some timers
-	float m_liquid_transform_timer;
-	float m_liquid_transform_every;
-	float m_masterserver_timer;
-	float m_emergethread_trigger_timer;
-	float m_savemap_timer;
+	float m_liquid_transform_timer = 0.0f;
+	float m_liquid_transform_every = 1.0f;
+	float m_masterserver_timer = 0.0f;
+	float m_emergethread_trigger_timer = 0.0f;
+	float m_savemap_timer = 0.0f;
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	// Environment
-	ServerEnvironment *m_env;
+	ServerEnvironment *m_env = nullptr;
 
 	// server connection
 	con::Connection m_con;
 
 	// Ban checking
-	BanManager *m_banmanager;
+	BanManager *m_banmanager = nullptr;
 
 	// Rollback manager (behind m_env_mutex)
-	IRollbackManager *m_rollback;
-	bool m_enable_rollback_recording; // Updated once in a while
+	IRollbackManager *m_rollback = nullptr;
+	bool m_enable_rollback_recording = false; // Updated once in a while
 
 	// Emerge manager
-	EmergeManager *m_emerge;
+	EmergeManager *m_emerge = nullptr;
 
 	// Scripting
 	// Envlock and conlock should be locked when using Lua
-	ServerScripting *m_script;
+	ServerScripting *m_script = nullptr;
 
 	// Item definition manager
 	IWritableItemDefManager *m_itemdef;
@@ -577,21 +569,21 @@ private:
 
 	// A buffer for time steps
 	// step() increments and AsyncRunStep() run by m_thread reads it.
-	float m_step_dtime;
-	Mutex m_step_dtime_mutex;
+	float m_step_dtime = 0.0f;
+	std::mutex m_step_dtime_mutex;
 
 	// current server step lag counter
 	float m_lag;
 
 	// The server mainly operates in this thread
-	ServerThread *m_thread;
+	ServerThread *m_thread = nullptr;
 
 	/*
 		Time related stuff
 	*/
 
 	// Timer for sending time of day over network
-	float m_time_of_day_send_timer;
+	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
 	/*
@@ -610,10 +602,10 @@ private:
 		Random stuff
 	*/
 
-	bool m_shutdown_requested;
+	bool m_shutdown_requested = false;
 	std::string m_shutdown_msg;
-	bool m_shutdown_ask_reconnect;
-	float m_shutdown_timer;
+	bool m_shutdown_ask_reconnect = false;
+	float m_shutdown_timer = 0.0f;
 
 	ChatInterface *m_admin_chat;
 	std::string m_admin_nick;
@@ -637,7 +629,7 @@ private:
 		all sending of information by itself.
 		This is behind m_env_mutex
 	*/
-	bool m_ignore_map_edit_events;
+	bool m_ignore_map_edit_events = false;
 	/*
 		If a non-empty area, map edit events contained within are left
 		unsent. Done at map generation time to speed up editing of the
@@ -650,16 +642,16 @@ private:
 		this peed id as the disabled recipient
 		This is behind m_env_mutex
 	*/
-	u16 m_ignore_map_edit_events_peer_id;
+	u16 m_ignore_map_edit_events_peer_id = 0;
 
 	// media files known to server
-	UNORDERED_MAP<std::string, MediaInfo> m_media;
+	std::unordered_map<std::string, MediaInfo> m_media;
 
 	/*
 		Sounds
 	*/
-	UNORDERED_MAP<s32, ServerPlayingSound> m_playing_sounds;
-	s32 m_next_sound_id;
+	std::unordered_map<s32, ServerPlayingSound> m_playing_sounds;
+	s32 m_next_sound_id = 0;
 
 	/*
 		Detached inventories (behind m_env_mutex)
@@ -669,10 +661,8 @@ private:
 	// value = "" (visible to all players) or player name
 	std::map<std::string, std::string> m_detached_inventories_player;
 
-	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
-	float m_mod_storage_save_timer;
-
-	DISABLE_CLASS_COPY(Server);
+	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer = 10.0f;
 };
 
 /*

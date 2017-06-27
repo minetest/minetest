@@ -39,7 +39,6 @@ struct NearbyCollisionInfo {
 	NearbyCollisionInfo(bool is_ul, bool is_obj, int bouncy,
 			const v3s16 &pos, const aabb3f &box) :
 		is_unloaded(is_ul),
-		is_step_up(false),
 		is_object(is_obj),
 		bouncy(bouncy),
 		position(pos),
@@ -47,7 +46,7 @@ struct NearbyCollisionInfo {
 	{}
 
 	bool is_unloaded;
-	bool is_step_up;
+	bool is_step_up = false;
 	bool is_object;
 	int bouncy;
 	v3s16 position;
@@ -469,7 +468,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 							d));
 
 			// Get bounce multiplier
-			bool bouncy = (nearest_info.bouncy >= 1);
 			float bounce = -(float)nearest_info.bouncy / 100.0;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
@@ -499,7 +497,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				info.type = COLLISION_NODE;
 
 			info.node_p = nearest_info.position;
-			info.bouncy = bouncy;
 			info.old_speed = *speed_f;
 
 			// Set the speed component that caused the collision to zero
@@ -513,7 +510,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				else
 					speed_f->X = 0;
 				result.collides = true;
-				result.collides_xz = true;
 			} else if (nearest_collided == 1) { // Y
 				if(fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
@@ -526,7 +522,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				else
 					speed_f->Z = 0;
 				result.collides = true;
-				result.collides_xz = true;
 			}
 
 			info.new_speed = *speed_f;
@@ -572,8 +567,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 				if (box_info.is_object)
 					result.standing_on_object = true;
-				if (box_info.is_unloaded)
-					result.standing_on_unloaded = true;
 			}
 		}
 	}

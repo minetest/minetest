@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "player.h"
 #include "environment.h"
+#include "constants.h"
 #include <list>
 
 class Client;
@@ -44,27 +45,29 @@ public:
 	LocalPlayer(Client *client, const char *name);
 	virtual ~LocalPlayer();
 
-	ClientActiveObject *parent;
+	ClientActiveObject *parent = nullptr;
 
-	u16 hp;
-	bool isAttached;
-	bool touching_ground;
+	// Initialize hp to 0, so that no hearts will be shown if server
+	// doesn't support health points
+	u16 hp = 0;
+	bool isAttached = false;
+	bool touching_ground = false;
 	// This oscillates so that the player jumps a bit above the surface
-	bool in_liquid;
+	bool in_liquid = false;
 	// This is more stable and defines the maximum speed of the player
-	bool in_liquid_stable;
+	bool in_liquid_stable = false;
 	// Gets the viscosity of water to calculate friction
-	u8 liquid_viscosity;
-	bool is_climbing;
-	bool swimming_vertical;
+	u8 liquid_viscosity = 0;
+	bool is_climbing = false;
+	bool swimming_vertical = false;
 
-	float physics_override_speed;
-	float physics_override_jump;
-	float physics_override_gravity;
-	bool physics_override_sneak;
-	bool physics_override_sneak_glitch;
+	float physics_override_speed = 1.0f;
+	float physics_override_jump = 1.0f;
+	float physics_override_gravity = 1.0f;
+	bool physics_override_sneak = true;
+	bool physics_override_sneak_glitch = false;
 	// Temporary option for old move code
-	bool physics_override_new_move;
+	bool physics_override_new_move = true;
 
 	v3f overridePosition;
 
@@ -83,32 +86,32 @@ public:
 	// Used to check if anything changed and prevent sending packets if not
 	v3f last_position;
 	v3f last_speed;
-	float last_pitch;
-	float last_yaw;
-	unsigned int last_keyPressed;
-	u8 last_camera_fov;
-	u8 last_wanted_range;
+	float last_pitch = 0.0f;
+	float last_yaw = 0.0f;
+	unsigned int last_keyPressed = 0;
+	u8 last_camera_fov = 0;
+	u8 last_wanted_range = 0;
 
-	float camera_impact;
+	float camera_impact = 0.0f;
 
-	bool makes_footstep_sound;
+	bool makes_footstep_sound = true;
 
-	int last_animation;
+	int last_animation = NO_ANIM;
 	float last_animation_speed;
 
-	std::string hotbar_image;
-	std::string hotbar_selected_image;
+	std::string hotbar_image = "";
+	std::string hotbar_selected_image = "";
 
-	video::SColor light_color;
+	video::SColor light_color = video::SColor(255, 255, 255, 255);
 
-	float hurt_tilt_timer;
-	float hurt_tilt_strength;
+	float hurt_tilt_timer = 0.0f;
+	float hurt_tilt_strength = 0.0f;
 
 	GenericCAO *getCAO() const { return m_cao; }
 
 	void setCAO(GenericCAO *toset)
 	{
-		assert(m_cao == NULL); // Pre-condition
+		assert(!m_cao); // Pre-condition
 		m_cao = toset;
 	}
 
@@ -143,35 +146,36 @@ private:
 
 	v3f m_position;
 
-	v3s16 m_sneak_node;
+	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
 	// Stores the max player uplift by m_sneak_node
 	// To support temporary option for old move code
-	f32 m_sneak_node_bb_ymax;
+	f32 m_sneak_node_bb_ymax = 0.0f;
 	// Stores the top bounding box of m_sneak_node
-	aabb3f m_sneak_node_bb_top;
+	aabb3f m_sneak_node_bb_top = aabb3f(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	// Whether the player is allowed to sneak
-	bool m_sneak_node_exists;
+	bool m_sneak_node_exists = false;
 	// Whether recalculation of m_sneak_node and its top bbox is needed
-	bool m_need_to_get_new_sneak_node;
+	bool m_need_to_get_new_sneak_node = true;
 	// Whether a "sneak ladder" structure is detected at the players pos
 	// see detectSneakLadder() in the .cpp for more info (always false if disabled)
-	bool m_sneak_ladder_detected;
+	bool m_sneak_ladder_detected = false;
 	// Whether a 2-node-up ledge is detected at the players pos,
 	// see detectLedge() in the .cpp for more info (always false if disabled).
-	bool m_ledge_detected;
+	bool m_ledge_detected = false;
 
 	// Node below player, used to determine whether it has been removed,
 	// and its old type
-	v3s16 m_old_node_below;
-	std::string m_old_node_below_type;
-	bool m_can_jump;
-	u16 m_breath;
-	f32 m_yaw;
-	f32 m_pitch;
-	bool camera_barely_in_ceiling;
-	aabb3f m_collisionbox;
+	v3s16 m_old_node_below = v3s16(32767, 32767, 32767);
+	std::string m_old_node_below_type = "air";
+	bool m_can_jump = false;
+	u16 m_breath = PLAYER_MAX_BREATH;
+	f32 m_yaw = 0.0f;
+	f32 m_pitch = 0.0f;
+	bool camera_barely_in_ceiling = false;
+	aabb3f m_collisionbox = aabb3f(-BS * 0.30f, 0.0f, -BS * 0.30f, BS * 0.30f,
+			BS * 1.75f, BS * 0.30f);
 
-	GenericCAO *m_cao;
+	GenericCAO *m_cao = nullptr;
 	Client *m_client;
 };
 

@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"     // MapDrawControl
 #include "player.h"
 #include <cmath>
+#include "client/renderingengine.h"
 #include "settings.h"
 #include "wieldmesh.h"
 #include "noise.h"         // easeCurve
@@ -41,36 +42,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 		Client *client):
-	m_playernode(NULL),
-	m_headnode(NULL),
-	m_cameranode(NULL),
-
-	m_wieldmgr(NULL),
-	m_wieldnode(NULL),
-
 	m_draw_control(draw_control),
-	m_client(client),
-
-	m_camera_position(0,0,0),
-	m_camera_direction(0,0,0),
-	m_camera_offset(0,0,0),
-
-	m_aspect(1.0),
-	m_fov_x(1.0),
-	m_fov_y(1.0),
-
-	m_view_bobbing_anim(0),
-	m_view_bobbing_state(0),
-	m_view_bobbing_speed(0),
-	m_view_bobbing_fall(0),
-
-	m_digging_anim(0),
-	m_digging_button(-1),
-
-	m_wield_change_timer(0.125),
-	m_wield_item_next(),
-
-	m_camera_mode(CAMERA_MODE_FIRST)
+	m_client(client)
 {
 	//dstream<<FUNCTION_NAME<<std::endl;
 
@@ -103,6 +76,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	m_cache_view_bobbing_amount = g_settings->getFloat("view_bobbing_amount");
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
+	m_arm_inertia		    = g_settings->getBool("arm_inertia");
 	m_nametags.clear();
 }
 
@@ -126,7 +100,7 @@ bool Camera::successfullyCreated(std::string &error_message)
 	} else {
 		error_message.clear();
 	}
-	
+
 	if (g_settings->getBool("enable_client_modding")) {
 		m_client->getScript()->on_camera_ready(this);
 	}
@@ -218,6 +192,91 @@ void Camera::step(f32 dtime)
 				m_client->event()->put(e);
 			}
 		}
+	}
+}
+
+void Camera::addArmInertia(f32 player_yaw, f32 frametime)
+{
+	if (m_timer.X == 0.0f) {
+		// In the limit case where timer is 0 set a static velocity (generic case divide by zero)
+		m_cam_vel.X = 1.0001f;
+	}
+	else
+		m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
+
+	if (m_timer.Y == 0.0f) {
+		// In the limit case where timer is 0 set a static velocity (generic case divide by zero)
+		m_cam_vel.Y = 1.0001f;
+	}
+	else
+		m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
+
+	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
+		/*
+		   the arm moves when the camera moves fast enough.
+		*/
+
+		if (m_cam_vel.X > 1.0f) {
+			m_timer.X = frametime;
+
+			if (m_cam_vel.X > m_cam_vel_old.X)
+				m_cam_vel_old.X = m_cam_vel.X;
+
+			if (m_last_cam_pos.X > player_yaw)
+				// right
+				m_wieldmesh_offset.X -= (0.1f + frametime) * m_cam_vel.X;
+			else
+				// left
+				m_wieldmesh_offset.X += (0.1f + frametime) * m_cam_vel.X;
+
+			if (m_last_cam_pos.X != player_yaw)
+				m_last_cam_pos.X = player_yaw;
+
+			m_wieldmesh_offset.X = rangelim(m_wieldmesh_offset.X, 48.0f, 62.0f);
+		}
+
+		if (m_cam_vel.Y > 1.0f) {
+			m_timer.Y = frametime;
+
+			if (m_cam_vel.Y > m_cam_vel_old.Y)
+				m_cam_vel_old.Y = m_cam_vel.Y;
+
+			if (m_last_cam_pos.Y > m_camera_direction.Y)
+				// down
+				m_wieldmesh_offset.Y += (0.1f + frametime) * m_cam_vel.Y;
+			else
+				// up
+				m_wieldmesh_offset.Y -= (0.1f + frametime) * m_cam_vel.Y;
+
+			if (m_last_cam_pos.Y != m_camera_direction.Y)
+				m_last_cam_pos.Y = m_camera_direction.Y;
+
+			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y, -45.0f, -30.0f);
+		}
+	} else {
+		/*
+		   the arm now gets back to its default position when the camera stops.
+		*/
+
+		if (floor(m_wieldmesh_offset.X) == 55.0f) {
+			m_cam_vel_old.X = 0.0f;
+			m_wieldmesh_offset.X = 55.0f;
+		}
+
+		if (m_wieldmesh_offset.X > 55.0f)
+			m_wieldmesh_offset.X -= (0.05f + frametime) * m_cam_vel_old.X;
+		if (m_wieldmesh_offset.X < 55.0f)
+			m_wieldmesh_offset.X += (0.05f + frametime) * m_cam_vel_old.X;
+
+		if (floor(m_wieldmesh_offset.Y) == -35.0f) {
+			m_cam_vel_old.Y = 0.0f;
+			m_wieldmesh_offset.Y = -35.0f;
+		}
+
+		if (m_wieldmesh_offset.Y > -35.0f)
+			m_wieldmesh_offset.Y -= (0.05f + frametime) * m_cam_vel_old.Y;
+		if (m_wieldmesh_offset.Y < -35.0f)
+			m_wieldmesh_offset.Y += (0.05f + frametime) * m_cam_vel_old.Y;
 	}
 }
 
@@ -400,7 +459,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	fov_degrees = rangelim(fov_degrees, 7.0, 160.0);
 
 	// FOV and aspect ratio
-	m_aspect = (f32) porting::getWindowSize().X / (f32) porting::getWindowSize().Y;
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	m_aspect = (f32) window_size.X / (f32) window_size.Y;
 	m_fov_y = fov_degrees * M_PI / 180.0;
 	// Increase vertical FOV on lower aspect ratios (<16:10)
 	m_fov_y *= MYMAX(1.0, MYMIN(1.4, sqrt(16./10. / m_aspect)));
@@ -408,12 +468,12 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
-	float wieldmesh_offset_Y = -35 + player->getPitch() * 0.05;
-	wieldmesh_offset_Y = rangelim(wieldmesh_offset_Y, -52, -32);
+	if (m_arm_inertia)
+		addArmInertia(player->getYaw(), frametime);
 
 	// Position the wielded item
 	//v3f wield_position = v3f(45, -35, 65);
-	v3f wield_position = v3f(55, wieldmesh_offset_Y, 65);
+	v3f wield_position = v3f(m_wieldmesh_offset.X, m_wieldmesh_offset.Y, 65);
 	//v3f wield_rotation = v3f(-100, 120, -100);
 	v3f wield_rotation = v3f(-100, 120, -100);
 	wield_position.Y += fabs(m_wield_change_timer)*320 - 40;

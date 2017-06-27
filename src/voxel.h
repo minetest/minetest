@@ -60,11 +60,8 @@ class VoxelArea
 {
 public:
 	// Starts as zero sized
-	VoxelArea():
-		MinEdge(1,1,1),
-		MaxEdge(0,0,0)
-	{
-	}
+	VoxelArea() {}
+
 	VoxelArea(v3s16 min_edge, v3s16 max_edge):
 		MinEdge(min_edge),
 		MaxEdge(max_edge)
@@ -325,22 +322,22 @@ public:
 	}
 
 	// Edges are inclusive
-	v3s16 MinEdge;
+	v3s16 MinEdge = v3s16(1,1,1);
 	v3s16 MaxEdge;
 };
 
-// unused 
-#define VOXELFLAG_UNUSED   (1<<0)
+// unused
+#define VOXELFLAG_UNUSED   (1 << 0)
 // no data about that node
-#define VOXELFLAG_NO_DATA  (1<<1)
+#define VOXELFLAG_NO_DATA  (1 << 1)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED1 (1<<2)
+#define VOXELFLAG_CHECKED1 (1 << 2)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED2 (1<<3)
+#define VOXELFLAG_CHECKED2 (1 << 3)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED3 (1<<4)
+#define VOXELFLAG_CHECKED3 (1 << 4)
 // Algorithm-dependent
-#define VOXELFLAG_CHECKED4 (1<<5)
+#define VOXELFLAG_CHECKED4 (1 << 5)
 
 enum VoxelPrintMode
 {
@@ -570,29 +567,17 @@ public:
 	VoxelArea m_area;
 
 	/*
-		NULL if data size is 0 (extent (0,0,0))
+		nullptr if data size is 0 (extent (0,0,0))
 		Data is stored as [z*h*w + y*h + x]
 	*/
-	MapNode *m_data;
+	MapNode *m_data = nullptr;
 
 	/*
 		Flags of all nodes
 	*/
-	u8 *m_flags;
+	u8 *m_flags = nullptr;
 
 	static const MapNode ContentIgnoreNode;
-
-	//TODO: Use these or remove them
-	//TODO: Would these make any speed improvement?
-	//bool m_pressure_route_valid;
-	//v3s16 m_pressure_route_surface;
-
-	/*
-		Some settings
-	*/
-	//bool m_disable_water_climb;
-
-private:
 };
 
 #endif

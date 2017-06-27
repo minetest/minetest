@@ -50,6 +50,8 @@ MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 {
 	this->spflags          = params->spflags;
 	this->cave_width       = params->cave_width;
+	this->large_cave_depth = params->large_cave_depth;
+	this->lava_depth       = params->lava_depth;
 	this->cavern_limit     = params->cavern_limit;
 	this->cavern_taper     = params->cavern_taper;
 	this->cavern_threshold = params->cavern_threshold;
@@ -80,12 +82,6 @@ MapgenV5::~MapgenV5()
 
 MapgenV5Params::MapgenV5Params()
 {
-	spflags          = MGV5_CAVERNS;
-	cave_width       = 0.125;
-	cavern_limit     = -256;
-	cavern_taper     = 256;
-	cavern_threshold = 0.7;
-
 	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
 	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
 	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);
@@ -100,6 +96,8 @@ void MapgenV5Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv5_spflags",        spflags, flagdesc_mapgen_v5);
 	settings->getFloatNoEx("mgv5_cave_width",       cave_width);
+	settings->getS16NoEx("mgv5_large_cave_depth",   large_cave_depth);
+	settings->getS16NoEx("mgv5_lava_depth",         lava_depth);
 	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
 	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
@@ -118,6 +116,8 @@ void MapgenV5Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv5_spflags",        spflags, flagdesc_mapgen_v5, U32_MAX);
 	settings->setFloat("mgv5_cave_width",       cave_width);
+	settings->setS16("mgv5_large_cave_depth",   large_cave_depth);
+	settings->setS16("mgv5_lava_depth",         lava_depth);
 	settings->setS16("mgv5_cavern_limit",       cavern_limit);
 	settings->setS16("mgv5_cavern_taper",       cavern_taper);
 	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
@@ -215,7 +215,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 			// large caverns and floating blobs of overgenerated liquid.
 			generateCaves(stone_surface_max_y, -MAX_MAP_GENERATION_LIMIT);
 		else
-			generateCaves(stone_surface_max_y, MGV5_LARGE_CAVE_DEPTH);
+			generateCaves(stone_surface_max_y, large_cave_depth);
 	}
 
 	// Generate dungeons and desert temples

@@ -86,7 +86,7 @@ private:
 
 	static int l_show_keys_menu(lua_State *L);
 
-	static int l_show_file_open_dialog(lua_State *L);
+	static int l_show_path_select_dialog(lua_State *L);
 
 	static int l_set_topleft_text(lua_State *L);
 
@@ -107,6 +107,8 @@ private:
 	static int l_get_mainmenu_path(lua_State *L);
 
 	static int l_get_modpath(lua_State *L);
+
+	static int l_get_clientmodpath(lua_State *L);
 
 	static int l_get_gamepath(lua_State *L);
 

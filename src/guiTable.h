@@ -52,18 +52,11 @@ public:
 	*/
 	struct DynamicData
 	{
-		s32 selected;
-		s32 scrollpos;
-		s32 keynav_time;
+		s32 selected = 0;
+		s32 scrollpos = 0;
+		s32 keynav_time = 0;
 		core::stringw keynav_buffer;
 		std::set<s32> opened_trees;
-
-		DynamicData()
-		{
-			selected = 0;
-			scrollpos = 0;
-			keynav_time = 0;
-		}
 	};
 
 	/*
@@ -187,27 +180,27 @@ protected:
 	std::vector<Row> m_rows;
 	// Table content (only visible; indices into m_rows)
 	std::vector<s32> m_visible_rows;
-	bool m_is_textlist;
-	bool m_has_tree_column;
+	bool m_is_textlist = false;
+	bool m_has_tree_column = false;
 
 	// Selection status
-	s32 m_selected; // index of row (1...n), or 0 if none selected
-	s32 m_sel_column;
-	bool m_sel_doubleclick;
+	s32 m_selected = -1; // index of row (1...n), or 0 if none selected
+	s32 m_sel_column = 0;
+	bool m_sel_doubleclick = false;
 
 	// Keyboard navigation stuff
-	u64 m_keynav_time;
-	core::stringw m_keynav_buffer;
+	u64 m_keynav_time = 0;
+	core::stringw m_keynav_buffer = L"";
 
 	// Drawing and geometry information
-	bool m_border;
-	video::SColor m_color;
-	video::SColor m_background;
-	video::SColor m_highlight;
-	video::SColor m_highlight_text;
-	s32 m_rowheight;
-	gui::IGUIFont *m_font;
-	gui::IGUIScrollBar *m_scrollbar;
+	bool m_border = true;
+	video::SColor m_color = video::SColor(255, 255, 255, 255);
+	video::SColor m_background = video::SColor(255, 0, 0, 0);
+	video::SColor m_highlight = video::SColor(255, 70, 100, 50);
+	video::SColor m_highlight_text = video::SColor(255, 255, 255, 255);
+	s32 m_rowheight = 1;
+	gui::IGUIFont *m_font = nullptr;
+	gui::IGUIScrollBar *m_scrollbar = nullptr;
 
 	// Allocated strings and images
 	std::vector<core::stringw> m_strings;

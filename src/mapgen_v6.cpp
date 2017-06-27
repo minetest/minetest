@@ -147,12 +147,6 @@ MapgenV6::~MapgenV6()
 
 MapgenV6Params::MapgenV6Params()
 {
-	spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
-		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
-
-	freq_desert = 0.45;
-	freq_beach  = 0.15;
-
 	np_terrain_base   = NoiseParams(-4,   20.0, v3f(250.0, 250.0, 250.0), 82341,  5, 0.6,  2.0);
 	np_terrain_higher = NoiseParams(20,   16.0, v3f(500.0, 500.0, 500.0), 85039,  5, 0.6,  2.0);
 	np_steepness      = NoiseParams(0.85, 0.5,  v3f(125.0, 125.0, 125.0), -932,   5, 0.7,  2.0);
@@ -884,32 +878,56 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 					} while (ndef->get(*n2).walkable == false);
 					// Loop one up so that we're in air
 					vm->m_area.add_y(em, i2, 1);
-					n2 = &vm->m_data[i2];
 
-					bool old_is_water = (n->getContent() == c_water_source);
-					// Move mud to new place
-					if (!dropped_to_unknown) {
-						*n2 = *n;
-						// Set old place to be air (or water)
-						if (old_is_water) {
-							*n = MapNode(c_water_source);
-						} else {
-							*n = MapNode(CONTENT_AIR);
-							// Upper (n3) is not walkable or is NULL. If it is
-							// not NULL and not air and not water it is a
-							// decoration that needs removing, to avoid
-							// unsupported decorations.
-							if (n3 && n3->getContent() != CONTENT_AIR &&
-									n3->getContent() != c_water_source)
-								*n3 = MapNode(CONTENT_AIR);
-						}
-					}
+					// Move mud to new place. Outside mapchunk remove
+					// any decorations above removed or placed mud.
+					if (!dropped_to_unknown)
+						moveMud(i, i2, i3, p2d, em);
 
 					// Done
 					break;
 				}
 			}
 			}
+		}
+	}
+}
+
+
+void MapgenV6::moveMud(u32 remove_index, u32 place_index,
+	u32 above_remove_index, v2s16 pos, v3s16 em)
+{
+	MapNode n_air(CONTENT_AIR);
+	// Copy mud from old place to new place
+	vm->m_data[place_index] = vm->m_data[remove_index];
+	// Set old place to be air
+	vm->m_data[remove_index] = n_air;
+	// Outside the mapchunk decorations may need to be removed if above removed
+	// mud or if half-buried in placed mud. Placed mud is to the side of pos so
+	// use 'pos.X >= node_max.X' etc.
+	if (pos.X >= node_max.X || pos.X <= node_min.X ||
+			pos.Y >= node_max.Z || pos.Y <= node_min.Z) {
+		// 'above remove' node is above removed mud. If it is not air, water or
+		// 'ignore' it is a decoration that needs removing. Also search upwards
+		// to remove a possible stacked decoration.
+		// Check for 'ignore' because stacked decorations can penetrate into
+		// 'ignore' nodes above the mapchunk.
+		while (vm->m_area.contains(above_remove_index) &&
+				vm->m_data[above_remove_index].getContent() != CONTENT_AIR &&
+				vm->m_data[above_remove_index].getContent() != c_water_source &&
+				vm->m_data[above_remove_index].getContent() != CONTENT_IGNORE) {
+			vm->m_data[above_remove_index] = n_air;
+			vm->m_area.add_y(em, above_remove_index, 1);
+		}
+		// Mud placed may have partially-buried a stacked decoration, search
+		// above and remove.
+		vm->m_area.add_y(em, place_index, 1);
+		while (vm->m_area.contains(place_index) &&
+				vm->m_data[place_index].getContent() != CONTENT_AIR &&
+				vm->m_data[place_index].getContent() != c_water_source &&
+				vm->m_data[place_index].getContent() != CONTENT_IGNORE) {
+			vm->m_data[place_index] = n_air;
+			vm->m_area.add_y(em, place_index, 1);
 		}
 	}
 }
@@ -1002,14 +1020,13 @@ void MapgenV6::placeTreesAndJungleGrass()
 				continue;
 
 			v3s16 p(x, y, z);
-			// Trees grow only on mud and grass and snowblock
+			// Trees grow only on mud and grass
 			{
 				u32 i = vm->m_area.index(p);
 				content_t c = vm->m_data[i].getContent();
 				if (c != c_dirt &&
 						c != c_dirt_with_grass &&
-						c != c_dirt_with_snow &&
-						c != c_snowblock)
+						c != c_dirt_with_snow)
 					continue;
 			}
 			p.Y++;
@@ -1064,15 +1081,15 @@ void MapgenV6::growGrass() // Add surface nodes
 		content_t c = vm->m_data[i].getContent();
 		if (surface_y >= water_level - 20) {
 			if (bt == BT_TAIGA && c == c_dirt) {
-				vm->m_data[i] = n_snowblock;
-				vm->m_area.add_y(em, i, -1);
 				vm->m_data[i] = n_dirt_with_snow;
 			} else if (bt == BT_TUNDRA) {
 				if (c == c_dirt) {
+					vm->m_data[i] = n_snowblock;
+					vm->m_area.add_y(em, i, -1);
 					vm->m_data[i] = n_dirt_with_snow;
 				} else if (c == c_stone && surface_y < node_max.Y) {
 					vm->m_area.add_y(em, i, 1);
-					vm->m_data[i] = n_snow;
+					vm->m_data[i] = n_snowblock;
 				}
 			} else if (c == c_dirt) {
 				vm->m_data[i] = n_dirt_with_grass;

@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CLIENT_ENVIRONMENT_HEADER
 #define CLIENT_ENVIRONMENT_HEADER
 
-#include <IrrlichtDevice.h>
 #include <ISceneManager.h>
 #include "environment.h"
 #include "clientobject.h"
@@ -64,12 +63,11 @@ struct ClientEnvEvent
 	};
 };
 
+typedef std::unordered_map<u16, ClientActiveObject*> ClientActiveObjectMap;
 class ClientEnvironment : public Environment
 {
 public:
-	ClientEnvironment(ClientMap *map, scene::ISceneManager *smgr,
-		ITextureSource *texturesource, Client *client,
-		IrrlichtDevice *device);
+	ClientEnvironment(ClientMap *map, ITextureSource *texturesource, Client *client);
 	~ClientEnvironment();
 
 	Map & getMap();
@@ -175,13 +173,11 @@ public:
 	v3s16 getCameraOffset() const { return m_camera_offset; }
 private:
 	ClientMap *m_map;
-	LocalPlayer *m_local_player;
-	scene::ISceneManager *m_smgr;
+	LocalPlayer *m_local_player = nullptr;
 	ITextureSource *m_texturesource;
 	Client *m_client;
-	ClientScripting *m_script;
-	IrrlichtDevice *m_irr;
-	UNORDERED_MAP<u16, ClientActiveObject*> m_active_objects;
+	ClientScripting *m_script = nullptr;
+	ClientActiveObjectMap m_active_objects;
 	std::vector<ClientSimpleObject*> m_simple_objects;
 	std::queue<ClientEnvEvent> m_client_event_queue;
 	IntervalLimiter m_active_object_light_update_interval;

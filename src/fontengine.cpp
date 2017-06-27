@@ -16,16 +16,16 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 #include "fontengine.h"
-#include "log.h"
+#include "client/renderingengine.h"
 #include "config.h"
 #include "porting.h"
-#include "constants.h"
 #include "filesys.h"
 
 #if USE_FREETYPE
 #include "gettext.h"
-#include "xCGUITTFont.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 /** maximum size distance for getting a "similar" font size */
@@ -43,12 +43,7 @@ static void font_setting_changed(const std::string &name, void *userdata)
 /******************************************************************************/
 FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_settings(main_settings),
-	m_env(env),
-	m_font_cache(),
-	m_currentMode(FM_Standard),
-	m_lastMode(),
-	m_lastSize(0),
-	m_lastFont(NULL)
+	m_env(env)
 {
 
 	for (unsigned int i = 0; i < FM_MaxMode; i++) {
@@ -319,10 +314,8 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		if (! is_yes(m_settings->get("freetype"))) {
 			return;
 		}
-		unsigned int size = floor(
-				porting::getDisplayDensity() *
-				m_settings->getFloat("gui_scaling") *
-				basesize);
+		unsigned int size = floor(RenderingEngine::getDisplayDensity() *
+				m_settings->getFloat("gui_scaling") * basesize);
 		u32 font_shadow       = 0;
 		u32 font_shadow_alpha = 0;
 
@@ -400,7 +393,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		basesize = DEFAULT_FONT_SIZE;
 
 	unsigned int size = floor(
-			porting::getDisplayDensity() *
+			RenderingEngine::getDisplayDensity() *
 			m_settings->getFloat("gui_scaling") *
 			basesize);
 

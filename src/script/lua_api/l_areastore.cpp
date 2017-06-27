@@ -300,20 +300,19 @@ int LuaAreaStore::l_from_file(lua_State *L)
 	return deserialization_helper(L, o->as, is);
 }
 
-LuaAreaStore::LuaAreaStore()
+LuaAreaStore::LuaAreaStore() : as(AreaStore::getOptimalImplementation())
 {
-	this->as = AreaStore::getOptimalImplementation();
 }
 
 LuaAreaStore::LuaAreaStore(const std::string &type)
 {
 #if USE_SPATIAL
 	if (type == "LibSpatial") {
-		this->as = new SpatialAreaStore();
+		as = new SpatialAreaStore();
 	} else
 #endif
 	{
-		this->as = new VectorAreaStore();
+		as = new VectorAreaStore();
 	}
 }
 

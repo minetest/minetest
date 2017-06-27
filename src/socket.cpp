@@ -34,9 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #ifdef _WIN32
-	#ifndef WIN32_LEAN_AND_MEAN
-		#define WIN32_LEAN_AND_MEAN
-	#endif
 	// Without this some of the network functions are not found on mingw
 	#ifndef _WIN32_WINNT
 		#define _WIN32_WINNT 0x0501
@@ -90,9 +87,7 @@ void sockets_cleanup()
 
 Address::Address()
 {
-	m_addr_family = 0;
 	memset(&m_address, 0, sizeof(m_address));
-	m_port = 0;
 }
 
 Address::Address(u32 address, u16 port)

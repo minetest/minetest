@@ -33,7 +33,7 @@ struct ToolCapabilities;
 
 struct ItemStack
 {
-	ItemStack(): name(""), count(0), wear(0) {}
+	ItemStack() {}
 	ItemStack(const std::string &name_, u16 count_,
 			u16 wear, IItemDefManager *itemdef);
 
@@ -143,13 +143,12 @@ struct ItemStack
 	// If cannot be added at all, returns the item back.
 	// If can be added partly, decremented item is returned back.
 	// If can be added fully, empty item is returned.
-	ItemStack addItem(const ItemStack &newitem,
-			IItemDefManager *itemdef);
+	ItemStack addItem(ItemStack newitem, IItemDefManager *itemdef);
 
 	// Checks whether newitem could be added.
 	// If restitem is non-NULL, it receives the part of newitem that
 	// would be left over after adding.
-	bool itemFits(const ItemStack &newitem,
+	bool itemFits(ItemStack newitem,
 			ItemStack *restitem,  // may be NULL
 			IItemDefManager *itemdef) const;
 
@@ -164,9 +163,9 @@ struct ItemStack
 	/*
 		Properties
 	*/
-	std::string name;
-	u16 count;
-	u16 wear;
+	std::string name = "";
+	u16 count = 0;
+	u16 wear = 0;
 	ItemStackMetadata metadata;
 };
 
@@ -223,9 +222,10 @@ public:
 	// Checks whether there is room for a given item
 	bool roomForItem(const ItemStack &item) const;
 
-	// Checks whether the given count of the given item name
+	// Checks whether the given count of the given item
 	// exists in this inventory list.
-	bool containsItem(const ItemStack &item) const;
+	// If match_meta is false, only the items' names are compared.
+	bool containsItem(const ItemStack &item, bool match_meta) const;
 
 	// Removes the given count of the given item name from
 	// this inventory list. Walks the list in reverse order.
@@ -252,7 +252,8 @@ public:
 private:
 	std::vector<ItemStack> m_items;
 	std::string m_name;
-	u32 m_size, m_width;
+	u32 m_size;
+	u32 m_width = 0;
 	IItemDefManager *m_itemdef;
 };
 
@@ -307,7 +308,7 @@ private:
 
 	std::vector<InventoryList*> m_lists;
 	IItemDefManager *m_itemdef;
-	bool m_dirty;
+	bool m_dirty = false;
 };
 
 #endif

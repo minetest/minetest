@@ -25,80 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cstring>
 
 template <typename T>
-class SharedPtr
-{
-public:
-	SharedPtr(T *t=NULL)
-	{
-		refcount = new int;
-		*refcount = 1;
-		ptr = t;
-	}
-	SharedPtr(SharedPtr<T> &t)
-	{
-		//*this = t;
-		drop();
-		refcount = t.refcount;
-		(*refcount)++;
-		ptr = t.ptr;
-	}
-	~SharedPtr()
-	{
-		drop();
-	}
-	SharedPtr<T> & operator=(T *t)
-	{
-		drop();
-		refcount = new int;
-		*refcount = 1;
-		ptr = t;
-		return *this;
-	}
-	SharedPtr<T> & operator=(SharedPtr<T> &t)
-	{
-		drop();
-		refcount = t.refcount;
-		(*refcount)++;
-		ptr = t.ptr;
-		return *this;
-	}
-	T* operator->()
-	{
-		return ptr;
-	}
-	T & operator*()
-	{
-		return *ptr;
-	}
-	bool operator!=(T *t)
-	{
-		return ptr != t;
-	}
-	bool operator==(T *t)
-	{
-		return ptr == t;
-	}
-	T & operator[](unsigned int i)
-	{
-		return ptr[i];
-	}
-private:
-	void drop()
-	{
-		assert((*refcount) > 0);
-		(*refcount)--;
-		if(*refcount == 0)
-		{
-			delete refcount;
-			if(ptr != NULL)
-				delete ptr;
-		}
-	}
-	T *ptr;
-	int *refcount;
-};
-
-template <typename T>
 class Buffer
 {
 public:
@@ -171,8 +97,7 @@ public:
 private:
 	void drop()
 	{
-		if(data)
-			delete[] data;
+		delete[] data;
 	}
 	T *data;
 	unsigned int m_size;
@@ -288,8 +213,7 @@ private:
 		(*refcount)--;
 		if(*refcount == 0)
 		{
-			if(data)
-				delete[] data;
+			delete[] data;
 			delete refcount;
 		}
 	}

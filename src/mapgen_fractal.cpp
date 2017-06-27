@@ -49,17 +49,19 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags    = params->spflags;
-	this->cave_width = params->cave_width;
-	this->fractal    = params->fractal;
-	this->iterations = params->iterations;
-	this->scale      = params->scale;
-	this->offset     = params->offset;
-	this->slice_w    = params->slice_w;
-	this->julia_x    = params->julia_x;
-	this->julia_y    = params->julia_y;
-	this->julia_z    = params->julia_z;
-	this->julia_w    = params->julia_w;
+	this->spflags          = params->spflags;
+	this->cave_width       = params->cave_width;
+	this->large_cave_depth = params->large_cave_depth;
+	this->lava_depth       = params->lava_depth;
+	this->fractal          = params->fractal;
+	this->iterations       = params->iterations;
+	this->scale            = params->scale;
+	this->offset           = params->offset;
+	this->slice_w          = params->slice_w;
+	this->julia_x          = params->julia_x;
+	this->julia_y          = params->julia_y;
+	this->julia_z          = params->julia_z;
+	this->julia_w          = params->julia_w;
 
 	//// 2D terrain noise
 	noise_seabed       = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
@@ -82,18 +84,6 @@ MapgenFractal::~MapgenFractal()
 
 MapgenFractalParams::MapgenFractalParams()
 {
-	spflags    = 0;
-	cave_width = 0.09;
-	fractal    = 1;
-	iterations = 11;
-	scale      = v3f(4096.0, 1024.0, 4096.0);
-	offset     = v3f(1.79, 0.0, 0.0);
-	slice_w    = 0.0;
-	julia_x    = 0.33;
-	julia_y    = 0.33;
-	julia_z    = 0.33;
-	julia_w    = 0.33;
-
 	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
 	np_cave1        = NoiseParams(0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
@@ -103,17 +93,19 @@ MapgenFractalParams::MapgenFractalParams()
 
 void MapgenFractalParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal);
-	settings->getFloatNoEx("mgfractal_cave_width", cave_width);
-	settings->getU16NoEx("mgfractal_fractal",      fractal);
-	settings->getU16NoEx("mgfractal_iterations",   iterations);
-	settings->getV3FNoEx("mgfractal_scale",        scale);
-	settings->getV3FNoEx("mgfractal_offset",       offset);
-	settings->getFloatNoEx("mgfractal_slice_w",    slice_w);
-	settings->getFloatNoEx("mgfractal_julia_x",    julia_x);
-	settings->getFloatNoEx("mgfractal_julia_y",    julia_y);
-	settings->getFloatNoEx("mgfractal_julia_z",    julia_z);
-	settings->getFloatNoEx("mgfractal_julia_w",    julia_w);
+	settings->getFlagStrNoEx("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal);
+	settings->getFloatNoEx("mgfractal_cave_width",     cave_width);
+	settings->getS16NoEx("mgfractal_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgfractal_lava_depth",       lava_depth);
+	settings->getU16NoEx("mgfractal_fractal",          fractal);
+	settings->getU16NoEx("mgfractal_iterations",       iterations);
+	settings->getV3FNoEx("mgfractal_scale",            scale);
+	settings->getV3FNoEx("mgfractal_offset",           offset);
+	settings->getFloatNoEx("mgfractal_slice_w",        slice_w);
+	settings->getFloatNoEx("mgfractal_julia_x",        julia_x);
+	settings->getFloatNoEx("mgfractal_julia_y",        julia_y);
+	settings->getFloatNoEx("mgfractal_julia_z",        julia_z);
+	settings->getFloatNoEx("mgfractal_julia_w",        julia_w);
 
 	settings->getNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->getNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
@@ -124,17 +116,19 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal, U32_MAX);
-	settings->setFloat("mgfractal_cave_width", cave_width);
-	settings->setU16("mgfractal_fractal",      fractal);
-	settings->setU16("mgfractal_iterations",   iterations);
-	settings->setV3F("mgfractal_scale",        scale);
-	settings->setV3F("mgfractal_offset",       offset);
-	settings->setFloat("mgfractal_slice_w",    slice_w);
-	settings->setFloat("mgfractal_julia_x",    julia_x);
-	settings->setFloat("mgfractal_julia_y",    julia_y);
-	settings->setFloat("mgfractal_julia_z",    julia_z);
-	settings->setFloat("mgfractal_julia_w",    julia_w);
+	settings->setFlagStr("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFloat("mgfractal_cave_width",     cave_width);
+	settings->setS16("mgfractal_large_cave_depth", large_cave_depth);
+	settings->setS16("mgfractal_lava_depth",       lava_depth);
+	settings->setU16("mgfractal_fractal",          fractal);
+	settings->setU16("mgfractal_iterations",       iterations);
+	settings->setV3F("mgfractal_scale",            scale);
+	settings->setV3F("mgfractal_offset",           offset);
+	settings->setFloat("mgfractal_slice_w",        slice_w);
+	settings->setFloat("mgfractal_julia_x",        julia_x);
+	settings->setFloat("mgfractal_julia_y",        julia_y);
+	settings->setFloat("mgfractal_julia_z",        julia_z);
+	settings->setFloat("mgfractal_julia_w",        julia_w);
 
 	settings->setNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->setNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
@@ -208,7 +202,7 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 	MgStoneType stone_type = generateBiomes();
 
 	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y, MGFRACTAL_LARGE_CAVE_DEPTH);
+		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if (flags & MG_DUNGEONS)
 		generateDungeons(stone_surface_max_y, stone_type);

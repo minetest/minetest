@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "mapblock.h"
 #include <math.h>
+#include "client/renderingengine.h"
 
 
 ////
@@ -184,10 +185,10 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 //// Mapper
 ////
 
-Minimap::Minimap(IrrlichtDevice *device, Client *client)
+Minimap::Minimap(Client *client)
 {
 	this->client    = client;
-	this->driver    = device->getVideoDriver();
+	this->driver    = RenderingEngine::get_video_driver();
 	this->m_tsrc    = client->getTextureSource();
 	this->m_shdrsrc = client->getShaderSource();
 	this->m_ndef    = client->getNodeDefManager();
@@ -204,8 +205,6 @@ Minimap::Minimap(IrrlichtDevice *device, Client *client)
 	data->mode              = MINIMAP_MODE_OFF;
 	data->is_radar          = false;
 	data->map_invalidated   = true;
-	data->heightmap_image   = NULL;
-	data->minimap_image     = NULL;
 	data->texture           = NULL;
 	data->heightmap_texture = NULL;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
@@ -275,14 +274,14 @@ void Minimap::toggleMinimapShape()
 void Minimap::setMinimapShape(MinimapShape shape)
 {
 	MutexAutoLock lock(m_mutex);
-	
+
 	if (shape == MINIMAP_SHAPE_SQUARE)
 		data->minimap_shape_round = false;
 	else if (shape == MINIMAP_SHAPE_ROUND)
 		data->minimap_shape_round = true;
-	
+
 	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
-	m_minimap_update_thread->deferUpdate();	
+	m_minimap_update_thread->deferUpdate();
 }
 
 MinimapShape Minimap::getMinimapShape()
@@ -480,7 +479,7 @@ void Minimap::drawMinimap()
 		return;
 
 	updateActiveMarkers();
-	v2u32 screensize = porting::getWindowSize();
+	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 	const u32 size = 0.25 * screensize.Y;
 
 	core::rect<s32> oldViewPort = driver->getViewPort();

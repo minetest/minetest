@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
-#include "../threading/mutex.h"
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
 #define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
@@ -283,7 +282,7 @@ inline aabb3f getNodeBox(v3s16 p, float d)
 class IntervalLimiter
 {
 public:
-	IntervalLimiter() : m_accumulator(0) {}
+	IntervalLimiter() {}
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -301,7 +300,7 @@ public:
 	}
 
 private:
-	float m_accumulator;
+	float m_accumulator = 0.0f;
 };
 
 

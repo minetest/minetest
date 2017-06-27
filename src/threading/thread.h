@@ -23,15 +23,15 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef THREADING_THREAD_H
-#define THREADING_THREAD_H
+#pragma once
 
 #include "util/basic_macros.h"
-#include "threading/atomic.h"
-#include "threading/mutex.h"
-#include "threads.h"
 
 #include <string>
+#include <atomic>
+#include <thread>
+#include <mutex>
+
 #ifdef _AIX
 	#include <sys/thread.h> // for tid_t
 #endif
@@ -49,10 +49,12 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 
+
 class Thread {
 public:
 	Thread(const std::string &name="");
 	virtual ~Thread();
+	DISABLE_CLASS_COPY(Thread)
 
 	/*
 	 * Begins execution of a new thread at the pure virtual method Thread::run().
@@ -87,22 +89,12 @@ public:
 	/*
 	 * Returns true if the calling thread is this Thread object.
 	 */
-	bool isCurrentThread() { return thr_is_current_thread(getThreadId()); }
+	bool isCurrentThread() { return std::this_thread::get_id() == getThreadId(); }
 
-	inline bool isRunning() { return m_running; }
-	inline bool stopRequested() { return m_request_stop; }
+	bool isRunning() { return m_running; }
+	bool stopRequested() { return m_request_stop; }
 
-#if USE_CPP11_THREADS
-	inline threadid_t getThreadId() { return m_thread_obj->get_id(); }
-	inline threadhandle_t getThreadHandle() { return m_thread_obj->native_handle(); }
-#else
-#  if USE_WIN_THREADS
-	inline threadid_t getThreadId() { return m_thread_id; }
-#  else
-	inline threadid_t getThreadId() { return m_thread_handle; }
-#  endif
-	inline threadhandle_t getThreadHandle() { return m_thread_handle; }
-#endif
+	std::thread::id getThreadId() { return m_thread_obj->get_id(); }
 
 	/*
 	 * Gets the thread return value.
@@ -148,32 +140,25 @@ protected:
 	virtual void *run() = 0;
 
 private:
-	void *m_retval;
-	bool m_joinable;
-	Atomic<bool> m_request_stop;
-	Atomic<bool> m_running;
-	Mutex m_mutex;
-	Mutex m_start_finished_mutex;
+	std::thread::native_handle_type getThreadHandle()
+		{ return m_thread_obj->native_handle(); }
 
-#if USE_CPP11_THREADS
+	static void threadProc(Thread *thr);
+
+	void *m_retval = nullptr;
+	bool m_joinable = false;
+	std::atomic<bool> m_request_stop;
+	std::atomic<bool> m_running;
+	std::mutex m_mutex;
+	std::mutex m_start_finished_mutex;
+
 	std::thread *m_thread_obj;
-#else
-	threadhandle_t m_thread_handle;
-#   if USE_WIN_THREADS
-        threadid_t m_thread_id;
-#   endif
-#endif
 
-	static ThreadStartFunc threadProc;
 
 #ifdef _AIX
 	// For AIX, there does not exist any mapping from pthread_t to tid_t
 	// available to us, so we maintain one ourselves.  This is set on thread start.
 	tid_t m_kernel_thread_id;
 #endif
-
-	DISABLE_CLASS_COPY(Thread);
 };
-
-#endif
 

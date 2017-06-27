@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "joystick_controller.h"
 #include <list>
 #include "keycode.h"
+#include "renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
@@ -141,24 +142,23 @@ public:
 
 	MyEventReceiver()
 	{
-		clearInput();
 #ifdef HAVE_TOUCHSCREENGUI
 		m_touchscreengui = NULL;
 #endif
 	}
 
-	bool leftclicked;
-	bool rightclicked;
-	bool leftreleased;
-	bool rightreleased;
+	bool leftclicked = false;
+	bool rightclicked = false;
+	bool leftreleased = false;
+	bool rightreleased = false;
 
-	bool left_active;
-	bool middle_active;
-	bool right_active;
+	bool left_active = false;
+	bool middle_active = false;
+	bool right_active = false;
 
-	s32 mouse_wheel;
+	s32 mouse_wheel = 0;
 
-	JoystickController *joystick;
+	JoystickController *joystick = nullptr;
 
 #ifdef HAVE_TOUCHSCREENGUI
 	TouchScreenGUI *m_touchscreengui;
@@ -220,8 +220,7 @@ public:
 class RealInputHandler : public InputHandler
 {
 public:
-	RealInputHandler(IrrlichtDevice *device, MyEventReceiver *receiver)
-	    : m_device(device), m_receiver(receiver), m_mousepos(0, 0)
+	RealInputHandler(MyEventReceiver *receiver) : m_receiver(receiver)
 	{
 		m_receiver->joystick = &joystick;
 	}
@@ -240,16 +239,20 @@ public:
 	virtual void dontListenForKeys() { m_receiver->dontListenForKeys(); }
 	virtual v2s32 getMousePos()
 	{
-		if (m_device->getCursorControl()) {
-			return m_device->getCursorControl()->getPosition();
+		if (RenderingEngine::get_raw_device()->getCursorControl()) {
+			return RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->getPosition();
 		} else {
 			return m_mousepos;
 		}
 	}
 	virtual void setMousePos(s32 x, s32 y)
 	{
-		if (m_device->getCursorControl()) {
-			m_device->getCursorControl()->setPosition(x, y);
+		if (RenderingEngine::get_raw_device()->getCursorControl()) {
+			RenderingEngine::get_raw_device()
+					->getCursorControl()
+					->setPosition(x, y);
 		} else {
 			m_mousepos = v2s32(x, y);
 		}
@@ -277,24 +280,14 @@ public:
 	}
 
 private:
-	IrrlichtDevice *m_device;
-	MyEventReceiver *m_receiver;
+	MyEventReceiver *m_receiver = nullptr;
 	v2s32 m_mousepos;
 };
 
 class RandomInputHandler : public InputHandler
 {
 public:
-	RandomInputHandler()
-	{
-		leftdown = false;
-		rightdown = false;
-		leftclicked = false;
-		rightclicked = false;
-		leftreleased = false;
-		rightreleased = false;
-		keydown.clear();
-	}
+	RandomInputHandler() {}
 	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
@@ -390,12 +383,12 @@ private:
 	KeyList keydown;
 	v2s32 mousepos;
 	v2s32 mousespeed;
-	bool leftdown;
-	bool rightdown;
-	bool leftclicked;
-	bool rightclicked;
-	bool leftreleased;
-	bool rightreleased;
+	bool leftdown = false;
+	bool rightdown = false;
+	bool leftclicked = false;
+	bool rightclicked = false;
+	bool leftreleased = false;
+	bool rightreleased = false;
 };
 
 #endif

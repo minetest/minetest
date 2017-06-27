@@ -254,11 +254,8 @@ std::string ItemStack::getItemString() const
 }
 
 
-ItemStack ItemStack::addItem(const ItemStack &newitem_,
-		IItemDefManager *itemdef)
+ItemStack ItemStack::addItem(ItemStack newitem, IItemDefManager *itemdef)
 {
-	ItemStack newitem = newitem_;
-
 	// If the item is empty or the position invalid, bail out
 	if(newitem.empty())
 	{
@@ -267,8 +264,17 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
+		const u16 stackMax = newitem.getStackMax(itemdef);
+
 		*this = newitem;
-		newitem.clear();
+
+		// If the item fits fully, delete it
+		if (count <= stackMax) {
+			newitem.clear();
+		} else { // Else the item does not fit fully. Return the rest.
+			count = stackMax;
+			newitem.remove(count);
+		}
 	}
 	// If item name or metadata differs, bail out
 	else if (name != newitem.name
@@ -294,11 +300,10 @@ ItemStack ItemStack::addItem(const ItemStack &newitem_,
 	return newitem;
 }
 
-bool ItemStack::itemFits(const ItemStack &newitem_,
+bool ItemStack::itemFits(ItemStack newitem,
 		ItemStack *restitem,
 		IItemDefManager *itemdef) const
 {
-	ItemStack newitem = newitem_;
 
 	// If the item is empty or the position invalid, bail out
 	if(newitem.empty())
@@ -308,7 +313,14 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 	// If this is an empty item, it's an easy job.
 	else if(empty())
 	{
-		newitem.clear();
+		const u16 stackMax = newitem.getStackMax(itemdef);
+
+		// If the item fits fully, delete it
+		if (newitem.count <= stackMax) {
+			newitem.clear();
+		} else { // Else the item does not fit fully. Return the rest.
+			newitem.remove(stackMax);
+		}
 	}
 	// If item name or metadata differs, bail out
 	else if (name != newitem.name
@@ -322,7 +334,6 @@ bool ItemStack::itemFits(const ItemStack &newitem_,
 		newitem.clear();
 	}
 	// Else the item does not fit fully. Return the rest.
-	// the rest.
 	else
 	{
 		u16 freespace = freeSpace(itemdef);
@@ -372,7 +383,6 @@ ItemStack ItemStack::peekItem(u32 peekcount) const
 InventoryList::InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef):
 	m_name(name),
 	m_size(size),
-	m_width(0),
 	m_itemdef(itemdef)
 {
 	clearItems();
@@ -659,7 +669,7 @@ bool InventoryList::roomForItem(const ItemStack &item_) const
 	return false;
 }
 
-bool InventoryList::containsItem(const ItemStack &item) const
+bool InventoryList::containsItem(const ItemStack &item, bool match_meta) const
 {
 	u32 count = item.count;
 	if(count == 0)
@@ -670,9 +680,9 @@ bool InventoryList::containsItem(const ItemStack &item) const
 	{
 		if(count == 0)
 			break;
-		if(i->name == item.name)
-		{
-			if(i->count >= count)
+		if (i->name == item.name
+				&& (!match_meta || (i->metadata == item.metadata))) {
+			if (i->count >= count)
 				return true;
 			else
 				count -= i->count;

@@ -26,8 +26,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Settings;
 
-#define WORLDNAME_BLACKLISTED_CHARS "/\\"
-
 struct SubgameSpec
 {
 	std::string id; // "" = game does not exist
@@ -37,15 +35,15 @@ struct SubgameSpec
 	std::string name;
 	std::string menuicon_path;
 
-	SubgameSpec(const std::string &id_="",
-			const std::string &path_="",	
-			const std::string &gamemods_path_="",
-			const std::set<std::string> &addon_mods_paths_=std::set<std::string>(),
-			const std::string &name_="",
-			const std::string &menuicon_path_=""):
+	SubgameSpec(const std::string &id_ = "",
+			const std::string &path_ = "",
+			const std::string &gamemods_path_ = "",
+			const std::set<std::string> &addon_mods_paths_ = std::set<std::string>(),
+			const std::string &name_ = "",
+			const std::string &menuicon_path_ = ""):
 		id(id_),
 		path(path_),
-		gamemods_path(gamemods_path_),		
+		gamemods_path(gamemods_path_),
 		addon_mods_paths(addon_mods_paths_),
 		name(name_),
 		menuicon_path(menuicon_path_)

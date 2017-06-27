@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IGUISkin.h>
 #include <IGUIFont.h>
 #include <IGUIScrollBar.h>
+#include "client/renderingengine.h"
 #include "debug.h"
 #include "log.h"
 #include "client/tile.h"
@@ -47,22 +48,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 		ISimpleTextureSource *tsrc
 ):
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_tsrc(tsrc),
-	m_is_textlist(false),
-	m_has_tree_column(false),
-	m_selected(-1),
-	m_sel_column(0),
-	m_sel_doubleclick(false),
-	m_keynav_time(0),
-	m_keynav_buffer(L""),
-	m_border(true),
-	m_color(255, 255, 255, 255),
-	m_background(255, 0, 0, 0),
-	m_highlight(255, 70, 100, 50),
-	m_highlight_text(255, 255, 255, 255),
-	m_rowheight(1),
-	m_font(NULL),
-	m_scrollbar(NULL)
+	m_tsrc(tsrc)
 {
 	assert(tsrc != NULL);
 
@@ -94,7 +80,8 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	updateAbsolutePosition();
 
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth()/(2.0/3.0)) * porting::getDisplayDensity() *
+	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
+			RenderingEngine::getDisplayDensity() *
 			g_settings->getFloat("gui_scaling");
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
@@ -109,7 +96,7 @@ GUITable::~GUITable()
 
 	if (m_font)
 		m_font->drop();
-	
+
 	m_scrollbar->remove();
 }
 

@@ -1,4 +1,4 @@
-Minetest Lua Client Modding API Reference 0.4.15
+Minetest Lua Client Modding API Reference 0.4.16
 ================================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -648,10 +648,10 @@ Call these functions only at load time!
       semi-frequent intervals as well as on server shutdown.
 * `minetest.register_on_connect(func())`
     * Called at the end of client connection (when player is loaded onto map)
-* `minetest.register_on_receiving_chat_message(func(name, message))`
+* `minetest.register_on_receiving_chat_message(func(message))`
     * Called always when a client receive a message
     * Return `true` to mark the message as handled, which means that it will not be shown to chat
-* `minetest.register_on_sending_chat_message(func(name, message))`
+* `minetest.register_on_sending_chat_message(func(message))`
     * Called always when a client send a message from chat
     * Return `true` to mark the message as handled, which means that it will not be sent to server
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
@@ -676,7 +676,7 @@ Call these functions only at load time!
     * Called when the local player punches a node
     * Newest functions are called first
     * If any function returns true, the punch is ignored
-* `minetest.register_on_placenode(function(pointed_thing, node))`    
+* `minetest.register_on_placenode(function(pointed_thing, node))`
     * Called when a node has been placed
 * `minetest.register_on_item_use(func(item, pointed_thing))`
     * Called when the local player uses an item.
@@ -729,6 +729,13 @@ Call these functions only at load time!
     * Clears the out chat queue
 * `minetest.localplayer`
     * Reference to the LocalPlayer object. See [`LocalPlayer`](#localplayer) class reference for methods.
+
+### Privileges
+* `minetest.get_privilege_list()`
+    * Returns a list of privileges the currect player has in the format `{priv1=true,...}`
+* `minetest.string_to_privs(str)`: returns `{priv1=true,...}`
+* `minetest.privs_to_string(privs)`: returns `"priv1,priv2,..."`
+    * Convert between two privilege representations
 
 ### Client Environment
 * `minetest.get_player_names()`
@@ -787,6 +794,10 @@ Call these functions only at load time!
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+    * Each argument is a 8 Bit unsigned integer
+    * Returns the ColorString from rgb or rgba values
+    * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
@@ -1117,15 +1128,15 @@ The following functions provide escape sequences:
       `minetest.get_color_escape_sequence(color) ..
        message ..
        minetest.get_color_escape_sequence("#ffffff")`
-* `color.get_background_escape_sequence(color)`
+* `minetest.get_background_escape_sequence(color)`
     * `color` is a [ColorString](#colorstring)
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
-* `color.strip_foreground_colors(str)`
+* `minetest.strip_foreground_colors(str)`
     * Removes foreground colors added by `get_color_escape_sequence`.
-* `color.strip_background_colors(str)`
+* `minetest.strip_background_colors(str)`
     * Removes background colors added by `get_background_escape_sequence`.
-* `color.strip_colors(str)`
+* `minetest.strip_colors(str)`
     * Removes all color escape sequences.
 
 `ColorString`

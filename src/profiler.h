@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
@@ -43,9 +42,7 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler()
-	{
-	}
+	Profiler() {}
 
 	void add(const std::string &name, float value)
 	{
@@ -177,7 +174,7 @@ public:
 	}
 
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::map<std::string, float> m_data;
 	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;
@@ -196,9 +193,9 @@ public:
 			ScopeProfilerType type = SPT_ADD);
 	~ScopeProfiler();
 private:
-	Profiler *m_profiler;
+	Profiler *m_profiler = nullptr;
 	std::string m_name;
-	TimeTaker *m_timer;
+	TimeTaker *m_timer = nullptr;
 	enum ScopeProfilerType m_type;
 };
 

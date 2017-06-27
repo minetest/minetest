@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/tile.h"
 #include "mesh.h"
 #include <IMeshManipulator.h>
+#include "client/renderingengine.h"
 #include "client.h"
 #include "log.h"
 #include "noise.h"
-#include "util/cpp11.h"
 
 // Distance of light extrapolation (for oversized nodes)
 // After this distance, it gives up and considers light level constant
@@ -43,7 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Corresponding offsets are listed in g_27dirs
 #define FRAMED_NEIGHBOR_COUNT 18
 
-static constexpr v3s16 light_dirs[8] = {
+static const v3s16 light_dirs[8] = {
 	v3s16(-1, -1, -1),
 	v3s16(-1, -1,  1),
 	v3s16(-1,  1, -1),
@@ -65,8 +65,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	collector = output;
 
 	nodedef   = data->m_client->ndef();
-	smgr      = data->m_client->getSceneManager();
-	meshmanip = smgr->getMeshManipulator();
+	meshmanip = RenderingEngine::get_scene_manager()->getMeshManipulator();
 
 	enable_mesh_cache = g_settings->getBool("enable_mesh_cache") &&
 		!data->m_smooth_lighting; // Mesh cache is not supported with smooth lighting
@@ -837,7 +836,7 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
-		offset.Y = BS * ((yrng.next() % 16 / 16.0) * 0.125);
+		offset.Y = -BS * ((yrng.next() % 16 / 16.0) * 0.125);
 	}
 	int offset_count = offset_top_only ? 2 : 4;
 	for (int i = 0; i < offset_count; i++)

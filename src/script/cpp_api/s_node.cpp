@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 
 
+// Should be ordered exactly like enum NodeDrawType in nodedef.h
 struct EnumString ScriptApiNode::es_DrawType[] =
 	{
 		{NDT_NORMAL, "normal"},
@@ -34,17 +35,17 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_LIQUID, "liquid"},
 		{NDT_FLOWINGLIQUID, "flowingliquid"},
 		{NDT_GLASSLIKE, "glasslike"},
-		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
-		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_ALLFACES, "allfaces"},
 		{NDT_ALLFACES_OPTIONAL, "allfaces_optional"},
 		{NDT_TORCHLIKE, "torchlike"},
 		{NDT_SIGNLIKE, "signlike"},
 		{NDT_PLANTLIKE, "plantlike"},
-		{NDT_FIRELIKE, "firelike"},
 		{NDT_FENCELIKE, "fencelike"},
 		{NDT_RAILLIKE, "raillike"},
 		{NDT_NODEBOX, "nodebox"},
+		{NDT_GLASSLIKE_FRAMED, "glasslike_framed"},
+		{NDT_FIRELIKE, "firelike"},
+		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_MESH, "mesh"},
 		{0, NULL},
 	};

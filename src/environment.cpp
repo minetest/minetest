@@ -28,12 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 Environment::Environment(IGameDef *gamedef):
-	m_time_of_day_speed(0),
-	m_time_of_day(9000),
-	m_time_of_day_f(9000./24000),
-	m_time_conversion_skew(0.0f),
-	m_enable_day_night_ratio_override(false),
-	m_day_night_ratio_override(0.0f),
+	m_time_of_day_speed(0.0f),
+	m_day_count(0),
 	m_gamedef(gamedef)
 {
 	m_cache_enable_shaders = g_settings->getBool("enable_shaders");

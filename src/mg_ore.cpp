@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 FlagDesc flagdesc_ore[] = {
-	{"absheight",                 OREFLAG_ABSHEIGHT},
+	{"absheight",                 OREFLAG_ABSHEIGHT}, // Non-functional
 	{"puff_cliffs",               OREFLAG_PUFF_CLIFFS},
 	{"puff_additive_composition", OREFLAG_PUFF_ADDITIVE},
 	{NULL,                        0}
@@ -72,14 +72,6 @@ void OreManager::clear()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-Ore::Ore()
-{
-	flags = 0;
-	noise = NULL;
-}
-
-
 Ore::~Ore()
 {
 	delete noise;
@@ -95,22 +87,11 @@ void Ore::resolveNodeNames()
 
 size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
-	int in_range = 0;
-
-	in_range |= (nmin.Y <= y_max && nmax.Y >= y_min);
-	if (flags & OREFLAG_ABSHEIGHT)
-		in_range |= (nmin.Y >= -y_max && nmax.Y <= -y_min) << 1;
-	if (!in_range)
+	if (!(nmin.Y <= y_max && nmax.Y >= y_min))
 		return 0;
 
-	int actual_ymin, actual_ymax;
-	if (in_range & ORE_RANGE_MIRROR) {
-		actual_ymin = MYMAX(nmin.Y, -y_max);
-		actual_ymax = MYMIN(nmax.Y, -y_min);
-	} else {
-		actual_ymin = MYMAX(nmin.Y, y_min);
-		actual_ymax = MYMIN(nmax.Y, y_max);
-	}
+	int actual_ymin = MYMAX(nmin.Y, y_min);
+	int actual_ymax = MYMIN(nmax.Y, y_max);
 	if (clust_size >= actual_ymax - actual_ymin + 1)
 		return 0;
 
@@ -150,7 +131,7 @@ void OreScatter::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 index = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -204,7 +185,7 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -232,8 +213,6 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 OrePuff::OrePuff() :
 	Ore()
 {
-	noise_puff_top    = NULL;
-	noise_puff_bottom = NULL;
 }
 
 
@@ -272,7 +251,7 @@ void OrePuff::generate(MMVManip *vm, int mapseed, u32 blockseed,
 			continue;
 
 		if (biomemap && !biomes.empty()) {
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[index]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[index]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -340,7 +319,7 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z0 - nmin.Z) + (x0 - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}
@@ -385,7 +364,6 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 OreVein::OreVein() :
 	Ore()
 {
-	noise2 = NULL;
 }
 
 
@@ -424,7 +402,7 @@ void OreVein::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 		if (biomemap && !biomes.empty()) {
 			u32 bmapidx = sizex * (z - nmin.Z) + (x - nmin.X);
-			UNORDERED_SET<u8>::iterator it = biomes.find(biomemap[bmapidx]);
+			std::unordered_set<u8>::const_iterator it = biomes.find(biomemap[bmapidx]);
 			if (it == biomes.end())
 				continue;
 		}

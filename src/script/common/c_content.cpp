@@ -132,7 +132,7 @@ void push_item_definition(lua_State *L, const ItemDefinition &i)
 void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 {
 	std::string type(es_ItemType[(int)i.type].str);
-	
+
 	lua_newtable(L);
 	lua_pushstring(L, i.name.c_str());
 	lua_setfield(L, -2, "name");
@@ -721,9 +721,9 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
 	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
 	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
-	
+
 	/* Missing "tiles" because I don't see a usecase (at least not yet). */
-	
+
 	lua_newtable(L);
 	lua_pushboolean(L, c.has_on_construct);
 	lua_setfield(L, -2, "has_on_construct");
@@ -756,10 +756,10 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	if (!c.palette_name.empty()) {
 		push_ARGB8(L, c.color);
 		lua_setfield(L, -2, "color");
-		
+
 		lua_pushstring(L, c.palette_name.c_str());
 		lua_setfield(L, -2, "palette_name");
-		
+
 		push_palette(L, c.palette);
 		lua_setfield(L, -2, "palette");
 	}
@@ -767,7 +767,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "waving");
 	lua_pushnumber(L, c.connect_sides);
 	lua_setfield(L, -2, "connect_sides");
-	
+
 	lua_newtable(L);
 	u16 i = 1;
 	for (std::vector<std::string>::const_iterator it = c.connects_to.begin();
@@ -776,7 +776,7 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 		lua_rawseti(L, -2, i);
 	}
 	lua_setfield(L, -2, "connects_to");
-	
+
 	push_ARGB8(L, c.post_effect_color);
 	lua_setfield(L, -2, "post_effect_color");
 	lua_pushnumber(L, c.leveled);
@@ -925,6 +925,7 @@ void read_server_sound_params(lua_State *L, int index,
 		getfloatfield(L, index, "gain", params.gain);
 		getstringfield(L, index, "to_player", params.to_player);
 		getfloatfield(L, index, "fade", params.fade);
+		getfloatfield(L, index, "pitch", params.pitch);
 		lua_getfield(L, index, "pos");
 		if(!lua_isnil(L, -1)){
 			v3f p = read_v3f(L, -1)*BS;
@@ -958,6 +959,7 @@ void read_soundspec(lua_State *L, int index, SimpleSoundSpec &spec)
 		getstringfield(L, index, "name", spec.name);
 		getfloatfield(L, index, "gain", spec.gain);
 		getfloatfield(L, index, "fade", spec.fade);
+		getfloatfield(L, index, "pitch", spec.pitch);
 	} else if(lua_isstring(L, index)){
 		spec.name = lua_tostring(L, index);
 	}
@@ -972,6 +974,8 @@ void push_soundspec(lua_State *L, const SimpleSoundSpec &spec)
 	lua_setfield(L, -2, "gain");
 	lua_pushnumber(L, spec.fade);
 	lua_setfield(L, -2, "fade");
+	lua_pushnumber(L, spec.pitch);
+	lua_setfield(L, -2, "pitch");
 }
 
 /******************************************************************************/
@@ -1171,7 +1175,7 @@ void push_tool_capabilities(lua_State *L,
 			const ToolGroupCap &groupcap = i->second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for (UNORDERED_MAP<int, float>::const_iterator
+			for (std::unordered_map<int, float>::const_iterator
 					i = groupcap.times.begin(); i != groupcap.times.end(); ++i) {
 				lua_pushinteger(L, i->first);
 				lua_pushnumber(L, i->second);

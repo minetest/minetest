@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 #ifndef SERVER
-#include "client/tile.h"
 #include "mesh.h"
 #include "client.h"
+#include "client/renderingengine.h"
+#include "client/tile.h"
 #include <IMeshManipulator.h>
 #endif
 #include "log.h"
@@ -248,15 +249,21 @@ void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, con
 */
 
 static void serializeSimpleSoundSpec(const SimpleSoundSpec &ss,
-		std::ostream &os)
+		std::ostream &os, u8 version)
 {
 	os<<serializeString(ss.name);
 	writeF1000(os, ss.gain);
+
+	if (version >= 11)
+		writeF1000(os, ss.pitch);
 }
-static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is)
+static void deSerializeSimpleSoundSpec(SimpleSoundSpec &ss, std::istream &is, u8 version)
 {
 	ss.name = deSerializeString(is);
 	ss.gain = readF1000(is);
+
+	if (version >= 11)
+		ss.pitch = readF1000(is);
 }
 
 void TextureSettings::readSettings()
@@ -384,7 +391,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	}
 
 	// version
-	writeU8(os, 10);
+	u8 version = (protocol_version >= 34) ? 11 : 10;
+	writeU8(os, version);
 
 	// general
 	os << serializeString(name);
@@ -460,9 +468,9 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	collision_box.serialize(os, protocol_version);
 
 	// sound
-	serializeSimpleSoundSpec(sound_footstep, os);
-	serializeSimpleSoundSpec(sound_dig, os);
-	serializeSimpleSoundSpec(sound_dug, os);
+	serializeSimpleSoundSpec(sound_footstep, os, version);
+	serializeSimpleSoundSpec(sound_dig, os, version);
+	serializeSimpleSoundSpec(sound_dug, os, version);
 
 	// legacy
 	writeU8(os, legacy_facedir_simple);
@@ -491,7 +499,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	if (version < 9) {
 		deSerializeOld(is, version);
 		return;
-	} else if (version > 10) {
+	} else if (version > 11) {
 		throw SerializationError("unsupported ContentFeatures version");
 	}
 
@@ -573,9 +581,9 @@ void ContentFeatures::deSerialize(std::istream &is)
 	collision_box.deSerialize(is);
 
 	// sounds
-	deSerializeSimpleSoundSpec(sound_footstep, is);
-	deSerializeSimpleSoundSpec(sound_dig, is);
-	deSerializeSimpleSoundSpec(sound_dug, is);
+	deSerializeSimpleSoundSpec(sound_footstep, is, version);
+	deSerializeSimpleSoundSpec(sound_dig, is, version);
+	deSerializeSimpleSoundSpec(sound_dug, is, version);
 
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
@@ -912,12 +920,12 @@ private:
 	// item aliases too. Updated by updateAliases()
 	// Note: Not serialized.
 
-	UNORDERED_MAP<std::string, content_t> m_name_id_mapping_with_aliases;
+	std::unordered_map<std::string, content_t> m_name_id_mapping_with_aliases;
 
 	// A mapping from groups to a list of content_ts (and their levels)
 	// that belong to it.  Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
-	UNORDERED_MAP<std::string, GroupItems> m_group_to_items;
+	std::unordered_map<std::string, GroupItems> m_group_to_items;
 
 	// Next possibly free id
 	content_t m_next_id;
@@ -1050,7 +1058,7 @@ inline const ContentFeatures& CNodeDefManager::get(const MapNode &n) const
 
 bool CNodeDefManager::getId(const std::string &name, content_t &result) const
 {
-	UNORDERED_MAP<std::string, content_t>::const_iterator
+	std::unordered_map<std::string, content_t>::const_iterator
 		i = m_name_id_mapping_with_aliases.find(name);
 	if(i == m_name_id_mapping_with_aliases.end())
 		return false;
@@ -1080,7 +1088,7 @@ bool CNodeDefManager::getIds(const std::string &name,
 	}
 	std::string group = name.substr(6);
 
-	UNORDERED_MAP<std::string, GroupItems>::const_iterator
+	std::unordered_map<std::string, GroupItems>::const_iterator
 		i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
@@ -1282,7 +1290,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 		i != def.groups.end(); ++i) {
 		std::string group_name = i->first;
 
-		UNORDERED_MAP<std::string, GroupItems>::iterator
+		std::unordered_map<std::string, GroupItems>::iterator
 			j = m_group_to_items.find(group_name);
 		if (j == m_group_to_items.end()) {
 			m_group_to_items[group_name].push_back(
@@ -1318,7 +1326,7 @@ void CNodeDefManager::removeNode(const std::string &name)
 	}
 
 	// Erase node content from all groups it belongs to
-	for (UNORDERED_MAP<std::string, GroupItems>::iterator iter_groups =
+	for (std::unordered_map<std::string, GroupItems>::iterator iter_groups =
 			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
 		GroupItems &items = iter_groups->second;
 		for (GroupItems::iterator iter_groupitems = items.begin();
@@ -1420,8 +1428,8 @@ void CNodeDefManager::updateTextures(IGameDef *gamedef,
 	Client *client = (Client *)gamedef;
 	ITextureSource *tsrc = client->tsrc();
 	IShaderSource *shdsrc = client->getShaderSource();
-	scene::ISceneManager* smgr = client->getSceneManager();
-	scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
+	scene::IMeshManipulator *meshmanip =
+		RenderingEngine::get_scene_manager()->getMeshManipulator();
 	TextureSettings tsettings;
 	tsettings.readSettings();
 
@@ -1604,9 +1612,9 @@ void ContentFeatures::serializeOld(std::ostream &os, u16 protocol_version) const
 		selection_box.serialize(os, protocol_version);
 		writeU8(os, legacy_facedir_simple);
 		writeU8(os, legacy_wallmounted);
-		serializeSimpleSoundSpec(sound_footstep, os);
-		serializeSimpleSoundSpec(sound_dig, os);
-		serializeSimpleSoundSpec(sound_dug, os);
+		serializeSimpleSoundSpec(sound_footstep, os, 10);
+		serializeSimpleSoundSpec(sound_dig, os, 10);
+		serializeSimpleSoundSpec(sound_dug, os, 10);
 		writeU8(os, rightclickable);
 		writeU8(os, drowning);
 		writeU8(os, leveled);
@@ -1676,9 +1684,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		selection_box.deSerialize(is);
 		legacy_facedir_simple = readU8(is);
 		legacy_wallmounted = readU8(is);
-		deSerializeSimpleSoundSpec(sound_footstep, is);
-		deSerializeSimpleSoundSpec(sound_dig, is);
-		deSerializeSimpleSoundSpec(sound_dug, is);
+		deSerializeSimpleSoundSpec(sound_footstep, is, version);
+		deSerializeSimpleSoundSpec(sound_dig, is, version);
+		deSerializeSimpleSoundSpec(sound_dug, is, version);
 	} else if (version == 6) {
 		name = deSerializeString(is);
 		groups.clear();
@@ -1726,9 +1734,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		selection_box.deSerialize(is);
 		legacy_facedir_simple = readU8(is);
 		legacy_wallmounted = readU8(is);
-		deSerializeSimpleSoundSpec(sound_footstep, is);
-		deSerializeSimpleSoundSpec(sound_dig, is);
-		deSerializeSimpleSoundSpec(sound_dug, is);
+		deSerializeSimpleSoundSpec(sound_footstep, is, version);
+		deSerializeSimpleSoundSpec(sound_dig, is, version);
+		deSerializeSimpleSoundSpec(sound_dug, is, version);
 		rightclickable = readU8(is);
 		drowning = readU8(is);
 		leveled = readU8(is);
@@ -1781,9 +1789,9 @@ void ContentFeatures::deSerializeOld(std::istream &is, int version)
 		selection_box.deSerialize(is);
 		legacy_facedir_simple = readU8(is);
 		legacy_wallmounted = readU8(is);
-		deSerializeSimpleSoundSpec(sound_footstep, is);
-		deSerializeSimpleSoundSpec(sound_dig, is);
-		deSerializeSimpleSoundSpec(sound_dug, is);
+		deSerializeSimpleSoundSpec(sound_footstep, is, version);
+		deSerializeSimpleSoundSpec(sound_dig, is, version);
+		deSerializeSimpleSoundSpec(sound_dug, is, version);
 		rightclickable = readU8(is);
 		drowning = readU8(is);
 		leveled = readU8(is);
@@ -1916,11 +1924,6 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 
 NodeResolver::NodeResolver()
 {
-	m_ndef            = NULL;
-	m_nodenames_idx   = 0;
-	m_nnlistsizes_idx = 0;
-	m_resolve_done    = false;
-
 	m_nodenames.reserve(16);
 	m_nnlistsizes.reserve(4);
 }

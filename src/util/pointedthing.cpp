@@ -23,16 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../exceptions.h"
 #include <sstream>
 
-PointedThing::PointedThing():
-	type(POINTEDTHING_NOTHING),
-	node_undersurface(0,0,0),
-	node_abovesurface(0,0,0),
-	node_real_undersurface(0,0,0),
-	intersection_point(0,0,0),
-	intersection_normal(0,0,0),
-	object_id(-1)
-{}
-
 std::string PointedThing::dump() const
 {
 	std::ostringstream os(std::ios::binary);

@@ -114,11 +114,11 @@ public:
 
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
-	bool use_crosshair_image;
-	std::string hotbar_image;
-	bool use_hotbar_image;
-	std::string hotbar_selected_image;
-	bool use_hotbar_selected_image;
+	bool use_crosshair_image = false;
+	std::string hotbar_image = "";
+	bool use_hotbar_image = false;
+	std::string hotbar_selected_image = "";
+	bool use_hotbar_selected_image = false;
 
 	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
 		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
@@ -170,7 +170,7 @@ private:
 	v3f m_selection_pos;
 	v3f m_selection_pos_with_offset;
 
-	scene::IMesh* m_selection_mesh;
+	scene::IMesh *m_selection_mesh = nullptr;
 	video::SColor m_selection_mesh_color;
 	v3f m_selected_face_normal;
 

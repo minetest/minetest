@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_ORE_HEADER
 #define MG_ORE_HEADER
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -32,13 +32,10 @@ class MMVManip;
 
 /////////////////// Ore generation flags
 
-#define OREFLAG_ABSHEIGHT     0x01
+#define OREFLAG_ABSHEIGHT     0x01 // Non-functional but kept to not break flags
 #define OREFLAG_PUFF_CLIFFS   0x02
 #define OREFLAG_PUFF_ADDITIVE 0x04
 #define OREFLAG_USE_NOISE     0x08
-
-#define ORE_RANGE_ACTUAL 1
-#define ORE_RANGE_MIRROR 2
 
 enum OreType {
 	ORE_SCATTER,
@@ -62,13 +59,13 @@ public:
 	s16 y_min;
 	s16 y_max;
 	u8 ore_param2;		// to set node-specific attributes
-	u32 flags;          // attributes for this ore
+	u32 flags = 0;          // attributes for this ore
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
-	Noise *noise;
-	UNORDERED_SET<u8> biomes;
+	Noise *noise = nullptr;
+	std::unordered_set<u8> biomes;
 
-	Ore();
+	Ore() {};
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -104,8 +101,8 @@ public:
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
-	Noise *noise_puff_top;
-	Noise *noise_puff_bottom;
+	Noise *noise_puff_top = nullptr;
+	Noise *noise_puff_bottom = nullptr;
 
 	OrePuff();
 	virtual ~OrePuff();
@@ -127,7 +124,7 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	float random_factor;
-	Noise *noise2;
+	Noise *noise2 = nullptr;
 
 	OreVein();
 	virtual ~OreVein();
@@ -160,7 +157,7 @@ public:
 		case ORE_VEIN:
 			return new OreVein;
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 

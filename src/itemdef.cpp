@@ -112,11 +112,8 @@ void ItemDefinition::reset()
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	if(tool_capabilities)
-	{
-		delete tool_capabilities;
-		tool_capabilities = NULL;
-	}
+	delete tool_capabilities;
+	tool_capabilities = NULL;
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
@@ -127,8 +124,8 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-
-	writeU8(os, 3); // version (proto > 20)
+	u8 version = (protocol_version >= 34) ? 4 : 3;
+	writeU8(os, version);
 	writeU8(os, type);
 	os << serializeString(name);
 	os << serializeString(description);
@@ -159,6 +156,11 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeF1000(os, sound_place_failed.gain);
 	os << serializeString(palette_image);
 	writeU32(os, color.color);
+
+	if (version >= 4) {
+		writeF1000(os, sound_place.pitch);
+		writeF1000(os, sound_place_failed.pitch);
+	}
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -168,7 +170,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version < 1 || version > 3)
+	if (version < 1 || version > 4)
 		throw SerializationError("unsupported ItemDefinition version");
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
@@ -207,7 +209,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 		sound_place.name = deSerializeString(is);
 		sound_place.gain = readF1000(is);
 	}
-	if(version == 3) {
+	if(version >= 3) {
 		range = readF1000(is);
 	}
 	// If you add anything here, insert it primarily inside the try-catch
@@ -217,6 +219,11 @@ void ItemDefinition::deSerialize(std::istream &is)
 		sound_place_failed.gain = readF1000(is);
 		palette_image = deSerializeString(is);
 		color.set(readU32(is));
+
+		if (version >= 4) {
+			sound_place.pitch = readF1000(is);
+			sound_place_failed.pitch = readF1000(is);
+		}
 	} catch(SerializationError &e) {};
 }
 
@@ -248,7 +255,7 @@ public:
 	{
 
 #ifndef SERVER
-		m_main_thread = thr_get_current_thread_id();
+		m_main_thread = std::this_thread::get_id();
 #endif
 		clear();
 	}
@@ -323,7 +330,7 @@ public:
 				<<name<<"\""<<std::endl;
 
 		// This is not thread-safe
-		sanity_check(thr_is_current_thread(m_main_thread));
+		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
 		ClientCached *cc = NULL;
@@ -359,15 +366,12 @@ public:
 	{
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
-		if(cc)
+		if (cc)
 			return cc;
 
-		if(thr_is_current_thread(m_main_thread))
-		{
+		if (std::this_thread::get_id() == m_main_thread) {
 			return createClientCachedDirect(name, client);
-		}
-		else
-		{
+		} else {
 			// We're gonna ask the result to be put into here
 			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
@@ -583,7 +587,7 @@ private:
 	StringMap m_aliases;
 #ifndef SERVER
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
+	std::thread::id m_main_thread;
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes

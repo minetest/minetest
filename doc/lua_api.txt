@@ -531,24 +531,26 @@ for conversion.
 If the `ItemStack`'s metadata contains the `color` field, it will be
 lost on placement, because nodes on the map can only use palettes.
 
-If the `ItemStack`'s metadata contains the `palette_index` field, you
-currently must manually convert between it and the node's `param2` with
-custom `on_place` and `on_dig` callbacks.
+If the `ItemStack`'s metadata contains the `palette_index` field, it is
+automatically transferred between node and item forms by the engine,
+when a player digs or places a colored node.
+You can disable this feature by setting the `drop` field of the node
+to itself (without metadata).
 
 ### Colored items in craft recipes
 Craft recipes only support item strings, but fortunately item strings
 can also contain metadata. Example craft recipe registration:
 
-    local stack = ItemStack("wool:block")
-    dyed:get_meta():set_int("palette_index", 3) -- add index
     minetest.register_craft({
-        output = dyed:to_string(), -- convert to string
+        output = minetest.itemstring_with_palette("wool:block", 3),
         type = "shapeless",
         recipe = {
             "wool:block",
             "dye:red",
         },
     })
+
+To set the `color` field, you can use `minetest.itemstring_with_color`.
 
 Metadata field filtering in the `recipe` field are not supported yet,
 so the craft output is independent of the color of the ingredients.
@@ -578,7 +580,7 @@ Example (colored grass block):
         description = "Dirt with Grass",
         -- Regular tiles, as usual
         -- The dirt tile disables palette coloring
-        tiles = {{name = "default_grass.png"}, 
+        tiles = {{name = "default_grass.png"},
             {name = "default_dirt.png", color = "white"}},
         -- Overlay tiles: define them in the same style
         -- The top and bottom tile does not have overlay
@@ -622,12 +624,14 @@ Examples of sound parameter tables:
     {
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
+        pitch = 1.0, -- default
     }
     -- Play locationless to one player
     {
         to_player = name,
         gain = 1.0, -- default
         fade = 0.0, -- default, change to a value > 0 to fade the sound in
+        pitch = 1.0, -- default
     }
     -- Play locationless to one player, looped
     {
@@ -658,6 +662,7 @@ one player using `to_player = name,`
 * e.g. `{}`
 * e.g. `{name = "default_place_node"}`
 * e.g. `{name = "default_place_node", gain = 1.0}`
+* e.g. `{name = "default_place_node", gain = 1.0, pitch = 1.0}`
 
 Registered definitions of stuff
 -------------------------------
@@ -1071,12 +1076,7 @@ Ore attributes
 See section "Flag Specifier Format".
 
 Currently supported flags:
-`absheight`, `puff_cliffs`, `puff_additive_composition`.
-
-### `absheight`
-Also produce this same ore between the height range of `-y_max` and `-y_min`.
-
-Useful for having ore in sky realms without having to duplicate ore entries.
+`puff_cliffs`, `puff_additive_composition`.
 
 ### `puff_cliffs`
 If set, puff ore generation will not taper down large differences in displacement
@@ -2060,15 +2060,15 @@ The following functions provide escape sequences:
       `minetest.get_color_escape_sequence(color) ..
        message ..
        minetest.get_color_escape_sequence("#ffffff")`
-* `color.get_background_escape_sequence(color)`
+* `minetest.get_background_escape_sequence(color)`
     * `color` is a ColorString
     * The escape sequence sets the background of the whole text element to
       `color`. Only defined for item descriptions and tooltips.
-* `color.strip_foreground_colors(str)`
+* `minetest.strip_foreground_colors(str)`
     * Removes foreground colors added by `get_color_escape_sequence`.
-* `color.strip_background_colors(str)`
+* `minetest.strip_background_colors(str)`
     * Removes background colors added by `get_background_escape_sequence`.
-* `color.strip_colors(str)`
+* `minetest.strip_colors(str)`
     * Removes all color escape sequences.
 
 Spatial Vectors
@@ -2462,12 +2462,13 @@ and `minetest.auth_reload` call the authetification handler.
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * `search_center` is an optional boolean (default: `false`)
       If true `pos` is also checked for the nodes
-* `minetest.find_nodes_in_area(minp, maxp, nodenames)`: returns a list of positions
-    * returns as second value a table with the count of the individual nodes found
+* `minetest.find_nodes_in_area(pos1, pos2, nodenames)`: returns a list of positions
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
-* `minetest.find_nodes_in_area_under_air(minp, maxp, nodenames)`: returns a list of positions
-    * returned positions are nodes with a node air above
+    * First return value: Table with all node positions
+    * Second return value: Table with the count of each node with the node name as index
+* `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a list of positions
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
+    * Return value: Table with all node positions with a node air above
 * `minetest.get_perlin(noiseparams)`
 * `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
     * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
@@ -2711,9 +2712,9 @@ and `minetest.auth_reload` call the authetification handler.
     * Example query for `"default:gold_ingot"` will return table:
 
             {
-                [1]={type = "cooking", width = 3, output = "default:gold_ingot",
+                [1]={method = "cooking", width = 3, output = "default:gold_ingot",
                 items = {1 = "default:gold_lump"}},
-                [2]={type = "normal", width = 1, output = "default:gold_ingot 9",
+                [2]={method = "normal", width = 1, output = "default:gold_ingot 9",
                 items = {1 = "default:goldblock"}}
             }
 * `minetest.handle_node_drops(pos, drops, digger)`
@@ -2722,6 +2723,21 @@ and `minetest.auth_reload` call the authetification handler.
       digger's inventory
     * Can be overridden to get different functionality (e.g. dropping items on
       ground)
+* `minetest.itemstring_with_palette(item, palette_index)`: returns an item string
+    * Creates an item string which contains palette index information
+      for hardware colorization. You can use the returned string
+      as an output in a craft recipe.
+    * `item`: the item stack which becomes colored. Can be in string,
+      table and native form.
+    * `palette_index`: this index is added to the item stack
+* `minetest.itemstring_with_color(item, colorstring)`: returns an item string
+    * Creates an item string which contains static color information
+      for hardware colorization. Use this method if you wish to colorize
+      an item that does not own a palette. You can use the returned string
+      as an output in a craft recipe.
+    * `item`: the item stack which becomes colored. Can be in string,
+      table and native form.
+    * `colorstring`: the new color of the item stack
 
 ### Rollback
 * `minetest.rollback_get_node_actions(pos, range, seconds, limit)`:
@@ -2952,6 +2968,10 @@ These functions return the leftover itemstack.
     * See documentation on `minetest.compress()` for supported compression methods.
     * currently supported.
     * `...` indicates method-specific arguments. Currently, no methods use this.
+* `minetest.rgba(red, green, blue[, alpha])`: returns a string
+    * Each argument is a 8 Bit unsigned integer
+    * Returns the ColorString from rgb or rgba values
+    * Example: `minetest.rgba(10, 20, 30, 40)`, returns `"#0A141E28"`
 * `minetest.encode_base64(string)`: returns string encoded in base64
     * Encodes a string in base64.
 * `minetest.decode_base64(string)`: returns string
@@ -3322,8 +3342,9 @@ An `InvRef` is a reference to an inventory.
 * `add_item(listname, stack)`: add item somewhere in list, returns leftover `ItemStack`
 * `room_for_item(listname, stack):` returns `true` if the stack of items
   can be fully added to the list
-* `contains_item(listname, stack)`: returns `true` if the stack of items
-  can be fully taken from the list
+* `contains_item(listname, stack, [match_meta])`: returns `true` if
+  the stack of items can be fully taken from the list.
+  If `match_meta` is false, only the items' names are compared (default: `false`).
 * `remove_item(listname, stack)`: take as many items as specified from the list,
   returns the items that were actually removed (as an `ItemStack`) -- note that
   any item metadata is ignored, so attempting to remove a specific unique

@@ -28,40 +28,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	CachedMapBlockData
 */
 
-CachedMapBlockData::CachedMapBlockData():
-	p(-1337,-1337,-1337),
-	data(NULL),
-	refcount_from_queue(0),
-	last_used_timestamp(time(0))
-{
-}
-
 CachedMapBlockData::~CachedMapBlockData()
 {
 	assert(refcount_from_queue == 0);
 
-	if (data)
-		delete[] data;
+	delete[] data;
 }
 
 /*
 	QueuedMeshUpdate
 */
 
-QueuedMeshUpdate::QueuedMeshUpdate():
-	p(-1337,-1337,-1337),
-	ack_block_to_server(false),
-	urgent(false),
-	crack_level(-1),
-	crack_pos(0,0,0),
-	data(NULL)
-{
-}
-
 QueuedMeshUpdate::~QueuedMeshUpdate()
 {
-	if (data)
-		delete data;
+	delete data;
 }
 
 /*
@@ -243,7 +223,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 
 	data->fillBlockDataBegin(q->p);
 
-	int t_now = time(0);
+	std::time_t t_now = std::time(0);
 
 	// Collect data for 3*3*3 blocks from cache
 	v3s16 dp;

@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <map>
 #include <json/json.h>
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "config.h"
 #include "metadata.h"
 
@@ -38,23 +38,17 @@ struct ModSpec
 	std::string name;
 	std::string path;
 	//if normal mod:
-	UNORDERED_SET<std::string> depends;
-	UNORDERED_SET<std::string> optdepends;
-	UNORDERED_SET<std::string> unsatisfied_depends;
+	std::unordered_set<std::string> depends;
+	std::unordered_set<std::string> optdepends;
+	std::unordered_set<std::string> unsatisfied_depends;
 
-	bool part_of_modpack;
-	bool is_modpack;
+	bool part_of_modpack = false;
+	bool is_modpack = false;
 	// if modpack:
 	std::map<std::string,ModSpec> modpack_content;
 	ModSpec(const std::string &name_="", const std::string &path_=""):
 		name(name_),
-		path(path_),
-		depends(),
-		optdepends(),
-		unsatisfied_depends(),
-		part_of_modpack(false),
-		is_modpack(false),
-		modpack_content()
+		path(path_)
 	{}
 };
 
@@ -125,7 +119,7 @@ private:
 	// 1. game mod in modpack; 2. game mod;
 	// 3. world mod in modpack; 4. world mod;
 	// 5. addon mod in modpack; 6. addon mod.
-	UNORDERED_SET<std::string> m_name_conflicts;
+	std::unordered_set<std::string> m_name_conflicts;
 
 	// Deleted default constructor
 	ModConfiguration() {}
@@ -235,7 +229,7 @@ public:
 	virtual bool setString(const std::string &name, const std::string &var);
 private:
 	std::string m_mod_name;
-	bool m_modified;
+	bool m_modified = false;
 };
 
 #endif

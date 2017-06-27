@@ -56,9 +56,10 @@ enum BiomeV6Type
 
 
 struct MapgenV6Params : public MapgenParams {
-	u32 spflags;
-	float freq_desert;
-	float freq_beach;
+	u32 spflags = MGV6_JUNGLES | MGV6_SNOWBIOMES | MGV6_TREES |
+		MGV6_BIOMEBLEND | MGV6_MUDFLOW;
+	float freq_desert = 0.45f;
+	float freq_beach = 0.15f;
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_higher;
 	NoiseParams np_steepness;
@@ -162,6 +163,8 @@ public:
 	int generateGround();
 	void addMud();
 	void flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos);
+	void moveMud(u32 remove_index, u32 place_index,
+		u32 above_remove_index, v2s16 pos, v3s16 em);
 	void growGrass();
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);

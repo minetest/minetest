@@ -117,10 +117,10 @@ public:
 	virtual Biome *getBiomeAtIndex(size_t index, s16 y) const = 0;
 
 	// Result of calcBiomes bulk computation.
-	biome_t *biomemap;
+	biome_t *biomemap = nullptr;
 
 protected:
-	BiomeManager *m_bmgr;
+	BiomeManager *m_bmgr = nullptr;
 	v3s16 m_pmin;
 	v3s16 m_csize;
 };

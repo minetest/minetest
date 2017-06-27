@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cmath>
 #include <IFileSystem.h>
 #include "threading/mutex_auto_lock.h"
+#include "client/renderingengine.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -41,7 +42,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientmap.h"
 #include "clientmedia.h"
 #include "version.h"
-#include "drawscene.h"
 #include "database-sqlite3.h"
 #include "serialization.h"
 #include "guiscalingfilter.h"
@@ -55,7 +55,6 @@ extern gui::IGUIEnvironment* guienv;
 */
 
 Client::Client(
-		IrrlichtDevice *device,
 		const char *playername,
 		const std::string &password,
 		const std::string &address_name,
@@ -69,11 +68,6 @@ Client::Client(
 		bool ipv6,
 		GameUIFlags *game_ui_flags
 ):
-	m_packetcounter_timer(0.0),
-	m_connection_reinit_timer(0.1),
-	m_avg_rtt_timer(0.0),
-	m_playerpos_send_timer(0.0),
-	m_ignore_damage_timer(0.0),
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -82,56 +76,25 @@ Client::Client(
 	m_event(event),
 	m_mesh_update_thread(this),
 	m_env(
-		new ClientMap(this, control,
-			device->getSceneManager()->getRootSceneNode(),
-			device->getSceneManager(), 666),
-		device->getSceneManager(),
-		tsrc, this, device
+		new ClientMap(this, control, 666),
+		tsrc, this
 	),
 	m_particle_manager(&m_env),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
 	m_address_name(address_name),
-	m_device(device),
-	m_camera(NULL),
-	m_minimap(NULL),
-	m_minimap_disabled_by_server(false),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
-	m_proto_ver(0),
-	m_playeritem(0),
-	m_inventory_updated(false),
-	m_inventory_from_server(NULL),
-	m_inventory_from_server_age(0.0),
-	m_animation_time(0),
-	m_crack_level(-1),
-	m_crack_pos(0,0,0),
 	m_last_chat_message_sent(time(NULL)),
-	m_chat_message_allowance(5.0f),
-	m_map_seed(0),
 	m_password(password),
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
-	m_auth_data(NULL),
-	m_access_denied(false),
-	m_access_denied_reconnect(false),
-	m_itemdef_received(false),
-	m_nodedef_received(false),
 	m_media_downloader(new ClientMediaDownloader()),
-	m_time_of_day_set(false),
-	m_last_time_of_day_f(-1),
-	m_time_of_day_update_timer(0),
-	m_recommended_send_interval(0.1),
-	m_removed_sounds_check_timer(0),
 	m_state(LC_Created),
-	m_localdb(NULL),
-	m_script(NULL),
-	m_mod_storage_save_timer(10.0f),
-	m_game_ui_flags(game_ui_flags),
-	m_shutdown(false)
+	m_game_ui_flags(game_ui_flags)
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
 
 	if (g_settings->getBool("enable_minimap")) {
-		m_minimap = new Minimap(device, this);
+		m_minimap = new Minimap(this);
 	}
 	m_cache_save_interval = g_settings->getU16("server_map_save_interval");
 
@@ -242,19 +205,18 @@ Client::~Client()
 	delete m_inventory_from_server;
 
 	// Delete detached inventories
-	for (UNORDERED_MAP<std::string, Inventory*>::iterator
+	for (std::unordered_map<std::string, Inventory*>::iterator
 			i = m_detached_inventories.begin();
 			i != m_detached_inventories.end(); ++i) {
 		delete i->second;
 	}
 
 	// cleanup 3d model meshes on client shutdown
-	while (m_device->getSceneManager()->getMeshCache()->getMeshCount() != 0) {
-		scene::IAnimatedMesh *mesh =
-			m_device->getSceneManager()->getMeshCache()->getMeshByIndex(0);
+	while (RenderingEngine::get_mesh_cache()->getMeshCount() != 0) {
+		scene::IAnimatedMesh *mesh = RenderingEngine::get_mesh_cache()->getMeshByIndex(0);
 
-		if (mesh != NULL)
-			m_device->getSceneManager()->getMeshCache()->removeMesh(mesh);
+		if (mesh)
+			RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	}
 
 	delete m_minimap;
@@ -415,7 +377,7 @@ void Client::step(float dtime)
 	*/
 	// Control local player (0ms)
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	player->applyControl(dtime);
 
 	// Step environment
@@ -490,10 +452,8 @@ void Client::step(float dtime)
 			MapBlock *block = m_env.getMap().getBlockNoCreateNoEx(r.p);
 			if (block) {
 				// Delete the old mesh
-				if (block->mesh != NULL) {
-					delete block->mesh;
-					block->mesh = NULL;
-				}
+				delete block->mesh;
+				block->mesh = nullptr;
 
 				if (r.mesh) {
 					minimap_mapblock = r.mesh->moveMinimapMapblock();
@@ -571,7 +531,7 @@ void Client::step(float dtime)
 		Update positions of sounds attached to objects
 	*/
 	{
-		for(UNORDERED_MAP<int, u16>::iterator i = m_sounds_to_objects.begin();
+		for(std::unordered_map<int, u16>::iterator i = m_sounds_to_objects.begin();
 				i != m_sounds_to_objects.end(); ++i) {
 			int client_id = i->first;
 			u16 object_id = i->second;
@@ -591,7 +551,7 @@ void Client::step(float dtime)
 		m_removed_sounds_check_timer = 0;
 		// Find removed sounds and clear references to them
 		std::vector<s32> removed_server_ids;
-		for(UNORDERED_MAP<s32, int>::iterator i = m_sounds_server_to_client.begin();
+		for (std::unordered_map<s32, int>::iterator i = m_sounds_server_to_client.begin();
 				i != m_sounds_server_to_client.end();) {
 			s32 server_id = i->first;
 			int client_id = i->second;
@@ -614,7 +574,7 @@ void Client::step(float dtime)
 	if (m_mod_storage_save_timer <= 0.0f) {
 		verbosestream << "Saving registered mod storages." << std::endl;
 		m_mod_storage_save_timer = g_settings->getFloat("server_map_save_interval");
-		for (UNORDERED_MAP<std::string, ModMetadata *>::const_iterator
+		for (std::unordered_map<std::string, ModMetadata *>::const_iterator
 				it = m_mod_storages.begin(); it != m_mod_storages.end(); ++it) {
 			if (it->second->isModified()) {
 				it->second->save(getModStoragePath());
@@ -648,8 +608,8 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		verbosestream<<"Client: Attempting to load image "
 		<<"file \""<<filename<<"\""<<std::endl;
 
-		io::IFileSystem *irrfs = m_device->getFileSystem();
-		video::IVideoDriver *vdrv = m_device->getVideoDriver();
+		io::IFileSystem *irrfs = RenderingEngine::get_filesystem();
+		video::IVideoDriver *vdrv = RenderingEngine::get_video_driver();
 
 		// Create an irrlicht memory file
 		io::IReadFile *rfile = irrfs->createMemoryReadFile(
@@ -1404,7 +1364,7 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 void Client::setPlayerControl(PlayerControl &control)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	player->control = control;
 }
 
@@ -1428,7 +1388,7 @@ bool Client::getLocalInventoryUpdated()
 void Client::getLocalInventory(Inventory &dst)
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	dst = player->inventory;
 }
 
@@ -1441,7 +1401,7 @@ Inventory* Client::getInventory(const InventoryLocation &loc)
 	case InventoryLocation::CURRENT_PLAYER:
 	{
 		LocalPlayer *player = m_env.getLocalPlayer();
-		assert(player != NULL);
+		assert(player);
 		return &player->inventory;
 	}
 	break;
@@ -1530,7 +1490,7 @@ void Client::setCrack(int level, v3s16 pos)
 u16 Client::getHP()
 {
 	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
+	assert(player);
 	return player->hp;
 }
 
@@ -1563,7 +1523,7 @@ void Client::typeChatMessage(const std::wstring &message)
 		// compatibility code
 		if (m_proto_ver < 29) {
 			LocalPlayer *player = m_env.getLocalPlayer();
-			assert(player != NULL);
+			assert(player);
 			std::wstring name = narrow_to_wide(player->getName());
 			pushToChatQueue((std::wstring)L"<" + name + L"> " + message);
 		}
@@ -1662,7 +1622,6 @@ float Client::mediaReceiveProgress()
 }
 
 typedef struct TextureUpdateArgs {
-	IrrlichtDevice *device;
 	gui::IGUIEnvironment *guienv;
 	u64 last_time_ms;
 	u16 last_percent;
@@ -1689,12 +1648,12 @@ void texture_update_progress(void *args, u32 progress, u32 max_progress)
 			targs->last_time_ms = time_ms;
 			std::basic_stringstream<wchar_t> strm;
 			strm << targs->text_base << " " << targs->last_percent << "%...";
-			draw_load_screen(strm.str(), targs->device, targs->guienv, targs->tsrc, 0,
+			RenderingEngine::draw_load_screen(strm.str(), targs->guienv, targs->tsrc, 0,
 				72 + (u16) ((18. / 100.) * (double) targs->last_percent), true);
 		}
 }
 
-void Client::afterContentReceived(IrrlichtDevice *device)
+void Client::afterContentReceived()
 {
 	infostream<<"Client::afterContentReceived() started"<<std::endl;
 	assert(m_itemdef_received); // pre-condition
@@ -1706,25 +1665,25 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	// Clear cached pre-scaled 2D GUI images, as this cache
 	// might have images with the same name but different
 	// content from previous sessions.
-	guiScalingCacheClear(device->getVideoDriver());
+	guiScalingCacheClear();
 
 	// Rebuild inherited images and recreate textures
 	infostream<<"- Rebuilding images and textures"<<std::endl;
-	draw_load_screen(text,device, guienv, m_tsrc, 0, 70);
+	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 70);
 	m_tsrc->rebuildImagesAndTextures();
 	delete[] text;
 
 	// Rebuild shaders
 	infostream<<"- Rebuilding shaders"<<std::endl;
 	text = wgettext("Rebuilding shaders...");
-	draw_load_screen(text, device, guienv, m_tsrc, 0, 71);
+	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 71);
 	m_shsrc->rebuildShaders();
 	delete[] text;
 
 	// Update node aliases
 	infostream<<"- Updating node aliases"<<std::endl;
 	text = wgettext("Initializing nodes...");
-	draw_load_screen(text, device, guienv, m_tsrc, 0, 72);
+	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	std::string texture_path = g_settings->get("texture_path");
 	if (texture_path != "" && fs::IsDir(texture_path))
@@ -1736,7 +1695,6 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	// Update node textures and assign shaders to each tile
 	infostream<<"- Updating node textures"<<std::endl;
 	TextureUpdateArgs tu_args;
-	tu_args.device = device;
 	tu_args.guienv = guienv;
 	tu_args.last_time_ms = porting::getTimeMs();
 	tu_args.last_percent = 0;
@@ -1758,7 +1716,7 @@ void Client::afterContentReceived(IrrlichtDevice *device)
 	}
 
 	text = wgettext("Done!");
-	draw_load_screen(text, device, guienv, m_tsrc, 0, 100);
+	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 100);
 	infostream<<"Client::afterContentReceived() done"<<std::endl;
 	delete[] text;
 }
@@ -1774,9 +1732,9 @@ float Client::getCurRate()
 			m_con.getLocalStat(con::CUR_DL_RATE));
 }
 
-void Client::makeScreenshot(IrrlichtDevice *device)
+void Client::makeScreenshot()
 {
-	irr::video::IVideoDriver *driver = device->getVideoDriver();
+	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	irr::video::IImage* const raw_image = driver->createScreenShot();
 
 	if (!raw_image)
@@ -1891,10 +1849,7 @@ IShaderSource* Client::getShaderSource()
 {
 	return m_shsrc;
 }
-scene::ISceneManager* Client::getSceneManager()
-{
-	return m_device->getSceneManager();
-}
+
 u16 Client::allocateUnknownNodeId(const std::string &name)
 {
 	errorstream << "Client::allocateUnknownNodeId(): "
@@ -1926,22 +1881,20 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 		return NULL;
 	}
 	const std::string &data    = it->second;
-	scene::ISceneManager *smgr = m_device->getSceneManager();
 
 	// Create the mesh, remove it from cache and return it
 	// This allows unique vertex colors and other properties for each instance
 	Buffer<char> data_rw(data.c_str(), data.size()); // Const-incorrect Irrlicht
-	io::IFileSystem *irrfs = m_device->getFileSystem();
-	io::IReadFile *rfile   = irrfs->createMemoryReadFile(
+	io::IReadFile *rfile   = RenderingEngine::get_filesystem()->createMemoryReadFile(
 			*data_rw, data_rw.getSize(), filename.c_str());
 	FATAL_ERROR_IF(!rfile, "Could not create/open RAM file");
 
-	scene::IAnimatedMesh *mesh = smgr->getMesh(rfile);
+	scene::IAnimatedMesh *mesh = RenderingEngine::get_scene_manager()->getMesh(rfile);
 	rfile->drop();
 	// NOTE: By playing with Irrlicht refcounts, maybe we could cache a bunch
 	// of uniquely named instances and re-use them
 	mesh->grab();
-	smgr->getMeshCache()->removeMesh(mesh);
+	RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	return mesh;
 }
 
@@ -1959,7 +1912,8 @@ bool Client::registerModStorage(ModMetadata *storage)
 
 void Client::unregisterModStorage(const std::string &name)
 {
-	UNORDERED_MAP<std::string, ModMetadata *>::const_iterator it = m_mod_storages.find(name);
+	std::unordered_map<std::string, ModMetadata *>::const_iterator it =
+		m_mod_storages.find(name);
 	if (it != m_mod_storages.end()) {
 		// Save unconditionaly on unregistration
 		it->second->save(getModStoragePath());

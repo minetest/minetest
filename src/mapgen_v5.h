@@ -23,8 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-#define MGV5_LARGE_CAVE_DEPTH -256
-
 ///////// Mapgen V5 flags
 #define MGV5_CAVERNS 0x01
 
@@ -34,11 +32,13 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenParams
 {
-	u32 spflags;
-	float cave_width;
-	s16 cavern_limit;
-	s16 cavern_taper;
-	float cavern_threshold;
+	u32 spflags = MGV5_CAVERNS;
+	float cave_width = 0.125f;
+	s16 large_cave_depth = -256;
+	s16 lava_depth = -256;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 256;
+	float cavern_threshold = 0.7f;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
@@ -68,6 +68,7 @@ public:
 	int generateBaseTerrain();
 
 private:
+	s16 large_cave_depth;
 	Noise *noise_factor;
 	Noise *noise_height;
 	Noise *noise_ground;

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef MG_DECORATION_HEADER
 #define MG_DECORATION_HEADER
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -64,8 +64,8 @@ struct CutoffData {
 
 class Decoration : public ObjDef, public NodeResolver {
 public:
-	Decoration();
-	virtual ~Decoration();
+	Decoration() {};
+	virtual ~Decoration() {};
 
 	virtual void resolveNodeNames();
 
@@ -76,20 +76,18 @@ public:
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 
-	u32 flags;
-	int mapseed;
+	u32 flags = 0;
+	int mapseed = 0;
 	std::vector<content_t> c_place_on;
-	s16 sidelen;
+	s16 sidelen = 1;
 	s16 y_min;
 	s16 y_max;
-	float fill_ratio;
+	float fill_ratio = 0.0f;
 	NoiseParams np;
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
 
-	UNORDERED_SET<u8> biomes;
-	//std::list<CutoffData> cutoffs;
-	//Mutex cutoff_mutex;
+	std::unordered_set<u8> biomes;
 };
 
 class DecoSimple : public Decoration {
@@ -106,13 +104,13 @@ public:
 
 class DecoSchematic : public Decoration {
 public:
-	DecoSchematic();
+	DecoSchematic() {};
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
 	virtual int getHeight();
 
 	Rotation rotation;
-	Schematic *schematic;
+	Schematic *schematic = nullptr;
 };
 
 

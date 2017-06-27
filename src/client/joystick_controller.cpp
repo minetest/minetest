@@ -154,12 +154,9 @@ JoystickLayout create_xbox_layout()
 	return jlo;
 }
 
-JoystickController::JoystickController()
+JoystickController::JoystickController() :
+		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
 {
-	m_joystick_id = 0;
-
-	doubling_dtime = g_settings->getFloat("repeat_joystick_button_time");
-
 	for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
 		m_past_pressed_time[i] = 0;
 	}

@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_server.h"
 #include "cpp_api/s_security.h"
-#include "util/basic_macros.h"
 
 /*****************************************************************************/
 /* Scripting <-> Server Game Interface                                       */
@@ -51,7 +50,6 @@ public:
 
 private:
 	void InitializeModApi(lua_State *L, int top);
-	DISABLE_CLASS_COPY(ServerScripting);
 };
 
 void log_deprecated(const std::string &message);

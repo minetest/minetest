@@ -512,6 +512,12 @@ function core.explode_scrollbar_event(evt)
 end
 
 --------------------------------------------------------------------------------
+function core.rgba(r, g, b, a)
+	return a and string.format("#%02X%02X%02X%02X", r, g, b, a) or
+			string.format("#%02X%02X%02X", r, g, b)
+end
+
+--------------------------------------------------------------------------------
 function core.pos_to_string(pos, decimal_places)
 	local x = pos.x
 	local y = pos.y
@@ -642,43 +648,25 @@ end
 
 local ESCAPE_CHAR = string.char(0x1b)
 
--- Client-side mods don't have access to settings
-if core.settings and core.settings:get_bool("disable_escape_sequences") then
-
-	function core.get_color_escape_sequence(color)
-		return ""
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ""
-	end
-
-	function core.colorize(color, message)
-		return message
-	end
-
-else
-
-	function core.get_color_escape_sequence(color)
-		return ESCAPE_CHAR .. "(c@" .. color .. ")"
-	end
-
-	function core.get_background_escape_sequence(color)
-		return ESCAPE_CHAR .. "(b@" .. color .. ")"
-	end
-
-	function core.colorize(color, message)
-		local lines = tostring(message):split("\n", true)
-		local color_code = core.get_color_escape_sequence(color)
-
-		for i, line in ipairs(lines) do
-			lines[i] = color_code .. line
-		end
-
-		return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
-	end
-
+function core.get_color_escape_sequence(color)
+	return ESCAPE_CHAR .. "(c@" .. color .. ")"
 end
+
+function core.get_background_escape_sequence(color)
+	return ESCAPE_CHAR .. "(b@" .. color .. ")"
+end
+
+function core.colorize(color, message)
+	local lines = tostring(message):split("\n", true)
+	local color_code = core.get_color_escape_sequence(color)
+
+	for i, line in ipairs(lines) do
+		lines[i] = color_code .. line
+	end
+
+	return table.concat(lines, "\n") .. core.get_color_escape_sequence("#ffffff")
+end
+
 
 function core.strip_foreground_colors(str)
 	return (str:gsub(ESCAPE_CHAR .. "%(c@[^)]+%)", ""))
@@ -723,3 +711,28 @@ function core.pointed_thing_to_face_pos(placer, pointed_thing)
 	end
 	return fine_pos
 end
+
+function core.string_to_privs(str, delim)
+	assert(type(str) == "string")
+	delim = delim or ','
+	local privs = {}
+	for _, priv in pairs(string.split(str, delim)) do
+		privs[priv:trim()] = true
+	end
+	return privs
+end
+
+function core.privs_to_string(privs, delim)
+	assert(type(privs) == "table")
+	delim = delim or ','
+	local list = {}
+	for priv, bool in pairs(privs) do
+		if bool then
+			list[#list + 1] = priv
+		end
+	end
+	return table.concat(list, delim)
+end
+
+assert(core.string_to_privs("a,b").b == true)
+assert(core.privs_to_string({a=true,b=true}) == "a,b")

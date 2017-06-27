@@ -54,6 +54,7 @@ MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *em
 	this->spflags          = params->spflags;
 	this->ground_level     = params->ground_level;
 	this->large_cave_depth = params->large_cave_depth;
+	this->lava_depth       = params->lava_depth;
 	this->cave_width       = params->cave_width;
 	this->lake_threshold   = params->lake_threshold;
 	this->lake_steepness   = params->lake_steepness;
@@ -82,15 +83,6 @@ MapgenFlat::~MapgenFlat()
 
 MapgenFlatParams::MapgenFlatParams()
 {
-	spflags          = 0;
-	ground_level     = 8;
-	large_cave_depth = -33;
-	cave_width       = 0.09;
-	lake_threshold   = -0.45;
-	lake_steepness   = 48.0;
-	hill_threshold   = 0.45;
-	hill_steepness   = 64.0;
-
 	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
 	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
 	np_cave1        = NoiseParams(0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
@@ -103,6 +95,7 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgflat_spflags",      spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",     ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgflat_lava_depth",       lava_depth);
 	settings->getFloatNoEx("mgflat_cave_width",     cave_width);
 	settings->getFloatNoEx("mgflat_lake_threshold", lake_threshold);
 	settings->getFloatNoEx("mgflat_lake_steepness", lake_steepness);
@@ -121,6 +114,7 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgflat_spflags",      spflags, flagdesc_mapgen_flat, U32_MAX);
 	settings->setS16("mgflat_ground_level",     ground_level);
 	settings->setS16("mgflat_large_cave_depth", large_cave_depth);
+	settings->setS16("mgflat_lava_depth",       lava_depth);
 	settings->setFloat("mgflat_cave_width",     cave_width);
 	settings->setFloat("mgflat_lake_threshold", lake_threshold);
 	settings->setFloat("mgflat_lake_steepness", lake_steepness);

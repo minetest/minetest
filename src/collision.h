@@ -36,37 +36,20 @@ enum CollisionType
 
 struct CollisionInfo
 {
-	enum CollisionType type;
-	v3s16 node_p; // COLLISION_NODE
-	bool bouncy;
+	CollisionInfo() {}
+	CollisionType type = COLLISION_NODE;
+	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	v3f old_speed;
 	v3f new_speed;
-
-	CollisionInfo():
-		type(COLLISION_NODE),
-		node_p(-32768,-32768,-32768),
-		bouncy(false),
-		old_speed(0,0,0),
-		new_speed(0,0,0)
-	{}
 };
 
 struct collisionMoveResult
 {
-	bool touching_ground;
-	bool collides;
-	bool collides_xz;
-	bool standing_on_unloaded;
-	bool standing_on_object;
+	collisionMoveResult() {}
+	bool touching_ground = false;
+	bool collides = false;
+	bool standing_on_object = false;
 	std::vector<CollisionInfo> collisions;
-
-	collisionMoveResult():
-		touching_ground(false),
-		collides(false),
-		collides_xz(false),
-		standing_on_unloaded(false),
-		standing_on_object(false)
-	{}
 };
 
 // Moves using a single iteration; speed should not exceed pos_max_d/dtime

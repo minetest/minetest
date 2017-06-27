@@ -34,16 +34,18 @@ public:
 
 struct SimpleSoundSpec
 {
-	SimpleSoundSpec(const std::string &name = "", float gain = 1.0, float fade = 0.0)
-	    : name(name), gain(gain), fade(fade)
+	SimpleSoundSpec(const std::string &name = "", float gain = 1.0f,
+			float fade = 0.0f, float pitch = 1.0f)
+	    : name(name), gain(gain), fade(fade), pitch(pitch)
 	{
 	}
 
 	bool exists() const { return name != ""; }
 
-	std::string name;
-	float gain;
-	float fade;
+	std::string name = "";
+	float gain = 1.0f;
+	float fade = 0.0f;
+	float pitch = 1.0f;
 };
 
 class ISoundManager
@@ -64,9 +66,9 @@ public:
 	// playSound functions return -1 on failure, otherwise a handle to the
 	// sound. If name=="", call should be ignored without error.
 	virtual int playSound(const std::string &name, bool loop, float volume,
-			float fade = 0) = 0;
-	virtual int playSoundAt(
-			const std::string &name, bool loop, float volume, v3f pos) = 0;
+			float fade = 0.0f, float pitch = 1.0f) = 0;
+	virtual int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
+			float pitch = 1.0f) = 0;
 	virtual void stopSound(int sound) = 0;
 	virtual bool soundExists(int sound) = 0;
 	virtual void updateSoundPosition(int sound, v3f pos) = 0;
@@ -77,11 +79,11 @@ public:
 
 	int playSound(const SimpleSoundSpec &spec, bool loop)
 	{
-		return playSound(spec.name, loop, spec.gain, spec.fade);
+		return playSound(spec.name, loop, spec.gain, spec.fade, spec.pitch);
 	}
 	int playSoundAt(const SimpleSoundSpec &spec, bool loop, v3f pos)
 	{
-		return playSoundAt(spec.name, loop, spec.gain, pos);
+		return playSoundAt(spec.name, loop, spec.gain, pos, spec.pitch);
 	}
 };
 
@@ -98,11 +100,13 @@ public:
 	}
 	void updateListener(v3f pos, v3f vel, v3f at, v3f up) {}
 	void setListenerGain(float gain) {}
-	int playSound(const std::string &name, bool loop, float volume, float fade)
+	int playSound(const std::string &name, bool loop, float volume, float fade,
+			float pitch)
 	{
 		return 0;
 	}
-	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos)
+	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos,
+			float pitch)
 	{
 		return 0;
 	}

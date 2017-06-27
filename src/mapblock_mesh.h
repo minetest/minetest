@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "voxel.h"
-#include "util/cpp11_container.h"
 #include <map>
 
 class Client;
@@ -40,10 +39,9 @@ struct MinimapMapblock;
 struct MeshMakeData
 {
 	VoxelManipulator m_vmanip;
-	v3s16 m_blockpos;
-	v3s16 m_crack_pos_relative;
-	bool m_smooth_lighting;
-	bool m_show_hud;
+	v3s16 m_blockpos = v3s16(-1337,-1337,-1337);
+	v3s16 m_crack_pos_relative = v3s16(-1337,-1337,-1337);
+	bool m_smooth_lighting = false;
 
 	Client *m_client;
 	bool m_use_shaders;
@@ -139,8 +137,6 @@ public:
 private:
 	scene::IMesh *m_mesh[MAX_TILE_LAYERS];
 	MinimapMapblock *m_minimap_mapblock;
-	Client *m_client;
-	video::IVideoDriver *m_driver;
 	ITextureSource *m_tsrc;
 	IShaderSource *m_shdrsrc;
 

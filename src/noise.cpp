@@ -47,8 +47,8 @@ typedef float (*Interp3dFxn)(
 		float x, float y, float z);
 
 float cos_lookup[16] = {
-	1.0,  0.9238,  0.7071,  0.3826, 0, -0.3826, -0.7071, -0.9238,
-	1.0, -0.9238, -0.7071, -0.3826, 0,  0.3826,  0.7071,  0.9238
+	1.0f,  0.9238f,  0.7071f,  0.3826f, .0f, -0.3826f, -0.7071f, -0.9238f,
+	1.0f, -0.9238f, -0.7071f, -0.3826f, .0f,  0.3826f,  0.7071f,  0.9238f
 };
 
 FlagDesc flagdesc_noiseparams[] = {
@@ -432,10 +432,6 @@ Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 	this->sx   = sx;
 	this->sy   = sy;
 	this->sz   = sz;
-
-	this->persist_buf  = NULL;
-	this->gradient_buf = NULL;
-	this->result       = NULL;
 
 	allocBuffers();
 }

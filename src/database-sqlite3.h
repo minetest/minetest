@@ -113,18 +113,18 @@ protected:
 	virtual void createDatabase() = 0;
 	virtual void initStatements() = 0;
 
-	sqlite3 *m_database;
+	sqlite3 *m_database = nullptr;
 private:
 	// Open the database
 	void openDatabase();
 
-	bool m_initialized;
+	bool m_initialized = false;
 
-	std::string m_savedir;
-	std::string m_dbname;
+	std::string m_savedir = "";
+	std::string m_dbname = "";
 
-	sqlite3_stmt *m_stmt_begin;
-	sqlite3_stmt *m_stmt_end;
+	sqlite3_stmt *m_stmt_begin = nullptr;
+	sqlite3_stmt *m_stmt_end = nullptr;
 
 	s64 m_busy_handler_data[2];
 
@@ -152,10 +152,10 @@ private:
 	void bindPos(sqlite3_stmt *stmt, const v3s16 &pos, int index = 1);
 
 	// Map
-	sqlite3_stmt *m_stmt_read;
-	sqlite3_stmt *m_stmt_write;
-	sqlite3_stmt *m_stmt_list;
-	sqlite3_stmt *m_stmt_delete;
+	sqlite3_stmt *m_stmt_read = nullptr;
+	sqlite3_stmt *m_stmt_write = nullptr;
+	sqlite3_stmt *m_stmt_list = nullptr;
+	sqlite3_stmt *m_stmt_delete = nullptr;
 };
 
 class PlayerDatabaseSQLite3 : private Database_SQLite3, public PlayerDatabase
@@ -177,20 +177,20 @@ private:
 	bool playerDataExists(const std::string &name);
 
 	// Players
-	sqlite3_stmt *m_stmt_player_load;
-	sqlite3_stmt *m_stmt_player_add;
-	sqlite3_stmt *m_stmt_player_update;
-	sqlite3_stmt *m_stmt_player_remove;
-	sqlite3_stmt *m_stmt_player_list;
-	sqlite3_stmt *m_stmt_player_load_inventory;
-	sqlite3_stmt *m_stmt_player_load_inventory_items;
-	sqlite3_stmt *m_stmt_player_add_inventory;
-	sqlite3_stmt *m_stmt_player_add_inventory_items;
-	sqlite3_stmt *m_stmt_player_remove_inventory;
-	sqlite3_stmt *m_stmt_player_remove_inventory_items;
-	sqlite3_stmt *m_stmt_player_metadata_load;
-	sqlite3_stmt *m_stmt_player_metadata_remove;
-	sqlite3_stmt *m_stmt_player_metadata_add;
+	sqlite3_stmt *m_stmt_player_load = nullptr;
+	sqlite3_stmt *m_stmt_player_add = nullptr;
+	sqlite3_stmt *m_stmt_player_update = nullptr;
+	sqlite3_stmt *m_stmt_player_remove = nullptr;
+	sqlite3_stmt *m_stmt_player_list = nullptr;
+	sqlite3_stmt *m_stmt_player_load_inventory = nullptr;
+	sqlite3_stmt *m_stmt_player_load_inventory_items = nullptr;
+	sqlite3_stmt *m_stmt_player_add_inventory = nullptr;
+	sqlite3_stmt *m_stmt_player_add_inventory_items = nullptr;
+	sqlite3_stmt *m_stmt_player_remove_inventory = nullptr;
+	sqlite3_stmt *m_stmt_player_remove_inventory_items = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_load = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_remove = nullptr;
+	sqlite3_stmt *m_stmt_player_metadata_add = nullptr;
 };
 
 #endif

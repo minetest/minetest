@@ -36,9 +36,7 @@ extern irr::scene::ISceneManager *g_menucloudsmgr;
 class Clouds : public scene::ISceneNode
 {
 public:
-	Clouds(
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
+	Clouds(scene::ISceneManager* mgr,
 			s32 id,
 			u32 seed,
 			s16 cloudheight=0
@@ -53,7 +51,7 @@ public:
 	virtual void OnRegisterSceneNode();
 
 	virtual void render();
-	
+
 	virtual const aabb3f &getBoundingBox() const
 	{
 		return m_box;
@@ -68,7 +66,7 @@ public:
 	{
 		return m_material;
 	}
-	
+
 	/*
 		Other stuff
 	*/
@@ -76,7 +74,7 @@ public:
 	void step(float dtime);
 
 	void update(v2f camera_p, video::SColorf color);
-	
+
 	void updateCameraOffset(v3s16 camera_offset)
 	{
 		m_camera_offset = camera_offset;
@@ -135,9 +133,8 @@ private:
 	u32 m_seed;
 	v2f m_camera_pos;
 	v2f m_origin;
-	v2f m_speed;
 	v3s16 m_camera_offset;
-	video::SColorf m_color;
+	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
 
 };

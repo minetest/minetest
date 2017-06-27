@@ -34,13 +34,6 @@ extern "C" {
 #include "common/c_internal.h"
 
 /******************************************************************************/
-AsyncEngine::AsyncEngine() :
-	initDone(false),
-	jobIdCounter(0)
-{
-}
-
-/******************************************************************************/
 AsyncEngine::~AsyncEngine()
 {
 

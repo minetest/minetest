@@ -69,44 +69,22 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_pos_relative(pos * MAP_BLOCKSIZE),
-		m_gamedef(gamedef),
-		m_modified(MOD_STATE_WRITE_NEEDED),
-		m_modified_reason(MOD_REASON_INITIAL),
-		is_underground(false),
-		m_lighting_complete(0xFFFF),
-		m_day_night_differs(false),
-		m_day_night_differs_expired(true),
-		m_generated(false),
-		m_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
-		m_disk_timestamp(BLOCK_TIMESTAMP_UNDEFINED),
-		m_usage_timer(0),
-		m_refcount(0)
+		m_gamedef(gamedef)
 {
-	data = NULL;
 	if(dummy == false)
 		reallocate();
-
-#ifndef SERVER
-	mesh = NULL;
-#endif
 }
 
 MapBlock::~MapBlock()
 {
 #ifndef SERVER
 	{
-		//MutexAutoLock lock(mesh_mutex);
-
-		if(mesh)
-		{
-			delete mesh;
-			mesh = NULL;
-		}
+		delete mesh;
+		mesh = nullptr;
 	}
 #endif
 
-	if(data)
-		delete[] data;
+	delete[] data;
 }
 
 bool MapBlock::isValidPositionParent(v3s16 p)
@@ -125,7 +103,7 @@ MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 	if (isValidPosition(p) == false)
 		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
 
-	if (data == NULL) {
+	if (!data) {
 		if (is_valid_position)
 			*is_valid_position = false;
 		return MapNode(CONTENT_IGNORE);
@@ -378,7 +356,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 	// Running this function un-expires m_day_night_differs
 	m_day_night_differs_expired = false;
 
-	if (data == NULL) {
+	if (!data) {
 		m_day_night_differs = false;
 		return;
 	}
@@ -419,9 +397,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 
 void MapBlock::expireDayNightDiff()
 {
-	//INodeDefManager *nodemgr = m_gamedef->ndef();
-
-	if(data == NULL){
+	if (!data) {
 		m_day_night_differs = false;
 		m_day_night_differs_expired = false;
 		return;
@@ -558,10 +534,8 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
 
-	if(data == NULL)
-	{
+	if (!data)
 		throw SerializationError("ERROR: Not writing dummy block.");
-	}
 
 	FATAL_ERROR_IF(version < SER_FMT_VER_LOWEST_WRITE, "Serialisation version error");
 
@@ -997,8 +971,8 @@ std::string analyze_block(MapBlock *block)
 	std::ostringstream desc;
 
 	v3s16 p = block->getPos();
-	char spos[20];
-	snprintf(spos, 20, "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
+	char spos[25];
+	snprintf(spos, sizeof(spos), "(%2d,%2d,%2d), ", p.X, p.Y, p.Z);
 	desc<<spos;
 
 	switch(block->getModified())

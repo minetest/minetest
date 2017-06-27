@@ -23,9 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-postgresql.h"
 
 #ifdef _WIN32
-        #ifndef WIN32_LEAN_AND_MEAN
-                #define WIN32_LEAN_AND_MEAN
-        #endif
         // Without this some of the network functions are not found on mingw
         #ifndef _WIN32_WINNT
                 #define _WIN32_WINNT 0x0501
@@ -43,9 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 
 Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
-	m_connect_string(connect_string),
-	m_conn(NULL),
-	m_pgversion(0)
+	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
 		throw SettingNotFoundException(
@@ -586,7 +581,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->addItem(pg_to_uint(results2, row2, 0), stack);
+				invList->changeItem(pg_to_uint(results2, row2, 0), stack);
 			}
 		}
 		PQclear(results2);

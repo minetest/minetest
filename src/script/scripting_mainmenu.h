@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_mainmenu.h"
 #include "cpp_api/s_async.h"
-#include "util/basic_macros.h"
 
 /*****************************************************************************/
 /* Scripting <-> Main Menu Interface                                         */
@@ -47,7 +46,6 @@ private:
 	static void registerLuaClasses(lua_State *L, int top);
 
 	AsyncEngine asyncEngine;
-	DISABLE_CLASS_COPY(MainMenuScripting);
 };
 
 

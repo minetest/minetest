@@ -34,7 +34,5 @@ void content_nodemeta_deserialize_legacy(std::istream &is,
 		NodeMetadataList *meta, NodeTimerList *timers,
 		IItemDefManager *item_def_mgr);
 
-void content_nodemeta_serialize_legacy(std::ostream &os, NodeMetadataList *meta);
-
 #endif
 

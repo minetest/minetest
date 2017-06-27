@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <errno.h>
+#include <mutex>
 #include "threading/event.h"
 #include "config.h"
 #include "exceptions.h"
@@ -36,17 +37,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "noise.h"
 
-Mutex g_httpfetch_mutex;
+std::mutex g_httpfetch_mutex;
 std::map<unsigned long, std::queue<HTTPFetchResult> > g_httpfetch_results;
 PcgRandom g_callerid_randomness;
 
 HTTPFetchRequest::HTTPFetchRequest() :
-	url(""),
-	caller(HTTPFETCH_DISCARD),
-	request_id(0),
 	timeout(g_settings->getS32("curl_timeout")),
 	connect_timeout(timeout),
-	multipart(false),
 	useragent(std::string(PROJECT_NAME_C "/") + g_version_hash + " (" + porting::get_sysinfo() + ")")
 {
 }

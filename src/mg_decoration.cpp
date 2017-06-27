@@ -67,21 +67,6 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-
-Decoration::Decoration()
-{
-	mapseed    = 0;
-	fill_ratio = 0;
-	sidelen    = 1;
-	flags      = 0;
-}
-
-
-Decoration::~Decoration()
-{
-}
-
-
 void Decoration::resolveNodeNames()
 {
 	getIdsFromNrBacklog(&c_place_on);
@@ -208,14 +193,11 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 #endif
 			}
 
-			if (mg->biomemap) {
-				UNORDERED_SET<u8>::iterator iter;
-
-				if (!biomes.empty()) {
-					iter = biomes.find(mg->biomemap[mapindex]);
-					if (iter == biomes.end())
-						continue;
-				}
+			if (mg->biomemap && !biomes.empty()) {
+				std::unordered_set<u8>::const_iterator iter =
+					biomes.find(mg->biomemap[mapindex]);
+				if (iter == biomes.end())
+					continue;
 			}
 
 			v3s16 pos(x, y, z);
@@ -332,13 +314,6 @@ int DecoSimple::getHeight()
 
 
 ///////////////////////////////////////////////////////////////////////////////
-
-
-DecoSchematic::DecoSchematic()
-{
-	schematic = NULL;
-}
-
 
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {

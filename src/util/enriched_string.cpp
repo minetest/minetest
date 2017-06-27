@@ -30,8 +30,7 @@ EnrichedString::EnrichedString()
 EnrichedString::EnrichedString(const std::wstring &string,
 		const std::vector<SColor> &colors):
 	m_string(string),
-	m_colors(colors),
-	m_has_background(false)
+	m_colors(colors)
 {}
 
 EnrichedString::EnrichedString(const std::wstring &s, const SColor &color)

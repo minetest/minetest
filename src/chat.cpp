@@ -27,13 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 
 ChatBuffer::ChatBuffer(u32 scrollback):
-	m_scrollback(scrollback),
-	m_unformatted(),
-	m_cols(0),
-	m_rows(0),
-	m_scroll(0),
-	m_formatted(),
-	m_empty_formatted_line()
+	m_scrollback(scrollback)
 {
 	if (m_scrollback == 0)
 		m_scrollback = 1;
@@ -383,16 +377,7 @@ s32 ChatBuffer::getBottomScrollPos() const
 
 ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
 	m_prompt(prompt),
-	m_line(L""),
-	m_history(),
-	m_history_index(0),
-	m_history_limit(history_limit),
-	m_cols(0),
-	m_view(0),
-	m_cursor(0),
-	m_cursor_len(0),
-	m_nick_completion_start(0),
-	m_nick_completion_end(0)
+	m_history_limit(history_limit)
 {
 }
 

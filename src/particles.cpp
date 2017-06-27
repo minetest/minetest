@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "collision.h"
 #include <stdlib.h>
+#include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "environment.h"
@@ -42,7 +43,6 @@ v3f random_v3f(v3f min, v3f max)
 
 Particle::Particle(
 	IGameDef *gamedef,
-	scene::ISceneManager* smgr,
 	LocalPlayer *player,
 	ClientEnvironment *env,
 	v3f pos,
@@ -60,7 +60,8 @@ Particle::Particle(
 	u8 glow,
 	video::SColor color
 ):
-	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+		RenderingEngine::get_scene_manager())
 {
 	// Misc
 	m_gamedef = gamedef;
@@ -76,8 +77,6 @@ Particle::Particle(
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = anim;
-	m_animation_frame = 0;
-	m_animation_time = 0.0;
 
 	// Color
 	m_base_color = color;
@@ -88,7 +87,6 @@ Particle::Particle(
 	m_velocity = velocity;
 	m_acceleration = acceleration;
 	m_expiration = expirationtime;
-	m_time = 0;
 	m_player = player;
 	m_size = size;
 	m_collisiondetection = collisiondetection;
@@ -247,7 +245,7 @@ void Particle::updateVertices()
 	ParticleSpawner
 */
 
-ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, LocalPlayer *player,
+ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
@@ -258,7 +256,6 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
-	m_smgr = smgr;
 	m_player = player;
 	m_amount = amount;
 	m_spawntime = time;
@@ -294,7 +291,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
 
-	static const float radius =
+	static thread_local const float radius =
 			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
 
 	bool unloaded = false;
@@ -347,7 +344,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 						Particle* toadd = new Particle(
 							m_gamedef,
-							m_smgr,
 							m_player,
 							env,
 							pos,
@@ -408,7 +404,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 					Particle* toadd = new Particle(
 						m_gamedef,
-						m_smgr,
 						m_player,
 						env,
 						pos,
@@ -510,7 +505,7 @@ void ParticleManager::clearAll ()
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
-		scene::ISceneManager* smgr, LocalPlayer *player)
+	LocalPlayer *player)
 {
 	switch (event->type) {
 		case CE_DELETE_PARTICLESPAWNER: {
@@ -536,7 +531,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
-			ParticleSpawner* toadd = new ParticleSpawner(client, smgr, player,
+			ParticleSpawner *toadd = new ParticleSpawner(client, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
 					*event->add_particlespawner.minpos,
@@ -581,7 +576,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
-			Particle* toadd = new Particle(client, smgr, player, m_env,
+			Particle *toadd = new Particle(client, player, m_env,
 					*event->spawn_particle.pos,
 					*event->spawn_particle.vel,
 					*event->spawn_particle.acc,
@@ -610,25 +605,22 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 }
 
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
-	for (u16 j = 0; j < 32; j++) // set the amount of particles here
-	{
-		addNodeParticle(gamedef, smgr, player, pos, n, f);
+	// set the amount of particles here
+	for (u16 j = 0; j < 32; j++) {
+		addNodeParticle(gamedef, player, pos, n, f);
 	}
 }
 
 void ParticleManager::addPunchingParticles(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
-	addNodeParticle(gamedef, smgr, player, pos, n, f);
+	addNodeParticle(gamedef, player, pos, n, f);
 }
 
 void ParticleManager::addNodeParticle(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
 	// Texture
 	u8 texid = myrand_range(0, 5);
@@ -670,7 +662,6 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	Particle* toadd = new Particle(
 		gamedef,
-		smgr,
 		player,
 		m_env,
 		particlepos,

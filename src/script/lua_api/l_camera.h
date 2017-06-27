@@ -26,7 +26,7 @@ private:
 	static int l_get_look_horizontal(lua_State *L);
 	static int l_get_aspect_ratio(lua_State *L);
 
-	Camera *m_camera;
+	Camera *m_camera = nullptr;
 
 public:
 	LuaCamera(Camera *m);

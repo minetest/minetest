@@ -33,9 +33,7 @@ u64 emerge_load_time = 0;
 u64 clearflag_time = 0;
 
 
-VoxelManipulator::VoxelManipulator():
-	m_data(NULL),
-	m_flags(NULL)
+VoxelManipulator::VoxelManipulator()
 {
 }
 
@@ -49,9 +47,9 @@ void VoxelManipulator::clear()
 	// Reset area to volume=0
 	m_area = VoxelArea();
 	delete[] m_data;
-	m_data = NULL;
+	m_data = nullptr;
 	delete[] m_flags;
-	m_flags = NULL;
+	m_flags = nullptr;
 }
 
 void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,

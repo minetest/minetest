@@ -127,16 +127,6 @@ MapgenValleys::~MapgenValleys()
 
 MapgenValleysParams::MapgenValleysParams()
 {
-	spflags            = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
-	large_cave_depth   = -33;
-	lava_features      = 0;  // How often water will occur in caves.
-	massive_cave_depth = -256;  // highest altitude of massive caves
-	river_depth        = 4;  // How deep to carve river channels.
-	river_size         = 5;  // How wide to make rivers.
-	water_features     = 0;  // How often water will occur in caves.
-	cave_width         = 0.09;
-
 	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
 	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
 	np_filler_depth       = NoiseParams(0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f);
@@ -743,7 +733,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
 			CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-				c_water_source, c_lava_source);
+				c_water_source, c_lava_source, lava_max_height);
 
 			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 		}

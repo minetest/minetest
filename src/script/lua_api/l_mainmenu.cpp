@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiEngine.h"
 #include "guiMainMenu.h"
 #include "guiKeyChangeMenu.h"
-#include "guiFileSelectMenu.h"
+#include "guiPathSelectMenu.h"
 #include "subgame.h"
 #include "version.h"
 #include "porting.h"
@@ -33,10 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "serverlist.h"
 #include "mapgen.h"
 #include "settings.h"
-#include "EDriverTypes.h"
 
 #include <IFileArchive.h>
 #include <IFileSystem.h>
+#include "client/renderingengine.h"
 
 
 /******************************************************************************/
@@ -628,8 +628,7 @@ int ModApiMainMenu::l_show_keys_menu(lua_State *L)
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
-	GUIKeyChangeMenu *kmenu
-		= new GUIKeyChangeMenu(	engine->m_device->getGUIEnvironment(),
+	GUIKeyChangeMenu *kmenu = new GUIKeyChangeMenu(RenderingEngine::get_gui_env(),
 								engine->m_parent,
 								-1,
 								engine->m_menumanager);
@@ -735,6 +734,15 @@ int ModApiMainMenu::l_get_modpath(lua_State *L)
 }
 
 /******************************************************************************/
+int ModApiMainMenu::l_get_clientmodpath(lua_State *L)
+{
+	std::string modpath = fs::RemoveRelativePathComponents(
+		porting::path_user + DIR_DELIM + "clientmods" + DIR_DELIM);
+	lua_pushstring(L, modpath.c_str());
+	return 1;
+}
+
+/******************************************************************************/
 int ModApiMainMenu::l_get_gamepath(lua_State *L)
 {
 	std::string gamepath = fs::RemoveRelativePathComponents(
@@ -823,9 +831,6 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_extract_zip(lua_State *L)
 {
-	GUIEngine* engine = getGuiEngine(L);
-	sanity_check(engine);
-
 	const char *zipfile	= luaL_checkstring(L, 1);
 	const char *destination	= luaL_checkstring(L, 2);
 
@@ -834,7 +839,7 @@ int ModApiMainMenu::l_extract_zip(lua_State *L)
 	if (ModApiMainMenu::isMinetestPath(absolute_destination)) {
 		fs::CreateAllDirs(absolute_destination);
 
-		io::IFileSystem* fs = engine->m_device->getFileSystem();
+		io::IFileSystem *fs = RenderingEngine::get_filesystem();
 
 		if (!fs->addFileArchive(zipfile,true,false,io::EFAT_ZIP)) {
 			lua_pushboolean(L,false);
@@ -941,21 +946,23 @@ bool ModApiMainMenu::isMinetestPath(std::string path)
 }
 
 /******************************************************************************/
-int ModApiMainMenu::l_show_file_open_dialog(lua_State *L)
+int ModApiMainMenu::l_show_path_select_dialog(lua_State *L)
 {
 	GUIEngine* engine = getGuiEngine(L);
 	sanity_check(engine != NULL);
 
 	const char *formname= luaL_checkstring(L, 1);
 	const char *title	= luaL_checkstring(L, 2);
+	bool is_file_select = lua_toboolean(L, 3);
 
 	GUIFileSelectMenu* fileOpenMenu =
-		new GUIFileSelectMenu(engine->m_device->getGUIEnvironment(),
+		new GUIFileSelectMenu(RenderingEngine::get_gui_env(),
 								engine->m_parent,
 								-1,
 								engine->m_menumanager,
 								title,
-								formname);
+								formname,
+								is_file_select);
 	fileOpenMenu->setTextDest(engine->m_buttonhandler);
 	fileOpenMenu->drop();
 	return 0;
@@ -986,13 +993,12 @@ int ModApiMainMenu::l_download_file(lua_State *L)
 /******************************************************************************/
 int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 {
-	std::vector<irr::video::E_DRIVER_TYPE> drivers
-		= porting::getSupportedVideoDrivers();
+	std::vector<irr::video::E_DRIVER_TYPE> drivers = RenderingEngine::getSupportedVideoDrivers();
 
 	lua_newtable(L);
 	for (u32 i = 0; i != drivers.size(); i++) {
-		const char *name  = porting::getVideoDriverName(drivers[i]);
-		const char *fname = porting::getVideoDriverFriendlyName(drivers[i]);
+		const char *name  = RenderingEngine::getVideoDriverName(drivers[i]);
+		const char *fname = RenderingEngine::getVideoDriverFriendlyName(drivers[i]);
 
 		lua_newtable(L);
 		lua_pushstring(L, name);
@@ -1010,7 +1016,7 @@ int ModApiMainMenu::l_get_video_drivers(lua_State *L)
 int ModApiMainMenu::l_get_video_modes(lua_State *L)
 {
 	std::vector<core::vector3d<u32> > videomodes
-		= porting::getSupportedVideoModes();
+		= RenderingEngine::getSupportedVideoModes();
 
 	lua_newtable(L);
 	for (u32 i = 0; i != videomodes.size(); i++) {
@@ -1043,23 +1049,24 @@ int ModApiMainMenu::l_get_screen_info(lua_State *L)
 	lua_newtable(L);
 	int top = lua_gettop(L);
 	lua_pushstring(L,"density");
-	lua_pushnumber(L,porting::getDisplayDensity());
+	lua_pushnumber(L,RenderingEngine::getDisplayDensity());
 	lua_settable(L, top);
 
 	lua_pushstring(L,"display_width");
-	lua_pushnumber(L,porting::getDisplaySize().X);
+	lua_pushnumber(L,RenderingEngine::getDisplaySize().X);
 	lua_settable(L, top);
 
 	lua_pushstring(L,"display_height");
-	lua_pushnumber(L,porting::getDisplaySize().Y);
+	lua_pushnumber(L,RenderingEngine::getDisplaySize().Y);
 	lua_settable(L, top);
 
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	lua_pushstring(L,"window_width");
-	lua_pushnumber(L,porting::getWindowSize().X);
+	lua_pushnumber(L, window_size.X);
 	lua_settable(L, top);
 
 	lua_pushstring(L,"window_height");
-	lua_pushnumber(L,porting::getWindowSize().Y);
+	lua_pushnumber(L, window_size.Y);
 	lua_settable(L, top);
 	return 1;
 }
@@ -1120,6 +1127,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(set_topleft_text);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
@@ -1128,7 +1136,7 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(copy_dir);
 	API_FCT(extract_zip);
 	API_FCT(get_mainmenu_path);
-	API_FCT(show_file_open_dialog);
+	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
 	API_FCT(get_modstore_details);
 	API_FCT(get_modstore_list);
@@ -1150,6 +1158,7 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_favorites);
 	API_FCT(get_mapgen_names);
 	API_FCT(get_modpath);
+	API_FCT(get_clientmodpath);
 	API_FCT(get_gamepath);
 	API_FCT(get_texturepath);
 	API_FCT(get_texturepath_share);
@@ -1162,4 +1171,3 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(get_modstore_list);
 	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }
-

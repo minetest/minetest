@@ -24,9 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "settings.h"
 
-LuaMinimap::LuaMinimap(Minimap *m)
+LuaMinimap::LuaMinimap(Minimap *m) : m_minimap(m)
 {
-	m_minimap = m;
 }
 
 void LuaMinimap::create(lua_State *L, Minimap *m)

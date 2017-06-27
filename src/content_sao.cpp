@@ -106,19 +106,7 @@ TestSAO proto_TestSAO(NULL, v3f(0,0,0));
  */
 
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
-	ServerActiveObject(env, pos),
-	m_hp(-1),
-	m_yaw(0),
-	m_properties_sent(true),
-	m_armor_groups_sent(false),
-	m_animation_range(0,0),
-	m_animation_speed(0),
-	m_animation_blend(0),
-	m_animation_loop(true),
-	m_animation_sent(false),
-	m_bone_position_sent(false),
-	m_attachment_parent_id(0),
-	m_attachment_sent(false)
+	ServerActiveObject(env, pos)
 {
 	// Initialize something to armor groups
 	m_armor_groups["fleshy"] = 100;
@@ -213,7 +201,7 @@ void UnitSAO::removeAttachmentChild(int child_id)
 	m_attachment_child_ids.erase(child_id);
 }
 
-const UNORDERED_SET<int> &UnitSAO::getAttachmentChildIds()
+const std::unordered_set<int> &UnitSAO::getAttachmentChildIds()
 {
 	return m_attachment_child_ids;
 }
@@ -239,16 +227,7 @@ LuaEntitySAO::LuaEntitySAO(ServerEnvironment *env, v3f pos,
 		const std::string &name, const std::string &state):
 	UnitSAO(env, pos),
 	m_init_name(name),
-	m_init_state(state),
-	m_registered(false),
-	m_velocity(0,0,0),
-	m_acceleration(0,0,0),
-	m_last_sent_yaw(0),
-	m_last_sent_position(0,0,0),
-	m_last_sent_velocity(0,0,0),
-	m_last_sent_position_timer(0),
-	m_last_sent_move_precision(0),
-	m_current_texture_modifier("")
+	m_init_state(state)
 {
 	// Only register type if no environment supplied
 	if(env == NULL){
@@ -263,7 +242,7 @@ LuaEntitySAO::~LuaEntitySAO()
 		m_env->getScriptIface()->luaentity_Remove(m_id);
 	}
 
-	for (UNORDERED_SET<u32>::iterator it = m_attached_particle_spawners.begin();
+	for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
 		it != m_attached_particle_spawners.end(); ++it) {
 		m_env->deleteParticleSpawner(*it, false);
 	}
@@ -461,7 +440,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 
 	if(m_bone_position_sent == false){
 		m_bone_position_sent = true;
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
 			std::string str = gob_cmd_update_bone_position((*ii).first,
 					(*ii).second.X, (*ii).second.Y);
@@ -498,7 +477,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 	msg_os << serializeLongString(gob_cmd_update_animation(
 		m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
-	for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
 				(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
@@ -506,7 +485,7 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(gob_cmd_update_attachment(m_attachment_parent_id,
 		m_attachment_bone, m_attachment_position, m_attachment_rotation)); // 4
 	int message_count = 4 + m_bone_position.size();
-	for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
+	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			(ii != m_attachment_child_ids.end()); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 			message_count++;
@@ -783,29 +762,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	UnitSAO(env_, v3f(0,0,0)),
 	m_player(player_),
 	m_peer_id(peer_id_),
-	m_inventory(NULL),
-	m_damage(0),
-	m_last_good_position(0,0,0),
-	m_time_from_last_teleport(0),
-	m_time_from_last_punch(0),
-	m_nocheat_dig_pos(32767, 32767, 32767),
-	m_nocheat_dig_time(0),
-	m_wield_index(0),
-	m_position_not_sent(false),
-	m_is_singleplayer(is_singleplayer),
-	m_breath(PLAYER_MAX_BREATH),
-	m_pitch(0),
-	m_fov(0),
-	m_wanted_range(0),
-	m_extended_attributes_modified(false),
-	// public
-	m_physics_override_speed(1),
-	m_physics_override_jump(1),
-	m_physics_override_gravity(1),
-	m_physics_override_sneak(true),
-	m_physics_override_sneak_glitch(false),
-	m_physics_override_new_move(true),
-	m_physics_override_sent(false)
+	m_is_singleplayer(is_singleplayer)
 {
 	assert(m_peer_id != 0);	// pre-condition
 
@@ -868,7 +825,7 @@ void PlayerSAO::removingFromEnvironment()
 	ServerActiveObject::removingFromEnvironment();
 	if (m_player->getPlayerSAO() == this) {
 		unlinkPlayerSessionAndSave();
-		for (UNORDERED_SET<u32>::iterator it = m_attached_particle_spawners.begin();
+		for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
 			it != m_attached_particle_spawners.end(); ++it) {
 			m_env->deleteParticleSpawner(*it, false);
 		}
@@ -893,7 +850,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	msg_os << serializeLongString(gob_cmd_update_armor_groups(m_armor_groups)); // 2
 	msg_os << serializeLongString(gob_cmd_update_animation(
 		m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop)); // 3
-	for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+	for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 			ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 		msg_os << serializeLongString(gob_cmd_update_bone_position((*ii).first,
 			(*ii).second.X, (*ii).second.Y)); // m_bone_position.size
@@ -906,7 +863,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	// (GENERIC_CMD_UPDATE_NAMETAG_ATTRIBUTES) : Deprecated, for backwards compatibility only.
 	msg_os << serializeLongString(gob_cmd_update_nametag_attributes(m_prop.nametag_color)); // 6
 	int message_count = 6 + m_bone_position.size();
-	for (UNORDERED_SET<int>::const_iterator ii = m_attachment_child_ids.begin();
+	for (std::unordered_set<int>::const_iterator ii = m_attachment_child_ids.begin();
 			ii != m_attachment_child_ids.end(); ++ii) {
 		if (ServerActiveObject *obj = m_env->getActiveObject(*ii)) {
 			message_count++;
@@ -1083,7 +1040,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
-		for (UNORDERED_MAP<std::string, core::vector2d<v3f> >::const_iterator
+		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii) {
 			std::string str = gob_cmd_update_bone_position((*ii).first,
 					(*ii).second.X, (*ii).second.Y);

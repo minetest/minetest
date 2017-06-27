@@ -52,13 +52,7 @@ class TerminalChatConsole : public Thread {
 public:
 
 	TerminalChatConsole() :
-		Thread("TerminalThread"),
-		m_log_level(LL_ACTION),
-		m_utf8_bytes_to_wait(0),
-		m_kill_requested(NULL),
-		m_esc_mode(false),
-		m_game_time(0),
-		m_time_of_day(0)
+		Thread("TerminalThread")
 	{}
 
 	void setup(
@@ -74,7 +68,7 @@ public:
 	virtual void *run();
 
 	// Highly required!
-	void clearKillStatus() { m_kill_requested = NULL; }
+	void clearKillStatus() { m_kill_requested = nullptr; }
 
 	void stopAndWaitforThread();
 
@@ -102,10 +96,10 @@ private:
 		~CursesInitHelper() { cons->deInitOfCurses(); }
 	};
 
-	int m_log_level;
+	int m_log_level = LL_ACTION;
 	std::string m_nick;
 
-	u8 m_utf8_bytes_to_wait;
+	u8 m_utf8_bytes_to_wait = 0;
 	std::string m_pending_utf8_bytes;
 
 	std::list<std::string> m_nicks;
@@ -114,16 +108,16 @@ private:
 	int m_rows;
 	bool m_can_draw_text;
 
-	bool *m_kill_requested;
+	bool *m_kill_requested = nullptr;
 	ChatBackend m_chat_backend;
 	ChatInterface *m_chat_interface;
 
 	TermLogOutput m_log_output;
 
-	bool m_esc_mode;
+	bool m_esc_mode = false;
 
-	u64 m_game_time;
-	u32 m_time_of_day;
+	u64 m_game_time = 0;
+	u32 m_time_of_day = 0;
 };
 
 extern TerminalChatConsole g_term_console;

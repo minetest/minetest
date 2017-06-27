@@ -207,24 +207,18 @@ enum PlantlikeStyle {
 
 struct TileDef
 {
-	std::string name;
-	bool backface_culling; // Takes effect only in special cases
-	bool tileable_horizontal;
-	bool tileable_vertical;
+	std::string name = "";
+	bool backface_culling = true; // Takes effect only in special cases
+	bool tileable_horizontal = true;
+	bool tileable_vertical = true;
 	//! If true, the tile has its own color.
-	bool has_color;
+	bool has_color = false;
 	//! The color of the tile.
-	video::SColor color;
+	video::SColor color = video::SColor(0xFFFFFFFF);
 
 	struct TileAnimationParams animation;
 
-	TileDef() :
-		name(""),
-		backface_culling(true),
-		tileable_horizontal(true),
-		tileable_vertical(true),
-		has_color(false),
-		color(video::SColor(0xFFFFFFFF))
+	TileDef()
 	{
 		animation.type = TAT_NONE;
 	}
@@ -514,12 +508,12 @@ public:
 
 	void nodeResolveInternal();
 
-	u32 m_nodenames_idx;
-	u32 m_nnlistsizes_idx;
+	u32 m_nodenames_idx = 0;
+	u32 m_nnlistsizes_idx = 0;
 	std::vector<std::string> m_nodenames;
 	std::vector<size_t> m_nnlistsizes;
-	INodeDefManager *m_ndef;
-	bool m_resolve_done;
+	INodeDefManager *m_ndef = nullptr;
+	bool m_resolve_done = false;
 };
 
 #endif

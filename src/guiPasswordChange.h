@@ -47,9 +47,9 @@ public:
 
 private:
 	Client *m_client;
-	std::wstring m_oldpass;
-	std::wstring m_newpass;
-	std::wstring m_newpass_confirm;
+	std::wstring m_oldpass = L"";
+	std::wstring m_newpass = L"";
+	std::wstring m_newpass_confirm = L"";
 };
 
 #endif

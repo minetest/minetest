@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MapSettingsManager::MapSettingsManager(Settings *user_settings,
 		const std::string &map_meta_path):
-	mapgen_params(NULL),
 	m_map_meta_path(map_meta_path),
 	m_map_settings(new Settings()),
 	m_user_settings(user_settings)
