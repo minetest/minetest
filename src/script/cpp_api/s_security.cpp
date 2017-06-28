@@ -385,9 +385,9 @@ bool ScriptApiSecurity::safeLoadFile(lua_State *L, const char *path, const char 
 {
 	FILE *fp;
 	char *chunk_name;
-	if (display_name == NULL)
+	if (!display_name)
 		display_name = path;
-	if (path == NULL) {
+	if (!path) {
 		fp = stdin;
 		chunk_name = const_cast<char *>("=stdin");
 	} else {
@@ -650,7 +650,7 @@ int ScriptApiSecurity::sl_g_loadfile(lua_State *L)
 	if (script->getType() == ScriptingType::Client) {
 		std:: string display_path = lua_tostring(L, 1);
 		const std::string *path = script->getClient()->getModFile(display_path);
-		if (path == NULL) {
+		if (!path) {
 			std::string error_msg = "Coudln't find script called:" + display_path;
 			lua_pushnil(L);
 			lua_pushstring(L, error_msg.c_str());

@@ -128,16 +128,12 @@ void Client::loadMods()
 
 	// Print mods
 	infostream << "Client Loading mods: ";
-	for (std::vector<ModSpec>::const_iterator i = m_mods.begin();
-		i != m_mods.end(); ++i) {
-		infostream << (*i).name << " ";
-	}
+	for (const ModSpec &mod : m_mods)
+		infostream << mod.name << " ";
 	infostream << std::endl;
 
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = m_mods.begin();
-			it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
+	for (const ModSpec &mod : m_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
 				"\": Mod name does not follow naming conventions: "
@@ -174,11 +170,8 @@ void Client::initMods()
 	}
 
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = m_mods.begin();
-			it != m_mods.end(); ++it) {
-		const ModSpec &mod = *it;
+	for (const ModSpec &mod : m_mods)
 		m_script->loadModFromMemory(mod.name);
-	}
 }
 
 const std::string &Client::getBuiltinLuaPath()
