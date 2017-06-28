@@ -12,23 +12,19 @@ core.register_globalstep(function(dtime)
 	while time >= jobs.expire do
 		to_execute[#to_execute+1] = jobs.data
 		jobs = jobs.children
-		if not jobs then
+		if not jobs[1] then
+			jobs = nil
 			break
 		end
-		local from = #jobs
-		local to = 1
-		while from > to do
-			to = to-1
-			local a = jobs[from]
-			local b = jobs[from-1]
-			if a.expire > b.expire then
-				b,a = a,b
+		local root = jobs[#jobs]
+		for i = #jobs-1, 1, -1 do
+			local root2 = jobs[i]
+			if root.expire > root2.expire then
+				root,root2 = root2,root
 			end
-			a.children[#a.children+1] = b
-			jobs[to] = a
-			from = from - 2
+			root.children[#root.children+1] = root2
 		end
-		jobs = jobs[to]
+		jobs = root
 	end
 	for i = 1,#to_execute do
 		core.set_last_run_mod(to_execute[i].mod_origin)
