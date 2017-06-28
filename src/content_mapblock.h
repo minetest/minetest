@@ -62,9 +62,9 @@ public:
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
-	void useTile(int index = 0, int set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
-		int reset_flags = 0, bool special = false);
-	void getTile(const v3s16 &direction, TileSpec *tile);
+	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
+		u8 reset_flags = 0, bool special = false);
+	void getTile(v3s16 direction, TileSpec *tile);
 	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing

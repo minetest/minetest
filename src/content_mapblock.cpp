@@ -73,7 +73,7 @@ MapblockMeshGenerator::MapblockMeshGenerator(MeshMakeData *input, MeshCollector 
 	blockpos_nodes = data->m_blockpos * MAP_BLOCKSIZE;
 }
 
-void MapblockMeshGenerator::useTile(int index, int set_flags, int reset_flags, bool special)
+void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, bool special)
 {
 	if (special)
 		getSpecialTile(index, &tile, p == data->m_crack_pos_relative);
@@ -87,7 +87,7 @@ void MapblockMeshGenerator::useTile(int index, int set_flags, int reset_flags, b
 	}
 }
 
-void MapblockMeshGenerator::getTile(const v3s16& direction, TileSpec *tile)
+void MapblockMeshGenerator::getTile(v3s16 direction, TileSpec *tile)
 {
 	getNodeTile(n, p, direction, data, *tile);
 }
