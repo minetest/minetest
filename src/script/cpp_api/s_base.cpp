@@ -92,7 +92,7 @@ ScriptApiBase::ScriptApiBase()
 	lua_getglobal(m_luastack, "debug");
 	lua_getfield(m_luastack, -1, "traceback");
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE);
-	lua_pop(m_luastack, 1);
+	lua_pop(m_luastack, 1); // pop debug
 
 	// If we are using LuaJIT add a C++ wrapper function to catch
 	// exceptions thrown in Lua -> C++ calls
