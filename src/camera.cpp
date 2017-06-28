@@ -195,39 +195,51 @@ void Camera::step(f32 dtime)
 	}
 }
 
+static inline v2f dir(const v2f &pos_dist)
+{
+	f32 x = pos_dist.X - 55.0f;
+	f32 y = pos_dist.Y + 35.0f;
+
+	f32 x_abs = std::fabs(x);
+	f32 y_abs = std::fabs(y);
+
+	if (x_abs >= y_abs) {
+		y *= (1.0f / x_abs);
+		x /= x_abs;
+	}
+
+	if (y_abs >= x_abs) {
+		x *= (1.0f / y_abs);
+		y /= y_abs;
+	}
+
+	return v2f(std::fabs(x), std::fabs(y));
+}
+
 void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 {
-	if (m_timer.X == 0.0f) {
-		// In the limit case where timer is 0 set a static velocity (generic case divide by zero)
-		m_cam_vel.X = 1.0001f;
-	}
-	else
-		m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / m_timer.X) * 0.01f;
-
-	if (m_timer.Y == 0.0f) {
-		// In the limit case where timer is 0 set a static velocity (generic case divide by zero)
-		m_cam_vel.Y = 1.0001f;
-	}
-	else
-		m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / m_timer.Y);
+	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / frametime) * 0.01f;
+	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / frametime);
 
 	if (m_cam_vel.X > 1.0f || m_cam_vel.Y > 1.0f) {
 		/*
-		   the arm moves when the camera moves fast enough.
+		    The arm moves relative to the camera speed,
+		    with an acceleration factor.
 		*/
 
 		if (m_cam_vel.X > 1.0f) {
-			m_timer.X = frametime;
-
 			if (m_cam_vel.X > m_cam_vel_old.X)
 				m_cam_vel_old.X = m_cam_vel.X;
 
-			if (m_last_cam_pos.X > player_yaw)
+			if (m_last_cam_pos.X > player_yaw) {
 				// right
+				m_cam_vel.X -= std::fabs(55.0f - m_wieldmesh_offset.X) * 0.1f;
 				m_wieldmesh_offset.X -= (0.1f + frametime) * m_cam_vel.X;
-			else
+			} else {
 				// left
+				m_cam_vel.X += std::fabs(55.0f - m_wieldmesh_offset.X) * 0.1f;
 				m_wieldmesh_offset.X += (0.1f + frametime) * m_cam_vel.X;
+			}
 
 			if (m_last_cam_pos.X != player_yaw)
 				m_last_cam_pos.X = player_yaw;
@@ -236,47 +248,54 @@ void Camera::addArmInertia(f32 player_yaw, f32 frametime)
 		}
 
 		if (m_cam_vel.Y > 1.0f) {
-			m_timer.Y = frametime;
-
 			if (m_cam_vel.Y > m_cam_vel_old.Y)
 				m_cam_vel_old.Y = m_cam_vel.Y;
 
-			if (m_last_cam_pos.Y > m_camera_direction.Y)
+			if (m_last_cam_pos.Y > m_camera_direction.Y) {
 				// down
+				m_cam_vel.Y -= std::fabs(-35.0f - m_wieldmesh_offset.Y) * 0.1f;
 				m_wieldmesh_offset.Y += (0.1f + frametime) * m_cam_vel.Y;
-			else
+			} else {
 				// up
+				m_cam_vel.Y += std::fabs(-35.0f - m_wieldmesh_offset.Y) * 0.1f;
 				m_wieldmesh_offset.Y -= (0.1f + frametime) * m_cam_vel.Y;
+			}
 
 			if (m_last_cam_pos.Y != m_camera_direction.Y)
 				m_last_cam_pos.Y = m_camera_direction.Y;
 
 			m_wieldmesh_offset.Y = rangelim(m_wieldmesh_offset.Y, -45.0f, -30.0f);
 		}
+
+		m_arm_dir = dir(m_wieldmesh_offset);
 	} else {
 		/*
-		   the arm now gets back to its default position when the camera stops.
+		    Now the arm gets back to its default position when the camera stops,
+		    following a vector, with a smooth deceleration factor.
 		*/
 
-		if (floor(m_wieldmesh_offset.X) == 55.0f) {
+		f32 acc_X = (m_cam_vel_old.X * (1.0f + (1.0f - m_arm_dir.X))) /
+			(20.0f / std::fabs(55.0f - m_wieldmesh_offset.X));
+		f32 acc_Y = (m_cam_vel_old.Y * (1.0f + (1.0f - m_arm_dir.Y))) /
+			(15.0f / std::fabs(-35.0f - m_wieldmesh_offset.Y));
+
+		if (std::fabs(55.0f - m_wieldmesh_offset.X) < 0.1f)
 			m_cam_vel_old.X = 0.0f;
-			m_wieldmesh_offset.X = 55.0f;
-		}
 
 		if (m_wieldmesh_offset.X > 55.0f)
-			m_wieldmesh_offset.X -= (0.05f + frametime) * m_cam_vel_old.X;
-		if (m_wieldmesh_offset.X < 55.0f)
-			m_wieldmesh_offset.X += (0.05f + frametime) * m_cam_vel_old.X;
+			m_wieldmesh_offset.X -= (0.2f + frametime) * acc_X;
 
-		if (floor(m_wieldmesh_offset.Y) == -35.0f) {
+		if (m_wieldmesh_offset.X < 55.0f)
+			m_wieldmesh_offset.X += (0.2f + frametime) * acc_X;
+
+		if (std::fabs(-35.0f - m_wieldmesh_offset.Y) < 0.1f)
 			m_cam_vel_old.Y = 0.0f;
-			m_wieldmesh_offset.Y = -35.0f;
-		}
 
 		if (m_wieldmesh_offset.Y > -35.0f)
-			m_wieldmesh_offset.Y -= (0.05f + frametime) * m_cam_vel_old.Y;
+			m_wieldmesh_offset.Y -= (0.1f + frametime) * acc_Y;
+
 		if (m_wieldmesh_offset.Y < -35.0f)
-			m_wieldmesh_offset.Y += (0.05f + frametime) * m_cam_vel_old.Y;
+			m_wieldmesh_offset.Y += (0.1f + frametime) * acc_Y;
 	}
 }
 
@@ -468,7 +487,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_cameranode->setAspectRatio(m_aspect);
 	m_cameranode->setFOV(m_fov_y);
 
-	if (m_arm_inertia)
+	if (m_arm_inertia && frametime > 0.0f)
 		addArmInertia(player->getYaw(), frametime);
 
 	// Position the wielded item
