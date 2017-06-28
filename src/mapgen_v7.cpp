@@ -68,6 +68,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	// This is to avoid a divide-by-zero.
 	// Parameter will be saved to map_meta.txt in limited form.
 	params->float_mount_height = MYMAX(params->float_mount_height, 1.0f);
+	this->float_mount_height   = params->float_mount_height;
 
 	// 2D noise
 	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);
