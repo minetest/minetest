@@ -49,19 +49,19 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags          = params->spflags;
-	this->cave_width       = params->cave_width;
-	this->large_cave_depth = params->large_cave_depth;
-	this->lava_depth       = params->lava_depth;
-	this->fractal          = params->fractal;
-	this->iterations       = params->iterations;
-	this->scale            = params->scale;
-	this->offset           = params->offset;
-	this->slice_w          = params->slice_w;
-	this->julia_x          = params->julia_x;
-	this->julia_y          = params->julia_y;
-	this->julia_z          = params->julia_z;
-	this->julia_w          = params->julia_w;
+	spflags          = params->spflags;
+	cave_width       = params->cave_width;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	fractal          = params->fractal;
+	iterations       = params->iterations;
+	scale            = params->scale;
+	offset           = params->offset;
+	slice_w          = params->slice_w;
+	julia_x          = params->julia_x;
+	julia_y          = params->julia_y;
+	julia_z          = params->julia_z;
+	julia_w          = params->julia_w;
 
 	//// 2D terrain noise
 	noise_seabed       = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
@@ -70,8 +70,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeMa
 	MapgenBasic::np_cave1 = params->np_cave1;
 	MapgenBasic::np_cave2 = params->np_cave2;
 
-	this->formula = fractal / 2 + fractal % 2;
-	this->julia   = fractal % 2 == 0;
+	formula = fractal / 2 + fractal % 2;
+	julia   = fractal % 2 == 0;
 }
 
 

@@ -66,19 +66,19 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	: MapgenBasic(mapgenid, params, emerge)
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
-	this->m_bgen = (BiomeGenOriginal *)biomegen;
+	m_bgen = (BiomeGenOriginal *)biomegen;
 
 	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
-	this->spflags            = params->spflags;
-	this->altitude_chill     = params->altitude_chill;
-	this->large_cave_depth   = params->large_cave_depth;
-	this->lava_features_lim  = rangelim(params->lava_features, 0, 10);
-	this->massive_cave_depth = params->massive_cave_depth;
-	this->river_depth_bed    = params->river_depth + 1.f;
-	this->river_size_factor  = params->river_size / 100.f;
-	this->water_features_lim = rangelim(params->water_features, 0, 10);
-	this->cave_width         = params->cave_width;
+	spflags            = params->spflags;
+	altitude_chill     = params->altitude_chill;
+	large_cave_depth   = params->large_cave_depth;
+	lava_features_lim  = rangelim(params->lava_features, 0, 10);
+	massive_cave_depth = params->massive_cave_depth;
+	river_depth_bed    = params->river_depth + 1.f;
+	river_size_factor  = params->river_size / 100.f;
+	water_features_lim = rangelim(params->water_features, 0, 10);
+	cave_width         = params->cave_width;
 
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&params->np_filler_depth,       seed, csize.X, csize.Z);
@@ -96,13 +96,13 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	noise_cave2             = new Noise(&params->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
 	noise_massive_caves     = new Noise(&params->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
-	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
-	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
-	this->humidity_adjust    = bp->np_humidity.offset - 50.f;
+	humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
+	use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
+	humidity_adjust    = bp->np_humidity.offset - 50.f;
 
 	// a small chance of overflows if the settings are very high
-	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
-	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
+	cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
+	lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
 	tcave_cache = new float[csize.Y + 2];
 }
