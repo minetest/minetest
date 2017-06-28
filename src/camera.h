@@ -191,7 +191,7 @@ private:
 	v3s16 m_camera_offset;
 
 	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
-	v2f m_timer;
+	v2f m_arm_dir;
 	v2f m_cam_vel;
 	v2f m_cam_vel_old;
 	v2f m_last_cam_pos;
