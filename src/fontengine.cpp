@@ -334,13 +334,13 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 
-		if (font != NULL) {
+		if (font) {
 			m_font_cache[mode][basesize] = font;
 			return;
 		}
 
 		if (font_config_prefix == "mono_") {
-			std::string mono_font_path = m_settings->getDefault("mono_font_path");
+			const std::string & mono_font_path = m_settings->getDefault("mono_font_path");
 
 			if (font_path != mono_font_path) {
 				// try original mono font
@@ -351,7 +351,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 					mono_font_path.c_str(), size, true, true,
 					font_shadow, font_shadow_alpha);
 
-				if (font != NULL) {
+				if (font) {
 					m_font_cache[mode][basesize] = font;
 					return;
 				}
@@ -367,12 +367,12 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 				font_path.c_str(), size, true, true, font_shadow,
 				font_shadow_alpha);
 
-			if (font != NULL) {
+			if (font) {
 				m_font_cache[mode][basesize] = font;
 				return;
 			}
 
-			std::string fallback_font_path = m_settings->getDefault("fallback_font_path");
+			const std::string & fallback_font_path = m_settings->getDefault("fallback_font_path");
 
 			if (font_path != fallback_font_path) {
 				// try original fallback font
@@ -383,7 +383,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 					fallback_font_path.c_str(), size, true, true,
 					font_shadow, font_shadow_alpha);
 
-				if (font != NULL) {
+				if (font) {
 					m_font_cache[mode][basesize] = font;
 					return;
 				}
@@ -497,7 +497,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		}
 	}
 
-	if (font != NULL) {
+	if (font) {
 		font->grab();
 		m_font_cache[mode][basesize] = font;
 	}
