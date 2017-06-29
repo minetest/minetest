@@ -113,12 +113,12 @@ void InventoryLocation::deSerialize(std::string s)
 	InventoryAction
 */
 
-InventoryAction * InventoryAction::deSerialize(std::istream &is)
+InventoryAction *InventoryAction::deSerialize(std::istream &is)
 {
 	std::string type;
 	std::getline(is, type, ' ');
 
-	InventoryAction *a = NULL;
+	InventoryAction *a = nullptr;
 
 	if (type == "Move") {
 		a = new IMoveAction(is, false);
@@ -137,12 +137,9 @@ InventoryAction * InventoryAction::deSerialize(std::istream &is)
 	IMoveAction
 */
 
-IMoveAction::IMoveAction(std::istream &is, bool somewhere)
+IMoveAction::IMoveAction(std::istream &is, bool somewhere) : move_somewhere(somewhere)
 {
 	std::string ts;
-	move_somewhere = somewhere;
-	caused_by_move_somewhere = false;
-	move_count = 0;
 
 	std::getline(is, ts, ' ');
 	count = stoi(ts);
@@ -881,7 +878,7 @@ void ICraftAction::clientApply(InventoryManager *mgr, IGameDef *gamedef)
 
 
 // Crafting helper
-bool getCraftingResult(Inventory *inv, ItemStack& result,
+bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef)
 {
@@ -898,7 +895,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	CraftInput ci;
 	ci.method = CRAFT_METHOD_NORMAL;
 	ci.width = clist->getWidth() ? clist->getWidth() : 3;
-	for(u16 i=0; i<clist->getSize(); i++)
+	for(u16 i=0; i < clist->getSize(); i++)
 		ci.items.push_back(clist->getItem(i));
 
 	// Find out what is crafted and add it to result item slot
@@ -911,7 +908,7 @@ bool getCraftingResult(Inventory *inv, ItemStack& result,
 	if(found && decrementInput)
 	{
 		// CraftInput has been changed, apply changes in clist
-		for(u16 i=0; i<clist->getSize(); i++)
+		for(u16 i=0; i < clist->getSize(); i++)
 		{
 			clist->changeItem(i, ci.items[i]);
 		}
