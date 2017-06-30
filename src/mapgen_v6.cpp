@@ -58,14 +58,14 @@ FlagDesc flagdesc_mapgen_v6[] = {
 MapgenV6::MapgenV6(int mapgenid, MapgenV6Params *params, EmergeManager *emerge)
 	: Mapgen(mapgenid, params, emerge)
 {
-	this->m_emerge = emerge;
-	this->ystride = csize.X; //////fix this
+	m_emerge = emerge;
+	ystride = csize.X; //////fix this
 
-	this->heightmap = new s16[csize.X * csize.Z];
+	heightmap = new s16[csize.X * csize.Z];
 
-	this->spflags     = params->spflags;
-	this->freq_desert = params->freq_desert;
-	this->freq_beach  = params->freq_beach;
+	spflags     = params->spflags;
+	freq_desert = params->freq_desert;
+	freq_beach  = params->freq_beach;
 
 	np_cave        = &params->np_cave;
 	np_humidity    = &params->np_humidity;

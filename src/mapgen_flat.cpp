@@ -51,15 +51,15 @@ FlagDesc flagdesc_mapgen_flat[] = {
 MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags          = params->spflags;
-	this->ground_level     = params->ground_level;
-	this->large_cave_depth = params->large_cave_depth;
-	this->lava_depth       = params->lava_depth;
-	this->cave_width       = params->cave_width;
-	this->lake_threshold   = params->lake_threshold;
-	this->lake_steepness   = params->lake_steepness;
-	this->hill_threshold   = params->hill_threshold;
-	this->hill_steepness   = params->hill_steepness;
+	spflags          = params->spflags;
+	ground_level     = params->ground_level;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	cave_width       = params->cave_width;
+	lake_threshold   = params->lake_threshold;
+	lake_steepness   = params->lake_steepness;
+	hill_threshold   = params->hill_threshold;
+	hill_steepness   = params->hill_steepness;
 
 	// 2D noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);

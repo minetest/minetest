@@ -54,21 +54,21 @@ FlagDesc flagdesc_mapgen_v7[] = {
 MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags             = params->spflags;
-	this->cave_width          = params->cave_width;
-	this->large_cave_depth    = params->large_cave_depth;
-	this->lava_depth          = params->lava_depth;
-	this->float_mount_density = params->float_mount_density;
-	this->floatland_level     = params->floatland_level;
-	this->shadow_limit        = params->shadow_limit;
-	this->cavern_limit        = params->cavern_limit;
-	this->cavern_taper        = params->cavern_taper;
-	this->cavern_threshold    = params->cavern_threshold;
+	spflags             = params->spflags;
+	cave_width          = params->cave_width;
+	large_cave_depth    = params->large_cave_depth;
+	lava_depth          = params->lava_depth;
+	float_mount_density = params->float_mount_density;
+	floatland_level     = params->floatland_level;
+	shadow_limit        = params->shadow_limit;
+	cavern_limit        = params->cavern_limit;
+	cavern_taper        = params->cavern_taper;
+	cavern_threshold    = params->cavern_threshold;
 
 	// This is to avoid a divide-by-zero.
 	// Parameter will be saved to map_meta.txt in limited form.
 	params->float_mount_height = MYMAX(params->float_mount_height, 1.0f);
-	this->float_mount_height   = params->float_mount_height;
+	float_mount_height   = params->float_mount_height;
 
 	// 2D noise
 	noise_terrain_base    = new Noise(&params->np_terrain_base,    seed, csize.X, csize.Z);

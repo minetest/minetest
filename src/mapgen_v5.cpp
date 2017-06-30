@@ -48,13 +48,13 @@ FlagDesc flagdesc_mapgen_v5[] = {
 MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags          = params->spflags;
-	this->cave_width       = params->cave_width;
-	this->large_cave_depth = params->large_cave_depth;
-	this->lava_depth       = params->lava_depth;
-	this->cavern_limit     = params->cavern_limit;
-	this->cavern_taper     = params->cavern_taper;
-	this->cavern_threshold = params->cavern_threshold;
+	spflags          = params->spflags;
+	cave_width       = params->cave_width;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	cavern_limit     = params->cavern_limit;
+	cavern_taper     = params->cavern_taper;
+	cavern_threshold = params->cavern_threshold;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
