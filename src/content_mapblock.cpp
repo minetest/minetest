@@ -926,6 +926,13 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 {
 	useTile(0, MATERIAL_FLAG_CRACK_OVERLAY, 0, true);
 	origin += v3f(0.0, BS, 0.0);
+	p.Y++;
+	if (data->m_smooth_lighting) {
+		getSmoothLightFrame();
+	} else {
+		MapNode ntop = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
+		light = getInteriorLight(ntop, 1, nodedef);
+	}
 	drawPlantlike();
 }
 
