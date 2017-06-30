@@ -344,8 +344,9 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 
 			if (font_path != mono_font_path) {
 				// try original mono font
-				errorstream << "FontEngine: failed to load custom mono font: " << font_path << ", "
-						"trying to fall back to original mono font" << std::endl;
+				errorstream << "FontEngine: failed to load custom mono "
+						"font: " << font_path << ", trying to fall back to "
+						"original mono font" << std::endl;
 
 				font = gui::CGUITTFont::createTTFont(m_env,
 					mono_font_path.c_str(), size, true, true,
@@ -358,8 +359,8 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 			}
 		} else {
 			// try fallback font
-			errorstream << "FontEngine: failed to load: " << font_path << ", trying to fall back "
-					"to fallback font" << std::endl;
+			errorstream << "FontEngine: failed to load: " << font_path <<
+					", trying to fall back to fallback font" << std::endl;
 
 			font_path = g_settings->get(font_config_prefix + "fallback_font_path");
 
@@ -376,8 +377,9 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 
 			if (font_path != fallback_font_path) {
 				// try original fallback font
-				errorstream << "FontEngine: failed to load custom fallback font: " << font_path << ", "
-						"trying to fall back to original fallback font" << std::endl;
+				errorstream << "FontEngine: failed to load custom fallback "
+						"font: " << font_path << ", trying to fall back to "
+						"original fallback font" << std::endl;
 
 				font = gui::CGUITTFont::createTTFont(m_env,
 					fallback_font_path.c_str(), size, true, true,
@@ -393,9 +395,9 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		// give up
 		errorstream << "FontEngine: failed to load freetype font: "
 				<< font_path << std::endl;
-		errorstream << "minetest can not continue without a valid font. Please correct "
-				"the 'font_path' setting or install the font file in the proper "
-				"location" << std::endl;
+		errorstream << "minetest can not continue without a valid font. "
+				"Please correct the 'font_path' setting or install the font "
+				"file in the proper location" << std::endl;
 		abort();
 	}
 #endif
