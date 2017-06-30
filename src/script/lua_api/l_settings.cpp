@@ -23,8 +23,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "log.h"
 
+#define SET_CLIENT_SECURITY_CHECK(L, name) \
+	if (ScriptApiSecurity::isClient(L) && name.compare(0, 7, "client.") != 0) { \
+		name = "client." + name;\
+	}
 
 #define SET_SECURITY_CHECK(L, name) \
+	SET_CLIENT_SECURITY_CHECK(L, name) \
 	if (o->m_settings == g_settings && ScriptApiSecurity::isSecure(L) && \
 			name.compare(0, 7, "secure.") == 0) { \
 		throw LuaError("Attempt to set secure setting."); \
@@ -78,6 +83,8 @@ int LuaSettings::l_get(lua_State* L)
 	LuaSettings* o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
+	SET_CLIENT_SECURITY_CHECK(L, key)
+
 	if (o->m_settings->exists(key)) {
 		std::string value = o->m_settings->get(key);
 		lua_pushstring(L, value.c_str());
@@ -95,6 +102,8 @@ int LuaSettings::l_get_bool(lua_State* L)
 	LuaSettings* o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
+	SET_CLIENT_SECURITY_CHECK(L, key)
+
 	if (o->m_settings->exists(key)) {
 		bool value = o->m_settings->getBool(key);
 		lua_pushboolean(L, value);
@@ -160,13 +169,20 @@ int LuaSettings::l_get_names(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
+	bool is_client = ScriptApiSecurity::isClient(L);
 	std::vector<std::string> keys = o->m_settings->getNames();
 
 	lua_newtable(L);
-	for (unsigned int i=0; i < keys.size(); i++)
+	int lua_offset = 1;
+	for (std::string key : keys)
 	{
-		lua_pushstring(L, keys[i].c_str());
-		lua_rawseti(L, -2, i + 1);
+		if (is_client && key.compare(0, 7, "client.") != 0)
+			continue;
+		else if (is_client)
+			key.erase(0,7);
+		lua_pushstring(L, key.c_str());
+		lua_rawseti(L, -2, lua_offset);
+		lua_offset++;
 	}
 
 	return 1;
@@ -195,13 +211,18 @@ int LuaSettings::l_to_table(lua_State* L)
 	NO_MAP_LOCK_REQUIRED;
 	LuaSettings* o = checkobject(L, 1);
 
+	bool is_client = ScriptApiSecurity::isClient(L);
 	std::vector<std::string> keys = o->m_settings->getNames();
 
 	lua_newtable(L);
-	for (unsigned int i=0; i < keys.size(); i++)
+	for (std::string key : keys)
 	{
-		lua_pushstring(L, o->m_settings->get(keys[i]).c_str());
-		lua_setfield(L, -2, keys[i].c_str());
+		if (is_client && key.compare(0, 7, "client.") != 0)
+			continue;
+		lua_pushstring(L, o->m_settings->get(key).c_str());
+		if (is_client)
+			key.erase(0,7);
+		lua_setfield(L, -2, key.c_str());
 	}
 
 	return 1;

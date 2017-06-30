@@ -318,6 +318,8 @@ void ScriptApiSecurity::initializeSecurityClient()
 #endif
 
 	lua_pop(L, 1); // Pop globals_backup
+	lua_pushboolean(L, true);
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_IS_CLIENT);
 }
 
 int ScriptApiSecurity::backupGlobals(lua_State *L)
@@ -356,6 +358,14 @@ bool ScriptApiSecurity::isSecure(lua_State *L)
 	bool secure = !lua_isnil(L, -1);
 	lua_pop(L, 1);
 	return secure;
+}
+
+bool ScriptApiSecurity::isClient(lua_State *L)
+{
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_IS_CLIENT);
+	bool client = lua_toboolean(L, -1);
+	lua_pop(L, 1);
+	return client;
 }
 
 

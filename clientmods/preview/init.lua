@@ -155,3 +155,16 @@ core.register_chatcommand("privs", {
 		return true, core.privs_to_string(minetest.get_privilege_list())
 	end,
 })
+
+-- This is an example function to ensure it's working properly, should be removed before merge
+core.register_chatcommand("dump_settings", {
+	func = function(param)
+		core.settings:set("test", "test")
+		print(core.settings:get("test"))
+		core.settings:set_bool("test_bool", true)
+		print(core.settings:get_bool("test_bool"))
+		core.settings:write()
+		print(dump(core.settings:get_names()))
+		return true, dump(core.settings:to_table())
+	end,
+})

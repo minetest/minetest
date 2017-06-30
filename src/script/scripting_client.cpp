@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_client.h"
 #include "lua_api/l_env.h"
 #include "lua_api/l_minimap.h"
+#include "lua_api/l_settings.h"
 #include "lua_api/l_storage.h"
 #include "lua_api/l_sound.h"
 #include "lua_api/l_util.h"
@@ -69,6 +70,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
 	LuaCamera::Register(L);
+	LuaSettings::Register(L);
 
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);

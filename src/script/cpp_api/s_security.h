@@ -47,6 +47,8 @@ public:
 	void initializeSecurityClient();
 	// Checks if the Lua state has been secured
 	static bool isSecure(lua_State *L);
+	// Checks if this is CSM
+	static bool isClient(lua_State *L);
 	// Loads a file as Lua code safely (doesn't allow bytecode).
 	static bool safeLoadFile(lua_State *L, const char *path);
 	// Checks if mods are allowed to read (and optionally write) to the path
