@@ -3526,7 +3526,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		// Possibly send inventory action to server
 		if (move_amount > 0) {
-			// Send IACTION_MOVE
+			// Send IAction::Move
 
 			assert(m_selected_item && m_selected_item->isValid());
 			assert(s.isValid());
@@ -3563,7 +3563,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				m_selected_content_guess = ItemStack(); // Clear
 			}
 
-			infostream << "Handing IACTION_MOVE to manager" << std::endl;
+			infostream << "Handing IAction::Move to manager" << std::endl;
 			IMoveAction *a = new IMoveAction();
 			a->count = move_amount;
 			a->from_inv = m_selected_item->inventoryloc;
@@ -3599,7 +3599,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				ItemStack stack_from = list_from->getItem(s.i);
 				assert(shift_move_amount <= stack_from.count);
 				if (m_client->getProtoVersion() >= 25) {
-					infostream << "Handing IACTION_MOVE to manager" << std::endl;
+					infostream << "Handing IAction::Move to manager" << std::endl;
 					IMoveAction *a = new IMoveAction();
 					a->count = shift_move_amount;
 					a->from_inv = s.inventoryloc;
@@ -3617,7 +3617,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 							&& shift_move_amount > 0; slot_to++) {
 						list_to->itemFits(slot_to, stack_from, &leftover);
 						if (leftover.count < stack_from.count) {
-							infostream << "Handing IACTION_MOVE to manager" << std::endl;
+							infostream << "Handing IAction::Move to manager" << std::endl;
 							IMoveAction *a = new IMoveAction();
 							a->count = MYMIN(shift_move_amount,
 								(u32) (stack_from.count - leftover.count));
@@ -3637,7 +3637,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		} else if (drop_amount > 0) {
 			m_selected_content_guess = ItemStack(); // Clear
 
-			// Send IACTION_DROP
+			// Send IAction::Drop
 
 			assert(m_selected_item && m_selected_item->isValid());
 			assert(inv_selected);
@@ -3650,7 +3650,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			assert(drop_amount > 0 && drop_amount <= m_selected_amount);
 			m_selected_amount -= drop_amount;
 
-			infostream << "Handing IACTION_DROP to manager" << std::endl;
+			infostream << "Handing IAction::Drop to manager" << std::endl;
 			IDropAction *a = new IDropAction();
 			a->count = drop_amount;
 			a->from_inv = m_selected_item->inventoryloc;
@@ -3660,12 +3660,12 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		} else if (craft_amount > 0) {
 			m_selected_content_guess = ItemStack(); // Clear
 
-			// Send IACTION_CRAFT
+			// Send IAction::Craft
 
 			assert(s.isValid());
 			assert(inv_s);
 
-			infostream << "Handing IACTION_CRAFT to manager" << std::endl;
+			infostream << "Handing IAction::Craft to manager" << std::endl;
 			ICraftAction *a = new ICraftAction();
 			a->count = craft_amount;
 			a->craft_inv = s.inventoryloc;

@@ -126,7 +126,8 @@ InventoryAction *InventoryAction::deSerialize(std::istream &is)
 	IMoveAction
 */
 
-IMoveAction::IMoveAction(std::istream &is, bool somewhere) : move_somewhere(somewhere)
+IMoveAction::IMoveAction(std::istream &is, bool somewhere) :
+		move_somewhere(somewhere)
 {
 	std::string ts;
 

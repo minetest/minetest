@@ -117,11 +117,10 @@ public:
 	virtual void inventoryAction(InventoryAction *a){}
 };
 
-enum IAction : u16
-{
-	IACTION_MOVE = 0,
-	IACTION_DROP,
-	IACTION_CRAFT
+enum class IAction : u16 {
+	Move,
+	Drop,
+	Craft
 };
 
 struct InventoryAction
@@ -159,7 +158,7 @@ struct IMoveAction : public InventoryAction
 
 	IAction getType() const
 	{
-		return IACTION_MOVE;
+		return IAction::Move;
 	}
 
 	void serialize(std::ostream &os) const
@@ -197,7 +196,7 @@ struct IDropAction : public InventoryAction
 
 	IAction getType() const
 	{
-		return IACTION_DROP;
+		return IAction::Drop;
 	}
 
 	void serialize(std::ostream &os) const
@@ -226,7 +225,7 @@ struct ICraftAction : public InventoryAction
 
 	IAction getType() const
 	{
-		return IACTION_CRAFT;
+		return IAction::Craft;
 	}
 
 	void serialize(std::ostream &os) const
