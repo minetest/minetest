@@ -36,6 +36,7 @@ extern "C" {
 MainMenuScripting::MainMenuScripting(GUIEngine* guiengine)
 {
 	setGuiEngine(guiengine);
+	setType(ScriptingType::MainMenu);
 
 	SCRIPTAPI_PRECHECKHEADER
 

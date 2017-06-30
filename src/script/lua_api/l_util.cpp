@@ -246,7 +246,7 @@ int ModApiUtil::l_get_builtin_path(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
 
-	std::string path = porting::path_share + DIR_DELIM + "builtin";
+	std::string path = porting::path_share + DIR_DELIM + "builtin" + DIR_DELIM;
 	lua_pushstring(L, path.c_str());
 
 	return 1;
@@ -469,8 +469,6 @@ void ModApiUtil::InitializeClient(lua_State *L, int top)
 	API_FCT(write_json);
 
 	API_FCT(is_yes);
-
-	API_FCT(get_builtin_path);
 
 	API_FCT(compress);
 	API_FCT(decompress);

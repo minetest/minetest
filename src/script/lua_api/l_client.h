@@ -95,6 +95,9 @@ private:
 	// get_privilege_list()
 	static int l_get_privilege_list(lua_State *L);
 
+	// get_builtin_path()
+	static int l_get_builtin_path(lua_State *L);
+
 public:
 	static void Initialize(lua_State *L, int top);
 };

@@ -104,17 +104,17 @@ Client::Client(
 	m_script->setEnv(&m_env);
 }
 
-void Client::initMods()
+void Client::loadMods()
 {
-	m_script->loadMod(getBuiltinLuaPath() + DIR_DELIM "init.lua", BUILTIN_MOD_NAME);
+	// Load builtin
+	scanModIntoMemory(BUILTIN_MOD_NAME, getBuiltinLuaPath());
 
 	// If modding is not enabled, don't load mods, just builtin
 	if (!m_modding_enabled) {
 		return;
 	}
-
 	ClientModConfiguration modconf(getClientModsLuaPath());
-	std::vector<ModSpec> mods = modconf.getMods();
+	m_mods = modconf.getMods();
 	std::vector<ModSpec> unsatisfied_mods = modconf.getUnsatisfiedMods();
 	// complain about mods with unsatisfied dependencies
 	if (!modconf.isConsistent()) {
@@ -123,26 +123,50 @@ void Client::initMods()
 
 	// Print mods
 	infostream << "Client Loading mods: ";
-	for (std::vector<ModSpec>::const_iterator i = mods.begin();
-		i != mods.end(); ++i) {
-		infostream << (*i).name << " ";
-	}
-
+	for (const ModSpec &mod : m_mods)
+		infostream << mod.name << " ";
 	infostream << std::endl;
+
 	// Load and run "mod" scripts
-	for (std::vector<ModSpec>::const_iterator it = mods.begin();
-		it != mods.end(); ++it) {
-		const ModSpec &mod = *it;
+	for (const ModSpec &mod : m_mods) {
 		if (!string_allowed(mod.name, MODNAME_ALLOWED_CHARS)) {
 			throw ModError("Error loading mod \"" + mod.name +
 				"\": Mod name does not follow naming conventions: "
 					"Only characters [a-z0-9_] are allowed.");
 		}
-		std::string script_path = mod.path + DIR_DELIM + "init.lua";
-		infostream << "  [" << padStringRight(mod.name, 12) << "] [\""
-			<< script_path << "\"]" << std::endl;
-		m_script->loadMod(script_path, mod.name);
+		scanModIntoMemory(mod.name, mod.path);
 	}
+}
+
+void Client::scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
+			std::string mod_subpath)
+{
+	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
+	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
+	for (unsigned int j=0; j < mod.size(); j++){
+		std::string filename = mod[j].name;
+		if (mod[j].dir) {
+			scanModSubfolder(mod_name, mod_path, mod_subpath
+					+ filename + DIR_DELIM);
+			continue;
+		}
+		std::replace( mod_subpath.begin(), mod_subpath.end(), DIR_DELIM_CHAR, '/');
+		m_mod_files[mod_name + ":" + mod_subpath + filename] = full_path  + filename;
+	}
+}
+
+void Client::initMods()
+{
+	m_script->loadModFromMemory(BUILTIN_MOD_NAME);
+
+	// If modding is not enabled, don't load mods, just builtin
+	if (!m_modding_enabled) {
+		return;
+	}
+
+	// Load and run "mod" scripts
+	for (const ModSpec &mod : m_mods)
+		m_script->loadModFromMemory(mod.name);
 }
 
 const std::string &Client::getBuiltinLuaPath()
@@ -1896,6 +1920,17 @@ scene::IAnimatedMesh* Client::getMesh(const std::string &filename)
 	mesh->grab();
 	RenderingEngine::get_mesh_cache()->removeMesh(mesh);
 	return mesh;
+}
+
+const std::string* Client::getModFile(const std::string &filename)
+{
+	StringMap::const_iterator it = m_mod_files.find(filename);
+	if (it == m_mod_files.end()) {
+		errorstream << "Client::getModFile(): File not found: \"" << filename
+			<< "\"" << std::endl;
+		return NULL;
+	}
+	return &it->second;
 }
 
 bool Client::registerModStorage(ModMetadata *storage)

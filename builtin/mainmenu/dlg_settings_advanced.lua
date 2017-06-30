@@ -264,7 +264,7 @@ end
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
-	local builtin_path = core.get_builtin_path() .. DIR_DELIM .. FILENAME
+	local builtin_path = core.get_builtin_path() .. FILENAME
 	local file = io.open(builtin_path, "r")
 	local settings = {}
 	if not file then
@@ -775,4 +775,4 @@ end
 
 -- Generate minetest.conf.example and settings_translation_file.cpp
 
---assert(loadfile(core.get_builtin_path()..DIR_DELIM.."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))

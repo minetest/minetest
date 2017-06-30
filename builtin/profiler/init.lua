@@ -23,7 +23,7 @@ local function get_bool_default(name, default)
 	return val
 end
 
-local profiler_path = core.get_builtin_path()..DIR_DELIM.."profiler"..DIR_DELIM
+local profiler_path = core.get_builtin_path().."profiler"..DIR_DELIM
 local profiler = {}
 local sampler = assert(loadfile(profiler_path .. "sampling.lua"))(profiler)
 local instrumentation  = assert(loadfile(profiler_path .. "instrumentation.lua"))(profiler, sampler, get_bool_default)

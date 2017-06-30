@@ -53,11 +53,11 @@ extern "C" {
 #define CUSTOM_RIDX_SCRIPTAPI           (CUSTOM_RIDX_BASE)
 #define CUSTOM_RIDX_GLOBALS_BACKUP      (CUSTOM_RIDX_BASE + 1)
 #define CUSTOM_RIDX_CURRENT_MOD_NAME    (CUSTOM_RIDX_BASE + 2)
-#define CUSTOM_RIDX_ERROR_HANDLER       (CUSTOM_RIDX_BASE + 3)
+#define CUSTOM_RIDX_BACKTRACE           (CUSTOM_RIDX_BASE + 3)
 
 // Pushes the error handler onto the stack and returns its index
 #define PUSH_ERROR_HANDLER(L) \
-	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER), lua_gettop((L)))
+	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
 
 #define PCALL_RESL(L, RES) do {                         \
 	int result_ = (RES);                                \
