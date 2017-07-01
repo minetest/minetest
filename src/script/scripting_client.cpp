@@ -33,10 +33,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_localplayer.h"
 #include "lua_api/l_camera.h"
 
-ClientScripting::ClientScripting(Client *client)
+ClientScripting::ClientScripting(Client *client):
+	ScriptApiBase(ScriptingType::Client)
 {
 	setGameDef(client);
-	setType(ScriptingType::Client);
 
 	SCRIPTAPI_PRECHECKHEADER
 
@@ -58,9 +58,6 @@ ClientScripting::ClientScripting(Client *client)
 	// Push builtin initialization type
 	lua_pushstring(L, "client");
 	lua_setglobal(L, "INIT");
-
-	lua_pushstring(L, "/");
-	lua_setglobal(L, "DIR_DELIM");
 
 	infostream << "SCRIPTAPI: Initialized client game modules" << std::endl;
 }

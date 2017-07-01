@@ -23,15 +23,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <thread>
 #include <mutex>
+#include <unordered_map>
 #include "util/basic_macros.h"
 
 extern "C" {
 #include <lua.h>
+#include <lualib.h>
 }
 
 #include "irrlichttypes.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
+#include "debug.h"
+#include "cmake_config.h"
 
 #define SCRIPTAPI_LOCK_DEBUG
 #define SCRIPTAPI_DEBUG
@@ -54,9 +58,10 @@ extern "C" {
 	setOriginFromTableRaw(index, __FUNCTION__)
 
 enum class ScriptingType: u8 {
+	Async,
 	Client,
-	Server,
-	MainMenu
+	MainMenu,
+	Server
 };
 
 class Server;
@@ -70,7 +75,11 @@ class ServerActiveObject;
 
 class ScriptApiBase {
 public:
-	ScriptApiBase();
+	ScriptApiBase(ScriptingType  type);
+	ScriptApiBase()
+	{
+		FATAL_ERROR_IF(true, "ScriptApiBase created without ScriptingType!");
+	}
 	virtual ~ScriptApiBase();
 	DISABLE_CLASS_COPY(ScriptApiBase);
 
@@ -91,7 +100,6 @@ public:
 
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
-	void setType(ScriptingType type) { m_type = type; }
 	ScriptingType getType() { return m_type; }
 #ifndef SERVER
 	Client* getClient();
@@ -100,6 +108,20 @@ public:
 	std::string getOrigin() { return m_last_run_mod; }
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
+
+	void clientLoadLibs(lua_State *L);
+	std::unordered_map<std::string, lua_CFunction> m_libs = {
+		{ "", luaopen_base },
+		{ LUA_LOADLIBNAME, luaopen_package },
+		{ LUA_TABLIBNAME,  luaopen_table   },
+		{ LUA_OSLIBNAME,   luaopen_os      },
+		{ LUA_STRLIBNAME,  luaopen_string  },
+		{ LUA_MATHLIBNAME, luaopen_math    },
+		{ LUA_DBLIBNAME,   luaopen_debug   },
+#if USE_LUAJIT
+		{ LUA_JITLIBNAME,  luaopen_jit     },
+#endif
+	};
 
 protected:
 	friend class LuaABM;

@@ -71,7 +71,8 @@ public:
 	ScriptApiBase
 */
 
-ScriptApiBase::ScriptApiBase()
+ScriptApiBase::ScriptApiBase(ScriptingType type):
+		m_type(type)
 {
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	m_lock_recursion_count = 0;
@@ -82,7 +83,10 @@ ScriptApiBase::ScriptApiBase()
 
 	lua_atpanic(m_luastack, &luaPanic);
 
-	luaL_openlibs(m_luastack);
+	if (m_type == ScriptingType::Client)
+		clientLoadLibs(m_luastack);
+	else
+		luaL_openlibs(m_luastack);
 
 	// Make the ScriptApiBase* accessible to ModApiBase
 	lua_pushlightuserdata(m_luastack, this);
@@ -106,7 +110,10 @@ ScriptApiBase::ScriptApiBase()
 	lua_newtable(m_luastack);
 	lua_setglobal(m_luastack, "core");
 
-	lua_pushstring(m_luastack, DIR_DELIM);
+	if (m_type == ScriptingType::Client)
+		lua_pushstring(m_luastack, "/");
+	else
+		lua_pushstring(m_luastack, DIR_DELIM);
 	lua_setglobal(m_luastack, "DIR_DELIM");
 
 	lua_pushstring(m_luastack, porting::getPlatformName());
@@ -126,6 +133,15 @@ int ScriptApiBase::luaPanic(lua_State *L)
 	FATAL_ERROR(oss.str().c_str());
 	// NOTREACHED
 	return 0;
+}
+
+void ScriptApiBase::clientLoadLibs(lua_State *L)
+{
+	for (std::pair<std::string, lua_CFunction> lib : m_libs) {
+	    lua_pushcfunction(L, lib.second);
+	    lua_pushstring(L, lib.first.c_str());
+	    lua_call(L, 1, 0);
+	}
 }
 
 void ScriptApiBase::loadMod(const std::string &script_path,
