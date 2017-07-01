@@ -639,7 +639,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"TILE_MATERIAL_OPAQUE"
 	};
 
-	for (int i = 0; i < 6; i++){
+	for (int i = 0; i < 7; i++){
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";
