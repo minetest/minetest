@@ -908,7 +908,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	std::istringstream is(datastring, std::ios_base::binary);
 	// Create an action
 	InventoryAction *a = InventoryAction::deSerialize(is);
-	if (a == NULL) {
+	if (!a) {
 		infostream << "TOSERVER_INVENTORY_ACTION: "
 				<< "InventoryAction::deSerialize() returned NULL"
 				<< std::endl;
@@ -927,7 +927,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	/*
 		Handle restrictions and special cases of the move action
 	*/
-	if (a->getType() == IACTION_MOVE) {
+	if (a->getType() == IAction::Move) {
 		IMoveAction *ma = (IMoveAction*)a;
 
 		ma->from_inv.applyCurrentPlayer(player->getName());
@@ -982,7 +982,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	/*
 		Handle restrictions and special cases of the drop action
 	*/
-	else if (a->getType() == IACTION_DROP) {
+	else if (a->getType() == IAction::Drop) {
 		IDropAction *da = (IDropAction*)a;
 
 		da->from_inv.applyCurrentPlayer(player->getName());
@@ -1018,7 +1018,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 	/*
 		Handle restrictions and special cases of the craft action
 	*/
-	else if (a->getType() == IACTION_CRAFT) {
+	else if (a->getType() == IAction::Craft) {
 		ICraftAction *ca = (ICraftAction*)a;
 
 		ca->craft_inv.applyCurrentPlayer(player->getName());

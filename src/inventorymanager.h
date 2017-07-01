@@ -117,15 +117,17 @@ public:
 	virtual void inventoryAction(InventoryAction *a){}
 };
 
-#define IACTION_MOVE 0
-#define IACTION_DROP 1
-#define IACTION_CRAFT 2
+enum class IAction : u16 {
+	Move,
+	Drop,
+	Craft
+};
 
 struct InventoryAction
 {
-	static InventoryAction * deSerialize(std::istream &is);
+	static InventoryAction *deSerialize(std::istream &is);
 
-	virtual u16 getType() const = 0;
+	virtual IAction getType() const = 0;
 	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
 			IGameDef *gamedef) = 0;
@@ -136,35 +138,27 @@ struct InventoryAction
 struct IMoveAction : public InventoryAction
 {
 	// count=0 means "everything"
-	u16 count;
+	u16 count = 0;
 	InventoryLocation from_inv;
 	std::string from_list;
-	s16 from_i;
+	s16 from_i = -1;
 	InventoryLocation to_inv;
 	std::string to_list;
-	s16 to_i;
-	bool move_somewhere;
+	s16 to_i = -1;
+	bool move_somewhere = false;
 
 	// treat these as private
 	// related to movement to somewhere
-	bool caused_by_move_somewhere;
-	u32 move_count;
+	bool caused_by_move_somewhere = false;
+	u32 move_count = 0;
 
-	IMoveAction()
-	{
-		count = 0;
-		from_i = -1;
-		to_i = -1;
-		move_somewhere = false;
-		caused_by_move_somewhere = false;
-		move_count = 0;
-	}
+	IMoveAction() {}
 
 	IMoveAction(std::istream &is, bool somewhere);
 
-	u16 getType() const
+	IAction getType() const
 	{
-		return IACTION_MOVE;
+		return IAction::Move;
 	}
 
 	void serialize(std::ostream &os) const
@@ -191,22 +185,18 @@ struct IMoveAction : public InventoryAction
 struct IDropAction : public InventoryAction
 {
 	// count=0 means "everything"
-	u16 count;
+	u16 count = 0;
 	InventoryLocation from_inv;
 	std::string from_list;
-	s16 from_i;
+	s16 from_i = -1;
 
-	IDropAction()
-	{
-		count = 0;
-		from_i = -1;
-	}
+	IDropAction() {}
 
 	IDropAction(std::istream &is);
 
-	u16 getType() const
+	IAction getType() const
 	{
-		return IACTION_DROP;
+		return IAction::Drop;
 	}
 
 	void serialize(std::ostream &os) const
@@ -226,19 +216,16 @@ struct IDropAction : public InventoryAction
 struct ICraftAction : public InventoryAction
 {
 	// count=0 means "everything"
-	u16 count;
+	u16 count = 0;
 	InventoryLocation craft_inv;
 
-	ICraftAction()
-	{
-		count = 0;
-	}
+	ICraftAction() {}
 
 	ICraftAction(std::istream &is);
 
-	u16 getType() const
+	IAction getType() const
 	{
-		return IACTION_CRAFT;
+		return IAction::Craft;
 	}
 
 	void serialize(std::ostream &os) const
@@ -254,7 +241,7 @@ struct ICraftAction : public InventoryAction
 };
 
 // Crafting helper
-bool getCraftingResult(Inventory *inv, ItemStack& result,
+bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef);
 
