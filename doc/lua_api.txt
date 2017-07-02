@@ -4126,12 +4126,15 @@ Definition tables
 * `"image.png"`
 * `{name="image.png", animation={Tile Animation definition}}`
 * `{name="image.png", backface_culling=bool, tileable_vertical=bool,
-    tileable_horizontal=bool}`
+    tileable_horizontal=bool, world_aligned=bool}`
     * backface culling enabled by default for most nodes
     * tileable flags are info for shaders, how they should treat texture
 	  when displacement mapping is used
 	  Directions are from the point of view of the tile texture,
 	  not the node it's on
+    * world-aligned textures are not rotated with the node. Used to make
+          various semiblocks look consistent with surrounding nodes.
+          Supported by solid nodes and nodeboxes only.
 * `{name="image.png", color=ColorSpec}`
     * the texture's color will be multiplied with this color.
     * the tile's color overrides the owning node's color in all cases.
