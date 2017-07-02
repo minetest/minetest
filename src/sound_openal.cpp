@@ -478,7 +478,7 @@ public:
 
 	void pauseSnd(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
 		if (it == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = it->second;
@@ -488,7 +488,7 @@ public:
 	
 	void resumeSnd(int id)
 	{
-		UNORDERED_MAP<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
 		if (it == m_sounds_playing.end())
 			return;
 		PlayingSound *sound = it->second;
