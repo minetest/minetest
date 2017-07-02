@@ -835,7 +835,7 @@ void Client::handleCommand_PauseSound(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	UNORDERED_MAP<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
+	std::unordered_map<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
 	if (it != m_sounds_server_to_client.end()) {
 		int client_id = it->second;
 		m_sound->pauseSound(client_id);
@@ -848,7 +848,7 @@ void Client::handleCommand_ResumeSound(NetworkPacket* pkt)
 
 	*pkt >> server_id;
 
-	UNORDERED_MAP<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
+	std::unordered_map<s32, int>::iterator it = m_sounds_server_to_client.find(server_id);
 	if (it != m_sounds_server_to_client.end()) {
 		int client_id = it->second;
 		m_sound->resumeSound(client_id);
