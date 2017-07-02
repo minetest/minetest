@@ -2139,7 +2139,7 @@ void Server::stopSound(s32 handle)
 void Server::pauseSound(s32 handle)
 {
 	// Get sound reference
-	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	std::unordered_map<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
 	if (i == m_playing_sounds.end())
 		return;
 	ServerPlayingSound &psound = i->second;
@@ -2158,7 +2158,7 @@ void Server::pauseSound(s32 handle)
 void Server::resumeSound(s32 handle)
 {
 	// Get sound reference
-	UNORDERED_MAP<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
+	std::unordered_map<s32, ServerPlayingSound>::iterator i = m_playing_sounds.find(handle);
 	if (i == m_playing_sounds.end())
 		return;
 	ServerPlayingSound &psound = i->second;
