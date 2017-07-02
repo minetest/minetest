@@ -40,10 +40,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-Hud::Hud(gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
+Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
-	driver      = RenderingEngine::get_video_driver();
+	driver            = RenderingEngine::get_video_driver();
 	this->guienv      = guienv;
 	this->client      = client;
 	this->player      = player;

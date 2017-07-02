@@ -120,7 +120,7 @@ public:
 	std::string hotbar_selected_image = "";
 	bool use_hotbar_selected_image = false;
 
-	Hud(gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
+	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory);
 	~Hud();
 

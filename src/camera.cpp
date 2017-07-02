@@ -38,7 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CAMERA_OFFSET_STEP 200
 
-Camera::Camera(MapDrawControl& draw_control, Client *client):
+Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
 	m_client(client)
 {

@@ -60,7 +60,7 @@ enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 class Camera
 {
 public:
-	Camera(MapDrawControl& draw_control, Client *client);
+	Camera(MapDrawControl &draw_control, Client *client);
 	~Camera();
 
 	// Get camera scene node.
