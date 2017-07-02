@@ -51,15 +51,3 @@ core.register_chatcommand("disconnect", {
 		core.disconnect()
 	end,
 })
-
-core.register_chatcommand("clear_chat_queue", {
-	description = core.gettext("Clear the out chat queue"),
-	func = function(param)
-		core.clear_out_chat_queue()
-		return true, core.gettext("The out chat queue is now empty")
-	end,
-})
-
-function core.run_server_chatcommand(cmd, param)
-	core.send_chat_message("/" .. cmd .. " " .. param)
-end
