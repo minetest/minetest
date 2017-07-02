@@ -2147,7 +2147,7 @@ void Server::pauseSound(s32 handle)
 	NetworkPacket pkt(TOCLIENT_PAUSE_SOUND, 4);
 	pkt << handle;
 
-	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
+	for (std::unordered_set<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); ++i) {
 		// Send as reliable
 		m_clients.send(*i, 0, &pkt, true);
@@ -2166,7 +2166,7 @@ void Server::resumeSound(s32 handle)
 	NetworkPacket pkt(TOCLIENT_RESUME_SOUND, 4);
 	pkt << handle;
 
-	for (UNORDERED_SET<u16>::iterator i = psound.clients.begin();
+	for (std::unordered_set<u16>::iterator i = psound.clients.begin();
 			i != psound.clients.end(); ++i) {
 		// Send as reliable
 		m_clients.send(*i, 0, &pkt, true);
