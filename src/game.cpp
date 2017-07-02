@@ -121,8 +121,7 @@ struct TextDestPlayerInventory : public TextDest
 
 struct LocalFormspecHandler : public TextDest
 {
-	LocalFormspecHandler(const std::string &formname):
-		m_client(NULL)
+	LocalFormspecHandler(const std::string &formname)
 	{
 		m_formname = formname;
 	}
@@ -174,10 +173,11 @@ struct LocalFormspecHandler : public TextDest
 		}
 
 		// Don't disable this part when modding is disabled, it's used in builtin
-		m_client->getScript()->on_formspec_input(m_formname, fields);
+		if (m_client && m_client->getScript())
+			m_client->getScript()->on_formspec_input(m_formname, fields);
 	}
 
-	Client *m_client;
+	Client *m_client = nullptr;
 };
 
 /* Form update callback */
