@@ -192,13 +192,8 @@ private:
 ExtrusionMeshCache *g_extrusion_mesh_cache = NULL;
 
 
-WieldMeshSceneNode::WieldMeshSceneNode(
-		scene::ISceneNode *parent,
-		scene::ISceneManager *mgr,
-		s32 id,
-		bool lighting
-):
-	scene::ISceneNode(parent, mgr, id),
+WieldMeshSceneNode::WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id, bool lighting):
+	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_material_type(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF),
 	m_lighting(lighting)
 {

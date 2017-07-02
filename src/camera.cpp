@@ -38,16 +38,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define CAMERA_OFFSET_STEP 200
 
-#include "nodedef.h"
-
-Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-		Client *client):
+Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_draw_control(draw_control),
 	m_client(client)
 {
-	//dstream<<FUNCTION_NAME<<std::endl;
-
-	m_driver = smgr->getVideoDriver();
+	scene::ISceneManager *smgr = RenderingEngine::get_scene_manager();
 	// note: making the camera node a child of the player node
 	// would lead to unexpected behaviour, so we don't do that.
 	m_playernode = smgr->addEmptySceneNode(smgr->getRootSceneNode());
@@ -59,7 +54,7 @@ Camera::Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
 	// all other 3D scene nodes and before the GUI.
 	m_wieldmgr = smgr->createNewSceneManager();
 	m_wieldmgr->addCameraSceneNode();
-	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr->getRootSceneNode(), m_wieldmgr, -1, false);
+	m_wieldnode = new WieldMeshSceneNode(m_wieldmgr, -1, false);
 	m_wieldnode->setItem(ItemStack(), m_client);
 	m_wieldnode->drop(); // m_wieldmgr grabbed it
 
@@ -643,7 +638,7 @@ void Camera::drawNametags()
 				utf8_to_wide(nametag_colorless).c_str());
 			f32 zDiv = transformed_pos[3] == 0.0f ? 1.0f :
 				core::reciprocal(transformed_pos[3]);
-			v2u32 screensize = m_driver->getScreenSize();
+			v2u32 screensize = RenderingEngine::get_video_driver()->getScreenSize();
 			v2s32 screen_pos;
 			screen_pos.X = screensize.X *
 				(0.5 * transformed_pos[0] * zDiv + 0.5) - textsize.Width / 2;

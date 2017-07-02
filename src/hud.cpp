@@ -40,12 +40,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "touchscreengui.h"
 #endif
 
-Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
+Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
-	this->driver      = driver;
-	this->smgr        = smgr;
+	driver            = RenderingEngine::get_video_driver();
 	this->guienv      = guienv;
 	this->client      = client;
 	this->player      = player;
@@ -339,7 +337,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v3f p_pos = player->getPosition() / BS;
 				v3f w_pos = e->world_pos * BS;
 				float distance = floor(10 * p_pos.getDistanceFrom(e->world_pos)) / 10;
-				scene::ICameraSceneNode* camera = smgr->getActiveCamera();
+				scene::ICameraSceneNode* camera =
+					RenderingEngine::get_scene_manager()->getActiveCamera();
 				w_pos -= intToFloat(camera_offset, BS);
 				core::matrix4 trans = camera->getProjectionMatrix();
 				trans *= camera->getViewMatrix();

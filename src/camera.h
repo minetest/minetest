@@ -60,8 +60,7 @@ enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 class Camera
 {
 public:
-	Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-			Client *client);
+	Camera(MapDrawControl &draw_control, Client *client);
 	~Camera();
 
 	// Get camera scene node.
@@ -181,7 +180,6 @@ private:
 	MapDrawControl& m_draw_control;
 
 	Client *m_client;
-	video::IVideoDriver *m_driver;
 
 	// Absolute camera position
 	v3f m_camera_position;

@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
-#include <map>
 #include <unordered_map>
 
 class ClientEnvironment;
@@ -39,7 +38,7 @@ public:
 	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc) {};
+	virtual void addToScene(ITextureSource *tsrc) {};
 	virtual void removeFromScene(bool permanent) {}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}

@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IBillboardSceneNode.h>
 #include <IMeshManipulator.h>
 #include <IAnimatedMeshSceneNode.h>
-#include <IBoneSceneNode.h>
 #include "content_cao.h"
 #include "util/numeric.h" // For IntervalLimiter
 #include "util/serialize.h"
@@ -43,8 +42,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "camera.h" // CameraModes
 #include "wieldmesh.h"
-#include "log.h"
 #include <algorithm>
+#include "client/renderingengine.h"
 
 class Settings;
 struct ToolCapabilities;
@@ -128,7 +127,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
+	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -164,7 +163,7 @@ ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
 	return new TestCAO(client, env);
 }
 
-void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void TestCAO::addToScene(ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -193,7 +192,7 @@ void TestCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	m_node = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 	mesh->drop();
 	updateNodePos();
 }
@@ -270,7 +269,7 @@ public:
 
 	static ClientActiveObject* create(Client *client, ClientEnvironment *env);
 
-	void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc);
+	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
 	void updateLight(u8 light_at_pos);
 	v3s16 getLightPosition();
@@ -326,7 +325,7 @@ ClientActiveObject* ItemCAO::create(Client *client, ClientEnvironment *env)
 	return new ItemCAO(client, env);
 }
 
-void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void ItemCAO::addToScene(ITextureSource *tsrc)
 {
 	if(m_node != NULL)
 		return;
@@ -360,7 +359,7 @@ void ItemCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	// Add to mesh
 	mesh->addMeshBuffer(buf);
 	buf->drop();
-	m_node = smgr->addMeshSceneNode(mesh, NULL);
+	m_node = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 	mesh->drop();
 	updateNodePos();
 
@@ -717,9 +716,9 @@ void GenericCAO::removeFromScene(bool permanent)
 	}
 }
 
-void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
+void GenericCAO::addToScene(ITextureSource *tsrc)
 {
-	m_smgr = smgr;
+	m_smgr = RenderingEngine::get_scene_manager();
 
 	if (getSceneNode() != NULL) {
 		return;
@@ -733,7 +732,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
-		m_spritenode = smgr->addBillboardSceneNode(
+		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
 				NULL, v2f(1, 1), v3f(0,0,0), -1);
 		m_spritenode->grab();
 		m_spritenode->setMaterialTexture(0,
@@ -796,7 +795,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 			mesh->addMeshBuffer(buf);
 			buf->drop();
 		}
-		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 		m_meshnode->grab();
 		mesh->drop();
 		// Set it to use the materials of the meshbuffers directly.
@@ -806,7 +805,7 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 	else if(m_prop.visual == "cube") {
 		infostream<<"GenericCAO::addToScene(): cube"<<std::endl;
 		scene::IMesh *mesh = createCubeMesh(v3f(BS,BS,BS));
-		m_meshnode = smgr->addMeshSceneNode(mesh, NULL);
+		m_meshnode = RenderingEngine::get_scene_manager()->addMeshSceneNode(mesh, NULL);
 		m_meshnode->grab();
 		mesh->drop();
 
@@ -826,7 +825,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 		scene::IAnimatedMesh *mesh = m_client->getMesh(m_prop.mesh);
 		if(mesh)
 		{
-			m_animated_meshnode = smgr->addAnimatedMeshSceneNode(mesh, NULL);
+			m_animated_meshnode = RenderingEngine::get_scene_manager()->
+				addAnimatedMeshSceneNode(mesh, NULL);
 			m_animated_meshnode->grab();
 			mesh->drop(); // The scene node took hold of it
 			m_animated_meshnode->animateJoints(); // Needed for some animations
@@ -865,8 +865,8 @@ void GenericCAO::addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc)
 			infostream << "serialized form: " << m_prop.wield_item << std::endl;
 			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
-		m_wield_meshnode = new WieldMeshSceneNode(smgr->getRootSceneNode(),
-			smgr, -1);
+		m_wield_meshnode = new WieldMeshSceneNode(
+			RenderingEngine::get_scene_manager(), -1);
 		m_wield_meshnode->setItem(item, m_client);
 
 		m_wield_meshnode->setScale(
@@ -1050,7 +1050,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		}
 
 		removeFromScene(false);
-		addToScene(m_smgr, m_client->tsrc());
+		addToScene(m_client->tsrc());
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
 		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {

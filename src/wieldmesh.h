@@ -74,8 +74,7 @@ struct ItemMesh
 class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
-	WieldMeshSceneNode(scene::ISceneNode *parent, scene::ISceneManager *mgr,
-			s32 id = -1, bool lighting = false);
+	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
 	void setCube(const ContentFeatures &f, v3f wield_scale);
