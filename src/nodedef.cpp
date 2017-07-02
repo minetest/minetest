@@ -881,18 +881,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
-	} else if ((drawtype == NDT_NODEBOX) &&
-			((node_box.type == NODEBOX_REGULAR) ||
-			(node_box.type == NODEBOX_FIXED)) &&
-			(!node_box.fixed.empty())) {
-		//Convert regular nodebox nodes to meshnodes
-		//Change the drawtype and apply scale
-// 		drawtype = NDT_MESH;
-// 		mesh_ptr[0] = convertNodeboxesToMesh(node_box.fixed);
-// 		v3f scale = v3f(1.0, 1.0, 1.0) * visual_scale;
-// 		scaleMesh(mesh_ptr[0], scale);
-// 		recalculateBoundingBox(mesh_ptr[0]);
-// 		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 	}
 
 	//Cache 6dfacedir and wallmounted rotated clones of meshes
