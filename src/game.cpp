@@ -1914,7 +1914,7 @@ bool Game::createClient(const std::string &playername,
 
 	/* Camera
 	 */
-	camera = new Camera(smgr, *draw_control, client);
+	camera = new Camera(*draw_control, client);
 	if (!camera || !camera->successfullyCreated(*error_message))
 		return false;
 	client->setCamera(camera);
@@ -1971,7 +1971,7 @@ bool Game::createClient(const std::string &playername,
 	player->hurt_tilt_timer = 0;
 	player->hurt_tilt_strength = 0;
 
-	hud = new Hud(driver, smgr, guienv, client, player, local_inventory);
+	hud = new Hud(guienv, client, player, local_inventory);
 
 	if (!hud) {
 		*error_message = "Memory error: could not create HUD";

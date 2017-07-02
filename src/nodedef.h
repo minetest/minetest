@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef SERVER
 #include "client/tile.h"
 #include "shader.h"
+#include <IMeshManipulator.h>
 class Client;
 #endif
 #include "itemgroup.h"

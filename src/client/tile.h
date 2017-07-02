@@ -23,9 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
 #include <ITexture.h>
-#include <IrrlichtDevice.h>
 #include <string>
 #include <vector>
+#include <SMaterial.h>
 #include "util/numeric.h"
 
 class IGameDef;

@@ -456,7 +456,7 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	infostream<<"ClientEnvironment::addActiveObject(): "
 		<<"added (id="<<object->getId()<<")"<<std::endl;
 	m_active_objects[object->getId()] = object;
-	object->addToScene(RenderingEngine::get_scene_manager(), m_texturesource);
+	object->addToScene(m_texturesource);
 	{ // Update lighting immediately
 		u8 light = 0;
 		bool pos_ok;
