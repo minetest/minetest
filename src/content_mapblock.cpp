@@ -1200,8 +1200,7 @@ void MapblockMeshGenerator::drawNodeboxNode()
 	TileSpec tiles[6];
 	for (int face = 0; face < 6; face++) {
 		// Handles facedir rotation for textures
-		getTile(face, &tiles[face]);
-// 		getTile(tile_dirs[face], &tiles[face]);
+		getTile(tile_dirs[face], &tiles[face]);
 	}
 
 	// locate possible neighboring nodes to connect to

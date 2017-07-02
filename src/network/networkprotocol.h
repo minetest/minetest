@@ -160,9 +160,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			instead of guessing based on the active object list.
 	PROTOCOL VERSION 34:
 		Add sound pitch
+	PROTOCOL VERSION 35:
+		Change TileDef serialization format.
+		Add world-aligned tiles.
 */
 
-#define LATEST_PROTOCOL_VERSION 34
+#define LATEST_PROTOCOL_VERSION 35
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24

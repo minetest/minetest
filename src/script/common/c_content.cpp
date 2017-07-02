@@ -396,6 +396,8 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		tiledef.world_aligned = getboolfield_default(
+			L, index, "world_aligned", false);
 		// color = ...
 		lua_getfield(L, index, "color");
 		tiledef.has_color = read_color(L, -1, &tiledef.color);
