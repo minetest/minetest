@@ -84,7 +84,7 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_atpanic(m_luastack, &luaPanic);
 
 	if (m_type == ScriptingType::Client)
-		clientLoadLibs(m_luastack);
+		clientOpenLibs(m_luastack);
 	else
 		luaL_openlibs(m_luastack);
 
@@ -135,7 +135,7 @@ int ScriptApiBase::luaPanic(lua_State *L)
 	return 0;
 }
 
-void ScriptApiBase::clientLoadLibs(lua_State *L)
+void ScriptApiBase::clientOpenLibs(lua_State *L)
 {
 	for (std::pair<std::string, lua_CFunction> lib : m_libs) {
 	    lua_pushcfunction(L, lib.second);

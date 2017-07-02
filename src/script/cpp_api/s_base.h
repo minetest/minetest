@@ -109,8 +109,8 @@ public:
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
 
-	void clientLoadLibs(lua_State *L);
-	std::unordered_map<std::string, lua_CFunction> m_libs = {
+	void clientOpenLibs(lua_State *L);
+	const std::unordered_map<std::string, lua_CFunction> m_libs = {
 		{ "", luaopen_base },
 		{ LUA_LOADLIBNAME, luaopen_package },
 		{ LUA_TABLIBNAME,  luaopen_table   },
