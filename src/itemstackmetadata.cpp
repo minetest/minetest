@@ -28,8 +28,8 @@ void ItemStackMetadata::serialize(std::ostream &os) const
 		if (!stringvar.first.empty() || !stringvar.second.empty())
 			root[stringvar.first] = stringvar.second;
 	}
-	os << serializeJsonStringIfNeeded((char)SERIALIZATION_VERSION_IDENTIFIER +
-			Json::FastWriter().write(root));
+
+	os << (char) SERIALIZATION_VERSION_IDENTIFIER + Json::FastWriter().write(root);
 }
 
 #define DESERIALIZE_START '\x01'
@@ -41,40 +41,46 @@ void ItemStackMetadata::serialize(std::ostream &os) const
 
 void ItemStackMetadata::deSerialize(std::istream &is)
 {
-	std::string in = deSerializeJsonStringIfNeeded(is);
-
 	m_stringvars.clear();
 
-	if (in.empty())
+	// Check for EOF
+	if (!is.good())
 		return;
 
-	if (in[0] == SERIALIZATION_VERSION_IDENTIFIER) {
-		in.erase(0, 1);
+	// Decode Json metadata (ItemMeta 3, 2017-07-02)
+	if (is.peek() == SERIALIZATION_VERSION_IDENTIFIER) {
+		is.ignore(1);
+		std::string in(std::istreambuf_iterator<char>(is), {});
 
 		Json::Reader reader;
 		Json::Value attr_root;
 		if (reader.parse(in, attr_root) && attr_root.type() == Json::objectValue) {
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
-			for (Json::Value::Members::const_iterator it = attr_list.begin();
-					it != attr_list.end(); ++it) {
-				m_stringvars[*it] = attr_root[*it].asString();
+			for (auto it : attr_list) {
+				m_stringvars[it] = attr_root[it].asString();
 			}
 		} else {
 			errorstream << "ItemStackMetadata::deSerialize():"
 				<< " expected JSON data, but failed to parse. Ignoring." << std::endl;
 		}
-	} else if (in[0] == DESERIALIZE_START) {
-		// BACKWARDS COMPATIBILITY
-		Strfnd fnd(in);
-		fnd.to(1);
-		while (!fnd.at_end()) {
-			std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
-			std::string var  = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
-			m_stringvars[name] = var;
-		}
+
 	} else {
-		// BACKWARDS COMPATIBILITY
-		m_stringvars[""] = in;
+		std::string in = deSerializeJsonStringIfNeeded(is);
+
+		// BACKWARDS COMPATIBILITY (ItemMeta 2, 2017-01-31)
+		if (in[0] == DESERIALIZE_START) {
+			Strfnd fnd(in);
+			fnd.to(1);
+			while (!fnd.at_end()) {
+				std::string name = fnd.next(DESERIALIZE_KV_DELIM_STR);
+				std::string var  = fnd.next(DESERIALIZE_PAIR_DELIM_STR);
+				m_stringvars[name] = var;
+			}
+
+		// BACKWARDS COMPATIBILITY (ItemMeta 1)
+		} else {
+			m_stringvars[""] = in;
+		}
 	}
 	updateToolCapabilities();
 }

@@ -34,6 +34,7 @@ public:
 
 	void testSerializeDeserialize(IItemDefManager *idef);
 	void testDeSerializeItemStackMetadata();
+	void testSerializeDeserializeItemMetadata();
 
 	static const char *serialized_inventory;
 	static const char *serialized_inventory_2;
@@ -45,6 +46,7 @@ void TestInventory::runTests(IGameDef *gamedef)
 {
 	TEST(testSerializeDeserialize, gamedef->getItemDefManager());
 	TEST(testDeSerializeItemStackMetadata);
+	TEST(testSerializeDeserializeItemMetadata);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +195,7 @@ void TestInventory::testDeSerializeItemStackMetadata() {
 		is << SERIALIZATION_VERSION_IDENTIFIER
 		   << "{ \"foo\": \"bar\", \"description\": \"this is a JSON string!\\nHow exciting!\"}";
 
-		std::istringstream is2(serializeJsonString(is.str()));
+		std::istringstream is2(is.str());
 
 		ItemStackMetadata metadata;
 		metadata.deSerialize(is2);
@@ -214,4 +216,21 @@ void TestInventory::testDeSerializeItemStackMetadata() {
 		UASSERT(metadata.size() == 1);
 		UASSERT(metadata.getString("") == test);
 	}
+}
+
+void TestInventory::testSerializeDeserializeItemMetadata() {
+	ItemStackMetadata metadata;
+	metadata.setString("one", "two");
+	metadata.setString("foo", "{\"\"sn4##434#sas#34eds#}");
+	metadata.setString("bar", "\x01\x02\x03\x02\x03\x01");
+	metadata.setString("\x01", "asasasas");
+
+	std::ostringstream os;
+	metadata.serialize(os);
+
+	std::istringstream is(os.str());
+	ItemStackMetadata metadata2;
+	metadata2.deSerialize(is);
+
+	UASSERT(metadata2 == metadata);
 }
