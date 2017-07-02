@@ -866,7 +866,6 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			item.deSerialize(m_prop.wield_item, m_client->idef());
 		}
 		m_wield_meshnode = new WieldMeshSceneNode(
-			RenderingEngine::get_scene_manager()->getRootSceneNode(),
 			RenderingEngine::get_scene_manager(), -1);
 		m_wield_meshnode->setItem(item, m_client);
 
