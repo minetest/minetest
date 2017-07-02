@@ -242,7 +242,6 @@ public:
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
-	void clearOutChatQueue();
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
@@ -462,8 +461,6 @@ private:
 	// Helper function
 	inline std::string getPlayerName()
 	{ return m_env.getLocalPlayer()->getName(); }
-
-	bool canSendChatMessage() const;
 
 	float m_packetcounter_timer = 0.0f;
 	float m_connection_reinit_timer = 0.1f;
