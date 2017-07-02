@@ -343,10 +343,6 @@
 #    type: string
 # serverlist_file = favoriteservers.txt
 
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
-#    type: int
-# max_out_chat_queue_size = 20
-
 ## Graphics
 
 ### In-Game
