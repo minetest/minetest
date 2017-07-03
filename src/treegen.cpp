@@ -817,10 +817,12 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 		for (s16 zz = zi; zz <= zi + 1; zz++) {
 			u32 i = leaves_a.index(v3s16(xi, yy, zz));
 			u32 ia = leaves_a.index(v3s16(xi, yy + 1, zz));
-			for (s16 xx = 0; xx <= 1; xx++) {
-				leaves_d[i + xx] = 1;
-				if (leaves_d[ia + xx] == 0)
-					leaves_d[ia + xx] = 2;
+			for (s32 xx = xi; xx <= xi + 1; xx++) {
+				leaves_d[i] = 1;
+				if (leaves_d[ia] == 0)
+					leaves_d[ia] = 2;
+				i++;
+				ia++;
 			}
 		}
 	}
