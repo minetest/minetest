@@ -165,7 +165,7 @@ public:
 
 	void drawNametags();
 
-	inline void addArmInertia(f32 player_yaw, f32 frametime);
+	inline void addArmInertia(f32 player_yaw);
 
 private:
 	// Nodes
