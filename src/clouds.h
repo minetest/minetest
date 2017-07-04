@@ -73,7 +73,7 @@ public:
 
 	void step(float dtime);
 
-	void update(v2f camera_p, video::SColorf color);
+	void update(const v3f &camera_p, const video::SColorf &color);
 
 	void updateCameraOffset(v3s16 camera_offset)
 	{
@@ -116,6 +116,10 @@ public:
 		updateBox();
 	}
 
+	bool isCameraInsideCloud() const { return m_camera_inside_cloud; }
+
+	const video::SColor getColor() const { return m_color.toSColor(); }
+
 private:
 	void updateBox()
 	{
@@ -125,17 +129,20 @@ private:
 				BS * 1000000.0f, height_bs + thickness_bs - BS * m_camera_offset.Y, BS * 1000000.0f);
 	}
 
+	bool gridFilled(int x, int y) const;
+
 	video::SMaterial m_material;
 	aabb3f m_box;
 	s16 m_passed_cloud_y;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
 	u32 m_seed;
-	v2f m_camera_pos;
+	v3f m_camera_pos;
 	v2f m_origin;
 	v3s16 m_camera_offset;
 	video::SColorf m_color = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	CloudParams m_params;
+	bool m_camera_inside_cloud = false;
 
 };
 

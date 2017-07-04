@@ -64,8 +64,8 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 
-	bool getCloudsVisible() { return m_clouds_visible && m_clouds_enabled; }
-	const video::SColorf &getCloudColor() { return m_cloudcolor_f; }
+	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
+	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
 
 	void setVisible(bool visible) { m_visible = visible; }
 	// Set only from set_sky API
@@ -74,6 +74,12 @@ public:
 	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
+	void overrideColors(const video::SColor &bgcolor, const video::SColor &skycolor)
+	{
+		m_bgcolor = bgcolor;
+		m_skycolor = skycolor;
+	}
+	void setBodiesVisible(bool visible) { m_bodies_visible = visible; }
 
 private:
 	aabb3f m_box;
@@ -128,6 +134,7 @@ private:
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
 	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
+	bool m_bodies_visible = true; // sun, moon, stars
 	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
