@@ -813,8 +813,7 @@ int ModApiMainMenu::l_copy_dir(lua_State *L)
 	std::string absolute_destination = fs::RemoveRelativePathComponents(destination);
 	std::string absolute_source = fs::RemoveRelativePathComponents(source);
 
-	if ((ModApiMainMenu::isMinetestPath(absolute_source)) &&
-			(ModApiMainMenu::isMinetestPath(absolute_destination))) {
+	if ((ModApiMainMenu::isMinetestPath(absolute_destination))) {
 		bool retval = fs::CopyDir(absolute_source,absolute_destination);
 
 		if (retval && (!keep_source)) {
