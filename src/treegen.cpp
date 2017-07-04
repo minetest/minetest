@@ -802,12 +802,9 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 	}
 
 	// Centre top nodes
-	u32 i = leaves_a.index(v3s16(0, 1, 0));
-	leaves_d[i] = 1;
-	i = leaves_a.index(v3s16(0, 2, 0));
-	leaves_d[i] = 1;
-	i = leaves_a.index(v3s16(0, 3, 0));
-	leaves_d[i] = 2;
+	leaves_d[leaves_a.index(v3s16(0, 1, 0))] = 1;
+	leaves_d[leaves_a.index(v3s16(0, 2, 0))] = 1;
+	leaves_d[leaves_a.index(v3s16(0, 3, 0))] = 2;
 
 	// Lower branches
 	s16 my = -6;
@@ -820,7 +817,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 		for (s16 zz = zi; zz <= zi + 1; zz++) {
 			u32 i = leaves_a.index(v3s16(xi, yy, zz));
 			u32 ia = leaves_a.index(v3s16(xi, yy + 1, zz));
-			for (s16 xx = xi; xx <= xi + 1; xx++) {
+			for (s32 xx = xi; xx <= xi + 1; xx++) {
 				leaves_d[i] = 1;
 				if (leaves_d[ia] == 0)
 					leaves_d[ia] = 2;
