@@ -1028,7 +1028,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	std::string datastring(pkt->getString(0), pkt->getSize());
 	std::istringstream is(datastring, std::ios_base::binary);
 
-	u32 id;
+	u32 server_id;
 	u8 type;
 	v2f pos;
 	std::string name;
@@ -1042,7 +1042,7 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	v3f world_pos;
 	v2s32 size;
 
-	*pkt >> id >> type >> pos >> name >> scale >> text >> number >> item
+	*pkt >> server_id >> type >> pos >> name >> scale >> text >> number >> item
 		>> dir >> align >> offset;
 	try {
 		*pkt >> world_pos;
@@ -1052,6 +1052,8 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 	try {
 		*pkt >> size;
 	} catch(SerializationError &e) {};
+	u32 client_id = getEnv().getLocalPlayer()->getFreeHudID();
+	m_hud_server_to_client[server_id] = client_id;
 
 	ClientEvent *event = new ClientEvent();
 	event->type             = CE_HUDADD;
@@ -1073,14 +1075,19 @@ void Client::handleCommand_HudAdd(NetworkPacket* pkt)
 
 void Client::handleCommand_HudRemove(NetworkPacket* pkt)
 {
-	u32 id;
+	u32 server_id;
 
-	*pkt >> id;
+	*pkt >> server_id;
 
-	ClientEvent *event = new ClientEvent();
-	event->type     = CE_HUDRM;
-	event->hudrm.id = id;
-	m_client_event_queue.push(event);
+	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
+	if (i != m_hud_server_to_client.end()) {
+		int client_id = i->second;
+
+		ClientEvent *event = new ClientEvent();
+		event->type     = CE_HUDRM;
+		event->hudrm.id = client_id;
+		m_client_event_queue.push(event);
+	}
 }
 
 void Client::handleCommand_HudChange(NetworkPacket* pkt)
@@ -1090,10 +1097,10 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	v3f v3fdata;
 	u32 intdata = 0;
 	v2s32 v2s32data;
-	u32 id;
+	u32 server_id;
 	u8 stat;
 
-	*pkt >> id >> stat;
+	*pkt >> server_id >> stat;
 
 	if (stat == HUD_STAT_POS || stat == HUD_STAT_SCALE ||
 		stat == HUD_STAT_ALIGN || stat == HUD_STAT_OFFSET)
@@ -1107,6 +1114,8 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	else
 		*pkt >> intdata;
 
+	std::unordered_map<u32, u32>::const_iterator i = m_hud_server_to_client.find(server_id);
+	if (i != m_hud_server_to_client.end()) {
 	ClientEvent *event = new ClientEvent();
 	event->type              = CE_HUDCHANGE;
 	event->hudchange.id      = id;
@@ -1117,6 +1126,7 @@ void Client::handleCommand_HudChange(NetworkPacket* pkt)
 	event->hudchange.data    = intdata;
 	event->hudchange.v2s32data = new v2s32(v2s32data);
 	m_client_event_queue.push(event);
+	}
 }
 
 void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)

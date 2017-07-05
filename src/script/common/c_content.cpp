@@ -1792,3 +1792,142 @@ void push_objectRef(lua_State *L, const u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
+
+void read_hud_element(lua_State *L, HudElement *elem)
+{
+	elem->type = (HudElementType)getenumfield(L, 2, "hud_elem_type",
+									es_HudElementType, HUD_ELEM_TEXT);
+
+	lua_getfield(L, 2, "position");
+	elem->pos = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "scale");
+	elem->scale = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "size");
+	elem->size = lua_istable(L, -1) ? read_v2s32(L, -1) : v2s32();
+	lua_pop(L, 1);
+
+	elem->name   = getstringfield_default(L, 2, "name", "");
+	elem->text   = getstringfield_default(L, 2, "text", "");
+	elem->number = getintfield_default(L, 2, "number", 0);
+	elem->item   = getintfield_default(L, 2, "item", 0);
+	elem->dir    = getintfield_default(L, 2, "direction", 0);
+
+	// Deprecated, only for compatibility's sake
+	if (elem->dir == 0)
+		elem->dir = getintfield_default(L, 2, "dir", 0);
+
+	lua_getfield(L, 2, "alignment");
+	elem->align = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "offset");
+	elem->offset = lua_istable(L, -1) ? read_v2f(L, -1) : v2f();
+	lua_pop(L, 1);
+
+	lua_getfield(L, 2, "world_pos");
+	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
+	lua_pop(L, 1);
+
+	/* check for known deprecated element usage */
+	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32()))
+		log_deprecated(L,"Deprecated usage of statbar without size!");
+}
+
+void push_hud_element(lua_State *L, HudElement *elem)
+{
+	lua_newtable(L);
+
+	lua_pushstring(L, es_HudElementType[(u8)elem->type].str);
+	lua_setfield(L, -2, "type");
+
+	push_v2f(L, elem->pos);
+	lua_setfield(L, -2, "position");
+
+	lua_pushstring(L, elem->name.c_str());
+	lua_setfield(L, -2, "name");
+
+	push_v2f(L, elem->scale);
+	lua_setfield(L, -2, "scale");
+
+	lua_pushstring(L, elem->text.c_str());
+	lua_setfield(L, -2, "text");
+
+	lua_pushnumber(L, elem->number);
+	lua_setfield(L, -2, "number");
+
+	lua_pushnumber(L, elem->item);
+	lua_setfield(L, -2, "item");
+
+	lua_pushnumber(L, elem->dir);
+	lua_setfield(L, -2, "direction");
+
+	// Deprecated, only for compatibility's sake
+	lua_pushnumber(L, elem->dir);
+	lua_setfield(L, -2, "dir");
+
+	push_v3f(L, elem->world_pos);
+	lua_setfield(L, -2, "world_pos");
+}
+
+HudElementStat read_hud_change(lua_State *L, HudElement *elem, void **value)
+{
+	HudElementStat stat = HUD_STAT_NUMBER;
+	if (lua_isstring(L, 3)) {
+		int statint;
+		std::string statstr = lua_tostring(L, 3);
+		stat = string_to_enum(es_HudElementStat, statint, statstr) ?
+				(HudElementStat)statint : stat;
+	}
+
+	switch (stat) {
+		case HUD_STAT_POS:
+			elem->pos = read_v2f(L, 4);
+			*value = &elem->pos;
+			break;
+		case HUD_STAT_NAME:
+			elem->name = luaL_checkstring(L, 4);
+			*value = &elem->name;
+			break;
+		case HUD_STAT_SCALE:
+			elem->scale = read_v2f(L, 4);
+			*value = &elem->scale;
+			break;
+		case HUD_STAT_TEXT:
+			elem->text = luaL_checkstring(L, 4);
+			*value = &elem->text;
+			break;
+		case HUD_STAT_NUMBER:
+			elem->number = luaL_checknumber(L, 4);
+			*value = &elem->number;
+			break;
+		case HUD_STAT_ITEM:
+			elem->item = luaL_checknumber(L, 4);
+			*value = &elem->item;
+			break;
+		case HUD_STAT_DIR:
+			elem->dir = luaL_checknumber(L, 4);
+			*value = &elem->dir;
+			break;
+		case HUD_STAT_ALIGN:
+			elem->align = read_v2f(L, 4);
+			*value = &elem->align;
+			break;
+		case HUD_STAT_OFFSET:
+			elem->offset = read_v2f(L, 4);
+			*value = &elem->offset;
+			break;
+		case HUD_STAT_WORLD_POS:
+			elem->world_pos = read_v3f(L, 4);
+			*value = &elem->world_pos;
+			break;
+		case HUD_STAT_SIZE:
+			elem->size = read_v2s32(L, 4);
+			*value = &elem->size;
+			break;
+	}
+	return stat;
+}
