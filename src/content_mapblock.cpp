@@ -934,6 +934,7 @@ void MapblockMeshGenerator::drawPlantlikeRootedNode()
 		light = getInteriorLight(ntop, 1, nodedef);
 	}
 	drawPlantlike();
+	p.Y--;
 }
 
 void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle,
