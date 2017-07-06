@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h" // getContainerPos
 #include "settings.h"
 #include "mapgen.h"
+#include "nodedef.h" // For ContentFeatures for getNodeDef*()
+#include "util/pointer.h" // HybridPtr
+#include "node_with_def.h"
 
 class Map;
 class NodeMetadataList;
@@ -287,6 +290,15 @@ public:
 		setNode(p.X, p.Y, p.Z, n);
 	}
 
+	NodeWithDef getNodeWithDefNoEx(v3s16 p);
+
+	void setNode(v3s16 p, const NodeWithDef &nd)
+    {
+    	if (!isValidPosition(p))
+    		throw InvalidPositionException();
+    	setNodeNoCheck(p, nd);
+    }
+
 	////
 	//// Non-checking variants of the above
 	////
@@ -321,7 +333,7 @@ public:
 		return getNodeUnsafe(p.X, p.Y, p.Z);
 	}
 
-	inline void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	inline void setNodeNoCheck(s16 x, s16 y, s16 z, const MapNode & n)
 	{
 		if (!data)
 			throw InvalidPositionException();
@@ -330,10 +342,16 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_SET_NODE_NO_CHECK);
 	}
 
-	inline void setNodeNoCheck(v3s16 p, MapNode & n)
+	inline void setNodeNoCheck(v3s16 p, const MapNode & n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
+
+	HybridPtr<const ContentFeatures> getNodeDefNoCheck(v3s16 p, bool *valid_position);
+    NodeWithDef getNodeWithDefNoCheck(v3s16 p, bool *valid_position);
+	void setNodeNoCheck(v3s16 p, const NodeWithDef &nd);
+	// def=NULL resets to global definition
+	void setNodeDefNoCheck(v3s16 p, const ContentFeatures *def);
 
 	// These functions consult the parent container if the position
 	// is not valid on this MapBlock.
@@ -528,6 +546,8 @@ public:
 	NodeMetadataList m_node_metadata;
 	NodeTimerList m_node_timers;
 	StaticObjectList m_static_objects;
+
+	std::map<v3s16, ContentFeatures> m_special_nodedefs;
 
 	static const u32 ystride = MAP_BLOCKSIZE;
 	static const u32 zstride = MAP_BLOCKSIZE * MAP_BLOCKSIZE;

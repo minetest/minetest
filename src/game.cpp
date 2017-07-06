@@ -797,14 +797,17 @@ bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_de
 		v3s16 p = neighbourpos;
 
 		// Place inside node itself if buildable_to
-		MapNode n_under = map.getNodeNoEx(nodepos, &is_valid_position);
+		HybridPtr<const ContentFeatures> f_ptr = map.getNodeDefNoEx(nodepos, &is_valid_position);
+		const ContentFeatures &f = *f_ptr;
 		if (is_valid_position)
 		{
-			if (nodedef->get(n_under).buildable_to)
+			if (f.buildable_to)
 				p = nodepos;
 			else {
 				node = map.getNodeNoEx(p, &is_valid_position);
-				if (is_valid_position &&!nodedef->get(node).buildable_to)
+				HybridPtr<const ContentFeatures> f_ptr2 = map.getNodeDefNoEx(p, &is_valid_position);
+				const ContentFeatures &f2 = *f_ptr2;
+				if (is_valid_position &&!f2.buildable_to)
 					return false;
 			}
 		}
@@ -3694,8 +3697,10 @@ PointedThing Game::updatePointedThing(
 	} else if (result.type == POINTEDTHING_NODE) {
 		// Update selection boxes
 		MapNode n = map.getNodeNoEx(result.node_undersurface);
+		HybridPtr<const ContentFeatures> f_ptr = map.getNodeDefNoEx(result.node_undersurface);
+		const ContentFeatures &f = *f_ptr;
 		std::vector<aabb3f> boxes;
-		n.getSelectionBoxes(nodedef, &boxes,
+		n.getSelectionBoxes(f, &boxes,
 			n.getNeighbors(result.node_undersurface, &map));
 
 		f32 d = 0.002 * BS;

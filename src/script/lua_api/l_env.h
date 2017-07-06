@@ -39,6 +39,14 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_swap_node(lua_State *L);
 
+	// minetest.set_def(pos, adddef)
+	// pos = {x=num, y=num, z=num}
+	static int l_set_def(lua_State *L);
+
+    // minetest.get_nodedef(pos)
+    // pos = {x=num, y=num, z=num}
+    static int l_get_nodedef(lua_State *L);
+
 	// get_node(pos)
 	// pos = {x=num, y=num, z=num}
 	static int l_get_node(lua_State *L);

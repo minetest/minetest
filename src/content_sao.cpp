@@ -889,16 +889,16 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (m_drowning_interval.step(dtime, 2.0)) {
 		// get head position
 		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
-		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+		HybridPtr<const ContentFeatures> f_ptr = m_env->getMap().getNodeDefNoEx(p);
+		const ContentFeatures &f = *f_ptr;
 		// If node generates drown
-		if (c.drowning > 0 && m_hp > 0) {
+		if (f.drowning > 0 && m_hp > 0) {
 			if (m_breath > 0)
 				setBreath(m_breath - 1);
 
 			// No more breath, damage player
 			if (m_breath == 0) {
-				setHP(m_hp - c.drowning);
+				setHP(m_hp - f.drowning);
 				m_env->getGameDef()->SendPlayerHPOrDie(this);
 			}
 		}
@@ -907,34 +907,40 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	if (m_breathing_interval.step(dtime, 0.5)) {
 		// get head position
 		v3s16 p = floatToInt(m_base_position + v3f(0, BS * 1.6, 0), BS);
-		MapNode n = m_env->getMap().getNodeNoEx(p);
-		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
+		HybridPtr<const ContentFeatures> f_ptr = m_env->getMap().getNodeDefNoEx(p);
+		const ContentFeatures &f = *f_ptr;
 		// If player is alive & no drowning, breath
-		if (m_hp > 0 && m_breath < PLAYER_MAX_BREATH && c.drowning == 0)
+		if (m_hp > 0 && m_breath < PLAYER_MAX_BREATH && f.drowning == 0)
 			setBreath(m_breath + 1);
 	}
 
 	if (m_node_hurt_interval.step(dtime, 1.0)) {
 		// Feet, middle and head
 		v3s16 p1 = floatToInt(m_base_position + v3f(0, BS*0.1, 0), BS);
-		MapNode n1 = m_env->getMap().getNodeNoEx(p1);
 		v3s16 p2 = floatToInt(m_base_position + v3f(0, BS*0.8, 0), BS);
-		MapNode n2 = m_env->getMap().getNodeNoEx(p2);
 		v3s16 p3 = floatToInt(m_base_position + v3f(0, BS*1.6, 0), BS);
-		MapNode n3 = m_env->getMap().getNodeNoEx(p3);
+		bool is_valid_position_1;
+		bool is_valid_position_2;
+		bool is_valid_position_3;
+		HybridPtr<const ContentFeatures> f_ptr1 = m_env->getMap().getNodeDefNoEx(p1, &is_valid_position_1);
+		HybridPtr<const ContentFeatures> f_ptr2 = m_env->getMap().getNodeDefNoEx(p2, &is_valid_position_2);
+		HybridPtr<const ContentFeatures> f_ptr3 = m_env->getMap().getNodeDefNoEx(p3, &is_valid_position_3);
 
-		u32 damage_per_second = 0;
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n1).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n2).damage_per_second);
-		damage_per_second = MYMAX(damage_per_second,
-			m_env->getGameDef()->ndef()->get(n3).damage_per_second);
+		if (is_valid_position_1 && is_valid_position_2 && is_valid_position_3) {
+			const ContentFeatures &f1 = *f_ptr1;
+			const ContentFeatures &f2 = *f_ptr2;
+			const ContentFeatures &f3 = *f_ptr3;
 
-		if (damage_per_second != 0 && m_hp > 0) {
-			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
-			setHP(newhp);
-			m_env->getGameDef()->SendPlayerHPOrDie(this);
+			u32 damage_per_second = 0;
+			damage_per_second = MYMAX(damage_per_second, f1.damage_per_second);
+			damage_per_second = MYMAX(damage_per_second, f2.damage_per_second);
+			damage_per_second = MYMAX(damage_per_second, f3.damage_per_second);
+
+			if (damage_per_second != 0 && m_hp > 0) {
+				s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
+				setHP(newhp);
+				m_env->getGameDef()->SendPlayerHPOrDie(this);
+			}
 		}
 	}
 

@@ -62,7 +62,7 @@ core.register_entity(":__builtin:falling_node", {
 		local bcp = {x = pos.x, y = pos.y - 0.7, z = pos.z}
 		-- Avoid bugs caused by an unloaded node below
 		local bcn = core.get_node_or_nil(bcp)
-		local bcd = bcn and core.registered_nodes[bcn.name]
+		local bcd = bcn and core.get_nodedef(bcp)
 		if bcn and
 				(not bcd or bcd.walkable or
 				(core.get_item_group(self.node.name, "float") ~= 0 and
@@ -86,7 +86,7 @@ core.register_entity(":__builtin:falling_node", {
 			local np = {x = bcp.x, y = bcp.y + 1, z = bcp.z}
 			-- Check what's here
 			local n2 = core.get_node(np)
-			local nd = core.registered_nodes[n2.name]
+			local nd = core.get_nodedef(np)
 			-- If it's not air or liquid, remove node and replace it with
 			-- it's drops
 			if n2.name ~= "air" and (not nd or nd.liquidtype == "none") then
@@ -189,7 +189,7 @@ function core.check_single_for_falling(p)
 		local p_bottom = {x = p.x, y = p.y - 1, z = p.z}
 		-- Only spawn falling node if node below is loaded
 		local n_bottom = core.get_node_or_nil(p_bottom)
-		local d_bottom = n_bottom and core.registered_nodes[n_bottom.name]
+		local d_bottom = n_bottom and core.get_nodedef(p_bottom)
 		if d_bottom and
 
 				(core.get_item_group(n.name, "float") == 0 or

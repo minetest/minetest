@@ -692,14 +692,29 @@ void ClientMap::renderPostFx(CameraMode cam_mode)
 	// Sadly ISceneManager has no "post effects" render pass, in that case we
 	// could just register for that and handle it in renderMap().
 
-	MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
-
 	// - If the player is in a solid node, make everything black.
 	// - If the player is in liquid, draw a semi-transparent overlay.
 	// - Do not if player is in third person mode
-	const ContentFeatures& features = m_nodedef->get(n);
-	video::SColor post_effect_color = features.post_effect_color;
-	if(features.solidness == 2 && !(g_settings->getBool("noclip") &&
+	v3s16 p = floatToInt(m_camera_position, BS);
+	bool is_valid_position;
+	HybridPtr<const ContentFeatures> f_ptr = getNodeDefNoEx(p, &is_valid_position);
+	if (!is_valid_position)
+		return;
+	const ContentFeatures &def = *f_ptr;
+
+	ContentFeatures f = def;
+
+	ITextureSource *tsrc = m_client->tsrc();
+    IShaderSource *shdsrc = m_client->getShaderSource();
+    scene::ISceneManager* smgr = m_client->getSceneManager();
+    scene::IMeshManipulator* meshmanip = smgr->getMeshManipulator();
+    TextureSettings tsettings;
+    tsettings.readSettings();
+
+	f.updateTextures(tsrc, shdsrc, meshmanip, m_client, tsettings);
+
+	video::SColor post_effect_color = f.post_effect_color;
+	if(f.solidness == 2 && !(g_settings->getBool("noclip") &&
 			m_client->checkLocalPrivilege("noclip")) &&
 			cam_mode == CAMERA_MODE_FIRST)
 	{

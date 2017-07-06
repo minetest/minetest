@@ -255,22 +255,29 @@ void ClientEnvironment::step(float dtime)
 
 			// Feet, middle and head
 			v3s16 p1 = floatToInt(pf + v3f(0, BS * 0.1, 0), BS);
-			MapNode n1 = m_map->getNodeNoEx(p1);
 			v3s16 p2 = floatToInt(pf + v3f(0, BS * 0.8, 0), BS);
-			MapNode n2 = m_map->getNodeNoEx(p2);
 			v3s16 p3 = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
-			MapNode n3 = m_map->getNodeNoEx(p3);
+			bool is_valid_position_1;
+			bool is_valid_position_2;
+			bool is_valid_position_3;
+			HybridPtr<const ContentFeatures> f_ptr1 = m_map->getNodeDefNoEx(p1, &is_valid_position_1);
+			HybridPtr<const ContentFeatures> f_ptr2 = m_map->getNodeDefNoEx(p2, &is_valid_position_2);
+			HybridPtr<const ContentFeatures> f_ptr3 = m_map->getNodeDefNoEx(p3, &is_valid_position_3);
 
-			u32 damage_per_second = 0;
-			damage_per_second = MYMAX(damage_per_second,
-				m_client->ndef()->get(n1).damage_per_second);
-			damage_per_second = MYMAX(damage_per_second,
-				m_client->ndef()->get(n2).damage_per_second);
-			damage_per_second = MYMAX(damage_per_second,
-				m_client->ndef()->get(n3).damage_per_second);
+			if (is_valid_position_1 && is_valid_position_2 && is_valid_position_3) {
+				const ContentFeatures &f1 = *f_ptr1;
+				const ContentFeatures &f2 = *f_ptr2;
+				const ContentFeatures &f3 = *f_ptr3;
 
-			if (damage_per_second != 0)
-				damageLocalPlayer(damage_per_second, true);
+
+				u32 damage_per_second = 0;
+				damage_per_second = MYMAX(damage_per_second, f1.damage_per_second);
+				damage_per_second = MYMAX(damage_per_second, f2.damage_per_second);
+				damage_per_second = MYMAX(damage_per_second, f3.damage_per_second);
+
+				if (damage_per_second != 0)
+					damageLocalPlayer(damage_per_second, true);
+			}
 		}
 
 		/*
@@ -281,9 +288,9 @@ void ClientEnvironment::step(float dtime)
 
 			// head
 			v3s16 p = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
-			MapNode n = m_map->getNodeNoEx(p);
-			ContentFeatures c = m_client->ndef()->get(n);
-			u8 drowning_damage = c.drowning;
+			HybridPtr<const ContentFeatures> f_ptr = m_map->getNodeDefNoEx(p);
+			const ContentFeatures &f = *f_ptr;
+			u8 drowning_damage = f.drowning;
 			if (drowning_damage > 0 && lplayer->hp > 0) {
 				u16 breath = lplayer->getBreath();
 				if (breath > 10) {
@@ -305,11 +312,11 @@ void ClientEnvironment::step(float dtime)
 
 			// head
 			v3s16 p = floatToInt(pf + v3f(0, BS * 1.6, 0), BS);
-			MapNode n = m_map->getNodeNoEx(p);
-			ContentFeatures c = m_client->ndef()->get(n);
+			HybridPtr<const ContentFeatures> f_ptr = m_map->getNodeDefNoEx(p);
+			const ContentFeatures &f = *f_ptr;
 			if (!lplayer->hp) {
 				lplayer->setBreath(11);
-			} else if (c.drowning == 0) {
+			} else if (f.drowning == 0) {
 				u16 breath = lplayer->getBreath();
 				if (breath <= 10) {
 					breath += 1;
@@ -665,12 +672,10 @@ ClientActiveObject * ClientEnvironment::getSelectedActiveObject(
 /*
 	Check if a node is pointable
 */
-static inline bool isPointableNode(const MapNode &n,
+static inline bool isPointableNode(const ContentFeatures &f,
 	INodeDefManager *ndef, bool liquids_pointable)
 {
-	const ContentFeatures &features = ndef->get(n);
-	return features.pointable ||
-		(liquids_pointable && features.isLiquid());
+	return f.pointable || (liquids_pointable && f.isLiquid());
 }
 
 PointedThing ClientEnvironment::getPointedThing(
@@ -765,12 +770,14 @@ PointedThing ClientEnvironment::getPointedThing(
 					bool is_valid_position;
 
 					n = m_map->getNodeNoEx(np, &is_valid_position);
+					HybridPtr<const ContentFeatures> f_ptr = m_map->getNodeDefNoEx(np);
+					const ContentFeatures &f = *f_ptr;
 					if (!(is_valid_position &&
-						isPointableNode(n, nodedef, liquids_pointable))) {
+						isPointableNode(f, nodedef, liquids_pointable))) {
 						continue;
 					}
 					std::vector<aabb3f> boxes;
-					n.getSelectionBoxes(nodedef, &boxes,
+					n.getSelectionBoxes(f, &boxes,
 						n.getNeighbors(np, m_map));
 
 					v3f npf = intToFloat(np, BS);

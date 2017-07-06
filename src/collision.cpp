@@ -282,7 +282,8 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 			any_position_valid = true;
 			INodeDefManager *nodedef = gamedef->getNodeDefManager();
-			const ContentFeatures &f = nodedef->get(n);
+			HybridPtr<const ContentFeatures> f_ptr = map->getNodeDefNoEx(p);
+			const ContentFeatures &f = *f_ptr;
 			if(f.walkable == false)
 				continue;
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
@@ -315,7 +316,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
 			}
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+			n.getCollisionBoxes(f, &nodeboxes, neighbors);
 			for(std::vector<aabb3f>::iterator
 					i = nodeboxes.begin();
 					i != nodeboxes.end(); ++i)

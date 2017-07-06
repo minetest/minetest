@@ -246,9 +246,9 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		return itemstack, false
 	end
 
-	local olddef_under = core.registered_nodes[oldnode_under.name]
+	local olddef_under = core.get_nodedef(under)
 	olddef_under = olddef_under or core.nodedef_default
-	local olddef_above = core.registered_nodes[oldnode_above.name]
+	local olddef_above = core.get_nodedef(above)
 	olddef_above = olddef_above or core.nodedef_default
 
 	if not olddef_above.buildable_to and not olddef_under.buildable_to then

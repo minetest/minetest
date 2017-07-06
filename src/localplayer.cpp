@@ -216,13 +216,15 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3s16 pp2 = floatToInt(position + v3f(0,-0.2*BS,0), BS);
 	node = map->getNodeNoEx(pp, &is_valid_position);
 	bool is_valid_position2;
-	MapNode node2 = map->getNodeNoEx(pp2, &is_valid_position2);
+	HybridPtr<const ContentFeatures> f_ptr = map->getNodeDefNoEx(pp);
+	HybridPtr<const ContentFeatures> f_ptr2 = map->getNodeDefNoEx(pp2, &is_valid_position2);
 
 	if (!(is_valid_position && is_valid_position2)) {
 		is_climbing = false;
 	} else {
-		is_climbing = (nodemgr->get(node.getContent()).climbable
-				|| nodemgr->get(node2.getContent()).climbable) && !free_move;
+		const ContentFeatures &f = *f_ptr;
+		const ContentFeatures &f2 = *f_ptr2;
+		is_climbing = (f.climbable || f2.climbable) && !free_move;
 	}
 
 
@@ -391,8 +393,10 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 		if (sneak_node_found) {
 			// Update saved top bounding box of sneak node
 			MapNode n = map->getNodeNoEx(m_sneak_node);
+			HybridPtr<const ContentFeatures> f_ptr = map->getNodeDefNoEx(m_sneak_node);
+			const ContentFeatures &f = *f_ptr;
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(nodemgr, &nodeboxes);
+			n.getCollisionBoxes(f, &nodeboxes);
 			m_sneak_node_bb_top = getTopBoundingBox(nodeboxes);
 
 			m_sneak_ladder_detected = physics_override_sneak_glitch &&
@@ -857,13 +861,16 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3s16 pp2 = floatToInt(position + v3f(0, -0.2 * BS, 0), BS);
 	node = map->getNodeNoEx(pp, &is_valid_position);
 	bool is_valid_position2;
-	MapNode node2 = map->getNodeNoEx(pp2, &is_valid_position2);
+	HybridPtr<const ContentFeatures> f_ptr = map->getNodeDefNoEx(pp);
+	HybridPtr<const ContentFeatures> f_ptr2 = map->getNodeDefNoEx(pp2, &is_valid_position2);
 
-	if (!(is_valid_position && is_valid_position2))
+	if (!(is_valid_position && is_valid_position2)) {
 		is_climbing = false;
-	else
-		is_climbing = (nodemgr->get(node.getContent()).climbable ||
-				nodemgr->get(node2.getContent()).climbable) && !free_move;
+	} else {
+    	const ContentFeatures &f = *f_ptr;
+    	const ContentFeatures &f2 = *f_ptr2;
+		is_climbing = (f.climbable || f2.climbable) && !free_move;
+	}
 
 	/*
 		Collision uncertainty radius
@@ -998,8 +1005,10 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		if (sneak_node_found) {
 			f32 cb_max = 0;
 			MapNode n = map->getNodeNoEx(m_sneak_node);
+			HybridPtr<const ContentFeatures> f_ptr = map->getNodeDefNoEx(m_sneak_node);
+            const ContentFeatures &f = *f_ptr;
 			std::vector<aabb3f> nodeboxes;
-			n.getCollisionBoxes(nodemgr, &nodeboxes);
+			n.getCollisionBoxes(f, &nodeboxes);
 			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
 					it != nodeboxes.end(); ++it) {
 				aabb3f box = *it;
