@@ -1220,6 +1220,76 @@ mgv7_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 #    Second of 2 3D noises that together define tunnels.
 mgv7_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
+[***Mapgen carpathian]
+
+#    Map generation attributes specific to Mapgen Carpathian.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns caverns,nocaverns
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+mgcarpathian_cave_width (Cave width) float 0.09
+
+#    Y of upper limit of large pseudorandom caves.
+mgcarpathian_large_cave_depth (Large cave depth) int -33
+
+#    Y-level of cavern upper limit.
+mgcarpathian_cavern_limit (Cavern limit) int -256
+
+#    Y-distance over which caverns expand to full size.
+mgcarpathian_cavern_taper (Cavern taper) int 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
+
+#    2D noise that defines the base ground level.
+mgcarpathian_np_base (Base ground noise) noise_params 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5
+
+#    Variation of biome filler depth.
+mgcarpathian_np_filler_depth (Filler depth noise) noise_params 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0
+
+#    First of 4 3D noises that together define hill/mountain range height.
+mgcarpathian_np_height1 (Hilliness1 noise) noise_params 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0
+
+#    Second of 4 3D noises that together define hill/mountain range height.
+mgcarpathian_np_height2 (Hilliness2 noise) noise_params 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0
+
+#    Third of 4 3D noises that together define hill/mountain range height.
+mgcarpathian_np_height3 (Hilliness3 noise) noise_params 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0
+
+#    Fourth of 4 3D noises that together define hill/mountain range height.
+mgcarpathian_np_height4 (Hilliness4 noise) noise_params 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of rolling hills.
+mgcarpathian_np_hills_terrain (Rolling hills spread noise) noise_params 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of ridged mountain ranges.
+mgcarpathian_np_ridge_terrain (Ridge mountain spread noise) noise_params 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of step mountain ranges.
+mgcarpathian_np_step_terrain (Step mountain spread noise) noise_params 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0
+
+#    2D noise that controls the shape/size of rolling hills.
+mgcarpathian_np_hills (Rolling hill size noise) noise_params 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0
+
+#    2D noise that controls the shape/size of ridged mountains.
+mgcarpathian_np_ridge_mnt (Ridged mountain size noise) noise_params 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0
+
+#    2D noise that controls the shape/size of step mountains.
+mgcarpathian_np_step_mnt (Step mountain size noise) noise_params 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
+
+#    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
+mgcarpathian_np_mnt_var (Mountain variation noise) noise_params 0, 1, (499, 499, 499), 2490, 5, 0.6, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+mgcarpathian_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+mgcarpathian_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+mgcarpathian_np_cavern (Cavern noise) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+
 [***Mapgen flat]
 
 #    Map generation attributes specific to Mapgen flat.

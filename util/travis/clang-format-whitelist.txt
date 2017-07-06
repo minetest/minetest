@@ -129,6 +129,8 @@ src/mapblock_mesh.cpp
 src/mapblock_mesh.h
 src/map.cpp
 src/mapgen.cpp
+src/mapgen_carpathian.cpp
+src/mapgen_carpathian.h
 src/mapgen_flat.cpp
 src/mapgen_fractal.cpp
 src/mapgen.h

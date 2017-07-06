@@ -400,6 +400,7 @@ set(common_SRCS
 	map_settings_manager.cpp
 	mapblock.cpp
 	mapgen.cpp
+	mapgen_carpathian.cpp
 	mapgen_flat.cpp
 	mapgen_fractal.cpp
 	mapgen_singlenode.cpp

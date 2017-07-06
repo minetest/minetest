@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 #include "filesys.h"
 #include "log.h"
+#include "mapgen_carpathian.h"
 #include "mapgen_flat.h"
 #include "mapgen_fractal.h"
 #include "mapgen_v5.h"
@@ -86,6 +87,7 @@ static MapgenDesc g_reg_mapgens[] = {
 	{"fractal",    true},
 	{"valleys",    true},
 	{"singlenode", true},
+	{"carpathian", true},
 };
 
 STATIC_ASSERT(
@@ -159,6 +161,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 	MapgenParams *params, EmergeManager *emerge)
 {
 	switch (mgtype) {
+	case MAPGEN_CARPATHIAN:
+		return new MapgenCarpathian(mgid, (MapgenCarpathianParams *)params, emerge);
 	case MAPGEN_FLAT:
 		return new MapgenFlat(mgid, (MapgenFlatParams *)params, emerge);
 	case MAPGEN_FRACTAL:
@@ -182,6 +186,8 @@ Mapgen *Mapgen::createMapgen(MapgenType mgtype, int mgid,
 MapgenParams *Mapgen::createMapgenParams(MapgenType mgtype)
 {
 	switch (mgtype) {
+	case MAPGEN_CARPATHIAN:
+		return new MapgenCarpathianParams;
 	case MAPGEN_FLAT:
 		return new MapgenFlatParams;
 	case MAPGEN_FRACTAL:
