@@ -416,6 +416,7 @@ void Client::handleCommand_ChatMessageOld(NetworkPacket* pkt)
 	}
 
 	// If chat message not consummed by client lua API
+	// @TODO send this to CSM using ChatMessage object
 	if (!moddingEnabled() || !m_script->on_receiving_message(wide_to_utf8(message))) {
 		pushToChatQueue(new ChatMessage(message));
 	}
@@ -441,11 +442,19 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 		return;
 	}
 
-	*pkt >> chatMessage->sender >> chatMessage->message;
+	*pkt >> chatMessage->sender >> chatMessage->message >> chatMessage->timestamp;
 
 	chatMessage->type = (ChatMessageType) message_type;
 
-	m_chat_queue.push(chatMessage);
+	// @TODO send this to CSM using ChatMessage object
+	if (!moddingEnabled() || !m_script->on_receiving_message(
+			wide_to_utf8(chatMessage->message))) {
+		pushToChatQueue(chatMessage);
+	}
+	else {
+		// Message was consumed by CSM and should not handled by client, destroying
+		delete chatMessage;
+	}
 }
 
 void Client::handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt)

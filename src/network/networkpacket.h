@@ -84,6 +84,9 @@ public:
 		NetworkPacket& operator>>(u64& dst);
 		NetworkPacket& operator<<(u64 src);
 
+		NetworkPacket& operator>>(std::time_t& dst);
+		NetworkPacket& operator<<(std::time_t src);
+
 		NetworkPacket& operator>>(float& dst);
 		NetworkPacket& operator<<(float src);
 
