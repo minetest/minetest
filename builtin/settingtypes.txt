@@ -1230,8 +1230,11 @@ mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns caverns,no
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgcarpathian_cave_width (Cave width) float 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 mgcarpathian_large_cave_depth (Large cave depth) int -33
+
+#    Y of upper limit of lava in large caves.
+mgcarpathian_lava_depth (Lava depth) int -256
 
 #    Y-level of cavern upper limit.
 mgcarpathian_cavern_limit (Cavern limit) int -256
