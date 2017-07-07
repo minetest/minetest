@@ -56,7 +56,9 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
+	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
+	getstringfield(L, index, "wield_overlay", def.wield_overlay);
 	getstringfield(L, index, "palette", def.palette_image);
 
 	// Read item color.
@@ -142,8 +144,12 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
 	lua_setfield(L, -2, "inventory_image");
+	lua_pushstring(L, i.inventory_overlay.c_str());
+	lua_setfield(L, -2, "inventory_overlay");
 	lua_pushstring(L, i.wield_image.c_str());
 	lua_setfield(L, -2, "wield_image");
+	lua_pushstring(L, i.wield_overlay.c_str());
+	lua_setfield(L, -2, "wield_overlay");
 	lua_pushstring(L, i.palette_image.c_str());
 	lua_setfield(L, -2, "palette_image");
 	push_ARGB8(L, i.color);
