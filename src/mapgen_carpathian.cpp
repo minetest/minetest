@@ -57,6 +57,7 @@ MapgenCarpathian::MapgenCarpathian(
 	spflags          = params->spflags;
 	cave_width       = params->cave_width;
 	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
 	cavern_limit     = params->cavern_limit;
 	cavern_taper     = params->cavern_taper;
 	cavern_threshold = params->cavern_threshold;
@@ -131,6 +132,7 @@ void MapgenCarpathianParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian);
 	settings->getFloatNoEx("mgcarpathian_cave_width",       cave_width);
 	settings->getS16NoEx("mgcarpathian_large_cave_depth",   large_cave_depth);
+	settings->getS16NoEx("mgcarpathian_lava_depth",         lava_depth);
 	settings->getS16NoEx("mgcarpathian_cavern_limit",       cavern_limit);
 	settings->getS16NoEx("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgcarpathian_cavern_threshold", cavern_threshold);
@@ -159,6 +161,7 @@ void MapgenCarpathianParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgcarpathian_spflags", spflags, flagdesc_mapgen_carpathian, U32_MAX);
 	settings->setFloat("mgcarpathian_cave_width",       cave_width);
 	settings->setS16("mgcarpathian_large_cave_depth",   large_cave_depth);
+	settings->setS16("mgcarpathian_lava_depth",         lava_depth);
 	settings->setS16("mgcarpathian_cavern_limit",       cavern_limit);
 	settings->setS16("mgcarpathian_cavern_taper",       cavern_taper);
 	settings->setFloat("mgcarpathian_cavern_threshold", cavern_threshold);

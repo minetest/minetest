@@ -37,6 +37,7 @@ struct MapgenCarpathianParams : public MapgenParams
 	u32 spflags            = MGCARPATHIAN_CAVERNS;
 	float cave_width       = 0.09f;
 	s16 large_cave_depth   = -33;
+	s16 lava_depth         = -256;
 	s16 cavern_limit       = -256;
 	s16 cavern_taper       = 256;
 	float cavern_threshold = 0.7f;
