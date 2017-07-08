@@ -2469,6 +2469,8 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.find_nodes_in_area_under_air(pos1, pos2, nodenames)`: returns a list of positions
     * `nodenames`: e.g. `{"ignore", "group:tree"}` or `"default:dirt"`
     * Return value: Table with all node positions with a node air above
+* `minetest.get_nodes_in_area(pos1, pos2)`: returns a list of nodenames and positions
+    * Return value: Table with all node names and their positions
 * `minetest.get_perlin(noiseparams)`
 * `minetest.get_perlin(seeddiff, octaves, persistence, scale)`
     * Return world-specific perlin noise (`int(worldseed)+seeddiff`)
