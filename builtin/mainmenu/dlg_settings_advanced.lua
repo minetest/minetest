@@ -451,26 +451,23 @@ local function create_change_setting_formspec(dialogdata)
 	local comment_text = ""
 
 	if setting.comment == "" then
-		comment_text = fgettext_ne("(No description of setting given)")
+		formspec = formspec .. "," .. fgettext_nl("(No description of setting given)") .. ","
 	else
-		comment_text = fgettext_ne(setting.comment)
-	end
-	for _, comment_line in ipairs(comment_text:split("\n", true)) do
-		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
+		formspec = formspec .. "," .. fgettext_nl(setting.comment) .. ","
 	end
 
 	if setting.type == "flags" then
 		formspec = formspec .. ",,"
-				.. "," .. fgettext("Please enter a comma seperated list of flags.") .. ","
+				.. "," .. fgettext_nl("Please enter a comma seperated list of flags.") .. ","
 				.. "," .. fgettext("Possible values are: ")
 				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
 	elseif setting.type == "noise_params" then
 		formspec = formspec .. ",,"
-				.. "," .. fgettext("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
-				.. "," .. fgettext("Optionally the lacunarity can be appended with a leading comma.") .. ","
+				.. "," .. fgettext_nl("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
+				.. "," .. fgettext_nl("Optionally the lacunarity can be appended with a leading comma.") .. ","
 	elseif setting.type == "v3f" then
 		formspec = formspec .. ",,"
-				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
+				.. "," .. fgettext_nl("Format is 3 numbers separated by commas and inside brackets.") .. ","
 	end
 
 	formspec = formspec:sub(1, -2) -- remove trailing comma

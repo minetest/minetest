@@ -644,6 +644,19 @@ if INIT == "client" or INIT == "mainmenu" then
 	function fgettext(text, ...)
 		return core.formspec_escape(fgettext_ne(text, ...))
 	end
+
+	function fgettext_nl(text, ...)
+		local translation = fgettext_ne(text, ...)
+		local result = ""
+		for _, line in ipairs(translation:split("\n", true)) do
+			if result == "" then
+				result = result .. core.formspec_escape(line)
+			else
+				result = result .. ",," .. core.formspec_escape(line)
+			end
+		end
+		return result
+	end
 end
 
 local ESCAPE_CHAR = string.char(0x1b)
