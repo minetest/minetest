@@ -1,6 +1,10 @@
 uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
 
+// Directional lighting information
+uniform vec4 lightColor;
+uniform vec3 lightDirection;
+
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
@@ -17,6 +21,13 @@ varying vec3 vPosition;
 // precision must be considered).
 varying vec3 worldPosition;
 
+// Specular lighting information
+varying float sunLight;
+varying float specularIntensity;
+varying float specularExponent;
+
+varying vec3 worldNormal;
+
 varying vec3 eyeVec;
 varying vec3 lightVec;
 varying vec3 tsEyeVec;
@@ -25,9 +36,9 @@ varying float area_enable_parallax;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+const vec3 artificialLightDirection = normalize(vec3(0.2, 1.0, -0.5));
 const float e = 2.718281828459;
 const float BS = 10.0;
-
 
 float smoothCurve(float x)
 {
@@ -158,8 +169,13 @@ float disp_z;
 
 	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
 
+	vec3 alwaysNormal = gl_Normal;
+	if (alwaysNormal.x * alwaysNormal.x + alwaysNormal.y * alwaysNormal.y + alwaysNormal.z * alwaysNormal.z < 0.01) {
+		alwaysNormal = vec3(0.0, 1.0, 0.0);
+	}
+
 	vec3 normal, tangent, binormal;
-	normal = normalize(gl_NormalMatrix * gl_Normal);
+	normal = normalize(gl_NormalMatrix * alwaysNormal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
 	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
 
@@ -177,6 +193,16 @@ float disp_z;
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
 
+	// Specular settings
+#ifdef ENABLE_SPECULAR_LIGHTING
+	sunLight = gl_Color.a; // Copy alpha into sunlight for specular
+
+	worldNormal = normalize(alwaysNormal); // The actual world-space normal
+
+	specularIntensity = 0.06;
+	specularExponent = 35.0;
+#endif
+
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
@@ -185,15 +211,26 @@ float disp_z;
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float nightRatio = 1 - gl_Color.a;
-	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
+	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2;
 	color.a = 1;
-	
+
+#if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
+	// Lighting color
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
+
+	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
+	resultLightColor = (resultLightColor * ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) * 0.5)) + 0.4;
+
+	float artificialLightShading = ((dot(alwaysNormal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+
+	color.rgb *= mix(resultLightColor, artificialLight * artificialLightShading, nightRatio);
+#endif
+
 	// Emphase blue a bit in darker places
 	// See C++ implementation in mapblock_mesh.cpp final_color_blend()
 	float brightness = (color.r + color.g + color.b) / 3;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
-	
 	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }

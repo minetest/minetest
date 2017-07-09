@@ -226,6 +226,7 @@ private:
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
 	bool m_arm_inertia;
+	bool m_enable_shaders;
 
 	std::list<Nametag *> m_nametags;
 };

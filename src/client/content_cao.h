@@ -123,8 +123,13 @@ private:
 	bool m_visuals_expired = false;
 	float m_step_distance_counter = 0.0f;
 	u8 m_last_light = 255;
+	u8 m_last_artificial_light_ratio = 255;
 	bool m_is_visible = false;
 	s8 m_glow = 0;
+	// Material
+	video::E_MATERIAL_TYPE m_material_type;
+	// Settings
+	bool m_enable_shaders = false;
 
 public:
 	GenericCAO(Client *client, ClientEnvironment *env);
@@ -230,9 +235,9 @@ public:
 		m_visuals_expired = true;
 	}
 
-	void updateLight(u8 light_at_pos);
+	void updateLight(u8 light_at_pos, u8 artificial_light_ratio);
 
-	void updateLightNoCheck(u8 light_at_pos);
+	void updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio);
 
 	v3s16 getLightPosition();
 

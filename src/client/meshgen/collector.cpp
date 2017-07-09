@@ -80,7 +80,7 @@ void MeshCollector::append(const TileLayer &layer, const video::S3DVertex *verti
 	for (u32 i = 0; i < numVertices; i++) {
 		video::SColor color = c;
 		if (!light_source)
-			applyFacesShading(color, vertices[i].Normal);
+			applyWorldShading(color, vertices[i].Normal);
 		p.vertices.emplace_back(vertices[i].Pos + pos, vertices[i].Normal, color,
 				scale * vertices[i].TCoords);
 	}

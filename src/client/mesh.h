@@ -27,6 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  * normal vector.
  */
 void applyFacesShading(video::SColor &color, const v3f &normal);
+void applyNoFacesShading(video::SColor &color, const v3f &normal);
+extern void (*applyWorldShading)(video::SColor &color, const v3f &normal);
 
 /*
 	Create a new cube mesh.
@@ -68,6 +70,7 @@ void setAnimatedMeshColor(scene::IAnimatedMeshSceneNode *node, const video::SCol
  * The color is darkened based on the normal vector of the vertices.
  */
 void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
+void colorizeWorldMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor);
 
 /*
 	Set the color of all vertices in the mesh.
