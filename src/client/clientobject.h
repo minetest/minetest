@@ -40,8 +40,8 @@ public:
 	virtual void addToScene(ITextureSource *tsrc) {};
 	virtual void removeFromScene(bool permanent) {}
 	// 0 <= light_at_pos <= LIGHT_SUN
-	virtual void updateLight(u8 light_at_pos){}
-	virtual void updateLightNoCheck(u8 light_at_pos){}
+	virtual void updateLight(u8 light_at_pos, u8 artificial_light_ratio){}
+	virtual void updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }

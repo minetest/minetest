@@ -693,6 +693,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			<< ", it was reduced." << std::endl;
 		f.light_source = LIGHT_MAX;
 	}
+
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
 

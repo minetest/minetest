@@ -61,6 +61,15 @@ void applyFacesShading(video::SColor &color, const v3f &normal)
 		applyShadeFactor(color, 0.670820f * x2 + 1.000000f * y2 + 0.836660f * z2);
 }
 
+// Intentionally empty function to assign to the shading function if hardware
+// shaders are enabled to prevent shading CPU and GPU side at the same time
+void applyNoFacesShading(video::SColor &color, const v3f &normal)
+{
+}
+
+// Function pointer to the applyFacesShading function; invalid until assigned in game.cpp
+void (*applyWorldShading)(video::SColor &color, const v3f &normal);
+
 scene::IAnimatedMesh* createCubeMesh(v3f scale)
 {
 	video::SColor c(255,255,255,255);
@@ -214,6 +223,21 @@ void colorizeMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolo
 		*vc = *buffercolor;
 		// Apply shading
 		applyFacesShading(*vc, vertex->Normal);
+	}
+}
+
+void colorizeWorldMeshBuffer(scene::IMeshBuffer *buf, const video::SColor *buffercolor)
+{
+	const u32 stride = getVertexPitchFromType(buf->getVertexType());
+	u32 vertex_count = buf->getVertexCount();
+	u8 *vertices = (u8 *) buf->getVertices();
+	for (u32 i = 0; i < vertex_count; i++) {
+		video::S3DVertex *vertex = (video::S3DVertex *) (vertices + i * stride);
+		video::SColor *vc = &(vertex->Color);
+		// Reset color
+		*vc = *buffercolor;
+		// Apply shading
+		applyWorldShading(*vc, vertex->Normal);
 	}
 }
 

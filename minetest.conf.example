@@ -597,6 +597,16 @@
 #    type: bool
 # tone_mapping = false
 
+#### Advanced Lighting
+
+#    Enables directional environment lighting
+#    type: bool
+# directional_shading = false
+
+#    Enables per-pixel specular highlights
+#    type: bool
+# specular_lighting = false
+
 #### Bumpmapping
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack

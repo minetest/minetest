@@ -86,6 +86,31 @@ void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 	m_local_player = player;
 }
 
+static u8 get_artificial_light_ratio(MapNode n, const ContentFeatures f)
+{
+	u16 day = decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
+	u16 night = decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+
+	// Since we don't know if the day light is sunlight or
+	// artificial light, assume it is artificial when the night
+	// light bank is also lit.
+	if (day < night)
+		day = 0;
+	else
+		day = day - night;
+
+	u32 sum = day + night;
+
+	// Ratio of sunlight:
+	u32 r;
+	if (sum > 0)
+		r = day * 255 / sum;
+	else
+		r = 0;
+
+	return 255 - r;
+}
+
 void ClientEnvironment::step(float dtime)
 {
 	/* Step time of day */
@@ -272,13 +297,16 @@ void ClientEnvironment::step(float dtime)
 
 			// Get node at head
 			v3s16 p = cao->getLightPosition();
-			MapNode n = this->m_map->getNodeNoEx(p, &pos_ok);
+			MapNode n = m_map->getNodeNoEx(p, &pos_ok);
+
 			if (pos_ok)
 				light = n.getLightBlend(day_night_ratio, m_client->ndef());
 			else
 				light = blend_light(day_night_ratio, LIGHT_SUN, 0);
 
-			cao->updateLight(light);
+			const ContentFeatures &f = m_client->ndef()->get(n);
+
+			cao->updateLight(light, get_artificial_light_ratio(n, f));
 		}
 	};
 
@@ -359,7 +387,8 @@ u16 ClientEnvironment::addActiveObject(ClientActiveObject *object)
 	else
 		light = blend_light(getDayNightRatio(), LIGHT_SUN, 0);
 
-	object->updateLight(light);
+	object->updateLight(light, 255);
+
 	return object->getId();
 }
 

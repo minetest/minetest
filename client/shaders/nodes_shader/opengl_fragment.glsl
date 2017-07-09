@@ -2,12 +2,26 @@ uniform sampler2D baseTexture;
 uniform sampler2D normalTexture;
 uniform sampler2D textureFlags;
 
+// Directional lighting information
+uniform vec4 lightColor;
+uniform vec3 lightDirection;
+
 uniform vec4 skyBgColor;
 uniform float fogDistance;
+
 uniform vec3 eyePosition;
+uniform vec3 wrappedEyePosition;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+
+// Specular lighting information
+varying float sunLight;
+varying float specularIntensity;
+varying float specularExponent;
+
+varying vec3 worldNormal;
+
 varying float area_enable_parallax;
 
 varying vec3 eyeVec;
@@ -46,11 +60,27 @@ vec4 applyToneMapping(vec4 color)
 	const float gamma = 1.6;
 	const float exposureBias = 5.5;
 	color.rgb = uncharted2Tonemap(exposureBias * color.rgb);
-	// Precalculated white_scale from 
+	// Precalculated white_scale from
 	//vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
 	vec3 whiteScale = vec3(1.036015346);
 	color.rgb *= whiteScale;
 	return vec4(pow(color.rgb, vec3(1.0 / gamma)), color.a);
+}
+#endif
+
+#ifdef ENABLE_SPECULAR_LIGHTING
+vec4 applySpecularLighting(vec4 col, float intensity, float exponent)
+{
+	// Specular highlights
+	vec3 e = normalize(worldPosition - wrappedEyePosition);
+	vec3 l = normalize(lightDirection);
+	float d = dot(e, reflect(l, worldNormal));
+
+	float specular = intensity * pow(max(d, 0.0), exponent);
+
+	col.rgb += lightColor.rgb * lightColor.a * specular * sunLight;
+
+	return col;
 }
 #endif
 
@@ -195,8 +225,12 @@ void main(void)
 	color = base.rgb;
 #endif
 
-	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0); 
-	
+	vec4 col = vec4(color.rgb * gl_Color.rgb, 1.0);
+
+#ifdef ENABLE_SPECULAR_LIGHTING
+	col = applySpecularLighting(col, specularIntensity, specularExponent);
+#endif
+
 #ifdef ENABLE_TONE_MAPPING
 	col = applyToneMapping(col);
 #endif

@@ -75,6 +75,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	// as a zoom FOV and load world beyond the set server limits.
 	m_cache_fov                 = std::fmax(g_settings->getFloat("fov"), 45.0f);
 	m_arm_inertia               = g_settings->getBool("arm_inertia");
+	m_enable_shaders            = g_settings->getBool("enable_shaders");
 	m_nametags.clear();
 }
 

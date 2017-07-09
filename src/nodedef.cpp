@@ -827,7 +827,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 		}
 	}
 
-	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype);
+	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type,
+			drawtype, light_source > 0);
 
 	u8 overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
@@ -835,7 +836,8 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	else if (overlay_material == TILE_MATERIAL_LIQUID_OPAQUE)
 		overlay_material = TILE_MATERIAL_LIQUID_TRANSPARENT;
 
-	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype);
+	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material,
+			drawtype, light_source > 0);
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {

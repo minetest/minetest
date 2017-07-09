@@ -523,6 +523,14 @@ enable_shaders (Shaders) bool true
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
 
+[***Advanced Lighting]
+
+#    Enables directional environment lighting
+directional_shading (Directional shading) bool false
+
+#    Enables per-pixel specular highlights
+specular_lighting (Specular lighting) bool false
+
 [***Tone Mapping]
 
 #    Enables filmic tone mapping
