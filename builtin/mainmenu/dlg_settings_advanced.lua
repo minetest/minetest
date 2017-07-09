@@ -466,8 +466,9 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
 	elseif setting.type == "noise_params" then
 		formspec = formspec .. ",,"
-				.. "," .. fgettext("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
-				.. "," .. fgettext("Optionally the lacunarity can be appended with a leading comma.") .. ","
+				.. "," .. fgettext("Format:") .. ","
+				.. "," .. fgettext("<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),") .. ","
+				.. "," .. fgettext("<seed>, <octaves>, <persistence>, <lacunarity>") .. ","
 	elseif setting.type == "v3f" then
 		formspec = formspec .. ",,"
 				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
