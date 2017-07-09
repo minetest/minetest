@@ -13,9 +13,6 @@ varying vec3 vPosition;
 varying vec3 worldPosition;
 
 varying vec3 eyeVec;
-varying vec3 lightVec;
-varying vec3 tsEyeVec;
-varying vec3 tsLightVec;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
@@ -31,34 +28,35 @@ void main(void)
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
-	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
-
-	lightVec = sunPosition - worldPosition;
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
-
 
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
-	vec4 color;
+	vec4 color = gl_Color;
+	color.a = 1.0;
+
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float nightRatio = 1.0 - gl_Color.a;
-	color.a = 1.0;
-	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
-		nightRatio * artificialLight.rgb) * 2;
 
 #ifdef ENABLE_ADVANCED_LIGHTING
+	vec3 norm = normalize((vec4(gl_Normal, 0.0) * mWorld).xyz);
+
+	norm.x = -norm.x;
+
 	// Directional shading color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
+		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
 	// Add a bit and multiply
 	color.rgb += resultLightColor * 0.15;
 	color.rgb *= resultLightColor;
+
+	color.rgb = (norm * 0.5) + 0.5;
 #endif
 
         // Emphase blue a bit in darker places

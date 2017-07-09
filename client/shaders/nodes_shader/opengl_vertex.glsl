@@ -162,7 +162,8 @@ float disp_z;
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
-	// Multiply then add a slight bit
+	// Add a bit and multiply
+	color.rgb += resultLightColor * 0.15;
 	color.rgb *= resultLightColor;
 #endif
 

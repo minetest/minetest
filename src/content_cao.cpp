@@ -558,6 +558,8 @@ void GenericCAO::initialize(const std::string &data)
 		if (m_client->getProtoVersion() < 33)
 			m_env->addPlayerName(m_name.c_str());
 	}
+
+	m_enable_shaders = g_settings->getBool("enable_shaders");
 }
 
 void GenericCAO::processInitData(const std::string &data)
@@ -730,6 +732,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		return;
 	}
 
+	IShaderSource *shdrsrc = m_client->getShaderSource();
+
+	if (m_enable_shaders) {
+		u32 shader_id = shdrsrc->getShader("model_shader", TILE_MATERIAL_BASIC, NDT_NORMAL);
+		m_material_type = shdrsrc->getShaderInfo(shader_id).material;
+	}
+
 	if (m_prop.visual == "sprite") {
 		infostream<<"GenericCAO::addToScene(): single_sprite"<<std::endl;
 		m_spritenode = RenderingEngine::get_scene_manager()->addBillboardSceneNode(
@@ -842,7 +851,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 			m_animated_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-			m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			if (m_enable_shaders) {
+				m_animated_meshnode->setMaterialType(m_material_type);
+				m_animated_meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING,false);
+				m_animated_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS,true);
+			} else {
+				m_animated_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+			}
 			m_animated_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 			m_animated_meshnode->setMaterialFlag(video::EMF_BACK_FACE_CULLING, backface_culling);
 		}
