@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/joystick_controller.h"
 #include "clientmap.h"
 #include "clouds.h"
+#include <cmath>
 #include "config.h"
 #include "content_cao.h"
 #include "event_manager.h"
@@ -44,6 +45,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiVolumeChange.h"
 #include "mainmenumanager.h"
 #include "mapblock.h"
+#include "mesh.h" // For updating the global applyFacesShading function pointer
 #include "minimap.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
@@ -619,13 +621,17 @@ class GameGlobalShaderConstantSetter : public IShaderConstantSetter
 	CachedVertexShaderSetting<float> m_animation_timer_vertex;
 	CachedPixelShaderSetting<float> m_animation_timer_pixel;
 	CachedPixelShaderSetting<float, 3> m_day_light;
+	CachedPixelShaderSetting<float, 4> m_light_color;
+	CachedPixelShaderSetting<float, 3> m_light_direction;
 	CachedPixelShaderSetting<float, 3> m_eye_position_pixel;
 	CachedVertexShaderSetting<float, 3> m_eye_position_vertex;
+	CachedPixelShaderSetting<float, 3> m_wrapped_eye_position_pixel;
 	CachedPixelShaderSetting<float, 3> m_minimap_yaw;
 	CachedPixelShaderSetting<SamplerLayer_t> m_base_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_normal_texture;
 	CachedPixelShaderSetting<SamplerLayer_t> m_texture_flags;
 	Client *m_client;
+	Camera *m_camera;
 
 public:
 	void onSettingsChange(const std::string &name)
@@ -641,8 +647,10 @@ public:
 
 	void setSky(Sky *sky) { m_sky = sky; }
 
+	void setCamera(Camera *camera) { m_camera = camera; }
+
 	GameGlobalShaderConstantSetter(Sky *sky, bool *force_fog_off,
-			f32 *fog_range, Client *client) :
+			f32 *fog_range, Client *client, Camera *camera) :
 		m_sky(sky),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
@@ -651,13 +659,17 @@ public:
 		m_animation_timer_vertex("animationTimer"),
 		m_animation_timer_pixel("animationTimer"),
 		m_day_light("dayLight"),
+		m_light_color("lightColor"),
+		m_light_direction("lightDirection"),
 		m_eye_position_pixel("eyePosition"),
 		m_eye_position_vertex("eyePosition"),
+		m_wrapped_eye_position_pixel("wrappedEyePosition"),
 		m_minimap_yaw("yawVec"),
 		m_base_texture("baseTexture"),
 		m_normal_texture("normalTexture"),
 		m_texture_flags("textureFlags"),
-		m_client(client)
+		m_client(client),
+		m_camera(camera)
 	{
 		g_settings->registerChangedCallback("enable_fog", settingsCallback, this);
 		m_fog_enabled = g_settings->getBool("enable_fog");
@@ -702,6 +714,30 @@ public:
 			sunlight.b };
 		m_day_light.set(dnc, services);
 
+		// Lighting will also use location-based lighting in the future
+		// for smaller models so the sun color alone isn't sufficient
+		const float time_of_day = (float)m_client->getEnv().getTimeOfDayF();
+		float sun_angle = time_of_day * M_PI * 2;
+		float light_color[4] = {
+			sunlight.r,
+			sunlight.g,
+			sunlight.b,
+ 			1.0 };
+		if (daynight_ratio < 320) { // Moon light
+			sun_angle -= M_PI;
+
+			light_color[0] *= 0.8;
+			light_color[1] *= 0.8;
+		}
+
+		m_light_color.set(light_color, services);
+
+		float light_direction[3] = {
+			sin(sun_angle),
+			-cos(sun_angle),
+			0.0 };
+		m_light_direction.set(light_direction, services);
+
 		u32 animation_timer = porting::getTimeMs() % 100000;
 		float animation_timer_f = (float)animation_timer / 100000.f;
 		m_animation_timer_vertex.set(&animation_timer_f, services);
@@ -718,6 +754,15 @@ public:
 #endif
 		m_eye_position_pixel.set(eye_position_array, services);
 		m_eye_position_vertex.set(eye_position_array, services);
+
+		// Override the existing array; no need to allocate another
+		if (m_camera) {
+			v3f co = intToFloat(m_camera->getOffset(), BS);
+			eye_position_array[0] = epos.X - co.X;
+			eye_position_array[1] = epos.Y - co.Y;
+			eye_position_array[2] = epos.Z - co.Z;
+			m_wrapped_eye_position_pixel.set(eye_position_array, services);
+		}
 
 		if (m_client->getMinimap()) {
 			float minimap_yaw_array[3];
@@ -748,14 +793,17 @@ class GameGlobalShaderConstantSetterFactory : public IShaderConstantSetterFactor
 	bool *m_force_fog_off;
 	f32 *m_fog_range;
 	Client *m_client;
+	Camera *m_camera;
 	std::vector<GameGlobalShaderConstantSetter *> created_nosky;
+	std::vector<GameGlobalShaderConstantSetter *> created_camera;
 public:
 	GameGlobalShaderConstantSetterFactory(bool *force_fog_off,
 			f32 *fog_range, Client *client) :
 		m_sky(NULL),
 		m_force_fog_off(force_fog_off),
 		m_fog_range(fog_range),
-		m_client(client)
+		m_client(client),
+		m_camera(NULL)
 	{}
 
 	void setSky(Sky *sky) {
@@ -766,12 +814,24 @@ public:
 		created_nosky.clear();
 	}
 
+	void setCamera(Camera *camera) {
+		m_camera = camera;
+		for (size_t i = 0; i < created_camera.size(); ++i) {
+			created_camera[i]->setCamera(m_camera);
+		}
+		created_camera.clear();
+	}
+
 	virtual IShaderConstantSetter* create()
 	{
 		GameGlobalShaderConstantSetter *scs = new GameGlobalShaderConstantSetter(
-				m_sky, m_force_fog_off, m_fog_range, m_client);
+				m_sky, m_force_fog_off, m_fog_range, m_client, m_camera);
 		if (!m_sky)
 			created_nosky.push_back(scs);
+
+		if (!m_camera)
+			created_camera.push_back(scs);
+
 		return scs;
 	}
 };
@@ -1522,6 +1582,8 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("camera_smoothing",
 		&settingChangedCallback, this);
+	g_settings->registerChangedCallback("enable_shaders",
+		&settingChangedCallback, this);
 
 	readSettings();
 
@@ -1580,6 +1642,8 @@ Game::~Game()
 	g_settings->deregisterChangedCallback("cinematic_camera_smoothing",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("camera_smoothing",
+		&settingChangedCallback, this);
+	g_settings->deregisterChangedCallback("enable_shaders",
 		&settingChangedCallback, this);
 }
 
@@ -1918,6 +1982,8 @@ bool Game::createClient(const std::string &playername,
 	if (!camera || !camera->successfullyCreated(*error_message))
 		return false;
 	client->setCamera(camera);
+
+	scsf->setCamera(camera);
 
 	/* Clouds
 	 */
@@ -4521,6 +4587,10 @@ void Game::readSettings()
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
+	if (g_settings->getBool("enable_shaders") && g_settings->getBool("enable_advanced_lighting"))
+		applyWorldShading = &applyNoFacesShading;
+	else
+		applyWorldShading = &applyFacesShading;
 }
 
 /****************************************************************************/

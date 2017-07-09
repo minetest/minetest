@@ -1,6 +1,10 @@
 uniform mat4 mWorldViewProj;
 uniform mat4 mWorld;
 
+// Directional lighting information
+uniform vec4 lightColor;
+uniform vec3 lightDirection;
+
 // Color of the light emitted by the sun.
 uniform vec3 dayLight;
 uniform vec3 eyePosition;
@@ -8,6 +12,13 @@ uniform float animationTimer;
 
 varying vec3 vPosition;
 varying vec3 worldPosition;
+
+// Specular lighting information
+varying float sunLight;
+varying float specularIntensity;
+varying float specularExponent;
+
+varying vec3 worldNormal;
 
 varying vec3 eyeVec;
 varying vec3 lightVec;
@@ -122,6 +133,16 @@ float disp_z;
 	v.z = dot(eyeVec, normal);
 	tsEyeVec = normalize (v);
 
+	// Specular settings
+#ifdef ENABLE_SPECULAR_LIGHTING
+	sunLight = gl_Color.a; // Copy alpha into sunlight for specular
+
+	worldNormal = normalize(gl_Normal); // The actual world-space normal
+
+	specularIntensity = 0.06;
+	specularExponent = 35.0;
+#endif
+
 	// Calculate color.
 	// Red, green and blue components are pre-multiplied with
 	// the brightness, so now we have to multiply these
@@ -129,16 +150,27 @@ float disp_z;
 	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1 - gl_Color.a;
-	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb + 
+	float nightRatio = 1.0 - gl_Color.a;
+	color.a = 1.0;
+	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2;
-	color.a = 1;
-	
-	// Emphase blue a bit in darker places
-	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-	float brightness = (color.r + color.g + color.b) / 3;
+
+#ifdef ENABLE_ADVANCED_LIGHTING
+	// Directional shading color
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
+		((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
+
+	resultLightColor = (resultLightColor * 0.6) + 0.4;
+
+	// Multiply then add a slight bit
+	color.rgb *= resultLightColor;
+#endif
+
+        // Emphase blue a bit in darker places
+        // See C++ implementation in mapblock_mesh.cpp finalColorBlend()
+        float brightness = (color.r + color.g + color.b) / 3;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
-	
-	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
+
+	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);;
 }

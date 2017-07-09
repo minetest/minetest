@@ -389,7 +389,7 @@ void WieldMeshSceneNode::setColor(video::SColor c)
 			bc.getGreen() * green / 255,
 			bc.getBlue() * blue / 255);
 		scene::IMeshBuffer *buf = mesh->getMeshBuffer(j);
-		colorizeMeshBuffer(buf, &buffercolor);
+		colorizeWorldMeshBuffer(buf, &buffercolor);
 	}
 }
 

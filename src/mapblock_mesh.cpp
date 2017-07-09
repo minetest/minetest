@@ -608,7 +608,7 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 		for (u8 i = 0; i < 4; i++) {
 			video::SColor c = encode_light(li[i], tile.emissive_light);
 			if (!tile.emissive_light)
-				applyFacesShading(c, normal);
+				applyWorldShading(c, normal);
 
 			face.vertices[i] = video::S3DVertex(vertex_pos[i], normal, c, f[i]);
 		}
@@ -1496,7 +1496,7 @@ void MeshCollector::append(const TileLayer &layer,
 		for (u32 i = 0; i < numVertices; i++) {
 			if (!light_source) {
 				c = original_c;
-				applyFacesShading(c, vertices[i].Normal);
+				applyWorldShading(c, vertices[i].Normal);
 			}
 			video::S3DVertexTangents vert(vertices[i].Pos + pos,
 				vertices[i].Normal, c, vertices[i].TCoords);
@@ -1507,7 +1507,7 @@ void MeshCollector::append(const TileLayer &layer,
 		for (u32 i = 0; i < numVertices; i++) {
 			if (!light_source) {
 				c = original_c;
-				applyFacesShading(c, vertices[i].Normal);
+				applyWorldShading(c, vertices[i].Normal);
 			}
 			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
 				vertices[i].TCoords);

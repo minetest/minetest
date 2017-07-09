@@ -741,6 +741,12 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (g_settings->getBool("tone_mapping"))
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 
+	if (g_settings->getBool("enable_advanced_lighting"))
+		shaders_header += "#define ENABLE_ADVANCED_LIGHTING\n";
+
+	if (g_settings->getBool("enable_specular_lighting"))
+		shaders_header += "#define ENABLE_SPECULAR_LIGHTING\n";
+
 	shaders_header += "#define FOG_START ";
 	shaders_header += ftos(rangelim(g_settings->getFloat("fog_start"), 0.0f, 0.99f));
 	shaders_header += "\n";

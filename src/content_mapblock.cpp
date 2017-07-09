@@ -111,7 +111,7 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 		else
 			vertices[j].Color = color;
 		if (shade_face)
-			applyFacesShading(vertices[j].Color, normal2);
+			applyWorldShading(vertices[j].Color, normal2);
 		vertices[j].TCoords = tcoords[j];
 	}
 	collector->append(tile, vertices, 4, quad_indices, 6);
@@ -141,12 +141,12 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 			colors[face] = encode_light(light, f->light_source);
 		}
 		if (!f->light_source) {
-			applyFacesShading(colors[0], v3f(0, 1, 0));
-			applyFacesShading(colors[1], v3f(0, -1, 0));
-			applyFacesShading(colors[2], v3f(1, 0, 0));
-			applyFacesShading(colors[3], v3f(-1, 0, 0));
-			applyFacesShading(colors[4], v3f(0, 0, 1));
-			applyFacesShading(colors[5], v3f(0, 0, -1));
+			applyWorldShading(colors[0], v3f(0, 1, 0));
+			applyWorldShading(colors[1], v3f(0, -1, 0));
+			applyWorldShading(colors[2], v3f(1, 0, 0));
+			applyWorldShading(colors[3], v3f(-1, 0, 0));
+			applyWorldShading(colors[4], v3f(0, 0, 1));
+			applyWorldShading(colors[5], v3f(0, 0, -1));
 		}
 	}
 
@@ -243,7 +243,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 			vertices[j].Color = encode_light(lights[light_indices[j]],
 				f->light_source);
 			if (!f->light_source)
-				applyFacesShading(vertices[j].Color, vertices[j].Normal);
+				applyWorldShading(vertices[j].Color, vertices[j].Normal);
 		}
 	}
 
@@ -299,7 +299,7 @@ video::SColor MapblockMeshGenerator::blendLightColor(const v3f &vertex_pos,
 {
 	video::SColor color = blendLightColor(vertex_pos);
 	if (!f->light_source)
-		applyFacesShading(color, vertex_normal);
+		applyWorldShading(color, vertex_normal);
 	return color;
 }
 

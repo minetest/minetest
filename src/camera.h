@@ -228,6 +228,7 @@ private:
 	f32 m_cache_fov;
 	f32 m_cache_zoom_fov;
 	bool m_arm_inertia;
+	bool m_enable_shaders;
 
 	std::list<Nametag *> m_nametags;
 };

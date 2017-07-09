@@ -74,6 +74,7 @@ Camera::Camera(MapDrawControl &draw_control, Client *client):
 	m_cache_fov                 = g_settings->getFloat("fov");
 	m_cache_zoom_fov            = g_settings->getFloat("zoom_fov");
 	m_arm_inertia		    = g_settings->getBool("arm_inertia");
+	m_enable_shaders	    = g_settings->getBool("enable_shaders");
 	m_nametags.clear();
 }
 
@@ -517,7 +518,8 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
-	m_wieldnode->setColor(player->light_color);
+	if (!m_enable_shaders)
+		m_wieldnode->setColor(player->light_color);
 
 	// Set render distance
 	updateViewingRange();
