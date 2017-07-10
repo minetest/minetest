@@ -621,7 +621,7 @@ MapgenBasic::~MapgenBasic()
 }
 
 
-MgStoneType MapgenBasic::generateBiomes()
+MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 {
 	// can't generate biomes without a biome generator!
 	assert(biomegen);
@@ -673,7 +673,10 @@ MgStoneType MapgenBasic::generateBiomes()
 				(air_above || !biome);
 
 			if (is_stone_surface || is_water_surface) {
-				biome = biomegen->getBiomeAtIndex(index, y);
+				// Limit to +-MAX MAP GENERATION LIMIT to work with biome y_min / y_max.
+				s32 relative_y = rangelim(y - biome_zero_level,
+					-MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT);
+				biome = biomegen->getBiomeAtIndex(index, relative_y);
 
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
 					biomemap[index] = biome->index;

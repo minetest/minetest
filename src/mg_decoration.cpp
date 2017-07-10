@@ -48,7 +48,7 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 
 
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
-	v3s16 nmin, v3s16 nmax)
+	v3s16 nmin, v3s16 nmax, s16 deco_zero_level)
 {
 	size_t nplaced = 0;
 
@@ -57,7 +57,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
+		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax, deco_zero_level);
 		blockseed++;
 	}
 
@@ -123,8 +123,18 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
+	v3s16 nmin, v3s16 nmax, s16 deco_zero_level)
 {
+	// Decoration y_min / y_max is displaced by deco_zero_level or remains
+	// unchanged. Any decoration with a limit at +-MAX_MAP_GENERATION_LIMIT is
+	// considered to have that limit at +-infinity, so we do not alter that limit.
+	s32 y_min_disp = (y_min <= -MAX_MAP_GENERATION_LIMIT) ?
+		-MAX_MAP_GENERATION_LIMIT : y_min + deco_zero_level;
+
+	s32 y_max_disp = (y_max >= MAX_MAP_GENERATION_LIMIT) ?
+		MAX_MAP_GENERATION_LIMIT : y_max + deco_zero_level;
+
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
@@ -179,8 +189,7 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 			else
 				y = mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
 
-			if (y < nmin.Y || y > nmax.Y ||
-				y < y_min  || y > y_max)
+			if (y < y_min_disp || y > y_max_disp || y < nmin.Y || y > nmax.Y)
 				continue;
 
 			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y) {
