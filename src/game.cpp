@@ -723,11 +723,17 @@ public:
 			sunlight.g,
 			sunlight.b,
  			1.0 };
-		if (daynight_ratio < 320) { // Moon light
+		light_color[3] = 1.0 - (time_of_day / 1000.0);
+		if (daynight_ratio > 320 && daynight_ratio < 470) { // Moon light
+			sun_angle -= M_PI * (1.0 - ((daynight_ratio - 320) / 150.0));
+
+			light_color[1] *= 0.8; // Reduced green and blue
+			light_color[2] *= 0.9;
+		} else if (daynight_ratio <= 320) {
 			sun_angle -= M_PI;
 
-			light_color[0] *= 0.9;
-			light_color[1] *= 0.8;
+			light_color[0] *= 0.8; // Reduced red and green
+			light_color[1] *= 0.9;
 		}
 
 		m_light_color.set(light_color, services);

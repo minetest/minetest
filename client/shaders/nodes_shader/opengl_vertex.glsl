@@ -158,12 +158,10 @@ float disp_z;
 #ifdef ENABLE_ADVANCED_LIGHTING
 	// Directional shading color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
+		((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
-	// Add a bit and multiply
-	color.rgb += resultLightColor * 0.15;
 	color.rgb *= resultLightColor;
 #endif
 

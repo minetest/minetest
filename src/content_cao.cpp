@@ -748,8 +748,14 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 				tsrc->getTextureForMesh("unknown_node.png"));
 		m_spritenode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_spritenode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
 		m_spritenode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		if (m_enable_shaders) {
+			m_spritenode->setMaterialType(m_material_type);
+			m_spritenode->setMaterialFlag(video::EMF_GOURAUD_SHADING,false);
+			m_spritenode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS,true);
+		} else {
+			m_spritenode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		}
 		u8 li = m_last_light;
 		m_spritenode->setColor(video::SColor(255,li,li,li));
 		m_spritenode->setSize(m_prop.visual_size*BS);
@@ -780,7 +786,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			if (m_enable_shaders) {
+				buf->getMaterial().MaterialType = m_material_type;
+				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING,false);
+				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS,true);
+			} else {
+				buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			}
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
 			buf->drop();
@@ -799,7 +811,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 			buf->getMaterial().setFlag(video::EMF_LIGHTING, false);
 			buf->getMaterial().setFlag(video::EMF_BILINEAR_FILTER, false);
 			buf->getMaterial().setFlag(video::EMF_FOG_ENABLE, true);
-			buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			if (m_enable_shaders) {
+				buf->getMaterial().MaterialType = m_material_type;
+				buf->getMaterial().setFlag(video::EMF_GOURAUD_SHADING,false);
+				buf->getMaterial().setFlag(video::EMF_NORMALIZE_NORMALS,true);
+			} else {
+				buf->getMaterial().MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+			}
 			// Add to mesh
 			mesh->addMeshBuffer(buf);
 			buf->drop();
@@ -826,7 +844,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 
 		m_meshnode->setMaterialFlag(video::EMF_LIGHTING, false);
 		m_meshnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
-		m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		if (m_enable_shaders) {
+			m_meshnode->setMaterialType(m_material_type);
+			m_meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING,false);
+			m_meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS,true);
+		} else {
+			m_meshnode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF);
+		}
 		m_meshnode->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 	}
 	else if(m_prop.visual == "mesh") {

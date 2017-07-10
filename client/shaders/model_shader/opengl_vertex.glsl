@@ -42,19 +42,15 @@ void main(void)
 	float nightRatio = 1.0 - gl_Color.a;
 
 #ifdef ENABLE_ADVANCED_LIGHTING
-	vec3 norm = normalize((vec4(gl_Normal, 0.0) * mWorld).xyz);
+	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
 
 	// Directional shading color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
+		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
-	// Add a bit and multiply
-	color.rgb += resultLightColor * 0.15;
 	color.rgb *= resultLightColor;
-
-//	color.rgb = (norm * 0.5) + 0.5;
 #endif
 
         // Emphase blue a bit in darker places
