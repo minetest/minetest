@@ -117,6 +117,30 @@ void MapblockMeshGenerator::drawQuad(v3f *coords, const v3s16 &normal)
 	collector->append(tile, vertices, 4, quad_indices, 6);
 }
 
+void MapblockMeshGenerator::drawQuadExtra(v3f *coords, const v3f &normal, bool flipTex)
+{
+	static const v2f tcoords[4] = {v2f(0, 0), v2f(1, 0), v2f(1, 1), v2f(0, 1)};
+	static const v2f tcoords2[4] = {v2f(1, 0), v2f(0, 0), v2f(0, 1), v2f(1, 1)};
+	video::S3DVertex vertices[4];
+	bool shade_face = !f->light_source && (normal != v3f(0.0, 0.0, 0.0));
+	v3f normal2(normal.X, normal.Y, normal.Z);
+	for (int j = 0; j < 4; j++) {
+		vertices[j].Pos = coords[j] + origin;
+		vertices[j].Normal = normal2;
+		if (data->m_smooth_lighting)
+			vertices[j].Color = blendLightColor(coords[j]);
+		else
+			vertices[j].Color = color;
+		if (shade_face)
+			applyWorldShading(vertices[j].Color, normal2);
+		if (flipTex)
+			vertices[j].TCoords = tcoords2[j];
+		else
+			vertices[j].TCoords = tcoords[j];
+	}
+	collector->append(tile, vertices, 4, quad_indices, 6);
+}
+
 // Create a cuboid.
 //  tiles     - the tiles (materials) to use (for all 6 faces)
 //  tilecount - number of entries in tiles, 1<=tilecount<=6
@@ -834,18 +858,35 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 		v3f( scale, -BS / 2, 0),
 		v3f(-scale, -BS / 2, 0),
 	};
+	v3f vertices_flipped[4] = {
+		v3f( scale, -BS / 2 + scale * 2, 0),
+		v3f(-scale, -BS / 2 + scale * 2, 0),
+		v3f(-scale, -BS / 2, 0),
+		v3f( scale, -BS / 2, 0),
+	};
 	if (random_offset_Y) {
 		PseudoRandom yrng(face_num++ | p.X << 16 | p.Z << 8 | p.Y << 24);
 		offset.Y = -BS * ((yrng.next() % 16 / 16.0) * 0.125);
 	}
 	int offset_count = offset_top_only ? 2 : 4;
-	for (int i = 0; i < offset_count; i++)
+	for (int i = 0; i < offset_count; i++) {
 		vertices[i].Z += quad_offset;
+		vertices_flipped[i].Z += quad_offset;
+	}
 	for (int i = 0; i < 4; i++) {
 		vertices[i].rotateXZBy(rotation + rotate_degree);
 		vertices[i] += offset;
+		vertices_flipped[i].rotateXZBy(rotation + rotate_degree);
+		vertices_flipped[i] += offset;
 	}
-	drawQuad(vertices);
+
+	v3f dir(0.0, 0.0, 1.0);
+	dir.rotateXZBy(rotation + rotate_degree);
+
+	drawQuadExtra(vertices, dir);
+
+//	dir.invert();
+//	drawQuadExtra(vertices_flipped, dir, true);
 }
 
 void MapblockMeshGenerator::drawPlantlikeNode()

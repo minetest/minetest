@@ -68,6 +68,7 @@ public:
 
 // face drawing
 	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
+	void drawQuadExtra(v3f *vertices, const v3f &normal = v3f(0.0, 0.0, 0.0), bool flipTex = false);
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
