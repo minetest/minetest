@@ -1601,11 +1601,5 @@ main_menu_game_mgr (Main menu game manager) int 0
 
 main_menu_mod_mgr (Main menu mod manager) int 1
 
-modstore_download_url (Modstore download URL) string https://forum.minetest.net/media/
-
-modstore_listmods_url (Modstore mods list URL) string https://forum.minetest.net/mmdb/mods/
-
-modstore_details_url (Modstore details URL) string https://forum.minetest.net/mmdb/mod/*/
-
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 profiler_print_interval (Engine profiling data print interval) int 0

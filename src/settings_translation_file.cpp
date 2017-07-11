@@ -769,9 +769,6 @@ fake_function() {
 	gettext("Replaces the default main menu with a custom one.");
 	gettext("Main menu game manager");
 	gettext("Main menu mod manager");
-	gettext("Modstore download URL");
-	gettext("Modstore mods list URL");
-	gettext("Modstore details URL");
 	gettext("Engine profiling data print interval");
 	gettext("Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.");
 }
