@@ -101,6 +101,10 @@ always_fly_fast (Always fly and fast) bool true
 #    The time in seconds it takes between repeated right clicks when holding the right mouse button.
 repeat_rightclick_time (Rightclick repetition interval) float 0.25
 
+#    Prevent digging and placing from repeating when holding the mouse buttons.
+#    Enable this when you dig or place too often by accident.
+safe_dig_and_place (Safe digging and placing) bool false
+
 #    Enable random user input (only used for testing).
 random_input (Random input) bool false
 

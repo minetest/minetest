@@ -1150,6 +1150,7 @@ struct GameRunData {
 	bool digging;
 	bool ldown_for_dig;
 	bool dig_instantly;
+	bool digging_blocked;
 	bool left_punch;
 	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
@@ -1157,6 +1158,7 @@ struct GameRunData {
 	float dig_time;
 	float dig_time_complete;
 	float repeat_rightclick_timer;
+	bool rightclick_blocked;
 	float object_hit_delay_timer;
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
@@ -3574,6 +3576,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hud->updateSelectionMesh(camera_offset);
 	}
 
+	if (runData.digging_blocked && !isLeftPressed()) {
+		// allow digging again if button is not pressed
+		runData.digging_blocked = false;
+	}
+
 	/*
 		Stop digging when
 		- releasing left mouse button
@@ -3620,8 +3627,10 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	if (isRightPressed())
 		runData.repeat_rightclick_timer += dtime;
-	else
+	else {
 		runData.repeat_rightclick_timer = 0;
+		runData.rightclick_blocked = false;
+	}
 
 	if (playeritem_def.usable && isLeftPressed()) {
 		if (getLeftClicked() && (!client->moddingEnabled()
@@ -3777,6 +3786,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	ClientMap &map = client->getEnv().getClientMap();
 
 	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
+			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
 	}
@@ -3797,6 +3807,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 	if ((getRightClicked() ||
 			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
+			!runData.rightclick_blocked &&
 			client->checkPrivilege("interact")) {
 		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
@@ -3850,6 +3861,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				}
 			}
 		}
+		// we right clicked, now block it from repeating if we want to be safe
+		if (g_settings->getBool("safe_dig_and_place"))
+			runData.rightclick_blocked = true;
 	}
 }
 
@@ -3995,6 +4009,9 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		runData.dig_time = 0;
 		runData.digging = false;
+		// we successfully dug, now block it from repeating if we want to be safe
+		if (g_settings->getBool("safe_dig_and_place"))
+			runData.digging_blocked = true;
 
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
