@@ -20,6 +20,11 @@ const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
 
+float intensity(vec3 color)
+{
+	return (color.r + color.g + color.b) / 3.0;
+}
+
 void main(void)
 {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
@@ -48,7 +53,8 @@ void main(void)
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
 		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
 
-	resultLightColor = (resultLightColor * 0.6) + 0.4;
+	float indoors = intensity(gl_Color.rgb) * 0.6;
+	resultLightColor = (resultLightColor * indoors) + (1.0 - indoors);
 
 	color.rgb *= resultLightColor;
 #endif
