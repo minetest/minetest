@@ -1158,7 +1158,6 @@ struct GameRunData {
 	float dig_time;
 	float dig_time_complete;
 	float repeat_rightclick_timer;
-	bool rightclick_blocked;
 	float object_hit_delay_timer;
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
@@ -3625,12 +3624,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
-	if (isRightPressed())
+	// Prepare for repeating, unless we're not supposed to
+	if (isRightPressed() && !g_settings->getBool("safe_dig_and_place"))
 		runData.repeat_rightclick_timer += dtime;
-	else {
+	else
 		runData.repeat_rightclick_timer = 0;
-		runData.rightclick_blocked = false;
-	}
 
 	if (playeritem_def.usable && isLeftPressed()) {
 		if (getLeftClicked() && (!client->moddingEnabled()
@@ -3807,7 +3805,6 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 	if ((getRightClicked() ||
 			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
-			!runData.rightclick_blocked &&
 			client->checkPrivilege("interact")) {
 		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
@@ -3861,9 +3858,6 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				}
 			}
 		}
-		// we right clicked, now block it from repeating if we want to be safe
-		if (g_settings->getBool("safe_dig_and_place"))
-			runData.rightclick_blocked = true;
 	}
 }
 
