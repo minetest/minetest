@@ -23,11 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mapgen.h"
 
-//////////// Mapgen V7 flags
-#define MGV7_MOUNTAINS  0x01
-#define MGV7_RIDGES     0x02
-#define MGV7_FLOATLANDS 0x04
-#define MGV7_CAVERNS    0x08
+/////////////// Mapgen V7 flags
+#define MGV7_MOUNTAINS   0x01
+#define MGV7_RIDGES      0x02
+#define MGV7_FLOATLANDS  0x04
+#define MGV7_CAVERNS     0x08
+#define MGV7_BIOMEREPEAT 0x10
 
 class BiomeManager;
 
@@ -35,7 +36,8 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 
 struct MapgenV7Params : public MapgenParams {
-	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
+	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES |
+		MGV7_CAVERNS | MGV7_BIOMEREPEAT;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
 	s16 lava_depth = -256;

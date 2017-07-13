@@ -1390,12 +1390,12 @@
 #### Mapgen v7
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag enables the rivers.
-#    Floatlands are currently experimental and subject to change.
+#    'ridges' enables the rivers.
+#    'biomerepeat' causes surface biomes to repeat in the floatlands.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
-# mgv7_spflags = mountains,ridges,nofloatlands,caverns
+#    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float

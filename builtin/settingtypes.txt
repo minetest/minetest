@@ -1151,11 +1151,11 @@ mgv6_np_apple_trees (Apple trees noise) noise_params 0, 1, (100, 100, 100), 3429
 [***Mapgen v7]
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag enables the rivers.
-#    Floatlands are currently experimental and subject to change.
+#    'ridges' enables the rivers.
+#    'biomerepeat' causes surface biomes to repeat in the floatlands.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgv7_spflags (Mapgen v7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
+mgv7_spflags (Mapgen v7 specific flags) flags mountains,ridges,nofloatlands,caverns,biomerepeat mountains,ridges,floatlands,caverns,biomerepeat,nomountains,noridges,nofloatlands,nocaverns,nobiomerepeat
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 mgv7_cave_width (Cave width) float 0.09
