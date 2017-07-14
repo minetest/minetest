@@ -365,25 +365,6 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path):
 }
 #endif
 
-#if USE_CURL
-Json::Value getModstoreUrl(const std::string &url)
-{
-	std::vector<std::string> extra_headers;
-
-	bool special_http_header = true;
-
-	try {
-		special_http_header = g_settings->getBool("modstore_disable_special_http_header");
-	} catch (SettingNotFoundException) {}
-
-	if (special_http_header) {
-		extra_headers.push_back("Accept: application/vnd.minetest.mmdb-v1+json");
-	}
-	return fetchJsonValue(url, special_http_header ? &extra_headers : NULL);
-}
-
-#endif
-
 ModMetadata::ModMetadata(const std::string &mod_name):
 	m_mod_name(mod_name)
 {

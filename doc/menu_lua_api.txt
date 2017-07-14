@@ -37,26 +37,6 @@ core.get_modpath() (possible in async calls)
 ^ returns path to global modpath
 core.get_clientmodpath() (possible in async calls)
 ^ returns path to global client-side modpath
-core.get_modstore_details(modid) (possible in async calls)
-^ modid numeric id of mod in modstore
-^ returns {
-	id			= <numeric id of mod in modstore>,
-	title		= <human readable title>,
-	basename	= <basename for mod>,
-	description = <description of mod>,
-	author		= <author of mod>,
-	download_url= <best match download url>,
-	license		= <short description of license>,
-	rating		= <float value of current rating>
-}
-core.get_modstore_list() (possible in async calls)
-^ returns {
-	[1] = {
-		id		 = <numeric id of mod in modstore>,
-		title	 = <human readable title>,
-		basename = <basename for mod>
-	}
-}
 core.get_gamepath() (possible in async calls)
 ^ returns path to global gamepath
 core.get_texturepath() (possible in async calls)

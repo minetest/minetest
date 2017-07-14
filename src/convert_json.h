@@ -22,12 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <json/json.h>
 
-struct ModStoreMod;
-struct ModStoreModDetails;
-
-std::vector<ModStoreMod>    readModStoreList(Json::Value& modlist);
-ModStoreModDetails          readModStoreModDetails(Json::Value& details);
-
 Json::Value                 fetchJsonValue(const std::string &url,
                                            std::vector<std::string> *extra_headers);
 

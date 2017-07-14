@@ -1499,7 +1499,7 @@
 #    Y of upper limit of large caves.
 #    type: int
 # mgcarpathian_large_cave_depth = -33
- 
+
 #    Y of upper limit of lava in large caves.
 #    type: int
 # mgcarpathian_lava_depth = -256
@@ -1961,16 +1961,6 @@
 #    type: int
 # main_menu_mod_mgr = 1
 
-#    type: string
-# modstore_download_url = https://forum.minetest.net/media/
-
-#    type: string
-# modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
-
-#    type: string
-# modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
-
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
-

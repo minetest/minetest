@@ -311,147 +311,6 @@ int ModApiMainMenu::l_get_games(lua_State *L)
 	return 1;
 }
 /******************************************************************************/
-int ModApiMainMenu::l_get_modstore_details(lua_State *L)
-{
-	const char *modid	= luaL_checkstring(L, 1);
-
-	if (modid != 0) {
-		Json::Value details;
-		std::string url = "";
-		try{
-			url = g_settings->get("modstore_details_url");
-		}
-		catch(SettingNotFoundException &e) {
-			lua_pushnil(L);
-			return 1;
-		}
-
-		size_t idpos = url.find("*");
-		url.erase(idpos,1);
-		url.insert(idpos,modid);
-
-		details = getModstoreUrl(url);
-
-		ModStoreModDetails current_mod = readModStoreModDetails(details);
-
-		if ( current_mod.valid) {
-			lua_newtable(L);
-			int top = lua_gettop(L);
-
-			lua_pushstring(L,"id");
-			lua_pushnumber(L,current_mod.id);
-			lua_settable(L, top);
-
-			lua_pushstring(L,"title");
-			lua_pushstring(L,current_mod.title.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"basename");
-			lua_pushstring(L,current_mod.basename.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"description");
-			lua_pushstring(L,current_mod.description.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"author");
-			lua_pushstring(L,current_mod.author.username.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"download_url");
-			lua_pushstring(L,current_mod.versions[0].file.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"versions");
-			lua_newtable(L);
-			int versionstop = lua_gettop(L);
-			for (unsigned int i=0;i < current_mod.versions.size(); i++) {
-				lua_pushnumber(L,i+1);
-				lua_newtable(L);
-				int current_element = lua_gettop(L);
-
-				lua_pushstring(L,"date");
-				lua_pushstring(L,current_mod.versions[i].date.c_str());
-				lua_settable(L,current_element);
-
-				lua_pushstring(L,"download_url");
-				lua_pushstring(L,current_mod.versions[i].file.c_str());
-				lua_settable(L,current_element);
-
-				lua_settable(L,versionstop);
-			}
-			lua_settable(L, top);
-
-			lua_pushstring(L,"screenshot_url");
-			lua_pushstring(L,current_mod.titlepic.file.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"license");
-			lua_pushstring(L,current_mod.license.shortinfo.c_str());
-			lua_settable(L, top);
-
-			lua_pushstring(L,"rating");
-			lua_pushnumber(L,current_mod.rating);
-			lua_settable(L, top);
-
-			//TODO depends
-
-			//TODO softdepends
-			return 1;
-		}
-	}
-	return 0;
-}
-
-/******************************************************************************/
-int ModApiMainMenu::l_get_modstore_list(lua_State *L)
-{
-	Json::Value mods;
-	std::string url = "";
-	try{
-		url = g_settings->get("modstore_listmods_url");
-	}
-	catch(SettingNotFoundException &e) {
-		lua_pushnil(L);
-		return 1;
-	}
-
-	mods = getModstoreUrl(url);
-
-	std::vector<ModStoreMod> moddata = readModStoreList(mods);
-
-	lua_newtable(L);
-	int top = lua_gettop(L);
-	unsigned int index = 1;
-
-	for (unsigned int i = 0; i < moddata.size(); i++)
-	{
-		if (moddata[i].valid) {
-			lua_pushnumber(L,index);
-			lua_newtable(L);
-
-			int top_lvl2 = lua_gettop(L);
-
-			lua_pushstring(L,"id");
-			lua_pushnumber(L,moddata[i].id);
-			lua_settable(L, top_lvl2);
-
-			lua_pushstring(L,"title");
-			lua_pushstring(L,moddata[i].title.c_str());
-			lua_settable(L, top_lvl2);
-
-			lua_pushstring(L,"basename");
-			lua_pushstring(L,moddata[i].basename.c_str());
-			lua_settable(L, top_lvl2);
-
-			lua_settable(L, top);
-			index++;
-		}
-	}
-	return 1;
-}
-
-/******************************************************************************/
 int ModApiMainMenu::l_get_favorites(lua_State *L)
 {
 	std::string listtype = "local";
@@ -1137,8 +996,6 @@ void ModApiMainMenu::Initialize(lua_State *L, int top)
 	API_FCT(get_mainmenu_path);
 	API_FCT(show_path_select_dialog);
 	API_FCT(download_file);
-	API_FCT(get_modstore_details);
-	API_FCT(get_modstore_list);
 	API_FCT(gettext);
 	API_FCT(get_video_drivers);
 	API_FCT(get_video_modes);
@@ -1166,7 +1023,5 @@ void ModApiMainMenu::InitializeAsync(lua_State *L, int top)
 	API_FCT(copy_dir);
 	//API_FCT(extract_zip); //TODO remove dependency to GuiEngine
 	API_FCT(download_file);
-	API_FCT(get_modstore_details);
-	API_FCT(get_modstore_list);
 	//API_FCT(gettext); (gettext lib isn't threadsafe)
 }
