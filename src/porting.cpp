@@ -556,7 +556,7 @@ void initializePaths()
 	infostream << "Detected user path: " << path_user << std::endl;
 	infostream << "Detected cache path: " << path_cache << std::endl;
 
-#ifdef USE_GETTEXT
+#if USE_GETTEXT
 	bool found_localedir = false;
 #  ifdef STATIC_LOCALEDIR
 	if (STATIC_LOCALEDIR[0] && fs::PathExists(STATIC_LOCALEDIR)) {
