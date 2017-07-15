@@ -78,7 +78,7 @@ void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, boo
 	if (special)
 		getSpecialTile(index, &tile, p == data->m_crack_pos_relative);
 	else
-		getNodeTileN(n, p, index, data, tile);
+		getTile(index, &tile);
 	if (!data->m_smooth_lighting)
 		color = encode_light(light, f->light_source);
 	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
@@ -87,14 +87,19 @@ void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, boo
 	}
 }
 
+// Returns a tile, ready for use, non-rotated.
+void MapblockMeshGenerator::getTile(int index, TileSpec *tile)
+{
+	getNodeTileN(n, p, index, data, *tile);
+}
+
+// Returns a tile, ready for use, rotated according to the node facedir.
 void MapblockMeshGenerator::getTile(v3s16 direction, TileSpec *tile)
 {
 	getNodeTile(n, p, direction, data, *tile);
 }
 
-/*!
- * Returns the i-th special tile for a map node.
- */
+// Returns a special tile, ready for use, non-rotated.
 void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply_crack)
 {
 	*tile = f->special_tiles[index];

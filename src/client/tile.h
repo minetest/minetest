@@ -318,6 +318,9 @@ struct TileSpec
 			&& emissive_light == other.emissive_light;
 	}
 
+	//! If true, the tile rotation is ignored.
+	bool world_aligned = false;
+	//! Tile rotation.
 	u8 rotation = 0;
 	//! This much light does the tile emit.
 	u8 emissive_light = 0;

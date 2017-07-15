@@ -764,7 +764,7 @@ void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &t
 	};
 	u16 tile_index=facedir*16 + dir_i;
 	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = dir_to_tile[tile_index + 1];
+	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
 }
 
 static void getTileInfo(

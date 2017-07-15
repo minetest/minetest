@@ -218,6 +218,7 @@ struct TileDef
 	bool has_color = false;
 	//! The color of the tile.
 	video::SColor color = video::SColor(0xFFFFFFFF);
+	bool world_aligned = false;
 
 	struct TileAnimationParams animation;
 

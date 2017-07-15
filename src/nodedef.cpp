@@ -187,9 +187,17 @@ void NodeBox::deSerialize(std::istream &is)
 	TileDef
 */
 
+#define TILE_FLAG_BACKFACE_CULLING 0x0001
+#define TILE_FLAG_TILEABLE_HORIZONTAL 0x0002
+#define TILE_FLAG_TILEABLE_VERTICAL 0x0004
+#define TILE_FLAG_HAS_COLOR 0x0008
+#define TILE_FLAG_WORLD_ALIGNED 0x0010
+
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
-	if (protocol_version >= 30)
+	if (protocol_version >= 35)
+		writeU8(os, 5);
+	else if (protocol_version >= 30)
 		writeU8(os, 4);
 	else if (protocol_version >= 29)
 		writeU8(os, 3);
@@ -200,6 +208,26 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 
 	os << serializeString(name);
 	animation.serialize(os, protocol_version);
+	if (protocol_version >= 35) {
+		u16 flags = 0;
+		if (backface_culling)
+			flags |= TILE_FLAG_BACKFACE_CULLING;
+		if (tileable_horizontal)
+			flags |= TILE_FLAG_TILEABLE_HORIZONTAL;
+		if (tileable_vertical)
+			flags |= TILE_FLAG_TILEABLE_VERTICAL;
+		if (has_color)
+			flags |= TILE_FLAG_HAS_COLOR;
+		if (world_aligned)
+			flags |= TILE_FLAG_WORLD_ALIGNED;
+		writeU16(os, flags);
+		if (has_color) {
+			writeU8(os, color.getRed());
+			writeU8(os, color.getGreen());
+			writeU8(os, color.getBlue());
+		}
+		return;
+	}
 	writeU8(os, backface_culling);
 	if (protocol_version >= 26) {
 		writeU8(os, tileable_horizontal);
@@ -220,6 +248,20 @@ void TileDef::deSerialize(std::istream &is, const u8 contenfeatures_version, con
 	int version = readU8(is);
 	name = deSerializeString(is);
 	animation.deSerialize(is, version >= 3 ? 29 : 26);
+	if (version >= 5) {
+		u16 flags = readU16(is);
+		backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
+		tileable_horizontal = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
+		tileable_vertical = flags & TILE_FLAG_TILEABLE_VERTICAL;
+		has_color = flags & TILE_FLAG_HAS_COLOR;
+		world_aligned = flags & TILE_FLAG_WORLD_ALIGNED;
+		if (has_color) {
+			color.setRed(readU8(is));
+			color.setGreen(readU8(is));
+			color.setBlue(readU8(is));
+		}
+		return;
+	}
 	if (version >= 1)
 		backface_culling = readU8(is);
 	if (version >= 2) {
@@ -798,6 +840,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
+		tiles[j].world_aligned = tdef[j].world_aligned;
 		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader,
 			tsettings.use_normal_texture,
 			tdef[j].backface_culling, material_type);
@@ -838,18 +881,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
-	} else if ((drawtype == NDT_NODEBOX) &&
-			((node_box.type == NODEBOX_REGULAR) ||
-			(node_box.type == NODEBOX_FIXED)) &&
-			(!node_box.fixed.empty())) {
-		//Convert regular nodebox nodes to meshnodes
-		//Change the drawtype and apply scale
-		drawtype = NDT_MESH;
-		mesh_ptr[0] = convertNodeboxesToMesh(node_box.fixed);
-		v3f scale = v3f(1.0, 1.0, 1.0) * visual_scale;
-		scaleMesh(mesh_ptr[0], scale);
-		recalculateBoundingBox(mesh_ptr[0]);
-		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 	}
 
 	//Cache 6dfacedir and wallmounted rotated clones of meshes
