@@ -968,7 +968,7 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    type: int
-csm_flavour_limits (Client side modding flavour limits) int 0
+csm_flavour_limits (Client side modding flavour limits) int 3
 
 #    If CSM flavour for node range is enabled, sets the client range limit for get_node
 #    to this limit. The default limit (8) is reasonable to know nodes very near player.
