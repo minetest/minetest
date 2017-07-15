@@ -194,9 +194,6 @@ int ModApiClient::l_get_node_or_nil(lua_State *L)
 {
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
-	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
-		// TODO
-	}
 
 	// Do it
 	bool pos_ok;

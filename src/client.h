@@ -397,6 +397,14 @@ public:
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
+
+	/**
+	 * Helper function for Client Side Modding
+	 * Flavour is applied there, this should not be used for core engine
+	 * @param p
+	 * @param is_valid_position
+	 * @return
+	 */
 	MapNode getNode(v3s16 p, bool *is_valid_position);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 

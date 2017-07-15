@@ -1361,8 +1361,22 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
+/**
+ * Helper function for Client Side Modding
+ * Flavour is applied there, this should not be used for core engine
+ * @param p
+ * @param is_valid_position
+ * @return
+ */
 MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 {
+	if (getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
+		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
+		if (ppos.getDistanceFrom(p) > CSM_FL_LOOKUP_NODES_LIMIT) {
+			*is_valid_position = false;
+			return MapNode();
+		}
+	}
 	return m_env.getMap().getNodeNoEx(p, is_valid_position);
 }
 
