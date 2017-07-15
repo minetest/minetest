@@ -215,7 +215,8 @@ static inline v2f dir(const v2f &pos_dist)
 
 void Camera::addArmInertia(f32 player_yaw)
 {
-	m_cam_vel.X = std::fabs((m_last_cam_pos.X - player_yaw) / 0.016f) * 0.01f;
+	m_cam_vel.X = std::fabs(rangelim(m_last_cam_pos.X - player_yaw,
+		-100.0f, 100.0f) / 0.016f) * 0.01f;
 	m_cam_vel.Y = std::fabs((m_last_cam_pos.Y - m_camera_direction.Y) / 0.016f);
 	f32 gap_X = std::fabs(WIELDMESH_OFFSET_X - m_wieldmesh_offset.X);
 	f32 gap_Y = std::fabs(WIELDMESH_OFFSET_Y - m_wieldmesh_offset.Y);
