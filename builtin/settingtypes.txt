@@ -960,6 +960,20 @@ block_send_optimize_distance (block send optimize distance) int 4 2
 #    so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server side occlusion culling) bool true
 
+#    Limits some features on client
+#    It's a byteflag, you should add value for every feature you want to limit
+#    Here is the possible values to combine:
+#    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
+#    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
+#    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
+#    READ_NODEDEFS: 8 (disable get_node_def call client-side)
+#    type: int
+csm_flavour_limits (Client side modding flavour limits) int 0
+
+#    If CSM flavour for node range is enabled, sets the client range limit for get_node
+#    to this limit. The default limit (8) is reasonable to know nodes very near player.
+csm_flavour_noderange_limit (Client side noderange flavour limit) int 8
+
 [*Mapgen]
 
 #    Name of map generator to be used when creating a new world.

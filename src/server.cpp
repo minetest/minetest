@@ -298,7 +298,7 @@ Server::Server(
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
-	m_csm_flavour_limits = g_settings->getU64("csm_flavour_blacklist");
+	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
 	m_csm_noderange_limit = (u32) g_settings->getS32("csm_flavour_noderange_limit");
 }
 
