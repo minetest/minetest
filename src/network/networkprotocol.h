@@ -1008,8 +1008,6 @@ enum PlayerListModifer: u8
 	PLAYER_LIST_REMOVE,
 };
 
-#define CSM_FL_LOOKUP_NODES_LIMIT 8
-
 enum CSMFlavourLimit : u64 {
 	CSM_FL_NONE = 0x00000000,
 	CSM_FL_LOOKUP_NODES = 0x00000001, // Limit node lookups

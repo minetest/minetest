@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include <algorithm>
 #include "scripting_server.h"
 #include "environment.h"
 #include "server.h"
@@ -730,7 +731,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	// Client API limitations
 	if (getClient(L) &&
 		getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
-		radius = std::max(radius, CSM_FL_LOOKUP_NODES_LIMIT);
+		radius = std::max<int>(radius, getClient(L)->getCSMNodeRangeLimit());
 	}
 
 	for (int d = start_radius; d <= radius; d++) {

@@ -1372,7 +1372,7 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 {
 	if (getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
-		if (ppos.getDistanceFrom(p) > CSM_FL_LOOKUP_NODES_LIMIT) {
+		if ((u32) std::abs(ppos.getDistanceFrom(p)) > m_csm_noderange_limit) {
 			*is_valid_position = false;
 			return MapNode();
 		}

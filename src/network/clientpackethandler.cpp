@@ -1379,5 +1379,5 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
-	*pkt >> m_csm_flavour_limits;
+	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
 }

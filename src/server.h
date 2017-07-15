@@ -669,6 +669,7 @@ private:
 
 	// CSM flavour limits byteflag
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 /*

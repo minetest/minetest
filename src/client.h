@@ -566,6 +566,11 @@ public:
 		return m_csm_flavour_limits;
 	}
 
+	u32 getCSMNodeRangeLimit() const
+	{
+		return m_csm_noderange_limit;
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -722,6 +727,7 @@ private:
 
 	// CSM flavour limits byteflag
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 #endif // !CLIENT_HEADER
