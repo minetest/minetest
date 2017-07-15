@@ -325,7 +325,7 @@ enum ToClientCommand
 		wstring message
 	*/
 
-	TOCLIENT_CHAT_MESSAGE_OLD = 0x30, // Deprecated by proto v25
+	TOCLIENT_CHAT_MESSAGE_OLD = 0x30, // Deprecated by proto v35
 	/*
 		u16 length
 		wstring message

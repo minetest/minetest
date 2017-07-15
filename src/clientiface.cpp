@@ -706,12 +706,9 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 			pkt_to_send = pkt;
 		} else if (client->net_proto_version != 0) {
 			pkt_to_send = legacypkt;
-		}
-		else {
-			std::stringstream ss;
-			ss << "Client with unhandled version to handle: '"
+		} else {
+			warningstream << "Client with unhandled version to handle: '"
 				<< client->net_proto_version << "'";
-			FATAL_ERROR(ss.str().c_str());
 			continue;
 		}
 
