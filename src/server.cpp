@@ -1638,8 +1638,7 @@ void Server::SendChatMessage(u16 peer_id, const ChatMessage &message)
 			Send(&legacypkt);
 		else
 			Send(&pkt);
-	}
-	else {
+	} else {
 		m_clients.sendToAllCompat(&pkt, &legacypkt, 35);
 	}
 }

@@ -329,8 +329,8 @@ public:
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessageOld(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ChatMessageOld(NetworkPacket *pkt);
+	void handleCommand_ChatMessage(NetworkPacket *pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
 	void handleCommand_Movement(NetworkPacket* pkt);

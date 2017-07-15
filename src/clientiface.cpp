@@ -700,18 +700,25 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 	for (std::unordered_map<u16, RemoteClient*>::iterator i = m_clients.begin();
 			i != m_clients.end(); ++i) {
 		RemoteClient *client = i->second;
+		NetworkPacket *pkt_to_send = nullptr;
 
 		if (client->net_proto_version >= min_proto_ver) {
-			m_con->Send(client->peer_id,
-						clientCommandFactoryTable[pkt->getCommand()].channel,
-						pkt,
-						clientCommandFactoryTable[pkt->getCommand()].reliable);
+			pkt_to_send = pkt;
 		} else if (client->net_proto_version != 0) {
-			m_con->Send(client->peer_id,
-						clientCommandFactoryTable[legacypkt->getCommand()].channel,
-						legacypkt,
-						clientCommandFactoryTable[legacypkt->getCommand()].reliable);
+			pkt_to_send = legacypkt;
 		}
+		else {
+			std::stringstream ss;
+			ss << "Client with unhandled version to handle: '"
+				<< client->net_proto_version << "'";
+			FATAL_ERROR(ss.str().c_str());
+			continue;
+		}
+
+		m_con->Send(client->peer_id,
+			clientCommandFactoryTable[pkt_to_send->getCommand()].channel,
+			pkt_to_send,
+			clientCommandFactoryTable[pkt_to_send->getCommand()].reliable);
 	}
 }
 

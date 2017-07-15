@@ -398,7 +398,7 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 			<< " dr=" << dr << std::endl;
 }
 
-void Client::handleCommand_ChatMessageOld(NetworkPacket* pkt)
+void Client::handleCommand_ChatMessageOld(NetworkPacket *pkt)
 {
 	/*
 		u16 command
@@ -422,7 +422,7 @@ void Client::handleCommand_ChatMessageOld(NetworkPacket* pkt)
 	}
 }
 
-void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
+void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
 {
 	/*
 		u8 version
@@ -450,8 +450,7 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 	if (!moddingEnabled() || !m_script->on_receiving_message(
 			wide_to_utf8(chatMessage->message))) {
 		pushToChatQueue(chatMessage);
-	}
-	else {
+	} else {
 		// Message was consumed by CSM and should not handled by client, destroying
 		delete chatMessage;
 	}
