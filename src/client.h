@@ -40,6 +40,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "filesys.h"
 
+#define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
+
 struct MeshMakeData;
 class MapBlockMesh;
 class IWritableTextureSource;
@@ -373,6 +375,7 @@ public:
 		const StringMap &fields);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
+	void clearOutChatQueue();
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
@@ -579,6 +582,8 @@ private:
 	inline std::string getPlayerName()
 	{ return m_env.getLocalPlayer()->getName(); }
 
+	bool canSendChatMessage() const;
+
 	float m_packetcounter_timer = 0.0f;
 	float m_connection_reinit_timer = 0.1f;
 	float m_avg_rtt_timer = 0.0f;
@@ -625,6 +630,9 @@ private:
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
 	std::queue<std::wstring> m_chat_queue;
+	std::queue<std::wstring> m_out_chat_queue;
+	u32 m_last_chat_message_sent;
+	float m_chat_message_allowance = 5.0f;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;
