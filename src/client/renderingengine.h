@@ -125,6 +125,8 @@ public:
 	static std::vector<core::vector3d<u32>> getSupportedVideoModes();
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
+	static bool take_screenshot(const std::string &filename);
+
 private:
 	enum parallax_sign
 	{

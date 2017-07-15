@@ -1758,12 +1758,6 @@ float Client::getCurRate()
 
 void Client::makeScreenshot()
 {
-	irr::video::IVideoDriver *driver = RenderingEngine::get_video_driver();
-	irr::video::IImage* const raw_image = driver->createScreenShot();
-
-	if (!raw_image)
-		return;
-
 	time_t t = time(NULL);
 	struct tm *tm = localtime(&t);
 
@@ -1794,25 +1788,17 @@ void Client::makeScreenshot()
 	if (serial == SCREENSHOT_MAX_SERIAL_TRIES) {
 		infostream << "Could not find suitable filename for screenshot" << std::endl;
 	} else {
-		irr::video::IImage* const image =
-				driver->createImage(video::ECF_R8G8B8, raw_image->getDimension());
+		std::string message;
+		if (RenderingEngine::take_screenshot(filename))
+			message = strgettext("Saved screenshot to '%s'");
+		else
+			message = strgettext("Failed to take/save screenshot '%s'");
 
-		if (image) {
-			raw_image->copyTo(image);
-
-			std::ostringstream sstr;
-			if (driver->writeImageToFile(image, filename.c_str(), quality)) {
-				sstr << "Saved screenshot to '" << filename << "'";
-			} else {
-				sstr << "Failed to save screenshot '" << filename << "'";
-			}
-			pushToChatQueue(narrow_to_wide(sstr.str()));
-			infostream << sstr.str() << std::endl;
-			image->drop();
-		}
+		char message_buf[200];
+		snprintf(message_buf, sizeof(message_buf), message.c_str(), filename.c_str());
+		pushToChatQueue(narrow_to_wide(std::string(message_buf)));
+		infostream << message_buf << std::endl;
 	}
-
-	raw_image->drop();
 }
 
 bool Client::shouldShowMinimap() const
