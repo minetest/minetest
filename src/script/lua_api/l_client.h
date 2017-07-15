@@ -67,9 +67,6 @@ private:
 	// get_node(pos)
 	static int l_get_node(lua_State *L);
 
-	// get_node_or_nil(pos)
-	static int l_get_node_or_nil(lua_State *L);
-
 	// get_wielded_item()
 	static int l_get_wielded_item(lua_State *L);
 

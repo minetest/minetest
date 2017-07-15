@@ -176,25 +176,6 @@ int ModApiClient::l_get_node(lua_State *L)
 	// pos
 	v3s16 pos = read_v3s16(L, 1);
 
-	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
-		// TODO
-	}
-
-	// Do it
-	bool pos_ok;
-	MapNode n = getClient(L)->getNode(pos, &pos_ok);
-	// Return node
-	pushnode(L, n, getClient(L)->ndef());
-	return 1;
-}
-
-// get_node_or_nil(pos)
-// pos = {x=num, y=num, z=num}
-int ModApiClient::l_get_node_or_nil(lua_State *L)
-{
-	// pos
-	v3s16 pos = read_v3s16(L, 1);
-
 	// Do it
 	bool pos_ok;
 	MapNode n = getClient(L)->getNode(pos, &pos_ok);
@@ -383,7 +364,6 @@ void ModApiClient::Initialize(lua_State *L, int top)
 	API_FCT(send_respawn);
 	API_FCT(gettext);
 	API_FCT(get_node);
-	API_FCT(get_node_or_nil);
 	API_FCT(get_wielded_item);
 	API_FCT(disconnect);
 	API_FCT(get_meta);
