@@ -960,9 +960,8 @@ block_send_optimize_distance (block send optimize distance) int 4 2
 #    so that the utility of noclip mode is reduced.
 server_side_occlusion_culling (Server side occlusion culling) bool true
 
-#    Limits some features on client
-#    It's a byteflag, you should add value for every feature you want to limit
-#    Here is the possible values to combine:
+#    Restricts the access of certain client-side functions on servers
+#    Combine these byteflags below to restrict more client-side features:
 #    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
 #    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
