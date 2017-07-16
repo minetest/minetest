@@ -868,6 +868,50 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 	return 1;
 }
 
+// get_nodes_in_area(minp, maxp) -> list of nodenames and positions
+int ModApiEnvMod::l_get_nodes_in_area(lua_State *L)
+{
+	GET_ENV_PTR;
+
+	v3s16 minp = read_v3s16(L, 1);
+	v3s16 maxp = read_v3s16(L, 2);
+	sortBoxVerticies(minp, maxp);
+
+	v3s16 cube = maxp - minp + 1;
+
+	/* Limit for too large areas, assume default values
+	 * and give tolerances of 1 node on each side
+	 * (chunksize * MAP_BLOCKSIZE + 2)^3 = 551368
+	*/
+	if ((u64)cube.X * (u64)cube.Y * (u64)cube.Z > 551368) {
+		luaL_error(L, "get_nodes_in_area(): area volume"
+				" exceeds allowed value of 551368");
+		return 0;
+	}
+
+	INodeDefManager *ndef = getServer(L)->ndef();
+
+	luaL_checkstack(L, 3, nullptr);
+	lua_newtable(L);
+	u64 i = 0;
+
+	for (s16 x = minp.X; x <= maxp.X; x++)
+	for (s16 y = minp.Y; y <= maxp.Y; y++)
+	for (s16 z = minp.Z; z <= maxp.Z; z++) {
+		v3s16 p(x, y, z);
+		MapNode n = env->getMap().getNodeNoEx(p);
+
+		lua_newtable(L);
+		lua_pushstring(L, ndef->get(n).name.c_str());
+		lua_setfield(L, -2, "name");
+		push_v3s16(L, p);
+		lua_setfield(L, -2, "pos");
+		lua_rawseti(L, -2, ++i);
+	}
+
+	return 1;
+}
+
 // get_perlin(seeddiff, octaves, persistence, scale)
 // returns world-specific PerlinNoise
 int ModApiEnvMod::l_get_perlin(lua_State *L)
@@ -1249,6 +1293,7 @@ void ModApiEnvMod::Initialize(lua_State *L, int top)
 	API_FCT(find_node_near);
 	API_FCT(find_nodes_in_area);
 	API_FCT(find_nodes_in_area_under_air);
+	API_FCT(get_nodes_in_area);
 	API_FCT(fix_light);
 	API_FCT(emerge_area);
 	API_FCT(delete_area);
