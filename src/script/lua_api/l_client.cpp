@@ -92,7 +92,7 @@ int ModApiClient::l_send_chat_message(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	// If server disable this API, discard
+	// If server disabled this API, discard
 	if (getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_CHAT_MESSAGES)
 		return 0;
 

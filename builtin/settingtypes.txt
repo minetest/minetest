@@ -969,8 +969,8 @@ server_side_occlusion_culling (Server side occlusion culling) bool true
 #    type: int
 csm_flavour_limits (Client side modding flavour limits) int 3
 
-#    If CSM flavour for node range is enabled, sets the client range limit for get_node
-#    to this limit. The default limit (8) is reasonable to know nodes very near player.
+#   If the CSM flavour for node range is enabled, get_node is limited to
+#   this many nodes from the player.
 csm_flavour_noderange_limit (Client side noderange flavour limit) int 8
 
 [*Mapgen]
