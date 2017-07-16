@@ -408,6 +408,7 @@ examples.
 * Clickable button. When clicked, fields will be sent.
 * `x`, `y` and `name` work as per field
 * `w` and `h` are the size of the button
+* Buttons are a set height, but will be vertically centred on `h`
 * `label` is the text on the button
 * Position and size units are inventory slots
 
