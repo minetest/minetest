@@ -168,6 +168,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  			* sender
  			* type (RAW, NORMAL, ANNOUNCE, SYSTEM)
  			* content
+ 		Add TOCLIENT_CSM_FLAVOUR_LIMITS to define which CSM flavour should be limited
 */
 
 #define LATEST_PROTOCOL_VERSION 35
