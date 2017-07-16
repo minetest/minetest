@@ -1428,6 +1428,7 @@ private:
 	 */
 	gui::IGUIStaticText *guitext;          // First line of debug text
 	gui::IGUIStaticText *guitext2;         // Second line of debug text
+	gui::IGUIStaticText *guitext3;         // Third line of debug text
 	gui::IGUIStaticText *guitext_info;     // At the middle of the screen
 	gui::IGUIStaticText *guitext_status;
 	gui::IGUIStaticText *guitext_chat;	   // Chat text
@@ -1996,6 +1997,12 @@ bool Game::initGui()
 
 	// Second line of debug text
 	guitext2 = addStaticText(guienv,
+			L"",
+			core::rect<s32>(0, 0, 0, 0),
+			false, false, guiroot);
+
+	// Third line of debug text
+	guitext3 = addStaticText(guienv,
 			L"",
 			core::rect<s32>(0, 0, 0, 0),
 			false, false, guiroot);
@@ -4307,21 +4314,20 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	if (flags.show_debug) {
 		static float drawtime_avg = 0;
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-
 		u16 fps = 1.0 / stats.dtime_jitter.avg;
 
 		std::ostringstream os(std::ios_base::binary);
 		os << std::fixed
 		   << PROJECT_NAME_C " " << g_version_hash
-		   << "; " << fps << " FPS"
-		   << ", (R: range_all=" << draw_control->range_all << ")"
+		   << ", FPS = " << fps
+		   << ", range_all = " << draw_control->range_all
 		   << std::setprecision(0)
 		   << ", drawtime = " << drawtime_avg << " ms"
 		   << std::setprecision(1)
 		   << ", dtime_jitter = "
 		   << (stats.dtime_jitter.max_fraction * 100.0) << " %"
 		   << std::setprecision(1)
-		   << ", v_range = " << draw_control->wanted_range
+		   << ", view_range = " << draw_control->wanted_range
 		   << std::setprecision(3)
 		   << ", RTT = " << client->getRTT() << " s";
 		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
@@ -4341,38 +4347,51 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	if (flags.show_debug) {
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed
-		   << "(" << (player_position.X / BS)
+		   << "pos = (" << (player_position.X / BS)
 		   << ", " << (player_position.Y / BS)
 		   << ", " << (player_position.Z / BS)
-		   << ") (yaw=" << (wrapDegrees_0_360(cam.camera_yaw)) << "°"
+		   << "), yaw = " << (wrapDegrees_0_360(cam.camera_yaw)) << "°"
 		   << " " << yawToDirectionString(cam.camera_yaw)
-		   << ") (seed = " << ((u64)client->getMapSeed())
-		   << ")";
-
-		if (runData.pointed_old.type == POINTEDTHING_NODE) {
-			ClientMap &map = client->getEnv().getClientMap();
-			const INodeDefManager *nodedef = client->getNodeDefManager();
-			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
-			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-				const ContentFeatures &features = nodedef->get(n);
-				os << " (pointing_at = \"" << nodedef->get(n).name
-				   << "\", param1 = " << (u64) n.getParam1()
-				   << ", param2 = " << (u64) n.getParam2()
-				   << ", tiledef[0] = \"" << features.tiledef[0].name.c_str()
-				   << "\")";
-			}
-		}
-
+		   << ", seed = " << ((u64)client->getMapSeed());
 		setStaticText(guitext2, utf8_to_wide(os.str()).c_str());
 		guitext2->setVisible(true);
+	} else {
+		guitext2->setVisible(false);
+	}
 
+	if (guitext2->isVisible()) {
 		core::rect<s32> rect(
 				5,             5 + g_fontengine->getTextHeight(),
 				screensize.X,  5 + g_fontengine->getTextHeight() * 2
 		);
 		guitext2->setRelativePosition(rect);
+	}
+
+	if (flags.show_debug && runData.pointed_old.type == POINTEDTHING_NODE) {
+		ClientMap &map = client->getEnv().getClientMap();
+		const INodeDefManager *nodedef = client->getNodeDefManager();
+		MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
+
+		if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
+			std::ostringstream os(std::ios_base::binary);
+			os << "pointing_at = (" << nodedef->get(n).name
+			   << ", param2 = " << (u64) n.getParam2()
+			   << ")";
+			setStaticText(guitext3, utf8_to_wide(os.str()).c_str());
+			guitext3->setVisible(true);
+		} else {
+			guitext3->setVisible(false);
+		}
 	} else {
-		guitext2->setVisible(false);
+		guitext3->setVisible(false);
+	}
+
+	if (guitext3->isVisible()) {
+		core::rect<s32> rect(
+				5,             5 + g_fontengine->getTextHeight() * 2,
+				screensize.X,  5 + g_fontengine->getTextHeight() * 3
+		);
+		guitext3->setRelativePosition(rect);
 	}
 
 	setStaticText(guitext_info, infotext.c_str());
