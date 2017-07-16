@@ -1288,14 +1288,21 @@ void MapblockMeshGenerator::errorUnknownDrawtype()
 
 void MapblockMeshGenerator::drawNode()
 {
+	// skip some drawtypes early
+	switch (f->drawtype) {
+		case NDT_NORMAL:   // Drawn by MapBlockMesh
+		case NDT_AIRLIKE:  // Not drawn at all
+		case NDT_LIQUID:   // Drawn by MapBlockMesh
+			return;
+		default:
+			break;
+	}
+	origin = intToFloat(p, BS);
 	if (data->m_smooth_lighting)
 		getSmoothLightFrame();
 	else
 		light = getInteriorLight(n, 1, nodedef);
 	switch (f->drawtype) {
-		case NDT_NORMAL:            break; // Drawn by MapBlockMesh
-		case NDT_AIRLIKE:           break; // Not drawn at all
-		case NDT_LIQUID:            break; // Drawn by MapBlockMesh
 		case NDT_FLOWINGLIQUID:     drawLiquidNode(); break;
 		case NDT_GLASSLIKE:         drawGlasslikeNode(); break;
 		case NDT_GLASSLIKE_FRAMED:  drawGlasslikeFramedNode(); break;
@@ -1324,7 +1331,6 @@ void MapblockMeshGenerator::generate()
 	for (p.X = 0; p.X < MAP_BLOCKSIZE; p.X++) {
 		n = data->m_vmanip.getNodeNoEx(blockpos_nodes + p);
 		f = &nodedef->get(n);
-		origin = intToFloat(p, BS);
 		drawNode();
 	}
 }
