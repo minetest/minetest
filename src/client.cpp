@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "script/scripting_client.h"
 #include "game.h"
+#include "chatmessage.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -1518,12 +1519,34 @@ u16 Client::getHP()
 	return player->hp;
 }
 
-bool Client::getChatMessage(std::wstring &message)
+bool Client::getChatMessage(std::wstring &res)
 {
-	if(m_chat_queue.size() == 0)
+	if (m_chat_queue.empty())
 		return false;
-	message = m_chat_queue.front();
+
+	ChatMessage *chatMessage = m_chat_queue.front();
 	m_chat_queue.pop();
+
+	res = L"";
+
+	switch (chatMessage->type) {
+		case CHATMESSAGE_TYPE_RAW:
+		case CHATMESSAGE_TYPE_ANNOUNCE:
+		case CHATMESSAGE_TYPE_SYSTEM:
+			res = chatMessage->message;
+			break;
+		case CHATMESSAGE_TYPE_NORMAL: {
+			if (!chatMessage->sender.empty())
+				res = L"<" + chatMessage->sender + L"> " + chatMessage->message;
+			else
+				res = chatMessage->message;
+			break;
+		}
+		default:
+			break;
+	}
+
+	delete chatMessage;
 	return true;
 }
 
@@ -1542,14 +1565,13 @@ void Client::typeChatMessage(const std::wstring &message)
 	sendChatMessage(message);
 
 	// Show locally
-	if (message[0] != L'/')
-	{
+	if (message[0] != L'/') {
 		// compatibility code
 		if (m_proto_ver < 29) {
 			LocalPlayer *player = m_env.getLocalPlayer();
 			assert(player);
 			std::wstring name = narrow_to_wide(player->getName());
-			pushToChatQueue((std::wstring)L"<" + name + L"> " + message);
+			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_NORMAL, message, name));
 		}
 	}
 }
@@ -1806,7 +1828,8 @@ void Client::makeScreenshot()
 			} else {
 				sstr << "Failed to save screenshot '" << filename << "'";
 			}
-			pushToChatQueue(narrow_to_wide(sstr.str()));
+			pushToChatQueue(new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+					narrow_to_wide(sstr.str())));
 			infostream << sstr.str() << std::endl;
 			image->drop();
 		}

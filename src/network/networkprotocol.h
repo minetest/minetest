@@ -160,9 +160,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			instead of guessing based on the active object list.
 	PROTOCOL VERSION 34:
 		Add sound pitch
+	PROTOCOL VERSION 35:
+ 		Rename TOCLIENT_CHAT_MESSAGE to TOCLIENT_CHAT_MESSAGE_OLD (0x30)
+ 		Add TOCLIENT_CHAT_MESSAGE (0x2F)
+ 			This chat message is a signalisation message containing various informations:
+ 			* timestamp
+ 			* sender
+ 			* type (RAW, NORMAL, ANNOUNCE, SYSTEM)
+ 			* content
 */
 
-#define LATEST_PROTOCOL_VERSION 34
+#define LATEST_PROTOCOL_VERSION 35
 
 // Server's supported network protocol range
 #define SERVER_PROTOCOL_VERSION_MIN 24
@@ -307,7 +315,17 @@ enum ToClientCommand
 
 	// (oops, there is some gap here)
 
-	TOCLIENT_CHAT_MESSAGE = 0x30,
+	TOCLIENT_CHAT_MESSAGE = 0x2F,
+	/*
+		u8 version
+		u8 message_type
+		u16 sendername length
+		wstring sendername
+		u16 length
+		wstring message
+	*/
+
+	TOCLIENT_CHAT_MESSAGE_OLD = 0x30, // Deprecated by proto v35
 	/*
 		u16 length
 		wstring message

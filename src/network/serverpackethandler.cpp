@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <chatmessage.h>
 #include "server.h"
 #include "log.h"
 
@@ -644,8 +645,10 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Warnings about protocol version can be issued here
 	if (getClient(pkt->getPeerId())->net_proto_version < LATEST_PROTOCOL_VERSION) {
-		SendChatMessage(pkt->getPeerId(), L"# Server: WARNING: YOUR CLIENT'S "
-				L"VERSION MAY NOT BE FULLY COMPATIBLE WITH THIS SERVER!");
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"# Server: WARNING: YOUR CLIENT'S VERSION MAY NOT BE FULLY COMPATIBLE "
+				L"WITH THIS SERVER!"));
+
 	}
 }
 
@@ -1077,11 +1080,11 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 	std::string name = player->getName();
 	std::wstring wname = narrow_to_wide(name);
 
-	std::wstring answer_to_sender = handleChat(name, wname, message,
-		true, dynamic_cast<RemotePlayer *>(player));
+	std::wstring answer_to_sender = handleChat(name, wname, message, true, player);
 	if (!answer_to_sender.empty()) {
 		// Send the answer to sender
-		SendChatMessage(pkt->getPeerId(), answer_to_sender);
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_NORMAL,
+				answer_to_sender, wname));
 	}
 }
 
@@ -1171,7 +1174,8 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 		infostream<<"Server: " << player->getName() <<
 				" supplied invalid password hash" << std::endl;
 		// Wrong old password supplied!!
-		SendChatMessage(pkt->getPeerId(), L"Invalid new password hash supplied. Password NOT changed.");
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Invalid new password hash supplied. Password NOT changed."));
 		return;
 	}
 
@@ -1186,18 +1190,21 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 	if (oldpwd != checkpwd) {
 		infostream << "Server: invalid old password" << std::endl;
 		// Wrong old password supplied!!
-		SendChatMessage(pkt->getPeerId(), L"Invalid old password supplied. Password NOT changed.");
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Invalid old password supplied. Password NOT changed."));
 		return;
 	}
 
 	bool success = m_script->setPassword(playername, newpwd);
 	if (success) {
 		actionstream << player->getName() << " changes password" << std::endl;
-		SendChatMessage(pkt->getPeerId(), L"Password change successful.");
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Password change successful."));
 	} else {
 		actionstream << player->getName() << " tries to change password but "
 				<< "it fails" << std::endl;
-		SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
+		SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+				L"Password change failed or unavailable."));
 	}
 }
 
@@ -1853,11 +1860,13 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		bool success = m_script->setPassword(playername, pw_db_field);
 		if (success) {
 			actionstream << playername << " changes password" << std::endl;
-			SendChatMessage(pkt->getPeerId(), L"Password change successful.");
+			SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+					L"Password change successful."));
 		} else {
 			actionstream << playername << " tries to change password but "
 				<< "it fails" << std::endl;
-			SendChatMessage(pkt->getPeerId(), L"Password change failed or unavailable.");
+			SendChatMessage(pkt->getPeerId(), ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+					L"Password change failed or unavailable."));
 		}
 	}
 }

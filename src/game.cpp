@@ -976,8 +976,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	}
 
 	// Get new messages from client
-	std::wstring message;
-
+	std::wstring message = L"";
 	while (client.getChatMessage(message)) {
 		chat_backend.addUnparsedMessage(message);
 	}

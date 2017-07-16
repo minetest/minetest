@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 
 #include "util/base64.h"
+#include "chatmessage.h"
 #include "clientmedia.h"
 #include "log.h"
 #include "map.h"
@@ -142,7 +143,9 @@ void Client::handleCommand_AcceptSudoMode(NetworkPacket* pkt)
 }
 void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 {
-	pushToChatQueue(L"Password change denied. Password NOT changed.");
+	ChatMessage *chatMessage = new ChatMessage(CHATMESSAGE_TYPE_SYSTEM,
+			L"Password change denied. Password NOT changed.");
+	pushToChatQueue(chatMessage);
 	// reset everything and be sad
 	deleteAuthData();
 }
@@ -395,7 +398,7 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 			<< " dr=" << dr << std::endl;
 }
 
-void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
+void Client::handleCommand_ChatMessageOld(NetworkPacket *pkt)
 {
 	/*
 		u16 command
@@ -413,8 +416,43 @@ void Client::handleCommand_ChatMessage(NetworkPacket* pkt)
 	}
 
 	// If chat message not consummed by client lua API
+	// @TODO send this to CSM using ChatMessage object
 	if (!moddingEnabled() || !m_script->on_receiving_message(wide_to_utf8(message))) {
-		pushToChatQueue(message);
+		pushToChatQueue(new ChatMessage(message));
+	}
+}
+
+void Client::handleCommand_ChatMessage(NetworkPacket *pkt)
+{
+	/*
+		u8 version
+		u8 message_type
+		u16 sendername length
+		wstring sendername
+		u16 length
+		wstring message
+	 */
+
+	ChatMessage *chatMessage = new ChatMessage();
+	u8 version, message_type;
+	*pkt >> version >> message_type;
+
+	if (version != 1 || message_type >= CHATMESSAGE_TYPE_MAX) {
+		delete chatMessage;
+		return;
+	}
+
+	*pkt >> chatMessage->sender >> chatMessage->message >> chatMessage->timestamp;
+
+	chatMessage->type = (ChatMessageType) message_type;
+
+	// @TODO send this to CSM using ChatMessage object
+	if (!moddingEnabled() || !m_script->on_receiving_message(
+			wide_to_utf8(chatMessage->message))) {
+		pushToChatQueue(chatMessage);
+	} else {
+		// Message was consumed by CSM and should not handled by client, destroying
+		delete chatMessage;
 	}
 }
 
