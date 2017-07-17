@@ -156,7 +156,8 @@ int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 			air_count = 0;
 		} else if (solid_below) {  // Air above solid node
 			air_count++;
-			if (air_count == 2)
+			// 3 to account for snowblock dust
+			if (air_count == 3)
 				return y - 2;
 		}
 	}
