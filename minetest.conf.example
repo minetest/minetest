@@ -558,7 +558,7 @@
 
 #    Height component of the initial window size.
 #    type: int
-# screen_h = 576
+# screen_h = 600
 
 #    Save window size automatically when modified.
 #    type: bool
