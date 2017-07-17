@@ -995,7 +995,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	s32 chat_y = 5;
 
 	if (show_debug)
-		chat_y += 2 * line_height;
+		chat_y += 3 * line_height;
 
 	// first pass to calculate height of text to be set
 	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
