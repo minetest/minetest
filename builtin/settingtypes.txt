@@ -487,7 +487,7 @@ viewing_range (Viewing range) int 100 20 4000
 screen_w (Screen width) int 1024
 
 #    Height component of the initial window size.
-screen_h (Screen height) int 576
+screen_h (Screen height) int 600
 
 #    Save window size automatically when modified.
 autosave_screensize (Autosave Screen Size) bool true

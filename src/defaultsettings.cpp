@@ -126,7 +126,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
 	settings->setDefault("screen_w", "1024");
-	settings->setDefault("screen_h", "576");
+	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
 	settings->setDefault("fullscreen_bpp", "24");
