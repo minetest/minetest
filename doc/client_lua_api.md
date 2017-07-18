@@ -700,7 +700,7 @@ Call these functions only at load time!
     * Returns the time of day: `0` for midnight, `0.5` for midday
 
 ### Map
-* `minetest.get_node(pos)`
+* `minetest.get_node_or_nil(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `nil`
       for unloaded areas or flavour limited areas.

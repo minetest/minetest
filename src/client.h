@@ -561,9 +561,9 @@ public:
 		return m_address_name;
 	}
 
-	u64 getCSMFlavourLimits() const
+	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
 	{
-		return m_csm_flavour_limits;
+		return m_csm_flavour_limits & flag;
 	}
 
 	u32 getCSMNodeRangeLimit() const

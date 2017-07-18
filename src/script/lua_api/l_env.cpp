@@ -731,7 +731,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 #ifndef SERVER
 	// Client API limitations
 	if (getClient(L) &&
-			getClient(L)->getCSMFlavourLimits() & CSMFlavourLimit::CSM_FL_LOOKUP_NODES) {
+			getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOOKUP_NODES)) {
 		radius = std::max<int>(radius, getClient(L)->getCSMNodeRangeLimit());
 	}
 #endif
