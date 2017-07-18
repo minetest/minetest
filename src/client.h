@@ -364,6 +364,7 @@ public:
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -396,6 +397,14 @@ public:
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
+
+	/**
+	 * Helper function for Client Side Modding
+	 * Flavour is applied there, this should not be used for core engine
+	 * @param p
+	 * @param is_valid_position
+	 * @return
+	 */
 	MapNode getNode(v3s16 p, bool *is_valid_position);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
@@ -552,6 +561,16 @@ public:
 		return m_address_name;
 	}
 
+	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
+	{
+		return m_csm_flavour_limits & flag;
+	}
+
+	u32 getCSMNodeRangeLimit() const
+	{
+		return m_csm_noderange_limit;
+	}
+
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -705,6 +724,10 @@ private:
 	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown = false;
+
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 #endif // !CLIENT_HEADER

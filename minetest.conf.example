@@ -1172,6 +1172,19 @@
 #    type: bool
 # server_side_occlusion_culling = true
 
+#    Restricts the access of certain client-side functions on servers
+#    Combine these byteflags below to restrict more client-side features:
+#    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
+#    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
+#    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
+#    READ_NODEDEFS: 8 (disable get_node_def call client-side)
+#    type: int
+# csm_flavour_limits = 3
+
+#   If the CSM flavour for node range is enabled, get_node is limited to
+#   this many nodes from the player.
+# csm_flavour_noderange_limit 8
+
 ## Mapgen
 
 #    Name of map generator to be used when creating a new world.

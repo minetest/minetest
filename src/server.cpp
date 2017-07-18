@@ -298,6 +298,8 @@ Server::Server(
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
+	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
+	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
 }
 
 Server::~Server()
@@ -2017,7 +2019,14 @@ void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas, boo
 	m_clients.send(pkt.getPeerId(),
 			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
 			&pkt, reliable);
+}
 
+void Server::SendCSMFlavourLimits(u16 peer_id)
+{
+	NetworkPacket pkt(TOCLIENT_CSM_FLAVOUR_LIMITS,
+		sizeof(m_csm_flavour_limits) + sizeof(m_csm_noderange_limit), peer_id);
+	pkt << m_csm_flavour_limits << m_csm_noderange_limit;
+	Send(&pkt);
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,

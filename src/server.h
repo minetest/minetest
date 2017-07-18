@@ -466,6 +466,8 @@ private:
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
+	void SendCSMFlavourLimits(u16 peer_id);
+
 	/*
 		Something random
 	*/
@@ -664,6 +666,10 @@ private:
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
+
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 /*
@@ -674,4 +680,3 @@ private:
 void dedicated_server_loop(Server &server, bool &kill);
 
 #endif
-

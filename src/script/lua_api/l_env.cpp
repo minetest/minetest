@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_vmanip.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include <algorithm>
 #include "scripting_server.h"
 #include "environment.h"
 #include "server.h"
@@ -726,6 +727,15 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	}
 
 	int start_radius = (lua_toboolean(L, 4)) ? 0 : 1;
+
+#ifndef SERVER
+	// Client API limitations
+	if (getClient(L) &&
+			getClient(L)->checkCSMFlavourLimit(CSMFlavourLimit::CSM_FL_LOOKUP_NODES)) {
+		radius = std::max<int>(radius, getClient(L)->getCSMNodeRangeLimit());
+	}
+#endif
+
 	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 		for (std::vector<v3s16>::iterator i = list.begin();
