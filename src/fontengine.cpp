@@ -340,7 +340,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		}
 
 		if (font_config_prefix == "mono_") {
-			const std::string & mono_font_path = m_settings->getDefault("mono_font_path");
+			const std::string &mono_font_path = m_settings->getDefault("mono_font_path");
 
 			if (font_path != mono_font_path) {
 				// try original mono font
@@ -373,7 +373,7 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 				return;
 			}
 
-			const std::string & fallback_font_path = m_settings->getDefault("fallback_font_path");
+			const std::string &fallback_font_path = m_settings->getDefault("fallback_font_path");
 
 			if (font_path != fallback_font_path) {
 				// try original fallback font
