@@ -109,7 +109,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 const std::vector<LoadingBlockModifierDef *> *
 LBMContentMapping::lookup(content_t c) const
 {
-	container_map::const_iterator it = map.find(c);
+	lbm_map::const_iterator it = map.find(c);
 	if (it == map.end())
 		return NULL;
 	// This first dereferences the iterator, returning

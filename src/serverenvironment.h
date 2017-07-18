@@ -88,8 +88,8 @@ struct LoadingBlockModifierDef
 
 struct LBMContentMapping
 {
-	typedef std::map<content_t, std::vector<LoadingBlockModifierDef *> > container_map;
-	container_map map;
+	typedef std::unordered_map<content_t, std::vector<LoadingBlockModifierDef *>> lbm_map;
+	lbm_map map;
 
 	std::vector<LoadingBlockModifierDef *> lbm_list;
 
