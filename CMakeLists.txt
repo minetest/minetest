@@ -237,6 +237,9 @@ set(CPACK_PACKAGE_VENDOR "celeron55")
 set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
 if(WIN32)
+	# Include all dynamically linked runtime libaries such as MSVCRxxx.dll
+	include(InstallRequiredSystemLibraries)
+
 	if(RUN_IN_PLACE)
 		if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 			set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${VERSION_STRING}-win64")
