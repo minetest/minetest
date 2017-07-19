@@ -784,7 +784,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.hp_max = PLAYER_MAX_HP;
 	m_prop.physical = false;
 	m_prop.weight = 75;
-	m_prop.collisionbox = aabb3f(-0.3f, -1.0f, -0.3f, 0.3f, 0.75f, 0.3f);
+	m_prop.collisionbox = aabb3f(-0.3f, -1.0f, -0.3f, 0.3f, 0.77f, 0.3f);
 	// start of default appearance, this should be overwritten by LUA
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
@@ -1414,7 +1414,7 @@ bool PlayerSAO::checkMovementCheat()
 
 bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 {
-	*toset = aabb3f(-0.3f * BS, 0.0f, -0.3f * BS, 0.3f * BS, 1.75f * BS, 0.3f * BS);
+	*toset = aabb3f(-0.3f * BS, 0.0f, -0.3f * BS, 0.3f * BS, 1.77f * BS, 0.3f * BS);
 
 	toset->MinEdge += m_base_position;
 	toset->MaxEdge += m_base_position;
