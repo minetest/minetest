@@ -828,6 +828,14 @@ if(BUILD_CLIENT)
 		endforeach()
 	endif()
 
+	if(USE_FREETYPE)
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+				FILES_MATCHING PATTERN "*.ttf" PATTERN "*.txt")
+	else()
+		install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../fonts" DESTINATION "${SHAREDIR}" 
+				FILES_MATCHING PATTERN "*.png" PATTERN "*.xml")
+	endif()
+
 	if(WIN32)
 		if(DEFINED IRRLICHT_DLL)
 			install(FILES ${IRRLICHT_DLL} DESTINATION ${BINDIR})
