@@ -78,9 +78,13 @@ Locations:
 Where each location is on each platform:
 
 * Windows .zip / RUN_IN_PLACE source:
-    * `bin`   = `bin`
-    * `share` = `.`
-    * `user`  = `.`
+    * bin   = `bin`
+    * share = `.`
+    * user  = `.`
+* Windows installed:
+    * $bin   = `C:\Program Files\Minetest\bin (Depends on the install location)`
+    * $share = `C:\Program Files\Minetest (Depends on the install location)`
+    * $user  = `%Appdata%\Minetest`
 * Linux installed:
     * `bin`   = `/usr/bin`
     * `share` = `/usr/share/minetest`
@@ -425,6 +429,19 @@ This is how we build Windows releases.
     popd
     echo Failed.
     exit /b 1
+
+### Windows Installer using WIX Toolset
+
+Requirements:
+* Visual Studio 2017
+* Wix Toolset
+
+In Visual Studio 2017 Installer select "Optional Features" -> "Wix Toolset"
+
+Build the binaries like described above, but make sure you unselect "RUN_IN_PLACE".
+
+Open the generated Project file with VS. Right click "PACKAGE" and choose "Generate".
+It may take some minutes to generate the installer.
 
 Version scheme
 --------------
