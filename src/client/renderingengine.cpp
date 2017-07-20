@@ -539,6 +539,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 			irr::scene::ESNRP_TRANSPARENT +
 			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
 	camera->getCameraNode()->setPosition(leftEye);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -567,6 +568,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 			irr::scene::ESNRP_TRANSPARENT +
 			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
 	camera->getCameraNode()->setPosition(rightEye);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -582,6 +584,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 	getVideoDriver()->getOverrideMaterial().EnableFlags = 0;
 	getVideoDriver()->getOverrideMaterial().EnablePasses = 0;
 	camera->getCameraNode()->setPosition(oldPosition);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(oldTarget);
 }
 
@@ -632,6 +635,7 @@ video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_s
 	// clear the depth buffer
 	getVideoDriver()->clearZBuffer();
 	camera->getCameraNode()->setPosition(eye_pos);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 
@@ -709,6 +713,7 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 	// clear the depth buffer
 	getVideoDriver()->clearZBuffer();
 	camera->getCameraNode()->setPosition(rightEye);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 
@@ -735,6 +740,7 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 
 	/* cleanup */
 	camera->getCameraNode()->setPosition(oldPosition);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(oldTarget);
 }
 
@@ -799,6 +805,7 @@ void RenderingEngine::draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud
 
 	/* cleanup */
 	camera->getCameraNode()->setPosition(oldPosition);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(oldTarget);
 }
 
@@ -863,6 +870,7 @@ void RenderingEngine::draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud
 
 	/* cleanup */
 	camera->getCameraNode()->setPosition(oldPosition);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(oldTarget);
 }
 
@@ -898,6 +906,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 	// clear the depth buffer, and color
 	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	camera->getCameraNode()->setPosition(leftEye);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -925,6 +934,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 	// clear the depth buffer, and color
 	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
 	camera->getCameraNode()->setPosition(rightEye);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -941,6 +951,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 	guienv->drawAll();
 
 	camera->getCameraNode()->setPosition(oldPosition);
+	camera->getCameraNode()->updateAbsolutePosition();
 	camera->getCameraNode()->setTarget(oldTarget);
 #endif
 }
