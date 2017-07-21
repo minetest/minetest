@@ -538,7 +538,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 			irr::scene::ESNRP_SKY_BOX + irr::scene::ESNRP_SOLID +
 			irr::scene::ESNRP_TRANSPARENT +
 			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-    setCamera(camera, leftEye, focusPoint);
+	setCamera(camera, leftEye, focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
@@ -565,7 +565,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 			irr::scene::ESNRP_SKY_BOX + irr::scene::ESNRP_SOLID +
 			irr::scene::ESNRP_TRANSPARENT +
 			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
-    setCamera(camera, rightEye, focusPoint);
+	setCamera(camera, rightEye, focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 	if (show_hud) {
@@ -580,7 +580,7 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 	getVideoDriver()->getOverrideMaterial().EnableFlags = 0;
 	getVideoDriver()->getOverrideMaterial().EnablePasses = 0;
 
-    setCamera(camera, oldPosition, oldTarget);
+	setCamera(camera, oldPosition, oldTarget);
 }
 
 void RenderingEngine::init_texture(
@@ -629,7 +629,7 @@ video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_s
 
 	// clear the depth buffer
 	getVideoDriver()->clearZBuffer();
-    setCamera(camera, eye_pos, focusPoint);
+	setCamera(camera, eye_pos, focusPoint);
 	get_scene_manager()->drawAll();
 
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -705,7 +705,7 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 
 	// clear the depth buffer
 	getVideoDriver()->clearZBuffer();
-    setCamera(camera, rightEye, focusPoint);
+	setCamera(camera, rightEye, focusPoint);
 	get_scene_manager()->drawAll();
 
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -730,7 +730,7 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 	}
 
 	/* cleanup */
-    setCamera(camera, oldPosition, oldTarget);
+	setCamera(camera, oldPosition, oldTarget);
 }
 
 void RenderingEngine::draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud *hud,
@@ -793,7 +793,7 @@ void RenderingEngine::draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud
 	right_image = nullptr;
 
 	/* cleanup */
-    setCamera(camera, oldPosition, oldTarget);
+	setCamera(camera, oldPosition, oldTarget);
 }
 
 void RenderingEngine::draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud *hud,
@@ -856,7 +856,7 @@ void RenderingEngine::draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud
 	right_image = NULL;
 
 	/* cleanup */
-    setCamera(camera, oldPosition, oldTarget);
+	setCamera(camera, oldPosition, oldTarget);
 }
 
 void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *hud,
@@ -890,7 +890,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 
 	// clear the depth buffer, and color
 	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-    setCamera(camera, leftEye, focusPoint);
+	setCamera(camera, leftEye, focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
@@ -916,7 +916,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 
 	// clear the depth buffer, and color
 	getVideoDriver()->beginScene(true, true, irr::video::SColor(200, 200, 200, 255));
-    setCamera(camera, rightEye, focusPoint);
+	setCamera(camera, rightEye, focusPoint);
 	get_scene_manager()->drawAll();
 	getVideoDriver()->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
@@ -931,7 +931,7 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 
 	guienv->drawAll();
 
-    setCamera(camera, oldPosition, oldTarget);
+	setCamera(camera, oldPosition, oldTarget);
 #endif
 }
 
@@ -1003,7 +1003,8 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 	return driver_names[type];
 }
 
-void RenderingEngine::setCamera(Camera *camera, irr::core::vector3df position, irr::core::vector3df target)
+void RenderingEngine::setCamera(Camera *camera,
+	irr::core::vector3df position, irr::core::vector3df target)
 {
 	camera->getCameraNode()->setPosition(position);
 	camera->getCameraNode()->updateAbsolutePosition();
