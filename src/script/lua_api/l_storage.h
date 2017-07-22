@@ -18,8 +18,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __L_STORAGE_H__
-#define __L_STORAGE_H__
+#ifndef L_STORAGE_H
+#define L_STORAGE_H
 
 #include "l_metadata.h"
 #include "lua_api/l_base.h"
@@ -60,4 +60,4 @@ public:
 	static ModMetadata *getobject(StorageRef *ref);
 };
 
-#endif /* __L_STORAGE_H__ */
+#endif /* L_STORAGE_H */

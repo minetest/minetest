@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __CONVERT_JSON_H__
-#define __CONVERT_JSON_H__
+#ifndef CONVERT_JSON_H
+#define CONVERT_JSON_H
 
 #include <json/json.h>
 

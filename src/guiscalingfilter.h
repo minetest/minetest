@@ -15,8 +15,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef _GUI_SCALING_FILTER_H_
-#define _GUI_SCALING_FILTER_H_
+#ifndef GUI_SCALING_FILTER_H
+#define GUI_SCALING_FILTER_H
 
 #include "irrlichttypes_extrabloated.h"
 

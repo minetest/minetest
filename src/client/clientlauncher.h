@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __CLIENT_LAUNCHER_H__
-#define __CLIENT_LAUNCHER_H__
+#ifndef CLIENT_LAUNCHER_H
+#define CLIENT_LAUNCHER_H
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/inputhandler.h"
