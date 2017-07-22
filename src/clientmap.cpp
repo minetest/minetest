@@ -596,11 +596,12 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	};
 	if(z_directions[0].X < -99){
 		for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+			// Assumes FOV of 72 and 16/9 aspect ratio
 			z_directions[i] = v3f(
-				0.01 * myrand_range(-100, 100),
+				0.02 * myrand_range(-100, 100),
 				1.0,
 				0.01 * myrand_range(-100, 100)
-			);
+			).normalize();
 			z_offsets[i] = 0.01 * myrand_range(0,100);
 		}
 	}
@@ -613,7 +614,6 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	std::vector<int> values;
 	for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
 		v3f z_dir = z_directions[i];
-		z_dir.normalize();
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0,1,0), z_dir);
 		v3f dir = m_camera_direction;
