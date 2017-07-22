@@ -1003,8 +1003,8 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 	return driver_names[type];
 }
 
-void RenderingEngine::setCamera(Camera *camera, irr::core::vector3df position,
-		irr::core::vector3df target)
+void RenderingEngine::setCamera(Camera *camera, const irr::core::vector3df &position,
+		const irr::core::vector3df &target)
 {
 	camera->getCameraNode()->setPosition(position);
 	camera->getCameraNode()->updateAbsolutePosition();
