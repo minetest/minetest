@@ -156,7 +156,7 @@ float disp_z;
 		nightRatio * artificialLight.rgb) * 2;
 
 // Nested instead of an && so the 2nd condition for && isn't checked until required
-#if ENABLE_ADVANCED_LIGHTING
+#ifdef ENABLE_ADVANCED_LIGHTING
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
 
