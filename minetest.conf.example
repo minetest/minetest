@@ -1510,6 +1510,10 @@
 #    type: int
 # mgcarpathian_large_cave_depth = -33
 
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgcarpathian_lava_depth = -256
+
 #    Y-level of cavern upper limit.
 #    type: int
 # mgcarpathian_cavern_limit = -256
