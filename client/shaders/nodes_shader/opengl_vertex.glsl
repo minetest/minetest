@@ -160,12 +160,12 @@ float disp_z;
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
 
-#if DRAW_TYPE != NDT_PLANTLIKE && DRAW_TYPE != NDT_TORCHLIKE
 	// Directional shading color
-	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
-#else // More subtle shading for non-directional objects
-	// Directional shading color
+#if DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE
+	// More subtle shading for non-directional objects
 	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
+#else
+	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
 #endif
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
