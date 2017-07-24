@@ -56,6 +56,7 @@ MapgenV7::MapgenV7(int mapgenid, MapgenV7Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
 	spflags             = params->spflags;
+	mount_zero_level    = params->mount_zero_level;
 	cave_width          = params->cave_width;
 	large_cave_depth    = params->large_cave_depth;
 	lava_depth          = params->lava_depth;
@@ -149,6 +150,7 @@ MapgenV7Params::MapgenV7Params()
 void MapgenV7Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv7_spflags",           spflags, flagdesc_mapgen_v7);
+	settings->getS16NoEx("mgv7_mount_zero_level",      mount_zero_level);
 	settings->getFloatNoEx("mgv7_cave_width",          cave_width);
 	settings->getS16NoEx("mgv7_large_cave_depth",      large_cave_depth);
 	settings->getS16NoEx("mgv7_lava_depth",            lava_depth);
@@ -180,6 +182,7 @@ void MapgenV7Params::readParams(const Settings *settings)
 void MapgenV7Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv7_spflags",           spflags, flagdesc_mapgen_v7, U32_MAX);
+	settings->setS16("mgv7_mount_zero_level",      mount_zero_level);
 	settings->setFloat("mgv7_cave_width",          cave_width);
 	settings->setS16("mgv7_large_cave_depth",      large_cave_depth);
 	settings->setS16("mgv7_lava_depth",            lava_depth);
@@ -397,7 +400,7 @@ bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 {
 	float mnt_h_n =
 			MYMAX(NoisePerlin2D(&noise_mount_height->np, x, z, seed), 1.0f);
-	float density_gradient = -((float)y / mnt_h_n);
+	float density_gradient = -((float)(y - mount_zero_level) / mnt_h_n);
 	float mnt_n = NoisePerlin3D(&noise_mountain->np, x, y, z, seed);
 
 	return mnt_n + density_gradient >= 0.0;
@@ -407,7 +410,7 @@ bool MapgenV7::getMountainTerrainAtPoint(s16 x, s16 y, s16 z)
 bool MapgenV7::getMountainTerrainFromMap(int idx_xyz, int idx_xz, s16 y)
 {
 	float mounthn = MYMAX(noise_mount_height->result[idx_xz], 1.0f);
-	float density_gradient = -((float)y / mounthn);
+	float density_gradient = -((float)(y - mount_zero_level) / mounthn);
 	float mountn = noise_mountain->result[idx_xyz];
 
 	return mountn + density_gradient >= 0.0;

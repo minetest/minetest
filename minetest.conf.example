@@ -1397,6 +1397,10 @@
 #    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
 # mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
 
+#    Y of mountain density gradient zero level. Used to shift mountains vertically.
+#    type: int
+# mgv7_mount_zero_level = 0
+
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
 # mgv7_cave_width = 0.09
