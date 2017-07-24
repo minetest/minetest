@@ -741,8 +741,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (g_settings->getBool("tone_mapping"))
 		shaders_header += "#define ENABLE_TONE_MAPPING\n";
 
+	shaders_header += "#define ENABLE_ADVANCED_LIGHTING ";
 	if (g_settings->getBool("enable_advanced_lighting"))
-		shaders_header += "#define ENABLE_ADVANCED_LIGHTING\n";
+		shaders_header += "1\n";
+	else
+		shaders_header += "0\n";
 
 	if (g_settings->getBool("enable_specular_lighting"))
 		shaders_header += "#define ENABLE_SPECULAR_LIGHTING\n";

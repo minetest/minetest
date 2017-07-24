@@ -155,10 +155,18 @@ float disp_z;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2;
 
-#ifdef ENABLE_ADVANCED_LIGHTING
+// Nested instead of an && so the 2nd condition for && isn't checked until required
+#if ENABLE_ADVANCED_LIGHTING
+	// Lighting color
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
+
+#if DRAW_TYPE != NDT_PLANTLIKE && DRAW_TYPE != NDT_TORCHLIKE
 	// Directional shading color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
+	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
+#else // More subtle shading for non-directional objects
+	// Directional shading color
+	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
+#endif
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
