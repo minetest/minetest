@@ -62,12 +62,12 @@ public:
 	// Starts as zero sized
 	VoxelArea() {}
 
-	VoxelArea(v3s16 min_edge, v3s16 max_edge):
+	VoxelArea(const v3s16 &min_edge, const v3s16 &max_edge):
 		MinEdge(min_edge),
 		MaxEdge(max_edge)
 	{
 	}
-	VoxelArea(v3s16 p):
+	VoxelArea(const v3s16 &p):
 		MinEdge(p),
 		MaxEdge(p)
 	{
@@ -113,18 +113,6 @@ public:
 		MinEdge -= d;
 		MaxEdge += d;
 	}
-
-	/*void operator+=(v3s16 off)
-	{
-		MinEdge += off;
-		MaxEdge += off;
-	}
-
-	void operator-=(v3s16 off)
-	{
-		MinEdge -= off;
-		MaxEdge -= off;
-	}*/
 
 	/*
 		const methods
@@ -179,12 +167,12 @@ public:
 				&& MaxEdge == other.MaxEdge);
 	}
 
-	VoxelArea operator+(v3s16 off) const
+	VoxelArea operator+(const v3s16 &off) const
 	{
 		return VoxelArea(MinEdge+off, MaxEdge+off);
 	}
 
-	VoxelArea operator-(v3s16 off) const
+	VoxelArea operator-(const v3s16 &off) const
 	{
 		return VoxelArea(MinEdge-off, MaxEdge-off);
 	}
@@ -347,36 +335,22 @@ enum VoxelPrintMode
 	VOXELPRINT_LIGHT_DAY,
 };
 
-class VoxelManipulator /*: public NodeContainer*/
+class VoxelManipulator
 {
 public:
 	VoxelManipulator();
 	virtual ~VoxelManipulator();
 
 	/*
-		Virtuals from NodeContainer
-	*/
-	/*virtual u16 nodeContainerId() const
-	{
-		return NODECONTAINER_ID_VOXELMANIPULATOR;
-	}
-	bool isValidPosition(v3s16 p)
-	{
-		addArea(p);
-		return !(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA);
-	}*/
-
-	/*
 		These are a bit slow and shouldn't be used internally.
 		Use m_data[m_area.index(p)] instead.
 	*/
-	MapNode getNode(v3s16 p)
+	MapNode getNode(const v3s16 &p)
 	{
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
 
-		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
-		{
+		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA) {
 			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
 					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
 					<<", index="<<m_area.index(p)
@@ -388,23 +362,22 @@ public:
 
 		return m_data[m_area.index(p)];
 	}
-	MapNode getNodeNoEx(v3s16 p)
+	MapNode getNodeNoEx(const v3s16 &p)
 	{
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
 
-		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
-		{
+		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA) {
 			return MapNode(CONTENT_IGNORE);
 		}
 
 		return m_data[m_area.index(p)];
 	}
-	MapNode getNodeNoExNoEmerge(v3s16 p)
+	MapNode getNodeNoExNoEmerge(const v3s16 &p)
 	{
-		if(m_area.contains(p) == false)
+		if (!m_area.contains(p))
 			return MapNode(CONTENT_IGNORE);
-		if(m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
+		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
 			return MapNode(CONTENT_IGNORE);
 		return m_data[m_area.index(p)];
 	}
@@ -425,32 +398,18 @@ public:
 		return m_data[index];
 	}
 
-	u8 & getFlagsRefUnsafe(v3s16 p)
+	u8 & getFlagsRefUnsafe(const v3s16 &p)
 	{
 		return m_flags[m_area.index(p)];
 	}
-	bool exists(v3s16 p)
+
+	bool exists(const v3s16 &p)
 	{
 		return m_area.contains(p) &&
 			!(getFlagsRefUnsafe(p) & VOXELFLAG_NO_DATA);
 	}
-	MapNode & getNodeRef(v3s16 p)
-	{
-		VoxelArea voxel_area(p);
-		addArea(voxel_area);
-		if(getFlagsRefUnsafe(p) & VOXELFLAG_NO_DATA)
-		{
-			/*dstream<<"EXCEPT: VoxelManipulator::getNode(): "
-					<<"p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-					<<", index="<<m_area.index(p)
-					<<", flags="<<(int)getFlagsRefUnsafe(p)
-					<<" is inexistent"<<std::endl;*/
-			throw InvalidPositionException
-			("VoxelManipulator: getNode: inexistent");
-		}
-		return getNodeRefUnsafe(p);
-	}
-	void setNode(v3s16 p, const MapNode &n)
+
+	void setNode(const v3s16 &p, const MapNode &n)
 	{
 		VoxelArea voxel_area(p);
 		addArea(voxel_area);
@@ -459,30 +418,10 @@ public:
 		m_flags[m_area.index(p)] &= ~VOXELFLAG_NO_DATA;
 	}
 	// TODO: Should be removed and replaced with setNode
-	void setNodeNoRef(v3s16 p, const MapNode &n)
+	void setNodeNoRef(const v3s16 &p, const MapNode &n)
 	{
 		setNode(p, n);
 	}
-
-	/*void setExists(VoxelArea a)
-	{
-		addArea(a);
-		for(s32 z=a.MinEdge.Z; z<=a.MaxEdge.Z; z++)
-		for(s32 y=a.MinEdge.Y; y<=a.MaxEdge.Y; y++)
-		for(s32 x=a.MinEdge.X; x<=a.MaxEdge.X; x++)
-		{
-			m_flags[m_area.index(x,y,z)] &= ~VOXELFLAG_NO_DATA;
-		}
-	}*/
-
-	/*MapNode & operator[](v3s16 p)
-	{
-		//dstream<<"operator[] p=("<<p.X<<","<<p.Y<<","<<p.Z<<")"<<std::endl;
-		if(isValidPosition(p) == false)
-			addArea(VoxelArea(p));
-
-		return m_data[m_area.index(p)];
-	}*/
 
 	/*
 		Set stuff if available without an emerge.
@@ -490,26 +429,13 @@ public:
 		This is convenient but slower than playing around directly
 		with the m_data table with indices.
 	*/
-	bool setNodeNoEmerge(v3s16 p, MapNode n)
+	bool setNodeNoEmerge(const v3s16 &p, MapNode n)
 	{
-		if(m_area.contains(p) == false)
+		if(!m_area.contains(p))
 			return false;
 		m_data[m_area.index(p)] = n;
 		return true;
 	}
-	bool setNodeNoEmerge(s32 i, MapNode n)
-	{
-		if(m_area.contains(i) == false)
-			return false;
-		m_data[i] = n;
-		return true;
-	}
-	/*bool setContentNoEmerge(v3s16 p, u8 c)
-	{
-		if(isValidPosition(p) == false)
-			return false;
-		m_data[m_area.index(p)].d = c;
-	}*/
 
 	/*
 		Control
@@ -543,17 +469,10 @@ public:
 
 	void unspreadLight(enum LightBank bank, v3s16 p, u8 oldlight,
 			std::set<v3s16> & light_sources, INodeDefManager *nodemgr);
-	void unspreadLight(enum LightBank bank,
-			std::map<v3s16, u8> & from_nodes,
-			std::set<v3s16> & light_sources, INodeDefManager *nodemgr);
 
 	void spreadLight(enum LightBank bank, v3s16 p, INodeDefManager *nodemgr);
 	void spreadLight(enum LightBank bank,
 			std::set<v3s16> & from_nodes, INodeDefManager *nodemgr);
-
-	/*
-		Virtual functions
-	*/
 
 	/*
 		Member variables
