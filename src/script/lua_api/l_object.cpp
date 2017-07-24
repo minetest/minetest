@@ -1766,7 +1766,7 @@ int ObjectRef::l_set_clouds(lua_State *L)
 	if (lua_istable(L, -1)) {
 		v2f new_speed;
 		new_speed.X = getfloatfield_default(L, -1, "x", 0);
-		new_speed.Y = getfloatfield_default(L, -1, "y", 0);
+		new_speed.Y = getfloatfield_default(L, -1, "z", 0);
 		cloud_params.speed = new_speed;
 	}
 	lua_pop(L, 1);
