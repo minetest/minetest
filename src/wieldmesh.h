@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef WIELDMESH_HEADER
-#define WIELDMESH_HEADER
+#pragma once
 
 #include <string>
 #include "irrlichttypes_extrabloated.h"
@@ -137,4 +136,3 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
 		bool set_material, video::E_MATERIAL_TYPE *mattype,
 		std::vector<ItemPartColor> *colors);
-#endif

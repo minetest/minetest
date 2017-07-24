@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAP_SETTINGS_MANAGER_HEADER
-#define MAP_SETTINGS_MANAGER_HEADER
+#pragma once
 
 #include <string>
 
@@ -76,4 +75,3 @@ private:
 	Settings *m_user_settings;
 };
 
-#endif

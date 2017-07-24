@@ -19,8 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGENV6_HEADER
-#define MAPGENV6_HEADER
+#pragma once
 
 #include "mapgen.h"
 #include "noise.h"
@@ -170,4 +169,3 @@ public:
 	virtual void generateCaves(int max_stone_y);
 };
 
-#endif

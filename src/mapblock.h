@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPBLOCK_HEADER
-#define MAPBLOCK_HEADER
+#pragma once
 
 #include <set>
 #include "debug.h"
@@ -672,4 +671,3 @@ inline void getNodeSectorPosWithOffset(const v2s16 &p, v2s16 &block, v2s16 &offs
 */
 std::string analyze_block(MapBlock *block);
 
-#endif

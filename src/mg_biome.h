@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_BIOME_HEADER
-#define MG_BIOME_HEADER
+#pragma once
 
 #include "objdef.h"
 #include "nodedef.h"
@@ -229,5 +228,3 @@ private:
 
 };
 
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef IRRLICHTTYPES_BLOATED_HEADER
-#define IRRLICHTTYPES_BLOATED_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 
@@ -28,4 +27,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <SColor.h>
 
-#endif

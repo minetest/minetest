@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_ENVIRONMENT_HEADER
-#define CLIENT_ENVIRONMENT_HEADER
+#pragma once
 
 #include <ISceneManager.h>
 #include "environment.h"
@@ -158,4 +157,3 @@ private:
 	v3s16 m_camera_offset;
 };
 
-#endif

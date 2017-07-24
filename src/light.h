@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LIGHT_HEADER
-#define LIGHT_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 
@@ -125,4 +124,3 @@ inline u8 blend_light(u32 daylight_factor, u8 lightday, u8 lightnight)
 	return l;
 }
 
-#endif

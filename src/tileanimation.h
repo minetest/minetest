@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TILEANIMATION_HEADER
-#define TILEANIMATION_HEADER
+#pragma once
 
 #include <iostream>
 #include "irrlichttypes_bloated.h"
@@ -59,4 +58,3 @@ struct TileAnimationParams
 	v2f getTextureCoords(v2u32 texture_size, int frame) const;
 };
 
-#endif

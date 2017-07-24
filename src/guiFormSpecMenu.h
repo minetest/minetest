@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
-#ifndef GUIINVENTORYMENU_HEADER
-#define GUIINVENTORYMENU_HEADER
+#pragma once
 
 #include <utility>
 #include <stack>
@@ -568,4 +567,3 @@ public:
 	std::string m_formspec;
 };
 
-#endif

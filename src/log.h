@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LOG_HEADER
-#define LOG_HEADER
+#pragma once
 
 #include <map>
 #include <queue>
@@ -213,5 +212,3 @@ extern std::ostream dstream;
 	#define derr_client (*derr_client_ptr)
 #endif
 
-
-#endif

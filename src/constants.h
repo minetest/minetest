@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONSTANTS_HEADER
-#define CONSTANTS_HEADER
+#pragma once
 
 /*
 	All kinds of constants.
@@ -116,4 +115,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #define DEFAULT_FONT_SIZE (10)
 
-#endif

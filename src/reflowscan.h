@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef REFLOWSCAN_H
-#define REFLOWSCAN_H
+#pragma once
 
 #include "util/container.h"
 #include "irrlichttypes_bloated.h"
@@ -47,4 +46,3 @@ private:
 	u32 m_lookup_state_bitset;
 };
 
-#endif // REFLOWSCAN_H

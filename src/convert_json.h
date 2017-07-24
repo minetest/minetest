@@ -17,12 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONVERT_JSON_H
-#define CONVERT_JSON_H
+#pragma once
 
 #include <json/json.h>
 
 Json::Value                 fetchJsonValue(const std::string &url,
                                            std::vector<std::string> *extra_headers);
 
-#endif

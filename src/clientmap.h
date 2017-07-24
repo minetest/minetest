@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTMAP_HEADER
-#define CLIENTMAP_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
@@ -143,6 +142,4 @@ private:
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
 };
-
-#endif
 

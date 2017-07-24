@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef OBJECT_PROPERTIES_HEADER
-#define OBJECT_PROPERTIES_HEADER
+#pragma once
 
 #include <string>
 #include "irrlichttypes_bloated.h"
@@ -61,4 +60,3 @@ struct ObjectProperties
 	void deSerialize(std::istream &is);
 };
 
-#endif

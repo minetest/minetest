@@ -17,8 +17,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef GUIVOLUMECHANGE_HEADER
-#define GUIVOLUMECHANGE_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
@@ -45,6 +44,4 @@ public:
 	
 	bool pausesGame() { return true; }
 };
-
-#endif
 

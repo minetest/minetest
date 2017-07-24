@@ -16,8 +16,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef PORTING_ANDROID_H
-#define PORTING_ANDROID_H
+#pragma once
 
 #ifndef __ANDROID__
 #error this include has to be included on android port only!
@@ -78,4 +77,3 @@ std::string getInputDialogValue();
 
 }
 
-#endif

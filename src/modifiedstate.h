@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MODIFIEDSTATE_HEADER
-#define MODIFIEDSTATE_HEADER
+#pragma once
 
 enum ModifiedState
 {
@@ -33,4 +32,3 @@ enum ModifiedState
 	MOD_RESERVED5 = 5,
 };
 
-#endif

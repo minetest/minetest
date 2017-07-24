@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_MAPBLOCK_HEADER
-#define CONTENT_MAPBLOCK_HEADER
+#pragma once
 #include "util/numeric.h"
 #include "nodedef.h"
 #include <IMeshManipulator.h>
@@ -147,4 +146,3 @@ public:
 	void generate();
 };
 
-#endif

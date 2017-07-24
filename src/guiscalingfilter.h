@@ -15,8 +15,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef GUI_SCALING_FILTER_H
-#define GUI_SCALING_FILTER_H
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 
@@ -49,4 +48,3 @@ void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 		const core::rect<s32> *cliprect = 0, const video::SColor *const colors = 0,
 		bool usealpha = false);
 
-#endif
