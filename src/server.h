@@ -65,31 +65,6 @@ enum ClientDeletionReason {
 	CDR_DENY
 };
 
-class MapEditEventAreaIgnorer
-{
-public:
-	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
-		m_ignorevariable(ignorevariable)
-	{
-		if(m_ignorevariable->getVolume() == 0)
-			*m_ignorevariable = a;
-		else
-			m_ignorevariable = NULL;
-	}
-
-	~MapEditEventAreaIgnorer()
-	{
-		if(m_ignorevariable)
-		{
-			assert(m_ignorevariable->getVolume() != 0);
-			*m_ignorevariable = VoxelArea();
-		}
-	}
-
-private:
-	VoxelArea *m_ignorevariable;
-};
-
 struct MediaInfo
 {
 	std::string path;
