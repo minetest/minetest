@@ -74,6 +74,7 @@ enum
 	GUI_ID_KEY_FOG_BUTTON,
 	GUI_ID_KEY_DEC_RANGE_BUTTON,
 	GUI_ID_KEY_INC_RANGE_BUTTON,
+	GUI_ID_KEY_AUTOFWD_BUTTON,
 	// other
 	GUI_ID_CB_AUX1_DESCENDS,
 	GUI_ID_CB_DOUBLETAP_JUMP,
@@ -431,6 +432,7 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_MUTE_BUTTON,      wgettext("Mute"),             "keymap_mute");
 	this->add_key(GUI_ID_KEY_DEC_VOLUME_BUTTON,wgettext("Dec. volume"),      "keymap_decrease_volume");
 	this->add_key(GUI_ID_KEY_INC_VOLUME_BUTTON,wgettext("Inc. volume"),      "keymap_increase_volume");
+	this->add_key(GUI_ID_KEY_AUTOFWD_BUTTON,   wgettext("Autoforward"),      "keymap_autoforward");
 	this->add_key(GUI_ID_KEY_CHAT_BUTTON,      wgettext("Chat"),             "keymap_chat");
 	this->add_key(GUI_ID_KEY_SCREENSHOT_BUTTON,wgettext("Screenshot"),       "keymap_screenshot");
 	this->add_key(GUI_ID_KEY_RANGE_BUTTON,     wgettext("Range select"),     "keymap_rangeselect");
