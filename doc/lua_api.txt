@@ -2847,18 +2847,25 @@ These functions return the leftover itemstack.
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
     * Create a schematic from the volume of map specified by the box formed by p1 and p2.
-    * Apply the specified probability values to the specified nodes in `probability_list`.
+    * Apply the specified probability and per-node force-place to the specified nodes
+      according to the `probability_list`.
         * `probability_list` is an array of tables containing two fields, `pos` and `prob`.
             * `pos` is the 3D vector specifying the absolute coordinates of the
               node being modified,
-            * `prob` is the integer value from `0` to `255` of the probability (see: Schematic specifier).
+            * `prob` is an integer value from `0` to `255` that encodes probability and
+              per-node force-place. Probability has levels 0-127, then 128 is added to
+              encode per-node force-place.
+              For probability stated as 0-255, divide by 2 and round down to get values
+              0-127, then add 128 to apply per-node force-place.
             * If there are two or more entries with the same pos value, the
               last entry is used.
             * If `pos` is not inside the box formed by `p1` and `p2`, it is ignored.
             * If `probability_list` equals `nil`, no probabilities are applied.
-            * Slice probability works in the same manner, except takes a field
-              called `ypos` instead which
-              indicates the y position of the slice with a probability applied.
+    * Apply the specified probability to the specified horizontal slices according to the
+      `slice_prob_list`.
+        * `slice_prob_list` is an array of tables containing two fields, `ypos` and `prob`.
+            * `ypos` indicates the y position of the slice with a probability applied,
+              the lowest slice being `ypos = 0`.
             * If slice probability list equals `nil`, no slice probabilities are applied.
     * Saves schematic in the Minetest Schematic format to filename.
 
