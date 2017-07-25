@@ -53,9 +53,9 @@ void main(void)
 	color.rgb *= resultLightColor;
 #endif
 
-        // Emphase blue a bit in darker places
-        // See C++ implementation in mapblock_mesh.cpp finalColorBlend()
-        float brightness = (color.r + color.g + color.b) / 3;
+	// Emphase blue a bit in darker places
+	// See C++ implementation in mapblock_mesh.cpp finalColorBlend()
+	float brightness = (color.r + color.g + color.b) / 3;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 

@@ -725,7 +725,7 @@ public:
 			sunlight.g,
 			sunlight.b,
  			1.0 };
-		light_color[3] = 1.0 - (time_of_day / 1000.0);
+		light_color[3] = 1.0 - (time_of_day / 1000.0f);
 		if (daynight_ratio > 320 && daynight_ratio < 470) { // Moon light
 			sun_angle -= M_PI * (1.0 - ((daynight_ratio - 320) / 150.0));
 

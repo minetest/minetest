@@ -179,5 +179,5 @@ float disp_z;
 	color.b += max(0.0, 0.021 - abs(0.2 * brightness - 0.021) +
 		0.07 * brightness);
 
-	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);;
+	gl_FrontColor = gl_BackColor = clamp(color, 0.0, 1.0);
 }
