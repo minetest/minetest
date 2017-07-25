@@ -55,7 +55,7 @@ void VoxelManipulator::clear()
 void VoxelManipulator::print(std::ostream &o, INodeDefManager *ndef,
 		VoxelPrintMode mode)
 {
-	v3s16 em = m_area.getExtent();
+	const v3s16 &em = m_area.getExtent();
 	v3s16 of = m_area.MinEdge;
 	o<<"size: "<<em.X<<"x"<<em.Y<<"x"<<em.Z
 	 <<" offset: ("<<of.X<<","<<of.Y<<","<<of.Z<<")"<<std::endl;
@@ -208,7 +208,7 @@ void VoxelManipulator::addArea(const VoxelArea &area)
 }
 
 void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
-		v3s16 from_pos, v3s16 to_pos, v3s16 size)
+		v3s16 from_pos, v3s16 to_pos, const v3s16 &size)
 {
 	/* The reason for this optimised code is that we're a member function
 	 * and the data type/layout of m_data is know to us: it's stored as
@@ -256,7 +256,7 @@ void VoxelManipulator::copyFrom(MapNode *src, const VoxelArea& src_area,
 }
 
 void VoxelManipulator::copyTo(MapNode *dst, const VoxelArea& dst_area,
-		v3s16 dst_pos, v3s16 from_pos, v3s16 size)
+		v3s16 dst_pos, v3s16 from_pos, const v3s16 &size)
 {
 	for(s16 z=0; z<size.Z; z++)
 	for(s16 y=0; y<size.Y; y++)

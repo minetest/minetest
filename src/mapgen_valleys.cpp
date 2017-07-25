@@ -475,7 +475,7 @@ int MapgenValleys::generateTerrain()
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index_2d = 0;
 
@@ -597,7 +597,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	MapNode n_lava(c_lava_source);
 	MapNode n_water(c_river_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 
 	// Cave blend distance near YMIN, YMAX
 	const float massive_cave_blend = 128.f;

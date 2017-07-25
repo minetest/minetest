@@ -66,11 +66,14 @@ public:
 		MinEdge(min_edge),
 		MaxEdge(max_edge)
 	{
+		cacheExtent();
 	}
+
 	VoxelArea(const v3s16 &p):
 		MinEdge(p),
 		MaxEdge(p)
 	{
+		cacheExtent();
 	}
 
 	/*
@@ -90,13 +93,16 @@ public:
 		if(a.MaxEdge.X > MaxEdge.X) MaxEdge.X = a.MaxEdge.X;
 		if(a.MaxEdge.Y > MaxEdge.Y) MaxEdge.Y = a.MaxEdge.Y;
 		if(a.MaxEdge.Z > MaxEdge.Z) MaxEdge.Z = a.MaxEdge.Z;
+		cacheExtent();
 	}
+
 	void addPoint(const v3s16 &p)
 	{
 		if(hasEmptyExtent())
 		{
 			MinEdge = p;
 			MaxEdge = p;
+			cacheExtent();
 			return;
 		}
 		if(p.X < MinEdge.X) MinEdge.X = p.X;
@@ -105,6 +111,7 @@ public:
 		if(p.X > MaxEdge.X) MaxEdge.X = p.X;
 		if(p.Y > MaxEdge.Y) MaxEdge.Y = p.Y;
 		if(p.Z > MaxEdge.Z) MaxEdge.Z = p.Z;
+		cacheExtent();
 	}
 
 	// Pad with d nodes
@@ -118,9 +125,9 @@ public:
 		const methods
 	*/
 
-	v3s16 getExtent() const
+	const v3s16 &getExtent() const
 	{
-		return MaxEdge - MinEdge + v3s16(1,1,1);
+		return m_cache_extent;
 	}
 
 	/* Because MaxEdge and MinEdge are included in the voxel area an empty extent
@@ -133,9 +140,9 @@ public:
 
 	s32 getVolume() const
 	{
-		v3s16 e = getExtent();
-		return (s32)e.X * (s32)e.Y * (s32)e.Z;
+		return (s32) m_cache_extent.X * (s32) m_cache_extent.Y * (s32) m_cache_extent.Z;
 	}
+
 	bool contains(const VoxelArea &a) const
 	{
 		// No area contains an empty area
@@ -261,10 +268,9 @@ public:
 	*/
 	s32 index(s16 x, s16 y, s16 z) const
 	{
-		v3s16 em = getExtent();
-		v3s16 off = MinEdge;
-		s32 i = (s32)(z-off.Z)*em.Y*em.X + (y-off.Y)*em.X + (x-off.X);
-		//dstream<<" i("<<x<<","<<y<<","<<z<<")="<<i<<" ";
+		s32 i = (s32) (z - MinEdge.Z) * m_cache_extent.Y * m_cache_extent.X
+			+ (y - MinEdge.Y) * m_cache_extent.X
+			+ (x - MinEdge.X);
 		return i;
 	}
 	s32 index(v3s16 p) const
@@ -298,20 +304,28 @@ public:
 	*/
 	void print(std::ostream &o) const
 	{
-		v3s16 e = getExtent();
-		o<<"("<<MinEdge.X
-		 <<","<<MinEdge.Y
-		 <<","<<MinEdge.Z
-		 <<")("<<MaxEdge.X
-		 <<","<<MaxEdge.Y
-		 <<","<<MaxEdge.Z
-		 <<")"
-		 <<"="<<e.X<<"x"<<e.Y<<"x"<<e.Z<<"="<<getVolume();
+		o << "(" << MinEdge.X
+			<< "," << MinEdge.Y
+			<< "," << MinEdge.Z
+			<< ")("<< MaxEdge.X
+			<< "," << MaxEdge.Y
+			<< "," << MaxEdge.Z
+			<< ")"
+			<< "="
+			<< m_cache_extent.X << "x" << m_cache_extent.Y << "x" << m_cache_extent.Z
+			<< "=" << getVolume();
 	}
 
 	// Edges are inclusive
 	v3s16 MinEdge = v3s16(1,1,1);
 	v3s16 MaxEdge;
+private:
+	void cacheExtent()
+	{
+		m_cache_extent = MaxEdge - MinEdge + v3s16(1,1,1);
+	}
+
+	v3s16 m_cache_extent = v3s16(0,0,0);
 };
 
 // unused
@@ -453,11 +467,11 @@ public:
 		dst_area.getExtent() <= src_area.getExtent()
 	*/
 	void copyFrom(MapNode *src, const VoxelArea& src_area,
-			v3s16 from_pos, v3s16 to_pos, v3s16 size);
+			v3s16 from_pos, v3s16 to_pos, const v3s16 &size);
 
 	// Copy data
 	void copyTo(MapNode *dst, const VoxelArea& dst_area,
-			v3s16 dst_pos, v3s16 from_pos, v3s16 size);
+			v3s16 dst_pos, v3s16 from_pos, const v3s16 &size);
 
 	/*
 		Algorithms

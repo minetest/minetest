@@ -237,7 +237,7 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 // Returns Y one under area minimum if not found
 s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
 	s16 y_nodes_min = vm->m_area.MinEdge.Y;
 	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
@@ -257,7 +257,7 @@ s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found
 s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -275,7 +275,7 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found or if ground is found first
 s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -344,7 +344,7 @@ inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
 {
 	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
-	v3s16 em  = vm->m_area.getExtent();
+	const v3s16 &em  = vm->m_area.getExtent();
 
 	for (s16 z = nmin.Z + 1; z <= nmax.Z - 1; z++)
 	for (s16 x = nmin.X + 1; x <= nmax.X - 1; x++) {
@@ -467,7 +467,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 	//TimeTaker t("propagateSunlight");
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 
 	// NOTE: Direct access to the low 4 bits of param1 is okay here because,
 	// by definition, sunlight will never be in the night lightbank.
@@ -627,7 +627,7 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 	assert(biomegen);
 	assert(biomemap);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 	MgStoneType stone_type = MGSTONE_STONE;
 
@@ -764,7 +764,7 @@ void MapgenBasic::dustTopNodes()
 	if (node_max.Y < water_level)
 		return;
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
