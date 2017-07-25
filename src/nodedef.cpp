@@ -365,6 +365,8 @@ void ContentFeatures::reset()
 	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
 	light_source = 0;
+	light_type = 0;
+	overlay_light_type = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
@@ -439,6 +441,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, light_propagates);
 	writeU8(os, sunlight_propagates);
 	writeU8(os, light_source);
+	writeU8(os, light_type);
+	writeU8(os, overlay_light_type);
 
 	// map generation
 	writeU8(os, is_ground_content);
@@ -552,6 +556,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 	sunlight_propagates = readU8(is);
 	light_source = readU8(is);
 	light_source = MYMIN(light_source, LIGHT_MAX);
+	light_type = readU8(is);
+	overlay_light_type = readU8(is);
 
 	// map generation
 	is_ground_content = readU8(is);
@@ -786,7 +792,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 tile_shader[6];
 	for (u16 j = 0; j < 6; j++) {
 		tile_shader[j] = shdsrc->getShader("nodes_shader",
-			material_type, drawtype);
+			material_type, drawtype, light_type);
 	}
 	u8 overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
@@ -796,7 +802,7 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 overlay_shader[6];
 	for (u16 j = 0; j < 6; j++) {
 		overlay_shader[j] = shdsrc->getShader("nodes_shader",
-			overlay_material, drawtype);
+			overlay_material, drawtype, overlay_light_type);
 	}
 
 	// Tiles (fill in f->tiles[])

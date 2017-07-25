@@ -49,6 +49,7 @@ struct ShaderInfo {
 	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
 	u8 drawtype = 0;
 	u8 material_type = 0;
+	u8 light_type = 0;
 
 	ShaderInfo() {}
 	virtual ~ShaderInfo() {}
@@ -126,10 +127,10 @@ public:
 	IShaderSource(){}
 	virtual ~IShaderSource(){}
 	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		const u8 material_type, const u8 drawtype, const u8 light_type = 0){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
 	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		const u8 material_type, const u8 drawtype, const u8 light_type = 0){return 0;}
 };
 
 class IWritableShaderSource : public IShaderSource {
@@ -137,10 +138,10 @@ public:
 	IWritableShaderSource(){}
 	virtual ~IWritableShaderSource(){}
 	virtual u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		const u8 material_type, const u8 drawtype, const u8 light_type = 0){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
 	virtual u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype){return 0;}
+		const u8 material_type, const u8 drawtype, const u8 light_type = 0){return 0;}
 
 	virtual void processQueue()=0;
 	virtual void insertSourceShader(const std::string &name_of_shader,

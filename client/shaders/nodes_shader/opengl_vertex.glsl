@@ -31,7 +31,6 @@ const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
 const float e = 2.718281828459;
 const float BS = 10.0;
 
-
 float smoothCurve(float x)
 {
 	return x * x * (3.0 - 2.0 * x);
@@ -155,20 +154,31 @@ float disp_z;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
 		nightRatio * artificialLight.rgb) * 2;
 
-// Nested instead of an && so the 2nd condition for && isn't checked until required
+// A ton of nested #if defines, should try to shave off a couple if needed
+// Runtime performance isn't a problem here since it's compiled once
 #ifdef ENABLE_ADVANCED_LIGHTING
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
 
-	// Directional shading color
-#if DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE
-	// More subtle shading for non-directional objects
+	// Lighting and effects
+#if LIGHT_TYPE == LIGHT_TYPE_BRIGHT || LIGHT_TYPE == LIGHT_TYPE_BRIGHT_FLICKER
+#if LIGHT_TYPE == LIGHT_TYPE_BRIGHT_FLICKER
+	resultLightColor *= (smoothTriangleWave(animationTimer * 700) * 0.07) + 0.93;
+#endif
+#elif LIGHT_TYPE == LIGHT_TYPE_GLOW
+	resultLightColor *= (sin(animationTimer * 188.495559) * 0.1) + 0.9;
+#elif (DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE)
+	#if LIGHT_TYPE == LIGHT_TYPE_FLICKER
+		resultLightColor *= (smoothTriangleWave(animationTimer * 700) * 0.07) + 0.93;
+	#endif
+
+	// Plant/torchlike meshes have an assumed normal of up
 	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
+	resultLightColor = (resultLightColor * 0.6) + 0.4;
 #else
 	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
-#endif
-
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
+#endif
 
 	color.rgb *= resultLightColor;
 #endif

@@ -92,6 +92,16 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{0, NULL},
 	};
 
+struct EnumString ScriptApiNode::es_LightType[] =
+	{
+		{LIGHT_TYPE_NONE, "none"},
+		{LIGHT_TYPE_BRIGHT, "bright"},
+		{LIGHT_TYPE_BRIGHT_FLICKER, "bright_flicker"},
+		{LIGHT_TYPE_FLICKER, "flicker"},
+		{LIGHT_TYPE_GLOW, "glow"},
+		{0, NULL},
+	};
+
 ScriptApiNode::ScriptApiNode() {
 }
 

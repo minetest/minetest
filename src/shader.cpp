@@ -272,7 +272,7 @@ public:
 		The id 0 points to a null shader. Its material is EMT_SOLID.
 	*/
 	u32 getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		const u8 material_type, const u8 drawtype, const u8 light_type);
 
 	/*
 		If shader specified by the name pointed by the id doesn't
@@ -284,7 +284,7 @@ public:
 	*/
 
 	u32 getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype);
+		const u8 material_type, const u8 drawtype, const u8 light_type);
 
 	ShaderInfo getShaderInfo(u32 id);
 
@@ -340,7 +340,7 @@ IWritableShaderSource *createShaderSource()
 	Generate shader given the shader name.
 */
 ShaderInfo generate_shader(const std::string &name,
-		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
+		u8 material_type, u8 drawtype, u8 light_type, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache);
 
@@ -376,14 +376,14 @@ ShaderSource::~ShaderSource()
 }
 
 u32 ShaderSource::getShader(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		const u8 material_type, const u8 drawtype, const u8 light_type)
 {
 	/*
 		Get shader
 	*/
 
 	if (std::this_thread::get_id() == m_main_thread) {
-		return getShaderIdDirect(name, material_type, drawtype);
+		return getShaderIdDirect(name, material_type, drawtype, light_type);
 	} else {
 		/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
 
@@ -420,7 +420,7 @@ u32 ShaderSource::getShader(const std::string &name,
 	This method generates all the shaders
 */
 u32 ShaderSource::getShaderIdDirect(const std::string &name,
-		const u8 material_type, const u8 drawtype)
+		const u8 material_type, const u8 drawtype, const u8 light_type)
 {
 	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
 
@@ -434,7 +434,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
 		ShaderInfo *info = &m_shaderinfo_cache[i];
 		if(info->name == name && info->material_type == material_type &&
-			info->drawtype == drawtype)
+			info->drawtype == drawtype && info->light_type == light_type)
 			return i;
 	}
 
@@ -447,7 +447,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 		return 0;
 	}
 
-	ShaderInfo info = generate_shader(name, material_type, drawtype,
+	ShaderInfo info = generate_shader(name, material_type, drawtype, light_type,
 			m_callbacks, m_setter_factories, &m_sourcecache);
 
 	/*
@@ -513,7 +513,7 @@ void ShaderSource::rebuildShaders()
 		ShaderInfo *info = &m_shaderinfo_cache[i];
 		if(info->name != ""){
 			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_callbacks,
+					info->drawtype, info->light_type, m_callbacks,
 					m_setter_factories, &m_sourcecache);
 		}
 	}
@@ -521,7 +521,7 @@ void ShaderSource::rebuildShaders()
 
 
 ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
-		std::vector<ShaderCallback *> &callbacks,
+		u8 light_type, std::vector<ShaderCallback *> &callbacks,
 		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache)
 {
@@ -529,6 +529,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaderinfo.name = name;
 	shaderinfo.material_type = material_type;
 	shaderinfo.drawtype = drawtype;
+	shaderinfo.light_type = light_type;
 	shaderinfo.material = video::EMT_SOLID;
 	switch (material_type) {
 	case TILE_MATERIAL_OPAQUE:
@@ -647,11 +648,30 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		shaders_header += "\n";
 	}
 
+	static const char* lightTypes[] = {
+		"LIGHT_TYPE_NONE",
+		"LIGHT_TYPE_BRIGHT",
+		"LIGHT_TYPE_BRIGHT_FLICKER",
+		"LIGHT_TYPE_FLICKER",
+		"LIGHT_TYPE_GLOW"
+	};
+
+	for (int i = 0; i < 5; i++){
+		shaders_header += "#define ";
+		shaders_header += lightTypes[i];
+		shaders_header += " ";
+		shaders_header += itos(i);
+		shaders_header += "\n";
+	}
+
 	shaders_header += "#define MATERIAL_TYPE ";
 	shaders_header += itos(material_type);
 	shaders_header += "\n";
 	shaders_header += "#define DRAW_TYPE ";
 	shaders_header += itos(drawtype);
+	shaders_header += "\n";
+	shaders_header += "#define LIGHT_TYPE ";
+	shaders_header += itos(light_type);
 	shaders_header += "\n";
 
 	if (g_settings->getBool("generate_normalmaps")) {

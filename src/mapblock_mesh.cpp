@@ -825,6 +825,8 @@ static void getTileInfo(
 	getNodeTile(n, p_corrected, face_dir_corrected, data, tile);
 	const ContentFeatures &f = ndef->get(n);
 	tile.emissive_light = f.light_source;
+	if (f.light_type)
+		tile.emissive_light = MYMAX(tile.emissive_light, 1);
 
 	// eg. water and glass
 	if (equivalent) {

@@ -96,6 +96,15 @@ enum NodeBoxType
 	NODEBOX_CONNECTED, // optionally draws nodeboxes if a neighbor node attaches
 };
 
+enum LightType
+{
+	LIGHT_TYPE_NONE, // No special light effects; normal node
+	LIGHT_TYPE_BRIGHT, // Node is fullbright
+	LIGHT_TYPE_BRIGHT_FLICKER, // Node is fullbright and also flickers like firelight
+	LIGHT_TYPE_FLICKER, // Node flickers like firelight
+	LIGHT_TYPE_GLOW, // Node is fullbright and glows like lava or embers
+};
+
 struct NodeBox
 {
 	enum NodeBoxType type;
@@ -302,6 +311,10 @@ struct ContentFeatures
 	bool sunlight_propagates;
 	// Amount of light the node emits
 	u8 light_source;
+	// Type of light; minor effect
+	u8 light_type;
+	// Overlays have the light type too- useful for partially glowing embers or something
+	u8 overlay_light_type;
 
 	// --- MAP GENERATION ---
 
