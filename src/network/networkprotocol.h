@@ -163,12 +163,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 35:
  		Rename TOCLIENT_CHAT_MESSAGE to TOCLIENT_CHAT_MESSAGE_OLD (0x30)
  		Add TOCLIENT_CHAT_MESSAGE (0x2F)
- 			This chat message is a signalisation message containing various informations:
+ 			This chat message is a signalisation message containing various
+			informations:
  			* timestamp
  			* sender
  			* type (RAW, NORMAL, ANNOUNCE, SYSTEM)
  			* content
- 		Add TOCLIENT_CSM_FLAVOUR_LIMITS to define which CSM flavour should be limited
+ 		Add TOCLIENT_CSM_FLAVOUR_LIMITS to define which CSM flavour should be
+			limited
+		Add settable player collisionbox. Breaks compatibility with older
+			clients as a 1-node vertical offset has been removed from player's
+			position
 */
 
 #define LATEST_PROTOCOL_VERSION 35
