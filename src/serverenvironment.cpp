@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "remoteplayer.h"
 #include "scripting_server.h"
 #include "server.h"
-#include "voxelalgorithms.h"
 #include "util/serialize.h"
 #include "util/basic_macros.h"
 #include "util/pointedthing.h"
@@ -70,9 +69,8 @@ ABMWithState::ABMWithState(ActiveBlockModifier *abm_):
 
 void LBMContentMapping::deleteContents()
 {
-	for (std::vector<LoadingBlockModifierDef *>::iterator it = lbm_list.begin();
-		it != lbm_list.end(); ++it) {
-		delete *it;
+	for (auto &it : lbm_list) {
+		delete it;
 	}
 }
 
@@ -84,24 +82,21 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 
 	lbm_list.push_back(lbm_def);
 
-	for (std::set<std::string>::const_iterator it = lbm_def->trigger_contents.begin();
-		it != lbm_def->trigger_contents.end(); ++it) {
+	for (const std::string &nodeTrigger: lbm_def->trigger_contents) {
 		std::set<content_t> c_ids;
-		bool found = nodedef->getIds(*it, c_ids);
+		bool found = nodedef->getIds(nodeTrigger, c_ids);
 		if (!found) {
-			content_t c_id = gamedef->allocateUnknownNodeId(*it);
+			content_t c_id = gamedef->allocateUnknownNodeId(nodeTrigger);
 			if (c_id == CONTENT_IGNORE) {
 				// Seems it can't be allocated.
-				warningstream << "Could not internalize node name \"" << *it
+				warningstream << "Could not internalize node name \"" << nodeTrigger
 					<< "\" while loading LBM \"" << lbm_def->name << "\"." << std::endl;
 				continue;
 			}
 			c_ids.insert(c_id);
 		}
 
-		for (std::set<content_t>::const_iterator iit =
-			c_ids.begin(); iit != c_ids.end(); ++iit) {
-			content_t c_id = *iit;
+		for (content_t c_id : c_ids) {
 			map[c_id].push_back(lbm_def);
 		}
 	}
@@ -110,7 +105,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 const std::vector<LoadingBlockModifierDef *> *
 LBMContentMapping::lookup(content_t c) const
 {
-	container_map::const_iterator it = map.find(c);
+	lbm_map::const_iterator it = map.find(c);
 	if (it == map.end())
 		return NULL;
 	// This first dereferences the iterator, returning
@@ -121,13 +116,12 @@ LBMContentMapping::lookup(content_t c) const
 
 LBMManager::~LBMManager()
 {
-	for (std::map<std::string, LoadingBlockModifierDef *>::iterator it =
-		m_lbm_defs.begin(); it != m_lbm_defs.end(); ++it) {
-		delete it->second;
+	for (auto &m_lbm_def : m_lbm_defs) {
+		delete m_lbm_def.second;
 	}
-	for (lbm_lookup_map::iterator it = m_lbm_lookup.begin();
-		it != m_lbm_lookup.end(); ++it) {
-		(it->second).deleteContents();
+
+	for (auto &it : m_lbm_lookup) {
+		(it.second).deleteContents();
 	}
 }
 
@@ -213,12 +207,11 @@ void LBMManager::loadIntroductionTimes(const std::string &times,
 	LBMContentMapping &lbms_we_introduce_now = m_lbm_lookup[now];
 	LBMContentMapping &lbms_running_always = m_lbm_lookup[U32_MAX];
 
-	for (std::map<std::string, LoadingBlockModifierDef *>::iterator it =
-		m_lbm_defs.begin(); it != m_lbm_defs.end(); ++it) {
-		if (it->second->run_at_every_load) {
-			lbms_running_always.addLBM(it->second, gamedef);
+	for (auto &m_lbm_def : m_lbm_defs) {
+		if (m_lbm_def.second->run_at_every_load) {
+			lbms_running_always.addLBM(m_lbm_def.second, gamedef);
 		} else {
-			lbms_we_introduce_now.addLBM(it->second, gamedef);
+			lbms_we_introduce_now.addLBM(m_lbm_def.second, gamedef);
 		}
 	}
 
@@ -234,18 +227,16 @@ std::string LBMManager::createIntroductionTimesString()
 		"attempted to query on non fully set up LBMManager");
 
 	std::ostringstream oss;
-	for (lbm_lookup_map::iterator it = m_lbm_lookup.begin();
-		it != m_lbm_lookup.end(); ++it) {
-		u32 time = it->first;
-		std::vector<LoadingBlockModifierDef *> &lbm_list = it->second.lbm_list;
-		for (std::vector<LoadingBlockModifierDef *>::iterator iit = lbm_list.begin();
-			iit != lbm_list.end(); ++iit) {
+	for (const auto &it : m_lbm_lookup) {
+		u32 time = it.first;
+		const std::vector<LoadingBlockModifierDef *> &lbm_list = it.second.lbm_list;
+		for (const auto &lbm_def : lbm_list) {
 			// Don't add if the LBM runs at every load,
 			// then introducement time is hardcoded
 			// and doesn't need to be stored
-			if ((*iit)->run_at_every_load)
+			if (lbm_def->run_at_every_load)
 				continue;
-			oss << (*iit)->name << "~" << time << ";";
+			oss << lbm_def->name << "~" << time << ";";
 		}
 	}
 	return oss.str();
@@ -273,9 +264,8 @@ void LBMManager::applyLBMs(ServerEnvironment *env, MapBlock *block, u32 stamp)
 						iit->second.lookup(c);
 					if (!lbm_list)
 						continue;
-					for (std::vector<LoadingBlockModifierDef *>::const_iterator iit =
-						lbm_list->begin(); iit != lbm_list->end(); ++iit) {
-						(*iit)->trigger(env, pos + pos_of_block, n);
+					for (auto lbmdef : *lbm_list) {
+						lbmdef->trigger(env, pos + pos_of_block, n);
 					}
 				}
 			}
@@ -1660,6 +1650,38 @@ ActiveObjectMessage ServerEnvironment::getActiveObjectMessage()
 	ActiveObjectMessage message = m_active_object_messages.front();
 	m_active_object_messages.pop();
 	return message;
+}
+
+void ServerEnvironment::getSelectedActiveObjects(
+	const core::line3d<f32> &shootline_on_map,
+	std::vector<PointedThing> &objects)
+{
+	std::vector<u16> objectIds;
+	getObjectsInsideRadius(objectIds, shootline_on_map.start,
+		shootline_on_map.getLength() + 10.0f);
+	const v3f line_vector = shootline_on_map.getVector();
+
+	for (u32 i = 0; i < objectIds.size(); i++) {
+		ServerActiveObject* obj = getActiveObject(objectIds[i]);
+
+		aabb3f selection_box;
+		if (!obj->getSelectionBox(&selection_box))
+			continue;
+
+		v3f pos = obj->getBasePosition();
+
+		aabb3f offsetted_box(selection_box.MinEdge + pos,
+			selection_box.MaxEdge + pos);
+
+		v3f current_intersection;
+		v3s16 current_normal;
+		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
+				&current_intersection, &current_normal)) {
+			objects.push_back(PointedThing(
+				(s16) objectIds[i], current_intersection, current_normal,
+				(current_intersection - shootline_on_map.start).getLengthSQ()));
+		}
+	}
 }
 
 /*

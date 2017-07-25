@@ -65,7 +65,7 @@ public:
 	{
 	}
 
-	u16 getId()
+	u16 getId() const
 	{
 		return m_id;
 	}
@@ -76,7 +76,28 @@ public:
 	}
 
 	virtual ActiveObjectType getType() const = 0;
+
+
+	/*!
+	 * Returns the collision box of the object.
+	 * This box is translated by the object's
+	 * location.
+	 * The box's coordinates are world coordinates.
+	 * @returns true if the object has a collision box.
+	 */
 	virtual bool getCollisionBox(aabb3f *toset) const = 0;
+
+
+	/*!
+	 * Returns the selection box of the object.
+	 * This box is not translated when the
+	 * object moves.
+	 * The box's coordinates are world coordinates.
+	 * @returns true if the object has a selection box.
+	 */
+	virtual bool getSelectionBox(aabb3f *toset) const = 0;
+
+
 	virtual bool collideWithObjects() const = 0;
 protected:
 	u16 m_id; // 0 is invalid, "no id"

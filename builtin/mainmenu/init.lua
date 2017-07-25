@@ -36,7 +36,6 @@ dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "gamemgr.lua")
 dofile(menupath .. DIR_DELIM .. "modmgr.lua")
-dofile(menupath .. DIR_DELIM .. "store.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
@@ -151,13 +150,6 @@ local function init_globals()
 	end
 	ui.set_default("maintab")
 	tv_main:show()
-
-	-- Create modstore ui
-	if PLATFORM == "Android" then
-		modstore.init({x = 12, y = 6}, 3, 2)
-	else
-		modstore.init({x = 12, y = 8}, 4, 3)
-	end
 
 	ui.update()
 

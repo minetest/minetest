@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
 struct MeshMakeData;
+struct ChatMessage;
 class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
@@ -328,7 +329,8 @@ public:
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ChatMessageOld(NetworkPacket *pkt);
+	void handleCommand_ChatMessage(NetworkPacket *pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
 	void handleCommand_Movement(NetworkPacket* pkt);
@@ -362,6 +364,7 @@ public:
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -394,6 +397,14 @@ public:
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
+
+	/**
+	 * Helper function for Client Side Modding
+	 * Flavour is applied there, this should not be used for core engine
+	 * @param p
+	 * @param is_valid_position
+	 * @return
+	 */
 	MapNode getNode(v3s16 p, bool *is_valid_position);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
@@ -520,9 +531,9 @@ public:
 
 	void makeScreenshot();
 
-	inline void pushToChatQueue(const std::wstring &input)
+	inline void pushToChatQueue(ChatMessage *cec)
 	{
-		m_chat_queue.push(input);
+		m_chat_queue.push(cec);
 	}
 
 	ClientScripting *getScript() { return m_script; }
@@ -548,6 +559,16 @@ public:
 	const std::string &getAddressName() const
 	{
 		return m_address_name;
+	}
+
+	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
+	{
+		return m_csm_flavour_limits & flag;
+	}
+
+	u32 getCSMNodeRangeLimit() const
+	{
+		return m_csm_noderange_limit;
 	}
 
 private:
@@ -629,10 +650,10 @@ private:
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-	std::queue<std::wstring> m_chat_queue;
 	std::queue<std::wstring> m_out_chat_queue;
 	u32 m_last_chat_message_sent;
 	float m_chat_message_allowance = 5.0f;
+	std::queue<ChatMessage *> m_chat_queue;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;
@@ -703,6 +724,10 @@ private:
 	GameUIFlags *m_game_ui_flags;
 
 	bool m_shutdown = false;
+
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 #endif // !CLIENT_HEADER

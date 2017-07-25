@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientiface.h"
 #include "remoteplayer.h"
 #include "network/networkpacket.h"
+#include "chatmessage.h"
 #include <string>
 #include <list>
 #include <map>
@@ -388,7 +389,7 @@ private:
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(u16 peer_id, const std::wstring &message);
+	void SendChatMessage(u16 peer_id, const ChatMessage &message);
 	void SendTimeOfDay(u16 peer_id, u16 time, f32 time_speed);
 	void SendPlayerHP(u16 peer_id);
 
@@ -465,6 +466,8 @@ private:
 
 	u32 SendActiveObjectRemoveAdd(u16 peer_id, const std::string &datas);
 	void SendActiveObjectMessages(u16 peer_id, const std::string &datas, bool reliable = true);
+	void SendCSMFlavourLimits(u16 peer_id);
+
 	/*
 		Something random
 	*/
@@ -663,6 +666,10 @@ private:
 
 	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
 	float m_mod_storage_save_timer = 10.0f;
+
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
 };
 
 /*
@@ -673,4 +680,3 @@ private:
 void dedicated_server_loop(Server &server, bool &kill);
 
 #endif
-

@@ -134,6 +134,7 @@ public:
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
 	s16 getS16(const std::string &name) const;
+	u32 getU32(const std::string &name) const;
 	s32 getS32(const std::string &name) const;
 	u64 getU64(const std::string &name) const;
 	float getFloat(const std::string &name) const;

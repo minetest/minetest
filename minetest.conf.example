@@ -564,7 +564,7 @@
 
 #    Width component of the initial window size.
 #    type: int
-# screen_w = 800
+# screen_w = 1024
 
 #    Height component of the initial window size.
 #    type: int
@@ -1182,6 +1182,19 @@
 #    type: bool
 # server_side_occlusion_culling = true
 
+#    Restricts the access of certain client-side functions on servers
+#    Combine these byteflags below to restrict more client-side features:
+#    LOOKUP_NODES_LIMIT: 1 (limits get_node call client-side to csm_flavour_noderange_limit)
+#    CHAT_MESSAGES: 2 (disable send_chat_message call client-side)
+#    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
+#    READ_NODEDEFS: 8 (disable get_node_def call client-side)
+#    type: int
+# csm_flavour_limits = 3
+
+#   If the CSM flavour for node range is enabled, get_node is limited to
+#   this many nodes from the player.
+# csm_flavour_noderange_limit 8
+
 ## Mapgen
 
 #    Name of map generator to be used when creating a new world.
@@ -1387,12 +1400,12 @@
 #### Mapgen v7
 
 #    Map generation attributes specific to Mapgen v7.
-#    The 'ridges' flag enables the rivers.
-#    Floatlands are currently experimental and subject to change.
+#    'ridges' enables the rivers.
+#    'biomerepeat' causes surface biomes to repeat in the floatlands.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
-# mgv7_spflags = mountains,ridges,nofloatlands,caverns
+#    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
 
 #    Controls width of tunnels, a smaller value creates wider tunnels.
 #    type: float
@@ -1506,7 +1519,7 @@
 #    type: float
 # mgcarpathian_cave_width = 0.09
 
-#    Y of upper limit of large pseudorandom caves.
+#    Y of upper limit of large caves.
 #    type: int
 # mgcarpathian_large_cave_depth = -33
 
@@ -1970,15 +1983,6 @@
 
 #    type: int
 # main_menu_mod_mgr = 1
-
-#    type: string
-# modstore_download_url = https://forum.minetest.net/media/
-
-#    type: string
-# modstore_listmods_url = https://forum.minetest.net/mmdb/mods/
-
-#    type: string
-# modstore_details_url = https://forum.minetest.net/mmdb/mod/*/
 
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int

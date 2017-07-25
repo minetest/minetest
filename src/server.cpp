@@ -60,6 +60,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/sha1.h"
 #include "util/hex.h"
 #include "database.h"
+#include "chatmessage.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -297,6 +298,8 @@ Server::Server(
 
 	m_liquid_transform_every = g_settings->getFloat("liquid_update");
 	m_max_chatmessage_length = g_settings->getU16("chat_message_max_size");
+	m_csm_flavour_limits = g_settings->getU64("csm_flavour_limits");
+	m_csm_noderange_limit = g_settings->getU32("csm_flavour_noderange_limit");
 }
 
 Server::~Server()
@@ -304,7 +307,8 @@ Server::~Server()
 	infostream<<"Server destructing"<<std::endl;
 
 	// Send shutdown message
-	SendChatMessage(PEER_ID_INEXISTENT, L"*** Server shutting down");
+	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE,
+			L"*** Server shutting down"));
 
 	{
 		MutexAutoLock envlock(m_env_mutex);
@@ -1107,7 +1111,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	// Note things in chat if not in simple singleplayer mode
 	if (!m_simple_singleplayer_mode && g_settings->getBool("show_statusline_on_connect")) {
 		// Send information about server to player in chat
-		SendChatMessage(peer_id, getStatusString());
+		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
 	}
 	Address addr = getPeerAddress(player->peer_id);
 	std::string ip_str = addr.serializeString();
@@ -1615,21 +1619,29 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 	Send(&pkt);
 }
 
-void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
+void Server::SendChatMessage(u16 peer_id, const ChatMessage &message)
 {
 	DSTACK(FUNCTION_NAME);
+
+	NetworkPacket legacypkt(TOCLIENT_CHAT_MESSAGE_OLD, 0, peer_id);
+	legacypkt << message.message;
+
+	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+	u8 version = 1;
+	u8 type = message.type;
+	pkt << version << type << std::wstring(L"") << message.message << message.timestamp;
+
 	if (peer_id != PEER_ID_INEXISTENT) {
-		NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
+		RemotePlayer *player = m_env->getPlayer(peer_id);
+		if (!player)
+			return;
 
-		if (m_clients.getProtocolVersion(peer_id) < 27)
-			pkt << unescape_enriched(message);
+		if (player->protocol_version < 35)
+			Send(&legacypkt);
 		else
-			pkt << message;
-
-		Send(&pkt);
+			Send(&pkt);
 	} else {
-		for (u16 id : m_clients.getClientIDs())
-			SendChatMessage(id, message);
+		m_clients.sendToAllCompat(&pkt, &legacypkt, 35);
 	}
 }
 
@@ -2007,7 +2019,14 @@ void Server::SendActiveObjectMessages(u16 peer_id, const std::string &datas, boo
 	m_clients.send(pkt.getPeerId(),
 			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
 			&pkt, reliable);
+}
 
+void Server::SendCSMFlavourLimits(u16 peer_id)
+{
+	NetworkPacket pkt(TOCLIENT_CSM_FLAVOUR_LIMITS,
+		sizeof(m_csm_flavour_limits) + sizeof(m_csm_noderange_limit), peer_id);
+	pkt << m_csm_flavour_limits << m_csm_noderange_limit;
+	Send(&pkt);
 }
 
 s32 Server::playSound(const SimpleSoundSpec &spec,
@@ -2811,8 +2830,10 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 	}
 
 	// Send leave chat message to all remaining clients
-	if(message.length() != 0)
-		SendChatMessage(PEER_ID_INEXISTENT,message);
+	if (!message.empty()) {
+		SendChatMessage(PEER_ID_INEXISTENT,
+				ChatMessage(CHATMESSAGE_TYPE_ANNOUNCE, message));
+	}
 }
 
 void Server::UpdateCrafting(RemotePlayer *player)
@@ -2934,7 +2955,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 		for (u16 i = 0; i < clients.size(); i++) {
 			u16 cid = clients[i];
 			if (cid != peer_id_to_avoid_sending)
-				SendChatMessage(cid, line);
+				SendChatMessage(cid, ChatMessage(line));
 		}
 	}
 	return L"";
@@ -3096,7 +3117,7 @@ void Server::notifyPlayer(const char *name, const std::wstring &msg)
 	if (player->peer_id == PEER_ID_INEXISTENT)
 		return;
 
-	SendChatMessage(player->peer_id, msg);
+	SendChatMessage(player->peer_id, ChatMessage(msg));
 }
 
 bool Server::showFormspec(const char *playername, const std::string &formspec,
@@ -3271,7 +3292,7 @@ bool Server::overrideDayNightRatio(RemotePlayer *player, bool do_override,
 
 void Server::notifyPlayers(const std::wstring &msg)
 {
-	SendChatMessage(PEER_ID_INEXISTENT,msg);
+	SendChatMessage(PEER_ID_INEXISTENT, ChatMessage(msg));
 }
 
 void Server::spawnParticle(const std::string &playername, v3f pos,

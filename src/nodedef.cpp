@@ -365,8 +365,6 @@ void ContentFeatures::reset()
 	liquid_range = LIQUID_LEVEL_MAX+1;
 	drowning = 0;
 	light_source = 0;
-	light_type = 0;
-	overlay_light_type = 0;
 	damage_per_second = 0;
 	node_box = NodeBox();
 	selection_box = NodeBox();
@@ -441,8 +439,6 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, light_propagates);
 	writeU8(os, sunlight_propagates);
 	writeU8(os, light_source);
-	writeU8(os, light_type);
-	writeU8(os, overlay_light_type);
 
 	// map generation
 	writeU8(os, is_ground_content);
@@ -556,8 +552,6 @@ void ContentFeatures::deSerialize(std::istream &is)
 	sunlight_propagates = readU8(is);
 	light_source = readU8(is);
 	light_source = MYMIN(light_source, LIGHT_MAX);
-	light_type = readU8(is);
-	overlay_light_type = readU8(is);
 
 	// map generation
 	is_ground_content = readU8(is);
@@ -778,6 +772,9 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	case NDT_RAILLIKE:
 		solidness = 0;
 		break;
+	case NDT_PLANTLIKE_ROOTED:
+		solidness = 2;
+		break;
 	}
 
 	if (is_liquid) {
@@ -789,38 +786,41 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			TILE_MATERIAL_LIQUID_OPAQUE : TILE_MATERIAL_LIQUID_TRANSPARENT;
 	}
 
-	u32 tile_shader[6];
-	for (u16 j = 0; j < 6; j++) {
-		tile_shader[j] = shdsrc->getShader("nodes_shader",
-			material_type, drawtype, light_type);
-	}
+	u32 tile_shader = shdsrc->getShader("nodes_shader", material_type, drawtype, light_source > 0);
+
 	u8 overlay_material = material_type;
 	if (overlay_material == TILE_MATERIAL_OPAQUE)
 		overlay_material = TILE_MATERIAL_BASIC;
 	else if (overlay_material == TILE_MATERIAL_LIQUID_OPAQUE)
 		overlay_material = TILE_MATERIAL_LIQUID_TRANSPARENT;
-	u32 overlay_shader[6];
-	for (u16 j = 0; j < 6; j++) {
-		overlay_shader[j] = shdsrc->getShader("nodes_shader",
-			overlay_material, drawtype, overlay_light_type);
-	}
+
+	u32 overlay_shader = shdsrc->getShader("nodes_shader", overlay_material, drawtype, light_source > 0);
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
-		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader[j],
+		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader,
 			tsettings.use_normal_texture,
 			tdef[j].backface_culling, material_type);
 		if (tdef_overlay[j].name != "")
 			fillTileAttribs(tsrc, &tiles[j].layers[1], &tdef_overlay[j],
-				overlay_shader[j], tsettings.use_normal_texture,
+				overlay_shader, tsettings.use_normal_texture,
 				tdef[j].backface_culling, overlay_material);
 	}
+
+	u8 special_material = material_type;
+	if (drawtype == NDT_PLANTLIKE_ROOTED) {
+		if (waving == 1)
+			special_material = TILE_MATERIAL_WAVING_PLANTS;
+		else if (waving == 2)
+			special_material = TILE_MATERIAL_WAVING_LEAVES;
+	}
+	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
 
 	// Special tiles (fill in f->special_tiles[])
 	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
 		fillTileAttribs(tsrc, &special_tiles[j].layers[0], &tdef_spec[j],
-			tile_shader[j], tsettings.use_normal_texture,
-			tdef_spec[j].backface_culling, material_type);
+			special_shader, tsettings.use_normal_texture,
+			tdef_spec[j].backface_culling, special_material);
 	}
 
 	if (param_type_2 == CPT2_COLOR ||

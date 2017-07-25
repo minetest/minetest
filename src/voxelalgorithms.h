@@ -123,21 +123,25 @@ public:
 	 * which multiplying the line's vector gives a vector that ends
 	 * on the intersection of two nodes.
 	 */
-	v3f m_next_intersection_multi = v3f(10000.0f, 10000.0f, 10000.0f);
+	v3f m_next_intersection_multi { 10000.0f, 10000.0f, 10000.0f };
 	/*!
 	 * Each component stores the smallest positive number, by which
 	 * m_next_intersection_multi's components can be increased.
 	 */
-	v3f m_intersection_multi_inc = v3f(10000.0f, 10000.0f, 10000.0f);
+	v3f m_intersection_multi_inc { 10000.0f, 10000.0f, 10000.0f };
 	/*!
 	 * Direction of the line. Each component can be -1 or 1 (if a
 	 * component of the line's vector is 0, then there will be 1).
 	 */
-	v3s16 m_step_directions = v3s16(1, 1, 1);
+	v3s16 m_step_directions { 1, 1, 1 };
 	//! Position of the current node.
 	v3s16 m_current_node_pos;
-	//! If true, the next node will intersect the line, too.
-	bool m_has_next;
+	//! Index of the current node
+	s16 m_current_index = 0;
+	//! Position of the start node.
+	v3s16 m_start_node_pos;
+	//! Index of the last node
+	s16 m_last_index;
 
 	/*!
 	 * Creates a voxel line iterator with the given line.
@@ -161,7 +165,18 @@ public:
 	/*!
 	 * Returns true if the next voxel intersects the given line.
 	 */
-	inline bool hasNext() const { return m_has_next; }
+	inline bool hasNext() const
+	{
+		return m_current_index < m_last_index;
+	}
+
+	/*!
+	 * Returns how many times next() must be called until
+	 * voxel==m_current_node_pos.
+	 * If voxel does not intersect with the line,
+	 * the result is undefined.
+	 */
+	s16 getIndex(v3s16 voxel);
 };
 
 } // namespace voxalgo

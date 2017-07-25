@@ -47,6 +47,7 @@ struct EnumString ScriptApiNode::es_DrawType[] =
 		{NDT_FIRELIKE, "firelike"},
 		{NDT_GLASSLIKE_FRAMED_OPTIONAL, "glasslike_framed_optional"},
 		{NDT_MESH, "mesh"},
+		{NDT_PLANTLIKE_ROOTED, "plantlike_rooted"},
 		{0, NULL},
 	};
 
@@ -89,16 +90,6 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{NODEBOX_WALLMOUNTED, "wallmounted"},
 		{NODEBOX_LEVELED, "leveled"},
 		{NODEBOX_CONNECTED, "connected"},
-		{0, NULL},
-	};
-
-struct EnumString ScriptApiNode::es_LightType[] =
-	{
-		{LIGHT_TYPE_NONE, "none"},
-		{LIGHT_TYPE_BRIGHT, "bright"},
-		{LIGHT_TYPE_BRIGHT_FLICKER, "bright_flicker"},
-		{LIGHT_TYPE_FLICKER, "flicker"},
-		{LIGHT_TYPE_GLOW, "glow"},
 		{0, NULL},
 	};
 

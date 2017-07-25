@@ -125,7 +125,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
-	settings->setDefault("screen_w", "800");
+	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
 	settings->setDefault("fullscreen", "false");
@@ -223,9 +223,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("main_menu_path", "");
 	settings->setDefault("main_menu_mod_mgr", "1");
 	settings->setDefault("main_menu_game_mgr", "0");
-	settings->setDefault("modstore_download_url", "https://forum.minetest.net/media/");
-	settings->setDefault("modstore_listmods_url", "https://forum.minetest.net/mmdb/mods/");
-	settings->setDefault("modstore_details_url", "https://forum.minetest.net/mmdb/mod/*/");
 	settings->setDefault("serverlist_file", "favoriteservers.txt");
 
 #if USE_FREETYPE
@@ -299,6 +296,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("max_block_send_distance", "9");
 	settings->setDefault("block_send_optimize_distance", "4");
 	settings->setDefault("server_side_occlusion_culling", "true");
+	settings->setDefault("csm_flavour_limits", "3");
+	settings->setDefault("csm_flavour_noderange_limit", "8");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
 	settings->setDefault("server_unload_unused_data_timeout", "29");

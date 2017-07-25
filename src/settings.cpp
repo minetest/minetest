@@ -398,6 +398,11 @@ s16 Settings::getS16(const std::string &name) const
 }
 
 
+u32 Settings::getU32(const std::string &name) const
+{
+	return (u32) stoi(get(name));
+}
+
 s32 Settings::getS32(const std::string &name) const
 {
 	return stoi(get(name));

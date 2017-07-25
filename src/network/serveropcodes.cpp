@@ -155,13 +155,13 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_INVENTORY",                0, true }, // 0x27
 	null_command_factory,
 	{ "TOCLIENT_TIME_OF_DAY",              0, true }, // 0x29
+	{ "TOCLIENT_CSM_FLAVOUR_LIMITS",       0, true }, // 0x2A
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,
-	null_command_factory,
-	null_command_factory,
-	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x30
+	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
+	{ "TOCLIENT_CHAT_MESSAGE_OLD",         0, true }, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel
 	{ "TOCLIENT_HP",                       0, true }, // 0x33

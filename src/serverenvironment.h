@@ -88,8 +88,8 @@ struct LoadingBlockModifierDef
 
 struct LBMContentMapping
 {
-	typedef std::map<content_t, std::vector<LoadingBlockModifierDef *> > container_map;
-	container_map map;
+	typedef std::unordered_map<content_t, std::vector<LoadingBlockModifierDef *>> lbm_map;
+	lbm_map map;
 
 	std::vector<LoadingBlockModifierDef *> lbm_list;
 
@@ -283,6 +283,11 @@ public:
 		Returns a message with id=0 if no messages are available.
 	*/
 	ActiveObjectMessage getActiveObjectMessage();
+
+	virtual void getSelectedActiveObjects(
+		const core::line3d<f32> &shootline_on_map,
+		std::vector<PointedThing> &objects
+	);
 
 	/*
 		Activate objects and dynamically modify for the dtime determined

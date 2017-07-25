@@ -43,7 +43,8 @@ OreManager::OreManager(IGameDef *gamedef) :
 }
 
 
-size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed,
+	v3s16 nmin, v3s16 nmax, s16 ore_zero_level)
 {
 	size_t nplaced = 0;
 
@@ -52,7 +53,7 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nma
 		if (!ore)
 			continue;
 
-		nplaced += ore->placeOre(mg, blockseed, nmin, nmax);
+		nplaced += ore->placeOre(mg, blockseed, nmin, nmax, ore_zero_level);
 		blockseed++;
 	}
 
@@ -85,13 +86,23 @@ void Ore::resolveNodeNames()
 }
 
 
-size_t Ore::placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
+size_t Ore::placeOre(Mapgen *mg, u32 blockseed,
+	v3s16 nmin, v3s16 nmax, s16 ore_zero_level)
 {
-	if (!(nmin.Y <= y_max && nmax.Y >= y_min))
+	// Ore y_min / y_max is displaced by ore_zero_level or remains unchanged.
+	// Any ore with a limit at +-MAX_MAP_GENERATION_LIMIT is considered to have
+	// that limit at +-infinity, so we do not alter that limit.
+	s32 y_min_disp = (y_min <= -MAX_MAP_GENERATION_LIMIT) ?
+		-MAX_MAP_GENERATION_LIMIT : y_min + ore_zero_level;
+
+	s32 y_max_disp = (y_max >= MAX_MAP_GENERATION_LIMIT) ?
+		MAX_MAP_GENERATION_LIMIT : y_max + ore_zero_level;
+
+	if (nmin.Y > y_max_disp || nmax.Y < y_min_disp)
 		return 0;
 
-	int actual_ymin = MYMAX(nmin.Y, y_min);
-	int actual_ymax = MYMIN(nmax.Y, y_max);
+	int actual_ymin = MYMAX(nmin.Y, y_min_disp);
+	int actual_ymax = MYMIN(nmax.Y, y_max_disp);
 	if (clust_size >= actual_ymax - actual_ymin + 1)
 		return 0;
 

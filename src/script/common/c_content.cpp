@@ -362,6 +362,7 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 	bool default_culling = true;
 	switch (drawtype) {
 		case NDT_PLANTLIKE:
+		case NDT_PLANTLIKE_ROOTED:
 		case NDT_FIRELIKE:
 			default_tiling = false;
 			// "break" is omitted here intentionaly, as PLANTLIKE
@@ -631,15 +632,6 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			<< ", it was reduced." << std::endl;
 		f.light_source = LIGHT_MAX;
 	}
-	f.light_type = (LightType)getenumfield(L, index, "light_type",
-			ScriptApiNode::es_LightType,LIGHT_TYPE_NONE);
-	f.overlay_light_type = (LightType)getenumfield(L, index, "overlay_light_type",
-			ScriptApiNode::es_LightType,LIGHT_TYPE_NONE);
-
-	if (f.light_source && f.overlay_light_type == LIGHT_TYPE_NONE && f.light_type == LIGHT_TYPE_NONE) {
-		f.light_type = LIGHT_TYPE_BRIGHT;
-		f.overlay_light_type = LIGHT_TYPE_BRIGHT;
-	}
 
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
@@ -795,10 +787,6 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "sunlight_propagates");
 	lua_pushnumber(L, c.light_source);
 	lua_setfield(L, -2, "light_source");
-	lua_pushnumber(L, c.light_type);
-	lua_setfield(L, -2, "light_type");
-	lua_pushnumber(L, c.overlay_light_type);
-	lua_setfield(L, -2, "overlay_light_type");
 	lua_pushboolean(L, c.is_ground_content);
 	lua_setfield(L, -2, "is_ground_content");
 	lua_pushboolean(L, c.walkable);

@@ -23,20 +23,47 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../exceptions.h"
 #include <sstream>
 
+PointedThing::PointedThing(const v3s16 &under, const v3s16 &above,
+	const v3s16 &real_under, const v3f &point, const v3s16 &normal,
+	f32 distSq):
+	type(POINTEDTHING_NODE),
+	node_undersurface(under),
+	node_abovesurface(above),
+	node_real_undersurface(real_under),
+	intersection_point(point),
+	intersection_normal(normal),
+	distanceSq(distSq)
+{}
+
+PointedThing::PointedThing(s16 id, const v3f &point, const v3s16 &normal,
+	f32 distSq) :
+	type(POINTEDTHING_OBJECT),
+	object_id(id),
+	intersection_point(point),
+	intersection_normal(normal),
+	distanceSq(distSq)
+{}
+
 std::string PointedThing::dump() const
 {
 	std::ostringstream os(std::ios::binary);
-	if (type == POINTEDTHING_NOTHING) {
-		os<<"[nothing]";
-	} else if (type == POINTEDTHING_NODE) {
+	switch (type) {
+	case POINTEDTHING_NOTHING:
+		os << "[nothing]";
+		break;
+	case POINTEDTHING_NODE:
+	{
 		const v3s16 &u = node_undersurface;
 		const v3s16 &a = node_abovesurface;
-		os<<"[node under="<<u.X<<","<<u.Y<<","<<u.Z
-			<< " above="<<a.X<<","<<a.Y<<","<<a.Z<<"]";
-	} else if (type == POINTEDTHING_OBJECT) {
-		os<<"[object "<<object_id<<"]";
-	} else {
-		os<<"[unknown PointedThing]";
+		os << "[node under=" << u.X << "," << u.Y << "," << u.Z << " above="
+			<< a.X << "," << a.Y << "," << a.Z << "]";
+	}
+		break;
+	case POINTEDTHING_OBJECT:
+		os << "[object " << object_id << "]";
+		break;
+	default:
+		os << "[unknown PointedThing]";
 	}
 	return os.str();
 }
@@ -104,4 +131,3 @@ bool PointedThing::operator!=(const PointedThing &pt2) const
 {
 	return !(*this == pt2);
 }
-

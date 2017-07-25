@@ -292,6 +292,9 @@ if(WIN32)
 		set(VORBIS_DLL "" CACHE FILEPATH "Path to libvorbis.dll for installation (optional)")
 		set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
 	endif()
+	if(USE_LUAJIT)
+		set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
+	endif()
 else()
 	# Unix probably
 	if(BUILD_CLIENT)
@@ -428,9 +431,9 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	quicktune.cpp
+	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
-	raycast.cpp
 	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp
@@ -808,6 +811,9 @@ if(WIN32)
 	endif()
 	if(LEVELDB_DLL)
 		install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(LUA_DLL)
+		install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 

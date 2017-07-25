@@ -66,13 +66,13 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_INVENTORY",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Inventory }, // 0x27
 	null_command_handler,
 	{ "TOCLIENT_TIME_OF_DAY",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_TimeOfDay }, // 0x29
+	{ "TOCLIENT_CSM_FLAVOUR_LIMITS",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CSMFlavourLimits }, // 0x2A
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
-	null_command_handler,
-	null_command_handler,
-	{ "TOCLIENT_CHAT_MESSAGE",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatMessage }, // 0x30
+	{ "TOCLIENT_CHAT_MESSAGE",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatMessage }, // 0x2F
+	{ "TOCLIENT_CHAT_MESSAGE_OLD",         TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ChatMessageOld }, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ActiveObjectRemoveAdd }, // 0x31
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ActiveObjectMessages }, // 0x32
 	{ "TOCLIENT_HP",                       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HP }, // 0x33

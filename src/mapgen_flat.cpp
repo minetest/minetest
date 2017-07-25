@@ -189,7 +189,7 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes();
+	MgStoneType stone_type = generateBiomes(water_level - 1);
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
@@ -199,10 +199,12 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
+		m_emerge->decomgr->placeAllDecos(this, blockseed,
+			node_min, node_max, water_level - 1);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
+	m_emerge->oremgr->placeAllOres(this, blockseed,
+		node_min, node_max, water_level - 1);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

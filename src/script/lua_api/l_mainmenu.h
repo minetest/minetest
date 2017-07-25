@@ -124,10 +124,6 @@ private:
 
 	static int l_extract_zip(lua_State *L);
 
-	static int l_get_modstore_details(lua_State *L);
-
-	static int l_get_modstore_list(lua_State *L);
-
 	static int l_download_file(lua_State *L);
 
 	static int l_get_video_drivers(lua_State *L);

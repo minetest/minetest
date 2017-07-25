@@ -33,15 +33,6 @@ local function get_formspec(tabview, name, tabdata)
 		modmgr.render_modlist(modmgr.global_mods) ..
 		";" .. tabdata.selected_mod .. "]"
 
-	retval = retval ..
---		"label[0.8,4.2;" .. fgettext("Add mod:") .. "]" ..
---		TODO Disabled due to upcoming release 0.4.8 and irrlicht messing up localization
---		"button[0.75,4.85;1.8,0.5;btn_mod_mgr_install_local;".. fgettext("Local install") .. "]" ..
-
---		TODO Disabled due to service being offline, and not likely to come online again, in this form
---		"button[0,4.85;5.25,0.5;btn_modstore;".. fgettext("Online mod repository") .. "]"
-		""
-
 	local selected_mod = nil
 
 	if filterlist.size(modmgr.global_mods) >= tabdata.selected_mod then
@@ -135,18 +126,6 @@ local function handle_buttons(tabview, fields, tabname, tabdata)
 
 	if fields["btn_mod_mgr_install_local"] ~= nil then
 		core.show_file_open_dialog("mod_mgt_open_dlg",fgettext("Select Mod File:"))
-		return true
-	end
-
-	if fields["btn_modstore"] ~= nil then
-		local modstore_ui = ui.find_by_name("modstore")
-		if modstore_ui ~= nil then
-			tabview:hide()
-			modstore.update_modlist()
-			modstore_ui:show()
-		else
-			print("modstore ui element not found")
-		end
 		return true
 	end
 

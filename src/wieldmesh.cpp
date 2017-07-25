@@ -327,28 +327,45 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			m_meshnode->setScale(
 					def.wield_scale * WIELD_SCALE_FACTOR
 					/ (BS * f.visual_scale));
-		} else if (f.drawtype == NDT_AIRLIKE) {
-			changeToMesh(nullptr);
-		} else if (f.drawtype == NDT_PLANTLIKE) {
-			setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-				def.wield_scale, tsrc,
-				f.tiles[0].layers[0].animation_frame_count);
-		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES) {
-			setCube(f, def.wield_scale);
 		} else {
-			MeshMakeData mesh_make_data(client, false);
-			MapNode mesh_make_node(id, 255, 0);
-			mesh_make_data.fillSingleNode(&mesh_make_node);
-			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-			scene::SMesh *mesh = cloneMesh(mapblock_mesh.getMesh());
-			translateMesh(mesh, v3f(-BS, -BS, -BS));
-			postProcessNodeMesh(mesh, f, m_enable_shaders, true,
-				&m_material_type, &m_colors);
-			changeToMesh(mesh);
-			mesh->drop();
-			m_meshnode->setScale(
-					def.wield_scale * WIELD_SCALE_FACTOR
-					/ (BS * f.visual_scale));
+			switch (f.drawtype) {
+				case NDT_AIRLIKE: {
+					changeToMesh(nullptr);
+					break;
+				}
+				case NDT_PLANTLIKE: {
+					setExtruded(tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
+						def.wield_scale, tsrc,
+						f.tiles[0].layers[0].animation_frame_count);
+					break;
+				}
+				case NDT_PLANTLIKE_ROOTED: {
+					setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
+						def.wield_scale, tsrc,
+						f.special_tiles[0].layers[0].animation_frame_count);
+					break;
+				}
+				case NDT_NORMAL:
+				case NDT_ALLFACES: {
+					setCube(f, def.wield_scale);
+					break;
+				}
+				default: {
+					MeshMakeData mesh_make_data(client, false);
+					MapNode mesh_make_node(id, 255, 0);
+					mesh_make_data.fillSingleNode(&mesh_make_node);
+					MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
+					scene::SMesh *mesh = cloneMesh(mapblock_mesh.getMesh());
+					translateMesh(mesh, v3f(-BS, -BS, -BS));
+					postProcessNodeMesh(mesh, f, m_enable_shaders, true,
+						&m_material_type, &m_colors);
+					changeToMesh(mesh);
+					mesh->drop();
+					m_meshnode->setScale(
+							def.wield_scale * WIELD_SCALE_FACTOR
+							/ (BS * f.visual_scale));
+				}
+			}
 		}
 		u32 material_count = m_meshnode->getMaterialCount();
 		for (u32 i = 0; i < material_count; ++i) {
@@ -446,35 +463,50 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
-		} else if (f.drawtype == NDT_PLANTLIKE) {
-			mesh = getExtrudedMesh(tsrc,
-				tsrc->getTextureName(f.tiles[0].layers[0].texture_id));
-		} else if (f.drawtype == NDT_NORMAL || f.drawtype == NDT_ALLFACES
-			|| f.drawtype == NDT_LIQUID || f.drawtype == NDT_FLOWINGLIQUID) {
-			scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
-			mesh = cloneMesh(cube);
-			cube->drop();
-			scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
 		} else {
-			MeshMakeData mesh_make_data(client, false);
-			MapNode mesh_make_node(id, 255, 0);
-			mesh_make_data.fillSingleNode(&mesh_make_node);
-			MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
-			mesh = cloneMesh(mapblock_mesh.getMesh());
-			translateMesh(mesh, v3f(-BS, -BS, -BS));
-			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
+			switch (f.drawtype) {
+				case NDT_PLANTLIKE: {
+					mesh = getExtrudedMesh(tsrc,
+						tsrc->getTextureName(f.tiles[0].layers[0].texture_id));
+					break;
+				}
+				case NDT_PLANTLIKE_ROOTED: {
+					mesh = getExtrudedMesh(tsrc,
+						tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id));
+					break;
+				}
+				case NDT_NORMAL:
+				case NDT_ALLFACES:
+				case NDT_LIQUID:
+				case NDT_FLOWINGLIQUID: {
+					scene::IMesh *cube = g_extrusion_mesh_cache->createCube();
+					mesh = cloneMesh(cube);
+					cube->drop();
+					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+					break;
+				}
+				default: {
+					MeshMakeData mesh_make_data(client, false);
+					MapNode mesh_make_node(id, 255, 0);
+					mesh_make_data.fillSingleNode(&mesh_make_node);
+					MapBlockMesh mapblock_mesh(&mesh_make_data, v3s16(0, 0, 0));
+					mesh = cloneMesh(mapblock_mesh.getMesh());
+					translateMesh(mesh, v3f(-BS, -BS, -BS));
+					scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
 
-			u32 mc = mesh->getMeshBufferCount();
-			for (u32 i = 0; i < mc; ++i) {
-				video::SMaterial &material1 =
-					mesh->getMeshBuffer(i)->getMaterial();
-				video::SMaterial &material2 =
-					mapblock_mesh.getMesh()->getMeshBuffer(i)->getMaterial();
-				material1.setTexture(0, material2.getTexture(0));
-				material1.setTexture(1, material2.getTexture(1));
-				material1.setTexture(2, material2.getTexture(2));
-				material1.setTexture(3, material2.getTexture(3));
-				material1.MaterialType = material2.MaterialType;
+					u32 mc = mesh->getMeshBufferCount();
+					for (u32 i = 0; i < mc; ++i) {
+						video::SMaterial &material1 =
+							mesh->getMeshBuffer(i)->getMaterial();
+						video::SMaterial &material2 =
+							mapblock_mesh.getMesh()->getMeshBuffer(i)->getMaterial();
+						material1.setTexture(0, material2.getTexture(0));
+						material1.setTexture(1, material2.getTexture(1));
+						material1.setTexture(2, material2.getTexture(2));
+						material1.setTexture(3, material2.getTexture(3));
+						material1.MaterialType = material2.MaterialType;
+					}
+				}
 			}
 		}
 

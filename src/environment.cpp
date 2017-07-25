@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "environment.h"
 #include "collision.h"
+#include "raycast.h"
 #include "serverobject.h"
 #include "scripting_server.h"
 #include "server.h"
@@ -81,6 +82,179 @@ float Environment::getTimeOfDayF()
 {
 	MutexAutoLock lock(this->m_time_lock);
 	return m_time_of_day_f;
+}
+
+/*
+	Check if a node is pointable
+*/
+inline static bool isPointableNode(const MapNode &n,
+			    INodeDefManager *nodedef , bool liquids_pointable)
+{
+	const ContentFeatures &features = nodedef->get(n);
+	return features.pointable ||
+	       (liquids_pointable && features.isLiquid());
+}
+
+void Environment::continueRaycast(RaycastState *state, PointedThing *result)
+{
+	INodeDefManager *nodedef = getMap().getNodeDefManager();
+	if (state->m_initialization_needed) {
+		// Add objects
+		if (state->m_objects_pointable) {
+			std::vector<PointedThing> found;
+			getSelectedActiveObjects(state->m_shootline, found);
+			for (std::vector<PointedThing>::iterator pointed = found.begin();
+					pointed != found.end(); ++pointed) {
+				state->m_found.push(*pointed);
+			}
+		}
+		// Set search range
+		core::aabbox3d<s16> maximal_exceed = nodedef->getSelectionBoxIntUnion();
+		state->m_search_range.MinEdge = -maximal_exceed.MaxEdge;
+		state->m_search_range.MaxEdge = -maximal_exceed.MinEdge;
+		// Setting is done
+		state->m_initialization_needed = false;
+	}
+
+	// The index of the first pointed thing that was not returned
+	// before. The last index which needs to be tested.
+	s16 lastIndex = state->m_iterator.m_last_index;
+	if (!state->m_found.empty()) {
+		lastIndex = state->m_iterator.getIndex(
+			floatToInt(state->m_found.top().intersection_point, BS));
+	}
+
+	Map &map = getMap();
+	// If a node is found, this is the center of the
+	// first nodebox the shootline meets.
+	v3f found_boxcenter(0, 0, 0);
+	// The untested nodes are in this range.
+	core::aabbox3d<s16> new_nodes;
+	while (state->m_iterator.m_current_index <= lastIndex) {
+		// Test the nodes around the current node in search_range.
+		new_nodes = state->m_search_range;
+		new_nodes.MinEdge += state->m_iterator.m_current_node_pos;
+		new_nodes.MaxEdge += state->m_iterator.m_current_node_pos;
+
+		// Only check new nodes
+		v3s16 delta = state->m_iterator.m_current_node_pos
+			- state->m_previous_node;
+		if (delta.X > 0) {
+			new_nodes.MinEdge.X = new_nodes.MaxEdge.X;
+		} else if (delta.X < 0) {
+			new_nodes.MaxEdge.X = new_nodes.MinEdge.X;
+		} else if (delta.Y > 0) {
+			new_nodes.MinEdge.Y = new_nodes.MaxEdge.Y;
+		} else if (delta.Y < 0) {
+			new_nodes.MaxEdge.Y = new_nodes.MinEdge.Y;
+		} else if (delta.Z > 0) {
+			new_nodes.MinEdge.Z = new_nodes.MaxEdge.Z;
+		} else if (delta.Z < 0) {
+			new_nodes.MaxEdge.Z = new_nodes.MinEdge.Z;
+		}
+
+		// For each untested node
+		for (s16 x = new_nodes.MinEdge.X; x <= new_nodes.MaxEdge.X; x++)
+		for (s16 y = new_nodes.MinEdge.Y; y <= new_nodes.MaxEdge.Y; y++)
+		for (s16 z = new_nodes.MinEdge.Z; z <= new_nodes.MaxEdge.Z; z++) {
+			MapNode n;
+			v3s16 np(x, y, z);
+			bool is_valid_position;
+
+			n = map.getNodeNoEx(np, &is_valid_position);
+			if (!(is_valid_position && isPointableNode(n, nodedef,
+					state->m_liquids_pointable))) {
+				continue;
+			}
+
+			PointedThing result;
+
+			std::vector<aabb3f> boxes;
+			n.getSelectionBoxes(nodedef, &boxes,
+				n.getNeighbors(np, &map));
+
+			// Is there a collision with a selection box?
+			bool is_colliding = false;
+			// Minimal distance of all collisions
+			float min_distance_sq = 10000000;
+
+			v3f npf = intToFloat(np, BS);
+			for (std::vector<aabb3f>::const_iterator i = boxes.begin();
+					i != boxes.end(); ++i) {
+				// Get current collision box
+				aabb3f box = *i;
+				box.MinEdge += npf;
+				box.MaxEdge += npf;
+
+				v3f intersection_point;
+				v3s16 intersection_normal;
+				if (!boxLineCollision(box, state->m_shootline.start,
+						state->m_shootline.getVector(), &intersection_point,
+						&intersection_normal))
+					continue;
+
+				f32 distanceSq = (intersection_point
+					- state->m_shootline.start).getLengthSQ();
+				// If this is the nearest collision, save it
+				if (min_distance_sq > distanceSq) {
+					min_distance_sq = distanceSq;
+					result.intersection_point = intersection_point;
+					result.intersection_normal = intersection_normal;
+					found_boxcenter = box.getCenter();
+					is_colliding = true;
+				}
+			}
+			// If there wasn't a collision, stop
+			if (!is_colliding) {
+				continue;
+			}
+			result.type = POINTEDTHING_NODE;
+			result.node_undersurface = np;
+			result.distanceSq = min_distance_sq;
+			// Set undersurface and abovesurface nodes
+			f32 d = 0.002 * BS;
+			v3f fake_intersection = result.intersection_point;
+			// Move intersection towards its source block.
+			if (fake_intersection.X < found_boxcenter.X) {
+				fake_intersection.X += d;
+			} else {
+				fake_intersection.X -= d;
+			}
+			if (fake_intersection.Y < found_boxcenter.Y) {
+				fake_intersection.Y += d;
+			} else {
+				fake_intersection.Y -= d;
+			}
+			if (fake_intersection.Z < found_boxcenter.Z) {
+				fake_intersection.Z += d;
+			} else {
+				fake_intersection.Z -= d;
+			}
+			result.node_real_undersurface = floatToInt(
+				fake_intersection, BS);
+			result.node_abovesurface = result.node_real_undersurface
+				+ result.intersection_normal;
+			// Push found PointedThing
+			state->m_found.push(result);
+			// If this is nearer than the old nearest object,
+			// the search can be shorter
+			s16 newIndex = state->m_iterator.getIndex(
+				result.node_real_undersurface);
+			if (newIndex < lastIndex) {
+				lastIndex = newIndex;
+			}
+		}
+		// Next node
+		state->m_previous_node = state->m_iterator.m_current_node_pos;
+		state->m_iterator.next();
+	}
+	// Return empty PointedThing if nothing left on the ray
+	if (state->m_found.empty()) {
+		result->type = POINTEDTHING_NOTHING;
+	} else {
+		*result = state->m_found.top();
+		state->m_found.pop();
+	}
 }
 
 void Environment::stepTimeOfDay(float dtime)
