@@ -740,9 +740,11 @@ public:
 
 		m_light_color.set(light_color, services);
 
+		const float as = sin(sun_angle);
+		const float ac = -cos(sun_angle);
 		float light_direction[3] = {
-			sin(sun_angle),
-			-cos(sun_angle),
+			as,
+			ac,
 			0.0 };
 		m_light_direction.set(light_direction, services);
 
