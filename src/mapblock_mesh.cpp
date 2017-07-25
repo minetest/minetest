@@ -1535,14 +1535,12 @@ void MeshCollector::applyTileColors()
 		}
 	else
 		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-			std::vector<PreMeshBuffer> *p = &prebuffers[layer];
-			for (std::vector<PreMeshBuffer>::iterator it = p->begin();
-					it != p->end(); ++it) {
-				video::SColor tc = it->layer.color;
+			for (auto &pmb : prebuffers[layer]) {
+				video::SColor tc = pmb.layer.color;
 				if (tc == video::SColor(0xFFFFFFFF))
 					continue;
-				for (u32 index = 0; index < it->vertices.size(); index++) {
-					video::SColor *c = &it->vertices[index].Color;
+				for (auto &vertice : pmb.vertices) {
+					video::SColor *c = &vertice.Color;
 					c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
 						c->getGreen() * tc.getGreen() / 255,
 						c->getBlue() * tc.getBlue() / 255);
