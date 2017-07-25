@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include <set>
 #include <list>
-#include <map>
+#include "util/basic_macros.h"
 
 class INodeDefManager;
 
@@ -140,7 +140,7 @@ public:
 
 	s32 getVolume() const
 	{
-		return (s32) m_cache_extent.X * (s32) m_cache_extent.Y * (s32) m_cache_extent.Z;
+		return (s32)m_cache_extent.X * (s32)m_cache_extent.Y * (s32)m_cache_extent.Z;
 	}
 
 	bool contains(const VoxelArea &a) const
@@ -268,7 +268,7 @@ public:
 	*/
 	s32 index(s16 x, s16 y, s16 z) const
 	{
-		s32 i = (s32) (z - MinEdge.Z) * m_cache_extent.Y * m_cache_extent.X
+		s32 i = (s32)(z - MinEdge.Z) * m_cache_extent.Y * m_cache_extent.X
 			+ (y - MinEdge.Y) * m_cache_extent.X
 			+ (x - MinEdge.X);
 		return i;
@@ -304,14 +304,7 @@ public:
 	*/
 	void print(std::ostream &o) const
 	{
-		o << "(" << MinEdge.X
-			<< "," << MinEdge.Y
-			<< "," << MinEdge.Z
-			<< ")("<< MaxEdge.X
-			<< "," << MaxEdge.Y
-			<< "," << MaxEdge.Z
-			<< ")"
-			<< "="
+		o << PP(MinEdge) << PP(MaxEdge) << "="
 			<< m_cache_extent.X << "x" << m_cache_extent.Y << "x" << m_cache_extent.Z
 			<< "=" << getVolume();
 	}
