@@ -18,18 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mapblock_mesh.h"
-#include "light.h"
 #include "mapblock.h"
 #include "map.h"
 #include "profiler.h"
-#include "nodedef.h"
 #include "mesh.h"
 #include "minimap.h"
 #include "content_mapblock.h"
-#include "noise.h"
-#include "shader.h"
-#include "settings.h"
-#include "util/directiontables.h"
 #include "client/renderingengine.h"
 
 /*
@@ -602,7 +596,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 		if (layer->texture_id == 0)
 			continue;
 
-		dest.push_back(FastFace());
+		// equivalent to dest.push_back(FastFace()) but faster
+		dest.emplace_back();
 		FastFace& face = *dest.rbegin();
 
 		for (u8 i = 0; i < 4; i++) {
