@@ -593,7 +593,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.MaterialType = *mattype;
 			}
 			if (layer->animation_frame_count > 1) {
-				FrameSpec animation_frame = layer->frames[0];
+				const FrameSpec &animation_frame = (*layer->frames)[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, layer->texture);
@@ -601,7 +601,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			if (use_shaders) {
 				if (layer->normal_texture) {
 					if (layer->animation_frame_count > 1) {
-						FrameSpec animation_frame = layer->frames[0];
+						const FrameSpec &animation_frame = (*layer->frames)[0];
 						material.setTexture(1, animation_frame.normal_texture);
 					} else
 						material.setTexture(1, layer->normal_texture);
