@@ -636,6 +636,11 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.overlay_light_type = (LightType)getenumfield(L, index, "overlay_light_type",
 			ScriptApiNode::es_LightType,LIGHT_TYPE_NONE);
 
+	if (f.light_source && f.overlay_light_type == LIGHT_TYPE_NONE && f.light_type == LIGHT_TYPE_NONE) {
+		f.light_type = LIGHT_TYPE_BRIGHT;
+		f.overlay_light_type = LIGHT_TYPE_BRIGHT;
+	}
+
 	f.damage_per_second = getintfield_default(L, index,
 			"damage_per_second", f.damage_per_second);
 
