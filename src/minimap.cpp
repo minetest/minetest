@@ -606,7 +606,7 @@ void Minimap::updateActiveMarkers()
 //// MinimapMapblock
 ////
 
-void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
+void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, const v3s16 &pos)
 {
 
 	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)

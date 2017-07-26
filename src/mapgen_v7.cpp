@@ -489,7 +489,7 @@ int MapgenV7::generateTerrain()
 	}
 
 	//// Place nodes
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index2d = 0;
 
