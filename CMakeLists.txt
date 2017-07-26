@@ -164,7 +164,10 @@ if(RUN_IN_PLACE)
 	install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/textures/texture_packs_here.txt" DESTINATION "${SHAREDIR}/textures")
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games" DESTINATION "${SHAREDIR}" COMPONENT "Subgames" PATTERN ".git*" EXCLUDE )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minetest_game" DESTINATION "${SHAREDIR}/games/" 
+	COMPONENT "SUBGAME_MINETEST_GAME" OPTIONAL PATTERN ".git*" EXCLUDE )
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/games/minimal" DESTINATION "${SHAREDIR}/games/" 
+	COMPONENT "SUBGAME_MINIMAL" OPTIONAL PATTERN ".git*" EXCLUDE )
 
 if(BUILD_CLIENT)
 	install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/client/shaders" DESTINATION "${SHAREDIR}/client")
@@ -235,6 +238,25 @@ set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 set(CPACK_PACKAGE_VENDOR "celeron55")
 set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
+
+include(CPackComponent)
+
+cpack_add_component(SUBGAME_MINETEST_GAME
+	DISPLAY_NAME "Minetest Game"
+	DESCRIPTION "The official subgame for the Minetest engine, that can easily extended by mods."
+	GROUP "Subgames"
+)
+
+cpack_add_component(SUBGAME_MINIMAL
+	DISPLAY_NAME "Minimal development test"
+	DESCRIPTION "A minimal subgame helping to develop the engine."
+	DISABLED #DISABLED does not mean it is disabled, it means its not selected on default!
+	GROUP "Subgames"
+)
+
+cpack_add_component_group(Subgames
+	DESCRIPTION "Games for the Minetest engine."
+)
 
 if(WIN32)
 	# Include all dynamically linked runtime libaries such as MSVCRxxx.dll
