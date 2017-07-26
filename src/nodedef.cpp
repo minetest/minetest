@@ -637,7 +637,10 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileLayer *tile,
 		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION;
 	} else {
 		std::ostringstream os(std::ios::binary);
-		tile->frames.resize(frame_count);
+		if (!tile->frames) {
+			tile->frames = std::make_shared<std::vector<FrameSpec>>();
+		}
+		tile->frames->resize(frame_count);
 
 		for (int i = 0; i < frame_count; i++) {
 
@@ -652,7 +655,7 @@ void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileLayer *tile,
 			if (tile->normal_texture)
 				frame.normal_texture = tsrc->getNormalTexture(os.str());
 			frame.flags_texture = tile->flags_texture;
-			tile->frames[i] = frame;
+			(*tile->frames)[i] = frame;
 		}
 	}
 }

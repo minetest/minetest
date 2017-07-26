@@ -18,17 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "mapblock_mesh.h"
-#include "light.h"
 #include "mapblock.h"
 #include "map.h"
 #include "profiler.h"
-#include "nodedef.h"
 #include "mesh.h"
 #include "minimap.h"
 #include "content_mapblock.h"
-#include "noise.h"
-#include "shader.h"
-#include "settings.h"
 #include "util/directiontables.h"
 #include "client/renderingengine.h"
 
@@ -602,7 +597,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 		if (layer->texture_id == 0)
 			continue;
 
-		dest.push_back(FastFace());
+		// equivalent to dest.push_back(FastFace()) but faster
+		dest.emplace_back();
 		FastFace& face = *dest.rbegin();
 
 		for (u8 i = 0; i < 4; i++) {
@@ -1126,7 +1122,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 					m_animation_frame_offsets[std::pair<u8, u32>(layer, i)] = 0;
 				}
 				// Replace tile texture with the first animation frame
-				p.layer.texture = p.layer.frames[0].texture;
+				p.layer.texture = (*p.layer.frames)[0].texture;
 			}
 
 			if (!m_enable_shaders) {
@@ -1314,7 +1310,7 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 		scene::IMeshBuffer *buf = m_mesh[i->first.first]->
 			getMeshBuffer(i->first.second);
 
-		const FrameSpec &animation_frame = tile.frames[frame];
+		const FrameSpec &animation_frame = (*tile.frames)[frame];
 		buf->getMaterial().setTexture(0, animation_frame.texture);
 		if (m_enable_shaders) {
 			if (animation_frame.normal_texture) {
