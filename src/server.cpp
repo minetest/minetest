@@ -1022,7 +1022,6 @@ void Server::AsyncRunStep(bool initial_step)
 void Server::Receive()
 {
 	DSTACK(FUNCTION_NAME);
-	SharedBuffer<u8> data;
 	u16 peer_id;
 	try {
 		NetworkPacket pkt;
