@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mesh.h"
 #include "minimap.h"
 #include "content_mapblock.h"
+#include "util/directiontables.h"
 #include "client/renderingengine.h"
 
 /*
