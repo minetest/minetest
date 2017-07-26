@@ -216,15 +216,6 @@ public:
 	bool addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata = true);
 	bool removeNodeWithEvent(v3s16 p);
 
-	/*
-		Takes the blocks at the edges into account
-	*/
-	bool getDayNightDiff(v3s16 blockpos);
-
-	//core::aabbox3d<s16> getDisplayedBlockArea();
-
-	//bool updateChangedVisibleArea();
-
 	// Call these before and after saving of many blocks
 	virtual void beginSave() { return; }
 	virtual void endSave() { return; }

@@ -362,63 +362,6 @@ bool Map::removeNodeWithEvent(v3s16 p)
 	return succeeded;
 }
 
-bool Map::getDayNightDiff(v3s16 blockpos)
-{
-	try{
-		v3s16 p = blockpos + v3s16(0,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	// Leading edges
-	try{
-		v3s16 p = blockpos + v3s16(-1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,-1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,-1);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	// Trailing edges
-	try{
-		v3s16 p = blockpos + v3s16(1,0,0);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,1,0);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-	try{
-		v3s16 p = blockpos + v3s16(0,0,1);
-		MapBlock *b = getBlockNoCreate(p);
-		if(b->getDayNightDiff())
-			return true;
-	}
-	catch(InvalidPositionException &e){}
-
-	return false;
-}
-
 struct TimeOrderedMapBlock {
 	MapSector *sect;
 	MapBlock *block;

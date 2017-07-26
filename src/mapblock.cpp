@@ -361,7 +361,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 		return;
 	}
 
-	bool differs;
+	bool differs = false;
 
 	/*
 		Check if any lighting value differs
@@ -465,7 +465,7 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 
 			const ContentFeatures &f = nodedef->get(global_id);
 			const std::string &name = f.name;
-			if(name == "")
+			if (name.empty())
 				unknown_contents.insert(global_id);
 			else
 				nimap->set(id, name);
