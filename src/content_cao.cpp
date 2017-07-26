@@ -946,7 +946,7 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 
 v3s16 GenericCAO::getLightPosition()
 {
-	return floatToInt(m_position, BS);
+	return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
 }
 
 void GenericCAO::updateNodePos()
