@@ -582,8 +582,10 @@ int LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	if (getHP() == 0)
+	if (getHP() == 0) {
 		m_removed = true;
+		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
+	}
 
 
 
