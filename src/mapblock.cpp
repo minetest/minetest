@@ -502,7 +502,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 	std::unordered_set<content_t> unnamed_contents;
 	std::unordered_set<std::string> unallocatable_contents;
 
-	bool previous_was_found = false;
+	bool previous_exists = false;
 	content_t previous_local_id = CONTENT_IGNORE;
 	content_t previous_global_id = CONTENT_IGNORE;
 
@@ -512,7 +512,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 		// apply directly previous resolved id
 		// This permits to massively improve loading performance when nodes are similar
 		// example: default:air, default:stone are massively present
-		if (previous_was_found && local_id == previous_local_id) {
+		if (previous_exists && local_id == previous_local_id) {
 			nodes[i].setContent(previous_global_id);
 			continue;
 		}
@@ -520,7 +520,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 		std::string name;
 		if (!nimap->getName(local_id, name)) {
 			unnamed_contents.insert(local_id);
-			previous_was_found = false;
+			previous_exists = false;
 			continue;
 		}
 
@@ -529,7 +529,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 			global_id = gamedef->allocateUnknownNodeId(name);
 			if (global_id == CONTENT_IGNORE) {
 				unallocatable_contents.insert(name);
-				previous_was_found = false;
+				previous_exists = false;
 				continue;
 			}
 		}
@@ -538,7 +538,7 @@ static void correctBlockNodeIds(const NameIdMapping *nimap, MapNode *nodes,
 		// Save previous node local_id & global_id result
 		previous_local_id = local_id;
 		previous_global_id = global_id;
-		previous_was_found = true;
+		previous_exists = true;
 	}
 
 	for (const content_t c: unnamed_contents) {
