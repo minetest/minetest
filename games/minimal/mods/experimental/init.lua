@@ -317,6 +317,9 @@ minetest.register_entity("experimental:testentity", {
 		self.object:remove()
 		hitter:add_to_inventory('craft testobject1 1')
 	end,
+	on_death = function(self, killer)
+		print("testentity.on_death")
+	end
 })
 
 --
@@ -398,11 +401,11 @@ minetest.register_abm({
         if ncpos ~= nil then
             return
         end
-       
+
         if pos.x % 16 ~= 8 or pos.z % 16 ~= 8 then
             return
         end
-       
+
         pos.y = pos.y + 1
         n = minetest.get_node(pos)
         print(dump(n))
@@ -431,7 +434,7 @@ minetest.register_abm({
                 return
             end
             nctime = clock
-           
+
             s0 = ncstuff[ncq]
             ncq = s0[1]
             s1 = ncstuff[ncq]
@@ -477,15 +480,15 @@ minetest.register_node("experimental:tester_node_1", {
 			experimental.print_to_everything("incorrect metadata found")
 		end
 	end,
-       
+
 	on_destruct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:on_destruct("..minetest.pos_to_string(pos)..")")
 	end,
- 
+
 	after_destruct = function(pos)
 		experimental.print_to_everything("experimental:tester_node_1:after_destruct("..minetest.pos_to_string(pos)..")")
 	end,
- 
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		experimental.print_to_everything("experimental:tester_node_1:after_dig_node("..minetest.pos_to_string(pos)..")")
 	end,
