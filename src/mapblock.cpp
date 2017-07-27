@@ -367,7 +367,7 @@ void MapBlock::actuallyUpdateDayNightDiff()
 		Check if any lighting value differs
 	*/
 
-	MapNode previous_n;
+	MapNode previous_n(CONTENT_IGNORE);
 	for (u32 i = 0; i < nodecount; i++) {
 		MapNode n = data[i];
 
