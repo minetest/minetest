@@ -988,7 +988,7 @@ void ServerEnvironment::getObjectsInsideRadius(std::vector<u16> &objects, v3f po
 		i != m_active_objects.end(); ++i) {
 		ServerActiveObject* obj = i->second;
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();
+		const v3f &objectpos = obj->getBasePosition();
 		if (objectpos.getDistanceFrom(pos) > radius)
 			continue;
 		objects.push_back(id);
@@ -1668,7 +1668,7 @@ void ServerEnvironment::getSelectedActiveObjects(
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
 
-		v3f pos = obj->getBasePosition();
+		const v3f &pos = obj->getBasePosition();
 
 		aabb3f offsetted_box(selection_box.MinEdge + pos,
 			selection_box.MaxEdge + pos);
@@ -1718,7 +1718,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	}
 
 	if (objectpos_over_limit(object->getBasePosition())) {
-		v3f p = object->getBasePosition();
+		const v3f &p = object->getBasePosition();
 		warningstream << "ServerEnvironment::addActiveObjectRaw(): "
 			<< "object position (" << p.X << "," << p.Y << "," << p.Z
 			<< ") outside maximum range" << std::endl;
@@ -1746,7 +1746,7 @@ u16 ServerEnvironment::addActiveObjectRaw(ServerActiveObject *object,
 	if(object->isStaticAllowed())
 	{
 		// Add static object to active static list of the block
-		v3f objectpos = object->getBasePosition();
+		const v3f &objectpos = object->getBasePosition();
 		std::string staticdata = "";
 		object->getStaticData(&staticdata);
 		StaticObject s_obj(object->getType(), objectpos, staticdata);
@@ -2013,7 +2013,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 			continue;
 
 		u16 id = i->first;
-		v3f objectpos = obj->getBasePosition();
+		const v3f &objectpos = obj->getBasePosition();
 
 		// The block in which the object resides in
 		v3s16 blockpos_o = getNodeBlockPos(floatToInt(objectpos, BS));

@@ -335,8 +335,8 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	// If the object gets detached this comes into effect automatically from the last known origin
 	if(isAttached())
 	{
-		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
-		m_base_position = pos;
+		m_base_position =
+			m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_velocity = v3f(0,0,0);
 		m_acceleration = v3f(0,0,0);
 	}
@@ -608,7 +608,7 @@ void LuaEntitySAO::setPos(const v3f &pos)
 	sendPosition(false, true);
 }
 
-void LuaEntitySAO::moveTo(v3f pos, bool continuous)
+void LuaEntitySAO::moveTo(const v3f &pos, bool continuous)
 {
 	if(isAttached())
 		return;
@@ -992,7 +992,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	// Each frame, parent position is copied if the object is attached, otherwise it's calculated normally
 	// If the object gets detached this comes into effect automatically from the last known origin
 	if (isAttached()) {
-		v3f pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
+		const v3f &pos = m_env->getActiveObject(m_attachment_parent_id)->getBasePosition();
 		m_last_good_position = pos;
 		setBasePosition(pos);
 	}
@@ -1098,7 +1098,7 @@ void PlayerSAO::setPos(const v3f &pos)
 	m_env->getGameDef()->SendMovePlayer(m_peer_id);
 }
 
-void PlayerSAO::moveTo(v3f pos, bool continuous)
+void PlayerSAO::moveTo(const v3f &pos, bool continuous)
 {
 	if(isAttached())
 		return;

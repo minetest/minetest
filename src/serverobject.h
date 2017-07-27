@@ -78,19 +78,17 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition(){ return m_base_position; }
-	void setBasePosition(v3f pos){ m_base_position = pos; }
-	ServerEnvironment* getEnv(){ return m_env; }
+	const v3f &getBasePosition() { return m_base_position; }
+	void setBasePosition(const v3f &pos) { m_base_position = pos; }
+	ServerEnvironment* getEnv() { return m_env; }
 
 	/*
 		Some more dynamic interface
 	*/
 
-	virtual void setPos(const v3f &pos)
-		{ setBasePosition(pos); }
+	virtual void setPos(const v3f &pos) { setBasePosition(pos); }
 	// continuous: if true, object does not stop immediately at pos
-	virtual void moveTo(v3f pos, bool continuous)
-		{ setBasePosition(pos); }
+	virtual void moveTo(const v3f &pos, bool continuous) { setBasePosition(pos); }
 	// If object has moved less than this and data has not changed,
 	// saving to disk may be omitted
 	virtual float getMinimumSavedMovement();
@@ -149,8 +147,6 @@ public:
 	{}
 	virtual const ItemGroupList &getArmorGroups()
 	{ static const ItemGroupList rv; return rv; }
-	virtual void setPhysicsOverride(float physics_override_speed, float physics_override_jump, float physics_override_gravity)
-	{}
 	virtual void setAnimation(v2f frames, float frame_speed, float frame_blend, bool frame_loop)
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
@@ -181,8 +177,6 @@ public:
 	{ return NULL; }
 	virtual InventoryLocation getInventoryLocation() const
 	{ return InventoryLocation(); }
-	virtual void setInventoryModified()
-	{}
 	virtual std::string getWieldList() const
 	{ return ""; }
 	virtual int getWieldIndex() const

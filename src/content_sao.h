@@ -110,7 +110,7 @@ public:
 			float time_from_last_punch=1000000);
 	void rightClick(ServerActiveObject *clicker);
 	void setPos(const v3f &pos);
-	void moveTo(v3f pos, bool continuous);
+	void moveTo(const v3f &pos, bool continuous);
 	float getMinimumSavedMovement();
 	std::string getDescription();
 	void setHP(s16 hp);
@@ -215,7 +215,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	void setBasePosition(const v3f &position);
 	void setPos(const v3f &pos);
-	void moveTo(v3f pos, bool continuous);
+	void moveTo(const v3f &pos, bool continuous);
 	void setYaw(const float yaw);
 	// Data should not be sent at player initialization
 	void setYawAndSend(const float yaw);

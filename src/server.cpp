@@ -1939,7 +1939,7 @@ void Server::SendMovePlayer(u16 peer_id)
 	pkt << sao->getBasePosition() << sao->getPitch() << sao->getYaw();
 
 	{
-		v3f pos = sao->getBasePosition();
+		const v3f &pos = sao->getBasePosition();
 		verbosestream << "Server: Sending TOCLIENT_MOVE_PLAYER"
 				<< " pos=(" << pos.X << "," << pos.Y << "," << pos.Z << ")"
 				<< " pitch=" << sao->getPitch()
@@ -2191,7 +2191,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 					continue;
 
 				// If player is far away, only set modified blocks not sent
-				v3f player_pos = sao->getBasePosition();
+				const v3f &player_pos = sao->getBasePosition();
 				if (player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;
@@ -2221,7 +2221,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 					continue;
 
 				// If player is far away, only set modified blocks not sent
-				v3f player_pos = sao->getBasePosition();
+				const v3f &player_pos = sao->getBasePosition();
 				if(player_pos.getDistanceFrom(p_f) > maxd) {
 					far_players->push_back(*i);
 					continue;

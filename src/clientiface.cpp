@@ -94,7 +94,7 @@ void RemoteClient::GetNextBlocks (
 		return;
 	}
 
-	v3f playerpos = sao->getBasePosition();
+	const v3f &playerpos = sao->getBasePosition();
 	v3f playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
