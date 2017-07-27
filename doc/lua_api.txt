@@ -3864,6 +3864,9 @@ Registered entities
           * `tool_capabilities`: capability table of used tool (can be `nil`)
           * `dir`: unit vector of direction of punch. Always defined. Points from
             the puncher to the punched.
+	`on_death(self, killer)`
+        * Called when the object dies.
+          * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
     * `get_staticdata(self)`
         * Should return a string that will be passed to `on_activate` when

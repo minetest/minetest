@@ -41,6 +41,7 @@ public:
 	bool luaentity_Punch(u16 id,
 			ServerActiveObject *puncher, float time_from_last_punch,
 			const ToolCapabilities *toolcap, v3f dir, s16 damage);
+	bool luaentity_on_death(u16 id, ServerActiveObject *killer);
 	void luaentity_Rightclick(u16 id,
 			ServerActiveObject *clicker);
 };

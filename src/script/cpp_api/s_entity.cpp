@@ -262,6 +262,34 @@ bool ScriptApiEntity::luaentity_Punch(u16 id,
 	return retval;
 }
 
+bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	int error_handler = PUSH_ERROR_HANDLER(L);
+
+	// Get core.luaentities[id]
+	luaentity_get(L, id);
+	int object = lua_gettop(L);
+	// State: object is at top of stack
+	// Get function
+	lua_getfield(L, -1, "on_death");
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 2); // Pop on_death and entity
+		return false;
+	}
+	luaL_checktype(L, -1, LUA_TFUNCTION);
+	lua_pushvalue(L, object);  // self
+	objectrefGetOrCreate(L, killer);  // killer reference
+
+	setOriginFromTable(object);
+	PCALL_RES(lua_pcall(L, 6, 1, error_handler));
+
+	bool retval = lua_toboolean(L, -1);
+	lua_pop(L, 2); // Pop object and error handler
+	return retval;
+}
+
 // Calls entity:on_rightclick(ObjectRef clicker)
 void ScriptApiEntity::luaentity_Rightclick(u16 id,
 		ServerActiveObject *clicker)
