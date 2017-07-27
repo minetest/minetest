@@ -3865,7 +3865,7 @@ Registered entities
           * `dir`: unit vector of direction of punch. Always defined. Points from
             the puncher to the punched.
 	`on_death(self, killer)`
-        * Called when the object die.
+        * Called when the object dies.
           * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
     * `get_staticdata(self)`
