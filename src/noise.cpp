@@ -713,7 +713,8 @@ float *Noise::perlinMap2D(float x, float y, float *persistence_map)
 	if (persistence_map) {
 		if (!persist_buf)
 			persist_buf = new float[bufsize];
-		memset(persist_buf, 1.0f, sizeof(float) * bufsize);
+		for (size_t i = 0; i != bufsize; i++)
+			persist_buf[i] = 1.0;
 	}
 
 	for (size_t oct = 0; oct < np.octaves; oct++) {
@@ -750,8 +751,8 @@ float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 	if (persistence_map) {
 		if (!persist_buf)
 			persist_buf = new float[bufsize];
-
-		memset(persist_buf, 1.0f, sizeof(float) * bufsize);
+		for (size_t i = 0; i != bufsize; i++)
+			persist_buf[i] = 1.0;
 	}
 
 	for (size_t oct = 0; oct < np.octaves; oct++) {
