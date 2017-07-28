@@ -236,7 +236,9 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType stone_type = generateBiomes(water_level - 1);
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -244,7 +246,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

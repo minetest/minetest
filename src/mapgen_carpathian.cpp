@@ -242,7 +242,10 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes(water_level - 1);
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -262,7 +265,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

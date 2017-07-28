@@ -79,11 +79,11 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
-// TODO(hmmmm/paramat): make stone type selection dynamic
 enum MgStoneType {
 	MGSTONE_STONE,
 	MGSTONE_DESERT_STONE,
 	MGSTONE_SANDSTONE,
+	MGSTONE_OTHER,
 };
 
 struct GenNotifyEvent {
@@ -250,8 +250,10 @@ public:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
-	virtual MgStoneType generateBiomes(s16 biome_zero_level = 0);
+	virtual void generateDungeons(s16 max_stone_y,
+		MgStoneType stone_type, content_t biome_stone);
+	virtual void generateBiomes(MgStoneType *mgstone_type,
+		content_t *biome_stone, s16 biome_zero_level);
 	virtual void dustTopNodes();
 
 protected:
