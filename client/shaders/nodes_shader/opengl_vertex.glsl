@@ -114,8 +114,13 @@ float disp_z;
 
 	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
 
+	vec3 alwaysNormal = gl_Normal;
+	if (alwaysNormal.x * alwaysNormal.x + alwaysNormal.y * alwaysNormal.y + alwaysNormal.z * alwaysNormal.z < 0.01) {
+		alwaysNormal = vec3(0.0, 1.0, 0.0);
+	}
+
 	vec3 normal, tangent, binormal;
-	normal = normalize(gl_NormalMatrix * gl_Normal);
+	normal = normalize(gl_NormalMatrix * alwaysNormal);
 	tangent = normalize(gl_NormalMatrix * gl_MultiTexCoord1.xyz);
 	binormal = normalize(gl_NormalMatrix * gl_MultiTexCoord2.xyz);
 
@@ -137,7 +142,7 @@ float disp_z;
 #ifdef ENABLE_SPECULAR_LIGHTING
 	sunLight = gl_Color.a; // Copy alpha into sunlight for specular
 
-	worldNormal = normalize(gl_Normal); // The actual world-space normal
+	worldNormal = normalize(alwaysNormal); // The actual world-space normal
 
 	specularIntensity = 0.06;
 	specularExponent = 35.0;
@@ -167,11 +172,11 @@ float disp_z;
 	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 #else
-	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
+	resultLightColor *= ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) / 1.2);
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 #endif
 
-	float artificialLightShading = ((dot(gl_Normal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+	float artificialLightShading = ((dot(alwaysNormal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
 
 	color.rgb *= mix(resultLightColor, artificialLight * artificialLightShading, outdoorsRatio);
 #endif
