@@ -157,7 +157,7 @@ float disp_z;
 
 // A ton of nested #if defines, should try to shave off a couple if needed
 // Runtime performance isn't a problem here since it's compiled once
-#if defined(ENABLE_ADVANCED_LIGHTING) && !LIGHT_EMISSIVE
+#if defined(ENABLE_DIRECTIONAL_SHADING) && !LIGHT_EMISSIVE
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
 

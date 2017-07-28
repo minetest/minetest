@@ -4609,7 +4609,7 @@ void Game::readSettings()
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
-	if (g_settings->getBool("enable_shaders") && g_settings->getBool("enable_advanced_lighting"))
+	if (g_settings->getBool("enable_shaders") && g_settings->getBool("directional_shading"))
 		applyWorldShading = &applyNoFacesShading;
 	else
 		applyWorldShading = &applyFacesShading;

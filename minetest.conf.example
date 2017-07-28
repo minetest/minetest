@@ -458,13 +458,13 @@
 
 ##### Advanced Lighting
 
-#    Enables advanced lighting effects such directional environment lighting
+#    Enables directional environment lighting
 #    type: bool
-# enable_advanced_lighting = false
+# directional_shading = true
 
 #    Enables per-pixel specular highlights
 #    type: bool
-# enable_specular_lighting = false
+# specular_lighting = false
 
 ##### Bumpmapping
 

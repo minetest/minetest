@@ -41,7 +41,7 @@ void main(void)
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float nightRatio = 1.0 - gl_Color.a;
 
-#ifdef ENABLE_ADVANCED_LIGHTING
+#ifdef ENABLE_DIRECTIONAL_SHADING
 	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
 
 	// Directional shading color
