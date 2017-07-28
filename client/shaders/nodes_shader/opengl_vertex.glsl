@@ -28,6 +28,7 @@ varying float area_enable_parallax;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+const vec3 artificialLightDirection = normalize(vec3(0.2, 1.0, -0.5));
 const float e = 2.718281828459;
 const float BS = 10.0;
 
@@ -149,28 +150,30 @@ float disp_z;
 	// The pre-baked colors are halved to prevent overflow.
 	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1.0 - gl_Color.a;
+	float outdoorsRatio = 1.0 - gl_Color.a;
 	color.a = 1.0;
 	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
-		nightRatio * artificialLight.rgb) * 2;
+		outdoorsRatio * artificialLight.rgb) * 2;
 
 // A ton of nested #if defines, should try to shave off a couple if needed
 // Runtime performance isn't a problem here since it's compiled once
-#ifdef ENABLE_ADVANCED_LIGHTING
+#if defined(ENABLE_ADVANCED_LIGHTING) && !LIGHT_EMISSIVE
 	// Lighting color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio);
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
 
 	// Lighting and effects
-#if (DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE) && !LIGHT_EMISSIVE
+#if (DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE)
 	// Plant/torchlike meshes have an assumed normal of up
 	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
-#elif !LIGHT_EMISSIVE
+#else
 	resultLightColor *= ((max(dot(gl_Normal, lightDirection), -0.2) + 0.2) / 1.2);
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 #endif
 
-	color.rgb *= resultLightColor;
+	float artificialLightShading = ((dot(gl_Normal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+
+	color.rgb *= mix(resultLightColor, artificialLight * artificialLightShading, outdoorsRatio);
 #endif
 
         // Emphase blue a bit in darker places
