@@ -184,7 +184,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("anisotropic_filter", "false");
 	settings->setDefault("bilinear_filter", "false");
 	settings->setDefault("trilinear_filter", "false");
-	settings->setDefault("directional_shading", "true");
+	settings->setDefault("directional_shading", "false");
 	settings->setDefault("specular_lighting", "false");
 	settings->setDefault("tone_mapping", "false");
 	settings->setDefault("enable_bumpmapping", "false");

@@ -405,7 +405,7 @@ shader_path (Shader path) path
 [****Advanced Lighting]
 
 #    Enables directional environment lighting
-directional_shading (Directional shading) bool true
+directional_shading (Directional shading) bool false
 
 #    Enables per-pixel specular highlights
 specular_lighting (Specular lighting) bool false

@@ -460,7 +460,7 @@
 
 #    Enables directional environment lighting
 #    type: bool
-# directional_shading = true
+# directional_shading = false
 
 #    Enables per-pixel specular highlights
 #    type: bool

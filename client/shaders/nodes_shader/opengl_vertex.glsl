@@ -166,15 +166,8 @@ float disp_z;
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
 
-	// Lighting and effects
-#if (DRAW_TYPE == NDT_PLANTLIKE || DRAW_TYPE == NDT_TORCHLIKE)
-	// Plant/torchlike meshes have an assumed normal of up
-	resultLightColor *= ((max(dot(vec3(0.0, 1.0, 0.0), lightDirection), -0.2) + 0.2) / 1.2);
-	resultLightColor = (resultLightColor * 0.6) + 0.4;
-#else
 	resultLightColor *= ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) / 1.2);
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
-#endif
 
 	float artificialLightShading = ((dot(alwaysNormal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
 
