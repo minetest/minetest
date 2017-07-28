@@ -621,7 +621,8 @@ MapgenBasic::~MapgenBasic()
 }
 
 
-MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
+void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
+	content_t *biome_stone, s16 biome_zero_level)
 {
 	// can't generate biomes without a biome generator!
 	assert(biomegen);
@@ -629,7 +630,8 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
-	MgStoneType stone_type = MGSTONE_STONE;
+	MgStoneType stone_type = MGSTONE_OTHER;
+	content_t c_biome_stone = c_stone;
 
 	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
@@ -689,12 +691,15 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 				depth_riverbed = biome->depth_riverbed;
 
 				// Detect stone type for dungeons during every biome calculation.
-				// This is more efficient than detecting per-node and will not
-				// miss any desert stone or sandstone biomes.
-				if (biome->c_stone == c_desert_stone)
+				// If none detected the last selected biome stone is chosen.
+				if (biome->c_stone == c_stone)
+					stone_type = MGSTONE_STONE;
+				else if (biome->c_stone == c_desert_stone)
 					stone_type = MGSTONE_DESERT_STONE;
 				else if (biome->c_stone == c_sandstone)
 					stone_type = MGSTONE_SANDSTONE;
+
+				c_biome_stone = biome->c_stone;
 			}
 
 			if (c == c_stone) {
@@ -755,7 +760,8 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 		}
 	}
 
-	return stone_type;
+	*mgstone_type = stone_type;
+	*biome_stone = c_biome_stone;
 }
 
 
@@ -845,7 +851,8 @@ bool MapgenBasic::generateCaverns(s16 max_stone_y)
 }
 
 
-void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
+void MapgenBasic::generateDungeons(s16 max_stone_y,
+	MgStoneType stone_type, content_t biome_stone)
 {
 	if (max_stone_y < node_min.Y)
 		return;
@@ -906,6 +913,19 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 		dp.room_size_max       = v3s16(10, 6, 10);
 		dp.room_size_large_min = v3s16(10, 8, 10);
 		dp.room_size_large_max = v3s16(18, 16, 18);
+		dp.notifytype          = GENNOTIFY_DUNGEON;
+		break;
+	case MGSTONE_OTHER:
+		dp.c_wall              = biome_stone;
+		dp.c_alt_wall          = biome_stone;
+		dp.c_stair             = biome_stone;
+
+		dp.diagonal_dirs       = false;
+		dp.holesize            = v3s16(1, 2, 1);
+		dp.room_size_min       = v3s16(4, 4, 4);
+		dp.room_size_max       = v3s16(8, 6, 8);
+		dp.room_size_large_min = v3s16(8, 8, 8);
+		dp.room_size_large_max = v3s16(16, 16, 16);
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 		break;
 	}
