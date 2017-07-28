@@ -203,7 +203,7 @@ local function formspec(tabview, name, tabdata)
 		"label[3.85,3.45;" .. fgettext("Screen:") .. "]" ..
 		"checkbox[3.85,3.6;cb_autosave_screensize;" .. fgettext("Autosave screen size") .. ";"
 				.. dump(core.settings:get_bool("autosave_screensize")) .. "]" ..
-		"box[7.75,0;4,4.4;#999999]" ..
+		"box[7.75,0;4,5.4;#999999]" ..
 		"checkbox[8,0;cb_shaders;" .. fgettext("Shaders") .. ";"
 				.. dump(core.settings:get_bool("enable_shaders")) .. "]"
 
@@ -213,7 +213,7 @@ local function formspec(tabview, name, tabdata)
 			.. fgettext("Reset singleplayer world") .. "]"
 	else
 		tab_string = tab_string ..
-			"button[8,4.85;3.75,0.5;btn_change_keys;"
+			"button[3.75,4.85;4,0.5;btn_change_keys;"
 			.. fgettext("Change keys") .. "]"
 	end
 
@@ -244,7 +244,11 @@ local function formspec(tabview, name, tabdata)
 			"checkbox[8,3;cb_waving_leaves;" .. fgettext("Waving Leaves") .. ";"
 					.. dump(core.settings:get_bool("enable_waving_leaves")) .. "]" ..
 			"checkbox[8,3.5;cb_waving_plants;" .. fgettext("Waving Plants") .. ";"
-					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
+					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]" ..
+			"checkbox[8,4.0;cb_directional_shading;" .. fgettext("Directional Shading") .. ";"
+					.. dump(core.settings:get_bool("directional_shading")) .. "]" ..
+			"checkbox[8,4.5;cb_specular_lighting;" .. fgettext("Specular Lighting") .. ";"
+					.. dump(core.settings:get_bool("specular_lighting")) .. "]"
 	else
 		tab_string = tab_string ..
 			"label[8.38,0.7;" .. core.colorize("#888888",
@@ -260,7 +264,11 @@ local function formspec(tabview, name, tabdata)
 			"label[8.38,3.2;" .. core.colorize("#888888",
 					fgettext("Waving Leaves")) .. "]" ..
 			"label[8.38,3.7;" .. core.colorize("#888888",
-					fgettext("Waving Plants")) .. "]"
+					fgettext("Waving Plants")) .. "]" ..
+			"label[8.38,4.2;" .. core.colorize("#888888",
+					fgettext("Directional Shading")) .. "]" ..
+			"label[8.38,4.7;" .. core.colorize("#888888",
+					fgettext("Specular Lighting")) .. "]"
 	end
 
 	return tab_string
@@ -336,6 +344,14 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	end
 	if fields["cb_waving_plants"] then
 		core.settings:set("enable_waving_plants", fields["cb_waving_plants"])
+		return true
+	end
+	if fields["cb_directional_shading"] then
+		core.settings:set("directional_shading", fields["cb_directional_shading"])
+		return true
+	end
+	if fields["cb_specular_lighting"] then
+		core.settings:set("specular_lighting", fields["cb_specular_lighting"])
 		return true
 	end
 	if fields["btn_change_keys"] then
