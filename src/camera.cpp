@@ -617,7 +617,7 @@ void Camera::drawNametags()
 			// shadow can remain.
 			continue;
 		}
-		v3f pos = nametag->parent_node->getAbsolutePosition() + v3f(0.0, 1.1 * BS, 0.0);
+		v3f pos = nametag->parent_node->getAbsolutePosition() + nametag->nametag_pos * BS;
 		f32 transformed_pos[4] = { pos.X, pos.Y, pos.Z, 1.0f };
 		trans.multiplyWith1x4Matrix(transformed_pos);
 		if (transformed_pos[3] > 0) {
@@ -641,9 +641,10 @@ void Camera::drawNametags()
 }
 
 Nametag *Camera::addNametag(scene::ISceneNode *parent_node,
-		std::string nametag_text, video::SColor nametag_color)
+		const std::string &nametag_text, video::SColor nametag_color,
+		const v3f &pos)
 {
-	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color);
+	Nametag *nametag = new Nametag(parent_node, nametag_text, nametag_color, pos);
 	m_nametags.push_back(nametag);
 	return nametag;
 }

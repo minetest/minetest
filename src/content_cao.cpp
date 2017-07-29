@@ -895,8 +895,11 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	scene::ISceneNode *node = getSceneNode();
 	if (node && m_prop.nametag != "" && !m_is_local_player) {
 		// Add nametag
+		v3f pos;
+		pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
 		m_nametag = m_client->getCamera()->addNametag(node,
-			m_prop.nametag, m_prop.nametag_color);
+			m_prop.nametag, m_prop.nametag_color,
+			pos);
 	}
 
 	updateNodePos();
@@ -1700,6 +1703,9 @@ void GenericCAO::processMessage(const std::string &data)
 		m_prop.nametag_color = readARGB8(is);
 		if (m_nametag != NULL) {
 			m_nametag->nametag_color = m_prop.nametag_color;
+			v3f pos;
+			pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
+			m_nametag->nametag_pos = pos;
 		}
 	} else if (cmd == GENERIC_CMD_SPAWN_INFANT) {
 		u16 child_id = readU16(is);
