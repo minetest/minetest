@@ -38,15 +38,12 @@ void main(void)
 	vec4 color = gl_Color;
 	color.a = 1.0;
 
-	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1.0 - gl_Color.a;
-
 #ifdef ENABLE_DIRECTIONAL_SHADING
 	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
 
 	// Directional shading color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2) * lightColor.a;
+	vec3 resultLightColor = lightColor.rgb * lightColor.a *
+		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
 
 	resultLightColor = (resultLightColor * 0.6) + 0.4;
 

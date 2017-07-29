@@ -519,8 +519,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	m_wieldnode->setPosition(wield_position);
 	m_wieldnode->setRotation(wield_rotation);
 
-	if (!m_enable_shaders)
-		m_wieldnode->setColor(player->light_color);
+	m_wieldnode->setColor(player->light_color);
 
 	// Set render distance
 	updateViewingRange();
