@@ -130,7 +130,9 @@ s32 PcgRandom::range(s32 min, s32 max)
 	if (max < min)
 		throw PrngException("Invalid range (max < min)");
 
-	u32 bound = max - min + 1;
+	// We have to cast to s64 because otherwise this could overflow,
+	// and signed overflow is undefined behavior.
+	u32 bound = (s64)max - (s64)min + 1;
 	return range(bound) + min;
 }
 
