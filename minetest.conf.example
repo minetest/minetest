@@ -28,7 +28,7 @@
 #    type: bool
 # free_move = false
 
-#    Fast movement (via use key).
+#    Fast movement (via special key).
 #    This requires the "fast" privilege on the server.
 #    type: bool
 # fast_move = false
@@ -59,7 +59,7 @@
 #    type: float
 # mouse_sensitivity = 0.2
 
-#    If enabled, "use" key instead of "sneak" key is used for climbing down and descending.
+#    If enabled, "special" key instead of "sneak" key is used for climbing down and descending.
 #    type: bool
 # aux1_descends = false
 
@@ -67,7 +67,7 @@
 #    type: bool
 # doubletap_jump = false
 
-#    If disabled "use" key is used to fly fast if both fly and fast mode are enabled.
+#    If disabled, "special" key is used to fly fast if both fly and fast mode are enabled.
 #    type: bool
 # always_fly_fast = true
 
@@ -141,7 +141,7 @@
 #    type: key
 # keymap_inventory = KEY_KEY_I
 
-#    Key for moving fast in fast mode.
+#    Key for moving fast in fast mode (known as "special").
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_special1 = KEY_KEY_E

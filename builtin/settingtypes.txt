@@ -65,7 +65,7 @@ enable_build_where_you_stand (Build inside player) bool false
 #    This requires the "fly" privilege on the server.
 free_move (Flying) bool false
 
-#    Fast movement (via use key).
+#    Fast movement (via the "special" key).
 #    This requires the "fast" privilege on the server.
 fast_move (Fast movement) bool false
 
@@ -89,13 +89,13 @@ invert_mouse (Invert mouse) bool false
 #    Mouse sensitivity multiplier.
 mouse_sensitivity (Mouse sensitivity) float 0.2
 
-#    If enabled, "use" key instead of "sneak" key is used for climbing down and descending.
-aux1_descends (Key use for climbing/descending) bool false
+#    If enabled, "special" key instead of "sneak" key is used for climbing down and descending.
+aux1_descends (Special key for climbing/descending) bool false
 
 #    Double-tapping the jump key toggles fly mode.
 doubletap_jump (Double tap jump for fly) bool false
 
-#    If disabled "use" key is used to fly fast if both fly and fast mode are enabled.
+#    If disabled, "special" key is used to fly fast if both fly and fast mode are enabled.
 always_fly_fast (Always fly and fast) bool true
 
 #    The time in seconds it takes between repeated right clicks when holding the right mouse button.
@@ -155,7 +155,7 @@ keymap_inventory (Inventory key) key KEY_KEY_I
 
 #    Key for moving fast in fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_special1 (Use key) key KEY_KEY_E
+keymap_special1 (Special key) key KEY_KEY_E
 
 #    Key for opening the chat window.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3

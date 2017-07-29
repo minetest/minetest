@@ -51,6 +51,7 @@ Default controls
 - -: Decrease view range
 - K: Enable/disable fly mode (needs fly privilege)
 - J: Enable/disable fast mode (needs fast privilege)
+- E: Move fast in fast mode
 - H: Enable/disable noclip mode (needs noclip privilege)
 
 - F1:  Hide/show HUD
