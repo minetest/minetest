@@ -241,6 +241,11 @@ set(CPACK_PACKAGE_CONTACT "Perttu Ahola <celeron55@gmail.com>")
 
 include(CPackComponent)
 
+cpack_add_component(Docs
+	DISPLAY_NAME "Documentation"
+	DESCRIPTION "Documentation about Minetest and Minetest modding"
+)
+
 cpack_add_component(SUBGAME_MINETEST_GAME
 	DISPLAY_NAME "Minetest Game"
 	DESCRIPTION "The official subgame for the Minetest engine, that can easily extended by mods."
