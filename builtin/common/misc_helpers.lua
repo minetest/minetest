@@ -309,10 +309,11 @@ end
 
 
 function core.wrap_text(text, limit)
+	local new_text = ""
 	if text:len() <= limit then
 		return text
 	end
-	while true do
+	while text:len() > limit do
 		local s = text:sub(1,limit)
 		local space = s:reverse():find(" ")
 		if limit == 1 then
@@ -332,13 +333,10 @@ function core.wrap_text(text, limit)
 				text = text:sub(last_space + 1, 
 				text:len())
 			end
-			
-			if text:len() < limit then
-				new_text = new_text .. text
-				text = ""
-			end
 		end
 	end
+	new_text = new_text .. text
+	text = ""
 	return new_text
 end
 
