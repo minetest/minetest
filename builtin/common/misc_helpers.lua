@@ -309,40 +309,35 @@ end
 
 
 function core.wrap_text(text, limit)
-	local new_text = ""
-	local x = 1
-	if text:len() > limit then
-		while x == 1 do
-			local s = text:sub(1,limit)
-			local space = s:reverse():find(" ")
-			if limit == 1 then
-				local letter = s:sub(1,1)
-				new_text = new_text .. letter .. "\n"
-				text = text:sub(2, text:len())
+	if text:len() <= limit then
+		return text
+	end
+	while true do
+		local s = text:sub(1,limit)
+		local space = s:reverse():find(" ")
+		if limit == 1 then
+			local letter = s:sub(1,1)
+			new_text = new_text .. letter .. "\n"
+			text = text:sub(2, text:len())
+		else
+			if space == nil then
+				local split = s:sub(1,(limit - 1))
+				new_text = new_text .. split .. "-\n"
+				text = text:sub(split:len() + 1, 
+				text:len())
 			else
-				if space == nil then
-					local split = s:sub(1,(limit - 1))
-					new_text = new_text .. split .. "-\n"
-					text = text:sub(split:len() + 1, 
-					text:len())
-				else
-					local last_space = (limit - space) + 1
-					new_text = new_text .. 
-					text:sub(1,last_space) .. "\n"
-					text = text:sub(last_space + 1, 
-					text:len())
-				end
-				if text:len() < limit then
-					new_text = new_text .. text
-					text = ""
-				end
+				local last_space = (limit - space) + 1
+				new_text = new_text .. 
+				text:sub(1,last_space) .. "\n"
+				text = text:sub(last_space + 1, 
+				text:len())
 			end
-			if text == "" then
-				x = 0
+			
+			if text:len() < limit then
+				new_text = new_text .. text
+				text = ""
 			end
 		end
-	else
-		new_text = text
 	end
 	return new_text
 end
