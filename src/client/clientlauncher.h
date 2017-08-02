@@ -60,7 +60,7 @@ protected:
 	gui::IGUIFont *font = nullptr;
 	SubgameSpec gamespec;
 	WorldSpec worldspec;
-	bool simple_singleplayer_mode;
+	bool simple_singleplayer_mode = false;
 
 	// These are set up based on the menu and other things
 	// TODO: Are these required since there's already playername, password, etc
