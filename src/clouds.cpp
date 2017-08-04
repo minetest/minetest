@@ -37,14 +37,12 @@ static constexpr const float cloud_size = BS * 64.0f;
 
 static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 {
-	// TODO: only re-read cloud settings, not height or radius
 	((Clouds *)data)->readSettings();
 }
 
 Clouds::Clouds(scene::ISceneManager* mgr,
 		s32 id,
-		u32 seed,
-		s16 cloudheight
+		u32 seed
 ):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
@@ -58,13 +56,13 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
+	m_params.height        = 120;
 	m_params.density       = 0.4f;
 	m_params.thickness     = 16.0f;
 	m_params.color_bright  = video::SColor(229, 240, 240, 255);
 	m_params.color_ambient = video::SColor(255, 0, 0, 0);
 	m_params.speed         = v2f(0.0f, -2.0f);
 
-	m_passed_cloud_y = cloudheight;
 	readSettings();
 	g_settings->registerChangedCallback("enable_3d_clouds",
 		&cloud_3d_setting_changed, this);
@@ -370,8 +368,6 @@ void Clouds::update(const v3f &camera_p, const video::SColorf &color_diffuse)
 
 void Clouds::readSettings()
 {
-	m_params.height = (m_passed_cloud_y ? m_passed_cloud_y :
-		g_settings->getS16("cloud_height"));
 	m_cloud_radius_i = g_settings->getU16("cloud_radius");
 	m_enable_3d = g_settings->getBool("enable_3d_clouds");
 }

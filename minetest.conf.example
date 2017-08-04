@@ -690,10 +690,6 @@
 #    type: enum values: null, software, burningsvideo, direct3d8, direct3d9, opengl
 # video_driver = opengl
 
-#    Height on which clouds are appearing.
-#    type: int
-# cloud_height = 120
-
 #    Radius of cloud area stated in number of 64 node cloud squares.
 #    Values larger than 26 will start to produce sharp cutoffs at cloud area corners.
 #    type: int

@@ -38,8 +38,7 @@ class Clouds : public scene::ISceneNode
 public:
 	Clouds(scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed,
-			s16 cloudheight=0
+			u32 seed
 	);
 
 	~Clouds();
@@ -133,7 +132,6 @@ private:
 
 	video::SMaterial m_material;
 	aabb3f m_box;
-	s16 m_passed_cloud_y;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
 	u32 m_seed;
