@@ -633,8 +633,8 @@ void ServerEnvironment::loadMeta()
 	}
 
 	setTimeOfDay(args.exists("time_of_day") ?
-		// set day to morning by default
-		args.getU64("time_of_day") : 9000);
+		// set day to early morning by default
+		args.getU64("time_of_day") : 5250);
 
 	m_last_clear_objects_time = args.exists("last_clear_objects_time") ?
 		// If missing, do as if clearObjects was never called
