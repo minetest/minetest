@@ -260,7 +260,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
-		MYMIN(pos_f->Y, newpos_f.Y),
+		MYMIN(pos_f->Y, newpos_f.Y) + 0.01 * BS, // bias rounding, player often at +/-n.5
 		MYMIN(pos_f->Z, newpos_f.Z)
 	);
 	v3f maxpos_f(
