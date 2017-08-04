@@ -257,20 +257,25 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
 	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
 
-	v3s16 oldpos_i = floatToInt(*pos_f, BS);
-	v3s16 newpos_i = floatToInt(*pos_f + *speed_f * dtime, BS);
-	s16 min_x = MYMIN(oldpos_i.X, newpos_i.X) + (box_0.MinEdge.X / BS) - 1;
-	s16 min_y = MYMIN(oldpos_i.Y, newpos_i.Y) + (box_0.MinEdge.Y / BS) - 1;
-	s16 min_z = MYMIN(oldpos_i.Z, newpos_i.Z) + (box_0.MinEdge.Z / BS) - 1;
-	s16 max_x = MYMAX(oldpos_i.X, newpos_i.X) + (box_0.MaxEdge.X / BS) + 1;
-	s16 max_y = MYMAX(oldpos_i.Y, newpos_i.Y) + (box_0.MaxEdge.Y / BS) + 1;
-	s16 max_z = MYMAX(oldpos_i.Z, newpos_i.Z) + (box_0.MaxEdge.Z / BS) + 1;
+	v3f newpos_f = *pos_f + *speed_f * dtime;
+	v3f minpos_f(
+		MYMIN(pos_f->X, newpos_f.X),
+		MYMIN(pos_f->Y, newpos_f.Y),
+		MYMIN(pos_f->Z, newpos_f.Z)
+	);
+	v3f maxpos_f(
+		MYMAX(pos_f->X, newpos_f.X),
+		MYMAX(pos_f->Y, newpos_f.Y),
+		MYMAX(pos_f->Z, newpos_f.Z)
+	);
+	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
+	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
 
 	bool any_position_valid = false;
 
-	for(s16 x = min_x; x <= max_x; x++)
-	for(s16 y = min_y; y <= max_y; y++)
-	for(s16 z = min_z; z <= max_z; z++)
+	for(s16 x = min.X; x <= max.X; x++)
+	for(s16 y = min.Y; y <= max.Y; y++)
+	for(s16 z = min.Z; z <= max.Z; z++)
 	{
 		v3s16 p(x,y,z);
 
