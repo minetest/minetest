@@ -416,7 +416,7 @@ Copyright (C) 2010-2012 celeron55, Perttu Ahola <celeron55@gmail.com>
 ShadowNinja:
   textures/base/pack/smoke_puff.png
 
-Paramat:
+paramat:
   textures/base/pack/menu_header.png
 
 erlehmann:
@@ -424,6 +424,9 @@ erlehmann:
   misc/minetest-icon.ico
   misc/minetest.svg
   textures/base/pack/logo.png
+
+JRottm
+  textures/base/pack/player_marker.png
 
 License of Minetest source code
 -------------------------------
