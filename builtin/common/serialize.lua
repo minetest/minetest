@@ -16,8 +16,9 @@
 --   1. Recursively find and record multiple references and recursion.
 --   2. Recursively dump the value into a string.
 -- @param x Value to serialize (nil is allowed).
+-- @param use_newlines If true separate top level items by line feeds instead of by spaces.
 -- @return load()able string containing the value.
-function core.serialize(x)
+function core.serialize(x, use_newlines)
 	local local_index  = 1  -- Top index of the "_" local table in the dump
 	-- table->nil/1/2 set of tables seen.
 	-- nil = not seen, 1 = seen once, 2 = seen multiple times.
@@ -91,16 +92,16 @@ function core.serialize(x)
 	-- If x occurs multiple times, dump the local variable rather than
 	-- the value. If it's the first time it's dumped, also dump the
 	-- content in local_defs.
-	function dump_or_ref_val(x)
+	function dump_or_ref_val(x, iter)
 		if seen[x] ~= 2 then
-			return dump_val(x)
+			return dump_val(x, iter)
 		end
 		local var = dumped[x]
 		if var then  -- Already referenced
 			return var
 		end
 		-- First occurence, create and register reference
-		local val = dump_val(x)
+		local val = dump_val(x, iter)
 		local i = local_index
 		local_index = local_index + 1
 		var = "_["..i.."]"
@@ -112,7 +113,7 @@ function core.serialize(x)
 	-- Second phase.  Dump the object; subparts occuring multiple times
 	-- are dumped in local variables which can be referenced multiple
 	-- times.  Care is taken to dump local vars in a sensible order.
-	function dump_val(x)
+	function dump_val(x, iter)
 		local  tp = type(x)
 		if     x  == nil        then return "nil"
 		elseif tp == "string"   then return string.format("%q", x)
@@ -135,18 +136,22 @@ function core.serialize(x)
 			local np = nest_points[x]
 			for i, v in ipairs(x) do
 				if not np or not np[i] then
-					vals[#vals + 1] = dump_or_ref_val(v)
+					vals[#vals + 1] = dump_or_ref_val(v, iter+1)
 				end
 				idx_dumped[i] = true
 			end
 			for k, v in pairs(x) do
 				if (not np or not np[k]) and
 						not idx_dumped[k] then
-					vals[#vals + 1] = "["..dump_or_ref_val(k).."] = "
-						..dump_or_ref_val(v)
+					vals[#vals + 1] = "["..dump_or_ref_val(k, iter+1).."] = "
+						..dump_or_ref_val(v, iter+1)
 				end
 			end
-			return "{"..table.concat(vals, ", ").."}"
+			if use_newlines and iter == 0 then
+				return "{"..table.concat(vals, ",\n").."}"
+			else
+				return "{"..table.concat(vals, ", ").."}"
+			end
 		else
 			error("Can't serialize data of type "..tp)
 		end
@@ -163,15 +168,19 @@ function core.serialize(x)
 	end
 
 	mark_multiple_occurences(x)
-	local top_level = dump_or_ref_val(x)
+	local top_level = dump_or_ref_val(x, 0)
 	dump_nest_points()
 
 	if next(local_defs) then
 		return "local _ = {}\n"
 			..table.concat(local_defs, "\n")
-			.."\nreturn "..top_level
+			.."\nreturn "..top_level.."\n"
 	else
-		return "return "..top_level
+		if use_newlines then
+			return "return "..top_level.."\n"
+		else
+			return "return "..top_level
+		end
 	end
 end
 
@@ -209,6 +218,7 @@ end
 -- Unit tests
 local test_in = {cat={sound="nyan", speed=400}, dog={sound="woof"}}
 local test_out = core.deserialize(core.serialize(test_in))
+local test_out = core.deserialize(core.serialize(test_in, true))
 
 assert(test_in.cat.sound == test_out.cat.sound)
 assert(test_in.cat.speed == test_out.cat.speed)
@@ -216,6 +226,7 @@ assert(test_in.dog.sound == test_out.dog.sound)
 
 test_in = {escape_chars="\n\r\t\v\\\"\'", non_european="θשׁ٩∂"}
 test_out = core.deserialize(core.serialize(test_in))
+test_out = core.deserialize(core.serialize(test_in, true))
 assert(test_in.escape_chars == test_out.escape_chars)
 assert(test_in.non_european == test_out.non_european)
 
