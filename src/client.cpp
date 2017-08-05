@@ -1895,6 +1895,11 @@ void Client::showGameDebug(const bool show)
 	m_game_ui_flags->show_debug = show;
 }
 
+void Client::showGameStatus(const bool show)
+{
+	m_game_ui_flags->show_status = show;
+}
+
 // IGameDef interface
 // Under envlock
 IItemDefManager* Client::getItemDefManager()

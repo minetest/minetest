@@ -1411,7 +1411,7 @@ private:
 
 	/* GUI stuff
 	 */
-	gui::IGUIStaticText *guitext;          // First line of debug text
+	gui::IGUIStaticText *guitext;          // First line of status/debug text
 	gui::IGUIStaticText *guitext2;         // Second line of debug text
 	gui::IGUIStaticText *guitext3;         // Third line of debug text
 	gui::IGUIStaticText *guitext_info;     // Object info (e.g. "Furnace out of fuel")
@@ -1606,6 +1606,7 @@ bool Game::startup(bool *kill,
 	memset(&flags, 0, sizeof(flags));
 	flags.show_chat = true;
 	flags.show_hud = true;
+	flags.show_status = g_settings->getBool("show_status");
 	flags.show_debug = g_settings->getBool("show_debug");
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
@@ -2861,14 +2862,18 @@ void Game::toggleFog()
 
 void Game::toggleDebug()
 {
-	// Initial / 4x toggle: Chat only
-	// 1x toggle: Debug text with chat
-	// 2x toggle: Debug text with profiler graph
-	// 3x toggle: Debug text and wireframe
-	if (!flags.show_debug) {
+	// Initial / 5x toggle: Chat only
+	// 1x toggle: Status text with chat
+	// 2x toggle: Status and debug text with chat
+	// 3x toggle: Status and debug text with chat and profiler graph
+	// 4x toggle: Status and debug text with chat and wireframe (skipped if no debug privilege)
+	// In the config it's possible to set show_status=false, show_debug=true,
+	// but this will merge into the 3rd case after the first F5 press.
+	if (!flags.show_status) {
+		flags.show_status = true;
+		m_noticetext = L"Status shown";
+	} else if (!flags.show_debug) {
 		flags.show_debug = true;
-		flags.show_profiler_graph = false;
-		draw_control->show_wireframe = false;
 		m_noticetext = L"Debug info shown";
 	} else if (!flags.show_profiler_graph && !draw_control->show_wireframe) {
 		flags.show_profiler_graph = true;
@@ -2878,14 +2883,11 @@ void Game::toggleDebug()
 		draw_control->show_wireframe = true;
 		m_noticetext = L"Wireframe shown";
 	} else {
+		flags.show_status = false;
 		flags.show_debug = false;
 		flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
-		if (client->checkPrivilege("debug")) {
-			m_noticetext = L"Debug info, profiler graph, and wireframe hidden";
-		} else {
-			m_noticetext = L"Debug info and profiler graph hidden";
-		}
+		m_noticetext = L"Status and all debug infos hidden";
 	}
 	runData.noticetext_time = 0.0f;
 }
@@ -4283,14 +4285,17 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 }
 
 
-inline static const char *yawToDirectionString(int yaw)
+static const char *yawToDirectionString(float yaw_f)
 {
-	static const char *direction[4] = {"North [+Z]", "West [-X]", "South [-Z]", "East [+X]"};
+	static const char *direction[8] = {
+		"North [+Z]", "NW [-X+Z]", "West [-X]", "SW [-X-Z]",
+		"South [-Z]", "SE [+X-Z]", "East [+X]", "NE [+X+Z]"
+	};
 
-	yaw = wrapDegrees_0_360(yaw);
-	yaw = (yaw + 45) % 360 / 90;
+	yaw_f = wrapDegrees_0_360(yaw_f);
+	int dir = (yaw_f + 22.5f) / 45;
 
-	return direction[yaw];
+	return direction[dir % 8];
 }
 
 
@@ -4300,100 +4305,130 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	unsigned int line_height = g_fontengine->getLineHeight();
 
 	/*
-		Update debug info
+		Update status/debug info
 	*/
-	if (flags.show_debug) {
-		static float drawtime_avg = 0;
-		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
-		u16 fps = 1.0 / stats.dtime_jitter.avg;
+	guitext ->setVisible(false);
+	guitext2->setVisible(false);
+	guitext3->setVisible(false);
 
-		std::ostringstream os(std::ios_base::binary);
-		os << std::fixed
-		   << PROJECT_NAME_C " " << g_version_hash
-		   << ", FPS = " << fps
-		   << ", range_all = " << draw_control->range_all
-		   << std::setprecision(0)
-		   << ", drawtime = " << drawtime_avg << " ms"
-		   << std::setprecision(1)
-		   << ", dtime_jitter = "
-		   << (stats.dtime_jitter.max_fraction * 100.0) << " %"
-		   << std::setprecision(1)
-		   << ", view_range = " << draw_control->wanted_range
-		   << std::setprecision(3)
-		   << ", RTT = " << client->getRTT() << " s";
-		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
-		guitext->setVisible(true);
-	} else {
-		guitext->setVisible(false);
-	}
+	// Even though not achievable via F5, someone might have set show_status=false,
+	// but show_debug=true in the config. We do NOT move up debug info up if status
+	// is invisible, too much complexibility for a rare corner case
+	if (flags.show_status || flags.show_debug) {
+		// Experimentation shows, with default font, 'big_screen' (2-lined)
+		// layout works from 1070..1100 pixels upwards without overlapping
+		// with the minimap for normal play. Divided by 24 (line height
+		// tested with) = 45 + safety = 50. Height != width, and we have a
+		// proportional font, but we need line_height anyway, so it doesn't
+		// cost us anything, and it's much better than a fixed limit.
+		bool big_screen = screensize.X >= line_height * 50;
 
-	if (guitext->isVisible()) {
-		core::rect<s32> rect(
-				5,              5,
-				screensize.X,   5 + line_height
-		);
-		guitext->setRelativePosition(rect);
-	}
+		// Status/debug output uses 1-3 lines
+		std::ostringstream os1(std::ios_base::binary);
+		std::ostringstream os2(std::ios_base::binary);
+		std::ostringstream os3(std::ios_base::binary);
+		// On small screens some items get 'wrapped' down to allow as
+		// small as 800x600, but still use only 2 lines on big screens
+		std::ostringstream &os12 = big_screen ? os1 : os2;
+		std::ostringstream &os23 = big_screen ? os2 : os3;
 
-	if (flags.show_debug) {
-		LocalPlayer *player = client->getEnv().getLocalPlayer();
-		v3f player_position = player->getPosition();
+		if (flags.show_status) {
+			LocalPlayer *player = client->getEnv().getLocalPlayer();
+			v3f player_position = player->getPosition();
 
-		std::ostringstream os(std::ios_base::binary);
-		os << std::setprecision(1) << std::fixed
-		   << "pos = (" << (player_position.X / BS)
-		   << ", " << (player_position.Y / BS)
-		   << ", " << (player_position.Z / BS)
-		   << "), yaw = " << (wrapDegrees_0_360(cam.camera_yaw)) << "°"
-		   << " " << yawToDirectionString(cam.camera_yaw)
-		   << ", seed = " << ((u64)client->getMapSeed());
-		setStaticText(guitext2, utf8_to_wide(os.str()).c_str());
-		guitext2->setVisible(true);
-	} else {
-		guitext2->setVisible(false);
-	}
-
-	if (guitext2->isVisible()) {
-		core::rect<s32> rect(
-				5,             5 + line_height,
-				screensize.X,  5 + line_height * 2
-		);
-		guitext2->setRelativePosition(rect);
-	}
-
-	if (flags.show_debug && runData.pointed_old.type == POINTEDTHING_NODE) {
-		ClientMap &map = client->getEnv().getClientMap();
-		const INodeDefManager *nodedef = client->getNodeDefManager();
-		MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
-
-		if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
-			std::ostringstream os(std::ios_base::binary);
-			os << "pointing_at = (" << nodedef->get(n).name
-			   << ", param2 = " << (u64) n.getParam2()
-			   << ")";
-			setStaticText(guitext3, utf8_to_wide(os.str()).c_str());
-			guitext3->setVisible(true);
-		} else {
-			guitext3->setVisible(false);
+			// MT version may move to line 2 if no room, because player
+			// pos, direction (and later pointed node) have priority
+			os12 << PROJECT_NAME_C " " << g_version_hash << ": ";
+			// Non-debug: pos (1, 1, 1), debug: pos (0.7, 1.2, 0.5)
+			os1  << std::setprecision(flags.show_debug) << std::fixed
+			     << "pos (" << (player_position.X / BS)
+			     << ", " << (player_position.Y / BS + 0.01f) // bias rounding, player often at +/-n.5
+			     << ", " << (player_position.Z / BS)
+				// if we do +0.5 outside wrap func then 359.6->"360°" looks odd
+			     << "), yaw " << (int)wrapDegrees_0_360(cam.camera_yaw + 0.5f)
+			     << "° " << yawToDirectionString(cam.camera_yaw);
 		}
-	} else {
-		guitext3->setVisible(false);
-	}
 
-	if (guitext3->isVisible()) {
-		core::rect<s32> rect(
-				5,             5 + line_height * 2,
-				screensize.X,  5 + line_height * 3
-		);
-		guitext3->setRelativePosition(rect);
+		if (flags.show_debug) {
+			static float drawtime_avg = 0.0f;
+			drawtime_avg = drawtime_avg * 0.95f + stats.drawtime * 0.05f;
+			u32 fps = myround(1.0f / stats.dtime_jitter.avg);
+
+			os2  << "seed = " << client->getMapSeed();
+			if (big_screen) // less lines ==> new-line replaced by comma
+				os2 << ", ";
+			os23 << std::setprecision(1) << std::fixed
+			     << "view_range = "
+				// wanted_range is float, but +/- keys only do +/-10 ==> int
+			     << (draw_control->range_all ? "∞" : itos(draw_control->wanted_range))
+			     << ", FPS = " << fps
+			     << ", drawtime = " << myround(drawtime_avg) << " ms"
+			     << ", dtime_jitter = "
+			     << (stats.dtime_jitter.max_fraction * 100.0f) << " %"
+			     << std::setprecision(3)
+			     << ", RTT = " << client->getRTT() << " s";
+		}
+
+		// Avoid unnecessary work
+		if (runData.pointed_old.type == POINTEDTHING_NODE && flags.show_status) {
+			ClientMap &map = client->getEnv().getClientMap();
+			const INodeDefManager *nodedef = client->getNodeDefManager();
+			MapNode n = map.getNodeNoEx(runData.pointed_old.node_undersurface);
+
+			if (n.getContent() != CONTENT_IGNORE && nodedef->get(n).name != "unknown") {
+				os1 << ", pointing at " << nodedef->get(n).name;
+				if (flags.show_debug)
+					// if moved to line 2 make clear what we're talking about
+					os12 << (big_screen ? ", param2 = " : ", pointed param2 = ")
+					     << n.getParam2();
+			}
+		}
+
+		// Line 1: setting show_debug alone does not make this visible
+		if (flags.show_status) {
+			setStaticText(guitext, utf8_to_wide(os1.str()).c_str());
+			guitext->setVisible(true);
+			core::rect<s32> rect(
+					5,              5,
+					screensize.X,   5 + line_height
+			);
+			guitext->setRelativePosition(rect);
+		}
+
+		// Line 2: may contain MT version if small screen width, in that
+		// case not shown unless debug enabled
+		if (flags.show_debug) {
+			setStaticText(guitext2, utf8_to_wide(os2.str()).c_str());
+			guitext2->setVisible(true);
+			core::rect<s32> rect(
+					5,             5 + line_height * 1,
+					screensize.X,  5 + line_height * 2
+			);
+			guitext2->setRelativePosition(rect);
+		}
+
+		// Line 3: performance-related debug infos if didn't fit in line 2
+		if (flags.show_debug && !big_screen) {
+			setStaticText(guitext3, utf8_to_wide(os3.str()).c_str());
+			guitext3->setVisible(true);
+			core::rect<s32> rect(
+					5,             5 + line_height * 2,
+					screensize.X,  5 + line_height * 3
+			);
+			guitext3->setRelativePosition(rect);
+		}
 	}
 
 	/*
 		Get chat messages from client
 	*/
 	s32 chat_y = 5;
-	if (flags.show_debug)
-		chat_y += line_height * 3;
+	if (flags.show_debug) {
+		// debug info always ends after line 2 or 3
+		chat_y += line_height * (2 + guitext3->isVisible());
+	} else if (flags.show_status) {
+		chat_y += line_height * 1;
+	}
 	// Don't show chat if disabled or if profiler is enabled
 	updateChat(*client, dtime, chat_y, screensize,
 			flags.show_chat && !runData.profiler_current_page,

@@ -33,6 +33,7 @@ struct GameUIFlags
 	bool show_hud;
 	bool show_minimap;
 	bool force_fog_off;
+	bool show_status;
 	bool show_debug;
 	bool show_profiler_graph;
 	bool disable_camera_update;
