@@ -130,6 +130,16 @@ inline void sortBoxVerticies(v3s16 &p1, v3s16 &p2) {
 		SWAP(s16, p1.Z, p2.Z);
 }
 
+inline void sortBoxVerticies(v3f &p1, v3f &p2)
+{
+	if (p1.X > p2.X)
+		SWAP(f32, p1.X, p2.X);
+	if (p1.Y > p2.Y)
+		SWAP(f32, p1.Y, p2.Y);
+	if (p1.Z > p2.Z)
+		SWAP(f32, p1.Z, p2.Z);
+}
+
 inline v3s16 componentwise_min(const v3s16 &a, const v3s16 &b)
 {
 	return v3s16(MYMIN(a.X, b.X), MYMIN(a.Y, b.Y), MYMIN(a.Z, b.Z));

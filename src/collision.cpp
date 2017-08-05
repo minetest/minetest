@@ -257,22 +257,20 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
 	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
 
-	v3s16 oldpos_i = floatToInt(*pos_f, BS);
-	v3s16 newpos_i = floatToInt(*pos_f + *speed_f * dtime, BS);
-	s16 min_x = MYMIN(oldpos_i.X, newpos_i.X) + (box_0.MinEdge.X / BS) - 1;
-	s16 min_y = MYMIN(oldpos_i.Y, newpos_i.Y) + (box_0.MinEdge.Y / BS) - 1;
-	s16 min_z = MYMIN(oldpos_i.Z, newpos_i.Z) + (box_0.MinEdge.Z / BS) - 1;
-	s16 max_x = MYMAX(oldpos_i.X, newpos_i.X) + (box_0.MaxEdge.X / BS) + 1;
-	s16 max_y = MYMAX(oldpos_i.Y, newpos_i.Y) + (box_0.MaxEdge.Y / BS) + 1;
-	s16 max_z = MYMAX(oldpos_i.Z, newpos_i.Z) + (box_0.MaxEdge.Z / BS) + 1;
+	v3f minpos = *pos_f;
+	v3f maxpos = *pos_f + *speed_f * dtime;
+	sortBoxVerticies(minpos, maxpos);
+	minpos += box_0.MinEdge;
+	maxpos += box_0.MaxEdge;
+	const v3s16 min_i = floatToInt(minpos, BS) - 1;
+	const v3s16 max_i = floatToInt(maxpos, BS) + 1;
 
 	bool any_position_valid = false;
 
-	for(s16 x = min_x; x <= max_x; x++)
-	for(s16 y = min_y; y <= max_y; y++)
-	for(s16 z = min_z; z <= max_z; z++)
-	{
-		v3s16 p(x,y,z);
+	for (s16 x = min_i.X; x <= max_i.X; ++x)
+	for (s16 y = min_i.Y; y <= max_i.Y; ++y)
+	for (s16 z = min_i.Z; z <= max_i.Z; ++z) {
+		const v3s16 p(x, y, z);
 
 		bool is_position_valid;
 		MapNode n = map->getNodeNoEx(p, &is_position_valid);
@@ -283,7 +281,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			any_position_valid = true;
 			INodeDefManager *nodedef = gamedef->getNodeDefManager();
 			const ContentFeatures &f = nodedef->get(n);
-			if(f.walkable == false)
+			if (!f.walkable)
 				continue;
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
@@ -316,13 +314,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-			for(std::vector<aabb3f>::iterator
-					i = nodeboxes.begin();
-					i != nodeboxes.end(); ++i)
-			{
-				aabb3f box = *i;
-				box.MinEdge += v3f(x, y, z)*BS;
-				box.MaxEdge += v3f(x, y, z)*BS;
+			for (aabb3f &box : nodeboxes) {
+				box.MinEdge += v3f(x, y, z) * BS;
+				box.MaxEdge += v3f(x, y, z) * BS;
 				cinfo.push_back(NearbyCollisionInfo(false,
 					false, n_bouncy_value, p, box));
 			}

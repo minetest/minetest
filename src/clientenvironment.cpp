@@ -210,29 +210,25 @@ void ClientEnvironment::step(float dtime)
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 
-	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
-		i != player_collisions.end(); ++i) {
-		CollisionInfo &info = *i;
-		v3f speed_diff = info.new_speed - info.old_speed;;
+	for (CollisionInfo &info : player_collisions) {
+		const v3f speed_diff = info.new_speed - info.old_speed;
+
 		// Handle only fall damage
 		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+		if (speed_diff.Y < 0 || info.old_speed.Y >= 0)
 			continue;
-		// Get rid of other components
-		speed_diff.X = 0;
-		speed_diff.Z = 0;
+
 		f32 pre_factor = 1; // 1 hp per node/s
-		f32 tolerance = BS*14; // 5 without damage
+		f32 tolerance = BS * 14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
-		if(info.type == COLLISION_NODE)
-		{
+		if (info.type == COLLISION_NODE) {
 			const ContentFeatures &f = m_client->ndef()->
 				get(m_map->getNodeNoEx(info.node_p));
 			// Determine fall damage multiplier
-			int addp = itemgroup_get(f.groups, "fall_damage_add_percent");
-			pre_factor = 1.0 + (float)addp/100.0;
+			pre_factor = 1 + itemgroup_get(f.groups,
+				"fall_damage_add_percent") / 100.f;
 		}
-		float speed = pre_factor * speed_diff.getLength();
+		float speed = pre_factor * fabs(speed_diff.Y);
 		if (speed > tolerance) {
 			f32 damage_f = (speed - tolerance) / BS * post_factor;
 			u8 damage = (u8)MYMIN(damage_f + 0.5, 255);
