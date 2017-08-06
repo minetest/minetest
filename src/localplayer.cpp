@@ -279,9 +279,15 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// This should always apply, otherwise there are glitches
 	sanity_check(d > pos_max_d);
 
-	// TODO: this shouldn't be hardcoded but transmitted from server
-	float player_stepheight = (touching_ground) ? (BS * 0.6f) : (BS * 0.2f);
+	// Player object property step height is multiplied by BS in
+	// /src/script/common/c_content.cpp and /src/content_sao.cpp
+	float player_stepheight = (m_cao == nullptr) ? 0.0f :
+		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
+	// TODO this is a problematic hack.
+	// Use a better implementation for autojump, or apply a custom stepheight
+	// to all players, as this currently creates unintended special movement
+	// abilities and advantages for Android players on a server.
 #ifdef __ANDROID__
 	player_stepheight += (0.6f * BS);
 #endif

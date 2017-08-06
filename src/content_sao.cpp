@@ -799,6 +799,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	// end of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
+	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_hp = PLAYER_MAX_HP;
 }
 

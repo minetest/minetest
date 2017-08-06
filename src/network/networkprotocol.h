@@ -174,6 +174,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add settable player collisionbox. Breaks compatibility with older
 			clients as a 1-node vertical offset has been removed from player's
 			position
+		Add settable player stepheight using existing object property.
+			Breaks compatibility with older clients.
 */
 
 #define LATEST_PROTOCOL_VERSION 35

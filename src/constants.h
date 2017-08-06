@@ -80,6 +80,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // the main loop (related to TempMods and day/night)
 //#define MAP_BLOCKSIZE 32
 
+// Player step height in nodes
+#define PLAYER_DEFAULT_STEPHEIGHT 0.6f
+
 /*
     Old stuff that shouldn't be hardcoded
 */
