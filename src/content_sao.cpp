@@ -752,12 +752,12 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
 
 bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible) {
+	if (!m_prop.is_visible || !m_prop.pointable) {
 		return false;
 	}
 
-	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
-	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+	toset->MinEdge = m_prop.selectionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
 }
@@ -786,6 +786,8 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
+	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
+	m_prop.pointable = true;
 	// start of default appearance, this should be overwritten by LUA
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
@@ -1426,12 +1428,12 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 
 bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible) {
+	if (!m_prop.is_visible || !m_prop.pointable) {
 		return false;
 	}
 
-	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
-	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+	toset->MinEdge = m_prop.selectionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
 }
