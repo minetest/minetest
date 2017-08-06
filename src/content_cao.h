@@ -147,6 +147,11 @@ public:
 
 	scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode();
 
+	inline f32 getStepHeight() const
+	{
+		return m_prop.stepheight;
+	}
+
 	inline bool isLocalPlayer() const
 	{
 		return m_is_local_player;
