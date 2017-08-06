@@ -42,8 +42,7 @@ static void cloud_3d_setting_changed(const std::string &settingname, void *data)
 
 Clouds::Clouds(scene::ISceneManager* mgr,
 		s32 id,
-		u32 seed,
-		s16 cloudheight
+		u32 seed
 ):
 	scene::ISceneNode(mgr->getRootSceneNode(), mgr, id),
 	m_seed(seed)
@@ -57,7 +56,7 @@ Clouds::Clouds(scene::ISceneManager* mgr,
 	//m_material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 
-	m_params.height        = cloudheight ? cloudheight : 120;
+	m_params.height        = 120;
 	m_params.density       = 0.4f;
 	m_params.thickness     = 16.0f;
 	m_params.color_bright  = video::SColor(229, 240, 240, 255);

@@ -38,8 +38,7 @@ class Clouds : public scene::ISceneNode
 public:
 	Clouds(scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed,
-			s16 cloudheight=0
+			u32 seed
 	);
 
 	~Clouds();
