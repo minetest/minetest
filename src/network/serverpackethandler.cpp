@@ -474,6 +474,9 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
 
+	// SERVER SIDE MOVEMENT: here we would unpack the action log
+	// from the client and replay it.
+
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
 	playersao->setPitch(pitch);

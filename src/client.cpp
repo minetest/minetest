@@ -1245,6 +1245,11 @@ void Client::sendPlayerPos()
 	myplayer->last_camera_fov   = camera_fov;
 	myplayer->last_wanted_range = wanted_range;
 
+	//infostream << "Sending Player Position information" << std::endl;
+
+	// SERVER SIDE MOVEMENT: here we serialize the player's actions since
+	// the last such packet into an action log and send that
+
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(myplayer, &map, &pkt);

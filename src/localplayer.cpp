@@ -467,6 +467,12 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {
+
+	// SERVER SIDE MOVEMENT: this method will need to be abstracted into:
+	// - a wrapper that pushes the current controls into the action log
+	// - a function that can be called on the client OR on the server (when
+	//   replaying the action log).
+
 	// Clear stuff
 	swimming_vertical = false;
 
