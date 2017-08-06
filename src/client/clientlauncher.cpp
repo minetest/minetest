@@ -401,8 +401,7 @@ bool ClientLauncher::launch_game(std::string &error_message,
 
 	if (menudata.name == "" && !simple_singleplayer_mode) {
 		error_message = gettext("Please choose a name!");
-		if (skip_main_menu) 
-			errorstream << error_message << std::endl;
+		errorstream << error_message << std::endl;
 		return false;
 	}
 
