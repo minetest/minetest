@@ -238,20 +238,21 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	// If mountains are disabled, terrain level is base terrain level.
 	// Avoids mid-air spawn where mountain terrain would have been.
 	if (!(spflags & MGV7_MOUNTAINS)) {
-		if (y <= water_level || y > max_spawn_y)
+		if (y < water_level || y > max_spawn_y)
 			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 		else
-			// + 1 to not be half-buried in a potential node-deep biome 'dust'
-			return y + 1;
+			// y + 2 because y is surface level and due to biome 'dust'
+			return y + 2;
 	}
 
 	// Search upwards for first node without mountain terrain
 	int iters = 256;
 	while (iters > 0 && y <= max_spawn_y) {
-		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {  // If air above
+		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {
 			if (y <= water_level || y > max_spawn_y)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 			else
+				// y + 1 due to biome 'dust'
 				return y + 1;
 		}
 		y++;
