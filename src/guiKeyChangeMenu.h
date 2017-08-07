@@ -58,6 +58,8 @@ public:
 
 	bool OnEvent(const SEvent &event);
 
+	bool pausesGame() { return true; }
+
 private:
 	void init_keys();
 
