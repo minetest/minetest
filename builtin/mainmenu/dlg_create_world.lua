@@ -15,6 +15,8 @@
 --with this program; if not, write to the Free Software Foundation, Inc.,
 --51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+mm_mg = {}
+
 local function create_world_formspec(dialogdata)
 	local mapgens = core.get_mapgen_names()
 
@@ -54,7 +56,8 @@ local function create_world_formspec(dialogdata)
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
 
 		"label[2,2;" .. fgettext("Mapgen") .. "]"..
-		"dropdown[4.2,2;6.3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"dropdown[4.2,1.9;3;dd_mapgen;" .. mglist .. ";" .. selindex .. "]" ..
+		"button[7.25,2.05;3,0.5;mg_flags;".. fgettext("Settings") .. "]" ..
 
 		"label[2,3;" .. fgettext("Game") .. "]"..
 		"textlist[4.2,3;5.8,2.3;games;" .. gamemgr.gamelist() ..
@@ -91,10 +94,10 @@ local function create_world_buttonhandler(this, fields)
 			local message = nil
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
+			update_mg_flags()  -- Apply mapgen flags.
 
 			if not menudata.worldlist:uid_exists_raw(worldname) then
 				core.settings:set("mg_name",fields["dd_mapgen"])
-				message = core.create_world(worldname,gameindex)
 			else
 				message = fgettext("A world named \"$1\" already exists", worldname)
 			end
@@ -124,11 +127,27 @@ local function create_world_buttonhandler(this, fields)
 	end
 	
 	if fields["world_create_cancel"] then
+		load_mg_flags()  -- Reset to last saved.
 		this:delete()
 		return true
 	end
 
-	return false
+	if fields["mg_flags"] ~= nil then
+		local mg_flags_dlg = create_mg_flags_dlg()
+		mg_flags_dlg:set_parent(this)
+		this:hide()
+		mg_flags_dlg:show()
+		return true
+	end
+
+	local ddhandled = false
+	if fields["dd_mapgen"] then
+		core.setting_set("mg_name",fields["dd_mapgen"])
+		ddhandled = true
+		return true
+	end
+
+	return ddhandled
 end
 
 
