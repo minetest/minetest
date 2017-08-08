@@ -31,7 +31,13 @@ install_linux_deps() {
 # Mac OSX build only
 install_macosx_deps() {
 	brew update
-	brew install freetype gettext hiredis irrlicht jpeg leveldb libogg libvorbis luajit
+	brew install freetype gettext hiredis irrlicht leveldb libogg libvorbis luajit
+	if [[ "$(brew ls | grep jpeg)" == *"jpeg"* ]]; then
+		brew upgrade jpeg #if jpeg exists upgrade, *"somestring"* = string includes string
+		# "somestring" in it, the asterisks (*) should always be outside of the quotes
+	else
+		brew install jpeg #otherwise install
+	fi
 	#brew upgrade postgresql
 }
 
@@ -39,6 +45,11 @@ install_macosx_deps() {
 TRIGGER_COMPILE_PATHS="src/.*\.(c|cpp|h)|CMakeLists.txt|cmake/Modules/|util/travis/|util/buildbot/"
 
 needs_compile() {
-	git diff --name-only $TRAVIS_COMMIT_RANGE | egrep -q "^($TRIGGER_COMPILE_PATHS)"
+	RANGE="$TRAVIS_COMMIT_RANGE"
+	if [[ "$(git diff --name-only $RANGE -- 2>/dev/null)" == "" ]]; then 
+		RANGE="$TRAVIS_COMMIT^...$TRAVIS_COMMIT"
+		echo "Fixed range: $RANGE"
+	fi
+	git diff --name-only $RANGE -- | egrep -q "^($TRIGGER_COMPILE_PATHS)"
 }
 
