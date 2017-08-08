@@ -2004,7 +2004,8 @@ bool Game::initGui()
 	// Object infos are shown in this
 	guitext_info = addStaticText(guienv,
 			L"",
-			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5) + v2s32(100, 200),
+			core::rect<s32>(0, 0, 400, g_fontengine->getTextHeight() * 5 + 5)
+				+ v2s32(100, 5 + g_fontengine->getTextHeight() * (3 + 6)), //debug+chat
 			false, true, guiroot);
 
 	// Status text (displays info when showing and hiding GUI stuff, etc.)
