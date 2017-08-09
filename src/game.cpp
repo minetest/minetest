@@ -951,8 +951,8 @@ static inline void create_formspec_menu(GUIFormSpecMenu **cur_formspec,
 #endif
 
 /******************************************************************************/
-static void updateChat(Client &client, f32 dtime, bool show_debug,
-		const v2u32 &screensize, bool show_chat, u32 show_profiler,
+static void updateChat(Client &client, f32 dtime, s32 chat_y,
+		const v2u32 &screensize, bool show_chat,
 		ChatBackend &chat_backend, gui::IGUIStaticText *guitext_chat)
 {
 	// Add chat log output for errors to be shown in chat
@@ -979,32 +979,22 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	// Display all messages in a static text element
 	unsigned int recent_chat_count = chat_backend.getRecentBuffer().getLineCount();
 	EnrichedString recent_chat     = chat_backend.getRecentChat();
-	unsigned int line_height       = g_fontengine->getLineHeight();
 
 	setStaticText(guitext_chat, recent_chat);
 
-	// Update gui element size and position
-	s32 chat_y = 5;
-
-	if (show_debug)
-		chat_y += 3 * line_height;
-
 	// first pass to calculate height of text to be set
-	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
 	s32 width = std::min(g_fontengine->getTextWidth(recent_chat.c_str()) + 10,
-			window_size.X - 20);
-	core::rect<s32> rect(10, chat_y, width, chat_y + window_size.Y);
+			screensize.X - 20);
+	core::rect<s32> rect(10, chat_y, width, chat_y + screensize.Y);
 	guitext_chat->setRelativePosition(rect);
 
 	//now use real height of text and adjust rect according to this size
 	rect = core::rect<s32>(10, chat_y, width,
 			       chat_y + guitext_chat->getTextHeight());
-
-
 	guitext_chat->setRelativePosition(rect);
-	// Don't show chat if disabled or empty or profiler is enabled
-	guitext_chat->setVisible(
-		show_chat && recent_chat_count != 0 && !show_profiler);
+
+	// Don't show chat if disabled or empty
+	guitext_chat->setVisible(show_chat && recent_chat_count);
 }
 
 
@@ -4053,6 +4043,7 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 		const CameraOrientation &cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	v2u32 screensize = driver->getScreenSize();
 
 	/*
 		Fog range
@@ -4171,16 +4162,6 @@ void Game::updateFrame(ProfilerGraph *graph, RunStats *stats, f32 dtime,
 				false // range fog
 		);
 	}
-
-	/*
-		Get chat messages from client
-	*/
-
-	v2u32 screensize = driver->getScreenSize();
-
-	updateChat(*client, dtime, flags.show_debug, screensize,
-			flags.show_chat, runData.profiler_current_page,
-			*chat_backend, guitext_chat);
 
 	/*
 		Inventory
@@ -4316,9 +4297,11 @@ inline static const char *yawToDirectionString(int yaw)
 void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam)
 {
 	v2u32 screensize = driver->getScreenSize();
-	LocalPlayer *player = client->getEnv().getLocalPlayer();
-	v3f player_position = player->getPosition();
+	unsigned int line_height = g_fontengine->getLineHeight();
 
+	/*
+		Update debug info
+	*/
 	if (flags.show_debug) {
 		static float drawtime_avg = 0;
 		drawtime_avg = drawtime_avg * 0.95 + stats.drawtime * 0.05;
@@ -4347,12 +4330,15 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 	if (guitext->isVisible()) {
 		core::rect<s32> rect(
 				5,              5,
-				screensize.X,   5 + g_fontengine->getTextHeight()
+				screensize.X,   5 + line_height
 		);
 		guitext->setRelativePosition(rect);
 	}
 
 	if (flags.show_debug) {
+		LocalPlayer *player = client->getEnv().getLocalPlayer();
+		v3f player_position = player->getPosition();
+
 		std::ostringstream os(std::ios_base::binary);
 		os << std::setprecision(1) << std::fixed
 		   << "pos = (" << (player_position.X / BS)
@@ -4369,8 +4355,8 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 
 	if (guitext2->isVisible()) {
 		core::rect<s32> rect(
-				5,             5 + g_fontengine->getTextHeight(),
-				screensize.X,  5 + g_fontengine->getTextHeight() * 2
+				5,             5 + line_height,
+				screensize.X,  5 + line_height * 2
 		);
 		guitext2->setRelativePosition(rect);
 	}
@@ -4396,15 +4382,32 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 
 	if (guitext3->isVisible()) {
 		core::rect<s32> rect(
-				5,             5 + g_fontengine->getTextHeight() * 2,
-				screensize.X,  5 + g_fontengine->getTextHeight() * 3
+				5,             5 + line_height * 2,
+				screensize.X,  5 + line_height * 3
 		);
 		guitext3->setRelativePosition(rect);
 	}
 
+	/*
+		Get chat messages from client
+	*/
+	s32 chat_y = 5;
+	if (flags.show_debug)
+		chat_y += line_height * 3;
+	// Don't show chat if disabled or if profiler is enabled
+	updateChat(*client, dtime, chat_y, screensize,
+			flags.show_chat && !runData.profiler_current_page,
+			*chat_backend, guitext_chat);
+
+	/*
+		Update node info text
+	*/
 	setStaticText(guitext_info, translate_string(infotext).c_str());
 	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
 
+	/*
+		Update GUI notice
+	*/
 	float noticetext_time_max = 1.5f;
 
 	if (!m_noticetext.empty()) {
