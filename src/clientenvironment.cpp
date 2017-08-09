@@ -162,6 +162,8 @@ void ClientEnvironment::step(float dtime)
 		/*
 			Handle local player
 		*/
+		// SERVER SIDE MOVEMENT: this is the main player motion loop on the client
+		// abstract this so that it can apply on the server as well.
 
 		{
 			// Apply physics

@@ -383,6 +383,7 @@ add_subdirectory(irrlicht_changes)
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
+	actionlog.cpp
 	ban.cpp
 	chat.cpp
 	clientiface.cpp

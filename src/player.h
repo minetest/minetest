@@ -98,6 +98,7 @@ public:
 
 	DISABLE_CLASS_COPY(Player);
 
+	// SERVER SIDE MOVEMENT: should happen here
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d)
 	{}
 	virtual void move(f32 dtime, Environment *env, f32 pos_max_d,
