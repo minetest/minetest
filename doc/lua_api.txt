@@ -4317,9 +4317,11 @@ Definition tables
         ^ By default: Calls minetest.register_on_punchnode callbacks ]]
         on_rightclick = func(pos, node, clicker, itemstack, pointed_thing), --[[
         ^ default: nil
-        ^ if defined, itemstack will hold clicker's wielded item
+        ^ itemstack will hold clicker's wielded item
         ^ Shall return the leftover itemstack
-        ^ Note: pointed_thing can be nil, if a mod calls this function ]]
+        ^ Note: pointed_thing can be nil, if a mod calls this function
+          This function does not get triggered by clients <=0.4.16 if the
+          "formspec" node metadata field is set ]]
 
         on_dig = func(pos, node, digger), --[[
         ^ default: minetest.node_dig
