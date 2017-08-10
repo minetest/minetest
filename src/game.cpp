@@ -3799,6 +3799,11 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 		if (meta && meta->getString("formspec") != "" && !random_input
 				&& !isKeyDown(KeyType::SNEAK)) {
+			// Report right click to server
+			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+				client->interact(3, pointed);
+			}
+
 			infostream << "Launching custom inventory view" << std::endl;
 
 			InventoryLocation inventoryloc;
