@@ -105,7 +105,7 @@ public:
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
 	bool isStaticAllowed() const
-	{ return !m_prop.no_static_save; }
+	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
