@@ -444,7 +444,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
-void LocalPlayer::applyControl(float dtime)
+void LocalPlayer::applyControl(float dtime, ClientEnvironment *env)
 {
 	// Clear stuff
 	swimming_vertical = false;
@@ -660,9 +660,16 @@ void LocalPlayer::applyControl(float dtime)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
+	INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	Map *map = &env->getMap();
+	bool slippery = false;
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
+	slippery = itemgroup_get(f.groups, "slippery");
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speedH * physics_override_speed, incH * physics_override_speed);
-	accelerateVertical(speedV * physics_override_speed, incV * physics_override_speed);
+	accelerateHorizontal(speedH * physics_override_speed,
+			incH * physics_override_speed, slippery);
+	accelerateVertical(speedV * physics_override_speed,
+			incV * physics_override_speed);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()
@@ -699,12 +706,20 @@ v3f LocalPlayer::getEyeOffset() const
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored
-void LocalPlayer::accelerateHorizontal(const v3f &target_speed, const f32 max_increase)
+void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
+	const f32 max_increase, bool slippery)
 {
         if (max_increase == 0)
                 return;
 
-        v3f d_wanted = target_speed - m_speed;
+	v3f d_wanted = target_speed - m_speed;
+	if (slippery) {
+		if (target_speed == v3f(0))
+			d_wanted = -m_speed * 0.05f;
+		else
+			d_wanted = target_speed * 0.1f - m_speed * 0.1f;
+	}
+
         d_wanted.Y = 0;
         f32 dl = d_wanted.getLength();
         if (dl > max_increase)
