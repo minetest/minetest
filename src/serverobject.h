@@ -78,7 +78,7 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition(){ return m_base_position; }
+	v3f getBasePosition() const { return m_base_position; }
 	void setBasePosition(v3f pos){ m_base_position = pos; }
 	ServerEnvironment* getEnv(){ return m_env; }
 

@@ -1169,17 +1169,13 @@ void ServerEnvironment::step(float dtime)
 	*/
 	{
 		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
-		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
-			assert(player);
-
+		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
-			if(player->peer_id == 0)
+			if (player->peer_id == 0)
 				continue;
 
 			// Move
-			player->move(dtime, this, 100*BS);
+			player->move(dtime, this, 100 * BS);
 		}
 	}
 
@@ -1192,11 +1188,7 @@ void ServerEnvironment::step(float dtime)
 			Get player block positions
 		*/
 		std::vector<v3s16> players_blockpos;
-		for (std::vector<RemotePlayer *>::iterator i = m_players.begin();
-			i != m_players.end(); ++i) {
-			RemotePlayer *player = dynamic_cast<RemotePlayer *>(*i);
-			assert(player);
-
+		for (RemotePlayer *player: m_players) {
 			// Ignore disconnected players
 			if (player->peer_id == 0)
 				continue;
@@ -1204,9 +1196,8 @@ void ServerEnvironment::step(float dtime)
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
-			v3s16 blockpos = getNodeBlockPos(
-				floatToInt(playersao->getBasePosition(), BS));
-			players_blockpos.push_back(blockpos);
+			players_blockpos.push_back(
+				getNodeBlockPos(floatToInt(playersao->getBasePosition(), BS)));
 		}
 
 		/*
@@ -1226,16 +1217,9 @@ void ServerEnvironment::step(float dtime)
 		// Convert active objects that are no more in active blocks to static
 		deactivateFarObjects(false);
 
-		for(std::set<v3s16>::iterator
-			i = blocks_removed.begin();
-			i != blocks_removed.end(); ++i) {
-			v3s16 p = *i;
-
-			/* infostream<<"Server: Block " << PP(p)
-				<< " became inactive"<<std::endl; */
-
+		for (const v3s16 &p: blocks_removed) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if(block==NULL)
+			if (!block)
 				continue;
 
 			// Set current time as timestamp (and let it set ChangedFlag)
@@ -1246,21 +1230,14 @@ void ServerEnvironment::step(float dtime)
 			Handle added blocks
 		*/
 
-		for(std::set<v3s16>::iterator
-			i = blocks_added.begin();
-			i != blocks_added.end(); ++i)
-		{
-			v3s16 p = *i;
-
+		for (const v3s16 &p: blocks_added) {
 			MapBlock *block = m_map->getBlockOrEmerge(p);
-			if(block==NULL){
+			if (!block) {
 				m_active_blocks.m_list.erase(p);
 				continue;
 			}
 
 			activateBlock(block);
-			/* infostream<<"Server: Block " << PP(p)
-				<< " became active"<<std::endl; */
 		}
 	}
 
@@ -1272,17 +1249,9 @@ void ServerEnvironment::step(float dtime)
 
 		float dtime = m_cache_nodetimer_interval;
 
-		for(std::set<v3s16>::iterator
-			i = m_active_blocks.m_list.begin();
-			i != m_active_blocks.m_list.end(); ++i)
-		{
-			v3s16 p = *i;
-
-			/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
-					<<") being handled"<<std::endl;*/
-
+		for (const v3s16 &p: m_active_blocks.m_list) {
 			MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-			if(block==NULL)
+			if (!block)
 				continue;
 
 			// Reset block usage timer
@@ -1297,17 +1266,16 @@ void ServerEnvironment::step(float dtime)
 					MOD_REASON_BLOCK_EXPIRED);
 
 			// Run node timers
-			std::vector<NodeTimer> elapsed_timers =
-				block->m_node_timers.step((float)dtime);
+			std::vector<NodeTimer> elapsed_timers = block->m_node_timers.step(dtime);
 			if (!elapsed_timers.empty()) {
 				MapNode n;
-				for (std::vector<NodeTimer>::iterator i = elapsed_timers.begin();
-					i != elapsed_timers.end(); ++i) {
-					n = block->getNodeNoEx(i->position);
-					p = i->position + block->getPosRelative();
-					if (m_script->node_on_timer(p, n, i->elapsed)) {
+				v3s16 p2;
+				for (const NodeTimer &elapsed_timer: elapsed_timers) {
+					n = block->getNodeNoEx(elapsed_timer.position);
+					p2 = elapsed_timer.position + block->getPosRelative();
+					if (m_script->node_on_timer(p2, n, elapsed_timer.elapsed)) {
 						block->setNodeTimer(NodeTimer(
-							i->timeout, 0, i->position));
+							elapsed_timer.timeout, 0, elapsed_timer.position));
 					}
 				}
 			}
@@ -1315,8 +1283,8 @@ void ServerEnvironment::step(float dtime)
 	}
 
 	if (m_active_block_modifier_interval.step(dtime, m_cache_abm_interval))
-		do{ // breakable
-			if(m_active_block_interval_overload_skip > 0){
+		do { // breakable
+			if (m_active_block_interval_overload_skip > 0) {
 				ScopeProfiler sp(g_profiler, "SEnv: ABM overload skips");
 				m_active_block_interval_overload_skip--;
 				break;
@@ -1327,17 +1295,9 @@ void ServerEnvironment::step(float dtime)
 			// Initialize handling of ActiveBlockModifiers
 			ABMHandler abmhandler(m_abms, m_cache_abm_interval, this, true);
 
-			for(std::set<v3s16>::iterator
-				i = m_active_blocks.m_list.begin();
-				i != m_active_blocks.m_list.end(); ++i)
-			{
-				v3s16 p = *i;
-
-				/*infostream<<"Server: Block ("<<p.X<<","<<p.Y<<","<<p.Z
-						<<") being handled"<<std::endl;*/
-
+			for (const v3s16 &p : m_active_blocks.m_list) {
 				MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-				if(block == NULL)
+				if (!block)
 					continue;
 
 				// Set current time as timestamp
@@ -1349,7 +1309,7 @@ void ServerEnvironment::step(float dtime)
 
 			u32 time_ms = timer.stop(true);
 			u32 max_time_ms = 200;
-			if(time_ms > max_time_ms){
+			if (time_ms > max_time_ms) {
 				warningstream<<"active block modifiers took "
 					<<time_ms<<"ms (longer than "
 					<<max_time_ms<<"ms)"<<std::endl;
@@ -1401,8 +1361,7 @@ void ServerEnvironment::step(float dtime)
 	/*
 		Manage active objects
 	*/
-	if(m_object_management_interval.step(dtime, 0.5))
-	{
+	if (m_object_management_interval.step(dtime, 0.5)) {
 		ScopeProfiler sp(g_profiler, "SEnv: remove removed objs avg /.5s", SPT_AVG);
 		/*
 			Remove objects that satisfy (m_removed && m_known_by_count==0)
@@ -1461,9 +1420,9 @@ u32 ServerEnvironment::addParticleSpawner(float exptime, u16 attached_id)
 void ServerEnvironment::deleteParticleSpawner(u32 id, bool remove_from_object)
 {
 	m_particle_spawners.erase(id);
-	std::unordered_map<u32, u16>::iterator it = m_particle_spawner_attachments.find(id);
+	const auto &it = m_particle_spawner_attachments.find(id);
 	if (it != m_particle_spawner_attachments.end()) {
-		u16 obj_id = (*it).second;
+		u16 obj_id = it->second;
 		ServerActiveObject *sao = getActiveObject(obj_id);
 		if (sao != NULL && remove_from_object) {
 			sao->detachParticleSpawner(id);
