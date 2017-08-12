@@ -555,7 +555,29 @@ local function handle_give_command(cmd, giver, receiver, stackstring)
 	if receiverref == nil then
 		return false, receiver .. " is not a known player"
 	end
-	local leftover = receiverref:get_inventory():add_item("main", itemstack)
+	local inv = receiverref:get_inventory()
+	local list = inv:get_list("main")
+	local itemname = itemstack:get_name()
+	local leftover = ItemStack(itemstack)
+	local empty_index = nil
+	for i, stack in pairs(list) do
+		if stack:get_name() == itemname and
+		   stack:get_free_space() > 0 then
+			local items = leftover:take_item(stack:get_free_space())
+			stack:add_item(items)
+			inv:set_stack("main", i, stack)
+
+			if leftover:is_empty() then
+				break
+			end
+		elseif stack:is_empty() and not empty_index then
+			empty_index = i
+		end
+	end
+	if not leftover:is_empty() and empty_index then
+		inv:set_stack("main", empty_index, leftover)
+		leftover:set_count(0)
+	end
 	local partiality
 	if leftover:is_empty() then
 		partiality = ""
