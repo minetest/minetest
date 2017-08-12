@@ -28,14 +28,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "convert_json.h"
 
-static bool parseDependsLine(std::istream &is,
-		std::string &dep, std::set<char> &symbols)
+static bool parseDependsString(std::string &dep,
+		std::set<char> &symbols)
 {
-	std::getline(is, dep);
 	dep = trim(dep);
 	symbols.clear();
 	size_t pos = dep.size();
-	while(pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)){
+	while (pos > 0 && !string_allowed(dep.substr(pos-1, 1), MODNAME_ALLOWED_CHARS)) {
 		// last character is a symbol, not part of the modname
 		symbols.insert(dep[pos-1]);
 		--pos;
@@ -60,28 +59,55 @@ void parseModContents(ModSpec &spec)
 
 	// Handle modpacks (defined by containing modpack.txt)
 	std::ifstream modpack_is((spec.path+DIR_DELIM+"modpack.txt").c_str());
-	if(modpack_is.good()){ //a modpack, recursively get the mods in it
+	if (modpack_is.good()) { // a modpack, recursively get the mods in it
 		modpack_is.close(); // We don't actually need the file
 		spec.is_modpack = true;
 		spec.modpack_content = getModsInPath(spec.path, true);
-
 		// modpacks have no dependencies; they are defined and
 		// tracked separately for each mod in the modpack
-	}
-	else{ // not a modpack, parse the dependencies
-		std::ifstream is((spec.path+DIR_DELIM+"depends.txt").c_str());
-		while(is.good()){
-			std::string dep;
-			std::set<char> symbols;
-			if(parseDependsLine(is, dep, symbols)){
-				if(symbols.count('?') != 0){
-					spec.optdepends.insert(dep);
-				}
-				else{
-					spec.depends.insert(dep);
+
+	} else {
+		// Attempt to load dependencies from mod.conf
+		bool mod_conf_has_depends = false;
+		if (info.exists("depends")) {
+			mod_conf_has_depends = true;
+			std::string dep = info.get("depends");
+			for (const auto& dependency :  str_split(dep, ',')) {
+				spec.depends.insert(dependency);
+			}
+		}
+
+		if (info.exists("optional_depends")) {
+			mod_conf_has_depends = true;
+			std::string dep = info.get("optional_depends");
+			for (const auto& dependency :  str_split(dep, ',')) {
+				spec.optdepends.insert(dependency);
+			}
+		}
+
+		// Fallback to depends.txt
+		if (!mod_conf_has_depends) {
+			std::vector<std::string> dependencies;
+
+			std::ifstream is((spec.path + DIR_DELIM + "depends.txt").c_str());
+			while (is.good()) {
+				std::string dep;
+				std::getline(is, dep);
+				dependencies.push_back(dep);
+			}
+
+			for (auto dependency : dependencies) {
+				std::set<char> symbols;
+				if (parseDependsString(dependency, symbols)) {
+					if (symbols.count('?') != 0) {
+						spec.optdepends.insert(dependency);
+					} else {
+						spec.depends.insert(dependency);
+					}
 				}
 			}
 		}
+
 	}
 }
 
