@@ -26,10 +26,11 @@ gtags.files
 *.project
 
 ## Files related to minetest development cycle
-/*.patch
+/*.patch*
 *.diff
 # GNU Patch reject file
 *.rej
+coverage*
 
 ## Non-static Minetest directories or symlinks to these
 /bin/
