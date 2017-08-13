@@ -777,6 +777,12 @@ node definition:
       respectively. Allows light to propagate from or through the node with
       light value falling by 1 per node. This is essential for a light source
       node to spread its light.
+      Nodes with drawtype allfaces, allfaces_optional, torchlike, signlike,
+      plantlike, raillike, firelike, nodebox and mesh have paramtype set to
+      "light" if omitted because they require this paramtype to be displayed
+      correctly.
+      If the node doesn't have paramtype "light", you can use param1 to store
+      custom 8 Bit values for your own purposes.
 
 `param2` is reserved for the engine when any of these are used:
 

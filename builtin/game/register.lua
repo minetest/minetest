@@ -65,14 +65,14 @@ local function check_modname_prefix(name)
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
-		
+
 		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
-		
+
 		return name
 	end
 end
@@ -105,6 +105,17 @@ function core.register_entity(name, prototype)
 	prototype.mod_origin = core.get_current_modname() or "??"
 end
 
+local param1light_drawtypes = {
+	allfaces = true,
+	allfaces_optional = true,
+	torchlike = true,
+	signlike = true,
+	plantlike = true,
+	raillike = true,
+	firelike = true,
+	nodebox = true,
+	mesh = true,
+}
 function core.register_item(name, itemdef)
 	-- Check name
 	if name == nil then
@@ -118,14 +129,23 @@ function core.register_item(name, itemdef)
 
 	-- Apply defaults and add to registered_* table
 	if itemdef.type == "node" then
-		-- Use the nodebox as selection box if it's not set manually
-		if itemdef.drawtype == "nodebox" and not itemdef.selection_box then
-			itemdef.selection_box = itemdef.node_box
-		elseif itemdef.drawtype == "fencelike" and not itemdef.selection_box then
-			itemdef.selection_box = {
-				type = "fixed",
-				fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
-			}
+		if itemdef.drawtype then
+			-- Use the nodebox as selection box if it's not set manually
+			if not itemdef.selection_box then
+				if itemdef.drawtype == "nodebox" then
+					itemdef.selection_box = itemdef.node_box
+				elseif itemdef.drawtype == "fencelike" then
+					itemdef.selection_box = {
+						type = "fixed",
+						fixed = {-1/8, -1/2, -1/8, 1/8, 1/2, 1/8},
+					}
+				end
+			end
+			-- Set paramtype to "light" if necessary
+			if param1light_drawtypes[itemdef.drawtype]
+			and not itemdef.paramtype then
+				itemdef.paramtype = "light"
+			end
 		end
 		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
 			itemdef.light_source = core.LIGHT_MAX
