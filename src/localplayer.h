@@ -79,7 +79,7 @@ public:
 	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 
-	void applyControl(float dtime, ClientEnvironment *env);
+	void applyControl(float dtime, Environment *env);
 
 	v3s16 getStandingNodePos();
 	v3s16 getFootstepNodePos();

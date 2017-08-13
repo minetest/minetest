@@ -444,7 +444,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
-void LocalPlayer::applyControl(float dtime, ClientEnvironment *env)
+void LocalPlayer::applyControl(float dtime, Environment *env)
 {
 	// Clear stuff
 	swimming_vertical = false;
@@ -660,11 +660,10 @@ void LocalPlayer::applyControl(float dtime, ClientEnvironment *env)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
-	INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
-	bool slippery = false;
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
-	slippery = itemgroup_get(f.groups, "slippery");
+	bool slippery = (itemgroup_get(f.groups, "slippery") != 0);
 	// Accelerate to target speed with maximum increment
 	accelerateHorizontal(speedH * physics_override_speed,
 			incH * physics_override_speed, slippery);
