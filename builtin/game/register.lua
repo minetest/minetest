@@ -146,6 +146,25 @@ function core.register_item(name, itemdef)
 			and not itemdef.paramtype then
 				itemdef.paramtype = "light"
 			end
+			-- Fix inventory_image and wield_image for specific drawtypes
+			if not itemdef.inventory_image and itemdef.tiles and
+					type(itemdef.tiles[1]) == "string" then
+				if itemdef.drawtype == "plantlike" or
+						itemdef.drawtype == "raillike" or
+						itemdef.drawtype == "signlike" or
+						itemdef.drawtype == "torchlike" or
+						itemdef.drawtype == "firelike" then
+					itemdef.inventory_image = itemdef.tiles[1]
+				end
+				-- torch,
+				if not itemdef.wield_image then
+					if itemdef.drawtype == "raillike" or
+							itemdef.drawtype == "signlike" or
+							itemdef.drawtype == "torchlike" then
+						itemdef.wield_image = itemdef.inventory_image
+					end
+				end
+			end
 		end
 		if itemdef.light_source and itemdef.light_source > core.LIGHT_MAX then
 			itemdef.light_source = core.LIGHT_MAX
