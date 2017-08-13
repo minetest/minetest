@@ -713,36 +713,36 @@ void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
 
 	v3f d_wanted = target_speed - m_speed;
 	if (slippery) {
-		if (target_speed == v3f(0))
+		if (target_speed == v3f())
 			d_wanted = -m_speed * 0.05f;
 		else
-			d_wanted = target_speed * 0.1f - m_speed * 0.1f;
+			d_wanted *= 0.1f;
 	}
 
-        d_wanted.Y = 0;
-        f32 dl = d_wanted.getLength();
-        if (dl > max_increase)
-                dl = max_increase;
+	d_wanted.Y = 0.0f;
+	f32 dl = d_wanted.getLength();
+	if (dl > max_increase)
+		dl = max_increase;
 
-        v3f d = d_wanted.normalize() * dl;
+	v3f d = d_wanted.normalize() * dl;
 
-        m_speed.X += d.X;
-        m_speed.Z += d.Z;
+	m_speed.X += d.X;
+	m_speed.Z += d.Z;
 }
 
 // Vertical acceleration (Y), X and Z directions are ignored
 void LocalPlayer::accelerateVertical(const v3f &target_speed, const f32 max_increase)
 {
-        if (max_increase == 0)
-                return;
+	if (max_increase == 0)
+		return;
 
-        f32 d_wanted = target_speed.Y - m_speed.Y;
-        if (d_wanted > max_increase)
-                d_wanted = max_increase;
-        else if (d_wanted < -max_increase)
-                d_wanted = -max_increase;
+	f32 d_wanted = target_speed.Y - m_speed.Y;
+	if (d_wanted > max_increase)
+		d_wanted = max_increase;
+	else if (d_wanted < -max_increase)
+		d_wanted = -max_increase;
 
-        m_speed.Y += d_wanted;
+	m_speed.Y += d_wanted;
 }
 
 // Temporary option for old move code
