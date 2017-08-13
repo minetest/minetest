@@ -73,7 +73,6 @@ Client::Client(
 	m_connection_reinit_timer(0.1),
 	m_avg_rtt_timer(0.0),
 	m_playerpos_send_timer(0.0),
-	m_ignore_damage_timer(0.0),
 	m_tsrc(tsrc),
 	m_shsrc(shsrc),
 	m_itemdef(itemdef),
@@ -275,13 +274,8 @@ void Client::step(float dtime)
 	DSTACK(FUNCTION_NAME);
 
 	// Limit a bit
-	if(dtime > 2.0)
+	if (dtime > 2.0)
 		dtime = 2.0;
-
-	if(m_ignore_damage_timer > dtime)
-		m_ignore_damage_timer -= dtime;
-	else
-		m_ignore_damage_timer = 0.0;
 
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
@@ -429,18 +423,16 @@ void Client::step(float dtime)
 		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
 		if (envEvent.type == CEE_PLAYER_DAMAGE) {
-			if (m_ignore_damage_timer <= 0) {
-				u8 damage = envEvent.player_damage.amount;
+			u8 damage = envEvent.player_damage.amount;
 
-				if (envEvent.player_damage.send_to_server)
-					sendDamage(damage);
+			if (envEvent.player_damage.send_to_server)
+				sendDamage(damage);
 
-				// Add to ClientEvent queue
-				ClientEvent event;
-				event.type = CE_PLAYER_DAMAGE;
-				event.player_damage.amount = damage;
-				m_client_event_queue.push(event);
-			}
+			// Add to ClientEvent queue
+			ClientEvent event;
+			event.type = CE_PLAYER_DAMAGE;
+			event.player_damage.amount = damage;
+			m_client_event_queue.push(event);
 		}
 		// Protocol v29 or greater obsoleted this event
 		else if (envEvent.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
