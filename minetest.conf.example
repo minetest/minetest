@@ -28,7 +28,7 @@
 #    type: bool
 # free_move = false
 
-#    Fast movement (via special key).
+#    Fast movement (via the "special" key).
 #    This requires the "fast" privilege on the server.
 #    type: bool
 # fast_move = false
@@ -141,7 +141,7 @@
 #    type: key
 # keymap_inventory = KEY_KEY_I
 
-#    Key for moving fast in fast mode (known as "special").
+#    Key for moving fast in fast mode.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_special1 = KEY_KEY_E
@@ -241,6 +241,121 @@
 #    type: key
 # keymap_zoom = KEY_KEY_Z
 
+#    Key for selecting the first hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot1 = KEY_KEY_1
+
+#    Key for selecting the second hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot2 = KEY_KEY_2
+
+#    Key for selecting the third hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot3 = KEY_KEY_3
+
+#    Key for selecting the fourth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot4 = KEY_KEY_4
+
+#    Key for selecting the fifth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot5 = KEY_KEY_5
+
+#    Key for selecting the sixth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot6 = KEY_KEY_6
+
+#    Key for selecting the seventh hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot7 = KEY_KEY_7
+
+#    Key for selecting the eighth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot8 = KEY_KEY_8
+
+#    Key for selecting the ninth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot9 = KEY_KEY_9
+
+#    Key for selecting the tenth hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot10 = KEY_KEY_0
+
+#    Key for selecting the 11th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot11 =
+
+#    Key for selecting the 12th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot12 =
+
+#    Key for selecting the 13th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot13 =
+
+#    Key for selecting the 14th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot14 =
+
+#    Key for selecting the 15th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot15 =
+
+#    Key for selecting the 16th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot16 =
+
+#    Key for selecting the 17th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot17 =
+
+#    Key for selecting the 18th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot18 =
+
+#    Key for selecting the 19th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot19 =
+
+#    Key for selecting the 20th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot20 =
+
+#    Key for selecting the 21th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot21 =
+
+#    Key for selecting the 22th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot22 =
+
+#    Key for selecting the 23th hotbar slot.
+#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
+#    type: key
+# keymap_slot23 =
+
 #    Key for toggling the display of the HUD.
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
@@ -295,98 +410,6 @@
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 #    type: key
 # keymap_print_debug_stacks = KEY_KEY_P
-
-#    Key for selecting the first hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot1 = KEY_KEY_1
-
-#    Key for selecting the second hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot2 = KEY_KEY_2
-
-#    Key for selecting the third hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot3 = KEY_KEY_3
-
-#    Key for selecting the fourth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot4 = KEY_KEY_4
-
-#    Key for selecting the fifth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot5 = KEY_KEY_5
-
-#    Key for selecting the sixth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot6 = KEY_KEY_6
-
-#    Key for selecting the seventh hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot7 = KEY_KEY_7
-
-#    Key for selecting the eighth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot8 = KEY_KEY_8
-
-#    Key for selecting the ninth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot9 = KEY_KEY_9
-
-#    Key for selecting the tenth hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot10 = KEY_KEY_0
-
-#    Key for selecting the 11th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot11 =
-
-#    Key for selecting the 12th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot12 =
-
-#    Key for selecting the 13th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot13 =
-
-#    Key for selecting the 14th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot14 =
-
-#    Key for selecting the 15th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot15 =
-
-#    Key for selecting the 16th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot16 =
-
-#    Key for selecting the 17th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot17 =
-
-#    Key for selecting the 18th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot18 =
-
-#    Key for selecting the 19th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot19 =
-
-#    Key for selecting the 20th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot20 =
-
-#    Key for selecting the 21th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot21 =
-
-#    Key for selecting the 22th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot22 =
-
-#    Key for selecting the 23th hotbar slot.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-# keymap_slot23 =
 
 ## Network
 
@@ -1267,669 +1290,13 @@
 #    READ_ITEMDEFS: 4 (disable get_item_def call client-side)
 #    READ_NODEDEFS: 8 (disable get_node_def call client-side)
 #    type: int
+#    type: int
 # csm_flavour_limits = 3
 
-#   If the CSM flavour for node range is enabled, get_node is limited to
-#   this many nodes from the player.
-# csm_flavour_noderange_limit 8
-
-## Mapgen
-
-#    Name of map generator to be used when creating a new world.
-#    Creating a world in the main menu will override this.
-#    type: enum values: v5, v6, v7, flat, valleys, fractal, singlenode
-# mg_name = v7
-
-#    Water surface level of the world.
+#    If the CSM flavour for node range is enabled, get_node is limited to
+#    this many nodes from the player.
 #    type: int
-# water_level = 1
-
-#    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
-#    type: int
-# max_block_generate_distance = 6
-
-#    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
-#    Only mapchunks completely within the mapgen limit are generated.
-#    Value is stored per-world.
-#    type: int min: 0 max: 31000
-# mapgen_limit = 31000
-
-#    Global map generation attributes.
-#    In Mapgen v6 the 'decorations' flag controls all decorations except trees
-#    and junglegrass, in all other mapgens this flag controls all decorations.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
-# mg_flags = caves,dungeons,light,decorations
-
-#    Whether dungeons occasionally project from the terrain.
-#    type: bool
-# projecting_dungeons = true
-
-### Advanced
-
-#    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
-#    type: int
-# chunksize = 5
-
-#    Dump the mapgen debug infos.
-#    type: bool
-# enable_mapgen_debug_info = false
-
-#    Maximum number of blocks that can be queued for loading.
-#    type: int
-# emergequeue_limit_total = 256
-
-#    Maximum number of blocks to be queued that are to be loaded from file.
-#    Set to blank for an appropriate amount to be chosen automatically.
-#    type: int
-# emergequeue_limit_diskonly = 32
-
-#    Maximum number of blocks to be queued that are to be generated.
-#    Set to blank for an appropriate amount to be chosen automatically.
-#    type: int
-# emergequeue_limit_generate = 32
-
-#    Number of emerge threads to use. Make this field blank, or increase this number
-#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
-#    at the cost of slightly buggy caves.
-#    type: int
-# num_emerge_threads = 1
-
-#### Biome API temperature and humidity noise parameters
-
-#    Temperature variation for biomes.
-#    type: noise_params
-# mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
-
-#    Small-scale temperature variation for blending biomes on borders.
-#    type: noise_params
-# mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
-
-#    Humidity variation for biomes.
-#    type: noise_params
-# mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
-
-#    Small-scale humidity variation for blending biomes on borders.
-#    type: noise_params
-# mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
-
-#### Mapgen v5
-
-#    Map generation attributes specific to Mapgen v5.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: caverns, nocaverns
-# mgv5_spflags = caverns
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgv5_cave_width = 0.125
-
-#    Y of upper limit of large caves.
-#    type: int
-# mgv5_large_cave_depth = -256
-
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgv5_lava_depth = -256
-
-#    Y-level of cavern upper limit.
-#    type: int
-# mgv5_cavern_limit = -256
-
-#    Y-distance over which caverns expand to full size.
-#    type: int
-# mgv5_cavern_taper = 256
-
-#    Defines full size of caverns, smaller values create larger caverns.
-#    type: float
-# mgv5_cavern_threshold = 0.7
-
-#    Variation of biome filler depth.
-#    type: noise_params
-# mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
-
-#    Variation of terrain vertical scale.
-#    When noise is < -0.55 terrain is near-flat.
-#    type: noise_params
-# mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
-
-#    Y-level of average terrain surface.
-#    type: noise_params
-# mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
-
-#    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
-
-#    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
-
-#    3D noise defining giant caverns.
-#    type: noise_params
-# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
-
-#### Mapgen v6
-
-#    Map generation attributes specific to Mapgen v6.
-#    The 'snowbiomes' flag enables the new 5 biome system.
-#    When the new biome system is enabled jungles are automatically enabled and
-#    the 'jungles' flag is ignored.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
-# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
-
-#    Deserts occur when np_biome exceeds this value.
-#    When the new biome system is enabled, this is ignored.
-#    type: float
-# mgv6_freq_desert = 0.45
-
-#    Sandy beaches occur when np_beach exceeds this value.
-#    type: float
-# mgv6_freq_beach = 0.15
-
-#    Y-level of lower terrain and lakebeds.
-#    type: noise_params
-# mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
-
-#    Y-level of higher (cliff-top) terrain.
-#    type: noise_params
-# mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
-
-#    Varies steepness of cliffs.
-#    type: noise_params
-# mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
-
-#    Defines areas of 'terrain_higher' (cliff-top terrain).
-#    type: noise_params
-# mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
-
-#    Varies depth of biome surface nodes.
-#    type: noise_params
-# mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
-
-#    Defines areas with sandy beaches.
-#    type: noise_params
-# mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
-
-#    Temperature variation for biomes.
-#    type: noise_params
-# mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
-
-#    Variation of number of caves.
-#    type: noise_params
-# mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
-
-#    Humidity variation for biomes.
-#    type: noise_params
-# mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
-
-#    Defines tree areas and tree density.
-#    type: noise_params
-# mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
-
-#    Defines areas where trees have apples.
-#    type: noise_params
-# mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
-
-#### Mapgen v7
-
-#    Map generation attributes specific to Mapgen v7.
-#    'ridges' enables the rivers.
-#    'biomerepeat' causes surface biomes to repeat in the floatlands.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
-# mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
-
-#    Y of mountain density gradient zero level. Used to shift mountains vertically.
-#    type: int
-# mgv7_mount_zero_level = 0
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgv7_cave_width = 0.09
-
-#    Y of upper limit of large caves.
-#    type: int
-# mgv7_large_cave_depth = -33
-
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgv7_lava_depth = -256
-
-#    Controls the density of floatland mountain terrain.
-#    Is an offset added to the 'np_mountain' noise value.
-#    type: float
-# mgv7_float_mount_density = 0.6
-
-#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
-#    type: float
-# mgv7_float_mount_height = 128.0
-
-#    Y-level of floatland midpoint and lake surface.
-#    type: int
-# mgv7_floatland_level = 1280
-
-#    Y-level to which floatland shadows extend.
-#    type: int
-# mgv7_shadow_limit = 1024
-
-#    Y-level of cavern upper limit.
-#    type: int
-# mgv7_cavern_limit = -256
-
-#    Y-distance over which caverns expand to full size.
-#    type: int
-# mgv7_cavern_taper = 256
-
-#    Defines full size of caverns, smaller values create larger caverns.
-#    type: float
-# mgv7_cavern_threshold = 0.7
-
-#    Y-level of higher (cliff-top) terrain.
-#    type: noise_params
-# mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
-
-#    Y-level of lower terrain and lakebeds.
-#    type: noise_params
-# mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
-
-#    Varies roughness of terrain.
-#    Defines the 'persistence' value for terrain_base and terrain_alt noises.
-#    type: noise_params
-# mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
-
-#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
-#    type: noise_params
-# mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
-
-#    Variation of biome filler depth.
-#    type: noise_params
-# mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-
-#    Variation of maximum mountain height (in nodes).
-#    type: noise_params
-# mgv7_np_mount_height = 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
-
-#    Defines large-scale river channel structure.
-#    type: noise_params
-# mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
-
-#    Defines areas of floatland smooth terrain.
-#    Smooth floatlands occur when noise > 0.
-#    type: noise_params
-# mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
-
-#    Variation of hill height and lake depth on floatland smooth terrain.
-#    type: noise_params
-# mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
-
-#    3D noise defining mountain structure and height.
-#    Also defines structure of floatland mountain terrain.
-#    type: noise_params
-# mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
-
-#    3D noise defining structure of river canyon walls.
-#    type: noise_params
-# mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
-
-#    3D noise defining giant caverns.
-#    type: noise_params
-# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
-
-#    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
-
-#    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
-
-#### Mapgen carpathian
-
-#    Map generation attributes specific to Mapgen Carpathian.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: caverns, nocaverns
-# mgcarpathian_spflags = caverns
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgcarpathian_cave_width = 0.09
-
-#    Y of upper limit of large caves.
-#    type: int
-# mgcarpathian_large_cave_depth = -33
-
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgcarpathian_lava_depth = -256
-
-#    Y-level of cavern upper limit.
-#    type: int
-# mgcarpathian_cavern_limit = -256
-
-#    Y-distance over which caverns expand to full size.
-#    type: int
-# mgcarpathian_cavern_taper = 256
-
-#    Defines full size of caverns, smaller values create larger caverns.
-#    type: float
-# mgcarpathian_cavern_threshold = 0.7
-
-#    2D noise that defines the base ground level.
-#    type: noise_params
-# mgcarpathian_np_base = 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5
-
-#    Variation of biome filler depth.
-#    type: noise_params
-# mgcarpathian_np_filler_depth = 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0
-
-#    First of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height1 = 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0
-
-#    Second of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height2 = 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0
-
-#    Third of 4 3D noises that together definehill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height3 = 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0
-
-#    Fourth of 4 3D noises that together define hill/mountain range height.
-#    type: noise_params
-# mgcarpathian_np_height4 = 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0
-
-#    2D noise that controls the size/occurance of rolling hills.
-#    type: noise_params
-# mgcarpathian_np_hills_terrain = 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0
-
-#    2D noise that controls the size/occurance of ridged mountain ranges.
-#    type: noise_params
-# mgcarpathian_np_ridge_terrain = 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0
-
-#    2D noise that controls the size/occurance of step mountain ranges.
-#    type: noise_params
-# mgcarpathian_np_step_terrain = 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0
-
-#    2D noise that controls the shape/size of rolling hills.
-#    type: noise_params
-# mgcarpathian_np_hills = 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0
-
-#    2D noise that controls the shape/size of ridged mountains.
-#    type: noise_params
-# mgcarpathian_np_ridge_mnt = 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0
-
-#    2D noise that controls the shape/size of step mountains.
-#    type: noise_params
-# mgcarpathian_np_step_mnt = 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
-
-#    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
-#    type: noise_params
-# mgcarpathian_np_mnt_var = 0, 1, (499, 499, 499), 2490, 5, 0.6, 2.0
-
-#    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgcarpathian_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
-
-#    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgcarpathian_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
-
-#    3D noise defining giant caverns.
-#    type: noise_params
-# mgcarpathian_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
-
-#### Mapgen flat
-
-#    Map generation attributes specific to Mapgen flat.
-#    Occasional lakes and hills can be added to the flat world.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: lakes, hills, nolakes, nohills
-# mgflat_spflags = nolakes,nohills
-
-#    Y of flat ground.
-#    type: int
-# mgflat_ground_level = 8
-
-#    Y of upper limit of large caves.
-#    type: int
-# mgflat_large_cave_depth = -33
-
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgflat_lava_depth = -256
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgflat_cave_width = 0.09
-
-#    Terrain noise threshold for lakes.
-#    Controls proportion of world area covered by lakes.
-#    Adjust towards 0.0 for a larger proportion.
-#    type: float
-# mgflat_lake_threshold = -0.45
-
-#    Controls steepness/depth of lake depressions.
-#    type: float
-# mgflat_lake_steepness = 48.0
-
-#    Terrain noise threshold for hills.
-#    Controls proportion of world area covered by hills.
-#    Adjust towards 0.0 for a larger proportion.
-#    type: float
-# mgflat_hill_threshold = 0.45
-
-#    Controls steepness/height of hills.
-#    type: float
-# mgflat_hill_steepness = 64.0
-
-#    Defines location and terrain of optional hills and lakes.
-#    type: noise_params
-# mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
-
-#    Variation of biome filler depth.
-#    type: noise_params
-# mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-
-#    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
-
-#    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
-
-#### Mapgen fractal
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgfractal_cave_width = 0.09
-
-#    Y of upper limit of large caves.
-#    type: int
-# mgfractal_large_cave_depth = -33
-
-#    Y of upper limit of lava in large caves.
-#    type: int
-# mgfractal_lava_depth = -256
-
-#    Choice of 18 fractals from 9 formulas.
-#    1 = 4D "Roundy" mandelbrot set.
-#    2 = 4D "Roundy" julia set.
-#    3 = 4D "Squarry" mandelbrot set.
-#    4 = 4D "Squarry" julia set.
-#    5 = 4D "Mandy Cousin" mandelbrot set.
-#    6 = 4D "Mandy Cousin" julia set.
-#    7 = 4D "Variation" mandelbrot set.
-#    8 = 4D "Variation" julia set.
-#    9 = 3D "Mandelbrot/Mandelbar" mandelbrot set.
-#    10 = 3D "Mandelbrot/Mandelbar" julia set.
-#    11 = 3D "Christmas Tree" mandelbrot set.
-#    12 = 3D "Christmas Tree" julia set.
-#    13 = 3D "Mandelbulb" mandelbrot set.
-#    14 = 3D "Mandelbulb" julia set.
-#    15 = 3D "Cosine Mandelbulb" mandelbrot set.
-#    16 = 3D "Cosine Mandelbulb" julia set.
-#    17 = 4D "Mandelbulb" mandelbrot set.
-#    18 = 4D "Mandelbulb" julia set.
-#    type: int min: 1 max: 18
-# mgfractal_fractal = 1
-
-#    Iterations of the recursive function.
-#    Controls the amount of fine detail.
-#    type: int
-# mgfractal_iterations = 11
-
-#    Approximate (X,Y,Z) scale of fractal in nodes.
-#    type: v3f
-# mgfractal_scale = (4096.0, 1024.0, 4096.0)
-
-#    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
-#    Used to move a suitable spawn area of low land close to (0, 0).
-#    The default is suitable for mandelbrot sets, it needs to be edited for julia sets.
-#    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
-#    type: v3f
-# mgfractal_offset = (1.79, 0.0, 0.0)
-
-#    W co-ordinate of the generated 3D slice of a 4D fractal.
-#    Determines which 3D slice of the 4D shape is generated.
-#    Has no effect on 3D fractals.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_slice_w = 0.0
-
-#    Julia set only: X component of hypercomplex constant determining julia shape.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_julia_x = 0.33
-
-#    Julia set only: Y component of hypercomplex constant determining julia shape.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_julia_y = 0.33
-
-#    Julia set only: Z component of hypercomplex constant determining julia shape.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_julia_z = 0.33
-
-#    Julia set only: W component of hypercomplex constant determining julia shape.
-#    Has no effect on 3D fractals.
-#    Range roughly -2 to 2.
-#    type: float
-# mgfractal_julia_w = 0.33
-
-#    Y-level of seabed.
-#    type: noise_params
-# mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
-
-#    Variation of biome filler depth.
-#    type: noise_params
-# mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
-
-#    First of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
-
-#    Second of 2 3D noises that together define tunnels.
-#    type: noise_params
-# mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
-
-#### Mapgen Valleys
-
-##### General
-
-#    Map generation attributes specific to Mapgen Valleys.
-#    'altitude_chill' makes higher elevations colder, which may cause biome issues.
-#    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
-#    it may interfere with delicately adjusted biomes.
-#    Flags that are not specified in the flag string are not modified from the default.
-#    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
-# mg_valleys_spflags = altitude_chill,humid_rivers
-
-#    The altitude at which temperature drops by 20C
-#    type: int
-# mgvalleys_altitude_chill = 90
-
-#    Depth below which you'll find large caves.
-#    type: int
-# mgvalleys_large_cave_depth = -33
-
-#    Creates unpredictable lava features in caves.
-#    These can make mining difficult. Zero disables them. (0-10)
-#    type: int
-# mgvalleys_lava_features = 0
-
-#    Depth below which you'll find massive caves.
-#    type: int
-# mgvalleys_massive_cave_depth = -256
-
-#    How deep to make rivers
-#    type: int
-# mgvalleys_river_depth = 4
-
-#    How wide to make rivers
-#    type: int
-# mgvalleys_river_size = 5
-
-#    Creates unpredictable water features in caves.
-#    These can make mining difficult. Zero disables them. (0-10)
-#    type: int
-# mgvalleys_water_features = 0
-
-#    Controls width of tunnels, a smaller value creates wider tunnels.
-#    type: float
-# mgvalleys_cave_width = 0.09
-
-##### Noises
-
-#    Caves and tunnels form at the intersection of the two noises
-#    type: noise_params
-# mgvalleys_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
-
-#    Caves and tunnels form at the intersection of the two noises
-#    type: noise_params
-# mgvalleys_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
-
-#    The depth of dirt or other filler
-#    type: noise_params
-# mgvalleys_np_filler_depth = 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
-
-#    Massive caves form here.
-#    type: noise_params
-# mgvalleys_np_massive_caves = 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
-
-#    River noise -- rivers occur close to zero
-#    type: noise_params
-# mgvalleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
-
-#    Base terrain height
-#    type: noise_params
-# mgvalleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
-
-#    Raises terrain to make valleys around the rivers
-#    type: noise_params
-# mgvalleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
-
-#    Slope and fill work together to modify the heights
-#    type: noise_params
-# mgvalleys_np_inter_valley_fill = 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
-
-#    Amplifies the valleys
-#    type: noise_params
-# mgvalleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
-
-#    Slope and fill work together to modify the heights
-#    type: noise_params
-# mgvalleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+# csm_flavour_noderange_limit = 8
 
 ## Security
 
@@ -2069,3 +1436,674 @@
 #    Print the engine's profiling data in regular intervals (in seconds). 0 = disable. Useful for developers.
 #    type: int
 # profiler_print_interval = 0
+
+#
+# Mapgen
+#
+
+#    Name of map generator to be used when creating a new world.
+#    Creating a world in the main menu will override this.
+#    type: enum values: v5, v6, v7, flat, valleys, fractal, singlenode
+# mg_name = v7
+
+#    Water surface level of the world.
+#    type: int
+# water_level = 1
+
+#    From how far blocks are generated for clients, stated in mapblocks (16 nodes).
+#    type: int
+# max_block_generate_distance = 6
+
+#    Limit of map generation, in nodes, in all 6 directions from (0, 0, 0).
+#    Only mapchunks completely within the mapgen limit are generated.
+#    Value is stored per-world.
+#    type: int min: 0 max: 31000
+# mapgen_limit = 31000
+
+#    Global map generation attributes.
+#    In Mapgen v6 the 'decorations' flag controls all decorations except trees
+#    and junglegrass, in all other mapgens this flag controls all decorations.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: caves, dungeons, light, decorations, nocaves, nodungeons, nolight, nodecorations
+# mg_flags = caves,dungeons,light,decorations
+
+#    Whether dungeons occasionally project from the terrain.
+#    type: bool
+# projecting_dungeons = true
+
+## Biome API temperature and humidity noise parameters
+
+#    Temperature variation for biomes.
+#    type: noise_params
+# mg_biome_np_heat = 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
+
+#    Small-scale temperature variation for blending biomes on borders.
+#    type: noise_params
+# mg_biome_np_heat_blend = 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
+
+#    Humidity variation for biomes.
+#    type: noise_params
+# mg_biome_np_humidity = 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
+
+#    Small-scale humidity variation for blending biomes on borders.
+#    type: noise_params
+# mg_biome_np_humidity_blend = 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+
+## Mapgen V5
+
+#    Map generation attributes specific to Mapgen v5.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: caverns, nocaverns
+# mgv5_spflags = caverns
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgv5_cave_width = 0.125
+
+#    Y of upper limit of large caves.
+#    type: int
+# mgv5_large_cave_depth = -256
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgv5_lava_depth = -256
+
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv5_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv5_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv5_cavern_threshold = 0.7
+
+### Noises
+
+#    Variation of biome filler depth.
+#    type: noise_params
+# mgv5_np_filler_depth = 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
+
+#    Variation of terrain vertical scale.
+#    When noise is < -0.55 terrain is near-flat.
+#    type: noise_params
+# mgv5_np_factor = 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
+
+#    Y-level of average terrain surface.
+#    type: noise_params
+# mgv5_np_height = 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgv5_np_cave1 = 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgv5_np_cave2 = 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+#    type: noise_params
+# mgv5_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+
+## Mapgen V6
+
+#    Map generation attributes specific to Mapgen v6.
+#    The 'snowbiomes' flag enables the new 5 biome system.
+#    When the new biome system is enabled jungles are automatically enabled and
+#    the 'jungles' flag is ignored.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: jungles, biomeblend, mudflow, snowbiomes, flat, trees, nojungles, nobiomeblend, nomudflow, nosnowbiomes, noflat, notrees
+# mgv6_spflags = jungles,biomeblend,mudflow,snowbiomes,trees
+
+#    Deserts occur when np_biome exceeds this value.
+#    When the new biome system is enabled, this is ignored.
+#    type: float
+# mgv6_freq_desert = 0.45
+
+#    Sandy beaches occur when np_beach exceeds this value.
+#    type: float
+# mgv6_freq_beach = 0.15
+
+### Noises
+
+#    Y-level of lower terrain and lakebeds.
+#    type: noise_params
+# mgv6_np_terrain_base = -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+
+#    Y-level of higher (cliff-top) terrain.
+#    type: noise_params
+# mgv6_np_terrain_higher = 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
+
+#    Varies steepness of cliffs.
+#    type: noise_params
+# mgv6_np_steepness = 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
+
+#    Defines areas of 'terrain_higher' (cliff-top terrain).
+#    type: noise_params
+# mgv6_np_height_select = 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+
+#    Varies depth of biome surface nodes.
+#    type: noise_params
+# mgv6_np_mud = 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
+
+#    Defines areas with sandy beaches.
+#    type: noise_params
+# mgv6_np_beach = 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
+
+#    Temperature variation for biomes.
+#    type: noise_params
+# mgv6_np_biome = 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
+
+#    Variation of number of caves.
+#    type: noise_params
+# mgv6_np_cave = 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
+
+#    Humidity variation for biomes.
+#    type: noise_params
+# mgv6_np_humidity = 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
+
+#    Defines tree areas and tree density.
+#    type: noise_params
+# mgv6_np_trees = 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
+
+#    Defines areas where trees have apples.
+#    type: noise_params
+# mgv6_np_apple_trees = 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
+
+## Mapgen V7
+
+#    Map generation attributes specific to Mapgen v7.
+#    'ridges' enables the rivers.
+#    'biomerepeat' causes surface biomes to repeat in the floatlands.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
+
+#    Y of mountain density gradient zero level. Used to shift mountains vertically.
+#    type: int
+# mgv7_mount_zero_level = 0
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgv7_cave_width = 0.09
+
+#    Y of upper limit of large caves.
+#    type: int
+# mgv7_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgv7_lava_depth = -256
+
+#    Controls the density of floatland mountain terrain.
+#    Is an offset added to the 'np_mountain' noise value.
+#    type: float
+# mgv7_float_mount_density = 0.6
+
+#    Typical maximum height, above and below midpoint, of floatland mountain terrain.
+#    type: float
+# mgv7_float_mount_height = 128.0
+
+#    Y-level of floatland midpoint and lake surface.
+#    type: int
+# mgv7_floatland_level = 1280
+
+#    Y-level to which floatland shadows extend.
+#    type: int
+# mgv7_shadow_limit = 1024
+
+#    Y-level of cavern upper limit.
+#    type: int
+# mgv7_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgv7_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgv7_cavern_threshold = 0.7
+
+### Noises
+
+#    Y-level of higher (cliff-top) terrain.
+#    type: noise_params
+# mgv7_np_terrain_base = 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
+
+#    Y-level of lower terrain and lakebeds.
+#    type: noise_params
+# mgv7_np_terrain_alt = 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
+
+#    Varies roughness of terrain.
+#    Defines the 'persistence' value for terrain_base and terrain_alt noises.
+#    type: noise_params
+# mgv7_np_terrain_persist = 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
+
+#    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
+#    type: noise_params
+# mgv7_np_height_select = -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
+
+#    Variation of biome filler depth.
+#    type: noise_params
+# mgv7_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+
+#    Variation of maximum mountain height (in nodes).
+#    type: noise_params
+# mgv7_np_mount_height = 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
+
+#    Defines large-scale river channel structure.
+#    type: noise_params
+# mgv7_np_ridge_uwater = 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+
+#    Defines areas of floatland smooth terrain.
+#    Smooth floatlands occur when noise > 0.
+#    type: noise_params
+# mgv7_np_floatland_base = -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+
+#    Variation of hill height and lake depth on floatland smooth terrain.
+#    type: noise_params
+# mgv7_np_float_base_height = 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
+
+#    3D noise defining mountain structure and height.
+#    Also defines structure of floatland mountain terrain.
+#    type: noise_params
+# mgv7_np_mountain = -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
+
+#    3D noise defining structure of river canyon walls.
+#    type: noise_params
+# mgv7_np_ridge = 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+
+#    3D noise defining giant caverns.
+#    type: noise_params
+# mgv7_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgv7_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgv7_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+## Mapgen Carpathian
+
+#    Map generation attributes specific to Mapgen Carpathian.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: caverns, nocaverns
+# mgcarpathian_spflags = caverns
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgcarpathian_cave_width = 0.09
+
+#    Y of upper limit of large caves.
+#    type: int
+# mgcarpathian_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgcarpathian_lava_depth = -256
+
+#    Y-level of cavern upper limit.
+#    type: int
+# mgcarpathian_cavern_limit = -256
+
+#    Y-distance over which caverns expand to full size.
+#    type: int
+# mgcarpathian_cavern_taper = 256
+
+#    Defines full size of caverns, smaller values create larger caverns.
+#    type: float
+# mgcarpathian_cavern_threshold = 0.7
+
+### Noises
+
+#    2D noise that defines the base ground level.
+#    type: noise_params
+# mgcarpathian_np_base = 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5
+
+#    Variation of biome filler depth.
+#    type: noise_params
+# mgcarpathian_np_filler_depth = 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0
+
+#    First of 4 3D noises that together define hill/mountain range height.
+#    type: noise_params
+# mgcarpathian_np_height1 = 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0
+
+#    Second of 4 3D noises that together define hill/mountain range height.
+#    type: noise_params
+# mgcarpathian_np_height2 = 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0
+
+#    Third of 4 3D noises that together define hill/mountain range height.
+#    type: noise_params
+# mgcarpathian_np_height3 = 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0
+
+#    Fourth of 4 3D noises that together define hill/mountain range height.
+#    type: noise_params
+# mgcarpathian_np_height4 = 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of rolling hills.
+#    type: noise_params
+# mgcarpathian_np_hills_terrain = 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of ridged mountain ranges.
+#    type: noise_params
+# mgcarpathian_np_ridge_terrain = 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0
+
+#    2D noise that controls the size/occurance of step mountain ranges.
+#    type: noise_params
+# mgcarpathian_np_step_terrain = 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0
+
+#    2D noise that controls the shape/size of rolling hills.
+#    type: noise_params
+# mgcarpathian_np_hills = 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0
+
+#    2D noise that controls the shape/size of ridged mountains.
+#    type: noise_params
+# mgcarpathian_np_ridge_mnt = 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0
+
+#    2D noise that controls the shape/size of step mountains.
+#    type: noise_params
+# mgcarpathian_np_step_mnt = 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
+
+#    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
+#    type: noise_params
+# mgcarpathian_np_mnt_var = 0, 1, (499, 499, 499), 2490, 5, 0.6, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgcarpathian_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgcarpathian_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    3D noise defining giant caverns.
+#    type: noise_params
+# mgcarpathian_np_cavern = 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+
+## Mapgen Flat
+
+#    Map generation attributes specific to Mapgen flat.
+#    Occasional lakes and hills can be added to the flat world.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: lakes, hills, nolakes, nohills
+# mgflat_spflags = nolakes,nohills
+
+#    Y of flat ground.
+#    type: int
+# mgflat_ground_level = 8
+
+#    Y of upper limit of large caves.
+#    type: int
+# mgflat_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgflat_lava_depth = -256
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgflat_cave_width = 0.09
+
+#    Terrain noise threshold for lakes.
+#    Controls proportion of world area covered by lakes.
+#    Adjust towards 0.0 for a larger proportion.
+#    type: float
+# mgflat_lake_threshold = -0.45
+
+#    Controls steepness/depth of lake depressions.
+#    type: float
+# mgflat_lake_steepness = 48.0
+
+#    Terrain noise threshold for hills.
+#    Controls proportion of world area covered by hills.
+#    Adjust towards 0.0 for a larger proportion.
+#    type: float
+# mgflat_hill_threshold = 0.45
+
+#    Controls steepness/height of hills.
+#    type: float
+# mgflat_hill_steepness = 64.0
+
+### Noises
+
+#    Defines location and terrain of optional hills and lakes.
+#    type: noise_params
+# mgflat_np_terrain = 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
+
+#    Variation of biome filler depth.
+#    type: noise_params
+# mgflat_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgflat_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgflat_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+## Mapgen Fractal
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgfractal_cave_width = 0.09
+
+#    Y of upper limit of large caves.
+#    type: int
+# mgfractal_large_cave_depth = -33
+
+#    Y of upper limit of lava in large caves.
+#    type: int
+# mgfractal_lava_depth = -256
+
+#    Choice of 18 fractals from 9 formulas.
+#    1 = 4D "Roundy" mandelbrot set.
+#    2 = 4D "Roundy" julia set.
+#    3 = 4D "Squarry" mandelbrot set.
+#    4 = 4D "Squarry" julia set.
+#    5 = 4D "Mandy Cousin" mandelbrot set.
+#    6 = 4D "Mandy Cousin" julia set.
+#    7 = 4D "Variation" mandelbrot set.
+#    8 = 4D "Variation" julia set.
+#    9 = 3D "Mandelbrot/Mandelbar" mandelbrot set.
+#    10 = 3D "Mandelbrot/Mandelbar" julia set.
+#    11 = 3D "Christmas Tree" mandelbrot set.
+#    12 = 3D "Christmas Tree" julia set.
+#    13 = 3D "Mandelbulb" mandelbrot set.
+#    14 = 3D "Mandelbulb" julia set.
+#    15 = 3D "Cosine Mandelbulb" mandelbrot set.
+#    16 = 3D "Cosine Mandelbulb" julia set.
+#    17 = 4D "Mandelbulb" mandelbrot set.
+#    18 = 4D "Mandelbulb" julia set.
+#    type: int min: 1 max: 18
+# mgfractal_fractal = 1
+
+#    Iterations of the recursive function.
+#    Controls the amount of fine detail.
+#    type: int
+# mgfractal_iterations = 11
+
+#    Approximate (X,Y,Z) scale of fractal in nodes.
+#    type: v3f
+# mgfractal_scale = (4096.0, 1024.0, 4096.0)
+
+#    (X,Y,Z) offset of fractal from world centre in units of 'scale'.
+#    Used to move a suitable spawn area of low land close to (0, 0).
+#    The default is suitable for mandelbrot sets, it needs to be edited for julia sets.
+#    Range roughly -2 to 2. Multiply by 'scale' for offset in nodes.
+#    type: v3f
+# mgfractal_offset = (1.79, 0.0, 0.0)
+
+#    W co-ordinate of the generated 3D slice of a 4D fractal.
+#    Determines which 3D slice of the 4D shape is generated.
+#    Has no effect on 3D fractals.
+#    Range roughly -2 to 2.
+#    type: float
+# mgfractal_slice_w = 0.0
+
+#    Julia set only: X component of hypercomplex constant determining julia shape.
+#    Range roughly -2 to 2.
+#    type: float
+# mgfractal_julia_x = 0.33
+
+#    Julia set only: Y component of hypercomplex constant determining julia shape.
+#    Range roughly -2 to 2.
+#    type: float
+# mgfractal_julia_y = 0.33
+
+#    Julia set only: Z component of hypercomplex constant determining julia shape.
+#    Range roughly -2 to 2.
+#    type: float
+# mgfractal_julia_z = 0.33
+
+#    Julia set only: W component of hypercomplex constant determining julia shape.
+#    Has no effect on 3D fractals.
+#    Range roughly -2 to 2.
+#    type: float
+# mgfractal_julia_w = 0.33
+
+### Noises
+
+#    Y-level of seabed.
+#    type: noise_params
+# mgfractal_np_seabed = -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
+
+#    Variation of biome filler depth.
+#    type: noise_params
+# mgfractal_np_filler_depth = 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+
+#    First of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgfractal_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Second of 2 3D noises that together define tunnels.
+#    type: noise_params
+# mgfractal_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+## Mapgen Valleys
+
+#    Map generation attributes specific to Mapgen Valleys.
+#    'altitude_chill' makes higher elevations colder, which may cause biome issues.
+#    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
+#    it may interfere with delicately adjusted biomes.
+#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags starting with 'no' are used to explicitly disable them.
+#    type: flags possible values: altitude_chill, noaltitude_chill, humid_rivers, nohumid_rivers
+# mg_valleys_spflags = altitude_chill,humid_rivers
+
+#    The altitude at which temperature drops by 20C
+#    type: int
+# mgvalleys_altitude_chill = 90
+
+#    Depth below which you'll find large caves.
+#    type: int
+# mgvalleys_large_cave_depth = -33
+
+#    Creates unpredictable lava features in caves.
+#    These can make mining difficult. Zero disables them. (0-10)
+#    type: int
+# mgvalleys_lava_features = 0
+
+#    Depth below which you'll find massive caves.
+#    type: int
+# mgvalleys_massive_cave_depth = -256
+
+#    How deep to make rivers
+#    type: int
+# mgvalleys_river_depth = 4
+
+#    How wide to make rivers
+#    type: int
+# mgvalleys_river_size = 5
+
+#    Creates unpredictable water features in caves.
+#    These can make mining difficult. Zero disables them. (0-10)
+#    type: int
+# mgvalleys_water_features = 0
+
+#    Controls width of tunnels, a smaller value creates wider tunnels.
+#    type: float
+# mgvalleys_cave_width = 0.09
+
+### Noises
+
+#    Caves and tunnels form at the intersection of the two noises
+#    type: noise_params
+# mgvalleys_np_cave1 = 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+
+#    Caves and tunnels form at the intersection of the two noises
+#    type: noise_params
+# mgvalleys_np_cave2 = 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+
+#    The depth of dirt or other filler
+#    type: noise_params
+# mgvalleys_np_filler_depth = 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
+
+#    Massive caves form here.
+#    type: noise_params
+# mgvalleys_np_massive_caves = 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+
+#    River noise -- rivers occur close to zero
+#    type: noise_params
+# mgvalleys_np_rivers = 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
+
+#    Base terrain height
+#    type: noise_params
+# mgvalleys_np_terrain_height = -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
+
+#    Raises terrain to make valleys around the rivers
+#    type: noise_params
+# mgvalleys_np_valley_depth = 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
+
+#    Slope and fill work together to modify the heights
+#    type: noise_params
+# mgvalleys_np_inter_valley_fill = 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
+
+#    Amplifies the valleys
+#    type: noise_params
+# mgvalleys_np_valley_profile = 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
+
+#    Slope and fill work together to modify the heights
+#    type: noise_params
+# mgvalleys_np_inter_valley_slope = 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+
+## Advanced
+
+#    Size of chunks to be generated at once by mapgen, stated in mapblocks (16 nodes).
+#    type: int
+# chunksize = 5
+
+#    Dump the mapgen debug infos.
+#    type: bool
+# enable_mapgen_debug_info = false
+
+#    Maximum number of blocks that can be queued for loading.
+#    type: int
+# emergequeue_limit_total = 256
+
+#    Maximum number of blocks to be queued that are to be loaded from file.
+#    Set to blank for an appropriate amount to be chosen automatically.
+#    type: int
+# emergequeue_limit_diskonly = 32
+
+#    Maximum number of blocks to be queued that are to be generated.
+#    Set to blank for an appropriate amount to be chosen automatically.
+#    type: int
+# emergequeue_limit_generate = 32
+
+#    Number of emerge threads to use. Make this field blank, or increase this number
+#    to use multiple threads. On multiprocessor systems, this will improve mapgen speed greatly
+#    at the cost of slightly buggy caves.
+#    type: int
+# num_emerge_threads = 1
+
