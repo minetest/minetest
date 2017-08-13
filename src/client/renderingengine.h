@@ -41,7 +41,10 @@ public:
 	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
-	video::IVideoDriver *getVideoDriver();
+	video::IVideoDriver *getVideoDriver()
+	{
+		return driver;
+	}
 
 	static const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
 	static const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
@@ -142,44 +145,38 @@ private:
 			const v2u32 &screensize, const video::SColor &skycolor,
 			bool show_hud, bool show_minimap);
 
-	void draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv);
+	void draw_anaglyph_3d_mode();
+	void draw_interlaced_3d_mode();
+	void draw_sidebyside_3d_mode();
+	void draw_top_bottom_3d_mode();
+	void draw_pageflip_3d_mode();
+	void draw_plain();
 
-	void draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
+	void init_texture(const v2u32 &size, video::ITexture **texture, const char *name);
+	void init_texture(video::ITexture **texture, const char *name);
 
-	void draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *hud,
-			const v2u32 &screensize, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void draw_plain(Camera *camera, bool show_hud, Hud *hud, const v2u32 &screensize,
-			bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
-
-	void init_texture(const v2u32 &screensize, video::ITexture **texture,
-			const char *name);
-
-	video::ITexture *draw_image(const v2u32 &screensize, parallax_sign psign,
+	video::ITexture *draw_image(parallax_sign psign,
 			const irr::core::matrix4 &startMatrix,
-			const irr::core::vector3df &focusPoint, bool show_hud,
-			Camera *camera, Hud *hud, bool draw_wield_tool, Client *client,
-			gui::IGUIEnvironment *guienv, const video::SColor &skycolor);
+			const irr::core::vector3df &focusPoint);
 
-	video::ITexture *draw_hud(const v2u32 &screensize, bool show_hud, Hud *hud,
-			Client *client, bool draw_crosshair,
-			const video::SColor &skycolor, gui::IGUIEnvironment *guienv,
-			Camera *camera);
+	video::ITexture *draw_hud();
+
+	Camera *camera;
+	Client *client;
+	LocalPlayer *player;
+	Minimap *mapper;
+	Hud *hud;
+
+	v2u32 screensize;
+	video::SColor skycolor;
+	bool show_hud;
+	bool show_minimap;
+	bool draw_wield_tool;
+	bool draw_crosshair;
 
 	irr::IrrlichtDevice *m_device = nullptr;
+	irr::video::IVideoDriver *driver;
+	irr::scene::ISceneManager *smgr;
+	irr::gui::IGUIEnvironment *guienv;
 	static RenderingEngine *s_singleton;
 };
