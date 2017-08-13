@@ -574,7 +574,6 @@ private:
 	float m_connection_reinit_timer;
 	float m_avg_rtt_timer;
 	float m_playerpos_send_timer;
-	float m_ignore_damage_timer; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
