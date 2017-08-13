@@ -766,7 +766,7 @@ void Server::AsyncRunStep(bool initial_step)
 			if (aom.id == 0)
 				break;
 
-			std::vector<ActiveObjectMessage>* message_list = NULL;
+			std::vector<ActiveObjectMessage>* message_list = nullptr;
 			std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator n;
 			n = buffered_messages.find(aom.id);
 			if (n == buffered_messages.end()) {
@@ -780,29 +780,24 @@ void Server::AsyncRunStep(bool initial_step)
 		}
 
 		m_clients.lock();
-		RemoteClientMap clients = m_clients.getClientList();
+		const RemoteClientMap &clients = m_clients.getClientList();
 		// Route data to every client
-		for (std::unordered_map<u16, RemoteClient*>::iterator i = clients.begin();
-				i != clients.end(); ++i) {
-			RemoteClient *client = i->second;
+		for (const auto &client_it : clients) {
+			RemoteClient *client = client_it.second;
 			std::string reliable_data;
 			std::string unreliable_data;
 			// Go through all objects in message buffer
-			for (std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator
-					j = buffered_messages.begin();
-					j != buffered_messages.end(); ++j) {
+			for (const auto &buffered_message : buffered_messages) {
 				// If object is not known by client, skip it
-				u16 id = j->first;
+				u16 id = buffered_message.first;
 				if (client->m_known_objects.find(id) == client->m_known_objects.end())
 					continue;
 
 				// Get message list of object
-				std::vector<ActiveObjectMessage>* list = j->second;
+				std::vector<ActiveObjectMessage>* list = buffered_message.second;
 				// Go through every message
-				for (std::vector<ActiveObjectMessage>::iterator
-						k = list->begin(); k != list->end(); ++k) {
+				for (const ActiveObjectMessage &aom : *list) {
 					// Compose the full new data with header
-					ActiveObjectMessage aom = *k;
 					std::string new_data;
 					// Add object id
 					char buf[2];
@@ -811,7 +806,7 @@ void Server::AsyncRunStep(bool initial_step)
 					// Add data
 					new_data += serializeString(aom.datastring);
 					// Add data to buffer
-					if(aom.reliable)
+					if (aom.reliable)
 						reliable_data += new_data;
 					else
 						unreliable_data += new_data;
@@ -821,21 +816,19 @@ void Server::AsyncRunStep(bool initial_step)
 				reliable_data and unreliable_data are now ready.
 				Send them.
 			*/
-			if(reliable_data.size() > 0) {
+			if (!reliable_data.empty()) {
 				SendActiveObjectMessages(client->peer_id, reliable_data);
 			}
 
-			if(unreliable_data.size() > 0) {
+			if (!unreliable_data.empty()) {
 				SendActiveObjectMessages(client->peer_id, unreliable_data, false);
 			}
 		}
 		m_clients.unlock();
 
 		// Clear buffered_messages
-		for (std::unordered_map<u16, std::vector<ActiveObjectMessage>* >::iterator
-				i = buffered_messages.begin();
-				i != buffered_messages.end(); ++i) {
-			delete i->second;
+		for (auto &buffered_message : buffered_messages) {
+			delete buffered_message.second;
 		}
 	}
 
@@ -859,8 +852,7 @@ void Server::AsyncRunStep(bool initial_step)
 		// We'll log the amount of each
 		Profiler prof;
 
-		while(m_unsent_map_edit_queue.size() != 0)
-		{
+		while (!m_unsent_map_edit_queue.empty()) {
 			MapEditEvent* event = m_unsent_map_edit_queue.front();
 			m_unsent_map_edit_queue.pop();
 
@@ -890,10 +882,8 @@ void Server::AsyncRunStep(bool initial_step)
 			case MEET_OTHER:
 				infostream << "Server: MEET_OTHER" << std::endl;
 				prof.add("MEET_OTHER", 1);
-				for(std::set<v3s16>::iterator
-						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i) {
-					setBlockNotSent(*i);
+				for (const v3s16 &modified_block : event->modified_blocks) {
+					setBlockNotSent(modified_block);
 				}
 				break;
 			default:
@@ -906,38 +896,29 @@ void Server::AsyncRunStep(bool initial_step)
 			/*
 				Set blocks not sent to far players
 			*/
-			if(!far_players.empty()) {
+			if (!far_players.empty()) {
 				// Convert list format to that wanted by SetBlocksNotSent
 				std::map<v3s16, MapBlock*> modified_blocks2;
-				for(std::set<v3s16>::iterator
-						i = event->modified_blocks.begin();
-						i != event->modified_blocks.end(); ++i) {
-					modified_blocks2[*i] =
-							m_env->getMap().getBlockNoCreateNoEx(*i);
+				for (const v3s16 &modified_block : event->modified_blocks) {
+					modified_blocks2[modified_block] =
+							m_env->getMap().getBlockNoCreateNoEx(modified_block);
 				}
 
 				// Set blocks not sent
-				for(std::vector<u16>::iterator
-						i = far_players.begin();
-						i != far_players.end(); ++i) {
-					if(RemoteClient *client = getClient(*i))
+				for (const u16 far_player : far_players) {
+					if (RemoteClient *client = getClient(far_player))
 						client->SetBlocksNotSent(modified_blocks2);
 				}
 			}
 
 			delete event;
-
-			/*// Don't send too many at a time
-			count++;
-			if(count >= 1 && m_unsent_map_edit_queue.size() < 100)
-				break;*/
 		}
 
-		if(event_count >= 5){
-			infostream<<"Server: MapEditEvents:"<<std::endl;
+		if (event_count >= 5) {
+			infostream << "Server: MapEditEvents:" << std::endl;
 			prof.print(infostream);
-		} else if(event_count != 0){
-			verbosestream<<"Server: MapEditEvents:"<<std::endl;
+		} else if (event_count != 0) {
+			verbosestream << "Server: MapEditEvents:" << std::endl;
 			prof.print(verbosestream);
 		}
 
@@ -1290,8 +1271,7 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 		if (!playerSend)
 			return;
 
-		RemotePlayer *player =
-			dynamic_cast<RemotePlayer *>(m_env->getPlayer(loc.name.c_str()));
+		RemotePlayer *player = m_env->getPlayer(loc.name.c_str());
 
 		if (!player)
 			return;
@@ -2212,10 +2192,10 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	v3f p_f = intToFloat(p, BS);
 
 	std::vector<u16> clients = m_clients.getClientIDs();
-	for(std::vector<u16>::iterator i = clients.begin();	i != clients.end(); ++i) {
+	for (const u16 client_id : clients) {
 		if (far_players) {
 			// Get player
-			if (RemotePlayer *player = m_env->getPlayer(*i)) {
+			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
 				PlayerSAO *sao = player->getPlayerSAO();
 				if (!sao)
 					continue;
@@ -2223,7 +2203,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = sao->getBasePosition();
 				if(player_pos.getDistanceFrom(p_f) > maxd) {
-					far_players->push_back(*i);
+					far_players->push_back(client_id);
 					continue;
 				}
 			}
@@ -2231,8 +2211,8 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 		NetworkPacket pkt(TOCLIENT_ADDNODE, 6 + 2 + 1 + 1 + 1);
 		m_clients.lock();
-		RemoteClient* client = m_clients.lockedGetClientNoEx(*i);
-		if (client != 0) {
+		RemoteClient* client = m_clients.lockedGetClientNoEx(client_id);
+		if (client) {
 			pkt << p << n.param0 << n.param1 << n.param2
 					<< (u8) (remove_metadata ? 0 : 1);
 		}
@@ -2240,7 +2220,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 		// Send as reliable
 		if (pkt.getSize() > 0)
-			m_clients.send(*i, 0, &pkt, true);
+			m_clients.send(client_id, 0, &pkt, true);
 	}
 }
 
@@ -2248,9 +2228,8 @@ void Server::setBlockNotSent(v3s16 p)
 {
 	std::vector<u16> clients = m_clients.getClientIDs();
 	m_clients.lock();
-	for(std::vector<u16>::iterator i = clients.begin();
-		i != clients.end(); ++i) {
-		RemoteClient *client = m_clients.lockedGetClientNoEx(*i);
+	for (const u16 i : clients) {
+		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
 		client->SetBlockNotSent(p);
 	}
 	m_clients.unlock();
@@ -2292,16 +2271,15 @@ void Server::SendBlocks(float dtime)
 	s32 total_sending = 0;
 
 	{
-		ScopeProfiler sp(g_profiler, "Server: selecting blocks for sending");
+		ScopeProfiler sp2(g_profiler, "Server: selecting blocks for sending");
 
 		std::vector<u16> clients = m_clients.getClientIDs();
 
 		m_clients.lock();
-		for(std::vector<u16>::iterator i = clients.begin();
-			i != clients.end(); ++i) {
-			RemoteClient *client = m_clients.lockedGetClientNoEx(*i, CS_Active);
+		for (const u16 client_id : clients) {
+			RemoteClient *client = m_clients.lockedGetClientNoEx(client_id, CS_Active);
 
-			if (client == NULL)
+			if (!client)
 				continue;
 
 			total_sending += client->SendingCount();
