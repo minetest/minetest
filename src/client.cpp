@@ -264,13 +264,8 @@ void Client::connect(Address address, bool is_local_server)
 void Client::step(float dtime)
 {
 	// Limit a bit
-	if(dtime > 2.0)
+	if (dtime > 2.0)
 		dtime = 2.0;
-
-	if(m_ignore_damage_timer > dtime)
-		m_ignore_damage_timer -= dtime;
-	else
-		m_ignore_damage_timer = 0.0;
 
 	m_animation_time += dtime;
 	if(m_animation_time > 60.0)
@@ -394,18 +389,16 @@ void Client::step(float dtime)
 		ClientEnvEvent envEvent = m_env.getClientEnvEvent();
 
 		if (envEvent.type == CEE_PLAYER_DAMAGE) {
-			if (m_ignore_damage_timer <= 0) {
-				u8 damage = envEvent.player_damage.amount;
+			u8 damage = envEvent.player_damage.amount;
 
-				if (envEvent.player_damage.send_to_server)
-					sendDamage(damage);
+			if (envEvent.player_damage.send_to_server)
+				sendDamage(damage);
 
-				// Add to ClientEvent queue
-				ClientEvent *event = new ClientEvent();
-				event->type = CE_PLAYER_DAMAGE;
-				event->player_damage.amount = damage;
-				m_client_event_queue.push(event);
-			}
+			// Add to ClientEvent queue
+			ClientEvent *event = new ClientEvent();
+			event->type = CE_PLAYER_DAMAGE;
+			event->player_damage.amount = damage;
+			m_client_event_queue.push(event);
 		}
 	}
 
