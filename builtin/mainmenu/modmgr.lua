@@ -283,7 +283,7 @@ function modmgr.get_dependencies(path)
 	local mod_conf = Settings(path .. DIR_DELIM .. "mod.conf")
 	local mod_conf_contains_deps = false
 	if mod_conf then
-		local conf_hard_deps = mod_conf:get("depends")
+		local conf_hard_deps = mod_conf:get("dependencies")
 		if conf_hard_deps then
 			mod_conf_contains_deps = true
 			local list = conf_hard_deps:split()
@@ -292,7 +292,7 @@ function modmgr.get_dependencies(path)
 			end
 		end
 
-		local conf_soft_deps = mod_conf:get("optional_depends")
+		local conf_soft_deps = mod_conf:get("optional_dependencies")
 		if conf_soft_deps then
 			mod_conf_contains_deps = true
 			local list = conf_soft_deps:split()

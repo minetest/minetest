@@ -71,7 +71,7 @@ void parseModContents(ModSpec &spec)
 		bool mod_conf_has_depends = false;
 		if (info.exists("depends")) {
 			mod_conf_has_depends = true;
-			std::string dep = info.get("depends");
+			std::string dep = info.get("dependencies");
 			for (const auto& dependency :  str_split(dep, ',')) {
 				spec.depends.insert(dependency);
 			}
@@ -79,7 +79,7 @@ void parseModContents(ModSpec &spec)
 
 		if (info.exists("optional_depends")) {
 			mod_conf_has_depends = true;
-			std::string dep = info.get("optional_depends");
+			std::string dep = info.get("optional_dependencies");
 			for (const auto& dependency :  str_split(dep, ',')) {
 				spec.optdepends.insert(dependency);
 			}
