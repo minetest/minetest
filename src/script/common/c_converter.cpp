@@ -193,6 +193,12 @@ v3f check_v3f(lua_State *L, int index)
 	pos.Z = lua_tonumber(L, -1);
 	CHECK_FLOAT_RANGE(pos.Z, "z")
 	lua_pop(L, 1);
+	if(util_isnan(pos.X))
+		throw LuaError("NaN passed as X coordinate");
+	if(util_isnan(pos.Y))
+		throw LuaError("NaN passed as Y coordinate");
+	if(util_isnan(pos.Z))
+		throw LuaError("NaN passed as Z coordinate");
 	return pos;
 }
 

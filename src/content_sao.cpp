@@ -648,6 +648,9 @@ s16 LuaEntitySAO::getHP() const
 
 void LuaEntitySAO::setVelocity(v3f velocity)
 {
+	if(util_isnan(velocity.X) || util_isnan(velocity.Y) ||
+			util_isnan(velocity.Z))
+		throw BaseException("LuaEntitySAO::setVelocity(): Given value is NaN");
 	m_velocity = velocity;
 }
 
