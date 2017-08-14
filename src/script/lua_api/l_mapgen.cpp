@@ -676,7 +676,7 @@ int ModApiMapgen::l_set_mapgen_params(lua_State *L)
 	if (lua_isnumber(L, -1))
 		settingsmgr->setMapSetting("chunksize", lua_tostring(L, -1), true);
 
-	warn_if_field_exists(L, 1, "flagmask",
+	log_deprecated_field(L, 1, "set_mapgen_params", "", "flagmask",
 		"Deprecated: flags field now includes unset flags.");
 
 	lua_getfield(L, 1, "flags");
@@ -1062,7 +1062,7 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->flags          = 0;
 
 	//// Get noise_threshold
-	warn_if_field_exists(L, index, "noise_threshhold",
+	log_deprecated_field(L, index, "register_ore", ore->name.c_str(), "noise_threshhold",
 		"Deprecated: new name is \"noise_threshold\".");
 
 	float nthresh;
@@ -1072,9 +1072,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 	ore->nthresh = nthresh;
 
 	//// Get y_min/y_max
-	warn_if_field_exists(L, index, "height_min",
+	log_deprecated_field(L, index, "register_ore", ore->name.c_str(), "height_min",
 		"Deprecated: new name is \"y_min\".");
-	warn_if_field_exists(L, index, "height_max",
+	log_deprecated_field(L, index, "register_ore", ore->name.c_str(), "height_max",
 		"Deprecated: new name is \"y_max\".");
 
 	int ymin, ymax;

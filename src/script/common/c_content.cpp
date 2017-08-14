@@ -79,7 +79,7 @@ void read_item_definition(lua_State* L, int index,
 
 	getboolfield(L, index, "liquids_pointable", def.liquids_pointable);
 
-	warn_if_field_exists(L, index, "tool_digging_properties",
+	log_deprecated_field(L, index, "", def.name.c_str(), "tool_digging_properties",
 			"Deprecated; use tool_capabilities");
 
 	lua_getfield(L, index, "tool_capabilities");
@@ -454,7 +454,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// If nil, try the deprecated name "tile_images" instead
 	if(lua_isnil(L, -1)){
 		lua_pop(L, 1);
-		warn_if_field_exists(L, index, "tile_images",
+		log_deprecated_field(L, index, "", f.name.c_str(), "tile_images",
 				"Deprecated; new name is \"tiles\".");
 		lua_getfield(L, index, "tile_images");
 	}
@@ -517,7 +517,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	// If nil, try the deprecated name "special_materials" instead
 	if(lua_isnil(L, -1)){
 		lua_pop(L, 1);
-		warn_if_field_exists(L, index, "special_materials",
+		log_deprecated_field(L, index, "", f.name.c_str(), "special_materials",
 				"Deprecated; new name is \"special_tiles\".");
 		lua_getfield(L, index, "special_materials");
 	}
@@ -572,17 +572,17 @@ ContentFeatures read_content_features(lua_State *L, int index)
 			<< " has a palette, but not a suitable paramtype2." << std::endl;
 
 	// Warn about some deprecated fields
-	warn_if_field_exists(L, index, "wall_mounted",
+	log_deprecated_field(L, index, "", f.name.c_str(), "wall_mounted",
 			"Deprecated; use paramtype2 = 'wallmounted'");
-	warn_if_field_exists(L, index, "light_propagates",
+	log_deprecated_field(L, index, "", f.name.c_str(), "light_propagates",
 			"Deprecated; determined from paramtype");
-	warn_if_field_exists(L, index, "dug_item",
+	log_deprecated_field(L, index, "", f.name.c_str(), "dug_item",
 			"Deprecated; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item",
+	log_deprecated_field(L, index, "", f.name.c_str(), "extra_dug_item",
 			"Deprecated; use 'drop' field");
-	warn_if_field_exists(L, index, "extra_dug_item_rarity",
+	log_deprecated_field(L, index, "", f.name.c_str(), "extra_dug_item_rarity",
 			"Deprecated; use 'drop' field");
-	warn_if_field_exists(L, index, "metadata_name",
+	log_deprecated_field(L, index, "", f.name.c_str(), "metadata_name",
 			"Deprecated; use on_add and metadata callbacks");
 
 	// True for all ground-like things like stone and mud, false for eg. trees
@@ -1050,19 +1050,6 @@ void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
 	lua_setfield(L, -2, "param1");
 	lua_pushnumber(L, n.getParam2());
 	lua_setfield(L, -2, "param2");
-}
-
-/******************************************************************************/
-void warn_if_field_exists(lua_State *L, int table,
-		const char *name, const std::string &message)
-{
-	lua_getfield(L, table, name);
-	if (!lua_isnil(L, -1)) {
-		warningstream << "Field \"" << name << "\": "
-				<< message << std::endl;
-		infostream << script_get_backtrace(L) << std::endl;
-	}
-	lua_pop(L, 1);
 }
 
 /******************************************************************************/

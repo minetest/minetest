@@ -106,5 +106,9 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 void log_deprecated(lua_State *L, const std::string &message);
+void log_deprecated_field(lua_State *L, int table,
+	const char *function, const char *name,
+	const char *field_name, const std::string &message);
+
 
 #endif /* C_INTERNAL_H_ */

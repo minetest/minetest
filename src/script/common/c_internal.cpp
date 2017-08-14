@@ -162,3 +162,18 @@ void log_deprecated(lua_State *L, const std::string &message)
 	}
 }
 
+void log_deprecated_field(lua_State *L, int table, const char *function,
+		const char *name, const char *field_name, const std::string &message)
+{
+	lua_getfield(L, table, field_name);
+	if (!lua_isnil(L, -1)) {
+		std::ostringstream msg;
+		msg << function << (*function ? ": " : "")
+			<< name << (*name ? ": " : "")
+			<< "field \"" << field_name << "\": "
+			<< message << std::endl;
+		log_deprecated(L, msg.str());
+	}
+	lua_pop(L, 1);
+}
+
