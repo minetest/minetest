@@ -84,13 +84,17 @@ u32 Player::addHud(HudElement *toadd)
 {
 	MutexAutoLock lock(m_mutex);
 
-	u32 id = getFreeHudID();
+	// Try to find a free slot in current list
+	for (u32 id = 0; id != hud.size(); id++) {
+		if (!hud[id]) {
+			hud[id] = toadd;
+			return id;
+		}
+	}
 
-	if (id < hud.size())
-		hud[id] = toadd;
-	else
-		hud.push_back(toadd);
-
+	// No slot was found, add hud to end of the list
+	u32 id = hud.size();
+	hud.push_back(toadd);
 	return id;
 }
 
@@ -101,19 +105,17 @@ HudElement* Player::getHud(u32 id)
 	if (id < hud.size())
 		return hud[id];
 
-	return NULL;
+	return nullptr;
 }
 
-HudElement* Player::removeHud(u32 id)
+void Player::removeHud(u32 id)
 {
 	MutexAutoLock lock(m_mutex);
 
-	HudElement* retval = NULL;
 	if (id < hud.size()) {
-		retval = hud[id];
-		hud[id] = NULL;
+		delete hud[id];
+		hud[id] = nullptr;
 	}
-	return retval;
 }
 
 void Player::clearHud()

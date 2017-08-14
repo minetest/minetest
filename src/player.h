@@ -109,22 +109,12 @@ public:
 		return m_speed;
 	}
 
-	void setSpeed(v3f speed)
+	void setSpeed(const v3f &speed)
 	{
 		m_speed = speed;
 	}
 
 	const char *getName() const { return m_name; }
-
-	u32 getFreeHudID()
-	{
-		size_t size = hud.size();
-		for (size_t i = 0; i != size; i++) {
-			if (!hud[i])
-				return i;
-		}
-		return size;
-	}
 
 	v3f eye_offset_first;
 	v3f eye_offset_third;
@@ -158,7 +148,7 @@ public:
 
 	HudElement* getHud(u32 id);
 	u32         addHud(HudElement* hud);
-	HudElement* removeHud(u32 id);
+	void removeHud(u32 id);
 	void        clearHud();
 
 	u32 hud_flags;

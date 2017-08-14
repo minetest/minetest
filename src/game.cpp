@@ -3216,7 +3216,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 				HudElement *e = player->getHud(id);
 
-				if (e != NULL) {
+				// If there is already a hud, ignore event
+				if (e) {
 					delete event.hudadd.pos;
 					delete event.hudadd.name;
 					delete event.hudadd.scale;
@@ -3258,11 +3259,7 @@ void Game::processClientEvents(CameraOrientation *cam)
 			break;
 
 		case CE_HUDRM:
-			{
-				HudElement *e = player->removeHud(event.hudrm.id);
-
-				delete e;
-			}
+			player->removeHud(event.hudrm.id);
 			break;
 
 		case CE_HUDCHANGE:
@@ -3270,7 +3267,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 				u32 id = event.hudchange.id;
 				HudElement *e = player->getHud(id);
 
-				if (e == NULL) {
+				// If hud isn't registered, ignore event
+				if (!e) {
 					delete event.hudchange.v3fdata;
 					delete event.hudchange.v2fdata;
 					delete event.hudchange.sdata;

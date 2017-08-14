@@ -1362,8 +1362,8 @@ int ObjectRef::l_hud_add(lua_State *L)
 		log_deprecated(L,"Deprecated usage of statbar without size!");
 	}
 
-	u32 id = getServer(L)->hudAdd(player, elem);
-	if (id == U32_MAX) {
+	s32 id = getServer(L)->hudAdd(player, elem);
+	if (id == -1) {
 		delete elem;
 		return 0;
 	}
@@ -1381,11 +1381,11 @@ int ObjectRef::l_hud_remove(lua_State *L)
 	if (player == NULL)
 		return 0;
 
-	u32 id = -1;
+	s32 id = -1;
 	if (!lua_isnil(L, 2))
 		id = lua_tonumber(L, 2);
 
-	if (!getServer(L)->hudRemove(player, id))
+	if (id < 0 || !getServer(L)->hudRemove(player, id))
 		return 0;
 
 	lua_pushboolean(L, true);
@@ -1398,7 +1398,7 @@ int ObjectRef::l_hud_change(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	if (player == NULL)
+	if (!player)
 		return 0;
 
 	u32 id = lua_isnumber(L, 2) ? lua_tonumber(L, 2) : -1;
