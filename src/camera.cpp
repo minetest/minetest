@@ -526,7 +526,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 	// If the player is walking, swimming, or climbing,
 	// view bobbing is enabled and free_move is off,
 	// start (or continue) the view bobbing animation.
-	v3f speed = player->getSpeed();
+	const v3f &speed = player->getSpeed();
 	const bool movement_XZ = hypot(speed.X, speed.Z) > BS;
 	const bool movement_Y = fabs(speed.Y) > BS;
 
