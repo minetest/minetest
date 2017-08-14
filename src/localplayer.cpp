@@ -469,9 +469,9 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 {
 
 	// SERVER SIDE MOVEMENT: this method will need to be abstracted into:
-	// - a wrapper that pushes the current controls into the action log
+	// - a wrapper that pushes the current controls into the control log
 	// - a function that can be called on the client OR on the server (when
-	//   replaying the action log).
+	//   replaying the control log).
 
 	// Clear stuff
 	swimming_vertical = false;

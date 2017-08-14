@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ACTIONLOG_HEADER
-#define ACTIONLOG_HEADER
+#ifndef CONTROLLOG_HEADER
+#define CONTROLLOG_HEADER
 
 /*
 
@@ -53,18 +53,18 @@ if joystick enabled / detected:
 
 */
 
-class ActionLogLine
+class ControlLogEntry
 {
 public:
-	ActionLogLine();
+	ControlLogEntry();
 
 private:
 };
 
-class ActionLog
+class ControlLog
 {
 public:
-	ActionLog();
+	ControlLog();
 private:
 	unsigned char version;
 };

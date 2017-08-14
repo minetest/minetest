@@ -6,24 +6,24 @@ validation is merged.)
 ## Start
 
 The entire system starts when the server sends the first player position and
-requests an "action log". The action log protocol / format is versioned; the
-server sends the highest version number of action logs that it supports, or 0
-if no action log is required. From this point on, the client sends the action
+requests an "control log". The control log protocol / format is versioned; the
+server sends the highest version number of control logs that it supports, or 0
+if no control log is required. From this point on, the client sends the control
 log in the highest version that it supports itself and that is less or
-equal to what the server supports. The version is always part of the action
+equal to what the server supports. The version is always part of the control
 log packet.
 
 The server also sends a motion model request. This consists of a numeric 8-bit
 identifier of the model and an 8-bit version. Minetest currently has one motion
 model in one version, so these two numbers should last a while.
 
-## Action Log
+## Control Log
 
-The client starts collecting action log items. Whenever the client sends its
-position, speed and orientation, it also sends an action log. The action log
+The client starts collecting control log items. Whenever the client sends its
+position, speed and orientation, it also sends an control log. The control log
 basically consists of the controls and duration that the client uses during the
 `applyControl` method. The remaining physics calculations are *not* part of the
-action log. The idea is that, given the same starting position, the server
+control log. The idea is that, given the same starting position, the server
 could use the same code and the same input as the client, and arrive at roughly
 the same conclusion, namely the position and speed at the beginning of the
 movement packet.
@@ -32,9 +32,9 @@ movement packet.
 
 The server now has two new player positions: the player position from the
 beginning of the movement packet, and the player position calculated by
-applying the action log to the last known player position. Ideally, these two
+applying the control log to the last known player position. Ideally, these two
 would be identical (and since this system does not affect the original player
-motion packet, this shows that the action log does not add any delay or lag to
+motion packet, this shows that the control log does not add any delay or lag to
 player motion). Realistically, the two will diverge more and more over time. The
 server has three basic choices how to deal with this situation:
 
@@ -54,60 +54,60 @@ the exact position and speed of the player. The server also remembers the last
 position and speed it sent.
 
 The client, upon receiving such a position and speed command, adjusts its own
-player position and speed to exactly these values. Then it discards any action
+player position and speed to exactly these values. Then it discards any control
 log entries it had accumulated so far. The purpose of these entries was to
 provide proof of the player's position *before* the teleport, and they are
-therefore useless afterwards. The first entry of the new action log is an
-acknowledgement of the new position and speed, the next entries are then actions
-(control settings) from this point on.
+therefore useless afterwards. The first entry of the new control log is an
+acknowledgement of the new position and speed, the next entries are then
+control settings from this point on.
 
 ## Disabling
 
-The server can disable or pause the entire system by requesting action log
-version 0. The client does not need to calculate or send action log items while
+The server can disable or pause the entire system by requesting control log
+version 0. The client does not need to calculate or send control log items while
 the version is 0. The system restarts when the server requests a greater
 version. For best results, the server should also send a client position and
-speed, so that the action log restarts from a known point. Alternatively, the
+speed, so that the control log restarts from a known point. Alternatively, the
 server could fully trust the first position given in the next position update &
-action log packet it recieves.
+control log packet it recieves.
 
 ## Timestamps
 
-Each regular action log line begins with the dtime, in milliseconds, that the
+Each regular control log line begins with the dtime, in milliseconds, that the
 motion was calculated with the controls from this line. Lines with identical
 controls may be combined into a line with these controls and the combined
 dtime. Lines may also be split into two or more lines with identical controls
 and dtimes that sum to the original one.
 
 The dtime is serialized as an unsigned 8bit number, but some values at the top
-are reserved for non-regular lines, say above 200. In cases where an action
+are reserved for non-regular lines, say above 200. In cases where an control
 log line takes more than these 200 ms, a special continuation line may be
 used, with an additional unsigned 16-bit number of additional milliseconds.
 
-Each action log message contains a continuously increasing time stamp, in
+Each control log message contains a continuously increasing time stamp, in
 milliseconds. The client initializes this time stamp at some point, i.e. the
-start of the action log or the first package from the server.
+start of the control log or the first package from the server.
 
 ## Timeouts
 
 The server should refuse to process logs that start more than a given time in
 the past, for example 2 seconds. In these cases, a reset should be sent.
-The server should also refuse to process action logs reaching too far into the
+The server should also refuse to process control logs reaching too far into the
 future. A reset may be possible, but it should suffice to ignore the part of
 the log from the future and acknowledge only the part up to "the present". Note
 that in this case, the final position message can not be compared to the
 computed result, probably causing a diversion.
 
-The server should never be required to remember parts of the action log, or
+The server should never be required to remember parts of the control log, or
 more than a single past player state and the timestamp of this state.
 
 ## Skipping validation for performance
 
-Since the action log contains all the information required to prove that the
+Since the control log contains all the information required to prove that the
 original position message is correct, a server that is experiencing temporary
 performance problems can opt to occasionally skip the validation and believe
 the position outright. This should be hard to exploit if the skipping is
 unpredictable. Specifically, it should not be based on the length of the
-action log, as much sense as that would make performance-wise, since this
+control log, as much sense as that would make performance-wise, since this
 could allow malicious clients to cheat using an invalid final position with
-a long, phony action log.
+a long, phony control log.

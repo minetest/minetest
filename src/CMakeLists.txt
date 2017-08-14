@@ -383,7 +383,6 @@ add_subdirectory(irrlicht_changes)
 set(common_SRCS
 	${database_SRCS}
 	${mapgen_SRCS}
-	actionlog.cpp
 	ban.cpp
 	chat.cpp
 	clientiface.cpp
@@ -391,6 +390,7 @@ set(common_SRCS
 	content_mapnode.cpp
 	content_nodemeta.cpp
 	content_sao.cpp
+	controllog.cpp
 	convert_json.cpp
 	craftdef.cpp
 	debug.cpp
