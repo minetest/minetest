@@ -20,6 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef CONTROLLOG_HEADER
 #define CONTROLLOG_HEADER
 
+#include "irrlichttypes_bloated.h"
+
 /*
 
 overhead:
@@ -58,7 +60,69 @@ class ControlLogEntry
 public:
 	ControlLogEntry();
 
+	void setDtime(float dtime);
+	float getDtime() const;
+
+	void setFreeMove(bool free_move);
+	bool getFreeMove() const;
+	void setFastMove(bool fast_move);
+	bool getFastMove() const;
+	void setContinuousForward(bool continuous_forward);
+	bool getContinuousForward() const;
+	void setAlwaysFlyFast(bool always_fly_fast);
+	bool getAlwaysFlyFast() const;
+	void setAux1Descends(bool aux_descends);
+	bool getAux1Descends() const;
+
+	void setUp(bool up);
+	bool getUp() const;
+	void setDown(bool down);
+	bool getDown() const;
+	void setLeft(bool left);
+	bool getLeft() const;
+	void setRight(bool right);
+	bool getRight() const;
+
+	void setJump(bool jump);
+	bool getJump() const;
+	void setSneak(bool sneak);
+	bool getSneak() const;
+	void setAux1(bool aux1);
+	bool getAux1() const;
+
+	void setPitch(float pitch);
+	float getPitch() const;
+	void setYaw(float yaw);
+	float getYaw() const;
+
+	void setJoyForw(float joy_forw);
+	float getJoyForw() const;
+	void setJoySidew(float joy_sidew);
+	float getJoySidew() const;
+
 private:
+	u16 dtime;
+
+	bool free_move;
+	bool fast_move;
+	bool continuous_forward;
+	bool always_fly_fast;
+	bool aux1_descends;
+	
+	bool up;
+	bool down;
+	bool left;
+	bool right;
+
+	bool jump;
+	bool sneak;
+	bool aux1;
+
+	s8 pitch;
+	u16 yaw; // 9 bits
+
+	s8 joy_forw;
+	s8 joy_sidew;
 };
 
 class ControlLog
@@ -66,7 +130,7 @@ class ControlLog
 public:
 	ControlLog();
 private:
-	unsigned char version;
+	u8 version;
 };
 
 #endif

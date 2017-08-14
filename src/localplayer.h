@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "constants.h"
 #include "settings.h"
+#include "controllog.h"
 #include <list>
 
 class Client;
@@ -150,6 +151,7 @@ private:
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 	float getSlipFactor(Environment *env, const v3f &speedH);
+	void _applyControl(const ControlLogEntry &cle);
 
 	v3f m_position;
 	v3s16 m_standing_node;

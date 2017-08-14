@@ -467,11 +467,45 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {
+	ControlLogEntry cle;
+	cle.setDtime(dtime);
+
+	cle.setFreeMove(g_settings->getBool("free_move"));
+	cle.setFastMove(g_settings->getBool("fast_move"));
+	cle.setContinuousForward(g_settings->getBool("continuous_forward"));
+	cle.setAlwaysFlyFast(g_settings->getBool("always_fly_fast"));
+	cle.setAux1Descends(g_settings->getBool("aux1_descends"));
+
+	cle.setUp(control.up);
+	cle.setDown(control.down);
+	cle.setLeft(control.left);
+	cle.setRight(control.right);
+
+	cle.setJump(control.jump);
+	cle.setSneak(control.sneak);
+	cle.setAux1(control.aux1);
+
+	cle.setPitch(control.pitch);
+	cle.setYaw(control.yaw);
+
+	cle.setJoyForw(control.forw_move_joystick_axis / 32767.f);
+	cle.setJoySidew(control.sidew_move_joystick_axis / 32767.f);
+
+	_applyControl(cle);
+
+	// append entry to actual log
+}
+
+void LocalPlayer::_applyControl(const ControlLogEntry &cle)
+{
 
 	// SERVER SIDE MOVEMENT: this method will need to be abstracted into:
 	// - a wrapper that pushes the current controls into the control log
 	// - a function that can be called on the client OR on the server (when
 	//   replaying the control log).
+
+
+	float dtime = cle.getDtime();
 
 	// Clear stuff
 	swimming_vertical = false;
