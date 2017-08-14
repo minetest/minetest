@@ -89,7 +89,7 @@ static const char *alErrorString(ALenum err)
 
 static ALenum warn_if_error(ALenum err, const char *desc)
 {
-	if(err == AL_NO_ERROR)
+	if (err == AL_NO_ERROR)
 		return err;
 	warningstream<<desc<<": "<<alErrorString(err)<<std::endl;
 	return err;
@@ -125,7 +125,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 	pInfo = ov_info(oggFile, -1);
 
 	// Check the number of channels... always use 16-bit samples
-	if(pInfo->channels == 1)
+	if (pInfo->channels == 1)
 		snd->format = AL_FORMAT_MONO16;
 	else
 		snd->format = AL_FORMAT_STEREO16;
@@ -139,7 +139,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 		// Read up to a buffer's worth of decoded sound data
 		bytes = ov_read(oggFile, array, BUFFER_SIZE, endian, 2, 1, &bitStream);
 
-		if(bytes < 0)
+		if (bytes < 0)
 		{
 			ov_clear(oggFile);
 			infostream << "Audio: Error decoding "
@@ -159,7 +159,7 @@ SoundBuffer *load_opened_ogg_file(OggVorbis_File *oggFile,
 
 	ALenum error = alGetError();
 
-	if(error != AL_NO_ERROR){
+	if (error != AL_NO_ERROR){
 		infostream<<"Audio: OpenAL error: "<<alErrorString(error)
 				<<"preparing sound buffer"<<std::endl;
 	}
@@ -302,14 +302,14 @@ public:
 		infostream<<"Audio: Initializing..."<<std::endl;
 
 		m_device = alcOpenDevice(NULL);
-		if(!m_device){
+		if (!m_device){
 			infostream<<"Audio: No audio device available, audio system "
 				<<"not initialized"<<std::endl;
 			return;
 		}
 
 		m_context = alcCreateContext(m_device, NULL);
-		if(!m_context){
+		if (!m_context){
 			error = alcGetError(m_device);
 			infostream<<"Audio: Unable to initialize audio context, "
 					<<"aborting audio initialization ("<<alcErrorString(error)
@@ -319,7 +319,7 @@ public:
 			return;
 		}
 
-		if(!alcMakeContextCurrent(m_context) ||
+		if (!alcMakeContextCurrent(m_context) ||
 				(error = alcGetError(m_device) != ALC_NO_ERROR))
 		{
 			infostream<<"Audio: Error setting audio context, aborting audio "
@@ -351,13 +351,13 @@ public:
 		alcCloseDevice(m_device);
 		m_device = NULL;
 
-		for (std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
-				m_buffers.begin(); i != m_buffers.end(); ++i) {
-			for (std::vector<SoundBuffer*>::iterator iter = (*i).second.begin();
-					iter != (*i).second.end(); ++iter) {
+		for (std::unordered_map<std::string, std::vector<SoundBuffer*> >::iterator it = m_buffers.begin();
+				it != m_buffers.end(); ++it) {
+			for (std::vector<SoundBuffer*>::iterator iter = (*it).second.begin();
+					iter != (*it).second.end(); ++iter) {
 				delete *iter;
 			}
-			(*i).second.clear();
+			(*it).second.clear();
 		}
 		m_buffers.clear();
 		infostream<<"Audio: Deinitialized."<<std::endl;
@@ -370,10 +370,10 @@ public:
 
 	void addBuffer(const std::string &name, SoundBuffer *buf)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*> >::iterator it =
 				m_buffers.find(name);
-		if(i != m_buffers.end()){
-			i->second.push_back(buf);
+		if(it != m_buffers.end()){
+			it->second.push_back(buf);
 			return;
 		}
 		std::vector<SoundBuffer*> bufs;
@@ -384,11 +384,11 @@ public:
 
 	SoundBuffer* getBuffer(const std::string &name)
 	{
-		std::unordered_map<std::string, std::vector<SoundBuffer*>>::iterator i =
+		std::unordered_map<std::string, std::vector<SoundBuffer*> >::iterator it =
 				m_buffers.find(name);
-		if(i == m_buffers.end())
+		if (it == m_buffers.end())
 			return NULL;
-		std::vector<SoundBuffer*> &bufs = i->second;
+		std::vector<SoundBuffer*> &bufs = it->second;
 		int j = myrand() % bufs.size();
 		return bufs[j];
 	}
@@ -442,6 +442,7 @@ public:
 	int playSoundRaw(SoundBuffer *buf, bool loop, float volume, float pitch)
 	{
 		assert(buf);
+
 		PlayingSound *sound = createPlayingSound(buf, loop, volume, pitch);
 		if(!sound)
 			return -1;
@@ -453,6 +454,7 @@ public:
 	int playSoundRawAt(SoundBuffer *buf, bool loop, float volume, v3f pos, float pitch)
 	{
 		assert(buf);
+
 		PlayingSound *sound = createPlayingSoundAt(buf, loop, volume, pos, pitch);
 		if(!sound)
 			return -1;
@@ -463,10 +465,10 @@ public:
 
 	void deleteSound(int id)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		if(i == m_sounds_playing.end())
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		if (it == m_sounds_playing.end())
 			return;
-		PlayingSound *sound = i->second;
+		PlayingSound *sound = it->second;
 
 		alDeleteSources(1, &sound->source_id);
 
@@ -474,24 +476,44 @@ public:
 		m_sounds_playing.erase(id);
 	}
 
+	void pauseSnd(int id)
+	{
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		if (it == m_sounds_playing.end())
+			return;
+		PlayingSound *sound = it->second;
+		
+		alSourcePause(sound->source_id);
+	}
+	
+	void resumeSnd(int id)
+	{
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		if (it == m_sounds_playing.end())
+			return;
+		PlayingSound *sound = it->second;
+		
+		alSourcePlay(sound->source_id);
+	}
+
 	/* If buffer does not exist, consult the fetcher */
 	SoundBuffer* getFetchBuffer(const std::string &name)
 	{
 		SoundBuffer *buf = getBuffer(name);
-		if(buf)
+		if (buf)
 			return buf;
-		if(!m_fetcher)
+		if (!m_fetcher)
 			return NULL;
 		std::set<std::string> paths;
 		std::set<std::string> datas;
 		m_fetcher->fetchSounds(name, paths, datas);
-		for(std::set<std::string>::iterator i = paths.begin();
-				i != paths.end(); ++i){
-			loadSoundFile(name, *i);
+		for (std::set<std::string>::iterator it = paths.begin();
+				it != paths.end(); ++it){
+			loadSoundFile(name, *it);
 		}
-		for(std::set<std::string>::iterator i = datas.begin();
-				i != datas.end(); ++i){
-			loadSoundData(name, *i);
+		for (std::set<std::string>::iterator it = datas.begin();
+				it != datas.end(); ++it){
+			loadSoundData(name, *it);
 		}
 		return getBuffer(name);
 	}
@@ -503,26 +525,28 @@ public:
 				<<m_sounds_playing.size()<<" playing sounds, "
 				<<m_buffers.size()<<" sound names loaded"<<std::endl;
 		std::set<int> del_list;
-		for(std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.begin();
-				i != m_sounds_playing.end(); ++i) {
-			int id = i->first;
-			PlayingSound *sound = i->second;
+		for (std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.begin();
+				it != m_sounds_playing.end(); ++it) {
+			int id = it->first;
+			PlayingSound *sound = it->second;
+
 			// If not playing, remove it
 			{
 				ALint state;
 				alGetSourcei(sound->source_id, AL_SOURCE_STATE, &state);
-				if(state != AL_PLAYING){
+				
+				if (state != AL_PLAYING && state != AL_PAUSED) {
 					del_list.insert(id);
 				}
 			}
 		}
-		if(!del_list.empty())
+		if (!del_list.empty())
 			verbosestream<<"OpenALSoundManager::maintain(): deleting "
 					<<del_list.size()<<" playing sounds"<<std::endl;
-		for(std::set<int>::iterator i = del_list.begin();
-				i != del_list.end(); ++i)
+		for (std::set<int>::iterator it = del_list.begin();
+				it != del_list.end(); ++it)
 		{
-			deleteSound(*i);
+			deleteSound(*it);
 		}
 	}
 
@@ -536,7 +560,7 @@ public:
 			addBuffer(name, buf);
 		return false;
 	}
-
+  
 	bool loadSoundData(const std::string &name,
 			const std::string &filedata)
 	{
@@ -566,10 +590,10 @@ public:
 	int playSound(const std::string &name, bool loop, float volume, float fade, float pitch)
 	{
 		maintain();
-		if(name == "")
+		if (name == "")
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
-		if(!buf){
+		if (!buf){
 			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
 					<<std::endl;
 			return -1;
@@ -583,27 +607,39 @@ public:
 		}
 		return handle;
 	}
-
+  
 	int playSoundAt(const std::string &name, bool loop, float volume, v3f pos, float pitch)
 	{
 		maintain();
-		if(name == "")
+		if (name == "")
 			return 0;
 		SoundBuffer *buf = getFetchBuffer(name);
-		if(!buf){
+		if (!buf){
 			infostream<<"OpenALSoundManager: \""<<name<<"\" not found."
 					<<std::endl;
 			return -1;
 		}
 		return playSoundRawAt(buf, loop, volume, pos, pitch);
 	}
-
+  
 	void stopSound(int sound)
 	{
 		maintain();
 		deleteSound(sound);
 	}
-
+	
+	void pauseSound(int sound)
+	{
+		maintain();
+		pauseSnd(sound);
+	}
+	
+	void resumeSound(int sound)
+	{
+		maintain();
+		resumeSnd(sound);
+	}
+	
 	void fadeSound(int soundid, float step, float gain)
 	{
 		m_sounds_fading[soundid] = FadeState(step, getSoundGain(soundid), gain);
@@ -645,13 +681,14 @@ public:
 		maintain();
 		return (m_sounds_playing.count(sound) != 0);
 	}
-
+	
 	void updateSoundPosition(int id, v3f pos)
 	{
-		std::unordered_map<int, PlayingSound*>::iterator i = m_sounds_playing.find(id);
-		if (i == m_sounds_playing.end())
+		std::unordered_map<int, PlayingSound*>::iterator it = m_sounds_playing.find(id);
+		if (it == m_sounds_playing.end())
+
 			return;
-		PlayingSound *sound = i->second;
+		PlayingSound *sound = it->second;
 
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
@@ -686,9 +723,8 @@ public:
 ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher)
 {
 	OpenALSoundManager *m = new OpenALSoundManager(fetcher);
-	if(m->m_is_initialized)
+	if (m->m_is_initialized)
 		return m;
 	delete m;
 	return NULL;
 };
-

@@ -456,6 +456,22 @@ int ModApiServer::l_sound_stop(lua_State *L)
 	return 0;
 }
 
+// sound_pause(handle)
+int ModApiServer::l_sound_pause(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	int handle = luaL_checkinteger(L, 1);
+	getServer(L)->pauseSound(handle);
+	return 0;
+}
+
+// sound_resume(handle)
+int ModApiServer::l_sound_resume(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	int handle = luaL_checkinteger(L, 1);
+	getServer(L)->resumeSound(handle);
+  
 int ModApiServer::l_sound_fade(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -529,6 +545,8 @@ void ModApiServer::Initialize(lua_State *L, int top)
 	API_FCT(show_formspec);
 	API_FCT(sound_play);
 	API_FCT(sound_stop);
+	API_FCT(sound_pause);
+	API_FCT(sound_resume);
 	API_FCT(sound_fade);
 
 	API_FCT(get_player_information);

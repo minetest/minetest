@@ -200,8 +200,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
-	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_PAUSE_SOUND",              0, true }, // 0x57
+	{ "TOCLIENT_RESUME_SOUND",             0, true }, // 0x58
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

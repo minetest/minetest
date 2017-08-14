@@ -471,6 +471,17 @@ enum ToClientCommand
 		s32 sound_id
 	*/
 
+	TOCLIENT_PAUSE_SOUND = 0x54,
+	/*
+		s32 sound_id
+	*/
+
+	TOCLIENT_RESUME_SOUND = 0x55,
+	/*
+		s32 sound_id
+	*/
+
+
 	TOCLIENT_PRIVILEGES = 0x41,
 	/*
 		u16 number of privileges

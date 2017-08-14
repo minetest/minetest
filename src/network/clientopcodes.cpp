@@ -111,9 +111,8 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CLOUD_PARAMS",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CloudParams }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FadeSound }, // 0x55
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_UpdatePlayerList }, // 0x56
-	null_command_handler,
-	null_command_handler,
-	null_command_handler,
+	{ "TOCLIENT_PAUSE_SOUND",              TOCLIENT_STATE_CONNECTED, &Client::handleCommand_PauseSound },  // 0x57
+	{ "TOCLIENT_RESUME_SOUND",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ResumeSound }, // 0x58
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,

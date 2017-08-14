@@ -580,9 +580,21 @@ void GUIEngine::stopSound(s32 handle)
 }
 
 /******************************************************************************/
+void GUIEngine::pauseSound(s32 handle)
+{
+    m_sound_manager->pauseSound(handle);
+}
+
+/******************************************************************************/
+void GUIEngine::resumeSound(s32 handle)
+{
+    m_sound_manager->resumeSound(handle);
+}
+
+
+/******************************************************************************/
 unsigned int GUIEngine::queueAsync(const std::string &serialized_func,
 		const std::string &serialized_params)
 {
 	return m_script->queueAsync(serialized_func, serialized_params);
 }
-

@@ -202,7 +202,12 @@ public:
 	// Envlock
 	s32 playSound(const SimpleSoundSpec &spec, const ServerSoundParams &params);
 	void stopSound(s32 handle);
+
+	void pauseSound(s32 handle);
+	void resumeSound(s32 handle);
+
 	void fadeSound(s32 handle, float step, float gain);
+
 
 	// Envlock
 	std::set<std::string> getPlayerEffectivePrivs(const std::string &name);
@@ -564,6 +569,7 @@ private:
 	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
+
 	/*
 	 Client interface
 	 */
