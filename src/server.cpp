@@ -114,7 +114,7 @@ void *ServerThread::run()
 
 	END_DEBUG_EXCEPTION_HANDLER
 
-	return NULL;
+	return nullptr;
 }
 
 v3f ServerSoundParams::getPos(ServerEnvironment *env, bool *pos_exists) const
@@ -172,7 +172,7 @@ Server::Server(
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
-	if(path_world == "")
+	if (path_world.empty())
 		throw ServerError("Supplied empty world path");
 
 	if(!gamespec.isValid())
@@ -251,7 +251,7 @@ Server::Server(
 
 	// Apply texture overrides from texturepack/override.txt
 	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "" && fs::IsDir(texture_path))
+	if (!texture_path.empty() && fs::IsDir(texture_path))
 		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
@@ -326,7 +326,7 @@ Server::~Server()
 			reconnect = m_shutdown_ask_reconnect;
 			kick_msg = m_shutdown_msg;
 		}
-		if (kick_msg == "") {
+		if (kick_msg.empty()) {
 			kick_msg = g_settings->get("kick_msg_shutdown");
 		}
 		m_env->kickAllPlayers(SERVER_ACCESSDENIED_SHUTDOWN,
@@ -1016,7 +1016,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	m_clients.lock();
 	try {
 		RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_InitDone);
-		if (client != NULL) {
+		if (client) {
 			playername = client->getName();
 			playersao = emergePlayer(playername.c_str(), peer_id, client->net_proto_version);
 		}
@@ -1029,7 +1029,7 @@ PlayerSAO* Server::StageTwoClientInit(u16 peer_id)
 	RemotePlayer *player = m_env->getPlayer(playername.c_str());
 
 	// If failed, cancel
-	if ((playersao == NULL) || (player == NULL)) {
+	if (!playersao || !player) {
 		if (player && player->peer_id != 0) {
 			actionstream << "Server: Failed to emerge player \"" << playername
 					<< "\" (player allocated to an another client)" << std::endl;
@@ -1301,11 +1301,7 @@ void Server::peerAdded(con::Peer *peer)
 	verbosestream<<"Server::peerAdded(): peer->id="
 			<<peer->id<<std::endl;
 
-	con::PeerChange c;
-	c.type = con::PEER_ADDED;
-	c.peer_id = peer->id;
-	c.timeout = false;
-	m_peer_change_queue.push(c);
+	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
 }
 
 void Server::deletingPeer(con::Peer *peer, bool timeout)
@@ -1315,11 +1311,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 			<<peer->id<<", timeout="<<timeout<<std::endl;
 
 	m_clients.event(peer->id, CSE_Disconnect);
-	con::PeerChange c;
-	c.type = con::PEER_REMOVED;
-	c.peer_id = peer->id;
-	c.timeout = timeout;
-	m_peer_change_queue.push(c);
+	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
 }
 
 bool Server::getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval)
@@ -1344,7 +1336,7 @@ bool Server::getClientInfo(
 	m_clients.lock();
 	RemoteClient* client = m_clients.lockedGetClientNoEx(peer_id, CS_Invalid);
 
-	if (client == NULL) {
+	if (!client) {
 		m_clients.unlock();
 		return false;
 	}
@@ -2134,10 +2126,10 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	pkt << p;
 
 	std::vector<u16> clients = m_clients.getClientIDs();
-	for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
+	for (u16 client_id : clients) {
 		if (far_players) {
 			// Get player
-			if (RemotePlayer *player = m_env->getPlayer(*i)) {
+			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
 				PlayerSAO *sao = player->getPlayerSAO();
 				if (!sao)
 					continue;
@@ -2145,14 +2137,14 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 				// If player is far away, only set modified blocks not sent
 				v3f player_pos = sao->getBasePosition();
 				if (player_pos.getDistanceFrom(p_f) > maxd) {
-					far_players->push_back(*i);
+					far_players->push_back(client_id);
 					continue;
 				}
 			}
 		}
 
 		// Send as reliable
-		m_clients.send(*i, 0, &pkt, true);
+		m_clients.send(client_id, 0, &pkt, true);
 	}
 }
 
@@ -2275,19 +2267,15 @@ void Server::SendBlocks(float dtime)
 
 		PrioritySortedBlockTransfer q = queue[i];
 
-		MapBlock *block = NULL;
-		try
-		{
+		MapBlock *block = nullptr;
+		try {
 			block = m_env->getMap().getBlockNoCreate(q.pos);
-		}
-		catch(InvalidPositionException &e)
-		{
+		} catch(const InvalidPositionException &e) {
 			continue;
 		}
 
 		RemoteClient *client = m_clients.lockedGetClientNoEx(q.peer_id, CS_Active);
-
-		if(!client)
+		if (!client)
 			continue;
 
 		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
@@ -2718,7 +2706,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 		RemotePlayer *player = m_env->getPlayer(peer_id);
 
 		/* Run scripts and remove from environment */
-		if (player != NULL) {
+		if (player) {
 			PlayerSAO *playersao = player->getPlayerSAO();
 			assert(playersao);
 
@@ -2737,7 +2725,7 @@ void Server::DeleteClient(u16 peer_id, ClientDeletionReason reason)
 			Print out action
 		*/
 		{
-			if(player != NULL && reason != CDR_DENY) {
+			if (player && reason != CDR_DENY) {
 				std::ostringstream os(std::ios_base::binary);
 				std::vector<u16> clients = m_clients.getClientIDs();
 
@@ -2889,8 +2877,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	if (player && player->protocol_version >= 29)
 		peer_id_to_avoid_sending = PEER_ID_INEXISTENT;
 
-	for (u16 i = 0; i < clients.size(); i++) {
-		u16 cid = clients[i];
+	for (u16 cid : clients) {
 		if (cid != peer_id_to_avoid_sending)
 			SendChatMessage(cid, ChatMessage(line));
 	}
@@ -2927,7 +2914,7 @@ RemoteClient* Server::getClientNoEx(u16 peer_id, ClientState state_min)
 std::string Server::getPlayerName(u16 peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	if (player == NULL)
+	if (!player)
 		return "[id="+itos(peer_id)+"]";
 	return player->getName();
 }
@@ -2935,7 +2922,7 @@ std::string Server::getPlayerName(u16 peer_id)
 PlayerSAO* Server::getPlayerSAO(u16 peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
-	if (player == NULL)
+	if (!player)
 		return NULL;
 	return player->getPlayerSAO();
 }
@@ -2954,12 +2941,12 @@ std::wstring Server::getStatusString()
 	bool first = true;
 	os<<L", clients={";
 	std::vector<u16> clients = m_clients.getClientIDs();
-	for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
+	for (u16 client_id : clients) {
 		// Get player
-		RemotePlayer *player = m_env->getPlayer(*i);
+		RemotePlayer *player = m_env->getPlayer(client_id);
 		// Get name of player
 		std::wstring name = L"unknown";
-		if (player != NULL)
+		if (player)
 			name = narrow_to_wide(player->getName());
 		// Add name to information string
 		if(!first)
@@ -3540,7 +3527,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version
 	RemotePlayer *player = m_env->getPlayer(name);
 
 	// If player is already connected, cancel
-	if (player != NULL && player->peer_id != 0) {
+	if (player && player->peer_id != 0) {
 		infostream<<"emergePlayer(): Player already connected"<<std::endl;
 		return NULL;
 	}
@@ -3548,7 +3535,7 @@ PlayerSAO* Server::emergePlayer(const char *name, u16 peer_id, u16 proto_version
 	/*
 		If player with the wanted peer_id already exists, cancel.
 	*/
-	if (m_env->getPlayer(peer_id) != NULL) {
+	if (m_env->getPlayer(peer_id)) {
 		infostream<<"emergePlayer(): Player with wrong name but same"
 				" peer_id already exists"<<std::endl;
 		return NULL;

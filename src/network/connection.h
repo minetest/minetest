@@ -586,6 +586,10 @@ enum PeerChangeType
 };
 struct PeerChange
 {
+	PeerChange(PeerChangeType t, u16 _peer_id, bool _timeout):
+		type(t), peer_id(_peer_id), timeout(_timeout) {}
+	PeerChange() = delete;
+
 	PeerChangeType type;
 	u16 peer_id;
 	bool timeout;
