@@ -77,8 +77,18 @@ public:
 
 class RenderingCoreStereo: public RenderingCore
 {
+protected:
+	float parallax_strength;
+
 public:
+	enum class Eye
+	{
+		Left = -1,
+		Right = 1,
+	};
 	RenderingCoreStereo(irr::IrrlichtDevice *_device);
+	virtual void use_eye(Eye eye);
+	virtual void use_default();
 };
 
 class RenderingCoreAnaglyph: public RenderingCoreStereo
@@ -86,6 +96,8 @@ class RenderingCoreAnaglyph: public RenderingCoreStereo
 public:
 	RenderingCoreAnaglyph(irr::IrrlichtDevice *_device);
 	void draw() override;
+	void use_eye(Eye eye) override;
+	void use_default() override;
 };
 
 class RenderingCoreDouble: public RenderingCoreStereo
