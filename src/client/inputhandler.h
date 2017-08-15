@@ -180,8 +180,9 @@ private:
 class InputHandler
 {
 public:
-	InputHandler() {}
-	virtual ~InputHandler() {}
+	InputHandler() = default;
+
+	virtual ~InputHandler() = default;
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
@@ -243,9 +244,10 @@ public:
 			return RenderingEngine::get_raw_device()
 					->getCursorControl()
 					->getPosition();
-		} else {
-			return m_mousepos;
 		}
+
+		return m_mousepos;
+
 	}
 	virtual void setMousePos(s32 x, s32 y)
 	{
@@ -287,7 +289,8 @@ private:
 class RandomInputHandler : public InputHandler
 {
 public:
-	RandomInputHandler() {}
+	RandomInputHandler() = default;
+
 	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }

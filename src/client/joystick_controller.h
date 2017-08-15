@@ -52,7 +52,8 @@ struct JoystickCombination {
 
 struct JoystickButtonCmb : public JoystickCombination {
 
-	JoystickButtonCmb() {}
+	JoystickButtonCmb() = default;
+
 	JoystickButtonCmb(GameKeyType key, u32 filter_mask, u32 compare_mask) :
 		filter_mask(filter_mask),
 		compare_mask(compare_mask)
@@ -68,7 +69,8 @@ struct JoystickButtonCmb : public JoystickCombination {
 
 struct JoystickAxisCmb : public JoystickCombination {
 
-	JoystickAxisCmb() {}
+	JoystickAxisCmb() = default;
+
 	JoystickAxisCmb(GameKeyType key, u16 axis_to_compare, int direction, s16 thresh) :
 		axis_to_compare(axis_to_compare),
 		direction(direction),
