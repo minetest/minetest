@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <string>
 #include "irrlichttypes_extrabloated.h"
 #include "debug.h"
@@ -31,6 +32,8 @@ class Client;
 class LocalPlayer;
 class Hud;
 class Minimap;
+
+class RenderingCore;
 
 class RenderingEngine
 {
@@ -161,6 +164,7 @@ private:
 
 	video::ITexture *draw_hud();
 
+	std::unique_ptr<RenderingCore> core;
 	Camera *camera;
 	Client *client;
 	LocalPlayer *player;

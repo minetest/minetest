@@ -29,6 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "clientmap.h"
 #include "renderingengine.h"
+#include "renderingcore.h"
 #include "inputhandler.h"
 #include "gettext.h"
 
@@ -56,8 +57,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 bits = g_settings->getU16("fullscreen_bpp");
 	u16 fsaa = g_settings->getU16("fsaa");
 
+	const std::string &draw_mode = g_settings->get("3d_mode");
 	// stereo buffer required for pageflip stereo
-	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
+	bool stereo_buffer = draw_mode == "pageflip";
 
 	// Determine driver
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
@@ -99,12 +101,26 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	m_device = createDeviceEx(params);
 	driver = m_device->getVideoDriver();
-	smgr = m_device->getSceneManager();
+
+	if (draw_mode == "anaglyph")
+		core.reset(new RenderingCoreAnaglyph(m_device));
+	else if (draw_mode == "interlaced")
+		core.reset(new RenderingCoreInterlaced(m_device));
+	else if (draw_mode == "sidebyside")
+		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::SideBySide));
+	else if (draw_mode == "topbottom")
+		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::TopBottom));
+	else if (draw_mode == "pageflip")
+		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::Pageflip));
+	else
+		core.reset(new RenderingCorePlain(m_device));
+
 	s_singleton = this;
 }
 
 RenderingEngine::~RenderingEngine()
 {
+	core.reset();
 	m_device->drop();
 	s_singleton = nullptr;
 }
@@ -439,74 +455,9 @@ void RenderingEngine::_draw_scene(Camera *_camera, Client *_client, LocalPlayer 
 		const v2u32 &_screensize, const video::SColor &_skycolor, bool _show_hud,
 		bool _show_minimap)
 {
-	camera = _camera;
-	client = _client;
-	player = _player;
-	mapper = _mapper;
-	hud = _hud;
-
-	screensize = _screensize;
-	skycolor = _skycolor;
-	show_hud = _show_hud;
-	show_minimap = _show_minimap;
-
-	guienv = _guienv;
-
-	draw_wield_tool =
-			(show_hud && (player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-					camera->getCameraMode() < CAMERA_MODE_THIRD);
-
-	draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			       (camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-
-#ifdef HAVE_TOUCHSCREENGUI
-	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
-	} catch (SettingNotFoundException) {
-	}
-#endif
-
-	const std::string &draw_mode = g_settings->get("3d_mode");
-
-	if (draw_mode == "anaglyph") {
-		draw_anaglyph_3d_mode();
-		draw_crosshair = false;
-	} else if (draw_mode == "interlaced") {
-		draw_interlaced_3d_mode();
-		draw_crosshair = false;
-	} else if (draw_mode == "sidebyside") {
-		draw_sidebyside_3d_mode();
-		show_hud = false;
-	} else if (draw_mode == "topbottom") {
-		draw_top_bottom_3d_mode();
-		show_hud = false;
-	} else if (draw_mode == "pageflip") {
-		draw_pageflip_3d_mode();
-		draw_crosshair = false;
-		show_hud = false;
-	} else {
-		draw_plain();
-	}
-
-	/*
-		Post effects
-	*/
-	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
-
-	// TODO how to make those 3d too
-	if (show_hud) {
-		if (draw_crosshair)
-			hud->drawCrosshair();
-
-		hud->drawHotbar(client->getPlayerItem());
-		hud->drawLuaElements(camera->getOffset());
-		camera->drawNametags();
-
-		if (mapper && show_minimap)
-			mapper->drawMinimap();
-	}
-
-	guienv->drawAll();
+	core->setup(_camera, _client, _player, _hud, _mapper, _guienv,
+		_screensize, _skycolor, _show_hud, _show_minimap);
+	core->draw();
 }
 
 void RenderingEngine::draw_anaglyph_3d_mode()
