@@ -29,7 +29,7 @@ class RenderingEngine;
 class ClientLauncher
 {
 public:
-	ClientLauncher() {}
+	ClientLauncher() = default;
 
 	~ClientLauncher();
 

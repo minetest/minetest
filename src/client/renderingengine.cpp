@@ -419,8 +419,7 @@ std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()
 	for (s32 i = 0; i != num_modes; i++) {
 		core::dimension2d<u32> mode_res = modelist->getVideoModeResolution(i);
 		u32 mode_depth = (u32)modelist->getVideoModeDepth(i);
-		mlist.push_back(core::vector3d<u32>(
-				mode_res.Width, mode_res.Height, mode_depth));
+		mlist.emplace_back(mode_res.Width, mode_res.Height, mode_depth);
 	}
 
 	nulldevice->drop();

@@ -90,8 +90,10 @@ struct TextureFromMeshParams
 class ISimpleTextureSource
 {
 public:
-	ISimpleTextureSource(){}
-	virtual ~ISimpleTextureSource(){}
+	ISimpleTextureSource() = default;
+
+	virtual ~ISimpleTextureSource() = default;
+
 	virtual video::ITexture* getTexture(
 			const std::string &name, u32 *id = nullptr) = 0;
 };
@@ -99,8 +101,10 @@ public:
 class ITextureSource : public ISimpleTextureSource
 {
 public:
-	ITextureSource(){}
-	virtual ~ITextureSource(){}
+	ITextureSource() = default;
+
+	virtual ~ITextureSource() = default;
+
 	virtual u32 getTextureId(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
 	virtual video::ITexture* getTexture(u32 id)=0;
@@ -126,8 +130,10 @@ public:
 class IWritableTextureSource : public ITextureSource
 {
 public:
-	IWritableTextureSource(){}
-	virtual ~IWritableTextureSource(){}
+	IWritableTextureSource() = default;
+
+	virtual ~IWritableTextureSource() = default;
+
 	virtual u32 getTextureId(const std::string &name)=0;
 	virtual std::string getTextureName(u32 id)=0;
 	virtual video::ITexture* getTexture(u32 id)=0;
@@ -170,7 +176,7 @@ enum MaterialType{
 // Ignored if MATERIAL_FLAG_CRACK is not set.
 #define MATERIAL_FLAG_CRACK_OVERLAY 0x04
 #define MATERIAL_FLAG_ANIMATION 0x08
-#define MATERIAL_FLAG_HIGHLIGHTED 0x10
+//#define MATERIAL_FLAG_HIGHLIGHTED 0x10
 #define MATERIAL_FLAG_TILEABLE_HORIZONTAL 0x20
 #define MATERIAL_FLAG_TILEABLE_VERTICAL 0x40
 
@@ -180,7 +186,8 @@ enum MaterialType{
 */
 struct FrameSpec
 {
-	FrameSpec() {}
+	FrameSpec() = default;
+
 	u32 texture_id = 0;
 	video::ITexture *texture = nullptr;
 	video::ITexture *normal_texture = nullptr;
@@ -192,7 +199,7 @@ struct FrameSpec
 //! Defines a layer of a tile.
 struct TileLayer
 {
-	TileLayer() {}
+	TileLayer() = default;
 
 	/*!
 	 * Two layers are equal if they can be merged.
@@ -232,8 +239,7 @@ struct TileLayer
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
 		}
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
-			? true : false;
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
 			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 		}
@@ -244,8 +250,7 @@ struct TileLayer
 
 	void applyMaterialOptionsWithShaders(video::SMaterial &material) const
 	{
-		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING)
-			? true : false;
+		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
 			material.TextureLayer[0].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
 			material.TextureLayer[1].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
