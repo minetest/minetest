@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GETTEXT_HEADER
 
 #include "config.h" // for USE_GETTEXT
+#include <string>
 
 #if USE_GETTEXT
 	#include <libintl.h>
