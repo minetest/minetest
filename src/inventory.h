@@ -123,20 +123,13 @@ struct ItemStack
 	// Returns true if the item is (was) a tool
 	bool addWear(s32 amount, IItemDefManager *itemdef)
 	{
-		if(getDefinition(itemdef).type == ITEM_TOOL)
-		{
-			if(amount > 65535 - wear)
-				clear();
-			else if(amount < -wear)
-				wear = 0;
-			else
-				wear += amount;
-			return true;
-		}
+		if(amount > 65535 - wear && getDefinition(itemdef).type == ITEM_TOOL)
+			clear();
+		else if(amount < -wear)
+			wear = 0;
 		else
-		{
-			return false;
-		}
+			wear += amount;
+		return true;
 	}
 
 	// If possible, adds newitem to this item.
