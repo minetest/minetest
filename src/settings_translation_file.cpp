@@ -245,6 +245,8 @@ fake_function() {
 	gettext("Field of view while zooming in degrees.\nThis requires the \"zoom\" privilege on the server.");
 	gettext("Gamma");
 	gettext("Adjust the gamma encoding for the light tables. Higher numbers are brighter.\nThis setting is for the client only and is ignored by the server.");
+	gettext("Darkness sharpness");
+	gettext("Lightness sharpness");
 	gettext("Texture path");
 	gettext("Path to texture directory. All textures are first searched from here.");
 	gettext("Video driver");
