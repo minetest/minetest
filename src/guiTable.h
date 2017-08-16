@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 
-#ifndef GUITABLE_HEADER
-#define GUITABLE_HEADER
+#pragma once
 
 #include <map>
 #include <set>
@@ -256,6 +255,4 @@ protected:
 	static void alignContent(Cell *cell, s32 xmax, s32 content_width,
 			s32 align);
 };
-
-#endif
 

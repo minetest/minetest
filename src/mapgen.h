@@ -19,8 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_HEADER
-#define MAPGEN_HEADER
+#pragma once
 
 #include "noise.h"
 #include "nodedef.h"
@@ -300,4 +299,3 @@ protected:
 	int lava_depth;
 };
 
-#endif

@@ -22,8 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mods.h"
 #include <json/json.h>
 
-#ifndef SERVERLIST_HEADER
-#define SERVERLIST_HEADER
+#pragma once
 
 typedef Json::Value ServerListSpec;
 
@@ -52,4 +51,3 @@ void sendAnnounce(AnnounceAction, u16 port,
 
 } // namespace ServerList
 
-#endif

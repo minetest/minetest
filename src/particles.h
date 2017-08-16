@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PARTICLES_HEADER
-#define PARTICLES_HEADER
+#pragma once
 
 #include <iostream>
 #include "irrlichttypes_extrabloated.h"
@@ -211,4 +210,3 @@ private:
 	std::mutex m_spawner_list_lock;
 };
 
-#endif

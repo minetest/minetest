@@ -3,8 +3,7 @@
 	Otherwise use default values
 */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #define STRINGIFY(x) #x
 #define STR(x) STRINGIFY(x)
@@ -39,4 +38,3 @@
 		" USE_LUAJIT=" STR(USE_LUAJIT) \
 		" STATIC_SHAREDIR=" STR(STATIC_SHAREDIR)
 
-#endif

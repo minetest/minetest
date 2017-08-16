@@ -46,8 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	The QUICKTUNE macros shouldn't generally be left in committed code.
 */
 
-#ifndef QUICKTUNE_HEADER
-#define QUICKTUNE_HEADER
+#pragma once
 
 #include <string>
 #include <map>
@@ -99,6 +98,4 @@ void updateQuicktuneValue(const std::string &name, QuicktuneValue &val);
 
 #define QUICKTUNE_AUTONAME(type_, var, min_, max_)\
 	QUICKTUNE(type_, var, min_, max_, #var)
-
-#endif
 

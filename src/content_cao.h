@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_CAO_HEADER
-#define CONTENT_CAO_HEADER
+#pragma once
 
 #include <map>
 #include "irrlichttypes_extrabloated.h"
@@ -215,5 +214,3 @@ public:
 	}
 };
 
-
-#endif
