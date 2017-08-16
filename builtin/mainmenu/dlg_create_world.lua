@@ -44,11 +44,14 @@ local function create_world_formspec(dialogdata)
 		end
 	end
 
+	local random_number = math.random(10000, 99999)
+	local random_world_name = "Untitled" .. random_number
+
 	current_seed = core.formspec_escape(current_seed)
 	local retval =
 		"size[11.5,6.5,true]" ..
 		"label[2,0;" .. fgettext("World name") .. "]"..
-		"field[4.5,0.4;6,0.5;te_world_name;;]" ..
+		"field[4.5,0.4;6,0.5;te_world_name;;" .. random_world_name .. "]" ..
 
 		"label[2,1;" .. fgettext("Seed") .. "]"..
 		"field[4.5,1.4;6,0.5;te_seed;;".. current_seed .. "]" ..
