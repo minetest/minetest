@@ -204,9 +204,7 @@ struct ClientEvent
 class PacketCounter
 {
 public:
-	PacketCounter()
-	{
-	}
+	PacketCounter() = default;
 
 	void add(u16 command)
 	{
@@ -223,23 +221,15 @@ public:
 
 	void clear()
 	{
-		for(std::map<u16, u16>::iterator
-				i = m_packets.begin();
-				i != m_packets.end(); ++i)
-		{
-			i->second = 0;
+		for (auto &m_packet : m_packets) {
+			m_packet.second = 0;
 		}
 	}
 
 	void print(std::ostream &o)
 	{
-		for(std::map<u16, u16>::iterator
-				i = m_packets.begin();
-				i != m_packets.end(); ++i)
-		{
-			o<<"cmd "<<i->first
-					<<" count "<<i->second
-					<<std::endl;
+		for (const auto &m_packet : m_packets) {
+			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
 		}
 	}
 
@@ -544,12 +534,12 @@ public:
 		m_client_event_queue.push(event);
 	}
 
-	void showGameChat(const bool show = true);
-	void showGameHud(const bool show = true);
-	void showMinimap(const bool show = true);
-	void showProfiler(const bool show = true);
-	void showGameFog(const bool show = true);
-	void showGameDebug(const bool show = true);
+	void showGameChat(bool show = true);
+	void showGameHud(bool show = true);
+	void showMinimap(bool show = true);
+	void showProfiler(bool show = true);
+	void showGameFog(bool show = true);
+	void showGameDebug(bool show = true);
 
 	const Address getServerAddress()
 	{

@@ -144,9 +144,9 @@ void Client::scanModSubfolder(const std::string &mod_name, const std::string &mo
 {
 	std::string full_path = mod_path + DIR_DELIM + mod_subpath;
 	std::vector<fs::DirListNode> mod = fs::GetDirListing(full_path);
-	for (unsigned int j=0; j < mod.size(); j++){
-		std::string filename = mod[j].name;
-		if (mod[j].dir) {
+	for (const fs::DirListNode &j : mod) {
+		std::string filename = j.name;
+		if (j.dir) {
 			scanModSubfolder(mod_name, mod_path, mod_subpath
 					+ filename + DIR_DELIM);
 			continue;
@@ -230,10 +230,8 @@ Client::~Client()
 	delete m_inventory_from_server;
 
 	// Delete detached inventories
-	for (std::unordered_map<std::string, Inventory*>::iterator
-			i = m_detached_inventories.begin();
-			i != m_detached_inventories.end(); ++i) {
-		delete i->second;
+	for (auto &m_detached_inventorie : m_detached_inventories) {
+		delete m_detached_inventorie.second;
 	}
 
 	// cleanup 3d model meshes on client shutdown
@@ -556,15 +554,13 @@ void Client::step(float dtime)
 		Update positions of sounds attached to objects
 	*/
 	{
-		for(std::unordered_map<int, u16>::iterator i = m_sounds_to_objects.begin();
-				i != m_sounds_to_objects.end(); ++i) {
-			int client_id = i->first;
-			u16 object_id = i->second;
+		for (auto &m_sounds_to_object : m_sounds_to_objects) {
+			int client_id = m_sounds_to_object.first;
+			u16 object_id = m_sounds_to_object.second;
 			ClientActiveObject *cao = m_env.getActiveObject(object_id);
-			if(!cao)
+			if (!cao)
 				continue;
-			v3f pos = cao->getPosition();
-			m_sound->updateSoundPosition(client_id, pos);
+			m_sound->updateSoundPosition(client_id, cao->getPosition());
 		}
 	}
 
@@ -628,8 +624,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		NULL
 	};
 	name = removeStringEnd(filename, image_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Attempting to load image "
 		<<"file \""<<filename<<"\""<<std::endl;
 
@@ -644,18 +639,17 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 
 		// Read image
 		video::IImage *img = vdrv->createImageFromFile(rfile);
-		if(!img){
+		if (!img) {
 			errorstream<<"Client: Cannot create image from data of "
 					<<"file \""<<filename<<"\""<<std::endl;
 			rfile->drop();
 			return false;
 		}
-		else {
-			m_tsrc->insertSourceImage(filename, img);
-			img->drop();
-			rfile->drop();
-			return true;
-		}
+
+		m_tsrc->insertSourceImage(filename, img);
+		img->drop();
+		rfile->drop();
+		return true;
 	}
 
 	const char *sound_ext[] = {
@@ -664,8 +658,7 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		".ogg", NULL
 	};
 	name = removeStringEnd(filename, sound_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Attempting to load sound "
 		<<"file \""<<filename<<"\""<<std::endl;
 		m_sound->loadSoundData(name, data);
@@ -676,9 +669,9 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		".x", ".b3d", ".md2", ".obj",
 		NULL
 	};
+
 	name = removeStringEnd(filename, model_ext);
-	if(name != "")
-	{
+	if (!name.empty()) {
 		verbosestream<<"Client: Storing model into memory: "
 				<<"\""<<filename<<"\""<<std::endl;
 		if(m_mesh_data.count(filename))
@@ -732,9 +725,8 @@ void Client::request_media(const std::vector<std::string> &file_requests)
 
 	pkt << (u16) (file_requests_size & 0xFFFF);
 
-	for(std::vector<std::string>::const_iterator i = file_requests.begin();
-			i != file_requests.end(); ++i) {
-		pkt << (*i);
+	for (const std::string &file_request : file_requests) {
+		pkt << file_request;
 	}
 
 	Send(&pkt);
@@ -1020,7 +1012,7 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 				&verifier, &salt);
 
 			NetworkPacket resp_pkt(TOSERVER_FIRST_SRP, 0);
-			resp_pkt << salt << verifier << (u8)((m_password == "") ? 1 : 0);
+			resp_pkt << salt << verifier << (u8)((m_password.empty()) ? 1 : 0);
 
 			Send(&resp_pkt);
 			break;
@@ -1062,12 +1054,8 @@ void Client::sendDeletedBlocks(std::vector<v3s16> &blocks)
 
 	pkt << (u8) blocks.size();
 
-	u32 k = 0;
-	for(std::vector<v3s16>::iterator
-			j = blocks.begin();
-			j != blocks.end(); ++j) {
-		pkt << *j;
-		k++;
+	for (const v3s16 &block : blocks) {
+		pkt << block;
 	}
 
 	Send(&pkt);
@@ -1089,9 +1077,8 @@ void Client::sendRemovedSounds(std::vector<s32> &soundList)
 
 	pkt << (u16) (server_ids & 0xFFFF);
 
-	for(std::vector<s32>::iterator i = soundList.begin();
-			i != soundList.end(); ++i)
-		pkt << *i;
+	for (int sound_id : soundList)
+		pkt << sound_id;
 
 	Send(&pkt);
 }
@@ -1354,10 +1341,8 @@ void Client::removeNode(v3s16 p)
 	catch(InvalidPositionException &e) {
 	}
 
-	for(std::map<v3s16, MapBlock *>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i) {
-		addUpdateMeshTaskWithEdge(i->first, false, true);
+	for (const auto &modified_block : modified_blocks) {
+		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}
 }
 
@@ -1374,7 +1359,7 @@ MapNode Client::getNode(v3s16 p, bool *is_valid_position)
 		v3s16 ppos = floatToInt(m_env.getLocalPlayer()->getPosition(), BS);
 		if ((u32) ppos.getDistanceFrom(p) > m_csm_noderange_limit) {
 			*is_valid_position = false;
-			return MapNode();
+			return {};
 		}
 	}
 	return m_env.getMap().getNodeNoEx(p, is_valid_position);
@@ -1393,10 +1378,8 @@ void Client::addNode(v3s16 p, MapNode n, bool remove_metadata)
 	catch(InvalidPositionException &e) {
 	}
 
-	for(std::map<v3s16, MapBlock *>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i) {
-		addUpdateMeshTaskWithEdge(i->first, false, true);
+	for (const auto &modified_block : modified_blocks) {
+		addUpdateMeshTaskWithEdge(modified_block.first, false, true);
 	}
 }
 
@@ -1567,7 +1550,7 @@ bool Client::getChatMessage(std::wstring &res)
 void Client::typeChatMessage(const std::wstring &message)
 {
 	// Discard empty line
-	if(message == L"")
+	if (message.empty())
 		return;
 
 	// If message was ate by script API, don't send it to server
@@ -1677,8 +1660,8 @@ float Client::mediaReceiveProgress()
 {
 	if (m_media_downloader)
 		return m_media_downloader->getProgress();
-	else
-		return 1.0; // downloader only exists when not yet done
+
+	return 1.0; // downloader only exists when not yet done
 }
 
 typedef struct TextureUpdateArgs {
@@ -1746,7 +1729,7 @@ void Client::afterContentReceived()
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	std::string texture_path = g_settings->get("texture_path");
-	if (texture_path != "" && fs::IsDir(texture_path))
+	if (!texture_path.empty() && fs::IsDir(texture_path))
 		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
