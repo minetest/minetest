@@ -622,13 +622,22 @@ std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 	std::vector<u16> reply;
 	MutexAutoLock clientslock(m_clients_mutex);
 
-	for (RemoteClientMap::iterator i = m_clients.begin();
-		i != m_clients.end(); ++i) {
-		if (i->second->getState() >= min_state)
-			reply.push_back(i->second->peer_id);
+	for (const auto &m_client : m_clients) {
+		if (m_client.second->getState() >= min_state)
+			reply.push_back(m_client.second->peer_id);
 	}
 
 	return reply;
+}
+
+/**
+ * Verify if user limit was reached.
+ * User limit count all clients from HelloSent state (MT protocol user) to Active state
+ * @return true if user limit was reached
+ */
+bool ClientInterface::isUserLimitReached()
+{
+	return getClientIDs(CS_HelloSent).size() >= g_settings->getU16("max_users");
 }
 
 void ClientInterface::step(float dtime)
