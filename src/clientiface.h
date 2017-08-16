@@ -449,6 +449,9 @@ public:
 	/* get list of active client id's */
 	std::vector<u16> getClientIDs(ClientState min_state=CS_Active);
 
+	/* verify is server user limit was reached */
+	bool isUserLimitReached();
+
 	/* get list of client player names */
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
@@ -493,7 +496,6 @@ public:
 	}
 
 	static std::string state2Name(ClientState state);
-
 protected:
 	//TODO find way to avoid this functions
 	void lock() { m_clients_mutex.lock(); }
