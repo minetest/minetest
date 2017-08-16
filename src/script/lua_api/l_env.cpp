@@ -37,6 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
+#ifndef SERVER
+#include "client.h"
+#endif
 
 struct EnumString ModApiEnvMod::es_ClearObjectsMode[] =
 {

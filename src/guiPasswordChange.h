@@ -21,8 +21,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
-#include "client.h"
 #include <string>
+
+class Client;
 
 class GUIPasswordChange : public GUIModalMenu
 {

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_minimap.h"
 #include "lua_api/l_internal.h"
 #include "common/c_converter.h"
+#include "client.h"
 #include "minimap.h"
 #include "settings.h"
 

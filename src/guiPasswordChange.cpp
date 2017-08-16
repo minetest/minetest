@@ -17,9 +17,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include "guiPasswordChange.h"
-#include "debug.h"
-#include "serialization.h"
-#include <string>
+#include "client.h"
 #include <IGUICheckBox.h>
 #include <IGUIEditBox.h>
 #include <IGUIButton.h>
