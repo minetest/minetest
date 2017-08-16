@@ -107,11 +107,9 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	else if (draw_mode == "interlaced")
 		core.reset(new RenderingCoreInterlaced(m_device));
 	else if (draw_mode == "sidebyside")
-		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::SideBySide));
-	else if (draw_mode == "topbottom")
-		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::TopBottom));
+		core.reset(new RenderingCoreSideBySide(m_device));
 	else if (draw_mode == "pageflip")
-		core.reset(new RenderingCoreDouble(m_device, RenderingCoreDouble::Mode::Pageflip));
+		core.reset(new RenderingCorePageflip(m_device));
 	else
 		core.reset(new RenderingCorePlain(m_device));
 
