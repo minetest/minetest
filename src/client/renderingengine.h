@@ -132,13 +132,6 @@ public:
 	static std::vector<irr::video::E_DRIVER_TYPE> getSupportedVideoDrivers();
 
 private:
-	enum parallax_sign
-	{
-		LEFT = -1,
-		RIGHT = 1,
-		EYECOUNT = 2
-	};
-
 	void _draw_load_screen(const std::wstring &text, gui::IGUIEnvironment *guienv,
 			ITextureSource *tsrc, float dtime = 0, int percent = 0,
 			bool clouds = true);
@@ -148,39 +141,8 @@ private:
 			const v2u32 &screensize, const video::SColor &skycolor,
 			bool show_hud, bool show_minimap);
 
-	void draw_anaglyph_3d_mode();
-	void draw_interlaced_3d_mode();
-	void draw_sidebyside_3d_mode();
-	void draw_top_bottom_3d_mode();
-	void draw_pageflip_3d_mode();
-	void draw_plain();
-
-	void init_texture(const v2u32 &size, video::ITexture **texture, const char *name);
-	void init_texture(video::ITexture **texture, const char *name);
-
-	video::ITexture *draw_image(parallax_sign psign,
-			const irr::core::matrix4 &startMatrix,
-			const irr::core::vector3df &focusPoint);
-
-	video::ITexture *draw_hud();
-
 	std::unique_ptr<RenderingCore> core;
-	Camera *camera;
-	Client *client;
-	LocalPlayer *player;
-	Minimap *mapper;
-	Hud *hud;
-
-	v2u32 screensize;
-	video::SColor skycolor;
-	bool show_hud;
-	bool show_minimap;
-	bool draw_wield_tool;
-	bool draw_crosshair;
-
 	irr::IrrlichtDevice *m_device = nullptr;
 	irr::video::IVideoDriver *driver;
-	irr::scene::ISceneManager *smgr;
-	irr::gui::IGUIEnvironment *guienv;
 	static RenderingEngine *s_singleton;
 };
