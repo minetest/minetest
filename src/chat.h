@@ -73,7 +73,7 @@ class ChatBuffer
 {
 public:
 	ChatBuffer(u32 scrollback);
-	~ChatBuffer();
+	~ChatBuffer() = default;
 
 	// Append chat line
 	// Removes oldest chat line if scrollback size is reached
@@ -145,7 +145,7 @@ class ChatPrompt
 {
 public:
 	ChatPrompt(const std::wstring &prompt, u32 history_limit);
-	~ChatPrompt();
+	~ChatPrompt() = default;
 
 	// Input character or string
 	void input(wchar_t ch);
@@ -252,7 +252,7 @@ class ChatBackend
 {
 public:
 	ChatBackend();
-	~ChatBackend();
+	~ChatBackend() = default;
 
 	// Add chat message
 	void addMessage(std::wstring name, std::wstring text);

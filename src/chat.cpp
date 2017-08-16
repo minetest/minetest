@@ -34,10 +34,6 @@ ChatBuffer::ChatBuffer(u32 scrollback):
 	m_empty_formatted_line.first = true;
 }
 
-ChatBuffer::~ChatBuffer()
-{
-}
-
 void ChatBuffer::addLine(std::wstring name, std::wstring text)
 {
 	ChatLine line(name, text);
@@ -79,9 +75,8 @@ const ChatLine& ChatBuffer::getLine(u32 index) const
 
 void ChatBuffer::step(f32 dtime)
 {
-	for (u32 i = 0; i < m_unformatted.size(); ++i)
-	{
-		m_unformatted[i].age += dtime;
+	for (ChatLine &line : m_unformatted) {
+		line.age += dtime;
 	}
 }
 
@@ -198,8 +193,8 @@ const ChatFormattedLine& ChatBuffer::getFormattedLine(u32 row) const
 	s32 index = m_scroll + (s32) row;
 	if (index >= 0 && index < (s32) m_formatted.size())
 		return m_formatted[index];
-	else
-		return m_empty_formatted_line;
+
+	return m_empty_formatted_line;
 }
 
 void ChatBuffer::scroll(s32 rows)
@@ -357,10 +352,11 @@ s32 ChatBuffer::getTopScrollPos() const
 	s32 rows = (s32) m_rows;
 	if (rows == 0)
 		return 0;
-	else if (formatted_count <= rows)
+
+	if (formatted_count <= rows)
 		return formatted_count - rows;
-	else
-		return 0;
+
+	return 0;
 }
 
 s32 ChatBuffer::getBottomScrollPos() const
@@ -378,10 +374,6 @@ s32 ChatBuffer::getBottomScrollPos() const
 ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
 	m_prompt(prompt),
 	m_history_limit(history_limit)
-{
-}
-
-ChatPrompt::~ChatPrompt()
 {
 }
 
@@ -484,18 +476,15 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
-	for (std::list<std::string>::const_iterator
-			i = names.begin();
-			i != names.end(); ++i)
-	{
-		if (str_starts_with(narrow_to_wide(*i), prefix, true))
-		{
-			std::wstring completion = narrow_to_wide(*i);
+	for (const std::string &name : names) {
+		if (str_starts_with(narrow_to_wide(name), prefix, true)) {
+			std::wstring completion = narrow_to_wide(name);
 			if (prefix_start == 0)
 				completion += L": ";
 			completions.push_back(completion);
 		}
 	}
+
 	if (completions.empty())
 		return;
 
@@ -655,10 +644,6 @@ ChatBackend::ChatBackend():
 	m_console_buffer(500),
 	m_recent_buffer(6),
 	m_prompt(L"]", 500)
-{
-}
-
-ChatBackend::~ChatBackend()
 {
 }
 

@@ -515,7 +515,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -819,7 +819,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -858,7 +858,8 @@ inline s16 CavesV6::getSurfaceFromHeightmap(v3s16 p)
 			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
 		return heightmap[index];
-	} else {
-		return water_level;
 	}
+
+	return water_level;
+
 }
