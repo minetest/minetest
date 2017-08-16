@@ -630,9 +630,14 @@ std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 	return reply;
 }
 
+/**
+ * Verify if user limit was reached.
+ * User limit count all clients from HelloSent state (MT protocol user) to Active state
+ * @return true if user limit was reached
+ */
 bool ClientInterface::isUserLimitReached()
 {
-	return getClientIDs(CS_Active).size() >= g_settings->getU16("max_users");
+	return getClientIDs(CS_HelloSent).size() >= g_settings->getU16("max_users");
 }
 
 void ClientInterface::step(float dtime)
