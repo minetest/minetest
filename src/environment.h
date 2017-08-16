@@ -36,9 +36,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <atomic>
 #include <mutex>
 #include "irr_v3d.h"
-#include "activeobject.h"
-#include "util/numeric.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
+#include "util/basic_macros.h"
 
 class IGameDef;
 class Map;

@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "client.h"
 #include "networkprotocol.h"
-#include "networkpacket.h"
+
+class NetworkPacket;
 
 enum ToClientConnectionState {
 	TOCLIENT_STATE_NOT_CONNECTED,

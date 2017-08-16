@@ -23,7 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "server.h"
 #include "networkprotocol.h"
-#include "networkpacket.h"
+
+class NetworkPacket;
 
 enum ToServerConnectionState {
 	TOSERVER_STATE_NOT_CONNECTED,

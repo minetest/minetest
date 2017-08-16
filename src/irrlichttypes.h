@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
  *       regardless of the compiler.
  */
 #ifndef _MSC_VER
-#	include <stdint.h>
+#	include <cstdint>
 #endif
 
 #include <irrTypes.h>

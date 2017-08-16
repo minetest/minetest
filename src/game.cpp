@@ -3445,8 +3445,7 @@ void Game::updateCamera(u32 busy_time, f32 dtime)
 	float tool_reload_ratio = runData.time_from_last_punch / full_punch_interval;
 
 	tool_reload_ratio = MYMIN(tool_reload_ratio, 1.0);
-	camera->update(player, dtime, busy_time / 1000.0f, tool_reload_ratio,
-		      client->getEnv());
+	camera->update(player, dtime, busy_time / 1000.0f, tool_reload_ratio);
 	camera->step(dtime);
 
 	v3f camera_position = camera->getPosition();

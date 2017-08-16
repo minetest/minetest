@@ -30,7 +30,7 @@ extern "C" {
 }
 
 #ifndef SERVER
-#include "client.h"
+class Client;
 #endif
 
 class ScriptApiBase;

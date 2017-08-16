@@ -564,6 +564,20 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 }
 
 /*
+	ConnectionCommand
+ */
+
+void ConnectionCommand::send(u16 peer_id_, u8 channelnum_, NetworkPacket *pkt,
+	bool reliable_)
+{
+	type = CONNCMD_SEND;
+	peer_id = peer_id_;
+	channelnum = channelnum_;
+	data = pkt->oldForgePacket();
+	reliable = reliable_;
+}
+
+/*
 	Channel
 */
 

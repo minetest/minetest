@@ -21,17 +21,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define MINIMAP_HEADER
 
 #include "irrlichttypes_extrabloated.h"
-#include "client.h"
+#include "util/thread.h"
 #include "voxel.h"
-#include "threading/semaphore.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "camera.h"
+
+class Client;
+class ITextureSource;
+class IShaderSource;
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
-
 
 enum MinimapMode {
 	MINIMAP_MODE_OFF,

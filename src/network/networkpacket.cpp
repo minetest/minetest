@@ -18,7 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "networkpacket.h"
-#include "debug.h"
+#include <sstream>
 #include "exceptions.h"
 #include "util/serialize.h"
 

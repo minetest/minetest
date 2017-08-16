@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ISceneManager.h>
 #include "environment.h"
 #include "clientobject.h"
+#include "util/numeric.h"
 
 class ClientSimpleObject;
 class ClientMap;

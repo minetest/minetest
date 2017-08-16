@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <thread>
 #include "common/c_internal.h"
 #include "cpp_api/s_base.h"
+#include "threading/mutex_auto_lock.h"
 
 #ifdef SCRIPTAPI_LOCK_DEBUG
 #include "debug.h" // assert()

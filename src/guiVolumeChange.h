@@ -22,7 +22,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
-#include "client.h"
 #include <string>
 
 class GUIVolumeChange : public GUIModalMenu
@@ -32,7 +31,7 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr);
 	~GUIVolumeChange();
-	
+
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
@@ -42,7 +41,7 @@ public:
 	void drawMenu();
 
 	bool OnEvent(const SEvent& event);
-	
+
 	bool pausesGame() { return true; }
 };
 

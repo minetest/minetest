@@ -247,8 +247,8 @@ public:
 		}
 
 		return m_mousepos;
-
 	}
+
 	virtual void setMousePos(s32 x, s32 y)
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {

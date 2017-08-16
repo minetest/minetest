@@ -24,8 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <deque>
 #include <map>
 
-#include "threading/thread.h"
 #include "threading/semaphore.h"
+#include "threading/thread.h"
 #include "debug.h"
 #include "lua.h"
 #include "cpp_api/s_base.h"
@@ -39,7 +39,7 @@ class AsyncEngine;
 // Data required to queue a job
 struct LuaJobInfo
 {
-	LuaJobInfo() {};
+	LuaJobInfo() = default;
 
 	// Function to be called in async environment
 	std::string serializedFunction = "";

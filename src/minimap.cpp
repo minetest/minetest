@@ -18,16 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "minimap.h"
-#include "threading/mutex_auto_lock.h"
-#include "threading/semaphore.h"
+#include "client.h"
 #include "clientmap.h"
 #include "settings.h"
-#include "nodedef.h"
-#include "porting.h"
-#include "util/numeric.h"
-#include "util/string.h"
 #include "mapblock.h"
-#include <math.h>
 #include "client/renderingengine.h"
 
 
@@ -37,16 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MinimapUpdateThread::~MinimapUpdateThread()
 {
-	for (std::map<v3s16, MinimapMapblock *>::iterator
-			it = m_blocks_cache.begin();
-			it != m_blocks_cache.end(); ++it) {
-		delete it->second;
+	for (auto &it : m_blocks_cache) {
+		delete it.second;
 	}
 
-	for (std::deque<QueuedMinimapUpdate>::iterator
-			it = m_update_queue.begin();
-			it != m_update_queue.end(); ++it) {
-		QueuedMinimapUpdate &q = *it;
+	for (auto &q : m_update_queue) {
 		delete q.data;
 	}
 }

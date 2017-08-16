@@ -24,12 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventory.h"
 #include "mesh.h"
 #include "client/tile.h"
-#include "util/numeric.h"
 #include <ICameraSceneNode.h>
 #include <ISceneNode.h>
 #include <list>
-
-#include "client.h"
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -120,7 +117,7 @@ public:
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, f32 busytime,
-			f32 tool_reload_ratio, ClientEnvironment &c_env);
+			f32 tool_reload_ratio);
 
 	// Update render distance
 	void updateViewingRange();

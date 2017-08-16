@@ -22,6 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <cmath>
 #include <IFileSystem.h>
+#include "client.h"
+#include "network/clientopcodes.h"
+#include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/renderingengine.h"
 #include "util/auth.h"
@@ -30,8 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include "util/string.h"
 #include "util/srp.h"
-#include "client.h"
-#include "network/clientopcodes.h"
 #include "filesys.h"
 #include "mapblock_mesh.h"
 #include "mapblock.h"

@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <string>
 #include <thread>
+#include <mutex>
 #include "util/basic_macros.h"
 
 extern "C" {
@@ -30,7 +31,6 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
 

@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 #include <irrlicht.h>
 #include "fontengine.h"
+#include "client.h"
 #include "clouds.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "hud.h"
+#include "localplayer.h"
 #include "camera.h"
 #include "minimap.h"
 #include "clientmap.h"

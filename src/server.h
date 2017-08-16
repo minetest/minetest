@@ -34,16 +34,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "util/basic_macros.h"
 #include "serverenvironment.h"
-#include "chat_interface.h"
 #include "clientiface.h"
 #include "remoteplayer.h"
-#include "network/networkpacket.h"
 #include "chatmessage.h"
 #include <string>
 #include <list>
 #include <map>
 #include <vector>
 
+class ChatEvent;
+struct ChatEventChat;
+struct ChatInterface;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;

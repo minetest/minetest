@@ -111,7 +111,7 @@ struct NoiseParams {
 	float lacunarity = 2.0f;
 	u32 flags = NOISE_FLAG_DEFAULTS;
 
-	NoiseParams() {}
+	NoiseParams() = default;
 
 	NoiseParams(float offset_, float scale_, v3f spread_, s32 seed_,
 		u16 octaves_, float persist_, float lacunarity_,
