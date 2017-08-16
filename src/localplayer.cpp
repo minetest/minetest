@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 #include "content_cao.h"
+#include <cmath>
 
 /*
 	LocalPlayer
@@ -658,10 +659,26 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
-	bool slippery = (itemgroup_get(f.groups, "slippery") != 0);
+	float slip_factor = 1.0f;
+	int slippery = itemgroup_get(f.groups, "slippery");
+	// REMOVE: can override via env variable
+	char *slipenv = getenv("SLIPPERY");
+	if (slipenv)
+		slippery = atoi(slipenv);
+	// REMOVE: switch between original and alternative slipping code
+	if (getenv("NEW_SLIP") != NULL) {
+		if (slippery >= 1) {
+			if (speedH == v3f(0.0f)) {
+				slippery = slippery * 2;
+			}
+			slip_factor = core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
+		}
+		slippery = 0; // disable flag below
+	}
+
 	// Accelerate to target speed with maximum increment
 	accelerateHorizontal(speedH * physics_override_speed,
-			incH * physics_override_speed, slippery);
+			incH * physics_override_speed * slip_factor, slippery > 0);
 	accelerateVertical(speedV * physics_override_speed,
 			incV * physics_override_speed);
 }
@@ -1037,3 +1054,4 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_can_jump = false;
 	}
 }
+
