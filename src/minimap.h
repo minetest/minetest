@@ -23,11 +23,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_extrabloated.h"
 #include "client.h"
 #include "voxel.h"
-#include "threading/semaphore.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "camera.h"
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512

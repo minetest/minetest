@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <map>
 #include <list>
-#include "util/numeric.h"
 #include "mapnode.h"
 #ifndef SERVER
 #include "client/tile.h"

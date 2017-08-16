@@ -283,8 +283,7 @@ void Camera::addArmInertia(f32 player_yaw)
 	}
 }
 
-void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
-		f32 tool_reload_ratio, ClientEnvironment &c_env)
+void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_reload_ratio)
 {
 	// Get player position
 	// Smooth the movement when walking up stairs
@@ -408,19 +407,19 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime,
 
 		// Calculate new position
 		bool abort = false;
-		for (int i = BS; i <= BS*2.75; i++)
-		{
-			my_cp.X = m_camera_position.X + m_camera_direction.X*-i;
-			my_cp.Z = m_camera_position.Z + m_camera_direction.Z*-i;
+		for (int i = BS; i <= BS * 2.75; i++) {
+			my_cp.X = m_camera_position.X + m_camera_direction.X * -i;
+			my_cp.Z = m_camera_position.Z + m_camera_direction.Z * -i;
 			if (i > 12)
-				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y*-i);
+				my_cp.Y = m_camera_position.Y + (m_camera_direction.Y * -i);
 
 			// Prevent camera positioned inside nodes
 			INodeDefManager *nodemgr = m_client->ndef();
-			MapNode n = c_env.getClientMap().getNodeNoEx(floatToInt(my_cp, BS));
+			MapNode n = m_client->getEnv().getClientMap()
+				.getNodeNoEx(floatToInt(my_cp, BS));
+
 			const ContentFeatures& features = nodemgr->get(n);
-			if(features.walkable)
-			{
+			if (features.walkable) {
 				my_cp.X += m_camera_direction.X*-1*-BS/2;
 				my_cp.Z += m_camera_direction.Z*-1*-BS/2;
 				my_cp.Y += m_camera_direction.Y*-1*-BS/2;

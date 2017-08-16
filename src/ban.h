@@ -30,7 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BanManager
 {
 public:
-	BanManager(const std::string &bannfilepath);
+	BanManager(const std::string &banfilepath);
 	~BanManager();
 	void load();
 	void save();

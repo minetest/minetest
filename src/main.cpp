@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "mainmenumanager.h"
 #include "irrlichttypes_extrabloated.h"
+#include "chat_interface.h"
 #include "debug.h"
 #include "unittest/test.h"
 #include "server.h"
@@ -34,10 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "quicktune.h"
 #include "httpfetch.h"
 #include "guiEngine.h"
-#include "map.h"
-#include "player.h"
-#include "mapsector.h"
-#include "fontengine.h"
 #include "gameparams.h"
 #include "database.h"
 #include "config.h"
@@ -47,7 +44,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 #ifndef SERVER
 #include "client/clientlauncher.h"
-
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI

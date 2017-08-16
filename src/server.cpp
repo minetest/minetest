@@ -61,6 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/hex.h"
 #include "database.h"
 #include "chatmessage.h"
+#include "chat_interface.h"
 
 class ClientNotFoundException : public BaseException
 {

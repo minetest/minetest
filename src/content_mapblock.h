@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef CONTENT_MAPBLOCK_HEADER
 #define CONTENT_MAPBLOCK_HEADER
-#include "util/numeric.h"
+
 #include "nodedef.h"
 #include <IMeshManipulator.h>
 

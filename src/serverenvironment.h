@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "environment.h"
 #include "mapnode.h"
 #include "mapblock.h"
+#include "activeobject.h"
 #include <set>
 
 class IGameDef;

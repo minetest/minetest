@@ -24,7 +24,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "socket.h"
 #include "exceptions.h"
 #include "constants.h"
-#include "network/networkpacket.h"
 #include "util/pointer.h"
 #include "util/container.h"
 #include "util/thread.h"
@@ -433,15 +432,8 @@ struct ConnectionCommand
 		type = CONNCMD_DISCONNECT_PEER;
 		peer_id = peer_id_;
 	}
-	void send(u16 peer_id_, u8 channelnum_,
-			NetworkPacket* pkt, bool reliable_)
-	{
-		type = CONNCMD_SEND;
-		peer_id = peer_id_;
-		channelnum = channelnum_;
-		data = pkt->oldForgePacket();
-		reliable = reliable_;
-	}
+
+	void send(u16 peer_id_, u8 channelnum_, NetworkPacket* pkt, bool reliable_);
 
 	void ack(u16 peer_id_, u8 channelnum_, const SharedBuffer<u8> &data_)
 	{

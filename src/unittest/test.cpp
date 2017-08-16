@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "gamedef.h"
 #include "mods.h"
+#include "util/numeric.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;

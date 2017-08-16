@@ -20,9 +20,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifndef NETWORKPACKET_HEADER
 #define NETWORKPACKET_HEADER
 
+#include <SColor.h>
 #include "util/pointer.h"
 #include "util/numeric.h"
-#include "networkprotocol.h"
 
 class NetworkPacket
 {

@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "localplayer.h"
 #include "map.h"
 #include "camera.h" // CameraModes
+#include "client.h"
 #include "wieldmesh.h"
 #include <algorithm>
 #include "client/renderingengine.h"
