@@ -29,8 +29,7 @@
    john@suckerfreegames.com
 */
 
-#ifndef __C_GUI_TTFONT_H_INCLUDED__
-#define __C_GUI_TTFONT_H_INCLUDED__
+#pragma once
 
 #include <irrlicht.h>
 #include <ft2build.h>
@@ -390,5 +389,3 @@ namespace gui
 
 } // end namespace gui
 } // end namespace irr
-
-#endif // __C_GUI_TTFONT_H_INCLUDED__

@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
 
-#ifndef SKY_HEADER
-#define SKY_HEADER
+#pragma once
 
 #define SKY_MATERIAL_COUNT 5
 #define SKY_STAR_COUNT 200
@@ -147,5 +146,3 @@ private:
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
 };
-
-#endif

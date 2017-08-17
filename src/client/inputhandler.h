@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef INPUT_HANDLER_H
-#define INPUT_HANDLER_H
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
@@ -393,5 +392,3 @@ private:
 	bool leftreleased = false;
 	bool rightreleased = false;
 };
-
-#endif

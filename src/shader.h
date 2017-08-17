@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SHADER_HEADER
-#define SHADER_HEADER
+#pragma once
 
 #include <IMaterialRendererServices.h>
 #include "irrlichttypes_bloated.h"
@@ -153,5 +152,3 @@ IWritableShaderSource *createShaderSource();
 
 void dumpShaderProgram(std::ostream &output_stream,
 	const std::string &program_type, const std::string &program);
-
-#endif

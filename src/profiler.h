@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PROFILER_HEADER
-#define PROFILER_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <string>
@@ -198,6 +197,3 @@ private:
 	TimeTaker *m_timer = nullptr;
 	enum ScopeProfilerType m_type;
 };
-
-#endif
-

@@ -28,8 +28,7 @@
    john@suckerfreegames.com
 */
 
-#ifndef __IRR_USTRING_H_INCLUDED__
-#define __IRR_USTRING_H_INCLUDED__
+#pragma once
 
 #if (__cplusplus > 199711L) || (_MSC_VER >= 1600) || defined(__GXX_EXPERIMENTAL_CXX0X__)
 #	define USTRING_CPP0X
@@ -3890,5 +3889,3 @@ class hash : public std::unary_function<core::ustring, size_t>
 
 } // end namespace core
 } // end namespace irr
-
-#endif

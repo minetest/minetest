@@ -25,8 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 /******************************************************************************/
 
-#ifndef C_CONTENT_H_
-#define C_CONTENT_H_
+#pragma once
 
 extern "C" {
 #include <lua.h>
@@ -187,5 +186,3 @@ void               push_pointed_thing        (lua_State *L, const PointedThing &
 void               push_objectRef            (lua_State *L, const u16 id);
 
 extern struct EnumString es_TileAnimationType[];
-
-#endif /* C_CONTENT_H_ */
