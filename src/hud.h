@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
 #define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
 #define HUD_FLAG_MINIMAP_VISIBLE   (1 << 5)
+#define HUD_FLAG_ALLOW_ZOOM        (1 << 6)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
