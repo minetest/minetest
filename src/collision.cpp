@@ -273,68 +273,63 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	bool any_position_valid = false;
 
 	v3s16 p;
-	for (s16 x = min.X; x <= max.X; x++) {
-		p.X = x;
-		for (s16 y = min.Y; y <= max.Y; y++) {
-			p.Y = y;
-			for (s16 z = min.Z; z <= max.Z; z++) {
-				p.Z = z;
-				bool is_position_valid;
-				MapNode n = map->getNodeNoEx(p, &is_position_valid);
+	for (p.X = min.X; p.X <= max.X; p.X++)
+	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
+	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
+		bool is_position_valid;
+		MapNode n = map->getNodeNoEx(p, &is_position_valid);
 
-				if (is_position_valid) {
-					// Object collides into walkable nodes
+		if (is_position_valid) {
+			// Object collides into walkable nodes
 
-					any_position_valid = true;
-					INodeDefManager *nodedef = gamedef->getNodeDefManager();
-					const ContentFeatures &f = nodedef->get(n);
+			any_position_valid = true;
+			INodeDefManager *nodedef = gamedef->getNodeDefManager();
+			const ContentFeatures &f = nodedef->get(n);
 
-					if (!f.walkable)
-						continue;
+			if (!f.walkable)
+				continue;
 
-					int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
+			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
-					int neighbors = 0;
-					if (f.drawtype == NDT_NODEBOX &&
-						f.node_box.type == NODEBOX_CONNECTED) {
-						v3s16 p2 = p;
+			int neighbors = 0;
+			if (f.drawtype == NDT_NODEBOX &&
+				f.node_box.type == NODEBOX_CONNECTED) {
+				v3s16 p2 = p;
 
-						p2.Y++;
-						getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
+				p2.Y++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 1, &neighbors);
 
-						p2 = p;
-						p2.Y--;
-						getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
+				p2 = p;
+				p2.Y--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 2, &neighbors);
 
-						p2 = p;
-						p2.Z--;
-						getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
+				p2 = p;
+				p2.Z--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 4, &neighbors);
 
-						p2 = p;
-						p2.X--;
-						getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
+				p2 = p;
+				p2.X--;
+				getNeighborConnectingFace(p2, nodedef, map, n, 8, &neighbors);
 
-						p2 = p;
-						p2.Z++;
-						getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
+				p2 = p;
+				p2.Z++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 16, &neighbors);
 
-						p2 = p;
-						p2.X++;
-						getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
-					}
-					std::vector<aabb3f> nodeboxes;
-					n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-					for (auto box : nodeboxes) {
-						box.MinEdge += v3f(x, y, z) * BS;
-						box.MaxEdge += v3f(x, y, z) * BS;
-						cinfo.emplace_back(false, false, n_bouncy_value, p, box);
-					}
-				} else {
-					// Collide with unloaded nodes
-					aabb3f box = getNodeBox(p, BS);
-					cinfo.emplace_back(true, false, 0, p, box);
-				}
+				p2 = p;
+				p2.X++;
+				getNeighborConnectingFace(p2, nodedef, map, n, 32, &neighbors);
 			}
+			std::vector<aabb3f> nodeboxes;
+			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
+			for (auto box : nodeboxes) {
+				box.MinEdge += intToFloat(p, BS);
+				box.MaxEdge += intToFloat(p, BS);
+				cinfo.emplace_back(false, false, n_bouncy_value, p, box);
+			}
+		} else {
+			// Collide with unloaded nodes
+			aabb3f box = getNodeBox(p, BS);
+			cinfo.emplace_back(true, false, 0, p, box);
 		}
 	}
 
