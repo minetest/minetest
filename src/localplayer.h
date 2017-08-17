@@ -144,7 +144,7 @@ public:
 
 private:
 	// clang-format off
-	void accelerateHorizontal(const v3f &target_speed, f32 max_increase, bool slippery);
+	void accelerateHorizontal(const v3f &target_speed, f32 max_increase);
 	// clang-format on
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);

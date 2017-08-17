@@ -656,29 +656,22 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
+	// Slip on slippery nodes
 	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
 	float slip_factor = 1.0f;
 	int slippery = itemgroup_get(f.groups, "slippery");
-	// REMOVE: can override via env variable
-	char *slipenv = getenv("SLIPPERY");
-	if (slipenv)
-		slippery = atoi(slipenv);
-	// REMOVE: switch between original and alternative slipping code
-	if (getenv("NEW_SLIP") != NULL) {
-		if (slippery >= 1) {
-			if (speedH == v3f(0.0f)) {
-				slippery = slippery * 2;
-			}
-			slip_factor = core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
+	if (slippery >= 1) {
+		if (speedH == v3f(0.0f)) {
+			slippery = slippery * 2;
 		}
-		slippery = 0; // disable flag below
+		slip_factor = core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
 	}
 
 	// Accelerate to target speed with maximum increment
 	accelerateHorizontal(speedH * physics_override_speed,
-			incH * physics_override_speed * slip_factor, slippery > 0);
+			incH * physics_override_speed * slip_factor);
 	accelerateVertical(speedV * physics_override_speed,
 			incV * physics_override_speed);
 }
@@ -1054,4 +1047,3 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		m_can_jump = false;
 	}
 }
-
