@@ -1014,7 +1014,7 @@ max_objects_per_block (Maximum objects per block) int 64
 sqlite_synchronous (Synchronous SQLite) enum 2 0,1,2
 
 #    Length of a server tick and the interval at which objects are generally updated over network.
-dedicated_server_step (Dedicated server step) float 0.1
+dedicated_server_step (Dedicated server step) float 0.09
 
 #    Time in between active block management cycles
 active_block_mgmt_interval (Active Block Management interval) float 2.0
