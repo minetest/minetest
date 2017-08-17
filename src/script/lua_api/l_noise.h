@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_NOISE_H_
-#define L_NOISE_H_
+#pragma once
 
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
@@ -193,5 +192,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif /* L_NOISE_H_ */

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef THREADING_SEMAPHORE_H
-#define THREADING_SEMAPHORE_H
+#pragma once
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -51,5 +50,3 @@ private:
 
 	DISABLE_CLASS_COPY(Semaphore);
 };
-
-#endif

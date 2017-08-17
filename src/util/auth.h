@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef AUTH_H
-#define AUTH_H
+#pragma once
 
 /// Gets the base64 encoded legacy password db entry.
 std::string translate_password(const std::string &name,
@@ -46,5 +45,3 @@ std::string encode_srp_verifier(const std::string &verifier,
 /// and salt components.
 bool decode_srp_verifier_and_salt(const std::string &encoded,
 	std::string *verifier, std::string *salt);
-
-#endif

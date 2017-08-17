@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_OBJECT_H_
-#define L_OBJECT_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "irrlichttypes.h"
@@ -333,5 +332,3 @@ private:
 	static int l_get_nametag_attributes(lua_State *L);
 
 };
-
-#endif /* L_OBJECT_H_ */
