@@ -40,11 +40,11 @@ struct SmoothTranslator
 	v3f vect_show;
 	v3f vect_aim;
 	f32 anim_counter = 0;
-	f32 anim_time;
+	f32 anim_time = 0;
 	f32 anim_time_counter = 0;
 	bool aim_is_end = true;
 
-	SmoothTranslator() {};
+	SmoothTranslator() = default;
 
 	void init(v3f vect);
 

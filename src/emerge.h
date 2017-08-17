@@ -54,7 +54,8 @@ struct BlockMakeData {
 	UniqueQueue<v3s16> transforming_liquid;
 	INodeDefManager *nodedef = nullptr;
 
-	BlockMakeData() {}
+	BlockMakeData() = default;
+
 	~BlockMakeData() { delete vmanip; }
 };
 

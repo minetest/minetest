@@ -29,7 +29,7 @@ class UnitSAO: public ServerActiveObject
 {
 public:
 	UnitSAO(ServerEnvironment *env, v3f pos);
-	virtual ~UnitSAO() {}
+	virtual ~UnitSAO() = default;
 
 	virtual void setYaw(const float yaw) { m_yaw = yaw; }
 	float getYaw() const { return m_yaw; };
@@ -156,7 +156,7 @@ class LagPool
 	float m_pool = 15.0f;
 	float m_max = 15.0f;
 public:
-	LagPool() {}
+	LagPool() = default;
 
 	void setMax(float new_max)
 	{
@@ -323,7 +323,7 @@ public:
 		m_time_from_last_punch = 0.0;
 		return r;
 	}
-	void noCheatDigStart(v3s16 p)
+	void noCheatDigStart(const v3s16 &p)
 	{
 		m_nocheat_dig_pos = p;
 		m_nocheat_dig_time = 0;

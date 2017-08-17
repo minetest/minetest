@@ -489,7 +489,8 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
-		std::string name = list->getName(), width = itos(list->getWidth()),
+		const std::string &name = list->getName();
+		std::string width = itos(list->getWidth()),
 			inv_id = itos(i), lsize = itos(list->getSize());
 
 		const char* inv_values[] = {
@@ -518,11 +519,11 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 
 	execPrepared("remove_player_metadata", 1, rmvalues);
 	const PlayerAttributes &attrs = sao->getExtendedAttributes();
-	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
+	for (const auto &attr : attrs) {
 		const char *meta_values[] = {
 			player->getName(),
-			it->first.c_str(),
-			it->second.c_str()
+			attr.first.c_str(),
+			attr.second.c_str()
 		};
 		execPrepared("save_player_metadata", 3, meta_values);
 	}
@@ -622,7 +623,7 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++)
-		res.push_back(PQgetvalue(results, row, 0));
+		res.emplace_back(PQgetvalue(results, row, 0));
 
 	PQclear(results);
 }

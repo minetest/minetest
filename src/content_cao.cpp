@@ -119,7 +119,7 @@ class TestCAO : public ClientActiveObject
 {
 public:
 	TestCAO(Client *client, ClientEnvironment *env);
-	virtual ~TestCAO();
+	virtual ~TestCAO() = default;
 
 	ActiveObjectType getType() const
 	{
@@ -153,10 +153,6 @@ TestCAO::TestCAO(Client *client, ClientEnvironment *env):
 	m_position(v3f(0,10*BS,0))
 {
 	ClientActiveObject::registerType(getType(), create);
-}
-
-TestCAO::~TestCAO()
-{
 }
 
 ClientActiveObject* TestCAO::create(Client *client, ClientEnvironment *env)
@@ -261,7 +257,7 @@ class ItemCAO : public ClientActiveObject
 {
 public:
 	ItemCAO(Client *client, ClientEnvironment *env);
-	virtual ~ItemCAO();
+	virtual ~ItemCAO() = default;
 
 	ActiveObjectType getType() const
 	{
@@ -321,10 +317,6 @@ ItemCAO::ItemCAO(Client *client, ClientEnvironment *env):
 	{
 		ClientActiveObject::registerType(getType(), create);
 	}
-}
-
-ItemCAO::~ItemCAO()
-{
 }
 
 ClientActiveObject* ItemCAO::create(Client *client, ClientEnvironment *env)
@@ -563,7 +555,7 @@ void GenericCAO::initialize(const std::string &data)
 			player->setCAO(this);
 		}
 		if (m_client->getProtoVersion() < 33)
-			m_env->addPlayerName(m_name.c_str());
+			m_env->addPlayerName(m_name);
 	}
 }
 
@@ -607,7 +599,7 @@ void GenericCAO::processInitData(const std::string &data)
 GenericCAO::~GenericCAO()
 {
 	if (m_is_player && m_client->getProtoVersion() < 33) {
-		m_env->removePlayerName(m_name.c_str());
+		m_env->removePlayerName(m_name);
 	}
 	removeFromScene(true);
 }
@@ -628,8 +620,8 @@ v3f GenericCAO::getPosition()
 		scene::ISceneNode *node = getSceneNode();
 		if (node)
 			return node->getAbsolutePosition();
-		else
-			return m_position;
+
+		return m_position;
 	}
 	return pos_translator.vect_show;
 }
@@ -638,11 +630,17 @@ scene::ISceneNode* GenericCAO::getSceneNode()
 {
 	if (m_meshnode) {
 		return m_meshnode;
-	} else if (m_animated_meshnode) {
+	}
+
+	if (m_animated_meshnode) {
 		return m_animated_meshnode;
-	} else if (m_wield_meshnode) {
+	}
+
+	if (m_wield_meshnode) {
 		return m_wield_meshnode;
-	} else if (m_spritenode) {
+	}
+
+	if (m_spritenode) {
 		return m_spritenode;
 	}
 	return NULL;
@@ -655,8 +653,8 @@ scene::IAnimatedMeshSceneNode* GenericCAO::getAnimatedMeshSceneNode()
 
 void GenericCAO::setChildrenVisible(bool toset)
 {
-	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-		GenericCAO *obj = m_env->getGenericCAO(m_children[i]);
+	for (u16 cao_id : m_children) {
+		GenericCAO *obj = m_env->getGenericCAO(cao_id);
 		if (obj) {
 			obj->setVisible(toset);
 		}
@@ -686,8 +684,7 @@ void GenericCAO::removeFromScene(bool permanent)
 	// Should be true when removing the object permanently and false when refreshing (eg: updating visuals)
 	if((m_env != NULL) && (permanent))
 	{
-		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-			u16 ci = m_children[i];
+		for (u16 ci : m_children) {
 			if (m_env->attachement_parent_ids[ci] == getId()) {
 				m_env->attachement_parent_ids[ci] = 0;
 			}
@@ -858,14 +855,13 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
-	}
-	else if(m_prop.visual == "wielditem") {
+	} else if (m_prop.visual == "wielditem") {
 		ItemStack item;
 		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
-		if (m_prop.wield_item == "") {
+		if (m_prop.wield_item.empty()) {
 			// Old format, only textures are specified.
 			infostream << "textures: " << m_prop.textures.size() << std::endl;
-			if (m_prop.textures.size() >= 1) {
+			if (!m_prop.textures.empty()) {
 				infostream << "textures[0]: " << m_prop.textures[0]
 					<< std::endl;
 				IItemDefManager *idef = m_client->idef();
@@ -894,7 +890,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		updateTextures(m_current_texture_modifier);
 
 	scene::ISceneNode *node = getSceneNode();
-	if (node && m_prop.nametag != "" && !m_is_local_player) {
+	if (node && !m_prop.nametag.empty() && !m_is_local_player) {
 		// Add nametag
 		v3f pos;
 		pos.Y = m_prop.collisionbox.MaxEdge.Y + 0.3f;
@@ -919,8 +915,8 @@ void GenericCAO::updateLight(u8 light_at_pos)
 	updateLightNoCheck(light_at_pos);
 
 	// Update light of all children
-	for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
-		ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
+	for (u16 i : m_children) {
+		ClientActiveObject *obj = m_env->getActiveObject(i);
 		if (obj) {
 			obj->updateLightNoCheck(light_at_pos);
 		}
@@ -1046,9 +1042,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		// Attachments, part 1: All attached objects must be unparented first,
 		// or Irrlicht causes a segmentation fault
-		for(std::vector<u16>::iterator ci = m_children.begin();
-				ci != m_children.end();)
-		{
+		for (auto ci = m_children.begin(); ci != m_children.end();) {
 			if (m_env->attachement_parent_ids[*ci] != getId()) {
 				ci = m_children.erase(ci);
 				continue;
@@ -1066,9 +1060,9 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 		addToScene(m_client->tsrc());
 
 		// Attachments, part 2: Now that the parent has been refreshed, put its attachments back
-		for (std::vector<u16>::size_type i = 0; i < m_children.size(); i++) {
+		for (u16 cao_id : m_children) {
 			// Get the object of the child
-			ClientActiveObject *obj = m_env->getActiveObject(m_children[i]);
+			ClientActiveObject *obj = m_env->getActiveObject(cao_id);
 			if (obj)
 				obj->setAttachments();
 		}
@@ -1248,12 +1242,10 @@ void GenericCAO::updateTextures(std::string mod)
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
 
-	if(m_spritenode)
-	{
-		if(m_prop.visual == "sprite")
-		{
+	if (m_spritenode) {
+		if (m_prop.visual == "sprite") {
 			std::string texturestring = "unknown_node.png";
-			if(m_prop.textures.size() >= 1)
+			if (!m_prop.textures.empty())
 				texturestring = m_prop.textures[0];
 			texturestring += mod;
 			m_spritenode->setMaterialTexture(0,
@@ -1262,8 +1254,7 @@ void GenericCAO::updateTextures(std::string mod)
 			// This allows setting per-material colors. However, until a real lighting
 			// system is added, the code below will have no effect. Once MineTest
 			// has directional lighting, it should work automatically.
-			if(m_prop.colors.size() >= 1)
-			{
+			if (!m_prop.colors.empty()) {
 				m_spritenode->getMaterial(0).AmbientColor = m_prop.colors[0];
 				m_spritenode->getMaterial(0).DiffuseColor = m_prop.colors[0];
 				m_spritenode->getMaterial(0).SpecularColor = m_prop.colors[0];
@@ -1274,20 +1265,17 @@ void GenericCAO::updateTextures(std::string mod)
 			m_spritenode->getMaterial(0).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 		}
 	}
-	if(m_animated_meshnode)
-	{
-		if(m_prop.visual == "mesh")
-		{
+
+	if (m_animated_meshnode) {
+		if (m_prop.visual == "mesh") {
 			for (u32 i = 0; i < m_prop.textures.size() &&
-					i < m_animated_meshnode->getMaterialCount(); ++i)
-			{
+					i < m_animated_meshnode->getMaterialCount(); ++i) {
 				std::string texturestring = m_prop.textures[i];
-				if(texturestring == "")
+				if (texturestring.empty())
 					continue; // Empty texture string means don't modify that material
 				texturestring += mod;
 				video::ITexture* texture = tsrc->getTextureForMesh(texturestring);
-				if(!texture)
-				{
+				if (!texture) {
 					errorstream<<"GenericCAO::updateTextures(): Could not load texture "<<texturestring<<std::endl;
 					continue;
 				}
@@ -1351,13 +1339,11 @@ void GenericCAO::updateTextures(std::string mod)
 				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
-		}
-		else if(m_prop.visual == "upright_sprite")
-		{
+		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			{
 				std::string tname = "unknown_object.png";
-				if(m_prop.textures.size() >= 1)
+				if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(0);
@@ -1367,8 +1353,7 @@ void GenericCAO::updateTextures(std::string mod)
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() >= 1)
-				{
+				if(!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];
@@ -1380,9 +1365,9 @@ void GenericCAO::updateTextures(std::string mod)
 			}
 			{
 				std::string tname = "unknown_object.png";
-				if(m_prop.textures.size() >= 2)
+				if (m_prop.textures.size() >= 2)
 					tname = m_prop.textures[1];
-				else if(m_prop.textures.size() >= 1)
+				else if (!m_prop.textures.empty())
 					tname = m_prop.textures[0];
 				tname += mod;
 				scene::IMeshBuffer *buf = mesh->getMeshBuffer(1);
@@ -1392,14 +1377,11 @@ void GenericCAO::updateTextures(std::string mod)
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() >= 2)
-				{
+				if (m_prop.colors.size() >= 2) {
 					buf->getMaterial().AmbientColor = m_prop.colors[1];
 					buf->getMaterial().DiffuseColor = m_prop.colors[1];
 					buf->getMaterial().SpecularColor = m_prop.colors[1];
-				}
-				else if(m_prop.colors.size() >= 1)
-				{
+				} else if (!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];
@@ -1476,7 +1458,7 @@ void GenericCAO::updateAttachments()
 		scene::ISceneNode *parent_node = getParent()->getSceneNode();
 		scene::IAnimatedMeshSceneNode *parent_animated_mesh_node =
 				getParent()->getAnimatedMeshSceneNode();
-		if (parent_animated_mesh_node && m_attachment_bone != "") {
+		if (parent_animated_mesh_node && !m_attachment_bone.empty()) {
 			parent_node = parent_animated_mesh_node->getJointNode(m_attachment_bone.c_str());
 		}
 
@@ -1519,7 +1501,7 @@ void GenericCAO::processMessage(const std::string &data)
 			player->setCollisionbox(m_selection_box);
 		}
 
-		if ((m_is_player && !m_is_local_player) && m_prop.nametag == "")
+		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
 			m_prop.nametag = m_name;
 
 		expireVisuals();

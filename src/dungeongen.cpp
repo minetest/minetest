@@ -201,7 +201,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		}
 	}
 	// No place found
-	if (fits == false)
+	if (!fits)
 		return;
 
 	/*
@@ -564,7 +564,7 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 		v3s16 doorplace;
 		v3s16 doordir;
 		bool r = findPlaceForDoor(doorplace, doordir);
-		if (r == false)
+		if (!r)
 			continue;
 		v3s16 roomplace;
 		// X east, Z north, Y up
@@ -596,7 +596,7 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 				break;
 			}
 		}
-		if (fits == false) {
+		if (!fits) {
 			// Find new place
 			continue;
 		}
@@ -625,12 +625,12 @@ v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 		} while ((dir.X == 0 || dir.Z == 0) && trycount < 10);
 
 		return dir;
-	} else {
-		if (random.next() % 2 == 0)
-			return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
-		else
-			return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
 	}
+
+	if (random.next() % 2 == 0)
+		return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
+
+	return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
 }
 
 
@@ -673,6 +673,6 @@ int dir_to_facedir(v3s16 d)
 {
 	if (abs(d.X) > abs(d.Z))
 		return d.X < 0 ? 3 : 1;
-	else
-		return d.Z < 0 ? 2 : 0;
+
+	return d.Z < 0 ? 2 : 0;
 }

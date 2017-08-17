@@ -52,18 +52,18 @@ public:
 	int id;
 
 	EmergeThread(Server *server, int ethreadid);
-	~EmergeThread();
+	~EmergeThread() = default;
 
 	void *run();
 	void signal();
 
 	// Requires queue mutex held
-	bool pushBlock(v3s16 pos);
+	bool pushBlock(const v3s16 &pos);
 
 	void cancelPendingItems();
 
 	static void runCompletionCallbacks(
-		v3s16 pos, EmergeAction action,
+		const v3s16 &pos, EmergeAction action,
 		const EmergeCallbackList &callbacks);
 
 private:
@@ -78,7 +78,7 @@ private:
 	bool popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata);
 
 	EmergeAction getBlockOrStartGen(
-		v3s16 pos, bool allow_gen, MapBlock **block, BlockMakeData *data);
+		const v3s16 &pos, bool allow_gen, MapBlock **block, BlockMakeData *data);
 	MapBlock *finishGen(v3s16 pos, BlockMakeData *bmdata,
 		std::map<v3s16, MapBlock *> *modified_blocks);
 
@@ -181,7 +181,7 @@ EmergeManager::~EmergeManager()
 
 bool EmergeManager::initMapgens(MapgenParams *params)
 {
-	if (m_mapgens.size())
+	if (!m_mapgens.empty())
 		return false;
 
 	this->mgparams = params;
@@ -316,7 +316,7 @@ v3s16 EmergeManager::getContainingChunk(v3s16 blockpos, s16 chunksize)
 
 int EmergeManager::getSpawnLevelAtPoint(v2s16 p)
 {
-	if (m_mapgens.size() == 0 || !m_mapgens[0]) {
+	if (m_mapgens.empty() || !m_mapgens[0]) {
 		errorstream << "EmergeManager: getSpawnLevelAtPoint() called"
 			" before mapgen init" << std::endl;
 		return 0;
@@ -328,7 +328,7 @@ int EmergeManager::getSpawnLevelAtPoint(v2s16 p)
 
 int EmergeManager::getGroundLevelAtPoint(v2s16 p)
 {
-	if (m_mapgens.size() == 0 || !m_mapgens[0]) {
+	if (m_mapgens.empty() || !m_mapgens[0]) {
 		errorstream << "EmergeManager: getGroundLevelAtPoint() called"
 			" before mapgen init" << std::endl;
 		return 0;
@@ -380,7 +380,7 @@ bool EmergeManager::pushBlockEmergeData(
 	*entry_already_exists   = !findres.second;
 
 	if (callback)
-		bedata.callbacks.push_back(std::make_pair(callback, callback_param));
+		bedata.callbacks.emplace_back(callback, callback_param);
 
 	if (*entry_already_exists) {
 		bedata.flags |= flags;
@@ -457,19 +457,13 @@ EmergeThread::EmergeThread(Server *server, int ethreadid) :
 }
 
 
-EmergeThread::~EmergeThread()
-{
-	//cancelPendingItems();
-}
-
-
 void EmergeThread::signal()
 {
 	m_queue_event.signal();
 }
 
 
-bool EmergeThread::pushBlock(v3s16 pos)
+bool EmergeThread::pushBlock(const v3s16 &pos)
 {
 	m_block_queue.push(pos);
 	return true;
@@ -494,9 +488,7 @@ void EmergeThread::cancelPendingItems()
 }
 
 
-void EmergeThread::runCompletionCallbacks(
-	v3s16 pos,
-	EmergeAction action,
+void EmergeThread::runCompletionCallbacks(const v3s16 &pos, EmergeAction action,
 	const EmergeCallbackList &callbacks)
 {
 	for (size_t i = 0; i != callbacks.size(); i++) {
@@ -528,7 +520,7 @@ bool EmergeThread::popBlockEmerge(v3s16 *pos, BlockEmergeData *bedata)
 
 
 EmergeAction EmergeThread::getBlockOrStartGen(
-	v3s16 pos, bool allow_gen, MapBlock **block, BlockMakeData *bmdata)
+	const v3s16 &pos, bool allow_gen, MapBlock **block, BlockMakeData *bmdata)
 {
 	MutexAutoLock envlock(m_server->m_env_mutex);
 
@@ -644,7 +636,7 @@ void *EmergeThread::run()
 
 				m_mapgen->makeChunk(&bmdata);
 
-				if (enable_mapgen_debug_info == false)
+				if (!enable_mapgen_debug_info)
 					t.stop(true); // Hide output
 			}
 
@@ -656,7 +648,7 @@ void *EmergeThread::run()
 		if (block)
 			modified_blocks[pos] = block;
 
-		if (modified_blocks.size() > 0)
+		if (!modified_blocks.empty())
 			m_server->SetBlocksNotSent(modified_blocks);
 	}
 	} catch (VersionMismatchException &e) {

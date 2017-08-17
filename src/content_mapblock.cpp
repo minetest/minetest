@@ -28,7 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMeshManipulator.h>
 #include "client/renderingengine.h"
 #include "client.h"
-#include "log.h"
 #include "noise.h"
 
 // Distance of light extrapolation (for oversized nodes)
@@ -81,9 +80,10 @@ void MapblockMeshGenerator::useTile(int index, u8 set_flags, u8 reset_flags, boo
 		getNodeTileN(n, p, index, data, tile);
 	if (!data->m_smooth_lighting)
 		color = encode_light(light, f->light_source);
-	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		tile.layers[layer].material_flags |= set_flags;
-		tile.layers[layer].material_flags &= ~reset_flags;
+
+	for (auto &layer : tile.layers) {
+		layer.material_flags |= set_flags;
+		layer.material_flags &= ~reset_flags;
 	}
 }
 
@@ -99,14 +99,16 @@ void MapblockMeshGenerator::getSpecialTile(int index, TileSpec *tile, bool apply
 {
 	*tile = f->special_tiles[index];
 	TileLayer *top_layer = NULL;
-	for (int layernum = 0; layernum < MAX_TILE_LAYERS; layernum++) {
-		TileLayer *layer = &tile->layers[layernum];
+
+	for (auto &layernum : tile->layers) {
+		TileLayer *layer = &layernum;
 		if (layer->texture_id == 0)
 			continue;
 		top_layer = layer;
 		if (!layer->has_color)
 			n.getColor(*f, &layer->color);
 	}
+
 	if (apply_crack)
 		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
@@ -502,8 +504,8 @@ void MapblockMeshGenerator::drawLiquidSides()
 		{1, 0},
 		{0, 0}
 	};
-	for (int i = 0; i < 4; i++) {
-		const LiquidFaceDesc &face = base_faces[i];
+
+	for (const auto &face : base_faces) {
 		const NeighborData &neighbor = liquid_neighbors[face.dir.Z + 1][face.dir.X + 1];
 
 		// No face between nodes of the same liquid, unless there is node
@@ -580,9 +582,9 @@ void MapblockMeshGenerator::drawLiquidTop()
 	tcoord_translate.X -= floor(tcoord_translate.X);
 	tcoord_translate.Y -= floor(tcoord_translate.Y);
 
-	for (int i = 0; i < 4; i++) {
-		vertices[i].TCoords.rotateBy(tcoord_angle, tcoord_center);
-		vertices[i].TCoords += tcoord_translate;
+	for (auto &vertice : vertices) {
+		vertice.TCoords.rotateBy(tcoord_angle, tcoord_center);
+		vertice.TCoords += tcoord_translate;
 	}
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);
@@ -619,14 +621,21 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 			v3f( BS / 2, -BS / 2, -BS / 2),
 			v3f(-BS / 2, -BS / 2, -BS / 2),
 		};
-		for (int i = 0; i < 4; i++) {
+
+		for (auto &vertice : vertices) {
 			switch (face) {
-				case D6D_ZP: vertices[i].rotateXZBy(180); break;
-				case D6D_YP: vertices[i].rotateYZBy( 90); break;
-				case D6D_XP: vertices[i].rotateXZBy( 90); break;
-				case D6D_ZN: vertices[i].rotateXZBy(  0); break;
-				case D6D_YN: vertices[i].rotateYZBy(-90); break;
-				case D6D_XN: vertices[i].rotateXZBy(-90); break;
+				case D6D_ZP:
+					vertice.rotateXZBy(180); break;
+				case D6D_YP:
+					vertice.rotateYZBy( 90); break;
+				case D6D_XP:
+					vertice.rotateXZBy( 90); break;
+				case D6D_ZN:
+					vertice.rotateXZBy(  0); break;
+				case D6D_YN:
+					vertice.rotateYZBy(-90); break;
+				case D6D_XN:
+					vertice.rotateXZBy(-90); break;
 			}
 		}
 		drawQuad(vertices, dir);
@@ -650,8 +659,8 @@ void MapblockMeshGenerator::drawGlasslikeFramedNode()
 		glass_tiles[4] = tiles[3];
 		glass_tiles[5] = tiles[4];
 	} else {
-		for (int face = 0; face < 6; face++)
-			glass_tiles[face] = tiles[4];
+		for (auto &glass_tile : glass_tiles)
+			glass_tile = tiles[4];
 	}
 
 	u8 param2 = n.getParam2();
@@ -785,14 +794,21 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		v3f( size, -size, 0),
 		v3f(-size, -size, 0),
 	};
-	for (int i = 0; i < 4; i++) {
+
+	for (auto &vertice : vertices) {
 		switch (wall) {
-			case DWM_YP: vertices[i].rotateXZBy(-45); break;
-			case DWM_YN: vertices[i].rotateXZBy( 45); break;
-			case DWM_XP: vertices[i].rotateXZBy(  0); break;
-			case DWM_XN: vertices[i].rotateXZBy(180); break;
-			case DWM_ZP: vertices[i].rotateXZBy( 90); break;
-			case DWM_ZN: vertices[i].rotateXZBy(-90); break;
+			case DWM_YP:
+				vertice.rotateXZBy(-45); break;
+			case DWM_YN:
+				vertice.rotateXZBy( 45); break;
+			case DWM_XP:
+				vertice.rotateXZBy(  0); break;
+			case DWM_XN:
+				vertice.rotateXZBy(180); break;
+			case DWM_ZP:
+				vertice.rotateXZBy( 90); break;
+			case DWM_ZN:
+				vertice.rotateXZBy(-90); break;
 		}
 	}
 	drawQuad(vertices);
@@ -811,14 +827,21 @@ void MapblockMeshGenerator::drawSignlikeNode()
 		v3f(BS / 2 - offset, -size, -size),
 		v3f(BS / 2 - offset, -size,  size),
 	};
-	for (int i = 0; i < 4; i++) {
+
+	for (auto &vertice : vertices) {
 		switch (wall) {
-			case DWM_YP: vertices[i].rotateXYBy( 90); break;
-			case DWM_YN: vertices[i].rotateXYBy(-90); break;
-			case DWM_XP: vertices[i].rotateXZBy(  0); break;
-			case DWM_XN: vertices[i].rotateXZBy(180); break;
-			case DWM_ZP: vertices[i].rotateXZBy( 90); break;
-			case DWM_ZN: vertices[i].rotateXZBy(-90); break;
+			case DWM_YP:
+				vertice.rotateXYBy( 90); break;
+			case DWM_YN:
+				vertice.rotateXYBy(-90); break;
+			case DWM_XP:
+				vertice.rotateXZBy(  0); break;
+			case DWM_XN:
+				vertice.rotateXZBy(180); break;
+			case DWM_ZP:
+				vertice.rotateXZBy( 90); break;
+			case DWM_ZN:
+				vertice.rotateXZBy(-90); break;
 		}
 	}
 	drawQuad(vertices);
@@ -840,9 +863,10 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	int offset_count = offset_top_only ? 2 : 4;
 	for (int i = 0; i < offset_count; i++)
 		vertices[i].Z += quad_offset;
-	for (int i = 0; i < 4; i++) {
-		vertices[i].rotateXZBy(rotation + rotate_degree);
-		vertices[i] += offset;
+
+	for (auto &vertice : vertices) {
+		vertice.rotateXZBy(rotation + rotate_degree);
+		vertice += offset;
 	}
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
@@ -946,11 +970,12 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		v3f( scale, -BS / 2, 0),
 		v3f(-scale, -BS / 2, 0),
 	};
-	for (int i = 0; i < 4; i++) {
-		vertices[i].rotateYZBy(opening_angle);
-		vertices[i].Z += offset_h;
-		vertices[i].rotateXZBy(rotation);
-		vertices[i].Y += offset_v;
+
+	for (auto &vertice : vertices) {
+		vertice.rotateYZBy(opening_angle);
+		vertice.Z += offset_h;
+		vertice.rotateXZBy(rotation);
+		vertice.Y += offset_v;
 	}
 	drawQuad(vertices);
 }
@@ -1006,8 +1031,9 @@ void MapblockMeshGenerator::drawFencelikeNode()
 {
 	useTile(0, 0, 0);
 	TileSpec tile_nocrack = tile;
-	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
-		tile_nocrack.layers[layer].material_flags &= ~MATERIAL_FLAG_CRACK;
+
+	for (auto &layer : tile_nocrack.layers)
+		layer.material_flags &= ~MATERIAL_FLAG_CRACK;
 
 	// Put wood the right way around in the posts
 	TileSpec tile_rot = tile;
@@ -1166,8 +1192,8 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		v3f(-size, -size + offset, -size),
 	};
 	if (angle)
-		for (int i = 0; i < 4; i++)
-			vertices[i].rotateXZBy(angle);
+		for (auto &vertice : vertices)
+			vertice.rotateXZBy(angle);
 	drawQuad(vertices);
 }
 
@@ -1212,8 +1238,8 @@ void MapblockMeshGenerator::drawNodeboxNode()
 
 	std::vector<aabb3f> boxes;
 	n.getNodeBoxes(nodedef, &boxes, neighbors_set);
-	for (std::vector<aabb3f>::iterator i = boxes.begin(); i != boxes.end(); ++i)
-		drawAutoLightedCuboid(*i, NULL, tiles, 6);
+	for (const auto &box : boxes)
+		drawAutoLightedCuboid(box, NULL, tiles, 6);
 }
 
 void MapblockMeshGenerator::drawMeshNode()

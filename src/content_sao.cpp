@@ -67,7 +67,7 @@ public:
 		if(m_base_position.Y > 8*BS)
 			m_base_position.Y = 2*BS;
 
-		if(send_recommended == false)
+		if (!send_recommended)
 			return;
 
 		m_timer1 -= dtime;
@@ -402,7 +402,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(send_recommended == false)
+	if (!send_recommended)
 		return;
 
 	if(!isAttached())
@@ -423,7 +423,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_armor_groups_sent == false){
+	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;
 		std::string str = gob_cmd_update_armor_groups(
 				m_armor_groups);
@@ -432,7 +432,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_animation_sent == false){
+	if (!m_animation_sent) {
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
@@ -441,7 +441,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_bone_position_sent == false){
+	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
 		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
@@ -453,7 +453,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_attachment_sent == false){
+	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
 		// create message and add to list
@@ -897,7 +897,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-void PlayerSAO::getStaticData(std::string *result) const
+void PlayerSAO::getStaticData(std::string *) const
 {
 	FATAL_ERROR("Deprecated function");
 }
@@ -1171,7 +1171,7 @@ int PlayerSAO::punch(v3f dir,
 		return 0;
 
 	// No effect if PvP disabled
-	if (g_settings->getBool("enable_pvp") == false) {
+	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
 			// create message and add to list

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <iostream>
 #include <exception>
-#include <assert.h>
+#include <cassert>
 #include "gettime.h"
 #include "log.h"
 

@@ -111,7 +111,7 @@ class MapDatabasePostgreSQL : private Database_PostgreSQL, public MapDatabase
 {
 public:
 	MapDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~MapDatabasePostgreSQL() {}
+	virtual ~MapDatabasePostgreSQL() = default;
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
@@ -130,7 +130,7 @@ class PlayerDatabasePostgreSQL : private Database_PostgreSQL, public PlayerDatab
 {
 public:
 	PlayerDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~PlayerDatabasePostgreSQL() {}
+	virtual ~PlayerDatabasePostgreSQL() = default;
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);

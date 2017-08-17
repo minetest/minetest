@@ -21,8 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"
 #include "debug.h"
 #include "exceptions.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <sstream>
@@ -110,7 +110,7 @@ void DebugStack::print(FILE *file, bool everything)
 		os.str().c_str());
 
 	for (int i = 0; i < stack_max_i; i++) {
-		if (i == stack_i && everything == false)
+		if (i == stack_i && !everything)
 			break;
 
 		if (i < stack_i)
@@ -128,7 +128,7 @@ void DebugStack::print(std::ostream &os, bool everything)
 	os<<"DEBUG STACK FOR THREAD "<<thread_id<<": "<<std::endl;
 
 	for(int i = 0; i < stack_max_i; i++) {
-		if(i == stack_i && everything == false)
+		if(i == stack_i && !everything)
 			break;
 
 		if (i < stack_i)
@@ -193,7 +193,7 @@ DebugStacker::~DebugStacker()
 {
 	MutexAutoLock lock(g_debug_stacks_mutex);
 
-	if (m_overflowed == true)
+	if (m_overflowed)
 		return;
 
 	m_stack->stack_i--;

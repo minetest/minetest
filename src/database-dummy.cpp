@@ -33,7 +33,7 @@ bool Database_Dummy::saveBlock(const v3s16 &pos, const std::string &data)
 void Database_Dummy::loadBlock(const v3s16 &pos, std::string *block)
 {
 	s64 i = getBlockAsInteger(pos);
-	std::map<s64, std::string>::iterator it = m_database.find(i);
+	auto it = m_database.find(i);
 	if (it == m_database.end()) {
 		*block = "";
 		return;
