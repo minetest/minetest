@@ -12,6 +12,7 @@ uniform float animationTimer;
 varying vec3 vPosition;
 varying vec3 worldPosition;
 
+varying vec3 lightVec;
 varying vec3 eyeVec;
 
 // Color of the light emitted by the light sources.
@@ -27,6 +28,10 @@ void main(void)
 
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
+
+	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
+
+	lightVec = sunPosition - worldPosition;
 
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
 
