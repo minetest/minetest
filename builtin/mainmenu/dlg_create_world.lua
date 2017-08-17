@@ -87,8 +87,8 @@ local function create_world_buttonhandler(this, fields)
 
 		if gameindex ~= nil then
 			if worldname == "" then
-				local random_number = os.date("!%Y-%m-%dT%TZ")
-				local random_world_name = "World" .. random_number
+				local random_number = math.random(10000, 99999)
+				local random_world_name = "Unnamed" .. random_number
 				worldname = random_world_name
 			end
 			local message = nil
