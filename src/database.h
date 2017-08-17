@@ -37,7 +37,7 @@ public:
 class MapDatabase : public Database
 {
 public:
-	virtual ~MapDatabase() {}
+	virtual ~MapDatabase() = default;
 
 	virtual bool saveBlock(const v3s16 &pos, const std::string &data) = 0;
 	virtual void loadBlock(const v3s16 &pos, std::string *block) = 0;
@@ -55,7 +55,8 @@ class RemotePlayer;
 class PlayerDatabase
 {
 public:
-	virtual ~PlayerDatabase() {}
+	virtual ~PlayerDatabase() = default;
+
 	virtual void savePlayer(RemotePlayer *player) = 0;
 	virtual bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) = 0;
 	virtual bool removePlayer(const std::string &name) = 0;

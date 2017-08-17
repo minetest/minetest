@@ -30,7 +30,7 @@ class PlayerDatabaseFiles : public PlayerDatabase
 {
 public:
 	PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir) {}
-	virtual ~PlayerDatabaseFiles() {}
+	virtual ~PlayerDatabaseFiles() = default;
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);

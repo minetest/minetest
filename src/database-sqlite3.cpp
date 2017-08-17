@@ -521,10 +521,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_reset(m_stmt_player_metadata_remove);
 
 	const PlayerAttributes &attrs = sao->getExtendedAttributes();
-	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
+	for (const auto &attr : attrs) {
 		str_to_sqlite(m_stmt_player_metadata_add, 1, player->getName());
-		str_to_sqlite(m_stmt_player_metadata_add, 2, it->first);
-		str_to_sqlite(m_stmt_player_metadata_add, 3, it->second);
+		str_to_sqlite(m_stmt_player_metadata_add, 2, attr.first);
+		str_to_sqlite(m_stmt_player_metadata_add, 3, attr.second);
 		sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_add), SQLITE_DONE);
 		sqlite3_reset(m_stmt_player_metadata_add);
 	}

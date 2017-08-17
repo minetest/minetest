@@ -30,7 +30,7 @@ class SmokePuffCSO: public ClientSimpleObject
 	scene::IBillboardSceneNode *m_spritenode = nullptr;
 public:
 	SmokePuffCSO(scene::ISceneManager *smgr,
-			ClientEnvironment *env, v3f pos, v2f size)
+			ClientEnvironment *env, const v3f &pos, const v2f &size)
 	{
 		infostream<<"SmokePuffCSO: constructing"<<std::endl;
 		m_spritenode = smgr->addBillboardSceneNode(
