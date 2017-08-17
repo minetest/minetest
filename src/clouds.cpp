@@ -208,7 +208,7 @@ void Clouds::render()
 
 		u32 i = GETINDEX(xi, zi, m_cloud_radius_i);
 
-		if(grid[i] == false)
+		if (!grid[i])
 			continue;
 
 		v2f p0 = v2f(xi,zi)*cloud_size + world_center_of_drawing_in_noise_f;

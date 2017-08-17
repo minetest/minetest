@@ -74,7 +74,7 @@ public:
 
 	void update(const v3f &camera_p, const video::SColorf &color);
 
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{
 		m_camera_offset = camera_offset;
 		updateBox();
