@@ -205,7 +205,7 @@ enum ClientStateEvent
 */
 struct PrioritySortedBlockTransfer
 {
-	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_peer_id)
+	PrioritySortedBlockTransfer(float a_priority, const v3s16 &a_pos, u16 a_peer_id)
 	{
 		priority = a_priority;
 		pos = a_pos;
@@ -246,8 +246,8 @@ public:
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
 
-	RemoteClient() {}
-	~RemoteClient() {}
+	RemoteClient() = default;
+	~RemoteClient() = default;
 
 	/*
 		Finds block that should be sent next to the client.
@@ -495,7 +495,6 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env;
-	std::mutex m_env_mutex;
 
 	float m_print_info_timer;
 

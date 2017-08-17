@@ -139,7 +139,7 @@ public:
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
 private:

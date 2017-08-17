@@ -52,14 +52,12 @@ ClientEnvironment::ClientEnvironment(ClientMap *map,
 ClientEnvironment::~ClientEnvironment()
 {
 	// delete active objects
-	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i) {
-		delete i->second;
+	for (auto &active_object : m_active_objects) {
+		delete active_object.second;
 	}
 
-	for(std::vector<ClientSimpleObject*>::iterator
-		i = m_simple_objects.begin(); i != m_simple_objects.end(); ++i) {
-		delete *i;
+	for (auto &simple_object : m_simple_objects) {
+		delete simple_object;
 	}
 
 	// Drop/delete map
@@ -211,13 +209,11 @@ void ClientEnvironment::step(float dtime)
 
 	//std::cout<<"Looped "<<loopcount<<" times."<<std::endl;
 
-	for(std::vector<CollisionInfo>::iterator i = player_collisions.begin();
-		i != player_collisions.end(); ++i) {
-		CollisionInfo &info = *i;
+	for (const CollisionInfo &info : player_collisions) {
 		v3f speed_diff = info.new_speed - info.old_speed;;
 		// Handle only fall damage
 		// (because otherwise walking against something in fast_move kills you)
-		if(speed_diff.Y < 0 || info.old_speed.Y >= 0)
+		if (speed_diff.Y < 0 || info.old_speed.Y >= 0)
 			continue;
 		// Get rid of other components
 		speed_diff.X = 0;
@@ -225,8 +221,7 @@ void ClientEnvironment::step(float dtime)
 		f32 pre_factor = 1; // 1 hp per node/s
 		f32 tolerance = BS*14; // 5 without damage
 		f32 post_factor = 1; // 1 hp per node/s
-		if(info.type == COLLISION_NODE)
-		{
+		if (info.type == COLLISION_NODE) {
 			const ContentFeatures &f = m_client->ndef()->
 				get(m_map->getNodeNoEx(info.node_p));
 			// Determine fall damage multiplier
@@ -343,14 +338,12 @@ void ClientEnvironment::step(float dtime)
 
 	g_profiler->avg("CEnv: num of objects", m_active_objects.size());
 	bool update_lighting = m_active_object_light_update_interval.step(dtime, 0.21);
-	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i) {
-		ClientActiveObject* obj = i->second;
+	for (auto &ao_it : m_active_objects) {
+		ClientActiveObject* obj = ao_it.second;
 		// Step object
 		obj->step(dtime, this);
 
-		if(update_lighting)
-		{
+		if (update_lighting) {
 			// Update lighting
 			u8 light = 0;
 			bool pos_ok;
@@ -371,9 +364,8 @@ void ClientEnvironment::step(float dtime)
 		Step and handle simple objects
 	*/
 	g_profiler->avg("CEnv: num of simple objects", m_simple_objects.size());
-	for(std::vector<ClientSimpleObject*>::iterator
-		i = m_simple_objects.begin(); i != m_simple_objects.end();) {
-		std::vector<ClientSimpleObject*>::iterator cur = i;
+	for (auto i = m_simple_objects.begin(); i != m_simple_objects.end();) {
+		auto cur = i;
 		ClientSimpleObject *simple = *cur;
 
 		simple->step(dtime);
@@ -397,13 +389,13 @@ GenericCAO* ClientEnvironment::getGenericCAO(u16 id)
 	ClientActiveObject *obj = getActiveObject(id);
 	if (obj && obj->getType() == ACTIVEOBJECT_TYPE_GENERIC)
 		return (GenericCAO*) obj;
-	else
-		return NULL;
+
+	return NULL;
 }
 
 ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 {
-	ClientActiveObjectMap::iterator n = m_active_objects.find(id);
+	auto n = m_active_objects.find(id);
 	if (n == m_active_objects.end())
 		return NULL;
 	return n->second;
@@ -412,10 +404,8 @@ ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
 bool isFreeClientActiveObjectId(const u16 id,
 	ClientActiveObjectMap &objects)
 {
-	if(id == 0)
-		return false;
+	return id != 0 && objects.find(id) == objects.end();
 
-	return objects.find(id) == objects.end();
 }
 
 u16 getFreeClientActiveObjectId(ClientActiveObjectMap &objects)
@@ -580,18 +570,15 @@ void ClientEnvironment::updateLocalPlayerBreath(u16 breath)
 void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
 	std::vector<DistanceSortedActiveObject> &dest)
 {
-	for (ClientActiveObjectMap::iterator i = m_active_objects.begin();
-			i != m_active_objects.end(); ++i) {
-		ClientActiveObject* obj = i->second;
+	for (auto &ao_it : m_active_objects) {
+		ClientActiveObject* obj = ao_it.second;
 
 		f32 d = (obj->getPosition() - origin).getLength();
 
-		if(d > max_d)
+		if (d > max_d)
 			continue;
 
-		DistanceSortedActiveObject dso(obj, d);
-
-		dest.push_back(dso);
+		dest.emplace_back(obj, d);
 	}
 }
 
@@ -614,12 +601,13 @@ void ClientEnvironment::getSelectedActiveObjects(
 		shootline_on_map.getLength() + 10.0f, allObjects);
 	const v3f line_vector = shootline_on_map.getVector();
 
-	for (u32 i = 0; i < allObjects.size(); i++) {
-		ClientActiveObject *obj = allObjects[i].obj;
+	for (const auto &allObject : allObjects) {
+		ClientActiveObject *obj = allObject.obj;
 		aabb3f selection_box;
 		if (!obj->getSelectionBox(&selection_box))
 			continue;
-		v3f pos = obj->getPosition();
+
+		const v3f &pos = obj->getPosition();
 		aabb3f offsetted_box(selection_box.MinEdge + pos,
 			selection_box.MaxEdge + pos);
 
@@ -627,9 +615,8 @@ void ClientEnvironment::getSelectedActiveObjects(
 		v3s16 current_normal;
 		if (boxLineCollision(offsetted_box, shootline_on_map.start, line_vector,
 				&current_intersection, &current_normal)) {
-			objects.push_back(PointedThing(
-				(s16) obj->getId(), current_intersection, current_normal,
-				(current_intersection - shootline_on_map.start).getLengthSQ()));
+			objects.emplace_back((s16) obj->getId(), current_intersection, current_normal,
+				(current_intersection - shootline_on_map.start).getLengthSQ());
 		}
 	}
 }

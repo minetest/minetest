@@ -103,10 +103,9 @@ int ModApiServer::l_get_player_privs(lua_State *L)
 	lua_newtable(L);
 	int table = lua_gettop(L);
 	std::set<std::string> privs_s = server->getPlayerEffectivePrivs(name);
-	for(std::set<std::string>::const_iterator
-			i = privs_s.begin(); i != privs_s.end(); ++i){
+	for (const std::string &privs_ : privs_s) {
 		lua_pushboolean(L, true);
-		lua_setfield(L, table, i->c_str());
+		lua_setfield(L, table, privs_.c_str());
 	}
 	lua_pushvalue(L, table);
 	return 1;
@@ -129,9 +128,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 		std::string ip_str = addr.serializeString();
 		lua_pushstring(L, ip_str.c_str());
 		return 1;
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch (const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
@@ -154,9 +151,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	try
 	{
 		addr = getServer(L)->getPeerAddress(player->peer_id);
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
 		return 1;
@@ -235,7 +230,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_pushstring(L,"protocol_version");
 	lua_pushnumber(L, prot_vers);
 	lua_settable(L, table);
-	
+
 #ifndef NDEBUG
 	lua_pushstring(L,"serialization_version");
 	lua_pushnumber(L, ser_vers);
@@ -299,9 +294,7 @@ int ModApiServer::l_ban_player(lua_State *L)
 			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->peer_id);
 		std::string ip_str = addr.serializeString();
 		getServer(L)->setIpBanned(ip_str, name);
-	}
-	catch(con::PeerNotFoundException) // unlikely
-	{
+	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushboolean(L, false); // error
 		return 1;
@@ -478,7 +471,7 @@ int ModApiServer::l_is_singleplayer(lua_State *L)
 int ModApiServer::l_notify_authentication_modified(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	std::string name = "";
+	std::string name;
 	if(lua_isstring(L, 1))
 		name = lua_tostring(L, 1);
 	getServer(L)->reportPrivsModified(name);
