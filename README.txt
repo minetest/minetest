@@ -146,6 +146,11 @@ $ tar xf master.tar.gz
 $ mv minetest_game-master minetest_game
 $ cd ..
 
+Download the nyancat mod, without using git:
+$ wget -Omods/nyancat.zip https://forum.minetest.net/download/file.php?id=9710
+$ unzip mods/nyancat.zip -d mods
+$ rm mods/nyancat.zip
+
 Build a version that runs directly from the source directory:
 $ cmake . -DRUN_IN_PLACE=TRUE
 $ make -j <number of processors>
