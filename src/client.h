@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HEADER
-#define CLIENT_HEADER
+#pragma once
 
 #include "network/connection.h"
 #include "clientenvironment.h"
@@ -718,5 +717,3 @@ private:
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 	u32 m_csm_noderange_limit = 8;
 };
-
-#endif // !CLIENT_HEADER

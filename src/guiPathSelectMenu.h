@@ -17,8 +17,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUIFILESELECTMENU_H_
-#define GUIFILESELECTMENU_H_
+#pragma once
 
 #include <string>
 
@@ -58,5 +57,3 @@ private:
 	std::string m_formname;
 	bool m_file_select_dialog;
 };
-
-#endif /* GUIFILESELECTMENU_H_ */

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef INVENTORYMANAGER_HEADER
-#define INVENTORYMANAGER_HEADER
+#pragma once
 
 #include "inventory.h"
 #include <iostream>
@@ -244,6 +243,3 @@ struct ICraftAction : public InventoryAction
 bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef);
-
-#endif
-

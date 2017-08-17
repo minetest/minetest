@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_SQLITE3_HEADER
-#define DATABASE_SQLITE3_HEADER
+#pragma once
 
 #include <cstring>
 #include <string>
@@ -192,5 +191,3 @@ private:
 	sqlite3_stmt *m_stmt_player_metadata_remove = nullptr;
 	sqlite3_stmt *m_stmt_player_metadata_add = nullptr;
 };
-
-#endif

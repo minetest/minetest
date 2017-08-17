@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DAYNIGHTRATIO_HEADER
-#define DAYNIGHTRATIO_HEADER
+#pragma once
 
 inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 {
@@ -64,6 +63,3 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 		return 1000;
 	}
 }
-
-#endif
-

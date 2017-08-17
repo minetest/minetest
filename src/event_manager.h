@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef EVENT_MANAGER_HEADER
-#define EVENT_MANAGER_HEADER
+#pragma once
 
 #include "event.h"
 #include <list>
@@ -110,6 +109,3 @@ public:
 		dereg(type, EventManager::receiverReceive, r);
 	}
 };
-
-#endif
-

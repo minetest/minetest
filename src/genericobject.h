@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GENERICOBJECT_HEADER
-#define GENERICOBJECT_HEADER
+#pragma once
 
 #include <string>
 #include "irrlichttypes_bloated.h"
@@ -83,6 +82,3 @@ std::string gob_cmd_update_nametag_attributes(video::SColor color);
 
 std::string gob_cmd_update_infant(u16 id, u8 type,
 		const std::string &client_initialization_data);
-
-#endif
-
