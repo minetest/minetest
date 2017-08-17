@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef STRFND_HEADER
-#define STRFND_HEADER
+#pragma once
 
 #include <string>
 
@@ -77,6 +76,3 @@ public:
 
 typedef BasicStrfnd<char> Strfnd;
 typedef BasicStrfnd<wchar_t> WStrfnd;
-
-#endif
-

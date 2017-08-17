@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_THREAD_HEADER
-#define UTIL_THREAD_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../threading/thread.h"
@@ -228,6 +227,3 @@ protected:
 private:
 	Semaphore m_update_sem;
 };
-
-#endif
-

@@ -56,8 +56,7 @@
  * [including the GNU Public Licence.]
  */
 
-#ifndef HEADER_SHA_H
-#define HEADER_SHA_H
+#pragma once
 
 #include <stddef.h>
 
@@ -152,6 +151,4 @@ void SHA256_Transform(SHA256_CTX *c, const unsigned char *data);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
