@@ -188,9 +188,8 @@ bool wouldCollideWithCeiling(
 
 	assert(y_increase >= 0);	// pre-condition
 
-	for (std::vector<NearbyCollisionInfo>::const_iterator it = cinfo.begin();
-			it != cinfo.end(); ++it) {
-		const aabb3f &staticbox = it->box;
+	for (const auto &it : cinfo) {
+		const aabb3f &staticbox = it.box;
 		if ((movingbox.MaxEdge.Y - d <= staticbox.MinEdge.Y) &&
 				(movingbox.MaxEdge.Y + y_increase > staticbox.MinEdge.Y) &&
 				(movingbox.MinEdge.X < staticbox.MaxEdge.X) &&
@@ -203,7 +202,7 @@ bool wouldCollideWithCeiling(
 	return false;
 }
 
-static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
+static inline void getNeighborConnectingFace(const v3s16 &p, INodeDefManager *nodedef,
 		Map *map, MapNode n, int v, int *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
@@ -255,7 +254,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
+	ScopeProfiler sp2(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
 
 	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
@@ -273,12 +272,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	bool any_position_valid = false;
 
-	for(s16 x = min.X; x <= max.X; x++)
-	for(s16 y = min.Y; y <= max.Y; y++)
-	for(s16 z = min.Z; z <= max.Z; z++)
-	{
-		v3s16 p(x,y,z);
-
+	v3s16 p;
+	for (p.X = min.X; p.X <= max.X; p.X++)
+	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
+	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
 		bool is_position_valid;
 		MapNode n = map->getNodeNoEx(p, &is_position_valid);
 
@@ -288,12 +285,15 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			any_position_valid = true;
 			INodeDefManager *nodedef = gamedef->getNodeDefManager();
 			const ContentFeatures &f = nodedef->get(n);
-			if(f.walkable == false)
+
+			if (!f.walkable)
 				continue;
+
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
 			int neighbors = 0;
-			if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+			if (f.drawtype == NDT_NODEBOX &&
+				f.node_box.type == NODEBOX_CONNECTED) {
 				v3s16 p2 = p;
 
 				p2.Y++;
@@ -321,20 +321,15 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-			for(std::vector<aabb3f>::iterator
-					i = nodeboxes.begin();
-					i != nodeboxes.end(); ++i)
-			{
-				aabb3f box = *i;
-				box.MinEdge += v3f(x, y, z)*BS;
-				box.MaxEdge += v3f(x, y, z)*BS;
-				cinfo.push_back(NearbyCollisionInfo(false,
-					false, n_bouncy_value, p, box));
+			for (auto box : nodeboxes) {
+				box.MinEdge += intToFloat(p, BS);
+				box.MaxEdge += intToFloat(p, BS);
+				cinfo.emplace_back(false, false, n_bouncy_value, p, box);
 			}
 		} else {
 			// Collide with unloaded nodes
 			aabb3f box = getNodeBox(p, BS);
-			cinfo.push_back(NearbyCollisionInfo(true, false, 0, p, box));
+			cinfo.emplace_back(true, false, 0, p, box);
 		}
 	}
 
@@ -349,7 +344,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	if(collideWithObjects)
 	{
-		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
+		ScopeProfiler sp2(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
 
 		/* add object boxes to cinfo */
@@ -361,9 +356,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			f32 distance = speed_f->getLength();
 			std::vector<DistanceSortedActiveObject> clientobjects;
 			c_env->getActiveObjects(*pos_f, distance * 1.5, clientobjects);
-			for (size_t i=0; i < clientobjects.size(); i++) {
-				if ((self == 0) || (self != clientobjects[i].obj)) {
-					objects.push_back((ActiveObject*)clientobjects[i].obj);
+			for (auto &clientobject : clientobjects) {
+				if (!self || (self != clientobject.obj)) {
+					objects.push_back((ActiveObject*) clientobject.obj);
 				}
 			}
 		}
@@ -375,9 +370,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				f32 distance = speed_f->getLength();
 				std::vector<u16> s_objects;
 				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5);
-				for (std::vector<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); ++iter) {
-					ServerActiveObject *current = s_env->getActiveObject(*iter);
-					if ((self == 0) || (self != current)) {
+				for (u16 obj_id : s_objects) {
+					ServerActiveObject *current = s_env->getActiveObject(obj_id);
+					if (!self || (self != current)) {
 						objects.push_back((ActiveObject*)current);
 					}
 				}
@@ -388,11 +383,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				iter != objects.end(); ++iter) {
 			ActiveObject *object = *iter;
 
-			if (object != NULL) {
+			if (object) {
 				aabb3f object_collisionbox;
 				if (object->getCollisionBox(&object_collisionbox) &&
 						object->collideWithObjects()) {
-					cinfo.push_back(NearbyCollisionInfo(false, true, 0, v3s16(), object_collisionbox));
+					cinfo.emplace_back(false, true, 0, v3s16(), object_collisionbox);
 				}
 			}
 		}
@@ -417,7 +412,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	while(dtime > BS * 1e-10) {
 		//TimeTaker tt3("collisionMoveSimple dtime loop");
-        	ScopeProfiler sp(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
+        	ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
 
 		// Avoid infinite loop
 		loopcount++;
@@ -545,8 +540,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	aabb3f box = box_0;
 	box.MinEdge += *pos_f;
 	box.MaxEdge += *pos_f;
-	for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
-		NearbyCollisionInfo &box_info = cinfo[boxindex];
+	for (const auto &box_info : cinfo) {
 		const aabb3f &cbox = box_info.box;
 
 		/*

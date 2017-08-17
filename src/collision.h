@@ -36,7 +36,8 @@ enum CollisionType
 
 struct CollisionInfo
 {
-	CollisionInfo() {}
+	CollisionInfo() = default;
+
 	CollisionType type = COLLISION_NODE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	v3f old_speed;
@@ -45,7 +46,8 @@ struct CollisionInfo
 
 struct collisionMoveResult
 {
-	collisionMoveResult() {}
+	collisionMoveResult() = default;
+
 	bool touching_ground = false;
 	bool collides = false;
 	bool standing_on_object = false;
