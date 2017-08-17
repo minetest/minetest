@@ -85,14 +85,21 @@ local function create_world_buttonhandler(this, fields)
 		local worldname = fields["te_world_name"]
 		local gameindex = core.get_textlist_index("games")
 
-		if gameindex ~= nil and
-			worldname ~= "" then
-
-			local message = nil
-
+		if gameindex ~= nil and worldname ~= "" then
 			core.settings:set("fixed_map_seed", fields["te_seed"])
-
-			if not menudata.worldlist:uid_exists_raw(worldname) then
+			
+			local message = nil
+			local game_name = gamemgr.get_game(gameindex).id
+			local exists = false
+			
+			for _, world in pairs(core.get_worlds()) do
+				if game_name == world.gameid and
+						world.name == worldname then
+					exists = true
+				end
+			end
+			
+			if not exists then
 				core.settings:set("mg_name",fields["dd_mapgen"])
 				message = core.create_world(worldname,gameindex)
 			else

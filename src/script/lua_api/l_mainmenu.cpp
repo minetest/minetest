@@ -501,9 +501,25 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 	const char *name	= luaL_checkstring(L, 1);
 	int gameidx			= luaL_checkinteger(L,2) -1;
 
+	std::string new_dir = fs::SanitizeFilename(name);
 	std::string path = porting::path_user + DIR_DELIM
-			"worlds" + DIR_DELIM
-			+ name;
+			+ "worlds" + DIR_DELIM + new_dir;
+
+	if (fs::PathExists(path)) {
+		path = path + "_";
+		for (int i = 1; i <= 100; i++) {
+			std::ostringstream test_path;
+			test_path << path << i;
+			if (!fs::PathExists(test_path.str())) {
+				path = test_path.str();
+				break;
+			}
+			if (i == 100) {
+				lua_pushstring(L, "Failed to find free directrory name for world");
+				return 1;
+			}
+		}
+	}
 
 	std::vector<SubgameSpec> games = getAvailableGames();
 
@@ -511,7 +527,7 @@ int ModApiMainMenu::l_create_world(lua_State *L)
 			(gameidx < (int) games.size())) {
 
 		// Create world if it doesn't exist
-		if (!loadGameConfAndInitWorld(path, games[gameidx])) {
+		if (!loadGameConfAndInitWorld(path, name, games[gameidx])) {
 			lua_pushstring(L, "Failed to initialize world");
 		} else {
 			lua_pushnil(L);

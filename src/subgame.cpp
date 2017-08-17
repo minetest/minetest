@@ -200,9 +200,8 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 {
 	std::string conf_path = world_path + DIR_DELIM + "world.mt";
 	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if(!succeeded){
-		if(can_be_legacy){
+	if (!conf.readConfigFile(conf_path.c_str())) {
+		if(can_be_legacy) {
 			// If map_meta.txt exists, it is probably an old minetest world
 			if(fs::PathExists(world_path + DIR_DELIM + "map_meta.txt"))
 				return LEGACY_GAMEID;
@@ -215,6 +214,19 @@ std::string getWorldGameId(const std::string &world_path, bool can_be_legacy)
 	if(conf.get("gameid") == "mesetint")
 		return "minetest";
 	return conf.get("gameid");
+}
+
+std::string getWorldName(const std::string &world_path, const std::string &dir_name)
+{
+	std::string conf_path = world_path + DIR_DELIM + "world.mt";
+	Settings conf;
+	if (!conf.readConfigFile(conf_path.c_str()))
+		return dir_name;
+	if (!conf.exists("world_name")) {
+		conf.set("world_name", dir_name);
+		return dir_name;
+	}
+	return conf.get("world_name");
 }
 
 std::string getWorldPathEnv()
@@ -243,10 +255,11 @@ std::vector<WorldSpec> getAvailableWorlds()
 			if(!dirvector[j].dir)
 				continue;
 			std::string fullpath = *i + DIR_DELIM + dirvector[j].name;
-			std::string name = dirvector[j].name;
+			std::string dir_name = dirvector[j].name;
 			// Just allow filling in the gameid always for now
 			bool can_be_legacy = true;
 			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
+			std::string name = getWorldName(fullpath, dir_name);
 			WorldSpec spec(fullpath, name, gameid);
 			if(!spec.isValid()){
 				infostream<<"(invalid: "<<name<<") ";
@@ -272,7 +285,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 	return worlds;
 }
 
-bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec)
+bool loadGameConfAndInitWorld(const std::string &path, const std::string &name, const SubgameSpec &gamespec)
 {
 	// Override defaults with those provided by the game.
 	// We clear and reload the defaults because the defaults
@@ -298,6 +311,7 @@ bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamesp
 		conf.set("player_backend", "sqlite3");
 		conf.setBool("creative_mode", g_settings->getBool("creative_mode"));
 		conf.setBool("enable_damage", g_settings->getBool("enable_damage"));
+		conf.set("world_name", name);
 
 		if (!conf.updateConfigFile(worldmt_path.c_str()))
 			return false;
