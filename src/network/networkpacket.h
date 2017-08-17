@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NETWORKPACKET_HEADER
-#define NETWORKPACKET_HEADER
+#pragma once
 
 #include <SColor.h>
 #include "util/pointer.h"
@@ -133,5 +132,3 @@ private:
 		u16 m_command = 0;
 		u16 m_peer_id = 0;
 };
-
-#endif

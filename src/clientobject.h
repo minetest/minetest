@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTOBJECT_HEADER
-#define CLIENTOBJECT_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
@@ -106,5 +105,3 @@ struct DistanceSortedActiveObject
 		return d < other.d;
 	}
 };
-
-#endif

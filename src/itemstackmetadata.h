@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ITEMSTACKMETADATA_HEADER
-#define ITEMSTACKMETADATA_HEADER
+#pragma once
 
 #include "metadata.h"
 
@@ -31,5 +30,3 @@ public:
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 };
-
-#endif

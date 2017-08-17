@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODEMETADATA_HEADER
-#define NODEMETADATA_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "metadata.h"
@@ -95,5 +94,3 @@ private:
 
 	std::map<v3s16, NodeMetadata *> m_data;
 };
-
-#endif

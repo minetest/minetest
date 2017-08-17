@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_NUMERIC_HEADER
-#define UTIL_NUMERIC_HEADER
+#pragma once
 
 #include "basic_macros.h"
 #include "../irrlichttypes.h"
@@ -363,5 +362,3 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 16;
 	return orig + 1;
 }
-
-#endif

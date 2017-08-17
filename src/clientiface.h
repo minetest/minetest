@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef _CLIENTIFACE_H_
-#define _CLIENTIFACE_H_
+
+#pragma once
 
 #include "irr_v3d.h"                   // for irrlicht datatypes
 
@@ -500,5 +500,3 @@ private:
 
 	static const char *statenames[];
 };
-
-#endif

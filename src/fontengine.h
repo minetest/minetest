@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef __FONTENGINE_H__
-#define __FONTENGINE_H__
+
+#pragma once
 
 #include <map>
 #include <vector>
@@ -135,5 +135,3 @@ private:
 
 /** interface to access main font engine*/
 extern FontEngine* g_fontengine;
-
-#endif

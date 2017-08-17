@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MESH_GENERATOR_THREAD_HEADER
-#define MESH_GENERATOR_THREAD_HEADER
+#pragma once
 
 #include <ctime>
 #include <mutex>
@@ -130,5 +129,3 @@ private:
 protected:
 	virtual void doUpdate();
 };
-
-#endif

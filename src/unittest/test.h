@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TEST_HEADER
-#define TEST_HEADER
+#pragma once
 
 #include <exception>
 #include <vector>
@@ -143,5 +142,3 @@ extern content_t t_CONTENT_LAVA;
 extern content_t t_CONTENT_BRICK;
 
 bool run_tests();
-
-#endif

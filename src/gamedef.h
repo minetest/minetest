@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GAMEDEF_HEADER
-#define GAMEDEF_HEADER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -80,6 +79,3 @@ public:
 	virtual bool registerModStorage(ModMetadata *storage) = 0;
 	virtual void unregisterModStorage(const std::string &name) = 0;
 };
-
-#endif
-

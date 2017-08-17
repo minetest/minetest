@@ -17,14 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_CSO_HEADER
-#define CONTENT_CSO_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "clientsimpleobject.h"
 
 ClientSimpleObject* createSmokePuff(scene::ISceneManager *smgr,
 		ClientEnvironment *env, v3f pos, v2f size);
-
-#endif
-

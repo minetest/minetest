@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINIMAP_HEADER
-#define MINIMAP_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "util/thread.h"
@@ -162,5 +161,3 @@ private:
 	std::mutex m_mutex;
 	std::list<v2f> m_active_markers;
 };
-
-#endif

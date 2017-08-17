@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODEDEF_HEADER
-#define NODEDEF_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <string>
@@ -517,5 +516,3 @@ public:
 	INodeDefManager *m_ndef = nullptr;
 	bool m_resolve_done = false;
 };
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINETEST_L_LOCALPLAYER_H
-#define MINETEST_L_LOCALPLAYER_H
+#pragma once
 
 #include "l_base.h"
 
@@ -81,5 +80,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif // MINETEST_L_LOCALPLAYER_H

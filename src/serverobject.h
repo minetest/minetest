@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVEROBJECT_HEADER
-#define SERVEROBJECT_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "irrlichttypes_bloated.h"
@@ -258,6 +257,3 @@ private:
 	// Used for creating objects based on type
 	static std::map<u16, Factory> m_types;
 };
-
-#endif
-

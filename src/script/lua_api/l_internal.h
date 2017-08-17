@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 /******************************************************************************/
 
-#ifndef L_INTERNAL_H_
-#define L_INTERNAL_H_
+#pragma once
 
 #include "common/c_internal.h"
 
@@ -44,5 +43,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define GET_ENV_PTR         \
 	MAP_LOCK_REQUIRED;      \
 	GET_ENV_PTR_NO_MAP_LOCK
-
-#endif /* L_INTERNAL_H_ */

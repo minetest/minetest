@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef FILESYS_HEADER
-#define FILESYS_HEADER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -118,6 +117,3 @@ bool safeWriteToFile(const std::string &path, const std::string &content);
 bool Rename(const std::string &from, const std::string &to);
 
 } // namespace fs
-
-#endif
-

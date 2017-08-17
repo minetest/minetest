@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef REMOTEPLAYER_HEADER
-#define REMOTEPLAYER_HEADER
+#pragma once
 
 #include "player.h"
 #include "cloudparams.h"
@@ -168,5 +167,3 @@ private:
 
 	CloudParams m_cloud_params;
 };
-
-#endif

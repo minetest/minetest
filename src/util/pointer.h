@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_POINTER_HEADER
-#define UTIL_POINTER_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../debug.h" // For assert()
@@ -227,6 +226,3 @@ inline SharedBuffer<u8> SharedBufferFromString(const char *string)
 	SharedBuffer<u8> b((u8*)string, strlen(string)+1);
 	return b;
 }
-
-#endif
-

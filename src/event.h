@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef EVENT_HEADER
-#define EVENT_HEADER
+#pragma once
 
 class MtEvent
 {
@@ -67,6 +66,3 @@ public:
 	virtual void reg(MtEventReceiver *r, const char *type) = 0;
 	virtual void dereg(MtEventReceiver *r, const char *type) = 0;
 };
-
-#endif
-

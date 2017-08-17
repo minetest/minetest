@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_FLAT_HEADER
-#define MAPGEN_FLAT_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -75,5 +74,3 @@ private:
 	float hill_steepness;
 	Noise *noise_terrain;
 };
-
-#endif

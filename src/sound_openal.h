@@ -17,12 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SOUND_OPENAL_HEADER
-#define SOUND_OPENAL_HEADER
+#pragma once
 
 #include "sound.h"
 
 ISoundManager *createOpenALSoundManager(OnDemandSoundFetcher *fetcher);
-
-#endif
-

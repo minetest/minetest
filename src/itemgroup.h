@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ITEMGROUP_HEADER
-#define ITEMGROUP_HEADER
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -32,5 +31,3 @@ static inline int itemgroup_get(const ItemGroupList &groups, const std::string &
 		return 0;
 	return i->second;
 }
-
-#endif

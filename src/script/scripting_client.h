@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_SCRIPTING_H_
-#define CLIENT_SCRIPTING_H_
+#pragma once
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_client.h"
@@ -41,4 +40,3 @@ public:
 private:
 	virtual void InitializeModApi(lua_State *L, int top);
 };
-#endif

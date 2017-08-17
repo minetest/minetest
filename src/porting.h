@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Random portability stuff
 */
 
-#ifndef PORTING_HEADER
-#define PORTING_HEADER
+#pragma once
 
 #ifdef _WIN32
 	#ifdef _WIN32_WINNT
@@ -332,6 +331,3 @@ void attachOrCreateConsole(void);
 #ifdef __ANDROID__
 #include "porting_android.h"
 #endif
-
-#endif // PORTING_HEADER
-

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPNODE_HEADER
-#define MAPNODE_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "light.h"
@@ -304,6 +303,3 @@ private:
 	// Deprecated serialization methods
 	void deSerialize_pre22(u8 *source, u8 version);
 };
-
-#endif
-

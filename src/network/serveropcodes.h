@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVEROPCODES_HEADER
-#define SERVEROPCODES_HEADER
+#pragma once
 
 #include "server.h"
 #include "networkprotocol.h"
@@ -49,5 +48,3 @@ struct ClientCommandFactory
 extern const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES];
 
 extern const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES];
-
-#endif

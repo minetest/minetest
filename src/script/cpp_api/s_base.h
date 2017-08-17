@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_BASE_H_
-#define S_BASE_H_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -147,5 +146,3 @@ private:
 	GUIEngine      *m_guiengine = nullptr;
 	ScriptingType  m_type;
 };
-
-#endif /* S_BASE_H_ */

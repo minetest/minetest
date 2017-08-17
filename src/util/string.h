@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_STRING_HEADER
-#define UTIL_STRING_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <stdlib.h>
@@ -648,6 +647,3 @@ inline const std::string duration_to_string(int sec)
 
 	return ss.str();
 }
-
-
-#endif

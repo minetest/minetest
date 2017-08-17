@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MODALMENU_HEADER
-#define MODALMENU_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #ifdef HAVE_TOUCHSCREENGUI
@@ -140,7 +139,3 @@ private:
 	// wants to launch other menus
 	bool m_allow_focus_removal = false;
 };
-
-
-#endif
-

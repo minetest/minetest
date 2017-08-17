@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_DECORATION_HEADER
-#define MG_DECORATION_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "objdef.h"
@@ -149,5 +148,3 @@ public:
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, s16 deco_zero_level = 0);
 };
-
-#endif

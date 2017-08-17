@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_ITEMSTACKMETA_H_
-#define L_ITEMSTACKMETA_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "lua_api/l_metadata.h"
@@ -55,5 +54,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif

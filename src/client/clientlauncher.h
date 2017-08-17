@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __CLIENT_LAUNCHER_H__
-#define __CLIENT_LAUNCHER_H__
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/inputhandler.h"
@@ -69,5 +68,3 @@ protected:
 	std::string current_address = "does-not-exist";
 	int current_port = 0;
 };
-
-#endif

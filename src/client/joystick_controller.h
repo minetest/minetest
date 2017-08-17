@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef JOYSTICK_HEADER
-#define JOYSTICK_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "keys.h"
@@ -168,5 +167,3 @@ private:
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_past_pressed_keys;
 	std::bitset<KeyType::INTERNAL_ENUM_COUNT> m_past_released_keys;
 };
-
-#endif

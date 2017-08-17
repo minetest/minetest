@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CPP_API_ASYNC_EVENTS_HEADER
-#define CPP_API_ASYNC_EVENTS_HEADER
+#pragma once
 
 #include <vector>
 #include <deque>
@@ -156,5 +155,3 @@ private:
 	// Counter semaphore for job dispatching
 	Semaphore jobQueueCounter;
 };
-
-#endif // CPP_API_ASYNC_EVENTS_HEADER

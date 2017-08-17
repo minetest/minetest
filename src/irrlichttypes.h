@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef IRRLICHTTYPES_HEADER
-#define IRRLICHTTYPES_HEADER
+#pragma once
 
 /* Ensure that <stdint.h> is included before <irrTypes.h>, unless building on
  * MSVC, to address an irrlicht issue: https://sourceforge.net/p/irrlicht/bugs/433/
@@ -62,5 +61,3 @@ using namespace irr;
 #define U16_MAX 0xFFFF
 #define U32_MAX 0xFFFFFFFF
 #define U64_MAX 0xFFFFFFFFFFFFFFFF
-
-#endif

@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef L_METADATA_H_
-#define L_METADATA_H_
+
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "lua_api/l_base.h"
@@ -72,5 +72,3 @@ protected:
 	// equals(self, other)
 	static int l_equals(lua_State *L);
 };
-
-#endif /* L_NODEMETA_H_ */

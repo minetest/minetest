@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GAME_HEADER
-#define GAME_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <string>
@@ -52,5 +51,3 @@ void the_game(bool *kill,
 		bool *reconnect_requested,
 		const SubgameSpec &gamespec, // Used for local game
 		bool simple_singleplayer_mode);
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TILE_HEADER
-#define TILE_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
@@ -330,4 +329,3 @@ struct TileSpec
 	//! The first is base texture, the second is overlay.
 	TileLayer layers[MAX_TILE_LAYERS];
 };
-#endif

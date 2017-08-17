@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ROLLBACK_HEADER
-#define ROLLBACK_HEADER
+#pragma once
 
 #include <string>
 #include "irr_v3d.h"
@@ -103,5 +102,3 @@ private:
 	std::vector<Entity> knownActors;
 	std::vector<Entity> knownNodes;
 };
-
-#endif

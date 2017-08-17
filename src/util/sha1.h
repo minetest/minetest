@@ -24,7 +24,8 @@ SOFTWARE.
 
 */
 
-#ifndef SHA1_HEADER
+#pragma once
+
 typedef unsigned int Uint32;
 
 class SHA1
@@ -51,6 +52,3 @@ public:
 	static void storeBigEndianUint32(unsigned char *byte, Uint32 num);
 	static void hexPrinter(unsigned char *c, int l);
 };
-
-#define SHA1_HEADER
-#endif

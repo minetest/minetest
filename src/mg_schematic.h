@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_SCHEMATIC_HEADER
-#define MG_SCHEMATIC_HEADER
+#pragma once
 
 #include <map>
 #include "mg_decoration.h"
@@ -146,5 +145,3 @@ private:
 
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
 	std::vector<std::string> *usednodes, INodeDefManager *ndef);
-
-#endif

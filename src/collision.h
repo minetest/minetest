@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef COLLISION_HEADER
-#define COLLISION_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <vector>
@@ -76,7 +75,3 @@ bool wouldCollideWithCeiling(
 		const std::vector<aabb3f> &staticboxes,
 		const aabb3f &movingbox,
 		f32 y_increase, f32 d);
-
-
-#endif
-

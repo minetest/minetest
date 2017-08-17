@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 /******************************************************************************/
 
-#ifndef C_INTERNAL_H_
-#define C_INTERNAL_H_
+#pragma once
 
 extern "C" {
 #include <lua.h>
@@ -106,5 +105,3 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 void log_deprecated(lua_State *L, const std::string &message);
-
-#endif /* C_INTERNAL_H_ */

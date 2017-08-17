@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_FRACTAL_HEADER
-#define MAPGEN_FRACTAL_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -86,5 +85,3 @@ private:
 	float julia_w;
 	Noise *noise_seabed;
 };
-
-#endif

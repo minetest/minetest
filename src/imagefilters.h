@@ -16,8 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef _IMAGE_FILTERS_H_
-#define _IMAGE_FILTERS_H_
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 
@@ -42,5 +41,3 @@ void imageCleanTransparent(video::IImage *src, u32 threshold);
  * and downscaling.
  */
 void imageScaleNNAA(video::IImage *src, const core::rect<s32> &srcrect, video::IImage *dest);
-
-#endif

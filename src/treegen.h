@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TREEGEN_HEADER
-#define TREEGEN_HEADER
+#pragma once
 
 #include <matrix4.h>
 #include "noise.h"
@@ -91,4 +90,3 @@ namespace treegen {
 	v3f transposeMatrix(irr::core::matrix4 M ,v3f v);
 
 }; // namespace treegen
-#endif

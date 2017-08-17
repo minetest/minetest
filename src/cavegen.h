@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CAVEGEN_HEADER
-#define CAVEGEN_HEADER
+#pragma once
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
 
@@ -241,5 +240,3 @@ private:
 
 	inline s16 getSurfaceFromHeightmap(v3s16 p);
 };
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_CONTAINER_HEADER
-#define UTIL_CONTAINER_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../exceptions.h"
@@ -301,6 +300,3 @@ private:
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
 };
-
-#endif
-
