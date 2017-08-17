@@ -520,7 +520,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 
 	// Enforce user limit.
 	// Don't enforce for users that have some admin right
-	if (m_clients.isUserLimitReached() >= g_settings->getU16("max_users") &&
+	if (m_clients.isUserLimitReached() &&
 			!checkPriv(playername, "server") &&
 			!checkPriv(playername, "ban") &&
 			!checkPriv(playername, "privs") &&
