@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPSECTOR_HEADER
-#define MAPSECTOR_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "irr_v2d.h"
@@ -135,6 +134,3 @@ public:
 private:
 };
 #endif
-
-#endif
-

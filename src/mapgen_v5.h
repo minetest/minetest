@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_V5_HEADER
-#define MAPGEN_V5_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -73,5 +72,3 @@ private:
 	Noise *noise_height;
 	Noise *noise_ground;
 };
-
-#endif

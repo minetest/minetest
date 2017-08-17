@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef KEYCODE_HEADER
-#define KEYCODE_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "Keycodes.h"
@@ -65,5 +64,3 @@ KeyPress getKeySetting(const char *settingname);
 void clearKeyCache();
 
 irr::EKEY_CODE keyname_to_keycode(const char *name);
-
-#endif

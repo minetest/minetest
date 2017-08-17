@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAINMENUMANAGER_HEADER
-#define MAINMENUMANAGER_HEADER
+#pragma once
 
 /*
 	All kinds of stuff that needs to be exposed from main.cpp
@@ -168,6 +167,3 @@ public:
 };
 
 extern MainGameCallback *g_gamecallback;
-
-#endif
-

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NAMEIDMAPPING_HEADER
-#define NAMEIDMAPPING_HEADER
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -90,5 +89,3 @@ private:
 	IdToNameMap m_id_to_name;
 	NameToIdMap m_name_to_id;
 };
-
-#endif

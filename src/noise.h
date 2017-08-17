@@ -23,8 +23,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NOISE_HEADER
-#define NOISE_HEADER
+#pragma once
 
 #include "irr_v3d.h"
 #include "exceptions.h"
@@ -232,6 +231,3 @@ inline float easeCurve(float t)
 }
 
 float contour(float v);
-
-#endif
-
