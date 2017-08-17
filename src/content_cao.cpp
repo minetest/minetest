@@ -855,8 +855,7 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 		}
 		else
 			errorstream<<"GenericCAO::addToScene(): Could not load mesh "<<m_prop.mesh<<std::endl;
-	}
-	else if (m_prop.visual == "wielditem") {
+	} else if (m_prop.visual == "wielditem") {
 		ItemStack item;
 		infostream << "GenericCAO::addToScene(): wielditem" << std::endl;
 		if (m_prop.wield_item.empty()) {
@@ -1340,8 +1339,7 @@ void GenericCAO::updateTextures(std::string mod)
 				m_meshnode->getMaterial(i).setFlag(video::EMF_BILINEAR_FILTER, use_bilinear_filter);
 				m_meshnode->getMaterial(i).setFlag(video::EMF_ANISOTROPIC_FILTER, use_anisotropic_filter);
 			}
-		}
-		else if (m_prop.visual == "upright_sprite") {
+		} else if (m_prop.visual == "upright_sprite") {
 			scene::IMesh *mesh = m_meshnode->getMesh();
 			{
 				std::string tname = "unknown_object.png";
@@ -1379,13 +1377,11 @@ void GenericCAO::updateTextures(std::string mod)
 				// This allows setting per-material colors. However, until a real lighting
 				// system is added, the code below will have no effect. Once MineTest
 				// has directional lighting, it should work automatically.
-				if(m_prop.colors.size() >= 2)
-				{
+				if (m_prop.colors.size() >= 2) {
 					buf->getMaterial().AmbientColor = m_prop.colors[1];
 					buf->getMaterial().DiffuseColor = m_prop.colors[1];
 					buf->getMaterial().SpecularColor = m_prop.colors[1];
-				}
-				else if (!m_prop.colors.empty()) {
+				} else if (!m_prop.colors.empty()) {
 					buf->getMaterial().AmbientColor = m_prop.colors[0];
 					buf->getMaterial().DiffuseColor = m_prop.colors[0];
 					buf->getMaterial().SpecularColor = m_prop.colors[0];

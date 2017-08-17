@@ -53,7 +53,7 @@ inline u32 time_to_daynight_ratio(float time_of_day, bool smooth)
 		return 1000;
 	}
 
-	for (u32 i=0; i<sizeof(values)/sizeof(*values); i++) {
+	for (u32 i=0; i < sizeof(values) / sizeof(*values); i++) {
 			if (values[i][0] <= t)
 				continue;
 			if (i == 0)
