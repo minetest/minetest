@@ -1218,7 +1218,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		if (m_use_tangent_vertices) {
 			scene::IMeshManipulator* meshmanip =
 				RenderingEngine::get_scene_manager()->getMeshManipulator();
-			meshmanip->recalculateTangents(m_mesh[layer], true, false, false);
+			meshmanip->recalculateTangents(m_mesh[layer], false, false, false);
 		}
 
 		if (m_mesh[layer])
