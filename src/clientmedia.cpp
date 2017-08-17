@@ -22,11 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "filecache.h"
 #include "filesys.h"
-#include "debug.h"
 #include "log.h"
 #include "porting.h"
 #include "settings.h"
-#include "network/networkprotocol.h"
 #include "util/hex.h"
 #include "util/serialize.h"
 #include "util/sha1.h"
@@ -52,12 +50,11 @@ ClientMediaDownloader::~ClientMediaDownloader()
 	if (m_httpfetch_caller != HTTPFETCH_DISCARD)
 		httpfetch_caller_free(m_httpfetch_caller);
 
-	for (std::map<std::string, FileStatus*>::iterator it = m_files.begin();
-			it != m_files.end(); ++it)
-		delete it->second;
+	for (auto &file_it : m_files)
+		delete file_it.second;
 
-	for (u32 i = 0; i < m_remotes.size(); ++i)
-		delete m_remotes[i];
+	for (auto &remote : m_remotes)
+		delete remote;
 }
 
 void ClientMediaDownloader::addFile(const std::string &name, const std::string &sha1)
@@ -88,7 +85,7 @@ void ClientMediaDownloader::addFile(const std::string &name, const std::string &
 		return;
 	}
 
-	FileStatus *filestatus = new FileStatus;
+	FileStatus *filestatus = new FileStatus();
 	filestatus->received = false;
 	filestatus->sha1 = sha1;
 	filestatus->current_remote = -1;
@@ -105,7 +102,7 @@ void ClientMediaDownloader::addRemoteServer(const std::string &baseurl)
 		infostream << "Client: Adding remote server \""
 			<< baseurl << "\" for media download" << std::endl;
 
-		RemoteServerStatus *remote = new RemoteServerStatus;
+		RemoteServerStatus *remote = new RemoteServerStatus();
 		remote->baseurl = baseurl;
 		remote->active_count = 0;
 		remote->request_by_filename = false;
@@ -166,11 +163,9 @@ void ClientMediaDownloader::initialStep(Client *client)
 {
 	// Check media cache
 	m_uncached_count = m_files.size();
-	for (std::map<std::string, FileStatus*>::iterator
-			it = m_files.begin();
-			it != m_files.end(); ++it) {
-		std::string name = it->first;
-		FileStatus *filestatus = it->second;
+	for (auto &file_it : m_files) {
+		std::string name = file_it.first;
+		FileStatus *filestatus = file_it.second;
 		const std::string &sha1 = filestatus->sha1;
 
 		std::ostringstream tmp_os(std::ios_base::binary);
@@ -258,7 +253,7 @@ void ClientMediaDownloader::initialStep(Client *client)
 			fetch_request.timeout = m_httpfetch_timeout;
 			fetch_request.connect_timeout = m_httpfetch_timeout;
 			fetch_request.post_data = required_hash_set;
-			fetch_request.extra_headers.push_back(
+			fetch_request.extra_headers.emplace_back(
 				"Content-Type: application/octet-stream");
 			httpfetch_async(fetch_request);
 
@@ -379,30 +374,30 @@ s32 ClientMediaDownloader::selectRemoteServer(FileStatus *filestatus)
 
 	if (filestatus->available_remotes.empty())
 		return -1;
-	else {
-		// Of all servers that claim to provide the file (and haven't
-		// been unsuccessfully tried before), find the one with the
-		// smallest number of currently active transfers
 
-		s32 best = 0;
-		s32 best_remote_id = filestatus->available_remotes[best];
-		s32 best_active_count = m_remotes[best_remote_id]->active_count;
+	// Of all servers that claim to provide the file (and haven't
+	// been unsuccessfully tried before), find the one with the
+	// smallest number of currently active transfers
 
-		for (u32 i = 1; i < filestatus->available_remotes.size(); ++i) {
-			s32 remote_id = filestatus->available_remotes[i];
-			s32 active_count = m_remotes[remote_id]->active_count;
-			if (active_count < best_active_count) {
-				best = i;
-				best_remote_id = remote_id;
-				best_active_count = active_count;
-			}
+	s32 best = 0;
+	s32 best_remote_id = filestatus->available_remotes[best];
+	s32 best_active_count = m_remotes[best_remote_id]->active_count;
+
+	for (u32 i = 1; i < filestatus->available_remotes.size(); ++i) {
+		s32 remote_id = filestatus->available_remotes[i];
+		s32 active_count = m_remotes[remote_id]->active_count;
+		if (active_count < best_active_count) {
+			best = i;
+			best_remote_id = remote_id;
+			best_active_count = active_count;
 		}
-
-		filestatus->available_remotes.erase(
-				filestatus->available_remotes.begin() + best);
-
-		return best_remote_id;
 	}
+
+	filestatus->available_remotes.erase(
+			filestatus->available_remotes.begin() + best);
+
+	return best_remote_id;
+
 }
 
 void ClientMediaDownloader::startRemoteMediaTransfers()
@@ -480,11 +475,9 @@ void ClientMediaDownloader::startConventionalTransfers(Client *client)
 		// Some media files have not been received yet, use the
 		// conventional slow method (minetest protocol) to get them
 		std::vector<std::string> file_requests;
-		for (std::map<std::string, FileStatus*>::iterator
-				it = m_files.begin();
-				it != m_files.end(); ++it) {
-			if (!it->second->received)
-				file_requests.push_back(it->first);
+		for (auto &file : m_files) {
+			if (!file.second->received)
+				file_requests.push_back(file.first);
 		}
 		assert((s32) file_requests.size() ==
 				m_uncached_count - m_uncached_received_count);

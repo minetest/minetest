@@ -42,10 +42,10 @@ public:
 
 	float getProgress() const {
 		if (m_uncached_count >= 1)
-			return 1.0 * m_uncached_received_count /
+			return 1.0f * m_uncached_received_count /
 				m_uncached_count;
-		else
-			return 0.0;
+
+		return 0.0f;
 	}
 
 	bool isStarted() const {
