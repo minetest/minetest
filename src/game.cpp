@@ -719,23 +719,23 @@ public:
 		// Lighting will also use location-based lighting in the future
 		// for smaller models so the sun color alone isn't sufficient
 		const float time_of_day = (float)m_client->getEnv().getTimeOfDayF();
-		float sun_angle = time_of_day * M_PI * 2;
+		float sun_angle = time_of_day * M_PI * 2.0f;
 		float light_color[4] = {
 			sunlight.r,
 			sunlight.g,
 			sunlight.b,
- 			1.0 };
-		light_color[3] = 1.0 - (time_of_day / 1000.0f);
+ 			1.0f };
+		light_color[3] = 1.0f - (time_of_day / 1000.0f);
 		if (daynight_ratio > 320 && daynight_ratio < 470) { // Moon light
-			sun_angle -= M_PI * (1.0 - ((daynight_ratio - 320) / 150.0));
+			sun_angle -= M_PI * (1.0f - ((daynight_ratio - 320) / 150.0f));
 
-			light_color[1] *= 0.8; // Reduced green and blue
-			light_color[2] *= 0.9;
+			light_color[1] *= 0.8f; // Reduced green and blue
+			light_color[2] *= 0.9f;
 		} else if (daynight_ratio <= 320) {
 			sun_angle -= M_PI;
 
-			light_color[0] *= 0.8; // Reduced red and green
-			light_color[1] *= 0.9;
+			light_color[0] *= 0.8f; // Reduced red and green
+			light_color[1] *= 0.9f;
 		}
 
 		m_light_color.set(light_color, services);
@@ -745,7 +745,7 @@ public:
 		float light_direction[3] = {
 			as,
 			ac,
-			0.0 };
+			0.0f };
 		m_light_direction.set(light_direction, services);
 
 		u32 animation_timer = porting::getTimeMs() % 100000;
