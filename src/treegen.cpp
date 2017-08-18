@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointer.h"
 #include "util/numeric.h"
 #include "map.h"
+#include "mapblock.h"
 #include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"

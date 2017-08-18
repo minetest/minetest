@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_content.h"
 #include "serverenvironment.h"
 #include "map.h"
+#include "mapblock.h"
 #include "server.h"
 
 /*

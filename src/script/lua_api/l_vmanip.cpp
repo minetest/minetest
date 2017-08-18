@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "environment.h"
 #include "map.h"
+#include "mapblock.h"
 #include "server.h"
 #include "mapgen.h"
 #include "voxelalgorithms.h"
