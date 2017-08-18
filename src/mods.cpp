@@ -134,9 +134,9 @@ ModConfiguration::ModConfiguration(const std::string &worldpath)
 
 void ModConfiguration::printUnsatisfiedModsError() const
 {
-	for (const auto &mod : m_unsatisfied_mods) {
+	for (const ModSpec &mod : m_unsatisfied_mods) {
 		errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
-		for (const auto &unsatisfied_depend : mod.unsatisfied_depends)
+		for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
 			errorstream << " \"" << unsatisfied_depend << "\"";
 		errorstream << std::endl;
 	}
@@ -165,7 +165,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 
 		std::set<std::string> seen_this_iteration;
 
-		for (const auto &mod : new_mods) {
+		for (const ModSpec &mod : new_mods) {
 			if (mod.part_of_modpack != (bool)want_from_modpack)
 				continue;
 

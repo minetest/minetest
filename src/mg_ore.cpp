@@ -64,7 +64,7 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed,
 
 void OreManager::clear()
 {
-	for (auto &object : m_objects) {
+	for (ObjDef *object : m_objects) {
 		Ore *ore = (Ore *) object;
 		delete ore;
 	}

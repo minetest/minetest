@@ -111,11 +111,11 @@ public:
 	{
 		const core::list<gui::IGUIElement*> &children = getChildren();
 		core::list<gui::IGUIElement*> children_copy;
-		for (gui::IGUIElement* i : children) {
+		for (gui::IGUIElement *i : children) {
 			children_copy.push_back(i);
 		}
-		
-		for (gui::IGUIElement* i : children_copy) {
+
+		for (gui::IGUIElement *i : children_copy) {
 			i->remove();
 		}
 	}
