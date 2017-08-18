@@ -3,53 +3,43 @@
 #include "client.h"
 #include "clientmap.h"
 #include "hud.h"
-#include "localplayer.h"
 #include "minimap.h"
 #include "settings.h"
 
 RenderingCore::RenderingCore(irr::IrrlichtDevice *_device) :
 	device(_device),
 	driver(device->getVideoDriver()),
-	smgr(device->getSceneManager())
+	smgr(device->getSceneManager()),
+	guienv(device->getGUIEnvironment())
 {
 	screensize = driver->getScreenSize();
+}
+
+void RenderingCore::initialize(Client *_client, Hud *_hud)
+{
+	client = _client;
+	camera = client->getCamera();
+	mapper = client->getMinimap();
+	hud = _hud;
 }
 
 void RenderingCore::update_screen_size()
 {
 }
 
-void RenderingCore::setup(Camera *_camera, Client *_client, LocalPlayer *_player,
-		  Hud *_hud, Minimap *_mapper, gui::IGUIEnvironment *_guienv,
-		  const v2u32 &_screensize, const video::SColor &_skycolor,
-		  bool _show_hud, bool _show_minimap)
+void RenderingCore::setup(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
+		bool _draw_wield_tool, bool _draw_crosshair)
 {
-	camera = _camera;
-	client = _client;
-	player = _player;
-	hud = _hud;
-	mapper = _mapper;
-	guienv = _guienv;
-
-	if (screensize != _screensize) {
-		screensize = _screensize;
+	v2u32 ss = driver->getScreenSize();
+	if (screensize != ss) {
+		screensize = ss;
 		update_screen_size();
 	}
 	skycolor = _skycolor;
 	show_hud = _show_hud;
 	show_minimap = _show_minimap;
-
-	draw_wield_tool = (show_hud && (player->hud_flags & HUD_FLAG_WIELDITEM_VISIBLE) &&
-			camera->getCameraMode() < CAMERA_MODE_THIRD);
-
-	draw_crosshair = ((player->hud_flags & HUD_FLAG_CROSSHAIR_VISIBLE) &&
-			(camera->getCameraMode() != CAMERA_MODE_THIRD_FRONT));
-#ifdef HAVE_TOUCHSCREENGUI
-	try {
-		draw_crosshair = !g_settings->getBool("touchtarget");
-	} catch (SettingNotFoundException) {
-	}
-#endif
+	draw_wield_tool = _draw_wield_tool;
+	draw_crosshair = _draw_crosshair;
 }
 
 void RenderingCore::draw_3d()

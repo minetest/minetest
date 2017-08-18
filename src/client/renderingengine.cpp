@@ -57,9 +57,8 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 	u16 bits = g_settings->getU16("fullscreen_bpp");
 	u16 fsaa = g_settings->getU16("fsaa");
 
-	const std::string &draw_mode = g_settings->get("3d_mode");
 	// stereo buffer required for pageflip stereo
-	bool stereo_buffer = draw_mode == "pageflip";
+	bool stereo_buffer = g_settings->get("3d_mode") == "pageflip";
 
 	// Determine driver
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
@@ -101,17 +100,6 @@ RenderingEngine::RenderingEngine(IEventReceiver *receiver)
 
 	m_device = createDeviceEx(params);
 	driver = m_device->getVideoDriver();
-
-	if (draw_mode == "anaglyph")
-		core.reset(new RenderingCoreAnaglyph(m_device));
-	else if (draw_mode == "interlaced")
-		core.reset(new RenderingCoreInterlaced(m_device));
-	else if (draw_mode == "sidebyside")
-		core.reset(new RenderingCoreSideBySide(m_device));
-	else if (draw_mode == "pageflip")
-		core.reset(new RenderingCorePageflip(m_device));
-	else
-		core.reset(new RenderingCorePlain(m_device));
 
 	s_singleton = this;
 }
@@ -448,13 +436,31 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 	return drivers;
 }
 
-void RenderingEngine::_draw_scene(Camera *_camera, Client *_client, LocalPlayer *_player,
-		Hud *_hud, Minimap *_mapper, gui::IGUIEnvironment *_guienv,
-		const v2u32 &_screensize, const video::SColor &_skycolor, bool _show_hud,
-		bool _show_minimap)
+void RenderingEngine::_initialize(Client *client, Hud *hud)
 {
-	core->setup(_camera, _client, _player, _hud, _mapper, _guienv,
-		_screensize, _skycolor, _show_hud, _show_minimap);
+	const std::string &draw_mode = g_settings->get("3d_mode");
+	if (draw_mode == "anaglyph")
+		core.reset(new RenderingCoreAnaglyph(m_device));
+	else if (draw_mode == "interlaced")
+		core.reset(new RenderingCoreInterlaced(m_device));
+	else if (draw_mode == "sidebyside")
+		core.reset(new RenderingCoreSideBySide(m_device));
+	else if (draw_mode == "pageflip")
+		core.reset(new RenderingCorePageflip(m_device));
+	else
+		core.reset(new RenderingCorePlain(m_device));
+	core->initialize(client, hud);
+}
+
+void RenderingEngine::_finalize()
+{
+	core.reset();
+}
+
+void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
+			bool draw_wield_tool, bool draw_crosshair)
+{
+	core->setup(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 	core->draw();
 }
 

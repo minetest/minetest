@@ -113,13 +113,21 @@ public:
 				text, guienv, tsrc, dtime, percent, clouds);
 	}
 
-	inline static void draw_scene(Camera *camera, Client *client, LocalPlayer *player,
-			Hud *hud, Minimap *mapper, gui::IGUIEnvironment *guienv,
-			const v2u32 &screensize, const video::SColor &skycolor,
-			bool show_hud, bool show_minimap)
+	inline static void draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
+			bool draw_wield_tool, bool draw_crosshair)
 	{
-		s_singleton->_draw_scene(camera, client, player, hud, mapper, guienv,
-				screensize, skycolor, show_hud, show_minimap);
+		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
+				 draw_wield_tool, draw_crosshair);
+	}
+
+	inline static void initialize(Client *client, Hud *hud)
+	{
+		s_singleton->_initialize(client, hud);
+	}
+
+	inline static void finalize()
+	{
+		s_singleton->_finalize();
 	}
 
 	static bool run()
@@ -136,10 +144,12 @@ private:
 			ITextureSource *tsrc, float dtime = 0, int percent = 0,
 			bool clouds = true);
 
-	void _draw_scene(Camera *camera, Client *client, LocalPlayer *player, Hud *hud,
-			Minimap *mapper, gui::IGUIEnvironment *guienv,
-			const v2u32 &screensize, const video::SColor &skycolor,
-			bool show_hud, bool show_minimap);
+	void _draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
+			bool draw_wield_tool, bool draw_crosshair);
+
+	void _initialize(Client *client, Hud *hud);
+
+	void _finalize();
 
 	std::unique_ptr<RenderingCore> core;
 	irr::IrrlichtDevice *m_device = nullptr;

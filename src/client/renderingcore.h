@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Camera;
 class Client;
-class LocalPlayer;
 class Hud;
 class Minimap;
 
@@ -32,11 +31,10 @@ class RenderingCore
 protected:
 	Camera *camera;
 	Client *client;
-	LocalPlayer *player;
 	Minimap *mapper;
 	Hud *hud;
 
-	v2u32 screensize;
+	v2u32 screensize = {0, 0};
 	video::SColor skycolor;
 	bool show_hud;
 	bool show_minimap;
@@ -59,10 +57,9 @@ public:
 	RenderingCore &operator= (const RenderingCore &) = delete;
 	RenderingCore &operator= (RenderingCore &&) = delete;
 
-	void setup(Camera *_camera, Client *_client, LocalPlayer *_player,
-		Hud *_hud, Minimap *_mapper, gui::IGUIEnvironment *_guienv,
-		const v2u32 &_screensize, const video::SColor &_skycolor,
-		bool _show_hud, bool _show_minimap);
+	void initialize(Client *_client, Hud *_hud);
+	void setup(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
+		bool _draw_wield_tool, bool _draw_crosshair);
 	virtual void draw() = 0;
 
 	void draw_3d();
