@@ -64,20 +64,14 @@ MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
 	DSTACK(FUNCTION_NAME);
 	// Check that it doesn't exist already
-	try{
+	try {
 		return getSectorNoGenerate(p2d);
-	}
-	catch(InvalidPositionException &e)
-	{
+	} catch(InvalidPositionException &e) {
 	}
 
 	// Create a sector
-	ClientMapSector *sector = new ClientMapSector(this, p2d, m_gamedef);
-
-	{
-		//MutexAutoLock lock(m_sector_mutex); // Bulk comment-out
-		m_sectors[p2d] = sector;
-	}
+	MapSector *sector = new MapSector(this, p2d, m_gamedef);
+	m_sectors[p2d] = sector;
 
 	return sector;
 }

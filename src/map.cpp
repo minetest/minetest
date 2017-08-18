@@ -1211,14 +1211,6 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		infostream<<"Please remove the map or fix it."<<std::endl;
 		warningstream<<"Map saving will be disabled."<<std::endl;
 	}
-
-	infostream<<"Initializing new map."<<std::endl;
-
-	// Create zero sector
-	emergeSector(v2s16(0,0));
-
-	// Initially write whole map
-	save(MOD_STATE_CLEAN);
 }
 
 ServerMap::~ServerMap()
@@ -1227,15 +1219,12 @@ ServerMap::~ServerMap()
 
 	try
 	{
-		if(m_map_saving_enabled)
-		{
+		if (m_map_saving_enabled) {
 			// Save only changed parts
 			save(MOD_STATE_WRITE_AT_UNLOAD);
-			infostream<<"ServerMap: Saved map to "<<m_savedir<<std::endl;
-		}
-		else
-		{
-			infostream<<"ServerMap: Map not saved"<<std::endl;
+			infostream << "ServerMap: Saved map to " << m_savedir << std::endl;
+		} else {
+			infostream << "ServerMap: Map not saved" << std::endl;
 		}
 	}
 	catch(std::exception &e)
@@ -1328,7 +1317,7 @@ bool ServerMap::initBlockMake(v3s16 blockpos, BlockMakeData *data)
 	for (s16 z = full_bpmin.Z; z <= full_bpmax.Z; z++) {
 		v2s16 sectorpos(x, z);
 		// Sector metadata is loaded from disk if not already loaded.
-		ServerMapSector *sector = createSector(sectorpos);
+		MapSector *sector = createSector(sectorpos);
 		FATAL_ERROR_IF(sector == NULL, "createSector() failed");
 
 		for (s16 y = full_bpmin.Y; y <= full_bpmax.Y; y++) {
@@ -1442,7 +1431,7 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 	//save(MOD_STATE_WRITE_AT_UNLOAD);
 }
 
-ServerMapSector *ServerMap::createSector(v2s16 p2d)
+MapSector *ServerMap::createSector(v2s16 p2d)
 {
 	DSTACKF("%s: p2d=(%d,%d)",
 			FUNCTION_NAME,
@@ -1451,30 +1440,9 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 	/*
 		Check if it exists already in memory
 	*/
-	ServerMapSector *sector = (ServerMapSector*)getSectorNoGenerateNoEx(p2d);
-	if(sector != NULL)
+	MapSector *sector = getSectorNoGenerateNoEx(p2d);
+	if (sector)
 		return sector;
-
-	/*
-		Try to load it from disk (with blocks)
-	*/
-	//if(loadSectorFull(p2d) == true)
-
-	/*
-		Try to load metadata from disk
-	*/
-#if 0
-	if(loadSectorMeta(p2d) == true)
-	{
-		ServerMapSector *sector = (ServerMapSector*)getSectorNoGenerateNoEx(p2d);
-		if(sector == NULL)
-		{
-			infostream<<"ServerMap::createSector(): loadSectorFull didn't make a sector"<<std::endl;
-			throw InvalidPositionException("");
-		}
-		return sector;
-	}
-#endif
 
 	/*
 		Do not create over max mapgen limit
@@ -1490,7 +1458,7 @@ ServerMapSector *ServerMap::createSector(v2s16 p2d)
 		Generate blank sector
 	*/
 
-	sector = new ServerMapSector(this, p2d, m_gamedef);
+	sector = new MapSector(this, p2d, m_gamedef);
 
 	// Sector position on map in nodes
 	//v2s16 nodepos2d = p2d * MAP_BLOCKSIZE;
@@ -1639,35 +1607,20 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 		NOTE: On old save formats, this will be slow, as it generates
 		      lighting on blocks for them.
 	*/
-	ServerMapSector *sector;
+	MapSector *sector;
 	try {
-		sector = (ServerMapSector*)createSector(p2d);
-		assert(sector->getId() == MAPSECTOR_SERVER);
-	}
-	catch(InvalidPositionException &e)
-	{
+		sector = createSector(p2d);
+	} catch (InvalidPositionException &e) {
 		infostream<<"createBlock: createSector() failed"<<std::endl;
 		throw e;
 	}
-	/*
-		NOTE: This should not be done, or at least the exception
-		should not be passed on as std::exception, because it
-		won't be catched at all.
-	*/
-	/*catch(std::exception &e)
-	{
-		infostream<<"createBlock: createSector() failed: "
-				<<e.what()<<std::endl;
-		throw e;
-	}*/
 
 	/*
 		Try to get a block from the sector
 	*/
 
 	MapBlock *block = sector->getBlockNoCreateNoEx(block_y);
-	if(block)
-	{
+	if (block) {
 		if(block->isDummy())
 			block->unDummify();
 		return block;
@@ -1697,38 +1650,11 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 	}
 
 	if (create_blank) {
-		ServerMapSector *sector = createSector(v2s16(p.X, p.Z));
+		MapSector *sector = createSector(v2s16(p.X, p.Z));
 		MapBlock *block = sector->createBlankBlock(p.Y);
 
 		return block;
 	}
-
-#if 0
-	if(allow_generate)
-	{
-		std::map<v3s16, MapBlock*> modified_blocks;
-		MapBlock *block = generateBlock(p, modified_blocks);
-		if(block)
-		{
-			MapEditEvent event;
-			event.type = MEET_OTHER;
-			event.p = p;
-
-			// Copy modified_blocks to event
-			for(std::map<v3s16, MapBlock*>::iterator
-					i = modified_blocks.begin();
-					i != modified_blocks.end(); ++i)
-			{
-				event.modified_blocks.insert(i->first);
-			}
-
-			// Queue event
-			dispatchEvent(&event);
-
-			return block;
-		}
-	}
-#endif
 
 	return NULL;
 }
@@ -1918,7 +1844,6 @@ void ServerMap::save(ModifiedState save_level)
 	// Profile modified reasons
 	Profiler modprofiler;
 
-	u32 sector_meta_count = 0;
 	u32 block_count = 0;
 	u32 block_count_all = 0; // Number of blocks in memory
 
@@ -1926,13 +1851,7 @@ void ServerMap::save(ModifiedState save_level)
 	bool save_started = false;
 
 	for (auto &sector_it : m_sectors) {
-		ServerMapSector *sector = (ServerMapSector*) sector_it.second;
-		assert(sector->getId() == MAPSECTOR_SERVER);
-
-		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN) {
-			saveSectorMeta(sector);
-			sector_meta_count++;
-		}
+		MapSector *sector = sector_it.second;
 
 		MapBlockVect blocks;
 		sector->getBlocks(blocks);
@@ -1951,12 +1870,6 @@ void ServerMap::save(ModifiedState save_level)
 
 				saveBlock(block);
 				block_count++;
-
-				/*infostream<<"ServerMap: Written block ("
-						<<block->getPos().X<<","
-						<<block->getPos().Y<<","
-						<<block->getPos().Z<<")"
-						<<std::endl;*/
 			}
 		}
 	}
@@ -1967,10 +1880,9 @@ void ServerMap::save(ModifiedState save_level)
 	/*
 		Only print if something happened or saved whole map
 	*/
-	if(save_level == MOD_STATE_CLEAN || sector_meta_count != 0
+	if(save_level == MOD_STATE_CLEAN
 			|| block_count != 0) {
 		infostream<<"ServerMap: Written: "
-				<<sector_meta_count<<" sector metadata files, "
 				<<block_count<<" block files"
 				<<", "<<block_count_all<<" blocks in memory."
 				<<std::endl;
@@ -2003,180 +1915,6 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 		}
 	}
 }
-
-void ServerMap::saveSectorMeta(ServerMapSector *sector)
-{
-	DSTACK(FUNCTION_NAME);
-	// Format used for writing
-	u8 version = SER_FMT_VER_HIGHEST_WRITE;
-	// Get destination
-	v2s16 pos = sector->getPos();
-	std::string dir = getSectorDir(pos);
-	createDirs(dir);
-
-	std::string fullpath = dir + DIR_DELIM + "meta";
-	std::ostringstream ss(std::ios_base::binary);
-
-	sector->serialize(ss, version);
-
-	if(!fs::safeWriteToFile(fullpath, ss.str()))
-		throw FileNotGoodException("Cannot write sector metafile");
-
-	sector->differs_from_disk = false;
-}
-
-MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load)
-{
-	DSTACK(FUNCTION_NAME);
-	// Get destination
-	v2s16 p2d = getSectorPos(sectordir);
-
-	ServerMapSector *sector = NULL;
-
-	std::string fullpath = sectordir + DIR_DELIM + "meta";
-	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if (!is.good()) {
-		// If the directory exists anyway, it probably is in some old
-		// format. Just go ahead and create the sector.
-		if(fs::PathExists(sectordir))
-		{
-			/*infostream<<"ServerMap::loadSectorMeta(): Sector metafile "
-					<<fullpath<<" doesn't exist but directory does."
-					<<" Continuing with a sector with no metadata."
-					<<std::endl;*/
-			sector = new ServerMapSector(this, p2d, m_gamedef);
-			m_sectors[p2d] = sector;
-		}
-		else
-		{
-			throw FileNotGoodException("Cannot open sector metafile");
-		}
-	}
-	else
-	{
-		sector = ServerMapSector::deSerialize
-				(is, this, p2d, m_sectors, m_gamedef);
-		if(save_after_load)
-			saveSectorMeta(sector);
-	}
-
-	sector->differs_from_disk = false;
-
-	return sector;
-}
-
-bool ServerMap::loadSectorMeta(v2s16 p2d)
-{
-	DSTACK(FUNCTION_NAME);
-
-	// The directory layout we're going to load from.
-	//  1 - original sectors/xxxxzzzz/
-	//  2 - new sectors2/xxx/zzz/
-	//  If we load from anything but the latest structure, we will
-	//  immediately save to the new one, and remove the old.
-	int loadlayout = 1;
-	std::string sectordir1 = getSectorDir(p2d, 1);
-	std::string sectordir;
-	if(fs::PathExists(sectordir1))
-	{
-		sectordir = sectordir1;
-	}
-	else
-	{
-		loadlayout = 2;
-		sectordir = getSectorDir(p2d, 2);
-	}
-
-	try{
-		loadSectorMeta(sectordir, loadlayout != 2);
-	}
-	catch(InvalidFilenameException &e)
-	{
-		return false;
-	}
-	catch(FileNotGoodException &e)
-	{
-		return false;
-	}
-	catch(std::exception &e)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-#if 0
-bool ServerMap::loadSectorFull(v2s16 p2d)
-{
-	DSTACK(FUNCTION_NAME);
-
-	MapSector *sector = NULL;
-
-	// The directory layout we're going to load from.
-	//  1 - original sectors/xxxxzzzz/
-	//  2 - new sectors2/xxx/zzz/
-	//  If we load from anything but the latest structure, we will
-	//  immediately save to the new one, and remove the old.
-	int loadlayout = 1;
-	std::string sectordir1 = getSectorDir(p2d, 1);
-	std::string sectordir;
-	if(fs::PathExists(sectordir1))
-	{
-		sectordir = sectordir1;
-	}
-	else
-	{
-		loadlayout = 2;
-		sectordir = getSectorDir(p2d, 2);
-	}
-
-	try{
-		sector = loadSectorMeta(sectordir, loadlayout != 2);
-	}
-	catch(InvalidFilenameException &e)
-	{
-		return false;
-	}
-	catch(FileNotGoodException &e)
-	{
-		return false;
-	}
-	catch(std::exception &e)
-	{
-		return false;
-	}
-
-	/*
-		Load blocks
-	*/
-	std::vector<fs::DirListNode> list2 = fs::GetDirListing
-			(sectordir);
-	std::vector<fs::DirListNode>::iterator i2;
-	for(i2=list2.begin(); i2!=list2.end(); i2++)
-	{
-		// We want files
-		if(i2->dir)
-			continue;
-		try{
-			loadBlock(sectordir, i2->name, sector, loadlayout != 2);
-		}
-		catch(InvalidFilenameException &e)
-		{
-			// This catches unknown crap in directory
-		}
-	}
-
-	if(loadlayout != 2)
-	{
-		infostream<<"Sector converted to new layout - deleting "<<
-			sectordir1<<std::endl;
-		fs::RecursiveDelete(sectordir1);
-	}
-
-	return true;
-}
-#endif
 
 MapDatabase *ServerMap::createDatabase(
 	const std::string &name,
@@ -2243,8 +1981,7 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 	o.write((char*) &version, 1);
 	block->serialize(o, version, true);
 
-	std::string data = o.str();
-	bool ret = db->saveBlock(p3d, data);
+	bool ret = db->saveBlock(p3d, o.str());
 	if (ret) {
 		// We just wrote it to the disk so clear modified flag
 		block->resetModified();
@@ -2414,13 +2151,11 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		//  2 - new sectors2/xxx/zzz/
 		//  If we load from anything but the latest structure, we will
 		//  immediately save to the new one, and remove the old.
-		int loadlayout = 1;
 		std::string sectordir1 = getSectorDir(p2d, 1);
 		std::string sectordir;
 		if (fs::PathExists(sectordir1)) {
 			sectordir = sectordir1;
 		} else {
-			loadlayout = 2;
 			sectordir = getSectorDir(p2d, 2);
 		}
 
@@ -2429,18 +2164,6 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		 */
 
 		MapSector *sector = getSectorNoGenerateNoEx(p2d);
-		if (sector == NULL) {
-			try {
-				sector = loadSectorMeta(sectordir, loadlayout != 2);
-			} catch(InvalidFilenameException &e) {
-				return NULL;
-			} catch(FileNotGoodException &e) {
-				return NULL;
-			} catch(std::exception &e) {
-				return NULL;
-			}
-		}
-
 
 		/*
 		Make sure file exists
@@ -2455,6 +2178,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		 */
 		loadBlock(sectordir, blockfilename, sector, true);
 	}
+
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
 	if (created_new && (block != NULL)) {
 		std::map<v3s16, MapBlock*> modified_blocks;

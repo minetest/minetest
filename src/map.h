@@ -349,7 +349,7 @@ public:
 		- Check disk (doesn't load blocks)
 		- Create blank one
 	*/
-	ServerMapSector *createSector(v2s16 p);
+	MapSector *createSector(v2s16 p);
 
 	bool saoPositionOverLimit(const v3f &p);
 
@@ -417,18 +417,6 @@ public:
 	void listAllLoadedBlocks(std::vector<v3s16> &dst);
 
 	MapgenParams *getMapgenParams();
-
-	/*void saveChunkMeta();
-	void loadChunkMeta();*/
-
-	// The sector mutex should be locked when calling most of these
-
-	// This only saves sector-specific data such as the heightmap
-	// (no MapBlocks)
-	// DEPRECATED? Sectors have no metadata anymore.
-	void saveSectorMeta(ServerMapSector *sector);
-	MapSector* loadSectorMeta(std::string dirname, bool save_after_load);
-	bool loadSectorMeta(v2s16 p2d);
 
 	bool saveBlock(MapBlock *block);
 	static bool saveBlock(MapBlock *block, MapDatabase *db);
