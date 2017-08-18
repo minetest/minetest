@@ -460,8 +460,7 @@ void RenderingEngine::_finalize()
 void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
 			bool draw_wield_tool, bool draw_crosshair)
 {
-	core->setup(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
-	core->draw();
+	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 }
 
 const char *RenderingEngine::getVideoDriverName(irr::video::E_DRIVER_TYPE type)

@@ -15,19 +15,28 @@ RenderingCore::RenderingCore(irr::IrrlichtDevice *_device) :
 	screensize = driver->getScreenSize();
 }
 
+RenderingCore::~RenderingCore()
+{
+	clear_textures();
+}
+
 void RenderingCore::initialize(Client *_client, Hud *_hud)
 {
 	client = _client;
 	camera = client->getCamera();
 	mapper = client->getMinimap();
 	hud = _hud;
+// have to be called now as the VMT is not ready in the constructor:
+	init_textures();
 }
 
 void RenderingCore::update_screen_size()
 {
+	clear_textures();
+	init_textures();
 }
 
-void RenderingCore::setup(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
+void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 		bool _draw_wield_tool, bool _draw_crosshair)
 {
 	v2u32 ss = driver->getScreenSize();
@@ -40,6 +49,10 @@ void RenderingCore::setup(video::SColor _skycolor, bool _show_hud, bool _show_mi
 	show_minimap = _show_minimap;
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
+
+	pre_draw();
+	draw_all();
+	post_draw();
 }
 
 void RenderingCore::draw_3d()
@@ -72,12 +85,7 @@ void RenderingCore::draw_last_fx()
 	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
 }
 
-RenderingCorePlain::RenderingCorePlain(irr::IrrlichtDevice *_device) :
-	RenderingCore(_device)
-{
-}
-
-void RenderingCorePlain::draw()
+void RenderingCorePlain::draw_all()
 {
 // TODO prepare undersamped rendering
 	draw_3d();
@@ -110,7 +118,7 @@ void RenderingCoreStereo::reset_eye()
 	cam->setPosition(base_transform.getTranslation());
 }
 
-void RenderingCoreStereo::draw_two()
+void RenderingCoreStereo::render_two()
 {
 	use_eye(false);
 	draw_3d();
@@ -120,15 +128,9 @@ void RenderingCoreStereo::draw_two()
 	reset_eye();
 }
 
-RenderingCoreAnaglyph::RenderingCoreAnaglyph(irr::IrrlichtDevice *_device) :
-	RenderingCoreStereo(_device)
+void RenderingCoreAnaglyph::draw_all()
 {
-}
-
-void RenderingCoreAnaglyph::draw()
-{
-	pre_draw();
-	draw_two();
+	render_two();
 	draw_last_fx();
 	draw_hud();
 }
@@ -157,17 +159,6 @@ void RenderingCoreAnaglyph::reset_eye()
 			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
 }
 
-RenderingCoreSideBySide::RenderingCoreSideBySide(irr::IrrlichtDevice *_device) :
-	RenderingCoreStereo(_device)
-{
-	init_textures();
-}
-
-RenderingCoreSideBySide::~RenderingCoreSideBySide()
-{
-	clear_textures();
-}
-
 void RenderingCoreSideBySide::init_textures()
 {
 	image_size = v2u32(screensize.X / 2, screensize.Y);
@@ -183,16 +174,9 @@ void RenderingCoreSideBySide::clear_textures()
 	driver->removeTexture(hud);
 }
 
-void RenderingCoreSideBySide::update_screen_size()
+void RenderingCoreSideBySide::draw_all()
 {
-	clear_textures();
-	init_textures();
-}
-
-void RenderingCoreSideBySide::draw()
-{
-	pre_draw();
-	draw_two();
+	render_two();
 	driver->setRenderTarget(hud, true, true, video::SColor(0, 0, 0, 0));
 	draw_hud();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
@@ -223,17 +207,6 @@ void RenderingCoreSideBySide::reset_eye()
 	RenderingCoreStereo::reset_eye();
 }
 
-RenderingCorePageflip::RenderingCorePageflip(irr::IrrlichtDevice *_device) :
-	RenderingCoreStereo(_device)
-{
-	init_textures();
-}
-
-RenderingCorePageflip::~RenderingCorePageflip()
-{
-	clear_textures();
-}
-
 void RenderingCorePageflip::init_textures()
 {
 	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", irr::video::ECF_A8R8G8B8);
@@ -244,19 +217,12 @@ void RenderingCorePageflip::clear_textures()
 	driver->removeTexture(hud);
 }
 
-void RenderingCorePageflip::update_screen_size()
+void RenderingCorePageflip::draw_all()
 {
-	clear_textures();
-	init_textures();
-}
-
-void RenderingCorePageflip::draw()
-{
-	pre_draw();
 	driver->setRenderTarget(hud, true, true, video::SColor(0, 0, 0, 0));
 	draw_hud();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-	draw_two();
+	render_two();
 }
 
 void RenderingCorePageflip::use_eye(bool _right)
@@ -277,19 +243,11 @@ void RenderingCorePageflip::reset_eye()
 RenderingCoreInterlaced::RenderingCoreInterlaced(irr::IrrlichtDevice *_device) :
 	RenderingCoreStereo(_device)
 {
-	mat.MaterialType = (video::E_MATERIAL_TYPE)0;
-	init_textures();
-}
-
-RenderingCoreInterlaced::~RenderingCoreInterlaced()
-{
-	clear_textures();
+	init_material();
 }
 
 void RenderingCoreInterlaced::init_material()
 {
-	if (mat.MaterialType)
-		return;
 	IShaderSource *s = client->getShaderSource();
 	mat.UseMipMaps = false;
 	mat.ZBuffer = false;
@@ -335,16 +293,9 @@ void RenderingCoreInterlaced::init_mask()
 	mask->unlock();
 }
 
-void RenderingCoreInterlaced::update_screen_size()
+void RenderingCoreInterlaced::draw_all()
 {
-	clear_textures();
-	init_textures();
-}
-
-void RenderingCoreInterlaced::draw()
-{
-	pre_draw();
-	draw_two();
+	render_two();
 	merge();
 	draw_hud();
 }
@@ -358,7 +309,6 @@ void RenderingCoreInterlaced::merge()
 		video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 255), 1.0, 1.0),
 	};
 	static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
-	init_material();
 	driver->setMaterial(mat);
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }

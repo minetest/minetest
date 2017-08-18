@@ -34,7 +34,7 @@ protected:
 	Minimap *mapper;
 	Hud *hud;
 
-	v2u32 screensize = {0, 0};
+	v2u32 screensize;
 	video::SColor skycolor;
 	bool show_hud;
 	bool show_minimap;
@@ -46,32 +46,37 @@ protected:
 	irr::scene::ISceneManager *smgr;
 	irr::gui::IGUIEnvironment *guienv;
 
-	virtual void update_screen_size();
+	void update_screen_size();
+	virtual void init_textures() {}
+	virtual void clear_textures() {}
+
+	virtual void pre_draw() {}
+	virtual void draw_all() = 0;
+	virtual void post_draw() {}
+
+	void draw_3d();
+	void draw_hud();
+	void draw_last_fx();
 
 public:
 	RenderingCore(irr::IrrlichtDevice *_device);
 	RenderingCore(const RenderingCore &) = delete;
 	RenderingCore(RenderingCore &&) = delete;
-	virtual ~RenderingCore() = default;
+	virtual ~RenderingCore();
 
 	RenderingCore &operator= (const RenderingCore &) = delete;
 	RenderingCore &operator= (RenderingCore &&) = delete;
 
 	void initialize(Client *_client, Hud *_hud);
-	void setup(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
-		bool _draw_wield_tool, bool _draw_crosshair);
-	virtual void draw() = 0;
-
-	void draw_3d();
-	void draw_hud();
-	void draw_last_fx();
+	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
+			bool _draw_wield_tool, bool _draw_crosshair);
 };
 
 class RenderingCorePlain: public RenderingCore
 {
 public:
-	RenderingCorePlain(irr::IrrlichtDevice *_device);
-	void draw() override;
+	using RenderingCore::RenderingCore;
+	void draw_all() override;
 };
 
 class RenderingCoreStereo: public RenderingCore
@@ -84,7 +89,7 @@ protected:
 	void pre_draw();
 	virtual void use_eye(bool right);
 	virtual void reset_eye();
-	void draw_two();
+	void render_two();
 
 public:
 	RenderingCoreStereo(irr::IrrlichtDevice *_device);
@@ -97,8 +102,8 @@ protected:
 	void reset_eye() override;
 
 public:
-	RenderingCoreAnaglyph(irr::IrrlichtDevice *_device);
-	void draw() override;
+	using RenderingCoreStereo::RenderingCoreStereo;
+	void draw_all() override;
 };
 
 class RenderingCoreSideBySide: public RenderingCoreStereo
@@ -109,17 +114,14 @@ protected:
 	video::ITexture *right = nullptr;
 	video::ITexture *hud = nullptr;
 
-	void init_textures();
-	void clear_textures();
-
-	void update_screen_size() override;
+	void init_textures() override;
+	void clear_textures() override;
 	void use_eye(bool right) override;
 	void reset_eye() override;
 
 public:
-	RenderingCoreSideBySide(irr::IrrlichtDevice *_device);
-	~RenderingCoreSideBySide() override;
-	void draw() override;
+	using RenderingCoreStereo::RenderingCoreStereo;
+	void draw_all() override;
 };
 
 class RenderingCorePageflip: public RenderingCoreStereo
@@ -127,17 +129,14 @@ class RenderingCorePageflip: public RenderingCoreStereo
 protected:
 	video::ITexture *hud = nullptr;
 
-	void init_textures();
-	void clear_textures();
-
-	void update_screen_size() override;
+	void init_textures() override;
+	void clear_textures() override;
 	void use_eye(bool right) override;
 	void reset_eye() override;
 
 public:
-	RenderingCorePageflip(irr::IrrlichtDevice *_device);
-	~RenderingCorePageflip() override;
-	void draw() override;
+	using RenderingCoreStereo::RenderingCoreStereo;
+	void draw_all() override;
 };
 
 class RenderingCoreInterlaced: public RenderingCoreStereo
@@ -150,18 +149,14 @@ protected:
 	video::SMaterial mat;
 
 	void init_material();
-	void init_textures();
-	void clear_textures();
+	void init_textures() override;
+	void clear_textures() override;
 	void init_mask();
-
-	void update_screen_size() override;
 	void use_eye(bool right) override;
 	void reset_eye() override;
-
 	void merge();
 
 public:
 	RenderingCoreInterlaced(irr::IrrlichtDevice *_device);
-	~RenderingCoreInterlaced() override;
-	void draw() override;
+	void draw_all() override;
 };
