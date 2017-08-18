@@ -95,8 +95,6 @@ void *ServerThread::run()
 
 	while (!stopRequested()) {
 		try {
-			//TimeTaker timer("AsyncRunStep() + Receive()");
-
 			m_server->AsyncRunStep();
 
 			m_server->Receive();
@@ -989,23 +987,17 @@ void Server::Receive()
 		m_con.Receive(&pkt);
 		peer_id = pkt.getPeerId();
 		ProcessData(&pkt);
-	}
-	catch(con::InvalidIncomingDataException &e) {
-		infostream<<"Server::Receive(): "
-				"InvalidIncomingDataException: what()="
-				<<e.what()<<std::endl;
-	}
-	catch(SerializationError &e) {
-		infostream<<"Server::Receive(): "
-				"SerializationError: what()="
-				<<e.what()<<std::endl;
-	}
-	catch(ClientStateError &e) {
+	} catch (const con::InvalidIncomingDataException &e) {
+		infostream << "Server::Receive(): InvalidIncomingDataException: what()="
+				<< e.what() << std::endl;
+	} catch (const SerializationError &e) {
+		infostream << "Server::Receive(): SerializationError: what()="
+				<< e.what() << std::endl;
+	} catch (const ClientStateError &e) {
 		errorstream << "ProcessData: peer=" << peer_id << e.what() << std::endl;
 		DenyAccess_Legacy(peer_id, L"Your client sent something server didn't expect."
 				L"Try reconnecting or updating your client");
-	}
-	catch(con::PeerNotFoundException &e) {
+	} catch (const con::PeerNotFoundException &e) {
 		// Do nothing
 	}
 }
@@ -2259,29 +2251,30 @@ void Server::SendBlocks(float dtime)
 	std::sort(queue.begin(), queue.end());
 
 	m_clients.lock();
-	for(u32 i=0; i<queue.size(); i++)
-	{
-		//TODO: Calculate limit dynamically
-		if(total_sending >= g_settings->getS32
-				("max_simultaneous_block_sends_server_total"))
-			break;
+	s32 max_blocks_to_send =
+			g_settings->getS32("max_simultaneous_block_sends_server_total");
 
-		PrioritySortedBlockTransfer q = queue[i];
+	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
+		//TODO: Calculate limit dynamically
+		if (total_sending >= max_blocks_to_send)
+			break;
 
 		MapBlock *block = nullptr;
 		try {
-			block = m_env->getMap().getBlockNoCreate(q.pos);
-		} catch(const InvalidPositionException &e) {
+			block = m_env->getMap().getBlockNoCreate(block_to_send.pos);
+		} catch (const InvalidPositionException &e) {
 			continue;
 		}
 
-		RemoteClient *client = m_clients.lockedGetClientNoEx(q.peer_id, CS_Active);
+		RemoteClient *client = m_clients.lockedGetClientNoEx(block_to_send.peer_id,
+				CS_Active);
 		if (!client)
 			continue;
 
-		SendBlockNoLock(q.peer_id, block, client->serialization_version, client->net_proto_version);
+		SendBlockNoLock(block_to_send.peer_id, block, client->serialization_version,
+				client->net_proto_version);
 
-		client->SentBlock(q.pos);
+		client->SentBlock(block_to_send.pos);
 		total_sending++;
 	}
 	m_clients.unlock();
