@@ -76,7 +76,7 @@ struct HTTPFetchResult
 	unsigned long caller = HTTPFETCH_DISCARD;
 	unsigned long request_id = 0;
 
-	HTTPFetchResult() {}
+	HTTPFetchResult() = default;
 
 	HTTPFetchResult(const HTTPFetchRequest &fetch_request)
 	    : caller(fetch_request.caller), request_id(fetch_request.request_id)

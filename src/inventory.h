@@ -172,7 +172,7 @@ class InventoryList
 {
 public:
 	InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef);
-	~InventoryList();
+	~InventoryList() = default;
 	void clearItems();
 	void setSize(u32 newsize);
 	void setWidth(u32 newWidth);

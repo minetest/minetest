@@ -630,8 +630,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		if ( !this->IsEnabled )
 			break;
 
-		if (Text.size())
-		{
+		if (!Text.empty()) {
 			core::stringw s;
 
 			if (MarkBegin != MarkEnd)
@@ -670,8 +669,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		if ( !this->IsEnabled )
 			break;
 
-		if (Text.size() != 0)
-		{
+		if (!Text.empty()) {
 			core::stringw s;
 
 			if (MarkBegin != MarkEnd)
@@ -820,8 +818,7 @@ void intlGUIEditBox::draw()
 		const bool prevOver = OverrideColorEnabled;
 		const video::SColor prevColor = OverrideColor;
 
-		if (Text.size())
-		{
+		if (!Text.empty()) {
 			if (!IsEnabled && !OverrideColorEnabled)
 			{
 				OverrideColorEnabled = true;
@@ -908,7 +905,7 @@ void intlGUIEditBox::draw()
 					// draw marked text
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
 
-					if (s.size())
+					if (!s.empty())
 						font->draw(s.c_str(), CurrentTextRect,
 							OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 							false, true, &localClipRect);
@@ -1057,24 +1054,22 @@ bool intlGUIEditBox::processMouse(const SEvent& event)
 		else
 		{
 			if (!AbsoluteClippingRect.isPointInside(
-				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
-			{
+				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
 				return false;
 			}
-			else
-			{
-				// move cursor
-				CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 
-                s32 newMarkBegin = MarkBegin;
-				if (!MouseMarking)
-					newMarkBegin = CursorPos;
 
-				MouseMarking = true;
-				setTextMarkers( newMarkBegin, CursorPos);
-				calculateScrollPos();
-				return true;
-			}
+			// move cursor
+			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
+
+			s32 newMarkBegin = MarkBegin;
+			if (!MouseMarking)
+				newMarkBegin = CursorPos;
+
+			MouseMarking = true;
+			setTextMarkers( newMarkBegin, CursorPos);
+			calculateScrollPos();
+			return true;
 		}
 	default:
 		break;
@@ -1185,8 +1180,7 @@ void intlGUIEditBox::breakText()
 
 		if (c == L' ' || c == 0 || i == (size-1))
 		{
-			if (word.size())
-			{
+			if (!word.empty()) {
 				// here comes the next whitespace, look if
 				// we can break the last word to the next line.
 				s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
@@ -1488,7 +1482,7 @@ void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
 	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
 
-	if (!ch.size())
+	if (ch.empty())
 		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
 	else
 		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);

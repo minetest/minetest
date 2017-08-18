@@ -774,17 +774,15 @@ void ICraftAction::apply(InventoryManager *mgr,
 
 		// Add the new replacements to the list
 		IItemDefManager *itemdef = gamedef->getItemDefManager();
-		for (std::vector<ItemStack>::iterator it = temp.begin();
-				it != temp.end(); ++it) {
-			for (std::vector<ItemStack>::iterator jt = output_replacements.begin();
-					jt != output_replacements.end(); ++jt) {
-				if (it->name == jt->name) {
-					*it = jt->addItem(*it, itemdef);
-					if (it->empty())
+		for (auto &itemstack : temp) {
+			for (auto &output_replacement : output_replacements) {
+				if (itemstack.name == output_replacement.name) {
+					itemstack = output_replacement.addItem(itemstack, itemdef);
+					if (itemstack.empty())
 						continue;
 				}
 			}
-			output_replacements.push_back(*it);
+			output_replacements.push_back(itemstack);
 		}
 
 		actionstream << player->getDescription()
@@ -795,7 +793,8 @@ void ICraftAction::apply(InventoryManager *mgr,
 		// Decrement counter
 		if (count_remaining == 1)
 			break;
-		else if (count_remaining > 1)
+
+		if (count_remaining > 1)
 			count_remaining--;
 
 		// Get next crafting result
@@ -806,24 +805,23 @@ void ICraftAction::apply(InventoryManager *mgr,
 
 	// Put the replacements in the inventory or drop them on the floor, if
 	// the invenotry is full
-	for (std::vector<ItemStack>::iterator it = output_replacements.begin();
-			it != output_replacements.end(); ++it) {
+	for (auto &output_replacement : output_replacements) {
 		if (list_main)
-			*it = list_main->addItem(*it);
-		if (it->empty())
+			output_replacement = list_main->addItem(output_replacement);
+		if (output_replacement.empty())
 			continue;
-		u16 count = it->count;
+		u16 count = output_replacement.count;
 		do {
-			PLAYER_TO_SA(player)->item_OnDrop(*it, player,
+			PLAYER_TO_SA(player)->item_OnDrop(output_replacement, player,
 				player->getBasePosition());
-			if (count >= it->count) {
+			if (count >= output_replacement.count) {
 				errorstream << "Couldn't drop replacement stack " <<
-					it->getItemString() << " because drop loop didn't "
+					output_replacement.getItemString() << " because drop loop didn't "
 					"decrease count." << std::endl;
 
 				break;
 			}
-		} while (!it->empty());
+		} while (!output_replacement.empty());
 	}
 
 	infostream<<"ICraftAction::apply(): crafted "

@@ -54,7 +54,7 @@ struct InventoryLocation
 		type = PLAYER;
 		name = name_;
 	}
-	void setNodeMeta(v3s16 p_)
+	void setNodeMeta(const v3s16 &p_)
 	{
 		type = NODEMETA;
 		p = p_;
@@ -105,8 +105,8 @@ struct InventoryAction;
 class InventoryManager
 {
 public:
-	InventoryManager(){}
-	virtual ~InventoryManager(){}
+	InventoryManager() = default;
+	virtual ~InventoryManager() = default;
 
 	// Get an inventory (server and client)
 	virtual Inventory* getInventory(const InventoryLocation &loc){return NULL;}
@@ -131,7 +131,7 @@ struct InventoryAction
 	virtual void apply(InventoryManager *mgr, ServerActiveObject *player,
 			IGameDef *gamedef) = 0;
 	virtual void clientApply(InventoryManager *mgr, IGameDef *gamedef) = 0;
-	virtual ~InventoryAction() {};
+	virtual ~InventoryAction() = default;;
 };
 
 struct IMoveAction : public InventoryAction
@@ -151,7 +151,7 @@ struct IMoveAction : public InventoryAction
 	bool caused_by_move_somewhere = false;
 	u32 move_count = 0;
 
-	IMoveAction() {}
+	IMoveAction() = default;
 
 	IMoveAction(std::istream &is, bool somewhere);
 
@@ -189,7 +189,7 @@ struct IDropAction : public InventoryAction
 	std::string from_list;
 	s16 from_i = -1;
 
-	IDropAction() {}
+	IDropAction() = default;
 
 	IDropAction(std::istream &is);
 
@@ -218,7 +218,7 @@ struct ICraftAction : public InventoryAction
 	u16 count = 0;
 	InventoryLocation craft_inv;
 
-	ICraftAction() {}
+	ICraftAction() = default;
 
 	ICraftAction(std::istream &is);
 

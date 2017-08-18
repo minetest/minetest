@@ -55,8 +55,8 @@ Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
 
-	for (unsigned int i = 0; i < 4; i++)
-		hbar_colors[i] = video::SColor(255, 255, 255, 255);
+	for (auto &hbar_color : hbar_colors)
+		hbar_color = video::SColor(255, 255, 255, 255);
 
 	tsrc = client->getTextureSource();
 
@@ -220,7 +220,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
-		if (hotbar_image != "")
+		if (!hotbar_image.empty())
 			use_hotbar_image = tsrc->isKnownSourceImage(hotbar_image);
 		else
 			use_hotbar_image = false;
@@ -229,7 +229,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	// Store hotbar_selected_image in member variable, used by drawItem()
 	if (hotbar_selected_image != player->hotbar_selected_image) {
 		hotbar_selected_image = player->hotbar_selected_image;
-		if (hotbar_selected_image != "")
+		if (!hotbar_selected_image.empty())
 			use_hotbar_selected_image = tsrc->isKnownSourceImage(hotbar_selected_image);
 		else
 			use_hotbar_selected_image = false;
@@ -572,7 +572,7 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 		m_selection_mesh = NULL;
 	}
 
-	if (!m_selection_boxes.size()) {
+	if (m_selection_boxes.empty()) {
 		// No pointed object
 		return;
 	}
@@ -597,10 +597,8 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 	aabb3f halo_box(100.0, 100.0, 100.0, -100.0, -100.0, -100.0);
 	m_halo_boxes.clear();
 
-	for (std::vector<aabb3f>::iterator
-			i = m_selection_boxes.begin();
-			i != m_selection_boxes.end(); ++i) {
-		halo_box.addInternalBox(*i);
+	for (const auto &selection_box : m_selection_boxes) {
+		halo_box.addInternalBox(selection_box);
 	}
 
 	m_halo_boxes.push_back(halo_box);
