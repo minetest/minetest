@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "client.h"
 #include "inventory.h"
+#include "shader.h"
 #include "client/tile.h"
 #include "localplayer.h"
 #include "camera.h"
@@ -33,7 +34,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "mesh.h"
 #include "wieldmesh.h"
-#include <IGUIStaticText.h>
 #include "client/renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI

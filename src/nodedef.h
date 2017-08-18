@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #ifndef SERVER
 #include "client/tile.h"
-#include "shader.h"
 #include <IMeshManipulator.h>
 class Client;
 #endif

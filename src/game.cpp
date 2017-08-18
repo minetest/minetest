@@ -66,6 +66,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "sound_openal.h"
+#include "shader.h"
+
 #endif
 
 extern Settings *g_settings;

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "clientmap.h"
 #include "settings.h"
+#include "shader.h"
 #include "mapblock.h"
 #include "client/renderingengine.h"
 

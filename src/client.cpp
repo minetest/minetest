@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "mods.h"
 #include "profiler.h"
+#include "shader.h"
 #include "gettext.h"
 #include "clientmap.h"
 #include "clientmedia.h"
