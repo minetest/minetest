@@ -46,5 +46,5 @@ video::ITexture *guiScalingImageButton(video::IVideoDriver *driver, video::IText
  */
 void draw2DImageFilterScaled(video::IVideoDriver *driver, video::ITexture *txr,
 		const core::rect<s32> &destrect, const core::rect<s32> &srcrect,
-		const core::rect<s32> *cliprect = 0, const video::SColor *const colors = 0,
+		const core::rect<s32> *cliprect = 0, video::SColor *const colors = 0,
 		bool usealpha = false);

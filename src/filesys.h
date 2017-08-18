@@ -26,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef _WIN32 // WINDOWS
 #define DIR_DELIM "\\"
 #define DIR_DELIM_CHAR '\\'
-#define FILESYS_CASE_INSENSITIVE 1
+#define FILESYS_CASE_INSENSITIVE true
 #define PATH_DELIM ";"
 #else // POSIX
 #define DIR_DELIM "/"
 #define DIR_DELIM_CHAR '/'
-#define FILESYS_CASE_INSENSITIVE 0
+#define FILESYS_CASE_INSENSITIVE false
 #define PATH_DELIM ":"
 #endif
 

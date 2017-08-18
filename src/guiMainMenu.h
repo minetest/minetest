@@ -26,7 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MainMenuDataForScript {
 
-	MainMenuDataForScript() {}
+	MainMenuDataForScript() = default;
 
 	// Whether the server has requested a reconnect
 	bool reconnect_requested = false;
@@ -51,5 +51,5 @@ struct MainMenuData {
 	// Data to be passed to the script
 	MainMenuDataForScript script_data;
 
-	MainMenuData() {}
+	MainMenuData() = default;
 };

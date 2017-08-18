@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <sstream>
 #include <utility>
-#include <string.h>
+#include <cstring>
 #include <IGUISkin.h>
 #include <IGUIFont.h>
 #include <IGUIScrollBar.h>

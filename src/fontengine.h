@@ -21,9 +21,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include <vector>
-#include "IGUIFont.h"
-#include "IGUISkin.h"
-#include "IGUIEnvironment.h"
+#include "util/basic_macros.h"
+#include <IGUIFont.h>
+#include <IGUISkin.h>
+#include <IGUIEnvironment.h>
 #include "settings.h"
 
 #define FONT_SIZE_UNSPECIFIED 0xFFFFFFFF
@@ -81,17 +82,6 @@ public:
 	void readSettings();
 
 private:
-	/** disable copy constructor */
-	FontEngine() :
-		m_settings(NULL),
-		m_env(NULL),
-		m_font_cache(),
-		m_currentMode(FM_Standard),
-		m_lastMode(),
-		m_lastSize(0),
-		m_lastFont(NULL)
-	{};
-
 	/** update content of font cache in case of a setting change made it invalid */
 	void updateFontCache();
 
@@ -108,10 +98,10 @@ private:
 	void cleanCache();
 
 	/** pointer to settings for registering callbacks or reading config */
-	Settings* m_settings;
+	Settings* m_settings = nullptr;
 
 	/** pointer to irrlicht gui environment */
-	gui::IGUIEnvironment* m_env;
+	gui::IGUIEnvironment* m_env = nullptr;
 
 	/** internal storage for caching fonts of different size */
 	std::map<unsigned int, irr::gui::IGUIFont*> m_font_cache[FM_MaxMode];
@@ -131,6 +121,7 @@ private:
 	/** last font returned */
 	irr::gui::IGUIFont* m_lastFont = nullptr;
 
+	DISABLE_CLASS_COPY(FontEngine);
 };
 
 /** interface to access main font engine*/

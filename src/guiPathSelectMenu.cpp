@@ -67,7 +67,7 @@ void GUIFileSelectMenu::drawMenu()
 
 void GUIFileSelectMenu::acceptInput()
 {
-	if ((m_text_dst != 0) && (this->m_formname != "")) {
+	if (m_text_dst && !m_formname.empty()) {
 		StringMap fields;
 		if (m_accepted) {
 			std::string path;
@@ -82,7 +82,7 @@ void GUIFileSelectMenu::acceptInput()
 		} else {
 			fields[m_formname + "_canceled"] = m_formname;
 		}
-		this->m_text_dst->gotText(fields);
+		m_text_dst->gotText(fields);
 	}
 	quitMenu();
 }
