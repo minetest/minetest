@@ -30,7 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class KeyPress
 {
 public:
-	KeyPress() {}
+	KeyPress() = default;
+
 	KeyPress(const char *name);
 
 	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);

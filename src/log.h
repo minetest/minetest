@@ -205,9 +205,7 @@ extern std::ostream dstream;
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
 #define dout_server (*dout_server_ptr)
-#define derr_server (*derr_server_ptr)
 
 #ifndef SERVER
 	#define dout_client (*dout_client_ptr)
-	#define derr_client (*derr_client_ptr)
 #endif

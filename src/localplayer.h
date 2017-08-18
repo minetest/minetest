@@ -43,7 +43,7 @@ class LocalPlayer : public Player
 {
 public:
 	LocalPlayer(Client *client, const char *name);
-	virtual ~LocalPlayer();
+	virtual ~LocalPlayer() = default;
 
 	ClientActiveObject *parent = nullptr;
 

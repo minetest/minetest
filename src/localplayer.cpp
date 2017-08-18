@@ -38,13 +38,9 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 {
 }
 
-LocalPlayer::~LocalPlayer()
-{
-}
-
 static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 {
-	if (nodeboxes.size() == 0)
+	if (nodeboxes.empty())
 		return aabb3f(0, 0, 0, 0, 0, 0);
 
 	aabb3f b_max;
@@ -103,8 +99,8 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	m_sneak_ladder_detected = false;
 	f32 min_distance_f = 100000.0 * BS;
 
-	for (s16 d = 0; d < 9; d++) {
-		const v3s16 p = current_node + dir9_center[d];
+	for (const auto &d : dir9_center) {
+		const v3s16 p = current_node + d;
 		const v3f pf = intToFloat(p, BS);
 		const v2f diff(position.X - pf.X, position.Z - pf.Z);
 		f32 distance_f = diff.getLength();
@@ -389,9 +385,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Dont report if flying
 	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
-		for(size_t i=0; i<result.collisions.size(); i++) {
-			const CollisionInfo &info = result.collisions[i];
-			collision_info->push_back(info);
+		for (const auto &colinfo : result.collisions) {
+			collision_info->push_back(colinfo);
 		}
 	}
 
@@ -938,7 +933,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 			// The node to be sneaked on has to be walkable
 			node = map->getNodeNoEx(p, &is_valid_position);
-			if (!is_valid_position || nodemgr->get(node).walkable == false)
+			if (!is_valid_position || !nodemgr->get(node).walkable)
 				continue;
 			// And the node above it has to be nonwalkable
 			node = map->getNodeNoEx(p + v3s16(0, 1, 0), &is_valid_position);
@@ -965,9 +960,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			MapNode n = map->getNodeNoEx(m_sneak_node);
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(nodemgr, &nodeboxes);
-			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
-					it != nodeboxes.end(); ++it) {
-				aabb3f box = *it;
+			for (const auto &box : nodeboxes) {
 				if (box.MaxEdge.Y > cb_max)
 					cb_max = box.MaxEdge.Y;
 			}
@@ -994,8 +987,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	// Dont report if flying
 	if (collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
-		for (size_t i = 0; i < result.collisions.size(); i++) {
-			const CollisionInfo &info = result.collisions[i];
+		for (const auto &info : result.collisions) {
 			collision_info->push_back(info);
 		}
 	}
