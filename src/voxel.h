@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes.h"
 #include "irr_v3d.h"
 #include <iostream>
-#include "debug.h"
+#include <cassert>
 #include "exceptions.h"
 #include "mapnode.h"
 #include <set>

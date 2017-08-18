@@ -62,6 +62,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database.h"
 #include "chatmessage.h"
 #include "chat_interface.h"
+#include "remoteplayer.h"
 
 class ClientNotFoundException : public BaseException
 {
@@ -3122,6 +3123,11 @@ bool Server::hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount)
 	return true;
 }
 
+s32 Server::hudGetHotbarItemcount(RemotePlayer *player) const
+{
+	return player->getHotbarItemcount();
+}
+
 void Server::hudSetHotbarImage(RemotePlayer *player, std::string name)
 {
 	if (!player)
@@ -3145,6 +3151,11 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 
 	player->setHotbarSelectedImage(name);
 	SendHUDSetParam(player->peer_id, HUD_PARAM_HOTBAR_SELECTED_IMAGE, name);
+}
+
+const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
+{
+	return player->getHotbarSelectedImage();
 }
 
 bool Server::setLocalPlayerAnimations(RemotePlayer *player,

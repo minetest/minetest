@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	All kinds of stuff that needs to be exposed from main.cpp
 */
-#include "debug.h" // assert
 #include "modalMenu.h"
+#include <cassert>
 #include <list>
 
 class IGameCallback

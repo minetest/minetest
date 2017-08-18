@@ -24,7 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_base.h"
 #include "server.h"
 #include "environment.h"
-#include "player.h"
+#include "remoteplayer.h"
 #include "log.h"
 #include <algorithm>
 

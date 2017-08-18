@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "debug.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
 #include "itemstackmetadata.h"
@@ -27,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include <string>
 #include <vector>
+#include <cassert>
 
 struct ToolCapabilities;
 
