@@ -6,7 +6,7 @@
 #include "minimap.h"
 #include "settings.h"
 
-RenderingCore::RenderingCore(irr::IrrlichtDevice *_device) :
+RenderingCore::RenderingCore(IrrlichtDevice *_device) :
 	device(_device),
 	driver(device->getVideoDriver()),
 	smgr(device->getSceneManager()),
@@ -94,7 +94,7 @@ void RenderingCorePlain::draw_all()
 	draw_hud();
 }
 
-RenderingCoreStereo::RenderingCoreStereo(irr::IrrlichtDevice *_device) :
+RenderingCoreStereo::RenderingCoreStereo(IrrlichtDevice *_device) :
 	RenderingCore(_device)
 {
 	parallax_strength = g_settings->getFloat("3d_paralax_strength");
@@ -108,8 +108,8 @@ void RenderingCoreStereo::pre_draw()
 
 void RenderingCoreStereo::use_eye(bool right)
 {
-	irr::core::matrix4 move;
-	move.setTranslation(irr::core::vector3df(right ? parallax_strength : -parallax_strength, 0.0f, 0.0f));
+	core::matrix4 move;
+	move.setTranslation(core::vector3df(right ? parallax_strength : -parallax_strength, 0.0f, 0.0f));
 	cam->setPosition((base_transform * move).getTranslation());
 }
 
@@ -135,36 +135,36 @@ void RenderingCoreAnaglyph::draw_all()
 	draw_hud();
 }
 
+void RenderingCoreAnaglyph::setup_material(int color_mask)
+{
+	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
+	mat.Material.ColorMask = color_mask;
+	mat.EnableFlags = video::EMF_COLOR_MASK;
+	mat.EnablePasses =
+			scene::ESNRP_SKY_BOX | scene::ESNRP_SOLID |
+			scene::ESNRP_TRANSPARENT |
+			scene::ESNRP_TRANSPARENT_EFFECT | scene::ESNRP_SHADOW;
+}
+
 void RenderingCoreAnaglyph::use_eye(bool right)
 {
 	RenderingCoreStereo::use_eye(right);
 	driver->clearZBuffer();
-	irr::video::SOverrideMaterial &mat = driver->getOverrideMaterial();
-	mat.Material.ColorMask = right ? irr::video::ECP_GREEN | irr::video::ECP_BLUE : irr::video::ECP_RED;
-	mat.EnableFlags = irr::video::EMF_COLOR_MASK;
-	mat.EnablePasses =
-			irr::scene::ESNRP_SKY_BOX | irr::scene::ESNRP_SOLID |
-			irr::scene::ESNRP_TRANSPARENT |
-			irr::scene::ESNRP_TRANSPARENT_EFFECT | irr::scene::ESNRP_SHADOW;
+	setup_material(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
 }
 
 void RenderingCoreAnaglyph::reset_eye()
 {
-	irr::video::SOverrideMaterial &mat = driver->getOverrideMaterial();
-	mat.Material.ColorMask = irr::video::ECP_ALL;
-	mat.EnableFlags = irr::video::EMF_COLOR_MASK;
-	mat.EnablePasses =
-			irr::scene::ESNRP_SKY_BOX + irr::scene::ESNRP_SOLID +
-			irr::scene::ESNRP_TRANSPARENT +
-			irr::scene::ESNRP_TRANSPARENT_EFFECT + irr::scene::ESNRP_SHADOW;
+	setup_material(video::ECP_ALL);
+	RenderingCoreStereo::reset_eye();
 }
 
 void RenderingCoreSideBySide::init_textures()
 {
-	image_size = v2u32(screensize.X / 2, screensize.Y);
-	left = driver->addRenderTargetTexture(image_size, "3d_render_left", irr::video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(image_size, "3d_render_right", irr::video::ECF_A8R8G8B8);
-	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", irr::video::ECF_A8R8G8B8);
+	v2u32 image_size{screensize.X / 2, screensize.Y};
+	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
+	right = driver->addRenderTargetTexture(image_size, "3d_render_right", video::ECF_A8R8G8B8);
+	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreSideBySide::clear_textures()
@@ -185,13 +185,13 @@ void RenderingCoreSideBySide::draw_all()
 	driver->draw2DImage(right, v2s32(screensize.X / 2, 0));
 
 	driver->draw2DImage(hud,
-			irr::core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
+			core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
+			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
 			true);
 
 	driver->draw2DImage(hud,
-			irr::core::rect<s32>(screensize.X / 2, 0, screensize.X, screensize.Y),
-			irr::core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
+			core::rect<s32>(screensize.X / 2, 0, screensize.X, screensize.Y),
+			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
 			true);
 }
 
@@ -209,7 +209,7 @@ void RenderingCoreSideBySide::reset_eye()
 
 void RenderingCorePageflip::init_textures()
 {
-	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", irr::video::ECF_A8R8G8B8);
+	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
 void RenderingCorePageflip::clear_textures()
@@ -228,7 +228,7 @@ void RenderingCorePageflip::draw_all()
 void RenderingCorePageflip::use_eye(bool _right)
 {
 	driver->setRenderTarget(
-		_right ? irr::video::ERT_STEREO_RIGHT_BUFFER : irr::video::ERT_STEREO_LEFT_BUFFER,
+		_right ? video::ERT_STEREO_RIGHT_BUFFER : video::ERT_STEREO_LEFT_BUFFER,
 		 true, true, skycolor);
 	RenderingCoreStereo::use_eye(_right);
 }
@@ -236,11 +236,11 @@ void RenderingCorePageflip::use_eye(bool _right)
 void RenderingCorePageflip::reset_eye()
 {
 	driver->draw2DImage(hud, v2s32(0, 0));
-	driver->setRenderTarget(irr::video::ERT_FRAME_BUFFER, false, false, skycolor);
+	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false, skycolor);
 	RenderingCoreStereo::reset_eye();
 }
 
-RenderingCoreInterlaced::RenderingCoreInterlaced(irr::IrrlichtDevice *_device) :
+RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device) :
 	RenderingCoreStereo(_device)
 {
 	init_material();
@@ -258,17 +258,17 @@ void RenderingCoreInterlaced::init_material()
 		mat.TextureLayer[k].AnisotropicFilter = false;
 		mat.TextureLayer[k].BilinearFilter = false;
 		mat.TextureLayer[k].TrilinearFilter = false;
-		mat.TextureLayer[k].TextureWrapU = irr::video::ETC_CLAMP_TO_EDGE;
-		mat.TextureLayer[k].TextureWrapV = irr::video::ETC_CLAMP_TO_EDGE;
+		mat.TextureLayer[k].TextureWrapU = video::ETC_CLAMP_TO_EDGE;
+		mat.TextureLayer[k].TextureWrapV = video::ETC_CLAMP_TO_EDGE;
 	}
 }
 
 void RenderingCoreInterlaced::init_textures()
 {
-	image_size = v2u32(screensize.X, screensize.Y / 2);
-	left = driver->addRenderTargetTexture(image_size, "3d_render_left", irr::video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(image_size, "3d_render_right", irr::video::ECF_A8R8G8B8);
-	mask = driver->addTexture(screensize, "3d_render_mask", irr::video::ECF_A8R8G8B8);
+	v2u32 image_size{screensize.X, screensize.Y / 2};
+	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
+	right = driver->addRenderTargetTexture(image_size, "3d_render_right", video::ECF_A8R8G8B8);
+	mask = driver->addTexture(screensize, "3d_render_mask", video::ECF_A8R8G8B8);
 	init_mask();
 	mat.TextureLayer[0].Texture = left;
 	mat.TextureLayer[1].Texture = right;

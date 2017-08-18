@@ -41,10 +41,10 @@ protected:
 	bool draw_wield_tool;
 	bool draw_crosshair;
 
-	irr::IrrlichtDevice *device;
-	irr::video::IVideoDriver *driver;
-	irr::scene::ISceneManager *smgr;
-	irr::gui::IGUIEnvironment *guienv;
+	IrrlichtDevice *device;
+	video::IVideoDriver *driver;
+	scene::ISceneManager *smgr;
+	gui::IGUIEnvironment *guienv;
 
 	void update_screen_size();
 	virtual void init_textures() {}
@@ -59,7 +59,7 @@ protected:
 	void draw_last_fx();
 
 public:
-	RenderingCore(irr::IrrlichtDevice *_device);
+	RenderingCore(IrrlichtDevice *_device);
 	RenderingCore(const RenderingCore &) = delete;
 	RenderingCore(RenderingCore &&) = delete;
 	virtual ~RenderingCore();
@@ -82,8 +82,8 @@ public:
 class RenderingCoreStereo: public RenderingCore
 {
 protected:
-	irr::scene::ICameraSceneNode *cam;
-	irr::core::matrix4 base_transform;
+	scene::ICameraSceneNode *cam;
+	core::matrix4 base_transform;
 	float parallax_strength;
 
 	void pre_draw();
@@ -92,12 +92,13 @@ protected:
 	void render_two();
 
 public:
-	RenderingCoreStereo(irr::IrrlichtDevice *_device);
+	RenderingCoreStereo(IrrlichtDevice *_device);
 };
 
 class RenderingCoreAnaglyph: public RenderingCoreStereo
 {
 protected:
+	void setup_material(int color_mask);
 	void use_eye(bool right) override;
 	void reset_eye() override;
 
@@ -109,7 +110,6 @@ public:
 class RenderingCoreSideBySide: public RenderingCoreStereo
 {
 protected:
-	v2u32 image_size;
 	video::ITexture *left = nullptr;
 	video::ITexture *right = nullptr;
 	video::ITexture *hud = nullptr;
@@ -142,7 +142,6 @@ public:
 class RenderingCoreInterlaced: public RenderingCoreStereo
 {
 protected:
-	v2u32 image_size;
 	video::ITexture *left = nullptr;
 	video::ITexture *right = nullptr;
 	video::ITexture *mask = nullptr;
@@ -157,6 +156,6 @@ protected:
 	void merge();
 
 public:
-	RenderingCoreInterlaced(irr::IrrlichtDevice *_device);
+	RenderingCoreInterlaced(IrrlichtDevice *_device);
 	void draw_all() override;
 };
