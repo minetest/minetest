@@ -33,6 +33,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
+#include "nodedef.h" // For ContentFeatures
+#include "util/pointer.h" // HybridPtr
+#include "node_with_def.h"
 
 class Settings;
 class MapDatabase;
@@ -197,6 +200,16 @@ public:
 	// If is_valid_position is not NULL then this will be set to true if the
 	// position is valid, otherwise false
 	MapNode getNodeNoEx(v3s16 p, bool *is_valid_position = NULL);
+
+	// Same as getNodeNoEx, but returns NULL if node is not found
+    HybridPtr<const ContentFeatures> getNodeDefNoEx(v3s16 p, bool *is_valid_position = NULL);
+
+    // Same as getNodeNoEx
+    NodeWithDef getNodeWithDefNoEx(v3s16 p, bool *is_valid_position = NULL);
+
+    void setNode(v3s16 p, const NodeWithDef &nd);
+
+    void setNodeDef(v3s16 p, const ContentFeatures *def);
 
 	/*
 		These handle lighting but not faces.

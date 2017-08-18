@@ -231,6 +231,67 @@ void Map::setNode(v3s16 p, MapNode & n)
 	block->setNodeNoCheck(relpos, n);
 }
 
+// Returns a NULL pointer if not found
+HybridPtr<const ContentFeatures> Map::getNodeDefNoEx(v3s16 p, bool *is_valid_position)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL) {
+		if (is_valid_position != NULL)
+			*is_valid_position = false;
+		return NULL;
+	}
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	bool is_valid_p;
+	HybridPtr<const ContentFeatures> f = block->getNodeDefNoCheck(relpos, &is_valid_p);
+	if (is_valid_position != NULL)
+		*is_valid_position = is_valid_p;
+	return f;
+}
+
+NodeWithDef Map::getNodeWithDefNoEx(v3s16 p, bool *is_valid_position)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL) {
+		if (is_valid_position != NULL)
+			*is_valid_position = false;
+		return NodeWithDef(MapNode(CONTENT_IGNORE), m_gamedef->ndef());
+	}
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	bool is_valid_p;
+	NodeWithDef node = block->getNodeWithDefNoCheck(relpos, &is_valid_p);
+	if (is_valid_position != NULL)
+		*is_valid_position = is_valid_p;
+	return node;
+}
+
+void Map::setNode(v3s16 p, const NodeWithDef &nd)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	// Never allow placing CONTENT_IGNORE, it fucks up stuff
+	if(nd.getContent() == CONTENT_IGNORE){
+		bool is_valid_position;
+		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
+				<<" while trying to replace \""
+				<<m_gamedef->ndef()->get(block->getNodeNoCheck(relpos, &is_valid_position)).name
+				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+		debug_stacks_print_to(infostream);
+		return;
+	}
+	block->setNodeNoCheck(relpos, nd);
+}
+
+void Map::setNodeDef(v3s16 p, const ContentFeatures *def)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	block->setNodeDefNoCheck(relpos, def);
+}
+
 void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		std::map<v3s16, MapBlock*> &modified_blocks,
 		bool remove_metadata)
