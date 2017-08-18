@@ -83,14 +83,15 @@ enum BiomeGenType {
 struct BiomeParams {
 	virtual void readParams(const Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~BiomeParams() {}
+	virtual ~BiomeParams() = default;
 
 	s32 seed;
 };
 
 class BiomeGen {
 public:
-	virtual ~BiomeGen() {}
+	virtual ~BiomeGen() = default;
+
 	virtual BiomeGenType getType() const = 0;
 
 	// Calculates the biome at the exact position provided.  This function can
@@ -188,7 +189,7 @@ private:
 class BiomeManager : public ObjDefManager {
 public:
 	BiomeManager(Server *server);
-	virtual ~BiomeManager();
+	virtual ~BiomeManager() = default;
 
 	const char *getObjectTitle() const
 	{

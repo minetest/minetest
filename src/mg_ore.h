@@ -104,7 +104,7 @@ public:
 	Noise *noise_puff_top = nullptr;
 	Noise *noise_puff_bottom = nullptr;
 
-	OrePuff();
+	OrePuff() = default;
 	virtual ~OrePuff();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -126,7 +126,7 @@ public:
 	float random_factor;
 	Noise *noise2 = nullptr;
 
-	OreVein();
+	OreVein() = default;
 	virtual ~OreVein();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,

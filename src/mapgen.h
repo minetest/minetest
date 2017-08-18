@@ -122,7 +122,7 @@ enum MapgenType {
 };
 
 struct MapgenParams {
-	MapgenParams() {}
+	MapgenParams() = default;
 	virtual ~MapgenParams();
 
 	MapgenType mgtype = MAPGEN_DEFAULT;

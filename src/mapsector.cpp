@@ -40,9 +40,8 @@ void MapSector::deleteBlocks()
 	m_block_cache = nullptr;
 
 	// Delete all
-	for (std::unordered_map<s16, MapBlock*>::iterator i = m_blocks.begin();
-		 	i != m_blocks.end(); ++i) {
-		delete i->second;
+	for (auto &block : m_blocks) {
+		delete block.second;
 	}
 
 	// Clear container
@@ -125,9 +124,8 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
-	for (std::unordered_map<s16, MapBlock*>::iterator bi = m_blocks.begin();
-		bi != m_blocks.end(); ++bi) {
-		dest.push_back(bi->second);
+	for (auto &block : m_blocks) {
+		dest.push_back(block.second);
 	}
 }
 
@@ -137,10 +135,6 @@ void MapSector::getBlocks(MapBlockVect &dest)
 
 ServerMapSector::ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
 		MapSector(parent, pos, gamedef)
-{
-}
-
-ServerMapSector::~ServerMapSector()
 {
 }
 
@@ -212,11 +206,9 @@ ServerMapSector* ServerMapSector::deSerialize(
 		assert(sector->getId() == MAPSECTOR_SERVER);
 		return (ServerMapSector*)sector;
 	}
-	else
-	{
-		sector = new ServerMapSector(parent, p2d, gamedef);
-		sectors[p2d] = sector;
-	}
+
+	sector = new ServerMapSector(parent, p2d, gamedef);
+	sectors[p2d] = sector;
 
 	/*
 		Set stuff in sector
@@ -236,11 +228,6 @@ ClientMapSector::ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
 		MapSector(parent, pos, gamedef)
 {
 }
-
-ClientMapSector::~ClientMapSector()
-{
-}
-
 #endif // !SERVER
 
 //END

@@ -249,18 +249,12 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		int facedir = n.getFaceDir(nodemgr);
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
-		for(std::vector<aabb3f>::const_iterator
-				i = fixed.begin();
-				i != fixed.end(); ++i)
-		{
-			aabb3f box = *i;
-
+		for (aabb3f box : fixed) {
 			if (nodebox.type == NODEBOX_LEVELED) {
 				box.MaxEdge.Y = -BS/2 + BS*((float)1/LEVELED_MAX) * n.getLevel(nodemgr);
 			}
 
-			switch (axisdir)
-			{
+			switch (axisdir) {
 			case 0:
 				if(facedir == 1)
 				{
@@ -403,16 +397,15 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 				nodebox.wall_side.MaxEdge
 			};
 
-			for(s32 i=0; i<2; i++)
-			{
+			for (v3f &vertice : vertices) {
 				if(dir == v3s16(-1,0,0))
-					vertices[i].rotateXZBy(0);
+					vertice.rotateXZBy(0);
 				if(dir == v3s16(1,0,0))
-					vertices[i].rotateXZBy(180);
+					vertice.rotateXZBy(180);
 				if(dir == v3s16(0,0,-1))
-					vertices[i].rotateXZBy(90);
+					vertice.rotateXZBy(90);
 				if(dir == v3s16(0,0,1))
-					vertices[i].rotateXZBy(-90);
+					vertice.rotateXZBy(-90);
 			}
 
 			aabb3f box = aabb3f(vertices[0]);
@@ -467,7 +460,7 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 }
 
 static inline void getNeighborConnectingFace(
-	v3s16 p, INodeDefManager *nodedef,
+	const v3s16 &p, INodeDefManager *nodedef,
 	Map *map, MapNode n, u8 bitmask, u8 *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
@@ -605,14 +598,16 @@ u32 MapNode::serializedLength(u8 version)
 	if(!ser_ver_supported(version))
 		throw VersionMismatchException("ERROR: MapNode format not supported");
 
-	if(version == 0)
+	if (version == 0)
 		return 1;
-	else if(version <= 9)
+
+	if (version <= 9)
 		return 2;
-	else if(version <= 23)
+
+	if (version <= 23)
 		return 3;
-	else
-		return 4;
+
+	return 4;
 }
 void MapNode::serialize(u8 *dest, u8 version)
 {

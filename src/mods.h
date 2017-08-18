@@ -121,7 +121,7 @@ private:
 	std::unordered_set<std::string> m_name_conflicts;
 
 	// Deleted default constructor
-	ModConfiguration() {}
+	ModConfiguration() = default;
 
 };
 
@@ -155,7 +155,7 @@ class ModMetadata: public Metadata
 {
 public:
 	ModMetadata(const std::string &mod_name);
-	~ModMetadata() {}
+	~ModMetadata() = default;
 
 	virtual void clear();
 

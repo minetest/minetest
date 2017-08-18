@@ -240,9 +240,9 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 	if (!(spflags & MGV7_MOUNTAINS)) {
 		if (y < water_level || y > max_spawn_y)
 			return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-		else
-			// y + 2 because y is surface level and due to biome 'dust'
-			return y + 2;
+
+		// y + 2 because y is surface level and due to biome 'dust'
+		return y + 2;
 	}
 
 	// Search upwards for first node without mountain terrain
@@ -251,9 +251,9 @@ int MapgenV7::getSpawnLevelAtPoint(v2s16 p)
 		if (!getMountainTerrainAtPoint(p.X, y + 1, p.Y)) {
 			if (y <= water_level || y > max_spawn_y)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-			else
-				// y + 1 due to biome 'dust'
-				return y + 1;
+
+			// y + 1 due to biome 'dust'
+			return y + 1;
 		}
 		y++;
 		iters--;

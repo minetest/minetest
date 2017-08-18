@@ -25,8 +25,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapgenSinglenodeParams : public MapgenParams
 {
-	MapgenSinglenodeParams() {}
-	~MapgenSinglenodeParams() {}
+	MapgenSinglenodeParams() = default;
+	~MapgenSinglenodeParams() = default;
 
 	void readParams(const Settings *settings) {}
 	void writeParams(Settings *settings) const {}
@@ -40,7 +40,7 @@ public:
 	u8 set_light;
 
 	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	~MapgenSinglenode();
+	~MapgenSinglenode() = default;
 
 	virtual MapgenType getType() const { return MAPGEN_SINGLENODE; }
 

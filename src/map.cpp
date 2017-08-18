@@ -527,14 +527,13 @@ void Map::unloadUnreferencedBlocks(std::vector<v3s16> *unloaded_blocks)
 
 void Map::deleteSectors(std::vector<v2s16> &sectorList)
 {
-	for(std::vector<v2s16>::iterator j = sectorList.begin();
-		j != sectorList.end(); ++j) {
-		MapSector *sector = m_sectors[*j];
+	for (v2s16 j : sectorList) {
+		MapSector *sector = m_sectors[j];
 		// If sector is in sector cache, remove it from there
 		if(m_sector_cache == sector)
 			m_sector_cache = NULL;
 		// Remove from map and delete
-		m_sectors.erase(*j);
+		m_sectors.erase(j);
 		delete sector;
 	}
 }
@@ -1724,7 +1723,7 @@ MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
-		if(block && block->isDummy() == false)
+		if (block && !block->isDummy())
 			return block;
 	}
 
@@ -1855,8 +1854,7 @@ bool ServerMap::loadFromFolders() {
 
 void ServerMap::createDirs(std::string path)
 {
-	if(fs::CreateAllDirs(path) == false)
-	{
+	if (!fs::CreateAllDirs(path)) {
 		m_dout<<"ServerMap: Failed to create directory "
 				<<"\""<<path<<"\""<<std::endl;
 		throw BaseException("ServerMap failed to create directory");
@@ -1940,7 +1938,7 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 void ServerMap::save(ModifiedState save_level)
 {
 	DSTACK(FUNCTION_NAME);
-	if(m_map_saving_enabled == false) {
+	if (!m_map_saving_enabled) {
 		warningstream<<"Not saving map, saving disabled."<<std::endl;
 		return;
 	}
@@ -2081,8 +2079,7 @@ MapSector* ServerMap::loadSectorMeta(std::string sectordir, bool save_after_load
 
 	std::string fullpath = sectordir + DIR_DELIM + "meta";
 	std::ifstream is(fullpath.c_str(), std::ios_base::binary);
-	if(is.good() == false)
-	{
+	if (!is.good()) {
 		// If the directory exists anyway, it probably is in some old
 		// format. Just go ahead and create the sector.
 		if(fs::PathExists(sectordir))
@@ -2494,7 +2491,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 		 */
 
 		std::string blockfilename = getBlockFilename(blockpos);
-		if (fs::PathExists(sectordir + DIR_DELIM + blockfilename) == false)
+		if (!fs::PathExists(sectordir + DIR_DELIM + blockfilename))
 			return NULL;
 
 		/*
@@ -2667,8 +2664,8 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 		v3s16 p = i->first;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
 		bool existed = !(i->second & VMANIP_BLOCK_DATA_INEXIST);
-		if ((existed == false) || (block == NULL) ||
-			(overwrite_generated == false && block->isGenerated() == true))
+		if (!existed || (block == NULL) ||
+			(!overwrite_generated && block->isGenerated()))
 			continue;
 
 		block->copyFrom(*this);

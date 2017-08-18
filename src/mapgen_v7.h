@@ -65,7 +65,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_cave2;
 
 	MapgenV7Params();
-	~MapgenV7Params() {}
+	~MapgenV7Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

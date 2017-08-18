@@ -48,11 +48,8 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin();
-				i != m_stack.end(); ++i)
-		{
-			assert(*i != menu);
+		for (gui::IGUIElement *i : m_stack) {
+			assert(i != menu);
 		}
 
 		if(!m_stack.empty())
@@ -103,10 +100,8 @@ public:
 
 	bool pausesGame()
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin(); i != m_stack.end(); ++i)
-		{
-			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(*i);
+		for (gui::IGUIElement *i : m_stack) {
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(i);
 			if (mm && mm->pausesGame())
 				return true;
 		}
@@ -123,8 +118,8 @@ extern bool isMenuActive();
 class MainGameCallback : public IGameCallback
 {
 public:
-	MainGameCallback() {}
-	virtual ~MainGameCallback() {}
+	MainGameCallback() = default;
+	virtual ~MainGameCallback() = default;
 
 	virtual void exitToOS()
 	{

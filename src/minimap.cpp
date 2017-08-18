@@ -46,10 +46,7 @@ bool MinimapUpdateThread::pushBlockUpdate(v3s16 pos, MinimapMapblock *data)
 
 	// Find if block is already in queue.
 	// If it is, update the data and quit.
-	for (std::deque<QueuedMinimapUpdate>::iterator
-			it = m_update_queue.begin();
-			it != m_update_queue.end(); ++it) {
-		QueuedMinimapUpdate &q = *it;
+	for (QueuedMinimapUpdate &q : m_update_queue) {
 		if (q.pos == pos) {
 			delete q.data;
 			q.data = data;
@@ -277,9 +274,9 @@ MinimapShape Minimap::getMinimapShape()
 {
 	if (data->minimap_shape_round) {
 		return MINIMAP_SHAPE_ROUND;
-	} else {
-		return MINIMAP_SHAPE_SQUARE;
 	}
+
+	return MINIMAP_SHAPE_SQUARE;
 }
 
 void Minimap::setMinimapMode(MinimapMode mode)
@@ -434,9 +431,9 @@ v3f Minimap::getYawVec()
 			cos(m_angle * core::DEGTORAD),
 			sin(m_angle * core::DEGTORAD),
 			1.0);
-	} else {
-		return v3f(1.0, 0.0, 1.0);
 	}
+
+	return v3f(1.0, 0.0, 1.0);
 }
 
 scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
@@ -568,9 +565,8 @@ void Minimap::updateActiveMarkers()
 
 	m_active_markers.clear();
 
-	for (std::list<Nametag *>::const_iterator i = nametags.begin();
-			i != nametags.end(); ++i) {
-		v3s16 pos = floatToInt((*i)->parent_node->getPosition() +
+	for (Nametag *nametag : nametags) {
+		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,
@@ -586,8 +582,9 @@ void Minimap::updateActiveMarkers()
 		if (!mask_col.getAlpha()) {
 			continue;
 		}
-		m_active_markers.push_back(v2f(((float)pos.X / (float)MINIMAP_MAX_SX) - 0.5,
-			(1.0 - (float)pos.Z / (float)MINIMAP_MAX_SY) - 0.5));
+
+		m_active_markers.emplace_back(((float)pos.X / (float)MINIMAP_MAX_SX) - 0.5,
+			(1.0 - (float)pos.Z / (float)MINIMAP_MAX_SY) - 0.5);
 	}
 }
 

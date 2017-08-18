@@ -71,7 +71,7 @@ MapBlock::MapBlock(Map *parent, v3s16 pos, IGameDef *gamedef, bool dummy):
 		m_pos_relative(pos * MAP_BLOCKSIZE),
 		m_gamedef(gamedef)
 {
-	if(dummy == false)
+	if (!dummy)
 		reallocate();
 }
 
@@ -89,24 +89,22 @@ MapBlock::~MapBlock()
 
 bool MapBlock::isValidPositionParent(v3s16 p)
 {
-	if(isValidPosition(p))
-	{
+	if (isValidPosition(p)) {
 		return true;
 	}
-	else{
-		return m_parent->isValidPosition(getPosRelative() + p);
-	}
+
+	return m_parent->isValidPosition(getPosRelative() + p);
 }
 
 MapNode MapBlock::getNodeParent(v3s16 p, bool *is_valid_position)
 {
-	if (isValidPosition(p) == false)
+	if (!isValidPosition(p))
 		return m_parent->getNodeNoEx(getPosRelative() + p, is_valid_position);
 
 	if (!data) {
 		if (is_valid_position)
 			*is_valid_position = false;
-		return MapNode(CONTENT_IGNORE);
+		return {CONTENT_IGNORE};
 	}
 	if (is_valid_position)
 		*is_valid_position = true;
@@ -201,8 +199,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 				else
 				{
 					MapNode n = getNodeNoEx(v3s16(x, MAP_BLOCKSIZE-1, z));
-					if(m_gamedef->ndef()->get(n).sunlight_propagates == false)
-					{
+					if (!m_gamedef->ndef()->get(n).sunlight_propagates) {
 						no_sunlight = true;
 					}
 				}
@@ -423,12 +420,11 @@ s16 MapBlock::getGroundLevel(v2s16 p2d)
 		for(; y>=0; y--)
 		{
 			MapNode n = getNodeRef(p2d.X, y, p2d.Y);
-			if(m_gamedef->ndef()->get(n).walkable)
-			{
+			if (m_gamedef->ndef()->get(n).walkable) {
 				if(y == MAP_BLOCKSIZE-1)
 					return -2;
-				else
-					return y;
+
+				return y;
 			}
 		}
 		return -1;
@@ -481,11 +477,9 @@ static void getBlockNodeIdMapping(NameIdMapping *nimap, MapNode *nodes,
 		// Update the MapNode
 		nodes[i].setContent(id);
 	}
-	for(std::set<content_t>::const_iterator
-			i = unknown_contents.begin();
-			i != unknown_contents.end(); ++i){
-		errorstream<<"getBlockNodeIdMapping(): IGNORING ERROR: "
-				<<"Name for node id "<<(*i)<<" not known"<<std::endl;
+	for (u16 unknown_content : unknown_contents) {
+		errorstream << "getBlockNodeIdMapping(): IGNORING ERROR: "
+				<< "Name for node id " << unknown_content << " not known" << std::endl;
 	}
 }
 // Correct ids in the block to match nodedef based on names.
