@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "event.h"
 #include "collision.h"
+#include "nodedef.h"
 #include "profiler.h"
 #include "raycast.h"
 #include "voxelalgorithms.h"

@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <algorithm>
 #include "scripting_server.h"
 #include "environment.h"
+#include "mapblock.h"
 #include "server.h"
 #include "nodedef.h"
 #include "daynightratio.h"
@@ -37,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "emerge.h"
 #include "pathfinder.h"
 #include "face_position_cache.h"
+#include "remoteplayer.h"
 #ifndef SERVER
 #include "client.h"
 #endif

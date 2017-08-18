@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "irrlicht.h" // createDevice
-
 #include "mainmenumanager.h"
 #include "irrlichttypes_extrabloated.h"
 #include "chat_interface.h"
@@ -38,6 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gameparams.h"
 #include "database.h"
 #include "config.h"
+#include "player.h"
 #include "porting.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"

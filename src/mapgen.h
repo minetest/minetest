@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "noise.h"
 #include "nodedef.h"
-#include "mapnode.h"
 #include "util/string.h"
 #include "util/container.h"
 

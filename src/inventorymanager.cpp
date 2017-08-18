@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "inventorymanager.h"
+#include "debug.h"
 #include "log.h"
 #include "serverenvironment.h"
 #include "scripting_server.h"

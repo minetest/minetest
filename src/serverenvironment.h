@@ -19,15 +19,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
-#include "mapblock.h"
-#include "activeobject.h"
+#include "settings.h"
+#include "util/numeric.h"
 #include <set>
 
 class IGameDef;
 class ServerMap;
 struct GameParams;
+class MapBlock;
 class RemotePlayer;
 class PlayerDatabase;
 class PlayerSAO;

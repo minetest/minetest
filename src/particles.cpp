@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "client.h"
 #include "collision.h"
-#include <stdlib.h>
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "environment.h"
 #include "clientmap.h"
 #include "mapnode.h"
+#include "nodedef.h"
 #include "client.h"
 #include "settings.h"
 

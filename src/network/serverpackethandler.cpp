@@ -17,15 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <chatmessage.h>
+#include "chatmessage.h"
 #include "server.h"
 #include "log.h"
-
 #include "content_sao.h"
 #include "emerge.h"
 #include "mapblock.h"
 #include "nodedef.h"
-#include "player.h"
+#include "remoteplayer.h"
 #include "rollback_interface.h"
 #include "scripting_server.h"
 #include "settings.h"

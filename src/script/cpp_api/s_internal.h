@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "threading/mutex_auto_lock.h"
 
 #ifdef SCRIPTAPI_LOCK_DEBUG
-#include "debug.h" // assert()
+#include <cassert>
 
 class LockChecker {
 public:

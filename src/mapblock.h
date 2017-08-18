@@ -20,7 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <set>
-#include "debug.h"
 #include "irr_v3d.h"
 #include "mapnode.h"
 #include "exceptions.h"

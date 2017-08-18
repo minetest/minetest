@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
+#include "debug.h"
 
 class Settings;
 class MapDatabase;

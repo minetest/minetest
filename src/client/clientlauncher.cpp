@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "filesys.h"
 #include "guiMainMenu.h"
 #include "game.h"
+#include "player.h"
 #include "chat.h"
 #include "gettext.h"
 #include "profiler.h"
