@@ -231,7 +231,68 @@ void Map::setNode(v3s16 p, MapNode & n)
 	block->setNodeNoCheck(relpos, n);
 }
 
-void Map::addNodeAndUpdate(v3s16 p, MapNode n,
+// Returns a NULL pointer if not found
+HybridPtr<const ContentFeatures> Map::getNodeDefNoEx(v3s16 p, bool *is_valid_position)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL) {
+		if (is_valid_position != NULL)
+			*is_valid_position = false;
+		return NULL;
+	}
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	bool is_valid_p;
+	HybridPtr<const ContentFeatures> f = block->getNodeDefNoCheck(relpos, &is_valid_p);
+	if (is_valid_position != NULL)
+		*is_valid_position = is_valid_p;
+	return f;
+}
+
+NodeWithDef Map::getNodeWithDefNoEx(v3s16 p, bool *is_valid_position)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreateNoEx(blockpos);
+	if(block == NULL) {
+		if (is_valid_position != NULL)
+			*is_valid_position = false;
+		return NodeWithDef(MapNode(CONTENT_IGNORE), m_gamedef->ndef());
+	}
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	bool is_valid_p;
+	NodeWithDef node = block->getNodeWithDefNoCheck(relpos, &is_valid_p);
+	if (is_valid_position != NULL)
+		*is_valid_position = is_valid_p;
+	return node;
+}
+
+void Map::setNode(v3s16 p, const NodeWithDef &nd)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	// Never allow placing CONTENT_IGNORE, it fucks up stuff
+	if(nd.getContent() == CONTENT_IGNORE){
+		bool is_valid_position;
+		errorstream<<"Map::setNode(): Not allowing to place CONTENT_IGNORE"
+				<<" while trying to replace \""
+				<<m_gamedef->ndef()->get(block->getNodeNoCheck(relpos, &is_valid_position)).name
+				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
+		debug_stacks_print_to(infostream);
+		return;
+	}
+	block->setNodeNoCheck(relpos, nd);
+}
+
+void Map::setNodeDef(v3s16 p, const ContentFeatures *def)
+{
+	v3s16 blockpos = getNodeBlockPos(p);
+	MapBlock *block = getBlockNoCreate(blockpos);
+	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
+	block->setNodeDefNoCheck(relpos, def);
+}
+
+void Map::addNodeAndUpdate(v3s16 p, NodeWithDef nd,
 		std::map<v3s16, MapBlock*> &modified_blocks,
 		bool remove_metadata)
 {
@@ -246,11 +307,13 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		removeNodeMetadata(p);
 	}
 
+	MapNode n = nd.node();
+
 	// Set the node on the map
 	// Ignore light (because calling voxalgo::update_lighting_nodes)
 	n.setLight(LIGHTBANK_DAY, 0, m_nodedef);
 	n.setLight(LIGHTBANK_NIGHT, 0, m_nodedef);
-	setNode(p, n);
+	setNode(p, nd);
 
 	// Update lighting
 	std::vector<std::pair<v3s16, MapNode> > oldnodes;
@@ -299,23 +362,29 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 	}
 }
 
+void Map::addNodeAndUpdate(v3s16 p, MapNode n,
+		std::map<v3s16, MapBlock*> &modified_blocks, bool remove_metadata)
+{
+	addNodeAndUpdate(p, NodeWithDef(n, m_gamedef->ndef()), modified_blocks, remove_metadata);
+}
+
 void Map::removeNodeAndUpdate(v3s16 p,
 		std::map<v3s16, MapBlock*> &modified_blocks)
 {
 	addNodeAndUpdate(p, MapNode(CONTENT_AIR), modified_blocks, true);
 }
 
-bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
+bool Map::addNodeWithEvent(v3s16 p, NodeWithDef nd, bool remove_metadata)
 {
 	MapEditEvent event;
 	event.type = remove_metadata ? MEET_ADDNODE : MEET_SWAPNODE;
 	event.p = p;
-	event.n = n;
+	event.n = nd.node();
 
 	bool succeeded = true;
 	try{
 		std::map<v3s16, MapBlock*> modified_blocks;
-		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
+		addNodeAndUpdate(p, nd, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
 		for(std::map<v3s16, MapBlock*>::iterator
@@ -331,7 +400,21 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 
 	dispatchEvent(&event);
 
+	// Report metadata update if special definition is used
+	if (nd.def_is_global() == false) {
+		v3s16 blockpos = getNodeBlockPos(p);
+		MapEditEvent event;
+		event.type = MEET_BLOCK_NODE_METADATA_CHANGED;
+		event.p = blockpos;
+		dispatchEvent(&event);
+	}
+
 	return succeeded;
+}
+
+bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
+{
+	return addNodeWithEvent(p, NodeWithDef(n, m_gamedef->ndef()), remove_metadata);
 }
 
 bool Map::removeNodeWithEvent(v3s16 p)

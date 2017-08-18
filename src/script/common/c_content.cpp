@@ -410,12 +410,12 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 }
 
 /******************************************************************************/
-ContentFeatures read_content_features(lua_State *L, int index)
+ContentFeatures read_content_features(lua_State *L, int index, ContentFeatures f_base)
 {
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	ContentFeatures f;
+	ContentFeatures f = f_base;
 
 	/* Cache existence of some callbacks */
 	lua_getfield(L, index, "on_construct");
@@ -443,7 +443,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	/* Visual definition */
 
 	f.drawtype = (NodeDrawType)getenumfield(L, index, "drawtype",
-			ScriptApiNode::es_DrawType,NDT_NORMAL);
+			ScriptApiNode::es_DrawType, f.drawtype);
 	getfloatfield(L, index, "visual_scale", f.visual_scale);
 
 	/* Meshnode model filename */
@@ -539,10 +539,14 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
-	f.alpha = getintfield_default(L, index, "alpha", 255);
+	bool usealpha_default = false;
+	if (f.alpha == 0)
+		usealpha_default = true;
+
+	f.alpha = getintfield_default(L, index, "alpha", f.alpha);
 
 	bool usealpha = getboolfield_default(L, index,
-			"use_texture_alpha", false);
+			"use_texture_alpha", usealpha_default);
 	if (usealpha)
 		f.alpha = 0;
 
@@ -560,9 +564,9 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_pop(L, 1);
 
 	f.param_type = (ContentParamType)getenumfield(L, index, "paramtype",
-			ScriptApiNode::es_ContentParamType, CPT_NONE);
+			ScriptApiNode::es_ContentParamType, f.param_type);
 	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
-			ScriptApiNode::es_ContentParamType2, CPT2_NONE);
+			ScriptApiNode::es_ContentParamType2, f.param_type_2);
 
 	if (f.palette_name != "" &&
 			!(f.param_type_2 == CPT2_COLOR ||
@@ -604,7 +608,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	getboolfield(L, index, "floodable", f.floodable);
 	// Whether the node is non-liquid, source liquid or flowing liquid
 	f.liquid_type = (LiquidType)getenumfield(L, index, "liquidtype",
-			ScriptApiNode::es_LiquidType, LIQUID_NONE);
+			ScriptApiNode::es_LiquidType, f.liquid_type);
 	// If the content is liquid, this is the flowing version of the liquid.
 	getstringfield(L, index, "liquid_alternative_flowing",
 			f.liquid_alternative_flowing);
@@ -716,127 +720,162 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	return f;
 }
 
-void push_content_features(lua_State *L, const ContentFeatures &c)
+void push_tiledef(lua_State *L, const TileDef &tiledef)
 {
-	std::string paramtype(ScriptApiNode::es_ContentParamType[(int)c.param_type].str);
-	std::string paramtype2(ScriptApiNode::es_ContentParamType2[(int)c.param_type_2].str);
-	std::string drawtype(ScriptApiNode::es_DrawType[(int)c.drawtype].str);
-	std::string liquid_type(ScriptApiNode::es_LiquidType[(int)c.liquid_type].str);
+	lua_createtable(L, 0, 3);
 
-	/* Missing "tiles" because I don't see a usecase (at least not yet). */
-
-	lua_newtable(L);
-	lua_pushboolean(L, c.has_on_construct);
-	lua_setfield(L, -2, "has_on_construct");
-	lua_pushboolean(L, c.has_on_destruct);
-	lua_setfield(L, -2, "has_on_destruct");
-	lua_pushboolean(L, c.has_after_destruct);
-	lua_setfield(L, -2, "has_after_destruct");
-	lua_pushstring(L, c.name.c_str());
+	lua_pushstring(L, tiledef.name.c_str());
 	lua_setfield(L, -2, "name");
-	push_groups(L, c.groups);
+	setboolfield(L, -1, "backface_culling", tiledef.backface_culling);
+
+	lua_createtable(L, 0, 3);
+
+	std::string type(es_TileAnimationType[(int)tiledef.animation.type].str);
+    setenumfield(L, -1, "type", es_TileAnimationType, tiledef.animation.type);
+
+	lua_createtable(L, 0, 3);
+	setintfield(L, -1, "aspect_w", tiledef.animation.vertical_frames.aspect_w);
+	setintfield(L, -1, "aspect_h", tiledef.animation.vertical_frames.aspect_h);
+	setfloatfield(L, -1, "length", tiledef.animation.vertical_frames.length);
+	lua_setfield(L, -2, "vertical_frames");
+
+	lua_createtable(L, 0, 3);
+	setintfield(L, -1, "frames_w", tiledef.animation.sheet_2d.frames_w);
+	setintfield(L, -1, "frames_h", tiledef.animation.sheet_2d.frames_h);
+	setfloatfield(L, -1, "frame_length", tiledef.animation.sheet_2d.frame_length);
+	lua_setfield(L, -2, "sheet_2d");
+
+	lua_setfield(L, -2, "animation");
+}
+
+void push_content_features(lua_State *L, const ContentFeatures &f)
+{
+	lua_newtable(L);
+	lua_pushboolean(L, f.has_on_construct);
+	lua_setfield(L, -2, "has_on_construct");
+	lua_pushboolean(L, f.has_on_destruct);
+	lua_setfield(L, -2, "has_on_destruct");
+	lua_pushboolean(L, f.has_after_destruct);
+	lua_setfield(L, -2, "has_after_destruct");
+	lua_pushstring(L, f.name.c_str());
+	lua_setfield(L, -2, "name");
+	push_groups(L, f.groups);
 	lua_setfield(L, -2, "groups");
-	lua_pushstring(L, paramtype.c_str());
-	lua_setfield(L, -2, "paramtype");
-	lua_pushstring(L, paramtype2.c_str());
-	lua_setfield(L, -2, "paramtype2");
-	lua_pushstring(L, drawtype.c_str());
-	lua_setfield(L, -2, "drawtype");
-	if (!c.mesh.empty()) {
-		lua_pushstring(L, c.mesh.c_str());
+	setenumfield(L, -1, "paramtype", ScriptApiNode::es_ContentParamType, f.param_type);
+	setenumfield(L, -1, "paramtype2", ScriptApiNode::es_ContentParamType2, f.param_type_2);
+	setenumfield(L, -1, "drawtype", ScriptApiNode::es_DrawType, f.drawtype);
+	if (!f.mesh.empty()) {
+		lua_pushstring(L, f.mesh.c_str());
 		lua_setfield(L, -2, "mesh");
 	}
 #ifndef SERVER
-	push_ARGB8(L, c.minimap_color);       // I know this is not set-able w/ register_node,
+	push_ARGB8(L, f.minimap_color);       // I know this is not set-able w/ register_node,
 	lua_setfield(L, -2, "minimap_color"); // but the people need to know!
 #endif
-	lua_pushnumber(L, c.visual_scale);
+	lua_pushnumber(L, f.visual_scale);
 	lua_setfield(L, -2, "visual_scale");
-	lua_pushnumber(L, c.alpha);
+	lua_pushnumber(L, f.alpha);
 	lua_setfield(L, -2, "alpha");
-	if (!c.palette_name.empty()) {
-		push_ARGB8(L, c.color);
+	lua_createtable(L, 6, 0);
+    for (int i=0; i<6; i++){
+    	lua_pushinteger(L, i+1);
+    	push_tiledef(L, f.tiledef[i]);
+    	lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "tiles");
+
+    lua_createtable(L, CF_SPECIAL_COUNT, 0);
+    for (int i=0; i<CF_SPECIAL_COUNT; i++){
+    	lua_pushinteger(L, i+1);
+    	push_tiledef(L, f.tiledef[i]);
+    	lua_settable(L, -3);
+    }
+    lua_setfield(L, -2, "special_tiles");
+
+	if (!f.palette_name.empty()) {
+		push_ARGB8(L, f.color);
 		lua_setfield(L, -2, "color");
 
-		lua_pushstring(L, c.palette_name.c_str());
+		lua_pushstring(L, f.palette_name.c_str());
 		lua_setfield(L, -2, "palette_name");
 
-		push_palette(L, c.palette);
+		push_palette(L, f.palette);
 		lua_setfield(L, -2, "palette");
 	}
-	lua_pushnumber(L, c.waving);
+	lua_pushnumber(L, f.waving);
 	lua_setfield(L, -2, "waving");
-	lua_pushnumber(L, c.connect_sides);
+	lua_pushnumber(L, f.connect_sides);
 	lua_setfield(L, -2, "connect_sides");
 
 	lua_newtable(L);
 	u16 i = 1;
-	for (std::vector<std::string>::const_iterator it = c.connects_to.begin();
-			it != c.connects_to.end(); ++it) {
+	for (std::vector<std::string>::const_iterator it = f.connects_to.begin();
+			it != f.connects_to.end(); ++it) {
 		lua_pushlstring(L, it->c_str(), it->size());
 		lua_rawseti(L, -2, i);
 	}
 	lua_setfield(L, -2, "connects_to");
 
-	push_ARGB8(L, c.post_effect_color);
+	push_ARGB8(L, f.post_effect_color);
 	lua_setfield(L, -2, "post_effect_color");
-	lua_pushnumber(L, c.leveled);
+	lua_pushnumber(L, f.leveled);
 	lua_setfield(L, -2, "leveled");
-	lua_pushboolean(L, c.sunlight_propagates);
+	lua_pushboolean(L, f.sunlight_propagates);
 	lua_setfield(L, -2, "sunlight_propagates");
-	lua_pushnumber(L, c.light_source);
+	lua_pushnumber(L, f.light_source);
 	lua_setfield(L, -2, "light_source");
-	lua_pushboolean(L, c.is_ground_content);
+	lua_pushboolean(L, f.is_ground_content);
 	lua_setfield(L, -2, "is_ground_content");
-	lua_pushboolean(L, c.walkable);
+	lua_pushboolean(L, f.walkable);
 	lua_setfield(L, -2, "walkable");
-	lua_pushboolean(L, c.pointable);
+	lua_pushboolean(L, f.pointable);
 	lua_setfield(L, -2, "pointable");
-	lua_pushboolean(L, c.diggable);
+	lua_pushboolean(L, f.diggable);
 	lua_setfield(L, -2, "diggable");
-	lua_pushboolean(L, c.climbable);
+	lua_pushboolean(L, f.climbable);
 	lua_setfield(L, -2, "climbable");
-	lua_pushboolean(L, c.buildable_to);
+	lua_pushboolean(L, f.buildable_to);
 	lua_setfield(L, -2, "buildable_to");
-	lua_pushboolean(L, c.rightclickable);
+	lua_pushboolean(L, f.rightclickable);
 	lua_setfield(L, -2, "rightclickable");
-	lua_pushnumber(L, c.damage_per_second);
+	lua_pushnumber(L, f.damage_per_second);
 	lua_setfield(L, -2, "damage_per_second");
-	if (c.isLiquid()) {
-		lua_pushstring(L, liquid_type.c_str());
-		lua_setfield(L, -2, "liquid_type");
-		lua_pushstring(L, c.liquid_alternative_flowing.c_str());
+	push_groups(L, f.groups);
+	lua_setfield(L, -2, "groups");
+	if (f.isLiquid()) {
+		setenumfield(L, -1, "liquid_type", ScriptApiNode::es_LiquidType, f.liquid_type);
+		lua_pushstring(L, f.liquid_alternative_flowing.c_str());
 		lua_setfield(L, -2, "liquid_alternative_flowing");
-		lua_pushstring(L, c.liquid_alternative_source.c_str());
+		lua_pushstring(L, f.liquid_alternative_source.c_str());
 		lua_setfield(L, -2, "liquid_alternative_source");
-		lua_pushnumber(L, c.liquid_viscosity);
+		lua_pushnumber(L, f.liquid_viscosity);
 		lua_setfield(L, -2, "liquid_viscosity");
-		lua_pushboolean(L, c.liquid_renewable);
+		lua_pushboolean(L, f.liquid_renewable);
 		lua_setfield(L, -2, "liquid_renewable");
-		lua_pushnumber(L, c.liquid_range);
+		lua_pushnumber(L, f.liquid_range);
 		lua_setfield(L, -2, "liquid_range");
 	}
-	lua_pushnumber(L, c.drowning);
+	lua_pushnumber(L, f.drowning);
 	lua_setfield(L, -2, "drowning");
-	lua_pushboolean(L, c.floodable);
+	lua_pushboolean(L, f.floodable);
 	lua_setfield(L, -2, "floodable");
-	push_nodebox(L, c.node_box);
+	push_nodebox(L, f.node_box);
 	lua_setfield(L, -2, "node_box");
-	push_nodebox(L, c.selection_box);
+	push_nodebox(L, f.selection_box);
 	lua_setfield(L, -2, "selection_box");
-	push_nodebox(L, c.collision_box);
+	push_nodebox(L, f.collision_box);
 	lua_setfield(L, -2, "collision_box");
 	lua_newtable(L);
-	push_soundspec(L, c.sound_footstep);
+	push_soundspec(L, f.sound_footstep);
 	lua_setfield(L, -2, "sound_footstep");
-	push_soundspec(L, c.sound_dig);
+	push_soundspec(L, f.sound_dig);
 	lua_setfield(L, -2, "sound_dig");
-	push_soundspec(L, c.sound_dug);
+	push_soundspec(L, f.sound_dug);
 	lua_setfield(L, -2, "sound_dug");
 	lua_setfield(L, -2, "sounds");
-	lua_pushboolean(L, c.legacy_facedir_simple);
+	lua_pushboolean(L, f.legacy_facedir_simple);
 	lua_setfield(L, -2, "legacy_facedir_simple");
-	lua_pushboolean(L, c.legacy_wallmounted);
+	lua_pushboolean(L, f.legacy_wallmounted);
 	lua_setfield(L, -2, "legacy_wallmounted");
 }
 
@@ -897,6 +936,17 @@ void push_box(lua_State *L, const std::vector<aabb3f> &box)
 	                it != box.end(); ++it) {
 		push_aabb3f(L, (*it));
 		lua_rawseti(L, -2, i);
+	}
+}
+
+/******************************************************************************/
+void push_groups(lua_State *L, std::map<std::string, int> groups)
+{
+	lua_createtable(L, 0, groups.size());
+	for(std::map<std::string, int>::iterator i = groups.begin();
+			i != groups.end(); i++)
+	{
+		setintfield(L, -1, i->first.c_str(), i->second);
 	}
 }
 
@@ -1043,7 +1093,7 @@ MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 /******************************************************************************/
 void pushnode(lua_State *L, const MapNode &n, INodeDefManager *ndef)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	lua_pushstring(L, ndef->get(n).name.c_str());
 	lua_setfield(L, -2, "name");
 	lua_pushnumber(L, n.getParam1());
@@ -1075,6 +1125,15 @@ int getenumfield(lua_State *L, int table,
 	return result;
 }
 
+void setenumfield(lua_State *L, int table,
+		const char *fieldname, const EnumString *spec, int num)
+{
+	lua_pushstring(L, enum_to_string(spec, num));
+	if(table < 0)
+		table -= 1;
+	lua_setfield(L, table, fieldname);
+}
+
 /******************************************************************************/
 bool string_to_enum(const EnumString *spec, int &result,
 		const std::string &str)
@@ -1088,6 +1147,18 @@ bool string_to_enum(const EnumString *spec, int &result,
 		esp++;
 	}
 	return false;
+}
+
+const char* enum_to_string(const EnumString *spec, const int num)
+{
+	const EnumString *esp = spec;
+	while(esp->str){
+		if(num == esp->num){
+			return esp->str;
+		}
+		esp++;
+	}
+	return "";
 }
 
 /******************************************************************************/
@@ -1162,46 +1233,46 @@ ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 void push_tool_capabilities(lua_State *L,
 		const ToolCapabilities &toolcap)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 4);
 	setfloatfield(L, -1, "full_punch_interval", toolcap.full_punch_interval);
-		setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
-		// Create groupcaps table
-		lua_newtable(L);
-		// For each groupcap
-		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
-			i != toolcap.groupcaps.end(); ++i) {
-			// Create groupcap table
-			lua_newtable(L);
-			const std::string &name = i->first;
-			const ToolGroupCap &groupcap = i->second;
-			// Create subtable "times"
-			lua_newtable(L);
-			for (std::unordered_map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); ++i) {
-				lua_pushinteger(L, i->first);
-				lua_pushnumber(L, i->second);
-				lua_settable(L, -3);
-			}
-			// Set subtable "times"
-			lua_setfield(L, -2, "times");
-			// Set simple parameters
-			setintfield(L, -1, "maxlevel", groupcap.maxlevel);
-			setintfield(L, -1, "uses", groupcap.uses);
-			// Insert groupcap table into groupcaps table
-			lua_setfield(L, -2, name.c_str());
+	setintfield(L, -1, "max_drop_level", toolcap.max_drop_level);
+	// Create groupcaps table
+	lua_createtable(L, 0, toolcap.groupcaps.size());
+	// For each groupcap
+	for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
+		i != toolcap.groupcaps.end(); ++i) {
+		// Create groupcap table
+		lua_createtable(L, 0, 3);
+		const std::string &name = i->first;
+		const ToolGroupCap &groupcap = i->second;
+		// Create subtable "times"
+		lua_createtable(L, groupcap.times.size(), 0);
+		for (std::unordered_map<int, float>::const_iterator
+				i = groupcap.times.begin(); i != groupcap.times.end(); ++i) {
+			lua_pushinteger(L, i->first);
+			lua_pushnumber(L, i->second);
+			lua_settable(L, -3);
 		}
-		// Set groupcaps table
-		lua_setfield(L, -2, "groupcaps");
-		//Create damage_groups table
-		lua_newtable(L);
-		// For each damage group
-		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
-			i != toolcap.damageGroups.end(); ++i) {
-			// Create damage group table
-			lua_pushinteger(L, i->second);
-			lua_setfield(L, -2, i->first.c_str());
-		}
-		lua_setfield(L, -2, "damage_groups");
+		// Set subtable "times"
+		lua_setfield(L, -2, "times");
+		// Set simple parameters
+		setintfield(L, -1, "maxlevel", groupcap.maxlevel);
+		setintfield(L, -1, "uses", groupcap.uses);
+		// Insert groupcap table into groupcaps table
+		lua_setfield(L, -2, name.c_str());
+	}
+	// Set groupcaps table
+	lua_setfield(L, -2, "groupcaps");
+	//Create damage_groups table
+	lua_createtable(L, 0, toolcap.damageGroups.size());
+	// For each damage group
+	for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
+		i != toolcap.damageGroups.end(); ++i) {
+		// Create damage group table
+		lua_pushinteger(L, i->second);
+		lua_setfield(L, -2, i->first.c_str());
+	}
+	lua_setfield(L, -2, "damage_groups");
 }
 
 /******************************************************************************/
@@ -1358,7 +1429,7 @@ ToolCapabilities read_tool_capabilities(
 /******************************************************************************/
 void push_dig_params(lua_State *L,const DigParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 3);
 	setboolfield(L, -1, "diggable", params.diggable);
 	setfloatfield(L, -1, "time", params.time);
 	setintfield(L, -1, "wear", params.wear);
@@ -1367,7 +1438,7 @@ void push_dig_params(lua_State *L,const DigParams &params)
 /******************************************************************************/
 void push_hit_params(lua_State *L,const HitParams &params)
 {
-	lua_newtable(L);
+	lua_createtable(L, 0, 2);
 	setintfield(L, -1, "hp", params.hp);
 	setintfield(L, -1, "wear", params.wear);
 }

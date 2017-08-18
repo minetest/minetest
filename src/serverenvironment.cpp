@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "nodedef.h"
 #include "nodemetadata.h"
+#include "node_with_def.h"
 #include "gamedef.h"
 #include "map.h"
 #include "profiler.h"
@@ -940,6 +941,35 @@ bool ServerEnvironment::setNode(v3s16 p, const MapNode &n)
 
 	// Call constructor
 	if (ndef->get(n).has_on_construct)
+		m_script->node_on_construct(p, n);
+
+	return true;
+}
+
+bool ServerEnvironment::setNode(v3s16 p, const MapNode &n, ContentFeatures &def)
+{
+	INodeDefManager *ndef = m_server->ndef();
+	MapNode n_old = m_map->getNodeNoEx(p);
+
+	// Call destructor
+	if (ndef->get(n_old).has_on_destruct)
+		m_script->node_on_destruct(p, n_old);
+
+	// Replace node
+	HybridPtr<const ContentFeatures> def_ptr(new ContentFeatures(def));
+	NodeWithDef nd(n, def_ptr);
+	if (!m_map->addNodeWithEvent(p, nd))
+		return false;
+
+	// Update active VoxelManipulator if a mapgen thread
+	m_map->updateVManip(p);
+
+	// Call post-destructor
+	if (ndef->get(n_old).has_after_destruct)
+		m_script->node_after_destruct(p, n_old);
+
+	// Call constructor
+	if(ndef->get(n).has_on_construct)
 		m_script->node_on_construct(p, n);
 
 	return true;
