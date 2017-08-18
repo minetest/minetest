@@ -3310,13 +3310,16 @@ This is basically a reference to a C++ `ServerActiveObject`
     * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags to `true`/`false`
-    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`, `minimap`
+    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`, `breathbar`,
+      `minimap`, `minimap_radar`
     * pass a table containing a `true`/`false` value of each flag to be set or unset
     * if a flag equals `nil`, the flag is not modified
     * note that setting `minimap` modifies the client's permission to view the minimap -
     * the client may locally elect to not view the minimap
+    * minimap `radar` is only usable when `minimap` is true
 * `hud_get_flags()`: returns a table containing status of hud flags
-    * returns `{ hotbar=true, healthbar=true, crosshair=true, wielditem=true, breathbar=true, minimap=true }`
+    * returns `{hotbar=true, healthbar=true, crosshair=true, wielditem=true,
+      breathbar=true, minimap=true, minimap_radar=true}`
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
 * `hud_get_hotbar_itemcount`: returns number of visible items

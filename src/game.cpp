@@ -2818,6 +2818,9 @@ void Game::toggleMinimap(bool shift_pressed)
 	if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) {
 		mode = mapper->getMinimapMode();
 		mode = (MinimapMode)((int)mode + 1);
+		// If radar is disabled and in, or switching to, radar mode
+		if (!(hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE) && mode > 3)
+			mode = MINIMAP_MODE_OFF;
 	}
 
 	flags.show_minimap = true;

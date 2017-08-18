@@ -34,12 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Note that these visibility flags do not determine if the hud items are
 // actually drawn, but rather, whether to draw the item should the rest
 // of the game state permit it.
-#define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
-#define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
-#define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
-#define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
-#define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
-#define HUD_FLAG_MINIMAP_VISIBLE   (1 << 5)
+#define HUD_FLAG_HOTBAR_VISIBLE        (1 << 0)
+#define HUD_FLAG_HEALTHBAR_VISIBLE     (1 << 1)
+#define HUD_FLAG_CROSSHAIR_VISIBLE     (1 << 2)
+#define HUD_FLAG_WIELDITEM_VISIBLE     (1 << 3)
+#define HUD_FLAG_BREATHBAR_VISIBLE     (1 << 4)
+#define HUD_FLAG_MINIMAP_VISIBLE       (1 << 5)
+#define HUD_FLAG_MINIMAP_RADAR_VISIBLE (1 << 6)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
