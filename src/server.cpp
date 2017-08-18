@@ -2254,7 +2254,7 @@ void Server::SendBlocks(float dtime)
 	s32 max_blocks_to_send =
 			g_settings->getS32("max_simultaneous_block_sends_server_total");
 
-	for (const auto &block_to_send : queue) {
+	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
 		//TODO: Calculate limit dynamically
 		if (total_sending >= max_blocks_to_send)
 			break;
@@ -2262,7 +2262,7 @@ void Server::SendBlocks(float dtime)
 		MapBlock *block = nullptr;
 		try {
 			block = m_env->getMap().getBlockNoCreate(block_to_send.pos);
-		} catch(const InvalidPositionException &e) {
+		} catch (const InvalidPositionException &e) {
 			continue;
 		}
 
