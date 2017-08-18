@@ -72,7 +72,7 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams np_apple_trees;
 
 	MapgenV6Params();
-	~MapgenV6Params() {}
+	~MapgenV6Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

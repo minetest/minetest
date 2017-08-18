@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
 #endif
 
 	// Update configuration file
-	if (g_settings_path != "")
+	if (!g_settings_path.empty())
 		g_settings->updateConfigFile(g_settings_path.c_str());
 
 	print_modified_quicktune_values();
@@ -306,17 +306,16 @@ static void print_help(const OptionList &allowed_options)
 
 static void print_allowed_options(const OptionList &allowed_options)
 {
-	for (OptionList::const_iterator i = allowed_options.begin();
-			i != allowed_options.end(); ++i) {
+	for (const auto &allowed_option : allowed_options) {
 		std::ostringstream os1(std::ios::binary);
-		os1 << "  --" << i->first;
-		if (i->second.type != VALUETYPE_FLAG)
+		os1 << "  --" << allowed_option.first;
+		if (allowed_option.second.type != VALUETYPE_FLAG)
 			os1 << _(" <value>");
 
 		std::cout << padStringRight(os1.str(), 30);
 
-		if (i->second.help)
-			std::cout << i->second.help;
+		if (allowed_option.second.help)
+			std::cout << allowed_option.second.help;
 
 		std::cout << std::endl;
 	}
@@ -335,9 +334,8 @@ static void print_version()
 static void list_game_ids()
 {
 	std::set<std::string> gameids = getAvailableGameIds();
-	for (std::set<std::string>::const_iterator i = gameids.begin();
-			i != gameids.end(); ++i)
-		std::cout << (*i) <<std::endl;
+	for (const std::string &gameid : gameids)
+		std::cout << gameid <<std::endl;
 }
 
 static void list_worlds()
@@ -350,10 +348,10 @@ static void list_worlds()
 static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 							 std::ostream &os)
 {
-	for (size_t i = 0; i < worldspecs.size(); i++) {
-		std::string name = worldspecs[i].name;
-		std::string path = worldspecs[i].path;
-		if (name.find(" ") != std::string::npos)
+	for (const WorldSpec &worldspec : worldspecs) {
+		std::string name = worldspec.name;
+		std::string path = worldspec.path;
+		if (name.find(' ') != std::string::npos)
 			name = std::string("'") + name + "'";
 		path = std::string("'") + path + "'";
 		name = padStringRight(name, 14);
@@ -366,15 +364,15 @@ static void print_modified_quicktune_values()
 	bool header_printed = false;
 	std::vector<std::string> names = getQuicktuneNames();
 
-	for (u32 i = 0; i < names.size(); i++) {
-		QuicktuneValue val = getQuicktuneValue(names[i]);
+	for (const std::string &name : names) {
+		QuicktuneValue val = getQuicktuneValue(name);
 		if (!val.modified)
 			continue;
 		if (!header_printed) {
 			dstream << "Modified quicktune values:" << std::endl;
 			header_printed = true;
 		}
-		dstream << names[i] << " = " << val.getString() << std::endl;
+		dstream << name << " = " << val.getString() << std::endl;
 	}
 }
 
@@ -485,16 +483,16 @@ static bool read_config_file(const Settings &cmd_args)
 				DIR_DELIM + ".." + DIR_DELIM + ".." + DIR_DELIM + "minetest.conf");
 #endif
 
-		for (size_t i = 0; i < filenames.size(); i++) {
-			bool r = g_settings->readConfigFile(filenames[i].c_str());
+		for (const std::string &filename : filenames) {
+			bool r = g_settings->readConfigFile(filename.c_str());
 			if (r) {
-				g_settings_path = filenames[i];
+				g_settings_path = filename;
 				break;
 			}
 		}
 
 		// If no path found, use the first one (menu creates the file)
-		if (g_settings_path == "")
+		if (g_settings_path.empty())
 			g_settings_path = filenames[0];
 	}
 
@@ -540,7 +538,7 @@ static void init_log_streams(const Settings &cmd_args)
 
 	verbosestream << "log_filename = " << log_filename << std::endl;
 
-	file_log_output.open(log_filename.c_str());
+	file_log_output.open(log_filename);
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 
@@ -573,6 +571,7 @@ static bool game_configure_world(GameParams *game_params, const Settings &cmd_ar
 {
 	if (get_world_from_cmdline(game_params, cmd_args))
 		return true;
+
 	if (get_world_from_config(game_params, cmd_args))
 		return true;
 
@@ -581,24 +580,24 @@ static bool game_configure_world(GameParams *game_params, const Settings &cmd_ar
 
 static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_args)
 {
-	std::string commanded_world = "";
+	std::string commanded_world;
 
 	// World name
-	std::string commanded_worldname = "";
+	std::string commanded_worldname;
 	if (cmd_args.exists("worldname"))
 		commanded_worldname = cmd_args.get("worldname");
 
 	// If a world name was specified, convert it to a path
-	if (commanded_worldname != "") {
+	if (!commanded_worldname.empty()) {
 		// Get information about available worlds
 		std::vector<WorldSpec> worldspecs = getAvailableWorlds();
 		bool found = false;
-		for (u32 i = 0; i < worldspecs.size(); i++) {
-			std::string name = worldspecs[i].name;
+		for (const WorldSpec &worldspec : worldspecs) {
+			std::string name = worldspec.name;
 			if (name == commanded_worldname) {
 				dstream << _("Using world specified by --worldname on the "
 					"command line") << std::endl;
-				commanded_world = worldspecs[i].path;
+				commanded_world = worldspec.path;
 				found = true;
 				break;
 			}
@@ -611,7 +610,7 @@ static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_
 		}
 
 		game_params->world_path = get_clean_world_path(commanded_world);
-		return commanded_world != "";
+		return !commanded_world.empty();
 	}
 
 	if (cmd_args.exists("world"))
@@ -622,20 +621,20 @@ static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_
 		commanded_world = cmd_args.get("nonopt0");
 
 	game_params->world_path = get_clean_world_path(commanded_world);
-	return commanded_world != "";
+	return !commanded_world.empty();
 }
 
 static bool get_world_from_config(GameParams *game_params, const Settings &cmd_args)
 {
 	// World directory
-	std::string commanded_world = "";
+	std::string commanded_world;
 
 	if (g_settings->exists("map-dir"))
 		commanded_world = g_settings->get("map-dir");
 
 	game_params->world_path = get_clean_world_path(commanded_world);
 
-	return commanded_world != "";
+	return !commanded_world.empty();
 }
 
 static bool auto_select_world(GameParams *game_params)
@@ -729,8 +728,8 @@ static bool determine_subgame(GameParams *game_params)
 
 	verbosestream << _("Determining gameid/gamespec") << std::endl;
 	// If world doesn't exist
-	if (game_params->world_path != ""
-			&& !getWorldExists(game_params->world_path)) {
+	if (!game_params->world_path.empty()
+		&& !getWorldExists(game_params->world_path)) {
 		// Try to take gamespec from command line
 		if (game_params->game_spec.isValid()) {
 			gamespec = game_params->game_spec;
@@ -810,7 +809,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	// Database migration
 	if (cmd_args.exists("migrate"))
 		return migrate_map_database(game_params, cmd_args);
-	else if (cmd_args.exists("migrate-players"))
+
+	if (cmd_args.exists("migrate-players"))
 		return ServerEnvironment::migratePlayersDatabase(game_params, cmd_args);
 
 	if (cmd_args.exists("terminal")) {

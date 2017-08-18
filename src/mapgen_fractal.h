@@ -50,7 +50,7 @@ struct MapgenFractalParams : public MapgenParams
 	NoiseParams np_cave2;
 
 	MapgenFractalParams();
-	~MapgenFractalParams() {}
+	~MapgenFractalParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

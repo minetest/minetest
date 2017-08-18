@@ -77,7 +77,7 @@ struct MapEditEvent
 	std::set<v3s16> modified_blocks;
 	u16 already_known_by_peer = 0;
 
-	MapEditEvent() {}
+	MapEditEvent() = default;
 
 	MapEditEvent * clone()
 	{
@@ -107,11 +107,7 @@ struct MapEditEvent
 		case MEET_OTHER:
 		{
 			VoxelArea a;
-			for(std::set<v3s16>::iterator
-					i = modified_blocks.begin();
-					i != modified_blocks.end(); ++i)
-			{
-				v3s16 p = *i;
+			for (v3s16 p : modified_blocks) {
 				v3s16 np1 = p*MAP_BLOCKSIZE;
 				v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
 				a.addPoint(np1);
@@ -216,8 +212,8 @@ public:
 	bool removeNodeWithEvent(v3s16 p);
 
 	// Call these before and after saving of many blocks
-	virtual void beginSave() { return; }
-	virtual void endSave() { return; }
+	virtual void beginSave() {}
+	virtual void endSave() {}
 
 	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
 

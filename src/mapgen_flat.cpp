@@ -148,10 +148,11 @@ int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 
 	if (ground_level < water_level)  // Ocean world, allow spawn in water
 		return MYMAX(level_at_point, water_level);
-	else if (level_at_point > water_level)
+
+	if (level_at_point > water_level)
 		return level_at_point;  // Spawn on land
-	else
-		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+
+	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 }
 
 

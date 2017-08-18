@@ -233,8 +233,8 @@ bool MapgenV6::block_is_underground(u64 seed, v3s16 blockpos)
 
 	if(blockpos.Y * MAP_BLOCKSIZE + MAP_BLOCKSIZE <= minimum_groundlevel)
 		return true;
-	else
-		return false;
+
+	return false;
 }
 
 
@@ -327,8 +327,8 @@ int MapgenV6::getSpawnLevelAtPoint(v2s16 p)
 	if (level_at_point <= water_level ||
 			level_at_point > water_level + 16)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-	else
-		return level_at_point;
+
+	return level_at_point;
 }
 
 
@@ -385,8 +385,8 @@ float MapgenV6::getTreeAmount(v2s16 p)
 	float zeroval = -0.39;
 	if (noise < zeroval)
 		return 0;
-	else
-		return 0.04 * (noise - zeroval) / (1.0 - zeroval);
+
+	return 0.04 * (noise - zeroval) / (1.0 - zeroval);
 }
 
 
@@ -443,16 +443,18 @@ BiomeV6Type MapgenV6::getBiome(int index, v2s16 p)
 		if (d > MGV6_FREQ_HOT + blend) {
 			if (h > MGV6_FREQ_JUNGLE + blend)
 				return BT_JUNGLE;
-			else
-				return BT_DESERT;
-		} else if (d < MGV6_FREQ_SNOW + blend) {
+
+			return BT_DESERT;
+		}
+
+		if (d < MGV6_FREQ_SNOW + blend) {
 			if (h > MGV6_FREQ_TAIGA + blend)
 				return BT_TAIGA;
-			else
-				return BT_TUNDRA;
-		} else {
-			return BT_NORMAL;
+
+			return BT_TUNDRA;
 		}
+
+		return BT_NORMAL;
 	} else {
 		if (d > freq_desert)
 			return BT_DESERT;
@@ -463,8 +465,8 @@ BiomeV6Type MapgenV6::getBiome(int index, v2s16 p)
 
 		if ((spflags & MGV6_JUNGLES) && h > 0.75)
 			return BT_JUNGLE;
-		else
-			return BT_NORMAL;
+
+		return BT_NORMAL;
 	}
 }
 
@@ -818,7 +820,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						u32 i2 = i;
 						vm->m_area.add_y(em, i2, -1);
 						// Cancel if out of area
-						if (vm->m_area.contains(i2) == false)
+						if (!vm->m_area.contains(i2))
 							continue;
 						MapNode *n2 = &vm->m_data[i2];
 						if (n2->getContent() != c_dirt &&
@@ -847,13 +849,12 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 				}
 
 				// Drop mud on side
-				for (u32 di = 0; di < 4; di++) {
-					v3s16 dirp = dirs4[di];
+				for (const v3s16 &dirp : dirs4) {
 					u32 i2 = i;
 					// Move to side
 					vm->m_area.add_p(em, i2, dirp);
 					// Fail if out of area
-					if (vm->m_area.contains(i2) == false)
+					if (!vm->m_area.contains(i2))
 						continue;
 					// Check that side is air
 					MapNode *n2 = &vm->m_data[i2];
@@ -861,7 +862,7 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						continue;
 					// Check that under side is air
 					vm->m_area.add_y(em, i2, -1);
-					if (vm->m_area.contains(i2) == false)
+					if (!vm->m_area.contains(i2))
 						continue;
 					n2 = &vm->m_data[i2];
 					if (ndef->get(*n2).walkable)
@@ -872,12 +873,12 @@ void MapgenV6::flowMud(s16 &mudflow_minpos, s16 &mudflow_maxpos)
 						vm->m_area.add_y(em, i2, -1);
 						n2 = &vm->m_data[i2];
 						// if out of known area
-						if (vm->m_area.contains(i2) == false ||
+						if (!vm->m_area.contains(i2) ||
 								n2->getContent() == CONTENT_IGNORE) {
 							dropped_to_unknown = true;
 							break;
 						}
-					} while (ndef->get(*n2).walkable == false);
+					} while (!ndef->get(*n2).walkable);
 					// Loop one up so that we're in air
 					vm->m_area.add_y(em, i2, 1);
 

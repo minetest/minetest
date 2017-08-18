@@ -137,8 +137,7 @@ struct MapNode
 	*/
 	u8 param2;
 
-	MapNode()
-	{ }
+	MapNode() = default;
 
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),

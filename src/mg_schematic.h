@@ -125,7 +125,7 @@ public:
 class SchematicManager : public ObjDefManager {
 public:
 	SchematicManager(Server *server);
-	virtual ~SchematicManager() {}
+	virtual ~SchematicManager() = default;
 
 	virtual void clear();
 

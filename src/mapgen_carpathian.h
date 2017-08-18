@@ -59,7 +59,7 @@ struct MapgenCarpathianParams : public MapgenParams
 	NoiseParams np_cavern;
 
 	MapgenCarpathianParams();
-	~MapgenCarpathianParams() {}
+	~MapgenCarpathianParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

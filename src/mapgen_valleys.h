@@ -66,7 +66,7 @@ struct MapgenValleysParams : public MapgenParams {
 	NoiseParams np_valley_profile;
 
 	MapgenValleysParams();
-	~MapgenValleysParams() {}
+	~MapgenValleysParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

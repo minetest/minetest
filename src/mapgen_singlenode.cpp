@@ -46,11 +46,6 @@ MapgenSinglenode::MapgenSinglenode(int mapgenid,
 }
 
 
-MapgenSinglenode::~MapgenSinglenode()
-{
-}
-
-
 //////////////////////// Map generator
 
 void MapgenSinglenode::makeChunk(BlockMakeData *data)

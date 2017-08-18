@@ -51,22 +51,17 @@ BiomeManager::BiomeManager(Server *server) :
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_water_source");
-	b->m_nodenames.push_back("mapgen_water_source");
-	b->m_nodenames.push_back("mapgen_river_water_source");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("ignore");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_water_source");
+	b->m_nodenames.emplace_back("mapgen_water_source");
+	b->m_nodenames.emplace_back("mapgen_river_water_source");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("ignore");
 	m_ndef->pendNodeResolve(b);
 
 	add(b);
-}
-
-
-BiomeManager::~BiomeManager()
-{
 }
 
 

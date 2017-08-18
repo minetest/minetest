@@ -156,9 +156,9 @@ int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 		if (n_ground * f > y - h) {  // If solid
 			if (y < water_level || y > max_spawn_y)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-			else
-				// y + 2 because y is surface and due to biome 'dust' nodes.
-				return y + 2;
+
+			// y + 2 because y is surface and due to biome 'dust' nodes.
+			return y + 2;
 		}
 	}
 	// Unsuitable spawn position, no ground found

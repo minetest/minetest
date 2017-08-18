@@ -41,7 +41,7 @@ static bool parseDependsLine(std::istream &is,
 		--pos;
 	}
 	dep = trim(dep.substr(0, pos));
-	return dep != "";
+	return !dep.empty();
 }
 
 void parseModContents(ModSpec &spec)
@@ -91,13 +91,13 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 
 	std::map<std::string, ModSpec> result;
 	std::vector<fs::DirListNode> dirlist = fs::GetDirListing(path);
-	for(u32 j=0; j<dirlist.size(); j++){
-		if(!dirlist[j].dir)
+	for (const fs::DirListNode &dln : dirlist) {
+		if(!dln.dir)
 			continue;
-		std::string modname = dirlist[j].name;
+		const std::string &modname = dln.name;
 		// Ignore all directories beginning with a ".", especially
 		// VCS directories like ".git" or ".svn"
-		if(modname[0] == '.')
+		if (modname[0] == '.')
 			continue;
 		std::string modpath = path + DIR_DELIM + modname;
 
@@ -112,12 +112,9 @@ std::map<std::string, ModSpec> getModsInPath(std::string path, bool part_of_modp
 std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 {
 	std::vector<ModSpec> result;
-	for(std::map<std::string,ModSpec>::iterator it = mods.begin();
-		it != mods.end(); ++it)
-	{
-		ModSpec mod = (*it).second;
-		if(mod.is_modpack)
-		{
+	for (const auto &it : mods) {
+		const ModSpec &mod = it.second;
+		if (mod.is_modpack) {
 			std::vector<ModSpec> content = flattenMods(mod.modpack_content);
 			result.reserve(result.size() + content.size());
 			result.insert(result.end(),content.begin(),content.end());
@@ -131,23 +128,16 @@ std::vector<ModSpec> flattenMods(std::map<std::string, ModSpec> mods)
 	return result;
 }
 
-ModConfiguration::ModConfiguration(const std::string &worldpath):
-	m_unsatisfied_mods(),
-	m_sorted_mods(),
-	m_name_conflicts()
+ModConfiguration::ModConfiguration(const std::string &worldpath)
 {
 }
 
 void ModConfiguration::printUnsatisfiedModsError() const
 {
-	for (std::vector<ModSpec>::const_iterator it = m_unsatisfied_mods.begin();
-		it != m_unsatisfied_mods.end(); ++it) {
-		ModSpec mod = *it;
+	for (const ModSpec &mod : m_unsatisfied_mods) {
 		errorstream << "mod \"" << mod.name << "\" has unsatisfied dependencies: ";
-		for (std::unordered_set<std::string>::iterator dep_it =
-			mod.unsatisfied_depends.begin();
-			dep_it != mod.unsatisfied_depends.end(); ++dep_it)
-			errorstream << " \"" << *dep_it << "\"";
+		for (const std::string &unsatisfied_depend : mod.unsatisfied_depends)
+			errorstream << " \"" << unsatisfied_depend << "\"";
 		errorstream << std::endl;
 	}
 }
@@ -175,17 +165,15 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 
 		std::set<std::string> seen_this_iteration;
 
-		for (std::vector<ModSpec>::const_iterator it = new_mods.begin();
-				it != new_mods.end(); ++it) {
-			const ModSpec &mod = *it;
-			if(mod.part_of_modpack != (bool)want_from_modpack)
+		for (const ModSpec &mod : new_mods) {
+			if (mod.part_of_modpack != (bool)want_from_modpack)
 				continue;
-			if(existing_mods.count(mod.name) == 0){
+
+			if (existing_mods.count(mod.name) == 0) {
 				// GOOD CASE: completely new mod.
 				m_unsatisfied_mods.push_back(mod);
 				existing_mods[mod.name] = m_unsatisfied_mods.size() - 1;
-			}
-			else if(seen_this_iteration.count(mod.name) == 0){
+			} else if(seen_this_iteration.count(mod.name) == 0) {
 				// BAD CASE: name conflict in different levels.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
@@ -198,8 +186,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				// If there was a "VERY BAD CASE" name conflict
 				// in an earlier level, ignore it.
 				m_name_conflicts.erase(mod.name);
-			}
-			else{
+			} else {
 				// VERY BAD CASE: name conflict in the same level.
 				u32 oldindex = existing_mods[mod.name];
 				const ModSpec &oldmod = m_unsatisfied_mods[oldindex];
@@ -210,6 +197,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 				m_unsatisfied_mods[oldindex] = mod;
 				m_name_conflicts.insert(mod.name);
 			}
+
 			seen_this_iteration.insert(mod.name);
 		}
 	}
@@ -222,17 +210,14 @@ void ModConfiguration::addModsFormConfig(const std::string &settings_path, const
 
 	conf.readConfigFile(settings_path.c_str());
 	std::vector<std::string> names = conf.getNames();
-	for (std::vector<std::string>::iterator it = names.begin();
-		it != names.end(); ++it) {
-		std::string name = *it;
+	for (const std::string &name : names) {
 		if (name.compare(0,9,"load_mod_")==0 && conf.getBool(name))
 			load_mod_names.insert(name.substr(9));
 	}
 
 	std::vector<ModSpec> addon_mods;
-	for (std::set<std::string>::const_iterator i = mods.begin();
-			i != mods.end(); ++i) {
-		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(*i));
+	for (const std::string &i : mods) {
+		std::vector<ModSpec> addon_mods_in_path = flattenMods(getModsInPath(i));
 		for (std::vector<ModSpec>::const_iterator it = addon_mods_in_path.begin();
 				it != addon_mods_in_path.end(); ++it) {
 			const ModSpec& mod = *it;
@@ -248,18 +233,18 @@ void ModConfiguration::addModsFormConfig(const std::string &settings_path, const
 	checkConflictsAndDeps();
 
 	// complain about mods declared to be loaded, but not found
-	for (std::vector<ModSpec>::iterator it = addon_mods.begin();
-			it != addon_mods.end(); ++it)
-		load_mod_names.erase((*it).name);
-	std::vector<ModSpec> UnsatisfiedMods = getUnsatisfiedMods();
-	for (std::vector<ModSpec>::iterator it = UnsatisfiedMods.begin();
-			it != UnsatisfiedMods.end(); ++it)
-		load_mod_names.erase((*it).name);
+	for (const ModSpec &addon_mod : addon_mods)
+		load_mod_names.erase(addon_mod.name);
+
+	std::vector<ModSpec> unsatisfiedMods = getUnsatisfiedMods();
+
+	for (const ModSpec &unsatisfiedMod : unsatisfiedMods)
+		load_mod_names.erase(unsatisfiedMod.name);
+
 	if (!load_mod_names.empty()) {
 		errorstream << "The following mods could not be found:";
-		for (std::set<std::string>::iterator it = load_mod_names.begin();
-				it != load_mod_names.end(); ++it)
-			errorstream << " \"" << (*it) << "\"";
+		for (const std::string &mod : load_mod_names)
+			errorstream << " \"" << mod << "\"";
 		errorstream << std::endl;
 	}
 }
@@ -286,23 +271,18 @@ void ModConfiguration::resolveDependencies()
 {
 	// Step 1: Compile a list of the mod names we're working with
 	std::set<std::string> modnames;
-	for(std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-		it != m_unsatisfied_mods.end(); ++it){
-		modnames.insert((*it).name);
+	for (const ModSpec &mod : m_unsatisfied_mods) {
+		modnames.insert(mod.name);
 	}
 
 	// Step 2: get dependencies (including optional dependencies)
 	// of each mod, split mods into satisfied and unsatisfied
 	std::list<ModSpec> satisfied;
 	std::list<ModSpec> unsatisfied;
-	for (std::vector<ModSpec>::iterator it = m_unsatisfied_mods.begin();
-			it != m_unsatisfied_mods.end(); ++it) {
-		ModSpec mod = *it;
+	for (ModSpec mod : m_unsatisfied_mods) {
 		mod.unsatisfied_depends = mod.depends;
 		// check which optional dependencies actually exist
-		for (std::unordered_set<std::string>::iterator it_optdep = mod.optdepends.begin();
-				it_optdep != mod.optdepends.end(); ++it_optdep) {
-			std::string optdep = *it_optdep;
+		for (const std::string &optdep : mod.optdepends) {
 			if (modnames.count(optdep) != 0)
 				mod.unsatisfied_depends.insert(optdep);
 		}
@@ -319,15 +299,13 @@ void ModConfiguration::resolveDependencies()
 		ModSpec mod = satisfied.back();
 		m_sorted_mods.push_back(mod);
 		satisfied.pop_back();
-		for(std::list<ModSpec>::iterator it = unsatisfied.begin();
-				it != unsatisfied.end(); ){
+		for (auto it = unsatisfied.begin(); it != unsatisfied.end(); ) {
 			ModSpec& mod2 = *it;
 			mod2.unsatisfied_depends.erase(mod.name);
-			if(mod2.unsatisfied_depends.empty()){
+			if (mod2.unsatisfied_depends.empty()) {
 				satisfied.push_back(mod2);
 				it = unsatisfied.erase(it);
-			}
-			else{
+			} else {
 				++it;
 			}
 		}
@@ -425,10 +403,9 @@ bool ModMetadata::load(const std::string &root_path)
 	}
 
 	const Json::Value::Members attr_list = root.getMemberNames();
-	for (Json::Value::Members::const_iterator it = attr_list.begin();
-			it != attr_list.end(); ++it) {
-		Json::Value attr_value = root[*it];
-		m_stringvars[*it] = attr_value.asString();
+	for (const auto &it : attr_list) {
+		Json::Value attr_value = root[it];
+		m_stringvars[it] = attr_value.asString();
 	}
 
 	return true;

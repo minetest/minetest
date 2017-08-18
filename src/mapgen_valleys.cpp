@@ -435,8 +435,8 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 	if (level_at_point <= water_level ||
 			level_at_point > water_level + 32)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-	else
-		return level_at_point;
+
+	return level_at_point;
 }
 
 
@@ -670,7 +670,8 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 			// Saves some time.
 			if (y > terrain + 10)
 				continue;
-			else if (y < terrain - 40)
+
+			if (y < terrain - 40)
 				underground = true;
 
 			// Dig massive caves.

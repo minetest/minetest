@@ -94,7 +94,7 @@ class ServerMapSector : public MapSector
 {
 public:
 	ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
-	~ServerMapSector();
+	~ServerMapSector() = default;
 
 	u32 getId() const
 	{
@@ -124,7 +124,7 @@ class ClientMapSector : public MapSector
 {
 public:
 	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
-	~ClientMapSector();
+	~ClientMapSector() = default;
 
 	u32 getId() const
 	{
