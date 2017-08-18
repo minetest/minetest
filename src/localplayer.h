@@ -143,9 +143,7 @@ public:
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
 private:
-	// clang-format off
-	void accelerateHorizontal(const v3f &target_speed, f32 max_increase);
-	// clang-format on
+	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 

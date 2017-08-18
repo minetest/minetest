@@ -27,7 +27,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "client.h"
 #include "content_cao.h"
-#include <cmath>
 
 /*
 	LocalPlayer
@@ -711,19 +710,12 @@ v3f LocalPlayer::getEyeOffset() const
 
 // Horizontal acceleration (X and Z), Y direction is ignored
 void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
-	const f32 max_increase, bool slippery)
+	const f32 max_increase)
 {
         if (max_increase == 0)
                 return;
 
 	v3f d_wanted = target_speed - m_speed;
-	if (slippery) {
-		if (target_speed == v3f())
-			d_wanted = -m_speed * 0.05f;
-		else
-			d_wanted *= 0.1f;
-	}
-
 	d_wanted.Y = 0.0f;
 	f32 dl = d_wanted.getLength();
 	if (dl > max_increase)
