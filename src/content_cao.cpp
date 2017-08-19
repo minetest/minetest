@@ -320,13 +320,6 @@ void GenericCAO::processInitData(const std::string &data)
 		m_yaw = readF1000(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
-	} else if (version == 0) { // In PROTOCOL_VERSION 13
-		m_name = deSerializeString(is);
-		m_is_player = readU8(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
-		m_hp = readS16(is);
-		num_messages = readU8(is);
 	} else {
 		errorstream<<"GenericCAO: Unsupported init data version"
 				<<std::endl;
@@ -689,7 +682,10 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 
 v3s16 GenericCAO::getLightPosition()
 {
-	return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+	if (m_is_player)
+		return floatToInt(m_position + v3f(0, 0.5 * BS, 0), BS);
+
+	return floatToInt(m_position, BS);
 }
 
 void GenericCAO::updateNodePos()
