@@ -173,7 +173,6 @@ std::list<SharedBuffer<u8> > makeAutoSplitPacket(
 		return list;
 	}
 
-
 	list.push_back(makeOriginalPacket(data));
 	return list;
 }
