@@ -19,13 +19,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <cctype>
 #include <fstream>
+#include <json/json.h>
 #include "mods.h"
 #include "filesys.h"
 #include "log.h"
 #include "subgame.h"
 #include "settings.h"
-#include "convert_json.h"
-#include "exceptions.h"
 #include "porting.h"
 
 static bool parseDependsLine(std::istream &is,

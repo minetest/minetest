@@ -300,5 +300,5 @@ struct MapNode
 
 private:
 	// Deprecated serialization methods
-	void deSerialize_pre22(u8 *source, u8 version);
+	void deSerialize_pre22(const u8 *source, u8 version);
 };

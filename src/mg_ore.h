@@ -64,7 +64,7 @@ public:
 	Noise *noise = nullptr;
 	std::unordered_set<u8> biomes;
 
-	Ore() {};
+	Ore() = default;;
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -136,7 +136,7 @@ public:
 class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
-	virtual ~OreManager() {}
+	virtual ~OreManager() = default;
 
 	const char *getObjectTitle() const
 	{

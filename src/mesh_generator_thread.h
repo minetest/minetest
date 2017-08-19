@@ -32,7 +32,7 @@ struct CachedMapBlockData
 	int refcount_from_queue = 0;
 	std::time_t last_used_timestamp = std::time(0);
 
-	CachedMapBlockData() {}
+	CachedMapBlockData() = default;
 	~CachedMapBlockData();
 };
 
@@ -45,7 +45,7 @@ struct QueuedMeshUpdate
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
-	QueuedMeshUpdate(){};
+	QueuedMeshUpdate() = default;
 	~QueuedMeshUpdate();
 };
 
@@ -105,7 +105,7 @@ struct MeshUpdateResult
 	MapBlockMesh *mesh = nullptr;
 	bool ack_block_to_server = false;
 
-	MeshUpdateResult() {}
+	MeshUpdateResult() = default;
 };
 
 class MeshUpdateThread : public UpdateThread

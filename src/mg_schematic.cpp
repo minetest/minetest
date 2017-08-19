@@ -56,7 +56,7 @@ void SchematicManager::clear()
 			DecoSchematic *dschem = dynamic_cast<DecoSchematic *>(deco);
 			if (dschem)
 				dschem->schematic = NULL;
-		} catch (std::bad_cast) {
+		} catch (const std::bad_cast &) {
 		}
 	}
 
@@ -68,8 +68,7 @@ void SchematicManager::clear()
 
 
 Schematic::Schematic()
-{
-}
+= default;
 
 
 Schematic::~Schematic()

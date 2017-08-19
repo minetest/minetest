@@ -455,7 +455,7 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 	}
 	else // NODEBOX_REGULAR
 	{
-		boxes.push_back(aabb3f(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2));
+		boxes.emplace_back(-BS/2,-BS/2,-BS/2,BS/2,BS/2,BS/2);
 	}
 }
 
@@ -764,7 +764,7 @@ void MapNode::deSerializeBulk(std::istream &is, int version,
 /*
 	Legacy serialization
 */
-void MapNode::deSerialize_pre22(u8 *source, u8 version)
+void MapNode::deSerialize_pre22(const u8 *source, u8 version)
 {
 	if(version <= 1)
 	{

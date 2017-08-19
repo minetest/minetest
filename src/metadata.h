@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class Metadata
 {
 public:
-	virtual ~Metadata() {}
+	virtual ~Metadata() = default;
 
 	virtual void clear();
 	virtual bool empty() const;

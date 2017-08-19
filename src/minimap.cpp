@@ -115,7 +115,6 @@ void MinimapUpdateThread::doUpdate()
 
 void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 {
-	v3s16 region(size, 0, size);
 	v3s16 pos_min(pos.X - size / 2, pos.Y - height / 2, pos.Z - size / 2);
 	v3s16 pos_max(pos_min.X + size - 1, pos.Y + height / 2, pos_min.Z + size - 1);
 	v3s16 blockpos_min = getNodeBlockPos(pos_min);

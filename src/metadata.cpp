@@ -18,12 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "metadata.h"
-#include "exceptions.h"
-#include "gamedef.h"
 #include "log.h"
-#include <sstream>
-#include "constants.h" // MAP_BLOCKSIZE
-#include <sstream>
 
 /*
 	Metadata
@@ -36,7 +31,7 @@ void Metadata::clear()
 
 bool Metadata::empty() const
 {
-	return m_stringvars.size() == 0;
+	return m_stringvars.empty();
 }
 
 size_t Metadata::size() const
@@ -54,10 +49,9 @@ bool Metadata::operator==(const Metadata &other) const
 	if (size() != other.size())
 		return false;
 
-	for (StringMap::const_iterator it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		if (!other.contains(it->first) ||
-				other.getString(it->first) != it->second)
+	for (const auto &sv : m_stringvars) {
+		if (!other.contains(sv.first) ||
+				other.getString(sv.first) != sv.second)
 			return false;
 	}
 
@@ -102,7 +96,7 @@ const std::string &Metadata::resolveString(const std::string &str, u16 recursion
 {
 	if (recursion <= 1 && str.substr(0, 2) == "${" && str[str.length() - 1] == '}') {
 		return getString(str.substr(2, str.length() - 3), recursion + 1);
-	} else {
-		return str;
 	}
+
+	return str;
 }

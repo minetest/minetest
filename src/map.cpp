@@ -1925,9 +1925,8 @@ void ServerMap::save(ModifiedState save_level)
 	// Don't do anything with sqlite unless something is really saved
 	bool save_started = false;
 
-	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
-		i != m_sectors.end(); ++i) {
-		ServerMapSector *sector = (ServerMapSector*)i->second;
+	for (auto &sector_it : m_sectors) {
+		ServerMapSector *sector = (ServerMapSector*) sector_it.second;
 		assert(sector->getId() == MAPSECTOR_SERVER);
 
 		if(sector->differs_from_disk || save_level == MOD_STATE_CLEAN) {
