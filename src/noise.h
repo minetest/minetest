@@ -112,7 +112,7 @@ struct NoiseParams {
 
 	NoiseParams() = default;
 
-	NoiseParams(float offset_, float scale_, v3f spread_, s32 seed_,
+	NoiseParams(float offset_, float scale_, const v3f &spread_, s32 seed_,
 		u16 octaves_, float persist_, float lacunarity_,
 		u32 flags_=NOISE_FLAG_DEFAULTS)
 	{
@@ -180,7 +180,8 @@ public:
 private:
 	void allocBuffers();
 	void resizeNoiseBuf(bool is3d);
-	void updateResults(float g, float *gmap, float *persistence_map, size_t bufsize);
+	void updateResults(float g, float *gmap, const float *persistence_map,
+			size_t bufsize);
 
 };
 

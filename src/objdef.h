@@ -43,7 +43,7 @@ enum ObjDefType {
 
 class ObjDef {
 public:
-	virtual ~ObjDef() {}
+	virtual ~ObjDef() = default;
 
 	u32 index;
 	u32 uid;

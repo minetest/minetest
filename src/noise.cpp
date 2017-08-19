@@ -23,10 +23,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <math.h>
+#include <cmath>
 #include "noise.h"
 #include <iostream>
-#include <string.h> // memset
+#include <cstring> // memset
 #include "debug.h"
 #include "util/numeric.h"
 #include "util/string.h"
@@ -262,8 +262,8 @@ float noise2d_gradient(float x, float y, s32 seed, bool eased)
 	// Interpolate
 	if (eased)
 		return biLinearInterpolation(v00, v10, v01, v11, xl, yl);
-	else
-		return biLinearInterpolationNoEase(v00, v10, v01, v11, xl, yl);
+
+	return biLinearInterpolationNoEase(v00, v10, v01, v11, xl, yl);
 }
 
 
@@ -292,12 +292,12 @@ float noise3d_gradient(float x, float y, float z, s32 seed, bool eased)
 			v000, v100, v010, v110,
 			v001, v101, v011, v111,
 			xl, yl, zl);
-	} else {
-		return triLinearInterpolationNoEase(
-			v000, v100, v010, v110,
-			v001, v101, v011, v111,
-			xl, yl, zl);
 	}
+
+	return triLinearInterpolationNoEase(
+		v000, v100, v010, v110,
+		v001, v101, v011, v111,
+		xl, yl, zl);
 }
 
 
@@ -778,7 +778,7 @@ float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 
 
 void Noise::updateResults(float g, float *gmap,
-	float *persistence_map, size_t bufsize)
+	const float *persistence_map, size_t bufsize)
 {
 	// This looks very ugly, but it is 50-70% faster than having
 	// conditional statements inside the loop

@@ -137,7 +137,7 @@ public:
 	bool enable_mesh_cache;
 	bool enable_minimap;
 
-	TextureSettings() {}
+	TextureSettings() = default;
 
 	void readSettings();
 };
@@ -369,7 +369,7 @@ struct ContentFeatures
 	*/
 
 	ContentFeatures();
-	~ContentFeatures();
+	~ContentFeatures() = default;
 	void reset();
 	void serialize(std::ostream &os, u16 protocol_version) const;
 	void deSerialize(std::istream &is);
@@ -411,8 +411,9 @@ struct ContentFeatures
 
 class INodeDefManager {
 public:
-	INodeDefManager(){}
-	virtual ~INodeDefManager(){}
+	INodeDefManager() = default;
+	virtual ~INodeDefManager() = default;
+
 	// Get node definition
 	virtual const ContentFeatures &get(content_t c) const=0;
 	virtual const ContentFeatures &get(const MapNode &n) const=0;
@@ -438,9 +439,9 @@ public:
 
 class IWritableNodeDefManager : public INodeDefManager {
 public:
-	IWritableNodeDefManager(){}
-	virtual ~IWritableNodeDefManager(){}
-	virtual IWritableNodeDefManager* clone()=0;
+	IWritableNodeDefManager() = default;
+	virtual ~IWritableNodeDefManager() = default;
+
 	// Get node definition
 	virtual const ContentFeatures &get(content_t c) const=0;
 	virtual const ContentFeatures &get(const MapNode &n) const=0;

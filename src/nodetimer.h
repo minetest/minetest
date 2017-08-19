@@ -35,12 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class NodeTimer
 {
 public:
-	NodeTimer() {}
+	NodeTimer() = default;
 	NodeTimer(const v3s16 &position_):
 		position(position_) {}
 	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_):
 		timeout(timeout_), elapsed(elapsed_), position(position_) {}
-	~NodeTimer() {}
+	~NodeTimer() = default;
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -57,8 +57,8 @@ public:
 class NodeTimerList
 {
 public:
-	NodeTimerList() {}
-	~NodeTimerList() {}
+	NodeTimerList() = default;
+	~NodeTimerList() = default;
 
 	void serialize(std::ostream &os, u8 map_format_version) const;
 	void deSerialize(std::istream &is, u8 map_format_version);
@@ -115,10 +115,6 @@ public:
 		m_timers.clear();
 		m_iterators.clear();
 		m_next_trigger_time = -1.;
-	}
-
-	inline double getNextTriggerTime() {
-		return m_next_trigger_time;
 	}
 
 	// Move forward in time, returns elapsed timers
