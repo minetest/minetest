@@ -167,7 +167,7 @@ std::string wide_to_utf8(const std::wstring &input)
 
 wchar_t *utf8_to_wide_c(const char *str)
 {
-	std::wstring ret = utf8_to_wide(std::string(str)).c_str();
+	std::wstring ret = utf8_to_wide(std::string(str));
 	size_t len = ret.length();
 	wchar_t *ret_c = new wchar_t[len + 1];
 	memset(ret_c, 0, (len + 1) * sizeof(wchar_t));
@@ -308,8 +308,8 @@ std::string wide_to_narrow(const std::wstring &wcs)
 	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
 	if (len == (size_t)(-1))
 		return "Character conversion failed!";
-	else
-		mbs[len] = 0;
+
+	mbs[len] = 0;
 	return *mbs;
 }
 
@@ -321,8 +321,7 @@ std::string urlencode(const std::string &str)
 	// followed by two hex digits. See RFC 3986, section 2.3.
 	static const char url_hex_chars[] = "0123456789ABCDEF";
 	std::ostringstream oss(std::ios::binary);
-	for (u32 i = 0; i < str.size(); i++) {
-		unsigned char c = str[i];
+	for (unsigned char c : str) {
 		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~') {
 			oss << c;
 		} else {

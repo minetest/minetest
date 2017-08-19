@@ -460,7 +460,7 @@ void Sky::render()
 			driver->drawVertexPrimitiveList(vertices, SKY_STAR_COUNT * 4,
 				indices, SKY_STAR_COUNT, video::EVT_STANDARD,
 				scene::EPT_QUADS, video::EIT_16BIT);
-		} while(0);
+		} while(false);
 
 		// Draw far cloudy fog thing below east and west horizons
 		for (u32 j = 0; j < 2; j++) {

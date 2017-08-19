@@ -35,7 +35,7 @@ struct Nametag {
 	Nametag(scene::ISceneNode *a_parent_node,
 			const std::string &a_nametag_text,
 			const video::SColor &a_nametag_color,
-			const v3f a_nametag_pos):
+			const v3f &a_nametag_pos):
 		parent_node(a_parent_node),
 		nametag_text(a_nametag_text),
 		nametag_color(a_nametag_color),

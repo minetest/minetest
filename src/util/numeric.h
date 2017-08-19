@@ -281,7 +281,8 @@ inline aabb3f getNodeBox(v3s16 p, float d)
 class IntervalLimiter
 {
 public:
-	IntervalLimiter() {}
+	IntervalLimiter() = default;
+
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted

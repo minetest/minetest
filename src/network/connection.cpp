@@ -1281,7 +1281,7 @@ bool ConnectionSendThread::packetsQueued()
 			continue;
 
 		for (Channel &channel : (dynamic_cast<UDPPeer *>(&peer))->channels) {
-			if (channel.queued_commands.size() > 0) {
+			if (!channel.queued_commands.empty()) {
 				return true;
 			}
 		}

@@ -68,9 +68,8 @@ void AreaStore::serialize(std::ostream &os) const
 
 	// TODO: Compression?
 	writeU16(os, areas_map.size());
-	for (AreaMap::const_iterator it = areas_map.begin();
-			it != areas_map.end(); ++it) {
-		const Area &a = it->second;
+	for (const auto &it : areas_map) {
+		const Area &a = it.second;
 		writeV3S16(os, a.minedge);
 		writeV3S16(os, a.maxedge);
 		writeU16(os, a.data.size());
@@ -193,10 +192,9 @@ bool VectorAreaStore::removeArea(u32 id)
 
 void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 {
-	for (size_t i = 0; i < m_areas.size(); ++i) {
-		Area *b = m_areas[i];
-		if (AST_CONTAINS_PT(b, pos)) {
-			result->push_back(b);
+	for (Area *area : m_areas) {
+		if (AST_CONTAINS_PT(area, pos)) {
+			result->push_back(area);
 		}
 	}
 }
@@ -204,11 +202,10 @@ void VectorAreaStore::getAreasForPosImpl(std::vector<Area *> *result, v3s16 pos)
 void VectorAreaStore::getAreasInArea(std::vector<Area *> *result,
 		v3s16 minedge, v3s16 maxedge, bool accept_overlap)
 {
-	for (size_t i = 0; i < m_areas.size(); ++i) {
-		Area *b = m_areas[i];
-		if (accept_overlap ? AST_AREAS_OVERLAP(minedge, maxedge, b) :
-				AST_CONTAINS_AREA(minedge, maxedge, b)) {
-			result->push_back(b);
+	for (Area *area : m_areas) {
+		if (accept_overlap ? AST_AREAS_OVERLAP(minedge, maxedge, area) :
+				AST_CONTAINS_AREA(minedge, maxedge, area)) {
+			result->push_back(area);
 		}
 	}
 }
