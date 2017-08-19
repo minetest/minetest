@@ -98,11 +98,6 @@ STATIC_ASSERT(
 //// Mapgen
 ////
 
-Mapgen::Mapgen()
-{
-}
-
-
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
@@ -128,11 +123,6 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	seed = (s32)params->seed;
 
 	ndef      = emerge->ndef;
-}
-
-
-Mapgen::~Mapgen()
-{
 }
 
 
@@ -283,7 +273,8 @@ s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 		MapNode &n = vm->m_data[i];
 		if (ndef->get(n).walkable)
 			return -MAX_MAP_GENERATION_LIMIT;
-		else if (ndef->get(n).isLiquid())
+
+		if (ndef->get(n).isLiquid())
 			break;
 
 		vm->m_area.add_y(em, i, -1);
@@ -938,11 +929,6 @@ void MapgenBasic::generateDungeons(s16 max_stone_y,
 ////
 //// GenerateNotifier
 ////
-
-GenerateNotifier::GenerateNotifier()
-{
-}
-
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
 	std::set<u32> *notify_on_deco_ids)

@@ -47,7 +47,7 @@ struct MapgenFlatParams : public MapgenParams
 	NoiseParams np_cave2;
 
 	MapgenFlatParams();
-	~MapgenFlatParams() {}
+	~MapgenFlatParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

@@ -168,8 +168,6 @@ public:
 		their differing fetch methods.
 	*/
 	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
-	virtual MapSector * emergeSector(v2s16 p,
-			std::map<v3s16, MapBlock*> &changed_blocks){ return NULL; }
 
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
@@ -496,7 +494,7 @@ class MMVManip : public VoxelManipulator
 {
 public:
 	MMVManip(Map *map);
-	virtual ~MMVManip();
+	virtual ~MMVManip() = default;
 
 	virtual void clear()
 	{

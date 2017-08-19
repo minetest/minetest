@@ -74,10 +74,8 @@ Map::~Map()
 	/*
 		Free all MapSectors
 	*/
-	for(std::map<v2s16, MapSector*>::iterator i = m_sectors.begin();
-		i != m_sectors.end(); ++i)
-	{
-		delete i->second;
+	for (auto &sector : m_sectors) {
+		delete sector.second;
 	}
 }
 
@@ -93,11 +91,8 @@ void Map::removeEventReceiver(MapEventReceiver *event_receiver)
 
 void Map::dispatchEvent(MapEditEvent *event)
 {
-	for(std::set<MapEventReceiver*>::iterator
-			i = m_event_receivers.begin();
-			i != m_event_receivers.end(); ++i)
-	{
-		(*i)->onMapEditEvent(event);
+	for (MapEventReceiver *event_receiver : m_event_receivers) {
+		event_receiver->onMapEditEvent(event);
 	}
 }
 
@@ -110,7 +105,7 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(v2s16 p)
 
 	std::map<v2s16, MapSector*>::iterator n = m_sectors.find(p);
 
-	if(n == m_sectors.end())
+	if (n == m_sectors.end())
 		return NULL;
 
 	MapSector *sector = n->second;
@@ -182,7 +177,7 @@ MapNode Map::getNodeNoEx(v3s16 p, bool *is_valid_position)
 	if (block == NULL) {
 		if (is_valid_position != NULL)
 			*is_valid_position = false;
-		return MapNode(CONTENT_IGNORE);
+		return {CONTENT_IGNORE};
 	}
 
 	v3s16 relpos = p - blockpos*MAP_BLOCKSIZE;
@@ -254,14 +249,11 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 
 	// Update lighting
 	std::vector<std::pair<v3s16, MapNode> > oldnodes;
-	oldnodes.push_back(std::pair<v3s16, MapNode>(p, oldnode));
+	oldnodes.emplace_back(p, oldnode);
 	voxalgo::update_lighting_nodes(this, oldnodes, modified_blocks);
 
-	for(std::map<v3s16, MapBlock*>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i)
-	{
-		i->second->expireDayNightDiff();
+	for (auto &modified_block : modified_blocks) {
+		modified_block.second->expireDayNightDiff();
 	}
 
 	// Report for rollback
@@ -277,18 +269,9 @@ void Map::addNodeAndUpdate(v3s16 p, MapNode n,
 		Add neighboring liquid nodes and this node to transform queue.
 		(it's vital for the node itself to get updated last, if it was removed.)
 	 */
-	v3s16 dirs[7] = {
-		v3s16(0,0,1), // back
-		v3s16(0,1,0), // top
-		v3s16(1,0,0), // right
-		v3s16(0,0,-1), // front
-		v3s16(0,-1,0), // bottom
-		v3s16(-1,0,0), // left
-		v3s16(0,0,0), // self
-	};
-	for(u16 i=0; i<7; i++)
-	{
-		v3s16 p2 = p + dirs[i];
+
+	for (const v3s16 &dir : g_7dirs) {
+		v3s16 p2 = p + dir;
 
 		bool is_valid_position;
 		MapNode n2 = getNodeNoEx(p2, &is_valid_position);
@@ -318,11 +301,8 @@ bool Map::addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata)
 		addNodeAndUpdate(p, n, modified_blocks, remove_metadata);
 
 		// Copy modified_blocks to event
-		for(std::map<v3s16, MapBlock*>::iterator
-				i = modified_blocks.begin();
-				i != modified_blocks.end(); ++i)
-		{
-			event.modified_blocks.insert(i->first);
+		for (auto &modified_block : modified_blocks) {
+			event.modified_blocks.insert(modified_block.first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -346,11 +326,8 @@ bool Map::removeNodeWithEvent(v3s16 p)
 		removeNodeAndUpdate(p, modified_blocks);
 
 		// Copy modified_blocks to event
-		for(std::map<v3s16, MapBlock*>::iterator
-				i = modified_blocks.begin();
-				i != modified_blocks.end(); ++i)
-		{
-			event.modified_blocks.insert(i->first);
+		for (auto &modified_block : modified_blocks) {
+			event.modified_blocks.insert(modified_block.first);
 		}
 	}
 	catch(InvalidPositionException &e){
@@ -397,19 +374,15 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 
 	// If there is no practical limit, we spare creation of mapblock_queue
 	if (max_loaded_blocks == U32_MAX) {
-		for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-				si != m_sectors.end(); ++si) {
-			MapSector *sector = si->second;
+		for (auto &sector_it : m_sectors) {
+			MapSector *sector = sector_it.second;
 
 			bool all_blocks_deleted = true;
 
 			MapBlockVect blocks;
 			sector->getBlocks(blocks);
 
-			for (MapBlockVect::iterator i = blocks.begin();
-					i != blocks.end(); ++i) {
-				MapBlock *block = (*i);
-
+			for (MapBlock *block : blocks) {
 				block->incrementUsageTimer(dtime);
 
 				if (block->refGet() == 0
@@ -439,22 +412,18 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			}
 
 			if (all_blocks_deleted) {
-				sector_deletion_queue.push_back(si->first);
+				sector_deletion_queue.push_back(sector_it.first);
 			}
 		}
 	} else {
 		std::priority_queue<TimeOrderedMapBlock> mapblock_queue;
-		for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-				si != m_sectors.end(); ++si) {
-			MapSector *sector = si->second;
+		for (auto &sector_it : m_sectors) {
+			MapSector *sector = sector_it.second;
 
 			MapBlockVect blocks;
 			sector->getBlocks(blocks);
 
-			for(MapBlockVect::iterator i = blocks.begin();
-					i != blocks.end(); ++i) {
-				MapBlock *block = (*i);
-
+			for (MapBlock *block : blocks) {
 				block->incrementUsageTimer(dtime);
 				mapblock_queue.push(TimeOrderedMapBlock(sector, block));
 			}
@@ -491,10 +460,9 @@ void Map::timerUpdate(float dtime, float unload_timeout, u32 max_loaded_blocks,
 			block_count_all--;
 		}
 		// Delete empty sectors
-		for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-			si != m_sectors.end(); ++si) {
-			if (si->second->empty()) {
-				sector_deletion_queue.push_back(si->first);
+		for (auto &sector_it : m_sectors) {
+			if (sector_it.second->empty()) {
+				sector_deletion_queue.push_back(sector_it.first);
 			}
 		}
 	}
@@ -876,7 +844,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		MapBlock *block = getBlockNoCreateNoEx(blockpos);
 		if (block != NULL) {
 			modified_blocks[blockpos] =  block;
-			changed_nodes.push_back(std::pair<v3s16, MapNode>(p0, n00));
+			changed_nodes.emplace_back(p0, n00);
 		}
 
 		/*
@@ -902,8 +870,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	}
 	//infostream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 
-	for (std::deque<v3s16>::iterator iter = must_reflow.begin(); iter != must_reflow.end(); ++iter)
-		m_transforming_liquid.push_back(*iter);
+	for (auto &iter : must_reflow)
+		m_transforming_liquid.push_back(iter);
 
 	voxalgo::update_lighting_nodes(this, changed_nodes, modified_blocks);
 
@@ -1205,14 +1173,11 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
 
-	try
-	{
+	try {
 		// If directory exists, check contents and load if possible
-		if(fs::PathExists(m_savedir))
-		{
+		if (fs::PathExists(m_savedir)) {
 			// If directory is empty, it is safe to save into it.
-			if(fs::GetDirListing(m_savedir).size() == 0)
-			{
+			if (fs::GetDirListing(m_savedir).empty()) {
 				infostream<<"ServerMap: Empty save directory is valid."
 						<<std::endl;
 				m_map_saving_enabled = true;
@@ -1442,10 +1407,8 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 		data->transforming_liquid.pop_front();
 	}
 
-	for (std::map<v3s16, MapBlock *>::iterator
-			it = changed_blocks->begin();
-			it != changed_blocks->end(); ++it) {
-		MapBlock *block = it->second;
+	for (auto &changed_block : *changed_blocks) {
+		MapBlock *block = changed_block.second;
 		if (!block)
 			continue;
 		/*
@@ -1975,10 +1938,7 @@ void ServerMap::save(ModifiedState save_level)
 		MapBlockVect blocks;
 		sector->getBlocks(blocks);
 
-		for(MapBlockVect::iterator j = blocks.begin();
-			j != blocks.end(); ++j) {
-			MapBlock *block = *j;
-
+		for (MapBlock *block : blocks) {
 			block_count_all++;
 
 			if(block->getModified() >= (u32)save_level) {
@@ -2032,17 +1992,14 @@ void ServerMap::listAllLoadableBlocks(std::vector<v3s16> &dst)
 
 void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 {
-	for(std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-		si != m_sectors.end(); ++si)
-	{
-		MapSector *sector = si->second;
+	for (auto &sector_it : m_sectors) {
+		MapSector *sector = sector_it.second;
 
 		MapBlockVect blocks;
 		sector->getBlocks(blocks);
 
-		for(MapBlockVect::iterator i = blocks.begin();
-				i != blocks.end(); ++i) {
-			v3s16 p = (*i)->getPos();
+		for (MapBlock *block : blocks) {
+			v3s16 p = block->getPos();
 			dst.push_back(p);
 		}
 	}
@@ -2232,22 +2189,22 @@ MapDatabase *ServerMap::createDatabase(
 	if (name == "dummy")
 		return new Database_Dummy();
 	#if USE_LEVELDB
-	else if (name == "leveldb")
+	if (name == "leveldb")
 		return new Database_LevelDB(savedir);
 	#endif
 	#if USE_REDIS
-	else if (name == "redis")
+	if (name == "redis")
 		return new Database_Redis(conf);
 	#endif
 	#if USE_POSTGRESQL
-	else if (name == "postgresql") {
-		std::string connect_string = "";
+	if (name == "postgresql") {
+		std::string connect_string;
 		conf.getNoEx("pgsql_connection", connect_string);
 		return new MapDatabasePostgreSQL(connect_string);
 	}
 	#endif
-	else
-		throw BaseException(std::string("Database backend ") + name + " not supported.");
+
+	throw BaseException(std::string("Database backend ") + name + " not supported.");
 }
 
 void ServerMap::beginSave()
@@ -2448,7 +2405,7 @@ MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 
 	std::string ret;
 	dbase->loadBlock(blockpos, &ret);
-	if (ret != "") {
+	if (!ret.empty()) {
 		loadBlock(&ret, blockpos, createSector(p2d), false);
 	} else {
 		// Not found in database, try the files
@@ -2556,10 +2513,6 @@ MMVManip::MMVManip(Map *map):
 {
 }
 
-MMVManip::~MMVManip()
-{
-}
-
 void MMVManip::initialEmerge(v3s16 blockpos_min, v3s16 blockpos_max,
 	bool load_if_inexistent)
 {
@@ -2657,13 +2610,10 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 	/*
 		Copy data of all blocks
 	*/
-	for(std::map<v3s16, u8>::iterator
-			i = m_loaded_blocks.begin();
-			i != m_loaded_blocks.end(); ++i)
-	{
-		v3s16 p = i->first;
+	for (auto &loaded_block : m_loaded_blocks) {
+		v3s16 p = loaded_block.first;
 		MapBlock *block = m_map->getBlockNoCreateNoEx(p);
-		bool existed = !(i->second & VMANIP_BLOCK_DATA_INEXIST);
+		bool existed = !(loaded_block.second & VMANIP_BLOCK_DATA_INEXIST);
 		if (!existed || (block == NULL) ||
 			(!overwrite_generated && block->isGenerated()))
 			continue;

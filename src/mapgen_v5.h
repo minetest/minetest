@@ -48,7 +48,7 @@ struct MapgenV5Params : public MapgenParams
 	NoiseParams np_cavern;
 
 	MapgenV5Params();
-	~MapgenV5Params() {}
+	~MapgenV5Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;

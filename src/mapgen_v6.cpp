@@ -455,19 +455,20 @@ BiomeV6Type MapgenV6::getBiome(int index, v2s16 p)
 		}
 
 		return BT_NORMAL;
-	} else {
-		if (d > freq_desert)
-			return BT_DESERT;
-
-		if ((spflags & MGV6_BIOMEBLEND) && (d > freq_desert - 0.10) &&
-				((noise2d(p.X, p.Y, seed) + 1.0) > (freq_desert - d) * 20.0))
-			return BT_DESERT;
-
-		if ((spflags & MGV6_JUNGLES) && h > 0.75)
-			return BT_JUNGLE;
-
-		return BT_NORMAL;
 	}
+
+	if (d > freq_desert)
+		return BT_DESERT;
+
+	if ((spflags & MGV6_BIOMEBLEND) && (d > freq_desert - 0.10) &&
+			((noise2d(p.X, p.Y, seed) + 1.0) > (freq_desert - d) * 20.0))
+		return BT_DESERT;
+
+	if ((spflags & MGV6_JUNGLES) && h > 0.75)
+		return BT_JUNGLE;
+
+	return BT_NORMAL;
+
 }
 
 

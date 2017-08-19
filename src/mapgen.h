@@ -92,7 +92,7 @@ struct GenNotifyEvent {
 
 class GenerateNotifier {
 public:
-	GenerateNotifier();
+	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, std::set<u32> *notify_on_deco_ids);
 
 	void setNotifyOn(u32 notify_on);
@@ -180,9 +180,9 @@ public:
 	BiomeGen *biomegen = nullptr;
 	GenerateNotifier gennotify;
 
-	Mapgen();
+	Mapgen() = default;
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	virtual ~Mapgen();
+	virtual ~Mapgen() = default;
 	DISABLE_CLASS_COPY(Mapgen);
 
 	virtual MapgenType getType() const { return MAPGEN_INVALID; }

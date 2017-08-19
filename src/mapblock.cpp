@@ -250,9 +250,7 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 				else if(current_light == LIGHT_SUN && nodemgr->get(n).sunlight_propagates)
 				{
 					// Do nothing: Sunlight is continued
-				}
-				else if(nodemgr->get(n).light_propagates == false)
-				{
+				} else if (!nodemgr->get(n).light_propagates) {
 					// A solid object is on the way.
 					stopped_to_solid_object = true;
 
@@ -305,10 +303,10 @@ bool MapBlock::propagateSunlight(std::set<v3s16> & light_sources,
 					if(nodemgr->get(n).light_propagates)
 					{
 						if(n.getLight(LIGHTBANK_DAY, nodemgr) == LIGHT_SUN
-								&& sunlight_should_go_down == false)
+								&& !sunlight_should_go_down)
 							block_below_is_valid = false;
 						else if(n.getLight(LIGHTBANK_DAY, nodemgr) != LIGHT_SUN
-								&& sunlight_should_go_down == true)
+								&& sunlight_should_go_down)
 							block_below_is_valid = false;
 					}
 				}
@@ -563,7 +561,7 @@ void MapBlock::serialize(std::ostream &os, u8 version, bool disk)
 		flags |= 0x01;
 	if(getDayNightDiff())
 		flags |= 0x02;
-	if(m_generated == false)
+	if (!m_generated)
 		flags |= 0x08;
 	writeU8(os, flags);
 	if (version >= 27) {
@@ -659,13 +657,13 @@ void MapBlock::deSerialize(std::istream &is, u8 version, bool disk)
 	}
 
 	u8 flags = readU8(is);
-	is_underground = (flags & 0x01) ? true : false;
-	m_day_night_differs = (flags & 0x02) ? true : false;
+	is_underground = (flags & 0x01) != 0;
+	m_day_night_differs = (flags & 0x02) != 0;
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;
 	else
 		m_lighting_complete = readU16(is);
-	m_generated = (flags & 0x08) ? false : true;
+	m_generated = (flags & 0x08) == 0;
 
 	/*
 		Bulk node data
@@ -839,10 +837,10 @@ void MapBlock::deSerialize_pre22(std::istream &is, u8 version, bool disk)
 	} else { // All other versions (10 to 21)
 		u8 flags;
 		is.read((char*)&flags, 1);
-		is_underground = (flags & 0x01) ? true : false;
-		m_day_night_differs = (flags & 0x02) ? true : false;
+		is_underground = (flags & 0x01) != 0;
+		m_day_night_differs = (flags & 0x02) != 0;
 		if(version >= 18)
-			m_generated = (flags & 0x08) ? false : true;
+			m_generated = (flags & 0x08) == 0;
 
 		// Uncompress data
 		std::ostringstream os(std::ios_base::binary);

@@ -300,8 +300,8 @@ int MapgenCarpathian::getSpawnLevelAtPoint(v2s16 p)
 	s16 level_at_point = terrainLevelAtPoint(p.X, p.Y);
 	if (level_at_point <= water_level || level_at_point > water_level + 32)
 		return MAX_MAP_GENERATION_LIMIT; // Unsuitable spawn point
-	else
-		return level_at_point;
+
+	return level_at_point;
 }
 
 
