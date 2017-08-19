@@ -353,10 +353,10 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	if (!succeeded || !conf.exists("player_backend")) {
 		// fall back to files
 		conf.set("player_backend", "files");
-		warningstream << "/!\\ You are using old player file backend. "
-				<< "This backend is deprecated and will be removed in next release /!\\"
-				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
-				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
+		warningstream << "You are using the file-based player backend. "
+				<< "You can migrate it to SQLite3 or PostgreSQL manually, "
+				<< "or let it migrate automatically in a future release. "
+				<< "http://wiki.minetest.net/Database_backends." << std::endl;
 
 		if (!conf.updateConfigFile(conf_path.c_str())) {
 			errorstream << "ServerEnvironment::ServerEnvironment(): "
