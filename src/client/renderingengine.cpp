@@ -29,7 +29,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "minimap.h"
 #include "clientmap.h"
 #include "renderingengine.h"
-#include "renderingcore.h"
+#include "render/core.h"
+#include "render/factory.h"
 #include "inputhandler.h"
 #include "gettext.h"
 
@@ -439,16 +440,7 @@ std::vector<irr::video::E_DRIVER_TYPE> RenderingEngine::getSupportedVideoDrivers
 void RenderingEngine::_initialize(Client *client, Hud *hud)
 {
 	const std::string &draw_mode = g_settings->get("3d_mode");
-	if (draw_mode == "anaglyph")
-		core.reset(new RenderingCoreAnaglyph(m_device));
-	else if (draw_mode == "interlaced")
-		core.reset(new RenderingCoreInterlaced(m_device));
-	else if (draw_mode == "sidebyside")
-		core.reset(new RenderingCoreSideBySide(m_device));
-	else if (draw_mode == "pageflip")
-		core.reset(new RenderingCorePageflip(m_device));
-	else
-		core.reset(new RenderingCorePlain(m_device));
+	core.reset(createRenderingCore(draw_mode, m_device));
 	core->initialize(client, hud);
 }
 
