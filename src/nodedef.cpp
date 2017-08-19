@@ -78,7 +78,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 			writeU8(os, type);
 
 		writeU16(os, fixed.size());
-		for (const auto &nodebox : fixed) {
+		for (const aabb3f &nodebox : fixed) {
 			writeV3F1000(os, nodebox.MinEdge);
 			writeV3F1000(os, nodebox.MaxEdge);
 		}
