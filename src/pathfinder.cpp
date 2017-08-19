@@ -77,8 +77,8 @@ public:
 	PathCost &operator= (const PathCost &b);
 
 	bool valid = false;              /**< movement is possible         */
-	int  value = 0;              /**< cost of movement             */
-	int  direction = 0;          /**< y-direction of movement      */
+	int  value = 0;                  /**< cost of movement             */
+	int  direction = 0;              /**< y-direction of movement      */
 	bool updated = false;            /**< this cost has ben calculated */
 
 };
