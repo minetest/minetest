@@ -431,12 +431,11 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 			boxes_size += nodebox.connect_right.size();
 		boxes.reserve(boxes_size);
 
-#define BOXESPUSHBACK(c) do { \
+#define BOXESPUSHBACK(c) \
 		for (std::vector<aabb3f>::const_iterator \
 				it = (c).begin(); \
 				it != (c).end(); ++it) \
-			(boxes).push_back(*it); \
-		} while (0)
+			(boxes).push_back(*it);
 
 		BOXESPUSHBACK(nodebox.fixed);
 

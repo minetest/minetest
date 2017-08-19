@@ -438,7 +438,7 @@ void VoxelManipulator::spreadLight(enum LightBank bank,
 
 	std::set<v3s16> lighted_nodes;
 
-	for (v3s16 pos : from_nodes) {
+	for (const v3s16 &pos : from_nodes) {
 		VoxelArea voxel_area(pos - v3s16(1,1,1), pos + v3s16(1,1,1));
 		addArea(voxel_area);
 

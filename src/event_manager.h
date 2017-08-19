@@ -43,17 +43,15 @@ class EventManager: public MtEventManager
 	std::map<std::string, Dest> m_dest;
 
 public:
-	~EventManager()
-	{
-	}
+	~EventManager() = default;
+
 	void put(MtEvent *e)
 	{
 		std::map<std::string, Dest>::iterator i = m_dest.find(e->getType());
 		if(i != m_dest.end()){
 			std::list<FuncSpec> &funcs = i->second.funcs;
-			for(std::list<FuncSpec>::iterator i = funcs.begin();
-					i != funcs.end(); ++i){
-				(*(i->f))(e, i->d);
+			for (FuncSpec &func : funcs) {
+				(*(func.f))(e, func.d);
 			}
 		}
 		delete e;
@@ -62,11 +60,11 @@ public:
 	{
 		std::map<std::string, Dest>::iterator i = m_dest.find(type);
 		if(i != m_dest.end()){
-			i->second.funcs.push_back(FuncSpec(f, data));
+			i->second.funcs.emplace_back(f, data);
 		} else{
 			std::list<FuncSpec> funcs;
 			Dest dest;
-			dest.funcs.push_back(FuncSpec(f, data));
+			dest.funcs.emplace_back(f, data);
 			m_dest[type] = dest;
 		}
 	}
@@ -86,9 +84,8 @@ public:
 				}
 			}
 		} else{
-			for(std::map<std::string, Dest>::iterator
-					i = m_dest.begin(); i != m_dest.end(); ++i){
-				std::list<FuncSpec> &funcs = i->second.funcs;
+			for (auto &dest : m_dest) {
+				std::list<FuncSpec> &funcs = dest.second.funcs;
 				std::list<FuncSpec>::iterator j = funcs.begin();
 				while(j != funcs.end()){
 					bool remove = (j->f == f && (!data || j->d == data));
