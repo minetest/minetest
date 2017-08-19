@@ -41,7 +41,7 @@ class RemotePlayer : public Player
 
 public:
 	RemotePlayer(const char *name, IItemDefManager *idef);
-	virtual ~RemotePlayer() {}
+	virtual ~RemotePlayer() = default;
 
 	void deSerialize(std::istream &is, const std::string &playername, PlayerSAO *sao);
 

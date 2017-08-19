@@ -55,7 +55,7 @@ public:
 		Prototypes are used that way.
 	*/
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
-	virtual ~ServerActiveObject();
+	virtual ~ServerActiveObject() = default;
 
 	virtual ActiveObjectType getSendType() const
 	{ return getType(); }

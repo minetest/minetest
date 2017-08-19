@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <ostream>
-#include <string.h>
+#include <cstring>
 #include "irrlichttypes.h"
 #include "exceptions.h"
 
@@ -111,7 +111,8 @@ private:
 class UDPSocket
 {
 public:
-	UDPSocket() { }
+	UDPSocket() = default;
+
 	UDPSocket(bool ipv6);
 	~UDPSocket();
 	void Bind(Address addr);

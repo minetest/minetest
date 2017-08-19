@@ -1507,8 +1507,8 @@ void MeshCollector::applyTileColors()
 				video::SColor tc = pmb.layer.color;
 				if (tc == video::SColor(0xFFFFFFFF))
 					continue;
-				for (auto &tangent_vertice : pmb.tangent_vertices) {
-					video::SColor *c = &tangent_vertice.Color;
+				for (video::S3DVertexTangents &tangent_vertex : pmb.tangent_vertices) {
+					video::SColor *c = &tangent_vertex.Color;
 					c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
 						c->getGreen() * tc.getGreen() / 255,
 						c->getBlue() * tc.getBlue() / 255);
@@ -1521,8 +1521,8 @@ void MeshCollector::applyTileColors()
 				video::SColor tc = pmb.layer.color;
 				if (tc == video::SColor(0xFFFFFFFF))
 					continue;
-				for (auto &vertice : pmb.vertices) {
-					video::SColor *c = &vertice.Color;
+				for (video::S3DVertex &vertex : pmb.vertices) {
+					video::SColor *c = &vertex.Color;
 					c->set(c->getAlpha(), c->getRed() * tc.getRed() / 255,
 						c->getGreen() * tc.getGreen() / 255,
 						c->getBlue() * tc.getBlue() / 255);

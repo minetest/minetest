@@ -582,9 +582,9 @@ void MapblockMeshGenerator::drawLiquidTop()
 	tcoord_translate.X -= floor(tcoord_translate.X);
 	tcoord_translate.Y -= floor(tcoord_translate.Y);
 
-	for (auto &vertice : vertices) {
-		vertice.TCoords.rotateBy(tcoord_angle, tcoord_center);
-		vertice.TCoords += tcoord_translate;
+	for (video::S3DVertex &vertex : vertices) {
+		vertex.TCoords.rotateBy(tcoord_angle, tcoord_center);
+		vertex.TCoords += tcoord_translate;
 	}
 
 	std::swap(vertices[0].TCoords, vertices[2].TCoords);
@@ -622,20 +622,20 @@ void MapblockMeshGenerator::drawGlasslikeNode()
 			v3f(-BS / 2, -BS / 2, -BS / 2),
 		};
 
-		for (auto &vertice : vertices) {
+		for (v3f &vertex : vertices) {
 			switch (face) {
 				case D6D_ZP:
-					vertice.rotateXZBy(180); break;
+					vertex.rotateXZBy(180); break;
 				case D6D_YP:
-					vertice.rotateYZBy( 90); break;
+					vertex.rotateYZBy( 90); break;
 				case D6D_XP:
-					vertice.rotateXZBy( 90); break;
+					vertex.rotateXZBy( 90); break;
 				case D6D_ZN:
-					vertice.rotateXZBy(  0); break;
+					vertex.rotateXZBy(  0); break;
 				case D6D_YN:
-					vertice.rotateYZBy(-90); break;
+					vertex.rotateYZBy(-90); break;
 				case D6D_XN:
-					vertice.rotateXZBy(-90); break;
+					vertex.rotateXZBy(-90); break;
 			}
 		}
 		drawQuad(vertices, dir);
@@ -795,20 +795,20 @@ void MapblockMeshGenerator::drawTorchlikeNode()
 		v3f(-size, -size, 0),
 	};
 
-	for (auto &vertice : vertices) {
+	for (v3f &vertex : vertices) {
 		switch (wall) {
 			case DWM_YP:
-				vertice.rotateXZBy(-45); break;
+				vertex.rotateXZBy(-45); break;
 			case DWM_YN:
-				vertice.rotateXZBy( 45); break;
+				vertex.rotateXZBy( 45); break;
 			case DWM_XP:
-				vertice.rotateXZBy(  0); break;
+				vertex.rotateXZBy(  0); break;
 			case DWM_XN:
-				vertice.rotateXZBy(180); break;
+				vertex.rotateXZBy(180); break;
 			case DWM_ZP:
-				vertice.rotateXZBy( 90); break;
+				vertex.rotateXZBy( 90); break;
 			case DWM_ZN:
-				vertice.rotateXZBy(-90); break;
+				vertex.rotateXZBy(-90); break;
 		}
 	}
 	drawQuad(vertices);
@@ -828,20 +828,20 @@ void MapblockMeshGenerator::drawSignlikeNode()
 		v3f(BS / 2 - offset, -size,  size),
 	};
 
-	for (auto &vertice : vertices) {
+	for (v3f &vertex : vertices) {
 		switch (wall) {
 			case DWM_YP:
-				vertice.rotateXYBy( 90); break;
+				vertex.rotateXYBy( 90); break;
 			case DWM_YN:
-				vertice.rotateXYBy(-90); break;
+				vertex.rotateXYBy(-90); break;
 			case DWM_XP:
-				vertice.rotateXZBy(  0); break;
+				vertex.rotateXZBy(  0); break;
 			case DWM_XN:
-				vertice.rotateXZBy(180); break;
+				vertex.rotateXZBy(180); break;
 			case DWM_ZP:
-				vertice.rotateXZBy( 90); break;
+				vertex.rotateXZBy( 90); break;
 			case DWM_ZN:
-				vertice.rotateXZBy(-90); break;
+				vertex.rotateXZBy(-90); break;
 		}
 	}
 	drawQuad(vertices);
@@ -864,9 +864,9 @@ void MapblockMeshGenerator::drawPlantlikeQuad(float rotation, float quad_offset,
 	for (int i = 0; i < offset_count; i++)
 		vertices[i].Z += quad_offset;
 
-	for (auto &vertice : vertices) {
-		vertice.rotateXZBy(rotation + rotate_degree);
-		vertice += offset;
+	for (v3f &vertex : vertices) {
+		vertex.rotateXZBy(rotation + rotate_degree);
+		vertex += offset;
 	}
 	drawQuad(vertices, v3s16(0, 0, 0), plant_height);
 }
@@ -971,11 +971,11 @@ void MapblockMeshGenerator::drawFirelikeQuad(float rotation, float opening_angle
 		v3f(-scale, -BS / 2, 0),
 	};
 
-	for (auto &vertice : vertices) {
-		vertice.rotateYZBy(opening_angle);
-		vertice.Z += offset_h;
-		vertice.rotateXZBy(rotation);
-		vertice.Y += offset_v;
+	for (v3f &vertex : vertices) {
+		vertex.rotateYZBy(opening_angle);
+		vertex.Z += offset_h;
+		vertex.rotateXZBy(rotation);
+		vertex.Y += offset_v;
 	}
 	drawQuad(vertices);
 }
@@ -1192,8 +1192,8 @@ void MapblockMeshGenerator::drawRaillikeNode()
 		v3f(-size, -size + offset, -size),
 	};
 	if (angle)
-		for (auto &vertice : vertices)
-			vertice.rotateXZBy(angle);
+		for (v3f &vertex : vertices)
+			vertex.rotateXZBy(angle);
 	drawQuad(vertices);
 }
 

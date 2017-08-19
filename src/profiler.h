@@ -42,7 +42,7 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler() {}
+	Profiler() = default;
 
 	void add(const std::string &name, float value)
 	{
@@ -80,11 +80,8 @@ public:
 	void clear()
 	{
 		MutexAutoLock lock(m_mutex);
-		for(std::map<std::string, float>::iterator
-				i = m_data.begin();
-				i != m_data.end(); ++i)
-		{
-			i->second = 0;
+		for (auto &it : m_data) {
+			it.second = 0;
 		}
 		m_avgcounts.clear();
 	}
