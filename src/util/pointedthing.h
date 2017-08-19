@@ -81,7 +81,7 @@ struct PointedThing
 	f32 distanceSq = 0;
 
 	//! Constructor for POINTEDTHING_NOTHING
-	PointedThing() {};
+	PointedThing() = default;
 	//! Constructor for POINTEDTHING_NODE
 	PointedThing(const v3s16 &under, const v3s16 &above,
 		const v3s16 &real_under, const v3f &point, const v3s16 &normal,

@@ -46,7 +46,7 @@ private:
 	static int gc_object(lua_State *L);
 public:
 	ItemStackMetaRef(ItemStack *istack): istack(istack) {}
-	~ItemStackMetaRef() {}
+	~ItemStackMetaRef() = default;
 
 	// Creates an ItemStackMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.

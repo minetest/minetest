@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "../constants.h" // BS, MAP_BLOCKSIZE
 #include "../noise.h" // PseudoRandom, PcgRandom
 #include "../threading/mutex_auto_lock.h"
-#include <string.h>
+#include <cstring>
 
 
 // myrand

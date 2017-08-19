@@ -78,8 +78,8 @@ public:
 template<typename Key, typename T, typename Caller, typename CallerData>
 class GetRequest {
 public:
-	GetRequest() {}
-	~GetRequest() {}
+	GetRequest() = default;
+	~GetRequest() = default;
 
 	GetRequest(const Key &a_key): key(a_key)
 	{
@@ -189,7 +189,7 @@ class UpdateThread : public Thread
 {
 public:
 	UpdateThread(const std::string &name) : Thread(name + "Update") {}
-	~UpdateThread() {}
+	~UpdateThread() = default;
 
 	void deferUpdate() { m_update_sem.post(); }
 

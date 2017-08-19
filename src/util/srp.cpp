@@ -31,13 +31,14 @@
 	#include <windows.h>
 	#include <wincrypt.h>
 #else
-	#include <time.h>
+	#include <ctime>
+
 #endif
 // clang-format on
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #include <config.h>
 

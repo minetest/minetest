@@ -48,7 +48,7 @@ private:
 
 public:
 	LuaCamera(Camera *m);
-	~LuaCamera() {}
+	~LuaCamera() = default;
 
 	static void create(lua_State *L, Camera *m);
 

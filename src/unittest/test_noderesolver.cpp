@@ -109,28 +109,28 @@ void TestNodeResolver::testNodeResolving(IWritableNodeDefManager *ndef)
 	Foobar foobar;
 	size_t i;
 
-	foobar.m_nodenames.push_back("default:torch");
+	foobar.m_nodenames.emplace_back("default:torch");
 
-	foobar.m_nodenames.push_back("default:dirt_with_grass");
-	foobar.m_nodenames.push_back("default:water");
-	foobar.m_nodenames.push_back("default:abloobloobloo");
-	foobar.m_nodenames.push_back("default:stone");
-	foobar.m_nodenames.push_back("default:shmegoldorf");
+	foobar.m_nodenames.emplace_back("default:dirt_with_grass");
+	foobar.m_nodenames.emplace_back("default:water");
+	foobar.m_nodenames.emplace_back("default:abloobloobloo");
+	foobar.m_nodenames.emplace_back("default:stone");
+	foobar.m_nodenames.emplace_back("default:shmegoldorf");
 	foobar.m_nnlistsizes.push_back(5);
 
-	foobar.m_nodenames.push_back("group:liquids");
+	foobar.m_nodenames.emplace_back("group:liquids");
 	foobar.m_nnlistsizes.push_back(1);
 
-	foobar.m_nodenames.push_back("default:warf");
-	foobar.m_nodenames.push_back("default:stone");
-	foobar.m_nodenames.push_back("default:bloop");
+	foobar.m_nodenames.emplace_back("default:warf");
+	foobar.m_nodenames.emplace_back("default:stone");
+	foobar.m_nodenames.emplace_back("default:bloop");
 	foobar.m_nnlistsizes.push_back(3);
 
 	foobar.m_nnlistsizes.push_back(0);
 
-	foobar.m_nodenames.push_back("default:brick");
-	foobar.m_nodenames.push_back("default:desert_stone");
-	foobar.m_nodenames.push_back("default:shnitzle");
+	foobar.m_nodenames.emplace_back("default:brick");
+	foobar.m_nodenames.emplace_back("default:desert_stone");
+	foobar.m_nodenames.emplace_back("default:shnitzle");
 
 	ndef->pendNodeResolve(&foobar);
 	UASSERT(foobar.m_ndef == ndef);
@@ -187,15 +187,15 @@ void TestNodeResolver::testPendingResolveCancellation(IWritableNodeDefManager *n
 	Foobaz foobaz1;
 	foobaz1.test_content1 = 1234;
 	foobaz1.test_content2 = 5678;
-	foobaz1.m_nodenames.push_back("default:dirt_with_grass");
-	foobaz1.m_nodenames.push_back("default:abloobloobloo");
+	foobaz1.m_nodenames.emplace_back("default:dirt_with_grass");
+	foobaz1.m_nodenames.emplace_back("default:abloobloobloo");
 	ndef->pendNodeResolve(&foobaz1);
 
 	Foobaz foobaz2;
 	foobaz2.test_content1 = 1234;
 	foobaz2.test_content2 = 5678;
-	foobaz2.m_nodenames.push_back("default:dirt_with_grass");
-	foobaz2.m_nodenames.push_back("default:abloobloobloo");
+	foobaz2.m_nodenames.emplace_back("default:dirt_with_grass");
+	foobaz2.m_nodenames.emplace_back("default:abloobloobloo");
 	ndef->pendNodeResolve(&foobaz2);
 
 	ndef->cancelNodeResolveCallback(&foobaz1);

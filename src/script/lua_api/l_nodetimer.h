@@ -51,7 +51,7 @@ private:
 
 public:
 	NodeTimerRef(v3s16 p, ServerEnvironment *env);
-	~NodeTimerRef();
+	~NodeTimerRef() = default;
 
 	// Creates an NodeTimerRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.

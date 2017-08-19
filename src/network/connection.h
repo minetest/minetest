@@ -133,16 +133,14 @@ inline bool seqnum_higher(u16 totest, u16 base)
 	{
 		if ((totest - base) > (SEQNUM_MAX/2))
 			return false;
-		else
-			return true;
+
+		return true;
 	}
-	else
-	{
-		if ((base - totest) > (SEQNUM_MAX/2))
-			return true;
-		else
-			return false;
-	}
+
+	if ((base - totest) > (SEQNUM_MAX/2))
+		return true;
+
+	return false;
 }
 
 inline bool seqnum_in_window(u16 seqnum, u16 next,u16 window_size)
@@ -150,14 +148,12 @@ inline bool seqnum_in_window(u16 seqnum, u16 next,u16 window_size)
 	u16 window_start = next;
 	u16 window_end   = ( next + window_size ) % (SEQNUM_MAX+1);
 
-	if (window_start < window_end)
-	{
+	if (window_start < window_end) {
 		return ((seqnum >= window_start) && (seqnum < window_end));
 	}
-	else
-	{
-		return ((seqnum < window_end) || (seqnum >= window_start));
-	}
+
+
+	return ((seqnum < window_end) || (seqnum >= window_start));
 }
 
 struct BufferedPacket
@@ -166,8 +162,7 @@ struct BufferedPacket
 		data(a_data, a_size)
 	{}
 	BufferedPacket(u32 a_size):
-		data(a_size), time(0.0), totaltime(0.0), absolute_send_time(-1),
-		resend_count(0)
+		data(a_size)
 	{}
 	Buffer<u8> data; // Data of the packet, including headers
 	float time = 0.0f; // Seconds from buffering the packet or re-sending
@@ -202,12 +197,13 @@ std::list<SharedBuffer<u8> > makeAutoSplitPacket(
 
 // Add the TYPE_RELIABLE header to the data
 SharedBuffer<u8> makeReliablePacket(
-		SharedBuffer<u8> data,
+		const SharedBuffer<u8> &data,
 		u16 seqnum);
 
 struct IncomingSplitPacket
 {
-	IncomingSplitPacket() {}
+	IncomingSplitPacket() = default;
+
 	// Key is chunk number, value is data without headers
 	std::map<u16, SharedBuffer<u8> > chunks;
 	u32 chunk_count;
@@ -315,7 +311,7 @@ typedef std::list<BufferedPacket>::iterator RPBSearchResult;
 class ReliablePacketBuffer
 {
 public:
-	ReliablePacketBuffer() {};
+	ReliablePacketBuffer() = default;
 
 	bool getFirstSeqnum(u16& result);
 
@@ -410,7 +406,7 @@ struct ConnectionCommand
 	bool reliable = false;
 	bool raw = false;
 
-	ConnectionCommand() {}
+	ConnectionCommand() = default;
 
 	void serve(Address address_)
 	{
@@ -501,8 +497,8 @@ public:
 
 	IncomingSplitBuffer incoming_splits;
 
-	Channel() {};
-	~Channel() {};
+	Channel() = default;
+	~Channel() = default;
 
 	void UpdatePacketLossCounter(unsigned int count);
 	void UpdatePacketTooLateCounter();
@@ -590,12 +586,8 @@ class PeerHandler
 {
 public:
 
-	PeerHandler()
-	{
-	}
-	virtual ~PeerHandler()
-	{
-	}
+	PeerHandler() = default;
+	virtual ~PeerHandler() = default;
 
 	/*
 		This is called after the Peer has been inserted into the
@@ -612,7 +604,7 @@ public:
 class PeerHelper
 {
 public:
-	PeerHelper() {};
+	PeerHelper() = default;;
 	PeerHelper(Peer* peer);
 	~PeerHelper();
 
@@ -744,7 +736,7 @@ class Peer {
 			float max_rtt = 0.0f;
 			float avg_rtt = -1.0f;
 
-			rttstats() {};
+			rttstats() = default;
 		};
 
 		rttstats m_rtt;
@@ -769,7 +761,7 @@ public:
 	friend class Connection;
 
 	UDPPeer(u16 a_id, Address a_address, Connection* connection);
-	virtual ~UDPPeer() {};
+	virtual ~UDPPeer() = default;
 
 	void PutReliableSendCommand(ConnectionCommand &c,
 							unsigned int max_packet_size);
@@ -841,7 +833,7 @@ struct ConnectionEvent
 	bool timeout = false;
 	Address address;
 
-	ConnectionEvent() {}
+	ConnectionEvent() = default;
 
 	std::string describe()
 	{

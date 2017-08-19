@@ -35,7 +35,7 @@ class ObjectRef : public ModApiBase {
 public:
 	ObjectRef(ServerActiveObject *object);
 
-	~ObjectRef();
+	~ObjectRef() = default;
 
 	// Creates an ObjectRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.

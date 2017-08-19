@@ -484,43 +484,35 @@ u32 TextureSource::getTextureId(const std::string &name)
 	/*
 		Get texture
 	*/
-	if (std::this_thread::get_id() == m_main_thread)
-	{
+	if (std::this_thread::get_id() == m_main_thread) {
 		return generateTexture(name);
 	}
-	else
-	{
-		infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
-		// We're gonna ask the result to be put into here
-		static ResultQueue<std::string, u32, u8, u8> result_queue;
 
-		// Throw a request in
-		m_get_texture_queue.add(name, 0, 0, &result_queue);
+	infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
-		/*infostream<<"Waiting for texture from main thread, name=\""
-				<<name<<"\""<<std::endl;*/
+	// We're gonna ask the result to be put into here
+	static ResultQueue<std::string, u32, u8, u8> result_queue;
 
-		try
-		{
-			while(true) {
-				// Wait result for a second
-				GetResult<std::string, u32, u8, u8>
-					result = result_queue.pop_front(1000);
+	// Throw a request in
+	m_get_texture_queue.add(name, 0, 0, &result_queue);
 
-				if (result.key == name) {
-					return result.item;
-				}
+	try {
+		while(true) {
+			// Wait result for a second
+			GetResult<std::string, u32, u8, u8>
+				result = result_queue.pop_front(1000);
+
+			if (result.key == name) {
+				return result.item;
 			}
 		}
-		catch(ItemNotFoundException &e)
-		{
-			errorstream<<"Waiting for texture " << name << " timed out."<<std::endl;
-			return 0;
-		}
+	} catch(ItemNotFoundException &e) {
+		errorstream << "Waiting for texture " << name << " timed out." << std::endl;
+		return 0;
 	}
 
-	infostream<<"getTextureId(): Failed"<<std::endl;
+	infostream << "getTextureId(): Failed" << std::endl;
 
 	return 0;
 }
@@ -673,7 +665,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 	// Only the main thread may load images
 	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	if (name == "")
+	if (name.empty())
 		return NULL;
 
 	auto it = m_palettes.find(name);

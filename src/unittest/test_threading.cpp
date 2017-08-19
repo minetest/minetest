@@ -166,16 +166,16 @@ void TestThreading::testAtomicSemaphoreThread()
 	static const u8 num_threads = 4;
 
 	AtomicTestThread *threads[num_threads];
-	for (u8 i = 0; i < num_threads; ++i) {
-		threads[i] = new AtomicTestThread(val, trigger);
-		UASSERT(threads[i]->start());
+	for (auto &thread : threads) {
+		thread = new AtomicTestThread(val, trigger);
+		UASSERT(thread->start());
 	}
 
 	trigger.post(num_threads);
 
-	for (u8 i = 0; i < num_threads; ++i) {
-		threads[i]->wait();
-		delete threads[i];
+	for (AtomicTestThread *thread : threads) {
+		thread->wait();
+		delete thread;
 	}
 
 	UASSERT(val == num_threads * 0x10000);

@@ -70,7 +70,7 @@ private:
 
 public:
 	LuaLocalPlayer(LocalPlayer *m);
-	~LuaLocalPlayer() {}
+	~LuaLocalPlayer() = default;
 
 	static void create(lua_State *L, LocalPlayer *m);
 

@@ -37,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#include <endian.h>
 	#endif
 #endif
-#include <string.h> // for memcpy
+#include <cstring> // for memcpy
 #include <iostream>
 #include <string>
 #include <vector>

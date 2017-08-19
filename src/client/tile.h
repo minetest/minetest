@@ -237,6 +237,8 @@ struct TileLayer
 		case TILE_MATERIAL_LIQUID_TRANSPARENT:
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			break;
+		default:
+			break;
 		}
 		material.BackfaceCulling = (material_flags & MATERIAL_FLAG_BACKFACE_CULLING) != 0;
 		if (!(material_flags & MATERIAL_FLAG_TILEABLE_HORIZONTAL)) {
@@ -304,8 +306,8 @@ struct TileLayer
 struct TileSpec
 {
 	TileSpec() {
-		for (int layer = 0; layer < MAX_TILE_LAYERS; layer++)
-			layers[layer] = TileLayer();
+		for (auto &layer : layers)
+			layer = TileLayer();
 	}
 
 	/*!
