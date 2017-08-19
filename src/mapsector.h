@@ -43,8 +43,6 @@ public:
 	MapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
 	virtual ~MapSector();
 
-	virtual u32 getId() const = 0;
-
 	void deleteBlocks();
 
 	v2s16 getPos()
@@ -63,9 +61,6 @@ public:
 	void getBlocks(MapBlockVect &dest);
 
 	bool empty() const { return m_blocks.empty(); }
-
-	// Always false at the moment, because sector contains no metadata.
-	bool differs_from_disk = false;
 
 protected:
 
@@ -89,48 +84,3 @@ protected:
 	MapBlock *getBlockBuffered(s16 y);
 
 };
-
-class ServerMapSector : public MapSector
-{
-public:
-	ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
-	~ServerMapSector() = default;
-
-	u32 getId() const
-	{
-		return MAPSECTOR_SERVER;
-	}
-
-	/*
-		These functions handle metadata.
-		They do not handle blocks.
-	*/
-
-	void serialize(std::ostream &os, u8 version);
-
-	static ServerMapSector* deSerialize(
-			std::istream &is,
-			Map *parent,
-			v2s16 p2d,
-			std::map<v2s16, MapSector*> & sectors,
-			IGameDef *gamedef
-		);
-
-private:
-};
-
-#ifndef SERVER
-class ClientMapSector : public MapSector
-{
-public:
-	ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef);
-	~ClientMapSector() = default;
-
-	u32 getId() const
-	{
-		return MAPSECTOR_CLIENT;
-	}
-
-private:
-};
-#endif
