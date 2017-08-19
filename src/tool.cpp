@@ -139,8 +139,8 @@ DigParams getDigParams(const ItemGroupList &groups,
 	if(time_from_last_punch < tp->full_punch_interval){
 		float f = time_from_last_punch / tp->full_punch_interval;
 		//infostream<<"f="<<f<<std::endl;
-		result_time /= f;
-		result_wear /= f;
+		result_time *= f;
+		result_wear *= f;
 	}
 
 	u16 wear_i = 65535.*result_wear;
@@ -157,6 +157,7 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 		const ToolCapabilities *tp, float time_from_last_punch)
 {
 	s16 damage = 0;
+	float result_wear = 0.0;
 	float full_punch_interval = tp->full_punch_interval;
 
 	for (DamageGroup::const_iterator i = tp->damageGroups.begin();
@@ -166,7 +167,24 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 				* armor / 100.0;
 	}
 
-	return HitParams(damage, 0);
+	for (std::map<std::string, ToolGroupCap>::const_iterator
+			i = tp->groupcaps.begin(); i != tp->groupcaps.end(); ++i) {
+		const ToolGroupCap &cap = i->second;
+
+		if (cap.uses != 0)
+			result_wear = 1.0 / cap.uses / pow(3.0, (double)(cap.maxlevel - 1.0));
+		else
+			result_wear = 0;
+	}
+
+	if (time_from_last_punch < tp->full_punch_interval) {
+		float f = time_from_last_punch / tp->full_punch_interval;
+		//infostream<<"f="<<f<<std::endl;
+		result_wear *= f;
+	}
+	u16 wear_i = 65535. * result_wear;
+
+	return HitParams(damage, wear_i);
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
