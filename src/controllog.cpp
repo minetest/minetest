@@ -18,10 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "controllog.h"
-
-ControlLog::ControlLog()
-{
-}
+#include <sstream>
 
 ControlLogEntry::ControlLogEntry()
 {
@@ -184,3 +181,138 @@ float ControlLogEntry::getJoySidew() const
 {
 	return joy_sidew / 127.0f;
 }
+
+u8 ControlLogEntry::serDtime() const
+{
+	return (u8)dtime;
+}
+u8 ControlLogEntry::serSettings() const
+{
+	u8 result = 0;
+	if (free_move)
+		result = result | 0x01;
+	if (fast_move)
+		result = result | 0x02;
+	if (continuous_forward)
+		result = result | 0x04;
+	if (always_fly_fast)
+		result = result | 0x08;
+	if (aux1_descends)
+		result = result | 0x10;
+	return result;
+}
+u8 ControlLogEntry::serKeys() const
+{
+	u8 result = 0;
+	if (up)
+		result = result | 0x01;
+	if (down)
+		result = result | 0x02;
+	if (left)
+		result = result | 0x04;
+	if (right)
+		result = result | 0x08;
+	if (jump)
+		result = result | 0x10;
+	if (sneak)
+		result = result | 0x20;
+	if (aux1)
+		result = result | 0x40;
+	return result;
+}
+u16 ControlLogEntry::serYawPitch() const
+{
+	u16 result = 0;
+	result = result | (yaw & 0x1ff << 7);
+	result = result | (pitch & 0x7f);
+	return result;
+}
+s8 ControlLogEntry::serJoyForw() const
+{
+	return joy_forw;
+}
+s8 ControlLogEntry::serJoySidew() const
+{
+	return joy_sidew;
+}
+bool ControlLogEntry::matches(const ControlLogEntry &other) const
+{
+	return false;
+}
+void ControlLogEntry::merge(const ControlLogEntry &other)
+{
+}
+
+
+
+ControlLog::ControlLog()
+{
+}
+
+void ControlLog::add(ControlLogEntry &cle)
+{
+	ControlLogEntry &cur = log.back();
+	if (cur.matches(cle)) {
+		cur.merge(cle); // in-place
+	} else {
+		log.push_back(cle);
+	}
+}
+
+// TODO: operator<<
+std::string ControlLog::serialize(u32 dtime)
+{
+	// loop to find flags (with/without joystick)
+	u8 flags = 0;
+	u16 bytes = 0; // will calculate later
+	bool settings_included = false;
+
+	std::stringstream output;
+
+	output << version;
+	output << flags;
+	output << bytes;
+
+	output << starttime;
+
+	int motion_model = 1;
+	int motion_model_version = 1;
+
+	output << (u8)motion_model << (u8)motion_model_version;
+	while (dtime >= 0 && output.tellp() && !log.empty()) {
+		ControlLogEntry cle = log.front();
+		log.pop_front();
+		if (cle.serSettings() != last_acked_settings && !settings_included) {
+			output << (u8)255 << cle.serSettings();
+			settings_included = true;
+		}
+		u16 overtime = 0;
+		if (cle.getDtime() > 200) {
+			overtime = cle.getDtime() - 200;
+			cle.setDtime(200);
+		}
+		output << cle.serDtime() << cle.serKeys() << cle.serYawPitch();
+		if (flags & 0x01) { // joystick
+			output << cle.serJoyForw() << cle.serJoySidew();
+		}
+		if (overtime) {
+			output << (u8)254 << (u16)overtime;
+		}
+	}
+	if (!log.empty()) {
+		output << (u8)253;
+	}
+
+	u16 len = output.tellp();
+	std::string str = output.str();
+	// inject the (total) length into the output
+	str[2] = (char)((len >> 8) & 0xff);
+	str[3] = (char)(len & 0xff);
+
+	return str;
+}
+
+void ControlLog::deserialize(const std::string logbytes)
+{
+}
+

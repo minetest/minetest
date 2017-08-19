@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define CONTROLLOG_HEADER
 
 #include "irrlichttypes_bloated.h"
+#include <deque>
+#include <string>
 
 /*
 
@@ -100,6 +102,16 @@ public:
 	void setJoySidew(float joy_sidew);
 	float getJoySidew() const;
 
+	bool matches(const ControlLogEntry &other) const;
+	void merge(const ControlLogEntry &other);
+
+	u8 serDtime() const;
+	u8 serSettings() const;
+	u16 serYawPitch() const;
+	u8 serKeys() const;
+	s8 serJoyForw() const;
+	s8 serJoySidew() const;
+
 private:
 	u16 dtime;
 
@@ -129,8 +141,15 @@ class ControlLog
 {
 public:
 	ControlLog();
+	void add(ControlLogEntry &cle); // position, too?
+	std::string serialize(u32 dtime); // up to dtime
+	void deserialize(const std::string logbytes);
+	void acknowledge(u32 dtime); // removes entries
 private:
-	u8 version;
+	u8 version; // agreed-upon version
+	u32 starttime = 0;
+	u8 last_acked_settings = 0;
+	std::deque<ControlLogEntry> log;
 };
 
 #endif

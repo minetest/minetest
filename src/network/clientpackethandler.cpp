@@ -125,6 +125,7 @@ void Client::handleCommand_AuthAccept(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	player->setPosition(playerpos);
+	// SERVER SIDE MOVEMENT: init control log here
 
 	infostream << "Client: received map seed: " << m_map_seed << std::endl;
 	infostream << "Client: received recommended send interval "
