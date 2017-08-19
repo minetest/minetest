@@ -30,7 +30,8 @@ class NetworkPacket
 public:
 		NetworkPacket(u16 command, u32 datasize, u16 peer_id);
 		NetworkPacket(u16 command, u32 datasize);
-		NetworkPacket() {}
+		NetworkPacket() = default;
+
 		~NetworkPacket();
 
 		void putRawPacket(u8 *data, u32 datasize, u16 peer_id);

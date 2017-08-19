@@ -51,7 +51,7 @@ private:
 
 public:
 	LuaMinimap(Minimap *m);
-	~LuaMinimap() {}
+	~LuaMinimap() = default;
 
 	static void create(lua_State *L, Minimap *object);
 

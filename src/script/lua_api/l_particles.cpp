@@ -53,8 +53,8 @@ int ModApiParticles::l_add_particle(lua_State *L)
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
 
-	std::string texture = "";
-	std::string playername = "";
+	std::string texture;
+	std::string playername;
 
 	u8 glow = 0;
 
@@ -158,8 +158,8 @@ int ModApiParticles::l_add_particlespawner(lua_State *L)
 	struct TileAnimationParams animation;
 	animation.type = TAT_NONE;
 	ServerActiveObject *attached = NULL;
-	std::string texture = "";
-	std::string playername = "";
+	std::string texture;
+	std::string playername;
 	u8 glow = 0;
 
 	if (lua_gettop(L) > 1) //deprecated
@@ -262,7 +262,7 @@ int ModApiParticles::l_delete_particlespawner(lua_State *L)
 
 	// Get parameters
 	u32 id = luaL_checknumber(L, 1);
-	std::string playername = "";
+	std::string playername;
 	if (lua_gettop(L) == 2) {
 		playername = luaL_checkstring(L, 2);
 	}

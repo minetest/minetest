@@ -113,10 +113,6 @@ NodeTimerRef::NodeTimerRef(v3s16 p, ServerEnvironment *env):
 {
 }
 
-NodeTimerRef::~NodeTimerRef()
-{
-}
-
 // Creates an NodeTimerRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
 void NodeTimerRef::create(lua_State *L, v3s16 p, ServerEnvironment *env)

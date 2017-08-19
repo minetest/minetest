@@ -106,7 +106,7 @@ private:
 public:
 	InvRef(const InventoryLocation &loc);
 
-	~InvRef();
+	~InvRef() = default;
 
 	// Creates an InvRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.

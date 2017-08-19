@@ -35,6 +35,8 @@ public:
 	Semaphore(int val = 0);
 	~Semaphore();
 
+	DISABLE_CLASS_COPY(Semaphore);
+
 	void post(unsigned int num = 1);
 	void wait();
 	bool wait(unsigned int time_ms);
@@ -47,6 +49,4 @@ private:
 #else
 	sem_t semaphore;
 #endif
-
-	DISABLE_CLASS_COPY(Semaphore);
 };

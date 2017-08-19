@@ -173,7 +173,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 		return;
 	}
 
-	if (string_allowed(playerName, PLAYERNAME_ALLOWED_CHARS) == false) {
+	if (!string_allowed(playerName, PLAYERNAME_ALLOWED_CHARS)) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_CHARS_IN_NAME);
@@ -199,8 +199,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
 					<< reason << std::endl;
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING,
-					reason.c_str());
+			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_CUSTOM_STRING, reason);
 			return;
 		}
 	}
@@ -468,7 +467,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 		return;
 	}
 
-	if (string_allowed(playername, PLAYERNAME_ALLOWED_CHARS) == false) {
+	if (!string_allowed(playername, PLAYERNAME_ALLOWED_CHARS)) {
 		actionstream << "Server: Player with an invalid name "
 				<< "tried to connect from " << addr_s << std::endl;
 		DenyAccess_Legacy(pkt->getPeerId(), L"Name contains unallowed characters");
@@ -489,7 +488,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 					<< "tried to connect from " << addr_s << " "
 					<< "but it was disallowed for the following reason: "
 					<< reason << std::endl;
-			DenyAccess_Legacy(pkt->getPeerId(), utf8_to_wide(reason.c_str()));
+			DenyAccess_Legacy(pkt->getPeerId(), utf8_to_wide(reason));
 			return;
 		}
 	}
@@ -539,7 +538,7 @@ void Server::handleCommand_Init_Legacy(NetworkPacket* pkt)
 	if (!has_auth) {
 		if (!isSingleplayer() &&
 				g_settings->getBool("disallow_empty_password") &&
-				std::string(given_password) == "") {
+				std::string(given_password).empty()) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password" << std::endl;
 			DenyAccess_Legacy(pkt->getPeerId(), L"Empty passwords are "
@@ -1637,7 +1636,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		RemoteClient *client = getClient(pkt->getPeerId());
 		v3s16 blockpos = getNodeBlockPos(floatToInt(pointed_pos_above, BS));
 		v3s16 blockpos2 = getNodeBlockPos(floatToInt(pointed_pos_under, BS));
-		if (item.getDefinition(m_itemdef).node_placement_prediction != "") {
+		if (!item.getDefinition(m_itemdef).node_placement_prediction.empty()) {
 			client->SetBlockNotSent(blockpos);
 			if (blockpos2 != blockpos) {
 				client->SetBlockNotSent(blockpos2);
@@ -1895,10 +1894,10 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
 			return;
-		} else {
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-			return;
 		}
+
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+		return;
 	}
 
 	std::string bytes_A;
@@ -1967,10 +1966,10 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
 			return;
-		} else {
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-			return;
 		}
+
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+		return;
 	}
 
 	NetworkPacket resp_pkt(TOCLIENT_SRP_BYTES_S_B, 0, pkt->getPeerId());
@@ -2004,10 +2003,10 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		if (wantSudo) {
 			DenySudoAccess(pkt->getPeerId());
 			return;
-		} else {
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
-			return;
 		}
+
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_UNEXPECTED_DATA);
+		return;
 	}
 
 	std::string bytes_M;
@@ -2035,14 +2034,14 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 				<< " (SRP) password for authentication." << std::endl;
 			DenySudoAccess(pkt->getPeerId());
 			return;
-		} else {
-			actionstream << "Server: User " << client->getName()
-				<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
-				<< " supplied wrong password (auth mechanism: SRP)."
-				<< std::endl;
-			DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
-			return;
 		}
+
+		actionstream << "Server: User " << client->getName()
+			<< " at " << getPeerAddress(pkt->getPeerId()).serializeString()
+			<< " supplied wrong password (auth mechanism: SRP)."
+			<< std::endl;
+		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_WRONG_PASSWORD);
+		return;
 	}
 
 	if (client->create_player_on_auth_success) {

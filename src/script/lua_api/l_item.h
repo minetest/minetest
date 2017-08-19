@@ -121,7 +121,7 @@ private:
 
 public:
 	LuaItemStack(const ItemStack &item);
-	~LuaItemStack();
+	~LuaItemStack() = default;
 
 	const ItemStack& getItem() const;
 	ItemStack& getItem();

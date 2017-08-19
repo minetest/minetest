@@ -80,7 +80,7 @@ public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
 	NodeMetaRef(Metadata *meta);
 
-	~NodeMetaRef();
+	~NodeMetaRef() = default;
 
 	// Creates an NodeMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.

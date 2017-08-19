@@ -409,10 +409,6 @@ InvRef::InvRef(const InventoryLocation &loc):
 {
 }
 
-InvRef::~InvRef()
-{
-}
-
 // Creates an InvRef and leaves it on top of stack
 // Not callable from Lua; all references are created on the C side.
 void InvRef::create(lua_State *L, const InventoryLocation &loc)

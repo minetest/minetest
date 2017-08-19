@@ -69,7 +69,7 @@ void ModApiHttp::read_http_fetch_request(lua_State *L, HTTPFetchRequest &req)
 		while (lua_next(L, 2) != 0)
 		{
 			const char *header = luaL_checkstring(L, -1);
-			req.extra_headers.push_back(header);
+			req.extra_headers.emplace_back(header);
 			lua_pop(L, 1);
 		}
 	}

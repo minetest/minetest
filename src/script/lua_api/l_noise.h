@@ -43,7 +43,7 @@ private:
 
 public:
 	LuaPerlinNoise(NoiseParams *params);
-	~LuaPerlinNoise();
+	~LuaPerlinNoise() = default;
 
 	// LuaPerlinNoise(seed, octaves, persistence, scale)
 	// Creates an LuaPerlinNoise and leaves it on top of stack

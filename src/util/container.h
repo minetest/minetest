@@ -79,7 +79,7 @@ template<typename Key, typename Value>
 class MutexedMap
 {
 public:
-	MutexedMap() {}
+	MutexedMap() = default;
 
 	void set(const Key &name, const Value &value)
 	{
@@ -128,7 +128,8 @@ public:
 	template<typename Key, typename U, typename Caller, typename CallerData>
 	friend class RequestQueue;
 
-	MutexedQueue() {}
+	MutexedQueue() = default;
+
 	bool empty() const
 	{
 		MutexAutoLock lock(m_mutex);
@@ -153,9 +154,9 @@ public:
 			T t = m_queue.front();
 			m_queue.pop_front();
 			return t;
-		} else {
-			return T();
 		}
+
+		return T();
 	}
 
 	T pop_front(u32 wait_time_max_ms)
@@ -166,9 +167,9 @@ public:
 			T t = m_queue.front();
 			m_queue.pop_front();
 			return t;
-		} else {
-			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
+
+		throw ItemNotFoundException("MutexedQueue: queue is empty");
 	}
 
 	T pop_frontNoEx()
@@ -190,9 +191,9 @@ public:
 			T t = m_queue.back();
 			m_queue.pop_back();
 			return t;
-		} else {
-			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
+
+		throw ItemNotFoundException("MutexedQueue: queue is empty");
 	}
 
 	/* this version of pop_back returns a empty element of T on timeout.
@@ -206,9 +207,9 @@ public:
 			T t = m_queue.back();
 			m_queue.pop_back();
 			return t;
-		} else {
-			return T();
 		}
+
+		return T();
 	}
 
 	T pop_backNoEx()

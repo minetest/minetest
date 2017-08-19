@@ -31,37 +31,36 @@ class TestFailedException : public std::exception {
 };
 
 // Runs a unit test and reports results
-#define TEST(fxn, ...) do {                                                   \
-	u64 t1 = porting::getTimeMs();                                            \
-	try {                                                                     \
-		fxn(__VA_ARGS__);                                                     \
-		rawstream << "[PASS] ";                                               \
-	} catch (TestFailedException &e) {                                        \
-		rawstream << "[FAIL] ";                                               \
-		num_tests_failed++;                                                   \
-	} catch (std::exception &e) {                                             \
-		rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
-		rawstream << "[FAIL] ";                                               \
-		num_tests_failed++;                                                   \
-	}                                                                         \
-	num_tests_run++;                                                          \
-	u64 tdiff = porting::getTimeMs() - t1;                                    \
-	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
-} while (0)
+#define TEST(fxn, ...) {                                                      \
+    u64 t1 = porting::getTimeMs();                                            \
+    try {                                                                     \
+        fxn(__VA_ARGS__);                                                     \
+        rawstream << "[PASS] ";                                               \
+    } catch (TestFailedException &e) {                                        \
+        rawstream << "[FAIL] ";                                               \
+        num_tests_failed++;                                                   \
+    } catch (std::exception &e) {                                             \
+        rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
+        rawstream << "[FAIL] ";                                               \
+        num_tests_failed++;                                                   \
+    }                                                                         \
+    num_tests_run++;                                                          \
+    u64 tdiff = porting::getTimeMs() - t1;                                    \
+    rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
+}
 
 // Asserts the specified condition is true, or fails the current unit test
-#define UASSERT(x) do {                                         \
+#define UASSERT(x)                                              \
 	if (!(x)) {                                                 \
 		rawstream << "Test assertion failed: " #x << std::endl  \
 			<< "    at " << fs::GetFilenameFromPath(__FILE__)   \
 			<< ":" << __LINE__ << std::endl;                    \
 		throw TestFailedException();                            \
-	}                                                           \
-} while (0)
+	}
 
 // Asserts the specified condition is true, or fails the current unit test
 // and prints the format specifier fmt
-#define UTEST(x, fmt, ...) do {                                          \
+#define UTEST(x, fmt, ...)                                               \
 	if (!(x)) {                                                          \
 		char utest_buf[1024];                                            \
 		snprintf(utest_buf, sizeof(utest_buf), fmt, __VA_ARGS__);        \
@@ -69,8 +68,7 @@ class TestFailedException : public std::exception {
 			<< "    at " << fs::GetFilenameFromPath(__FILE__)            \
 			<< ":" << __LINE__ << std::endl;                             \
 		throw TestFailedException();                                     \
-	}                                                                    \
-} while (0)
+	}
 
 // Asserts the comparison specified by CMP is true, or fails the current unit test
 #define UASSERTCMP(T, CMP, actual, expected) do {                         \

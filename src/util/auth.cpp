@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "base64.h"
 #include "sha1.h"
 #include "srp.h"
-#include "string.h"
+#include "util/string.h"
 #include "debug.h"
 
 // Get an sha-1 hash of the player's name combined with
