@@ -498,8 +498,8 @@ void ServerEnvironment::saveLoadedPlayers()
 	fs::CreateDir(players_path);
 
 	for (RemotePlayer *player : m_players) {
-		if (player->checkModified() ||
-			(player->getPlayerSAO() && player->getPlayerSAO()->extendedAttributesModified())) {
+		if (player->checkModified() || (player->getPlayerSAO() && 
+				player->getPlayerSAO()->extendedAttributesModified())) {
 			try {
 				m_player_database->savePlayer(player);
 			} catch (DatabaseException &e) {
