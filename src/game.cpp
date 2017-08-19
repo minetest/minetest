@@ -54,6 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "server.h"
 #include "settings.h"
+#include "shader.h"
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
@@ -66,8 +67,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #if USE_SOUND
 	#include "sound_openal.h"
-#include "shader.h"
-
 #endif
 
 extern Settings *g_settings;
