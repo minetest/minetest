@@ -697,7 +697,7 @@ struct SRPVerifier *srp_verifier_new(SRP_HashAlgorithm alg,
 		goto cleanup_and_exit;
 	}
 
-	memcpy((char *)ver->username, username, ulen);
+	memcpy(ver->username, username, ulen);
 
 	ver->authenticated = 0;
 
