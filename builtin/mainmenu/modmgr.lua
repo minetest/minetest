@@ -461,7 +461,8 @@ function modmgr.preparemodlist(data)
 		retval[#retval + 1] = {
 			typ = "game",
 			is_game_content = true,
-			name = fgettext("Subgame Mods")
+			name = fgettext("Subgame Mods"),
+			mp_level = -1,
 		}
 	end
 
