@@ -397,15 +397,15 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 				nodebox.wall_side.MaxEdge
 			};
 
-			for (v3f &vertice : vertices) {
+			for (v3f &vertex : vertices) {
 				if(dir == v3s16(-1,0,0))
-					vertice.rotateXZBy(0);
+					vertex.rotateXZBy(0);
 				if(dir == v3s16(1,0,0))
-					vertice.rotateXZBy(180);
+					vertex.rotateXZBy(180);
 				if(dir == v3s16(0,0,-1))
-					vertice.rotateXZBy(90);
+					vertex.rotateXZBy(90);
 				if(dir == v3s16(0,0,1))
-					vertice.rotateXZBy(-90);
+					vertex.rotateXZBy(-90);
 			}
 
 			aabb3f box = aabb3f(vertices[0]);

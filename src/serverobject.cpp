@@ -30,10 +30,6 @@ ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 {
 }
 
-ServerActiveObject::~ServerActiveObject()
-{
-}
-
 ServerActiveObject* ServerActiveObject::create(ActiveObjectType type,
 		ServerEnvironment *env, u16 id, v3f pos,
 		const std::string &data)

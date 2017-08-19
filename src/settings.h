@@ -72,7 +72,7 @@ struct ValueSpec {
 };
 
 struct SettingsEntry {
-	SettingsEntry() {}
+	SettingsEntry() = default;
 
 	SettingsEntry(const std::string &value_) :
 		value(value_)
@@ -92,7 +92,8 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
-	Settings() {}
+	Settings() = default;
+
 	~Settings();
 
 	Settings & operator += (const Settings &other);

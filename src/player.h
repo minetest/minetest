@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct PlayerControl
 {
-	PlayerControl() {}
+	PlayerControl() = default;
 
 	PlayerControl(
 		bool a_up,

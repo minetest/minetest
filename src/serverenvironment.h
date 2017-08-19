@@ -49,8 +49,8 @@ class ServerScripting;
 class ActiveBlockModifier
 {
 public:
-	ActiveBlockModifier(){};
-	virtual ~ActiveBlockModifier(){};
+	ActiveBlockModifier() = default;
+	virtual ~ActiveBlockModifier() = default;
 
 	// Set of contents to trigger on
 	virtual const std::set<std::string> &getTriggerContents() const = 0;
@@ -84,7 +84,8 @@ struct LoadingBlockModifierDef
 	std::string name;
 	bool run_at_every_load = false;
 
-	virtual ~LoadingBlockModifierDef() {}
+	virtual ~LoadingBlockModifierDef() = default;
+
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 };
 
@@ -106,7 +107,7 @@ struct LBMContentMapping
 class LBMManager
 {
 public:
-	LBMManager() {}
+	LBMManager() = default;
 	~LBMManager();
 
 	// Don't call this after loadIntroductionTimes() ran.

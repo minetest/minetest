@@ -59,7 +59,7 @@ namespace porting
 
 bool g_killed = false;
 
-bool * signal_handler_killstatus(void)
+bool *signal_handler_killstatus()
 {
 	return &g_killed;
 }
@@ -167,7 +167,7 @@ bool detectMSVCBuildDir(const std::string &path)
 		"bin\\Build",
 		NULL
 	};
-	return (removeStringEnd(path, ends) != "");
+	return (!removeStringEnd(path, ends).empty());
 }
 
 std::string get_sysinfo()
@@ -388,7 +388,7 @@ bool setSystemPaths()
 	// It is identified by containing the subdirectory "builtin".
 	std::list<std::string> trylist;
 	std::string static_sharedir = STATIC_SHAREDIR;
-	if (static_sharedir != "" && static_sharedir != ".")
+	if (!static_sharedir.empty() && static_sharedir != ".")
 		trylist.push_back(static_sharedir);
 
 	trylist.push_back(bindir + DIR_DELIM ".." DIR_DELIM "share"
@@ -623,7 +623,7 @@ bool secure_rand_fill_buf(void *buf, size_t len)
 
 #endif
 
-void attachOrCreateConsole(void)
+void attachOrCreateConsole()
 {
 #ifdef _WIN32
 	static bool consoleAllocated = false;

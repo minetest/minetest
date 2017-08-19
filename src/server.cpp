@@ -359,10 +359,8 @@ Server::~Server()
 	delete m_script;
 
 	// Delete detached inventories
-	for (std::map<std::string, Inventory*>::iterator
-			i = m_detached_inventories.begin();
-			i != m_detached_inventories.end(); ++i) {
-		delete i->second;
+	for (auto &detached_inventory : m_detached_inventories) {
+		delete detached_inventory.second;
 	}
 }
 
@@ -2298,14 +2296,12 @@ void Server::fillMediaCache()
 	paths.push_back(porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server");
 
 	// Collect media file information from paths into cache
-	for(std::vector<std::string>::iterator i = paths.begin();
-			i != paths.end(); ++i) {
-		std::string mediapath = *i;
+	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
-		for (u32 j = 0; j < dirlist.size(); j++) {
-			if (dirlist[j].dir) // Ignode dirs
+		for (const fs::DirListNode &dln : dirlist) {
+			if (dln.dir) // Ignode dirs
 				continue;
-			std::string filename = dirlist[j].name;
+			std::string filename = dln.name;
 			// If name contains illegal characters, ignore the file
 			if (!string_allowed(filename, TEXTURENAME_ALLOWED_CHARS)) {
 				infostream<<"Server: ignoring illegal file name: \""
@@ -2326,7 +2322,9 @@ void Server::fillMediaCache()
 				continue;
 			}
 			// Ok, attempt to load the file and add to cache
-			std::string filepath = mediapath + DIR_DELIM + filename;
+			std::string filepath;
+			filepath.append(mediapath).append(DIR_DELIM).append(filename);
+
 			// Read data
 			std::ifstream fis(filepath.c_str(), std::ios_base::binary);
 			if (!fis.good()) {

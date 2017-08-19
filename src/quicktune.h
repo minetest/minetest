@@ -58,7 +58,7 @@ enum QuicktuneValueType{
 };
 struct QuicktuneValue
 {
-	QuicktuneValueType type;
+	QuicktuneValueType type = QVT_NONE;
 	union{
 		struct{
 			float current;
@@ -66,12 +66,10 @@ struct QuicktuneValue
 			float max;
 		} value_QVT_FLOAT;
 	};
-	bool modified;
+	bool modified = false;
 
-	QuicktuneValue():
-		type(QVT_NONE),
-		modified(false)
-	{}
+	QuicktuneValue() = default;
+
 	std::string getString();
 	void relativeAdd(float amount);
 };

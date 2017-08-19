@@ -49,8 +49,8 @@ struct ShaderInfo {
 	u8 drawtype = 0;
 	u8 material_type = 0;
 
-	ShaderInfo() {}
-	virtual ~ShaderInfo() {}
+	ShaderInfo() = default;
+	virtual ~ShaderInfo() = default;
 };
 
 /*
@@ -64,7 +64,7 @@ namespace irr { namespace video {
 
 class IShaderConstantSetter {
 public:
-	virtual ~IShaderConstantSetter(){};
+	virtual ~IShaderConstantSetter() = default;
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
 };
@@ -72,7 +72,7 @@ public:
 
 class IShaderConstantSetterFactory {
 public:
-	virtual ~IShaderConstantSetterFactory() {};
+	virtual ~IShaderConstantSetterFactory() = default;
 	virtual IShaderConstantSetter* create() = 0;
 };
 
@@ -122,8 +122,9 @@ public:
 
 class IShaderSource {
 public:
-	IShaderSource(){}
-	virtual ~IShaderSource(){}
+	IShaderSource() = default;
+	virtual ~IShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
@@ -133,8 +134,9 @@ public:
 
 class IWritableShaderSource : public IShaderSource {
 public:
-	IWritableShaderSource(){}
-	virtual ~IWritableShaderSource(){}
+	IWritableShaderSource() = default;
+	virtual ~IWritableShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}

@@ -37,7 +37,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <AL/alext.h>
 #endif
 #include <vorbis/vorbisfile.h>
-#include <assert.h>
+#include <cassert>
 #include "log.h"
 #include "util/numeric.h" // myrand()
 #include "porting.h"

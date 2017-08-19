@@ -28,16 +28,16 @@ private:
 	u32 m_selected_i;
 	std::string m_message;
 public:
-	bool hasMessage()
+	bool hasMessage() const
 	{
-		return m_message != "";
+		return !m_message.empty();
 	}
 
 	std::string getMessage()
 	{
 		std::string s = m_message;
 		m_message = "";
-		if(s != "")
+		if (!s.empty())
 			return std::string("[quicktune] ") + s;
 		return "";
 	}
