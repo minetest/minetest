@@ -268,12 +268,12 @@ inline v3f intToFloat(v3s16 p, f32 d)
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
 	return aabb3f(
-		(float)p.X * d - 0.5 * d,
-		(float)p.Y * d - 0.5 * d,
-		(float)p.Z * d - 0.5 * d,
-		(float)p.X * d + 0.5 * d,
-		(float)p.Y * d + 0.5 * d,
-		(float)p.Z * d + 0.5 * d
+		(float)p.X * d - 0.5f * d,
+		(float)p.Y * d - 0.5f * d,
+		(float)p.Z * d - 0.5f * d,
+		(float)p.X * d + 0.5f * d,
+		(float)p.Y * d + 0.5f * d,
+		(float)p.Z * d + 0.5f * d
 	);
 }
 

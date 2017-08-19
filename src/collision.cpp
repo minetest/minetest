@@ -227,13 +227,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Calculate new velocity
 	*/
-	if (dtime > 0.5) {
+	if (dtime > 0.5f) {
 		if (!time_notification_done) {
 			time_notification_done = true;
 			infostream << "collisionMoveSimple: maximum step interval exceeded,"
 					" lost movement details!"<<std::endl;
 		}
-		dtime = 0.5;
+		dtime = 0.5f;
 	} else {
 		time_notification_done = false;
 	}
@@ -259,7 +259,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	v3f newpos_f = *pos_f + *speed_f * dtime;
 	v3f minpos_f(
 		MYMIN(pos_f->X, newpos_f.X),
-		MYMIN(pos_f->Y, newpos_f.Y) + 0.01 * BS, // bias rounding, player often at +/-n.5
+		MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5
 		MYMIN(pos_f->Z, newpos_f.Z)
 	);
 	v3f maxpos_f(
@@ -355,7 +355,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (c_env != 0) {
 			f32 distance = speed_f->getLength();
 			std::vector<DistanceSortedActiveObject> clientobjects;
-			c_env->getActiveObjects(*pos_f, distance * 1.5, clientobjects);
+			c_env->getActiveObjects(*pos_f, distance * 1.5f, clientobjects);
 			for (auto &clientobject : clientobjects) {
 				if (!self || (self != clientobject.obj)) {
 					objects.push_back((ActiveObject*) clientobject.obj);
@@ -369,7 +369,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (s_env != NULL) {
 				f32 distance = speed_f->getLength();
 				std::vector<u16> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5);
+				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5f);
 				for (u16 obj_id : s_objects) {
 					ServerActiveObject *current = s_env->getActiveObject(obj_id);
 					if (!self || (self != current)) {
@@ -401,7 +401,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision uncertainty radius
 		Make it a bit larger than the maximum distance of movement
 	*/
-	f32 d = pos_max_d * 1.1;
+	f32 d = pos_max_d * 1.1f;
 	// A fairly large value in here makes moving smoother
 	//f32 d = 0.15*BS;
 
@@ -410,7 +410,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	int loopcount = 0;
 
-	while(dtime > BS * 1e-10) {
+	while(dtime > BS * 1e-10f) {
 		//TimeTaker tt3("collisionMoveSimple dtime loop");
         	ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
 
@@ -468,7 +468,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 							d));
 
 			// Get bounce multiplier
-			float bounce = -(float)nearest_info.bouncy / 100.0;
+			float bounce = -(float)nearest_info.bouncy / 100.0f;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if (nearest_dtime < 0) {
@@ -525,7 +525,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 
 			info.new_speed = *speed_f;
-			if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1 * BS)
+			if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1f * BS)
 				is_collision = false;
 
 			if (is_collision) {
@@ -561,7 +561,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
 			}
-			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15 * BS) {
+			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15f * BS) {
 				result.touching_ground = true;
 
 				if (box_info.is_object)
