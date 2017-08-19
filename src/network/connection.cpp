@@ -1800,13 +1800,13 @@ void ConnectionSendThread::sendPackets(float dtime)
 		}
 		peer->m_increment_packets_remaining = m_iteration_packets_avaialble/m_connection->m_peers.size();
 
-		if (dynamic_cast<UDPPeer*>(&peer) == 0)
-		{
+		UDPPeer *udpPeer = dynamic_cast<UDPPeer*>(&peer);
+
+		if (!udpPeer) {
 			continue;
 		}
 
-		if (dynamic_cast<UDPPeer*>(&peer)->m_pending_disconnect)
-		{
+		if (udpPeer->m_pending_disconnect) {
 			pendingDisconnect.push_back(peerId);
 		}
 
@@ -1818,49 +1818,50 @@ void ConnectionSendThread::sendPackets(float dtime)
 		LOG(dout_con<<m_connection->getDesc()
 				<< " Handle per peer queues: peer_id=" << peerId
 			<< " packet quota: " << peer->m_increment_packets_remaining << std::endl);
+
 		// first send queued reliable packets for all peers (if possible)
-		for (unsigned int i=0; i < CHANNEL_COUNT; i++)
-		{
+		for (unsigned int i=0; i < CHANNEL_COUNT; i++) {
+			Channel &channel = udpPeer->channels[i];
 			u16 next_to_ack = 0;
-			dynamic_cast<UDPPeer*>(&peer)->channels[i].outgoing_reliables_sent.getFirstSeqnum(next_to_ack);
+
+			channel.outgoing_reliables_sent.getFirstSeqnum(next_to_ack);
 			u16 next_to_receive = 0;
-			dynamic_cast<UDPPeer*>(&peer)->channels[i].incoming_reliables.getFirstSeqnum(next_to_receive);
+			channel.incoming_reliables.getFirstSeqnum(next_to_receive);
 
 			LOG(dout_con<<m_connection->getDesc()<< "\t channel: "
 						<< i << ", peer quota:"
 						<< peer->m_increment_packets_remaining
 						<< std::endl
 					<< "\t\t\treliables on wire: "
-						<< dynamic_cast<UDPPeer*>(&peer)->channels[i].outgoing_reliables_sent.size()
+						<< channel.outgoing_reliables_sent.size()
 						<< ", waiting for ack for " << next_to_ack
 						<< std::endl
 					<< "\t\t\tincoming_reliables: "
-						<< dynamic_cast<UDPPeer*>(&peer)->channels[i].incoming_reliables.size()
+						<< channel.incoming_reliables.size()
 						<< ", next reliable packet: "
-						<< dynamic_cast<UDPPeer*>(&peer)->channels[i].readNextIncomingSeqNum()
+						<< channel.readNextIncomingSeqNum()
 						<< ", next queued: " << next_to_receive
 						<< std::endl
 					<< "\t\t\treliables queued : "
-						<< dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.size()
+						<< channel.queued_reliables.size()
 						<< std::endl
 					<< "\t\t\tqueued commands  : "
-						<< dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_commands.size()
+						<< channel.queued_commands.size()
 						<< std::endl);
 
-			while ((!dynamic_cast<UDPPeer *>(&peer)->channels[i].queued_reliables.empty()) &&
-					(dynamic_cast<UDPPeer*>(&peer)->channels[i].outgoing_reliables_sent.size()
-							< dynamic_cast<UDPPeer*>(&peer)->channels[i].getWindowSize())&&
+			while ((!channel.queued_reliables.empty()) &&
+					(channel.outgoing_reliables_sent.size()
+							< channel.getWindowSize())&&
 							(peer->m_increment_packets_remaining > 0))
 			{
-				BufferedPacket p = dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.front();
-				dynamic_cast<UDPPeer*>(&peer)->channels[i].queued_reliables.pop();
-				Channel* channel = &(dynamic_cast<UDPPeer*>(&peer)->channels[i]);
+				BufferedPacket p = channel.queued_reliables.front();
+				channel.queued_reliables.pop();
 				LOG(dout_con<<m_connection->getDesc()
 						<<" INFO: sending a queued reliable packet "
 						<<" channel: " << i
 						<<", seqnum: " << readU16(&p.data[BASE_HEADER_SIZE+1])
 						<< std::endl);
-				sendAsPacketReliable(p,channel);
+				sendAsPacketReliable(p, &channel);
 				peer->m_increment_packets_remaining--;
 			}
 		}
