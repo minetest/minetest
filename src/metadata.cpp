@@ -50,8 +50,7 @@ bool Metadata::operator==(const Metadata &other) const
 		return false;
 
 	for (const auto &sv : m_stringvars) {
-		if (!other.contains(sv.first) ||
-				other.getString(sv.first) != sv.second)
+		if (!other.contains(sv.first) || other.getString(sv.first) != sv.second)
 			return false;
 	}
 
