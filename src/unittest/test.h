@@ -32,21 +32,21 @@ class TestFailedException : public std::exception {
 
 // Runs a unit test and reports results
 #define TEST(fxn, ...) {                                                      \
-    u64 t1 = porting::getTimeMs();                                            \
-    try {                                                                     \
-        fxn(__VA_ARGS__);                                                     \
-        rawstream << "[PASS] ";                                               \
-    } catch (TestFailedException &e) {                                        \
-        rawstream << "[FAIL] ";                                               \
-        num_tests_failed++;                                                   \
-    } catch (std::exception &e) {                                             \
-        rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
-        rawstream << "[FAIL] ";                                               \
-        num_tests_failed++;                                                   \
-    }                                                                         \
-    num_tests_run++;                                                          \
-    u64 tdiff = porting::getTimeMs() - t1;                                    \
-    rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
+	u64 t1 = porting::getTimeMs();                                            \
+	try {                                                                     \
+		fxn(__VA_ARGS__);                                                     \
+		rawstream << "[PASS] ";                                               \
+	} catch (TestFailedException &e) {                                        \
+		rawstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                   \
+	} catch (std::exception &e) {                                             \
+		rawstream << "Caught unhandled exception: " << e.what() << std::endl; \
+		rawstream << "[FAIL] ";                                               \
+		num_tests_failed++;                                                   \
+	}                                                                         \
+	num_tests_run++;                                                          \
+	u64 tdiff = porting::getTimeMs() - t1;                                    \
+	rawstream << #fxn << " - " << tdiff << "ms" << std::endl;                 \
 }
 
 // Asserts the specified condition is true, or fails the current unit test
