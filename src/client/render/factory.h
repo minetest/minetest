@@ -21,4 +21,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include "core.h"
 
-RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevice *device);
+RenderingCore *createRenderingCore(
+		const std::string &stereo_mode, IrrlichtDevice *device);

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
-class RenderingCoreSideBySide: public RenderingCoreStereo
+class RenderingCoreSideBySide : public RenderingCoreStereo
 {
 protected:
 	video::ITexture *left = nullptr;

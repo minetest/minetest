@@ -63,8 +63,8 @@ public:
 	RenderingCore(RenderingCore &&) = delete;
 	virtual ~RenderingCore();
 
-	RenderingCore &operator= (const RenderingCore &) = delete;
-	RenderingCore &operator= (RenderingCore &&) = delete;
+	RenderingCore &operator=(const RenderingCore &) = delete;
+	RenderingCore &operator=(RenderingCore &&) = delete;
 
 	void initialize(Client *_client, Hud *_hud);
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,

@@ -22,7 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void RenderingCorePageflip::initTextures()
 {
-	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
+	hud = driver->addRenderTargetTexture(
+			screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
 void RenderingCorePageflip::clearTextures()
@@ -40,9 +41,9 @@ void RenderingCorePageflip::drawAll()
 
 void RenderingCorePageflip::useEye(bool _right)
 {
-	driver->setRenderTarget(
-		_right ? video::ERT_STEREO_RIGHT_BUFFER : video::ERT_STEREO_LEFT_BUFFER,
-		 true, true, skycolor);
+	driver->setRenderTarget(_right ? video::ERT_STEREO_RIGHT_BUFFER
+				       : video::ERT_STEREO_LEFT_BUFFER,
+			true, true, skycolor);
 	RenderingCoreStereo::useEye(_right);
 }
 

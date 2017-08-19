@@ -44,10 +44,7 @@ public:
 	v2u32 getWindowSize() const;
 	void setResizable(bool resize);
 
-	video::IVideoDriver *getVideoDriver()
-	{
-		return driver;
-	}
+	video::IVideoDriver *getVideoDriver() { return driver; }
 
 	static const char *getVideoDriverName(irr::video::E_DRIVER_TYPE type);
 	static const char *getVideoDriverFriendlyName(irr::video::E_DRIVER_TYPE type);
@@ -113,11 +110,11 @@ public:
 				text, guienv, tsrc, dtime, percent, clouds);
 	}
 
-	inline static void draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
-			bool draw_wield_tool, bool draw_crosshair)
+	inline static void draw_scene(video::SColor skycolor, bool show_hud,
+			bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 	{
 		s_singleton->_draw_scene(skycolor, show_hud, show_minimap,
-				 draw_wield_tool, draw_crosshair);
+				draw_wield_tool, draw_crosshair);
 	}
 
 	inline static void initialize(Client *client, Hud *hud)
@@ -125,10 +122,7 @@ public:
 		s_singleton->_initialize(client, hud);
 	}
 
-	inline static void finalize()
-	{
-		s_singleton->_finalize();
-	}
+	inline static void finalize() { s_singleton->_finalize(); }
 
 	static bool run()
 	{

@@ -209,8 +209,7 @@ bool RenderingEngine::setWindowIcon()
 							       "-xorg-icon-128.png");
 #endif
 #elif defined(_WIN32)
-	const video::SExposedVideoData exposedData =
-			driver->getExposedVideoData();
+	const video::SExposedVideoData exposedData = driver->getExposedVideoData();
 	HWND hWnd; // Window handle
 
 	switch (driver->getDriverType()) {
@@ -449,8 +448,8 @@ void RenderingEngine::_finalize()
 	core.reset();
 }
 
-void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud, bool show_minimap,
-			bool draw_wield_tool, bool draw_crosshair)
+void RenderingEngine::_draw_scene(video::SColor skycolor, bool show_hud,
+		bool show_minimap, bool draw_wield_tool, bool draw_crosshair)
 {
 	core->draw(skycolor, show_hud, show_minimap, draw_wield_tool, draw_crosshair);
 }

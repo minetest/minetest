@@ -23,11 +23,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 inline unsigned scaledown(unsigned coef, unsigned size)
 {
-        return (size + coef - 1) / coef;
+	return (size + coef - 1) / coef;
 }
 
-RenderingCorePlain::RenderingCorePlain(irr::IrrlichtDevice *_device) :
-		RenderingCore(_device)
+RenderingCorePlain::RenderingCorePlain(irr::IrrlichtDevice *_device)
+    : RenderingCore(_device)
 {
 	scale = g_settings->getU16("undersampling");
 }
@@ -37,7 +37,8 @@ void RenderingCorePlain::initTextures()
 	if (!scale)
 		return;
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
-	lowres = driver->addRenderTargetTexture(size, "render_lowres", video::ECF_A8R8G8B8);
+	lowres = driver->addRenderTargetTexture(
+			size, "render_lowres", video::ECF_A8R8G8B8);
 }
 
 void RenderingCorePlain::clearTextures()
@@ -61,8 +62,7 @@ void RenderingCorePlain::upscale()
 	driver->setRenderTarget(0, true, true);
 	v2u32 size{scaledown(scale, screensize.X), scaledown(scale, screensize.Y)};
 	v2u32 dest_size{scale * size.X, scale * size.Y};
-	driver->draw2DImage(lowres,
-			core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
+	driver->draw2DImage(lowres, core::rect<s32>(0, 0, dest_size.X, dest_size.Y),
 			core::rect<s32>(0, 0, size.X, size.Y));
 }
 

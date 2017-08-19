@@ -23,9 +23,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 void RenderingCoreSideBySide::initTextures()
 {
 	v2u32 image_size{screensize.X / 2, screensize.Y};
-	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(image_size, "3d_render_right", video::ECF_A8R8G8B8);
-	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
+	left = driver->addRenderTargetTexture(
+			image_size, "3d_render_left", video::ECF_A8R8G8B8);
+	right = driver->addRenderTargetTexture(
+			image_size, "3d_render_right", video::ECF_A8R8G8B8);
+	hud = driver->addRenderTargetTexture(
+			screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreSideBySide::clearTextures()
@@ -45,15 +48,12 @@ void RenderingCoreSideBySide::drawAll()
 	driver->draw2DImage(left, v2s32(0, 0));
 	driver->draw2DImage(right, v2s32(screensize.X / 2, 0));
 
-	driver->draw2DImage(hud,
-			core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
-			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
+	driver->draw2DImage(hud, core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
+			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 
 	driver->draw2DImage(hud,
 			core::rect<s32>(screensize.X / 2, 0, screensize.X, screensize.Y),
-			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0,
-			true);
+			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
 }
 
 void RenderingCoreSideBySide::useEye(bool _right)

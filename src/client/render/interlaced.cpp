@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "client/tile.h"
 
-RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device) :
-	RenderingCoreStereo(_device)
+RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device)
+    : RenderingCoreStereo(_device)
 {
 	initMaterial();
 }
@@ -49,8 +49,10 @@ void RenderingCoreInterlaced::initMaterial()
 void RenderingCoreInterlaced::initTextures()
 {
 	v2u32 image_size{screensize.X, screensize.Y / 2};
-	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
-	right = driver->addRenderTargetTexture(image_size, "3d_render_right", video::ECF_A8R8G8B8);
+	left = driver->addRenderTargetTexture(
+			image_size, "3d_render_left", video::ECF_A8R8G8B8);
+	right = driver->addRenderTargetTexture(
+			image_size, "3d_render_right", video::ECF_A8R8G8B8);
 	mask = driver->addTexture(screensize, "3d_render_mask", video::ECF_A8R8G8B8);
 	initMask();
 	mat.TextureLayer[0].Texture = left;
@@ -86,12 +88,16 @@ void RenderingCoreInterlaced::drawAll()
 void RenderingCoreInterlaced::merge()
 {
 	static const video::S3DVertex vertices[4] = {
-		video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 0, 255, 255), 1.0, 0.0),
-		video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 0, 255), 0.0, 0.0),
-		video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 0), 0.0, 1.0),
-		video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0, video::SColor(255, 255, 255, 255), 1.0, 1.0),
+			video::S3DVertex(1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
+					video::SColor(255, 0, 255, 255), 1.0, 0.0),
+			video::S3DVertex(-1.0, -1.0, 0.0, 0.0, 0.0, -1.0,
+					video::SColor(255, 255, 0, 255), 0.0, 0.0),
+			video::S3DVertex(-1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
+					video::SColor(255, 255, 255, 0), 0.0, 1.0),
+			video::S3DVertex(1.0, 1.0, 0.0, 0.0, 0.0, -1.0,
+					video::SColor(255, 255, 255, 255), 1.0, 1.0),
 	};
-	static const u16 indices[6] = { 0, 1, 2, 2, 3, 0 };
+	static const u16 indices[6] = {0, 1, 2, 2, 3, 0};
 	driver->setMaterial(mat);
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }

@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "stereo.h"
 
-class RenderingCoreAnaglyph: public RenderingCoreStereo
+class RenderingCoreAnaglyph : public RenderingCoreStereo
 {
 protected:
 	void setupMaterial(int color_mask);

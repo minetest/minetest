@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "core.h"
 
-class RenderingCoreStereo: public RenderingCore
+class RenderingCoreStereo : public RenderingCore
 {
 protected:
 	scene::ICameraSceneNode *cam;

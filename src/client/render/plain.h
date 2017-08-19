@@ -21,7 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 #include "core.h"
 
-class RenderingCorePlain: public RenderingCore
+class RenderingCorePlain : public RenderingCore
 {
 protected:
 	int scale = 0;
