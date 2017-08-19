@@ -28,10 +28,10 @@ protected:
 	core::matrix4 base_transform;
 	float eye_offset;
 
-	void pre_draw();
-	virtual void use_eye(bool right);
-	virtual void reset_eye();
-	void render_two();
+	void beforeDraw() override;
+	virtual void useEye(bool right);
+	virtual void resetEye();
+	void renderBothImages();
 
 public:
 	RenderingCoreStereo(IrrlichtDevice *_device);

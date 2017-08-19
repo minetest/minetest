@@ -46,17 +46,16 @@ protected:
 	scene::ISceneManager *smgr;
 	gui::IGUIEnvironment *guienv;
 
-	void update_screen_size();
-	virtual void init_textures() {}
-	virtual void clear_textures() {}
+	void updateScreenSize();
+	virtual void initTextures() {}
+	virtual void clearTextures() {}
 
-	virtual void pre_draw() {}
-	virtual void draw_all() = 0;
-	virtual void post_draw() {}
+	virtual void beforeDraw() {}
+	virtual void drawAll() = 0;
 
-	void draw_3d();
-	void draw_hud();
-	void draw_last_fx();
+	void draw3D();
+	void drawHUD();
+	void drawPostFx();
 
 public:
 	RenderingCore(IrrlichtDevice *_device);

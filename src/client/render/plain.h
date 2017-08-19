@@ -27,12 +27,12 @@ protected:
 	int scale = 0;
 	video::ITexture *lowres = nullptr;
 
-	void init_textures() override;
-	void clear_textures() override;
-	void pre_draw() override;
+	void initTextures() override;
+	void clearTextures() override;
+	void beforeDraw() override;
 	void upscale();
 
 public:
 	RenderingCorePlain(IrrlichtDevice *_device);
-	void draw_all() override;
+	void drawAll() override;
 };

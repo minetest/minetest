@@ -36,7 +36,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device) :
 
 RenderingCore::~RenderingCore()
 {
-	clear_textures();
+	clearTextures();
 }
 
 void RenderingCore::initialize(Client *_client, Hud *_hud)
@@ -46,13 +46,13 @@ void RenderingCore::initialize(Client *_client, Hud *_hud)
 	mapper = client->getMinimap();
 	hud = _hud;
 // have to be called now as the VMT is not ready in the constructor:
-	init_textures();
+	initTextures();
 }
 
-void RenderingCore::update_screen_size()
+void RenderingCore::updateScreenSize()
 {
-	clear_textures();
-	init_textures();
+	clearTextures();
+	initTextures();
 }
 
 void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
@@ -61,7 +61,7 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	v2u32 ss = driver->getScreenSize();
 	if (screensize != ss) {
 		screensize = ss;
-		update_screen_size();
+		updateScreenSize();
 	}
 	skycolor = _skycolor;
 	show_hud = _show_hud;
@@ -69,12 +69,11 @@ void RenderingCore::draw(video::SColor _skycolor, bool _show_hud, bool _show_min
 	draw_wield_tool = _draw_wield_tool;
 	draw_crosshair = _draw_crosshair;
 
-	pre_draw();
-	draw_all();
-	post_draw();
+	beforeDraw();
+	drawAll();
 }
 
-void RenderingCore::draw_3d()
+void RenderingCore::draw3D()
 {
 	smgr->drawAll();
 	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
@@ -85,7 +84,7 @@ void RenderingCore::draw_3d()
 		camera->drawWieldedTool();
 }
 
-void RenderingCore::draw_hud()
+void RenderingCore::drawHUD()
 {
 	if (!show_hud)
 		return;
@@ -99,7 +98,7 @@ void RenderingCore::draw_hud()
 	guienv->drawAll();
 }
 
-void RenderingCore::draw_last_fx()
+void RenderingCore::drawPostFx()
 {
 	client->getEnv().getClientMap().renderPostFx(camera->getCameraMode());
 }

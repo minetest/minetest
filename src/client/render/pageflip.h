@@ -26,12 +26,12 @@ class RenderingCorePageflip: public RenderingCoreStereo
 protected:
 	video::ITexture *hud = nullptr;
 
-	void init_textures() override;
-	void clear_textures() override;
-	void use_eye(bool right) override;
-	void reset_eye() override;
+	void initTextures() override;
+	void clearTextures() override;
+	void useEye(bool right) override;
+	void resetEye() override;
 
 public:
 	using RenderingCoreStereo::RenderingCoreStereo;
-	void draw_all() override;
+	void drawAll() override;
 };

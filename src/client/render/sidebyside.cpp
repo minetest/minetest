@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sidebyside.h"
 
-void RenderingCoreSideBySide::init_textures()
+void RenderingCoreSideBySide::initTextures()
 {
 	v2u32 image_size{screensize.X / 2, screensize.Y};
 	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
@@ -28,18 +28,18 @@ void RenderingCoreSideBySide::init_textures()
 	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
-void RenderingCoreSideBySide::clear_textures()
+void RenderingCoreSideBySide::clearTextures()
 {
 	driver->removeTexture(left);
 	driver->removeTexture(right);
 	driver->removeTexture(hud);
 }
 
-void RenderingCoreSideBySide::draw_all()
+void RenderingCoreSideBySide::drawAll()
 {
-	render_two();
+	renderBothImages();
 	driver->setRenderTarget(hud, true, true, video::SColor(0, 0, 0, 0));
-	draw_hud();
+	drawHUD();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
 
 	driver->draw2DImage(left, v2s32(0, 0));
@@ -56,14 +56,14 @@ void RenderingCoreSideBySide::draw_all()
 			true);
 }
 
-void RenderingCoreSideBySide::use_eye(bool _right)
+void RenderingCoreSideBySide::useEye(bool _right)
 {
 	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-	RenderingCoreStereo::use_eye(_right);
+	RenderingCoreStereo::useEye(_right);
 }
 
-void RenderingCoreSideBySide::reset_eye()
+void RenderingCoreSideBySide::resetEye()
 {
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-	RenderingCoreStereo::reset_eye();
+	RenderingCoreStereo::resetEye();
 }

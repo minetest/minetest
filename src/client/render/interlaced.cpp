@@ -26,10 +26,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device) :
 	RenderingCoreStereo(_device)
 {
-	init_material();
+	initMaterial();
 }
 
-void RenderingCoreInterlaced::init_material()
+void RenderingCoreInterlaced::initMaterial()
 {
 	IShaderSource *s = client->getShaderSource();
 	mat.UseMipMaps = false;
@@ -46,26 +46,26 @@ void RenderingCoreInterlaced::init_material()
 	}
 }
 
-void RenderingCoreInterlaced::init_textures()
+void RenderingCoreInterlaced::initTextures()
 {
 	v2u32 image_size{screensize.X, screensize.Y / 2};
 	left = driver->addRenderTargetTexture(image_size, "3d_render_left", video::ECF_A8R8G8B8);
 	right = driver->addRenderTargetTexture(image_size, "3d_render_right", video::ECF_A8R8G8B8);
 	mask = driver->addTexture(screensize, "3d_render_mask", video::ECF_A8R8G8B8);
-	init_mask();
+	initMask();
 	mat.TextureLayer[0].Texture = left;
 	mat.TextureLayer[1].Texture = right;
 	mat.TextureLayer[2].Texture = mask;
 }
 
-void RenderingCoreInterlaced::clear_textures()
+void RenderingCoreInterlaced::clearTextures()
 {
 	driver->removeTexture(left);
 	driver->removeTexture(right);
 	driver->removeTexture(mask);
 }
 
-void RenderingCoreInterlaced::init_mask()
+void RenderingCoreInterlaced::initMask()
 {
 	u8 *data = reinterpret_cast<u8 *>(mask->lock());
 	for (unsigned j = 0; j < screensize.Y; j++) {
@@ -76,11 +76,11 @@ void RenderingCoreInterlaced::init_mask()
 	mask->unlock();
 }
 
-void RenderingCoreInterlaced::draw_all()
+void RenderingCoreInterlaced::drawAll()
 {
-	render_two();
+	renderBothImages();
 	merge();
-	draw_hud();
+	drawHUD();
 }
 
 void RenderingCoreInterlaced::merge()
@@ -96,14 +96,14 @@ void RenderingCoreInterlaced::merge()
 	driver->drawVertexPrimitiveList(&vertices, 4, &indices, 2);
 }
 
-void RenderingCoreInterlaced::use_eye(bool _right)
+void RenderingCoreInterlaced::useEye(bool _right)
 {
 	driver->setRenderTarget(_right ? right : left, true, true, skycolor);
-	RenderingCoreStereo::use_eye(_right);
+	RenderingCoreStereo::useEye(_right);
 }
 
-void RenderingCoreInterlaced::reset_eye()
+void RenderingCoreInterlaced::resetEye()
 {
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-	RenderingCoreStereo::reset_eye();
+	RenderingCoreStereo::resetEye();
 }

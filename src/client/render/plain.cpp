@@ -32,7 +32,7 @@ RenderingCorePlain::RenderingCorePlain(irr::IrrlichtDevice *_device) :
 	scale = g_settings->getU16("undersampling");
 }
 
-void RenderingCorePlain::init_textures()
+void RenderingCorePlain::initTextures()
 {
 	if (!scale)
 		return;
@@ -40,14 +40,14 @@ void RenderingCorePlain::init_textures()
 	lowres = driver->addRenderTargetTexture(size, "render_lowres", video::ECF_A8R8G8B8);
 }
 
-void RenderingCorePlain::clear_textures()
+void RenderingCorePlain::clearTextures()
 {
 	if (!scale)
 		return;
 	driver->removeTexture(lowres);
 }
 
-void RenderingCorePlain::pre_draw()
+void RenderingCorePlain::beforeDraw()
 {
 	if (!scale)
 		return;
@@ -66,10 +66,10 @@ void RenderingCorePlain::upscale()
 			core::rect<s32>(0, 0, size.X, size.Y));
 }
 
-void RenderingCorePlain::draw_all()
+void RenderingCorePlain::drawAll()
 {
-	draw_3d();
-	draw_last_fx();
+	draw3D();
+	drawPostFx();
 	upscale();
-	draw_hud();
+	drawHUD();
 }

@@ -24,11 +24,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class RenderingCoreAnaglyph: public RenderingCoreStereo
 {
 protected:
-	void setup_material(int color_mask);
-	void use_eye(bool right) override;
-	void reset_eye() override;
+	void setupMaterial(int color_mask);
+	void useEye(bool right) override;
+	void resetEye() override;
 
 public:
 	using RenderingCoreStereo::RenderingCoreStereo;
-	void draw_all() override;
+	void drawAll() override;
 };

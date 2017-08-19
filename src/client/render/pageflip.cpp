@@ -20,35 +20,35 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "pageflip.h"
 
-void RenderingCorePageflip::init_textures()
+void RenderingCorePageflip::initTextures()
 {
 	hud = driver->addRenderTargetTexture(screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
-void RenderingCorePageflip::clear_textures()
+void RenderingCorePageflip::clearTextures()
 {
 	driver->removeTexture(hud);
 }
 
-void RenderingCorePageflip::draw_all()
+void RenderingCorePageflip::drawAll()
 {
 	driver->setRenderTarget(hud, true, true, video::SColor(0, 0, 0, 0));
-	draw_hud();
+	drawHUD();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
-	render_two();
+	renderBothImages();
 }
 
-void RenderingCorePageflip::use_eye(bool _right)
+void RenderingCorePageflip::useEye(bool _right)
 {
 	driver->setRenderTarget(
 		_right ? video::ERT_STEREO_RIGHT_BUFFER : video::ERT_STEREO_LEFT_BUFFER,
 		 true, true, skycolor);
-	RenderingCoreStereo::use_eye(_right);
+	RenderingCoreStereo::useEye(_right);
 }
 
-void RenderingCorePageflip::reset_eye()
+void RenderingCorePageflip::resetEye()
 {
 	driver->draw2DImage(hud, v2s32(0, 0));
 	driver->setRenderTarget(video::ERT_FRAME_BUFFER, false, false, skycolor);
-	RenderingCoreStereo::reset_eye();
+	RenderingCoreStereo::resetEye();
 }

@@ -28,30 +28,30 @@ RenderingCoreStereo::RenderingCoreStereo(IrrlichtDevice *_device) :
 	eye_offset = BS * g_settings->getFloat("3d_paralax_strength");
 }
 
-void RenderingCoreStereo::pre_draw()
+void RenderingCoreStereo::beforeDraw()
 {
 	cam = camera->getCameraNode();
 	base_transform = cam->getRelativeTransformation();
 }
 
-void RenderingCoreStereo::use_eye(bool right)
+void RenderingCoreStereo::useEye(bool right)
 {
 	core::matrix4 move;
 	move.setTranslation(core::vector3df(right ? eye_offset : -eye_offset, 0.0f, 0.0f));
 	cam->setPosition((base_transform * move).getTranslation());
 }
 
-void RenderingCoreStereo::reset_eye()
+void RenderingCoreStereo::resetEye()
 {
 	cam->setPosition(base_transform.getTranslation());
 }
 
-void RenderingCoreStereo::render_two()
+void RenderingCoreStereo::renderBothImages()
 {
-	use_eye(false);
-	draw_3d();
-	reset_eye();
-	use_eye(true);
-	draw_3d();
-	reset_eye();
+	useEye(false);
+	draw3D();
+	resetEye();
+	useEye(true);
+	draw3D();
+	resetEye();
 }

@@ -20,14 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "anaglyph.h"
 
-void RenderingCoreAnaglyph::draw_all()
+void RenderingCoreAnaglyph::drawAll()
 {
-	render_two();
-	draw_last_fx();
-	draw_hud();
+	renderBothImages();
+	drawPostFx();
+	drawHUD();
 }
 
-void RenderingCoreAnaglyph::setup_material(int color_mask)
+void RenderingCoreAnaglyph::setupMaterial(int color_mask)
 {
 	video::SOverrideMaterial &mat = driver->getOverrideMaterial();
 	mat.Material.ColorMask = color_mask;
@@ -38,15 +38,15 @@ void RenderingCoreAnaglyph::setup_material(int color_mask)
 			scene::ESNRP_TRANSPARENT_EFFECT | scene::ESNRP_SHADOW;
 }
 
-void RenderingCoreAnaglyph::use_eye(bool right)
+void RenderingCoreAnaglyph::useEye(bool right)
 {
-	RenderingCoreStereo::use_eye(right);
+	RenderingCoreStereo::useEye(right);
 	driver->clearZBuffer();
-	setup_material(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
+	setupMaterial(right ? video::ECP_GREEN | video::ECP_BLUE : video::ECP_RED);
 }
 
-void RenderingCoreAnaglyph::reset_eye()
+void RenderingCoreAnaglyph::resetEye()
 {
-	setup_material(video::ECP_ALL);
-	RenderingCoreStereo::reset_eye();
+	setupMaterial(video::ECP_ALL);
+	RenderingCoreStereo::resetEye();
 }

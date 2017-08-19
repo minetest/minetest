@@ -29,15 +29,15 @@ protected:
 	video::ITexture *mask = nullptr;
 	video::SMaterial mat;
 
-	void init_material();
-	void init_textures() override;
-	void clear_textures() override;
-	void init_mask();
-	void use_eye(bool right) override;
-	void reset_eye() override;
+	void initMaterial();
+	void initTextures() override;
+	void clearTextures() override;
+	void initMask();
+	void useEye(bool right) override;
+	void resetEye() override;
 	void merge();
 
 public:
 	RenderingCoreInterlaced(IrrlichtDevice *_device);
-	void draw_all() override;
+	void drawAll() override;
 };
