@@ -38,6 +38,6 @@ protected:
 	void merge();
 
 public:
-	RenderingCoreInterlaced(IrrlichtDevice *_device);
+	RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 	void drawAll() override;
 };

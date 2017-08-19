@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "shader.h"
 #include "client/tile.h"
 
-RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device)
-    : RenderingCoreStereo(_device)
+RenderingCoreInterlaced::RenderingCoreInterlaced(IrrlichtDevice *_device, Client *_client, Hud *_hud)
+    : RenderingCoreStereo(_device, _client, _hud)
 {
 	initMaterial();
 }

@@ -25,9 +25,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "hud.h"
 #include "minimap.h"
 
-RenderingCore::RenderingCore(IrrlichtDevice *_device)
+RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud)
     : device(_device), driver(device->getVideoDriver()), smgr(device->getSceneManager()),
-      guienv(device->getGUIEnvironment())
+      guienv(device->getGUIEnvironment()), client(_client), camera(client->getCamera()),
+      mapper(client->getMinimap()), hud(_hud)
 {
 	screensize = driver->getScreenSize();
 }
@@ -37,13 +38,9 @@ RenderingCore::~RenderingCore()
 	clearTextures();
 }
 
-void RenderingCore::initialize(Client *_client, Hud *_hud)
+void RenderingCore::initialize()
 {
-	client = _client;
-	camera = client->getCamera();
-	mapper = client->getMinimap();
-	hud = _hud;
-	// have to be called now as the VMT is not ready in the constructor:
+	// have to be called late as the VMT is not ready in the constructor:
 	initTextures();
 }
 

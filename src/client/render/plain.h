@@ -33,6 +33,6 @@ protected:
 	void upscale();
 
 public:
-	RenderingCorePlain(IrrlichtDevice *_device);
+	RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 	void drawAll() override;
 };

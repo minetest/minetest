@@ -29,11 +29,6 @@ class Minimap;
 class RenderingCore
 {
 protected:
-	Camera *camera;
-	Client *client;
-	Minimap *mapper;
-	Hud *hud;
-
 	v2u32 screensize;
 	video::SColor skycolor;
 	bool show_hud;
@@ -45,6 +40,11 @@ protected:
 	video::IVideoDriver *driver;
 	scene::ISceneManager *smgr;
 	gui::IGUIEnvironment *guienv;
+
+	Client *client;
+	Camera *camera;
+	Minimap *mapper;
+	Hud *hud;
 
 	void updateScreenSize();
 	virtual void initTextures() {}
@@ -58,7 +58,7 @@ protected:
 	void drawPostFx();
 
 public:
-	RenderingCore(IrrlichtDevice *_device);
+	RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud);
 	RenderingCore(const RenderingCore &) = delete;
 	RenderingCore(RenderingCore &&) = delete;
 	virtual ~RenderingCore();
@@ -66,7 +66,7 @@ public:
 	RenderingCore &operator=(const RenderingCore &) = delete;
 	RenderingCore &operator=(RenderingCore &&) = delete;
 
-	void initialize(Client *_client, Hud *_hud);
+	void initialize();
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
 };
