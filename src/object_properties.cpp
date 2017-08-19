@@ -26,8 +26,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 ObjectProperties::ObjectProperties()
 {
-	textures.push_back("unknown_object.png");
-	colors.push_back(video::SColor(255,255,255,255));
+	textures.emplace_back("unknown_object.png");
+	colors.emplace_back(255,255,255,255);
 }
 
 std::string ObjectProperties::dump()
@@ -42,13 +42,14 @@ std::string ObjectProperties::dump()
 	os<<", mesh="<<mesh;
 	os<<", visual_size="<<PP2(visual_size);
 	os<<", textures=[";
-	for(u32 i=0; i<textures.size(); i++){
-		os<<"\""<<textures[i]<<"\" ";
+	for (const std::string &texture : textures) {
+		os<<"\""<< texture <<"\" ";
 	}
 	os<<"]";
 	os<<", colors=[";
-	for(u32 i=0; i<colors.size(); i++){
-		os<<"\""<<colors[i].getAlpha()<<","<<colors[i].getRed()<<","<<colors[i].getGreen()<<","<<colors[i].getBlue()<<"\" ";
+	for (const video::SColor &color : colors) {
+		os << "\"" << color.getAlpha() << "," << color.getRed() << ","
+			<< color.getGreen() << "," << color.getBlue() << "\" ";
 	}
 	os<<"]";
 	os<<", spritediv="<<PP2(spritediv);
@@ -74,8 +75,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os<<serializeString(visual);
 	writeV2F1000(os, visual_size);
 	writeU16(os, textures.size());
-	for(u32 i=0; i<textures.size(); i++){
-		os<<serializeString(textures[i]);
+	for (const std::string &texture : textures) {
+		os << serializeString(texture);
 	}
 	writeV2S16(os, spritediv);
 	writeV2S16(os, initial_sprite_basepos);
@@ -85,8 +86,8 @@ void ObjectProperties::serialize(std::ostream &os) const
 	// Added in protocol version 14
 	os<<serializeString(mesh);
 	writeU16(os, colors.size());
-	for(u32 i=0; i<colors.size(); i++){
-		writeARGB8(os, colors[i]);
+	for (video::SColor color : colors) {
+		writeARGB8(os, color);
 	}
 	writeU8(os, collideWithObjects);
 	writeF1000(os,stepheight);
