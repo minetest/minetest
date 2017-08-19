@@ -30,7 +30,7 @@ extern "C" {
 #include "constants.h"
 
 
-#define CHECK_TYPE(index, name, type) do { \
+#define CHECK_TYPE(index, name, type) { \
 		int t = lua_type(L, (index)); \
 		if (t != (type)) { \
 			std::string traceback = script_get_backtrace(L); \
@@ -38,7 +38,7 @@ extern "C" {
 				" (expected " + lua_typename(L, (type)) + \
 				" got " + lua_typename(L, t) + ").\n" + traceback); \
 		} \
-	} while(0)
+	}
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
 #define CHECK_FLOAT_RANGE(value, name) \
 if (value < F1000_MIN || value > F1000_MAX) { \

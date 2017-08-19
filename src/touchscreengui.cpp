@@ -37,8 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace irr::core;
 
-extern Settings *g_settings;
-
 const char** touchgui_button_imagenames = (const char*[]) {
 	"up_arrow.png",
 	"down_arrow.png",
@@ -356,7 +354,7 @@ void AutoHideButtonBar::step(float dtime)
 
 void AutoHideButtonBar::deactivate()
 {
-	if (m_visible == true) {
+	if (m_visible) {
 		m_starter.guibutton->setVisible(true);
 		m_starter.guibutton->setEnabled(true);
 	}

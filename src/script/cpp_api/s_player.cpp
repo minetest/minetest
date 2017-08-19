@@ -192,8 +192,3 @@ void ScriptApiPlayer::on_playerReceiveFields(ServerActiveObject *player,
 	runCallbacks(3, RUN_CALLBACKS_MODE_OR_SC);
 }
 
-ScriptApiPlayer::~ScriptApiPlayer()
-{
-}
-
-

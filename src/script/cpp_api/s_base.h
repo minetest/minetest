@@ -40,12 +40,12 @@ extern "C" {
 // use that name to bypass security!
 #define BUILTIN_MOD_NAME "*builtin*"
 
-#define PCALL_RES(RES) do {                 \
+#define PCALL_RES(RES) {                    \
 	int result_ = (RES);                    \
 	if (result_ != 0) {                     \
 		scriptError(result_, __FUNCTION__); \
 	}                                       \
-} while (0)
+}
 
 #define runCallbacks(nargs, mode) \
 	runCallbacksRaw((nargs), (mode), __FUNCTION__)

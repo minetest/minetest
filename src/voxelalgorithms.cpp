@@ -118,7 +118,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 			} else if(incoming_light == LIGHT_SUN &&
 					ndef->get(n).sunlight_propagates){
 				// Do nothing
-			} else if(ndef->get(n).sunlight_propagates == false){
+			} else if(!ndef->get(n).sunlight_propagates){
 				incoming_light = 0;
 			} else {
 				incoming_light = diminish_light(incoming_light);
@@ -152,7 +152,7 @@ SunlightPropagateResult propagateSunlight(VoxelManipulator &v, VoxelArea a,
 		}
 	}
 
-	return SunlightPropagateResult(bottom_sunlight_valid);
+	return {bottom_sunlight_valid};
 }
 
 /*!
@@ -186,21 +186,16 @@ struct ChangingLight {
 	//! Position of the node's block.
 	mapblock_v3 block_position;
 	//! Pointer to the node's block.
-	MapBlock *block;
+	MapBlock *block = NULL;
 	/*!
 	 * Direction from the node that caused this node's changing
 	 * to this node.
 	 */
-	direction source_direction;
+	direction source_direction = 6;
 
-	ChangingLight() :
-		rel_position(),
-		block_position(),
-		block(NULL),
-		source_direction(6)
-	{}
+	ChangingLight() = default;
 
-	ChangingLight(relative_v3 rel_pos, mapblock_v3 block_pos,
+	ChangingLight(const relative_v3 &rel_pos, const mapblock_v3 &block_pos,
 		MapBlock *b, direction source_dir) :
 		rel_position(rel_pos),
 		block_position(block_pos),
@@ -265,8 +260,7 @@ struct LightQueue {
 		direction source_dir)
 	{
 		assert(light <= LIGHT_SUN);
-		lights[light].push_back(
-			ChangingLight(rel_pos, block_pos, block, source_dir));
+		lights[light].emplace_back(rel_pos, block_pos, block, source_dir);
 	}
 };
 
@@ -611,8 +605,7 @@ void update_lighting_nodes(Map *map,
 	bool is_valid_position;
 
 	// Process each light bank separately
-	for (s32 i = 0; i < 2; i++) {
-		LightBank bank = banks[i];
+	for (LightBank bank : banks) {
 		UnlightQueue disappearing_lights(256);
 		ReLightQueue light_sources(256);
 		// Nodes that are brighter than the brightest modified node was
@@ -663,8 +656,8 @@ void update_lighting_nodes(Map *map,
 					new_light = LIGHT_SUN;
 				} else {
 					new_light = ndef->get(n).light_source;
-					for (int i = 0; i < 6; i++) {
-						v3s16 p2 = p + neighbor_dirs[i];
+					for (const v3s16 &neighbor_dir : neighbor_dirs) {
+						v3s16 p2 = p + neighbor_dir;
 						bool is_valid;
 						MapNode n2 = map->getNodeNoEx(p2, &is_valid);
 						if (is_valid) {
@@ -813,8 +806,8 @@ bool is_light_locally_correct(Map *map, INodeDefManager *ndef, LightBank bank,
 	u8 light = n.getLightNoChecks(bank, &f);
 	assert(f.light_source <= LIGHT_MAX);
 	u8 brightest_neighbor = f.light_source + 1;
-	for (direction d = 0; d < 6; ++d) {
-		MapNode n2 = map->getNodeNoEx(pos + neighbor_dirs[d],
+	for (const v3s16 &neighbor_dir : neighbor_dirs) {
+		MapNode n2 = map->getNodeNoEx(pos + neighbor_dir,
 			&is_valid_position);
 		u8 light2 = n2.getLight(bank, ndef);
 		if (brightest_neighbor < light2) {
@@ -830,8 +823,7 @@ void update_block_border_lighting(Map *map, MapBlock *block,
 {
 	INodeDefManager *ndef = map->getNodeDefManager();
 	bool is_valid_position;
-	for (s32 i = 0; i < 2; i++) {
-		LightBank bank = banks[i];
+	for (LightBank bank : banks) {
 		// Since invalid light is not common, do not allocate
 		// memory if not needed.
 		UnlightQueue disappearing_lights(0);
@@ -1213,8 +1205,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 		data.target_block = v3s16(x, minblock.Y - 1, z);
 		for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
 		for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
-			data.data.push_back(
-				SunlightPropagationUnit(v2s16(x, z), lights[z][x]));
+			data.data.emplace_back(v2s16(x, z), lights[z][x]);
 		// Propagate sunlight and shadow below the voxel manipulator.
 		while (!data.data.empty()) {
 			if (propagate_block_sunlight(map, ndef, &data, &unlight[0],
@@ -1241,8 +1232,7 @@ void blit_back_with_light(ServerMap *map, MMVManip *vm,
 			continue;
 		v3s16 offset = block->getPosRelative();
 		// For each border of the block:
-		for (direction d = 0; d < 6; d++) {
-			VoxelArea a = block_pad[d];
+		for (const VoxelArea &a : block_pad) {
 			// For each node of the border:
 			for (s32 x = a.MinEdge.X; x <= a.MaxEdge.X; x++)
 			for (s32 z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++)
@@ -1353,8 +1343,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 	data.target_block = v3s16(blockpos.X, blockpos.Y - 1, blockpos.Z);
 	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
 	for (s16 x = 0; x < MAP_BLOCKSIZE; x++) {
-		data.data.push_back(
-			SunlightPropagationUnit(v2s16(x, z), lights[z][x]));
+		data.data.emplace_back(v2s16(x, z), lights[z][x]);
 	}
 	// Propagate sunlight and shadow below the voxel manipulator.
 	while (!data.data.empty()) {
@@ -1369,8 +1358,7 @@ void repair_block_light(ServerMap *map, MapBlock *block,
 	// --- STEP 2: Get nodes from borders to unlight
 
 	// For each border of the block:
-	for (direction d = 0; d < 6; d++) {
-		VoxelArea a = block_pad[d];
+	for (const VoxelArea &a : block_pad) {
 		// For each node of the border:
 		for (s32 x = a.MinEdge.X; x <= a.MaxEdge.X; x++)
 		for (s32 z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++)

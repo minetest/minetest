@@ -28,7 +28,7 @@ struct ToolCapabilities;
 class ScriptApiPlayer : virtual public ScriptApiBase
 {
 public:
-	virtual ~ScriptApiPlayer();
+	virtual ~ScriptApiPlayer() = default;
 
 	void on_newplayer(ServerActiveObject *player);
 	void on_dieplayer(ServerActiveObject *player);

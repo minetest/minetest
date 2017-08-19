@@ -260,7 +260,7 @@ void ScriptApiSecurity::initializeSecurityClient()
 	static const char *os_whitelist[] = {
 		"clock",
 		"date",
-		"difftime",	
+		"difftime",
 		"time",
 		"setlocale",
 	};
@@ -504,7 +504,7 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 			// by the operating system anyways.
 			return false;
 		}
-		removed = component + (removed.empty() ? "" : DIR_DELIM + removed);
+		removed.append(component).append(removed.empty() ? "" : DIR_DELIM + removed);
 		abs_path = fs::AbsolutePath(cur_path);
 	}
 	if (abs_path.empty())
@@ -550,9 +550,9 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	// Allow read-only access to all mod directories
 	if (!write_required) {
-		const std::vector<ModSpec> mods = gamedef->getMods();
-		for (size_t i = 0; i < mods.size(); ++i) {
-			str = fs::AbsolutePath(mods[i].path);
+		const std::vector<ModSpec> &mods = gamedef->getMods();
+		for (const ModSpec &mod : mods) {
+			str = fs::AbsolutePath(mod.path);
 			if (!str.empty() && fs::PathStartsWith(abs_path, str)) {
 				return true;
 			}
@@ -617,7 +617,9 @@ int ScriptApiSecurity::sl_g_load(lua_State *L)
 		int t = lua_type(L, -1);
 		if (t == LUA_TNIL) {
 			break;
-		} else if (t != LUA_TSTRING) {
+		}
+
+		if (t != LUA_TSTRING) {
 			lua_pushnil(L);
 			lua_pushliteral(L, "Loader didn't return a string");
 			return 2;

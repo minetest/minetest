@@ -93,7 +93,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE)) {
 				if (leaves_d[i] == 1) {
@@ -131,10 +131,8 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (std::map<v3s16, MapBlock*>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i)
-		event.modified_blocks.insert(i->first);
+	for (auto &modified_block : modified_blocks)
+		event.modified_blocks.insert(modified_block.first);
 	map->dispatchEvent(&event);
 	return SUCCESS;
 }
@@ -182,7 +180,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	//generate axiom
 	std::string axiom = tree_definition.initial_axiom;
 	for (s16 i = 0; i < iterations; i++) {
-		std::string temp = "";
+		std::string temp;
 		for (s16 j = 0; j < (s16)axiom.size(); j++) {
 			char axiom_char = axiom.at(j);
 			switch (axiom_char) {
@@ -403,7 +401,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 					v3f(position.X, position.Y, position.Z - 1),
 					tree_definition
 				);
-			} if (stack_orientation.empty() == false) {
+			} if (!stack_orientation.empty()) {
 				s16 size = 1;
 				for (x = -size; x <= size; x++)
 				for (y = -size; y <= size; y++)
@@ -527,7 +525,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -540,7 +538,7 @@ void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
 void tree_trunk_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	content_t current_node = vmanip.m_data[vi].getContent();
@@ -560,7 +558,7 @@ void tree_leaves_placement(MMVManip &vmanip, v3f p0,
 	if (ps.range(1, 100) > 100 - tree_definition.leaves2_chance)
 		leavesnode = tree_definition.leaves2node;
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -584,7 +582,7 @@ void tree_single_leaves_placement(MMVManip &vmanip, v3f p0,
 	if (ps.range(1, 100) > 100 - tree_definition.leaves2_chance)
 		leavesnode = tree_definition.leaves2node;
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -597,7 +595,7 @@ void tree_single_leaves_placement(MMVManip &vmanip, v3f p0,
 void tree_fruit_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -734,7 +732,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE)) {
 				if (leaves_d[i] == 1)
@@ -856,7 +854,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE ||
 					vmanip.m_data[vi] == snownode)) {

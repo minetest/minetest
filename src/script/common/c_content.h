@@ -123,7 +123,6 @@ MapNode            readnode                  (lua_State *L, int index,
 void               pushnode                  (lua_State *L, const MapNode &n,
                                               INodeDefManager *ndef);
 
-NodeBox            read_nodebox              (lua_State *L, int index);
 
 void               read_groups               (lua_State *L, int index,
                                               ItemGroupList &result);
@@ -159,9 +158,6 @@ std::vector<ItemStack> read_items            (lua_State *L,
                                               int index,
                                               Server* srv);
 
-void               read_soundspec            (lua_State *L,
-                                              int index,
-                                              SimpleSoundSpec &spec);
 void               push_soundspec            (lua_State *L,
                                               const SimpleSoundSpec &spec);
 

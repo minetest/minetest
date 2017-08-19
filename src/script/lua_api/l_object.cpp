@@ -551,7 +551,7 @@ int ObjectRef::l_get_local_animation(lua_State *L)
 	float frame_speed;
 	player->getLocalAnimations(frames, &frame_speed);
 
-	for (v2s32 frame : frames) {
+	for (const v2s32 &frame : frames) {
 		push_v2s32(L, frame);
 	}
 

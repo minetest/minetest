@@ -30,7 +30,7 @@ struct ToolGroupCap
 	int maxlevel = 1;
 	int uses = 20;
 
-	ToolGroupCap() {}
+	ToolGroupCap() = default;
 
 	bool getTime(int rating, float *time) const
 	{
@@ -118,7 +118,7 @@ struct PunchDamageResult
 	int damage = 0;
 	int wear = 0;
 
-	PunchDamageResult() {}
+	PunchDamageResult() = default;
 };
 
 struct ItemStack;

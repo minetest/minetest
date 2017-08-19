@@ -91,7 +91,7 @@ void read_item_definition(lua_State* L, int index,
 	// If name is "" (hand), ensure there are ToolCapabilities
 	// because it will be looked up there whenever any other item has
 	// no ToolCapabilities
-	if(def.name == "" && def.tool_capabilities == NULL){
+	if (def.name.empty() && def.tool_capabilities == NULL){
 		def.tool_capabilities = new ToolCapabilities();
 	}
 
@@ -212,9 +212,9 @@ void read_object_properties(lua_State *L, int index,
 		while(lua_next(L, table) != 0){
 			// key at index -2 and value at index -1
 			if(lua_isstring(L, -1))
-				prop->textures.push_back(lua_tostring(L, -1));
+				prop->textures.emplace_back(lua_tostring(L, -1));
 			else
-				prop->textures.push_back("");
+				prop->textures.emplace_back("");
 			// removes value, keeps key for next iteration
 			lua_pop(L, 1);
 		}
@@ -303,18 +303,16 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 
 	lua_newtable(L);
 	u16 i = 1;
-	for (std::vector<std::string>::iterator it = prop->textures.begin();
-			it != prop->textures.end(); ++it) {
-		lua_pushlstring(L, it->c_str(), it->size());
+	for (const std::string &texture : prop->textures) {
+		lua_pushlstring(L, texture.c_str(), texture.size());
 		lua_rawseti(L, -2, i);
 	}
 	lua_setfield(L, -2, "textures");
 
 	lua_newtable(L);
 	i = 1;
-	for (std::vector<video::SColor>::iterator it = prop->colors.begin();
-			it != prop->colors.end(); ++it) {
-		push_ARGB8(L, *it);
+	for (const video::SColor &color : prop->colors) {
+		push_ARGB8(L, color);
 		lua_rawseti(L, -2, i);
 	}
 	lua_setfield(L, -2, "colors");
@@ -564,7 +562,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	f.param_type_2 = (ContentParamType2)getenumfield(L, index, "paramtype2",
 			ScriptApiNode::es_ContentParamType2, CPT2_NONE);
 
-	if (f.palette_name != "" &&
+	if (!f.palette_name.empty() &&
 			!(f.param_type_2 == CPT2_COLOR ||
 			f.param_type_2 == CPT2_COLORED_FACEDIR ||
 			f.param_type_2 == CPT2_COLORED_WALLMOUNTED))
@@ -646,7 +644,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 		lua_pushnil(L);
 		while (lua_next(L, table) != 0) {
 			// Value at -1
-			f.connects_to.push_back(lua_tostring(L, -1));
+			f.connects_to.emplace_back(lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 	}
@@ -771,9 +769,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 
 	lua_newtable(L);
 	u16 i = 1;
-	for (std::vector<std::string>::const_iterator it = c.connects_to.begin();
-			it != c.connects_to.end(); ++it) {
-		lua_pushlstring(L, it->c_str(), it->size());
+	for (const std::string &it : c.connects_to) {
+		lua_pushlstring(L, it.c_str(), it.size());
 		lua_rawseti(L, -2, i);
 	}
 	lua_setfield(L, -2, "connects_to");
@@ -893,9 +890,8 @@ void push_box(lua_State *L, const std::vector<aabb3f> &box)
 {
 	lua_newtable(L);
 	u8 i = 1;
-	for (std::vector<aabb3f>::const_iterator it = box.begin();
-	                it != box.end(); ++it) {
-		push_aabb3f(L, (*it));
+	for (const aabb3f &it : box) {
+		push_aabb3f(L, it);
 		lua_rawseti(L, -2, i);
 	}
 }
@@ -987,21 +983,19 @@ NodeBox read_nodebox(lua_State *L, int index)
 		nodebox.type = (NodeBoxType)getenumfield(L, index, "type",
 				ScriptApiNode::es_NodeBoxType, NODEBOX_REGULAR);
 
-#define NODEBOXREAD(n, s) \
-	do { \
+#define NODEBOXREAD(n, s){ \
 		lua_getfield(L, index, (s)); \
 		if (lua_istable(L, -1)) \
 			(n) = read_aabb3f(L, -1, BS); \
 		lua_pop(L, 1); \
-	} while (0)
+	}
 
 #define NODEBOXREADVEC(n, s) \
-	do { \
 		lua_getfield(L, index, (s)); \
 		if (lua_istable(L, -1)) \
 			(n) = read_aabb3f_vector(L, -1, BS); \
-		lua_pop(L, 1); \
-	} while (0)
+		lua_pop(L, 1);
+
 		NODEBOXREADVEC(nodebox.fixed, "fixed");
 		NODEBOXREAD(nodebox.wall_top, "wall_top");
 		NODEBOXREAD(nodebox.wall_bottom, "wall_bottom");
@@ -1037,7 +1031,7 @@ MapNode readnode(lua_State *L, int index, INodeDefManager *ndef)
 		param2 = lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
-	return MapNode(ndef, name, param1, param2);
+	return {ndef, name, param1, param2};
 }
 
 /******************************************************************************/
@@ -1096,18 +1090,17 @@ ItemStack read_item(lua_State* L, int index, IItemDefManager *idef)
 	if(index < 0)
 		index = lua_gettop(L) + 1 + index;
 
-	if(lua_isnil(L, index))
-	{
+	if (lua_isnil(L, index)) {
 		return ItemStack();
 	}
-	else if(lua_isuserdata(L, index))
-	{
+
+	if (lua_isuserdata(L, index)) {
 		// Convert from LuaItemStack
 		LuaItemStack *o = LuaItemStack::checkobject(L, index);
 		return o->getItem();
 	}
-	else if(lua_isstring(L, index))
-	{
+
+	if (lua_isstring(L, index)) {
 		// Convert from itemstring
 		std::string itemstring = lua_tostring(L, index);
 		try
@@ -1168,18 +1161,16 @@ void push_tool_capabilities(lua_State *L,
 		// Create groupcaps table
 		lua_newtable(L);
 		// For each groupcap
-		for (ToolGCMap::const_iterator i = toolcap.groupcaps.begin();
-			i != toolcap.groupcaps.end(); ++i) {
+		for (const auto &gc_it : toolcap.groupcaps) {
 			// Create groupcap table
 			lua_newtable(L);
-			const std::string &name = i->first;
-			const ToolGroupCap &groupcap = i->second;
+			const std::string &name = gc_it.first;
+			const ToolGroupCap &groupcap = gc_it.second;
 			// Create subtable "times"
 			lua_newtable(L);
-			for (std::unordered_map<int, float>::const_iterator
-					i = groupcap.times.begin(); i != groupcap.times.end(); ++i) {
-				lua_pushinteger(L, i->first);
-				lua_pushnumber(L, i->second);
+			for (auto time : groupcap.times) {
+				lua_pushinteger(L, time.first);
+				lua_pushnumber(L, time.second);
 				lua_settable(L, -3);
 			}
 			// Set subtable "times"
@@ -1195,11 +1186,10 @@ void push_tool_capabilities(lua_State *L,
 		//Create damage_groups table
 		lua_newtable(L);
 		// For each damage group
-		for (DamageGroup::const_iterator i = toolcap.damageGroups.begin();
-			i != toolcap.damageGroups.end(); ++i) {
+		for (const auto &damageGroup : toolcap.damageGroups) {
 			// Create damage group table
-			lua_pushinteger(L, i->second);
-			lua_setfield(L, -2, i->first.c_str());
+			lua_pushinteger(L, damageGroup.second);
+			lua_setfield(L, -2, damageGroup.first.c_str());
 		}
 		lua_setfield(L, -2, "damage_groups");
 }
@@ -1459,9 +1449,9 @@ void read_groups(lua_State *L, int index, ItemGroupList &result)
 void push_groups(lua_State *L, const ItemGroupList &groups)
 {
 	lua_newtable(L);
-	for (ItemGroupList::const_iterator it = groups.begin(); it != groups.end(); ++it) {
-		lua_pushnumber(L, it->second);
-		lua_setfield(L, -2, it->first.c_str());
+	for (const auto &group : groups) {
+		lua_pushnumber(L, group.second);
+		lua_setfield(L, -2, group.first.c_str());
 	}
 }
 
@@ -1572,9 +1562,8 @@ static int push_json_value_getdepth(const Json::Value &value)
 		return 1;
 
 	int maxdepth = 0;
-	for (Json::Value::const_iterator it = value.begin();
-			it != value.end(); ++it) {
-		int elemdepth = push_json_value_getdepth(*it);
+	for (const auto &it : value) {
+		int elemdepth = push_json_value_getdepth(it);
 		if (elemdepth > maxdepth)
 			maxdepth = elemdepth;
 	}
@@ -1646,8 +1635,8 @@ bool push_json_value(lua_State *L, const Json::Value &value, int nullindex)
 	// of push_json_value_helper is 2, so make sure there a depth * 2 slots
 	if (lua_checkstack(L, depth * 2))
 		return push_json_value_helper(L, value, nullindex);
-	else
-		return false;
+
+	return false;
 }
 
 // Converts Lua table --> JSON

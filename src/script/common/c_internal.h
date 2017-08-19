@@ -58,12 +58,12 @@ extern "C" {
 #define PUSH_ERROR_HANDLER(L) \
 	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
 
-#define PCALL_RESL(L, RES) do {                         \
+#define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
 	if (result_ != 0) {                                 \
 		script_error((L), result_, NULL, __FUNCTION__); \
 	}                                                   \
-} while (0)
+}
 
 #define script_run_callbacks(L, nargs, mode) \
 	script_run_callbacks_f((L), (nargs), (mode), __FUNCTION__)

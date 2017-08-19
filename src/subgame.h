@@ -50,7 +50,7 @@ struct SubgameSpec
 
 	bool isValid() const
 	{
-		return (id != "" && path != "");
+		return (!id.empty() && !path.empty());
 	}
 };
 
@@ -89,7 +89,7 @@ struct WorldSpec
 
 	bool isValid() const
 	{
-		return (name != "" && path != "" && gameid != "");
+		return (!name.empty() && !path.empty() && !gameid.empty());
 	}
 };
 

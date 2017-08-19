@@ -743,7 +743,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 
 	for (int d = start_radius; d <= radius; d++) {
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
-		for (v3s16 i : list) {
+		for (const v3s16 &i : list) {
 			v3s16 p = pos + i;
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
 			if (filter.count(c) != 0) {
@@ -1127,7 +1127,7 @@ int ModApiEnvMod::l_find_path(lua_State *L)
 		lua_newtable(L);
 		int top = lua_gettop(L);
 		unsigned int index = 1;
-		for (v3s16 i : path) {
+		for (const v3s16 &i : path) {
 			lua_pushnumber(L,index);
 			push_v3s16(L, i);
 			lua_settable(L, top);

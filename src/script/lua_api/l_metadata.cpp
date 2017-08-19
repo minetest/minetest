@@ -218,10 +218,9 @@ void MetaDataRef::handleToTable(lua_State *L, Metadata *meta)
 	lua_newtable(L);
 	{
 		const StringMap &fields = meta->getStrings();
-		for (StringMap::const_iterator
-				it = fields.begin(); it != fields.end(); ++it) {
-			const std::string &name = it->first;
-			const std::string &value = it->second;
+		for (const auto &field : fields) {
+			const std::string &name = field.first;
+			const std::string &value = field.second;
 			lua_pushlstring(L, name.c_str(), name.size());
 			lua_pushlstring(L, value.c_str(), value.size());
 			lua_settable(L, -3);

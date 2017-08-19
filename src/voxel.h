@@ -59,7 +59,7 @@ class VoxelArea
 {
 public:
 	// Starts as zero sized
-	VoxelArea() {}
+	VoxelArea() = default;
 
 	VoxelArea(const v3s16 &min_edge, const v3s16 &max_edge):
 		MinEdge(min_edge),
@@ -175,12 +175,12 @@ public:
 
 	VoxelArea operator+(const v3s16 &off) const
 	{
-		return VoxelArea(MinEdge+off, MaxEdge+off);
+		return {MinEdge+off, MaxEdge+off};
 	}
 
 	VoxelArea operator-(const v3s16 &off) const
 	{
-		return VoxelArea(MinEdge-off, MaxEdge-off);
+		return {MinEdge-off, MaxEdge-off};
 	}
 
 	/*
@@ -344,7 +344,7 @@ enum VoxelPrintMode
 class VoxelManipulator
 {
 public:
-	VoxelManipulator();
+	VoxelManipulator() = default;
 	virtual ~VoxelManipulator();
 
 	/*
@@ -374,7 +374,7 @@ public:
 		addArea(voxel_area);
 
 		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA) {
-			return MapNode(CONTENT_IGNORE);
+			return {CONTENT_IGNORE};
 		}
 
 		return m_data[m_area.index(p)];
@@ -382,9 +382,9 @@ public:
 	MapNode getNodeNoExNoEmerge(const v3s16 &p)
 	{
 		if (!m_area.contains(p))
-			return MapNode(CONTENT_IGNORE);
+			return {CONTENT_IGNORE};
 		if (m_flags[m_area.index(p)] & VOXELFLAG_NO_DATA)
-			return MapNode(CONTENT_IGNORE);
+			return {CONTENT_IGNORE};
 		return m_data[m_area.index(p)];
 	}
 	// Stuff explodes if non-emerged area is touched with this.
