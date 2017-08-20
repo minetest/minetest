@@ -35,7 +35,7 @@ public:
 	void savePlayer(RemotePlayer *player) {}
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) { return true; }
 	bool removePlayer(const std::string &name) { return true; }
-	void listPlayers(std::vector<std::string> &) {}
+	void listPlayers(std::vector<std::string> &res) {}
 
 	void beginSave() {}
 	void endSave() {}

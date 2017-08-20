@@ -68,7 +68,7 @@ class AsyncEngine {
 	friend class AsyncWorkerThread;
 	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
-	AsyncEngine() {};
+	AsyncEngine() = default;
 	~AsyncEngine();
 
 	/**

@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -231,12 +231,12 @@ inline std::vector<std::basic_string<T> > str_split(
  */
 inline std::string lowercase(const std::string &str)
 {
-	std::string s2 = "";
+	std::string s2;
 
 	s2.reserve(str.size());
 
-	for (size_t i = 0; i < str.size(); i++)
-		s2 += tolower(str[i]);
+	for (char i : str)
+		s2 += tolower(i);
 
 	return s2;
 }
@@ -607,8 +607,8 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
  */
 inline bool is_number(const std::string &to_check)
 {
-	for (size_t i = 0; i < to_check.size(); i++)
-		if (!std::isdigit(to_check[i]))
+	for (char i : to_check)
+		if (!std::isdigit(i))
 			return false;
 
 	return !to_check.empty();

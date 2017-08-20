@@ -59,17 +59,12 @@ void StaticObjectList::serialize(std::ostream &os)
 	}
 	writeU16(os, count);
 
-	for(std::vector<StaticObject>::iterator
-			i = m_stored.begin();
-			i != m_stored.end(); ++i) {
-		StaticObject &s_obj = *i;
+	for (StaticObject &s_obj : m_stored) {
 		s_obj.serialize(os);
 	}
-	for(std::map<u16, StaticObject>::iterator
-			i = m_active.begin();
-			i != m_active.end(); ++i)
-	{
-		StaticObject s_obj = i->second;
+
+	for (auto &i : m_active) {
+		StaticObject s_obj = i.second;
 		s_obj.serialize(os);
 	}
 }

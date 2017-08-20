@@ -32,8 +32,8 @@ class ScriptApiNode
 		  public ScriptApiNodemeta
 {
 public:
-	ScriptApiNode();
-	virtual ~ScriptApiNode();
+	ScriptApiNode() = default;
+	virtual ~ScriptApiNode() = default;
 
 	bool node_on_punch(v3s16 p, MapNode node,
 			ServerActiveObject *puncher, PointedThing pointed);

@@ -71,7 +71,7 @@ class TestFailedException : public std::exception {
 	}
 
 // Asserts the comparison specified by CMP is true, or fails the current unit test
-#define UASSERTCMP(T, CMP, actual, expected) do {                         \
+#define UASSERTCMP(T, CMP, actual, expected) {                            \
 	T a = (actual);                                                       \
 	T e = (expected);                                                     \
 	if (!(a CMP e)) {                                                     \
@@ -84,12 +84,12 @@ class TestFailedException : public std::exception {
 			<< e << std::endl;                                            \
 		throw TestFailedException();                                      \
 	}                                                                     \
-} while (0)
+}
 
 #define UASSERTEQ(T, actual, expected) UASSERTCMP(T, ==, actual, expected)
 
 // UASSERTs that the specified exception occurs
-#define EXCEPTION_CHECK(EType, code) do { \
+#define EXCEPTION_CHECK(EType, code) {    \
 	bool exception_thrown = false;        \
 	try {                                 \
 		code;                             \
@@ -97,7 +97,7 @@ class TestFailedException : public std::exception {
 		exception_thrown = true;          \
 	}                                     \
 	UASSERT(exception_thrown);            \
-} while (0)
+}
 
 class IGameDef;
 

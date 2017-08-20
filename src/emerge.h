@@ -29,10 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
 #define BLOCK_EMERGE_FORCE_QUEUE (1 << 1)
 
-#define EMERGE_DBG_OUT(x) do {                         \
+#define EMERGE_DBG_OUT(x) {                            \
 	if (enable_mapgen_debug_info)                      \
 		infostream << "EmergeThread: " x << std::endl; \
-} while (0)
+}
 
 class EmergeThread;
 class INodeDefManager;

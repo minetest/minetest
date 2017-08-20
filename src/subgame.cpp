@@ -71,7 +71,7 @@ std::string getSubgamePathEnv()
 
 SubgameSpec findSubgame(const std::string &id)
 {
-	if(id == "")
+	if (id.empty())
 		return SubgameSpec();
 	std::string share = porting::path_share;
 	std::string user = porting::path_user;
@@ -81,32 +81,27 @@ SubgameSpec findSubgame(const std::string &id)
 
 	while (!search_paths.at_end()) {
 		std::string path = search_paths.next(PATH_DELIM);
-		find_paths.push_back(GameFindPath(
-				path + DIR_DELIM + id, false));
-		find_paths.push_back(GameFindPath(
-				path + DIR_DELIM + id + "_game", false));
+		find_paths.emplace_back(path + DIR_DELIM + id, false);
+		find_paths.emplace_back(path + DIR_DELIM + id + "_game", false);
 	}
 
-	find_paths.push_back(GameFindPath(
-			user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true));
-	find_paths.push_back(GameFindPath(
-			user + DIR_DELIM + "games" + DIR_DELIM + id, true));
-	find_paths.push_back(GameFindPath(
-			share + DIR_DELIM + "games" + DIR_DELIM + id + "_game", false));
-	find_paths.push_back(GameFindPath(
-			share + DIR_DELIM + "games" + DIR_DELIM + id, false));
+	find_paths.emplace_back(user + DIR_DELIM + "games" + DIR_DELIM + id + "_game", true);
+	find_paths.emplace_back(user + DIR_DELIM + "games" + DIR_DELIM + id, true);
+	find_paths.emplace_back(share + DIR_DELIM + "games" + DIR_DELIM + id + "_game",
+		false);
+	find_paths.emplace_back(share + DIR_DELIM + "games" + DIR_DELIM + id, false);
 	// Find game directory
 	std::string game_path;
 	bool user_game = true; // Game is in user's directory
-	for(u32 i=0; i<find_paths.size(); i++){
-		const std::string &try_path = find_paths[i].path;
-		if(fs::PathExists(try_path)){
+	for (const GameFindPath &find_path : find_paths) {
+		const std::string &try_path = find_path.path;
+		if (fs::PathExists(try_path)) {
 			game_path = try_path;
-			user_game = find_paths[i].user_specific;
+			user_game = find_path.user_specific;
 			break;
 		}
 	}
-	if(game_path == "")
+	if (game_path.empty())
 		return SubgameSpec();
 	std::string gamemod_path = game_path + DIR_DELIM + "mods";
 	// Find mod directories
@@ -116,7 +111,7 @@ SubgameSpec findSubgame(const std::string &id)
 	if(user != share || user_game)
 		mods_paths.insert(user + DIR_DELIM + "mods");
 	std::string game_name = getGameName(game_path);
-	if(game_name == "")
+	if (game_name.empty())
 		game_name = id;
 	std::string menuicon_path;
 #ifndef SERVER
@@ -137,7 +132,7 @@ SubgameSpec findWorldSubgame(const std::string &world_path)
 		gamespec.path = world_gamepath;
 		gamespec.gamemods_path= world_gamepath + DIR_DELIM + "mods";
 		gamespec.name = getGameName(world_gamepath);
-		if(gamespec.name == "")
+		if (gamespec.name.empty())
 			gamespec.name = "unknown";
 		return gamespec;
 	}
@@ -156,23 +151,22 @@ std::set<std::string> getAvailableGameIds()
 	while (!search_paths.at_end())
 		gamespaths.insert(search_paths.next(PATH_DELIM));
 
-	for (std::set<std::string>::const_iterator i = gamespaths.begin();
-			i != gamespaths.end(); ++i){
-		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(*i);
-		for(u32 j=0; j<dirlist.size(); j++){
-			if(!dirlist[j].dir)
+	for (const std::string &gamespath : gamespaths) {
+		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(gamespath);
+		for (const fs::DirListNode &dln : dirlist) {
+			if(!dln.dir)
 				continue;
 			// If configuration file is not found or broken, ignore game
 			Settings conf;
-			if(!getGameConfig(*i + DIR_DELIM + dirlist[j].name, conf))
+			if(!getGameConfig(gamespath + DIR_DELIM + dln.name, conf))
 				continue;
 			// Add it to result
 			const char *ends[] = {"_game", NULL};
-			std::string shorter = removeStringEnd(dirlist[j].name, ends);
-			if(shorter != "")
+			std::string shorter = removeStringEnd(dln.name, ends);
+			if (!shorter.empty())
 				gameids.insert(shorter);
 			else
-				gameids.insert(dirlist[j].name);
+				gameids.insert(dln.name);
 		}
 	}
 	return gameids;
@@ -182,9 +176,8 @@ std::vector<SubgameSpec> getAvailableGames()
 {
 	std::vector<SubgameSpec> specs;
 	std::set<std::string> gameids = getAvailableGameIds();
-	for(std::set<std::string>::const_iterator i = gameids.begin();
-			i != gameids.end(); ++i)
-		specs.push_back(findSubgame(*i));
+	for (const auto &gameid : gameids)
+		specs.push_back(findSubgame(gameid));
 	return specs;
 }
 
@@ -235,15 +228,14 @@ std::vector<WorldSpec> getAvailableWorlds()
 
 	worldspaths.insert(porting::path_user + DIR_DELIM + "worlds");
 	infostream << "Searching worlds..." << std::endl;
-	for (std::set<std::string>::const_iterator i = worldspaths.begin();
-			i != worldspaths.end(); ++i) {
-		infostream << "  In " << (*i) << ": " <<std::endl;
-		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(*i);
-		for(u32 j=0; j<dirvector.size(); j++){
-			if(!dirvector[j].dir)
+	for (const std::string &worldspath : worldspaths) {
+		infostream << "  In " << worldspath << ": " <<std::endl;
+		std::vector<fs::DirListNode> dirvector = fs::GetDirListing(worldspath);
+		for (const fs::DirListNode &dln : dirvector) {
+			if(!dln.dir)
 				continue;
-			std::string fullpath = *i + DIR_DELIM + dirvector[j].name;
-			std::string name = dirvector[j].name;
+			std::string fullpath = worldspath + DIR_DELIM + dln.name;
+			std::string name = dln.name;
 			// Just allow filling in the gameid always for now
 			bool can_be_legacy = true;
 			std::string gameid = getWorldGameId(fullpath, can_be_legacy);
@@ -267,7 +259,7 @@ std::vector<WorldSpec> getAvailableWorlds()
 		WorldSpec spec(fullpath, name, gameid);
 		infostream<<"Old world found."<<std::endl;
 		worlds.push_back(spec);
-	}while(0);
+	}while(false);
 	infostream<<worlds.size()<<" found."<<std::endl;
 	return worlds;
 }

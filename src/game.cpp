@@ -69,8 +69,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "sound_openal.h"
 #endif
 
-extern Settings *g_settings;
-extern Profiler *g_profiler;
 
 /*
 	Text input system
@@ -248,7 +246,7 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 		setStaticText(guitext_profiler, text.c_str());
 		guitext_profiler->setVisible(true);
 
-		s32 w = fe->getTextWidth(text.c_str());
+		s32 w = fe->getTextWidth(text);
 
 		if (w < 400)
 			w = 400;
@@ -291,11 +289,9 @@ private:
 	};
 	std::deque<Piece> m_log;
 public:
-	u32 m_log_max_size;
+	u32 m_log_max_size = 200;
 
-	ProfilerGraph():
-		m_log_max_size(200)
-	{}
+	ProfilerGraph() = default;
 
 	void put(const Profiler::GraphValues &values)
 	{
@@ -314,14 +310,10 @@ public:
 		// to be the same for each call to prevent flickering
 		std::map<std::string, Meta> m_meta;
 
-		for (std::deque<Piece>::const_iterator k = m_log.begin();
-				k != m_log.end(); ++k) {
-			const Piece &piece = *k;
-
-			for (Profiler::GraphValues::const_iterator i = piece.values.begin();
-					i != piece.values.end(); ++i) {
-				const std::string &id = i->first;
-				const float &value = i->second;
+		for (const Piece &piece : m_log) {
+			for (const auto &i : piece.values) {
+				const std::string &id = i.first;
+				const float &value = i.second;
 				std::map<std::string, Meta>::iterator j = m_meta.find(id);
 
 				if (j == m_meta.end()) {
@@ -349,9 +341,8 @@ public:
 			sizeof(usable_colors) / sizeof(*usable_colors);
 		u32 next_color_i = 0;
 
-		for (std::map<std::string, Meta>::iterator i = m_meta.begin();
-				i != m_meta.end(); ++i) {
-			Meta &meta = i->second;
+		for (auto &i : m_meta) {
+			Meta &meta = i.second;
 			video::SColor color(255, 200, 200, 200);
 
 			if (next_color_i < usable_colors_count)
@@ -401,9 +392,7 @@ public:
 			float lastscaledvalue = 0.0;
 			bool lastscaledvalue_exists = false;
 
-			for (std::deque<Piece>::const_iterator j = m_log.begin();
-					j != m_log.end(); ++j) {
-				const Piece &piece = *j;
+			for (const Piece &piece : m_log) {
 				float value = 0;
 				bool value_exists = false;
 				Profiler::GraphValues::const_iterator k =
@@ -763,8 +752,8 @@ public:
 
 	void setSky(Sky *sky) {
 		m_sky = sky;
-		for (size_t i = 0; i < created_nosky.size(); ++i) {
-			created_nosky[i]->setSky(m_sky);
+		for (GameGlobalShaderConstantSetter *ggscs : created_nosky) {
+			ggscs->setSky(m_sky);
 		}
 		created_nosky.clear();
 	}
@@ -793,7 +782,7 @@ bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_de
 	if (!is_valid_position)
 		return false;
 
-	if (prediction != "" && !nodedef->get(node).rightclickable) {
+	if (!prediction.empty() && !nodedef->get(node).rightclickable) {
 		verbosestream << "Node placement prediction for "
 			      << playeritem_def.name << " is "
 			      << prediction << std::endl;
@@ -978,7 +967,7 @@ static void updateChat(Client &client, f32 dtime, bool show_debug,
 	}
 
 	// Get new messages from client
-	std::wstring message = L"";
+	std::wstring message;
 	while (client.getChatMessage(message)) {
 		chat_backend.addUnparsedMessage(message);
 	}
@@ -1116,8 +1105,8 @@ void KeyCache::populate()
 	if (handler) {
 		// First clear all keys, then re-add the ones we listen for
 		handler->dontListenForKeys();
-		for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
-			handler->listenForKey(key[i]);
+		for (const KeyPress &k : key) {
+			handler->listenForKey(k);
 		}
 		handler->listenForKey(EscapeKey);
 		handler->listenForKey(CancelKey);
@@ -1384,7 +1373,7 @@ private:
 
 	GameOnDemandSoundFetcher soundfetcher; // useful when testing
 	ISoundManager *sound;
-	bool sound_is_dummy;
+	bool sound_is_dummy = false;
 	SoundMaker *soundmaker;
 
 	ChatBackend *chat_backend;
@@ -1464,9 +1453,9 @@ private:
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
-	bool m_invert_mouse;
-	bool m_first_loop_after_window_activation;
-	bool m_camera_offset_changed;
+	bool m_invert_mouse = false;
+	bool m_first_loop_after_window_activation = false;
+	bool m_camera_offset_changed = false;
 
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
@@ -1482,7 +1471,6 @@ Game::Game() :
 	itemdef_manager(NULL),
 	nodedef_manager(NULL),
 	sound(NULL),
-	sound_is_dummy(false),
 	soundmaker(NULL),
 	chat_backend(NULL),
 	current_formspec(NULL),
@@ -1496,10 +1484,7 @@ Game::Game() :
 	sky(NULL),
 	local_inventory(NULL),
 	hud(NULL),
-	mapper(NULL),
-	m_invert_mouse(false),
-	m_first_loop_after_window_activation(false),
-	m_camera_offset_changed(false)
+	mapper(NULL)
 {
 	g_settings->registerChangedCallback("doubletap_jump",
 		&settingChangedCallback, this);
@@ -1806,7 +1791,7 @@ bool Game::init(
 		return false;
 
 	// Create a server if not connecting to an existing one
-	if (*address == "") {
+	if (address->empty()) {
 		if (!createSingleplayerServer(map_dir, gamespec, port, address))
 			return false;
 	}
@@ -2168,7 +2153,7 @@ bool Game::connectToServer(const std::string &playername,
 
 			wait_time += dtime;
 			// Only time out if we aren't waiting for the server we started
-			if ((*address != "") && (wait_time > 10)) {
+			if ((!address->empty()) && (wait_time > 10)) {
 				bool sent_old_init = g_settings->getFlag("send_pre_v25_init");
 				// If no pre v25 init was sent, and no answer was received,
 				// but the low level connection could be established
@@ -3175,8 +3160,9 @@ void Game::processClientEvents(CameraOrientation *cam)
 			break;
 
 		case CE_SHOW_FORMSPEC:
-			if (*(event.show_formspec.formspec) == "") {
-				if (current_formspec && ( *(event.show_formspec.formname) == "" || *(event.show_formspec.formname) == cur_formname) ){
+			if (event.show_formspec.formspec->empty()) {
+				if (current_formspec && (event.show_formspec.formname->empty()
+						|| *(event.show_formspec.formname) == cur_formname)) {
 					current_formspec->quitMenu();
 				}
 			} else {
@@ -3713,7 +3699,7 @@ PointedThing Game::updatePointedThing(
 	}
 
 	// Update selection mesh light level and vertex colors
-	if (selectionboxes->size() > 0) {
+	if (!selectionboxes->empty()) {
 		v3f pf = hud->getSelectionPos();
 		v3s16 p = floatToInt(pf, BS);
 
@@ -3722,8 +3708,8 @@ PointedThing Game::updatePointedThing(
 		u16 node_light = getInteriorLight(n, -1, nodedef);
 		u16 light_level = node_light;
 
-		for (u8 i = 0; i < 6; i++) {
-			n = map.getNodeNoEx(p + g_6dirs[i]);
+		for (const v3s16 &dir : g_6dirs) {
+			n = map.getNodeNoEx(p + dir);
 			node_light = getInteriorLight(n, -1, nodedef);
 			if (node_light > light_level)
 				light_level = node_light;
@@ -3797,7 +3783,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		runData.repeat_rightclick_timer = 0;
 		infostream << "Ground right-clicked" << std::endl;
 
-		if (meta && meta->getString("formspec") != "" && !random_input
+		if (meta && !meta->getString("formspec").empty() && !random_input
 				&& !isKeyDown(KeyType::SNEAK)) {
 			// Report right click to server
 			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
@@ -3842,7 +3828,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 				soundmaker->m_player_rightpunch_sound =
 						SimpleSoundSpec();
 
-				if (playeritem_def.node_placement_prediction == "" ||
+				if (playeritem_def.node_placement_prediction.empty() ||
 						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
 					client->interact(3, pointed); // Report to server
 				} else {
@@ -3862,7 +3848,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 		utf8_to_wide(runData.selected_object->infoText()));
 
 	if (show_debug) {
-		if (infotext != L"") {
+		if (!infotext.empty()) {
 			infotext += L"\n";
 		}
 		infotext += unescape_enriched(utf8_to_wide(
@@ -3973,7 +3959,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 	if (sound_dig.exists() && params.diggable) {
 		if (sound_dig.name == "__group") {
-			if (params.main_group != "") {
+			if (!params.main_group.empty()) {
 				soundmaker->m_player_leftpunch_sound.gain = 0.5;
 				soundmaker->m_player_leftpunch_sound.name =
 						std::string("default_dig_") +
@@ -4649,7 +4635,7 @@ void Game::showPauseMenu()
 	static const std::string mode = strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
 		Address serverAddress = client->getServerAddress();
-		if (address != "") {
+		if (!address.empty()) {
 			os << mode << strgettext("Remote server") << "\n"
 					<< strgettext("- Address: ") << address;
 		} else {
@@ -4659,7 +4645,7 @@ void Game::showPauseMenu()
 	} else {
 		os << mode << strgettext("Singleplayer") << "\n";
 	}
-	if (simple_singleplayer_mode || address == "") {
+	if (simple_singleplayer_mode || address.empty()) {
 		static const std::string on = strgettext("On");
 		static const std::string off = strgettext("Off");
 		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
@@ -4673,7 +4659,7 @@ void Game::showPauseMenu()
 					<< strgettext("- Public: ") << announced << "\n";
 			std::string server_name = g_settings->get("server_name");
 			str_formspec_escape(server_name);
-			if (announced == on && server_name != "")
+			if (announced == on && !server_name.empty())
 				os << strgettext("- Server Name: ") << server_name;
 
 		}

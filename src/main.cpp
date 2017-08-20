@@ -352,8 +352,8 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 		std::string name = worldspec.name;
 		std::string path = worldspec.path;
 		if (name.find(' ') != std::string::npos)
-			name = std::string("'") + name + "'";
-		path = std::string("'") + path + "'";
+			name = std::string("'").append(name).append("'");
+		path = std::string("'").append(path).append("'");
 		name = padStringRight(name, 14);
 		os << "  " << name << " " << path << std::endl;
 	}

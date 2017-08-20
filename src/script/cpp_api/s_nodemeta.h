@@ -30,8 +30,8 @@ class ScriptApiNodemeta
 		  public ScriptApiItem
 {
 public:
-	ScriptApiNodemeta();
-	virtual ~ScriptApiNodemeta();
+	ScriptApiNodemeta() = default;
+	virtual ~ScriptApiNodemeta() = default;
 
 	// Return number of accepted items to be moved
 	int nodemeta_inventory_AllowMove(v3s16 p,

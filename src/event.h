@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class MtEvent
 {
 public:
-	virtual ~MtEvent() {};
+	virtual ~MtEvent() = default;
 	//virtual MtEvent* clone(){ return new IEvent; }
 	virtual const char* getType() const = 0;
 
@@ -49,7 +49,7 @@ public:
 class MtEventReceiver
 {
 public:
-	virtual ~MtEventReceiver(){};
+	virtual ~MtEventReceiver() = default;
 	virtual void onEvent(MtEvent *e) = 0;
 };
 
@@ -58,7 +58,7 @@ typedef void (*event_receive_func)(MtEvent *e, void *data);
 class MtEventManager
 {
 public:
-	virtual ~MtEventManager(){};
+	virtual ~MtEventManager() = default;
 	virtual void put(MtEvent *e) = 0;
 	virtual void reg(const char *type, event_receive_func f, void *data) = 0;
 	// If data==NULL, every occurence of f is deregistered.

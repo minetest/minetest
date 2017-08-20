@@ -365,8 +365,8 @@ s32 ChatBuffer::getBottomScrollPos() const
 	s32 rows = (s32) m_rows;
 	if (rows == 0)
 		return 0;
-	else
-		return formatted_count - rows;
+
+	return formatted_count - rows;
 }
 
 

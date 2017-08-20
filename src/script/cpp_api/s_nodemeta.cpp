@@ -232,12 +232,3 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 	PCALL_RES(lua_pcall(L, 5, 0, error_handler));
 	lua_pop(L, 1);  // Pop error handler
 }
-
-ScriptApiNodemeta::ScriptApiNodemeta()
-{
-}
-
-ScriptApiNodemeta::~ScriptApiNodemeta()
-{
-}
-

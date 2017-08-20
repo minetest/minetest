@@ -100,8 +100,9 @@ private:
 class IItemDefManager
 {
 public:
-	IItemDefManager(){}
-	virtual ~IItemDefManager(){}
+	IItemDefManager() = default;
+
+	virtual ~IItemDefManager() = default;
 
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;
@@ -133,8 +134,9 @@ public:
 class IWritableItemDefManager : public IItemDefManager
 {
 public:
-	IWritableItemDefManager(){}
-	virtual ~IWritableItemDefManager(){}
+	IWritableItemDefManager() = default;
+
+	virtual ~IWritableItemDefManager() = default;
 
 	// Get item definition
 	virtual const ItemDefinition& get(const std::string &name) const=0;

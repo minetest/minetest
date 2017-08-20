@@ -39,7 +39,7 @@ struct SimpleSoundSpec
 	{
 	}
 
-	bool exists() const { return name != ""; }
+	bool exists() const { return !name.empty(); }
 
 	std::string name = "";
 	float gain = 1.0f;
@@ -50,7 +50,8 @@ struct SimpleSoundSpec
 class ISoundManager
 {
 public:
-	virtual ~ISoundManager() {}
+	virtual ~ISoundManager() = default;
+
 	// Multiple sounds can be loaded per name; when played, the sound
 	// should be chosen randomly from alternatives
 	// Return value determines success/failure
@@ -80,7 +81,7 @@ public:
 	{
 		return playSound(spec.name, loop, spec.gain, spec.fade, spec.pitch);
 	}
-	int playSoundAt(const SimpleSoundSpec &spec, bool loop, v3f pos)
+	int playSoundAt(const SimpleSoundSpec &spec, bool loop, const v3f &pos)
 	{
 		return playSoundAt(spec.name, loop, spec.gain, pos, spec.pitch);
 	}

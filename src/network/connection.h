@@ -604,7 +604,7 @@ public:
 class PeerHelper
 {
 public:
-	PeerHelper() = default;;
+	PeerHelper() = default;
 	PeerHelper(Peer* peer);
 	~PeerHelper();
 

@@ -37,7 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() {}
+	Area() = default;
+
 	Area(const v3s16 &mine, const v3s16 &maxe) :
 		minedge(mine), maxedge(maxe)
 	{
@@ -56,7 +57,7 @@ public:
 		m_res_cache(1000, &cacheMiss, this)
 	{}
 
-	virtual ~AreaStore() {}
+	virtual ~AreaStore() = default;
 
 	static AreaStore *getOptimalImplementation();
 
