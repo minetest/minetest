@@ -2844,7 +2844,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					IGUIElement * element = getElementFromId(s.fid);
 					gui::IGUIComboBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_COMBO_BOX)) {
-						e = dynamic_cast<gui::IGUIComboBox*>(element);
+						e = static_cast<gui::IGUIComboBox*>(element);
 					}
 					s32 selected = e->getSelected();
 					if (selected >= 0) {
@@ -2857,11 +2857,11 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 				}
 				else if (s.ftype == f_TabHeader) {
 					// no dynamic cast possible due to some distributions shipped
-					// without rtti support in irrlicht
+					// without rttzi support in irrlicht
 					IGUIElement * element = getElementFromId(s.fid);
 					gui::IGUITabControl *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_TAB_CONTROL)) {
-						e = dynamic_cast<gui::IGUITabControl*>(element);
+						e = static_cast<gui::IGUITabControl *>(element);
 					}
 
 					if (e != 0) {
@@ -2876,7 +2876,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					IGUIElement * element = getElementFromId(s.fid);
 					gui::IGUICheckBox *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_CHECK_BOX)) {
-						e = dynamic_cast<gui::IGUICheckBox*>(element);
+						e = static_cast<gui::IGUICheckBox*>(element);
 					}
 
 					if (e != 0) {
@@ -2892,7 +2892,7 @@ void GUIFormSpecMenu::acceptInput(FormspecQuitMode quitmode=quit_mode_no)
 					IGUIElement * element = getElementFromId(s.fid);
 					gui::IGUIScrollBar *e = NULL;
 					if ((element) && (element->getType() == gui::EGUIET_SCROLL_BAR)) {
-						e = dynamic_cast<gui::IGUIScrollBar*>(element);
+						e = static_cast<gui::IGUIScrollBar*>(element);
 					}
 
 					if (e != 0) {
