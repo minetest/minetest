@@ -512,13 +512,6 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 	central_area_size = node_max - node_min + v3s16(1, 1, 1);
 	assert(central_area_size.X == central_area_size.Z);
 
-	int volume_blocks = (blockpos_max.X - blockpos_min.X + 1)
-					  * (blockpos_max.Y - blockpos_min.Y + 1)
-					  * (blockpos_max.Z - blockpos_max.Z + 1);
-
-	volume_nodes = volume_blocks *
-		MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE;
-
 	// Create a block-specific seed
 	blockseed = get_blockseed(data->seed, full_node_min);
 
