@@ -5,7 +5,7 @@
 needs_compile || exit 0
 
 if [[ "$LINT" == "1" ]]; then
-	# Lint with exit CI
+	# Lint and exit CI
 	perform_lint
 	exit 0
 fi

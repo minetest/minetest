@@ -96,6 +96,15 @@ matrix:
           packages: ['clang-format-5.0']
           sources: &sources
             - llvm-toolchain-trusty-5.0
+    - env: CLANG_TIDY=1
+      compiler: clang
+      os: linux
+      script: ./util/travis/clangtidy.sh
+      addons:
+        apt:
+          packages: ['clang-tidy-5.0']
+          sources: &sources
+            - llvm-toolchain-trusty-5.0
 
 
 
