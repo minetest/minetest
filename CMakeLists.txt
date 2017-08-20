@@ -14,8 +14,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 4)
-set(VERSION_PATCH 16)
+set(VERSION_MINOR 5)
+set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
