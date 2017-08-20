@@ -32,11 +32,10 @@ install_linux_deps() {
 install_macosx_deps() {
 	brew update
 	brew install freetype gettext hiredis irrlicht leveldb libogg libvorbis luajit
-	if [[ "$(brew ls | grep jpeg)" == *"jpeg"* ]]; then
-		brew upgrade jpeg #if jpeg exists upgrade, *"somestring"* = string includes string
-		# "somestring" in it, the asterisks (*) should always be outside of the quotes
+	if brew ls | grep -q jpeg; then
+		brew upgrade jpeg
 	else
-		brew install jpeg #otherwise install
+		brew install jpeg
 	fi
 	#brew upgrade postgresql
 }
