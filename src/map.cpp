@@ -1109,7 +1109,6 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
 	// of a mapblock, because we must consider all view angles.
 	// sqrt(1^2 + 1^2 + 1^2) = 1.732
 	float endoff = -BS * MAP_BLOCKSIZE * 1.732050807569;
-	v3s16 spn = cam_pos_nodes;
 	s16 bs2 = MAP_BLOCKSIZE / 2 + 1;
 	// to reduce the likelihood of falsely occluded blocks
 	// require at least two solid blocks
@@ -1118,23 +1117,23 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
 
 	return (
 		// For the central point of the mapblock 'endoff' can be halved
-		isOccluded(spn, cpn,
+		isOccluded(cam_pos_nodes, cpn,
 			step, stepfac, startoff, endoff / 2.0f, needed_count) &&
-		isOccluded(spn, cpn + v3s16(bs2,bs2,bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(bs2,bs2,-bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,bs2,-bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(bs2,-bs2,bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(bs2,-bs2,-bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(bs2,-bs2,-bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(-bs2,bs2,bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(-bs2,bs2,-bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,bs2,-bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(-bs2,-bs2,bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,bs2),
 			step, stepfac, startoff, endoff, needed_count) &&
-		isOccluded(spn, cpn + v3s16(-bs2,-bs2,-bs2),
+		isOccluded(cam_pos_nodes, cpn + v3s16(-bs2,-bs2,-bs2),
 			step, stepfac, startoff, endoff, needed_count));
 }
 

@@ -376,7 +376,8 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		}
 		return;
 	}
-	else if (!def.inventory_image.empty()) {
+
+	if (!def.inventory_image.empty()) {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
 		m_colors.emplace_back();
 		return;

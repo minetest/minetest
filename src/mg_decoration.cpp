@@ -286,7 +286,7 @@ void DecoSimple::resolveNodeNames()
 size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
 	// Don't bother if there aren't any decorations to place
-	if (c_decos.size() == 0)
+	if (c_decos.empty())
 		return 0;
 
 	if (!canPlaceDecoration(vm, p))

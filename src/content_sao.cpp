@@ -245,9 +245,8 @@ LuaEntitySAO::~LuaEntitySAO()
 		m_env->getScriptIface()->luaentity_Remove(m_id);
 	}
 
-	for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
-		it != m_attached_particle_spawners.end(); ++it) {
-		m_env->deleteParticleSpawner(*it, false);
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -267,7 +266,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
 		m_env->getScriptIface()->
-			luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
+			luaentity_Activate(m_id, m_init_state, dtime_s);
 	} else {
 		m_prop.infotext = m_init_name;
 	}
@@ -281,7 +280,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	s16 hp = 1;
 	v3f velocity;
 	float yaw = 0;
-	if(data != ""){
+	if (!data.empty()) {
 		std::istringstream is(data, std::ios::binary);
 		// read version
 		u8 version = readU8(is);
@@ -791,10 +790,10 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
 	m_prop.textures.clear();
-	m_prop.textures.push_back("player.png");
-	m_prop.textures.push_back("player_back.png");
+	m_prop.textures.emplace_back("player.png");
+	m_prop.textures.emplace_back("player_back.png");
 	m_prop.colors.clear();
-	m_prop.colors.push_back(video::SColor(255, 255, 255, 255));
+	m_prop.colors.emplace_back(255, 255, 255, 255);
 	m_prop.spritediv = v2s16(1,1);
 	// end of default appearance
 	m_prop.is_visible = true;
@@ -843,9 +842,8 @@ void PlayerSAO::removingFromEnvironment()
 	ServerActiveObject::removingFromEnvironment();
 	if (m_player->getPlayerSAO() == this) {
 		unlinkPlayerSessionAndSave();
-		for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
-			it != m_attached_particle_spawners.end(); ++it) {
-			m_env->deleteParticleSpawner(*it, false);
+		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+			m_env->deleteParticleSpawner(attached_particle_spawner, false);
 		}
 	}
 }
@@ -897,7 +895,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-void PlayerSAO::getStaticData(std::string *) const
+void PlayerSAO::getStaticData(std::string * result) const
 {
 	FATAL_ERROR("Deprecated function");
 }

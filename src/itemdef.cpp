@@ -135,7 +135,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeS16(os, stack_max);
 	writeU8(os, usable);
 	writeU8(os, liquids_pointable);
-	std::string tool_capabilities_s = "";
+	std::string tool_capabilities_s;
 	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
 		tool_capabilities->serialize(tmp_os, protocol_version);
@@ -143,10 +143,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os << serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for (ItemGroupList::const_iterator
-			i = groups.begin(); i != groups.end(); ++i){
-		os << serializeString(i->first);
-		writeS16(os, i->second);
+	for (const auto &group : groups) {
+		os << serializeString(group.first);
+		writeS16(os, group.second);
 	}
 	os << serializeString(node_placement_prediction);
 	os << serializeString(sound_place.name);
@@ -244,7 +243,6 @@ class CItemDefManager: public IWritableItemDefManager
 
 		ClientCached():
 			inventory_texture(NULL),
-			wield_mesh(),
 			palette(NULL)
 		{}
 	};
@@ -263,20 +261,15 @@ public:
 	{
 #ifndef SERVER
 		const std::vector<ClientCached*> &values = m_clientcached.getValues();
-		for(std::vector<ClientCached*>::const_iterator
-				i = values.begin(); i != values.end(); ++i)
-		{
-			ClientCached *cc = *i;
+		for (ClientCached *cc : values) {
 			if (cc->wield_mesh.mesh)
 				cc->wield_mesh.mesh->drop();
 			delete cc;
 		}
 
 #endif
-		for (std::map<std::string, ItemDefinition*>::iterator iter =
-				m_item_definitions.begin(); iter != m_item_definitions.end();
-				++iter) {
-			delete iter->second;
+		for (auto &item_definition : m_item_definitions) {
+			delete item_definition.second;
 		}
 		m_item_definitions.clear();
 	}
@@ -302,15 +295,12 @@ public:
 	virtual void getAll(std::set<std::string> &result) const
 	{
 		result.clear();
-		for(std::map<std::string, ItemDefinition *>::const_iterator
-				it = m_item_definitions.begin();
-				it != m_item_definitions.end(); ++it) {
-			result.insert(it->first);
+		for (const auto &item_definition : m_item_definitions) {
+			result.insert(item_definition.first);
 		}
-		for (StringMap::const_iterator
-				it = m_aliases.begin();
-				it != m_aliases.end(); ++it) {
-			result.insert(it->first);
+
+		for (const auto &alias : m_aliases) {
+			result.insert(alias.first);
 		}
 	}
 	virtual bool isKnown(const std::string &name_) const
@@ -346,7 +336,7 @@ public:
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
-		if(def.inventory_image != "")
+		if (!def.inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
 		ItemStack item = ItemStack();
@@ -371,28 +361,27 @@ public:
 
 		if (std::this_thread::get_id() == m_main_thread) {
 			return createClientCachedDirect(name, client);
-		} else {
-			// We're gonna ask the result to be put into here
-			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
+		}
 
-			// Throw a request in
-			m_get_clientcached_queue.add(name, 0, 0, &result_queue);
-			try{
-				while(true) {
-					// Wait result for a second
-					GetResult<std::string, ClientCached*, u8, u8>
-						result = result_queue.pop_front(1000);
+		// We're gonna ask the result to be put into here
+		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
-					if (result.key == name) {
-						return result.item;
-					}
+		// Throw a request in
+		m_get_clientcached_queue.add(name, 0, 0, &result_queue);
+		try {
+			while(true) {
+				// Wait result for a second
+				GetResult<std::string, ClientCached*, u8, u8>
+					result = result_queue.pop_front(1000);
+
+				if (result.key == name) {
+					return result.item;
 				}
 			}
-			catch(ItemNotFoundException &e)
-			{
-				errorstream<<"Waiting for clientcached " << name << " timed out."<<std::endl;
-				return &m_dummy_clientcached;
-			}
+		} catch(ItemNotFoundException &e) {
+			errorstream << "Waiting for clientcached " << name
+				<< " timed out." << std::endl;
+			return &m_dummy_clientcached;
 		}
 	}
 	// Get item inventory texture
@@ -430,13 +419,12 @@ public:
 		// Look for direct color definition
 		const std::string &colorstring = stack.metadata.getString("color", 0);
 		video::SColor directcolor;
-		if ((colorstring != "")
-				&& parseColorString(colorstring, directcolor, true))
+		if (!colorstring.empty() && parseColorString(colorstring, directcolor, true))
 			return directcolor;
 		// See if there is a palette
 		Palette *palette = getPalette(stack.name, client);
 		const std::string &index = stack.metadata.getString("palette_index", 0);
-		if ((palette != NULL) && (index != ""))
+		if (palette && !index.empty())
 			return (*palette)[mystoi(index, 0, 255)];
 		// Fallback color
 		return get(stack.name).color;
@@ -485,7 +473,7 @@ public:
 	{
 		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
 		// Ensure that the "" item (the hand) always has ToolCapabilities
-		if(def.name == "")
+		if (def.name.empty())
 			FATAL_ERROR_IF(!def.tool_capabilities, "Hand does not have ToolCapabilities");
 
 		if(m_item_definitions.count(def.name) == 0)

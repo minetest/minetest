@@ -353,9 +353,8 @@ public:
 		m_device = NULL;
 
 		for (auto &buffer : m_buffers) {
-			for (std::vector<SoundBuffer*>::iterator iter = buffer.second.begin();
-					iter != buffer.second.end(); ++iter) {
-				delete *iter;
+			for (SoundBuffer *sb : buffer.second) {
+				delete sb;
 			}
 			buffer.second.clear();
 		}

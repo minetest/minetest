@@ -104,7 +104,9 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 					c == biome->c_water) {
 				column_is_open = true;
 				continue;
-			} else if (c == biome->c_river_water) {
+			}
+
+			if (c == biome->c_river_water) {
 				column_is_open = true;
 				is_under_river = true;
 				continue;

@@ -1325,11 +1325,8 @@ bool MapBlockMesh::animate(bool faraway, float time, int crack, u32 daynight_rat
 			scene::IMeshBuffer *buf = m_mesh[daynight_diff.first.first]->
 				getMeshBuffer(daynight_diff.first.second);
 			video::S3DVertex *vertices = (video::S3DVertex *)buf->getVertices();
-			for (auto j = daynight_diff.second.begin();
-					j != daynight_diff.second.end(); ++j)
-			{
-				final_color_blend(&(vertices[j->first].Color),
-					j->second, day_color);
+			for (const auto &j : daynight_diff.second) {
+				final_color_blend(&(vertices[j.first].Color), j.second, day_color);
 			}
 		}
 		m_last_daynight_ratio = daynight_ratio;

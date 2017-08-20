@@ -19,11 +19,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "socket.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
 #include <sstream>
 #include <iomanip>
 #include "util/string.h"
@@ -114,20 +114,20 @@ Address::Address(const IPv6AddressBytes *ipv6_bytes, u16 port)
 // Equality (address family, address and port must be equal)
 bool Address::operator==(const Address &address)
 {
-	if(address.m_addr_family != m_addr_family || address.m_port != m_port)
+	if (address.m_addr_family != m_addr_family || address.m_port != m_port)
 		return false;
-	else if(m_addr_family == AF_INET)
-	{
+
+	if (m_addr_family == AF_INET) {
 		return m_address.ipv4.sin_addr.s_addr ==
 		       address.m_address.ipv4.sin_addr.s_addr;
 	}
-	else if(m_addr_family == AF_INET6)
-	{
+
+	if (m_addr_family == AF_INET6) {
 		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
 		              address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
 	}
-	else
-		return false;
+
+	return false;
 }
 
 bool Address::operator!=(const Address &address)
@@ -259,7 +259,9 @@ bool Address::isZero() const
 {
 	if (m_addr_family == AF_INET) {
 		return m_address.ipv4.sin_addr.s_addr == 0;
-	} else if (m_addr_family == AF_INET6) {
+	}
+
+	if (m_addr_family == AF_INET6) {
 		static const char zero[16] = {0};
 		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
 		              zero, 16) == 0;
@@ -316,7 +318,7 @@ UDPSocket::UDPSocket(bool ipv6)
 
 bool UDPSocket::init(bool ipv6, bool noExceptions)
 {
-	if (g_sockets_initialized == false) {
+	if (!g_sockets_initialized) {
 		dstream << "Sockets not initialized" << std::endl;
 		return false;
 	}
@@ -335,10 +337,10 @@ bool UDPSocket::init(bool ipv6, bool noExceptions)
 	if (m_handle <= 0) {
 		if (noExceptions) {
 			return false;
-		} else {
-			throw SocketException(std::string("Failed to create socket: error ")
-				+ itos(LAST_SOCKET_ERR()));
 		}
+
+		throw SocketException(std::string("Failed to create socket: error ")
+				+ itos(LAST_SOCKET_ERR()));
 	}
 
 	setTimeoutMs(0);
@@ -467,7 +469,7 @@ void UDPSocket::Send(const Address & destination, const void * data, int size)
 int UDPSocket::Receive(Address & sender, void *data, int size)
 {
 	// Return on timeout
-	if(WaitData(m_timeout_ms) == false)
+	if (!WaitData(m_timeout_ms))
 		return -1;
 
 	int received;
@@ -556,14 +558,16 @@ bool UDPSocket::WaitData(int timeout_ms)
 
 	if (result == 0)
 		return false;
-	else if (result < 0 && (errno == EINTR || errno == EBADF)) {
+
+	if (result < 0 && (errno == EINTR || errno == EBADF)) {
 		// N.B. select() fails when sockets are destroyed on Connection's dtor
 		// with EBADF.  Instead of doing tricky synchronization, allow this
 		// thread to exit but don't throw an exception.
 		return false;
-	} else if (result < 0) {
-		dstream << (int) m_handle << ": Select failed: "
-		        << strerror(errno) << std::endl;
+	}
+
+	if (result < 0) {
+		dstream << m_handle << ": Select failed: " << strerror(errno) << std::endl;
 
 #ifdef _WIN32
 		int e = WSAGetLastError();
@@ -576,7 +580,7 @@ bool UDPSocket::WaitData(int timeout_ms)
 #endif
 
 		throw SocketException("Select failed");
-	} else if(FD_ISSET(m_handle, &readset) == false) {
+	} else if (!FD_ISSET(m_handle, &readset)) {
 		// No data
 		return false;
 	}

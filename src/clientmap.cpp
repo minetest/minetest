@@ -274,8 +274,8 @@ struct MeshBufListList
 
 	void clear()
 	{
-		for (int l = 0; l < MAX_TILE_LAYERS; l++)
-			lists[l].clear();
+		for (auto &list : lists)
+			list.clear();
 	}
 
 	void add(scene::IMeshBuffer *buf, u8 layer)
@@ -441,9 +441,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	// Render all layers in order
-	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		std::vector<MeshBufList> &lists = drawbufs.lists[layer];
-
+	for (auto &lists : drawbufs.lists) {
 		int timecheck_counter = 0;
 		for (MeshBufList &list : lists) {
 			timecheck_counter++;

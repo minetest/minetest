@@ -53,7 +53,8 @@ typedef enum {
 
 struct TextDest
 {
-	virtual ~TextDest() {}
+	virtual ~TextDest() = default;
+
 	// This is deprecated I guess? -celeron55
 	virtual void gotText(const std::wstring &text) {}
 	virtual void gotText(const StringMap &fields) = 0;
@@ -64,7 +65,7 @@ struct TextDest
 class IFormSource
 {
 public:
-	virtual ~IFormSource(){}
+	virtual ~IFormSource() = default;
 	virtual std::string getForm() = 0;
 	// Fill in variables in field text
 	virtual std::string resolveText(const std::string &str) { return str; }
@@ -74,10 +75,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
-		ItemSpec() :
-			i(-1)
-		{
-		}
+		ItemSpec() = default;
 
 		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
@@ -92,14 +90,13 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		InventoryLocation inventoryloc;
 		std::string listname;
-		s32 i;
+		s32 i = -1;
 	};
 
 	struct ListDrawSpec
 	{
-		ListDrawSpec()
-		{
-		}
+		ListDrawSpec() = default;
+
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i):
@@ -120,9 +117,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct ListRingSpec
 	{
-		ListRingSpec()
-		{
-		}
+		ListRingSpec() = default;
+
 		ListRingSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname):
 			inventoryloc(a_inventoryloc),
@@ -201,9 +197,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct FieldSpec
 	{
-		FieldSpec()
-		{
-		}
+		FieldSpec() = default;
+
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &default_text, int id) :
 			fname(name),
@@ -241,7 +236,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct TooltipSpec
 	{
-		TooltipSpec() {}
+		TooltipSpec() = default;
+
 		TooltipSpec(const std::string &a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
 			tooltip(utf8_to_wide(a_tooltip)),
@@ -552,9 +548,7 @@ public:
 	{
 	}
 
-	~FormspecFormSource()
-	{
-	}
+	~FormspecFormSource() = default;
 
 	void setForm(const std::string &formspec)
 	{

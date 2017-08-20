@@ -60,9 +60,8 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 /******************************************************************************/
 MenuTextureSource::~MenuTextureSource()
 {
-	for (std::set<std::string>::iterator it = m_to_delete.begin();
-			it != m_to_delete.end(); ++it) {
-		const char *tname = (*it).c_str();
+	for (const std::string &texture_to_delete : m_to_delete) {
+		const char *tname = texture_to_delete.c_str();
 		video::ITexture *texture = m_driver->getTexture(tname);
 		m_driver->removeTexture(texture);
 	}
@@ -126,8 +125,8 @@ GUIEngine::GUIEngine(JoystickController *joystick,
 	m_kill(kill)
 {
 	//initialize texture pointers
-	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
-		m_textures[i].texture = NULL;
+	for (image_definition &texture : m_textures) {
+		texture.texture = NULL;
 	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
@@ -299,9 +298,9 @@ GUIEngine::~GUIEngine()
 	m_irr_toplefttext->setText(L"");
 
 	//clean up texture pointers
-	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
-		if (m_textures[i].texture)
-			RenderingEngine::get_video_driver()->removeTexture(m_textures[i].texture);
+	for (image_definition &texture : m_textures) {
+		if (texture.texture)
+			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
 	}
 
 	delete m_texture_source;
@@ -502,7 +501,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		m_textures[layer].texture = NULL;
 	}
 
-	if ((texturepath == "") || !fs::PathExists(texturepath)) {
+	if (texturepath.empty() || !fs::PathExists(texturepath)) {
 		return false;
 	}
 
@@ -510,7 +509,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 	m_textures[layer].tile    = tile_image;
 	m_textures[layer].minsize = minsize;
 
-	if (m_textures[layer].texture == NULL) {
+	if (!m_textures[layer].texture) {
 		return false;
 	}
 
