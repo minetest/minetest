@@ -1105,7 +1105,7 @@ void KeyCache::populate()
 	if (handler) {
 		// First clear all keys, then re-add the ones we listen for
 		handler->dontListenForKeys();
-		for (KeyPress *k : key) {
+		for (const KeyPress &k : key) {
 			handler->listenForKey(k);
 		}
 		handler->listenForKey(EscapeKey);
@@ -1470,7 +1470,7 @@ Game::Game() :
 	shader_src(NULL),
 	itemdef_manager(NULL),
 	nodedef_manager(NULL),
-	sound(NULL), ,
+	sound(NULL),
 	soundmaker(NULL),
 	chat_backend(NULL),
 	current_formspec(NULL),
@@ -3161,8 +3161,8 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 		case CE_SHOW_FORMSPEC:
 			if (event.show_formspec.formspec->empty()) {
-				if (current_formspec && (event.show_formspec.formname)->empty()
-						|| *(event.show_formspec.formname) == cur_formname) {
+				if (current_formspec && (event.show_formspec.formname->empty()
+						|| *(event.show_formspec.formname) == cur_formname)) {
 					current_formspec->quitMenu();
 				}
 			} else {
