@@ -48,7 +48,7 @@ class Environment
 public:
 	// Environment will delete the map passed to the constructor
 	Environment(IGameDef *gamedef);
-	virtual ~Environment();
+	virtual ~Environment() = default;
 	DISABLE_CLASS_COPY(Environment);
 
 	/*

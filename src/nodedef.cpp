@@ -159,13 +159,13 @@ void NodeBox::deSerialize(std::istream &is)
 	}
 	else if (type == NODEBOX_CONNECTED)
 	{
-#define READBOXES(box) do { \
+#define READBOXES(box) { \
 		count = readU16(is); \
 		(box).reserve(count); \
 		while (count--) { \
 			v3f min = readV3F1000(is); \
 			v3f max = readV3F1000(is); \
-			(box).emplace_back(min, max); }; } while (0)
+			(box).emplace_back(min, max); }; }
 
 		u16 count;
 
@@ -1958,7 +1958,7 @@ bool NodeResolver::getIdFromNrBacklog(content_t *result_out,
 	std::string name = m_nodenames[m_nodenames_idx++];
 
 	bool success = m_ndef->getId(name, c);
-	if (!success && node_alt != "") {
+	if (!success && !node_alt.empty()) {
 		name = node_alt;
 		success = m_ndef->getId(name, c);
 	}

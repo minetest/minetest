@@ -317,9 +317,7 @@ void GUIChatConsole::drawText()
 		if (y + line_height < 0)
 			continue;
 
-		for (u32 i = 0; i < line.fragments.size(); ++i)
-		{
-			const ChatFormattedFragment& fragment = line.fragments[i];
+		for (const ChatFormattedFragment &fragment : line.fragments) {
 			s32 x = (fragment.column + 1) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
@@ -327,7 +325,7 @@ void GUIChatConsole::drawText()
 
 			#if USE_FREETYPE
 			// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
+				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
 				tmp->draw(
 					fragment.text,
 					destrect,
@@ -411,8 +409,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// Key input
-		if(KeyPress(event.KeyInput) == getKeySetting("keymap_console"))
-		{
+		if (KeyPress(event.KeyInput) == getKeySetting("keymap_console")) {
 			closeConsole();
 
 			// inhibit open so the_game doesn't reopen immediately
@@ -420,8 +417,8 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_close_on_enter = false;
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_ESCAPE)
-		{
+
+		if (event.KeyInput.Key == KEY_ESCAPE) {
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
 			// inhibit open so the_game doesn't reopen immediately

@@ -39,10 +39,6 @@ Environment::Environment(IGameDef *gamedef):
 	m_cache_nodetimer_interval = g_settings->getFloat("nodetimer_interval");
 }
 
-Environment::~Environment()
-{
-}
-
 u32 Environment::getDayNightRatio()
 {
 	MutexAutoLock lock(this->m_time_lock);
@@ -103,9 +99,8 @@ void Environment::continueRaycast(RaycastState *state, PointedThing *result)
 		if (state->m_objects_pointable) {
 			std::vector<PointedThing> found;
 			getSelectedActiveObjects(state->m_shootline, found);
-			for (std::vector<PointedThing>::iterator pointed = found.begin();
-					pointed != found.end(); ++pointed) {
-				state->m_found.push(*pointed);
+			for (const PointedThing &pointed : found) {
+				state->m_found.push(pointed);
 			}
 		}
 		// Set search range

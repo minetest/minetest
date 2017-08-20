@@ -53,7 +53,7 @@ class Particle : public scene::ISceneNode
 		u8 glow,
 		video::SColor color = video::SColor(0xFFFFFFFF)
 	);
-	~Particle();
+	~Particle() = default;
 
 	virtual const aabb3f &getBoundingBox() const
 	{
@@ -133,7 +133,7 @@ class ParticleSpawner
 		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
-	~ParticleSpawner();
+	~ParticleSpawner() = default;
 
 	void step(float dtime, ClientEnvironment *env);
 

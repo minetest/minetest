@@ -85,18 +85,17 @@ GUIKeyChangeMenu::GUIKeyChangeMenu(gui::IGUIEnvironment* env,
 GUIModalMenu(env, parent, id, menumgr)
 {
 	init_keys();
-	for (size_t i = 0; i < key_settings.size(); i++)
-		key_used.push_back(key_settings.at(i)->key);
+	for (key_setting *ks : key_settings)
+		key_used.push_back(ks->key);
 }
 
 GUIKeyChangeMenu::~GUIKeyChangeMenu()
 {
 	removeChildren();
 
-	for (std::vector<key_setting*>::iterator iter = key_settings.begin();
-			iter != key_settings.end(); ++iter) {
-		delete[] (*iter)->button_name;
-		delete (*iter);
+	for (key_setting *ks : key_settings) {
+		delete[] ks->button_name;
+		delete ks;
 	}
 	key_settings.clear();
 }
@@ -105,15 +104,12 @@ void GUIKeyChangeMenu::removeChildren()
 {
 	const core::list<gui::IGUIElement*> &children = getChildren();
 	core::list<gui::IGUIElement*> children_copy;
-	for (core::list<gui::IGUIElement*>::ConstIterator i = children.begin(); i
-		 != children.end(); i++)
-	{
-		children_copy.push_back(*i);
+	for (gui::IGUIElement*i : children) {
+		children_copy.push_back(i);
 	}
-	for (core::list<gui::IGUIElement*>::Iterator i = children_copy.begin(); i
-		 != children_copy.end(); i++)
-	{
-		(*i)->remove();
+
+	for (gui::IGUIElement *i : children_copy) {
+		i->remove();
 	}
 }
 
@@ -238,11 +234,10 @@ void GUIKeyChangeMenu::drawMenu()
 
 bool GUIKeyChangeMenu::acceptInput()
 {
-	for(size_t i = 0; i < key_settings.size(); i++)
-	{
-		key_setting *k = key_settings.at(i);
+	for (key_setting *k : key_settings) {
 		g_settings->set(k->setting_name, k->key.sym());
 	}
+
 	{
 		gui::IGUIElement *e = getElementFromId(GUI_ID_CB_AUX1_DESCENDS);
 		if(e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
@@ -265,11 +260,8 @@ bool GUIKeyChangeMenu::resetMenu()
 {
 	if (activeKey >= 0)
 	{
-		for(size_t i = 0; i < key_settings.size(); i++)
-		{
-			key_setting *k = key_settings.at(i);
-			if(k->id == activeKey)
-			{
+		for (key_setting *k : key_settings) {
+			if (k->id == activeKey) {
 				const wchar_t *text = wgettext(k->key.name());
 				k->button->setText(text);
 				delete[] text;
@@ -317,11 +309,9 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 		// But go on
 		{
 			key_setting *k = NULL;
-			for(size_t i = 0; i < key_settings.size(); i++)
-			{
-				if(key_settings.at(i)->id == activeKey)
-				{
-					k = key_settings.at(i);
+			for (key_setting *ks : key_settings) {
+				if (ks->id == activeKey) {
+					k = ks;
 					break;
 				}
 			}
@@ -337,10 +327,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 			if(shift_went_down){
 				shift_down = true;
 				return false;
-			}else{
-				activeKey = -1;
-				return true;
 			}
+
+			activeKey = -1;
+			return true;
 		}
 	} else if (event.EventType == EET_KEY_INPUT_EVENT && activeKey < 0
 			&& event.KeyInput.PressedDown
@@ -372,11 +362,10 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 					return true;
 				default:
 					key_setting *k = NULL;
-					for(size_t i = 0; i < key_settings.size(); i++)
-					{
-						if(key_settings.at(i)->id == event.GUIEvent.Caller->getID())
-						{
-							k = key_settings.at(i);
+
+					for (key_setting *ks : key_settings) {
+						if (ks->id == event.GUIEvent.Caller->getID()) {
+							k = ks;
 							break;
 						}
 					}

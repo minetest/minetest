@@ -49,17 +49,17 @@ static u64 getHashForGrid(CraftHashType type, const std::vector<std::string> &gr
 		case CRAFT_HASH_TYPE_ITEM_NAMES: {
 			std::ostringstream os;
 			bool is_first = true;
-			for (size_t i = 0; i < grid_names.size(); i++) {
-				if (!grid_names[i].empty()) {
-					os << (is_first ? "" : "\n") << grid_names[i];
+			for (const std::string &grid_name : grid_names) {
+				if (!grid_name.empty()) {
+					os << (is_first ? "" : "\n") << grid_name;
 					is_first = false;
 				}
 			}
 			return getHashForString(os.str());
 		} case CRAFT_HASH_TYPE_COUNT: {
 			u64 cnt = 0;
-			for (size_t i = 0; i < grid_names.size(); i++)
-				if (!grid_names[i].empty())
+			for (const std::string &grid_name : grid_names)
+				if (!grid_name.empty())
 					cnt++;
 			return cnt;
 		} case CRAFT_HASH_TYPE_UNHASHED:
@@ -150,10 +150,9 @@ static bool craftGetBounds(const std::vector<std::string> &items, unsigned int w
 	bool success = false;
 	unsigned int x = 0;
 	unsigned int y = 0;
-	for (std::vector<std::string>::size_type i = 0;
-			i < items.size(); i++) {
+	for (const std::string &item : items) {
 		// Is this an actual item?
-		if (!items[i].empty()) {
+		if (!item.empty()) {
 			if (!success) {
 				// This is the first nonempty item
 				min_x = max_x = x;
@@ -726,13 +725,14 @@ u64 CraftDefinitionCooking::getHash(CraftHashType type) const
 	if (type == CRAFT_HASH_TYPE_ITEM_NAMES) {
 		return getHashForString(recipe_name);
 	}
+
 	if (type == CRAFT_HASH_TYPE_COUNT) {
 		return 1;
-	} else {
-		//illegal hash type for this CraftDefinition (pre-condition)
-		assert(false);
-		return 0;
 	}
+
+	// illegal hash type for this CraftDefinition (pre-condition)
+	assert(false);
+	return 0;
 }
 
 void CraftDefinitionCooking::initHash(IGameDef *gamedef)
@@ -821,11 +821,11 @@ u64 CraftDefinitionFuel::getHash(CraftHashType type) const
 
 	if (type == CRAFT_HASH_TYPE_COUNT) {
 		return 1;
-	} else {
-		//illegal hash type for this CraftDefinition (pre-condition)
-		assert(false);
-		return 0;
 	}
+
+	// illegal hash type for this CraftDefinition (pre-condition)
+	assert(false);
+	return 0;
 }
 
 void CraftDefinitionFuel::initHash(IGameDef *gamedef)
@@ -1059,9 +1059,8 @@ public:
 	{
 		for (int type = 0; type <= craft_hash_type_max; ++type) {
 			for (auto &it : m_craft_defs[type]) {
-				for (auto iit = it.second.begin();
-						iit != it.second.end(); ++iit) {
-					delete *iit;
+				for (auto &iit : it.second) {
+					delete iit;
 				}
 				it.second.clear();
 			}

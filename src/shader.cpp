@@ -345,7 +345,7 @@ ShaderInfo generate_shader(const std::string &name,
 /*
 	Load shader programs
 */
-void load_shaders(std::string name, SourceShaderCache *sourcecache,
+void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel);
@@ -821,7 +821,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	return shaderinfo;
 }
 
-void load_shaders(std::string name, SourceShaderCache *sourcecache,
+void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel)

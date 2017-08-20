@@ -127,10 +127,10 @@ namespace porting
 	Signal handler (grabs Ctrl-C on POSIX systems)
 */
 
-void signal_handler_init(void);
+void signal_handler_init();
 // Returns a pointer to a bool.
 // When the bool is true, program should quit.
-bool * signal_handler_killstatus(void);
+bool * signal_handler_killstatus();
 
 /*
 	Path of static data directory.
@@ -326,7 +326,7 @@ inline const char *getPlatformName()
 bool secure_rand_fill_buf(void *buf, size_t len);
 
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
-void attachOrCreateConsole(void);
+void attachOrCreateConsole();
 } // namespace porting
 
 #ifdef __ANDROID__

@@ -46,8 +46,8 @@ FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_env(env)
 {
 
-	for (unsigned int i = 0; i < FM_MaxMode; i++) {
-		m_default_size[i] = (FontMode) FONT_SIZE_UNSPECIFIED;
+	for (u32 &i : m_default_size) {
+		i = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
 	assert(m_settings != NULL); // pre-condition
@@ -113,15 +113,15 @@ FontEngine::~FontEngine()
 /******************************************************************************/
 void FontEngine::cleanCache()
 {
-	for ( unsigned int i = 0; i < FM_MaxMode; i++) {
+	for (auto &i : m_font_cache) {
 
 		for (std::map<unsigned int, irr::gui::IGUIFont*>::iterator iter
-				= m_font_cache[i].begin();
-				iter != m_font_cache[i].end(); ++iter) {
+				= i.begin();
+				iter != i.end(); ++iter) {
 			iter->second->drop();
 			iter->second = NULL;
 		}
-		m_font_cache[i].clear();
+		i.clear();
 	}
 }
 
@@ -370,7 +370,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 {
 	assert(mode == FM_Simple || mode == FM_SimpleMono); // pre-condition
 
-	std::string font_path = "";
+	std::string font_path;
 	if (mode == FM_Simple) {
 		font_path = m_settings->get("font_path");
 	} else {
