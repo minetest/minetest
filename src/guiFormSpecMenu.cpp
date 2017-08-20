@@ -114,8 +114,7 @@ GUIFormSpecMenu::~GUIFormSpecMenu()
 	removeChildren();
 
 	for (auto &table_it : m_tables) {
-		GUITable *table = table_it.second;
-		table->drop();
+		table_it.second->drop();
 	}
 
 	delete m_selected_item;
@@ -1951,9 +1950,8 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	// Remove children
 	removeChildren();
 
-	for (auto &table_id : m_tables) {
-		GUITable *table = table_id.second;
-		table->drop();
+	for (auto &table_it : m_tables) {
+		table_it.second->drop();
 	}
 
 	mydata.size= v2s32(100,100);

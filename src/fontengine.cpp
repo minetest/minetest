@@ -113,15 +113,13 @@ FontEngine::~FontEngine()
 /******************************************************************************/
 void FontEngine::cleanCache()
 {
-	for (auto &i : m_font_cache) {
+	for (auto &font_cache_it : m_font_cache) {
 
-		for (std::map<unsigned int, irr::gui::IGUIFont*>::iterator iter
-				= i.begin();
-				iter != i.end(); ++iter) {
-			iter->second->drop();
-			iter->second = NULL;
+		for (auto &font_it : font_cache_it) {
+			font_it.second->drop();
+			font_it.second = NULL;
 		}
-		i.clear();
+		font_cache_it.clear();
 	}
 }
 
