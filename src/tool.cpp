@@ -158,7 +158,8 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 
 	for (const auto &damageGroup : tp->damageGroups) {
 		s16 armor = itemgroup_get(armor_groups, damageGroup.first);
-		damage += damageGroup.second * rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
+		damage += damageGroup.second
+				* rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
 				* armor / 100.0;
 	}
 

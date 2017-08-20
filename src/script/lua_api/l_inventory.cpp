@@ -495,7 +495,7 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
-		if(getServer(L)->getInventory(loc) != NULL)
+		if (getServer(L)->getInventory(loc) != NULL)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
@@ -506,12 +506,12 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 	if (type == "player") {
 		std::string name = checkstringfield(L, 1, "name");
 		loc.setPlayer(name);
-	} else if(type == "detached") {
+	} else if (type == "detached") {
 		std::string name = checkstringfield(L, 1, "name");
 		loc.setDetached(name);
 	}
 
-	if(getServer(L)->getInventory(loc) != NULL)
+	if (getServer(L)->getInventory(loc) != NULL)
 		InvRef::create(L, loc);
 	else
 		lua_pushnil(L);
