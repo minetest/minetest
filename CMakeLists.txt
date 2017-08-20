@@ -11,6 +11,8 @@ set(PROJECT_NAME_CAPITALIZED "Minetest")
 
 # Works only for cmake 3.1 and greater
 set(CMAKE_CXX_STANDARD 11)
+set(GCC_MINIMUM_VERSION "4.8")
+set(CLANG_MINIMUM_VERSION "3.4")
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
@@ -202,6 +204,23 @@ endif()
 find_package(GMP REQUIRED)
 find_package(Json REQUIRED)
 find_package(Lua REQUIRED)
+
+# JsonCPP doesn't compile well on GCC 4.8
+if(NOT ENABLE_SYSTEM_JSONCPP)
+	set(GCC_MINIMUM_VERSION "4.9")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${GCC_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient gcc version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${GCC_MINIMUM_VERSION} or higher is required.")
+	endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${CLANG_MINIMUM_VERSION}")
+		message(FATAL_ERROR "Insufficient clang version, found ${CMAKE_CXX_COMPILER_VERSION}. "
+			"Version ${CLANG_MINIMUM_VERSION} or higher is required.")
+	endif()
+endif()
 
 # Subdirectories
 # Be sure to add all relevant definitions above this
