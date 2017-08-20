@@ -91,7 +91,6 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 	v3s16 central_area_size;
-	int volume_nodes;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
