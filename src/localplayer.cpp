@@ -658,7 +658,8 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	// Slip on slippery nodes
 	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
 	Map *map = &env->getMap();
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
+	const ContentFeatures &f = nodemgr->get(
+			map->getNodeNoEx(floatToInt(getPosition() - v3f(0, 0.05f * BS, 0), BS)));
 	float slip_factor = 1.0f;
 	int slippery = itemgroup_get(f.groups, "slippery");
 	if (slippery >= 1) {
@@ -679,7 +680,7 @@ v3s16 LocalPlayer::getStandingNodePos()
 {
 	if(m_sneak_node_exists)
 		return m_sneak_node;
-	return floatToInt(getPosition() - v3f(0, 0.05f * BS, 0), BS);
+	return floatToInt(getPosition() - v3f(0, BS, 0), BS);
 }
 
 v3s16 LocalPlayer::getFootstepNodePos()
