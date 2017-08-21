@@ -429,8 +429,6 @@ bool deSerializeStringToStruct(std::string valstr,
 //// BufReader
 ////
 
-extern SerializationError eof_ser_err;
-
 #define MAKE_BUFREADER_GETNOEX_FXN(T, N, S) \
 	inline bool get ## N ## NoEx(T *val)    \
 	{                                       \
@@ -446,7 +444,7 @@ extern SerializationError eof_ser_err;
 	{                                \
 		T val;                       \
 		if (!get ## N ## NoEx(&val)) \
-			throw eof_ser_err;       \
+			throw SerializationError("Attempted read past end of data"); \
 		return val;                  \
 	}
 
@@ -504,7 +502,7 @@ public:
 	inline void getRawData(void *val, size_t len)
 	{
 		if (!getRawDataNoEx(val, len))
-			throw eof_ser_err;
+			throw SerializationError("Attempted read past end of data");
 	}
 
 	inline size_t remaining()
