@@ -183,9 +183,17 @@ inline s64 readS64(const u8 *data)
 	return (s64)readU64(data);
 }
 
+// Legacy format
 inline f32 readF1000(const u8 *data)
 {
 	return (f32)readS32(data) / FIXEDPOINT_FACTOR;
+}
+
+inline f32 readF32(const u8 *data)
+{
+	f32 val = 0;
+	memcpy(&val, data, 4);
+	return val;
 }
 
 inline video::SColor readARGB8(const u8 *data)
@@ -245,6 +253,23 @@ inline v3f readV3F1000(const u8 *data)
 	return p;
 }
 
+inline v2f readV2F32(const u8 *data)
+{
+	v2f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	return p;
+}
+
+inline v3f readV3F32(const u8 *data)
+{
+	v3f p;
+	p.X = readF32(&data[0]);
+	p.Y = readF32(&data[4]);
+	p.Z = readF32(&data[8]);
+	return p;
+}
+
 /////////////// write routines ////////////////
 
 inline void writeU8(u8 *data, u8 i)
@@ -272,11 +297,19 @@ inline void writeS64(u8 *data, s64 i)
 	writeU64(data, (u64)i);
 }
 
+// Legacy format
 inline void writeF1000(u8 *data, f32 i)
 {
 	assert(i >= F1000_MIN && i <= F1000_MAX);
 	writeS32(data, i * FIXEDPOINT_FACTOR);
 }
+
+inline void writeF32(u8 *data, f32 i)
+{
+	assert(!(i != i)); // NaN check
+	memcpy(data, &i, 4);
+}
+
 
 inline void writeARGB8(u8 *data, video::SColor p)
 {
@@ -322,6 +355,19 @@ inline void writeV3F1000(u8 *data, v3f p)
 	writeF1000(&data[8], p.Z);
 }
 
+inline void writeV2F32(u8 *data, v2f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+}
+
+inline void writeV3F32(u8 *data, v3f p)
+{
+	writeF32(&data[0], p.X);
+	writeF32(&data[4], p.Y);
+	writeF32(&data[8], p.Z);
+}
+
 ////
 //// Iostream wrapper for data read/write
 ////
@@ -351,12 +397,15 @@ MAKE_STREAM_READ_FXN(s16,   S16,      2);
 MAKE_STREAM_READ_FXN(s32,   S32,      4);
 MAKE_STREAM_READ_FXN(s64,   S64,      8);
 MAKE_STREAM_READ_FXN(f32,   F1000,    4);
+MAKE_STREAM_READ_FXN(f32,   F32,      4);
 MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_READ_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_READ_FXN(video::SColor, ARGB8, 4);
 
 MAKE_STREAM_WRITE_FXN(u8,    U8,       1);
@@ -368,12 +417,15 @@ MAKE_STREAM_WRITE_FXN(s16,   S16,      2);
 MAKE_STREAM_WRITE_FXN(s32,   S32,      4);
 MAKE_STREAM_WRITE_FXN(s64,   S64,      8);
 MAKE_STREAM_WRITE_FXN(f32,   F1000,    4);
+MAKE_STREAM_WRITE_FXN(f32,   F32,      4);
 MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
+MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
+MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
 MAKE_STREAM_WRITE_FXN(video::SColor, ARGB8, 4);
 
 ////

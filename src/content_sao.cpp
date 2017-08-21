@@ -293,8 +293,8 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 			name = deSerializeString(is);
 			state = deSerializeLongString(is);
 			hp = readS16(is);
-			velocity = readV3F1000(is);
-			yaw = readF1000(is);
+			velocity = readV3F32(is);
+			yaw = readF32(is);
 		}
 	}
 	// create object
@@ -470,8 +470,8 @@ std::string LuaEntitySAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString(""); // name
 	writeU8(os, 0); // is_player
 	writeS16(os, getId()); //id
-	writeV3F1000(os, m_base_position);
-	writeF1000(os, m_yaw);
+	writeV3F32(os, m_base_position);
+	writeF32(os, m_yaw);
 	writeS16(os, m_hp);
 
 	std::ostringstream msg_os(std::ios::binary);
@@ -525,9 +525,9 @@ void LuaEntitySAO::getStaticData(std::string *result) const
 	// hp
 	writeS16(os, m_hp);
 	// velocity
-	writeV3F1000(os, m_velocity);
+	writeV3F32(os, m_velocity);
 	// yaw
-	writeF1000(os, m_yaw);
+	writeF32(os, m_yaw);
 	*result = os.str();
 }
 
@@ -859,8 +859,8 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	os << serializeString(m_player->getName()); // name
 	writeU8(os, 1); // is_player
 	writeS16(os, getId()); //id
-	writeV3F1000(os, m_base_position);
-	writeF1000(os, m_yaw);
+	writeV3F32(os, m_base_position);
+	writeF32(os, m_yaw);
 	writeS16(os, getHP());
 
 	std::ostringstream msg_os(std::ios::binary);

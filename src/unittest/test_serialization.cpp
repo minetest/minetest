@@ -307,6 +307,8 @@ void TestSerialization::testStreamRead()
 	UASSERT(readF1000(is) == F1000_MIN);
 	UASSERT(readF1000(is) == F1000_MAX);
 
+	UASSERT(readF32(is) == 60000121.f);
+
 	UASSERT(deSerializeString(is) == "foobar!");
 
 	UASSERT(readV2S16(is) == v2s16(500, 500));
@@ -347,6 +349,8 @@ void TestSerialization::testStreamWrite()
 	writeF1000(os, -300000.32f);
 	writeF1000(os, F1000_MIN);
 	writeF1000(os, F1000_MAX);
+
+	writeF32(os, 60000121.f);
 
 	os << serializeString("foobar!");
 

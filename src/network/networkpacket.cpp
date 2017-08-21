@@ -285,7 +285,7 @@ NetworkPacket& NetworkPacket::operator<<(float src)
 {
 	checkDataSize(4);
 
-	writeF1000(&m_data[m_read_offset], src);
+	writeF32(&m_data[m_read_offset], src);
 
 	m_read_offset += 4;
 	return *this;
@@ -380,7 +380,7 @@ NetworkPacket& NetworkPacket::operator>>(float& dst)
 {
 	checkReadOffset(m_read_offset, 4);
 
-	dst = readF1000(&m_data[m_read_offset]);
+	dst = readF32(&m_data[m_read_offset]);
 
 	m_read_offset += 4;
 	return *this;
@@ -390,7 +390,7 @@ NetworkPacket& NetworkPacket::operator>>(v2f& dst)
 {
 	checkReadOffset(m_read_offset, 8);
 
-	dst = readV2F1000(&m_data[m_read_offset]);
+	dst = readV2F32(&m_data[m_read_offset]);
 
 	m_read_offset += 8;
 	return *this;
@@ -400,7 +400,7 @@ NetworkPacket& NetworkPacket::operator>>(v3f& dst)
 {
 	checkReadOffset(m_read_offset, 12);
 
-	dst = readV3F1000(&m_data[m_read_offset]);
+	dst = readV3F32(&m_data[m_read_offset]);
 
 	m_read_offset += 12;
 	return *this;

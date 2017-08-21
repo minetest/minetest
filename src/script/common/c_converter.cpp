@@ -40,6 +40,7 @@ extern "C" {
 		} \
 	}
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
+// TODO: Check for real float limits
 #define CHECK_FLOAT_RANGE(value, name) \
 if (value < F1000_MIN || value > F1000_MAX) { \
 	std::ostringstream error_text; \
