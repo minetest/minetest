@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef __CLIENT_LAUNCHER_H__
-#define __CLIENT_LAUNCHER_H__
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "client/inputhandler.h"
@@ -29,7 +28,7 @@ class RenderingEngine;
 class ClientLauncher
 {
 public:
-	ClientLauncher() {}
+	ClientLauncher() = default;
 
 	~ClientLauncher();
 
@@ -60,7 +59,7 @@ protected:
 	gui::IGUIFont *font = nullptr;
 	SubgameSpec gamespec;
 	WorldSpec worldspec;
-	bool simple_singleplayer_mode;
+	bool simple_singleplayer_mode = false;
 
 	// These are set up based on the menu and other things
 	// TODO: Are these required since there's already playername, password, etc
@@ -69,5 +68,3 @@ protected:
 	std::string current_address = "does-not-exist";
 	int current_port = 0;
 };
-
-#endif

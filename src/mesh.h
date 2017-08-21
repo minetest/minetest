@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MESH_HEADER
-#define MESH_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "nodedef.h"
@@ -126,5 +125,3 @@ void recalculateBoundingBox(scene::IMesh *src_mesh);
 	Ported from irrlicht 1.8
 */
 scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh);
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MESH_GENERATOR_THREAD_HEADER
-#define MESH_GENERATOR_THREAD_HEADER
+#pragma once
 
 #include <ctime>
 #include <mutex>
@@ -33,7 +32,7 @@ struct CachedMapBlockData
 	int refcount_from_queue = 0;
 	std::time_t last_used_timestamp = std::time(0);
 
-	CachedMapBlockData() {}
+	CachedMapBlockData() = default;
 	~CachedMapBlockData();
 };
 
@@ -46,7 +45,7 @@ struct QueuedMeshUpdate
 	v3s16 crack_pos;
 	MeshMakeData *data = nullptr; // This is generated in MeshUpdateQueue::pop()
 
-	QueuedMeshUpdate(){};
+	QueuedMeshUpdate() = default;
 	~QueuedMeshUpdate();
 };
 
@@ -106,7 +105,7 @@ struct MeshUpdateResult
 	MapBlockMesh *mesh = nullptr;
 	bool ack_block_to_server = false;
 
-	MeshUpdateResult() {}
+	MeshUpdateResult() = default;
 };
 
 class MeshUpdateThread : public UpdateThread
@@ -130,5 +129,3 @@ private:
 protected:
 	virtual void doUpdate();
 };
-
-#endif

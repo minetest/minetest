@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SETTINGS_HEADER
-#define SETTINGS_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
@@ -73,7 +72,7 @@ struct ValueSpec {
 };
 
 struct SettingsEntry {
-	SettingsEntry() {}
+	SettingsEntry() = default;
 
 	SettingsEntry(const std::string &value_) :
 		value(value_)
@@ -93,7 +92,8 @@ typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
-	Settings() {}
+	Settings() = default;
+
 	~Settings();
 
 	Settings & operator += (const Settings &other);
@@ -234,6 +234,3 @@ private:
 	mutable std::mutex m_mutex;
 
 };
-
-#endif
-

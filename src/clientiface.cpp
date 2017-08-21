@@ -18,18 +18,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <sstream>
-
 #include "clientiface.h"
+#include "network/connection.h"
+#include "network/serveropcodes.h"
 #include "remoteplayer.h"
 #include "settings.h"
 #include "mapblock.h"
-#include "network/connection.h"
 #include "serverenvironment.h"
 #include "map.h"
 #include "emerge.h"
 #include "content_sao.h"              // TODO this is used for cleanup of only
 #include "log.h"
-#include "network/serveropcodes.h"
 #include "util/srp.h"
 #include "face_position_cache.h"
 
@@ -95,7 +94,7 @@ void RemoteClient::GetNextBlocks (
 	}
 
 	v3f playerpos = sao->getBasePosition();
-	v3f playerspeed = player->getSpeed();
+	const v3f &playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
@@ -281,12 +280,11 @@ void RemoteClient::GetNextBlocks (
 
 				// Block is dummy if data doesn't exist.
 				// It means it has been not found from disk and not generated
-				if(block->isDummy())
-				{
+				if (block->isDummy()) {
 					surely_not_found_on_disk = true;
 				}
 
-				if(block->isGenerated() == false)
+				if (!block->isGenerated())
 					block_is_invalid = true;
 
 				/*
@@ -296,9 +294,8 @@ void RemoteClient::GetNextBlocks (
 					Block is near ground level if night-time mesh
 					differs from day-time mesh.
 				*/
-				if(d >= d_opt)
-				{
-					if(block->getDayNightDiff() == false)
+				if (d >= d_opt) {
+					if (!block->getDayNightDiff())
 						continue;
 				}
 
@@ -312,8 +309,7 @@ void RemoteClient::GetNextBlocks (
 				If block has been marked to not exist on disk (dummy)
 				and generating new ones is not wanted, skip block.
 			*/
-			if(generate == false && surely_not_found_on_disk == true)
-			{
+			if (!generate && surely_not_found_on_disk) {
 				// get next one.
 				continue;
 			}
@@ -414,11 +410,8 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;
 
-	for(std::map<v3s16, MapBlock*>::iterator
-			i = blocks.begin();
-			i != blocks.end(); ++i)
-	{
-		v3s16 p = i->first;
+	for (auto &block : blocks) {
+		v3s16 p = block.first;
 		m_blocks_modified.insert(p);
 
 		if(m_blocks_sending.find(p) != m_blocks_sending.end())
@@ -610,10 +603,9 @@ ClientInterface::~ClientInterface()
 	{
 		MutexAutoLock clientslock(m_clients_mutex);
 
-		for (RemoteClientMap::iterator i = m_clients.begin();
-			i != m_clients.end(); ++i) {
+		for (auto &client_it : m_clients) {
 			// Delete client
-			delete i->second;
+			delete client_it.second;
 		}
 	}
 }
@@ -623,13 +615,22 @@ std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
 	std::vector<u16> reply;
 	MutexAutoLock clientslock(m_clients_mutex);
 
-	for (RemoteClientMap::iterator i = m_clients.begin();
-		i != m_clients.end(); ++i) {
-		if (i->second->getState() >= min_state)
-			reply.push_back(i->second->peer_id);
+	for (const auto &m_client : m_clients) {
+		if (m_client.second->getState() >= min_state)
+			reply.push_back(m_client.second->peer_id);
 	}
 
 	return reply;
+}
+
+/**
+ * Verify if user limit was reached.
+ * User limit count all clients from HelloSent state (MT protocol user) to Active state
+ * @return true if user limit was reached
+ */
+bool ClientInterface::isUserLimitReached()
+{
+	return getClientIDs(CS_HelloSent).size() >= g_settings->getU16("max_users");
 }
 
 void ClientInterface::step(float dtime)
@@ -652,8 +653,8 @@ void ClientInterface::UpdatePlayerList()
 		if(!clients.empty())
 			infostream<<"Players:"<<std::endl;
 
-		for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
-			RemotePlayer *player = m_env->getPlayer(*i);
+		for (u16 i : clients) {
+			RemotePlayer *player = m_env->getPlayer(i);
 
 			if (player == NULL)
 				continue;
@@ -662,12 +663,12 @@ void ClientInterface::UpdatePlayerList()
 
 			{
 				MutexAutoLock clientslock(m_clients_mutex);
-				RemoteClient* client = lockedGetClientNoEx(*i);
+				RemoteClient* client = lockedGetClientNoEx(i);
 				if (client)
 					client->PrintInfo(infostream);
 			}
 
-			m_clients_names.push_back(player->getName());
+			m_clients_names.emplace_back(player->getName());
 		}
 	}
 }
@@ -681,9 +682,8 @@ void ClientInterface::send(u16 peer_id, u8 channelnum,
 void ClientInterface::sendToAll(NetworkPacket *pkt)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	for (RemoteClientMap::iterator i = m_clients.begin();
-			i != m_clients.end(); ++i) {
-		RemoteClient *client = i->second;
+	for (auto &client_it : m_clients) {
+		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
 			m_con->Send(client->peer_id,
@@ -697,9 +697,8 @@ void ClientInterface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacyp
 		u16 min_proto_ver)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
-	for (std::unordered_map<u16, RemoteClient*>::iterator i = m_clients.begin();
-			i != m_clients.end(); ++i) {
-		RemoteClient *client = i->second;
+	for (auto &client_it : m_clients) {
+		RemoteClient *client = client_it.second;
 		NetworkPacket *pkt_to_send = nullptr;
 
 		if (client->net_proto_version >= min_proto_ver) {
@@ -730,8 +729,8 @@ RemoteClient* ClientInterface::getClientNoEx(u16 peer_id, ClientState state_min)
 
 	if (n->second->getState() >= state_min)
 		return n->second;
-	else
-		return NULL;
+
+	return NULL;
 }
 
 RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState state_min)
@@ -744,8 +743,8 @@ RemoteClient* ClientInterface::lockedGetClientNoEx(u16 peer_id, ClientState stat
 
 	if (n->second->getState() >= state_min)
 		return n->second;
-	else
-		return NULL;
+
+	return NULL;
 }
 
 ClientState ClientInterface::getClientState(u16 peer_id)
@@ -787,10 +786,8 @@ void ClientInterface::DeleteClient(u16 peer_id)
 	//TODO this should be done by client destructor!!!
 	RemoteClient *client = n->second;
 	// Handle objects
-	for (std::set<u16>::iterator i = client->m_known_objects.begin();
-			i != client->m_known_objects.end(); ++i) {
+	for (u16 id : client->m_known_objects) {
 		// Get object
-		u16 id = *i;
 		ServerActiveObject* obj = m_env->getActiveObject(id);
 
 		if(obj && obj->m_known_by_count > 0)

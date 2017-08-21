@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "noise.h"
 #include "map.h"
 #include "log.h"
+#include "util/numeric.h"
 #include <algorithm>
 
 
@@ -63,8 +64,8 @@ size_t OreManager::placeAllOres(Mapgen *mg, u32 blockseed,
 
 void OreManager::clear()
 {
-	for (size_t i = 0; i < m_objects.size(); i++) {
-		Ore *ore = (Ore *)m_objects[i];
+	for (ObjDef *object : m_objects) {
+		Ore *ore = (Ore *) object;
 		delete ore;
 	}
 	m_objects.clear();
@@ -220,13 +221,6 @@ void OreSheet::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 
 ///////////////////////////////////////////////////////////////////////////////
-
-OrePuff::OrePuff() :
-	Ore()
-{
-}
-
-
 OrePuff::~OrePuff()
 {
 	delete noise_puff_top;
@@ -371,13 +365,6 @@ void OreBlob::generate(MMVManip *vm, int mapseed, u32 blockseed,
 
 
 ///////////////////////////////////////////////////////////////////////////////
-
-OreVein::OreVein() :
-	Ore()
-{
-}
-
-
 OreVein::~OreVein()
 {
 	delete noise2;

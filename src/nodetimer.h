@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODETIMER_HEADER
-#define NODETIMER_HEADER
+#pragma once
 
 #include "irr_v3d.h"
 #include <iostream>
@@ -36,12 +35,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class NodeTimer
 {
 public:
-	NodeTimer() {}
+	NodeTimer() = default;
 	NodeTimer(const v3s16 &position_):
 		position(position_) {}
 	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_):
 		timeout(timeout_), elapsed(elapsed_), position(position_) {}
-	~NodeTimer() {}
+	~NodeTimer() = default;
 
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
@@ -58,8 +57,8 @@ public:
 class NodeTimerList
 {
 public:
-	NodeTimerList() {}
-	~NodeTimerList() {}
+	NodeTimerList() = default;
+	~NodeTimerList() = default;
 
 	void serialize(std::ostream &os, u8 map_format_version) const;
 	void deSerialize(std::istream &is, u8 map_format_version);
@@ -118,10 +117,6 @@ public:
 		m_next_trigger_time = -1.;
 	}
 
-	inline double getNextTriggerTime() {
-		return m_next_trigger_time;
-	}
-
 	// Move forward in time, returns elapsed timers
 	std::vector<NodeTimer> step(float dtime);
 
@@ -131,6 +126,3 @@ private:
 	double m_next_trigger_time = -1.0;
 	double m_time = 0.0;
 };
-
-#endif
-

@@ -67,7 +67,7 @@ public:
 		if(m_base_position.Y > 8*BS)
 			m_base_position.Y = 2*BS;
 
-		if(send_recommended == false)
+		if (!send_recommended)
 			return;
 
 		m_timer1 -= dtime;
@@ -245,9 +245,8 @@ LuaEntitySAO::~LuaEntitySAO()
 		m_env->getScriptIface()->luaentity_Remove(m_id);
 	}
 
-	for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
-		it != m_attached_particle_spawners.end(); ++it) {
-		m_env->deleteParticleSpawner(*it, false);
+	for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+		m_env->deleteParticleSpawner(attached_particle_spawner, false);
 	}
 }
 
@@ -267,7 +266,7 @@ void LuaEntitySAO::addedToEnvironment(u32 dtime_s)
 		m_hp = m_prop.hp_max;
 		// Activate entity, supplying serialized state
 		m_env->getScriptIface()->
-			luaentity_Activate(m_id, m_init_state.c_str(), dtime_s);
+			luaentity_Activate(m_id, m_init_state, dtime_s);
 	} else {
 		m_prop.infotext = m_init_name;
 	}
@@ -281,7 +280,7 @@ ServerActiveObject* LuaEntitySAO::create(ServerEnvironment *env, v3f pos,
 	s16 hp = 1;
 	v3f velocity;
 	float yaw = 0;
-	if(data != ""){
+	if (!data.empty()) {
 		std::istringstream is(data, std::ios::binary);
 		// read version
 		u8 version = readU8(is);
@@ -402,7 +401,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(send_recommended == false)
+	if (!send_recommended)
 		return;
 
 	if(!isAttached())
@@ -423,7 +422,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_armor_groups_sent == false){
+	if (!m_armor_groups_sent) {
 		m_armor_groups_sent = true;
 		std::string str = gob_cmd_update_armor_groups(
 				m_armor_groups);
@@ -432,7 +431,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_animation_sent == false){
+	if (!m_animation_sent) {
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
@@ -441,7 +440,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(m_bone_position_sent == false){
+	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
 		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
@@ -453,7 +452,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		}
 	}
 
-	if(m_attachment_sent == false){
+	if (!m_attachment_sent) {
 		m_attachment_sent = true;
 		std::string str = gob_cmd_update_attachment(m_attachment_parent_id, m_attachment_bone, m_attachment_position, m_attachment_rotation);
 		// create message and add to list
@@ -582,8 +581,10 @@ int LuaEntitySAO::punch(v3f dir,
 		}
 	}
 
-	if (getHP() == 0)
+	if (getHP() == 0) {
 		m_removed = true;
+		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
+	}
 
 
 
@@ -789,14 +790,15 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
 	m_prop.textures.clear();
-	m_prop.textures.push_back("player.png");
-	m_prop.textures.push_back("player_back.png");
+	m_prop.textures.emplace_back("player.png");
+	m_prop.textures.emplace_back("player_back.png");
 	m_prop.colors.clear();
-	m_prop.colors.push_back(video::SColor(255, 255, 255, 255));
+	m_prop.colors.emplace_back(255, 255, 255, 255);
 	m_prop.spritediv = v2s16(1,1);
 	// end of default appearance
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
+	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_hp = PLAYER_MAX_HP;
 }
 
@@ -840,9 +842,8 @@ void PlayerSAO::removingFromEnvironment()
 	ServerActiveObject::removingFromEnvironment();
 	if (m_player->getPlayerSAO() == this) {
 		unlinkPlayerSessionAndSave();
-		for (std::unordered_set<u32>::iterator it = m_attached_particle_spawners.begin();
-			it != m_attached_particle_spawners.end(); ++it) {
-			m_env->deleteParticleSpawner(*it, false);
+		for (u32 attached_particle_spawner : m_attached_particle_spawners) {
+			m_env->deleteParticleSpawner(attached_particle_spawner, false);
 		}
 	}
 }
@@ -894,7 +895,7 @@ std::string PlayerSAO::getClientInitializationData(u16 protocol_version)
 	return os.str();
 }
 
-void PlayerSAO::getStaticData(std::string *result) const
+void PlayerSAO::getStaticData(std::string * result) const
 {
 	FATAL_ERROR("Deprecated function");
 }
@@ -1168,7 +1169,7 @@ int PlayerSAO::punch(v3f dir,
 		return 0;
 
 	// No effect if PvP disabled
-	if (g_settings->getBool("enable_pvp") == false) {
+	if (!g_settings->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
 			// create message and add to list

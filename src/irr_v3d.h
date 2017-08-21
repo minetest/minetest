@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef IRR_V3D_HEADER
-#define IRR_V3D_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 
@@ -28,5 +27,3 @@ typedef core::vector3df v3f;
 typedef core::vector3d<s16> v3s16;
 typedef core::vector3d<u16> v3u16;
 typedef core::vector3d<s32> v3s32;
-
-#endif

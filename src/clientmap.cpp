@@ -22,9 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include <IMaterialRenderer.h>
 #include <matrix4.h>
-#include "log.h"
 #include "mapsector.h"
-#include "nodedef.h"
 #include "mapblock.h"
 #include "profiler.h"
 #include "settings.h"
@@ -42,10 +40,7 @@ ClientMap::ClientMap(
 	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
 		RenderingEngine::get_scene_manager(), id),
 	m_client(client),
-	m_control(control),
-	m_camera_position(0,0,0),
-	m_camera_direction(0,0,1),
-	m_camera_fov(M_PI)
+	m_control(control)
 {
 	m_box = aabb3f(-BS*1000000,-BS*1000000,-BS*1000000,
 			BS*1000000,BS*1000000,BS*1000000);
@@ -65,28 +60,18 @@ ClientMap::ClientMap(
 
 }
 
-ClientMap::~ClientMap()
-{
-}
-
 MapSector * ClientMap::emergeSector(v2s16 p2d)
 {
 	DSTACK(FUNCTION_NAME);
 	// Check that it doesn't exist already
-	try{
+	try {
 		return getSectorNoGenerate(p2d);
-	}
-	catch(InvalidPositionException &e)
-	{
+	} catch(InvalidPositionException &e) {
 	}
 
 	// Create a sector
-	ClientMapSector *sector = new ClientMapSector(this, p2d, m_gamedef);
-
-	{
-		//MutexAutoLock lock(m_sector_mutex); // Bulk comment-out
-		m_sectors[p2d] = sector;
-	}
+	MapSector *sector = new MapSector(this, p2d, m_gamedef);
+	m_sectors[p2d] = sector;
 
 	return sector;
 }
@@ -129,14 +114,13 @@ void ClientMap::getBlocksInViewRange(v3s16 cam_pos_nodes,
 			p_nodes_max.Z / MAP_BLOCKSIZE + 1);
 }
 
-void ClientMap::updateDrawList(video::IVideoDriver* driver)
+void ClientMap::updateDrawList()
 {
 	ScopeProfiler sp(g_profiler, "CM::updateDrawList()", SPT_AVG);
 	g_profiler->add("CM::updateDrawList() count", 1);
 
-	for (std::map<v3s16, MapBlock*>::iterator i = m_drawlist.begin();
-			i != m_drawlist.end(); ++i) {
-		MapBlock *block = i->second;
+	for (auto &i : m_drawlist) {
+		MapBlock *block = i.second;
 		block->refDrop();
 	}
 	m_drawlist.clear();
@@ -183,12 +167,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			occlusion_culling_enabled = false;
 	}
 
-	for (std::map<v2s16, MapSector*>::iterator si = m_sectors.begin();
-			si != m_sectors.end(); ++si) {
-		MapSector *sector = si->second;
+	for (const auto &sector_it : m_sectors) {
+		MapSector *sector = sector_it.second;
 		v2s16 sp = sector->getPos();
 
-		if (m_control.range_all == false) {
+		if (!m_control.range_all) {
 			if (sp.X < p_blocks_min.X || sp.X > p_blocks_max.X ||
 					sp.Y < p_blocks_min.Z || sp.Y > p_blocks_max.Z)
 				continue;
@@ -203,14 +186,11 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 
 		u32 sector_blocks_drawn = 0;
 
-		for (MapBlockVect::iterator i = sectorblocks.begin();
-				i != sectorblocks.end(); ++i) {
-			MapBlock *block = *i;
-
+		for (auto block : sectorblocks) {
 			/*
-				Compare block position to camera position, skip
-				if not seen on display
-			*/
+			Compare block position to camera position, skip
+			if not seen on display
+		*/
 
 			if (block->mesh)
 				block->mesh->updateCameraOffset(m_camera_offset);
@@ -267,10 +247,6 @@ void ClientMap::updateDrawList(video::IVideoDriver* driver)
 			m_last_drawn_sectors.insert(sp);
 	}
 
-	m_control.blocks_would_have_drawn = blocks_would_have_drawn;
-	m_control.blocks_drawn = blocks_drawn;
-	m_control.farthest_drawn = farthest_drawn;
-
 	g_profiler->avg("CM: blocks in range", blocks_in_range);
 	g_profiler->avg("CM: blocks occlusion culled", blocks_occlusion_culled);
 	if (blocks_in_range != 0)
@@ -298,8 +274,8 @@ struct MeshBufListList
 
 	void clear()
 	{
-		for (int l = 0; l < MAX_TILE_LAYERS; l++)
-			lists[l].clear();
+		for (auto &list : lists)
+			list.clear();
 	}
 
 	void add(scene::IMeshBuffer *buf, u8 layer)
@@ -389,9 +365,8 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 
 	MeshBufListList drawbufs;
 
-	for (std::map<v3s16, MapBlock*>::iterator i = m_drawlist.begin();
-			i != m_drawlist.end(); ++i) {
-		MapBlock *block = i->second;
+	for (auto &i : m_drawlist) {
+		MapBlock *block = i.second;
 
 		// If the mesh of the block happened to get deleted, ignore it
 		if (!block->mesh)
@@ -466,9 +441,7 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	}
 
 	// Render all layers in order
-	for (int layer = 0; layer < MAX_TILE_LAYERS; layer++) {
-		std::vector<MeshBufList> &lists = drawbufs.lists[layer];
-
+	for (auto &lists : drawbufs.lists) {
 		int timecheck_counter = 0;
 		for (MeshBufList &list : lists) {
 			timecheck_counter++;
@@ -507,12 +480,9 @@ void ClientMap::renderMap(video::IVideoDriver* driver, s32 pass)
 	if (blocks_drawn != 0)
 		g_profiler->avg(prefix + "empty blocks (frac)",
 			(float)blocks_without_stuff / blocks_drawn);
-
-	/*infostream<<"renderMap(): is_transparent_pass="<<is_transparent_pass
-			<<", rendered "<<vertex_count<<" vertices."<<std::endl;*/
 }
 
-static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
+static bool getVisibleBrightness(Map *map, const v3f &p0, v3f dir, float step,
 		float step_multiplier, float start_distance, float end_distance,
 		INodeDefManager *ndef, u32 daylight_factor, float sunlight_min_d,
 		int *result, bool *sunlight_seen)
@@ -546,19 +516,20 @@ static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
 			sunlight_min_d = 0;
 		}
 	}
-	for(int i=0; distance < end_distance; i++){
+	for (int i=0; distance < end_distance; i++) {
 		pf += dir * step;
 		distance += step;
 		step *= step_multiplier;
 
 		v3s16 p = floatToInt(pf, BS);
 		MapNode n = map->getNodeNoEx(p);
-		if(allow_allowing_non_sunlight_propagates && i == 0 &&
+		if (allow_allowing_non_sunlight_propagates && i == 0 &&
 				ndef->get(n).param_type == CPT_LIGHT &&
-				!ndef->get(n).sunlight_propagates){
+				!ndef->get(n).sunlight_propagates) {
 			allow_non_sunlight_propagates = true;
 		}
-		if(ndef->get(n).param_type != CPT_LIGHT ||
+
+		if (ndef->get(n).param_type != CPT_LIGHT ||
 				(!ndef->get(n).sunlight_propagates &&
 					!allow_non_sunlight_propagates)){
 			nonlight_seen = true;
@@ -567,9 +538,9 @@ static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
 				break;
 			continue;
 		}
-		if(distance >= sunlight_min_d && *sunlight_seen == false
-				&& nonlight_seen == false)
-			if(n.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
+
+		if (distance >= sunlight_min_d && !*sunlight_seen && !nonlight_seen)
+			if (n.getLight(LIGHTBANK_DAY, ndef) == LIGHT_SUN)
 				*sunlight_seen = true;
 		noncount = 0;
 		brightness_sum += decode_light(n.getLightBlend(daylight_factor, ndef));
@@ -587,25 +558,25 @@ static bool getVisibleBrightness(Map *map, v3f p0, v3f dir, float step,
 int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 		int oldvalue, bool *sunlight_seen_result)
 {
-	const bool debugprint = false;
 	static v3f z_directions[50] = {
 		v3f(-100, 0, 0)
 	};
 	static f32 z_offsets[sizeof(z_directions)/sizeof(*z_directions)] = {
 		-1000,
 	};
+
 	if(z_directions[0].X < -99){
 		for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
+			// Assumes FOV of 72 and 16/9 aspect ratio
 			z_directions[i] = v3f(
-				0.01 * myrand_range(-100, 100),
+				0.02 * myrand_range(-100, 100),
 				1.0,
 				0.01 * myrand_range(-100, 100)
-			);
+			).normalize();
 			z_offsets[i] = 0.01 * myrand_range(0,100);
 		}
 	}
-	if(debugprint)
-		std::cerr<<"In goes "<<PP(m_camera_direction)<<", out comes ";
+
 	int sunlight_seen_count = 0;
 	float sunlight_min_d = max_d*0.8;
 	if(sunlight_min_d > 35*BS)
@@ -613,7 +584,6 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	std::vector<int> values;
 	for(u32 i=0; i<sizeof(z_directions)/sizeof(*z_directions); i++){
 		v3f z_dir = z_directions[i];
-		z_dir.normalize();
 		core::CMatrix4<f32> a;
 		a.buildRotateFromTo(v3f(0,1,0), z_dir);
 		v3f dir = m_camera_direction;
@@ -646,22 +616,12 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 	else if(num_values_to_use >= 7)
 		num_values_to_use -= num_values_to_use/3;
 	u32 first_value_i = (values.size() - num_values_to_use) / 2;
-	if(debugprint){
-		for(u32 i=0; i < first_value_i; i++)
-			std::cerr<<values[i]<<" ";
-		std::cerr<<"[";
-	}
-	for(u32 i=first_value_i; i < first_value_i+num_values_to_use; i++){
-		if(debugprint)
-			std::cerr<<values[i]<<" ";
+
+	for (u32 i=first_value_i; i < first_value_i + num_values_to_use; i++) {
 		brightness_sum += values[i];
 		brightness_count++;
 	}
-	if(debugprint){
-		std::cerr<<"]";
-		for(u32 i=first_value_i+num_values_to_use; i < values.size(); i++)
-			std::cerr<<values[i]<<" ";
-	}
+
 	int ret = 0;
 	if(brightness_count == 0){
 		MapNode n = getNodeNoEx(floatToInt(m_camera_position, BS));
@@ -671,18 +631,9 @@ int ClientMap::getBackgroundBrightness(float max_d, u32 daylight_factor,
 			ret = oldvalue;
 		}
 	} else {
-		/*float pre = (float)brightness_sum / (float)brightness_count;
-		float tmp = pre;
-		const float d = 0.2;
-		pre *= 1.0 + d*2;
-		pre -= tmp * d;
-		int preint = pre;
-		ret = MYMAX(0, MYMIN(255, preint));*/
 		ret = brightness_sum / brightness_count;
 	}
-	if(debugprint)
-		std::cerr<<"Result: "<<ret<<" sunlight_seen_count="
-				<<sunlight_seen_count<<std::endl;
+
 	*sunlight_seen_result = (sunlight_seen_count > 0);
 	return ret;
 }

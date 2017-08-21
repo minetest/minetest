@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef L_NODEMETA_H_
-#define L_NODEMETA_H_
+
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "lua_api/l_metadata.h"
@@ -80,7 +80,7 @@ public:
 	NodeMetaRef(v3s16 p, ServerEnvironment *env);
 	NodeMetaRef(Metadata *meta);
 
-	~NodeMetaRef();
+	~NodeMetaRef() = default;
 
 	// Creates an NodeMetaRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
@@ -93,5 +93,3 @@ public:
 	static void Register(lua_State *L);
 	static void RegisterClient(lua_State *L);
 };
-
-#endif /* L_NODEMETA_H_ */

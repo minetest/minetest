@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "l_client.h"
 #include "chatmessage.h"
+#include "client.h"
 #include "clientenvironment.h"
 #include "common/c_content.h"
 #include "common/c_converter.h"
@@ -32,8 +33,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "util/string.h"
 #include "nodedef.h"
-
-extern MainGameCallback *g_gamecallback;
 
 int ModApiClient::l_get_current_modname(lua_State *L)
 {

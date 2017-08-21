@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LOCALPLAYER_HEADER
-#define LOCALPLAYER_HEADER
+#pragma once
 
 #include "player.h"
 #include "environment.h"
@@ -29,6 +28,7 @@ class Client;
 class Environment;
 class GenericCAO;
 class ClientActiveObject;
+class ClientEnvironment;
 class IGameDef;
 
 enum LocalPlayerAnimations
@@ -43,7 +43,7 @@ class LocalPlayer : public Player
 {
 public:
 	LocalPlayer(Client *client, const char *name);
-	virtual ~LocalPlayer();
+	virtual ~LocalPlayer() = default;
 
 	ClientActiveObject *parent = nullptr;
 
@@ -78,7 +78,7 @@ public:
 	void old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			std::vector<CollisionInfo> *collision_info);
 
-	void applyControl(float dtime);
+	void applyControl(float dtime, Environment *env);
 
 	v3s16 getStandingNodePos();
 	v3s16 getFootstepNodePos();
@@ -143,7 +143,9 @@ public:
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
 private:
-	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
+	// clang-format off
+	void accelerateHorizontal(const v3f &target_speed, f32 max_increase, bool slippery);
+	// clang-format on
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
 
@@ -180,5 +182,3 @@ private:
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
 };
-
-#endif

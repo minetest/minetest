@@ -17,14 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAINMENUMANAGER_HEADER
-#define MAINMENUMANAGER_HEADER
+#pragma once
 
 /*
 	All kinds of stuff that needs to be exposed from main.cpp
 */
-#include "debug.h" // assert
 #include "modalMenu.h"
+#include <cassert>
 #include <list>
 
 class IGameCallback
@@ -49,12 +48,11 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin();
-				i != m_stack.end(); ++i)
-		{
-			assert(*i != menu);
+#ifndef NDEBUG
+		for (gui::IGUIElement *i : m_stack) {
+			assert(i != menu);
 		}
+#endif
 
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(false);
@@ -104,10 +102,8 @@ public:
 
 	bool pausesGame()
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin(); i != m_stack.end(); ++i)
-		{
-			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(*i);
+		for (gui::IGUIElement *i : m_stack) {
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(i);
 			if (mm && mm->pausesGame())
 				return true;
 		}
@@ -124,8 +120,8 @@ extern bool isMenuActive();
 class MainGameCallback : public IGameCallback
 {
 public:
-	MainGameCallback() {}
-	virtual ~MainGameCallback() {}
+	MainGameCallback() = default;
+	virtual ~MainGameCallback() = default;
 
 	virtual void exitToOS()
 	{
@@ -168,6 +164,3 @@ public:
 };
 
 extern MainGameCallback *g_gamecallback;
-
-#endif
-

@@ -18,9 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
 #include "gettext.h"
 #include "util/string.h"
 #include "log.h"

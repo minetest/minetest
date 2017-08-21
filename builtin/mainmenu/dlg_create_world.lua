@@ -85,9 +85,12 @@ local function create_world_buttonhandler(this, fields)
 		local worldname = fields["te_world_name"]
 		local gameindex = core.get_textlist_index("games")
 
-		if gameindex ~= nil and
-			worldname ~= "" then
-
+		if gameindex ~= nil then
+			if worldname == "" then
+				local random_number = math.random(10000, 99999)
+				local random_world_name = "Unnamed" .. random_number
+				worldname = random_world_name
+			end
 			local message = nil
 
 			core.settings:set("fixed_map_seed", fields["te_seed"])
@@ -112,8 +115,7 @@ local function create_world_buttonhandler(this, fields)
 									menudata.worldlist:raw_index_by_uid(worldname))
 			end
 		else
-			gamedata.errormessage =
-				fgettext("No worldname given or no game selected")
+			gamedata.errormessage = fgettext("No game selected")
 		end
 		this:delete()
 		return true

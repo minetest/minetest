@@ -17,16 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CPP_API_ASYNC_EVENTS_HEADER
-#define CPP_API_ASYNC_EVENTS_HEADER
+#pragma once
 
 #include <vector>
 #include <deque>
 #include <map>
 
-#include "threading/thread.h"
 #include "threading/semaphore.h"
-#include "debug.h"
+#include "threading/thread.h"
 #include "lua.h"
 #include "cpp_api/s_base.h"
 
@@ -39,7 +37,7 @@ class AsyncEngine;
 // Data required to queue a job
 struct LuaJobInfo
 {
-	LuaJobInfo() {};
+	LuaJobInfo() = default;
 
 	// Function to be called in async environment
 	std::string serializedFunction = "";
@@ -70,7 +68,7 @@ class AsyncEngine {
 	friend class AsyncWorkerThread;
 	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
-	AsyncEngine() {};
+	AsyncEngine() = default;
 	~AsyncEngine();
 
 	/**
@@ -156,5 +154,3 @@ private:
 	// Counter semaphore for job dispatching
 	Semaphore jobQueueCounter;
 };
-
-#endif // CPP_API_ASYNC_EVENTS_HEADER

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPNODE_HEADER
-#define MAPNODE_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "light.h"
@@ -138,8 +137,7 @@ struct MapNode
 	*/
 	u8 param2;
 
-	MapNode()
-	{ }
+	MapNode() = default;
 
 	MapNode(content_t content, u8 a_param1=0, u8 a_param2=0)
 		: param0(content),
@@ -302,8 +300,5 @@ struct MapNode
 
 private:
 	// Deprecated serialization methods
-	void deSerialize_pre22(u8 *source, u8 version);
+	void deSerialize_pre22(const u8 *source, u8 version);
 };
-
-#endif
-

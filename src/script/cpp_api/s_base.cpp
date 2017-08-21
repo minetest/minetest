@@ -40,7 +40,7 @@ extern "C" {
 #endif
 }
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
 #include <sstream>

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_CONTAINER_HEADER
-#define UTIL_CONTAINER_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../exceptions.h"
@@ -80,7 +79,7 @@ template<typename Key, typename Value>
 class MutexedMap
 {
 public:
-	MutexedMap() {}
+	MutexedMap() = default;
 
 	void set(const Key &name, const Value &value)
 	{
@@ -129,7 +128,8 @@ public:
 	template<typename Key, typename U, typename Caller, typename CallerData>
 	friend class RequestQueue;
 
-	MutexedQueue() {}
+	MutexedQueue() = default;
+
 	bool empty() const
 	{
 		MutexAutoLock lock(m_mutex);
@@ -154,9 +154,9 @@ public:
 			T t = m_queue.front();
 			m_queue.pop_front();
 			return t;
-		} else {
-			return T();
 		}
+
+		return T();
 	}
 
 	T pop_front(u32 wait_time_max_ms)
@@ -167,9 +167,9 @@ public:
 			T t = m_queue.front();
 			m_queue.pop_front();
 			return t;
-		} else {
-			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
+
+		throw ItemNotFoundException("MutexedQueue: queue is empty");
 	}
 
 	T pop_frontNoEx()
@@ -191,9 +191,9 @@ public:
 			T t = m_queue.back();
 			m_queue.pop_back();
 			return t;
-		} else {
-			throw ItemNotFoundException("MutexedQueue: queue is empty");
 		}
+
+		throw ItemNotFoundException("MutexedQueue: queue is empty");
 	}
 
 	/* this version of pop_back returns a empty element of T on timeout.
@@ -207,9 +207,9 @@ public:
 			T t = m_queue.back();
 			m_queue.pop_back();
 			return t;
-		} else {
-			return T();
 		}
+
+		return T();
 	}
 
 	T pop_backNoEx()
@@ -301,6 +301,3 @@ private:
 	// we can't use std::deque here, because its iterators get invalidated
 	std::list<K> m_queue;
 };
-
-#endif
-

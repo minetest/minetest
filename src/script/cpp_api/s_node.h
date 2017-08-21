@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_NODE_H_
-#define S_NODE_H_
+#pragma once
 
 #include "irr_v3d.h"
 #include "cpp_api/s_base.h"
@@ -33,8 +32,8 @@ class ScriptApiNode
 		  public ScriptApiNodemeta
 {
 public:
-	ScriptApiNode();
-	virtual ~ScriptApiNode();
+	ScriptApiNode() = default;
+	virtual ~ScriptApiNode() = default;
 
 	bool node_on_punch(v3s16 p, MapNode node,
 			ServerActiveObject *puncher, PointedThing pointed);
@@ -58,7 +57,3 @@ public:
 	static struct EnumString es_LiquidType[];
 	static struct EnumString es_NodeBoxType[];
 };
-
-
-
-#endif /* S_NODE_H_ */

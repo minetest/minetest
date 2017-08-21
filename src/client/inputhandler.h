@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef INPUT_HANDLER_H
-#define INPUT_HANDLER_H
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "joystick_controller.h"
@@ -180,8 +179,9 @@ private:
 class InputHandler
 {
 public:
-	InputHandler() {}
-	virtual ~InputHandler() {}
+	InputHandler() = default;
+
+	virtual ~InputHandler() = default;
 
 	virtual bool isKeyDown(const KeyPress &keyCode) = 0;
 	virtual bool wasKeyDown(const KeyPress &keyCode) = 0;
@@ -243,10 +243,11 @@ public:
 			return RenderingEngine::get_raw_device()
 					->getCursorControl()
 					->getPosition();
-		} else {
-			return m_mousepos;
 		}
+
+		return m_mousepos;
 	}
+
 	virtual void setMousePos(s32 x, s32 y)
 	{
 		if (RenderingEngine::get_raw_device()->getCursorControl()) {
@@ -287,7 +288,8 @@ private:
 class RandomInputHandler : public InputHandler
 {
 public:
-	RandomInputHandler() {}
+	RandomInputHandler() = default;
+
 	virtual bool isKeyDown(const KeyPress &keyCode) { return keydown[keyCode]; }
 	virtual bool wasKeyDown(const KeyPress &keyCode) { return false; }
 	virtual v2s32 getMousePos() { return mousepos; }
@@ -390,5 +392,3 @@ private:
 	bool leftreleased = false;
 	bool rightreleased = false;
 };
-
-#endif

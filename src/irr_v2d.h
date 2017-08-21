@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef IRR_V2D_HEADER
-#define IRR_V2D_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 
@@ -29,5 +28,3 @@ typedef core::vector2d<s16> v2s16;
 typedef core::vector2d<s32> v2s32;
 typedef core::vector2d<u32> v2u32;
 typedef core::vector2d<f32> v2f32;
-
-#endif

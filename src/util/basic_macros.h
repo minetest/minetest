@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef BASICMACROS_HEADER
-#define BASICMACROS_HEADER
+#pragma once
 
 #define ARRLEN(x) (sizeof(x) / sizeof((x)[0]))
 
@@ -57,5 +56,3 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define PP(x) "("<<(x).X<<","<<(x).Y<<","<<(x).Z<<")"
 
 #define PP2(x) "("<<(x).X<<","<<(x).Y<<")"
-
-#endif

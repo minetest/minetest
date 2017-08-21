@@ -38,13 +38,9 @@ LocalPlayer::LocalPlayer(Client *client, const char *name):
 {
 }
 
-LocalPlayer::~LocalPlayer()
-{
-}
-
 static aabb3f getNodeBoundingBox(const std::vector<aabb3f> &nodeboxes)
 {
-	if (nodeboxes.size() == 0)
+	if (nodeboxes.empty())
 		return aabb3f(0, 0, 0, 0, 0, 0);
 
 	aabb3f b_max;
@@ -103,8 +99,8 @@ bool LocalPlayer::updateSneakNode(Map *map, const v3f &position,
 	m_sneak_ladder_detected = false;
 	f32 min_distance_f = 100000.0 * BS;
 
-	for (s16 d = 0; d < 9; d++) {
-		const v3s16 p = current_node + dir9_center[d];
+	for (const auto &d : dir9_center) {
+		const v3s16 p = current_node + d;
 		const v3f pf = intToFloat(p, BS);
 		const v2f diff(position.X - pf.X, position.Z - pf.Z);
 		f32 distance_f = diff.getLength();
@@ -279,9 +275,15 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// This should always apply, otherwise there are glitches
 	sanity_check(d > pos_max_d);
 
-	// TODO: this shouldn't be hardcoded but transmitted from server
-	float player_stepheight = (touching_ground) ? (BS * 0.6f) : (BS * 0.2f);
+	// Player object property step height is multiplied by BS in
+	// /src/script/common/c_content.cpp and /src/content_sao.cpp
+	float player_stepheight = (m_cao == nullptr) ? 0.0f :
+		(touching_ground ? m_cao->getStepHeight() : (0.2f * BS));
 
+	// TODO this is a problematic hack.
+	// Use a better implementation for autojump, or apply a custom stepheight
+	// to all players, as this currently creates unintended special movement
+	// abilities and advantages for Android players on a server.
 #ifdef __ANDROID__
 	player_stepheight += (0.6f * BS);
 #endif
@@ -383,9 +385,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 
 	// Dont report if flying
 	if(collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
-		for(size_t i=0; i<result.collisions.size(); i++) {
-			const CollisionInfo &info = result.collisions[i];
-			collision_info->push_back(info);
+		for (const auto &colinfo : result.collisions) {
+			collision_info->push_back(colinfo);
 		}
 	}
 
@@ -438,7 +439,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 	move(dtime, env, pos_max_d, NULL);
 }
 
-void LocalPlayer::applyControl(float dtime)
+void LocalPlayer::applyControl(float dtime, Environment *env)
 {
 	// Clear stuff
 	swimming_vertical = false;
@@ -654,9 +655,15 @@ void LocalPlayer::applyControl(float dtime)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
+	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	Map *map = &env->getMap();
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
+	bool slippery = (itemgroup_get(f.groups, "slippery") != 0);
 	// Accelerate to target speed with maximum increment
-	accelerateHorizontal(speedH * physics_override_speed, incH * physics_override_speed);
-	accelerateVertical(speedV * physics_override_speed, incV * physics_override_speed);
+	accelerateHorizontal(speedH * physics_override_speed,
+			incH * physics_override_speed, slippery);
+	accelerateVertical(speedV * physics_override_speed,
+			incV * physics_override_speed);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()
@@ -693,36 +700,44 @@ v3f LocalPlayer::getEyeOffset() const
 }
 
 // Horizontal acceleration (X and Z), Y direction is ignored
-void LocalPlayer::accelerateHorizontal(const v3f &target_speed, const f32 max_increase)
+void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
+	const f32 max_increase, bool slippery)
 {
         if (max_increase == 0)
                 return;
 
-        v3f d_wanted = target_speed - m_speed;
-        d_wanted.Y = 0;
-        f32 dl = d_wanted.getLength();
-        if (dl > max_increase)
-                dl = max_increase;
+	v3f d_wanted = target_speed - m_speed;
+	if (slippery) {
+		if (target_speed == v3f())
+			d_wanted = -m_speed * 0.05f;
+		else
+			d_wanted *= 0.1f;
+	}
 
-        v3f d = d_wanted.normalize() * dl;
+	d_wanted.Y = 0.0f;
+	f32 dl = d_wanted.getLength();
+	if (dl > max_increase)
+		dl = max_increase;
 
-        m_speed.X += d.X;
-        m_speed.Z += d.Z;
+	v3f d = d_wanted.normalize() * dl;
+
+	m_speed.X += d.X;
+	m_speed.Z += d.Z;
 }
 
 // Vertical acceleration (Y), X and Z directions are ignored
 void LocalPlayer::accelerateVertical(const v3f &target_speed, const f32 max_increase)
 {
-        if (max_increase == 0)
-                return;
+	if (max_increase == 0)
+		return;
 
-        f32 d_wanted = target_speed.Y - m_speed.Y;
-        if (d_wanted > max_increase)
-                d_wanted = max_increase;
-        else if (d_wanted < -max_increase)
-                d_wanted = -max_increase;
+	f32 d_wanted = target_speed.Y - m_speed.Y;
+	if (d_wanted > max_increase)
+		d_wanted = max_increase;
+	else if (d_wanted < -max_increase)
+		d_wanted = -max_increase;
 
-        m_speed.Y += d_wanted;
+	m_speed.Y += d_wanted;
 }
 
 // Temporary option for old move code
@@ -918,7 +933,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 
 			// The node to be sneaked on has to be walkable
 			node = map->getNodeNoEx(p, &is_valid_position);
-			if (!is_valid_position || nodemgr->get(node).walkable == false)
+			if (!is_valid_position || !nodemgr->get(node).walkable)
 				continue;
 			// And the node above it has to be nonwalkable
 			node = map->getNodeNoEx(p + v3s16(0, 1, 0), &is_valid_position);
@@ -945,9 +960,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 			MapNode n = map->getNodeNoEx(m_sneak_node);
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(nodemgr, &nodeboxes);
-			for (std::vector<aabb3f>::iterator it = nodeboxes.begin();
-					it != nodeboxes.end(); ++it) {
-				aabb3f box = *it;
+			for (const auto &box : nodeboxes) {
 				if (box.MaxEdge.Y > cb_max)
 					cb_max = box.MaxEdge.Y;
 			}
@@ -974,8 +987,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	*/
 	// Dont report if flying
 	if (collision_info && !(g_settings->getBool("free_move") && fly_allowed)) {
-		for (size_t i = 0; i < result.collisions.size(); i++) {
-			const CollisionInfo &info = result.collisions[i];
+		for (const auto &info : result.collisions) {
 			collision_info->push_back(info);
 		}
 	}

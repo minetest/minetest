@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CRAFTDEF_HEADER
-#define CRAFTDEF_HEADER
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -74,7 +73,7 @@ struct CraftInput
 	unsigned int width = 0;
 	std::vector<ItemStack> items;
 
-	CraftInput() {}
+	CraftInput() = default;
 
 	CraftInput(CraftMethod method_, unsigned int width_,
 			const std::vector<ItemStack> &items_):
@@ -94,7 +93,7 @@ struct CraftOutput
 	// Used for cooking (cook time) and fuel (burn time), seconds
 	float time = 0.0f;
 
-	CraftOutput() {}
+	CraftOutput() = default;
 
 	CraftOutput(const std::string &item_, float time_):
 		item(item_), time(time_)
@@ -120,9 +119,7 @@ struct CraftReplacements
 	// List of replacements
 	std::vector<std::pair<std::string, std::string> > pairs;
 
-	CraftReplacements():
-		pairs()
-	{}
+	CraftReplacements() = default;
 	CraftReplacements(const std::vector<std::pair<std::string, std::string> > &pairs_):
 		pairs(pairs_)
 	{}
@@ -135,8 +132,8 @@ struct CraftReplacements
 class CraftDefinition
 {
 public:
-	CraftDefinition(){}
-	virtual ~CraftDefinition(){}
+	CraftDefinition() = default;
+	virtual ~CraftDefinition() = default;
 
 	// Returns type of crafting definition
 	virtual std::string getName() const=0;
@@ -170,7 +167,7 @@ public:
 class CraftDefinitionShaped: public CraftDefinition
 {
 public:
-	CraftDefinitionShaped() {}
+	CraftDefinitionShaped() = delete;
 
 	CraftDefinitionShaped(
 			const std::string &output_,
@@ -180,7 +177,7 @@ public:
 		output(output_), width(width_), recipe(recipe_),
 		replacements(replacements_)
 	{}
-	virtual ~CraftDefinitionShaped(){}
+	virtual ~CraftDefinitionShaped() = default;
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
@@ -219,17 +216,14 @@ private:
 class CraftDefinitionShapeless: public CraftDefinition
 {
 public:
-	CraftDefinitionShapeless():
-		output(""), recipe(), hash_inited(false), replacements()
-	{}
+	CraftDefinitionShapeless() = delete;
 	CraftDefinitionShapeless(
 			const std::string &output_,
 			const std::vector<std::string> &recipe_,
 			const CraftReplacements &replacements_):
-		output(output_), recipe(recipe_),
-		hash_inited(false), replacements(replacements_)
+		output(output_), recipe(recipe_), replacements(replacements_)
 	{}
-	virtual ~CraftDefinitionShapeless(){}
+	virtual ~CraftDefinitionShapeless() = default;
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
@@ -253,7 +247,7 @@ private:
 	// Recipe list (item names)
 	std::vector<std::string> recipe_names;
 	// bool indicating if initHash has been called already
-	bool hash_inited;
+	bool hash_inited = false;
 	// Replacement items for decrementInput()
 	CraftReplacements replacements;
 };
@@ -267,13 +261,11 @@ private:
 class CraftDefinitionToolRepair: public CraftDefinition
 {
 public:
-	CraftDefinitionToolRepair():
-		additional_wear(0)
-	{}
+	CraftDefinitionToolRepair() = delete;
 	CraftDefinitionToolRepair(float additional_wear_):
 		additional_wear(additional_wear_)
 	{}
-	virtual ~CraftDefinitionToolRepair(){}
+	virtual ~CraftDefinitionToolRepair() = default;
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
@@ -295,7 +287,7 @@ private:
 	// 1 = new tool is completely broken
 	// 0 = simply add remaining uses of both input tools
 	// -1 = new tool is completely pristine
-	float additional_wear;
+	float additional_wear = 0.0f;
 };
 
 /*
@@ -305,18 +297,15 @@ private:
 class CraftDefinitionCooking: public CraftDefinition
 {
 public:
-	CraftDefinitionCooking():
-		output(""), recipe(""), hash_inited(false), cooktime()
-	{}
+	CraftDefinitionCooking() = delete;
 	CraftDefinitionCooking(
 			const std::string &output_,
 			const std::string &recipe_,
 			float cooktime_,
 			const CraftReplacements &replacements_):
-		output(output_), recipe(recipe_), hash_inited(false),
-		cooktime(cooktime_), replacements(replacements_)
+		output(output_), recipe(recipe_), cooktime(cooktime_), replacements(replacements_)
 	{}
-	virtual ~CraftDefinitionCooking(){}
+	virtual ~CraftDefinitionCooking() = default;
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
@@ -340,7 +329,7 @@ private:
 	// Recipe item name
 	std::string recipe_name;
 	// bool indicating if initHash has been called already
-	bool hash_inited;
+	bool hash_inited = false;
 	// Time in seconds
 	float cooktime;
 	// Replacement items for decrementInput()
@@ -354,18 +343,13 @@ private:
 class CraftDefinitionFuel: public CraftDefinition
 {
 public:
-	CraftDefinitionFuel():
-		recipe(""), hash_inited(false), burntime()
-	{}
+	CraftDefinitionFuel() = delete;
 	CraftDefinitionFuel(const std::string &recipe_,
 			float burntime_,
 			const CraftReplacements &replacements_):
-		recipe(recipe_),
-		hash_inited(false),
-		burntime(burntime_),
-		replacements(replacements_)
+		recipe(recipe_), burntime(burntime_), replacements(replacements_)
 	{}
-	virtual ~CraftDefinitionFuel(){}
+	virtual ~CraftDefinitionFuel() = default;
 
 	virtual std::string getName() const;
 	virtual bool check(const CraftInput &input, IGameDef *gamedef) const;
@@ -387,7 +371,7 @@ private:
 	// Recipe item name
 	std::string recipe_name;
 	// bool indicating if initHash has been called already
-	bool hash_inited;
+	bool hash_inited = false;
 	// Time in seconds
 	float burntime;
 	// Replacement items for decrementInput()
@@ -400,8 +384,8 @@ private:
 class ICraftDefManager
 {
 public:
-	ICraftDefManager(){}
-	virtual ~ICraftDefManager(){}
+	ICraftDefManager() = default;
+	virtual ~ICraftDefManager() = default;
 
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
@@ -417,8 +401,8 @@ public:
 class IWritableCraftDefManager : public ICraftDefManager
 {
 public:
-	IWritableCraftDefManager(){}
-	virtual ~IWritableCraftDefManager(){}
+	IWritableCraftDefManager() = default;
+	virtual ~IWritableCraftDefManager() = default;
 
 	// The main crafting function
 	virtual bool getCraftResult(CraftInput &input, CraftOutput &output,
@@ -446,6 +430,3 @@ public:
 };
 
 IWritableCraftDefManager* createCraftDefManager();
-
-#endif
-

@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************************************/
 /******************************************************************************/
 
-#ifndef C_INTERNAL_H_
-#define C_INTERNAL_H_
+#pragma once
 
 extern "C" {
 #include <lua.h>
@@ -59,12 +58,12 @@ extern "C" {
 #define PUSH_ERROR_HANDLER(L) \
 	(lua_rawgeti((L), LUA_REGISTRYINDEX, CUSTOM_RIDX_BACKTRACE), lua_gettop((L)))
 
-#define PCALL_RESL(L, RES) do {                         \
+#define PCALL_RESL(L, RES) {                            \
 	int result_ = (RES);                                \
 	if (result_ != 0) {                                 \
 		script_error((L), result_, NULL, __FUNCTION__); \
 	}                                                   \
-} while (0)
+}
 
 #define script_run_callbacks(L, nargs, mode) \
 	script_run_callbacks_f((L), (nargs), (mode), __FUNCTION__)
@@ -106,5 +105,3 @@ void script_error(lua_State *L, int pcall_result, const char *mod, const char *f
 void script_run_callbacks_f(lua_State *L, int nargs,
 	RunCallbacksMode mode, const char *fxn);
 void log_deprecated(lua_State *L, const std::string &message);
-
-#endif /* C_INTERNAL_H_ */

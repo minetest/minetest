@@ -31,13 +31,15 @@ bool RaycastSort::operator() (const PointedThing &pt1,
 	// returns false if pt1 is nearer than pt2
 	if (pt1.distanceSq < pt2.distanceSq) {
 		return false;
-	} else if (pt1.distanceSq == pt2.distanceSq) {
+	}
+
+	if (pt1.distanceSq == pt2.distanceSq) {
 		// Sort them to allow only one order
 		if (pt1.type == POINTEDTHING_OBJECT)
 			return (pt2.type == POINTEDTHING_OBJECT
 				&& pt1.object_id < pt2.object_id);
-		else
-			return (pt2.type == POINTEDTHING_OBJECT
+
+		return (pt2.type == POINTEDTHING_OBJECT
 				|| pt1.node_undersurface < pt2.node_undersurface);
 	}
 	return true;

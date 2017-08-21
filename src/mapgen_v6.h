@@ -19,8 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGENV6_HEADER
-#define MAPGENV6_HEADER
+#pragma once
 
 #include "mapgen.h"
 #include "noise.h"
@@ -73,7 +72,7 @@ struct MapgenV6Params : public MapgenParams {
 	NoiseParams np_apple_trees;
 
 	MapgenV6Params();
-	~MapgenV6Params() {}
+	~MapgenV6Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -92,7 +91,6 @@ public:
 	v3s16 full_node_min;
 	v3s16 full_node_max;
 	v3s16 central_area_size;
-	int volume_nodes;
 
 	Noise *noise_terrain_base;
 	Noise *noise_terrain_higher;
@@ -169,5 +167,3 @@ public:
 	void placeTreesAndJungleGrass();
 	virtual void generateCaves(int max_stone_y);
 };
-
-#endif

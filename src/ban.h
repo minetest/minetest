@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef BAN_HEADER
-#define BAN_HEADER
+#pragma once
 
 #include "util/string.h"
 #include "threading/thread.h"
@@ -30,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class BanManager
 {
 public:
-	BanManager(const std::string &bannfilepath);
+	BanManager(const std::string &banfilepath);
 	~BanManager();
 	void load();
 	void save();
@@ -48,5 +47,3 @@ private:
 	StringMap m_ips;
 	bool m_modified = false;
 };
-
-#endif

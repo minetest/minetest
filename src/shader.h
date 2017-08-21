@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SHADER_HEADER
-#define SHADER_HEADER
+#pragma once
 
 #include <IMaterialRendererServices.h>
 #include "irrlichttypes_bloated.h"
@@ -51,8 +50,8 @@ struct ShaderInfo {
 	u8 material_type = 0;
 	bool light_emissive = false;
 
-	ShaderInfo() {}
-	virtual ~ShaderInfo() {}
+	ShaderInfo() = default;
+	virtual ~ShaderInfo() = default;
 };
 
 /*
@@ -66,7 +65,7 @@ namespace irr { namespace video {
 
 class IShaderConstantSetter {
 public:
-	virtual ~IShaderConstantSetter(){};
+	virtual ~IShaderConstantSetter() = default;
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
 };
@@ -74,7 +73,7 @@ public:
 
 class IShaderConstantSetterFactory {
 public:
-	virtual ~IShaderConstantSetterFactory() {};
+	virtual ~IShaderConstantSetterFactory() = default;
 	virtual IShaderConstantSetter* create() = 0;
 };
 
@@ -124,8 +123,9 @@ public:
 
 class IShaderSource {
 public:
-	IShaderSource(){}
-	virtual ~IShaderSource(){}
+	IShaderSource() = default;
+	virtual ~IShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype, const bool light_emissive = false){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
@@ -135,8 +135,9 @@ public:
 
 class IWritableShaderSource : public IShaderSource {
 public:
-	IWritableShaderSource(){}
-	virtual ~IWritableShaderSource(){}
+	IWritableShaderSource() = default;
+	virtual ~IWritableShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype, const bool light_emissive = false){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
@@ -154,5 +155,3 @@ IWritableShaderSource *createShaderSource();
 
 void dumpShaderProgram(std::ostream &output_stream,
 	const std::string &program_type, const std::string &program);
-
-#endif

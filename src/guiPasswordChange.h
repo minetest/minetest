@@ -16,13 +16,13 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef GUIPASSWORDCHANGE_HEADER
-#define GUIPASSWORDCHANGE_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
-#include "client.h"
 #include <string>
+
+class Client;
 
 class GUIPasswordChange : public GUIModalMenu
 {
@@ -51,5 +51,3 @@ private:
 	std::wstring m_newpass = L"";
 	std::wstring m_newpass_confirm = L"";
 };
-
-#endif

@@ -20,13 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "client.h"
 #include "collision.h"
-#include <stdlib.h>
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "environment.h"
 #include "clientmap.h"
 #include "mapnode.h"
+#include "nodedef.h"
 #include "client.h"
 #include "settings.h"
 
@@ -104,10 +104,6 @@ Particle::Particle(
 
 	// Init model
 	updateVertices();
-}
-
-Particle::~Particle()
-{
 }
 
 void Particle::OnRegisterSceneNode()
@@ -227,17 +223,16 @@ void Particle::updateVertices()
 		0, 0, 0, 0, m_color, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
-	for(u16 i=0; i<4; i++)
-	{
+	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
-			m_vertices[i].Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
+			vertex.Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
 		} else {
-			m_vertices[i].Pos.rotateYZBy(m_player->getPitch());
-			m_vertices[i].Pos.rotateXZBy(m_player->getYaw());
+			vertex.Pos.rotateYZBy(m_player->getPitch());
+			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
-		m_box.addInternalPoint(m_vertices[i].Pos);
-		m_vertices[i].Pos += m_pos*BS - intToFloat(camera_offset, BS);
+		m_box.addInternalPoint(vertex.Pos);
+		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
 	}
 }
 
@@ -284,8 +279,6 @@ ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 		m_spawntimes.push_back(spawntime);
 	}
 }
-
-ParticleSpawner::~ParticleSpawner() {}
 
 void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
@@ -631,7 +624,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	// Only use first frame of animated texture
 	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
-		texture = tile.frames[0].texture;
+		texture = (*tile.frames)[0].texture;
 	else
 		texture = tile.texture;
 

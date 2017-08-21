@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef WIELDMESH_HEADER
-#define WIELDMESH_HEADER
+#pragma once
 
 #include <string>
+#include <vector>
 #include "irrlichttypes_extrabloated.h"
 
 struct ItemStack;
@@ -44,7 +44,7 @@ struct ItemPartColor
 	 */
 	video::SColor color = 0;
 
-	ItemPartColor() {}
+	ItemPartColor() = default;
 
 	ItemPartColor(bool override, video::SColor color)
 	    : override_base(override), color(color)
@@ -65,7 +65,7 @@ struct ItemMesh
 	 */
 	bool needs_shading = true;
 
-	ItemMesh() {}
+	ItemMesh() = default;
 };
 
 /*
@@ -135,6 +135,5 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
-		bool set_material, video::E_MATERIAL_TYPE *mattype,
+		bool set_material, const video::E_MATERIAL_TYPE *mattype,
 		std::vector<ItemPartColor> *colors);
-#endif

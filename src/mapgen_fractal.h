@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_FRACTAL_HEADER
-#define MAPGEN_FRACTAL_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -51,7 +50,7 @@ struct MapgenFractalParams : public MapgenParams
 	NoiseParams np_cave2;
 
 	MapgenFractalParams();
-	~MapgenFractalParams() {}
+	~MapgenFractalParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -86,5 +85,3 @@ private:
 	float julia_w;
 	Noise *noise_seabed;
 };
-
-#endif

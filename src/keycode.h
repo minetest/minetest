@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef KEYCODE_HEADER
-#define KEYCODE_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "Keycodes.h"
@@ -31,7 +30,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class KeyPress
 {
 public:
-	KeyPress() {}
+	KeyPress() = default;
+
 	KeyPress(const char *name);
 
 	KeyPress(const irr::SEvent::SKeyInput &in, bool prefer_character = false);
@@ -57,7 +57,6 @@ protected:
 
 extern const KeyPress EscapeKey;
 extern const KeyPress CancelKey;
-extern const KeyPress NumberKey[10];
 
 // Key configuration getter
 KeyPress getKeySetting(const char *settingname);
@@ -66,5 +65,3 @@ KeyPress getKeySetting(const char *settingname);
 void clearKeyCache();
 
 irr::EKEY_CODE keyname_to_keycode(const char *name);
-
-#endif

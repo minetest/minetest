@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAP_HEADER
-#define MAP_HEADER
+#pragma once
 
 #include <iostream>
 #include <sstream>
@@ -34,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "nodetimer.h"
 #include "map_settings_manager.h"
+#include "debug.h"
 
 class Settings;
 class MapDatabase;
@@ -78,7 +78,7 @@ struct MapEditEvent
 	std::set<v3s16> modified_blocks;
 	u16 already_known_by_peer = 0;
 
-	MapEditEvent() {}
+	MapEditEvent() = default;
 
 	MapEditEvent * clone()
 	{
@@ -108,11 +108,7 @@ struct MapEditEvent
 		case MEET_OTHER:
 		{
 			VoxelArea a;
-			for(std::set<v3s16>::iterator
-					i = modified_blocks.begin();
-					i != modified_blocks.end(); ++i)
-			{
-				v3s16 p = *i;
+			for (v3s16 p : modified_blocks) {
 				v3s16 np1 = p*MAP_BLOCKSIZE;
 				v3s16 np2 = np1 + v3s16(1,1,1)*MAP_BLOCKSIZE - v3s16(1,1,1);
 				a.addPoint(np1);
@@ -172,8 +168,6 @@ public:
 		their differing fetch methods.
 	*/
 	virtual MapSector * emergeSector(v2s16 p){ return NULL; }
-	virtual MapSector * emergeSector(v2s16 p,
-			std::map<v3s16, MapBlock*> &changed_blocks){ return NULL; }
 
 	// Returns InvalidPositionException if not found
 	MapBlock * getBlockNoCreate(v3s16 p);
@@ -216,18 +210,9 @@ public:
 	bool addNodeWithEvent(v3s16 p, MapNode n, bool remove_metadata = true);
 	bool removeNodeWithEvent(v3s16 p);
 
-	/*
-		Takes the blocks at the edges into account
-	*/
-	bool getDayNightDiff(v3s16 blockpos);
-
-	//core::aabbox3d<s16> getDisplayedBlockArea();
-
-	//bool updateChangedVisibleArea();
-
 	// Call these before and after saving of many blocks
-	virtual void beginSave() { return; }
-	virtual void endSave() { return; }
+	virtual void beginSave() {}
+	virtual void endSave() {}
 
 	virtual void save(ModifiedState save_level) { FATAL_ERROR("FIXME"); }
 
@@ -364,7 +349,7 @@ public:
 		- Check disk (doesn't load blocks)
 		- Create blank one
 	*/
-	ServerMapSector *createSector(v2s16 p);
+	MapSector *createSector(v2s16 p);
 
 	bool saoPositionOverLimit(const v3f &p);
 
@@ -433,18 +418,6 @@ public:
 
 	MapgenParams *getMapgenParams();
 
-	/*void saveChunkMeta();
-	void loadChunkMeta();*/
-
-	// The sector mutex should be locked when calling most of these
-
-	// This only saves sector-specific data such as the heightmap
-	// (no MapBlocks)
-	// DEPRECATED? Sectors have no metadata anymore.
-	void saveSectorMeta(ServerMapSector *sector);
-	MapSector* loadSectorMeta(std::string dirname, bool save_after_load);
-	bool loadSectorMeta(v2s16 p2d);
-
 	bool saveBlock(MapBlock *block);
 	static bool saveBlock(MapBlock *block, MapDatabase *db);
 	// This will generate a sector with getSector if not found.
@@ -509,7 +482,7 @@ class MMVManip : public VoxelManipulator
 {
 public:
 	MMVManip(Map *map);
-	virtual ~MMVManip();
+	virtual ~MMVManip() = default;
 
 	virtual void clear()
 	{
@@ -534,5 +507,3 @@ protected:
 	*/
 	std::map<v3s16, u8> m_loaded_blocks;
 };
-
-#endif

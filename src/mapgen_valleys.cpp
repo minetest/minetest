@@ -30,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 #include "settings.h" // For g_settings
@@ -236,7 +235,9 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType stone_type = generateBiomes(water_level - 1);
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -244,7 +245,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -433,8 +434,8 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 	if (level_at_point <= water_level ||
 			level_at_point > water_level + 32)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-	else
-		return level_at_point;
+
+	return level_at_point;
 }
 
 
@@ -475,7 +476,7 @@ int MapgenValleys::generateTerrain()
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index_2d = 0;
 
@@ -597,7 +598,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	MapNode n_lava(c_lava_source);
 	MapNode n_water(c_river_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 
 	// Cave blend distance near YMIN, YMAX
 	const float massive_cave_blend = 128.f;
@@ -668,7 +669,8 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 			// Saves some time.
 			if (y > terrain + 10)
 				continue;
-			else if (y < terrain - 40)
+
+			if (y < terrain - 40)
 				underground = true;
 
 			// Dig massive caves.

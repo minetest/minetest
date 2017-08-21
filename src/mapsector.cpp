@@ -40,9 +40,8 @@ void MapSector::deleteBlocks()
 	m_block_cache = nullptr;
 
 	// Delete all
-	for (std::unordered_map<s16, MapBlock*>::iterator i = m_blocks.begin();
-		 	i != m_blocks.end(); ++i) {
-		delete i->second;
+	for (auto &block : m_blocks) {
+		delete block.second;
 	}
 
 	// Clear container
@@ -125,122 +124,7 @@ void MapSector::deleteBlock(MapBlock *block)
 
 void MapSector::getBlocks(MapBlockVect &dest)
 {
-	for (std::unordered_map<s16, MapBlock*>::iterator bi = m_blocks.begin();
-		bi != m_blocks.end(); ++bi) {
-		dest.push_back(bi->second);
+	for (auto &block : m_blocks) {
+		dest.push_back(block.second);
 	}
 }
-
-/*
-	ServerMapSector
-*/
-
-ServerMapSector::ServerMapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
-		MapSector(parent, pos, gamedef)
-{
-}
-
-ServerMapSector::~ServerMapSector()
-{
-}
-
-void ServerMapSector::serialize(std::ostream &os, u8 version)
-{
-	if(!ser_ver_supported(version))
-		throw VersionMismatchException("ERROR: MapSector format not supported");
-
-	/*
-		[0] u8 serialization version
-		+ heightmap data
-	*/
-
-	// Server has both of these, no need to support not having them.
-	//assert(m_objects != NULL);
-
-	// Write version
-	os.write((char*)&version, 1);
-
-	/*
-		Add stuff here, if needed
-	*/
-
-}
-
-ServerMapSector* ServerMapSector::deSerialize(
-		std::istream &is,
-		Map *parent,
-		v2s16 p2d,
-		std::map<v2s16, MapSector*> & sectors,
-		IGameDef *gamedef
-	)
-{
-	/*
-		[0] u8 serialization version
-		+ heightmap data
-	*/
-
-	/*
-		Read stuff
-	*/
-
-	// Read version
-	u8 version = SER_FMT_VER_INVALID;
-	is.read((char*)&version, 1);
-
-	if(!ser_ver_supported(version))
-		throw VersionMismatchException("ERROR: MapSector format not supported");
-
-	/*
-		Add necessary reading stuff here
-	*/
-
-	/*
-		Get or create sector
-	*/
-
-	ServerMapSector *sector = NULL;
-
-	std::map<v2s16, MapSector*>::iterator n = sectors.find(p2d);
-
-	if(n != sectors.end())
-	{
-		warningstream<<"deSerializing existent sectors not supported "
-				"at the moment, because code hasn't been tested."
-				<<std::endl;
-
-		MapSector *sector = n->second;
-		assert(sector->getId() == MAPSECTOR_SERVER);
-		return (ServerMapSector*)sector;
-	}
-	else
-	{
-		sector = new ServerMapSector(parent, p2d, gamedef);
-		sectors[p2d] = sector;
-	}
-
-	/*
-		Set stuff in sector
-	*/
-
-	// Nothing here
-
-	return sector;
-}
-
-#ifndef SERVER
-/*
-	ClientMapSector
-*/
-
-ClientMapSector::ClientMapSector(Map *parent, v2s16 pos, IGameDef *gamedef):
-		MapSector(parent, pos, gamedef)
-{
-}
-
-ClientMapSector::~ClientMapSector()
-{
-}
-
-#endif // !SERVER
-
-//END

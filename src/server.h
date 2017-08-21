@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVER_HEADER
-#define SERVER_HEADER
+#pragma once
 
 #include "network/connection.h"
 #include "irr_v3d.h"
@@ -34,22 +33,23 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/thread.h"
 #include "util/basic_macros.h"
 #include "serverenvironment.h"
-#include "chat_interface.h"
 #include "clientiface.h"
-#include "remoteplayer.h"
-#include "network/networkpacket.h"
 #include "chatmessage.h"
 #include <string>
 #include <list>
 #include <map>
 #include <vector>
 
+class ChatEvent;
+struct ChatEventChat;
+struct ChatInterface;
 class IWritableItemDefManager;
 class IWritableNodeDefManager;
 class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
 class Inventory;
+class RemotePlayer;
 class PlayerSAO;
 class IRollbackManager;
 struct RollbackAction;
@@ -63,31 +63,6 @@ enum ClientDeletionReason {
 	CDR_LEAVE,
 	CDR_TIMEOUT,
 	CDR_DENY
-};
-
-class MapEditEventAreaIgnorer
-{
-public:
-	MapEditEventAreaIgnorer(VoxelArea *ignorevariable, const VoxelArea &a):
-		m_ignorevariable(ignorevariable)
-	{
-		if(m_ignorevariable->getVolume() == 0)
-			*m_ignorevariable = a;
-		else
-			m_ignorevariable = NULL;
-	}
-
-	~MapEditEventAreaIgnorer()
-	{
-		if(m_ignorevariable)
-		{
-			assert(m_ignorevariable->getVolume() != 0);
-			*m_ignorevariable = VoxelArea();
-		}
-	}
-
-private:
-	VoxelArea *m_ignorevariable;
 };
 
 struct MediaInfo
@@ -310,15 +285,11 @@ public:
 	bool hudChange(RemotePlayer *player, u32 id, HudElementStat stat, void *value);
 	bool hudSetFlags(RemotePlayer *player, u32 flags, u32 mask);
 	bool hudSetHotbarItemcount(RemotePlayer *player, s32 hotbar_itemcount);
-	s32 hudGetHotbarItemcount(RemotePlayer *player) const
-			{ return player->getHotbarItemcount(); }
+	s32 hudGetHotbarItemcount(RemotePlayer *player) const;
 	void hudSetHotbarImage(RemotePlayer *player, std::string name);
 	std::string hudGetHotbarImage(RemotePlayer *player);
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
-	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const
-	{
-		return player->getHotbarSelectedImage();
-	}
+	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
 	inline Address getPeerAddress(u16 peer_id)
 			{ return m_con.GetPeerAddress(peer_id); }
@@ -678,5 +649,3 @@ private:
 	Shuts down when kill is set to true.
 */
 void dedicated_server_loop(Server &server, bool &kill);
-
-#endif

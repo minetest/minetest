@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_NODETIMER_H_
-#define L_NODETIMER_H_
+#pragma once
 
 #include "irr_v3d.h"
 #include "lua_api/l_base.h"
@@ -52,7 +51,7 @@ private:
 
 public:
 	NodeTimerRef(v3s16 p, ServerEnvironment *env);
-	~NodeTimerRef();
+	~NodeTimerRef() = default;
 
 	// Creates an NodeTimerRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
@@ -62,5 +61,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif /* L_NODETIMER_H_ */

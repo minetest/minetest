@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_BASE_H_
-#define S_BASE_H_
+#pragma once
 
 #include <iostream>
 #include <string>
 #include <thread>
+#include <mutex>
 #include "util/basic_macros.h"
 
 extern "C" {
@@ -30,7 +30,6 @@ extern "C" {
 }
 
 #include "irrlichttypes.h"
-#include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
 
@@ -41,12 +40,12 @@ extern "C" {
 // use that name to bypass security!
 #define BUILTIN_MOD_NAME "*builtin*"
 
-#define PCALL_RES(RES) do {                 \
+#define PCALL_RES(RES) {                    \
 	int result_ = (RES);                    \
 	if (result_ != 0) {                     \
 		scriptError(result_, __FUNCTION__); \
 	}                                       \
-} while (0)
+}
 
 #define runCallbacks(nargs, mode) \
 	runCallbacksRaw((nargs), (mode), __FUNCTION__)
@@ -147,5 +146,3 @@ private:
 	GUIEngine      *m_guiengine = nullptr;
 	ScriptingType  m_type;
 };
-
-#endif /* S_BASE_H_ */

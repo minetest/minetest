@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef COLLISION_HEADER
-#define COLLISION_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include <vector>
@@ -36,7 +35,8 @@ enum CollisionType
 
 struct CollisionInfo
 {
-	CollisionInfo() {}
+	CollisionInfo() = default;
+
 	CollisionType type = COLLISION_NODE;
 	v3s16 node_p = v3s16(-32768,-32768,-32768); // COLLISION_NODE
 	v3f old_speed;
@@ -45,7 +45,8 @@ struct CollisionInfo
 
 struct collisionMoveResult
 {
-	collisionMoveResult() {}
+	collisionMoveResult() = default;
+
 	bool touching_ground = false;
 	bool collides = false;
 	bool standing_on_object = false;
@@ -74,7 +75,3 @@ bool wouldCollideWithCeiling(
 		const std::vector<aabb3f> &staticboxes,
 		const aabb3f &movingbox,
 		f32 y_increase, f32 d);
-
-
-#endif
-

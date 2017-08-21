@@ -17,12 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DEBUG_HEADER
-#define DEBUG_HEADER
+#pragma once
 
 #include <iostream>
 #include <exception>
-#include <assert.h>
+#include <cassert>
 #include "gettime.h"
 #include "log.h"
 
@@ -131,7 +130,3 @@ private:
 	#define BEGIN_DEBUG_EXCEPTION_HANDLER
 	#define END_DEBUG_EXCEPTION_HANDLER
 #endif
-
-#endif // DEBUG_HEADER
-
-

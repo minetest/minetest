@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_POINTEDTHING_HEADER
-#define UTIL_POINTEDTHING_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../irr_v3d.h"
@@ -82,7 +81,7 @@ struct PointedThing
 	f32 distanceSq = 0;
 
 	//! Constructor for POINTEDTHING_NOTHING
-	PointedThing() {};
+	PointedThing() = default;
 	//! Constructor for POINTEDTHING_NODE
 	PointedThing(const v3s16 &under, const v3s16 &above,
 		const v3s16 &real_under, const v3f &point, const v3s16 &normal,
@@ -98,6 +97,3 @@ struct PointedThing
 	bool operator==(const PointedThing &pt2) const;
 	bool operator!=(const PointedThing &pt2) const;
 };
-
-#endif
-

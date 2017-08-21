@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MODS_HEADER
-#define MODS_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <list>
@@ -122,7 +121,7 @@ private:
 	std::unordered_set<std::string> m_name_conflicts;
 
 	// Deleted default constructor
-	ModConfiguration() {}
+	ModConfiguration() = default;
 
 };
 
@@ -156,7 +155,7 @@ class ModMetadata: public Metadata
 {
 public:
 	ModMetadata(const std::string &mod_name);
-	~ModMetadata() {}
+	~ModMetadata() = default;
 
 	virtual void clear();
 
@@ -171,5 +170,3 @@ private:
 	std::string m_mod_name;
 	bool m_modified = false;
 };
-
-#endif

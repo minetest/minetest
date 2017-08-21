@@ -13,11 +13,9 @@ void ItemStackMetadata::serialize(std::ostream &os) const
 {
 	std::ostringstream os2;
 	os2 << DESERIALIZE_START;
-	for (StringMap::const_iterator
-			it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		os2 << it->first << DESERIALIZE_KV_DELIM
-		    << it->second << DESERIALIZE_PAIR_DELIM;
+	for (const auto &stringvar : m_stringvars) {
+		os2 << stringvar.first << DESERIALIZE_KV_DELIM
+		    << stringvar.second << DESERIALIZE_PAIR_DELIM;
 	}
 	os << serializeJsonStringIfNeeded(os2.str());
 }

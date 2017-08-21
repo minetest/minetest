@@ -1,4 +1,4 @@
-Minetest Lua Modding API Reference 0.4.16
+Minetest Lua Modding API Reference 0.5.0
 =========================================
 * More information at <http://www.minetest.net/>
 * Developer Wiki: <http://dev.minetest.net/>
@@ -536,6 +536,21 @@ automatically transferred between node and item forms by the engine,
 when a player digs or places a colored node.
 You can disable this feature by setting the `drop` field of the node
 to itself (without metadata).
+To transfer the color to a special drop, you need a drop table.
+Example:
+
+    minetest.register_node("mod:stone", {
+        description = "Stone",
+        tiles = {"default_stone.png"},
+        paramtype2 = "color",
+        palette = "palette.png",
+        drop = {
+            items = {
+                -- assume that mod:cobblestone also has the same palette
+                {items = {"mod:cobblestone"}, inherit_color = true },
+            }
+        }
+    })
 
 ### Colored items in craft recipes
 Craft recipes only support item strings, but fortunately item strings
@@ -1424,6 +1439,9 @@ Another example: Make red wool from white wool and red dye:
 * `soil`: saplings will grow on nodes in this group
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
+* `slippery`: Players and items will slide on the node.
+  Only use `slippery = 3` for now to ensure forwards compatibility.
+
 
 ### Known damage and digging time defining groups
 * `crumbly`: dirt, sand
@@ -2685,6 +2703,13 @@ and `minetest.auth_reload` call the authetification handler.
     * Convert a vector into a yaw (angle)
 * `minetest.yaw_to_dir(yaw)`
     * Convert yaw (angle) to a vector
+* `minetest.is_colored_paramtype(ptype)`
+    * Returns a boolean. Returns `true` if the given `paramtype2` contains color
+      information (`color`, `colorwallmounted` or `colorfacedir`).
+* `minetest.strip_param2_color(param2, paramtype2)`
+    * Removes everything but the color information from the
+      given `param2` value.
+    * Returns `nil` if the given `paramtype2` does not contain color information
 * `minetest.get_node_drops(nodename, toolname)`
     * Returns list of item names.
     * **Note**: This will be removed or modified in a future version.
@@ -2847,18 +2872,25 @@ These functions return the leftover itemstack.
 ### Schematics
 * `minetest.create_schematic(p1, p2, probability_list, filename, slice_prob_list)`
     * Create a schematic from the volume of map specified by the box formed by p1 and p2.
-    * Apply the specified probability values to the specified nodes in `probability_list`.
+    * Apply the specified probability and per-node force-place to the specified nodes
+      according to the `probability_list`.
         * `probability_list` is an array of tables containing two fields, `pos` and `prob`.
             * `pos` is the 3D vector specifying the absolute coordinates of the
               node being modified,
-            * `prob` is the integer value from `0` to `255` of the probability (see: Schematic specifier).
+            * `prob` is an integer value from `0` to `255` that encodes probability and
+              per-node force-place. Probability has levels 0-127, then 128 is added to
+              encode per-node force-place.
+              For probability stated as 0-255, divide by 2 and round down to get values
+              0-127, then add 128 to apply per-node force-place.
             * If there are two or more entries with the same pos value, the
               last entry is used.
             * If `pos` is not inside the box formed by `p1` and `p2`, it is ignored.
             * If `probability_list` equals `nil`, no probabilities are applied.
-            * Slice probability works in the same manner, except takes a field
-              called `ypos` instead which
-              indicates the y position of the slice with a probability applied.
+    * Apply the specified probability to the specified horizontal slices according to the
+      `slice_prob_list`.
+        * `slice_prob_list` is an array of tables containing two fields, `ypos` and `prob`.
+            * `ypos` indicates the y position of the slice with a probability applied,
+              the lowest slice being `ypos = 0`.
             * If slice probability list equals `nil`, no slice probabilities are applied.
     * Saves schematic in the Minetest Schematic format to filename.
 
@@ -3278,13 +3310,16 @@ This is basically a reference to a C++ `ServerActiveObject`
     * element `stat` values: `position`, `name`, `scale`, `text`, `number`, `item`, `dir`
 * `hud_get(id)`: gets the HUD element definition structure of the specified ID
 * `hud_set_flags(flags)`: sets specified HUD flags to `true`/`false`
-    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`, `minimap`
+    * `flags`: (is visible) `hotbar`, `healthbar`, `crosshair`, `wielditem`, `breathbar`,
+      `minimap`, `minimap_radar`
     * pass a table containing a `true`/`false` value of each flag to be set or unset
     * if a flag equals `nil`, the flag is not modified
     * note that setting `minimap` modifies the client's permission to view the minimap -
     * the client may locally elect to not view the minimap
+    * minimap `radar` is only usable when `minimap` is true
 * `hud_get_flags()`: returns a table containing status of hud flags
-    * returns `{ hotbar=true, healthbar=true, crosshair=true, wielditem=true, breathbar=true, minimap=true }`
+    * returns `{hotbar=true, healthbar=true, crosshair=true, wielditem=true,
+      breathbar=true, minimap=true, minimap_radar=true}`
 * `hud_set_hotbar_itemcount(count)`: sets number of items in builtin hotbar
     * `count`: number of items, must be between `1` and `23`
 * `hud_get_hotbar_itemcount`: returns number of visible items
@@ -3857,6 +3892,9 @@ Registered entities
           * `tool_capabilities`: capability table of used tool (can be `nil`)
           * `dir`: unit vector of direction of punch. Always defined. Points from
             the puncher to the punched.
+	`on_death(self, killer)`
+        * Called when the object dies.
+          * `killer`: an `ObjectRef` (can be `nil`)
     * `on_rightclick(self, clicker)`
     * `get_staticdata(self)`
         * Should return a string that will be passed to `on_activate` when
@@ -4262,6 +4300,7 @@ Definition tables
                 {
                     items = {"foo:bar", "baz:frob"},  -- Items to drop.
                     rarity = 1,  -- Probability of dropping is 1 / rarity.
+                    inherit_color = true, -- To inherit palette color from the node
                 },
             },
         },
@@ -4307,9 +4346,11 @@ Definition tables
         ^ By default: Calls minetest.register_on_punchnode callbacks ]]
         on_rightclick = func(pos, node, clicker, itemstack, pointed_thing), --[[
         ^ default: nil
-        ^ if defined, itemstack will hold clicker's wielded item
+        ^ itemstack will hold clicker's wielded item
         ^ Shall return the leftover itemstack
-        ^ Note: pointed_thing can be nil, if a mod calls this function ]]
+        ^ Note: pointed_thing can be nil, if a mod calls this function
+          This function does not get triggered by clients <=0.4.16 if the
+          "formspec" node metadata field is set ]]
 
         on_dig = func(pos, node, digger), --[[
         ^ default: minetest.node_dig

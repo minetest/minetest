@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef HTTPFETCH_HEADER
-#define HTTPFETCH_HEADER
+#pragma once
 
 #include <vector>
 #include "util/string.h"
@@ -77,7 +76,7 @@ struct HTTPFetchResult
 	unsigned long caller = HTTPFETCH_DISCARD;
 	unsigned long request_id = 0;
 
-	HTTPFetchResult() {}
+	HTTPFetchResult() = default;
 
 	HTTPFetchResult(const HTTPFetchRequest &fetch_request)
 	    : caller(fetch_request.caller), request_id(fetch_request.request_id)
@@ -113,5 +112,3 @@ void httpfetch_caller_free(unsigned long caller);
 // Performs a synchronous HTTP request. This blocks and therefore should
 // only be used from background threads.
 void httpfetch_sync(const HTTPFetchRequest &fetch_request, HTTPFetchResult &fetch_result);
-
-#endif // !HTTPFETCH_HEADER

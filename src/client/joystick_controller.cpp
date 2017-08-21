@@ -41,8 +41,8 @@ bool JoystickAxisCmb::isTriggered(const irr::SEvent::SJoystickEvent &ev) const
 }
 
 // spares many characters
-#define JLO_B_PB(A, B, C)    jlo.button_keys.push_back(JoystickButtonCmb(A, B, C))
-#define JLO_A_PB(A, B, C, D) jlo.axis_keys.push_back(JoystickAxisCmb(A, B, C, D))
+#define JLO_B_PB(A, B, C)    jlo.button_keys.emplace_back(A, B, C)
+#define JLO_A_PB(A, B, C, D) jlo.axis_keys.emplace_back(A, B, C, D)
 
 JoystickLayout create_default_layout()
 {
@@ -157,8 +157,8 @@ JoystickLayout create_xbox_layout()
 JoystickController::JoystickController() :
 		doubling_dtime(g_settings->getFloat("repeat_joystick_button_time"))
 {
-	for (size_t i = 0; i < KeyType::INTERNAL_ENUM_COUNT; i++) {
-		m_past_pressed_time[i] = 0;
+	for (float &i : m_past_pressed_time) {
+		i = 0;
 	}
 	clear();
 }
@@ -203,15 +203,15 @@ bool JoystickController::handleEvent(const irr::SEvent::SJoystickEvent &ev)
 
 	// First generate a list of keys pressed
 
-	for (size_t i = 0; i < m_layout.button_keys.size(); i++) {
-		if (m_layout.button_keys[i].isTriggered(ev)) {
-			keys_pressed.set(m_layout.button_keys[i].key);
+	for (const auto &button_key : m_layout.button_keys) {
+		if (button_key.isTriggered(ev)) {
+			keys_pressed.set(button_key.key);
 		}
 	}
 
-	for (size_t i = 0; i < m_layout.axis_keys.size(); i++) {
-		if (m_layout.axis_keys[i].isTriggered(ev)) {
-			keys_pressed.set(m_layout.axis_keys[i].key);
+	for (const auto &axis_key : m_layout.axis_keys) {
+		if (axis_key.isTriggered(ev)) {
+			keys_pressed.set(axis_key.key);
 		}
 	}
 

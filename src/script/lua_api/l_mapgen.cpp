@@ -731,7 +731,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 	const char *name   = luaL_checkstring(L, 1);
 	const char *value  = luaL_checkstring(L, 2);
-	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
 
 	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
 		errorstream << "set_mapgen_setting: cannot set '"
@@ -760,7 +760,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
 
 	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
 		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
@@ -786,7 +786,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool set_default = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : true;
+	bool set_default = !lua_isboolean(L, 3) || lua_toboolean(L, 3);
 
 	g_settings->setNoiseParams(name, np, set_default);
 
@@ -847,9 +847,8 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 
 	lua_newtable(L);
 	int i = 1;
-	for (std::set<u32>::iterator it = emerge->gen_notify_on_deco_ids.begin();
-			it != emerge->gen_notify_on_deco_ids.end(); ++it) {
-		lua_pushnumber(L, *it);
+	for (u32 gen_notify_on_deco_id : emerge->gen_notify_on_deco_ids) {
+		lua_pushnumber(L, gen_notify_on_deco_id);
 		lua_rawseti(L, -2, i);
 		i++;
 	}
@@ -1322,7 +1321,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 				lua_pop(L, 1);
 
 				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
-				prob_list.push_back(std::make_pair(pos, prob));
+				prob_list.emplace_back(pos, prob);
 			}
 
 			lua_pop(L, 1);
@@ -1336,7 +1335,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 			if (lua_istable(L, -1)) {
 				s16 ypos = getintfield_default(L, -1, "ypos", 0);
 				u8 prob  = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
-				slice_prob_list.push_back(std::make_pair(ypos, prob));
+				slice_prob_list.emplace_back(ypos, prob);
 			}
 
 			lua_pop(L, 1);

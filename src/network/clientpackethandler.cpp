@@ -221,7 +221,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
 				denyCode == SERVER_ACCESSDENIED_CRASH) {
 			*pkt >> m_access_denied_reason;
-			if (m_access_denied_reason == "") {
+			if (m_access_denied_reason.empty()) {
 				m_access_denied_reason = accessDeniedStrings[denyCode];
 			}
 			u8 reconnect;
@@ -237,7 +237,7 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 			// Until then (which may be never), this is outside
 			// of the defined protocol.
 			*pkt >> m_access_denied_reason;
-			if (m_access_denied_reason == "") {
+			if (m_access_denied_reason.empty()) {
 				m_access_denied_reason = "Unknown";
 			}
 		}
@@ -683,7 +683,7 @@ void Client::handleCommand_AnnounceMedia(NetworkPacket* pkt)
 		Strfnd sf(str);
 		while(!sf.at_end()) {
 			std::string baseurl = trim(sf.next(","));
-			if (baseurl != "")
+			if (!baseurl.empty())
 				m_media_downloader->addRemoteServer(baseurl);
 		}
 	}
@@ -1183,18 +1183,23 @@ void Client::handleCommand_HudSetFlags(NetworkPacket* pkt)
 	assert(player != NULL);
 
 	bool was_minimap_visible = player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE;
+	bool was_minimap_radar_visible = player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	player->hud_flags &= ~mask;
 	player->hud_flags |= flags;
 
 	m_minimap_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_VISIBLE);
+	bool m_minimap_radar_disabled_by_server = !(player->hud_flags & HUD_FLAG_MINIMAP_RADAR_VISIBLE);
 
 	// Hide minimap if it has been disabled by the server
-	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible) {
+	if (m_minimap && m_minimap_disabled_by_server && was_minimap_visible)
 		// defers a minimap update, therefore only call it if really
 		// needed, by checking that minimap was visible before
 		m_minimap->setMinimapMode(MINIMAP_MODE_OFF);
-	}
+
+	// Switch to surface mode if radar disabled by server
+	if (m_minimap && m_minimap_radar_disabled_by_server && was_minimap_radar_visible)
+		m_minimap->setMinimapMode(MINIMAP_MODE_SURFACEx1);
 }
 
 void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
@@ -1213,7 +1218,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	}
 	else if (param == HUD_PARAM_HOTBAR_IMAGE) {
 		// If value not empty verify image exists in texture source
-		if (value != "" && !getTextureSource()->isKnownSourceImage(value)) {
+		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
 			errorstream << "Server sent wrong Hud hotbar image (sent value: '"
 				<< value << "')" << std::endl;
 			return;
@@ -1222,7 +1227,7 @@ void Client::handleCommand_HudSetParam(NetworkPacket* pkt)
 	}
 	else if (param == HUD_PARAM_HOTBAR_SELECTED_IMAGE) {
 		// If value not empty verify image exists in texture source
-		if (value != "" && !getTextureSource()->isKnownSourceImage(value)) {
+		if (!value.empty() && !getTextureSource()->isKnownSourceImage(value)) {
 			errorstream << "Server sent wrong Hud hotbar selected image (sent value: '"
 					<< value << "')" << std::endl;
 			return;

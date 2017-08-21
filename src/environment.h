@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ENVIRONMENT_HEADER
-#define ENVIRONMENT_HEADER
+#pragma once
 
 /*
 	This class is the game's environment.
@@ -36,9 +35,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <atomic>
 #include <mutex>
 #include "irr_v3d.h"
-#include "activeobject.h"
-#include "util/numeric.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
+#include "util/basic_macros.h"
 
 class IGameDef;
 class Map;
@@ -50,7 +48,7 @@ class Environment
 public:
 	// Environment will delete the map passed to the constructor
 	Environment(IGameDef *gamedef);
-	virtual ~Environment();
+	virtual ~Environment() = default;
 	DISABLE_CLASS_COPY(Environment);
 
 	/*
@@ -110,9 +108,9 @@ protected:
 	 * Below: values managed by m_time_lock
 	*/
 	// Time of day in milli-hours (0-23999); determines day and night
-	u32 m_time_of_day = 9000;
-	// Time of day in 0...1
-	float m_time_of_day_f = 9000.0f / 24000.0f;
+	u32 m_time_of_day = 5250;
+	// Time of day in 0...1; start 5:15am unless overridden by game
+	float m_time_of_day_f = 5250.0f / 24000.0f;
 	// Stores the skew created by the float -> u32 conversion
 	// to be applied at next conversion, so that there is no real skew.
 	float m_time_conversion_skew = 0.0f;
@@ -145,5 +143,3 @@ protected:
 private:
 	std::mutex m_time_lock;
 };
-
-#endif

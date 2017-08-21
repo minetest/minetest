@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_MINIMAP_H_
-#define L_MINIMAP_H_
+#pragma once
 
 #include "l_base.h"
 
@@ -52,7 +51,7 @@ private:
 
 public:
 	LuaMinimap(Minimap *m);
-	~LuaMinimap() {}
+	~LuaMinimap() = default;
 
 	static void create(lua_State *L, Minimap *object);
 
@@ -61,5 +60,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif // L_MINIMAP_H_

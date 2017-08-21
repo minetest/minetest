@@ -23,8 +23,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef THREADING_EVENT_H
-#define THREADING_EVENT_H
+#pragma once
 
 #include <condition_variable>
 
@@ -45,5 +44,3 @@ private:
 	std::mutex mutex;
 	bool notified = false;
 };
-
-#endif

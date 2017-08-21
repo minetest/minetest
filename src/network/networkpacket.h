@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NETWORKPACKET_HEADER
-#define NETWORKPACKET_HEADER
+#pragma once
 
+#include <SColor.h>
+#include <ctime>
 #include "util/pointer.h"
 #include "util/numeric.h"
-#include "networkprotocol.h"
 
 class NetworkPacket
 {
@@ -30,7 +30,8 @@ class NetworkPacket
 public:
 		NetworkPacket(u16 command, u32 datasize, u16 peer_id);
 		NetworkPacket(u16 command, u32 datasize);
-		NetworkPacket() {}
+		NetworkPacket() = default;
+
 		~NetworkPacket();
 
 		void putRawPacket(u8 *data, u32 datasize, u16 peer_id);
@@ -133,5 +134,3 @@ private:
 		u16 m_command = 0;
 		u16 m_peer_id = 0;
 };
-
-#endif

@@ -148,10 +148,11 @@ int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 
 	if (ground_level < water_level)  // Ocean world, allow spawn in water
 		return MYMAX(level_at_point, water_level);
-	else if (level_at_point > water_level)
+
+	if (level_at_point > water_level)
 		return level_at_point;  // Spawn on land
-	else
-		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+
+	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 }
 
 
@@ -189,13 +190,16 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes(water_level - 1);
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -230,7 +234,7 @@ s16 MapgenFlat::generateTerrain()
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 ni2d = 0;
 

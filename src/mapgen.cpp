@@ -98,11 +98,6 @@ STATIC_ASSERT(
 //// Mapgen
 ////
 
-Mapgen::Mapgen()
-{
-}
-
-
 Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	gennotify(emerge->gen_notify_on, &emerge->gen_notify_on_deco_ids)
 {
@@ -128,11 +123,6 @@ Mapgen::Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge) :
 	seed = (s32)params->seed;
 
 	ndef      = emerge->ndef;
-}
-
-
-Mapgen::~Mapgen()
-{
 }
 
 
@@ -237,7 +227,7 @@ u32 Mapgen::getBlockSeed2(v3s16 p, s32 seed)
 // Returns Y one under area minimum if not found
 s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 y_nodes_max = vm->m_area.MaxEdge.Y;
 	s16 y_nodes_min = vm->m_area.MinEdge.Y;
 	u32 i = vm->m_area.index(p2d.X, y_nodes_max, p2d.Y);
@@ -257,7 +247,7 @@ s16 Mapgen::findGroundLevelFull(v2s16 p2d)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found
 s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -275,7 +265,7 @@ s16 Mapgen::findGroundLevel(v2s16 p2d, s16 ymin, s16 ymax)
 // Returns -MAX_MAP_GENERATION_LIMIT if not found or if ground is found first
 s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 {
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 i = vm->m_area.index(p2d.X, ymax, p2d.Y);
 	s16 y;
 
@@ -283,7 +273,8 @@ s16 Mapgen::findLiquidSurface(v2s16 p2d, s16 ymin, s16 ymax)
 		MapNode &n = vm->m_data[i];
 		if (ndef->get(n).walkable)
 			return -MAX_MAP_GENERATION_LIMIT;
-		else if (ndef->get(n).isLiquid())
+
+		if (ndef->get(n).isLiquid())
 			break;
 
 		vm->m_area.add_y(em, i, -1);
@@ -344,7 +335,7 @@ inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 void Mapgen::updateLiquid(UniqueQueue<v3s16> *trans_liquid, v3s16 nmin, v3s16 nmax)
 {
 	bool isignored, isliquid, wasignored, wasliquid, waschecked, waspushed;
-	v3s16 em  = vm->m_area.getExtent();
+	const v3s16 &em  = vm->m_area.getExtent();
 
 	for (s16 z = nmin.Z + 1; z <= nmax.Z - 1; z++)
 	for (s16 x = nmin.X + 1; x <= nmax.X - 1; x++) {
@@ -467,7 +458,7 @@ void Mapgen::propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow)
 	//TimeTaker t("propagateSunlight");
 	VoxelArea a(nmin, nmax);
 	bool block_is_underground = (water_level >= nmax.Y);
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 
 	// NOTE: Direct access to the low 4 bits of param1 is okay here because,
 	// by definition, sunlight will never be in the night lightbank.
@@ -621,15 +612,17 @@ MapgenBasic::~MapgenBasic()
 }
 
 
-MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
+void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
+	content_t *biome_stone, s16 biome_zero_level)
 {
 	// can't generate biomes without a biome generator!
 	assert(biomegen);
 	assert(biomemap);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
-	MgStoneType stone_type = MGSTONE_STONE;
+	MgStoneType stone_type = MGSTONE_OTHER;
+	content_t c_biome_stone = c_stone;
 
 	noise_filler_depth->perlinMap2D(node_min.X, node_min.Z);
 
@@ -689,12 +682,15 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 				depth_riverbed = biome->depth_riverbed;
 
 				// Detect stone type for dungeons during every biome calculation.
-				// This is more efficient than detecting per-node and will not
-				// miss any desert stone or sandstone biomes.
-				if (biome->c_stone == c_desert_stone)
+				// If none detected the last selected biome stone is chosen.
+				if (biome->c_stone == c_stone)
+					stone_type = MGSTONE_STONE;
+				else if (biome->c_stone == c_desert_stone)
 					stone_type = MGSTONE_DESERT_STONE;
 				else if (biome->c_stone == c_sandstone)
 					stone_type = MGSTONE_SANDSTONE;
+
+				c_biome_stone = biome->c_stone;
 			}
 
 			if (c == c_stone) {
@@ -755,7 +751,8 @@ MgStoneType MapgenBasic::generateBiomes(s16 biome_zero_level)
 		}
 	}
 
-	return stone_type;
+	*mgstone_type = stone_type;
+	*biome_stone = c_biome_stone;
 }
 
 
@@ -764,7 +761,7 @@ void MapgenBasic::dustTopNodes()
 	if (node_max.Y < water_level)
 		return;
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index = 0;
 
 	for (s16 z = node_min.Z; z <= node_max.Z; z++)
@@ -845,7 +842,8 @@ bool MapgenBasic::generateCaverns(s16 max_stone_y)
 }
 
 
-void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
+void MapgenBasic::generateDungeons(s16 max_stone_y,
+	MgStoneType stone_type, content_t biome_stone)
 {
 	if (max_stone_y < node_min.Y)
 		return;
@@ -908,6 +906,19 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 		dp.room_size_large_max = v3s16(18, 16, 18);
 		dp.notifytype          = GENNOTIFY_DUNGEON;
 		break;
+	case MGSTONE_OTHER:
+		dp.c_wall              = biome_stone;
+		dp.c_alt_wall          = biome_stone;
+		dp.c_stair             = biome_stone;
+
+		dp.diagonal_dirs       = false;
+		dp.holesize            = v3s16(1, 2, 1);
+		dp.room_size_min       = v3s16(4, 4, 4);
+		dp.room_size_max       = v3s16(8, 6, 8);
+		dp.room_size_large_min = v3s16(8, 8, 8);
+		dp.room_size_large_max = v3s16(16, 16, 16);
+		dp.notifytype          = GENNOTIFY_DUNGEON;
+		break;
 	}
 
 	DungeonGen dgen(ndef, &gennotify, &dp);
@@ -918,11 +929,6 @@ void MapgenBasic::generateDungeons(s16 max_stone_y, MgStoneType stone_type)
 ////
 //// GenerateNotifier
 ////
-
-GenerateNotifier::GenerateNotifier()
-{
-}
-
 
 GenerateNotifier::GenerateNotifier(u32 notify_on,
 	std::set<u32> *notify_on_deco_ids)

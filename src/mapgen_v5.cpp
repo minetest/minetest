@@ -134,7 +134,6 @@ void MapgenV5Params::writeParams(Settings *settings) const
 
 int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 {
-	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
 	if (f < 0.01)
@@ -143,25 +142,27 @@ int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 		f *= 1.6;
 	float h = NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
-	for (s16 y = 128; y >= -128; y--) {
+	// noise_height 'offset' is the average level of terrain. At least 50% of
+	// terrain will be below this.
+	// Raising the maximum spawn level above 'water_level + 16' is necessary
+	// for when noise_height 'offset' is set much higher than water_level.
+	s16 max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
+
+	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
+	// space above spawn position. Avoids spawning in possibly sealed voids.
+	for (s16 y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
 
 		if (n_ground * f > y - h) {  // If solid
-			// If either top 2 nodes of search are solid this is inside a
-			// mountain or floatland with possibly no space for the player to spawn.
-			if (y >= 127) {
+			if (y < water_level || y > max_spawn_y)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-			} else {  // Ground below at least 2 nodes of empty space
-				if (y <= water_level || y > water_level + 16)
-					return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-				else
-					return y;
-			}
+
+			// y + 2 because y is surface and due to biome 'dust' nodes.
+			return y + 2;
 		}
 	}
-
-	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
-	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn position, no ground found
+	// Unsuitable spawn position, no ground found
+	return MAX_MAP_GENERATION_LIMIT;
 }
 
 
@@ -200,7 +201,10 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes(water_level - 1);
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -220,7 +224,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Generate dungeons and desert temples
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

@@ -17,14 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PARTICLES_HEADER
-#define PARTICLES_HEADER
+#pragma once
 
 #include <iostream>
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "localplayer.h"
-#include "environment.h"
 #include "tileanimation.h"
 
 struct ClientEvent;
@@ -55,7 +53,7 @@ class Particle : public scene::ISceneNode
 		u8 glow,
 		video::SColor color = video::SColor(0xFFFFFFFF)
 	);
-	~Particle();
+	~Particle() = default;
 
 	virtual const aabb3f &getBoundingBox() const
 	{
@@ -135,7 +133,7 @@ class ParticleSpawner
 		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
-	~ParticleSpawner();
+	~ParticleSpawner() = default;
 
 	void step(float dtime, ClientEnvironment *env);
 
@@ -210,5 +208,3 @@ private:
 	std::mutex m_particle_list_lock;
 	std::mutex m_spawner_list_lock;
 };
-
-#endif

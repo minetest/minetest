@@ -23,8 +23,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NOISE_HEADER
-#define NOISE_HEADER
+#pragma once
 
 #include "irr_v3d.h"
 #include "exceptions.h"
@@ -111,9 +110,9 @@ struct NoiseParams {
 	float lacunarity = 2.0f;
 	u32 flags = NOISE_FLAG_DEFAULTS;
 
-	NoiseParams() {}
+	NoiseParams() = default;
 
-	NoiseParams(float offset_, float scale_, v3f spread_, s32 seed_,
+	NoiseParams(float offset_, float scale_, const v3f &spread_, s32 seed_,
 		u16 octaves_, float persist_, float lacunarity_,
 		u32 flags_=NOISE_FLAG_DEFAULTS)
 	{
@@ -181,7 +180,8 @@ public:
 private:
 	void allocBuffers();
 	void resizeNoiseBuf(bool is3d);
-	void updateResults(float g, float *gmap, float *persistence_map, size_t bufsize);
+	void updateResults(float g, float *gmap, const float *persistence_map,
+			size_t bufsize);
 
 };
 
@@ -232,6 +232,3 @@ inline float easeCurve(float t)
 }
 
 float contour(float v);
-
-#endif
-

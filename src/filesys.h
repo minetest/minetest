@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef FILESYS_HEADER
-#define FILESYS_HEADER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -27,12 +26,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #ifdef _WIN32 // WINDOWS
 #define DIR_DELIM "\\"
 #define DIR_DELIM_CHAR '\\'
-#define FILESYS_CASE_INSENSITIVE 1
+#define FILESYS_CASE_INSENSITIVE true
 #define PATH_DELIM ";"
 #else // POSIX
 #define DIR_DELIM "/"
 #define DIR_DELIM_CHAR '/'
-#define FILESYS_CASE_INSENSITIVE 0
+#define FILESYS_CASE_INSENSITIVE false
 #define PATH_DELIM ":"
 #endif
 
@@ -118,6 +117,3 @@ bool safeWriteToFile(const std::string &path, const std::string &content);
 bool Rename(const std::string &from, const std::string &to);
 
 } // namespace fs
-
-#endif
-

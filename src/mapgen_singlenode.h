@@ -19,15 +19,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_SINGLENODE_HEADER
-#define MAPGEN_SINGLENODE_HEADER
+#pragma once
 
 #include "mapgen.h"
 
 struct MapgenSinglenodeParams : public MapgenParams
 {
-	MapgenSinglenodeParams() {}
-	~MapgenSinglenodeParams() {}
+	MapgenSinglenodeParams() = default;
+	~MapgenSinglenodeParams() = default;
 
 	void readParams(const Settings *settings) {}
 	void writeParams(Settings *settings) const {}
@@ -41,12 +40,10 @@ public:
 	u8 set_light;
 
 	MapgenSinglenode(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	~MapgenSinglenode();
+	~MapgenSinglenode() = default;
 
 	virtual MapgenType getType() const { return MAPGEN_SINGLENODE; }
 
 	void makeChunk(BlockMakeData *data);
 	int getSpawnLevelAtPoint(v2s16 p);
 };
-
-#endif

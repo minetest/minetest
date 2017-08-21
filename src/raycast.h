@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SRC_RAYCAST_H_
-#define SRC_RAYCAST_H_
+#pragma once
 
 #include "voxelalgorithms.h"
 #include "util/pointedthing.h"
@@ -76,6 +75,3 @@ public:
  */
 bool boxLineCollision(const aabb3f &box, const v3f &start, const v3f &dir,
 	v3f *collision_point, v3s16 *collision_normal);
-
-
-#endif /* SRC_RAYCAST_H_ */

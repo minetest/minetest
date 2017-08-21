@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTMEDIA_HEADER
-#define CLIENTMEDIA_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "filecache.h"
@@ -42,10 +41,10 @@ public:
 
 	float getProgress() const {
 		if (m_uncached_count >= 1)
-			return 1.0 * m_uncached_received_count /
+			return 1.0f * m_uncached_received_count /
 				m_uncached_count;
-		else
-			return 0.0;
+
+		return 0.0f;
 	}
 
 	bool isStarted() const {
@@ -147,5 +146,3 @@ private:
 	std::string m_name_bound = "";
 
 };
-
-#endif // !CLIENTMEDIA_HEADER

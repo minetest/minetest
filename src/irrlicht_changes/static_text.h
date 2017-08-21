@@ -4,8 +4,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_GUI_STATIC_TEXT_H_INCLUDED__
-#define __C_GUI_STATIC_TEXT_H_INCLUDED__
+#pragma once
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
@@ -264,5 +263,3 @@ inline void setStaticText(irr::gui::IGUIStaticText *static_text, const wchar_t *
 }
 
 #endif // _IRR_COMPILE_WITH_GUI_
-
-#endif // C_GUI_STATIC_TEXT_H_INCLUDED

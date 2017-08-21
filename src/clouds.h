@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLOUDS_HEADER
-#define CLOUDS_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include <iostream>
@@ -38,8 +37,7 @@ class Clouds : public scene::ISceneNode
 public:
 	Clouds(scene::ISceneManager* mgr,
 			s32 id,
-			u32 seed,
-			s16 cloudheight=0
+			u32 seed
 	);
 
 	~Clouds();
@@ -75,7 +73,7 @@ public:
 
 	void update(const v3f &camera_p, const video::SColorf &color);
 
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{
 		m_camera_offset = camera_offset;
 		updateBox();
@@ -133,7 +131,6 @@ private:
 
 	video::SMaterial m_material;
 	aabb3f m_box;
-	s16 m_passed_cloud_y;
 	u16 m_cloud_radius_i;
 	bool m_enable_3d;
 	u32 m_seed;
@@ -145,7 +142,3 @@ private:
 	bool m_camera_inside_cloud = false;
 
 };
-
-
-
-#endif

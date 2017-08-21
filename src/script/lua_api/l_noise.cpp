@@ -36,11 +36,6 @@ LuaPerlinNoise::LuaPerlinNoise(NoiseParams *params) :
 }
 
 
-LuaPerlinNoise::~LuaPerlinNoise()
-{
-}
-
-
 int LuaPerlinNoise::l_get2d(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;

@@ -101,6 +101,39 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_screenshot", "KEY_F12");
 	settings->setDefault("keymap_increase_viewing_range_min", "+");
 	settings->setDefault("keymap_decrease_viewing_range_min", "-");
+	settings->setDefault("keymap_slot1", "KEY_KEY_1");
+	settings->setDefault("keymap_slot2", "KEY_KEY_2");
+	settings->setDefault("keymap_slot3", "KEY_KEY_3");
+	settings->setDefault("keymap_slot4", "KEY_KEY_4");
+	settings->setDefault("keymap_slot5", "KEY_KEY_5");
+	settings->setDefault("keymap_slot6", "KEY_KEY_6");
+	settings->setDefault("keymap_slot7", "KEY_KEY_7");
+	settings->setDefault("keymap_slot8", "KEY_KEY_8");
+	settings->setDefault("keymap_slot9", "KEY_KEY_9");
+	settings->setDefault("keymap_slot10", "KEY_KEY_0");
+	settings->setDefault("keymap_slot11", "");
+	settings->setDefault("keymap_slot12", "");
+	settings->setDefault("keymap_slot13", "");
+	settings->setDefault("keymap_slot14", "");
+	settings->setDefault("keymap_slot15", "");
+	settings->setDefault("keymap_slot16", "");
+	settings->setDefault("keymap_slot17", "");
+	settings->setDefault("keymap_slot18", "");
+	settings->setDefault("keymap_slot19", "");
+	settings->setDefault("keymap_slot20", "");
+	settings->setDefault("keymap_slot21", "");
+	settings->setDefault("keymap_slot22", "");
+	settings->setDefault("keymap_slot23", "");
+	settings->setDefault("enable_build_where_you_stand", "false" );
+	settings->setDefault("3d_mode", "none");
+	settings->setDefault("3d_paralax_strength", "0.025");
+	settings->setDefault("aux1_descends", "false");
+	settings->setDefault("doubletap_jump", "false");
+	settings->setDefault("always_fly_fast", "true");
+	settings->setDefault("directional_colored_fog", "true");
+	settings->setDefault("tooltip_show_delay", "400");
+	settings->setDefault("zoom_fov", "15");
+
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
@@ -135,7 +168,9 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("leaves_style", "fancy");
 	settings->setDefault("connected_glass", "false");
 	settings->setDefault("smooth_lighting", "true");
-	settings->setDefault("display_gamma", "2.2");
+	settings->setDefault("lighting_alpha", "0.0");
+	settings->setDefault("lighting_beta", "0.0");
+	settings->setDefault("display_gamma", "1.0");
 	settings->setDefault("texture_path", "");
 	settings->setDefault("shader_path", "");
 	settings->setDefault("video_driver", "opengl");
@@ -146,7 +181,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("view_bobbing_amount", "1.0");
 	settings->setDefault("fall_bobbing_amount", "0.0");
 	settings->setDefault("enable_3d_clouds", "true");
-	settings->setDefault("cloud_height", "120");
 	settings->setDefault("cloud_radius", "12");
 	settings->setDefault("menu_clouds", "true");
 	settings->setDefault("opaque_water", "false");
@@ -308,7 +342,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("chat_message_limit_trigger_kick", "50");
 	settings->setDefault("sqlite_synchronous", "2");
 	settings->setDefault("full_block_send_enable_min_time_from_building", "2.0");
-	settings->setDefault("dedicated_server_step", "0.1");
+	settings->setDefault("dedicated_server_step", "0.09");
 	settings->setDefault("active_block_mgmt_interval", "2.0");
 	settings->setDefault("abm_interval", "1.0");
 	settings->setDefault("nodetimer_interval", "0.2");
@@ -408,8 +442,7 @@ void set_default_settings(Settings *settings)
 void override_default_settings(Settings *settings, Settings *from)
 {
 	std::vector<std::string> names = from->getNames();
-	for (size_t i = 0; i < names.size(); i++) {
-		const std::string &name = names[i];
+	for (const auto &name : names) {
 		settings->setDefault(name, from->get(name));
 	}
 }

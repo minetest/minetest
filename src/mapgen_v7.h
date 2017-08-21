@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_V7_HEADER
-#define MAPGEN_V7_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -38,6 +37,7 @@ extern FlagDesc flagdesc_mapgen_v7[];
 struct MapgenV7Params : public MapgenParams {
 	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES |
 		MGV7_CAVERNS | MGV7_BIOMEREPEAT;
+	s16 mount_zero_level = 0;
 	float cave_width = 0.09f;
 	s16 large_cave_depth = -33;
 	s16 lava_depth = -256;
@@ -65,7 +65,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_cave2;
 
 	MapgenV7Params();
-	~MapgenV7Params() {}
+	~MapgenV7Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -92,6 +92,7 @@ public:
 	void generateRidgeTerrain();
 
 private:
+	s16 mount_zero_level;
 	s16 large_cave_depth;
 	float float_mount_density;
 	float float_mount_height;
@@ -109,5 +110,3 @@ private:
 	Noise *noise_mountain;
 	Noise *noise_ridge;
 };
-
-#endif

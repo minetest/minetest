@@ -17,8 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "settings.h"
 #include "wieldmesh.h"
+#include "settings.h"
+#include "shader.h"
 #include "inventory.h"
 #include "client.h"
 #include "itemdef.h"
@@ -145,10 +146,8 @@ public:
 	// Destructor
 	virtual ~ExtrusionMeshCache()
 	{
-		for (std::map<int, scene::IMesh*>::iterator
-				it = m_extrusion_meshes.begin();
-				it != m_extrusion_meshes.end(); ++it) {
-			it->second->drop();
+		for (auto &extrusion_meshe : m_extrusion_meshes) {
+			extrusion_meshe.second->drop();
 		}
 		m_cube->drop();
 	}
@@ -308,14 +307,15 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 	m_base_color = idef->getItemstackColor(item, client);
 
 	// If wield_image is defined, it overrides everything else
-	if (def.wield_image != "") {
+	if (!def.wield_image.empty()) {
 		setExtruded(def.wield_image, def.wield_scale, tsrc, 1);
-		m_colors.push_back(ItemPartColor());
+		m_colors.emplace_back();
 		return;
 	}
+
 	// Handle nodes
 	// See also CItemDefManager::createClientCached()
-	else if (def.type == ITEM_NODE) {
+	if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			// e.g. mesh nodes and nodeboxes
 			scene::SMesh *mesh = cloneMesh(f.mesh_ptr[0]);
@@ -376,9 +376,10 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 		}
 		return;
 	}
-	else if (def.inventory_image != "") {
+
+	if (!def.inventory_image.empty()) {
 		setExtruded(def.inventory_image, def.wield_scale, tsrc, 1);
-		m_colors.push_back(ItemPartColor());
+		m_colors.emplace_back();
 		return;
 	}
 
@@ -454,9 +455,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 	result->needs_shading = true;
 
 	// If inventory_image is defined, it overrides everything else
-	if (def.inventory_image != "") {
+	if (!def.inventory_image.empty()) {
 		mesh = getExtrudedMesh(tsrc, def.inventory_image);
-		result->buffer_colors.push_back(ItemPartColor());
+		result->buffer_colors.emplace_back();
 		// Items with inventory images do not need shading
 		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
@@ -559,7 +560,7 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
 }
 
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
-	bool use_shaders, bool set_material, video::E_MATERIAL_TYPE *mattype,
+	bool use_shaders, bool set_material, const video::E_MATERIAL_TYPE *mattype,
 	std::vector<ItemPartColor> *colors)
 {
 	u32 mc = mesh->getMeshBufferCount();
@@ -593,7 +594,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 				material.MaterialType = *mattype;
 			}
 			if (layer->animation_frame_count > 1) {
-				FrameSpec animation_frame = layer->frames[0];
+				const FrameSpec &animation_frame = (*layer->frames)[0];
 				material.setTexture(0, animation_frame.texture);
 			} else {
 				material.setTexture(0, layer->texture);
@@ -601,7 +602,7 @@ void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f,
 			if (use_shaders) {
 				if (layer->normal_texture) {
 					if (layer->animation_frame_count > 1) {
-						FrameSpec animation_frame = layer->frames[0];
+						const FrameSpec &animation_frame = (*layer->frames)[0];
 						material.setTexture(1, animation_frame.normal_texture);
 					} else
 						material.setTexture(1, layer->normal_texture);

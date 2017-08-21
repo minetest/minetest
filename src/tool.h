@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TOOL_HEADER
-#define TOOL_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include <string>
@@ -31,7 +30,7 @@ struct ToolGroupCap
 	int maxlevel = 1;
 	int uses = 20;
 
-	ToolGroupCap() {}
+	ToolGroupCap() = default;
 
 	bool getTime(int rating, float *time) const
 	{
@@ -119,7 +118,7 @@ struct PunchDamageResult
 	int damage = 0;
 	int wear = 0;
 
-	PunchDamageResult() {}
+	PunchDamageResult() = default;
 };
 
 struct ItemStack;
@@ -130,6 +129,3 @@ PunchDamageResult getPunchDamage(
 		const ItemStack *punchitem,
 		float time_from_last_punch
 );
-
-#endif
-

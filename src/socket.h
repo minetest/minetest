@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SOCKET_HEADER
-#define SOCKET_HEADER
+#pragma once
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
@@ -33,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #endif
 
 #include <ostream>
-#include <string.h>
+#include <cstring>
 #include "irrlichttypes.h"
 #include "exceptions.h"
 
@@ -112,7 +111,8 @@ private:
 class UDPSocket
 {
 public:
-	UDPSocket() { }
+	UDPSocket() = default;
+
 	UDPSocket(bool ipv6);
 	~UDPSocket();
 	void Bind(Address addr);
@@ -133,6 +133,3 @@ private:
 	int m_timeout_ms;
 	int m_addr_family;
 };
-
-#endif
-

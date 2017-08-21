@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_SERIALIZE_HEADER
-#define UTIL_SERIALIZE_HEADER
+#pragma once
 
 #include "../irrlichttypes_bloated.h"
 #include "../exceptions.h" // for SerializationError
@@ -38,7 +37,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		#include <endian.h>
 	#endif
 #endif
-#include <string.h> // for memcpy
+#include <cstring> // for memcpy
 #include <iostream>
 #include <string>
 #include <vector>
@@ -657,5 +656,3 @@ inline void putRawData(std::vector<u8> *dest, const void *src, size_t len)
 {
 	dest->insert(dest->end(), (u8 *)src, (u8 *)src + len);
 }
-
-#endif

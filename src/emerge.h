@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef EMERGE_HEADER
-#define EMERGE_HEADER
+#pragma once
 
 #include <map>
 #include <mutex>
@@ -30,10 +29,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #define BLOCK_EMERGE_ALLOW_GEN   (1 << 0)
 #define BLOCK_EMERGE_FORCE_QUEUE (1 << 1)
 
-#define EMERGE_DBG_OUT(x) do {                         \
+#define EMERGE_DBG_OUT(x) {                            \
 	if (enable_mapgen_debug_info)                      \
 		infostream << "EmergeThread: " x << std::endl; \
-} while (0)
+}
 
 class EmergeThread;
 class INodeDefManager;
@@ -55,7 +54,8 @@ struct BlockMakeData {
 	UniqueQueue<v3s16> transforming_liquid;
 	INodeDefManager *nodedef = nullptr;
 
-	BlockMakeData() {}
+	BlockMakeData() = default;
+
 	~BlockMakeData() { delete vmanip; }
 };
 
@@ -174,5 +174,3 @@ private:
 
 	friend class EmergeThread;
 };
-
-#endif

@@ -21,15 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <fstream>
 #include "inventory.h"
 #include "constants.h" // BS
+#include "log.h"
 
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_env(env),
 	m_base_position(pos)
-{
-}
-
-ServerActiveObject::~ServerActiveObject()
 {
 }
 

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef AREA_STORE_H_
-#define AREA_STORE_H_
+#pragma once
 
 #include "irr_v3d.h"
 #include "noise.h" // for PcgRandom
@@ -38,7 +37,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 struct Area {
-	Area() {}
+	Area() = default;
+
 	Area(const v3s16 &mine, const v3s16 &maxe) :
 		minedge(mine), maxedge(maxe)
 	{
@@ -57,7 +57,7 @@ public:
 		m_res_cache(1000, &cacheMiss, this)
 	{}
 
-	virtual ~AreaStore() {}
+	virtual ~AreaStore() = default;
 
 	static AreaStore *getOptimalImplementation();
 
@@ -197,5 +197,3 @@ private:
 };
 
 #endif // USE_SPATIAL
-
-#endif // AREA_STORE_H_

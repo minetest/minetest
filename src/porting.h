@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	Random portability stuff
 */
 
-#ifndef PORTING_HEADER
-#define PORTING_HEADER
+#pragma once
 
 #ifdef _WIN32
 	#ifdef _WIN32_WINNT
@@ -57,7 +56,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define sleep_ms(x) Sleep(x)
 #else
 	#include <unistd.h>
-	#include <stdint.h> //for uintptr_t
+	#include <cstdint> //for uintptr_t
 
 	// Use standard Posix macro for Linux
 	#if (defined(linux) || defined(__linux)) && !defined(__linux__)
@@ -113,8 +112,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifndef _WIN32 // Posix
 	#include <sys/time.h>
-	#include <time.h>
-	#if defined(__MACH__) && defined(__APPLE__)
+	#include <ctime>
+
+#if defined(__MACH__) && defined(__APPLE__)
 		#include <mach/clock.h>
 		#include <mach/mach.h>
 	#endif
@@ -127,10 +127,10 @@ namespace porting
 	Signal handler (grabs Ctrl-C on POSIX systems)
 */
 
-void signal_handler_init(void);
+void signal_handler_init();
 // Returns a pointer to a bool.
 // When the bool is true, program should quit.
-bool * signal_handler_killstatus(void);
+bool * signal_handler_killstatus();
 
 /*
 	Path of static data directory.
@@ -274,9 +274,9 @@ inline u64 getDeltaMs(u64 old_time_ms, u64 new_time_ms)
 {
 	if (new_time_ms >= old_time_ms) {
 		return (new_time_ms - old_time_ms);
-	} else {
-		return (old_time_ms - new_time_ms);
 	}
+
+	return (old_time_ms - new_time_ms);
 }
 
 inline const char *getPlatformName()
@@ -326,12 +326,9 @@ inline const char *getPlatformName()
 bool secure_rand_fill_buf(void *buf, size_t len);
 
 // This attaches to the parents process console, or creates a new one if it doesnt exist.
-void attachOrCreateConsole(void);
+void attachOrCreateConsole();
 } // namespace porting
 
 #ifdef __ANDROID__
 #include "porting_android.h"
 #endif
-
-#endif // PORTING_HEADER
-

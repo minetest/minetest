@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef EXCEPTIONS_HEADER
-#define EXCEPTIONS_HEADER
+#pragma once
 
 #include <exception>
 #include <string>
@@ -28,7 +27,8 @@ class BaseException : public std::exception
 {
 public:
 	BaseException(const std::string &s) throw(): m_s(s) {}
-	~BaseException() throw() {}
+	~BaseException() throw() = default;
+
 	virtual const char * what() const throw()
 	{
 		return m_s.c_str();
@@ -129,6 +129,3 @@ public:
 		BaseException(s)
 	{}
 };
-
-#endif
-

@@ -19,8 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_CARPATHIAN_HEADER
-#define MAPGEN_CARPATHIAN_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -60,7 +59,7 @@ struct MapgenCarpathianParams : public MapgenParams
 	NoiseParams np_cavern;
 
 	MapgenCarpathianParams();
-	~MapgenCarpathianParams() {}
+	~MapgenCarpathianParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -101,5 +100,3 @@ private:
 	float terrainLevelAtPoint(s16 x, s16 z);
 	int generateTerrain();
 };
-
-#endif

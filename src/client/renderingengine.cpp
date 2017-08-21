@@ -21,10 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IrrlichtDevice.h>
 #include <irrlicht.h>
 #include "fontengine.h"
+#include "client.h"
 #include "clouds.h"
 #include "util/numeric.h"
 #include "guiscalingfilter.h"
 #include "hud.h"
+#include "localplayer.h"
 #include "camera.h"
 #include "minimap.h"
 #include "clientmap.h"
@@ -419,8 +421,7 @@ std::vector<core::vector3d<u32>> RenderingEngine::getSupportedVideoModes()
 	for (s32 i = 0; i != num_modes; i++) {
 		core::dimension2d<u32> mode_res = modelist->getVideoModeResolution(i);
 		u32 mode_depth = (u32)modelist->getVideoModeDepth(i);
-		mlist.push_back(core::vector3d<u32>(
-				mode_res.Width, mode_res.Height, mode_depth));
+		mlist.emplace_back(mode_res.Width, mode_res.Height, mode_depth);
 	}
 
 	nulldevice->drop();

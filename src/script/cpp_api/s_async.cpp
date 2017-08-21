@@ -17,8 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 extern "C" {
 #include "lua.h"
@@ -38,9 +38,8 @@ AsyncEngine::~AsyncEngine()
 {
 
 	// Request all threads to stop
-	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); ++it) {
-		(*it)->stop();
+	for (AsyncWorkerThread *workerThread : workerThreads) {
+		workerThread->stop();
 	}
 
 
@@ -51,15 +50,13 @@ AsyncEngine::~AsyncEngine()
 	}
 
 	// Wait for threads to finish
-	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); ++it) {
-		(*it)->wait();
+	for (AsyncWorkerThread *workerThread : workerThreads) {
+		workerThread->wait();
 	}
 
 	// Force kill all threads
-	for (std::vector<AsyncWorkerThread *>::iterator it = workerThreads.begin();
-			it != workerThreads.end(); ++it) {
-		delete *it;
+	for (AsyncWorkerThread *workerThread : workerThreads) {
+		delete workerThread;
 	}
 
 	jobQueueMutex.lock();
@@ -192,9 +189,8 @@ void AsyncEngine::pushFinishedJobs(lua_State* L) {
 /******************************************************************************/
 void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 {
-	for (std::vector<StateInitializer>::iterator it = stateInitializers.begin();
-			it != stateInitializers.end(); it++) {
-		(*it)(L, top);
+	for (StateInitializer &stateInitializer : stateInitializers) {
+		stateInitializer(L, top);
 	}
 }
 
@@ -202,7 +198,6 @@ void AsyncEngine::prepareEnvironment(lua_State* L, int top)
 AsyncWorkerThread::AsyncWorkerThread(AsyncEngine* jobDispatcher,
 		const std::string &name) :
 	Thread(name),
-	ScriptApiBase(),
 	jobDispatcher(jobDispatcher)
 {
 	lua_State *L = getStack();

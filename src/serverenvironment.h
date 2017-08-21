@@ -17,17 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVER_ENVIRONMENT_HEADER
-#define SERVER_ENVIRONMENT_HEADER
+#pragma once
 
+#include "activeobject.h"
 #include "environment.h"
 #include "mapnode.h"
-#include "mapblock.h"
+#include "settings.h"
+#include "util/numeric.h"
 #include <set>
 
 class IGameDef;
 class ServerMap;
 struct GameParams;
+class MapBlock;
 class RemotePlayer;
 class PlayerDatabase;
 class PlayerSAO;
@@ -47,8 +49,8 @@ class ServerScripting;
 class ActiveBlockModifier
 {
 public:
-	ActiveBlockModifier(){};
-	virtual ~ActiveBlockModifier(){};
+	ActiveBlockModifier() = default;
+	virtual ~ActiveBlockModifier() = default;
 
 	// Set of contents to trigger on
 	virtual const std::set<std::string> &getTriggerContents() const = 0;
@@ -82,7 +84,8 @@ struct LoadingBlockModifierDef
 	std::string name;
 	bool run_at_every_load = false;
 
-	virtual ~LoadingBlockModifierDef() {}
+	virtual ~LoadingBlockModifierDef() = default;
+
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n){};
 };
 
@@ -104,7 +107,7 @@ struct LBMContentMapping
 class LBMManager
 {
 public:
-	LBMManager() {}
+	LBMManager() = default;
 	~LBMManager();
 
 	// Don't call this after loadIntroductionTimes() ran.
@@ -436,5 +439,3 @@ private:
 	std::unordered_map<u32, float> m_particle_spawners;
 	std::unordered_map<u32, u16> m_particle_spawner_attachments;
 };
-
-#endif

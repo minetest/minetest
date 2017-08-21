@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*             not being a script/modapi file!!!!!!!!                         */
 /******************************************************************************/
 /******************************************************************************/
-#ifndef C_CONVERTER_H_
-#define C_CONVERTER_H_
+#pragma once
 
 #include <vector>
 #include <unordered_map>
@@ -77,8 +76,6 @@ void               setfloatfield(lua_State *L, int table,
                              const char *fieldname, float value);
 void               setboolfield(lua_State *L, int table,
                              const char *fieldname, bool value);
-void               setstringfield(lua_State *L, int table,
-                             const char *fieldname, const char *value);
 
 v3f                 checkFloatPos       (lua_State *L, int index);
 v2f                 check_v2f           (lua_State *L, int index);
@@ -117,5 +114,3 @@ size_t write_array_slice_float(lua_State *L, int table_index, float *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
 size_t write_array_slice_u16(lua_State *L, int table_index, u16 *data,
 	v3u16 data_size, v3u16 slice_offset, v3u16 slice_size);
-
-#endif /* C_CONVERTER_H_ */

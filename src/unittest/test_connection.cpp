@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "util/serialize.h"
 #include "network/connection.h"
+#include "network/networkpacket.h"
 
 class TestConnection : public TestBase {
 public:

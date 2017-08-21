@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_SECURITY_H
-#define S_SECURITY_H
+#pragma once
 
 #include "cpp_api/s_base.h"
 
@@ -75,6 +74,3 @@ private:
 	static int sl_os_rename(lua_State *L);
 	static int sl_os_remove(lua_State *L);
 };
-
-#endif
-

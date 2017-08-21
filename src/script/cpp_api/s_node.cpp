@@ -93,12 +93,6 @@ struct EnumString ScriptApiNode::es_NodeBoxType[] =
 		{0, NULL},
 	};
 
-ScriptApiNode::ScriptApiNode() {
-}
-
-ScriptApiNode::~ScriptApiNode() {
-}
-
 bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 		ServerActiveObject *puncher, PointedThing pointed)
 {
@@ -198,7 +192,7 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 	pushnode(L, newnode, ndef);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
+	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
 }
 
 void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
@@ -237,7 +231,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 	lua_pushnumber(L,dtime);
 	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 	lua_remove(L, error_handler);
-	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1) == true;
+	return (bool) lua_isboolean(L, -1) && (bool) lua_toboolean(L, -1);
 }
 
 void ScriptApiNode::node_on_receive_fields(v3s16 p,

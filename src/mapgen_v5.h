@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_V5_HEADER
-#define MAPGEN_V5_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -49,7 +48,7 @@ struct MapgenV5Params : public MapgenParams
 	NoiseParams np_cavern;
 
 	MapgenV5Params();
-	~MapgenV5Params() {}
+	~MapgenV5Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -73,5 +72,3 @@ private:
 	Noise *noise_height;
 	Noise *noise_ground;
 };
-
-#endif

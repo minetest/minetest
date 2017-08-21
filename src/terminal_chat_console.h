@@ -17,15 +17,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef TERMINAL_CHAT_CONSOLE_H
-#define TERMINAL_CHAT_CONSOLE_H
+#pragma once
 
 #include "chat.h"
 #include "threading/thread.h"
-#include "chat_interface.h"
+#include "util/container.h"
 #include "log.h"
-
 #include <sstream>
+
+
+struct ChatInterface;
 
 class TermLogOutput : public ILogOutput {
 public:
@@ -121,5 +122,3 @@ private:
 };
 
 extern TerminalChatConsole g_term_console;
-
-#endif

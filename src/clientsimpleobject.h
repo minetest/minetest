@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTSIMPLEOBJECT_HEADER
-#define CLIENTSIMPLEOBJECT_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 class ClientEnvironment;
@@ -29,9 +28,8 @@ protected:
 public:
 	bool m_to_be_removed = false;
 
-	ClientSimpleObject() {}
-	virtual ~ClientSimpleObject() {}
+	ClientSimpleObject() = default;
+	virtual ~ClientSimpleObject() = default;
+
 	virtual void step(float dtime) {}
 };
-
-#endif

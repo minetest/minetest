@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SUBGAME_HEADER
-#define SUBGAME_HEADER
+#pragma once
 
 #include <string>
 #include <set>
@@ -51,7 +50,7 @@ struct SubgameSpec
 
 	bool isValid() const
 	{
-		return (id != "" && path != "");
+		return (!id.empty() && !path.empty());
 	}
 };
 
@@ -90,7 +89,7 @@ struct WorldSpec
 
 	bool isValid() const
 	{
-		return (name != "" && path != "" && gameid != "");
+		return (!name.empty() && !path.empty() && !gameid.empty());
 	}
 };
 
@@ -99,6 +98,3 @@ std::vector<WorldSpec> getAvailableWorlds();
 // loads the subgame's config and creates world directory
 // and world.mt if they don't exist
 bool loadGameConfAndInitWorld(const std::string &path, const SubgameSpec &gamespec);
-
-#endif
-

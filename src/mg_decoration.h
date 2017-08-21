@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_DECORATION_HEADER
-#define MG_DECORATION_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "objdef.h"
@@ -64,8 +63,8 @@ struct CutoffData {
 
 class Decoration : public ObjDef, public NodeResolver {
 public:
-	Decoration() {};
-	virtual ~Decoration() {};
+	Decoration() = default;
+	virtual ~Decoration() = default;
 
 	virtual void resolveNodeNames();
 
@@ -105,7 +104,7 @@ public:
 
 class DecoSchematic : public Decoration {
 public:
-	DecoSchematic() {};
+	DecoSchematic() = default;
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
 	virtual int getHeight();
@@ -125,7 +124,7 @@ public:
 class DecorationManager : public ObjDefManager {
 public:
 	DecorationManager(IGameDef *gamedef);
-	virtual ~DecorationManager() {}
+	virtual ~DecorationManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -149,5 +148,3 @@ public:
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, s16 deco_zero_level = 0);
 };
-
-#endif

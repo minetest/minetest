@@ -17,10 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef INVENTORY_HEADER
-#define INVENTORY_HEADER
+#pragma once
 
-#include "debug.h"
 #include "itemdef.h"
 #include "irrlichttypes.h"
 #include "itemstackmetadata.h"
@@ -28,16 +26,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ostream>
 #include <string>
 #include <vector>
+#include <cassert>
 
 struct ToolCapabilities;
 
 struct ItemStack
 {
-	ItemStack() {}
+	ItemStack() = default;
+
 	ItemStack(const std::string &name_, u16 count_,
 			u16 wear, IItemDefManager *itemdef);
 
-	~ItemStack() {}
+	~ItemStack() = default;
 
 	// Serialization
 	void serialize(std::ostream &os) const;
@@ -133,10 +133,8 @@ struct ItemStack
 				wear += amount;
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
 
 	// If possible, adds newitem to this item.
@@ -173,7 +171,7 @@ class InventoryList
 {
 public:
 	InventoryList(const std::string &name, u32 size, IItemDefManager *itemdef);
-	~InventoryList();
+	~InventoryList() = default;
 	void clearItems();
 	void setSize(u32 newsize);
 	void setWidth(u32 newWidth);
@@ -310,5 +308,3 @@ private:
 	IItemDefManager *m_itemdef;
 	bool m_dirty = false;
 };
-
-#endif

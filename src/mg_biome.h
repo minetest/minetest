@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_BIOME_HEADER
-#define MG_BIOME_HEADER
+#pragma once
 
 #include "objdef.h"
 #include "nodedef.h"
@@ -84,14 +83,15 @@ enum BiomeGenType {
 struct BiomeParams {
 	virtual void readParams(const Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~BiomeParams() {}
+	virtual ~BiomeParams() = default;
 
 	s32 seed;
 };
 
 class BiomeGen {
 public:
-	virtual ~BiomeGen() {}
+	virtual ~BiomeGen() = default;
+
 	virtual BiomeGenType getType() const = 0;
 
 	// Calculates the biome at the exact position provided.  This function can
@@ -189,7 +189,7 @@ private:
 class BiomeManager : public ObjDefManager {
 public:
 	BiomeManager(Server *server);
-	virtual ~BiomeManager();
+	virtual ~BiomeManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -228,6 +228,3 @@ private:
 	Server *m_server;
 
 };
-
-
-#endif

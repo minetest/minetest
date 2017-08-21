@@ -477,11 +477,7 @@ scene::IMesh* convertNodeboxesToMesh(const std::vector<aabb3f> &boxes,
 
 	video::SColor c(255,255,255,255);
 
-	for (std::vector<aabb3f>::const_iterator
-			i = boxes.begin();
-			i != boxes.end(); ++i)
-	{
-		aabb3f box = *i;
+	for (aabb3f box : boxes) {
 		box.repair();
 
 		box.MinEdge.X -= expand;
@@ -638,9 +634,8 @@ class f_lru
 public:
 	f_lru(vcache *v, tcache *t): vc(v), tc(t)
 	{
-		for (u16 i = 0; i < cachesize; i++)
-		{
-			cache[i] = -1;
+		for (int &i : cache) {
+			i = -1;
 		}
 	}
 
@@ -695,15 +690,14 @@ public:
 			}
 
 			// Update triangle scores
-			for (u16 i = 0; i < cachesize; i++)
-			{
-				if (cache[i] == -1)
+			for (int i : cache) {
+				if (i == -1)
 					break;
 
-				const u16 trisize = vc[cache[i]].tris.size();
+				const u16 trisize = vc[i].tris.size();
 				for (u16 t = 0; t < trisize; t++)
 				{
-					tcache *tri = &tc[vc[cache[i]].tris[t]];
+					tcache *tri = &tc[vc[i].tris[t]];
 
 					tri->score =
 						vc[tri->ind[0]].score +
@@ -713,7 +707,7 @@ public:
 					if (tri->score > hiscore)
 					{
 						hiscore = tri->score;
-						highest = vc[cache[i]].tris[t];
+						highest = vc[i].tris[t];
 					}
 				}
 			}
@@ -900,9 +894,8 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					tc[highest].drawn = true;
 
-					for (u16 j = 0; j < 3; j++)
-					{
-						vcache *vert = &vc[tc[highest].ind[j]];
+					for (u16 j : tc[highest].ind) {
+						vcache *vert = &vc[j];
 						for (u16 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])
@@ -1012,9 +1005,8 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					tc[highest].drawn = true;
 
-					for (u16 j = 0; j < 3; j++)
-					{
-						vcache *vert = &vc[tc[highest].ind[j]];
+					for (u16 j : tc[highest].ind) {
+						vcache *vert = &vc[j];
 						for (u16 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])
@@ -1125,9 +1117,8 @@ scene::IMesh* createForsythOptimizedMesh(const scene::IMesh *mesh)
 
 					tc[highest].drawn = true;
 
-					for (u16 j = 0; j < 3; j++)
-					{
-						vcache *vert = &vc[tc[highest].ind[j]];
+					for (u16 j : tc[highest].ind) {
+						vcache *vert = &vc[j];
 						for (u16 t = 0; t < vert->tris.size(); t++)
 						{
 							if (highest == vert->tris[t])

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_HTTP_H_
-#define L_HTTP_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "config.h"
@@ -46,5 +45,3 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 };
-
-#endif /* L_HTTP_H_ */

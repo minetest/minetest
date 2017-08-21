@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_ORE_HEADER
-#define MG_ORE_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "objdef.h"
@@ -65,7 +64,7 @@ public:
 	Noise *noise = nullptr;
 	std::unordered_set<u8> biomes;
 
-	Ore() {};
+	Ore() = default;;
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -105,7 +104,7 @@ public:
 	Noise *noise_puff_top = nullptr;
 	Noise *noise_puff_bottom = nullptr;
 
-	OrePuff();
+	OrePuff() = default;
 	virtual ~OrePuff();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -127,7 +126,7 @@ public:
 	float random_factor;
 	Noise *noise2 = nullptr;
 
-	OreVein();
+	OreVein() = default;
 	virtual ~OreVein();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -137,7 +136,7 @@ public:
 class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
-	virtual ~OreManager() {}
+	virtual ~OreManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -167,5 +166,3 @@ public:
 	size_t placeAllOres(Mapgen *mg, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, s16 ore_zero_level = 0);
 };
-
-#endif

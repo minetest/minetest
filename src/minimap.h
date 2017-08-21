@@ -17,21 +17,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINIMAP_HEADER
-#define MINIMAP_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
-#include "client.h"
+#include "util/thread.h"
 #include "voxel.h"
-#include "threading/semaphore.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "camera.h"
+
+class Client;
+class ITextureSource;
+class IShaderSource;
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
-
 
 enum MinimapMode {
 	MINIMAP_MODE_OFF,
@@ -63,7 +63,7 @@ struct MinimapPixel {
 };
 
 struct MinimapMapblock {
-	void getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos);
+	void getMinimapNodes(VoxelManipulator *vmanip, const v3s16 &pos);
 
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
@@ -161,5 +161,3 @@ private:
 	std::mutex m_mutex;
 	std::list<v2f> m_active_markers;
 };
-
-#endif

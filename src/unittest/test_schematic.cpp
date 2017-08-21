@@ -67,10 +67,10 @@ void TestSchematic::testMtsSerializeDeserialize(INodeDefManager *ndef)
 		std::ios_base::in | std::ios_base::out);
 
 	std::vector<std::string> names;
-	names.push_back("foo");
-	names.push_back("bar");
-	names.push_back("baz");
-	names.push_back("qux");
+	names.emplace_back("foo");
+	names.emplace_back("bar");
+	names.emplace_back("baz");
+	names.emplace_back("qux");
 
 	Schematic schem, schem2;
 
@@ -121,9 +121,9 @@ void TestSchematic::testLuaTableSerialize(INodeDefManager *ndef)
 		schem.slice_probs[y] = MTSCHEM_PROB_ALWAYS;
 
 	std::vector<std::string> names;
-	names.push_back("air");
-	names.push_back("default:lava_source");
-	names.push_back("default:glass");
+	names.emplace_back("air");
+	names.emplace_back("default:lava_source");
+	names.emplace_back("default:glass");
 
 	std::ostringstream ss(std::ios_base::binary);
 

@@ -24,7 +24,7 @@ local core_developers = {
 	"Nathanaël Courant (Nore/Ekdohibs) <nore@mesecons.net>",
 	"Loic Blot (nerzhul/nrz) <loic.blot@unix-experience.fr>",
 	"paramat",
-	"Craig Robbins (Zeno) <craig.d.robbins@gmail.com>",
+	"Zeno",
 	"Auke Kok (sofar) <sofar@foo-projects.org>",
 	"rubenwardy <rw@rubenwardy.com>",
 	"Krock/SmallJoker <mk939@ymail.com>",

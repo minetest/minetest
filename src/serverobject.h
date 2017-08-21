@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERVEROBJECT_HEADER
-#define SERVEROBJECT_HEADER
+#pragma once
 
 #include <unordered_set>
 #include "irrlichttypes_bloated.h"
@@ -56,7 +55,7 @@ public:
 		Prototypes are used that way.
 	*/
 	ServerActiveObject(ServerEnvironment *env, v3f pos);
-	virtual ~ServerActiveObject();
+	virtual ~ServerActiveObject() = default;
 
 	virtual ActiveObjectType getSendType() const
 	{ return getType(); }
@@ -78,7 +77,7 @@ public:
 	/*
 		Some simple getters/setters
 	*/
-	v3f getBasePosition(){ return m_base_position; }
+	v3f getBasePosition() const { return m_base_position; }
 	void setBasePosition(v3f pos){ m_base_position = pos; }
 	ServerEnvironment* getEnv(){ return m_env; }
 
@@ -258,6 +257,3 @@ private:
 	// Used for creating objects based on type
 	static std::map<u16, Factory> m_types;
 };
-
-#endif
-

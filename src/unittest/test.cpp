@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "itemdef.h"
 #include "gamedef.h"
 #include "mods.h"
+#include "util/numeric.h"
 
 content_t t_CONTENT_STONE;
 content_t t_CONTENT_GRASS;
@@ -119,8 +120,8 @@ void TestGameDef::defineSomeNodes()
 		"{default_stone.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	for(int i = 0; i < 6; i++)
-		f.tiledef[i].name = "default_stone.png";
+	for (TileDef &tiledef : f.tiledef)
+		tiledef.name = "default_stone.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
 	t_CONTENT_STONE = ndef->set(f.name, f);
@@ -174,8 +175,8 @@ void TestGameDef::defineSomeNodes()
 	f.liquid_viscosity = 4;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
-	for(int i = 0; i < 6; i++)
-		f.tiledef[i].name = "default_water.png";
+	for (TileDef &tiledef : f.tiledef)
+		tiledef.name = "default_water.png";
 	idef->registerItem(itemdef);
 	t_CONTENT_WATER = ndef->set(f.name, f);
 
@@ -196,8 +197,8 @@ void TestGameDef::defineSomeNodes()
 	f.light_source = LIGHT_MAX-1;
 	f.is_ground_content = true;
 	f.groups["liquids"] = 3;
-	for(int i = 0; i < 6; i++)
-		f.tiledef[i].name = "default_lava.png";
+	for (TileDef &tiledef : f.tiledef)
+		tiledef.name = "default_lava.png";
 	idef->registerItem(itemdef);
 	t_CONTENT_LAVA = ndef->set(f.name, f);
 
@@ -214,8 +215,8 @@ void TestGameDef::defineSomeNodes()
 		"{default_brick.png";
 	f = ContentFeatures();
 	f.name = itemdef.name;
-	for(int i = 0; i < 6; i++)
-		f.tiledef[i].name = "default_brick.png";
+	for (TileDef &tiledef : f.tiledef)
+		tiledef.name = "default_brick.png";
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
 	t_CONTENT_BRICK = ndef->set(f.name, f);

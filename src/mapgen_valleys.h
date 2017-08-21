@@ -24,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_VALLEYS_HEADER
-#define MAPGEN_VALLEYS_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -67,7 +66,7 @@ struct MapgenValleysParams : public MapgenParams {
 	NoiseParams np_valley_profile;
 
 	MapgenValleysParams();
-	~MapgenValleysParams() {}
+	~MapgenValleysParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -133,5 +132,3 @@ private:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
-
-#endif

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_DUMMY_HEADER
-#define DATABASE_DUMMY_HEADER
+#pragma once
 
 #include <map>
 #include <string>
@@ -36,7 +35,7 @@ public:
 	void savePlayer(RemotePlayer *player) {}
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) { return true; }
 	bool removePlayer(const std::string &name) { return true; }
-	void listPlayers(std::vector<std::string> &) {}
+	void listPlayers(std::vector<std::string> &res) {}
 
 	void beginSave() {}
 	void endSave() {}
@@ -44,5 +43,3 @@ public:
 private:
 	std::map<s64, std::string> m_database;
 };
-
-#endif

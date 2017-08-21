@@ -14,8 +14,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 # Also remember to set PROTOCOL_VERSION in network/networkprotocol.h when releasing
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 4)
-set(VERSION_PATCH 16)
+set(VERSION_MINOR 5)
+set(VERSION_PATCH 0)
 set(VERSION_EXTRA "" CACHE STRING "Stuff to append to version string")
 
 # Change to false for releases
@@ -175,7 +175,8 @@ endif()
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/fonts" DESTINATION "${SHAREDIR}")
 
-install(FILES "README.txt" DESTINATION "${DOCDIR}")
+install(FILES "README.md" DESTINATION "${DOCDIR}")
+install(FILES "LICENSE.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/menu_lua_api.txt" DESTINATION "${DOCDIR}")
 install(FILES "doc/texture_packs.txt" DESTINATION "${DOCDIR}")

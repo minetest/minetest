@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ACTIVEOBJECT_HEADER
-#define ACTIVEOBJECT_HEADER
+#pragma once
 
 #include "irr_aabb3d.h"
 #include <string>
@@ -102,6 +101,3 @@ public:
 protected:
 	u16 m_id; // 0 is invalid, "no id"
 };
-
-#endif
-

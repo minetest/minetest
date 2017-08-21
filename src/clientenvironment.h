@@ -17,12 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_ENVIRONMENT_HEADER
-#define CLIENT_ENVIRONMENT_HEADER
+#pragma once
 
 #include <ISceneManager.h>
 #include "environment.h"
 #include "clientobject.h"
+#include "util/numeric.h"
 
 class ClientSimpleObject;
 class ClientMap;
@@ -138,7 +138,7 @@ public:
 	const std::list<std::string> &getPlayerNames() { return m_player_names; }
 	void addPlayerName(const std::string &name) { m_player_names.push_back(name); }
 	void removePlayerName(const std::string &name) { m_player_names.remove(name); }
-	void updateCameraOffset(v3s16 camera_offset)
+	void updateCameraOffset(const v3s16 &camera_offset)
 	{ m_camera_offset = camera_offset; }
 	v3s16 getCameraOffset() const { return m_camera_offset; }
 private:
@@ -157,5 +157,3 @@ private:
 	std::list<std::string> m_player_names;
 	v3s16 m_camera_offset;
 };
-
-#endif

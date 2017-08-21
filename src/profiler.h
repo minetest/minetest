@@ -17,17 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PROFILER_HEADER
-#define PROFILER_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
+#include <cassert>
 #include <string>
 #include <map>
+#include <ostream>
 
 #include "threading/mutex_auto_lock.h"
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
-#include "debug.h"             // assert()
 
 #define MAX_PROFILER_TEXT_ROWS 20
 
@@ -42,7 +42,7 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler() {}
+	Profiler() = default;
 
 	void add(const std::string &name, float value)
 	{
@@ -80,11 +80,8 @@ public:
 	void clear()
 	{
 		MutexAutoLock lock(m_mutex);
-		for(std::map<std::string, float>::iterator
-				i = m_data.begin();
-				i != m_data.end(); ++i)
-		{
-			i->second = 0;
+		for (auto &it : m_data) {
+			it.second = 0;
 		}
 		m_avgcounts.clear();
 	}
@@ -198,6 +195,3 @@ private:
 	TimeTaker *m_timer = nullptr;
 	enum ScopeProfilerType m_type;
 };
-
-#endif
-

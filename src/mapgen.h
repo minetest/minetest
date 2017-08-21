@@ -19,12 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_HEADER
-#define MAPGEN_HEADER
+#pragma once
 
 #include "noise.h"
 #include "nodedef.h"
-#include "mapnode.h"
 #include "util/string.h"
 #include "util/container.h"
 
@@ -79,11 +77,11 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
-// TODO(hmmmm/paramat): make stone type selection dynamic
 enum MgStoneType {
 	MGSTONE_STONE,
 	MGSTONE_DESERT_STONE,
 	MGSTONE_SANDSTONE,
+	MGSTONE_OTHER,
 };
 
 struct GenNotifyEvent {
@@ -94,7 +92,7 @@ struct GenNotifyEvent {
 
 class GenerateNotifier {
 public:
-	GenerateNotifier();
+	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, std::set<u32> *notify_on_deco_ids);
 
 	void setNotifyOn(u32 notify_on);
@@ -123,7 +121,7 @@ enum MapgenType {
 };
 
 struct MapgenParams {
-	MapgenParams() {}
+	MapgenParams() = default;
 	virtual ~MapgenParams();
 
 	MapgenType mgtype = MAPGEN_DEFAULT;
@@ -182,9 +180,9 @@ public:
 	BiomeGen *biomegen = nullptr;
 	GenerateNotifier gennotify;
 
-	Mapgen();
+	Mapgen() = default;
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	virtual ~Mapgen();
+	virtual ~Mapgen() = default;
 	DISABLE_CLASS_COPY(Mapgen);
 
 	virtual MapgenType getType() const { return MAPGEN_INVALID; }
@@ -250,8 +248,10 @@ public:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
-	virtual MgStoneType generateBiomes(s16 biome_zero_level = 0);
+	virtual void generateDungeons(s16 max_stone_y,
+		MgStoneType stone_type, content_t biome_stone);
+	virtual void generateBiomes(MgStoneType *mgstone_type,
+		content_t *biome_stone, s16 biome_zero_level);
 	virtual void dustTopNodes();
 
 protected:
@@ -297,5 +297,3 @@ protected:
 	float cavern_threshold;
 	int lava_depth;
 };
-
-#endif

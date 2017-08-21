@@ -156,8 +156,8 @@ std::string serializeWideString(const std::wstring &plain)
 	writeU16((u8 *)buf, plain.size());
 	s.append(buf, 2);
 
-	for (u32 i = 0; i < plain.size(); i++) {
-		writeU16((u8 *)buf, plain[i]);
+	for (wchar_t i : plain) {
+		writeU16((u8 *)buf, i);
 		s.append(buf, 2);
 	}
 	return s;
@@ -246,8 +246,7 @@ std::string serializeJsonString(const std::string &plain)
 	std::ostringstream os(std::ios::binary);
 	os << "\"";
 
-	for (size_t i = 0; i < plain.size(); i++) {
-		char c = plain[i];
+	for (char c : plain) {
 		switch (c) {
 			case '"':
 				os << "\\\"";
@@ -308,7 +307,9 @@ std::string deSerializeJsonString(std::istream &is)
 
 		if (c == '"') {
 			return os.str();
-		} else if (c == '\\') {
+		}
+
+		if (c == '\\') {
 			c2 = is.get();
 			if (is.eof())
 				throw SerializationError("JSON string ended prematurely");
@@ -390,17 +391,18 @@ std::string deSerializeJsonStringIfNeeded(std::istream &is)
 				// Found end of word
 				is.unget();
 				break;
-			} else {
-				tmp_os << c;
 			}
+
+			tmp_os << c;
 		}
 		expect_initial_quote = false;
 	}
 	if (is_json) {
 		std::istringstream tmp_is(tmp_os.str(), std::ios::binary);
 		return deSerializeJsonString(tmp_is);
-	} else
-		return tmp_os.str();
+	}
+
+	return tmp_os.str();
 }
 
 ////
