@@ -28,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iomanip>
 #include <vector>
 
-SerializationError eof_ser_err("Attempted read past end of data");
-
 ////
 //// BufReader
 ////
