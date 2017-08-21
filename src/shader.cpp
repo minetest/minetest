@@ -382,11 +382,11 @@ u32 ShaderSource::getShader(const std::string &name,
 		Get shader
 	*/
 
+	/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
+
 	if (std::this_thread::get_id() == m_main_thread) {
 		return getShaderIdDirect(name, material_type, drawtype, light_emissive);
 	} else {
-		/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
-
 		// We're gonna ask the result to be put into here
 
 		static ResultQueue<std::string, u32, u8, u8> result_queue;
