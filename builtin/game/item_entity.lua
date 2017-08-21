@@ -176,7 +176,7 @@ core.register_entity(":__builtin:item", {
 		local node = core.get_node_or_nil(p)
 		local in_unloaded = (node == nil)
 		if in_unloaded then
-			-- Don't infinetly fall into unloaded map
+			-- Don't infinitely fall into unloaded map, stop motion
 			self.object:set_velocity({x = 0, y = 0, z = 0})
 			self.object:set_acceleration({x = 0, y = 0, z = 0})
 			self.physical_state = false
@@ -184,10 +184,13 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 		local nn = node.name
-		-- If node is not registered or node is walkably solid and resting on nodebox
+		local slippery = core.get_item_group(nn, "slippery")
 		local v = self.object:getvelocity()
-		if not core.registered_nodes[nn] or (core.registered_nodes[nn].walkable and
-				core.get_item_group(nn, "slippery") == 0) and v.y == 0 then
+		-- If node is not registered, or node is walkably solid and resting on nodebox
+		-- Vertical velocity is zero but entity might be sliding on a slippery node
+		if not core.registered_nodes[nn] or
+				(core.registered_nodes[nn].walkable and v.y == 0) then
+			-- If in motion
 			if self.physical_state then
 				local own_stack = ItemStack(self.object:get_luaentity().itemstring)
 				-- Merge with close entities of the same item
@@ -200,28 +203,36 @@ core.register_entity(":__builtin:item", {
 						end
 					end
 				end
-				self.object:set_velocity({x = 0, y = 0, z = 0})
-				self.object:set_acceleration({x = 0, y = 0, z = 0})
-				self.physical_state = false
-				self.object:set_properties({physical = false})
+				-- Resting on a slippery node and possibly sliding
+				if slippery ~= 0 then
+					-- If horizontal velocity near zero, stop motion
+					if math.abs(v.x) < 0.1 and math.abs(v.z) < 0.1 then
+						self.object:set_velocity({x = 0, y = 0, z = 0})
+						self.object:set_acceleration({x = 0, y = 0, z = 0})
+						self.physical_state = false
+						self.object:set_properties({physical = false})
+					else -- Horizontal deceleration
+						local slip_factor = 4.0 / (slippery + 4)
+						self.object:set_acceleration({
+							x = -v.x * slip_factor,
+							y = 0,
+							z = -v.z * slip_factor
+						})
+					end
+				else -- Resting on a non-slippery node, stop motion
+					self.object:set_velocity({x = 0, y = 0, z = 0})
+					self.object:set_acceleration({x = 0, y = 0, z = 0})
+					self.physical_state = false
+					self.object:set_properties({physical = false})
+				end
 			end
-		else
+		else -- Unsupported and/or in vertical motion (freefall)
+			-- If not in motion, apply gravity
 			if not self.physical_state then
 				self.object:set_velocity({x = 0, y = 0, z = 0})
 				self.object:set_acceleration({x = 0, y = -10, z = 0})
 				self.physical_state = true
 				self.object:set_properties({physical = true})
-			elseif minetest.get_item_group(nn, "slippery") ~= 0 then
-				if math.abs(v.x) < 0.2 and math.abs(v.z) < 0.2 then
-					self.object:set_velocity({x = 0, y = 0, z = 0})
-					self.object:set_acceleration({x = 0, y = 0, z = 0})
-					self.physical_state = false
-					self.object:set_properties({
-						physical = false
-					})
-				else
-					self.object:set_acceleration({x = -v.x, y = -10, z = -v.z})
-				end
 			end
 		end
 	end,
