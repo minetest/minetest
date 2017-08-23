@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "network/connection.h"
 #include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
 #include <ostream>
@@ -36,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "tileanimation.h"
 #include "mesh_generator_thread.h"
+#include "network/peerhandler.h"
 #include <fstream>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f

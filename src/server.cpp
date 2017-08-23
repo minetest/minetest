@@ -377,8 +377,8 @@ void Server::start(Address bind_addr)
 	m_thread->stop();
 
 	// Initialize connection
-	m_con.SetTimeoutMs(30);
-	m_con.Serve(bind_addr);
+	m_con->SetTimeoutMs(30);
+	m_con->Serve(bind_addr);
 
 	// Start thread
 	m_thread->start();
@@ -983,7 +983,7 @@ void Server::Receive()
 	u16 peer_id;
 	try {
 		NetworkPacket pkt;
-		m_con.Receive(&pkt);
+		m_con->Receive(&pkt);
 		peer_id = pkt.getPeerId();
 		ProcessData(&pkt);
 	} catch (const con::InvalidIncomingDataException &e) {
@@ -1308,7 +1308,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 
 bool Server::getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval)
 {
-	*retval = m_con.getPeerStat(peer_id,type);
+	*retval = m_con->getPeerStat(peer_id,type);
 	return *retval != -1;
 }
 
@@ -2623,7 +2623,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 	}
 
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 
@@ -2633,7 +2633,7 @@ void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string 
 
 	SendAccessDenied(peer_id, reason, custom_reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 // 13/03/15: remove this function when protocol version 25 will become
@@ -2644,7 +2644,7 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 
 	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 void Server::acceptAuth(u16 peer_id, bool forSudoMode)
@@ -3154,6 +3154,11 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
 {
 	return player->getHotbarSelectedImage();
+}
+
+Address Server::getPeerAddress(u16 peer_id)
+{
+	return m_con->GetPeerAddress(peer_id);
 }
 
 bool Server::setLocalPlayerAnimations(RemotePlayer *player,

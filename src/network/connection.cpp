@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "porting.h"
 #include "network/networkpacket.h"
+#include "network/peerhandler.h"
 #include "util/serialize.h"
 #include "util/numeric.h"
 #include "util/string.h"

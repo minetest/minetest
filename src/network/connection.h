@@ -566,41 +566,6 @@ private:
 
 class Peer;
 
-enum PeerChangeType
-{
-	PEER_ADDED,
-	PEER_REMOVED
-};
-struct PeerChange
-{
-	PeerChange(PeerChangeType t, u16 _peer_id, bool _timeout):
-		type(t), peer_id(_peer_id), timeout(_timeout) {}
-	PeerChange() = delete;
-
-	PeerChangeType type;
-	u16 peer_id;
-	bool timeout;
-};
-
-class PeerHandler
-{
-public:
-
-	PeerHandler() = default;
-	virtual ~PeerHandler() = default;
-
-	/*
-		This is called after the Peer has been inserted into the
-		Connection's peer container.
-	*/
-	virtual void peerAdded(Peer *peer) = 0;
-	/*
-		This is called before the Peer has been removed from the
-		Connection's peer container.
-	*/
-	virtual void deletingPeer(Peer *peer, bool timeout) = 0;
-};
-
 class PeerHelper
 {
 public:
@@ -973,6 +938,8 @@ private:
 
 	Connection *m_connection = nullptr;
 };
+
+class PeerHandler;
 
 class Connection
 {
