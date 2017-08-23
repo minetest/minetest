@@ -131,7 +131,7 @@ public:
 
 	void addToScene(ITextureSource *tsrc);
 	void removeFromScene(bool permanent);
-	void updateLight(u8 light_at_pos);
+	void updateLight(u8 light_at_pos, u8  artificial_light_ratio);
 	v3s16 getLightPosition();
 	void updateNodePos();
 
@@ -204,7 +204,7 @@ void TestCAO::removeFromScene(bool permanent)
 	m_node = NULL;
 }
 
-void TestCAO::updateLight(u8 light_at_pos)
+void TestCAO::updateLight(u8 light_at_pos, u8 artificial_light_ratio)
 {
 }
 
