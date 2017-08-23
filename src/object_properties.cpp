@@ -103,7 +103,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString(wield_item);
 	writeV3F1000(os, selectionbox.MinEdge);
 	writeV3F1000(os, selectionbox.MaxEdge);
-	writeU8(os, !pointable);
+	writeU8(os, pointable);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -149,7 +149,7 @@ void ObjectProperties::deSerialize(std::istream &is)
 			wield_item = deSerializeString(is);
 			selectionbox.MinEdge = readV3F1000(is);
 			selectionbox.MaxEdge = readV3F1000(is);
-			pointable = !readU8(is);
+			pointable = readU8(is);
 		}catch(SerializationError &e){}
 	}
 	else
