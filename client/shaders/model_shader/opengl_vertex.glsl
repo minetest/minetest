@@ -45,8 +45,8 @@ void main(void)
 	// The alpha gives the ratio of sunlight in the incoming light.
 	float outdoorsRatio = 1.0 - gl_Color.a;
 	color.a = 1.0;
-	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
-		outdoorsRatio * artificialLight.rgb);
+	color.rgb = gl_Color.rgb * (outdoorsRatio * dayLight.rgb +
+		gl_Color.a * artificialLight.rgb);
 
 #ifdef ENABLE_DIRECTIONAL_SHADING
 	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
@@ -59,7 +59,7 @@ void main(void)
 
 	float artificialLightShading = ((dot(norm, artificialLightDirection) + 1.0) * 0.25) + 0.5;
 
-	color.rgb *= mix(artificialLight * artificialLightShading, resultLightColor, outdoorsRatio);
+	color.rgb *= mix(gl_Color.rgb * artificialLightShading, resultLightColor, outdoorsRatio);
  #endif
 
         // Emphase blue a bit in darker places

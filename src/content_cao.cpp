@@ -704,6 +704,9 @@ void GenericCAO::updateLight(u8 light_at_pos, u8 artificial_light_ratio)
 
 void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 {
+	if (!m_enable_shaders)
+		artificial_light_ratio = 255;
+
 	u8 li = decode_light(light_at_pos);
 	if (li != m_last_light || artificial_light_ratio != m_last_artificial_light_ratio) {
 		m_last_light = li;
