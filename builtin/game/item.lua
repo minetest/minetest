@@ -38,6 +38,10 @@ function core.get_pointed_thing_position(pointed_thing, above)
 end
 
 function core.dir_to_facedir(dir, is6d)
+	-- nil check for dir (for use with place_node)
+	if not dir then
+		return 0
+	end
 	--account for y if requested
 	if is6d and math.abs(dir.y) > math.abs(dir.x) and math.abs(dir.y) > math.abs(dir.z) then
 
