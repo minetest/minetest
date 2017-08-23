@@ -172,7 +172,6 @@ src/network/clientpackethandler.cpp
 src/network/connection.cpp
 src/network/connection.h
 src/network/networkpacket.cpp
-src/network/networkpacket.h
 src/network/networkprotocol.h
 src/network/serveropcodes.cpp
 src/network/serveropcodes.h
