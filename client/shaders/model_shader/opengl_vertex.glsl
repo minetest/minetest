@@ -12,15 +12,15 @@ uniform float animationTimer;
 varying vec3 vPosition;
 varying vec3 worldPosition;
 
+varying vec3 lightVec;
 varying vec3 eyeVec;
 
 // Color of the light emitted by the light sources.
 const vec3 artificialLight = vec3(1.04, 1.04, 1.04);
+const vec3 artificialLightDirection = normalize(vec3(0.2, 1.0, -0.5));
 
-float intensity(vec3 color)
-{
-	return (color.r + color.g + color.b) / 3.0;
-}
+const float e = 2.718281828459;
+const float BS = 10.0;
 
 void main(void)
 {
@@ -30,6 +30,10 @@ void main(void)
 	vPosition = gl_Position.xyz;
 	worldPosition = (mWorld * gl_Vertex).xyz;
 
+	vec3 sunPosition = vec3 (0.0, eyePosition.y * BS + 900.0, 0.0);
+
+	lightVec = sunPosition - worldPosition;
+
 	eyeVec = -(gl_ModelViewMatrix * gl_Vertex).xyz;
 
 	// Calculate color.
@@ -37,24 +41,26 @@ void main(void)
 	// the brightness, so now we have to multiply these
 	// colors with the color of the incoming light.
 	// The pre-baked colors are halved to prevent overflow.
-	vec4 color = gl_Color;
-	color.a = 1.0;
-
+	vec4 color;
 	// The alpha gives the ratio of sunlight in the incoming light.
-	float nightRatio = 1.0 - gl_Color.a;
+	float outdoorsRatio = 1.0 - gl_Color.a;
+	color.a = 1.0;
+	color.rgb = gl_Color.rgb * (gl_Color.a * dayLight.rgb +
+		outdoorsRatio * artificialLight.rgb);
 
 #ifdef ENABLE_DIRECTIONAL_SHADING
 	vec3 norm = normalize((mWorld * vec4(gl_Normal, 0.0)).xyz);
 
-	// Directional shading color
-	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + nightRatio) *
-		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
+	// Lighting color
+	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
 
-	float indoors = intensity(gl_Color.rgb) * 0.6;
-	resultLightColor = (resultLightColor * indoors) + (1.0 - indoors);
+	resultLightColor *= ((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
+	resultLightColor = (resultLightColor * 0.6) + 0.4;
 
-	color.rgb *= resultLightColor;
-#endif
+	float artificialLightShading = ((dot(norm, artificialLightDirection) + 1.0) * 0.25) + 0.5;
+
+	color.rgb *= mix(artificialLight * artificialLightShading, resultLightColor, outdoorsRatio);
+ #endif
 
         // Emphase blue a bit in darker places
         // See C++ implementation in mapblock_mesh.cpp finalColorBlend()

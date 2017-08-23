@@ -684,30 +684,31 @@ void GenericCAO::addToScene(ITextureSource *tsrc)
 	updateAttachments();
 }
 
-void GenericCAO::updateLight(u8 light_at_pos)
+void GenericCAO::updateLight(u8 light_at_pos, u8 artificial_light_ratio)
 {
 	// Don't update light of attached one
 	if (getParent() != NULL) {
 		return;
 	}
 
-	updateLightNoCheck(light_at_pos);
+	updateLightNoCheck(light_at_pos, artificial_light_ratio);
 
 	// Update light of all children
 	for (u16 i : m_children) {
 		ClientActiveObject *obj = m_env->getActiveObject(i);
 		if (obj) {
-			obj->updateLightNoCheck(light_at_pos);
+			obj->updateLightNoCheck(light_at_pos, artificial_light_ratio);
 		}
 	}
 }
 
-void GenericCAO::updateLightNoCheck(u8 light_at_pos)
+void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 {
 	u8 li = decode_light(light_at_pos);
-	if (li != m_last_light)	{
+	if (li != m_last_light || artificial_light_ratio != m_last_artificial_light_ratio) {
 		m_last_light = li;
-		video::SColor color(255,li,li,li);
+		m_last_artificial_light_ratio = artificial_light_ratio;
+		video::SColor color(artificial_light_ratio,li,li,li);
 		if (m_meshnode) {
 			setMeshColor(m_meshnode->getMesh(), color);
 		} else if (m_animated_meshnode) {
