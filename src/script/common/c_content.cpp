@@ -183,7 +183,9 @@ void read_object_properties(lua_State *L, int index,
 	if(!lua_istable(L, index))
 		return;
 
-	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
+	int hp_max = 0;
+	if (getintfield(L, -1, "hp_max", hp_max))
+		prop->hp_max = (s16)rangelim(hp_max, 0, S16_MAX);
 
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);

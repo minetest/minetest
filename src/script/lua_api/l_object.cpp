@@ -751,6 +751,11 @@ int ObjectRef::l_set_properties(lua_State *L)
 	if (!prop)
 		return 0;
 	read_object_properties(L, 2, prop, getServer(L)->idef());
+	if (prop->hp_max < co->getHP()) {
+		co->setHP(prop->hp_max);
+		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
+			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+	}
 	co->notifyObjectPropertiesModified();
 	return 0;
 }
