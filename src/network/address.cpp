@@ -35,26 +35,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 
 #ifdef _WIN32
-	// Without this some of the network functions are not found on mingw
-	#ifndef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0501
-	#endif
-	#include <windows.h>
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
-	#define LAST_SOCKET_ERR() WSAGetLastError()
-	typedef SOCKET socket_t;
-	typedef int socklen_t;
+// Without this some of the network functions are not found on mingw
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#define LAST_SOCKET_ERR() WSAGetLastError()
+typedef SOCKET socket_t;
+typedef int socklen_t;
 #else
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <fcntl.h>
-	#include <netdb.h>
-	#include <unistd.h>
-	#include <arpa/inet.h>
-	#define LAST_SOCKET_ERR() (errno)
-	typedef int socket_t;
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#define LAST_SOCKET_ERR() (errno)
+typedef int socket_t;
 #endif
 
 /*
@@ -100,7 +100,7 @@ bool Address::operator==(const Address &address)
 
 	if (m_addr_family == AF_INET6) {
 		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
-		              address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
+				       address.m_address.ipv6.sin6_addr.s6_addr, 16) == 0;
 	}
 
 	return false;
@@ -115,9 +115,9 @@ void Address::Resolve(const char *name)
 {
 	if (!name || name[0] == 0) {
 		if (m_addr_family == AF_INET) {
-			setAddress((u32) 0);
+			setAddress((u32)0);
 		} else if (m_addr_family == AF_INET6) {
-			setAddress((IPv6AddressBytes*) 0);
+			setAddress((IPv6AddressBytes *)0);
 		}
 		return;
 	}
@@ -128,14 +128,11 @@ void Address::Resolve(const char *name)
 	// Setup hints
 	hints.ai_socktype = 0;
 	hints.ai_protocol = 0;
-	hints.ai_flags    = 0;
-	if(g_settings->getBool("enable_ipv6"))
-	{
+	hints.ai_flags = 0;
+	if (g_settings->getBool("enable_ipv6")) {
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;
-	}
-	else
-	{
+	} else {
 		hints.ai_family = AF_INET;
 	}
 
@@ -146,11 +143,11 @@ void Address::Resolve(const char *name)
 
 	// Copy data
 	if (resolved->ai_family == AF_INET) {
-		struct sockaddr_in *t = (struct sockaddr_in *) resolved->ai_addr;
+		struct sockaddr_in *t = (struct sockaddr_in *)resolved->ai_addr;
 		m_addr_family = AF_INET;
 		m_address.ipv4 = *t;
-	} else if(resolved->ai_family == AF_INET6) {
-		struct sockaddr_in6 *t = (struct sockaddr_in6 *) resolved->ai_addr;
+	} else if (resolved->ai_family == AF_INET6) {
+		struct sockaddr_in6 *t = (struct sockaddr_in6 *)resolved->ai_addr;
 		m_addr_family = AF_INET6;
 		m_address.ipv6 = *t;
 	} else {
@@ -165,8 +162,7 @@ std::string Address::serializeString() const
 {
 // windows XP doesnt have inet_ntop, maybe use better func
 #ifdef _WIN32
-	if(m_addr_family == AF_INET)
-	{
+	if (m_addr_family == AF_INET) {
 		u8 a, b, c, d;
 		u32 addr;
 		addr = ntohl(m_address.ipv4.sin_addr.s_addr);
@@ -175,26 +171,25 @@ std::string Address::serializeString() const
 		c = (addr & 0x0000FF00) >> 8;
 		d = (addr & 0x000000FF);
 		return itos(a) + "." + itos(b) + "." + itos(c) + "." + itos(d);
-	}
-	else if(m_addr_family == AF_INET6)
-	{
+	} else if (m_addr_family == AF_INET6) {
 		std::ostringstream os;
-		for(int i = 0; i < 16; i += 2)
-		{
-			u16 section =
-			(m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
-			(m_address.ipv6.sin6_addr.s6_addr[i + 1]);
+		for (int i = 0; i < 16; i += 2) {
+			u16 section = (m_address.ipv6.sin6_addr.s6_addr[i] << 8) |
+				      (m_address.ipv6.sin6_addr.s6_addr[i + 1]);
 			os << std::hex << section;
-			if(i < 14)
+			if (i < 14)
 				os << ":";
 		}
 		return os.str();
-	}
-	else
+	} else
 		return std::string("");
 #else
 	char str[INET6_ADDRSTRLEN];
-	if (inet_ntop(m_addr_family, (m_addr_family == AF_INET) ? (void*)&(m_address.ipv4.sin_addr) : (void*)&(m_address.ipv6.sin6_addr), str, INET6_ADDRSTRLEN) == NULL) {
+	if (inet_ntop(m_addr_family,
+			    (m_addr_family == AF_INET)
+					    ? (void *)&(m_address.ipv4.sin_addr)
+					    : (void *)&(m_address.ipv6.sin6_addr),
+			    str, INET6_ADDRSTRLEN) == NULL) {
 		return std::string("");
 	}
 	return std::string(str);
@@ -234,8 +229,7 @@ bool Address::isZero() const
 
 	if (m_addr_family == AF_INET6) {
 		static const char zero[16] = {0};
-		return memcmp(m_address.ipv6.sin6_addr.s6_addr,
-		              zero, 16) == 0;
+		return memcmp(m_address.ipv6.sin6_addr.s6_addr, zero, 16) == 0;
 	}
 	return false;
 }
@@ -272,9 +266,8 @@ void Address::setPort(u16 port)
 
 void Address::print(std::ostream *s) const
 {
-	if(m_addr_family == AF_INET6)
+	if (m_addr_family == AF_INET6)
 		*s << "[" << serializeString() << "]:" << m_port;
 	else
 		*s << serializeString() << ":" << m_port;
 }
-

@@ -21,13 +21,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT 0x0501
 #endif
-	#include <windows.h>
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
-	#include <netinet/in.h>
+#include <netinet/in.h>
 #endif
 
 #include <ostream>
@@ -65,13 +65,13 @@ public:
 	void setPort(unsigned short port);
 	void print(std::ostream *s) const;
 	std::string serializeString() const;
+
 private:
 	unsigned int m_addr_family = 0;
 	union
 	{
-		struct sockaddr_in  ipv4;
+		struct sockaddr_in ipv4;
 		struct sockaddr_in6 ipv6;
 	} m_address;
 	u16 m_port = 0; // Port is separate from sockaddr structures
 };
-
