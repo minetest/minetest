@@ -1049,21 +1049,21 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 		for (int z = 0; z <= 1; z++) {
 			for (int x = 0; x <= 1; x++) {
 				// this should cover all nodes surrounding player position
-				const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(floatToInt(
+				const ContentFeatures &f2 = nodemgr->get(map->getNodeNoEx(floatToInt(
 						getPosition() - v3f((x - 0.5f) * BS,
 										0.05f * BS,
 										(z - 0.5f) * BS),
 						BS)));
-				if (f.walkable) {
+				if (f2.walkable) {
 					// find least slippery node we might be standing on
-					int s = itemgroup_get(f.groups, "slippery");
+					int s = itemgroup_get(f2.groups, "slippery");
 					if (s < slippery)
 						slippery = s;
 				}
 			}
 		}
 		// without any hits, ignore slippery
-		if (slippery >= 2 << 16)
+		if (slippery >= (2 << 16))
 			slippery = 0;
 	}
 	if (slippery >= 1) {
