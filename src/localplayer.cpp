@@ -1040,9 +1040,11 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 	Map *map = &env->getMap();
 	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
 			floatToInt(getPosition() - v3f(0, 0.05f * BS, 0), BS)));
-	int slippery = itemgroup_get(f.groups, "slippery");
-	if (!f.walkable) {
-		// leaning over an edge? Check surroundings for slippery nodes
+	int slippery = 0;
+	if (f.walkable) {
+		slippery = itemgroup_get(f.groups, "slippery");
+	} else if (is_slipping) {
+		// slipping over an edge? Check surroundings for slippery nodes
 		slippery = 2 << 16; // guard value, bigger than all realistic ones
 		for (int z = 0; z <= 1; z++) {
 			for (int x = 0; x <= 1; x++) {
@@ -1069,6 +1071,10 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 			slippery = slippery * 2;
 		}
 		slip_factor = core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
+		is_slipping = true;
+	} else {
+		// remember this to avoid checking the edge case above too often
+		is_slipping = false;
 	}
 	return slip_factor;
 }
