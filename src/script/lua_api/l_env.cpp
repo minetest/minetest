@@ -150,7 +150,7 @@ int LuaRaycast::l_next(lua_State *L)
 	if (pointed.type == POINTEDTHING_NOTHING)
 		lua_pushnil(L);
 	else
-		script->pushPointedThing(pointed);
+		script->pushPointedThing(pointed, true);
 
 	return 1;
 }

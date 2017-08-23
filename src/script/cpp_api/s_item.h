@@ -54,6 +54,10 @@ protected:
 	friend class LuaRaycast;
 
 	bool getItemCallback(const char *name, const char *callbackname, const v3s16 *p = nullptr);
-	void pushPointedThing(const PointedThing& pointed);
+	/*!
+	 * Pushes a `pointed_thing` tabe to the stack.
+	 * \param hitpoint If true, the exact pointing location is also pushed
+	 */
+	void pushPointedThing(const PointedThing &pointed, bool hitpoint = false);
 
 };
