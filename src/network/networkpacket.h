@@ -19,10 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <SColor.h>
 #include <ctime>
 #include "util/pointer.h"
 #include "util/numeric.h"
+#include <SColor.h>
 
 class NetworkPacket
 {
