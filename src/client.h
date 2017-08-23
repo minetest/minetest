@@ -35,6 +35,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "tileanimation.h"
 #include "mesh_generator_thread.h"
+#include "network/address.h"
 #include "network/peerhandler.h"
 #include <fstream>
 
@@ -57,6 +58,9 @@ class Minimap;
 struct MinimapMapblock;
 class Camera;
 class NetworkPacket;
+namespace con {
+class Connection;
+}
 
 enum LocalClientState {
 	LC_Created,
@@ -472,8 +476,7 @@ public:
 	u8 getProtoVersion()
 	{ return m_proto_ver; }
 
-	bool connectedToServer()
-	{ return m_con.Connected(); }
+	bool connectedToServer();
 
 	float mediaReceiveProgress();
 
@@ -539,10 +542,7 @@ public:
 	void showGameFog(bool show = true);
 	void showGameDebug(bool show = true);
 
-	const Address getServerAddress()
-	{
-		return m_con.GetPeerAddress(PEER_ID_SERVER);
-	}
+	const Address getServerAddress();
 
 	const std::string &getAddressName() const
 	{

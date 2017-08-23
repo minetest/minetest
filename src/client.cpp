@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "client.h"
 #include "network/clientopcodes.h"
+#include "network/connection.h"
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
 #include "client/renderingengine.h"
@@ -83,7 +84,7 @@ Client::Client(
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
@@ -219,7 +220,7 @@ bool Client::isShutdown()
 Client::~Client()
 {
 	m_shutdown = true;
-	m_con.Disconnect();
+	m_con->Disconnect();
 
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
@@ -253,8 +254,8 @@ void Client::connect(Address address, bool is_local_server)
 
 	initLocalMapSaving(address, m_address_name, is_local_server);
 
-	m_con.SetTimeoutMs(0);
-	m_con.Connect(address);
+	m_con->SetTimeoutMs(0);
+	m_con->Connect(address);
 }
 
 void Client::step(float dtime)
@@ -787,7 +788,7 @@ void Client::Receive()
 {
 	DSTACK(FUNCTION_NAME);
 	NetworkPacket pkt;
-	m_con.Receive(&pkt);
+	m_con->Receive(&pkt);
 	ProcessData(&pkt);
 }
 
@@ -854,7 +855,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 void Client::Send(NetworkPacket* pkt)
 {
-	m_con.Send(PEER_ID_SERVER,
+	m_con->Send(PEER_ID_SERVER,
 		serverCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
@@ -1297,7 +1298,7 @@ void Client::sendPlayerPos()
 	u16 our_peer_id;
 	{
 		//MutexAutoLock lock(m_con_mutex); //bulk comment-out
-		our_peer_id = m_con.GetPeerID();
+		our_peer_id = m_con->GetPeerID();
 	}
 
 	// Set peer id if not set already
@@ -1319,7 +1320,7 @@ void Client::sendPlayerItem(u16 item)
 	if(myplayer == NULL)
 		return;
 
-	u16 our_peer_id = m_con.GetPeerID();
+	u16 our_peer_id = m_con->GetPeerID();
 
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
@@ -1658,6 +1659,16 @@ ClientEvent Client::getClientEvent()
 	return event;
 }
 
+bool Client::connectedToServer()
+{
+	return m_con->Connected();
+}
+
+const Address Client::getServerAddress()
+{
+	return m_con->GetPeerAddress(PEER_ID_SERVER);
+}
+
 float Client::mediaReceiveProgress()
 {
 	if (m_media_downloader)
@@ -1768,13 +1779,13 @@ void Client::afterContentReceived()
 
 float Client::getRTT()
 {
-	return m_con.getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
+	return m_con->getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
 }
 
 float Client::getCurRate()
 {
-	return (m_con.getLocalStat(con::CUR_INC_RATE) +
-			m_con.getLocalStat(con::CUR_DL_RATE));
+	return (m_con->getLocalStat(con::CUR_INC_RATE) +
+			m_con->getLocalStat(con::CUR_DL_RATE));
 }
 
 void Client::makeScreenshot()

@@ -418,7 +418,7 @@ public:
 
 	friend class Server;
 
-	ClientInterface(con::Connection* con);
+	ClientInterface(const std::shared_ptr<con::Connection> &con);
 	~ClientInterface();
 
 	/* run sync step */
@@ -487,7 +487,7 @@ private:
 	void UpdatePlayerList();
 
 	// Connection
-	con::Connection* m_con;
+	std::shared_ptr<con::Connection> m_con;
 	std::mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;

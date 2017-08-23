@@ -442,7 +442,6 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	socket.cpp
 	sound.cpp
 	staticobject.cpp
 	subgame.cpp

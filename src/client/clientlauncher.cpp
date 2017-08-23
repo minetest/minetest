@@ -33,6 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "clientlauncher.h"
 #include "version.h"
 #include "renderingengine.h"
+#include "network/networkexceptions.h"
 
 /* mainmenumanager.h
  */

@@ -27,43 +27,51 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <winsock2.h>
 	#include <ws2tcpip.h>
 #else
-	#include <sys/socket.h>
 	#include <netinet/in.h>
 #endif
 
 #include <ostream>
 #include <cstring>
-#include "address.h"
 #include "irrlichttypes.h"
 #include "networkexceptions.h"
 
-extern bool socket_enable_debug_output;
-
-void sockets_init();
-void sockets_cleanup();
-
-class UDPSocket
+class IPv6AddressBytes
 {
 public:
-	UDPSocket() = default;
-
-	UDPSocket(bool ipv6);
-	~UDPSocket();
-	void Bind(Address addr);
-
-	bool init(bool ipv6, bool noExceptions = false);
-
-	//void Close();
-	//bool IsOpen();
-	void Send(const Address & destination, const void * data, int size);
-	// Returns -1 if there is no data
-	int Receive(Address & sender, void * data, int size);
-	int GetHandle(); // For debugging purposes only
-	void setTimeoutMs(int timeout_ms);
-	// Returns true if there is data, false if timeout occurred
-	bool WaitData(int timeout_ms);
-private:
-	int m_handle;
-	int m_timeout_ms;
-	int m_addr_family;
+	u8 bytes[16];
+	IPv6AddressBytes() { memset(bytes, 0, 16); }
 };
+
+class Address
+{
+public:
+	Address();
+	Address(u32 address, u16 port);
+	Address(u8 a, u8 b, u8 c, u8 d, u16 port);
+	Address(const IPv6AddressBytes *ipv6_bytes, u16 port);
+	bool operator==(const Address &address);
+	bool operator!=(const Address &address);
+	// Resolve() may throw ResolveError (address is unchanged in this case)
+	void Resolve(const char *name);
+	struct sockaddr_in getAddress() const;
+	unsigned short getPort() const;
+	void setAddress(u32 address);
+	void setAddress(u8 a, u8 b, u8 c, u8 d);
+	void setAddress(const IPv6AddressBytes *ipv6_bytes);
+	struct sockaddr_in6 getAddress6() const;
+	int getFamily() const;
+	bool isIPv6() const;
+	bool isZero() const;
+	void setPort(unsigned short port);
+	void print(std::ostream *s) const;
+	std::string serializeString() const;
+private:
+	unsigned int m_addr_family = 0;
+	union
+	{
+		struct sockaddr_in  ipv4;
+		struct sockaddr_in6 ipv6;
+	} m_address;
+	u16 m_port = 0; // Port is separate from sockaddr structures
+};
+

@@ -22,7 +22,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "peerhandler.h"
 #include "socket.h"
-#include "exceptions.h"
 #include "constants.h"
 #include "util/pointer.h"
 #include "util/container.h"
@@ -37,89 +36,6 @@ class NetworkPacket;
 
 namespace con
 {
-
-/*
-	Exceptions
-*/
-class NotFoundException : public BaseException
-{
-public:
-	NotFoundException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class PeerNotFoundException : public BaseException
-{
-public:
-	PeerNotFoundException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ConnectionException : public BaseException
-{
-public:
-	ConnectionException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ConnectionBindFailed : public BaseException
-{
-public:
-	ConnectionBindFailed(const char *s):
-		BaseException(s)
-	{}
-};
-
-class InvalidIncomingDataException : public BaseException
-{
-public:
-	InvalidIncomingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class InvalidOutgoingDataException : public BaseException
-{
-public:
-	InvalidOutgoingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class NoIncomingDataException : public BaseException
-{
-public:
-	NoIncomingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ProcessedSilentlyException : public BaseException
-{
-public:
-	ProcessedSilentlyException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ProcessedQueued : public BaseException
-{
-public:
-	ProcessedQueued(const char *s):
-		BaseException(s)
-	{}
-};
-
-class IncomingDataCorruption : public BaseException
-{
-public:
-	IncomingDataCorruption(const char *s):
-		BaseException(s)
-	{}
-};
 
 typedef enum MTProtocols {
 	MTP_PRIMARY,

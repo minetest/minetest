@@ -29,7 +29,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "tileanimation.h" // struct TileAnimationParams
 #include "network/peerhandler.h"
-#include "network/socket.h"
+#include "network/address.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -506,7 +506,7 @@ private:
 	ServerEnvironment *m_env = nullptr;
 
 	// server connection
-	std::unique_ptr<con::Connection> m_con;
+	std::shared_ptr<con::Connection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;

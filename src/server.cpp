@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "ban.h"
@@ -157,17 +158,17 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(PROTOCOL_ID,
+	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
 			CONNECTION_TIMEOUT,
 			ipv6,
-			this),
+			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_uptime(0),
-	m_clients(&m_con),
+	m_clients(m_con),
 	m_admin_chat(iface)
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
