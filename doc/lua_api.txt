@@ -3978,7 +3978,7 @@ Definition tables
 
     {
         hp_max = 1,
-    --  ^ For players, the maximal HP defaults to `minetest.PLAYER_MAX_HP`
+    --  ^ For players, the maximal HP defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
         physical = true,
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,

@@ -22,7 +22,7 @@ core.EMERGE_GENERATED   = 4
 -- Size of mapblocks in nodes
 core.MAP_BLOCKSIZE = 16
 -- Default maximal HP of a player
-core.PLAYER_MAX_HP = 20
+core.PLAYER_MAX_HP_DEFAULT = 20
 -- Maximal breath of a player
 core.PLAYER_MAX_BREATH = 11
 

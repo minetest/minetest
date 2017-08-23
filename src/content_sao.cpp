@@ -783,7 +783,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 {
 	assert(m_peer_id != 0);	// pre-condition
 
-	m_prop.hp_max = PLAYER_MAX_HP;
+	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);

@@ -6,7 +6,7 @@ local health_bar_definition =
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "heart.png",
-	number = core.PLAYER_MAX_HP,
+	number = core.PLAYER_MAX_HP_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = { x=(-10*24)-25, y=-(48+24+16)},
@@ -48,11 +48,11 @@ local function initialize_builtin_statbars(player)
 	if player:hud_get_flags().healthbar and enable_damage then
  		if hud.id_healthbar == nil then
  			local hp = player:get_hp()
- 			local max_display_hp = math.max(core.PLAYER_MAX_HP,
+ 			local max_display_hp = math.max(core.PLAYER_MAX_HP_DEFAULT,
  				math.max(player:get_properties().hp_max, hp))
  			-- Limit width of health bar: Scale to the default maximal HP
 			health_bar_definition.number =
-				hp / max_display_hp * core.PLAYER_MAX_HP
+				hp / max_display_hp * core.PLAYER_MAX_HP_DEFAULT
 			hud.id_healthbar  = player:hud_add(health_bar_definition)
 		end
 	else
@@ -108,10 +108,10 @@ local function player_event_handler(player,eventname)
 
 		if hud_ids[name].id_healthbar ~= nil then
  			local hp = player:get_hp()
- 			local max_display_hp = math.max(core.PLAYER_MAX_HP,
+ 			local max_display_hp = math.max(core.PLAYER_MAX_HP_DEFAULT,
  				math.max(player:get_properties().hp_max, hp))
  			-- Limit width of health bar: Scale to the default maximal HP
-			local hp_count = hp / max_display_hp * core.PLAYER_MAX_HP
+			local hp_count = hp / max_display_hp * core.PLAYER_MAX_HP_DEFAULT
 			player:hud_change(hud_ids[name].id_healthbar, "number", hp_count)
 			return true
 		end
