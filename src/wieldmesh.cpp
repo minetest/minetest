@@ -325,7 +325,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			1);
 		m_colors.emplace_back();
 		// overlay is white, if present
-		m_colors.emplace_back(ItemPartColor(true, video::SColor(0xFFFFFFFF)));
+		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -354,12 +354,20 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 						tsrc->getTextureName(f.tiles[0].layers[1].texture_id),
 						def.wield_scale, tsrc,
 						f.tiles[0].layers[0].animation_frame_count);
+					// Add color
+					const TileLayer &l0=f.tiles[0].layers[0];
+					m_colors.emplace_back(l0.has_color, l0.color);
+					const TileLayer &l1=f.tiles[0].layers[1];
+					m_colors.emplace_back(l1.has_color, l1.color);
 					break;
 				}
 				case NDT_PLANTLIKE_ROOTED: {
 					setExtruded(tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id),
 						"", def.wield_scale, tsrc,
 						f.special_tiles[0].layers[0].animation_frame_count);
+					// Add color
+					const TileLayer &l0=f.special_tiles[0].layers[0];
+					m_colors.emplace_back(l0.has_color, l0.color);
 					break;
 				}
 				case NDT_NORMAL:
@@ -398,7 +406,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 			tsrc, 1);
 		m_colors.emplace_back();
 		// overlay is white, if present
-		m_colors.emplace_back(ItemPartColor(true, video::SColor(0xFFFFFFFF)));
+		m_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		return;
 	}
 
@@ -479,25 +487,34 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 			def.inventory_overlay);
 		result->buffer_colors.emplace_back();
 		// overlay is white, if present
-		result->buffer_colors.emplace_back(
-			ItemPartColor(true, video::SColor(0xFFFFFFFF)));
+		result->buffer_colors.emplace_back(true, video::SColor(0xFFFFFFFF));
 		// Items with inventory images do not need shading
 		result->needs_shading = false;
 	} else if (def.type == ITEM_NODE) {
 		if (f.mesh_ptr[0]) {
 			mesh = cloneMesh(f.mesh_ptr[0]);
 			scaleMesh(mesh, v3f(0.12, 0.12, 0.12));
+			postProcessNodeMesh(mesh, f, false, false, nullptr,
+				&result->buffer_colors);
 		} else {
 			switch (f.drawtype) {
 				case NDT_PLANTLIKE: {
 					mesh = getExtrudedMesh(tsrc,
 						tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
-						"");
+						tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
+					// Add color
+					const TileLayer &l0=f.tiles[0].layers[0];
+					result->buffer_colors.emplace_back(l0.has_color, l0.color);
+					const TileLayer &l1=f.tiles[0].layers[1];
+					result->buffer_colors.emplace_back(l1.has_color, l1.color);
 					break;
 				}
 				case NDT_PLANTLIKE_ROOTED: {
 					mesh = getExtrudedMesh(tsrc,
 						tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
+					// Add color
+					const TileLayer &l0=f.special_tiles[0].layers[0];
+					result->buffer_colors.emplace_back(l0.has_color, l0.color);
 					break;
 				}
 				case NDT_NORMAL:
@@ -508,6 +525,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					mesh = cloneMesh(cube);
 					cube->drop();
 					scaleMesh(mesh, v3f(1.2, 1.2, 1.2));
+					// add overlays
+					postProcessNodeMesh(mesh, f, false, false, nullptr,
+						&result->buffer_colors);
 					break;
 				}
 				default: {
@@ -531,6 +551,10 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 						material1.setTexture(3, material2.getTexture(3));
 						material1.MaterialType = material2.MaterialType;
 					}
+					// add overlays (since getMesh() returns
+					// the base layer only)
+					postProcessNodeMesh(mesh, f, false, false, nullptr,
+						&result->buffer_colors);
 				}
 			}
 		}
@@ -548,8 +572,6 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 
 		rotateMeshXZby(mesh, -45);
 		rotateMeshYZby(mesh, -30);
-
-		postProcessNodeMesh(mesh, f, false, false, nullptr, &result->buffer_colors);
 	}
 	result->mesh = mesh;
 }
