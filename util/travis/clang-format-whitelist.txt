@@ -304,8 +304,6 @@ src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
 src/sky.cpp
-src/socket.cpp
-src/socket.h
 src/sound.cpp
 src/sound_openal.cpp
 src/sound_openal.h
