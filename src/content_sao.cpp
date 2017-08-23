@@ -1430,7 +1430,8 @@ bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 		return false;
 	}
 
-	getCollisionBox(toset);
+	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
 
 	return true;
 }
