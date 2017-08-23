@@ -491,12 +491,12 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	cle.setJoyForw(control.forw_move_joystick_axis / 32767.f);
 	cle.setJoySidew(control.sidew_move_joystick_axis / 32767.f);
 
-	_applyControl(cle);
+	_applyControl(cle, env);
 
 	// append entry to actual log
 }
 
-void LocalPlayer::_applyControl(const ControlLogEntry &cle)
+void LocalPlayer::_applyControl(const ControlLogEntry &cle, Environment *env)
 {
 
 	// SERVER SIDE MOVEMENT: this method will need to be abstracted into:
