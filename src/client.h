@@ -611,7 +611,7 @@ private:
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
-	con::Connection m_con;
+	std::unique_ptr<con::Connection> m_con;
 	std::string m_address_name;
 	Camera *m_camera = nullptr;
 	Minimap *m_minimap = nullptr;

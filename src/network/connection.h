@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "peerhandler.h"
 #include "socket.h"
 #include "exceptions.h"
 #include "constants.h"
@@ -584,15 +585,6 @@ private:
 };
 
 class Connection;
-
-typedef enum {
-	MIN_RTT,
-	MAX_RTT,
-	AVG_RTT,
-	MIN_JITTER,
-	MAX_JITTER,
-	AVG_JITTER
-} rtt_stat_type;
 
 typedef enum {
 	CUR_DL_RATE,
