@@ -34,6 +34,7 @@ core.register_entity(":__builtin:item", {
 
 	itemstring = "",
 	physical_state = true,
+	slippery_state = false,
 	age = 0,
 
 	set_item = function(self, itemstring)
@@ -145,16 +146,40 @@ core.register_entity(":__builtin:item", {
 		local def = node and core.registered_nodes[node.name]
 		-- Ignore is nil -> stop until the block loaded
 		local is_physical = def and not def.walkable
+		local is_slippery = false
 
-		if self.physical_state == is_physical then
+		if def and def.walkable and
+				(math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
+			local slippery = core.get_item_group(node.name, "slippery")
+			is_slippery = slippery ~= 0
+			if is_slippery then
+				is_physical = true
+	
+				-- Horizontal deceleration
+				local slip_factor = 4.0 / (slippery + 4)
+				self.object:set_acceleration({
+					x = -vel.x * slip_factor,
+					y = 0,
+					z = -vel.z * slip_factor
+				})
+			end
+		end
+
+		if self.physical_state == is_physical and
+				self.slippery_state == is_slippery then
 			-- Do not update anything until the physical state changes
 			return
 		end
 
 		self.physical_state = is_physical
+		self.slippery_state = is_slippery
 		self.object:set_properties({
 			physical = is_physical
 		})
+
+		if is_slippery then
+			return
+		end
 
 		self.object:set_velocity({x=0, y=0, z=0})
 	
