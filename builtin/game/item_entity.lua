@@ -139,13 +139,13 @@ core.register_entity(":__builtin:item", {
 		local pos = self.object:get_pos()
 		local node = core.get_node_or_nil({
 			x = pos.x,
-			y = pos.y - 0.35,
+			y = pos.y + self.object:get_properties().collisionbox[2] - 0.05,
 			z = pos.z
 		})
 		local vel = self.object:getvelocity()
 		local def = node and core.registered_nodes[node.name]
 		-- Ignore is nil -> stop until the block loaded
-		local is_physical = def and not def.walkable
+		local is_physical = (def and not def.walkable) or vel.y ~= 0
 		local is_slippery = false
 
 		if def and def.walkable and
@@ -181,12 +181,11 @@ core.register_entity(":__builtin:item", {
 			return
 		end
 
-		self.object:set_velocity({x=0, y=0, z=0})
-	
 		if is_physical then
 			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 		else
 			self.object:set_acceleration({x = 0, y = 0, z = 0})
+			self.object:set_velocity({x = 0, y = 0, z = 0})
 		end
 
 		-- Collect the items around to merge with
