@@ -75,6 +75,11 @@
 #    type: float
 # repeat_rightclick_time = 0.25
 
+#    Prevent digging and placing from repeating when holding the mouse buttons.
+#    Enable this when you dig or place too often by accident.
+#    type: bool
+# safe_dig_and_place = false
+
 #    Enable random user input (only used for testing).
 #    type: bool
 # random_input = false
