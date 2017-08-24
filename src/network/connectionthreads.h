@@ -29,7 +29,8 @@ namespace con
 
 class Connection;
 
-class ConnectionSendThread : public Thread {
+class ConnectionSendThread : public Thread
+{
 
 public:
 	friend class UDPPeer;
@@ -40,61 +41,61 @@ public:
 
 	void Trigger();
 
-	void setParent(Connection* parent) {
+	void setParent(Connection *parent)
+	{
 		assert(parent != NULL); // Pre-condition
 		m_connection = parent;
 	}
 
-	void setPeerTimeout(float peer_timeout)
-	{ m_timeout = peer_timeout; }
+	void setPeerTimeout(float peer_timeout) { m_timeout = peer_timeout; }
 
 private:
-	void runTimeouts    (float dtime);
-	void rawSend        (const BufferedPacket &packet);
-	bool rawSendAsPacket(u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data, bool reliable);
+	void runTimeouts(float dtime);
+	void rawSend(const BufferedPacket &packet);
+	bool rawSendAsPacket(
+			u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
 
-	void processReliableCommand (ConnectionCommand &c);
-	void processNonReliableCommand (ConnectionCommand &c);
-	void serve          (Address bind_address);
-	void connect        (Address address);
-	void disconnect     ();
+	void processReliableCommand(ConnectionCommand &c);
+	void processNonReliableCommand(ConnectionCommand &c);
+	void serve(Address bind_address);
+	void connect(Address address);
+	void disconnect();
 	void disconnect_peer(u16 peer_id);
-	void send           (u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data);
-	void sendReliable   (ConnectionCommand &c);
-	void sendToAll      (u8 channelnum,
-		SharedBuffer<u8> data);
+	void send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data);
+	void sendReliable(ConnectionCommand &c);
+	void sendToAll(u8 channelnum, SharedBuffer<u8> data);
 	void sendToAllReliable(ConnectionCommand &c);
 
-	void sendPackets    (float dtime);
+	void sendPackets(float dtime);
 
-	void sendAsPacket   (u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data,bool ack=false);
+	void sendAsPacket(u16 peer_id, u8 channelnum, SharedBuffer<u8> data,
+			bool ack = false);
 
-	void sendAsPacketReliable(BufferedPacket& p, Channel* channel);
+	void sendAsPacketReliable(BufferedPacket &p, Channel *channel);
 
 	bool packetsQueued();
 
-	Connection           *m_connection = nullptr;
-	unsigned int          m_max_packet_size;
-	float                 m_timeout;
+	Connection *m_connection = nullptr;
+	unsigned int m_max_packet_size;
+	float m_timeout;
 	std::queue<OutgoingPacket> m_outgoing_queue;
-	Semaphore             m_send_sleep_semaphore;
+	Semaphore m_send_sleep_semaphore;
 
-	unsigned int          m_iteration_packets_avaialble;
-	unsigned int          m_max_commands_per_iteration = 1;
-	unsigned int          m_max_data_packets_per_iteration;
-	unsigned int          m_max_packets_requeued = 256;
+	unsigned int m_iteration_packets_avaialble;
+	unsigned int m_max_commands_per_iteration = 1;
+	unsigned int m_max_data_packets_per_iteration;
+	unsigned int m_max_packets_requeued = 256;
 };
 
-class ConnectionReceiveThread : public Thread {
+class ConnectionReceiveThread : public Thread
+{
 public:
 	ConnectionReceiveThread(unsigned int max_packet_size);
 
 	void *run();
 
-	void setParent(Connection *parent) {
+	void setParent(Connection *parent)
+	{
 		assert(parent); // Pre-condition
 		m_connection = parent;
 	}
@@ -107,8 +108,7 @@ private:
 	// If found, sets peer_id and dst
 	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
 
-	bool checkIncomingBuffers(Channel *channel, u16 &peer_id,
-		SharedBuffer<u8> &dst);
+	bool checkIncomingBuffers(Channel *channel, u16 &peer_id, SharedBuffer<u8> &dst);
 
 	/*
 		Processes a packet with the basic header stripped out.
@@ -119,21 +119,26 @@ private:
 			reliable: true if recursing into a reliable packet
 	*/
 	SharedBuffer<u8> processPacket(Channel *channel, SharedBuffer<u8> &packetdata,
-		u16 peer_id, u8 channelnum, bool reliable);
+			u16 peer_id, u8 channelnum, bool reliable);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
-		SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
+			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			bool reliable);
 	SharedBuffer<u8> handlePacketType_Original(Channel *channel,
-		SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
+			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			bool reliable);
 	SharedBuffer<u8> handlePacketType_Split(Channel *channel,
-		SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
+			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			bool reliable);
 	SharedBuffer<u8> handlePacketType_Reliable(Channel *channel,
-		SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable);
+			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			bool reliable);
 
 	struct PacketTypeHandler
 	{
 		SharedBuffer<u8> (ConnectionReceiveThread::*handler)(Channel *channel,
-			SharedBuffer<u8> &packet, Peer *peer, u8 channelnum, bool reliable);
+				SharedBuffer<u8> &packet, Peer *peer, u8 channelnum,
+				bool reliable);
 	};
 
 	static const PacketTypeHandler packetTypeRouter[PACKET_TYPE_MAX];
