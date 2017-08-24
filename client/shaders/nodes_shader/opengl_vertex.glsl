@@ -164,8 +164,8 @@ float disp_z;
 	// Lighting color
 	vec3 resultLightColor = ((lightColor.rgb * gl_Color.a) + outdoorsRatio);
 
-	resultLightColor *= ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) / 1.2);
-	resultLightColor = (resultLightColor * 0.6) + 0.4;
+	// ((resultLightColor * ((max(dot(normal, lightDirection), -0.2) + 0.2) / 1.2)* 0.6)) + 0.4;
+	resultLightColor = (resultLightColor * ((max(dot(alwaysNormal, lightDirection), -0.2) + 0.2) * 0.5)) + 0.4;
 
 	float artificialLightShading = ((dot(alwaysNormal, artificialLightDirection) + 1.0) * 0.25) + 0.5;
 

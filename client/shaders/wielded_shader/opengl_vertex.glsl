@@ -50,9 +50,7 @@ void main(void)
 	vec3 resultLightColor = lightColor.rgb * lightColor.a *
 		((max(dot(norm, lightDirection), -0.2) + 0.2) / 1.2);
 
-	resultLightColor = (resultLightColor * 0.6) + 0.4;
-
-	color.rgb *= resultLightColor;
+	color.rgb *= (resultLightColor * 0.6) + 0.4;
 #endif
 
 	// Emphase blue a bit in darker places

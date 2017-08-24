@@ -43,8 +43,8 @@ void main(void)
 
 	color = base.rgb;
 
-	vec4 col = vec4(color.rgb, base.a);
-	col *= gl_Color;
+	vec4 col = vec4(color.rgb, base.a) * gl_Color;
+
 	// Due to a bug in some (older ?) graphics stacks (possibly in the glsl compiler ?),
 	// the fog will only be rendered correctly if the last operation before the
 	// clamp() is an addition. Else, the clamp() seems to be ignored.
