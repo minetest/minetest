@@ -249,7 +249,7 @@ void WieldMeshSceneNode::setExtruded(const std::string &imagename,
 		return;
 	}
 	video::ITexture *overlay_texture =
-		(overlay_name == "") ? nullptr : tsrc->getTexture(overlay_name);
+		overlay_name.empty() ? NULL : tsrc->getTexture(overlay_name);
 
 	core::dimension2d<u32> dim = texture->getSize();
 	// Detect animation texture and pull off top frame instead of using entire thing
@@ -355,9 +355,9 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 						def.wield_scale, tsrc,
 						f.tiles[0].layers[0].animation_frame_count);
 					// Add color
-					const TileLayer &l0=f.tiles[0].layers[0];
+					const TileLayer &l0 = f.tiles[0].layers[0];
 					m_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1=f.tiles[0].layers[1];
+					const TileLayer &l1 = f.tiles[0].layers[1];
 					m_colors.emplace_back(l1.has_color, l1.color);
 					break;
 				}
@@ -366,7 +366,7 @@ void WieldMeshSceneNode::setItem(const ItemStack &item, Client *client)
 						"", def.wield_scale, tsrc,
 						f.special_tiles[0].layers[0].animation_frame_count);
 					// Add color
-					const TileLayer &l0=f.special_tiles[0].layers[0];
+					const TileLayer &l0 = f.special_tiles[0].layers[0];
 					m_colors.emplace_back(l0.has_color, l0.color);
 					break;
 				}
@@ -503,9 +503,9 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 						tsrc->getTextureName(f.tiles[0].layers[0].texture_id),
 						tsrc->getTextureName(f.tiles[0].layers[1].texture_id));
 					// Add color
-					const TileLayer &l0=f.tiles[0].layers[0];
+					const TileLayer &l0 = f.tiles[0].layers[0];
 					result->buffer_colors.emplace_back(l0.has_color, l0.color);
-					const TileLayer &l1=f.tiles[0].layers[1];
+					const TileLayer &l1 = f.tiles[0].layers[1];
 					result->buffer_colors.emplace_back(l1.has_color, l1.color);
 					break;
 				}
@@ -513,7 +513,7 @@ void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result)
 					mesh = getExtrudedMesh(tsrc,
 						tsrc->getTextureName(f.special_tiles[0].layers[0].texture_id), "");
 					// Add color
-					const TileLayer &l0=f.special_tiles[0].layers[0];
+					const TileLayer &l0 = f.special_tiles[0].layers[0];
 					result->buffer_colors.emplace_back(l0.has_color, l0.color);
 					break;
 				}
