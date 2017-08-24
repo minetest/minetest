@@ -1419,7 +1419,7 @@ msgstr "X Tlačítko 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "cs"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -1389,7 +1389,7 @@ msgstr "Xボタン2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ja"
 
 #: src/settings_translation_file.cpp
 #, fuzzy

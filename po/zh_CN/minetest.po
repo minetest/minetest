@@ -1408,7 +1408,7 @@ msgstr "X键2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "zh_CN"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -1421,7 +1421,7 @@ msgstr "X knop 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "nl"
 
 #: src/settings_translation_file.cpp
 msgid ""

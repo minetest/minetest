@@ -1389,7 +1389,7 @@ msgstr "la'o gy.X Button 2.gy."
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "jbo"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -1419,7 +1419,7 @@ msgstr "Pulsante X 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "it"
 
 #: src/settings_translation_file.cpp
 msgid ""

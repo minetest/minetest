@@ -1428,7 +1428,7 @@ msgstr "X-Butono 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "eo"
 
 #: src/settings_translation_file.cpp
 msgid ""

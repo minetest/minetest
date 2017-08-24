@@ -1411,7 +1411,7 @@ msgstr "X 按鈕 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "zh_TW"
 
 #: src/settings_translation_file.cpp
 msgid ""

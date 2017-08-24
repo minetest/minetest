@@ -1438,7 +1438,7 @@ msgstr "X Butonul 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ro"
 
 #: src/settings_translation_file.cpp
 msgid ""

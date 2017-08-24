@@ -1390,7 +1390,7 @@ msgstr "Tombol X 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "id"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -1391,7 +1391,7 @@ msgstr "Butang X 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "ms"
 
 #: src/settings_translation_file.cpp
 msgid ""

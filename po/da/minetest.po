@@ -1422,7 +1422,7 @@ msgstr "X knap 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "da"
 
 #: src/settings_translation_file.cpp
 msgid ""

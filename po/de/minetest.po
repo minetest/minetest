@@ -1395,7 +1395,7 @@ msgstr "X-Knopf 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "de"
 
 #: src/settings_translation_file.cpp
 msgid ""

@@ -1388,7 +1388,7 @@ msgstr "Дадат. кнопка 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "be"
 
 #: src/settings_translation_file.cpp
 msgid ""

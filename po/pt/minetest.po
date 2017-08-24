@@ -1413,7 +1413,7 @@ msgstr "Botão X 2"
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "pt"
 
 #: src/settings_translation_file.cpp
 msgid ""

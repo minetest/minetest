@@ -1357,7 +1357,7 @@ msgstr ""
 
 #: src/network/clientpackethandler.cpp
 msgid "LANG_CODE"
-msgstr ""
+msgstr "he"
 
 #: src/settings_translation_file.cpp
 msgid ""
