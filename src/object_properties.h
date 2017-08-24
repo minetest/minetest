@@ -33,6 +33,8 @@ struct ObjectProperties
 	bool collideWithObjects = true;
 	float weight = 5.0f;
 	aabb3f collisionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+	aabb3f selectionbox = aabb3f(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+	bool pointable = true;
 	std::string visual = "sprite";
 	std::string mesh = "";
 	v2f visual_size = v2f(1, 1);

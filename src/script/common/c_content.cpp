@@ -197,6 +197,13 @@ void read_object_properties(lua_State *L, int index,
 		prop->collisionbox = read_aabb3f(L, -1, 1.0);
 	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "selectionbox");
+	if (lua_istable(L, -1))
+		prop->selectionbox = read_aabb3f(L, -1, 1.0);
+	else
+		prop->selectionbox = prop->collisionbox;
+	lua_pop(L, 1);
+	getboolfield(L, -1, "pointable", prop->pointable);
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
@@ -296,6 +303,10 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "weight");
 	push_aabb3f(L, prop->collisionbox);
 	lua_setfield(L, -2, "collisionbox");
+	push_aabb3f(L, prop->selectionbox);
+	lua_setfield(L, -2, "selectionbox");
+	lua_pushboolean(L, prop->pointable);
+	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
 	lua_pushlstring(L, prop->mesh.c_str(), prop->mesh.size());

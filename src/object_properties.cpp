@@ -61,6 +61,8 @@ std::string ObjectProperties::dump()
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
+	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
+	os << ", pointable=" << pointable;
 	return os.str();
 }
 
@@ -99,6 +101,9 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
+	writeV3F1000(os, selectionbox.MinEdge);
+	writeV3F1000(os, selectionbox.MaxEdge);
+	writeU8(os, pointable);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -142,6 +147,9 @@ void ObjectProperties::deSerialize(std::istream &is)
 			automatic_face_movement_max_rotation_per_sec = readF1000(is);
 			infotext = deSerializeString(is);
 			wield_item = deSerializeString(is);
+			selectionbox.MinEdge = readV3F1000(is);
+			selectionbox.MaxEdge = readV3F1000(is);
+			pointable = readU8(is);
 		}catch(SerializationError &e){}
 	}
 	else

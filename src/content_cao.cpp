@@ -346,7 +346,7 @@ GenericCAO::~GenericCAO()
 bool GenericCAO::getSelectionBox(aabb3f *toset) const
 {
 	if (!m_prop.is_visible || !m_is_visible || m_is_local_player
-			|| getParent() != NULL){
+			|| !m_prop.pointable || getParent() != NULL) {
 		return false;
 	}
 	*toset = m_selection_box;
@@ -1226,7 +1226,7 @@ void GenericCAO::processMessage(const std::string &data)
 	if (cmd == GENERIC_CMD_SET_PROPERTIES) {
 		m_prop = gob_read_set_properties(is);
 
-		m_selection_box = m_prop.collisionbox;
+		m_selection_box = m_prop.selectionbox;
 		m_selection_box.MinEdge *= BS;
 		m_selection_box.MaxEdge *= BS;
 
@@ -1240,7 +1240,10 @@ void GenericCAO::processMessage(const std::string &data)
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
 			player->makes_footstep_sound = m_prop.makes_footstep_sound;
-			player->setCollisionbox(m_selection_box);
+			aabb3f collision_box = m_prop.collisionbox;
+			collision_box.MinEdge *= BS;
+			collision_box.MaxEdge *= BS;
+			player->setCollisionbox(collision_box);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
