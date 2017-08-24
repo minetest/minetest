@@ -780,9 +780,8 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			output.put(s[i]);
 			// The character is a literal '@'; add it twice
 			// so that it is not mistaken for an argument.
-			if (s[i] == L'@') {
+			if (s[i] == L'@')
 				output.put(L'@');
-			}
 			++i;
 			continue;
 		}
@@ -799,16 +798,14 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 			++i;
 			++start_index;
 			while (i < s.length() && s[i] != L')') {
-				if (s[i] == L'\\') {
+				if (s[i] == L'\\')
 					++i;
-				}
 				++i;
 			}
 			length = i - start_index;
 			++i;
-			if (i > s.length()) {
+			if (i > s.length())
 				i = s.length();
-			}
 		} else {
 			++i;
 			length = 1;
@@ -920,9 +917,8 @@ void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
 		} else if (parts[0] == L"T") {
 			// Beginning of translated string.
 			std::wstring textdomain;
-			if (parts.size() > 1) {
+			if (parts.size() > 1)
 				textdomain = parts[1];
-			}
 			std::wstring translated;
 			translate_string(s, textdomain, i, translated);
 			output << translated;

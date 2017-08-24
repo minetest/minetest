@@ -2174,9 +2174,13 @@ Two functions are provided to translate strings: `minetest.translate` and `minet
   As an extra commodity, if `textdomain` is nil, it is assumed to be "" instead.
 
 * `minetest.translate(textdomain, str, ...)` translates the string `str` with the given `textdomain`
-  for disambiguation. This function must be given a number of arguments equal to the number of
-  arguments the translated string expects. Arguments are literal strings -- they will not be translated,
-  so if you want them to be, they need to come as outputs of `minetest.translate` as well.
+  for disambiguation. The textdomain must match the textdomain specified in the translation file in order
+  to get the string translated. This can be used to that a string is translated differently in different contexts.
+  It is adviced to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
+  This function must be given a number of arguments equal to the number of arguments the translated string expects.
+  Arguments are literal strings -- they will not be translated, so if you want them to be, they need to come as
+  outputs of `minetest.translate` as well.
+
   For instance, suppose we want to translate "@1 Wool" with "@1" being replaced by the translation of "Red".
   We can do the following:
 

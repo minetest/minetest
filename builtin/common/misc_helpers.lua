@@ -715,10 +715,7 @@ function core.translate(textdomain, str, ...)
 end
 
 function core.get_translator(textdomain)
-	if textdomain == nil then
-		textdomain = ""
-	end
-	return function(str, ...) return core.translate(textdomain, str, ...) end
+	return function(str, ...) return core.translate(textdomain or "", str, ...) end
 end
 
 --------------------------------------------------------------------------------

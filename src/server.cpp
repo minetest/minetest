@@ -2316,6 +2316,7 @@ void Server::fillMediaCache()
 				".pcx", ".ppm", ".psd", ".wal", ".rgb",
 				".ogg",
 				".x", ".b3d", ".md2", ".obj",
+				// Custom translation file format
 				".tr",
 				NULL
 			};
