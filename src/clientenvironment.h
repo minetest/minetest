@@ -19,8 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <ISceneManager.h>
 #include "environment.h"
+#include <ISceneManager.h>
 #include "clientobject.h"
 #include "util/numeric.h"
 
