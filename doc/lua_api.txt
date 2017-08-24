@@ -2166,7 +2166,7 @@ Two functions are provided to translate strings: `minetest.translate` and `minet
 
 * `minetest.get_translator(textdomain)` is a simple wrapper around `minetest.translate`, and
   `minetest.get_translator(textdomain)(str, ...)` is equivalent to `minetest.translate(textdomain, str, ...)`.
-  It is intended to be used in the following way, so that is avoids verbose repetitions of `minetest.translate`:
+  It is intended to be used in the following way, so that it avoids verbose repetitions of `minetest.translate`:
 
     local S = minetest.get_translator(textdomain)
     S(str, ...)
@@ -2175,8 +2175,8 @@ Two functions are provided to translate strings: `minetest.translate` and `minet
 
 * `minetest.translate(textdomain, str, ...)` translates the string `str` with the given `textdomain`
   for disambiguation. The textdomain must match the textdomain specified in the translation file in order
-  to get the string translated. This can be used to that a string is translated differently in different contexts.
-  It is adviced to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
+  to get the string translated. This can be used so that a string is translated differently in different contexts.
+  It is advised to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
   This function must be given a number of arguments equal to the number of arguments the translated string expects.
   Arguments are literal strings -- they will not be translated, so if you want them to be, they need to come as
   outputs of `minetest.translate` as well.
