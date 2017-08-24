@@ -3544,6 +3544,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
+		// Scale shootline to the acual distance the player can reach
+		shootline.end = shootline.start
+			+ shootline.getVector().normalize() * BS * d;
 		shootline.start += intToFloat(camera_offset, BS);
 		shootline.end += intToFloat(camera_offset, BS);
 	}
