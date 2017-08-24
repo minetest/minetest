@@ -328,7 +328,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacket &p, Channel *chan
 }
 
 bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
-	SharedBuffer<u8> data, bool reliable)
+	const SharedBuffer<u8> &data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
@@ -605,9 +605,9 @@ void ConnectionSendThread::send(u16 peer_id, u8 channelnum,
 	u16 split_sequence_number = peer->getNextSplitSequenceNumber(channelnum);
 
 	u32 chunksize_max = m_max_packet_size - BASE_HEADER_SIZE;
-	std::list<SharedBuffer<u8> > originals;
+	std::list<SharedBuffer<u8>> originals;
 
-	originals = makeAutoSplitPacket(data, chunksize_max, split_sequence_number);
+	makeAutoSplitPacket(data, chunksize_max, split_sequence_number, &originals);
 
 	peer->setNextSplitSequenceNumber(channelnum, split_sequence_number);
 
@@ -1179,7 +1179,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 					dynamic_cast<UDPPeer *>(peer)->reportRTT(rtt);
 				}
 			}
-			//put bytes for max bandwidth calculation
+			// put bytes for max bandwidth calculation
 			channel->UpdateBytesSent(p.data.getSize(), 1);
 			if (channel->outgoing_reliables_sent.size() == 0)
 				m_connection->TriggerSend();
@@ -1273,8 +1273,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channe
 			channelnum);
 
 		// Buffer the packet
-		SharedBuffer<u8> data =
-			peer->addSplitPacket(channelnum, packet, reliable);
+		SharedBuffer<u8> data = peer->addSplitPacket(channelnum, packet, reliable);
 
 		if (data.getSize() != 0) {
 			LOG(dout_con << m_connection->getDesc()

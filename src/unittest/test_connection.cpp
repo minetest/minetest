@@ -290,13 +290,13 @@ void TestConnection::testConnectSendReceive()
 			infostream << "...";
 		infostream << std::endl;
 
-		Buffer<u8> sentdata = pkt.oldForgePacket();
+		SharedBuffer<u8> sentdata = pkt.oldForgePacket();
 
 		server.Send(peer_id_client, 0, &pkt, true);
 
 		//sleep_ms(3000);
 
-		Buffer<u8> recvdata;
+		SharedBuffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
 		u16 peer_id = 132;
 		u16 size = 0;

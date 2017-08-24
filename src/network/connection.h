@@ -102,32 +102,16 @@ struct BufferedPacket
 };
 
 // This adds the base headers to the data and makes a packet out of it
-BufferedPacket makePacket(Address &address, u8 *data, u32 datasize,
+BufferedPacket makePacket(Address &address, const SharedBuffer<u8> &data,
 		u32 protocol_id, u16 sender_peer_id, u8 channel);
-BufferedPacket makePacket(Address &address, SharedBuffer<u8> &data,
-		u32 protocol_id, u16 sender_peer_id, u8 channel);
-
-// Add the TYPE_ORIGINAL header to the data
-SharedBuffer<u8> makeOriginalPacket(
-		SharedBuffer<u8> data);
-
-// Split data in chunks and add TYPE_SPLIT headers to them
-std::list<SharedBuffer<u8> > makeSplitPacket(
-		SharedBuffer<u8> data,
-		u32 chunksize_max,
-		u16 seqnum);
 
 // Depending on size, make a TYPE_ORIGINAL or TYPE_SPLIT packet
 // Increments split_seqnum if a split packet is made
-std::list<SharedBuffer<u8> > makeAutoSplitPacket(
-		SharedBuffer<u8> data,
-		u32 chunksize_max,
-		u16 &split_seqnum);
+void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
+		u16 &split_seqnum, std::list<SharedBuffer<u8>> *list);
 
 // Add the TYPE_RELIABLE header to the data
-SharedBuffer<u8> makeReliablePacket(
-		const SharedBuffer<u8> &data,
-		u16 seqnum);
+SharedBuffer<u8> makeReliablePacket(const SharedBuffer<u8> &data, u16 seqnum);
 
 struct IncomingSplitPacket
 {
@@ -137,12 +121,12 @@ struct IncomingSplitPacket
 	IncomingSplitPacket() = delete;
 
 	// Key is chunk number, value is data without headers
-	std::map<u16, SharedBuffer<u8> > chunks;
+	std::map<u16, SharedBuffer<u8>> chunks;
 	u32 chunk_count;
 	float time = 0.0f; // Seconds from adding
 	bool reliable = false; // If true, isn't deleted on timeout
 
-	bool allReceived()
+	bool allReceived() const
 	{
 		return (chunks.size() == chunk_count);
 	}
@@ -341,7 +325,7 @@ struct ConnectionCommand
 	Address address;
 	u16 peer_id = PEER_ID_INEXISTENT;
 	u8 channelnum = 0;
-	Buffer<u8> data;
+	SharedBuffer<u8> data;
 	bool reliable = false;
 	bool raw = false;
 
@@ -785,7 +769,7 @@ public:
 	ConnectionEvent waitEvent(u32 timeout_ms);
 	void putCommand(ConnectionCommand &c);
 
-	void SetTimeoutMs(int timeout) { m_bc_receive_timeout = timeout; }
+	void SetTimeoutMs(u32 timeout) { m_bc_receive_timeout = timeout; }
 	void Serve(Address bind_addr);
 	void Connect(Address address);
 	bool Connected();
@@ -801,7 +785,6 @@ public:
 	void DisconnectPeer(u16 peer_id);
 
 protected:
-	PeerHelper getPeer(u16 peer_id);
 	PeerHelper getPeerNoEx(u16 peer_id);
 	u16   lookupPeer(Address& sender);
 
@@ -814,7 +797,6 @@ protected:
 	void sendAck(u16 peer_id, u8 channelnum, u16 seqnum);
 
 	void PrintInfo(std::ostream &out);
-	void PrintInfo();
 
 	std::list<u16> getPeerIDs()
 	{
@@ -847,7 +829,7 @@ private:
 
 	// Backwards compatibility
 	PeerHandler *m_bc_peerhandler;
-	int m_bc_receive_timeout = 0;
+	u32 m_bc_receive_timeout = 0;
 
 	bool m_shutting_down = false;
 
