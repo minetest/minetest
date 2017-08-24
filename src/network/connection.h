@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_bloated.h"
+#include "peerhandler.h"
 #include "socket.h"
-#include "exceptions.h"
 #include "constants.h"
 #include "util/pointer.h"
 #include "util/container.h"
@@ -36,89 +36,6 @@ class NetworkPacket;
 
 namespace con
 {
-
-/*
-	Exceptions
-*/
-class NotFoundException : public BaseException
-{
-public:
-	NotFoundException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class PeerNotFoundException : public BaseException
-{
-public:
-	PeerNotFoundException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ConnectionException : public BaseException
-{
-public:
-	ConnectionException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ConnectionBindFailed : public BaseException
-{
-public:
-	ConnectionBindFailed(const char *s):
-		BaseException(s)
-	{}
-};
-
-class InvalidIncomingDataException : public BaseException
-{
-public:
-	InvalidIncomingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class InvalidOutgoingDataException : public BaseException
-{
-public:
-	InvalidOutgoingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class NoIncomingDataException : public BaseException
-{
-public:
-	NoIncomingDataException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ProcessedSilentlyException : public BaseException
-{
-public:
-	ProcessedSilentlyException(const char *s):
-		BaseException(s)
-	{}
-};
-
-class ProcessedQueued : public BaseException
-{
-public:
-	ProcessedQueued(const char *s):
-		BaseException(s)
-	{}
-};
-
-class IncomingDataCorruption : public BaseException
-{
-public:
-	IncomingDataCorruption(const char *s):
-		BaseException(s)
-	{}
-};
 
 typedef enum MTProtocols {
 	MTP_PRIMARY,
@@ -566,41 +483,6 @@ private:
 
 class Peer;
 
-enum PeerChangeType
-{
-	PEER_ADDED,
-	PEER_REMOVED
-};
-struct PeerChange
-{
-	PeerChange(PeerChangeType t, u16 _peer_id, bool _timeout):
-		type(t), peer_id(_peer_id), timeout(_timeout) {}
-	PeerChange() = delete;
-
-	PeerChangeType type;
-	u16 peer_id;
-	bool timeout;
-};
-
-class PeerHandler
-{
-public:
-
-	PeerHandler() = default;
-	virtual ~PeerHandler() = default;
-
-	/*
-		This is called after the Peer has been inserted into the
-		Connection's peer container.
-	*/
-	virtual void peerAdded(Peer *peer) = 0;
-	/*
-		This is called before the Peer has been removed from the
-		Connection's peer container.
-	*/
-	virtual void deletingPeer(Peer *peer, bool timeout) = 0;
-};
-
 class PeerHelper
 {
 public:
@@ -619,15 +501,6 @@ private:
 };
 
 class Connection;
-
-typedef enum {
-	MIN_RTT,
-	MAX_RTT,
-	AVG_RTT,
-	MIN_JITTER,
-	MAX_JITTER,
-	AVG_JITTER
-} rtt_stat_type;
 
 typedef enum {
 	CUR_DL_RATE,
@@ -973,6 +846,8 @@ private:
 
 	Connection *m_connection = nullptr;
 };
+
+class PeerHandler;
 
 class Connection
 {

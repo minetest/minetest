@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include "network/connection.h"
 #include "irr_v3d.h"
 #include "map.h"
 #include "hud.h"
@@ -29,6 +28,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "subgame.h"
 #include "tileanimation.h" // struct TileAnimationParams
+#include "network/peerhandler.h"
+#include "network/address.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -291,8 +292,7 @@ public:
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
 	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
-	inline Address getPeerAddress(u16 peer_id)
-			{ return m_con.GetPeerAddress(peer_id); }
+	Address getPeerAddress(u16 peer_id);
 
 	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
@@ -320,7 +320,7 @@ public:
 	void DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason="");
 	void acceptAuth(u16 peer_id, bool forSudoMode);
 	void DenyAccess_Legacy(u16 peer_id, const std::wstring &reason);
-	bool getClientConInfo(u16 peer_id, con::rtt_stat_type type,float* retval);
+	bool getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval);
 	bool getClientInfo(u16 peer_id,ClientState* state, u32* uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
 			std::string* vers_string);
@@ -506,7 +506,7 @@ private:
 	ServerEnvironment *m_env = nullptr;
 
 	// server connection
-	con::Connection m_con;
+	std::shared_ptr<con::Connection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;

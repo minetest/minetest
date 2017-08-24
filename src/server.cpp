@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <queue>
 #include <algorithm>
+#include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "ban.h"
@@ -157,17 +158,17 @@ Server::Server(
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(PROTOCOL_ID,
+	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
 			CONNECTION_TIMEOUT,
 			ipv6,
-			this),
+			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_uptime(0),
-	m_clients(&m_con),
+	m_clients(m_con),
 	m_admin_chat(iface)
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
@@ -377,8 +378,8 @@ void Server::start(Address bind_addr)
 	m_thread->stop();
 
 	// Initialize connection
-	m_con.SetTimeoutMs(30);
-	m_con.Serve(bind_addr);
+	m_con->SetTimeoutMs(30);
+	m_con->Serve(bind_addr);
 
 	// Start thread
 	m_thread->start();
@@ -983,7 +984,7 @@ void Server::Receive()
 	u16 peer_id;
 	try {
 		NetworkPacket pkt;
-		m_con.Receive(&pkt);
+		m_con->Receive(&pkt);
 		peer_id = pkt.getPeerId();
 		ProcessData(&pkt);
 	} catch (const con::InvalidIncomingDataException &e) {
@@ -1308,7 +1309,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 
 bool Server::getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval)
 {
-	*retval = m_con.getPeerStat(peer_id,type);
+	*retval = m_con->getPeerStat(peer_id,type);
 	return *retval != -1;
 }
 
@@ -2623,7 +2624,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 	}
 
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 
@@ -2633,7 +2634,7 @@ void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string 
 
 	SendAccessDenied(peer_id, reason, custom_reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 // 13/03/15: remove this function when protocol version 25 will become
@@ -2644,7 +2645,7 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 
 	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con.DisconnectPeer(peer_id);
+	m_con->DisconnectPeer(peer_id);
 }
 
 void Server::acceptAuth(u16 peer_id, bool forSudoMode)
@@ -3154,6 +3155,11 @@ void Server::hudSetHotbarSelectedImage(RemotePlayer *player, std::string name)
 const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
 {
 	return player->getHotbarSelectedImage();
+}
+
+Address Server::getPeerAddress(u16 peer_id)
+{
+	return m_con->GetPeerAddress(peer_id);
 }
 
 bool Server::setLocalPlayerAnimations(RemotePlayer *player,

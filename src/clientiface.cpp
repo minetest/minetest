@@ -587,7 +587,7 @@ u64 RemoteClient::uptime() const
 	return porting::getTimeS() - m_connection_time;
 }
 
-ClientInterface::ClientInterface(con::Connection* con)
+ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
 :
 	m_con(con),
 	m_env(NULL),

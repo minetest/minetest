@@ -172,7 +172,6 @@ src/network/clientpackethandler.cpp
 src/network/connection.cpp
 src/network/connection.h
 src/network/networkpacket.cpp
-src/network/networkpacket.h
 src/network/networkprotocol.h
 src/network/serveropcodes.cpp
 src/network/serveropcodes.h
@@ -304,8 +303,6 @@ src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
 src/sky.cpp
-src/socket.cpp
-src/socket.h
 src/sound.cpp
 src/sound_openal.cpp
 src/sound_openal.h

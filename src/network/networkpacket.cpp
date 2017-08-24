@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "networkpacket.h"
 #include <sstream>
-#include "exceptions.h"
+#include "networkexceptions.h"
 #include "util/serialize.h"
 
 NetworkPacket::NetworkPacket(u16 command, u32 datasize, u16 peer_id):

@@ -31,6 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "util/strfnd.h"
 #include "network/clientopcodes.h"
+#include "network/connection.h"
 #include "script/scripting_client.h"
 #include "util/serialize.h"
 #include "util/srp.h"
@@ -97,7 +98,7 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 		m_chosen_auth_mech = AUTH_MECHANISM_NONE;
 		m_access_denied = true;
 		m_access_denied_reason = "Unknown";
-		m_con.Disconnect();
+		m_con->Disconnect();
 	}
 
 }
