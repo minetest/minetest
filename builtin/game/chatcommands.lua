@@ -646,6 +646,40 @@ core.register_chatcommand("spawnentity", {
 	end,
 })
 
+core.register_chatcommand("spawn_npc", {
+	params = "<EntityName> [<X>,<Y>,<Z>]",
+	description = "Spawn NPC at given (or your) position",
+	privs = {give=true, interact=true},
+	func = function(name, param)
+		local entityname, p = string.match(param, "^([^ ]+) *(.*)$")
+		if not entityname then
+			return false, "EntityName required"
+		end
+
+		if core.registered_npc[entityname] == nil then
+			return false, "No NPC with name " .. entityname .. " registered."
+		end
+
+		core.log("action", ("%s invokes /spawn_npc, npcname=%q"):format(name, entityname))
+		local player = core.get_player_by_name(name)
+		if player == nil then
+			core.log("error", "Unable to spawn NPC, player is nil")
+			return false, "Unable to spawn NPC, player is nil"
+		end
+		if p == "" then
+			p = player:getpos()
+		else
+			p = core.string_to_pos(p)
+			if p == nil then
+				return false, "Invalid parameters ('" .. param .. "')"
+			end
+		end
+		p.y = p.y + 1
+		core.add_npc(p, entityname)
+		return true, ("%q spawned."):format(entityname)
+	end,
+})
+
 core.register_chatcommand("pulverize", {
 	params = "",
 	description = "Destroy item in hand",

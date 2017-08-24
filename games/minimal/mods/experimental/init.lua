@@ -4,6 +4,9 @@
 
 -- For testing random stuff
 
+local modpath = minetest.get_modpath("experimental")
+dofile(modpath .. "/npc.lua")
+
 experimental = {}
 
 function experimental.print_to_everything(msg)

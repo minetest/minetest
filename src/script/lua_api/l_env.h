@@ -93,6 +93,10 @@ private:
 	// pos = {x=num, y=num, z=num}
 	static int l_add_entity(lua_State *L);
 
+	// add npc(pos, npcname) -> ObjectRef or nil
+	// pos = {x=num, y=num, z=num}
+	static int l_add_npc(lua_State *L);
+
 	// add_item(pos, itemstack or itemstring or table) -> ObjectRef or nil
 	// pos = {x=num, y=num, z=num}
 	static int l_add_item(lua_State *L);

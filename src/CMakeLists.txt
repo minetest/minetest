@@ -376,6 +376,7 @@ set(common_SRCS
 	content_mapnode.cpp
 	content_nodemeta.cpp
 	content_sao.cpp
+	npc_sao.cpp
 	convert_json.cpp
 	craftdef.cpp
 	database-dummy.cpp

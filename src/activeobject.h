@@ -33,6 +33,7 @@ enum ActiveObjectType {
 	ACTIVEOBJECT_TYPE_MOBV2 = 6,
 // End deprecated stuff
 	ACTIVEOBJECT_TYPE_LUAENTITY = 7,
+	ACTIVEOBJECT_TYPE_NPC = 8,
 // Special type, not stored as a static object
 	ACTIVEOBJECT_TYPE_PLAYER = 100,
 // Special type, only exists as CAO

@@ -20,6 +20,7 @@ core.register_alias_raw = nil
 core.registered_abms = {}
 core.registered_lbms = {}
 core.registered_entities = {}
+core.registered_npc = {}
 core.registered_items = {}
 core.registered_nodes = {}
 core.registered_craftitems = {}
@@ -102,6 +103,21 @@ function core.register_entity(name, prototype)
 
 	-- Add to core.registered_entities
 	core.registered_entities[name] = prototype
+	prototype.mod_origin = core.get_current_modname() or "??"
+end
+
+function core.register_npc(name, prototype)
+	-- Check name
+	if name == nil then
+		error("Unable to register npc: Name is nil")
+	end
+	name = check_modname_prefix(tostring(name))
+
+	prototype.name = name
+	prototype.__index = prototype  -- so that it can be used as a metatable
+
+	-- Add to core.registered_npc
+	core.registered_npc[name] = prototype
 	prototype.mod_origin = core.get_current_modname() or "??"
 end
 
