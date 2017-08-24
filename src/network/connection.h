@@ -37,13 +37,19 @@ class NetworkPacket;
 namespace con
 {
 
+class ConnectionReceiveThread;
+class ConnectionSendThread;
+
 typedef enum MTProtocols {
 	MTP_PRIMARY,
 	MTP_UDP,
 	MTP_MINETEST_RELIABLE_UDP
 } MTProtocols;
 
+#define MAX_UDP_PEERS 65535
+
 #define SEQNUM_MAX 65535
+
 inline bool seqnum_higher(u16 totest, u16 base)
 {
 	if (totest > base)
@@ -71,6 +77,12 @@ inline bool seqnum_in_window(u16 seqnum, u16 next,u16 window_size)
 
 
 	return ((seqnum < window_end) || (seqnum >= window_start));
+}
+
+static inline float CALC_DTIME(u64 lasttime, u64 curtime)
+{
+	float value = ( curtime - lasttime) / 1000.0;
+	return MYMAX(MYMIN(value,0.1),0.0);
 }
 
 struct BufferedPacket
@@ -119,7 +131,10 @@ SharedBuffer<u8> makeReliablePacket(
 
 struct IncomingSplitPacket
 {
-	IncomingSplitPacket() = default;
+	IncomingSplitPacket(u32 cc, bool r):
+		chunk_count(cc), reliable(r) {}
+
+	IncomingSplitPacket() = delete;
 
 	// Key is chunk number, value is data without headers
 	std::map<u16, SharedBuffer<u8> > chunks;
@@ -171,7 +186,7 @@ controltype and data description:
 	  packet to get a reply
 	CONTROLTYPE_DISCO
 */
-#define TYPE_CONTROL 0
+//#define TYPE_CONTROL 0
 #define CONTROLTYPE_ACK 0
 #define CONTROLTYPE_SET_PEER_ID 1
 #define CONTROLTYPE_PING 2
@@ -185,7 +200,7 @@ checking at all.
 	Header (1 byte):
 	[0] u8 type
 */
-#define TYPE_ORIGINAL 1
+//#define TYPE_ORIGINAL 1
 #define ORIGINAL_HEADER_SIZE 1
 /*
 SPLIT: These are sequences of packets forming one bigger piece of
@@ -202,7 +217,7 @@ data.
 	[3] u16 chunk_count
 	[5] u16 chunk_num
 */
-#define TYPE_SPLIT 2
+//#define TYPE_SPLIT 2
 /*
 RELIABLE: Delivery of all RELIABLE packets shall be forced by ACKs,
 and they shall be delivered in the same order as sent. This is done
@@ -214,10 +229,17 @@ with a buffer in the receiving and transmitting end.
 	[1] u16 seqnum
 
 */
-#define TYPE_RELIABLE 3
+//#define TYPE_RELIABLE 3
 #define RELIABLE_HEADER_SIZE 3
 #define SEQNUM_INITIAL 65500
 
+enum PacketType: u8 {
+	PACKET_TYPE_CONTROL = 0,
+	PACKET_TYPE_ORIGINAL = 1,
+	PACKET_TYPE_SPLIT = 2,
+	PACKET_TYPE_RELIABLE = 3,
+	PACKET_TYPE_MAX
+};
 /*
 	A buffer which stores reliable packets and sorts them internally
 	for fast access to the smallest one.
@@ -270,7 +292,7 @@ public:
 		Returns a reference counted buffer of length != 0 when a full split
 		packet is constructed. If not, returns one of length 0.
 	*/
-	SharedBuffer<u8> insert(BufferedPacket &p, bool reliable);
+	SharedBuffer<u8> insert(const BufferedPacket &p, bool reliable);
 
 	void removeUnreliableTimedOuts(float dtime, float timeout);
 
@@ -318,7 +340,7 @@ struct ConnectionCommand
 	enum ConnectionCommandType type = CONNCMD_NONE;
 	Address address;
 	u16 peer_id = PEER_ID_INEXISTENT;
-	u8 channelnum;
+	u8 channelnum = 0;
 	Buffer<u8> data;
 	bool reliable = false;
 	bool raw = false;
@@ -551,13 +573,12 @@ class Peer {
 
 		virtual u16 getNextSplitSequenceNumber(u8 channel) { return 0; };
 		virtual void setNextSplitSequenceNumber(u8 channel, u16 seqnum) {};
-		virtual SharedBuffer<u8> addSpiltPacket(u8 channel,
-												BufferedPacket toadd,
-												bool reliable)
-				{
-					fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
-					return SharedBuffer<u8>(0);
-				};
+		virtual SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
+				bool reliable)
+		{
+			fprintf(stderr,"Peer: addSplitPacket called, this is supposed to be never called!\n");
+			return SharedBuffer<u8>(0);
+		};
 
 		virtual bool Ping(float dtime, SharedBuffer<u8>& data) { return false; };
 
@@ -649,10 +670,8 @@ public:
 	u16 getNextSplitSequenceNumber(u8 channel);
 	void setNextSplitSequenceNumber(u8 channel, u16 seqnum);
 
-	SharedBuffer<u8> addSpiltPacket(u8 channel,
-									BufferedPacket toadd,
-									bool reliable);
-
+	SharedBuffer<u8> addSplitPacket(u8 channel, const BufferedPacket &toadd,
+		bool reliable);
 
 protected:
 	/*
@@ -750,103 +769,6 @@ struct ConnectionEvent
 	}
 };
 
-class ConnectionSendThread : public Thread {
-
-public:
-	friend class UDPPeer;
-
-	ConnectionSendThread(unsigned int max_packet_size, float timeout);
-
-	void *run();
-
-	void Trigger();
-
-	void setParent(Connection* parent) {
-		assert(parent != NULL); // Pre-condition
-		m_connection = parent;
-	}
-
-	void setPeerTimeout(float peer_timeout)
-		{ m_timeout = peer_timeout; }
-
-private:
-	void runTimeouts    (float dtime);
-	void rawSend        (const BufferedPacket &packet);
-	bool rawSendAsPacket(u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data, bool reliable);
-
-	void processReliableCommand (ConnectionCommand &c);
-	void processNonReliableCommand (ConnectionCommand &c);
-	void serve          (Address bind_address);
-	void connect        (Address address);
-	void disconnect     ();
-	void disconnect_peer(u16 peer_id);
-	void send           (u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data);
-	void sendReliable   (ConnectionCommand &c);
-	void sendToAll      (u8 channelnum,
-							SharedBuffer<u8> data);
-	void sendToAllReliable(ConnectionCommand &c);
-
-	void sendPackets    (float dtime);
-
-	void sendAsPacket   (u16 peer_id, u8 channelnum,
-							SharedBuffer<u8> data,bool ack=false);
-
-	void sendAsPacketReliable(BufferedPacket& p, Channel* channel);
-
-	bool packetsQueued();
-
-	Connection           *m_connection = nullptr;
-	unsigned int          m_max_packet_size;
-	float                 m_timeout;
-	std::queue<OutgoingPacket> m_outgoing_queue;
-	Semaphore             m_send_sleep_semaphore;
-
-	unsigned int          m_iteration_packets_avaialble;
-	unsigned int          m_max_commands_per_iteration = 1;
-	unsigned int          m_max_data_packets_per_iteration;
-	unsigned int          m_max_packets_requeued = 256;
-};
-
-class ConnectionReceiveThread : public Thread {
-public:
-	ConnectionReceiveThread(unsigned int max_packet_size);
-
-	void *run();
-
-	void setParent(Connection *parent) {
-		assert(parent); // Pre-condition
-		m_connection = parent;
-	}
-
-private:
-	void receive();
-
-	// Returns next data from a buffer if possible
-	// If found, returns true; if not, false.
-	// If found, sets peer_id and dst
-	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
-
-	bool checkIncomingBuffers(Channel *channel, u16 &peer_id,
-							SharedBuffer<u8> &dst);
-
-	/*
-		Processes a packet with the basic header stripped out.
-		Parameters:
-			packetdata: Data in packet (with no base headers)
-			peer_id: peer id of the sender of the packet in question
-			channelnum: channel on which the packet was sent
-			reliable: true if recursing into a reliable packet
-	*/
-	SharedBuffer<u8> processPacket(Channel *channel,
-							SharedBuffer<u8> packetdata, u16 peer_id,
-							u8 channelnum, bool reliable);
-
-
-	Connection *m_connection = nullptr;
-};
-
 class PeerHandler;
 
 class Connection
@@ -905,8 +827,7 @@ protected:
 
 	void putEvent(ConnectionEvent &e);
 
-	void TriggerSend()
-		{ m_sendThread.Trigger(); }
+	void TriggerSend();
 private:
 	std::list<Peer*> getPeers();
 
@@ -919,8 +840,8 @@ private:
 	std::list<u16> m_peer_ids;
 	std::mutex m_peers_mutex;
 
-	ConnectionSendThread m_sendThread;
-	ConnectionReceiveThread m_receiveThread;
+	std::unique_ptr<ConnectionSendThread> m_sendThread;
+	std::unique_ptr<ConnectionReceiveThread> m_receiveThread;
 
 	std::mutex m_info_mutex;
 

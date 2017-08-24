@@ -1,6 +1,7 @@
 set(common_network_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/address.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/connection.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/connectionthreads.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/networkpacket.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serverpackethandler.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/serveropcodes.cpp

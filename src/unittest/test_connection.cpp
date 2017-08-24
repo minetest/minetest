@@ -115,7 +115,7 @@ void TestConnection::testHelpers()
 	infostream<<"data1[0]="<<((u32)data1[0]&0xff)<<std::endl;*/
 
 	UASSERT(p2.getSize() == 3 + data1.getSize());
-	UASSERT(readU8(&p2[0]) == TYPE_RELIABLE);
+	UASSERT(readU8(&p2[0]) == con::PACKET_TYPE_RELIABLE);
 	UASSERT(readU16(&p2[1]) == seqnum);
 	UASSERT(readU8(&p2[3]) == data1[0]);
 }
