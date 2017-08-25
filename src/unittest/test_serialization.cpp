@@ -303,11 +303,9 @@ void TestSerialization::testStreamRead()
 	UASSERT(readS64(is) == -43);
 
 	UASSERT(readF1000(is) == 53.534f);
-	UASSERT(readF1000(is) == -300000.32f);
-	UASSERT(readF1000(is) == F1000_MIN);
-	UASSERT(readF1000(is) == F1000_MAX);
-
-	UASSERT(readF32(is) == 60000121.f);
+	UASSERT(readF32(is) == -6000000.32f);
+	UASSERT(readF32(is) == 0.4915f);
+	UASSERT(readF32(is) == 2315.99f);
 
 	UASSERT(deSerializeString(is) == "foobar!");
 
@@ -315,11 +313,11 @@ void TestSerialization::testStreamRead()
 	UASSERT(readV3S16(is) == v3s16(4207, 604, -30));
 	UASSERT(readV2S32(is) == v2s32(1920, 1080));
 	UASSERT(readV3S32(is) == v3s32(-400, 6400054, 290549855));
-	UASSERT(readV2F1000(is) == v2f(500.656f, 350.345f));
+	UASSERT(readV2F32(is) == v2f(500.656f, 350.345f));
 
 	UASSERT(deSerializeWideString(is) == L"\x02~woof~\x5455");
 
-	UASSERT(readV3F1000(is) == v3f(500, 10024.2f, -192.54f));
+	UASSERT(readV3F32(is) == v3f(500, 10024.2f, -192.54f));
 	UASSERT(readARGB8(is) == video::SColor(255, 128, 50, 128));
 
 	UASSERT(deSerializeLongString(is) == "some longer string here");
@@ -346,11 +344,9 @@ void TestSerialization::testStreamWrite()
 	writeS64(os, -43);
 
 	writeF1000(os, 53.53467f);
-	writeF1000(os, -300000.32f);
-	writeF1000(os, F1000_MIN);
-	writeF1000(os, F1000_MAX);
-
-	writeF32(os, 60000121.f);
+	writeF32(os, -6000000.32f);
+	writeF32(os, 0.4915f);
+	writeF32(os, 2315.99f);
 
 	os << serializeString("foobar!");
 
@@ -362,11 +358,11 @@ void TestSerialization::testStreamWrite()
 	writeV3S16(os, v3s16(4207, 604, -30));
 	writeV2S32(os, v2s32(1920, 1080));
 	writeV3S32(os, v3s32(-400, 6400054, 290549855));
-	writeV2F1000(os, v2f(500.65661f, 350.34567f));
+	writeV2F32(os, v2f(500.656f, 350.345f));
 
 	os << serializeWideString(L"\x02~woof~\x5455");
 
-	writeV3F1000(os, v3f(500, 10024.2f, -192.54f));
+	writeV3F32(os, v3f(500, 10024.2f, -192.54f));
 	writeARGB8(os, video::SColor(255, 128, 50, 128));
 
 	os << serializeLongString("some longer string here");
@@ -394,9 +390,9 @@ void TestSerialization::testVecPut()
 	putS64(&buf, -43);
 
 	putF1000(&buf, 53.53467f);
-	putF1000(&buf, -300000.32f);
-	putF1000(&buf, F1000_MIN);
-	putF1000(&buf, F1000_MAX);
+	putF32(&buf, -6000000.32f);
+	putF32(&buf, 0.4915f);
+	putF32(&buf, 2315.99f);
 
 	putString(&buf, "foobar!");
 
@@ -404,11 +400,11 @@ void TestSerialization::testVecPut()
 	putV3S16(&buf, v3s16(4207, 604, -30));
 	putV2S32(&buf, v2s32(1920, 1080));
 	putV3S32(&buf, v3s32(-400, 6400054, 290549855));
-	putV2F1000(&buf, v2f(500.65661f, 350.34567f));
+	putV2F32(&buf, v2f(500.656f, 350.345f));
 
 	putWideString(&buf, L"\x02~woof~\x5455");
 
-	putV3F1000(&buf, v3f(500, 10024.2f, -192.54f));
+	putV3F32(&buf, v3f(500, 10024.2f, -192.54f));
 	putARGB8(&buf, video::SColor(255, 128, 50, 128));
 
 	putLongString(&buf, "some longer string here");
@@ -474,17 +470,17 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getS32() == -6);
 	UASSERT(buf.getS64() == -43);
 	UASSERT(buf.getF1000() == 53.534f);
-	UASSERT(buf.getF1000() == -300000.32f);
-	UASSERT(buf.getF1000() == F1000_MIN);
-	UASSERT(buf.getF1000() == F1000_MAX);
+	UASSERT(buf.getF32() == -6000000.32f);
+	UASSERT(buf.getF32() == 0.4915f);
+	UASSERT(buf.getF32() == 2315.99f);
 	UASSERT(buf.getString() == "foobar!");
 	UASSERT(buf.getV2S16() == v2s16(500, 500));
 	UASSERT(buf.getV3S16() == v3s16(4207, 604, -30));
 	UASSERT(buf.getV2S32() == v2s32(1920, 1080));
 	UASSERT(buf.getV3S32() == v3s32(-400, 6400054, 290549855));
-	UASSERT(buf.getV2F1000() == v2f(500.656f, 350.345f));
+	UASSERT(buf.getV2F32() == v2f(500.656f, 350.345f));
 	UASSERT(buf.getWideString() == L"\x02~woof~\x5455");
-	UASSERT(buf.getV3F1000() == v3f(500, 10024.2f, -192.54f));
+	UASSERT(buf.getV3F32() == v3f(500, 10024.2f, -192.54f));
 	UASSERT(buf.getARGB8() == video::SColor(255, 128, 50, 128));
 	UASSERT(buf.getLongString() == "some longer string here");
 
@@ -520,6 +516,7 @@ void TestSerialization::testBufReader()
 	EXCEPTION_CHECK(SerializationError, buf.getS32());
 	EXCEPTION_CHECK(SerializationError, buf.getS64());
 
+	EXCEPTION_CHECK(SerializationError, buf.getF32());
 	EXCEPTION_CHECK(SerializationError, buf.getF1000());
 	EXCEPTION_CHECK(SerializationError, buf.getARGB8());
 
@@ -527,8 +524,8 @@ void TestSerialization::testBufReader()
 	EXCEPTION_CHECK(SerializationError, buf.getV3S16());
 	EXCEPTION_CHECK(SerializationError, buf.getV2S32());
 	EXCEPTION_CHECK(SerializationError, buf.getV3S32());
-	EXCEPTION_CHECK(SerializationError, buf.getV2F1000());
-	EXCEPTION_CHECK(SerializationError, buf.getV3F1000());
+	EXCEPTION_CHECK(SerializationError, buf.getV2F32());
+	EXCEPTION_CHECK(SerializationError, buf.getV3F32());
 
 	EXCEPTION_CHECK(SerializationError, buf.getString());
 	EXCEPTION_CHECK(SerializationError, buf.getWideString());
@@ -560,16 +557,16 @@ void TestSerialization::testBufReader()
 	UASSERT(buf.getS64NoEx(&s64_data));
 
 	UASSERT(buf.getF1000NoEx(&f32_data));
-	UASSERT(buf.getF1000NoEx(&f32_data2));
-	UASSERT(buf.getF1000NoEx(&f32_data3));
-	UASSERT(buf.getF1000NoEx(&f32_data4));
+	UASSERT(buf.getF32NoEx(&f32_data2));
+	UASSERT(buf.getF32NoEx(&f32_data3));
+	UASSERT(buf.getF32NoEx(&f32_data4));
 
 	UASSERT(buf.getStringNoEx(&string_data));
 	UASSERT(buf.getV2S16NoEx(&v2s16_data));
 	UASSERT(buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(buf.getV2F1000NoEx(&v2f_data));
+	UASSERT(buf.getV2F32NoEx(&v2f_data));
 	UASSERT(buf.getWideStringNoEx(&widestring_data));
 	UASSERT(buf.getV3F1000NoEx(&v3f_data));
 	UASSERT(buf.getARGB8NoEx(&scolor_data));
@@ -586,9 +583,9 @@ void TestSerialization::testBufReader()
 	UASSERT(s32_data == -6);
 	UASSERT(s64_data == -43);
 	UASSERT(f32_data == 53.534f);
-	UASSERT(f32_data2 == -300000.32f);
-	UASSERT(f32_data3 == F1000_MIN);
-	UASSERT(f32_data4 == F1000_MAX);
+	UASSERT(f32_data2 == -6000000.32f);
+	UASSERT(f32_data3 == 0.4915f);
+	UASSERT(f32_data4 == 2315.99f);
 	UASSERT(string_data == "foobar!");
 	UASSERT(v2s16_data == v2s16(500, 500));
 	UASSERT(v3s16_data == v3s16(4207, 604, -30));
@@ -620,14 +617,15 @@ void TestSerialization::testBufReader()
 	UASSERT(!buf.getS64NoEx(&s64_data));
 
 	UASSERT(!buf.getF1000NoEx(&f32_data));
+	UASSERT(!buf.getF32NoEx(&f32_data2));
 	UASSERT(!buf.getARGB8NoEx(&scolor_data));
 
 	UASSERT(!buf.getV2S16NoEx(&v2s16_data));
 	UASSERT(!buf.getV3S16NoEx(&v3s16_data));
 	UASSERT(!buf.getV2S32NoEx(&v2s32_data));
 	UASSERT(!buf.getV3S32NoEx(&v3s32_data));
-	UASSERT(!buf.getV2F1000NoEx(&v2f_data));
-	UASSERT(!buf.getV3F1000NoEx(&v3f_data));
+	UASSERT(!buf.getV2F32NoEx(&v2f_data));
+	UASSERT(!buf.getV3F32NoEx(&v3f_data));
 
 	UASSERT(!buf.getStringNoEx(&string_data));
 	UASSERT(!buf.getWideStringNoEx(&widestring_data));
@@ -639,15 +637,15 @@ void TestSerialization::testBufReader()
 const u8 TestSerialization::test_serialized_data[12 * 13] = {
 	0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc,
 	0xdd, 0xee, 0xff, 0x80, 0x75, 0x30, 0xff, 0xff, 0xff, 0xfa, 0xff, 0xff,
-	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xee, 0x1e,
-	0x5b, 0xc0, 0x80, 0x00, 0x02, 0x80, 0x7F, 0xFF, 0xFD, 0x80, 0x00, 0x07,
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xd5, 0x00, 0x00, 0xd1, 0x1e, 0xca, 0xb7,
+	0x1b, 0x01, 0x3e, 0xfb, 0xa5, 0xe3, 0x45, 0x10, 0xbf, 0x7d, 0x00, 0x07,
 	0x66, 0x6f, 0x6f, 0x62, 0x61, 0x72, 0x21, 0x01, 0xf4, 0x01, 0xf4, 0x10,
 	0x6f, 0x02, 0x5c, 0xff, 0xe2, 0x00, 0x00, 0x07, 0x80, 0x00, 0x00, 0x04,
 	0x38, 0xff, 0xff, 0xfe, 0x70, 0x00, 0x61, 0xa8, 0x36, 0x11, 0x51, 0x70,
-	0x5f, 0x00, 0x07, 0xa3, 0xb0, 0x00, 0x05, 0x58, 0x89, 0x00, 0x08, 0x00,
+	0x5f, 0x43, 0xfa, 0x53, 0xf8, 0x43, 0xaf, 0x2c, 0x29, 0x00, 0x08, 0x00,
 	0x02, 0x00, 0x7e, 0x00, 0x77, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x66, 0x00,
-	0x7e, 0x54, 0x55, 0x00, 0x07, 0xa1, 0x20, 0x00, 0x98, 0xf5, 0x08, 0xff,
-	0xfd, 0x0f, 0xe4, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
+	0x7e, 0x54, 0x55, 0x43, 0xfa, 0x00, 0x00, 0x46, 0x1c, 0xa0, 0xcd, 0xc3,
+	0x40, 0x8a, 0x3d, 0xff, 0x80, 0x32, 0x80, 0x00, 0x00, 0x00, 0x17, 0x73,
 	0x6f, 0x6d, 0x65, 0x20, 0x6c, 0x6f, 0x6e, 0x67, 0x65, 0x72, 0x20, 0x73,
 	0x74, 0x72, 0x69, 0x6e, 0x67, 0x20, 0x68, 0x65, 0x72, 0x65, 0xF0, 0x0D,
 };

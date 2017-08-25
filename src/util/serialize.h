@@ -41,6 +41,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cfloat>
 
 #define FIXEDPOINT_FACTOR 1000.0f
 
@@ -237,14 +238,7 @@ inline v3s32 readV3S32(const u8 *data)
 	return p;
 }
 
-inline v2f readV2F1000(const u8 *data)
-{
-	v2f p;
-	p.X = (float)readF1000(&data[0]);
-	p.Y = (float)readF1000(&data[4]);
-	return p;
-}
-
+// Legacy format
 inline v3f readV3F1000(const u8 *data)
 {
 	v3f p;
@@ -308,9 +302,13 @@ inline void writeF1000(u8 *data, f32 i)
 inline void writeF32(u8 *data, f32 i)
 {
 	assert(!(i != i)); // NaN check
+#if FLT_MANT_DIG == 24
 	u32 val = 0;
 	memcpy(&val, &i, 4);
 	writeU32(data, val);
+#else
+	FLT_MANT_DIG
+#endif
 }
 
 inline void writeARGB8(u8 *data, video::SColor p)
@@ -344,12 +342,7 @@ inline void writeV3S32(u8 *data, v3s32 p)
 	writeS32(&data[8], p.Z);
 }
 
-inline void writeV2F1000(u8 *data, v2f p)
-{
-	writeF1000(&data[0], p.X);
-	writeF1000(&data[4], p.Y);
-}
-
+// Legacy format
 inline void writeV3F1000(u8 *data, v3f p)
 {
 	writeF1000(&data[0], p.X);
@@ -404,7 +397,6 @@ MAKE_STREAM_READ_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_READ_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_READ_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_READ_FXN(v3s32, V3S32,   12);
-MAKE_STREAM_READ_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_READ_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_READ_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_READ_FXN(v3f,   V3F32,   12);
@@ -424,7 +416,6 @@ MAKE_STREAM_WRITE_FXN(v2s16, V2S16,    4);
 MAKE_STREAM_WRITE_FXN(v3s16, V3S16,    6);
 MAKE_STREAM_WRITE_FXN(v2s32, V2S32,    8);
 MAKE_STREAM_WRITE_FXN(v3s32, V3S32,   12);
-MAKE_STREAM_WRITE_FXN(v2f,   V2F1000,  8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F1000, 12);
 MAKE_STREAM_WRITE_FXN(v2f,   V2F32,    8);
 MAKE_STREAM_WRITE_FXN(v3f,   V3F32,   12);
@@ -517,12 +508,14 @@ public:
 	MAKE_BUFREADER_GETNOEX_FXN(s16,   S16,      2);
 	MAKE_BUFREADER_GETNOEX_FXN(s32,   S32,      4);
 	MAKE_BUFREADER_GETNOEX_FXN(s64,   S64,      8);
+	MAKE_BUFREADER_GETNOEX_FXN(f32,   F32,      4);
 	MAKE_BUFREADER_GETNOEX_FXN(f32,   F1000,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s16, V2S16,    4);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s16, V3S16,    6);
 	MAKE_BUFREADER_GETNOEX_FXN(v2s32, V2S32,    8);
 	MAKE_BUFREADER_GETNOEX_FXN(v3s32, V3S32,   12);
-	MAKE_BUFREADER_GETNOEX_FXN(v2f,   V2F1000,  8);
+	MAKE_BUFREADER_GETNOEX_FXN(v2f,   V2F32,    8);
+	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F32,   12);
 	MAKE_BUFREADER_GETNOEX_FXN(v3f,   V3F1000, 12);
 	MAKE_BUFREADER_GETNOEX_FXN(video::SColor, ARGB8, 4);
 
@@ -539,12 +532,14 @@ public:
 	MAKE_BUFREADER_GET_FXN(s16,           S16);
 	MAKE_BUFREADER_GET_FXN(s32,           S32);
 	MAKE_BUFREADER_GET_FXN(s64,           S64);
+	MAKE_BUFREADER_GET_FXN(f32,           F32);
 	MAKE_BUFREADER_GET_FXN(f32,           F1000);
 	MAKE_BUFREADER_GET_FXN(v2s16,         V2S16);
 	MAKE_BUFREADER_GET_FXN(v3s16,         V3S16);
 	MAKE_BUFREADER_GET_FXN(v2s32,         V2S32);
 	MAKE_BUFREADER_GET_FXN(v3s32,         V3S32);
-	MAKE_BUFREADER_GET_FXN(v2f,           V2F1000);
+	MAKE_BUFREADER_GET_FXN(v2f,           V2F32);
+	MAKE_BUFREADER_GET_FXN(v3f,           V3F32);
 	MAKE_BUFREADER_GET_FXN(v3f,           V3F1000);
 	MAKE_BUFREADER_GET_FXN(video::SColor, ARGB8);
 	MAKE_BUFREADER_GET_FXN(std::string,   String);
@@ -627,6 +622,19 @@ inline void putS64(std::vector<u8> *dest, s64 val)
 	putU64(dest, val);
 }
 
+inline void putF32(std::vector<u8> *dest, f32 val)
+{
+	assert(!(i != i)); // NaN check
+#if FLT_MANT_DIG == 24
+	u32 c = 0;
+	memcpy(&c, &val, 4);
+	putU32(dest, c);
+#else
+	FLT_MANT_DIG
+#endif
+}
+
+// Legacy format
 inline void putF1000(std::vector<u8> *dest, f32 val)
 {
 	putS32(dest, val * FIXEDPOINT_FACTOR);
@@ -658,17 +666,25 @@ inline void putV3S32(std::vector<u8> *dest, v3s32 val)
 	putS32(dest, val.Z);
 }
 
-inline void putV2F1000(std::vector<u8> *dest, v2f val)
-{
-	putF1000(dest, val.X);
-	putF1000(dest, val.Y);
-}
-
+// Legacy format
 inline void putV3F1000(std::vector<u8> *dest, v3f val)
 {
 	putF1000(dest, val.X);
 	putF1000(dest, val.Y);
 	putF1000(dest, val.Z);
+}
+
+inline void putV2F32(std::vector<u8> *dest, v2f val)
+{
+	putF32(dest, val.X);
+	putF32(dest, val.Y);
+}
+
+inline void putV3F32(std::vector<u8> *dest, v3f val)
+{
+	putF32(dest, val.X);
+	putF32(dest, val.Y);
+	putF32(dest, val.Z);
 }
 
 inline void putARGB8(std::vector<u8> *dest, video::SColor val)
