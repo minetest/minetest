@@ -584,10 +584,10 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc,
 	// check textures
 	video::ITexture *texture = tsrc->getTextureForMesh(imagename);
 	if (!texture) {
-		return nullptr;
+		return NULL;
 	}
 	video::ITexture *overlay_texture =
-		(overlay_name == "") ? nullptr : tsrc->getTexture(overlay_name);
+		(overlay_name.empty()) ? NULL : tsrc->getTexture(overlay_name);
 
 	// get mesh
 	core::dimension2d<u32> dim = texture->getSize();
