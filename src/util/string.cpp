@@ -866,7 +866,12 @@ void translate_string(const std::wstring &s, const std::wstring &textdomain,
 		// Here we have an argument; get its index and add the translated argument to the output.
 		int arg_index = toutput[j] - L'1';
 		++j;
-		result << args[arg_index];
+		if (0 <= arg_index && (size_t)arg_index < args.size()) {
+			result << args[arg_index];
+		} else {
+			// This is not allowed: show an error message
+			errorstream << "Ignoring out-of-bounds argument escape sequence in translation" << std::endl;
+		}
 	}
 	res = result.str();
 }
