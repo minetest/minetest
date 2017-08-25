@@ -796,6 +796,12 @@ node definition:
       respectively. Allows light to propagate from or through the node with
       light value falling by 1 per node. This is essential for a light source
       node to spread its light.
+      Nodes with drawtype allfaces, allfaces_optional, torchlike, signlike,
+      plantlike, raillike, firelike, nodebox and mesh have paramtype set to
+      "light" if omitted because they require this paramtype to be displayed
+      correctly.
+      If the node doesn't have paramtype "light", you can use param1 to store
+      custom 8 Bit values for your own purposes.
 
 `param2` is reserved for the engine when any of these are used:
 
@@ -4146,7 +4152,20 @@ Definition tables
                             {bendy = 2, snappy = 1},
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
+        --[[
+        ^ The icon of an item which is shown in the inventory
+        ^ For nodes with drawtype plantlike, raillike, signlike, torchlike or
+        ^ firelike it becomes set automatically to the first tile image if
+        ^ omitted.
+        ]]
         wield_image = "",
+         --[[
+        ^ The image of an item which is shown in the hud or dropped, if
+        ^ specified, the texture becomes extruded to look more
+        ^ three-dimensional.
+        ^ For nodes with drawtype raillike, signlike or torchlike it becomes set
+        ^ automatically to the first tile image if omitted.
+        ]]
         palette = "",
         --[[
         ^ An image file containing the palette of a node.
