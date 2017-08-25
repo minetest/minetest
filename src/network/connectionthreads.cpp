@@ -51,6 +51,8 @@ std::mutex log_conthread_mutex;
 /* maximum number of retries for reliable packets */
 #define MAX_RELIABLE_RETRY 5
 
+#define WINDOW_SIZE 5
+
 static u16 readPeerId(u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
@@ -172,7 +174,8 @@ void ConnectionSendThread::runTimeouts(float dtime)
 		if (!peer)
 			continue;
 
-		if (dynamic_cast<UDPPeer *>(&peer) == 0)
+		UDPPeer *udpPeer = dynamic_cast<UDPPeer *>(&peer);
+		if (!udpPeer)
 			continue;
 
 		PROFILE(std::stringstream peerIdentifier);
@@ -198,13 +201,13 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			continue;
 		}
 
-		float resend_timeout = dynamic_cast<UDPPeer *>(&peer)->getResendTimeout();
+		float resend_timeout = udpPeer->getResendTimeout();
 		bool retry_count_exceeded = false;
-		for (Channel &channel : (dynamic_cast<UDPPeer *>(&peer))->channels) {
+		for (Channel &channel : udpPeer->channels) {
 			std::list<BufferedPacket> timed_outs;
 
-			if (dynamic_cast<UDPPeer *>(&peer)->getLegacyPeer())
-				channel.setWindowSize(g_settings->getU16("workaround_window_size"));
+			if (udpPeer->getLegacyPeer())
+				channel.setWindowSize(WINDOW_SIZE);
 
 			// Remove timed out incomplete unreliable split packets
 			channel.incoming_splits.removeUnreliableTimedOuts(dtime, m_timeout);
@@ -261,7 +264,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 				break; /* no need to check other channels if we already did timeout */
 			}
 
-			channel.UpdateTimers(dtime, dynamic_cast<UDPPeer *>(&peer)->getLegacyPeer());
+			channel.UpdateTimers(dtime, udpPeer->getLegacyPeer());
 		}
 
 		/* skip to next peer if we did timeout */
@@ -269,18 +272,17 @@ void ConnectionSendThread::runTimeouts(float dtime)
 			continue;
 
 		/* send ping if necessary */
-		if (dynamic_cast<UDPPeer *>(&peer)->Ping(dtime, data)) {
+		if (udpPeer->Ping(dtime, data)) {
 			LOG(dout_con << m_connection->getDesc()
-				<< "Sending ping for peer_id: "
-				<< dynamic_cast<UDPPeer *>(&peer)->id << std::endl);
+				<< "Sending ping for peer_id: " << udpPeer->id << std::endl);
 			/* this may fail if there ain't a sequence number left */
-			if (!rawSendAsPacket(dynamic_cast<UDPPeer *>(&peer)->id, 0, data, true)) {
+			if (!rawSendAsPacket(udpPeer->id, 0, data, true)) {
 				//retrigger with reduced ping interval
-				dynamic_cast<UDPPeer *>(&peer)->Ping(4.0, data);
+				udpPeer->Ping(4.0, data);
 			}
 		}
 
-		dynamic_cast<UDPPeer *>(&peer)->RunCommandQueues(m_max_packet_size,
+		udpPeer->RunCommandQueues(m_max_packet_size,
 			m_max_commands_per_iteration,
 			m_max_packets_requeued);
 	}
@@ -718,10 +720,10 @@ void ConnectionSendThread::sendPackets(float dtime)
 				<< channel.queued_commands.size()
 				<< std::endl);
 
-			while ((!channel.queued_reliables.empty()) &&
-				(channel.outgoing_reliables_sent.size()
-					< channel.getWindowSize()) &&
-				(peer->m_increment_packets_remaining > 0)) {
+			while (!channel.queued_reliables.empty() &&
+					channel.outgoing_reliables_sent.size()
+					< channel.getWindowSize() &&
+					peer->m_increment_packets_remaining > 0) {
 				BufferedPacket p = channel.queued_reliables.front();
 				channel.queued_reliables.pop();
 				LOG(dout_con << m_connection->getDesc()
