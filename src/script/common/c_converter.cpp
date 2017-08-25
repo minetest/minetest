@@ -28,6 +28,7 @@ extern "C" {
 #include "common/c_converter.h"
 #include "common/c_internal.h"
 #include "constants.h"
+#include <cmath> // for isnan, isinf
 
 
 #define CHECK_TYPE(index, name, type) { \
@@ -40,13 +41,11 @@ extern "C" {
 		} \
 	}
 #define CHECK_POS_COORD(name) CHECK_TYPE(-1, "position coordinate '" name "'", LUA_TNUMBER)
-// TODO: Check for real float limits
 #define CHECK_FLOAT_RANGE(value, name) \
-if (value < F1000_MIN || value > F1000_MAX) { \
+if (std::isnan(value) || std::isinf(value)) { \
 	std::ostringstream error_text; \
 	error_text << "Invalid float vector dimension range '" name "' " << \
-	"(expected " << F1000_MIN << " < " name " < " << F1000_MAX << \
-	" got " << value << ")." << std::endl; \
+	"(got " << value << ")." << std::endl; \
 	throw LuaError(error_text.str()); \
 }
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)

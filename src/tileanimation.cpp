@@ -19,53 +19,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "util/serialize.h"
 
-void TileAnimationParams::serialize(std::ostream &os, u16 protocol_version) const
+void TileAnimationParams::serialize(std::ostream &os, u8 version) const
 {
-	if (protocol_version < 29) {
-		if (type == TAT_VERTICAL_FRAMES) {
-			writeU8(os, type);
-			writeU16(os, vertical_frames.aspect_w);
-			writeU16(os, vertical_frames.aspect_h);
-			writeF1000(os, vertical_frames.length);
-		} else {
-			writeU8(os, TAT_NONE);
-			writeU16(os, 1);
-			writeU16(os, 1);
-			writeF1000(os, 1.0);
-		}
-		return;
-	}
-
 	writeU8(os, type);
 	if (type == TAT_VERTICAL_FRAMES) {
 		writeU16(os, vertical_frames.aspect_w);
 		writeU16(os, vertical_frames.aspect_h);
-		writeF1000(os, vertical_frames.length);
+		writeF32(os, vertical_frames.length);
 	} else if (type == TAT_SHEET_2D) {
 		writeU8(os, sheet_2d.frames_w);
 		writeU8(os, sheet_2d.frames_h);
-		writeF1000(os, sheet_2d.frame_length);
+		writeF32(os, sheet_2d.frame_length);
 	}
 }
 
-void TileAnimationParams::deSerialize(std::istream &is, u16 protocol_version)
+void TileAnimationParams::deSerialize(std::istream &is, u8 version)
 {
 	type = (TileAnimationType) readU8(is);
-	if (protocol_version < 29) {
-		vertical_frames.aspect_w = readU16(is);
-		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF1000(is);
-		return;
-	}
 
 	if (type == TAT_VERTICAL_FRAMES) {
 		vertical_frames.aspect_w = readU16(is);
 		vertical_frames.aspect_h = readU16(is);
-		vertical_frames.length = readF1000(is);
+		vertical_frames.length = readF32(is);
 	} else if (type == TAT_SHEET_2D) {
 		sheet_2d.frames_w = readU8(is);
 		sheet_2d.frames_h = readU8(is);
-		sheet_2d.frame_length = readF1000(is);
+		sheet_2d.frame_length = readF32(is);
 	}
 }
 

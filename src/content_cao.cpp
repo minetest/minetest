@@ -300,8 +300,6 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_visible = false;
 			player->setCAO(this);
 		}
-		if (m_client->getProtoVersion() < 33)
-			m_env->addPlayerName(m_name);
 	}
 }
 
@@ -337,9 +335,6 @@ void GenericCAO::processInitData(const std::string &data)
 
 GenericCAO::~GenericCAO()
 {
-	if (m_is_player && m_client->getProtoVersion() < 33) {
-		m_env->removePlayerName(m_name);
-	}
 	removeFromScene(true);
 }
 
