@@ -191,8 +191,9 @@ inline f32 readF1000(const u8 *data)
 
 inline f32 readF32(const u8 *data)
 {
+	u32 dat = readU32(data);
 	f32 val = 0;
-	memcpy(&val, data, 4);
+	memcpy(&val, &dat, 4);
 	return val;
 }
 
@@ -307,9 +308,10 @@ inline void writeF1000(u8 *data, f32 i)
 inline void writeF32(u8 *data, f32 i)
 {
 	assert(!(i != i)); // NaN check
-	memcpy(data, &i, 4);
+	u32 val = 0;
+	memcpy(&val, &i, 4);
+	writeU32(data, val);
 }
-
 
 inline void writeARGB8(u8 *data, video::SColor p)
 {
