@@ -704,6 +704,8 @@ function core.translate(textdomain, str, ...)
 			end
 			arg_index = arg_index + 1
 			return ESCAPE_CHAR .. "F" .. arg[a] .. ESCAPE_CHAR .. "E"
+		elseif matched == "n" then
+			return "\n"
 		else
 			return matched
 		end
