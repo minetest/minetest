@@ -67,7 +67,9 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	name = def.name;
 	description = def.description;
 	inventory_image = def.inventory_image;
+	inventory_overlay = def.inventory_overlay;
 	wield_image = def.wield_image;
+	wield_overlay = def.wield_overlay;
 	wield_scale = def.wield_scale;
 	stack_max = def.stack_max;
 	usable = def.usable;
@@ -105,7 +107,9 @@ void ItemDefinition::reset()
 	name = "";
 	description = "";
 	inventory_image = "";
+	inventory_overlay = "";
 	wield_image = "";
+	wield_overlay = "";
 	palette_image = "";
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
@@ -159,6 +163,8 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	if (version >= 4) {
 		writeF1000(os, sound_place.pitch);
 		writeF1000(os, sound_place_failed.pitch);
+		os << serializeString(inventory_overlay);
+		os << serializeString(wield_overlay);
 	}
 }
 
@@ -222,6 +228,8 @@ void ItemDefinition::deSerialize(std::istream &is)
 		if (version >= 4) {
 			sound_place.pitch = readF1000(is);
 			sound_place_failed.pitch = readF1000(is);
+			inventory_overlay = deSerializeString(is);
+			wield_overlay = deSerializeString(is);
 		}
 	} catch(SerializationError &e) {};
 }

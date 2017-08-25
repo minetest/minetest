@@ -78,8 +78,8 @@ public:
 	virtual ~WieldMeshSceneNode();
 
 	void setCube(const ContentFeatures &f, v3f wield_scale);
-	void setExtruded(const std::string &imagename, v3f wield_scale,
-			ITextureSource *tsrc, u8 num_frames);
+	void setExtruded(const std::string &imagename, const std::string &overlay_image,
+			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
@@ -125,7 +125,8 @@ private:
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);
 
-scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename);
+scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename,
+		const std::string &overlay_name);
 
 /*!
  * Applies overlays, textures and optionally materials to the given mesh and

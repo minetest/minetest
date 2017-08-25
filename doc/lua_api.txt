@@ -588,7 +588,11 @@ other. This allows different hardware coloring, but also means that
 tiles with overlays are drawn slower. Using too much overlays might
 cause FPS loss.
 
-To define an overlay, simply set the `overlay_tiles` field of the node
+For inventory and wield images you can specify overlays which
+hardware coloring does not modify. You have to set `inventory_overlay`
+and `wield_overlay` fields to an image name.
+
+To define a node overlay, simply set the `overlay_tiles` field of the node
 definition. These tiles are defined in the same way as plain tiles:
 they can have a texture name, color etc.
 To skip one face, set that overlay tile to an empty string.
@@ -4146,7 +4150,9 @@ Definition tables
                             {bendy = 2, snappy = 1},
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
+        inventory_overlay = "overlay.png", -- an overlay which does not get colorized
         wield_image = "",
+        wield_overlay = "",
         palette = "",
         --[[
         ^ An image file containing the palette of a node.
