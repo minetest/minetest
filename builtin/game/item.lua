@@ -420,19 +420,16 @@ end
 
 function core.item_drop(itemstack, dropper, pos)
 	if dropper and dropper:is_player() then
-		local v = dropper:get_look_dir()
-		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
-		local cs = itemstack:get_count()
-		if dropper:get_player_control().sneak then
-			cs = 1
-		end
-		local item = itemstack:take_item(cs)
+		local dir = dropper:get_look_dir()
+		local p = {x = pos.x, y = pos.y + 1.2, z = pos.z}
+		local cnt = itemstack:get_count()
+		local item = itemstack:take_item(cnt)
 		local obj = core.add_item(p, item)
 		if obj then
-			v.x = v.x*2
-			v.y = v.y*2 + 2
-			v.z = v.z*2
-			obj:setvelocity(v)
+			dir.x = dir.x * 2
+			dir.y = dir.y * 2 + 2
+			dir.z = dir.z * 2
+			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
 			return itemstack
 		end
