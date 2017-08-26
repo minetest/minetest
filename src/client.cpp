@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/connection.h"
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
+#include "client/clientevent.h"
 #include "client/renderingengine.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
@@ -1863,6 +1864,11 @@ void Client::makeScreenshot()
 bool Client::shouldShowMinimap() const
 {
 	return !m_minimap_disabled_by_server;
+}
+
+void Client::pushToEventQueue(const ClientEvent &event)
+{
+	m_client_event_queue.push(event);
 }
 
 void Client::showGameChat(const bool show)
