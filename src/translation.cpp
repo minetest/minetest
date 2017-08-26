@@ -80,6 +80,8 @@ void Translations::loadTranslation(const std::string &data)
 				if (i + 1 < wline.length()) {
 					if (wline[i + 1] == L'=') {
 						word1.put(L'=');
+					} else if (wline[i + 1] == L'n') {
+						word1.put(L'\n');
 					} else {
 						word1.put(L'@');
 						word1.put(wline[i + 1]);
@@ -113,6 +115,8 @@ void Translations::loadTranslation(const std::string &data)
 				if (i + 1 < wline.length()) {
 					if (wline[i + 1] == L'=') {
 						word2.put(L'=');
+					} else if (wline[i + 1] == L'n') {
+						word2.put(L'\n');
 					} else {
 						word2.put(L'@');
 						word2.put(wline[i + 1]);

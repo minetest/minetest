@@ -2199,6 +2199,15 @@ Two functions are provided to translate strings: `minetest.translate` and `minet
 
   this will be displayed as "Laine Rouge" on clients with a French locale.
 
+### Operations on translated strings
+
+The output of `minetest.translate` is a string, with escape sequences adding additional information to that string
+so that it can be translated on the different clients. In particular, you can't expect operations like string.length
+to work on them like you would expect them to, or string.gsub to work in the expected manner. However, string
+concatenation will still work as expected (note that you should only use this for things like formspecs; do not
+translate sentences by breaking them into parts; arguments should be used instead), and operations such as
+`minetest.colorize` which are only concatenation under the hood as well.
+
 ### Translation file format
 A translation file has the suffix `.[lang].tr`, where `[lang]` is the language it corresponds to.
 The file should be a text file, with the following format:
@@ -2221,6 +2230,7 @@ Strings that need to be translated can contain several escapes, preceded by `@`.
   files to avoid begin confused with the `=` separating the original from the translation.
 * `@\n` (where the `\n` is a literal newline) acts as a literal newline. As with `@=`, this escape is not required
   in strings given to `minetest.translate`, but is in translation files.
+* `@n` acts as a literal newline as well.
 
 `minetest` namespace reference
 ------------------------------
