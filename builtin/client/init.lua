@@ -24,6 +24,7 @@ end)
 
 core.register_on_receiving_chat_message(function(message)
 	if #message > 80 then
+		core.display_chat_message(message:sub(1, 80))
 		return true
 	end
 end)
