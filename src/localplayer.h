@@ -60,6 +60,7 @@ public:
 	u8 liquid_viscosity = 0;
 	bool is_climbing = false;
 	bool swimming_vertical = false;
+	bool is_slipping = false;
 
 	float physics_override_speed = 1.0f;
 	float physics_override_jump = 1.0f;
@@ -143,11 +144,10 @@ public:
 	void setCollisionbox(const aabb3f &box) { m_collisionbox = box; }
 
 private:
-	// clang-format off
-	void accelerateHorizontal(const v3f &target_speed, f32 max_increase, bool slippery);
-	// clang-format on
+	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	bool updateSneakNode(Map *map, const v3f &position, const v3f &sneak_max);
+	float getSlipFactor(Environment *env, const v3f &speedH);
 
 	v3f m_position;
 

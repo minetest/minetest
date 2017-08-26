@@ -656,13 +656,10 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	else
 		incH = incV = movement_acceleration_default * BS * dtime;
 
-	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
-	Map *map = &env->getMap();
-	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(getStandingNodePos()));
-	bool slippery = (itemgroup_get(f.groups, "slippery") != 0);
+	float slip_factor = getSlipFactor(env, speedH);
 	// Accelerate to target speed with maximum increment
 	accelerateHorizontal(speedH * physics_override_speed,
-			incH * physics_override_speed, slippery);
+			incH * physics_override_speed * slip_factor);
 	accelerateVertical(speedV * physics_override_speed,
 			incV * physics_override_speed);
 }
@@ -702,19 +699,12 @@ v3f LocalPlayer::getEyeOffset() const
 
 // Horizontal acceleration (X and Z), Y direction is ignored
 void LocalPlayer::accelerateHorizontal(const v3f &target_speed,
-	const f32 max_increase, bool slippery)
+	const f32 max_increase)
 {
         if (max_increase == 0)
                 return;
 
 	v3f d_wanted = target_speed - m_speed;
-	if (slippery) {
-		if (target_speed == v3f())
-			d_wanted = -m_speed * 0.05f;
-		else
-			d_wanted *= 0.1f;
-	}
-
 	d_wanted.Y = 0.0f;
 	f32 dl = d_wanted.getLength();
 	if (dl > max_increase)
@@ -1037,4 +1027,53 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 		setSpeed(m_speed);
 		m_can_jump = false;
 	}
+}
+
+float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
+{
+
+	if (!touching_ground)
+		return 1.0f;
+
+	float slip_factor = 1.0f;
+	// Slip on slippery nodes
+	const INodeDefManager *nodemgr = env->getGameDef()->ndef();
+	Map *map = &env->getMap();
+	const ContentFeatures &f = nodemgr->get(map->getNodeNoEx(
+			floatToInt(getPosition() - v3f(0, 0.05f * BS, 0), BS)));
+	int slippery = 0;
+	if (f.walkable) {
+		slippery = itemgroup_get(f.groups, "slippery");
+	} else if (is_slipping) {
+		// slipping over an edge? Check surroundings for slippery nodes
+		slippery = 2 << 16; // guard value, bigger than all realistic ones
+		for (int z = 0; z <= 1; z++) {
+			for (int x = 0; x <= 1; x++) {
+				// this should cover all nodes surrounding player position
+				v3f offset((x - 0.5f) * BS, 0.05f * BS, (z - 0.5f) * BS);
+				const ContentFeatures &f2 = nodemgr->get(map->getNodeNoEx(
+						floatToInt(getPosition() - offset, BS)));
+				if (f2.walkable) {
+					// find least slippery node we might be standing on
+					int s = itemgroup_get(f2.groups, "slippery");
+					if (s < slippery)
+						slippery = s;
+				}
+			}
+		}
+		// without any hits, ignore slippery
+		if (slippery >= (2 << 16))
+			slippery = 0;
+	}
+	if (slippery >= 1) {
+		if (speedH == v3f(0.0f)) {
+			slippery = slippery * 2;
+		}
+		slip_factor = core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
+		is_slipping = true;
+	} else {
+		// remember this to avoid checking the edge case above too often
+		is_slipping = false;
+	}
+	return slip_factor;
 }
