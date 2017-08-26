@@ -285,7 +285,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	// to all players, as this currently creates unintended special movement
 	// abilities and advantages for Android players on a server.
 #ifdef __ANDROID__
-	player_stepheight += (0.6f * BS);
+	if (touching_ground)
+		player_stepheight += (0.6f * BS);
 #endif
 
 	v3f accel_f = v3f(0,0,0);
