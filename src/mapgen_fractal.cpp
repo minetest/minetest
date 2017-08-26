@@ -268,32 +268,38 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 	float nw = 0.0f;
 
 	for (u16 iter = 0; iter < iterations; iter++) {
-
-		if (formula == 1) {  // 4D "Roundy"
+		switch (formula) {
+		default:
+		case 1: // 4D "Roundy"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 2) {  // 4D "Squarry"
+			break;
+		case 2: // 4D "Squarry"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow - oy * oz) + cw;
-		} else if (formula == 3) {  // 4D "Mandy Cousin"
+			break;
+		case 3: // 4D "Mandy Cousin"
 			nx = ox * ox - oy * oy - oz * oz + ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 4) {  // 4D "Variation"
+			break;
+		case 4: // 4D "Variation"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz - oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 5) {  // 3D "Mandelbrot/Mandelbar"
+			break;
+		case 5: // 3D "Mandelbrot/Mandelbar"
 			nx = ox * ox - oy * oy - oz * oz + cx;
 			ny = 2.0f * ox * oy + cy;
 			nz = -2.0f * ox * oz + cz;
-		} else if (formula == 6) {  // 3D "Christmas Tree"
+			break;
+		case 6: // 3D "Christmas Tree"
 			// Altering the formula here is necessary to avoid division by zero
 			if (fabs(oz) < 0.000000001f) {
 				nx = ox * ox - oy * oy - oz * oz + cx;
@@ -305,7 +311,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = a * (oy * oy - oz * oz) + cy;
 				nz = a * 2.0f * oy * oz + cz;
 			}
-		} else if (formula == 7) {  // 3D "Mandelbulb"
+			break;
+		case 7: // 3D "Mandelbulb"
 			if (fabs(oy) < 0.000000001f) {
 				nx = ox * ox - oz * oz + cx;
 				ny = cy;
@@ -316,7 +323,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = 2.0f * ox * oy * a + cy;
 				nz = -2.0f * oz * sqrt(ox * ox + oy * oy) + cz;
 			}
-		} else if (formula == 8) {  // 3D "Cosine Mandelbulb"
+			break;
+		case 8: // 3D "Cosine Mandelbulb"
 			if (fabs(oy) < 0.000000001f) {
 				nx = 2.0f * ox * oz + cx;
 				ny = 4.0f * oy * oz + cy;
@@ -327,7 +335,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = 2.0f * ox * oy * a + cy;
 				nz = oz * oz - ox * ox - oy * oy + cz;
 			}
-		} else if (formula == 9) {  // 4D "Mandelbulb"
+			break;
+		case 9: // 4D "Mandelbulb"
 			float rxy = sqrt(ox * ox + oy * oy);
 			float rxyz = sqrt(ox * ox + oy * oy + oz * oz);
 			if (fabs(ow) < 0.000000001f && fabs(oz) < 0.000000001f) {
@@ -343,6 +352,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				nz = -2.0f * rxy * oz * a + cz;
 				nw = 2.0f * rxyz * ow + cw;
 			}
+			break;
 		}
 
 		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0f)
