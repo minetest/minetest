@@ -330,7 +330,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	float player_stepheight = (touching_ground) ? (BS * 0.6f) : (BS * 0.2f);
 
 #ifdef __ANDROID__
-	player_stepheight += (0.6f * BS);
+	if (touching_ground)
+		player_stepheight += (0.6f * BS);
 #endif
 
 	v3f accel_f = v3f(0,0,0);
