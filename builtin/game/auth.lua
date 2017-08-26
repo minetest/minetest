@@ -127,32 +127,16 @@ core.builtin_auth_handler = {
 		end
 
 		-- Run grant callbacks
-		print("Checking!")
 		for priv, _ in pairs(privileges) do
 			if not core.auth_table[name].privileges[priv] then
-				print("Running callback!")
-				if not core.registered_privileges[priv].on_grant
-						or core.registered_privileges[priv].on_grant(name, nil) then
-					for _, func in ipairs(core.registered_on_priv_grant) do
-						if not func(name, nil) then
-							break
-						end
-					end
-				end
+				core.run_priv_callbacks(name, priv, nil, "grant")
 			end
 		end
 
 		-- Run revoke callbacks
 		for priv, _ in pairs(core.auth_table[name].privileges) do
 			if not privileges[priv] then
-				if not core.registered_privileges[priv].on_revoke
-						or core.registered_privileges[priv].on_revoke(name, nil) then
-					for _, func in ipairs(core.registered_on_priv_revoke) do
-						if not func(name, nil) then
-							break
-						end
-					end
-				end
+				core.run_priv_callbacks(name, priv, nil, "revoke")
 			end
 		end
 

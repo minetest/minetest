@@ -133,14 +133,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 		return false, privs_unknown
 	end
 	for priv, _ in pairs(grantprivs) do
-		if not core.registered_privileges[priv].on_grant
-				or core.registered_privileges[priv].on_grant(grantname, caller) then
-			for _, func in ipairs(core.registered_on_priv_grant) do
-				if not func(grantname, caller) then
-					break
-				end
-			end
-		end
+		core.run_priv_callbacks(grantname, priv, caller, "grant")
 	end
 	core.set_player_privs(grantname, privs)
 	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
@@ -212,14 +205,7 @@ core.register_chatcommand("revoke", {
 		end
 
 		for priv, _ in pairs(revoke_privs) do
-			if not core.registered_privileges[priv].on_revoke
-					or core.registered_privileges[priv].on_revoke(revoke_name, name) then
-				for _, func in ipairs(core.registered_on_priv_revoke) do
-					if not func(revoke_name, name) then
-						break
-					end
-				end
-			end
+			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
 		end
 
 		core.set_player_privs(revoke_name, privs)
