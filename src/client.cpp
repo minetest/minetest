@@ -426,9 +426,9 @@ void Client::step(float dtime)
 					sendDamage(damage);
 
 				// Add to ClientEvent queue
-				ClientEvent event;
-				event.type = CE_PLAYER_DAMAGE;
-				event.player_damage.amount = damage;
+				ClientEvent *event = new ClientEvent();
+				event->type = CE_PLAYER_DAMAGE;
+				event->player_damage.amount = damage;
 				m_client_event_queue.push(event);
 			}
 		}
@@ -1662,12 +1662,12 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 	}
 }
 
-ClientEvent Client::getClientEvent()
+ClientEvent *Client::getClientEvent()
 {
 	FATAL_ERROR_IF(m_client_event_queue.empty(),
 			"Cannot getClientEvent, queue is empty.");
 
-	ClientEvent event = m_client_event_queue.front();
+	ClientEvent *event = m_client_event_queue.front();
 	m_client_event_queue.pop();
 	return event;
 }
@@ -1866,7 +1866,7 @@ bool Client::shouldShowMinimap() const
 	return !m_minimap_disabled_by_server;
 }
 
-void Client::pushToEventQueue(const ClientEvent &event)
+void Client::pushToEventQueue(ClientEvent *event)
 {
 	m_client_event_queue.push(event);
 }

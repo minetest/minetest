@@ -320,7 +320,7 @@ public:
 
 	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
-	ClientEvent getClientEvent();
+	ClientEvent * getClientEvent();
 
 	bool accessDenied() const { return m_access_denied; }
 
@@ -400,7 +400,7 @@ public:
 	ClientScripting *getScript() { return m_script; }
 	const bool moddingEnabled() const { return m_modding_enabled; }
 
-	void pushToEventQueue(const ClientEvent &event);
+	void pushToEventQueue(ClientEvent *event);
 
 	void showGameChat(bool show = true);
 	void showGameHud(bool show = true);
@@ -529,7 +529,7 @@ private:
 	bool m_access_denied = false;
 	bool m_access_denied_reconnect = false;
 	std::string m_access_denied_reason = "";
-	std::queue<ClientEvent> m_client_event_queue;
+	std::queue<ClientEvent *> m_client_event_queue;
 	bool m_itemdef_received = false;
 	bool m_nodedef_received = false;
 	ClientMediaDownloader *m_media_downloader;

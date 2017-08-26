@@ -3132,29 +3132,29 @@ void Game::processClientEvents(CameraOrientation *cam)
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
 	while (client->hasClientEvents()) {
-		ClientEvent event = client->getClientEvent();
+		std::unique_ptr<ClientEvent> event(client->getClientEvent());
 
-		switch (event.type) {
+		switch (event->type) {
 		case CE_PLAYER_DAMAGE:
 			if (client->getHP() == 0)
 				break;
 			if (client->moddingEnabled()) {
-				client->getScript()->on_damage_taken(event.player_damage.amount);
+				client->getScript()->on_damage_taken(event->player_damage.amount);
 			}
 
-			runData.damage_flash += 95.0 + 3.2 * event.player_damage.amount;
+			runData.damage_flash += 95.0 + 3.2 * event->player_damage.amount;
 			runData.damage_flash = MYMIN(runData.damage_flash, 127.0);
 
 			player->hurt_tilt_timer = 1.5;
 			player->hurt_tilt_strength =
-				rangelim(event.player_damage.amount / 4, 1.0, 4.0);
+				rangelim(event->player_damage.amount / 4, 1.0, 4.0);
 
 			client->event()->put(new SimpleTriggerEvent("PlayerDamage"));
 			break;
 
 		case CE_PLAYER_FORCE_MOVE:
-			cam->camera_yaw = event.player_force_move.yaw;
-			cam->camera_pitch = event.player_force_move.pitch;
+			cam->camera_yaw = event->player_force_move.yaw;
+			cam->camera_pitch = event->player_force_move.pitch;
 			break;
 
 		case CE_DEATHSCREEN:
@@ -3168,93 +3168,94 @@ void Game::processClientEvents(CameraOrientation *cam)
 			break;
 
 		case CE_SHOW_FORMSPEC:
-			if (event.show_formspec.formspec->empty()) {
-				if (current_formspec && (event.show_formspec.formname->empty()
-						|| *(event.show_formspec.formname) == cur_formname)) {
+			if (event->show_formspec.formspec->empty()) {
+				if (current_formspec && (event->show_formspec.formname->empty()
+						|| *(event->show_formspec.formname) == cur_formname)) {
 					current_formspec->quitMenu();
 				}
 			} else {
 				FormspecFormSource *fs_src =
-					new FormspecFormSource(*(event.show_formspec.formspec));
+					new FormspecFormSource(*(event->show_formspec.formspec));
 				TextDestPlayerInventory *txt_dst =
-					new TextDestPlayerInventory(client, *(event.show_formspec.formname));
+					new TextDestPlayerInventory(client, *(event->show_formspec.formname));
 
 				create_formspec_menu(&current_formspec, client, &input->joystick,
 					fs_src, txt_dst);
-				cur_formname = *(event.show_formspec.formname);
+				cur_formname = *(event->show_formspec.formname);
 			}
 
-			delete event.show_formspec.formspec;
-			delete event.show_formspec.formname;
+			delete event->show_formspec.formspec;
+			delete event->show_formspec.formname;
 			break;
 
 		case CE_SHOW_LOCAL_FORMSPEC:
 			{
-				FormspecFormSource *fs_src = new FormspecFormSource(*event.show_formspec.formspec);
-				LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event.show_formspec.formname, client);
+				FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
+				LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event->show_formspec.formname, client);
 				create_formspec_menu(&current_formspec, client, &input->joystick,
 					fs_src, txt_dst);
 			}
-			delete event.show_formspec.formspec;
-			delete event.show_formspec.formname;
+			delete event->show_formspec.formspec;
+			delete event->show_formspec.formname;
 			break;
 
 		case CE_SPAWN_PARTICLE:
 		case CE_ADD_PARTICLESPAWNER:
 		case CE_DELETE_PARTICLESPAWNER:
-			client->getParticleManager()->handleParticleEvent(&event, client, player);
+			client->getParticleManager()->handleParticleEvent(event.get(), client,
+				player);
 			break;
 
 		case CE_HUDADD:
 			{
-				u32 id = event.hudadd.id;
+				u32 id = event->hudadd.id;
 
 				HudElement *e = player->getHud(id);
 
 				if (e != NULL) {
-					delete event.hudadd.pos;
-					delete event.hudadd.name;
-					delete event.hudadd.scale;
-					delete event.hudadd.text;
-					delete event.hudadd.align;
-					delete event.hudadd.offset;
-					delete event.hudadd.world_pos;
-					delete event.hudadd.size;
+					delete event->hudadd.pos;
+					delete event->hudadd.name;
+					delete event->hudadd.scale;
+					delete event->hudadd.text;
+					delete event->hudadd.align;
+					delete event->hudadd.offset;
+					delete event->hudadd.world_pos;
+					delete event->hudadd.size;
 					continue;
 				}
 
 				e = new HudElement;
-				e->type   = (HudElementType)event.hudadd.type;
-				e->pos    = *event.hudadd.pos;
-				e->name   = *event.hudadd.name;
-				e->scale  = *event.hudadd.scale;
-				e->text   = *event.hudadd.text;
-				e->number = event.hudadd.number;
-				e->item   = event.hudadd.item;
-				e->dir    = event.hudadd.dir;
-				e->align  = *event.hudadd.align;
-				e->offset = *event.hudadd.offset;
-				e->world_pos = *event.hudadd.world_pos;
-				e->size = *event.hudadd.size;
+				e->type   = (HudElementType)event->hudadd.type;
+				e->pos    = *event->hudadd.pos;
+				e->name   = *event->hudadd.name;
+				e->scale  = *event->hudadd.scale;
+				e->text   = *event->hudadd.text;
+				e->number = event->hudadd.number;
+				e->item   = event->hudadd.item;
+				e->dir    = event->hudadd.dir;
+				e->align  = *event->hudadd.align;
+				e->offset = *event->hudadd.offset;
+				e->world_pos = *event->hudadd.world_pos;
+				e->size = *event->hudadd.size;
 
 				u32 new_id = player->addHud(e);
 				//if this isn't true our huds aren't consistent
 				sanity_check(new_id == id);
 			}
 
-			delete event.hudadd.pos;
-			delete event.hudadd.name;
-			delete event.hudadd.scale;
-			delete event.hudadd.text;
-			delete event.hudadd.align;
-			delete event.hudadd.offset;
-			delete event.hudadd.world_pos;
-			delete event.hudadd.size;
+			delete event->hudadd.pos;
+			delete event->hudadd.name;
+			delete event->hudadd.scale;
+			delete event->hudadd.text;
+			delete event->hudadd.align;
+			delete event->hudadd.offset;
+			delete event->hudadd.world_pos;
+			delete event->hudadd.size;
 			break;
 
 		case CE_HUDRM:
 			{
-				HudElement *e = player->removeHud(event.hudrm.id);
+				HudElement *e = player->removeHud(event->hudrm.id);
 
 				delete e;
 			}
@@ -3262,74 +3263,74 @@ void Game::processClientEvents(CameraOrientation *cam)
 
 		case CE_HUDCHANGE:
 			{
-				u32 id = event.hudchange.id;
+				u32 id = event->hudchange.id;
 				HudElement *e = player->getHud(id);
 
 				if (e == NULL) {
-					delete event.hudchange.v3fdata;
-					delete event.hudchange.v2fdata;
-					delete event.hudchange.sdata;
-					delete event.hudchange.v2s32data;
+					delete event->hudchange.v3fdata;
+					delete event->hudchange.v2fdata;
+					delete event->hudchange.sdata;
+					delete event->hudchange.v2s32data;
 					continue;
 				}
 
-				switch (event.hudchange.stat) {
+				switch (event->hudchange.stat) {
 				case HUD_STAT_POS:
-					e->pos = *event.hudchange.v2fdata;
+					e->pos = *event->hudchange.v2fdata;
 					break;
 
 				case HUD_STAT_NAME:
-					e->name = *event.hudchange.sdata;
+					e->name = *event->hudchange.sdata;
 					break;
 
 				case HUD_STAT_SCALE:
-					e->scale = *event.hudchange.v2fdata;
+					e->scale = *event->hudchange.v2fdata;
 					break;
 
 				case HUD_STAT_TEXT:
-					e->text = *event.hudchange.sdata;
+					e->text = *event->hudchange.sdata;
 					break;
 
 				case HUD_STAT_NUMBER:
-					e->number = event.hudchange.data;
+					e->number = event->hudchange.data;
 					break;
 
 				case HUD_STAT_ITEM:
-					e->item = event.hudchange.data;
+					e->item = event->hudchange.data;
 					break;
 
 				case HUD_STAT_DIR:
-					e->dir = event.hudchange.data;
+					e->dir = event->hudchange.data;
 					break;
 
 				case HUD_STAT_ALIGN:
-					e->align = *event.hudchange.v2fdata;
+					e->align = *event->hudchange.v2fdata;
 					break;
 
 				case HUD_STAT_OFFSET:
-					e->offset = *event.hudchange.v2fdata;
+					e->offset = *event->hudchange.v2fdata;
 					break;
 
 				case HUD_STAT_WORLD_POS:
-					e->world_pos = *event.hudchange.v3fdata;
+					e->world_pos = *event->hudchange.v3fdata;
 					break;
 
 				case HUD_STAT_SIZE:
-					e->size = *event.hudchange.v2s32data;
+					e->size = *event->hudchange.v2s32data;
 					break;
 				}
 			}
 
-			delete event.hudchange.v3fdata;
-			delete event.hudchange.v2fdata;
-			delete event.hudchange.sdata;
-			delete event.hudchange.v2s32data;
+			delete event->hudchange.v3fdata;
+			delete event->hudchange.v2fdata;
+			delete event->hudchange.sdata;
+			delete event->hudchange.v2s32data;
 			break;
 
 		case CE_SET_SKY:
 			sky->setVisible(false);
 			// Whether clouds are visible in front of a custom skybox
-			sky->setCloudsEnabled(event.set_sky.clouds);
+			sky->setCloudsEnabled(event->set_sky.clouds);
 
 			if (skybox) {
 				skybox->remove();
@@ -3337,50 +3338,50 @@ void Game::processClientEvents(CameraOrientation *cam)
 			}
 
 			// Handle according to type
-			if (*event.set_sky.type == "regular") {
+			if (*event->set_sky.type == "regular") {
 				sky->setVisible(true);
 				sky->setCloudsEnabled(true);
-			} else if (*event.set_sky.type == "skybox" &&
-					event.set_sky.params->size() == 6) {
-				sky->setFallbackBgColor(*event.set_sky.bgcolor);
+			} else if (*event->set_sky.type == "skybox" &&
+					event->set_sky.params->size() == 6) {
+				sky->setFallbackBgColor(*event->set_sky.bgcolor);
 				skybox = RenderingEngine::get_scene_manager()->addSkyBoxSceneNode(
-						 texture_src->getTextureForMesh((*event.set_sky.params)[0]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[1]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[2]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[3]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[4]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[5]));
+						 texture_src->getTextureForMesh((*event->set_sky.params)[0]),
+						 texture_src->getTextureForMesh((*event->set_sky.params)[1]),
+						 texture_src->getTextureForMesh((*event->set_sky.params)[2]),
+						 texture_src->getTextureForMesh((*event->set_sky.params)[3]),
+						 texture_src->getTextureForMesh((*event->set_sky.params)[4]),
+						 texture_src->getTextureForMesh((*event->set_sky.params)[5]));
 			}
 			// Handle everything else as plain color
 			else {
-				if (*event.set_sky.type != "plain")
+				if (*event->set_sky.type != "plain")
 					infostream << "Unknown sky type: "
-						   << (*event.set_sky.type) << std::endl;
+						   << (*event->set_sky.type) << std::endl;
 
-				sky->setFallbackBgColor(*event.set_sky.bgcolor);
+				sky->setFallbackBgColor(*event->set_sky.bgcolor);
 			}
 
-			delete event.set_sky.bgcolor;
-			delete event.set_sky.type;
-			delete event.set_sky.params;
+			delete event->set_sky.bgcolor;
+			delete event->set_sky.type;
+			delete event->set_sky.params;
 			break;
 
 		case CE_OVERRIDE_DAY_NIGHT_RATIO:
 			client->getEnv().setDayNightRatioOverride(
-					event.override_day_night_ratio.do_override,
-					event.override_day_night_ratio.ratio_f * 1000);
+					event->override_day_night_ratio.do_override,
+					event->override_day_night_ratio.ratio_f * 1000);
 			break;
 
 		case CE_CLOUD_PARAMS:
 			if (clouds) {
-				clouds->setDensity(event.cloud_params.density);
-				clouds->setColorBright(video::SColor(event.cloud_params.color_bright));
-				clouds->setColorAmbient(video::SColor(event.cloud_params.color_ambient));
-				clouds->setHeight(event.cloud_params.height);
-				clouds->setThickness(event.cloud_params.thickness);
+				clouds->setDensity(event->cloud_params.density);
+				clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
+				clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
+				clouds->setHeight(event->cloud_params.height);
+				clouds->setThickness(event->cloud_params.thickness);
 				clouds->setSpeed(v2f(
-						event.cloud_params.speed_x,
-						event.cloud_params.speed_y));
+						event->cloud_params.speed_x,
+						event->cloud_params.speed_y));
 			}
 			break;
 
