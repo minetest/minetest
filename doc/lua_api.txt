@@ -2446,6 +2446,12 @@ Call these functions only at load time!
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
       the default of `give_to_singleplayer` is true
     * To allow players with `basic_privs` to grant, see `basic_privs` minetest.conf setting.
+    * `on_grant(name, granter_name)`: Called when given to player `name` by `granter_name`.
+         `granter_name` will be nil if the priv was granted by a mod.
+    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by `revoker_name`.
+         `revoker_name` will be nil if the priv was revoked by a mod
+    * Note that the above two callbacks will be called twice if a player is responsible - 
+      once with the player name, and then with a nil player name.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
