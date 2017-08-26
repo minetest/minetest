@@ -22,7 +22,7 @@ core.register_on_formspec_input(function(formname, fields)
 	end
 end)
 
-core.register_on_receiving_chat_message(function(name, message)
+core.register_on_receiving_chat_message(function(message)
 	if #message > 80 then
 		return true
 	end
