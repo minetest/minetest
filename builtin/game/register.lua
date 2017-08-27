@@ -505,6 +505,19 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	return list
 end
 
+local function make_wrap_deregistration(reg_fn, clear_fn, list)
+	local unregister = function (unregistered_key)
+		local temporary_list = table.copy(list)
+		clear_fn()
+		for k,v in pairs(temporary_list) do
+			if unregistered_key ~= k then
+				reg_fn(v)
+			end
+		end
+	end
+	return unregister
+end
+
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change)
@@ -542,6 +555,8 @@ end
 core.registered_biomes      = make_registration_wrap("register_biome",      "clear_registered_biomes")
 core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
 core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
+
+core.unregister_biome = make_wrap_deregistration(core.register_biome, core.clear_registered_biomes, core.registered_biomes)
 
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()

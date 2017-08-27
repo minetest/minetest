@@ -715,6 +715,10 @@ the global `minetest.registered_*` tables.
     * added to `minetest.registered_biome` with the key of `biome.name`
     * if `biome.name` is nil, the key is the returned ID
 
+* `minetest.unregister_biome(name)`
+    * Unregisters the biome name from engine, and deletes the entry with key
+    * `name` from `minetest.registered_biome`
+
 * `minetest.register_ore(ore definition)`
     * returns an integer uniquely identifying the registered ore
     * added to `minetest.registered_ores` with the key of `ore.name`
