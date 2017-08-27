@@ -54,9 +54,7 @@
 # There shouldn't be too much settings per category; settings that shouldn't be
 #  modified by the "average user" should be in (sub-)categories called "Advanced".
 
-[Client]
-
-[*Controls]
+[Controls]
 #    If enabled, you can place blocks at the position (feet + eye level) where you stand.
 #    This is helpful when working with nodeboxes in small areas.
 enable_build_where_you_stand (Build inside player) bool false
@@ -373,52 +371,11 @@ keymap_decrease_viewing_range_min (View range decrease key) key -
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_print_debug_stacks (Print stacks) key KEY_KEY_P
 
-[*Network]
+[Graphics]
 
-#    Address to connect to.
-#    Leave this blank to start a local server.
-#    Note that the address field in the main menu overrides this setting.
-address (Server address) string
+[*In-Game]
 
-#    Port to connect to (UDP).
-#    Note that the port field in the main menu overrides this setting.
-remote_port (Remote port) int 30000 1 65535
-
-#    Whether to support older servers before protocol version 25.
-#    Enable if you want to connect to 0.4.12 servers and before.
-#    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
-#    Disabling this option will protect your password better.
-send_pre_v25_init (Support older servers) bool false
-
-#    Save the map received by the client on disk.
-enable_local_map_saving (Saving map received from server) bool false
-
-#    Show entity selection boxes
-show_entity_selectionbox (Show entity selection boxes) bool true
-
-#    Enable usage of remote media server (if provided by server).
-#    Remote servers offer a significantly faster way to download media (e.g. textures)
-#    when connecting to the server.
-enable_remote_media_server (Connect to external media server) bool true
-
-#    Enable Lua modding support on client.
-#    This support is experimental and API can change.
-enable_client_modding (Client modding) bool false
-
-#    URL to the server list displayed in the Multiplayer Tab.
-serverlist_url (Serverlist URL) string servers.minetest.net
-
-#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
-serverlist_file (Serverlist file) string favoriteservers.txt
-
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
-max_out_chat_queue_size (Maximum size of the out chat queue) int 20
-
-[*Graphics]
-
-[**In-Game]
-
-[***Basic]
+[**Basic]
 
 #    Enable VBO
 enable_vbo (VBO) bool true
@@ -451,7 +408,7 @@ node_highlighting (Node highlighting) enum box box,halo,none
 #    Adds particles when digging a node.
 enable_particles (Digging particles) bool true
 
-[***Filtering]
+[**Filtering]
 
 #    Use mip mapping to scale textures. May slightly increase performance.
 mip_map (Mipmapping) bool false
@@ -489,7 +446,7 @@ fsaa (FSAA) enum 0 0,1,2,4,8,16
 #    It should give significant performance boost at the cost of less detailed image.
 undersampling (Undersampling) enum 0 0,2,3,4
 
-[***Shaders]
+[**Shaders]
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
 #    This only works with the OpenGL video backend.
@@ -498,12 +455,12 @@ enable_shaders (Shaders) bool true
 #    Path to shader directory. If no path is defined, default location will be used.
 shader_path (Shader path) path
 
-[****Tone Mapping]
+[***Tone Mapping]
 
 #    Enables filmic tone mapping
 tone_mapping (Filmic tone mapping) bool false
 
-[****Bumpmapping]
+[***Bumpmapping]
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
 #    or need to be auto-generated.
@@ -521,7 +478,7 @@ normalmaps_strength (Normalmaps strength) float 0.6
 #    A higher value results in smoother normal maps.
 normalmaps_smooth (Normalmaps sampling) int 0 0 2
 
-[****Parallax Occlusion]
+[***Parallax Occlusion]
 
 #    Enables parallax occlusion mapping.
 #    Requires shaders to be enabled.
@@ -543,7 +500,7 @@ parallax_occlusion_scale (Parallax occlusion Scale) float 0.08
 #    Overall bias of parallax occlusion effect, usually scale/2.
 parallax_occlusion_bias (Parallax occlusion bias) float 0.04
 
-[****Waving Nodes]
+[***Waving Nodes]
 
 #    Set to true enables waving water.
 #    Requires shaders to be enabled.
@@ -563,7 +520,7 @@ enable_waving_leaves (Waving leaves) bool false
 #    Requires shaders to be enabled.
 enable_waving_plants (Waving plants) bool false
 
-[***Advanced]
+[**Advanced]
 
 #    Arm inertia, gives a more realistic movement of
 #    the arm when the camera moves.
@@ -716,7 +673,10 @@ fog_start (Fog Start) float 0.4 0.0 0.99
 #    Makes all liquids opaque
 opaque_water (Opaque liquids) bool false
 
-[**Menus]
+#    Show entity selection boxes
+show_entity_selectionbox (Show entity selection boxes) bool true
+
+[*Menus]
 
 #    Use a cloud animation for the main menu background.
 menu_clouds (Clouds in menu) bool true
@@ -777,7 +737,7 @@ screenshot_format (Screenshot format) enum png png,jpg,bmp,pcx,ppm,tga
 #    Use 0 for default quality.
 screenshot_quality (Screenshot quality) int 0 0 100
 
-[**Advanced]
+[*Advanced]
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 screen_dpi (DPI) int 72
@@ -786,11 +746,51 @@ screen_dpi (DPI) int 72
 #    Contains the same information as the file debug.txt (default name).
 enable_console (Enable console window) bool false
 
-[*Sound]
+[Sound]
 
 enable_sound (Sound) bool true
 
 sound_volume (Volume) float 0.7 0.0 1.0
+
+[Client]
+
+[*Network]
+
+#    Address to connect to.
+#    Leave this blank to start a local server.
+#    Note that the address field in the main menu overrides this setting.
+address (Server address) string
+
+#    Port to connect to (UDP).
+#    Note that the port field in the main menu overrides this setting.
+remote_port (Remote port) int 30000 1 65535
+
+#    Whether to support older servers before protocol version 25.
+#    Enable if you want to connect to 0.4.12 servers and before.
+#    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
+#    Disabling this option will protect your password better.
+send_pre_v25_init (Support older servers) bool false
+
+#    Save the map received by the client on disk.
+enable_local_map_saving (Saving map received from server) bool false
+
+#    Enable usage of remote media server (if provided by server).
+#    Remote servers offer a significantly faster way to download media (e.g. textures)
+#    when connecting to the server.
+enable_remote_media_server (Connect to external media server) bool true
+
+#    Enable Lua modding support on client.
+#    This support is experimental and API can change.
+enable_client_modding (Client modding) bool false
+
+#    URL to the server list displayed in the Multiplayer Tab.
+serverlist_url (Serverlist URL) string servers.minetest.net
+
+#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
+serverlist_file (Serverlist file) string favoriteservers.txt
+
+#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+max_out_chat_queue_size (Maximum size of the out chat queue) int 20
 
 [*Advanced]
 
