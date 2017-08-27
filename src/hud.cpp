@@ -424,8 +424,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
-	for (s32 i = 0; i < count / 2; i++)
-	{
+	for (s32 i = 0; i < count / 2; i++) {
 		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
 		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
 
@@ -434,8 +433,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		p += steppos;
 	}
 
-	if (count % 2 == 1)
-	{
+	if (count % 2 == 1) {
 		dsthalfrect += p;
 		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, NULL, colors, true);
 	}
