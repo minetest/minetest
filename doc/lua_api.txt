@@ -2555,7 +2555,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
-* `minetest.get_objects_inside_radius(pos, radius)`
+* `minetest.get_objects_inside_radius(pos, radius)`: returns a list of ObjectRefs
     * `radius`: using an euclidean metric
 * `minetest.set_timeofday(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
