@@ -359,38 +359,38 @@ static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 		2: top-left
 		3: top-right
 	*/
-	if (dir == v3s16(0,0,1)) {
+	if (dir == v3s16(0, 0, 1)) {
 		// If looking towards z+, this is the face that is behind
 		// the center point, facing towards z+.
 		vertex_dirs[0] = v3s16(-1,-1, 1);
 		vertex_dirs[1] = v3s16( 1,-1, 1);
 		vertex_dirs[2] = v3s16( 1, 1, 1);
 		vertex_dirs[3] = v3s16(-1, 1, 1);
-	} else if(dir == v3s16(0,0,-1)) {
+	} else if (dir == v3s16(0, 0, -1)) {
 		// faces towards Z-
 		vertex_dirs[0] = v3s16( 1,-1,-1);
 		vertex_dirs[1] = v3s16(-1,-1,-1);
 		vertex_dirs[2] = v3s16(-1, 1,-1);
 		vertex_dirs[3] = v3s16( 1, 1,-1);
-	} else if(dir == v3s16(1,0,0)) {
+	} else if (dir == v3s16(1, 0, 0)) {
 		// faces towards X+
 		vertex_dirs[0] = v3s16( 1,-1, 1);
 		vertex_dirs[1] = v3s16( 1,-1,-1);
 		vertex_dirs[2] = v3s16( 1, 1,-1);
 		vertex_dirs[3] = v3s16( 1, 1, 1);
-	} else if(dir == v3s16(-1,0,0)) {
+	} else if (dir == v3s16(-1, 0, 0)) {
 		// faces towards X-
 		vertex_dirs[0] = v3s16(-1,-1,-1);
 		vertex_dirs[1] = v3s16(-1,-1, 1);
 		vertex_dirs[2] = v3s16(-1, 1, 1);
 		vertex_dirs[3] = v3s16(-1, 1,-1);
-	} else if(dir == v3s16(0,1,0)) {
+	} else if (dir == v3s16(0, 1, 0)) {
 		// faces towards Y+ (assume Z- as "down" in texture)
 		vertex_dirs[0] = v3s16( 1, 1,-1);
 		vertex_dirs[1] = v3s16(-1, 1,-1);
 		vertex_dirs[2] = v3s16(-1, 1, 1);
 		vertex_dirs[3] = v3s16( 1, 1, 1);
-	} else if(dir == v3s16(0,-1,0)) {
+	} else if (dir == v3s16(0, -1, 0)) {
 		// faces towards Y- (assume Z+ as "down" in texture)
 		vertex_dirs[0] = v3s16( 1,-1, 1);
 		vertex_dirs[1] = v3s16(-1,-1, 1);
@@ -418,10 +418,10 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
 
-	float x0 = 0.0;
-	float y0 = 0.0;
-	float w = 1.0;
-	float h = 1.0;
+	float x0 = 0.0f;
+	float y0 = 0.0f;
+	float w = 1.0f;
+	float h = 1.0f;
 
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
@@ -553,10 +553,10 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 		vpos += pos;
 	}
 
-	f32 abs_scale = 1.0;
-	if      (scale.X < 0.999 || scale.X > 1.001) abs_scale = scale.X;
-	else if (scale.Y < 0.999 || scale.Y > 1.001) abs_scale = scale.Y;
-	else if (scale.Z < 0.999 || scale.Z > 1.001) abs_scale = scale.Z;
+	f32 abs_scale = 1.0f;
+	if      (scale.X < 0.999f || scale.X > 1.001f) abs_scale = scale.X;
+	else if (scale.Y < 0.999f || scale.Y > 1.001f) abs_scale = scale.Y;
+	else if (scale.Z < 0.999f || scale.Z > 1.001f) abs_scale = scale.Z;
 
 	v3f normal(dir.X, dir.Y, dir.Z);
 
@@ -924,22 +924,20 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get top(y+) faces in rows of x+
 	*/
-	for(s16 y = 0; y < MAP_BLOCKSIZE; y++) {
-		for(s16 z = 0; z < MAP_BLOCKSIZE; z++) {
-			updateFastFaceRow(data,
-					v3s16(0, y, z),
-					v3s16(1, 0, 0), //dir
-					v3f  (1, 0, 0),
-					v3s16(0, 1, 0), //face dir
-					dest);
-		}
-	}
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+		updateFastFaceRow(data,
+				v3s16(0, y, z),
+				v3s16(1, 0, 0), //dir
+				v3f  (1, 0, 0),
+				v3s16(0, 1, 0), //face dir
+				dest);
 
 	/*
 		Go through every x,y and get right(x+) faces in rows of z+
 	*/
-	for(s16 x = 0; x < MAP_BLOCKSIZE; x++)
-	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
 		updateFastFaceRow(data,
 				v3s16(x, y, 0),
 				v3s16(0, 0, 1), //dir
@@ -950,8 +948,8 @@ static void updateAllFastFaceRows(MeshMakeData *data,
 	/*
 		Go through every y,z and get back(z+) faces in rows of x+
 	*/
-	for(s16 z = 0; z < MAP_BLOCKSIZE; z++)
-	for(s16 y = 0; y < MAP_BLOCKSIZE; y++)
+	for (s16 z = 0; z < MAP_BLOCKSIZE; z++)
+	for (s16 y = 0; y < MAP_BLOCKSIZE; y++)
 		updateFastFaceRow(data,
 				v3s16(0, y, z),
 				v3s16(1, 0, 0), //dir
@@ -1017,8 +1015,8 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 		//TimeTaker timer2("MeshCollector building");
 
 		for (const FastFace &f : fastfaces_new) {
-			const u16 indices[] = {0, 1, 2, 2, 3, 0};
-			const u16 indices_alternate[] = {0, 1, 3, 2, 3, 1};
+			static const u16 indices[] = {0, 1, 2, 2, 3, 0};
+			static const u16 indices_alternate[] = {0, 1, 3, 2, 3, 1};
 
 			if (!f.layer.texture)
 				continue;
