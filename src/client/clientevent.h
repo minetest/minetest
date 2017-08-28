@@ -40,6 +40,7 @@ enum ClientEventType : u8
 	CE_SET_SKY,
 	CE_OVERRIDE_DAY_NIGHT_RATIO,
 	CE_CLOUD_PARAMS,
+	CLIENTEVENT_MAX,
 };
 
 struct ClientEvent
