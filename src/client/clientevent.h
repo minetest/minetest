@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "hud.h"
 
-enum ClientEventType: u8
+enum ClientEventType : u8
 {
 	CE_NONE,
 	CE_PLAYER_DAMAGE,
@@ -45,29 +45,35 @@ enum ClientEventType: u8
 struct ClientEvent
 {
 	ClientEventType type;
-	union{
-		//struct{
+	union
+	{
+		// struct{
 		//} none;
-		struct{
+		struct
+		{
 			u8 amount;
 		} player_damage;
-		struct{
+		struct
+		{
 			f32 pitch;
 			f32 yaw;
 		} player_force_move;
-		struct{
+		struct
+		{
 			bool set_camera_point_target;
 			f32 camera_point_target_x;
 			f32 camera_point_target_y;
 			f32 camera_point_target_z;
 		} deathscreen;
-		struct{
+		struct
+		{
 			std::string *formspec;
 			std::string *formname;
 		} show_formspec;
-		//struct{
+		// struct{
 		//} textures_updated;
-		struct{
+		struct
+		{
 			v3f *pos;
 			v3f *vel;
 			v3f *acc;
@@ -80,7 +86,8 @@ struct ClientEvent
 			struct TileAnimationParams animation;
 			u8 glow;
 		} spawn_particle;
-		struct{
+		struct
+		{
 			u16 amount;
 			f32 spawntime;
 			v3f *minpos;
@@ -102,10 +109,12 @@ struct ClientEvent
 			struct TileAnimationParams animation;
 			u8 glow;
 		} add_particlespawner;
-		struct{
+		struct
+		{
 			u32 id;
 		} delete_particlespawner;
-		struct{
+		struct
+		{
 			u32 id;
 			u8 type;
 			v2f *pos;
@@ -118,31 +127,36 @@ struct ClientEvent
 			v2f *align;
 			v2f *offset;
 			v3f *world_pos;
-			v2s32 * size;
+			v2s32 *size;
 		} hudadd;
-		struct{
+		struct
+		{
 			u32 id;
 		} hudrm;
-		struct{
+		struct
+		{
 			u32 id;
 			HudElementStat stat;
 			v2f *v2fdata;
 			std::string *sdata;
 			u32 data;
 			v3f *v3fdata;
-			v2s32 * v2s32data;
+			v2s32 *v2s32data;
 		} hudchange;
-		struct{
+		struct
+		{
 			video::SColor *bgcolor;
 			std::string *type;
 			std::vector<std::string> *params;
 			bool clouds;
 		} set_sky;
-		struct{
+		struct
+		{
 			bool do_override;
 			float ratio_f;
 		} override_day_night_ratio;
-		struct {
+		struct
+		{
 			f32 density;
 			u32 color_bright;
 			u32 color_ambient;
