@@ -40,8 +40,10 @@ typedef u16 content_t;
 	be significantly lower than the maximum content_t value, so that
 	there is enough room for dummy node IDs, which are created when
 	a MapBlock containing unknown node names is loaded from disk.
+
+	This is now set as a setting, default unchanged at 32767.
+	#define MAX_REGISTERED_CONTENT 0x7fffU
 */
-#define MAX_REGISTERED_CONTENT 0x7fffU
 
 /*
 	A solid walkable node with the texture unknown_node.png.

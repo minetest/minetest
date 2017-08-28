@@ -354,6 +354,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("secure.enable_security", "true");
 	settings->setDefault("secure.trusted_mods", "");
 	settings->setDefault("secure.http_mods", "");
+	settings->setDefault("max_registered_content", "32767");
 
 	// Physics
 	settings->setDefault("movement_acceleration_default", "3");

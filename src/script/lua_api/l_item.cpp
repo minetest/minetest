@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "inventory.h"
 #include "log.h"
+#include "settings.h" // For g_settings
 
 
 // garbage collector
@@ -536,13 +537,15 @@ int ModApiItemMod::l_register_item_raw(lua_State *L)
 	idef->registerItem(def);
 
 	// Read the node definition (content features) and register it
-	if(def.type == ITEM_NODE){
+	if (def.type == ITEM_NODE) {
 		ContentFeatures f = read_content_features(L, table);
 		content_t id = ndef->set(f.name, f);
+		static const u16 max_registered_content =
+				g_settings->getU16("max_registered_content");
 
-		if(id > MAX_REGISTERED_CONTENT){
+		if (id > max_registered_content) {
 			throw LuaError("Number of registerable nodes ("
-					+ itos(MAX_REGISTERED_CONTENT+1)
+					+ itos(max_registered_content + 1)
 					+ ") exceeded (" + name + ")");
 		}
 	}

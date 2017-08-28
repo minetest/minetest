@@ -1070,6 +1070,13 @@ csm_flavour_limits (Client side modding flavour limits) int 3
 #   this many nodes from the player.
 csm_flavour_noderange_limit (Client side noderange flavour limit) int 8
 
+#    Maximum number of nodes that can be registered by all mods.
+#    If increased above 32767 there is a small risk of losing some map node
+#    data if a world is used with mods disabled and very many 'unknown' nodes
+#    are loaded into that world.
+#    Needs a program restart to apply the setting, or, add it to minetest.conf.
+max_registered_content (Maximum registered nodes) int 32767 0 65535
+
 [*Security]
 
 #    Prevent mods from doing insecure things like running shell commands.
