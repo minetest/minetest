@@ -44,8 +44,9 @@ struct ObjectProperties
 	v2s16 initial_sprite_basepos;
 	bool is_visible = true;
 	bool makes_footstep_sound = false;
-	float automatic_rotate = 0.0f;
 	f32 stepheight = 0.0f;
+	bool can_zoom = true;
+	float automatic_rotate = 0.0f;
 	bool automatic_face_movement_dir = false;
 	f32 automatic_face_movement_dir_offset = 0.0f;
 	bool backface_culling = true;
