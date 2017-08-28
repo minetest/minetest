@@ -684,17 +684,16 @@ void getNodeTileN(MapNode mn, v3s16 p, u8 tileindex, MeshMakeData *data, TileSpe
 	INodeDefManager *ndef = data->m_client->ndef();
 	const ContentFeatures &f = ndef->get(mn);
 	tile = f.tiles[tileindex];
-	TileLayer *top_layer = NULL;
+	bool has_crack = p == data->m_crack_pos_relative;
 	for (TileLayer &layer : tile.layers) {
 		if (layer.texture_id == 0)
 			continue;
-		top_layer = &layer;
 		if (!layer.has_color)
 			mn.getColor(f, &(layer.color));
+		// Apply temporary crack
+		if (has_crack)
+			layer.material_flags |= MATERIAL_FLAG_CRACK;
 	}
-	// Apply temporary crack
-	if (p == data->m_crack_pos_relative)
-		top_layer->material_flags |= MATERIAL_FLAG_CRACK;
 }
 
 /*
