@@ -3394,22 +3394,31 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		int updown = 2;
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
-			button = 0; updown = 0; break;
+			button = 0; updown = 0;
+			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
-			button = 1; updown = 0; break;
+			button = 1; updown = 0;
+			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
-			button = 2; updown = 0; break;
+			button = 2; updown = 0;
+			break;
 		case EMIE_MOUSE_WHEEL:
-			button = 3 + (event.MouseInput.Wheel > 0); updown = 0; break;
+			button = 3 + (event.MouseInput.Wheel > 0); updown = 0;
+			break;
 		case EMIE_LMOUSE_LEFT_UP:
-			button = 0; updown = 1; break;
+			button = 0; updown = 1;
+			break;
 		case EMIE_RMOUSE_LEFT_UP:
-			button = 1; updown = 1; break;
+			button = 1; updown = 1;
+			break;
 		case EMIE_MMOUSE_LEFT_UP:
-			button = 2; updown = 1; break;
+			button = 2; updown = 1;
+			break;
 		case EMIE_MOUSE_MOVED:
-			updown = -1; break;
-		default: break;
+			updown = -1;
+			break;
+		default:
+			break;
 		}
 
 		// Set this number to a positive value to generate a move action
