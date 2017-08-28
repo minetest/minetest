@@ -2163,32 +2163,48 @@ For the following functions `x` can be either a vector or a number:
 
 Helper functions
 ----------------
-* `dump2(obj, name="_", dumped={})`
-     * Return object serialized as a string, handles reference loops
-* `dump(obj, dumped={})`
-    * Return object serialized as a string
+* `dump2(obj, name, dumped)`: returns a string which makes `obj` human readable,
+        handles reference loops
+    * `obj`: arbitrary variable
+    * `name`: string, default: `"_"`
+    * `dumped`: table, default: `{}`
+* `dump(obj, dumped)`: returns a string which makes `obj` human readable
+    * `obj`: arbitrary variable
+    * `dumped`: table, default: `{}`
 * `math.hypot(x, y)`
     * Get the hypotenuse of a triangle with legs x and y.
       Useful for distance calculation.
-* `math.sign(x, tolerance)`
+* `math.sign(x, tolerance)`: returns `-1`, `0` or `1`
     * Get the sign of a number.
-      Optional: Also returns `0` when the absolute value is within the tolerance (default: `0`)
-* `string.split(str, separator=",", include_empty=false, max_splits=-1, sep_is_pattern=false)`
-    * If `max_splits` is negative, do not limit splits.
-    * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
-    * e.g. `string:split("a,b", ",") == {"a","b"}`
-* `string:trim()`
-    * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
-* `minetest.wrap_text(str, limit, [as_table])`: returns a string or table
-    * Adds newlines to the string to keep it within the specified character limit
-      Note that returned lines may be longer than the limit since it only splits at word borders.
-    * limit: Maximal amount of characters in one line
-    * as_table: optional, if true return table of lines instead of string
-* `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
-    * Convert position to a printable string
-      Optional: 'decimal_places' will round the x, y and z of the pos to the given decimal place.
-* `minetest.string_to_pos(string)`: returns a position
-    * Same but in reverse. Returns `nil` if the string can't be parsed to a position.
+    * tolerance: number, default: `0.0`
+    * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
+      `0` is returned.
+* `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
+    * `separator`: string, default: `","`
+    * `include_empty`: boolean, default: `false`
+    * `max_splits`: number, if it's positive, splits aren't limited,
+      default: `-1`
+    * `sep_is_pattern`: boolean, it specifies whether separator is a plain
+      string or a pattern (regex), default: `false`
+    * e.g. `"a,b":split","` returns `{"a","b"}`
+* `string:trim()`: returns the string whithout whitespace pre- and suffixes
+    * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
+* `minetest.wrap_text(str, limit, as_table)`: returns a string or table
+    * Adds newlines to the string to keep it within the specified character
+      limit
+    * Note that the returned lines may be longer than the limit since it only
+      splits at word borders.
+    * `limit`: number, maximal amount of characters in one line
+    * `as_table`: boolean, if set to true, a table of lines instead of a string
+      is returned, default: `false`
+* `minetest.pos_to_string(pos, decimal_places)`: returns string `"(X,Y,Z)"`
+    * `pos`: table {x=X, y=Y, z=Z}
+    * Converts the position `pos` to a human-readable, printable string
+    * `decimal_places`: number, if specified, the x, y and z values of
+      the position are rounded to the given decimal place.
+* `minetest.string_to_pos(string)`: returns a position or `nil`
+    * Same but in reverse.
+    * If the string can't be parsed to a position, nothing is returned.
 * `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
     * Converts a string representing an area box into two positions
 * `minetest.formspec_escape(string)`: returns a string
@@ -2542,7 +2558,7 @@ Call these functions only at load time!
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
     * Should be called by the authentication handler if privileges changes.
-    * To report everybody, set `name=nil`.
+    * `name`: string, if ommited, everybody is reported
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "db entry" for a player with name matches given
     * password, false otherwise.
@@ -2581,12 +2597,15 @@ and `minetest.auth_reload` call the authetification handler.
 
 ### Environment access
 * `minetest.set_node(pos, node)`
-* `minetest.add_node(pos, node): alias set_node(pos, node)`
-    * Set node at position (`node = {name="foo", param1=0, param2=0}`)
+* `minetest.add_node(pos, node): alias to `minetest.set_node`
+    * Set node at position `pos`
+    * `node`: table `{name=string, param1=number, param2=number}`
+    * If param1 or param2 is omitted, it's set to `0`.
+    * e.g. `minetest.set_node({x=0, y=10, z=0}, {name="default:wood"})`
 * `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
-    * Equivalent to `set_node(pos, "air")`
+    * By default it does the same as `minetest.set_node(pos, {name="air"})`
 * `minetest.get_node(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `{name="ignore", param1=0, param2=0}`
@@ -3117,10 +3136,11 @@ These functions return the leftover itemstack.
     * `name`: `"breath"` or `"health"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.send_join_message(player_name)`
-    * Can be overridden by mods to change the join message
+    * This function can be overridden by mods to change the join message.
 * `minetest.send_leave_message(player_name, timed_out)`
-    * Can be overridden by mods to change the leave message
-* `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
+    * This function can be overridden by mods to change the leave message.
+* `minetest.hash_node_position(pos)`: returns an 48-bit integer
+    * `pos`: table {x=number, y=number, z=number},
     * Gives a unique hash number for a node position (16+16+16=48bit)
 * `minetest.get_position_from_hash(hash)`: returns a position
     * Inverse transform of `minetest.hash_node_position`
@@ -3386,9 +3406,14 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if successful
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
-* `set_animation({x=1,y=1}, frame_speed=15.0, frame_blend=0, frame_loop=true)`
+* `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
+  * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
+  * `frame_speed`: number, default: `15.0`
+  * `frame_blend`: number, default: `0.0`
+  * `frame_loop`: boolean, default: `true`
 * `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
-* `set_animation_frame_speed(frame_speed=15.0)`
+* `set_animation_frame_speed(frame_speed)`
+  * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
@@ -3418,18 +3443,25 @@ This is basically a reference to a C++ `ServerActiveObject`
       }
 
 ##### LuaEntitySAO-only (no-op for other objects)
-* `set_velocity({x=num, y=num, z=num})`
-* `get_velocity()`: returns `{x=num, y=num, z=num}`
-* `set_acceleration({x=num, y=num, z=num})`
-* `get_acceleration()`: returns `{x=num, y=num, z=num}`
+* `set_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
+* `get_velocity()`: returns the velocity, a vector
+* `set_acceleration(acc)`
+    * `acc` is a vector
+* `get_acceleration()`: returns the acceleration, a vector
 * `set_yaw(radians)`
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
-  select_horiz_by_yawpitch=false)`
-    * Select sprite from spritesheet with optional animation and DM-style
-      texture selection based on yaw relative to camera
+* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
+    * Select sprite from spritesheet with optional animation and Dungeon Master
+      style texture selection based on yaw relative to camera
+    * `p`: {x=number, y=number}, the coordinate of the first frame
+      (x: column, y: row), default: `{x=0, y=0}`
+    * `num_frames`: number, default: `1`
+    * `framelength`: number, default: `0.2`
+    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
+      Master mob, default: `false`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
@@ -3470,9 +3502,13 @@ This is basically a reference to a C++ `ServerActiveObject`
     * Should usually be called in `on_joinplayer`
 * `get_inventory_formspec()`: returns a formspec string
 * `get_player_control()`: returns table with player pressed keys
-    * `{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}`
+    * The table consists of fields with boolean value representing the pressed
+      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down and up
+    * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
+      sneak=true, aux1=false, down=false, up=false}`
 * `get_player_control_bits()`: returns integer with bit packed player pressed keys
-    * bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+    * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
+      7/LMB, 8/RMB
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
@@ -3627,36 +3663,42 @@ It can be created via `ItemStack(x)`, where x is an `ItemStack`,
 an itemstring, a table or `nil`.
 
 #### Methods
-* `is_empty()`: Returns `true` if stack is empty.
-* `get_name()`: Returns item name (e.g. `"default:stone"`).
-* `set_name(item_name)`: Returns boolean whether item was cleared
+* `is_empty()`: returns `true` if stack is empty.
+* `get_name()`: returns item name (e.g. `"default:stone"`).
+* `set_name(item_name)`: returns a boolean indicating whether the item was cleared
 * `get_count()`: Returns number of items on the stack.
-* `set_count(count)`: Returns boolean whether item was cleared
-* `get_wear()`: Returns tool wear (`0`-`65535`), `0` for non-tools.
-* `set_wear(wear)`: Returns boolean whether item was cleared
-* `get_meta()`: Returns ItemStackMetaRef. See section for more details
+* `set_count(count)`: returns a boolean indicating whether the item was cleared
+    * `count`: number, unsigned 16 bit integer
+* `get_wear()`: returns tool wear (`0`-`65535`), `0` for non-tools.
+* `set_wear(wear)`: returns boolean indicating whether item was cleared
+    * `wear`: number, unsigned 16 bit integer
+* `get_meta()`: returns ItemStackMetaRef. See section for more details
 * `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
-* `to_string()`: Returns the stack in itemstring form.
-* `to_table()`: Returns the stack in Lua table form.
-* `get_stack_max()`: Returns the maximum size of the stack (depends on the item).
-* `get_free_space()`: Returns `get_stack_max() - get_count()`.
-* `is_known()`: Returns `true` if the item name refers to a defined item type.
-* `get_definition()`: Returns the item definition table.
-* `get_tool_capabilities()`: Returns the digging properties of the item,
-  or those of the hand if none are defined for this item type
-* `add_wear(amount)`: Increases wear by `amount` if the item is a tool.
-* `add_item(item)`: Put some item or stack onto this stack.
-   Returns leftover `ItemStack`.
-* `item_fits(item)`: Returns `true` if item or stack can be fully added to
-  this one.
-* `take_item(n=1)`: Take (and remove) up to `n` items from this stack.
-  Returns taken `ItemStack`.
-* `peek_item(n=1)`: copy (don't remove) up to `n` items from this stack.
-  Returns taken `ItemStack`.
+* `to_string()`: returns the stack in itemstring form.
+* `to_table()`: returns the stack in Lua table form.
+* `get_stack_max()`: returns the maximum size of the stack (depends on the item).
+* `get_free_space()`: returns `get_stack_max() - get_count()`.
+* `is_known()`: returns `true` if the item name refers to a defined item type.
+* `get_definition()`: returns the item definition table.
+* `get_tool_capabilities()`: returns the digging properties of the item,
+        or those of the hand if none are defined for this item type
+* `add_wear(amount)`
+    * Increases wear by `amount` if the item is a tool
+    * `amount`: number, integer
+* `add_item(item)`: returns leftover `ItemStack`
+    * Put some item or stack onto this stack
+* `item_fits(item)`: returns `true` if item or stack can be fully added to
+        this one.
+* `take_item(n)`: returns taken `ItemStack`
+    * Take (and remove) up to `n` items from this stack
+    * `n`: number, default: `1`
+* `peek_item(n)`: returns taken `ItemStack`
+    * Copy (don't remove) up to `n` items from this stack
+    * `n`: number, default: `1`
 
 ### `PseudoRandom`
 A 16-bit pseudorandom number generator.
@@ -4427,7 +4469,7 @@ Definition tables
         ^ base tiles. You can use this to colorize only specific parts of
         ^ your texture. If the texture name is an empty string, that
         ^ overlay is not drawn. Since such tiles are drawn twice, it
-        ^ is not recommended to use overlays on very common nodes.
+        ^ is not recommended to use overlays on very common nodes. ]]
         special_tiles = {tile definition 1, Tile definition 2}, --[[
         ^ Special textures of node; used rarely (old field name: special_materials)
         ^ List can be shortened to needed length ]]
