@@ -1098,7 +1098,7 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
-	SharedBuffer<u8> &packetdata, u16 peer_id, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, u16 peer_id, u8 channelnum, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 
@@ -1137,7 +1137,7 @@ const ConnectionReceiveThread::PacketTypeHandler
 };
 
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *channel,
-	SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
 	if (packetdata.getSize() < 2)
 		throw InvalidIncomingDataException("packetdata.getSize() < 2");
@@ -1247,7 +1247,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *channel,
-	SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
 	if (packetdata.getSize() <= ORIGINAL_HEADER_SIZE)
 		throw InvalidIncomingDataException
@@ -1261,7 +1261,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Original(Channel *cha
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channel,
-	SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
 	Address peer_address;
 
@@ -1292,7 +1292,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Split(Channel *channe
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Reliable(Channel *channel,
-	SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum, bool reliable)
 {
 	assert(channel != NULL);
 

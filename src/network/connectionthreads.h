@@ -118,26 +118,26 @@ private:
 			channelnum: channel on which the packet was sent
 			reliable: true if recursing into a reliable packet
 	*/
-	SharedBuffer<u8> processPacket(Channel *channel, SharedBuffer<u8> &packetdata,
+	SharedBuffer<u8> processPacket(Channel *channel, SharedBuffer<u8> packetdata,
 			u16 peer_id, u8 channelnum, bool reliable);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
-			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,
 			bool reliable);
 	SharedBuffer<u8> handlePacketType_Original(Channel *channel,
-			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,
 			bool reliable);
 	SharedBuffer<u8> handlePacketType_Split(Channel *channel,
-			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,
 			bool reliable);
 	SharedBuffer<u8> handlePacketType_Reliable(Channel *channel,
-			SharedBuffer<u8> &packetdata, Peer *peer, u8 channelnum,
+			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,
 			bool reliable);
 
 	struct PacketTypeHandler
 	{
 		SharedBuffer<u8> (ConnectionReceiveThread::*handler)(Channel *channel,
-				SharedBuffer<u8> &packet, Peer *peer, u8 channelnum,
+				SharedBuffer<u8> packet, Peer *peer, u8 channelnum,
 				bool reliable);
 	};
 
