@@ -3386,9 +3386,14 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if successful
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
-* `set_animation({x=1,y=1}, frame_speed=15.0, frame_blend=0, frame_loop=true)`
+* `set_animation(frame_range, frame_speed, frame_blend, frame_loop)`
+  * `frame_range`: table {x=num, y=num}, default: `{x=1, y=1}`
+  * `frame_speed`: number, default: `15.0`
+  * `frame_blend`: number, default: `0.0`
+  * `frame_loop`: boolean, default: `true`
 * `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
-* `set_animation_frame_speed(frame_speed=15.0)`
+* `set_animation_frame_speed(frame_speed)`
+  * `frame_speed`: number, default: `15.0`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
@@ -3418,18 +3423,25 @@ This is basically a reference to a C++ `ServerActiveObject`
       }
 
 ##### LuaEntitySAO-only (no-op for other objects)
-* `set_velocity({x=num, y=num, z=num})`
-* `get_velocity()`: returns `{x=num, y=num, z=num}`
-* `set_acceleration({x=num, y=num, z=num})`
-* `get_acceleration()`: returns `{x=num, y=num, z=num}`
+* `set_velocity(vel)`
+    * `vel` is a vector, e.g. `{x=0, y=2.3, z=1}`
+* `get_velocity()`: returns the velocity, a vector
+* `set_acceleration(acc)`
+    * `acc` is a vector
+* `get_acceleration()`: returns the acceleration, a vector
 * `set_yaw(radians)`
 * `get_yaw()`: returns number in radians
 * `set_texture_mod(mod)`
 * `get_texture_mod()` returns current texture modifier
-* `set_sprite(p={x=0,y=0}, num_frames=1, framelength=0.2,
-  select_horiz_by_yawpitch=false)`
-    * Select sprite from spritesheet with optional animation and DM-style
-      texture selection based on yaw relative to camera
+* `set_sprite(p, num_frames, framelength, select_horiz_by_yawpitch)`
+    * Select sprite from spritesheet with optional animation and Dungeon Master
+      style texture selection based on yaw relative to camera
+    * `p`: {x=number, y=number}, the coordinate of the first frame
+      (x: column, y: row), default: `{x=0, y=0}`
+    * `num_frames`: number, default: `1`
+    * `framelength`: number, default: `0.2`
+    * `select_horiz_by_yawpitch`: boolean, this was once used for the Dungeon
+      Master mob, default: `false`
 * `get_entity_name()` (**Deprecated**: Will be removed in a future version)
 * `get_luaentity()`
 
