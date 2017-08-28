@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tileanimation.h"
 #include "util/serialize.h"
 
-void TileAnimationParams::serialize(std::ostream &os, u8 version) const
+void TileAnimationParams::serialize(std::ostream &os, u8 tiledef_version) const
 {
 	writeU8(os, type);
 	if (type == TAT_VERTICAL_FRAMES) {
@@ -33,7 +33,7 @@ void TileAnimationParams::serialize(std::ostream &os, u8 version) const
 	}
 }
 
-void TileAnimationParams::deSerialize(std::istream &is, u8 version)
+void TileAnimationParams::deSerialize(std::istream &is, u8 tiledef_version)
 {
 	type = (TileAnimationType) readU8(is);
 

@@ -177,7 +177,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Add settable player stepheight using existing object property.
 			Breaks compatibility with older clients.
 	PROTOCOL VERSION 36:
-		Backwards compability drop
+		Backwards compatibility drop
 */
 
 #define LATEST_PROTOCOL_VERSION 36

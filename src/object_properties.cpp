@@ -115,41 +115,39 @@ void ObjectProperties::deSerialize(std::istream &is)
 	if (version != 2)
 		throw SerializationError("unsupported ObjectProperties version");
 
-	try {
-		hp_max = readS16(is);
-		physical = readU8(is);
-		weight = readF1000(is);
-		collisionbox.MinEdge = readV3F1000(is);
-		collisionbox.MaxEdge = readV3F1000(is);
-		selectionbox.MinEdge = readV3F1000(is);
-		selectionbox.MaxEdge = readV3F1000(is);
-		pointable = readU8(is);
-		visual = deSerializeString(is);
-		visual_size = readV2F1000(is);
-		textures.clear();
-		u32 texture_count = readU16(is);
-		for (u32 i = 0; i < texture_count; i++){
-			textures.push_back(deSerializeString(is));
-		}
-		spritediv = readV2S16(is);
-		initial_sprite_basepos = readV2S16(is);
-		is_visible = readU8(is);
-		makes_footstep_sound = readU8(is);
-		automatic_rotate = readF1000(is);
-		mesh = deSerializeString(is);
-		u32 color_count = readU16(is);
-		for (u32 i = 0; i < color_count; i++){
-			colors.push_back(readARGB8(is));
-		}
-		collideWithObjects = readU8(is);
-		stepheight = readF1000(is);
-		automatic_face_movement_dir = readU8(is);
-		automatic_face_movement_dir_offset = readF1000(is);
-		backface_culling = readU8(is);
-		nametag = deSerializeString(is);
-		nametag_color = readARGB8(is);
-		automatic_face_movement_max_rotation_per_sec = readF1000(is);
-		infotext = deSerializeString(is);
-		wield_item = deSerializeString(is);
-	} catch (SerializationError &e) { }
+	hp_max = readS16(is);
+	physical = readU8(is);
+	weight = readF1000(is);
+	collisionbox.MinEdge = readV3F1000(is);
+	collisionbox.MaxEdge = readV3F1000(is);
+	selectionbox.MinEdge = readV3F1000(is);
+	selectionbox.MaxEdge = readV3F1000(is);
+	pointable = readU8(is);
+	visual = deSerializeString(is);
+	visual_size = readV2F1000(is);
+	textures.clear();
+	u32 texture_count = readU16(is);
+	for (u32 i = 0; i < texture_count; i++){
+		textures.push_back(deSerializeString(is));
+	}
+	spritediv = readV2S16(is);
+	initial_sprite_basepos = readV2S16(is);
+	is_visible = readU8(is);
+	makes_footstep_sound = readU8(is);
+	automatic_rotate = readF1000(is);
+	mesh = deSerializeString(is);
+	u32 color_count = readU16(is);
+	for (u32 i = 0; i < color_count; i++){
+		colors.push_back(readARGB8(is));
+	}
+	collideWithObjects = readU8(is);
+	stepheight = readF1000(is);
+	automatic_face_movement_dir = readU8(is);
+	automatic_face_movement_dir_offset = readF1000(is);
+	backface_culling = readU8(is);
+	nametag = deSerializeString(is);
+	nametag_color = readARGB8(is);
+	automatic_face_movement_max_rotation_per_sec = readF1000(is);
+	infotext = deSerializeString(is);
+	wield_item = deSerializeString(is);
 }

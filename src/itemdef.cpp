@@ -128,6 +128,7 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
+	// protocol_version >= 36
 	u8 version = 5;
 	writeU8(os, version);
 	writeU8(os, type);
@@ -173,8 +174,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if (version < 5 || version > 5)
+	if (version < 5)
 		throw SerializationError("unsupported ItemDefinition version");
+
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
 	description = deSerializeString(is);

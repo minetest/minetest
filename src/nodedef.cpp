@@ -115,7 +115,7 @@ void NodeBox::serialize(std::ostream &os, u16 protocol_version) const
 void NodeBox::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if (version < 4 || version > 4)
+	if (version < 4)
 		throw SerializationError("unsupported NodeBox version");
 
 	reset();
@@ -443,10 +443,8 @@ void ContentFeatures::deSerialize(std::istream &is)
 {
 	// version detection
 	int version = readU8(is);
-
-	if (version < 12 || version > 12) {
+	if (version < 12)
 		throw SerializationError("unsupported ContentFeatures version");
-	}
 
 	// general
 	name = deSerializeString(is);
