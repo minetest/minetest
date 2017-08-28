@@ -3470,9 +3470,13 @@ This is basically a reference to a C++ `ServerActiveObject`
     * Should usually be called in `on_joinplayer`
 * `get_inventory_formspec()`: returns a formspec string
 * `get_player_control()`: returns table with player pressed keys
-    * `{jump=bool,right=bool,left=bool,LMB=bool,RMB=bool,sneak=bool,aux1=bool,down=bool,up=bool}`
+    * The table consists of fields with boolean value representing the pressed
+      keys, the fields are LMB, RMB, jump, sneak, aux1, left, right, up and down
+    * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
+      sneak=true, aux1=false, down=false, up=false}`
 * `get_player_control_bits()`: returns integer with bit packed player pressed keys
-    * bit nr/meaning: 0/up ,1/down ,2/left ,3/right ,4/jump ,5/aux1 ,6/sneak ,7/LMB ,8/RMB
+    * bit nr/meaning: 0/up, 1/down, 2/left, 3/right, 4/jump, 5/aux1, 6/sneak,
+      7/LMB, 8/RMB
 * `set_physics_override(override_table)`
     * `override_table` is a table with the following fields:
         * `speed`: multiplier to default walking speed value (default: `1`)
