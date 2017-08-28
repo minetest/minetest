@@ -453,7 +453,7 @@ void Camera::update(LocalPlayer* player, f32 frametime, f32 busytime, f32 tool_r
 
 	// Get FOV
 	f32 fov_degrees;
-	if (player->getPlayerControl().zoom && m_client->checkLocalPrivilege("zoom")) {
+	if (player->getPlayerControl().zoom && player->getCanZoom()) {
 		fov_degrees = m_cache_zoom_fov;
 	} else {
 		fov_degrees = m_cache_fov;

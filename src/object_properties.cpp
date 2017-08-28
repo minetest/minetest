@@ -63,6 +63,7 @@ std::string ObjectProperties::dump()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
+	os << ", can_zoom=" << can_zoom;
 	return os.str();
 }
 
@@ -104,6 +105,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
+	writeU8(os, can_zoom);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -150,4 +152,5 @@ void ObjectProperties::deSerialize(std::istream &is)
 	automatic_face_movement_max_rotation_per_sec = readF1000(is);
 	infotext = deSerializeString(is);
 	wield_item = deSerializeString(is);
+	can_zoom = readU8(is);
 }
