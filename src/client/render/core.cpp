@@ -81,15 +81,15 @@ void RenderingCore::draw3D()
 
 void RenderingCore::drawHUD()
 {
-	if (!show_hud)
-		return;
-	if (draw_crosshair)
-		hud->drawCrosshair();
-	hud->drawHotbar(client->getPlayerItem());
-	hud->drawLuaElements(camera->getOffset());
-	camera->drawNametags();
-	if (mapper && show_minimap)
-		mapper->drawMinimap();
+	if (show_hud) {
+		if (draw_crosshair)
+			hud->drawCrosshair();
+		hud->drawHotbar(client->getPlayerItem());
+		hud->drawLuaElements(camera->getOffset());
+		camera->drawNametags();
+		if (mapper && show_minimap)
+			mapper->drawMinimap();
+	}
 	guienv->drawAll();
 }
 
