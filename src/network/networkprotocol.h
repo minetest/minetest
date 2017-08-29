@@ -176,18 +176,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			position
 		Add settable player stepheight using existing object property.
 			Breaks compatibility with older clients.
+	PROTOCOL VERSION 36:
+		Send real floats in network packets
+		Backwards compability drop
 */
 
-#define LATEST_PROTOCOL_VERSION 35
+#define LATEST_PROTOCOL_VERSION 36
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 24
+#define SERVER_PROTOCOL_VERSION_MIN 36
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
-#define CLIENT_PROTOCOL_VERSION_MIN 25
+#define CLIENT_PROTOCOL_VERSION_MIN 36
 #define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 24
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
@@ -220,7 +223,7 @@ enum ToClientCommand
 
 		v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
 		u64 map seed
-		f1000 recommended send interval
+		f32 recommended send interval
 		u32 : supported auth methods for sudo mode
 		      (where the user can change their password)
 	*/
@@ -241,7 +244,7 @@ enum ToClientCommand
 		[2] u8 deployed version
 		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
 		[12] u64 map seed (new as of 2011-02-27)
-		[20] f1000 recommended send interval (in seconds) (new as of 14)
+		[20] f32 recommended send interval (in seconds) (new as of 14)
 
 		NOTE: The position in here is deprecated; position is
 		      explicitly sent afterwards
@@ -318,7 +321,7 @@ enum ToClientCommand
 	/*
 		u16 time (0-23999)
 		Added in a later version:
-		f1000 time_speed
+		f32 time_speed
 	*/
 
 	TOCLIENT_CSM_FLAVOUR_LIMITS = 0x2A,
@@ -376,9 +379,9 @@ enum ToClientCommand
 
 	TOCLIENT_MOVE_PLAYER = 0x34,
 	/*
-		v3f1000 player position
-		f1000 player pitch
-		f1000 player yaw
+		v3f32 player position
+		f32 player pitch
+		f32 player yaw
 	*/
 
 	TOCLIENT_ACCESS_DENIED_LEGACY = 0x35,
@@ -400,7 +403,7 @@ enum ToClientCommand
 	TOCLIENT_DEATHSCREEN = 0x37,
 	/*
 		u8 bool set camera point target
-		v3f1000 camera point target (to point the death cause or whatever)
+		v3f32 camera point target (to point the death cause or whatever)
 	*/
 
 	TOCLIENT_MEDIA = 0x38,
@@ -504,27 +507,27 @@ enum ToClientCommand
 
 	TOCLIENT_MOVEMENT = 0x45,
 	/*
-		f1000 movement_acceleration_default
-		f1000 movement_acceleration_air
-		f1000 movement_acceleration_fast
-		f1000 movement_speed_walk
-		f1000 movement_speed_crouch
-		f1000 movement_speed_fast
-		f1000 movement_speed_climb
-		f1000 movement_speed_jump
-		f1000 movement_liquid_fluidity
-		f1000 movement_liquid_fluidity_smooth
-		f1000 movement_liquid_sink
-		f1000 movement_gravity
+		f32 movement_acceleration_default
+		f32 movement_acceleration_air
+		f32 movement_acceleration_fast
+		f32 movement_speed_walk
+		f32 movement_speed_crouch
+		f32 movement_speed_fast
+		f32 movement_speed_climb
+		f32 movement_speed_jump
+		f32 movement_liquid_fluidity
+		f32 movement_liquid_fluidity_smooth
+		f32 movement_liquid_sink
+		f32 movement_gravity
 	*/
 
 	TOCLIENT_SPAWN_PARTICLE = 0x46,
 	/*
-		v3f1000 pos
-		v3f1000 velocity
-		v3f1000 acceleration
-		f1000 expirationtime
-		f1000 size
+		v3f32 pos
+		v3f32 velocity
+		v3f32 acceleration
+		f32 expirationtime
+		f32 size
 		u8 bool collisiondetection
 		u8 bool vertical
 		u32 len
@@ -535,17 +538,17 @@ enum ToClientCommand
 	TOCLIENT_ADD_PARTICLESPAWNER = 0x47,
 	/*
 		u16 amount
-		f1000 spawntime
-		v3f1000 minpos
-		v3f1000 maxpos
-		v3f1000 minvel
-		v3f1000 maxvel
-		v3f1000 minacc
-		v3f1000 maxacc
-		f1000 minexptime
-		f1000 maxexptime
-		f1000 minsize
-		f1000 maxsize
+		f32 spawntime
+		v3f32 minpos
+		v3f32 maxpos
+		v3f32 minvel
+		v3f32 maxvel
+		v3f32 minacc
+		v3f32 maxacc
+		f32 minexptime
+		f32 maxexptime
+		f32 minsize
+		f32 maxsize
 		u8 bool collisiondetection
 		u8 bool vertical
 		u32 len
@@ -563,18 +566,18 @@ enum ToClientCommand
 	/*
 		u32 id
 		u8 type
-		v2f1000 pos
+		v2f32 pos
 		u32 len
 		u8[len] name
-		v2f1000 scale
+		v2f32 scale
 		u32 len2
 		u8[len2] text
 		u32 number
 		u32 item
 		u32 dir
-		v2f1000 align
-		v2f1000 offset
-		v3f1000 world_pos
+		v2f32 align
+		v2f32 offset
+		v3f32 world_pos
 		v2s32 size
 	*/
 
@@ -587,7 +590,7 @@ enum ToClientCommand
 	/*
 		u32 id
 		u8 stat
-		[v2f1000 data |
+		[v2f32 data |
 		 u32 len
 		 u8[len] data |
 		 u32 data]
@@ -635,13 +638,13 @@ enum ToClientCommand
 		v2s32 walk
 		v2s32 dig
 		v2s32 walk+dig
-		f1000 frame_speed
+		f32 frame_speed
 	*/
 
 	TOCLIENT_EYE_OFFSET = 0x52,
 	/*
-		v3f1000 first
-		v3f1000 third
+		v3f32 first
+		v3f32 third
 	*/
 
 	TOCLIENT_DELETE_PARTICLESPAWNER = 0x53,
@@ -651,12 +654,12 @@ enum ToClientCommand
 
 	TOCLIENT_CLOUD_PARAMS = 0x54,
 	/*
-		f1000 density
+		f32 density
 		u8[4] color_diffuse (ARGB)
 		u8[4] color_ambient (ARGB)
-		f1000 height
-		f1000 thickness
-		v2f1000 speed
+		f32 height
+		f32 thickness
+		v2f32 speed
 	*/
 
 	TOCLIENT_FADE_SOUND = 0x55,

@@ -300,8 +300,6 @@ void GenericCAO::initialize(const std::string &data)
 			m_is_visible = false;
 			player->setCAO(this);
 		}
-		if (m_client->getProtoVersion() < 33)
-			m_env->addPlayerName(m_name);
 	}
 }
 
@@ -316,8 +314,8 @@ void GenericCAO::processInitData(const std::string &data)
 		m_name = deSerializeString(is);
 		m_is_player = readU8(is);
 		m_id = readU16(is);
-		m_position = readV3F1000(is);
-		m_yaw = readF1000(is);
+		m_position = readV3F32(is);
+		m_yaw = readF32(is);
 		m_hp = readS16(is);
 		num_messages = readU8(is);
 	} else {
@@ -337,9 +335,6 @@ void GenericCAO::processInitData(const std::string &data)
 
 GenericCAO::~GenericCAO()
 {
-	if (m_is_player && m_client->getProtoVersion() < 33) {
-		m_env->removePlayerName(m_name);
-	}
 	removeFromScene(true);
 }
 
@@ -1253,16 +1248,16 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == GENERIC_CMD_UPDATE_POSITION) {
 		// Not sent by the server if this object is an attachment.
 		// We might however get here if the server notices the object being detached before the client.
-		m_position = readV3F1000(is);
-		m_velocity = readV3F1000(is);
-		m_acceleration = readV3F1000(is);
+		m_position = readV3F32(is);
+		m_velocity = readV3F32(is);
+		m_acceleration = readV3F32(is);
 		if(fabs(m_prop.automatic_rotate) < 0.001)
-			m_yaw = readF1000(is);
+			m_yaw = readF32(is);
 		else
-			readF1000(is);
+			readF32(is);
 		bool do_interpolate = readU8(is);
 		bool is_end_position = readU8(is);
-		float update_interval = readF1000(is);
+		float update_interval = readF32(is);
 
 		// Place us a bit higher if we're physical, to not sink into
 		// the ground due to sucky collision detection...
@@ -1292,7 +1287,7 @@ void GenericCAO::processMessage(const std::string &data)
 	} else if (cmd == GENERIC_CMD_SET_SPRITE) {
 		v2s16 p = readV2S16(is);
 		int num_frames = readU16(is);
-		float framelength = readF1000(is);
+		float framelength = readF32(is);
 		bool select_horiz_by_yawpitch = readU8(is);
 
 		m_tx_basepos = p;
@@ -1302,9 +1297,9 @@ void GenericCAO::processMessage(const std::string &data)
 
 		updateTexturePos();
 	} else if (cmd == GENERIC_CMD_SET_PHYSICS_OVERRIDE) {
-		float override_speed = readF1000(is);
-		float override_jump = readF1000(is);
-		float override_gravity = readF1000(is);
+		float override_speed = readF32(is);
+		float override_jump = readF32(is);
+		float override_gravity = readF32(is);
 		// these are sent inverted so we get true when the server sends nothing
 		bool sneak = !readU8(is);
 		bool sneak_glitch = !readU8(is);
@@ -1323,11 +1318,11 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 	} else if (cmd == GENERIC_CMD_SET_ANIMATION) {
 		// TODO: change frames send as v2s32 value
-		v2f range = readV2F1000(is);
+		v2f range = readV2F32(is);
 		if (!m_is_local_player) {
 			m_animation_range = v2s32((s32)range.X, (s32)range.Y);
-			m_animation_speed = readF1000(is);
-			m_animation_blend = readF1000(is);
+			m_animation_speed = readF32(is);
+			m_animation_blend = readF32(is);
 			// these are sent inverted so we get true when the server sends nothing
 			m_animation_loop = !readU8(is);
 			updateAnimation();
@@ -1336,8 +1331,8 @@ void GenericCAO::processMessage(const std::string &data)
 			if(player->last_animation == NO_ANIM)
 			{
 				m_animation_range = v2s32((s32)range.X, (s32)range.Y);
-				m_animation_speed = readF1000(is);
-				m_animation_blend = readF1000(is);
+				m_animation_speed = readF32(is);
+				m_animation_blend = readF32(is);
 				// these are sent inverted so we get true when the server sends nothing
 				m_animation_loop = !readU8(is);
 			}
@@ -1357,8 +1352,8 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
-		v3f position = readV3F1000(is);
-		v3f rotation = readV3F1000(is);
+		v3f position = readV3F32(is);
+		v3f rotation = readV3F32(is);
 		m_bone_position[bone] = core::vector2d<v3f>(position, rotation);
 
 		updateBonePosition();
@@ -1377,8 +1372,8 @@ void GenericCAO::processMessage(const std::string &data)
 		}
 
 		m_attachment_bone = deSerializeString(is);
-		m_attachment_position = readV3F1000(is);
-		m_attachment_rotation = readV3F1000(is);
+		m_attachment_position = readV3F32(is);
+		m_attachment_rotation = readV3F32(is);
 
 		// localplayer itself can't be attached to localplayer
 		if (!m_is_local_player) {

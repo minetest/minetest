@@ -27,8 +27,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 2); // version (protocol >= 18)
-	writeF1000(os, full_punch_interval);
+	writeU8(os, 3); // protocol_version >= 36
+	writeF32(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
 	for (const auto &groupcap : groupcaps) {
@@ -40,7 +40,7 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 		writeU32(os, cap->times.size());
 		for (const auto &time : cap->times) {
 			writeS16(os, time.first);
-			writeF1000(os, time.second);
+			writeF32(os, time.second);
 		}
 	}
 
@@ -55,9 +55,10 @@ void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 void ToolCapabilities::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 1 && version != 2) throw SerializationError(
-			"unsupported ToolCapabilities version");
-	full_punch_interval = readF1000(is);
+	if (version != 3)
+		throw SerializationError("unsupported ToolCapabilities version");
+
+	full_punch_interval = readF32(is);
 	max_drop_level = readS16(is);
 	groupcaps.clear();
 	u32 groupcaps_size = readU32(is);
@@ -69,19 +70,17 @@ void ToolCapabilities::deSerialize(std::istream &is)
 		u32 times_size = readU32(is);
 		for(u32 i=0; i<times_size; i++){
 			int level = readS16(is);
-			float time = readF1000(is);
+			float time = readF32(is);
 			cap.times[level] = time;
 		}
 		groupcaps[name] = cap;
 	}
-	if(version == 2)
-	{
-		u32 damage_groups_size = readU32(is);
-		for(u32 i=0; i<damage_groups_size; i++){
-			std::string name = deSerializeString(is);
-			s16 rating = readS16(is);
-			damageGroups[name] = rating;
-		}
+
+	u32 damage_groups_size = readU32(is);
+	for(u32 i=0; i<damage_groups_size; i++){
+		std::string name = deSerializeString(is);
+		s16 rating = readS16(is);
+		damageGroups[name] = rating;
 	}
 }
 
