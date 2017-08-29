@@ -26,7 +26,8 @@ inline unsigned scaledown(unsigned coef, unsigned size)
 	return (size + coef - 1) / coef;
 }
 
-RenderingCorePlain::RenderingCorePlain(IrrlichtDevice *_device, Client *_client, Hud *_hud)
+RenderingCorePlain::RenderingCorePlain(
+		IrrlichtDevice *_device, Client *_client, Hud *_hud)
     : RenderingCore(_device, _client, _hud)
 {
 	scale = g_settings->getU16("undersampling");
