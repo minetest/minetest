@@ -842,8 +842,6 @@ bool getCraftingResult(Inventory *inv, ItemStack &result,
 		std::vector<ItemStack> &output_replacements,
 		bool decrementInput, IGameDef *gamedef)
 {
-	DSTACK(FUNCTION_NAME);
-
 	result.clear();
 
 	// Get the InventoryList in which we will operate

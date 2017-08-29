@@ -73,8 +73,6 @@ public:
 		QUICKTUNE_INC,
 		QUICKTUNE_DEC,
 
-		DEBUG_STACKS,
-
 		// hotbar
 		SLOT_1,
 		SLOT_2,

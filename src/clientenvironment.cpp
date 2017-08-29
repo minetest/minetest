@@ -79,7 +79,6 @@ ClientMap & ClientEnvironment::getClientMap()
 
 void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 {
-	DSTACK(FUNCTION_NAME);
 	/*
 		It is a failure if already is a local player
 	*/
@@ -91,8 +90,6 @@ void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 
 void ClientEnvironment::step(float dtime)
 {
-	DSTACK(FUNCTION_NAME);
-
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 

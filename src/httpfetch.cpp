@@ -642,8 +642,6 @@ protected:
 
 	void *run()
 	{
-		DSTACK(FUNCTION_NAME);
-
 		CurlHandlePool pool;
 
 		m_multi = curl_multi_init();

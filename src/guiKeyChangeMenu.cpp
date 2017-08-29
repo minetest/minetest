@@ -63,7 +63,6 @@ enum
 	GUI_ID_KEY_MUTE_BUTTON,
 	GUI_ID_KEY_DEC_VOLUME_BUTTON,
 	GUI_ID_KEY_INC_VOLUME_BUTTON,
-	GUI_ID_KEY_DUMP_BUTTON,
 	GUI_ID_KEY_RANGE_BUTTON,
 	GUI_ID_KEY_ZOOM_BUTTON,
 	GUI_ID_KEY_CAMERA_BUTTON,
@@ -433,6 +432,5 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_HUD_BUTTON,       wgettext("Toggle HUD"),       "keymap_toggle_hud");
 	this->add_key(GUI_ID_KEY_CHATLOG_BUTTON,   wgettext("Toggle chat log"),  "keymap_toggle_chat");
 	this->add_key(GUI_ID_KEY_FOG_BUTTON,       wgettext("Toggle fog"),       "keymap_toggle_force_fog_off");
-	this->add_key(GUI_ID_KEY_DUMP_BUTTON,      wgettext("Print stacks"),     "keymap_print_debug_stacks");
 }
 

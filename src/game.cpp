@@ -1099,8 +1099,6 @@ void KeyCache::populate()
 	key[KeyType::QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
 	key[KeyType::QUICKTUNE_DEC]  = getKeySetting("keymap_quicktune_dec");
 
-	key[KeyType::DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
-
 	for (int i = 0; i < 23; i++) {
 		std::string slot_key_name = "keymap_slot" + std::to_string(i + 1);
 		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
@@ -2609,14 +2607,6 @@ void Game::processKeyInput()
 		quicktune->inc();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_DEC)) {
 		quicktune->dec();
-	} else if (wasKeyDown(KeyType::DEBUG_STACKS)) {
-		// Print debug stacks
-		dstream << "-----------------------------------------"
-		        << std::endl;
-		dstream << "Printing debug stacks:" << std::endl;
-		dstream << "-----------------------------------------"
-		        << std::endl;
-		debug_stacks_print();
 	}
 
 	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {

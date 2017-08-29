@@ -228,8 +228,6 @@ void TestGameDef::defineSomeNodes()
 
 bool run_tests()
 {
-	DSTACK(FUNCTION_NAME);
-
 	u64 t1 = porting::getTimeMs();
 	TestGameDef gamedef;
 

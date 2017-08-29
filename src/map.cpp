@@ -220,7 +220,6 @@ void Map::setNode(v3s16 p, MapNode & n)
 				<<" while trying to replace \""
 				<<m_nodedef->get(block->getNodeNoCheck(relpos, &temp_bool)).name
 				<<"\" at "<<PP(p)<<" (block "<<PP(blockpos)<<")"<<std::endl;
-		debug_stacks_print_to(infostream);
 		return;
 	}
 	block->setNodeNoCheck(relpos, n);
@@ -546,9 +545,6 @@ s32 Map::transforming_liquid_size() {
 void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 		ServerEnvironment *env)
 {
-	DSTACK(FUNCTION_NAME);
-	//TimeTaker timer("transformLiquids()");
-
 	u32 loopcount = 0;
 	u32 initial_size = m_transforming_liquid.size();
 
@@ -1432,10 +1428,6 @@ void ServerMap::finishBlockMake(BlockMakeData *data,
 
 MapSector *ServerMap::createSector(v2s16 p2d)
 {
-	DSTACKF("%s: p2d=(%d,%d)",
-			FUNCTION_NAME,
-			p2d.X, p2d.Y);
-
 	/*
 		Check if it exists already in memory
 	*/
@@ -1479,12 +1471,6 @@ MapBlock * ServerMap::generateBlock(
 		std::map<v3s16, MapBlock*> &modified_blocks
 )
 {
-	DSTACKF("%s: p=(%d,%d,%d)", FUNCTION_NAME, p.X, p.Y, p.Z);
-
-	/*infostream<<"generateBlock(): "
-			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
-			<<std::endl;*/
-
 	bool enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
 
 	TimeTaker timer("generateBlock");
@@ -1588,9 +1574,6 @@ MapBlock * ServerMap::generateBlock(
 
 MapBlock * ServerMap::createBlock(v3s16 p)
 {
-	DSTACKF("%s: p=(%d,%d,%d)",
-			FUNCTION_NAME, p.X, p.Y, p.Z);
-
 	/*
 		Do not create over max mapgen limit
 	*/
@@ -1632,10 +1615,6 @@ MapBlock * ServerMap::createBlock(v3s16 p)
 
 MapBlock * ServerMap::emergeBlock(v3s16 p, bool create_blank)
 {
-	DSTACKF("%s: p=(%d,%d,%d), create_blank=%d",
-			FUNCTION_NAME,
-			p.X, p.Y, p.Z, create_blank);
-
 	{
 		MapBlock *block = getBlockNoCreateNoEx(p);
 		if (block && !block->isDummy())
@@ -1825,7 +1804,6 @@ std::string ServerMap::getBlockFilename(v3s16 p)
 
 void ServerMap::save(ModifiedState save_level)
 {
-	DSTACK(FUNCTION_NAME);
 	if (!m_map_saving_enabled) {
 		warningstream<<"Not saving map, saving disabled."<<std::endl;
 		return;
@@ -1991,8 +1969,6 @@ bool ServerMap::saveBlock(MapBlock *block, MapDatabase *db)
 void ServerMap::loadBlock(const std::string &sectordir, const std::string &blockfile,
 		MapSector *sector, bool save_after_load)
 {
-	DSTACK(FUNCTION_NAME);
-
 	std::string fullpath = sectordir + DIR_DELIM + blockfile;
 	try {
 		std::ifstream is(fullpath.c_str(), std::ios_base::binary);
@@ -2069,8 +2045,6 @@ void ServerMap::loadBlock(const std::string &sectordir, const std::string &block
 
 void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool save_after_load)
 {
-	DSTACK(FUNCTION_NAME);
-
 	try {
 		std::istringstream is(*blob, std::ios_base::binary);
 
@@ -2132,8 +2106,6 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 
 MapBlock* ServerMap::loadBlock(v3s16 blockpos)
 {
-	DSTACK(FUNCTION_NAME);
-
 	bool created_new = (getBlockNoCreateNoEx(blockpos) == NULL);
 
 	v2s16 p2d(blockpos.X, blockpos.Z);

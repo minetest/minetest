@@ -424,7 +424,6 @@ RemotePlayer *ServerEnvironment::getPlayer(const char* name)
 
 void ServerEnvironment::addPlayer(RemotePlayer *player)
 {
-	DSTACK(FUNCTION_NAME);
 	/*
 		Check that peer_ids are unique.
 		Also check that names are unique.
@@ -1105,10 +1104,6 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 
 void ServerEnvironment::step(float dtime)
 {
-	DSTACK(FUNCTION_NAME);
-
-	//TimeTaker timer("ServerEnv step");
-
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 
