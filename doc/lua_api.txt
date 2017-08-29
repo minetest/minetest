@@ -1452,7 +1452,7 @@ Another example: Make red wool from white wool and red dye:
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
 * `slippery`: Players and items will slide on the node.
-  Only use `slippery = 3` for now to ensure forwards compatibility.
+  Slipperiness rises steadily with `slippery` value, starting at 1.
 
 
 ### Known damage and digging time defining groups
