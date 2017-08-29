@@ -437,9 +437,9 @@ end
 
 function core.run_priv_callbacks(name, priv, caller, method)
 	if not core.registered_privileges[priv]["on_" .. method] or
-			core.registered_privileges[priv]["on_" .. method](name, caller) then
+			not core.registered_privileges[priv]["on_" .. method](name, caller) then
 		for _, func in ipairs(core["registered_on_priv_" .. method]) do
-			if not func(name, caller) then
+			if not func(name, caller, priv) then
 				break
 			end
 		end

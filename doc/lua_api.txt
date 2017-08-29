@@ -2447,6 +2447,14 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_priv_grant(function(name, granter, priv))`
+    * Called when `granter` grants the priv `priv` to `name`.
+    * Note that the callback will be called twice if it's done by a player, once with granter being the player name,
+      and again with granter being nil.
+* `minetest.register_on_priv_revoke(function(name, revoker, priv))`
+    * Called when `revoker` revokes the priv `priv` from `name`.
+    * Note that the callback will be called twice if it's done by a player, once with revoker being the player name,
+      and again with revoker being nil.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
@@ -2464,8 +2472,9 @@ Call these functions only at load time!
          `granter_name` will be nil if the priv was granted by a mod.
     * `on_revoke(name, revoker_name)`: Called when taken from player `name` by `revoker_name`.
          `revoker_name` will be nil if the priv was revoked by a mod
-    * Note that the above two callbacks will be called twice if a player is responsible - 
+    * Note that the above two callbacks will be called twice if a player is responsible -
       once with the player name, and then with a nil player name.
+    * Return true in the above callbacks to stop register_on_priv_grant or revoke being called.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
