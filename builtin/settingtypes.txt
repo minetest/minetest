@@ -606,6 +606,18 @@ console_color (Console color) string (0,0,0)
 #    In-game chat console background alpha (opaqueness, between 0 and 255).
 console_alpha (Console alpha) int 200 0 255
 
+#    Formspec full-screen background opacity (between 0 and 255).
+formspec_fullscreen_bg_opacity (Formspec Full-Screen Background Opacity) int 140 0 255
+
+#    Formspec full-screen background color (R,G,B).
+formspec_fullscreen_bg_color (Formspec Full-Screen Background Color) string (0,0,0)
+
+#    Formspec default background opacity (between 0 and 255).
+formspec_default_bg_opacity (Formspec Default Background Opacity) int 140 0 255
+
+#    Formspec default background color (R,G,B).
+formspec_default_bg_color (Formspec Default Background Color) string (0,0,0)
+
 #    Selection box border color (R,G,B).
 selectionbox_color (Selection box color) string (0,0,0)
 

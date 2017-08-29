@@ -762,6 +762,22 @@
 #    type: int min: 0 max: 255
 # console_alpha = 200
 
+#    Formspec full-screen background opacity (between 0 and 255).
+#    type: int
+# formspec_fullscreen_bg_opacity = 140
+
+#    Formspec full-screen background color (R,G,B).
+#    type: string
+# formspec_fullscreen_bg_color = (0,0,0)
+
+#    Formspec default background opacity (between 0 and 255).
+#    type: int
+# formspec_default_bg_opacity = 140
+
+#    Formspec default background color (R,G,B).
+#    type: string
+# formspec_default_bg_color = (0,0,0)
+
 #    Selection box border color (R,G,B).
 #    type: string
 # selectionbox_color = (0,0,0)

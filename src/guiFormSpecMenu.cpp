@@ -79,6 +79,11 @@ static unsigned int font_line_height(gui::IGUIFont *font)
 	return font->getDimension(L"Ay").Height + font->getKerningHeight();
 }
 
+inline u32 clamp_u8(s32 value)
+{
+	return (u32) MYMIN(MYMAX(value, 0), 255);
+}
+
 GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 		gui::IGUIElement *parent, s32 id, IMenuManager *menumgr,
 		Client *client, ISimpleTextureSource *tsrc, IFormSource *fsrc, TextDest *tdst,
@@ -1567,17 +1572,19 @@ void GUIFormSpecMenu::parseBackgroundColor(parserData* data, const std::string &
 	std::vector<std::string> parts = split(element,';');
 
 	if (((parts.size() == 1) || (parts.size() == 2)) ||
-		((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION)))
-	{
-		parseColorString(parts[0],m_bgcolor,false);
+			((parts.size() > 2) && (m_formspec_version > FORMSPEC_API_VERSION))) {
+		parseColorString(parts[0], m_bgcolor, false);
 
 		if (parts.size() == 2) {
 			std::string fullscreen = parts[1];
 			m_bgfullscreen = is_yes(fullscreen);
 		}
+
 		return;
 	}
-	errorstream<< "Invalid bgcolor element(" << parts.size() << "): '" << element << "'"  << std::endl;
+
+	errorstream << "Invalid bgcolor element(" << parts.size() << "): '" << element << "'"
+			<< std::endl;
 }
 
 void GUIFormSpecMenu::parseListColors(parserData* data, const std::string &element)
@@ -1908,9 +1915,8 @@ void GUIFormSpecMenu::parseElement(parserData* data, const std::string &element)
 	}
 
 	// Ignore others
-	infostream
-		<< "Unknown DrawSpec: type="<<type<<", data=\""<<description<<"\""
-		<<std::endl;
+	infostream << "Unknown DrawSpec: type=" << type << ", data=\"" << description << "\""
+			<< std::endl;
 }
 
 void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
@@ -1978,9 +1984,28 @@ void GUIFormSpecMenu::regenerateGui(v2u32 screensize)
 	m_static_texts.clear();
 	m_dropdowns.clear();
 
-	// Set default values (fits old formspec values)
-	m_bgcolor = video::SColor(140,0,0,0);
 	m_bgfullscreen = false;
+
+	{
+		v3f formspec_bgcolor = g_settings->getV3F("formspec_default_bg_color");
+		m_bgcolor = video::SColor(
+			(u8) clamp_u8(g_settings->getS32("formspec_default_bg_opacity")),
+			clamp_u8(myround(formspec_bgcolor.X)),
+			clamp_u8(myround(formspec_bgcolor.Y)),
+			clamp_u8(myround(formspec_bgcolor.Z))
+		);
+	}
+
+	{
+		v3f formspec_bgcolor = g_settings->getV3F("formspec_fullscreen_bg_color");
+		m_fullscreen_bgcolor = video::SColor(
+			(u8) clamp_u8(g_settings->getS32("formspec_fullscreen_bg_opacity")),
+			clamp_u8(myround(formspec_bgcolor.X)),
+			clamp_u8(myround(formspec_bgcolor.Y)),
+			clamp_u8(myround(formspec_bgcolor.Z))
+		);
+	}
+
 
 	m_slotbg_n = video::SColor(255,128,128,128);
 	m_slotbg_h = video::SColor(255,192,192,192);
@@ -2401,9 +2426,9 @@ void GUIFormSpecMenu::drawSelectedItem()
 
 void GUIFormSpecMenu::drawMenu()
 {
-	if(m_form_src){
-		std::string newform = m_form_src->getForm();
-		if(newform != m_formspec_string){
+	if (m_form_src) {
+		const std::string &newform = m_form_src->getForm();
+		if (newform != m_formspec_string) {
 			m_formspec_string = newform;
 			regenerateGui(m_screensize_old);
 		}
@@ -2419,9 +2444,10 @@ void GUIFormSpecMenu::drawMenu()
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	v2u32 screenSize = driver->getScreenSize();
-	core::rect<s32> allbg(0, 0, screenSize.X ,	screenSize.Y);
+	core::rect<s32> allbg(0, 0, screenSize.X, screenSize.Y);
+
 	if (m_bgfullscreen)
-		driver->draw2DRectangle(m_bgcolor, allbg, &allbg);
+		driver->draw2DRectangle(m_fullscreen_bgcolor, allbg, &allbg);
 	else
 		driver->draw2DRectangle(m_bgcolor, AbsoluteRect, &AbsoluteClippingRect);
 
