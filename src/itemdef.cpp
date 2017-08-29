@@ -128,7 +128,8 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-	u8 version = (protocol_version >= 34) ? 4 : 3;
+	// protocol_version >= 36
+	u8 version = 5;
 	writeU8(os, version);
 	writeU8(os, type);
 	os << serializeString(name);
@@ -158,14 +159,12 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString(sound_place_failed.name);
 	writeF1000(os, sound_place_failed.gain);
 	os << serializeString(palette_image);
-	writeU32(os, color.color);
+	writeARGB8(os, color);
 
-	if (version >= 4) {
-		writeF1000(os, sound_place.pitch);
-		writeF1000(os, sound_place_failed.pitch);
-		os << serializeString(inventory_overlay);
-		os << serializeString(wield_overlay);
-	}
+	writeF1000(os, sound_place.pitch);
+	writeF1000(os, sound_place_failed.pitch);
+	os << serializeString(inventory_overlay);
+	os << serializeString(wield_overlay);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -175,8 +174,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if (version < 1 || version > 4)
+	if (version < 5)
 		throw SerializationError("unsupported ItemDefinition version");
+
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
 	description = deSerializeString(is);
@@ -200,38 +200,27 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
-	if(version == 1){
-		// We cant be sure that node_placement_prediction is send in version 1
-		try{
-			node_placement_prediction = deSerializeString(is);
-		}catch(SerializationError &e) {};
-		// Set the old default sound
-		sound_place.name = "default_place_node";
-		sound_place.gain = 0.5;
-	} else if(version >= 2) {
-		node_placement_prediction = deSerializeString(is);
-		//deserializeSimpleSoundSpec(sound_place, is);
-		sound_place.name = deSerializeString(is);
-		sound_place.gain = readF1000(is);
-	}
-	if(version >= 3) {
-		range = readF1000(is);
-	}
+
+	node_placement_prediction = deSerializeString(is);
+	//deserializeSimpleSoundSpec(sound_place, is);
+	sound_place.name = deSerializeString(is);
+	sound_place.gain = readF1000(is);
+	range = readF1000(is);
+
+	sound_place_failed.name = deSerializeString(is);
+	sound_place_failed.gain = readF1000(is);
+	palette_image = deSerializeString(is);
+	color = readARGB8(is);
+
+	sound_place.pitch = readF1000(is);
+	sound_place_failed.pitch = readF1000(is);
+	inventory_overlay = deSerializeString(is);
+	wield_overlay = deSerializeString(is);
+
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
-	try {
-		sound_place_failed.name = deSerializeString(is);
-		sound_place_failed.gain = readF1000(is);
-		palette_image = deSerializeString(is);
-		color.set(readU32(is));
-
-		if (version >= 4) {
-			sound_place.pitch = readF1000(is);
-			sound_place_failed.pitch = readF1000(is);
-			inventory_overlay = deSerializeString(is);
-			wield_overlay = deSerializeString(is);
-		}
-	} catch(SerializationError &e) {};
+	//try {
+	//} catch(SerializationError &e) {};
 }
 
 /*

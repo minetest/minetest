@@ -176,18 +176,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			position
 		Add settable player stepheight using existing object property.
 			Breaks compatibility with older clients.
+	PROTOCOL VERSION 36:
+		Backwards compatibility drop
 */
 
-#define LATEST_PROTOCOL_VERSION 35
+#define LATEST_PROTOCOL_VERSION 36
 
 // Server's supported network protocol range
-#define SERVER_PROTOCOL_VERSION_MIN 24
+#define SERVER_PROTOCOL_VERSION_MIN 36
 #define SERVER_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Client's supported network protocol range
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
-#define CLIENT_PROTOCOL_VERSION_MIN 25
+#define CLIENT_PROTOCOL_VERSION_MIN 36
 #define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 24
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 

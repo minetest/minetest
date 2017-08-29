@@ -68,13 +68,16 @@ std::string ObjectProperties::dump()
 
 void ObjectProperties::serialize(std::ostream &os) const
 {
-	writeU8(os, 1); // version
+	writeU8(os, 2); // version, protocol_version >= 36
 	writeS16(os, hp_max);
 	writeU8(os, physical);
 	writeF1000(os, weight);
 	writeV3F1000(os, collisionbox.MinEdge);
 	writeV3F1000(os, collisionbox.MaxEdge);
-	os<<serializeString(visual);
+	writeV3F1000(os, selectionbox.MinEdge);
+	writeV3F1000(os, selectionbox.MaxEdge);
+	writeU8(os, pointable);
+	os << serializeString(visual);
 	writeV2F1000(os, visual_size);
 	writeU16(os, textures.size());
 	for (const std::string &texture : textures) {
@@ -86,7 +89,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeU8(os, makes_footstep_sound);
 	writeF1000(os, automatic_rotate);
 	// Added in protocol version 14
-	os<<serializeString(mesh);
+	os << serializeString(mesh);
 	writeU16(os, colors.size());
 	for (video::SColor color : colors) {
 		writeARGB8(os, color);
@@ -101,9 +104,6 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
-	writeV3F1000(os, selectionbox.MinEdge);
-	writeV3F1000(os, selectionbox.MaxEdge);
-	writeU8(os, pointable);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -112,48 +112,42 @@ void ObjectProperties::serialize(std::ostream &os) const
 void ObjectProperties::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version == 1)
-	{
-		try{
-			hp_max = readS16(is);
-			physical = readU8(is);
-			weight = readF1000(is);
-			collisionbox.MinEdge = readV3F1000(is);
-			collisionbox.MaxEdge = readV3F1000(is);
-			visual = deSerializeString(is);
-			visual_size = readV2F1000(is);
-			textures.clear();
-			u32 texture_count = readU16(is);
-			for(u32 i=0; i<texture_count; i++){
-				textures.push_back(deSerializeString(is));
-			}
-			spritediv = readV2S16(is);
-			initial_sprite_basepos = readV2S16(is);
-			is_visible = readU8(is);
-			makes_footstep_sound = readU8(is);
-			automatic_rotate = readF1000(is);
-			mesh = deSerializeString(is);
-			u32 color_count = readU16(is);
-			for(u32 i=0; i<color_count; i++){
-				colors.push_back(readARGB8(is));
-			}
-			collideWithObjects = readU8(is);
-			stepheight = readF1000(is);
-			automatic_face_movement_dir = readU8(is);
-			automatic_face_movement_dir_offset = readF1000(is);
-			backface_culling = readU8(is);
-			nametag = deSerializeString(is);
-			nametag_color = readARGB8(is);
-			automatic_face_movement_max_rotation_per_sec = readF1000(is);
-			infotext = deSerializeString(is);
-			wield_item = deSerializeString(is);
-			selectionbox.MinEdge = readV3F1000(is);
-			selectionbox.MaxEdge = readV3F1000(is);
-			pointable = readU8(is);
-		}catch(SerializationError &e){}
-	}
-	else
-	{
+	if (version != 2)
 		throw SerializationError("unsupported ObjectProperties version");
+
+	hp_max = readS16(is);
+	physical = readU8(is);
+	weight = readF1000(is);
+	collisionbox.MinEdge = readV3F1000(is);
+	collisionbox.MaxEdge = readV3F1000(is);
+	selectionbox.MinEdge = readV3F1000(is);
+	selectionbox.MaxEdge = readV3F1000(is);
+	pointable = readU8(is);
+	visual = deSerializeString(is);
+	visual_size = readV2F1000(is);
+	textures.clear();
+	u32 texture_count = readU16(is);
+	for (u32 i = 0; i < texture_count; i++){
+		textures.push_back(deSerializeString(is));
 	}
+	spritediv = readV2S16(is);
+	initial_sprite_basepos = readV2S16(is);
+	is_visible = readU8(is);
+	makes_footstep_sound = readU8(is);
+	automatic_rotate = readF1000(is);
+	mesh = deSerializeString(is);
+	u32 color_count = readU16(is);
+	for (u32 i = 0; i < color_count; i++){
+		colors.push_back(readARGB8(is));
+	}
+	collideWithObjects = readU8(is);
+	stepheight = readF1000(is);
+	automatic_face_movement_dir = readU8(is);
+	automatic_face_movement_dir_offset = readF1000(is);
+	backface_culling = readU8(is);
+	nametag = deSerializeString(is);
+	nametag_color = readARGB8(is);
+	automatic_face_movement_max_rotation_per_sec = readF1000(is);
+	infotext = deSerializeString(is);
+	wield_item = deSerializeString(is);
 }
