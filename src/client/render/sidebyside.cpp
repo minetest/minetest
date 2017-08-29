@@ -20,9 +20,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "sidebyside.h"
 
+RenderingCoreSideBySide::RenderingCoreSideBySide(IrrlichtDevice *_device,
+		Client *_client, Hud *_hud, bool _horizontal)
+    : RenderingCoreStereo(_device, _client, _hud), horizontal(_horizontal)
+{
+}
+
 void RenderingCoreSideBySide::initTextures()
 {
-	v2u32 image_size{screensize.X / 2, screensize.Y};
+	screen = core::recti(0, 0, screensize.X, screensize.Y);
+	if (horizontal) {
+		image_size = {screensize.X, screensize.Y / 2};
+		rpos = v2s32(0, screensize.Y / 2);
+	} else {
+		image_size = {screensize.X / 2, screensize.Y};
+		rpos = v2s32(screensize.X / 2, 0);
+	}
 	left = driver->addRenderTargetTexture(
 			image_size, "3d_render_left", video::ECF_A8R8G8B8);
 	right = driver->addRenderTargetTexture(
@@ -45,15 +58,11 @@ void RenderingCoreSideBySide::drawAll()
 	drawHUD();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
 
-	driver->draw2DImage(left, v2s32(0, 0));
-	driver->draw2DImage(right, v2s32(screensize.X / 2, 0));
+	driver->draw2DImage(left, {});
+	driver->draw2DImage(right, rpos);
 
-	driver->draw2DImage(hud, core::rect<s32>(0, 0, screensize.X / 2, screensize.Y),
-			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
-
-	driver->draw2DImage(hud,
-			core::rect<s32>(screensize.X / 2, 0, screensize.X, screensize.Y),
-			core::rect<s32>(0, 0, screensize.X, screensize.Y), 0, 0, true);
+	driver->draw2DImage(hud, core::recti({}, image_size), screen, 0, 0, true);
+	driver->draw2DImage(hud, core::recti(rpos, image_size), screen, 0, 0, true);
 }
 
 void RenderingCoreSideBySide::useEye(bool _right)

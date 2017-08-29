@@ -39,5 +39,7 @@ RenderingCore *createRenderingCore(const std::string &stereo_mode, IrrlichtDevic
 		return new RenderingCorePageflip(device, client, hud);
 	if (stereo_mode == "sidebyside")
 		return new RenderingCoreSideBySide(device, client, hud);
+	if (stereo_mode == "topbottom")
+		return new RenderingCoreSideBySide(device, client, hud, true);
 	throw std::invalid_argument("Invalid rendering mode: " + stereo_mode);
 }

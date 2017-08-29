@@ -27,6 +27,10 @@ protected:
 	video::ITexture *left = nullptr;
 	video::ITexture *right = nullptr;
 	video::ITexture *hud = nullptr;
+	bool horizontal = false;
+	core::recti screen;
+	core::dimension2du image_size;
+	v2s32 rpos;
 
 	void initTextures() override;
 	void clearTextures() override;
@@ -34,6 +38,7 @@ protected:
 	void resetEye() override;
 
 public:
-	using RenderingCoreStereo::RenderingCoreStereo;
+	RenderingCoreSideBySide(IrrlichtDevice *_device, Client *_client, Hud *_hud,
+			bool _horizontal = false);
 	void drawAll() override;
 };
