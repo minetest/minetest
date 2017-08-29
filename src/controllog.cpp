@@ -238,10 +238,28 @@ s8 ControlLogEntry::serJoySidew() const
 }
 bool ControlLogEntry::matches(const ControlLogEntry &other) const
 {
-	return false;
+	return (
+		free_move == other.free_move &&
+		fast_move == other.fast_move &&
+		continuous_forward == other.continuous_forward &&
+		always_fly_fast == other.always_fly_fast &&
+		aux1_descends == other.aux1_descends &&
+		up == other.up &&
+		down == other.down &&
+		left == other.left &&
+		right == other.right &&
+		jump == other.jump &&
+		sneak == other.sneak &&
+		pitch == other.pitch &&
+		yaw == other.yaw &&
+		joy_forw == other.joy_forw &&
+		joy_sidew == other.joy_sidew
+	);
 }
 void ControlLogEntry::merge(const ControlLogEntry &other)
 {
+	dtime = dtime + other.dtime;
+	// the rest is supposedly identical
 }
 
 
@@ -252,9 +270,13 @@ ControlLog::ControlLog()
 
 void ControlLog::add(ControlLogEntry &cle)
 {
-	ControlLogEntry &cur = log.back();
-	if (cur.matches(cle)) {
-		cur.merge(cle); // in-place
+	if (log.size()) {
+		ControlLogEntry &cur = log.back();
+		if (cur.matches(cle)) {
+			cur.merge(cle); // in-place
+		} else {
+			log.push_back(cle);
+		}
 	} else {
 		log.push_back(cle);
 	}
