@@ -188,7 +188,7 @@ void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 }
 
 void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
-	cNodeDrawType drawtype)
+	NodeDrawType drawtype)
 {
 	int version = readU8(is);
 	name = deSerializeString(is);
