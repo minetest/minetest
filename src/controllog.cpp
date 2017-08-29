@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "controllog.h"
+#include "log.h"
 #include <sstream>
 
 ControlLogEntry::ControlLogEntry()
@@ -260,28 +261,32 @@ void ControlLog::add(ControlLogEntry &cle)
 }
 
 // TODO: operator<<
-std::string ControlLog::serialize(u32 dtime)
+std::string ControlLog::serialize(u32 bytes_max) const
 {
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
-	u16 bytes = 0; // will calculate later
+	//u16 bytes = 0; // will calculate later
 	bool settings_included = false;
 
 	std::stringstream output;
 
 	output << version;
 	output << flags;
-	output << bytes;
+	//output << bytes;
 
 	output << starttime;
 
 	int motion_model = 1;
 	int motion_model_version = 1;
+	int count = 0;
 
+	bool leftovers = false;
 	output << (u8)motion_model << (u8)motion_model_version;
-	while (dtime >= 0 && output.tellp() && !log.empty()) {
-		ControlLogEntry cle = log.front();
-		log.pop_front();
+	for( ControlLogEntry cle : log ) {
+		if (output.tellp() > bytes_max) {
+			leftovers = true;
+			break;
+		}
 		if (cle.serSettings() != last_acked_settings && !settings_included) {
 			output << (u8)255 << cle.serSettings();
 			settings_included = true;
@@ -292,6 +297,7 @@ std::string ControlLog::serialize(u32 dtime)
 			cle.setDtime(200);
 		}
 		output << cle.serDtime() << cle.serKeys() << cle.serYawPitch();
+		count++;
 		if (flags & 0x01) { // joystick
 			output << cle.serJoyForw() << cle.serJoySidew();
 		}
@@ -299,17 +305,11 @@ std::string ControlLog::serialize(u32 dtime)
 			output << (u8)254 << (u16)overtime;
 		}
 	}
-	if (!log.empty()) {
+	if (leftovers) {
 		output << (u8)253;
 	}
 
-	u16 len = output.tellp();
-	std::string str = output.str();
-	// inject the (total) length into the output
-	str[2] = (char)((len >> 8) & 0xff);
-	str[3] = (char)(len & 0xff);
-
-	return str;
+	return output.str();
 }
 
 void ControlLog::deserialize(const std::string logbytes)

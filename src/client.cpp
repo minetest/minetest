@@ -856,7 +856,7 @@ void Client::Send(NetworkPacket* pkt)
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
 }
 
-// Will fill up 12 + 12 + 4 + 4 + 4 bytes
+// Will fill up 12 + 12 + 4 + 4 + 4 + n bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
 	v3f pf           = myplayer->getPosition() * 100;
@@ -881,9 +881,14 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 		[12+12+4+4] u32 keyPressed
 		[12+12+4+4+4] u8 fov*80
 		[12+12+4+4+4+1] u8 ceil(wanted_range / MAP_BLOCKSIZE)
+		[12+12+4+4+4+1+n] bytes control log (long string)
 	*/
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
+
+	pkt->putLongString(myplayer->getControlLog().serialize(640));
+
+	std::string empty_log();
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)
@@ -1228,6 +1233,7 @@ void Client::sendPlayerPos()
 	u8 wanted_range  = map.getControl().wanted_range;
 
 	// Save bandwidth by only updating position when something changed
+	// SERVER SIDE MOVEMENT: also only when control log is empty
 	if(myplayer->last_position        == myplayer->getPosition() &&
 			myplayer->last_speed        == myplayer->getSpeed()    &&
 			myplayer->last_pitch        == myplayer->getPitch()    &&
@@ -1250,7 +1256,7 @@ void Client::sendPlayerPos()
 	// SERVER SIDE MOVEMENT: here we serialize the player's actions since
 	// the last such packet into an action log and send that
 
-	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
+	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1 + 4 + 2 );
 
 	writePlayerPos(myplayer, &map, &pkt);
 

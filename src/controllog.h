@@ -142,7 +142,7 @@ class ControlLog
 public:
 	ControlLog();
 	void add(ControlLogEntry &cle); // position, too?
-	std::string serialize(u32 dtime); // up to dtime
+	std::string serialize(u32 bytes=800) const; // up to bytes in length
 	void deserialize(const std::string logbytes);
 	void acknowledge(u32 dtime); // removes entries
 private:

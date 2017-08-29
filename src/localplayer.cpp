@@ -494,6 +494,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	_applyControl(cle, env);
 
 	// append entry to actual log
+	m_control_log.add(cle);
 }
 
 void LocalPlayer::_applyControl(const ControlLogEntry &cle, Environment *env)

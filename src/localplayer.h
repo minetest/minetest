@@ -145,6 +145,7 @@ public:
 
 	float getZoomFOV() const { return m_zoom_fov; }
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
+	ControlLog &getControlLog() { return m_control_log; }
 
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
@@ -188,4 +189,6 @@ private:
 
 	GenericCAO *m_cao = nullptr;
 	Client *m_client;
+
+	ControlLog m_control_log;
 };
