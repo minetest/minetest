@@ -159,7 +159,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString(sound_place_failed.name);
 	writeF1000(os, sound_place_failed.gain);
 	os << serializeString(palette_image);
-	writeU32(os, color.color);
+	writeARGB8(os, color);
 
 	writeF1000(os, sound_place.pitch);
 	writeF1000(os, sound_place_failed.pitch);
@@ -210,7 +210,7 @@ void ItemDefinition::deSerialize(std::istream &is)
 	sound_place_failed.name = deSerializeString(is);
 	sound_place_failed.gain = readF1000(is);
 	palette_image = deSerializeString(is);
-	color.set(readU32(is));
+	color = readARGB8(is);
 
 	sound_place.pitch = readF1000(is);
 	sound_place_failed.pitch = readF1000(is);
