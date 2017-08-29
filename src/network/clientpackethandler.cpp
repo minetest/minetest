@@ -375,11 +375,11 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 	}
 	else {
 		// Old message; try to approximate speed of time by ourselves
-		float time_of_day_f = (float)time_of_day / 24000.0;
+		float time_of_day_f = (float)time_of_day / 24000.0f;
 		float tod_diff_f = 0;
 
 		if (time_of_day_f < 0.2 && m_last_time_of_day_f > 0.8)
-			tod_diff_f = time_of_day_f - m_last_time_of_day_f + 1.0;
+			tod_diff_f = time_of_day_f - m_last_time_of_day_f + 1.0f;
 		else
 			tod_diff_f = time_of_day_f - m_last_time_of_day_f;
 
@@ -388,7 +388,7 @@ void Client::handleCommand_TimeOfDay(NetworkPacket* pkt)
 		m_time_of_day_update_timer = 0;
 
 		if (m_time_of_day_set) {
-			time_speed = (3600.0 * 24.0) * tod_diff_f / time_diff;
+			time_speed = (3600.0f * 24.0f) * tod_diff_f / time_diff;
 			infostream << "Client: Measured time_of_day speed (old format): "
 					<< time_speed << " tod_diff_f=" << tod_diff_f
 					<< " time_diff=" << time_diff << std::endl;
@@ -565,9 +565,9 @@ void Client::handleCommand_HP(NetworkPacket* pkt)
 	LocalPlayer *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 
-	u8 oldhp   = player->hp;
+	u16 oldhp   = player->hp;
 
-	u8 hp;
+	u16 hp;
 	*pkt >> hp;
 
 	player->hp = hp;
@@ -966,7 +966,7 @@ void Client::handleCommand_SpawnParticle(NetworkPacket* pkt)
 	std::string texture     = deSerializeLongString(is);
 	bool vertical           = false;
 	bool collision_removal  = false;
-	struct TileAnimationParams animation;
+	TileAnimationParams animation;
 	animation.type = TAT_NONE;
 	u8 glow = 0;
 	try {
@@ -1020,7 +1020,7 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 	bool vertical = false;
 	bool collision_removal = false;
-	struct TileAnimationParams animation;
+	TileAnimationParams animation;
 	animation.type = TAT_NONE;
 	u8 glow = 0;
 	u16 attached_id = 0;

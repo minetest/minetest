@@ -52,7 +52,7 @@ struct ClientEvent
 		//} none;
 		struct
 		{
-			u8 amount;
+			u16 amount;
 		} player_damage;
 		struct
 		{

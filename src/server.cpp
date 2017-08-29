@@ -1431,7 +1431,7 @@ void Server::SendPlayerHPOrDie(PlayerSAO *playersao)
 		DiePlayer(peer_id);
 }
 
-void Server::SendHP(u16 peer_id, u8 hp)
+void Server::SendHP(u16 peer_id, u16 hp)
 {
 	DSTACK(FUNCTION_NAME);
 

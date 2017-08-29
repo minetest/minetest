@@ -780,8 +780,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	*pkt >> f32pitch;
 	*pkt >> f32yaw;
 
-	f32 pitch = (f32)f32pitch / 100.0;
-	f32 yaw = (f32)f32yaw / 100.0;
+	f32 pitch = (f32)f32pitch / 100.0f;
+	f32 yaw = (f32)f32yaw / 100.0f;
 	u32 keyPressed = 0;
 
 	// default behavior (in case an old client doesn't send these)
@@ -792,13 +792,13 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		*pkt >> keyPressed;
 	if (pkt->getRemainingBytes() >= 1) {
 		*pkt >> f32fov;
-		fov = (f32)f32fov / 80.0;
+		fov = (f32)f32fov / 80.0f;
 	}
 	if (pkt->getRemainingBytes() >= 1)
 		*pkt >> wanted_range;
 
-	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
-	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
+	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
+	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
@@ -1406,7 +1406,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		if (max_d < 0 && max_d_hand >= 0)
 			max_d = max_d_hand;
 		else if (max_d < 0)
-			max_d = BS * 4.0;
+			max_d = BS * 4.0f;
 		// cube diagonal: sqrt(3) = 1.73
 		if (d > max_d * 1.73) {
 			actionstream << "Player " << player->getName()
