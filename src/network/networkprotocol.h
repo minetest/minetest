@@ -180,6 +180,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Backwards compatibility drop
 		Add 'can_zoom' to player object properties
 		Add glow to object properties
+		Mod channels
 */
 
 #define LATEST_PROTOCOL_VERSION 36
@@ -610,6 +611,20 @@ enum ToClientCommand
 			u16 len
 			u8[len] player name
 	*/
+
+	TOCLIENT_MODCHANNEL_MSG = 0x57,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 	u16 message length
+	 	std::string message
+	 */
+	TOCLIENT_MODCHANNEL_SIGNAL = 0x58,
+	/*
+		u8 signal id
+	 	u16 channel name length
+	 	std::string channel name
+	 */
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*

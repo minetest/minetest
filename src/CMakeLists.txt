@@ -420,6 +420,7 @@ set(common_SRCS
 	mg_decoration.cpp
 	mg_ore.cpp
 	mg_schematic.cpp
+	modchannels.cpp
 	mods.cpp
 	nameidmapping.cpp
 	nodedef.cpp

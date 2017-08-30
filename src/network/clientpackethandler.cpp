@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapsector.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "nodedef.h"
 #include "serialization.h"
 #include "server.h"
@@ -1329,4 +1330,30 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
 	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
+}
+
+/*
+ * Mod channels
+ */
+
+// @TODO client should have a list of registered channels, to filter them directly in API
+// it should also verify if it joined channels here, and do some rate limit too
+void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
+{
+	std::string channel_name, channel_msg;
+	*pkt >> channel_name >> channel_msg;
+
+	// @TODO do sth with mod channel msg
+}
+
+void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
+{
+	u8 signal_tmp;
+	ModChannelSignal signal;
+	std::string channel;
+
+	*pkt >> signal_tmp >> channel;
+
+	signal = (ModChannelSignal)signal_tmp;
+	// @TODO: do sth with signal
 }

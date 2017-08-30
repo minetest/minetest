@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "mods.h"
 #include "event_manager.h"
+#include "modchannels.h"
 #include "serverlist.h"
 #include "util/string.h"
 #include "rollback.h"
@@ -168,7 +169,8 @@ Server::Server(
 	m_event(new EventManager()),
 	m_uptime(0),
 	m_clients(m_con),
-	m_admin_chat(iface)
+	m_admin_chat(iface),
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
@@ -1376,7 +1378,12 @@ void Server::printToConsoleOnly(const std::string &text)
 
 void Server::Send(NetworkPacket* pkt)
 {
-	m_clients.send(pkt->getPeerId(),
+	Send(pkt->getPeerId(), pkt);
+}
+
+void Server::Send(u16 peer_id, NetworkPacket* pkt)
+{
+	m_clients.send(peer_id,
 		clientCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		clientCommandFactoryTable[pkt->getCommand()].reliable);
@@ -2567,7 +2574,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 	SendAccessDenied(peer_id, reason, str_reason, reconnect);
 
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con->DisconnectPeer(peer_id);
+	DisconnectPeer(peer_id);
 }
 
 
@@ -2575,7 +2582,7 @@ void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string 
 {
 	SendAccessDenied(peer_id, reason, custom_reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con->DisconnectPeer(peer_id);
+	DisconnectPeer(peer_id);
 }
 
 // 13/03/15: remove this function when protocol version 25 will become
@@ -2584,6 +2591,12 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 {
 	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
+	DisconnectPeer(peer_id);
+}
+
+void Server::DisconnectPeer(u16 peer_id)
+{
+	m_modchannel_mgr->leave_all_channels(peer_id);
 	m_con->DisconnectPeer(peer_id);
 }
 

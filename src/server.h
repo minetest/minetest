@@ -50,6 +50,7 @@ class IWritableCraftDefManager;
 class BanManager;
 class EventManager;
 class Inventory;
+class ModChannelMgr;
 class RemotePlayer;
 class PlayerSAO;
 class IRollbackManager;
@@ -144,6 +145,9 @@ public:
 	void handleCommand_Deprecated(NetworkPacket* pkt);
 	void handleCommand_Init(NetworkPacket* pkt);
 	void handleCommand_Init2(NetworkPacket* pkt);
+	void handleCommand_ModChannelJoin(NetworkPacket *pkt);
+	void handleCommand_ModChannelLeave(NetworkPacket *pkt);
+	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
 	void handleCommand_RequestMedia(NetworkPacket* pkt);
 	void handleCommand_ClientReady(NetworkPacket* pkt);
 	void handleCommand_GotBlocks(NetworkPacket* pkt);
@@ -166,6 +170,7 @@ public:
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket* pkt);
+	void Send(u16 peer_id, NetworkPacket* pkt);
 
 	// Helper for handleCommand_PlayerPos and handleCommand_Interact
 	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -319,6 +324,7 @@ public:
 	void DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string &custom_reason="");
 	void acceptAuth(u16 peer_id, bool forSudoMode);
 	void DenyAccess_Legacy(u16 peer_id, const std::wstring &reason);
+	void DisconnectPeer(u16 peer_id);
 	bool getClientConInfo(u16 peer_id, con::rtt_stat_type type, float* retval);
 	bool getClientInfo(u16 peer_id,ClientState* state, u32* uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
@@ -640,6 +646,9 @@ private:
 	// CSM flavour limits byteflag
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 	u32 m_csm_noderange_limit = 8;
+
+	// ModChannel manager
+	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
 /*
