@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-05-10 02:53+0000\n"
 "Last-Translator: yellowcrash10 <corini98@gmail.com>\n"
 "Language-Team: Esperanto <https://hosted.weblate.org/projects/minetest/"
@@ -39,7 +39,7 @@ msgstr "Eraro okazis:"
 msgid "Main menu"
 msgstr "Ĉefmenuo"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Bone"
 
@@ -52,7 +52,7 @@ msgstr "Rekonekti"
 msgid "The server has requested a reconnect:"
 msgstr "La servilo petis rekonekton:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Ŝargas…"
 
@@ -169,8 +169,9 @@ msgid "Mapgen"
 msgstr "Mondogenerilo"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Neniu mondonomo donitas aŭ neniu ludon elektitas"
+#, fuzzy
+msgid "No game selected"
+msgstr "Ŝanĝi vidodistancon"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -233,6 +234,14 @@ msgid "< Back to Settings page"
 msgstr "< Reiri al agorda paĝo"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
 msgid "Browse"
 msgstr "Folii"
@@ -255,9 +264,7 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "La aranĝo estas 3 diskomaj nombroj inter krampoj."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -267,10 +274,6 @@ msgstr "Ludoj"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Modifoj"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -295,15 +298,19 @@ msgstr "Eblaj valoroj estas: "
 msgid "Restore Default"
 msgstr "Refari Defaŭlton"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Serĉi"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid "Select path"
-msgstr "Selekto"
+msgid "Select directory"
+msgstr "Selekti modifan dosieron:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Selekti modifan dosieron:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -347,42 +354,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Fermi"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Elŝutas $1, bonvolu atendi…"
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instali"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Paĝo $1 de $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Takso"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Konciza nomo:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Instalis sukcese:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Neordigita"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Instali denove"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -724,6 +695,10 @@ msgid "Start Singleplayer"
 msgstr "Startigi solludanton"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Neniu informoj disponeblas"
 
@@ -851,10 +826,6 @@ msgid "Change Password"
 msgstr "Ŝanĝi pasvorton"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Konekti al servilo…"
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Daŭrigi"
 
@@ -887,14 +858,6 @@ msgstr ""
 "- Muso dekstra: lokigi/uzi\n"
 "- Musrado: elekti aĵon\n"
 "- T: babili\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Krei klienton…"
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Krei servilon…"
 
 #: src/game.cpp
 msgid ""
@@ -979,14 +942,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Adrestrovili…"
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Malŝaltiĝi…"
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Solludanto"
 
@@ -1021,12 +976,23 @@ msgid "Proceed"
 msgstr "Daŭrigi"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Uzi\" = malsupreniri"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Antaŭen"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Malantaŭen"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Ŝanĝi klavojn"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1039,6 +1005,10 @@ msgstr "Komando"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Konzolo"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1055,6 +1025,10 @@ msgstr "Lasi"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Antaŭen"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1112,13 +1086,32 @@ msgstr "Ŝanĝi vidodistancon"
 msgid "Right"
 msgstr "Dekstren"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot"
+msgstr "Ekrankopio"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Lanti"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Baskuli filmreĝimon"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Baskuli flugreĝimon"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Baskuli rapidreĝimon"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1129,12 +1122,18 @@ msgid "Toggle fly"
 msgstr "Baskuli flugreĝimon"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Baskuli flugreĝimon"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Baskuli nekolizian reĝimon"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Uzi"
+msgid "Toggle noclip"
+msgstr "Baskuli nekolizian reĝimon"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1427,6 +1426,10 @@ msgstr "X-Butono 1"
 msgid "X Button 2"
 msgstr "X-Butono 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "eo"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1610,11 +1613,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Antaŭen"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1885,7 +1893,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1965,6 +1973,11 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Damaĝon"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Paralaksa Okludo"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2090,10 +2103,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2122,18 +2131,6 @@ msgstr "Ŝaltu ĉiujn"
 #, fuzzy
 msgid "Disable anticheat"
 msgstr "Ŝalti partiklojn"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2221,10 +2218,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2273,10 +2266,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3105,7 +3094,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3280,6 +3269,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3636,6 +3629,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3687,18 +3690,6 @@ msgstr "Protuberancmapado"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3973,6 +3964,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4031,6 +4028,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4054,11 +4055,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Screenshot"
-msgstr "Ekrankopio"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4297,6 +4293,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4854,74 +4854,46 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "cURL tempolimo"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Kaŝu modifarojn"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ŝargi teksturojn…"
 
-#~ msgid "Attn"
-#~ msgstr "Attn"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Skala faktoro por menuoj "
 
-#~ msgid "Capital"
-#~ msgstr "Fiksiĝema klavo"
+#~ msgid "Touch free target"
+#~ msgstr "Sentuŝa celo"
 
-#~ msgid "Comma"
-#~ msgstr "Komo"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Finalo"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minuso"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punkto"
-
-#~ msgid "Plus"
-#~ msgstr "Pluso"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mondogenerilo"
+#~ msgid "If enabled, "
+#~ msgstr "ŝaltita"
 
 #, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mondogenerilo"
+#~ msgid "If disabled "
+#~ msgstr "Malŝaltu modifaron"
+
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
 
 #, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mondogenerilo"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generi Normalmapojn"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Publika servilolisto"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ne, memkompreneble!"
 
 #, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Paralaksa Okludo"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Eksaj kernprogramistoj"
 
 #, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mondogenerilo"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
+#~ msgid "Mapgen v7 cave width"
 #~ msgstr "Mondogenerilo"
 
 #, fuzzy
@@ -4929,43 +4901,123 @@ msgstr "cURL tempolimo"
 #~ msgstr "Mondogenerilo"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
+#~ msgid "Mapgen fractal slice w"
 #~ msgstr "Mondogenerilo"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Eksaj kernprogramistoj"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ne, memkompreneble!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Publika servilolisto"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mondogenerilo"
 
 #, fuzzy
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generi Normalmapojn"
-
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mondogenerilo"
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Malŝaltu modifaron"
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Paralaksa Okludo"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ŝaltita"
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Restartigu Minetest-on por efikigi pelilan ŝanĝon"
-
-#~ msgid "Touch free target"
-#~ msgstr "Sentuŝa celo"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Skala faktoro por menuoj "
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mondogenerilo"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ŝargi teksturojn…"
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mondogenerilo"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mondogenerilo"
+
+#~ msgid "Plus"
+#~ msgstr "Pluso"
+
+#~ msgid "Period"
+#~ msgstr "Punkto"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minuso"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Finalo"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Komo"
+
+#~ msgid "Capital"
+#~ msgstr "Fiksiĝema klavo"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Kaŝu modifarojn"
+
+#~ msgid "Use"
+#~ msgstr "Uzi"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Malŝaltiĝi…"
+
+#~ msgid "Resolving address..."
+#~ msgstr "Adrestrovili…"
+
+#~ msgid "Creating server..."
+#~ msgstr "Krei servilon…"
+
+#~ msgid "Creating client..."
+#~ msgstr "Krei klienton…"
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Konekti al servilo…"
+
+#~ msgid "re-Install"
+#~ msgstr "Instali denove"
+
+#~ msgid "Unsorted"
+#~ msgstr "Neordigita"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalis sukcese:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Konciza nomo:"
+
+#~ msgid "Rating"
+#~ msgstr "Takso"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Paĝo $1 de $2"
+
+#~ msgid "Install"
+#~ msgstr "Instali"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Elŝutas $1, bonvolu atendi…"
+
+#~ msgid "Close store"
+#~ msgstr "Fermi"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Selekto"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Neniu mondonomo donitas aŭ neniu ludon elektitas"

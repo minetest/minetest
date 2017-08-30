@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2013-06-01 18:09+0200\n"
 "Last-Translator: Chynggyz Jumaliev <translatorky@lavabit.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr ""
 msgid "Main menu"
 msgstr "Башкы меню"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr "Туташуу"
 msgid "The server has requested a reconnect:"
 msgstr ""
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Жүктөлүүдө..."
 
@@ -166,7 +166,7 @@ msgid "Mapgen"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
+msgid "No game selected"
 msgstr ""
 
 #: builtin/mainmenu/dlg_create_world.lua
@@ -228,6 +228,14 @@ msgid "< Back to Settings page"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr ""
 
@@ -250,9 +258,7 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -262,10 +268,6 @@ msgstr "Оюн"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
-msgstr ""
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -288,15 +290,19 @@ msgstr ""
 msgid "Restore Default"
 msgstr ""
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid "Select path"
-msgstr "Тандоо"
+msgid "Select directory"
+msgstr "Дүйнөнү тандаңыз:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Дүйнөнү тандаңыз:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -335,43 +341,6 @@ msgstr ""
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-#, fuzzy
-msgid "Shortname:"
-msgstr "Дүйнө аты"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
 msgstr ""
 
 #: builtin/mainmenu/tab_credits.lua
@@ -742,6 +711,10 @@ msgid "Start Singleplayer"
 msgstr "Бир кишилик"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr ""
 
@@ -870,10 +843,6 @@ msgid "Change Password"
 msgstr "Сырсөздү өзгөртүү"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Серверге туташтырылууда..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Улантуу"
 
@@ -906,15 +875,6 @@ msgstr ""
 "- Оң чычкан баскычы: коюу/колдонуу\n"
 "- Чычкан дөңгөлөгү: буюмду тандоо\n"
 "- T: маек\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Клиент жаратылууда..."
-
-#: src/game.cpp
-#, fuzzy
-msgid "Creating server..."
-msgstr "Сервер жаратылууда...."
 
 #: src/game.cpp
 msgid ""
@@ -988,15 +948,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Дареги чечилүүдө..."
-
-#: src/game.cpp
-#, fuzzy
-msgid "Shutting down..."
-msgstr "Оюн өчүрүлүүдө..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Бир кишилик"
 
@@ -1030,12 +981,22 @@ msgid "Proceed"
 msgstr "Улантуу"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+msgid "\"Special\" = climb down"
 msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Алга"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Артка"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Баскычтарды өзгөртүү"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1048,6 +1009,10 @@ msgstr "Команда"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Консоль"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1064,6 +1029,10 @@ msgstr "Ыргытуу"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Алга"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1120,13 +1089,32 @@ msgstr ""
 msgid "Right"
 msgstr "Оңго"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot"
+msgstr "Тез сүрөт"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Уурданып басуу"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle Cinematic"
+msgstr "Тез басууга которуу"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Учууга которуу"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
 msgstr "Тез басууга которуу"
 
 #: src/guiKeyChangeMenu.cpp
@@ -1138,12 +1126,18 @@ msgid "Toggle fly"
 msgstr "Учууга которуу"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
-msgstr ""
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Учууга которуу"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Колдонуу"
+#, fuzzy
+msgid "Toggle minimap"
+msgstr "Тез басууга которуу"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle noclip"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1433,6 +1427,10 @@ msgstr ""
 msgid "X Button 2"
 msgstr ""
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ky"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1617,11 +1615,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Алга"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1895,7 +1898,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1977,6 +1980,10 @@ msgstr ""
 #, fuzzy
 msgid "Damage"
 msgstr "Убалды күйгүзүү"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2103,10 +2110,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2135,18 +2138,6 @@ msgstr "Баарын күйгүзүү"
 #, fuzzy
 msgid "Disable anticheat"
 msgstr "Бөлүкчөлөрдү күйгүзүү"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2231,10 +2222,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2283,10 +2270,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3108,7 +3091,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3281,6 +3264,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3624,6 +3611,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3675,18 +3672,6 @@ msgstr "Mip-текстуралоо"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3952,6 +3937,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4010,6 +4001,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4033,11 +4028,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Screenshot"
-msgstr "Тез сүрөт"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4270,6 +4260,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4821,49 +4815,55 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Үтүр"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Kanji"
-#~ msgstr "Кандзи"
-
-#~ msgid "Minus"
-#~ msgstr "Кемитүү белгиси"
-
-#~ msgid "Period"
-#~ msgstr "Айланма сан"
-
-#~ msgid "Plus"
-#~ msgstr "Кошуу белгиси"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Жүктөлүүдө..."
 
 #, fuzzy
-#~ msgid "Public Serverlist"
-#~ msgstr "Жалпылык серверлердин тизмеси:"
+#~ msgid "Downloading"
+#~ msgstr "Ылдый"
 
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Баарын өчүрүү"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "күйгүзүлгөн"
+#~ msgid "is required by:"
+#~ msgstr "талап кылынганы:"
 
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Эски сырсөз"
+#~ msgid "Configuration saved.  "
+#~ msgstr "Конфигурация сакталды.  "
 
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Чектүү суюктук"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
+
+#~ msgid "Show Public"
+#~ msgstr "Жалпылыкты көрсөтүү"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Тандалмаларды көрсөтүү"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
+
+#~ msgid "Create world"
+#~ msgstr "Дүйнөнү жаратуу"
+
+#~ msgid "Address required."
+#~ msgstr "Дареги талап кылынат."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Өчүрүлө турган файлдар"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -4890,52 +4890,74 @@ msgstr ""
 #~ "- ESC: бул меню\n"
 #~ "- T: маек\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Бардык дүйнө файлдарын өчүрүү оңунан чыккан жок"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Дүйнөнү ырастоо мүмкүн эмес: Эч нерсе тандалган жок"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Дүйнөнү жаратуу мүмкүн эмес: Оюндар табылган жок"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Өчүрүлө турган файлдар"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Дүнөнү жаратуу мүмкүн эмес: Эч нерсе тандалган жок"
-
-#~ msgid "Address required."
-#~ msgstr "Дареги талап кылынат."
-
-#~ msgid "Create world"
-#~ msgstr "Дүйнөнү жаратуу"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Жергиликтүү серверди жүргүзүү үчүн даректи бош калтырыңыз."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Тандалмаларды көрсөтүү"
-
-#~ msgid "Show Public"
-#~ msgstr "Жалпылыкты көрсөтүү"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Эскертүү: Туура эмес конфигурация.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Конфигурация сакталды.  "
-
-#~ msgid "is required by:"
-#~ msgstr "талап кылынганы:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Сол баскычы: Бардык буюмдарды ташуу, Оң баскычы: Бир буюмду ташуу"
+#, fuzzy
+#~ msgid "Finite Liquid"
+#~ msgstr "Чектүү суюктук"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ылдый"
+#~ msgid "Password"
+#~ msgstr "Эски сырсөз"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Жүктөлүүдө..."
+#~ msgid "If enabled, "
+#~ msgstr "күйгүзүлгөн"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Баарын өчүрүү"
+
+#, fuzzy
+#~ msgid "Public Serverlist"
+#~ msgstr "Жалпылык серверлердин тизмеси:"
+
+#~ msgid "Plus"
+#~ msgstr "Кошуу белгиси"
+
+#~ msgid "Period"
+#~ msgstr "Айланма сан"
+
+#~ msgid "Minus"
+#~ msgstr "Кемитүү белгиси"
+
+#~ msgid "Kanji"
+#~ msgstr "Кандзи"
+
+#~ msgid "Kana"
+#~ msgstr "Кана"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Comma"
+#~ msgstr "Үтүр"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Use"
+#~ msgstr "Колдонуу"
+
+#, fuzzy
+#~ msgid "Shutting down..."
+#~ msgstr "Оюн өчүрүлүүдө..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Дареги чечилүүдө..."
+
+#, fuzzy
+#~ msgid "Creating server..."
+#~ msgstr "Сервер жаратылууда...."
+
+#~ msgid "Creating client..."
+#~ msgstr "Клиент жаратылууда..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Серверге туташтырылууда..."
+
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "Дүйнө аты"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Тандоо"

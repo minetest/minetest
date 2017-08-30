@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "config.h"
 #include "player.h"
 #include "porting.h"
+#include "network/socket.h"
 #if USE_CURSES
 	#include "terminal_chat_console.h"
 #endif
@@ -149,9 +150,6 @@ int main(int argc, char *argv[])
 		errorstream << "Cannot create user data directory" << std::endl;
 		return 1;
 	}
-
-	// Initialize debug stacks
-	DSTACK(FUNCTION_NAME);
 
 	// Debug handler
 	BEGIN_DEBUG_EXCEPTION_HANDLER
@@ -778,8 +776,6 @@ static bool determine_subgame(GameParams *game_params)
  *****************************************************************************/
 static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args)
 {
-	DSTACK("Dedicated server branch");
-
 	verbosestream << _("Using world path") << " ["
 	              << game_params.world_path << "]" << std::endl;
 	verbosestream << _("Using gameid") << " ["

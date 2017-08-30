@@ -65,14 +65,14 @@ local function check_modname_prefix(name)
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"\"" .. expected_prefix .. "\" or \":\" prefix required")
 		end
-		
+
 		-- Enforce that the name only contains letters, numbers and underscores.
 		local subname = name:sub(#expected_prefix+1)
 		if subname:find("[^%w_]") then
 			error("Name " .. name .. " does not follow naming conventions: " ..
 				"contains unallowed characters")
 		end
-		
+
 		return name
 	end
 end
@@ -435,6 +435,17 @@ function core.run_callbacks(callbacks, mode, ...)
 	return ret
 end
 
+function core.run_priv_callbacks(name, priv, caller, method)
+	if not core.registered_privileges[priv]["on_" .. method] or
+			not core.registered_privileges[priv]["on_" .. method](name, caller) then
+		for _, func in ipairs(core["registered_on_priv_" .. method]) do
+			if not func(name, caller, priv) then
+				break
+			end
+		end
+	end
+end
+
 --
 -- Callback registration
 --
@@ -494,6 +505,19 @@ local function make_registration_wrap(reg_fn_name, clear_fn_name)
 	return list
 end
 
+local function make_wrap_deregistration(reg_fn, clear_fn, list)
+	local unregister = function (unregistered_key)
+		local temporary_list = table.copy(list)
+		clear_fn()
+		for k,v in pairs(temporary_list) do
+			if unregistered_key ~= k then
+				reg_fn(v)
+			end
+		end
+	end
+	return unregister
+end
+
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
 function core.registered_on_player_hpchange(player, hp_change)
@@ -532,6 +556,8 @@ core.registered_biomes      = make_registration_wrap("register_biome",      "cle
 core.registered_ores        = make_registration_wrap("register_ore",        "clear_registered_ores")
 core.registered_decorations = make_registration_wrap("register_decoration", "clear_registered_decorations")
 
+core.unregister_biome = make_wrap_deregistration(core.register_biome, core.clear_registered_biomes, core.registered_biomes)
+
 core.registered_on_chat_messages, core.register_on_chat_message = make_registration()
 core.registered_globalsteps, core.register_globalstep = make_registration()
 core.registered_playerevents, core.register_playerevent = make_registration()
@@ -553,10 +579,11 @@ core.registered_craft_predicts, core.register_craft_predict = make_registration(
 core.registered_on_protection_violation, core.register_on_protection_violation = make_registration()
 core.registered_on_item_eats, core.register_on_item_eat = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
+core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
+core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()
 --
 
 core.register_on_mapgen_init = function(func) func(core.get_mapgen_params()) end
-

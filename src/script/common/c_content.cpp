@@ -56,7 +56,9 @@ void read_item_definition(lua_State* L, int index,
 	getstringfield(L, index, "name", def.name);
 	getstringfield(L, index, "description", def.description);
 	getstringfield(L, index, "inventory_image", def.inventory_image);
+	getstringfield(L, index, "inventory_overlay", def.inventory_overlay);
 	getstringfield(L, index, "wield_image", def.wield_image);
+	getstringfield(L, index, "wield_overlay", def.wield_overlay);
 	getstringfield(L, index, "palette", def.palette_image);
 
 	// Read item color.
@@ -142,8 +144,12 @@ void push_item_definition_full(lua_State *L, const ItemDefinition &i)
 	lua_setfield(L, -2, "type");
 	lua_pushstring(L, i.inventory_image.c_str());
 	lua_setfield(L, -2, "inventory_image");
+	lua_pushstring(L, i.inventory_overlay.c_str());
+	lua_setfield(L, -2, "inventory_overlay");
 	lua_pushstring(L, i.wield_image.c_str());
 	lua_setfield(L, -2, "wield_image");
+	lua_pushstring(L, i.wield_overlay.c_str());
+	lua_setfield(L, -2, "wield_overlay");
 	lua_pushstring(L, i.palette_image.c_str());
 	lua_setfield(L, -2, "palette_image");
 	push_ARGB8(L, i.color);
@@ -183,7 +189,9 @@ void read_object_properties(lua_State *L, int index,
 	if(!lua_istable(L, index))
 		return;
 
-	prop->hp_max = getintfield_default(L, -1, "hp_max", 10);
+	int hp_max = 0;
+	if (getintfield(L, -1, "hp_max", hp_max))
+		prop->hp_max = (s16)rangelim(hp_max, 0, S16_MAX);
 
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
@@ -195,6 +203,13 @@ void read_object_properties(lua_State *L, int index,
 		prop->collisionbox = read_aabb3f(L, -1, 1.0);
 	lua_pop(L, 1);
 
+	lua_getfield(L, -1, "selectionbox");
+	if (lua_istable(L, -1))
+		prop->selectionbox = read_aabb3f(L, -1, 1.0);
+	else
+		prop->selectionbox = prop->collisionbox;
+	lua_pop(L, 1);
+	getboolfield(L, -1, "pointable", prop->pointable);
 	getstringfield(L, -1, "visual", prop->visual);
 
 	getstringfield(L, -1, "mesh", prop->mesh);
@@ -294,6 +309,10 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "weight");
 	push_aabb3f(L, prop->collisionbox);
 	lua_setfield(L, -2, "collisionbox");
+	push_aabb3f(L, prop->selectionbox);
+	lua_setfield(L, -2, "selectionbox");
+	lua_pushboolean(L, prop->pointable);
+	lua_setfield(L, -2, "pointable");
 	lua_pushlstring(L, prop->visual.c_str(), prop->visual.size());
 	lua_setfield(L, -2, "visual");
 	lua_pushlstring(L, prop->mesh.c_str(), prop->mesh.size());

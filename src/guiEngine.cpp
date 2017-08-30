@@ -547,7 +547,7 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 /******************************************************************************/
 void GUIEngine::setTopleftText(const std::string &text)
 {
-	m_toplefttext = utf8_to_wide(text);
+	m_toplefttext = translate_string(utf8_to_wide(text));
 
 	updateTopLeftTextSize();
 }

@@ -7,11 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-05-31 19:57+0000\n"
 "Last-Translator: Mateusz Mendel <mendelm9@gmail.com>\n"
-"Language-Team: Polish "
-"<https://hosted.weblate.org/projects/minetest/minetest/pl/>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/minetest/minetest/"
+"pl/>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,7 +40,7 @@ msgstr "Wystąpił błąd:"
 msgid "Main menu"
 msgstr "Menu główne"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "OK"
 
@@ -52,7 +52,7 @@ msgstr "Połącz ponownie"
 msgid "The server has requested a reconnect:"
 msgstr "Serwer zażądał ponownego połączenia:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Ładowanie..."
 
@@ -166,8 +166,9 @@ msgid "Mapgen"
 msgstr "Generator mapy"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Nie podano nazwy świata lub nie wybrano gry"
+#, fuzzy
+msgid "No game selected"
+msgstr "Zasięg widzenia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -228,6 +229,17 @@ msgid "< Back to Settings page"
 msgstr "< Wróć do ekranu ustawień"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Format: <offset>, <skala>, (<rozpiętośćX>, <rozpiętośćY>, <rozpiętośćZ>), "
+"<ziarno>, <oktawy>, <trwanie>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Przeglądaj"
 
@@ -248,12 +260,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Składnia to 3 liczby oddzielone przecinkami i w nawiasach."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Format: <offset>, <skala>, (<rozpiętośćX>, <rozpiętośćY>, <rozpiętośćZ>), "
-"<ziarno>, <oktawy>, <trwanie>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -262,10 +270,6 @@ msgstr "Gry"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mody"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Opcjonalnie można dołączyć lakunarność poprzedzoną przecinkiem."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -287,14 +291,19 @@ msgstr "Możliwe wartości to: "
 msgid "Restore Default"
 msgstr "Przywróć domyślne"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Szukaj"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Wybierz ścieżkę"
+#, fuzzy
+msgid "Select directory"
+msgstr "Katalog map"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Wybierz plik moda:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -339,42 +348,6 @@ msgstr ""
 #, fuzzy
 msgid "Subgame Mods"
 msgstr "Mody trybów gry"
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Zamknij"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Ściąganie $1, czekaj..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instaluj"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Strona $1 z $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Ocena"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Nazwa skrócona:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Zainstalowano pomyślnie:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Nieposortowane"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Ponowna instalacja"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -714,6 +687,10 @@ msgid "Start Singleplayer"
 msgstr "Tryb jednoosobowy"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Brak informacjii"
 
@@ -838,10 +815,6 @@ msgid "Change Password"
 msgstr "Zmień hasło"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Łączenie z serwerem..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Dalej"
 
@@ -878,14 +851,6 @@ msgstr ""
 "- Prawy przycisk myszy: postawienie/użycie przedmiotu↵\n"
 "- Rolka myszy: wybór przedmiotu↵\n"
 "- T: chat\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Tworzenie klienta..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Tworzenie serwera...."
 
 #: src/game.cpp
 msgid ""
@@ -972,14 +937,6 @@ msgid "Remote server"
 msgstr "Serwer zdalny"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Sprawdzanie adresu..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Wyłączanie..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Pojedynczy gracz"
 
@@ -988,7 +945,7 @@ msgid "Sound Volume"
 msgstr "Głośność"
 
 #: src/game.cpp
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Volume changed to %d%%"
 msgstr "Zmieniono poziom głośności na %d%%"
 
@@ -1015,12 +972,23 @@ msgid "Proceed"
 msgstr "Kontynuuj"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Użyj\" = wspinaj się"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Przód"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Tył"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Zmień klawisze"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1033,6 +1001,10 @@ msgstr "Komenda"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Konsola"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1050,6 +1022,10 @@ msgstr "Upuść"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Przód"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1110,13 +1086,31 @@ msgstr "Zasięg widzenia"
 msgid "Right"
 msgstr "Prawo"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Zrzut ekranu"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Skradanie"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Przełącz na tryb Cinematic"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Przełącz tryb latania"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Przełącz tryb szybki"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1127,12 +1121,18 @@ msgid "Toggle fly"
 msgstr "Przełącz tryb latania"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Przełącz tryb latania"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Przełącz tryb noclip"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Użyj"
+msgid "Toggle noclip"
+msgstr "Przełącz tryb noclip"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1427,6 +1427,10 @@ msgstr "X Button 1"
 msgid "X Button 2"
 msgstr "X Button 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "pl"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1575,8 +1579,8 @@ msgid ""
 "brighter.\n"
 "This setting is for the client only and is ignored by the server."
 msgstr ""
-"Ustaw kodowanie gamma dla tablic świateł. Niższe wartości to większa jasność."
-"\n"
+"Ustaw kodowanie gamma dla tablic świateł. Niższe wartości to większa "
+"jasność.\n"
 "To ustawienie jest tylko dla klientów, ignorowane przez serwer."
 
 #: src/settings_translation_file.cpp
@@ -1663,13 +1667,18 @@ msgstr ""
 "Zapisane w blokach mapy (16 bloków)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Do przodu"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Automatycznie zgłoś do listy serwerów."
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Autorun key"
-msgstr "Tryb automatycznego biegania"
+msgid "Autosave Screen Size"
+msgstr "Automatyczny zapis rozmiaru okienka"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1956,7 +1965,8 @@ msgid "Continuous forward"
 msgstr "Ciągle na przód"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Ciągłe poruszanie się na przód (tylko do testowania)."
 
 #: src/settings_translation_file.cpp
@@ -2046,6 +2056,11 @@ msgstr "DPI"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Włącz obrażenia"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Stromość jeziora"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2192,10 +2207,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Głębokość poniżej której znajdziesz masywne jaskinie."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "Szybkość opadania"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2225,22 +2236,6 @@ msgstr "Włącz Efekty Cząsteczkowe"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Wyłącz anticheat"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr "Wyłącza sekwencję ucieczki"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
-"Wyłącza sekwencję ucieczki np. kolorowanie czatu.\n"
-"Użyj tego jeśli chcesz uruchomić serwer dla klientów przed 0.4.14 i chcesz "
-"wyłączyć\n"
-"sekwencję ucieczki generowaną przez modyfikacje."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2335,10 +2330,6 @@ msgstr ""
 "jeżeli następuje połączenie z serwerem."
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2397,10 +2388,6 @@ msgid ""
 msgstr ""
 "Włącza mapowanie paralaksy.\n"
 "Wymaga włączenia shaderów."
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3145,8 +3132,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz zmniejszania głośności.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3176,8 +3163,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz zwiększania głośności.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3247,8 +3234,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz wyciszania gry.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3319,8 +3306,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz wyboru następnej pozycji na pasku akcji.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -3330,8 +3317,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz wyboru poprzedniej pozycji na pasku akcji.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3370,7 +3357,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3517,8 +3504,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Klawisz wyświetlania zoom kiedy to możliwe.\n"
-"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901"
-"735e3da1b0edf72eb3"
+"Zobacz http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -3605,6 +3592,10 @@ msgstr ""
 "-   action\n"
 "-   info\n"
 "-   verbose"
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -4025,6 +4016,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -4074,18 +4075,6 @@ msgstr "Mip-Mappowanie"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4354,6 +4343,12 @@ msgid "Remote port"
 msgstr "Port zdalny"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4412,6 +4407,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Zapisz mapę otrzymaną z serwera"
 
@@ -4435,10 +4434,6 @@ msgstr "Wysokość ekranu"
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr "Szerokość ekranu"
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Zrzut ekranu"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4666,6 +4661,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5217,205 +5216,60 @@ msgstr ""
 msgid "cURL timeout"
 msgstr "Limit czasu cURL"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ukryj zawartość paczki modów"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Ładowanie..."
 
-#~ msgid "Start Game"
-#~ msgstr "Rozpocznij grę/Połącz"
+#, fuzzy
+#~ msgid "Downloading"
+#~ msgstr "Ściągnij"
 
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Przecinek"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Kropka"
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
-#~ "Kontrola szerokości pustyni i plaż w generatorze map v6.\n"
-#~ "Kiedy śnieżne biomy są włączone to 'mgv6_freq_desert'  zostanie "
-#~ "zignorowane."
+#~ "Lewy przycisk myszy: przenieś wszystkie przedmioty, Prawy przycisk myszy: "
+#~ "przenieś pojedynczy przedmiot"
 
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Determinuje kształt terenu.\n"
-#~ "Trzy liczby w nawiasach kontrolują skalę terenu\n"
-#~ "oraz powinny być identyczne."
+#~ msgid "is required by:"
+#~ msgstr "wymagane przez:"
 
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Generator mapy flat szerokość jaskini"
+#~ msgid "Configuration saved.  "
+#~ msgstr "Konfiguracja zapisana.  "
 
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Generator mapy fractal szerokość jaskini"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny.  "
 
-#, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Generator mapy"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Nie można stworzyć świata: Nazwa zawiera niedozwolone znaki"
 
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Generator mapy fractal iteracje"
+#~ msgid "Show Public"
+#~ msgstr "Pokaż publiczne"
 
-#, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Generator mapy"
+#~ msgid "Show Favorites"
+#~ msgstr "Pokaż ulubione"
 
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Generator mapy fractal skala"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Pozostaw pole adresu puste, by uruchomić serwer lokalny."
 
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Generator mapy"
+#~ msgid "Create world"
+#~ msgstr "Stwórz świat"
 
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Generator mapy v5 szerokość jaskini"
+#~ msgid "Address required."
+#~ msgstr "Wymagany adres."
 
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Generator mapy v7 szerokość jaskini"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Nie można skasować świata: nic nie zaznaczono"
 
-#, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "Szczegółowe dane profilowania. Przydatne dla twórców modyfikacji."
+#~ msgid "Files to be deleted"
+#~ msgstr "Pliki do skasowania"
 
-#, fuzzy
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Szczegółowe profilowanie modyfikacji"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Nie można utworzyć świata: Nie znaleziono żadnego trybu gry"
 
-#, fuzzy
-#~ msgid ""
-#~ "How many blocks are flying in the wire simultaneously for the whole "
-#~ "server."
-#~ msgstr ""
-#~ "Jak dużo bloków może jednocześnie być przesyłana przez sieć dla całego "
-#~ "serwera."
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Nie można skonfigurować świata: Nic nie zaznaczono"
 
-#~ msgid "Useful for mod developers."
-#~ msgstr "Przydatne dla twórców modyfikacji."
-
-#~ msgid "No of course not!"
-#~ msgstr "Oczywiście, że nie!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Lista publicznych serwerów"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generuj mapy normalnych"
-
-#~ msgid "No!!!"
-#~ msgstr "Nie!!"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Wyłącz wszystkie"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "włączone"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Kopiowanie moda \"$1\" do gry \"$2\" nie powiodło się"
-
-#~ msgid "GAMES"
-#~ msgstr "GRY"
-
-#~ msgid "Mods:"
-#~ msgstr "Mody:"
-
-#~ msgid "new game"
-#~ msgstr "nowa gra"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "EDYTUJ GRĘ"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Usuń zaznaczony mod"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<--Dodaj mod"
-
-#~ msgid "CLIENT"
-#~ msgstr "KLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "URUCHOM SERWER"
-
-#~ msgid "Name"
-#~ msgstr "Nazwa"
-
-#~ msgid "Password"
-#~ msgstr "Hasło"
-
-#~ msgid "SETTINGS"
-#~ msgstr "USTAWIENIA"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Ładuj obrazy przedmiotów"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Realistyczne ciecze"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "TRYB JEDNOOSOBOWY"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACZKI TEKSTUR"
-
-#~ msgid "MODS"
-#~ msgstr "MODY"
-
-#, fuzzy
-#~ msgid "Add mod:"
-#~ msgstr "<<--Dodaj mod"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Uwaga: Niektóre z modyfikacji nie zostały jeszcze skonfigurowane.\n"
-#~ "Zostaną domyślnie włączone gdy zapiszesz konfigurację.  "
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Ostrzeżenie: Niektóre z modyfikacji nie zostały znalezione.\n"
-#~ "Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację.  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Nie udało się skasować wszystkich plików świata"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -5442,57 +5296,277 @@ msgstr "Limit czasu cURL"
 #~ "- ESC: to menu\n"
 #~ "- T: czat\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Nie udało się skasować wszystkich plików świata"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Nie można skonfigurować świata: Nic nie zaznaczono"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Nie można utworzyć świata: Nie znaleziono żadnego trybu gry"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Pliki do skasowania"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Nie można skasować świata: nic nie zaznaczono"
-
-#~ msgid "Address required."
-#~ msgstr "Wymagany adres."
-
-#~ msgid "Create world"
-#~ msgstr "Stwórz świat"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Pozostaw pole adresu puste, by uruchomić serwer lokalny."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Pokaż ulubione"
-
-#~ msgid "Show Public"
-#~ msgstr "Pokaż publiczne"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Nie można stworzyć świata: Nazwa zawiera niedozwolone znaki"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Ostrzeżenie: Plik konfiguracyjny niespójny.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Konfiguracja zapisana.  "
-
-#~ msgid "is required by:"
-#~ msgstr "wymagane przez:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
 #~ msgstr ""
-#~ "Lewy przycisk myszy: przenieś wszystkie przedmioty, Prawy przycisk myszy: "
-#~ "przenieś pojedynczy przedmiot"
+#~ "Ostrzeżenie: Niektóre z modyfikacji nie zostały znalezione.\n"
+#~ "Ich ustawienia zostaną usunięte gdy zapiszesz konfigurację.  "
+
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Uwaga: Niektóre z modyfikacji nie zostały jeszcze skonfigurowane.\n"
+#~ "Zostaną domyślnie włączone gdy zapiszesz konfigurację.  "
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Ściągnij"
+#~ msgid "Add mod:"
+#~ msgstr "<<--Dodaj mod"
+
+#~ msgid "MODS"
+#~ msgstr "MODY"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACZKI TEKSTUR"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "TRYB JEDNOOSOBOWY"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Realistyczne ciecze"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Ładuj obrazy przedmiotów"
+
+#~ msgid "SETTINGS"
+#~ msgstr "USTAWIENIA"
+
+#~ msgid "Password"
+#~ msgstr "Hasło"
+
+#~ msgid "Name"
+#~ msgstr "Nazwa"
+
+#~ msgid "START SERVER"
+#~ msgstr "URUCHOM SERWER"
+
+#~ msgid "CLIENT"
+#~ msgstr "KLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<--Dodaj mod"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Usuń zaznaczony mod"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "EDYTUJ GRĘ"
+
+#~ msgid "new game"
+#~ msgstr "nowa gra"
+
+#~ msgid "Mods:"
+#~ msgstr "Mody:"
+
+#~ msgid "GAMES"
+#~ msgstr "GRY"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Kopiowanie moda \"$1\" do gry \"$2\" nie powiodło się"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Ładowanie..."
+#~ msgid "If enabled, "
+#~ msgstr "włączone"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Wyłącz wszystkie"
+
+#~ msgid "No!!!"
+#~ msgstr "Nie!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generuj mapy normalnych"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Lista publicznych serwerów"
+
+#~ msgid "No of course not!"
+#~ msgstr "Oczywiście, że nie!"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Przydatne dla twórców modyfikacji."
+
+#, fuzzy
+#~ msgid ""
+#~ "How many blocks are flying in the wire simultaneously for the whole "
+#~ "server."
+#~ msgstr ""
+#~ "Jak dużo bloków może jednocześnie być przesyłana przez sieć dla całego "
+#~ "serwera."
+
+#, fuzzy
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Szczegółowe profilowanie modyfikacji"
+
+#, fuzzy
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Szczegółowe dane profilowania. Przydatne dla twórców modyfikacji."
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Generator mapy v7 szerokość jaskini"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Generator mapy v5 szerokość jaskini"
+
+#, fuzzy
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Generator mapy"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Generator mapy fractal skala"
+
+#, fuzzy
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Generator mapy"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Generator mapy fractal iteracje"
+
+#, fuzzy
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Generator mapy"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Generator mapy fractal szerokość jaskini"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Generator mapy flat szerokość jaskini"
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Determinuje kształt terenu.\n"
+#~ "Trzy liczby w nawiasach kontrolują skalę terenu\n"
+#~ "oraz powinny być identyczne."
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Kontrola szerokości pustyni i plaż w generatorze map v6.\n"
+#~ "Kiedy śnieżne biomy są włączone to 'mgv6_freq_desert'  zostanie "
+#~ "zignorowane."
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Kropka"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Przecinek"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Start Game"
+#~ msgstr "Rozpocznij grę/Połącz"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ukryj zawartość paczki modów"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Wyłącza sekwencję ucieczki np. kolorowanie czatu.\n"
+#~ "Użyj tego jeśli chcesz uruchomić serwer dla klientów przed 0.4.14 i "
+#~ "chcesz wyłączyć\n"
+#~ "sekwencję ucieczki generowaną przez modyfikacje."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Wyłącza sekwencję ucieczki"
+
+#~ msgid "Descending speed"
+#~ msgstr "Szybkość opadania"
+
+#, fuzzy
+#~ msgid "Autorun key"
+#~ msgstr "Tryb automatycznego biegania"
+
+#~ msgid "Use"
+#~ msgstr "Użyj"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Wyłączanie..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Sprawdzanie adresu..."
+
+#~ msgid "Creating server..."
+#~ msgstr "Tworzenie serwera...."
+
+#~ msgid "Creating client..."
+#~ msgstr "Tworzenie klienta..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Łączenie z serwerem..."
+
+#~ msgid "re-Install"
+#~ msgstr "Ponowna instalacja"
+
+#~ msgid "Unsorted"
+#~ msgstr "Nieposortowane"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Zainstalowano pomyślnie:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Nazwa skrócona:"
+
+#~ msgid "Rating"
+#~ msgstr "Ocena"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Strona $1 z $2"
+
+#~ msgid "Install"
+#~ msgstr "Instaluj"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Ściąganie $1, czekaj..."
+
+#~ msgid "Close store"
+#~ msgstr "Zamknij"
+
+#~ msgid "Select path"
+#~ msgstr "Wybierz ścieżkę"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Opcjonalnie można dołączyć lakunarność poprzedzoną przecinkiem."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nie podano nazwy świata lub nie wybrano gry"

@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-05-25 17:22+0000\n"
 "Last-Translator: Viktar Vauchkevich <victorenator@gmail.com>\n"
-"Language-Team: Belarusian "
-"<https://hosted.weblate.org/projects/minetest/minetest/be/>\n"
+"Language-Team: Belarusian <https://hosted.weblate.org/projects/minetest/"
+"minetest/be/>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.14.1\n"
 
 #: builtin/client/init.lua
@@ -40,7 +40,7 @@ msgstr "Адбылася памылка:"
 msgid "Main menu"
 msgstr "Галоўнае меню"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Добра"
 
@@ -52,7 +52,7 @@ msgstr "Перазлучыцца"
 msgid "The server has requested a reconnect:"
 msgstr "Сервер патрабуе перазлучэнне:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Загрузка…"
 
@@ -164,8 +164,9 @@ msgid "Mapgen"
 msgstr "Генератар мапы"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Дадзены свет без назвы або не абрана гульня"
+#, fuzzy
+msgid "No game selected"
+msgstr "Далёкасць бачнасці"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -225,6 +226,17 @@ msgid "< Back to Settings page"
 msgstr "< Назад на старонку наладаў"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Фармат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Праглядзець"
 
@@ -245,12 +257,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Фармат: у дужках 3 лікі праз коску."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Фармат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -259,10 +267,6 @@ msgstr "Гульні"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Моды"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Пры жаданні можа быць дабаўлена лакунарнасць праз коску."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -284,14 +288,19 @@ msgstr "Магчымыя значэнні: "
 msgid "Restore Default"
 msgstr "Аднавіць агаданае"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Пошук"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Абраць шлях"
+#, fuzzy
+msgid "Select directory"
+msgstr "Каталог мапы"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Абраць файл моду:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -332,42 +341,6 @@ msgstr "Усталяванне моду: не ўдалося знайсці пр
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr "Падгульнявыя моды"
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Закрыць краму"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Запампоўка $1. Чакайце, калі ласка…"
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Усталяваць"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Старонка $1 з $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Рэйтынг"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Кароткая назва:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Паспяхова ўсталяваны:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Без сартавання"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "пераўсталяваць"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -698,6 +671,10 @@ msgid "Start Singleplayer"
 msgstr "Старт самотнай гульні"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Няма звестак"
 
@@ -818,10 +795,6 @@ msgid "Change Password"
 msgstr "Змяніць пароль"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Злучэнне з серверам…"
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Прадоўжыць"
 
@@ -857,14 +830,6 @@ msgstr ""
 "- Mouse right: змясціць/ужыць\n"
 "- Mouse wheel: абраць прадмет\n"
 "- %s: чат\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Стварэнне кліента…"
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Стварэнне сервера…"
 
 #: src/game.cpp
 msgid ""
@@ -947,14 +912,6 @@ msgid "Remote server"
 msgstr "Аддалены сервер"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Распазнаванне адраса…"
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Адключэнне…"
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Самотная гульня"
 
@@ -988,12 +945,23 @@ msgid "Proceed"
 msgstr "Прадоўжыць"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "«Ужыць» = злазіць"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Уперад"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Узад"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Змяніць"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1006,6 +974,11 @@ msgstr "Каманда"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Кансоль"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Dec. range"
+msgstr "Дыяпазон прагляду"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1022,6 +995,11 @@ msgstr "Выкінуць"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Уперад"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Inc. range"
+msgstr "Дыяпазон прагляду"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -1076,13 +1054,31 @@ msgstr "Далёкасць бачнасці"
 msgid "Right"
 msgstr "Управа"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Здымак экрана"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Красціся"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Кінематаграфічнасць"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Палёт"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Шпаркасць"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1093,12 +1089,18 @@ msgid "Toggle fly"
 msgstr "Палёт"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Палёт"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Сутыкненне"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Ужыць"
+msgid "Toggle noclip"
+msgstr "Сутыкненне"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1384,6 +1386,10 @@ msgstr "Дадат. кнопка 1"
 msgid "X Button 2"
 msgstr "Дадат. кнопка 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "be"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1609,12 +1615,18 @@ msgstr ""
 "Задаецца ў блоках мапы (16 вузлоў)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Клавіша ўперад"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Аўтаматычна дадаваць у спіс сервераў."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "Клавіша аўтабегу"
+#, fuzzy
+msgid "Autosave Screen Size"
+msgstr "Аўтаматычна захоўваць памеры экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1892,7 +1904,8 @@ msgid "Continuous forward"
 msgstr "Бесперапынна ісці ўперад"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Бесперапынны рух ўперад (толькі для тэставання)."
 
 #: src/settings_translation_file.cpp
@@ -1981,6 +1994,11 @@ msgstr "DPI (кропак на цалю)"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Пашкоджанні"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Крутасць азёр"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2120,10 +2138,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Глыбіня, ніжэй якой вы знойдзеце масіўныя пячоры."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "Хуткасць апускання"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2153,21 +2167,6 @@ msgstr "Часціцы пры капанні"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Адключыць анты-чыт"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr "Адключыць escape-паслядоўнасці"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
-"Адключыць escape-паслядоўнасці, напрыклад, размалёўку чату.\n"
-"Выкарыстоўвайце гэта, калі вы хочаце запусціць сервер з pre-0.4.14 кліентамі "
-"і калі вы хочаце адключыць escape-паслядоўнасці, якія генеруюцца модамі."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2262,10 +2261,6 @@ msgstr ""
 "(напрыклад тэкстур) пры злучэнні з серверам."
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr "Уключыць калыханне прагляду"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2325,10 +2320,6 @@ msgid ""
 msgstr ""
 "Уключае паралакснае аклюзіўнае тэкстураванне.\n"
 "Патрабуе шэйдэры."
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr "Уключае калыханне пра хадзьбе."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3076,8 +3067,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для памяншэння гучнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3106,8 +3097,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для павелічэння гучнасці.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3176,8 +3167,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для прыглушэння гульні.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3206,8 +3197,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для адкрыцця вакна чату для ўводу лакальных каманд.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3246,8 +3237,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для выбару наступнага элемента ў хотбары.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3256,8 +3247,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для выбару папярэдняга элемента хотбара.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3294,8 +3285,9 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3411,8 +3403,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для пераключэння адлюстравання вялікай кансолі чату.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3442,8 +3434,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Кнопка для выкарыстання прабліжэння, калі гэта магчыма.\n"
-"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319"
-"01735e3da1b0edf72eb3"
+"Глядзіце http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -3529,6 +3521,10 @@ msgstr ""
 "-    action (дзеянні)\n"
 "-    info (інфармацыя)\n"
 "-    verbose (дэталі)"
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
@@ -3685,8 +3681,8 @@ msgid ""
 "Flags starting with 'no' are used to explicitly disable them."
 msgstr ""
 "Адмысловыя параметры для генератара мапы 5.\n"
-"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых значэнняў."
-"\n"
+"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
+"значэнняў.\n"
 "Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
 
 #: src/settings_translation_file.cpp
@@ -3703,8 +3699,8 @@ msgstr ""
 "Параметр «snowbiomes» (снежныя біёмы) ўключае новую пяцібіёмнай сістэмы.\n"
 "Калі новая біёмная сістэма ўключаная, то джунглі таксама аўтаматычна\n"
 "ўключаныя і параметр «jungles» ігнаруецца.\n"
-"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых значэнняў."
-"\n"
+"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
+"значэнняў.\n"
 "Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
 
 #: src/settings_translation_file.cpp
@@ -3719,8 +3715,8 @@ msgstr ""
 "Адмысловыя параметры для генератара мапы 7.\n"
 "Параметр «ridges» (грэбені) уключае рэкі.\n"
 "Выспы, што ляцяць, эксперыментальныя ў цяперашні час і могуць змяніцца.\n"
-"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых значэнняў."
-"\n"
+"Параметры, якія не пазначаны ў радку, не адрозніваюцца ад агаданых "
+"значэнняў.\n"
 "Параметры, якія пачынаюцца з «no», выкарыстоўваюцца для яўнага адключэння."
 
 #: src/settings_translation_file.cpp
@@ -3933,6 +3929,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr "Максімум адначасовай адпраўкі блокаў у цэлым"
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 "Максімальны час у мілісекундах, які можа заняць спампоўка файла\n"
@@ -3985,18 +3991,6 @@ msgstr "MIP-тэкстураванне"
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
 msgstr "Змяняе памер элеметаў панэлі HUD."
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr "URL дэталізацыі модаў ў краме"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr "URL спампоўкі модаў ў краме"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
-msgstr "URL спісу модаў ў краме"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -4297,6 +4291,12 @@ msgid "Remote port"
 msgstr "Аддалены порт"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr "Змяняе агаданае галоўнае меню на карыстальніцкае."
 
@@ -4353,6 +4353,10 @@ msgid "Save the map received by the client on disk."
 msgstr "Захоўваць мапу, атрыманай кліентам, на дыск."
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Захаванне мапы, атрыманай з сервера"
 
@@ -4381,10 +4385,6 @@ msgstr "Вышыня экрана"
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr "Шырыня экрана"
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Здымак экрана"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4639,6 +4639,10 @@ msgid "Strict protocol checking"
 msgstr "Строгая праверка пратакола"
 
 #: src/settings_translation_file.cpp
+msgid "Strip color codes"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Support older servers"
 msgstr "Падтрымка старых сервераў"
 
@@ -4717,7 +4721,8 @@ msgstr "Глыбіня бруду або іншага запаўняльніка
 #: src/settings_translation_file.cpp
 msgid ""
 "The file path relative to your worldpath in which profiles will be saved to."
-msgstr "Шлях да файла адносна каталога свету, у якім будуць захоўвацца профілі."
+msgstr ""
+"Шлях да файла адносна каталога свету, у якім будуць захоўвацца профілі."
 
 #: src/settings_translation_file.cpp
 msgid "The identifier of the joystick to use"
@@ -5199,8 +5204,8 @@ msgid ""
 "background.\n"
 "Contains the same information as the file debug.txt (default name)."
 msgstr ""
-"Толькі для Windows-сістэм: запускае Minetest з акном каманднага радка ў фоне."
-"\n"
+"Толькі для Windows-сістэм: запускае Minetest з акном каманднага радка ў "
+"фоне.\n"
 "Змяшчае тую ж інфармацыю, што і файл debug.txt (агаданая назва)."
 
 #: src/settings_translation_file.cpp
@@ -5267,220 +5272,6 @@ msgstr "Граніца паралельнасці cURL"
 msgid "cURL timeout"
 msgstr "Таймаут cURL"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Схаваць змест пакета модаў"
-
-#~ msgid "Attn"
-#~ msgstr "Увага"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Коска"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Канец"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Кана"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Мінус"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Перыяд"
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Кіруе памерам пустынь і пляжаў у генератары мапаў 6.\n"
-#~ "Калі параметр «snowbiomes» уключаны, то «mgv6_freq_desert» ігнаруецца."
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Вызначае форму мясцовасці.\n"
-#~ "Тры лікі ў дужках кантралююць маштаб рэльефу і павінны быць аднолькавымі."
-
-#~ msgid "Mapgen biome heat noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры цеплыні біёму"
-
-#~ msgid "Mapgen biome humidity blend noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры змяшэння вільготнасці біёма"
-
-#~ msgid "Mapgen biome humidity noise parameters"
-#~ msgstr "Генератар мапы: шумавыя параметры вільготнасці біёма"
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Генератар плоскай мапы: шырыня пячоры"
-
-#~ msgid "Mapgen flat cave1 noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen flat cave2 noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen flat filler depth noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen flat large cave depth"
-#~ msgstr "Генератар плоскай мапы: глыбіня вялікай пячоры"
-
-#~ msgid "Mapgen flat terrain noise parameters"
-#~ msgstr "Генератар плоскай мапы: шумавыя параметры мясцовасці"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Генератар фрактальнай мапы: шырыня пячор"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Генератар фрактальнай мапы: фрактал"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Генератар фрактальнай мапы: ітэрацыі"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "Генератар фрактальнай мапы: Жулія W"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "Генератар фрактальнай мапы: Жулія X"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Генератар фрактальнай мапы: Жулія Y"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Генератар фрактальнай мапы: Жулія Z"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Генератар фрактальнай мапы: зрух"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Генератар фрактальнай мапы: маштаб"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры марскога дна"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "Генератар фрактальнай мапы: плоскасць W"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Генератар мапы 5: шырыня пячор"
-
-#~ msgid "Mapgen v5 cave1 noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen v5 cave2 noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen v5 factor noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры каэфіцыента"
-
-#~ msgid "Mapgen v5 filler depth noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen v5 height noise parameters"
-#~ msgstr "Генератар мапы 5: шумавыя параметры вышыні"
-
-#~ msgid "Mapgen v6 apple trees noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры яблынь"
-
-#~ msgid "Mapgen v6 beach frequency"
-#~ msgstr "Генератар мапы 6: частата пляжу"
-
-#~ msgid "Mapgen v6 beach noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры пляжу"
-
-#~ msgid "Mapgen v6 biome noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры біёму"
-
-#~ msgid "Mapgen v6 cave noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры пячоры"
-
-#~ msgid "Mapgen v6 desert frequency"
-#~ msgstr "Генератар мапы 6: частата пустыні"
-
-#~ msgid "Mapgen v6 mud noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры бруду"
-
-#~ msgid "Mapgen v6 steepness noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры крутасці"
-
-#~ msgid "Mapgen v6 terrain altitude noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры вышыні мясцовасці"
-
-#~ msgid "Mapgen v6 terrain base noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры асноўнай мясцовасці"
-
-#~ msgid "Mapgen v6 trees noise parameters"
-#~ msgstr "Генератар мапы 6: шумавыя параметры дрэў"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Генератар мапы 7: шырыня пячор"
-
-#~ msgid "Mapgen v7 cave1 noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры1"
-
-#~ msgid "Mapgen v7 cave2 noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры2"
-
-#~ msgid "Mapgen v7 filler depth noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры глыбіні запаўняльніка"
-
-#~ msgid "Mapgen v7 height select noise parameters"
-#~ msgstr "Генератар мапы 7: высокаселектыўныя шумавыя параметры"
-
-#~ msgid "Mapgen v7 mountain noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры гор"
-
-#~ msgid "Mapgen v7 ridge noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры хрыбтоў"
-
-#~ msgid "Mapgen v7 ridge water noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры водных хрыбтоў"
-
-#~ msgid "Mapgen v7 terrain altitude noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры вышыні мясцовасці"
-
-#~ msgid "Mapgen v7 terrain base noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры асноўнай мясцовасці"
-
-#~ msgid "Mapgen v7 terrain persistation noise parameters"
-#~ msgstr "Генератар мапы 7: шумавыя параметры ўстойлівасці мясцовасці"
-
-#~ msgid ""
-#~ "Noise parameters for biome API temperature, humidity and biome blend."
-#~ msgstr "Шумавыя параметры для тэмпературы, вільготнасці і змяшэння біёму."
-
 #~ msgid ""
 #~ "Where the map generator stops.\n"
 #~ "Please note:\n"
@@ -5498,3 +5289,306 @@ msgstr "Таймаут cURL"
 #~ "-    Гэтыя групы маюць зрух -32, -32 вузлоў ад пачатку.\n"
 #~ "-    Генеруюцца толькі групы, якія знаходзяцца ў межах "
 #~ "map_generation_limit."
+
+#~ msgid ""
+#~ "Noise parameters for biome API temperature, humidity and biome blend."
+#~ msgstr "Шумавыя параметры для тэмпературы, вільготнасці і змяшэння біёму."
+
+#~ msgid "Mapgen v7 terrain persistation noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры ўстойлівасці мясцовасці"
+
+#~ msgid "Mapgen v7 terrain base noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры асноўнай мясцовасці"
+
+#~ msgid "Mapgen v7 terrain altitude noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры вышыні мясцовасці"
+
+#~ msgid "Mapgen v7 ridge water noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры водных хрыбтоў"
+
+#~ msgid "Mapgen v7 ridge noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры хрыбтоў"
+
+#~ msgid "Mapgen v7 mountain noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры гор"
+
+#~ msgid "Mapgen v7 height select noise parameters"
+#~ msgstr "Генератар мапы 7: высокаселектыўныя шумавыя параметры"
+
+#~ msgid "Mapgen v7 filler depth noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры глыбіні запаўняльніка"
+
+#~ msgid "Mapgen v7 cave2 noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры2"
+
+#~ msgid "Mapgen v7 cave1 noise parameters"
+#~ msgstr "Генератар мапы 7: шумавыя параметры пячоры1"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Генератар мапы 7: шырыня пячор"
+
+#~ msgid "Mapgen v6 trees noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры дрэў"
+
+#~ msgid "Mapgen v6 terrain base noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры асноўнай мясцовасці"
+
+#~ msgid "Mapgen v6 terrain altitude noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры вышыні мясцовасці"
+
+#~ msgid "Mapgen v6 steepness noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры крутасці"
+
+#~ msgid "Mapgen v6 mud noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры бруду"
+
+#~ msgid "Mapgen v6 desert frequency"
+#~ msgstr "Генератар мапы 6: частата пустыні"
+
+#~ msgid "Mapgen v6 cave noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры пячоры"
+
+#~ msgid "Mapgen v6 biome noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры біёму"
+
+#~ msgid "Mapgen v6 beach noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры пляжу"
+
+#~ msgid "Mapgen v6 beach frequency"
+#~ msgstr "Генератар мапы 6: частата пляжу"
+
+#~ msgid "Mapgen v6 apple trees noise parameters"
+#~ msgstr "Генератар мапы 6: шумавыя параметры яблынь"
+
+#~ msgid "Mapgen v5 height noise parameters"
+#~ msgstr "Генератар мапы 5: шумавыя параметры вышыні"
+
+#~ msgid "Mapgen v5 filler depth noise parameters"
+#~ msgstr "Генератар мапы 5: шумавыя параметры глыбіні запаўняльніка"
+
+#~ msgid "Mapgen v5 factor noise parameters"
+#~ msgstr "Генератар мапы 5: шумавыя параметры каэфіцыента"
+
+#~ msgid "Mapgen v5 cave2 noise parameters"
+#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры2"
+
+#~ msgid "Mapgen v5 cave1 noise parameters"
+#~ msgstr "Генератар мапы 5: шумавыя параметры пячоры1"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Генератар мапы 5: шырыня пячор"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "Генератар фрактальнай мапы: плоскасць W"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры марскога дна"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Генератар фрактальнай мапы: маштаб"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Генератар фрактальнай мапы: зрух"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Генератар фрактальнай мапы: Жулія Z"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Генератар фрактальнай мапы: Жулія Y"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "Генератар фрактальнай мапы: Жулія X"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "Генератар фрактальнай мапы: Жулія W"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Генератар фрактальнай мапы: ітэрацыі"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Генератар фрактальнай мапы: фрактал"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры глыбіні запаўняльніка"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры2"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Генератар фрактальнай мапы: шумавыя параметры пячоры1"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Генератар фрактальнай мапы: шырыня пячор"
+
+#~ msgid "Mapgen flat terrain noise parameters"
+#~ msgstr "Генератар плоскай мапы: шумавыя параметры мясцовасці"
+
+#~ msgid "Mapgen flat large cave depth"
+#~ msgstr "Генератар плоскай мапы: глыбіня вялікай пячоры"
+
+#~ msgid "Mapgen flat filler depth noise parameters"
+#~ msgstr "Генератар плоскай мапы: шумавыя параметры глыбіні запаўняльніка"
+
+#~ msgid "Mapgen flat cave2 noise parameters"
+#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры2"
+
+#~ msgid "Mapgen flat cave1 noise parameters"
+#~ msgstr "Генератар плоскай мапы: шумавыя параметры пячоры1"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Генератар плоскай мапы: шырыня пячоры"
+
+#~ msgid "Mapgen biome humidity noise parameters"
+#~ msgstr "Генератар мапы: шумавыя параметры вільготнасці біёма"
+
+#~ msgid "Mapgen biome humidity blend noise parameters"
+#~ msgstr "Генератар мапы: шумавыя параметры змяшэння вільготнасці біёма"
+
+#~ msgid "Mapgen biome heat noise parameters"
+#~ msgstr "Генератар мапы: шумавыя параметры цеплыні біёму"
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Вызначае форму мясцовасці.\n"
+#~ "Тры лікі ў дужках кантралююць маштаб рэльефу і павінны быць аднолькавымі."
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Кіруе памерам пустынь і пляжаў у генератары мапаў 6.\n"
+#~ "Калі параметр «snowbiomes» уключаны, то «mgv6_freq_desert» ігнаруецца."
+
+#~ msgid "Plus"
+#~ msgstr "Плюс"
+
+#~ msgid "Period"
+#~ msgstr "Перыяд"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Мінус"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Кана"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Канец"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Коска"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Увага"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Схаваць змест пакета модаў"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "URL спісу модаў ў краме"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "URL спампоўкі модаў ў краме"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "URL дэталізацыі модаў ў краме"
+
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Уключае калыханне пра хадзьбе."
+
+#~ msgid "Enable view bobbing"
+#~ msgstr "Уключыць калыханне прагляду"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Адключыць escape-паслядоўнасці, напрыклад, размалёўку чату.\n"
+#~ "Выкарыстоўвайце гэта, калі вы хочаце запусціць сервер з pre-0.4.14 "
+#~ "кліентамі і калі вы хочаце адключыць escape-паслядоўнасці, якія "
+#~ "генеруюцца модамі."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Адключыць escape-паслядоўнасці"
+
+#~ msgid "Descending speed"
+#~ msgstr "Хуткасць апускання"
+
+#~ msgid "Autorun key"
+#~ msgstr "Клавіша аўтабегу"
+
+#~ msgid "Use"
+#~ msgstr "Ужыць"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Адключэнне…"
+
+#~ msgid "Resolving address..."
+#~ msgstr "Распазнаванне адраса…"
+
+#~ msgid "Creating server..."
+#~ msgstr "Стварэнне сервера…"
+
+#~ msgid "Creating client..."
+#~ msgstr "Стварэнне кліента…"
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Злучэнне з серверам…"
+
+#~ msgid "re-Install"
+#~ msgstr "пераўсталяваць"
+
+#~ msgid "Unsorted"
+#~ msgstr "Без сартавання"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Паспяхова ўсталяваны:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Кароткая назва:"
+
+#~ msgid "Rating"
+#~ msgstr "Рэйтынг"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Старонка $1 з $2"
+
+#~ msgid "Install"
+#~ msgstr "Усталяваць"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Запампоўка $1. Чакайце, калі ласка…"
+
+#~ msgid "Close store"
+#~ msgstr "Закрыць краму"
+
+#~ msgid "Select path"
+#~ msgstr "Абраць шлях"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Пры жаданні можа быць дабаўлена лакунарнасць праз коску."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Дадзены свет без назвы або не абрана гульня"

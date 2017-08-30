@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2016-10-26 09:14+0000\n"
 "Last-Translator: tonibm19 <bennasar99@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/minetest/"
@@ -39,7 +39,7 @@ msgstr "Ha ocorregut un error:"
 msgid "Main menu"
 msgstr "Menú principal"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "D'acord"
 
@@ -51,7 +51,7 @@ msgstr "Torneu a connectar"
 msgid "The server has requested a reconnect:"
 msgstr "El servidor ha sol·licitat una reconnexió:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Carregant ..."
 
@@ -167,8 +167,9 @@ msgid "Mapgen"
 msgstr "Generador de mapes"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "No s'ha donat un nom al món o no s'ha seleccionat ningun"
+#, fuzzy
+msgid "No game selected"
+msgstr "Seleccionar distancia"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -230,6 +231,17 @@ msgid "< Back to Settings page"
 msgstr "< Torna a la pàgina de configuració"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
+"<llavor>, <octaves>, <persistència>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Navegar"
 
@@ -251,12 +263,8 @@ msgstr ""
 "El format és 3 números separats per comes i aquests dins de parèntesis."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Format:  <offset> <escala> (<extensió X>, <extensió Y> , <extensión Z>), "
-"<llavor>, <octaves>, <persistència>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -265,10 +273,6 @@ msgstr "Jocs"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mods"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -290,14 +294,19 @@ msgstr "Els possibles valors són: "
 msgid "Restore Default"
 msgstr "Restablir per defecte"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Buscar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Seleccioneu la ruta"
+#, fuzzy
+msgid "Select directory"
+msgstr "Selecciona el fitxer del mod:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Selecciona el fitxer del mod:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -342,42 +351,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Tancar repositori"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Descarregant $1, si us plau esperi ..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instal·lar"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Pàgina $1 de $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Classificació"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Nom curt:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Instal·lat amb èxit:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Sense ordenar"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Reinstal·lar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -715,6 +688,10 @@ msgid "Start Singleplayer"
 msgstr "Començar Un Jugador"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Sense informació disponible"
 
@@ -840,10 +817,6 @@ msgid "Change Password"
 msgstr "Canviar contrasenya"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Connectant al servidor ..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Continuar"
 
@@ -876,14 +849,6 @@ msgstr ""
 "- Ratolí dre .: col·locar / utilitzar\n"
 "- Roda ratolí: triar objecte\n"
 "- T: xat\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Creant client ..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Creant servidor ..."
 
 #: src/game.cpp
 msgid ""
@@ -969,14 +934,6 @@ msgid "Remote server"
 msgstr "Anunciar servidor"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Resolent adreça ..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Tancant ..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Un jugador"
 
@@ -1010,12 +967,23 @@ msgid "Proceed"
 msgstr "Continuar"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Utilitzar\" = Descendir"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Avant"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Arrere"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Configurar controls"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1028,6 +996,10 @@ msgstr "Comandament"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Consola"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1044,6 +1016,10 @@ msgstr "Amollar"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Avant"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1102,13 +1078,31 @@ msgstr "Seleccionar distancia"
 msgid "Right"
 msgstr "Dreta"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr ""
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Discreció"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Activar Cinematogràfic"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Activar volar"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Activar ràpid"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1119,12 +1113,18 @@ msgid "Toggle fly"
 msgstr "Activar volar"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Activar volar"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Activar noclip"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Utilitzar"
+msgid "Toggle noclip"
+msgstr "Activar noclip"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1417,6 +1417,10 @@ msgstr "X Botó 1"
 msgid "X Button 2"
 msgstr "X Botó 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ca"
+
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
@@ -1636,11 +1640,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Tecla Avançar"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Automàticament informar a la llista del servidor."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1930,7 +1939,8 @@ msgid "Continuous forward"
 msgstr "Avanç continu"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Avanç continu (sols utilitzat per a testing)."
 
 #: src/settings_translation_file.cpp
@@ -2018,6 +2028,10 @@ msgstr "DPI (punts per polsada)"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Dany"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2147,10 +2161,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Profunditat davall la qual podràs trobar coves gegants."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2177,18 +2187,6 @@ msgstr "Partícules"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2273,10 +2271,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2323,10 +2317,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3203,7 +3193,7 @@ msgstr ""
 #: src/settings_translation_file.cpp
 #, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3390,6 +3380,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3733,6 +3727,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3782,18 +3786,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4059,6 +4051,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4116,6 +4114,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4138,10 +4140,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4372,6 +4370,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4926,52 +4928,24 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ocultar contingut MP"
+#~ msgid "No!!!"
+#~ msgstr "No!!!"
 
-#~ msgid "Attn"
-#~ msgstr "Atentament"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generar Mapes Normals"
 
-#~ msgid "Capital"
-#~ msgstr "Bloq Maj"
+#~ msgid "Public Serverlist"
+#~ msgstr "Llista de servidors públics"
 
-#~ msgid "Comma"
-#~ msgstr "Coma"
-
-#, fuzzy
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Fi"
+#~ msgid "No of course not!"
+#~ msgstr "No, per descomptat que no!"
 
 #, fuzzy
-#~ msgid "Junja"
-#~ msgstr "Junja"
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Generador de mapes"
 
-#, fuzzy
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#, fuzzy
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Menys"
-
-#, fuzzy
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Període"
-
-#~ msgid "Plus"
-#~ msgstr "Més"
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Amplada de les coves del generador de mapes plans"
 
 #~ msgid ""
 #~ "Controls size of deserts and beaches in Mapgen v6.\n"
@@ -4980,21 +4954,100 @@ msgstr ""
 #~ "Controla la mida dels deserts i platges a Mapgen v6.\n"
 #~ "Quan \"snowbiomes\" estan activats 'mgv6_freq_desert' és ignorat."
 
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Amplada de les coves del generador de mapes plans"
+#~ msgid "Plus"
+#~ msgstr "Més"
+
+#~ msgid "Period"
+#~ msgstr "Període"
 
 #, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Generador de mapes"
+#~ msgid "PA1"
+#~ msgstr "PA1"
 
-#~ msgid "No of course not!"
-#~ msgstr "No, per descomptat que no!"
+#~ msgid "Minus"
+#~ msgstr "Menys"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Llista de servidors públics"
+#, fuzzy
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generar Mapes Normals"
+#, fuzzy
+#~ msgid "Kana"
+#~ msgstr "Kana"
 
-#~ msgid "No!!!"
-#~ msgstr "No!!!"
+#, fuzzy
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Fi"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#, fuzzy
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Coma"
+
+#~ msgid "Capital"
+#~ msgstr "Bloq Maj"
+
+#~ msgid "Attn"
+#~ msgstr "Atentament"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ocultar contingut MP"
+
+#~ msgid "Use"
+#~ msgstr "Utilitzar"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Tancant ..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Resolent adreça ..."
+
+#~ msgid "Creating server..."
+#~ msgstr "Creant servidor ..."
+
+#~ msgid "Creating client..."
+#~ msgstr "Creant client ..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Connectant al servidor ..."
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstal·lar"
+
+#~ msgid "Unsorted"
+#~ msgstr "Sense ordenar"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instal·lat amb èxit:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Nom curt:"
+
+#~ msgid "Rating"
+#~ msgstr "Classificació"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pàgina $1 de $2"
+
+#~ msgid "Install"
+#~ msgstr "Instal·lar"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Descarregant $1, si us plau esperi ..."
+
+#~ msgid "Close store"
+#~ msgstr "Tancar repositori"
+
+#~ msgid "Select path"
+#~ msgstr "Seleccioneu la ruta"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "No s'ha donat un nom al món o no s'ha seleccionat ningun"

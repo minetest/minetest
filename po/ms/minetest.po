@@ -7,12 +7,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-06-02 15:18+0000\n"
-"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo.com>"
-"\n"
-"Language-Team: Malay "
-"<https://hosted.weblate.org/projects/minetest/minetest/ms/>\n"
+"Last-Translator: Muhammad Nur Hidayat Yasuyoshi <muhdnurhidayat96@yahoo."
+"com>\n"
+"Language-Team: Malay <https://hosted.weblate.org/projects/minetest/minetest/"
+"ms/>\n"
 "Language: ms\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,7 +40,7 @@ msgstr "Telah berlakunya ralat:"
 msgid "Main menu"
 msgstr "Menu utama"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Ok"
 
@@ -52,7 +52,7 @@ msgstr "Sambung semula"
 msgid "The server has requested a reconnect:"
 msgstr "Pelayan permainan meminta anda untuk menyambung semula:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Sedang memuatkan..."
 
@@ -164,8 +164,9 @@ msgid "Mapgen"
 msgstr "Janaan peta"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Nama dunia tidak diberi atau tiada permainan dipilih"
+#, fuzzy
+msgid "No game selected"
+msgstr "Jarak Pemilihan"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -226,6 +227,17 @@ msgid "< Back to Settings page"
 msgstr "< Kembali ke halaman Tetapan"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Format: <ofset>, <skala>, (<sebarX>, <sebarY>, <sebarZ>), <benih>, <oktaf>, "
+"<penerusan>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Layar"
 
@@ -246,12 +258,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Formatnya ialah 3 nombor dalam kurungan dipisahkan dengan koma."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Format: <ofset>, <skala>, (<sebarX>, <sebarY>, <sebarZ>), <benih>, <oktaf>, "
-"<penerusan>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -260,10 +268,6 @@ msgstr "Permainan"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mods"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Anda juga boleh tambah lakunariti dengan koma pelopor."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -285,14 +289,19 @@ msgstr "Nilai yang boleh digunakan: "
 msgid "Restore Default"
 msgstr "Pulihkan Tetapan Asal"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Cari"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Pilih laluan"
+#, fuzzy
+msgid "Select directory"
+msgstr "Direktori peta"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Pilih Fail Mods:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -333,42 +342,6 @@ msgstr "Pasang Mods: tidak jumpa nama folder yang sesuai untuk pek mods $1"
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr "Mods Subpermainan"
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Tutup kedai"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Sedang muat turun $1, sila tunggu..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Pasang"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Ms. $1 drpd $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Rating"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Nama Singkat:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Berjaya dipasang:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Tidak bersusun"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Pasang Semula"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -699,6 +672,10 @@ msgid "Start Singleplayer"
 msgstr "Mula Main Seorang"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Tiada maklumat tersedia"
 
@@ -820,10 +797,6 @@ msgid "Change Password"
 msgstr "Tukar Kata Laluan"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Sedang menyambung kepada pelayan..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Teruskan"
 
@@ -859,14 +832,6 @@ msgstr ""
 "- Butang tetikus kanan: letak barang/guna\n"
 "- Roda tetikus: pilih item\n"
 "- %s: sembang\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Sedang mencipta klien..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Sedang mencipta pelayan..."
 
 #: src/game.cpp
 msgid ""
@@ -949,14 +914,6 @@ msgid "Remote server"
 msgstr "Pelayan jarak jauh"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Sedang menyelesaikan alamat..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Sedang menutup..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Pemain Perseorangan"
 
@@ -990,12 +947,23 @@ msgid "Proceed"
 msgstr "Teruskan"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Guna sesuatu\" = panjat turun"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Ke Depan"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Ke Belakang"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Tukar kekunci"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1008,6 +976,11 @@ msgstr "Arahan"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Konsol"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Dec. range"
+msgstr "Jarak pandang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1024,6 +997,11 @@ msgstr "Jatuhkan"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Ke Depan"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Inc. range"
+msgstr "Jarak pandang"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -1079,13 +1057,31 @@ msgstr "Jarak Pemilihan"
 msgid "Right"
 msgstr "Ke Kanan"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Tangkap layar"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Selinap"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Togol Sinematik"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Togol Terbang"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Togol pergerakan pantas"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1096,12 +1092,18 @@ msgid "Toggle fly"
 msgstr "Togol Terbang"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Togol Terbang"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Togol tembus blok"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Guna"
+msgid "Toggle noclip"
+msgstr "Togol tembus blok"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1387,6 +1389,10 @@ msgstr "Butang X 1"
 msgid "X Button 2"
 msgstr "Butang X 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ms"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1398,8 +1404,8 @@ msgstr ""
 "Ofset fraktal (X,Y,Z) dari pusat dunia dalam unit 'skala'.\n"
 "Digunakan untuk memindahkan kawasan kelahiran tanah rendah lebih dekat "
 "kepada (0, 0).\n"
-"Nilai lalai sesuai untuk set mandelbrot, ia perlu disunting untuk set julia."
-"\n"
+"Nilai lalai sesuai untuk set mandelbrot, ia perlu disunting untuk set "
+"julia.\n"
 "Jaraknya secara kasar -2 sehingga 2. Darabkan dengan 'skala' untuk ofset "
 "dalam nod."
 
@@ -1612,12 +1618,18 @@ msgstr ""
 "Nyatakan dalam unit blokpeta (16 nod)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Kekunci ke depan"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Melaporkan pelayan kepada senarai pelayan permainan secara automatik."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "Kekunci berlari auto"
+#, fuzzy
+msgid "Autosave Screen Size"
+msgstr "Autosimpan saiz skrin"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1895,7 +1907,8 @@ msgid "Continuous forward"
 msgstr "Ke depan berterusan"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Sentiasa bergerak ke depan tanpa henti (hanya untuk percubaan)."
 
 #: src/settings_translation_file.cpp
@@ -1984,6 +1997,11 @@ msgstr "DPI"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Boleh cedera"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Kecuraman tasik"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2125,10 +2143,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Kedalaman di mana anda akan mula jumpa banyak gua."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "Kelajuan turun"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2159,22 +2173,6 @@ msgstr "Partikel ketika menggali"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Melumpuhkan antitipu"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr "Melumpuhkan jujukan lepas"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
-"Melumpuhkan jujukan lepas (escape sequences), cth: pewarnaan sembang.\n"
-"Gunakan ini jika anda ingin menjalankan pelayan dengan klien sebelum 0.4.14 "
-"dan\n"
-"anda ingin melumpuhkan jujukan lepas yang dijana oleh mods."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2275,10 +2273,6 @@ msgstr ""
 "apabila menyambung ke pelayan permainan."
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr "Membolehkan apungan pandang"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2339,10 +2333,6 @@ msgid ""
 msgstr ""
 "Membolehkan pemetaan oklusi paralaks.\n"
 "Memerlukan pembayang untuk dibolehkan."
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr "Membolehkan apungan pandang ketika berjalan."
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -2640,8 +2630,8 @@ msgstr ""
 "Atribut penjanaan peta sejagat.\n"
 "Dalam janapeta v6, bendera 'decorations' mengawal semua hiasan kecuali "
 "pokok\n"
-"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua hiasan."
-"\n"
+"dan rumput hutan, dalam janapeta lain pula bendera ini mengawal semua "
+"hiasan.\n"
 "Bendera yang tidak ditetapkan dalam rentetan bendera tidak diubah daripada "
 "nilai lalai.\n"
 "Bendera bermula dengan 'no' digunakan untuk betul-betul melumpuhkan mereka."
@@ -2695,8 +2685,8 @@ msgid ""
 msgstr ""
 "Membuatkan pembukah memasang diri sendiri:\n"
 "* Memasang sebuah fungsi kosong.\n"
-"Ini menganggarkan overhed, bahawa pemasangan ditambah (+1 panggilan fungsi)."
-"\n"
+"Ini menganggarkan overhed, bahawa pemasangan ditambah (+1 panggilan "
+"fungsi).\n"
 "* Memasang pensampel yang digunakan untuk mengemaskini statistik."
 
 #: src/settings_translation_file.cpp
@@ -3105,8 +3095,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memperlahankan bunyi.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3135,8 +3125,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menguatkan bunyi.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3205,8 +3195,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk membisukan permainan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3235,8 +3225,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk membuka tetingkap sembang untuk menaip arahan tempatan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3275,8 +3265,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih item seterusnya di dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3285,8 +3275,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk memilih item sebelumnya di dalam hotbar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3321,14 +3311,15 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol penjalanan automatik.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3377,8 +3368,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol mod tembus blok.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3408,8 +3399,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol papar pandu (HUD).\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3438,8 +3429,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menogol paparan konsol sembang besar.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3468,8 +3459,8 @@ msgid ""
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
 "Kekunci untuk menggunakan pandangan zum apabila dibenarkan.\n"
-"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e2319017"
-"35e3da1b0edf72eb3"
+"Lihat http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3"
 
 #: src/settings_translation_file.cpp
 msgid "Key use for climbing/descending"
@@ -3557,6 +3548,10 @@ msgstr ""
 "-    berjela-jela"
 
 #: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
 msgstr "Had baris hilir keluar pada cakera"
 
@@ -3571,8 +3566,8 @@ msgid ""
 "Value is stored per-world."
 msgstr ""
 "Had penjanaan peta dalam unit nod, dalam kesemua 6 arah daripada (0, 0, 0).\n"
-"Hanya ketulan peta yang berasa sepenuhnya di dalam had janapeta akan dijana."
-"\n"
+"Hanya ketulan peta yang berasa sepenuhnya di dalam had janapeta akan "
+"dijana.\n"
 "Nilai disimpan pada setiap dunia berbeza."
 
 #: src/settings_translation_file.cpp
@@ -3956,6 +3951,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr "Jumlah maksimum kesemua blok yang dihantar serentak"
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 "Masa maksimum dalam unit ms untuk muat turun fail (cth. muat turun mods)."
@@ -4007,18 +4012,6 @@ msgstr "Pemetaan Mip"
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
 msgstr "Mengubah saiz elemen hudbar."
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr "Kedai Mods: URL perincian"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr "Kedai Mods: URL muat turun"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
-msgstr "Kedai Mods: URL senarai mods"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -4320,6 +4313,12 @@ msgid "Remote port"
 msgstr "Port jarak jauh"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr "Gantikan menu utama lalai dengan menu yang dibuat lain."
 
@@ -4376,6 +4375,10 @@ msgid "Save the map received by the client on disk."
 msgstr "Simpan peta yang diterima oleh klien dalam cakera."
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "Simpan peta diterima dari pelayan permainan"
 
@@ -4405,10 +4408,6 @@ msgstr "Tinggi skrin"
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr "Lebar skrin"
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Tangkap layar"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4664,6 +4663,10 @@ msgstr "Kekuatan paralaks."
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "Pemeriksaan protokal ketat"
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
@@ -5311,46 +5314,135 @@ msgstr "Had cURL selari"
 msgid "cURL timeout"
 msgstr "Had masa cURL"
 
+#~ msgid "PA1"
+#~ msgstr "Butang PA1"
+
+#~ msgid "ExSel"
+#~ msgstr "Butang ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "Butang CrSel"
+
+#~ msgid "Attn"
+#~ msgstr "Butang Attn"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Noktah"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Comma"
+#~ msgstr "Koma"
+
+#~ msgid "Kanji"
+#~ msgstr "Butang Kanji"
+
+#~ msgid "Junja"
+#~ msgstr "Butang Junja"
+
+#~ msgid "Final"
+#~ msgstr "Butang Final"
+
+#~ msgid "Kana"
+#~ msgstr "Butang Kana"
+
+#~ msgid "Capital"
+#~ msgstr "Butang Caps Lock"
+
 #~ msgid "Hide mp content"
 #~ msgstr ""
 #~ "Sembunyikan\n"
 #~ "Kandungan MP"
 
-#~ msgid "Capital"
-#~ msgstr "Butang Caps Lock"
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Kedai Mods: URL senarai mods"
 
-#~ msgid "Kana"
-#~ msgstr "Butang Kana"
+#~ msgid "Modstore download URL"
+#~ msgstr "Kedai Mods: URL muat turun"
 
-#~ msgid "Final"
-#~ msgstr "Butang Final"
+#~ msgid "Modstore details URL"
+#~ msgstr "Kedai Mods: URL perincian"
 
-#~ msgid "Junja"
-#~ msgstr "Butang Junja"
+#~ msgid "Enables view bobbing when walking."
+#~ msgstr "Membolehkan apungan pandang ketika berjalan."
 
-#~ msgid "Kanji"
-#~ msgstr "Butang Kanji"
+#~ msgid "Enable view bobbing"
+#~ msgstr "Membolehkan apungan pandang"
 
-#~ msgid "Comma"
-#~ msgstr "Koma"
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Melumpuhkan jujukan lepas (escape sequences), cth: pewarnaan sembang.\n"
+#~ "Gunakan ini jika anda ingin menjalankan pelayan dengan klien sebelum "
+#~ "0.4.14 dan\n"
+#~ "anda ingin melumpuhkan jujukan lepas yang dijana oleh mods."
 
-#~ msgid "Minus"
-#~ msgstr "Minus"
+#~ msgid "Disable escape sequences"
+#~ msgstr "Melumpuhkan jujukan lepas"
 
-#~ msgid "Period"
-#~ msgstr "Noktah"
+#~ msgid "Descending speed"
+#~ msgstr "Kelajuan turun"
 
-#~ msgid "Plus"
-#~ msgstr "Plus"
+#~ msgid "Autorun key"
+#~ msgstr "Kekunci berlari auto"
 
-#~ msgid "Attn"
-#~ msgstr "Butang Attn"
+#~ msgid "Use"
+#~ msgstr "Guna"
 
-#~ msgid "CrSel"
-#~ msgstr "Butang CrSel"
+#~ msgid "Shutting down..."
+#~ msgstr "Sedang menutup..."
 
-#~ msgid "ExSel"
-#~ msgstr "Butang ExSel"
+#~ msgid "Resolving address..."
+#~ msgstr "Sedang menyelesaikan alamat..."
 
-#~ msgid "PA1"
-#~ msgstr "Butang PA1"
+#~ msgid "Creating server..."
+#~ msgstr "Sedang mencipta pelayan..."
+
+#~ msgid "Creating client..."
+#~ msgstr "Sedang mencipta klien..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Sedang menyambung kepada pelayan..."
+
+#~ msgid "re-Install"
+#~ msgstr "Pasang Semula"
+
+#~ msgid "Unsorted"
+#~ msgstr "Tidak bersusun"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Berjaya dipasang:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Nama Singkat:"
+
+#~ msgid "Rating"
+#~ msgstr "Rating"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Ms. $1 drpd $2"
+
+#~ msgid "Install"
+#~ msgstr "Pasang"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Sedang muat turun $1, sila tunggu..."
+
+#~ msgid "Close store"
+#~ msgstr "Tutup kedai"
+
+#~ msgid "Select path"
+#~ msgstr "Pilih laluan"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Anda juga boleh tambah lakunariti dengan koma pelopor."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nama dunia tidak diberi atau tiada permainan dipilih"

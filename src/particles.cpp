@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "client.h"
 #include "collision.h"
+#include "client/clientevent.h"
 #include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"

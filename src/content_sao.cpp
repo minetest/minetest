@@ -752,12 +752,12 @@ bool LuaEntitySAO::getCollisionBox(aabb3f *toset) const
 
 bool LuaEntitySAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible) {
+	if (!m_prop.is_visible || !m_prop.pointable) {
 		return false;
 	}
 
-	toset->MinEdge = m_prop.collisionbox.MinEdge * BS;
-	toset->MaxEdge = m_prop.collisionbox.MaxEdge * BS;
+	toset->MinEdge = m_prop.selectionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
 }
@@ -782,10 +782,12 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 {
 	assert(m_peer_id != 0);	// pre-condition
 
-	m_prop.hp_max = PLAYER_MAX_HP;
+	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
+	m_prop.selectionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
+	m_prop.pointable = true;
 	// start of default appearance, this should be overwritten by LUA
 	m_prop.visual = "upright_sprite";
 	m_prop.visual_size = v2f(1, 2);
@@ -799,7 +801,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
-	m_hp = PLAYER_MAX_HP;
+	m_hp = m_prop.hp_max;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -1235,8 +1237,8 @@ void PlayerSAO::setHP(s16 hp)
 
 	if (hp < 0)
 		hp = 0;
-	else if (hp > PLAYER_MAX_HP)
-		hp = PLAYER_MAX_HP;
+	else if (hp > m_prop.hp_max)
+		hp = m_prop.hp_max;
 
 	if (hp < oldhp && !g_settings->getBool("enable_damage")) {
 		return;
@@ -1426,11 +1428,12 @@ bool PlayerSAO::getCollisionBox(aabb3f *toset) const
 
 bool PlayerSAO::getSelectionBox(aabb3f *toset) const
 {
-	if (!m_prop.is_visible) {
+	if (!m_prop.is_visible || !m_prop.pointable) {
 		return false;
 	}
 
-	getCollisionBox(toset);
+	toset->MinEdge = m_prop.selectionbox.MinEdge * BS;
+	toset->MaxEdge = m_prop.selectionbox.MaxEdge * BS;
 
 	return true;
 }

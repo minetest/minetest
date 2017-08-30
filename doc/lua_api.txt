@@ -139,6 +139,7 @@ Mod directory structure
     |   |   `-- modname_something_else.png
     |   |-- sounds
     |   |-- media
+    |   |-- locale
     |   `-- <custom data>
     `-- another
 
@@ -181,6 +182,9 @@ Models for entities or meshnodes.
 ### `textures`, `sounds`, `media`
 Media files (textures, sounds, whatever) that will be transferred to the
 client and will be available for use by the mod.
+
+### `locale`
+Translation files for the clients. (See `Translations`)
 
 Naming convention for registered textual names
 ----------------------------------------------
@@ -584,7 +588,11 @@ other. This allows different hardware coloring, but also means that
 tiles with overlays are drawn slower. Using too much overlays might
 cause FPS loss.
 
-To define an overlay, simply set the `overlay_tiles` field of the node
+For inventory and wield images you can specify overlays which
+hardware coloring does not modify. You have to set `inventory_overlay`
+and `wield_overlay` fields to an image name.
+
+To define a node overlay, simply set the `overlay_tiles` field of the node
 definition. These tiles are defined in the same way as plain tiles:
 they can have a texture name, color etc.
 To skip one face, set that overlay tile to an empty string.
@@ -706,6 +714,10 @@ the global `minetest.registered_*` tables.
     * returns an integer uniquely identifying the registered biome
     * added to `minetest.registered_biome` with the key of `biome.name`
     * if `biome.name` is nil, the key is the returned ID
+
+* `minetest.unregister_biome(name)`
+    * Unregisters the biome name from engine, and deletes the entry with key
+    * `name` from `minetest.registered_biome`
 
 * `minetest.register_ore(ore definition)`
     * returns an integer uniquely identifying the registered ore
@@ -1440,7 +1452,7 @@ Another example: Make red wool from white wool and red dye:
 * `connect_to_raillike`: makes nodes of raillike drawtype with same group value
   connect to each other
 * `slippery`: Players and items will slide on the node.
-  Only use `slippery = 3` for now to ensure forwards compatibility.
+  Slipperiness rises steadily with `slippery` value, starting at 1.
 
 
 ### Known damage and digging time defining groups
@@ -2152,6 +2164,78 @@ Helper functions
 * `minetest.pointed_thing_to_face_pos(placer, pointed_thing)`: returns a position
     * returns the exact position on the surface of a pointed node
 
+Translations
+------------
+
+Texts can be translated client-side with the help of `minetest.translate` and translation files.
+
+### Translating a string
+Two functions are provided to translate strings: `minetest.translate` and `minetest.get_translator`.
+
+* `minetest.get_translator(textdomain)` is a simple wrapper around `minetest.translate`, and
+  `minetest.get_translator(textdomain)(str, ...)` is equivalent to `minetest.translate(textdomain, str, ...)`.
+  It is intended to be used in the following way, so that it avoids verbose repetitions of `minetest.translate`:
+
+    local S = minetest.get_translator(textdomain)
+    S(str, ...)
+
+  As an extra commodity, if `textdomain` is nil, it is assumed to be "" instead.
+
+* `minetest.translate(textdomain, str, ...)` translates the string `str` with the given `textdomain`
+  for disambiguation. The textdomain must match the textdomain specified in the translation file in order
+  to get the string translated. This can be used so that a string is translated differently in different contexts.
+  It is advised to use the name of the mod as textdomain whenever possible, to avoid clashes with other mods.
+  This function must be given a number of arguments equal to the number of arguments the translated string expects.
+  Arguments are literal strings -- they will not be translated, so if you want them to be, they need to come as
+  outputs of `minetest.translate` as well.
+
+  For instance, suppose we want to translate "@1 Wool" with "@1" being replaced by the translation of "Red".
+  We can do the following:
+
+    local S = minetest.get_translator()
+    S("@1 Wool", S("Red"))
+
+  This will be displayed as "Red Wool" on old clients and on clients that do not have localization enabled.
+  However, if we have for instance a translation file named `wool.fr.tr` containing the following:
+
+    @1 Wool=Laine @1
+    Red=Rouge
+
+  this will be displayed as "Laine Rouge" on clients with a French locale.
+
+### Operations on translated strings
+
+The output of `minetest.translate` is a string, with escape sequences adding additional information to that string
+so that it can be translated on the different clients. In particular, you can't expect operations like string.length
+to work on them like you would expect them to, or string.gsub to work in the expected manner. However, string
+concatenation will still work as expected (note that you should only use this for things like formspecs; do not
+translate sentences by breaking them into parts; arguments should be used instead), and operations such as
+`minetest.colorize` which are only concatenation under the hood as well.
+
+### Translation file format
+A translation file has the suffix `.[lang].tr`, where `[lang]` is the language it corresponds to.
+The file should be a text file, with the following format:
+
+* Lines beginning with `# textdomain:` (the space is significant) can be used to specify the text
+  domain of all following translations in the file.
+* All other empty lines or lines beginning with `#` are ignored.
+* Other lines should be in the format `original=translated`. Both `original` and `translated` can
+  contain escape sequences beginning with `@` to insert arguments, literal `@`, `=` or newline
+  (See ### Escapes below). There must be no extraneous whitespace around the `=` or at the beginning
+  or the end of the line.
+
+### Escapes
+Strings that need to be translated can contain several escapes, preceded by `@`.
+* `@@` acts as a literal `@`.
+* `@n`, where `n` is a digit between 1 and 9, is an argument for the translated string that will be inlined
+  when translation. Due to how translations are implemented, the original translation string **must** have
+  its arguments in increasing order, without gaps or repetitions, starting from 1.
+* `@=` acts as a literal `=`. It is not required in strings given to `minetest.translate`, but is in translation
+  files to avoid begin confused with the `=` separating the original from the translation.
+* `@\n` (where the `\n` is a literal newline) acts as a literal newline. As with `@=`, this escape is not required
+  in strings given to `minetest.translate`, but is in translation files.
+* `@n` acts as a literal newline as well.
+
 `minetest` namespace reference
 ------------------------------
 
@@ -2363,6 +2447,14 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_priv_grant(function(name, granter, priv))`
+    * Called when `granter` grants the priv `priv` to `name`.
+    * Note that the callback will be called twice if it's done by a player, once with granter being the player name,
+      and again with granter being nil.
+* `minetest.register_on_priv_revoke(function(name, revoker, priv))`
+    * Called when `revoker` revokes the priv `priv` from `name`.
+    * Note that the callback will be called twice if it's done by a player, once with revoker being the player name,
+      and again with revoker being nil.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
@@ -2376,6 +2468,13 @@ Call these functions only at load time!
     * `definition`: `{ description = "description text", give_to_singleplayer = boolean}`
       the default of `give_to_singleplayer` is true
     * To allow players with `basic_privs` to grant, see `basic_privs` minetest.conf setting.
+    * `on_grant(name, granter_name)`: Called when given to player `name` by `granter_name`.
+         `granter_name` will be nil if the priv was granted by a mod.
+    * `on_revoke(name, revoker_name)`: Called when taken from player `name` by `revoker_name`.
+         `revoker_name` will be nil if the priv was revoked by a mod
+    * Note that the above two callbacks will be called twice if a player is responsible -
+      once with the player name, and then with a nil player name.
+    * Return true in the above callbacks to stop register_on_priv_grant or revoke being called.
 * `minetest.register_authentication_handler(handler)`
     * See `minetest.builtin_auth_handler` in `builtin.lua` for reference
 
@@ -2469,7 +2568,7 @@ and `minetest.auth_reload` call the authetification handler.
 * `minetest.add_item(pos, item)`: Spawn item
     * Returns `ObjectRef`, or `nil` if failed
 * `minetest.get_player_by_name(name)`: Get an `ObjectRef` to a player
-* `minetest.get_objects_inside_radius(pos, radius)`
+* `minetest.get_objects_inside_radius(pos, radius)`: returns a list of ObjectRefs
     * `radius`: using an euclidean metric
 * `minetest.set_timeofday(val)`
     * `val` is between `0` and `1`; `0` for midnight, `0.5` for midday
@@ -3276,6 +3375,7 @@ This is basically a reference to a C++ `ServerActiveObject`
         * `0`: player is drowning,
         * `1`-`10`: remaining number of bubbles
         * `11`: bubbles bar is not shown
+        * See constant: `minetest.PLAYER_MAX_BREATH`
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
     * `value` must be a string.
@@ -3980,10 +4080,14 @@ Definition tables
 
     {
         hp_max = 1,
+    --  ^ For players, the maximal HP defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
         physical = true,
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
         collisionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
+        selectionbox = {-0.5, 0.0, -0.5, 0.5, 1.0, 0.5},
+    --  ^ Default, uses collision box dimensions when not set
+        pointable = true, -- overrides selection box when false
         visual = "cube" / "sprite" / "upright_sprite" / "mesh" / "wielditem",
         visual_size = {x = 1, y = 1},
         mesh = "model",
@@ -4075,7 +4179,9 @@ Definition tables
                             {bendy = 2, snappy = 1},
                             {hard = 1, metal = 1, spikes = 1}
         inventory_image = "default_tool_steelaxe.png",
+        inventory_overlay = "overlay.png", -- an overlay which does not get colorized
         wield_image = "",
+        wield_overlay = "",
         palette = "",
         --[[
         ^ An image file containing the palette of a node.

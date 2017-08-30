@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "tool.h"
 #include "version.h"
+#include "network/connection.h"
 #include "network/networkprotocol.h"
 #include "network/serveropcodes.h"
 #include "util/auth.h"
@@ -611,6 +612,9 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_GotInit2);
 	u16 protocol_version = m_clients.getProtocolVersion(pkt->getPeerId());
 
+	std::string lang;
+	if (pkt->getSize() > 0)
+		*pkt >> lang;
 
 	/*
 		Send some initialization data
@@ -631,7 +635,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 	m_clients.event(pkt->getPeerId(), CSE_SetDefinitionsSent);
 
 	// Send media announcement
-	sendMediaAnnouncement(pkt->getPeerId());
+	sendMediaAnnouncement(pkt->getPeerId(), lang);
 
 	// Send detached inventories
 	sendDetachedInventories(pkt->getPeerId());
@@ -686,7 +690,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 		actionstream
 			<< "TOSERVER_CLIENT_READY stage 2 client init failed for peer_id: "
 			<< peer_id << std::endl;
-		m_con.DisconnectPeer(peer_id);
+		m_con->DisconnectPeer(peer_id);
 		return;
 	}
 
@@ -695,7 +699,7 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 		errorstream
 			<< "TOSERVER_CLIENT_READY client sent inconsistent data, disconnecting peer_id: "
 			<< peer_id << std::endl;
-		m_con.DisconnectPeer(peer_id);
+		m_con->DisconnectPeer(peer_id);
 		return;
 	}
 
@@ -776,8 +780,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	*pkt >> f32pitch;
 	*pkt >> f32yaw;
 
-	f32 pitch = (f32)f32pitch / 100.0;
-	f32 yaw = (f32)f32yaw / 100.0;
+	f32 pitch = (f32)f32pitch / 100.0f;
+	f32 yaw = (f32)f32yaw / 100.0f;
 	u32 keyPressed = 0;
 
 	// default behavior (in case an old client doesn't send these)
@@ -788,13 +792,13 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		*pkt >> keyPressed;
 	if (pkt->getRemainingBytes() >= 1) {
 		*pkt >> f32fov;
-		fov = (f32)f32fov / 80.0;
+		fov = (f32)f32fov / 80.0f;
 	}
 	if (pkt->getRemainingBytes() >= 1)
 		*pkt >> wanted_range;
 
-	v3f position((f32)ps.X / 100.0, (f32)ps.Y / 100.0, (f32)ps.Z / 100.0);
-	v3f speed((f32)ss.X / 100.0, (f32)ss.Y / 100.0, (f32)ss.Z / 100.0);
+	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
+	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
@@ -830,7 +834,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -839,7 +843,7 @@ void Server::handleCommand_PlayerPos(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -891,7 +895,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -900,7 +904,7 @@ void Server::handleCommand_InventoryAction(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1072,7 +1076,7 @@ void Server::handleCommand_ChatMessage(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1100,7 +1104,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1109,7 +1113,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1166,7 +1170,7 @@ void Server::handleCommand_Password(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1219,7 +1223,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1228,7 +1232,7 @@ void Server::handleCommand_PlayerItem(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1246,7 +1250,7 @@ void Server::handleCommand_Respawn(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1299,7 +1303,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1308,7 +1312,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1402,7 +1406,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		if (max_d < 0 && max_d_hand >= 0)
 			max_d = max_d_hand;
 		else if (max_d < 0)
-			max_d = BS * 4.0;
+			max_d = BS * 4.0f;
 		// cube diagonal: sqrt(3) = 1.73
 		if (d > max_d * 1.73) {
 			actionstream << "Player " << player->getName()
@@ -1738,7 +1742,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1747,7 +1751,7 @@ void Server::handleCommand_NodeMetaFields(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!"  << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1789,7 +1793,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 
@@ -1798,7 +1802,7 @@ void Server::handleCommand_InventoryFields(NetworkPacket* pkt)
 		errorstream << "Server::ProcessData(): Canceling: "
 				"No player object for peer_id=" << pkt->getPeerId()
 				<< " disconnecting peer!" << std::endl;
-		m_con.DisconnectPeer(pkt->getPeerId());
+		m_con->DisconnectPeer(pkt->getPeerId());
 		return;
 	}
 

@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-05-21 20:31+0000\n"
 "Last-Translator: Fixer <artem.brz@gmail.com>\n"
-"Language-Team: Ukrainian "
-"<https://hosted.weblate.org/projects/minetest/minetest/uk/>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/minetest/"
+"minetest/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.14.1-dev\n"
 
 #: builtin/client/init.lua
@@ -40,7 +40,7 @@ msgstr "Трапилася помилка:"
 msgid "Main menu"
 msgstr "Головне меню"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Гаразд"
 
@@ -52,7 +52,7 @@ msgstr "Повторне підключення"
 msgid "The server has requested a reconnect:"
 msgstr "Сервер запросив перез'єднання:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Завантаження..."
 
@@ -164,8 +164,9 @@ msgid "Mapgen"
 msgstr "Генератор світу"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Назву світу не задано або не обрано гру"
+#, fuzzy
+msgid "No game selected"
+msgstr "Вибір діапазону"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -225,6 +226,17 @@ msgid "< Back to Settings page"
 msgstr "< Назад до Налаштувань"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Формат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Переглянути"
 
@@ -245,12 +257,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Формат: 3 номера, відокремлених комами і всередині дужок."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Формат: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -259,10 +267,6 @@ msgstr "Ігри"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Модифікації"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "За бажанням лакунарність може бути доповнена комою попереду."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -284,14 +288,19 @@ msgstr "Можливі значення: "
 msgid "Restore Default"
 msgstr "Відновити як було"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Пошук"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Вибрати шлях"
+#, fuzzy
+msgid "Select directory"
+msgstr "Оберіть файл модифікації:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Оберіть файл модифікації:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -336,42 +345,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr "Вбудовані моди"
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Вийти з крамнички"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Завантаження $1, зачекайте..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Встановити"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Сторінка $1 з $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Оцінка"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Коротка назва:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Успішно встановлено:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Невідсортоване"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Перевстановити"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -702,6 +675,10 @@ msgid "Start Singleplayer"
 msgstr "Почати одиночну гру"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Інформація відсутня"
 
@@ -822,10 +799,6 @@ msgid "Change Password"
 msgstr "Змінити пароль"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Підключення до сервера..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Продовжити"
 
@@ -861,14 +834,6 @@ msgstr ""
 "- Права кнопка миші: поставити/зробити\n"
 "- Колесо миші: вибір предмета\n"
 "- %s: чат\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Створення клієнта..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Створення сервера..."
 
 #: src/game.cpp
 msgid ""
@@ -951,14 +916,6 @@ msgid "Remote server"
 msgstr "Віддалений сервер"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Отримання адреси..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Вимкнення..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Одиночна гра"
 
@@ -992,12 +949,23 @@ msgid "Proceed"
 msgstr "Далі"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Використати\" = спускатися"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Вперед"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Назад"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Змінити клавіші"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1010,6 +978,10 @@ msgstr "Команда"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Консоль"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1026,6 +998,10 @@ msgstr "Викинути"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Вперед"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
@@ -1081,13 +1057,31 @@ msgstr "Вибір діапазону"
 msgid "Right"
 msgstr "Праворуч"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Знімок екрану"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Крастися"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Кінематографічний режим"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Політ"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Прискорення"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1098,12 +1092,18 @@ msgid "Toggle fly"
 msgstr "Політ"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Політ"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Прохід крізь стіни"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Використати"
+msgid "Toggle noclip"
+msgstr "Прохід крізь стіни"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1389,6 +1389,10 @@ msgstr "Додаткова кнопка 1"
 msgid "X Button 2"
 msgstr "Додаткова кнопка 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "uk"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1573,12 +1577,18 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Вперед"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr ""
+#, fuzzy
+msgid "Autosave Screen Size"
+msgstr "Зберігати розмір вікна"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1832,7 +1842,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1911,6 +1921,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Поранення"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2036,10 +2050,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2066,18 +2076,6 @@ msgstr "Часточки при копанні"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Вимкнути античіт"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2161,10 +2159,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2211,10 +2205,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3028,7 +3018,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3199,6 +3189,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3540,6 +3534,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3589,18 +3593,6 @@ msgstr "Mіп-текстурування"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3865,6 +3857,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -3921,6 +3919,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -3944,10 +3946,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Знімок екрану"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4172,6 +4170,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4718,119 +4720,173 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Сховати вміст модпаку"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Завантаження текстур..."
 
-#~ msgid "Attn"
-#~ msgstr "Увага"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Кома"
-
-#~ msgid "Final"
-#~ msgstr "Кінець"
-
-#~ msgid "Minus"
-#~ msgstr "Мінус"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Крапка"
-
-#~ msgid "Plus"
-#~ msgstr "Плюс"
-
-#~ msgid "No of course not!"
-#~ msgstr "Ні, звісно ні!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Список публічних серверів"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Масштабування елементів меню: "
 
 #, fuzzy
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Генерувати карти нормалей"
-
-#~ msgid "No!!!"
-#~ msgstr "Ні!!!"
-
-#, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Вимкнути багатокористувацьку гру"
-
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "Увімкнено"
-
-#, fuzzy
-#~ msgid "Password"
-#~ msgstr "Старий Пароль"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Попереднє завантаження зображень"
-
-#, fuzzy
-#~ msgid "Finite Liquid"
-#~ msgstr "Кінцеві рідини"
-
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Помилка при видаленні файлів світу"
-
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Файлів, що підлягають видаленню"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
-
-#~ msgid "Address required."
-#~ msgstr "Адреса необхідна."
-
-#~ msgid "Create world"
-#~ msgstr "Створити світ"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Показати Улюблені"
-
-#~ msgid "Show Public"
-#~ msgstr "Показати Публічні"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Попередження: Помилкова конфігурація.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Налаштування Збережено.  "
-
-#~ msgid "is required by:"
-#~ msgstr "необхідний для:"
+#~ msgid "Downloading"
+#~ msgstr "Вниз"
 
 #~ msgid "Left click: Move all items, Right click: Move single item"
 #~ msgstr ""
 #~ "Ліва кнопка миші: Перемістити усі предмети, Права кнопка миші: "
 #~ "Перемістити один предмет"
 
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Вниз"
+#~ msgid "is required by:"
+#~ msgstr "необхідний для:"
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Масштабування елементів меню: "
+#~ msgid "Configuration saved.  "
+#~ msgstr "Налаштування Збережено.  "
+
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Попередження: Помилкова конфігурація.  "
+
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Неможливо створити світ: Ім'я містить недопустимі символи"
+
+#~ msgid "Show Public"
+#~ msgstr "Показати Публічні"
+
+#~ msgid "Show Favorites"
+#~ msgstr "Показати Улюблені"
+
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Залишіть адресу незаповненою для створення локального серверу."
+
+#~ msgid "Create world"
+#~ msgstr "Створити світ"
+
+#~ msgid "Address required."
+#~ msgstr "Адреса необхідна."
+
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Неможливо видалити світ: Нічого не вибрано"
+
+#~ msgid "Files to be deleted"
+#~ msgstr "Файлів, що підлягають видаленню"
+
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Неможливо створити світ: Не знайдено жодної гри"
+
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Неможливо налаштувати світ: Нічого не вибрано"
+
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Помилка при видаленні файлів світу"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Завантаження текстур..."
+#~ msgid "Finite Liquid"
+#~ msgstr "Кінцеві рідини"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Попереднє завантаження зображень"
+
+#, fuzzy
+#~ msgid "Password"
+#~ msgstr "Старий Пароль"
+
+#, fuzzy
+#~ msgid "If enabled, "
+#~ msgstr "Увімкнено"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Вимкнути багатокористувацьку гру"
+
+#~ msgid "No!!!"
+#~ msgstr "Ні!!!"
+
+#, fuzzy
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Генерувати карти нормалей"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Список публічних серверів"
+
+#~ msgid "No of course not!"
+#~ msgstr "Ні, звісно ні!"
+
+#~ msgid "Plus"
+#~ msgstr "Плюс"
+
+#~ msgid "Period"
+#~ msgstr "Крапка"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Мінус"
+
+#~ msgid "Final"
+#~ msgstr "Кінець"
+
+#~ msgid "Comma"
+#~ msgstr "Кома"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Увага"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сховати вміст модпаку"
+
+#~ msgid "Use"
+#~ msgstr "Використати"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Вимкнення..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Отримання адреси..."
+
+#~ msgid "Creating server..."
+#~ msgstr "Створення сервера..."
+
+#~ msgid "Creating client..."
+#~ msgstr "Створення клієнта..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Підключення до сервера..."
+
+#~ msgid "re-Install"
+#~ msgstr "Перевстановити"
+
+#~ msgid "Unsorted"
+#~ msgstr "Невідсортоване"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успішно встановлено:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Коротка назва:"
+
+#~ msgid "Rating"
+#~ msgstr "Оцінка"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Сторінка $1 з $2"
+
+#~ msgid "Install"
+#~ msgstr "Встановити"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Завантаження $1, зачекайте..."
+
+#~ msgid "Close store"
+#~ msgstr "Вийти з крамнички"
+
+#~ msgid "Select path"
+#~ msgstr "Вибрати шлях"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "За бажанням лакунарність може бути доповнена комою попереду."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Назву світу не задано або не обрано гру"

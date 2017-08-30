@@ -224,7 +224,8 @@ struct TileDef
 	}
 
 	void serialize(std::ostream &os, u16 protocol_version) const;
-	void deSerialize(std::istream &is, const u8 contentfeatures_version, const NodeDrawType drawtype);
+	void deSerialize(std::istream &is, u8 contentfeatures_version,
+		NodeDrawType drawtype);
 };
 
 #define CF_SPECIAL_COUNT 6

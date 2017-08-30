@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-06-02 14:47+0000\n"
 "Last-Translator: Лазар Вукановић <gavranvukhome@gmail.com>\n"
-"Language-Team: Serbian (cyrillic) "
-"<https://hosted.weblate.org/projects/minetest/minetest/sr_Cyrl/>\n"
+"Language-Team: Serbian (cyrillic) <https://hosted.weblate.org/projects/"
+"minetest/minetest/sr_Cyrl/>\n"
 "Language: sr_Cyrl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<="
-"4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 2.15-dev\n"
 
 #: builtin/client/init.lua
@@ -40,7 +40,7 @@ msgstr "Догодила се грешка:"
 msgid "Main menu"
 msgstr "Главни мени"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Уреду"
 
@@ -52,7 +52,7 @@ msgstr "Поновно повезивање"
 msgid "The server has requested a reconnect:"
 msgstr "Сервер тражи поновно повезивање:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Учитавање..."
 
@@ -166,8 +166,9 @@ msgid "Mapgen"
 msgstr "Генератор мапе"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Име није дато или ниједна игра није изабрана"
+#, fuzzy
+msgid "No game selected"
+msgstr "Одабир домета"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -227,6 +228,17 @@ msgid "< Back to Settings page"
 msgstr "< Назад на страну са поставкама"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
+"<октаве>, <упорност>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Прегледај"
 
@@ -247,12 +259,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Формат су три броја унутар заграда раздвојени зарезима."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Формат:  <офсет>, <скала>, (<распонX>, <распонY>, <распонZ>), <семе>, "
-"<октаве>, <упорност>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -261,10 +269,6 @@ msgstr "Игре"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Модови"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Опоцијоно, лацунарност се може додати са зарезом."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -286,14 +290,19 @@ msgstr "Могуће вредности су: "
 msgid "Restore Default"
 msgstr "Поврати уобичајено"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Тражи"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Одабери локацију"
+#, fuzzy
+msgid "Select directory"
+msgstr "Изаберите фајл мода:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Изаберите фајл мода:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -338,42 +347,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Затвори складиште"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Преузима се $1, молим вас сачекајте..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Инсталирај"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Страна $1 од $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Оцена"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Краће име:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Успешно инсталиран:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Нераспоређено"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "поново инсталирај"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -708,6 +681,10 @@ msgid "Start Singleplayer"
 msgstr "Започни игру за једног играча"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Нема доступних информација"
 
@@ -834,10 +811,6 @@ msgid "Change Password"
 msgstr "Промени шифру"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Повезујем се на сервер..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Настави"
 
@@ -870,14 +843,6 @@ msgstr ""
 "- Десни клик миша: постављање/коришћење\n"
 "- Точкић миша: одабирање ставке\n"
 "- T: причање\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Правим клијента..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Правим сервер..."
 
 #: src/game.cpp
 msgid ""
@@ -962,14 +927,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Разлучујем адресу..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Искључивање..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Један играч"
 
@@ -1003,12 +960,23 @@ msgid "Proceed"
 msgstr "Настави"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Користи\" = Силажење"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Напред"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Назад"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Промени дугмад"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1021,6 +989,10 @@ msgstr "Команда"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Конзола"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1037,6 +1009,10 @@ msgstr "Бацање"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Напред"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1095,13 +1071,31 @@ msgstr "Одабир домета"
 msgid "Right"
 msgstr "Десно"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr ""
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Шуњање"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Укључи/Искључи Cinematic мод"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Укључи/Искључи летење"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Укључи/Искључи трчање"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1112,12 +1106,18 @@ msgid "Toggle fly"
 msgstr "Укључи/Искључи летење"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Укључи/Искључи летење"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Укључи/искључи пролажење кроз препреке"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Коришћење"
+msgid "Toggle noclip"
+msgstr "Укључи/искључи пролажење кроз препреке"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1410,6 +1410,10 @@ msgstr "X Дугме 1"
 msgid "X Button 2"
 msgstr "X Дугме 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "sr_Cyrl"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1593,8 +1597,8 @@ msgid ""
 "minetest.net."
 msgstr ""
 "Пријави овој сервер-листи.\n"
-"Ако желите да пријавите вашу ipv6 адресу, користите serverlist_url = "
-"v6.servers.minetest.net."
+"Ако желите да пријавите вашу ipv6 адресу, користите serverlist_url = v6."
+"servers.minetest.net."
 
 #: src/settings_translation_file.cpp
 msgid "Apple trees noise"
@@ -1631,12 +1635,17 @@ msgstr ""
 "Постављено у мапа-блоковима (16 блокова)"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Кључ за синематски мод"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Аутоматски пријави сервер-листи."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "Кључ за аутоматско трчање"
+msgid "Autosave Screen Size"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1916,7 +1925,8 @@ msgid "Continuous forward"
 msgstr "Непрекидно напред"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Непрекидно кретање унапред (користи се само за тестирање)."
 
 #: src/settings_translation_file.cpp
@@ -2004,6 +2014,10 @@ msgstr "DPI"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Штета"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2131,10 +2145,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2161,18 +2171,6 @@ msgstr "Честице"
 
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -2257,10 +2255,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2307,10 +2301,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3130,7 +3120,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3301,6 +3291,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3642,6 +3636,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3691,18 +3695,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3969,6 +3961,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4025,6 +4023,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4047,10 +4049,6 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Screen width"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4277,6 +4275,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4823,32 +4825,89 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Сакриј садржину мод-паковања"
-
-#~ msgid "Attn"
-#~ msgstr "Аттн"
-
-#~ msgid "Capital"
-#~ msgstr "Главно"
-
-#~ msgid "Comma"
-#~ msgstr "Зарез"
-
-#~ msgid "CrSel"
-#~ msgstr "ЦрСел"
-
-#~ msgid "ExSel"
-#~ msgstr "ЕхСел"
-
-#~ msgid "Final"
-#~ msgstr "Крајњи"
-
-#~ msgid "Minus"
-#~ msgstr "Минус"
+#~ msgid "Plus"
+#~ msgstr "Плус"
 
 #~ msgid "Period"
 #~ msgstr "Тачка"
 
-#~ msgid "Plus"
-#~ msgstr "Плус"
+#~ msgid "Minus"
+#~ msgstr "Минус"
+
+#~ msgid "Final"
+#~ msgstr "Крајњи"
+
+#~ msgid "ExSel"
+#~ msgstr "ЕхСел"
+
+#~ msgid "CrSel"
+#~ msgstr "ЦрСел"
+
+#~ msgid "Comma"
+#~ msgstr "Зарез"
+
+#~ msgid "Capital"
+#~ msgstr "Главно"
+
+#~ msgid "Attn"
+#~ msgstr "Аттн"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Сакриј садржину мод-паковања"
+
+#~ msgid "Autorun key"
+#~ msgstr "Кључ за аутоматско трчање"
+
+#~ msgid "Use"
+#~ msgstr "Коришћење"
+
+#~ msgid "Shutting down..."
+#~ msgstr "Искључивање..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Разлучујем адресу..."
+
+#~ msgid "Creating server..."
+#~ msgstr "Правим сервер..."
+
+#~ msgid "Creating client..."
+#~ msgstr "Правим клијента..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Повезујем се на сервер..."
+
+#~ msgid "re-Install"
+#~ msgstr "поново инсталирај"
+
+#~ msgid "Unsorted"
+#~ msgstr "Нераспоређено"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Успешно инсталиран:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Краће име:"
+
+#~ msgid "Rating"
+#~ msgstr "Оцена"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Страна $1 од $2"
+
+#~ msgid "Install"
+#~ msgstr "Инсталирај"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Преузима се $1, молим вас сачекајте..."
+
+#~ msgid "Close store"
+#~ msgstr "Затвори складиште"
+
+#~ msgid "Select path"
+#~ msgstr "Одабери локацију"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Опоцијоно, лацунарност се може додати са зарезом."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Име није дато или ниједна игра није изабрана"

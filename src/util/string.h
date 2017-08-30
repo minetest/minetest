@@ -203,6 +203,56 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 			case_insensitive);
 }
 
+
+/**
+ * Check whether \p str ends with the string suffix. If \p case_insensitive
+ * is true then the check is case insensitve (default is false; i.e. case is
+ * significant).
+ *
+ * @param str
+ * @param suffix
+ * @param case_insensitive
+ * @return true if the str begins with suffix
+ */
+template <typename T>
+inline bool str_ends_with(const std::basic_string<T> &str,
+		const std::basic_string<T> &suffix,
+		bool case_insensitive = false)
+{
+	if (str.size() < suffix.size())
+		return false;
+
+	size_t start = str.size() - suffix.size();
+	if (!case_insensitive)
+		return str.compare(start, suffix.size(), suffix) == 0;
+
+	for (size_t i = 0; i < suffix.size(); ++i)
+		if (tolower(str[start + i]) != tolower(suffix[i]))
+			return false;
+	return true;
+}
+
+
+/**
+ * Check whether \p str ends with the string suffix. If \p case_insensitive
+ * is true then the check is case insensitve (default is false; i.e. case is
+ * significant).
+ *
+ * @param str
+ * @param suffix
+ * @param case_insensitive
+ * @return true if the str begins with suffix
+ */
+template <typename T>
+inline bool str_ends_with(const std::basic_string<T> &str,
+		const T *suffix,
+		bool case_insensitive = false)
+{
+	return str_ends_with(str, std::basic_string<T>(suffix),
+			case_insensitive);
+}
+
+
 /**
  * Splits a string into its component parts separated by the character
  * \p delimiter.
@@ -596,6 +646,12 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	tokens.push_back(current);
 
 	return tokens;
+}
+
+std::wstring translate_string(const std::wstring &s);
+
+inline std::wstring unescape_translate(const std::wstring &s) {
+	return unescape_enriched(translate_string(s));
 }
 
 /**

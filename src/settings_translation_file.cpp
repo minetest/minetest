@@ -119,8 +119,6 @@ fake_function() {
 	gettext("Key for increasing the viewing range.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("View range decrease key");
 	gettext("Key for decreasing the viewing range.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
-	gettext("Print stacks");
-	gettext("Key for printing debug stacks. Used for development.\nSee http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3");
 	gettext("Network");
 	gettext("Server address");
 	gettext("Address to connect to.\nLeave this blank to start a local server.\nNote that the address field in the main menu overrides this setting.");

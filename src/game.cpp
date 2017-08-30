@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client/renderingengine.h"
 #include "camera.h"
 #include "client.h"
+#include "client/clientevent.h"
 #include "client/inputhandler.h"
 #include "client/tile.h"     // For TextureSource
 #include "client/keys.h"
@@ -60,6 +61,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sky.h"
 #include "subgame.h"
 #include "tool.h"
+#include "translation.h"
 #include "util/basic_macros.h"
 #include "util/directiontables.h"
 #include "util/pointedthing.h"
@@ -185,6 +187,7 @@ struct LocalFormspecHandler : public TextDest
 
 /* Form update callback */
 
+static const std::string empty_string = "";
 class NodeMetadataFormSource: public IFormSource
 {
 public:
@@ -193,12 +196,12 @@ public:
 		m_p(p)
 	{
 	}
-	std::string getForm()
+	const std::string &getForm() const
 	{
 		NodeMetadata *meta = m_map->getNodeMetadata(m_p);
 
 		if (!meta)
-			return "";
+			return empty_string;
 
 		return meta->getString("formspec");
 	}
@@ -224,7 +227,8 @@ public:
 		m_client(client)
 	{
 	}
-	std::string getForm()
+
+	const std::string &getForm() const
 	{
 		LocalPlayer *player = m_client->getEnv().getLocalPlayer();
 		return player->inventory_formspec;
@@ -244,7 +248,7 @@ void update_profiler_gui(gui::IGUIStaticText *guitext_profiler, FontEngine *fe,
 
 		std::ostringstream os(std::ios_base::binary);
 		g_profiler->printPage(os, show_profiler, show_profiler_max);
-		std::wstring text = utf8_to_wide(os.str());
+		std::wstring text = translate_string(utf8_to_wide(os.str()));
 		setStaticText(guitext_profiler, text.c_str());
 		guitext_profiler->setVisible(true);
 
@@ -1163,8 +1167,6 @@ void KeyCache::populate()
 	key[KeyType::QUICKTUNE_INC]  = getKeySetting("keymap_quicktune_inc");
 	key[KeyType::QUICKTUNE_DEC]  = getKeySetting("keymap_quicktune_dec");
 
-	key[KeyType::DEBUG_STACKS]   = getKeySetting("keymap_print_debug_stacks");
-
 	for (int i = 0; i < 23; i++) {
 		std::string slot_key_name = "keymap_slot" + std::to_string(i + 1);
 		key[KeyType::SLOT_1 + i] = getKeySetting(slot_key_name.c_str());
@@ -1210,6 +1212,7 @@ struct GameRunData {
 	bool digging;
 	bool ldown_for_dig;
 	bool dig_instantly;
+	bool digging_blocked;
 	bool left_punch;
 	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
@@ -1245,6 +1248,13 @@ struct RunStats {
 	u32 drawtime;
 
 	Jitter dtime_jitter, busy_time_jitter;
+};
+
+class Game;
+
+struct ClientEventHandler
+{
+	void (Game::*handler)(ClientEvent *, CameraOrientation *);
 };
 
 /****************************************************************************
@@ -1317,7 +1327,7 @@ protected:
 	void processKeyInput();
 	void processItemSelection(u16 *new_playeritem);
 
-	void dropSelectedItem();
+	void dropSelectedItem(bool single_item = false);
 	void openInventory();
 	void openConsole(float scale, const wchar_t *line=NULL);
 	void toggleFreeMove();
@@ -1426,6 +1436,25 @@ protected:
 
 private:
 	void showPauseMenu();
+
+	// ClientEvent handlers
+	void handleClientEvent_None(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_HandleParticleEvent(ClientEvent *event,
+		CameraOrientation *cam);
+	void handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam);
+	void handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
+		CameraOrientation *cam);
+	void handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam);
+
+	static const ClientEventHandler clientEventHandler[CLIENTEVENT_MAX];
 
 	InputHandler *input;
 
@@ -1689,6 +1718,8 @@ bool Game::startup(bool *kill,
 	flags.show_debug = g_settings->getBool("show_debug");
 	m_invert_mouse = g_settings->getBool("invert_mouse");
 	m_first_loop_after_window_activation = true;
+
+	g_translations->clear();
 
 	if (!init(map_dir, address, port, gamespec))
 		return false;
@@ -2569,7 +2600,7 @@ void Game::processUserInput(f32 dtime)
 void Game::processKeyInput()
 {
 	if (wasKeyDown(KeyType::DROP)) {
-		dropSelectedItem();
+		dropSelectedItem(isKeyDown(KeyType::SNEAK));
 	} else if (wasKeyDown(KeyType::AUTOFORWARD)) {
 		toggleAutoforward();
 	} else if (wasKeyDown(KeyType::INVENTORY)) {
@@ -2650,14 +2681,6 @@ void Game::processKeyInput()
 		quicktune->inc();
 	} else if (wasKeyDown(KeyType::QUICKTUNE_DEC)) {
 		quicktune->dec();
-	} else if (wasKeyDown(KeyType::DEBUG_STACKS)) {
-		// Print debug stacks
-		dstream << "-----------------------------------------"
-		        << std::endl;
-		dstream << "Printing debug stacks:" << std::endl;
-		dstream << "-----------------------------------------"
-		        << std::endl;
-		debug_stacks_print();
 	}
 
 	if (!isKeyDown(KeyType::JUMP) && runData.reset_jump_timer) {
@@ -2715,10 +2738,10 @@ void Game::processItemSelection(u16 *new_playeritem)
 }
 
 
-void Game::dropSelectedItem()
+void Game::dropSelectedItem(bool single_item)
 {
 	IDropAction *a = new IDropAction();
-	a->count = 0;
+	a->count = single_item ? 1 : 0;
 	a->from_inv.setCurrentPlayer();
 	a->from_list = "main";
 	a->from_i = client->getPlayerItem();
@@ -3195,272 +3218,301 @@ inline void Game::step(f32 *dtime)
 	}
 }
 
+const ClientEventHandler Game::clientEventHandler[CLIENTEVENT_MAX] = {
+	{&Game::handleClientEvent_None},
+	{&Game::handleClientEvent_PlayerDamage},
+	{&Game::handleClientEvent_PlayerForceMove},
+	{&Game::handleClientEvent_Deathscreen},
+	{&Game::handleClientEvent_ShowFormSpec},
+	{&Game::handleClientEvent_ShowLocalFormSpec},
+	{&Game::handleClientEvent_HandleParticleEvent},
+	{&Game::handleClientEvent_HandleParticleEvent},
+	{&Game::handleClientEvent_HandleParticleEvent},
+	{&Game::handleClientEvent_HudAdd},
+	{&Game::handleClientEvent_HudRemove},
+	{&Game::handleClientEvent_HudChange},
+	{&Game::handleClientEvent_SetSky},
+	{&Game::handleClientEvent_OverrideDayNigthRatio},
+	{&Game::handleClientEvent_CloudParams},
+};
 
-void Game::processClientEvents(CameraOrientation *cam)
+void Game::handleClientEvent_None(ClientEvent *event, CameraOrientation *cam)
+{
+	FATAL_ERROR("ClientEvent type None received");
+}
+
+void Game::handleClientEvent_PlayerDamage(ClientEvent *event, CameraOrientation *cam)
+{
+	if (client->getHP() == 0)
+		return;
+
+	if (client->moddingEnabled()) {
+		client->getScript()->on_damage_taken(event->player_damage.amount);
+	}
+
+	runData.damage_flash += 95.0 + 3.2 * event->player_damage.amount;
+	runData.damage_flash = MYMIN(runData.damage_flash, 127.0);
+
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	player->hurt_tilt_timer = 1.5;
+	player->hurt_tilt_strength =
+		rangelim(event->player_damage.amount / 4, 1.0, 4.0);
+
+	client->event()->put(new SimpleTriggerEvent("PlayerDamage"));
+}
+
+void Game::handleClientEvent_PlayerForceMove(ClientEvent *event, CameraOrientation *cam)
+{
+	cam->camera_yaw = event->player_force_move.yaw;
+	cam->camera_pitch = event->player_force_move.pitch;
+}
+
+void Game::handleClientEvent_Deathscreen(ClientEvent *event, CameraOrientation *cam)
+{
+	// This should be enabled for death formspec in builtin
+	client->getScript()->on_death();
+
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	/* Handle visualization */
+	runData.damage_flash = 0;
+	player->hurt_tilt_timer = 0;
+	player->hurt_tilt_strength = 0;
+}
+
+void Game::handleClientEvent_ShowFormSpec(ClientEvent *event, CameraOrientation *cam)
+{
+	if (event->show_formspec.formspec->empty()) {
+		if (current_formspec && (event->show_formspec.formname->empty()
+			|| *(event->show_formspec.formname) == cur_formname)) {
+			current_formspec->quitMenu();
+		}
+	} else {
+		FormspecFormSource *fs_src =
+			new FormspecFormSource(*(event->show_formspec.formspec));
+		TextDestPlayerInventory *txt_dst =
+			new TextDestPlayerInventory(client, *(event->show_formspec.formname));
+
+		create_formspec_menu(&current_formspec, client, &input->joystick,
+			fs_src, txt_dst);
+		cur_formname = *(event->show_formspec.formname);
+	}
+
+	delete event->show_formspec.formspec;
+	delete event->show_formspec.formname;
+}
+
+void Game::handleClientEvent_ShowLocalFormSpec(ClientEvent *event, CameraOrientation *cam)
+{
+	FormspecFormSource *fs_src = new FormspecFormSource(*event->show_formspec.formspec);
+	LocalFormspecHandler *txt_dst =
+		new LocalFormspecHandler(*event->show_formspec.formname, client);
+	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+
+	delete event->show_formspec.formspec;
+	delete event->show_formspec.formname;
+}
+
+void Game::handleClientEvent_HandleParticleEvent(ClientEvent *event,
+		CameraOrientation *cam)
+{
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	client->getParticleManager()->handleParticleEvent(event, client, player);
+}
+
+void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 {
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 
-	while (client->hasClientEvents()) {
-		ClientEvent event = client->getClientEvent();
+	u32 id = event->hudadd.id;
 
-		switch (event.type) {
-		case CE_PLAYER_DAMAGE:
-			if (client->getHP() == 0)
-				break;
-			if (client->moddingEnabled()) {
-				client->getScript()->on_damage_taken(event.player_damage.amount);
-			}
+	HudElement *e = player->getHud(id);
 
-			runData.damage_flash += 95.0 + 3.2 * event.player_damage.amount;
-			runData.damage_flash = MYMIN(runData.damage_flash, 127.0);
-
-			player->hurt_tilt_timer = 1.5;
-			player->hurt_tilt_strength =
-				rangelim(event.player_damage.amount / 4, 1.0, 4.0);
-
-			client->event()->put(new SimpleTriggerEvent("PlayerDamage"));
-			break;
-
-		case CE_PLAYER_FORCE_MOVE:
-			cam->camera_yaw = event.player_force_move.yaw;
-			cam->camera_pitch = event.player_force_move.pitch;
-			break;
-
-		case CE_DEATHSCREEN:
-			// This should be enabled for death formspec in builtin
-			client->getScript()->on_death();
-
-			/* Handle visualization */
-			runData.damage_flash = 0;
-			player->hurt_tilt_timer = 0;
-			player->hurt_tilt_strength = 0;
-			break;
-
-		case CE_SHOW_FORMSPEC:
-			if (event.show_formspec.formspec->empty()) {
-				if (current_formspec && (event.show_formspec.formname->empty()
-						|| *(event.show_formspec.formname) == cur_formname)) {
-					current_formspec->quitMenu();
-				}
-			} else {
-				FormspecFormSource *fs_src =
-					new FormspecFormSource(*(event.show_formspec.formspec));
-				TextDestPlayerInventory *txt_dst =
-					new TextDestPlayerInventory(client, *(event.show_formspec.formname));
-
-				create_formspec_menu(&current_formspec, client, &input->joystick,
-					fs_src, txt_dst);
-				cur_formname = *(event.show_formspec.formname);
-			}
-
-			delete event.show_formspec.formspec;
-			delete event.show_formspec.formname;
-			break;
-
-		case CE_SHOW_LOCAL_FORMSPEC:
-			{
-				FormspecFormSource *fs_src = new FormspecFormSource(*event.show_formspec.formspec);
-				LocalFormspecHandler *txt_dst = new LocalFormspecHandler(*event.show_formspec.formname, client);
-				create_formspec_menu(&current_formspec, client, &input->joystick,
-					fs_src, txt_dst);
-			}
-			delete event.show_formspec.formspec;
-			delete event.show_formspec.formname;
-			break;
-
-		case CE_SPAWN_PARTICLE:
-		case CE_ADD_PARTICLESPAWNER:
-		case CE_DELETE_PARTICLESPAWNER:
-			client->getParticleManager()->handleParticleEvent(&event, client, player);
-			break;
-
-		case CE_HUDADD:
-			{
-				u32 id = event.hudadd.id;
-
-				HudElement *e = player->getHud(id);
-
-				if (e != NULL) {
-					delete event.hudadd.pos;
-					delete event.hudadd.name;
-					delete event.hudadd.scale;
-					delete event.hudadd.text;
-					delete event.hudadd.align;
-					delete event.hudadd.offset;
-					delete event.hudadd.world_pos;
-					delete event.hudadd.size;
-					continue;
-				}
-
-				e = new HudElement;
-				e->type   = (HudElementType)event.hudadd.type;
-				e->pos    = *event.hudadd.pos;
-				e->name   = *event.hudadd.name;
-				e->scale  = *event.hudadd.scale;
-				e->text   = *event.hudadd.text;
-				e->number = event.hudadd.number;
-				e->item   = event.hudadd.item;
-				e->dir    = event.hudadd.dir;
-				e->align  = *event.hudadd.align;
-				e->offset = *event.hudadd.offset;
-				e->world_pos = *event.hudadd.world_pos;
-				e->size = *event.hudadd.size;
-
-				u32 new_id = player->addHud(e);
-				//if this isn't true our huds aren't consistent
-				sanity_check(new_id == id);
-			}
-
-			delete event.hudadd.pos;
-			delete event.hudadd.name;
-			delete event.hudadd.scale;
-			delete event.hudadd.text;
-			delete event.hudadd.align;
-			delete event.hudadd.offset;
-			delete event.hudadd.world_pos;
-			delete event.hudadd.size;
-			break;
-
-		case CE_HUDRM:
-			{
-				HudElement *e = player->removeHud(event.hudrm.id);
-
-				delete e;
-			}
-			break;
-
-		case CE_HUDCHANGE:
-			{
-				u32 id = event.hudchange.id;
-				HudElement *e = player->getHud(id);
-
-				if (e == NULL) {
-					delete event.hudchange.v3fdata;
-					delete event.hudchange.v2fdata;
-					delete event.hudchange.sdata;
-					delete event.hudchange.v2s32data;
-					continue;
-				}
-
-				switch (event.hudchange.stat) {
-				case HUD_STAT_POS:
-					e->pos = *event.hudchange.v2fdata;
-					break;
-
-				case HUD_STAT_NAME:
-					e->name = *event.hudchange.sdata;
-					break;
-
-				case HUD_STAT_SCALE:
-					e->scale = *event.hudchange.v2fdata;
-					break;
-
-				case HUD_STAT_TEXT:
-					e->text = *event.hudchange.sdata;
-					break;
-
-				case HUD_STAT_NUMBER:
-					e->number = event.hudchange.data;
-					break;
-
-				case HUD_STAT_ITEM:
-					e->item = event.hudchange.data;
-					break;
-
-				case HUD_STAT_DIR:
-					e->dir = event.hudchange.data;
-					break;
-
-				case HUD_STAT_ALIGN:
-					e->align = *event.hudchange.v2fdata;
-					break;
-
-				case HUD_STAT_OFFSET:
-					e->offset = *event.hudchange.v2fdata;
-					break;
-
-				case HUD_STAT_WORLD_POS:
-					e->world_pos = *event.hudchange.v3fdata;
-					break;
-
-				case HUD_STAT_SIZE:
-					e->size = *event.hudchange.v2s32data;
-					break;
-				}
-			}
-
-			delete event.hudchange.v3fdata;
-			delete event.hudchange.v2fdata;
-			delete event.hudchange.sdata;
-			delete event.hudchange.v2s32data;
-			break;
-
-		case CE_SET_SKY:
-			sky->setVisible(false);
-			// Whether clouds are visible in front of a custom skybox
-			sky->setCloudsEnabled(event.set_sky.clouds);
-
-			if (skybox) {
-				skybox->remove();
-				skybox = NULL;
-			}
-
-			// Handle according to type
-			if (*event.set_sky.type == "regular") {
-				sky->setVisible(true);
-				sky->setCloudsEnabled(true);
-			} else if (*event.set_sky.type == "skybox" &&
-					event.set_sky.params->size() == 6) {
-				sky->setFallbackBgColor(*event.set_sky.bgcolor);
-				skybox = RenderingEngine::get_scene_manager()->addSkyBoxSceneNode(
-						 texture_src->getTextureForMesh((*event.set_sky.params)[0]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[1]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[2]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[3]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[4]),
-						 texture_src->getTextureForMesh((*event.set_sky.params)[5]));
-			}
-			// Handle everything else as plain color
-			else {
-				if (*event.set_sky.type != "plain")
-					infostream << "Unknown sky type: "
-						   << (*event.set_sky.type) << std::endl;
-
-				sky->setFallbackBgColor(*event.set_sky.bgcolor);
-			}
-
-			delete event.set_sky.bgcolor;
-			delete event.set_sky.type;
-			delete event.set_sky.params;
-			break;
-
-		case CE_OVERRIDE_DAY_NIGHT_RATIO:
-			client->getEnv().setDayNightRatioOverride(
-					event.override_day_night_ratio.do_override,
-					event.override_day_night_ratio.ratio_f * 1000);
-			break;
-
-		case CE_CLOUD_PARAMS:
-			if (clouds) {
-				clouds->setDensity(event.cloud_params.density);
-				clouds->setColorBright(video::SColor(event.cloud_params.color_bright));
-				clouds->setColorAmbient(video::SColor(event.cloud_params.color_ambient));
-				clouds->setHeight(event.cloud_params.height);
-				clouds->setThickness(event.cloud_params.thickness);
-				clouds->setSpeed(v2f(
-						event.cloud_params.speed_x,
-						event.cloud_params.speed_y));
-			}
-			break;
-
-		default:
-			// unknown or unhandled type
-			break;
-
-		}
+	if (e != NULL) {
+		delete event->hudadd.pos;
+		delete event->hudadd.name;
+		delete event->hudadd.scale;
+		delete event->hudadd.text;
+		delete event->hudadd.align;
+		delete event->hudadd.offset;
+		delete event->hudadd.world_pos;
+		delete event->hudadd.size;
+		return;
 	}
+
+	e = new HudElement;
+	e->type   = (HudElementType)event->hudadd.type;
+	e->pos    = *event->hudadd.pos;
+	e->name   = *event->hudadd.name;
+	e->scale  = *event->hudadd.scale;
+	e->text   = *event->hudadd.text;
+	e->number = event->hudadd.number;
+	e->item   = event->hudadd.item;
+	e->dir    = event->hudadd.dir;
+	e->align  = *event->hudadd.align;
+	e->offset = *event->hudadd.offset;
+	e->world_pos = *event->hudadd.world_pos;
+	e->size = *event->hudadd.size;
+
+	u32 new_id = player->addHud(e);
+	//if this isn't true our huds aren't consistent
+	sanity_check(new_id == id);
+
+	delete event->hudadd.pos;
+	delete event->hudadd.name;
+	delete event->hudadd.scale;
+	delete event->hudadd.text;
+	delete event->hudadd.align;
+	delete event->hudadd.offset;
+	delete event->hudadd.world_pos;
+	delete event->hudadd.size;
 }
 
+void Game::handleClientEvent_HudRemove(ClientEvent *event, CameraOrientation *cam)
+{
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+	HudElement *e = player->removeHud(event->hudrm.id);
+	delete e;
+}
+
+void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *cam)
+{
+	LocalPlayer *player = client->getEnv().getLocalPlayer();
+
+	u32 id = event->hudchange.id;
+	HudElement *e = player->getHud(id);
+
+	if (e == NULL) {
+		delete event->hudchange.v3fdata;
+		delete event->hudchange.v2fdata;
+		delete event->hudchange.sdata;
+		delete event->hudchange.v2s32data;
+		return;
+	}
+
+	switch (event->hudchange.stat) {
+		case HUD_STAT_POS:
+			e->pos = *event->hudchange.v2fdata;
+			break;
+
+		case HUD_STAT_NAME:
+			e->name = *event->hudchange.sdata;
+			break;
+
+		case HUD_STAT_SCALE:
+			e->scale = *event->hudchange.v2fdata;
+			break;
+
+		case HUD_STAT_TEXT:
+			e->text = *event->hudchange.sdata;
+			break;
+
+		case HUD_STAT_NUMBER:
+			e->number = event->hudchange.data;
+			break;
+
+		case HUD_STAT_ITEM:
+			e->item = event->hudchange.data;
+			break;
+
+		case HUD_STAT_DIR:
+			e->dir = event->hudchange.data;
+			break;
+
+		case HUD_STAT_ALIGN:
+			e->align = *event->hudchange.v2fdata;
+			break;
+
+		case HUD_STAT_OFFSET:
+			e->offset = *event->hudchange.v2fdata;
+			break;
+
+		case HUD_STAT_WORLD_POS:
+			e->world_pos = *event->hudchange.v3fdata;
+			break;
+
+		case HUD_STAT_SIZE:
+			e->size = *event->hudchange.v2s32data;
+			break;
+	}
+
+	delete event->hudchange.v3fdata;
+	delete event->hudchange.v2fdata;
+	delete event->hudchange.sdata;
+	delete event->hudchange.v2s32data;
+}
+
+void Game::handleClientEvent_SetSky(ClientEvent *event, CameraOrientation *cam)
+{
+	sky->setVisible(false);
+	// Whether clouds are visible in front of a custom skybox
+	sky->setCloudsEnabled(event->set_sky.clouds);
+
+	if (skybox) {
+		skybox->remove();
+		skybox = NULL;
+	}
+
+	// Handle according to type
+	if (*event->set_sky.type == "regular") {
+		sky->setVisible(true);
+		sky->setCloudsEnabled(true);
+	} else if (*event->set_sky.type == "skybox" &&
+		event->set_sky.params->size() == 6) {
+		sky->setFallbackBgColor(*event->set_sky.bgcolor);
+		skybox = RenderingEngine::get_scene_manager()->addSkyBoxSceneNode(
+			texture_src->getTextureForMesh((*event->set_sky.params)[0]),
+			texture_src->getTextureForMesh((*event->set_sky.params)[1]),
+			texture_src->getTextureForMesh((*event->set_sky.params)[2]),
+			texture_src->getTextureForMesh((*event->set_sky.params)[3]),
+			texture_src->getTextureForMesh((*event->set_sky.params)[4]),
+			texture_src->getTextureForMesh((*event->set_sky.params)[5]));
+	}
+		// Handle everything else as plain color
+	else {
+		if (*event->set_sky.type != "plain")
+			infostream << "Unknown sky type: "
+				<< (*event->set_sky.type) << std::endl;
+
+		sky->setFallbackBgColor(*event->set_sky.bgcolor);
+	}
+
+	delete event->set_sky.bgcolor;
+	delete event->set_sky.type;
+	delete event->set_sky.params;
+}
+
+void Game::handleClientEvent_OverrideDayNigthRatio(ClientEvent *event,
+		CameraOrientation *cam)
+{
+	client->getEnv().setDayNightRatioOverride(
+		event->override_day_night_ratio.do_override,
+		event->override_day_night_ratio.ratio_f * 1000.0f);
+}
+
+void Game::handleClientEvent_CloudParams(ClientEvent *event, CameraOrientation *cam)
+{
+	if (!clouds)
+		return;
+
+	clouds->setDensity(event->cloud_params.density);
+	clouds->setColorBright(video::SColor(event->cloud_params.color_bright));
+	clouds->setColorAmbient(video::SColor(event->cloud_params.color_ambient));
+	clouds->setHeight(event->cloud_params.height);
+	clouds->setThickness(event->cloud_params.thickness);
+	clouds->setSpeed(v2f(event->cloud_params.speed_x, event->cloud_params.speed_y));
+}
+
+void Game::processClientEvents(CameraOrientation *cam)
+{
+	while (client->hasClientEvents()) {
+		std::unique_ptr<ClientEvent> event(client->getClientEvent());
+		FATAL_ERROR_IF(event->type >= CLIENTEVENT_MAX, "Invalid clientevent type");
+		const ClientEventHandler& evHandler = clientEventHandler[event->type];
+		(this->*evHandler.handler)(event.get(), cam);
+	}
+}
 
 void Game::updateCamera(u32 busy_time, f32 dtime)
 {
@@ -3617,6 +3669,9 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	if ((g_settings->getBool("touchtarget")) && (g_touchscreengui)) {
 		shootline = g_touchscreengui->getShootline();
+		// Scale shootline to the acual distance the player can reach
+		shootline.end = shootline.start
+			+ shootline.getVector().normalize() * BS * d;
 		shootline.start += intToFloat(camera_offset, BS);
 		shootline.end += intToFloat(camera_offset, BS);
 	}
@@ -3631,6 +3686,11 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	if (pointed != runData.pointed_old) {
 		infostream << "Pointing at " << pointed.dump() << std::endl;
 		hud->updateSelectionMesh(camera_offset);
+	}
+
+	if (runData.digging_blocked && !isLeftPressed()) {
+		// allow digging again if button is not pressed
+		runData.digging_blocked = false;
 	}
 
 	/*
@@ -3677,7 +3737,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
-	if (isRightPressed())
+	// Prepare for repeating, unless we're not supposed to
+	if (isRightPressed() && !g_settings->getBool("safe_dig_and_place"))
 		runData.repeat_rightclick_timer += dtime;
 	else
 		runData.repeat_rightclick_timer = 0;
@@ -3836,6 +3897,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	ClientMap &map = client->getEnv().getClientMap();
 
 	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
+			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
 	}
@@ -3844,7 +3906,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 	NodeMetadata *meta = map.getNodeMetadata(nodepos);
 
 	if (meta) {
-		infotext = unescape_enriched(utf8_to_wide(meta->getString("infotext")));
+		infotext = unescape_translate(utf8_to_wide(meta->getString("infotext")));
 	} else {
 		MapNode n = map.getNodeNoEx(nodepos);
 
@@ -3921,15 +3983,14 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &playeritem,
 		const v3f &player_position, bool show_debug)
 {
-	infotext = unescape_enriched(
+	infotext = unescape_translate(
 		utf8_to_wide(runData.selected_object->infoText()));
 
 	if (show_debug) {
 		if (!infotext.empty()) {
 			infotext += L"\n";
 		}
-		infotext += unescape_enriched(utf8_to_wide(
-			runData.selected_object->debugInfoText()));
+		infotext += utf8_to_wide(runData.selected_object->debugInfoText());
 	}
 
 	if (isLeftPressed()) {
@@ -4059,6 +4120,9 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		runData.dig_time = 0;
 		runData.digging = false;
+		// we successfully dug, now block it from repeating if we want to be safe
+		if (g_settings->getBool("safe_dig_and_place"))
+			runData.digging_blocked = true;
 
 		runData.nodig_delay_timer =
 				runData.dig_time_complete / (float)crack_animation_length;
@@ -4459,7 +4523,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		guitext3->setRelativePosition(rect);
 	}
 
-	setStaticText(guitext_info, infotext.c_str());
+	setStaticText(guitext_info, translate_string(infotext).c_str());
 	guitext_info->setVisible(flags.show_hud && g_menumgr.menuCount() == 0);
 
 	float statustext_time_max = 1.5;
@@ -4473,7 +4537,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		}
 	}
 
-	setStaticText(guitext_status, m_statustext.c_str());
+	setStaticText(guitext_status, translate_string(m_statustext).c_str());
 	guitext_status->setVisible(!m_statustext.empty());
 
 	if (!m_statustext.empty()) {

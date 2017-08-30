@@ -19,7 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "networkpacket.h"
 #include <sstream>
-#include "exceptions.h"
+#include "networkexceptions.h"
 #include "util/serialize.h"
 
 NetworkPacket::NetworkPacket(u16 command, u32 datasize, u16 peer_id):
@@ -526,9 +526,9 @@ NetworkPacket& NetworkPacket::operator<<(video::SColor src)
 	return *this;
 }
 
-Buffer<u8> NetworkPacket::oldForgePacket()
+SharedBuffer<u8> NetworkPacket::oldForgePacket()
 {
-	Buffer<u8> sb(m_datasize + 2);
+	SharedBuffer<u8> sb(m_datasize + 2);
 	writeU16(&sb[0], m_command);
 
 	u8* datas = getU8Ptr(0);

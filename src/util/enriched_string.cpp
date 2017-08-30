@@ -36,19 +36,19 @@ EnrichedString::EnrichedString(const std::wstring &string,
 EnrichedString::EnrichedString(const std::wstring &s, const SColor &color)
 {
 	clear();
-	addAtEnd(s, color);
+	addAtEnd(translate_string(s), color);
 }
 
 EnrichedString::EnrichedString(const wchar_t *str, const SColor &color)
 {
 	clear();
-	addAtEnd(std::wstring(str), color);
+	addAtEnd(translate_string(std::wstring(str)), color);
 }
 
 void EnrichedString::operator=(const wchar_t *str)
 {
 	clear();
-	addAtEnd(std::wstring(str), SColor(255, 255, 255, 255));
+	addAtEnd(translate_string(std::wstring(str)), SColor(255, 255, 255, 255));
 }
 
 void EnrichedString::addAtEnd(const std::wstring &s, const SColor &initial_color)

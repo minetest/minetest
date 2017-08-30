@@ -125,6 +125,21 @@ core.builtin_auth_handler = {
 				core.get_password_hash(name,
 					core.settings:get("default_password")))
 		end
+
+		-- Run grant callbacks
+		for priv, _ in pairs(privileges) do
+			if not core.auth_table[name].privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "grant")
+			end
+		end
+
+		-- Run revoke callbacks
+		for priv, _ in pairs(core.auth_table[name].privileges) do
+			if not privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "revoke")
+			end
+		end
+
 		core.auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
 		save_auth_file()

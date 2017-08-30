@@ -79,7 +79,6 @@ ClientMap & ClientEnvironment::getClientMap()
 
 void ClientEnvironment::setLocalPlayer(LocalPlayer *player)
 {
-	DSTACK(FUNCTION_NAME);
 	/*
 		It is a failure if already is a local player
 	*/
@@ -116,8 +115,6 @@ static u8 get_artificial_light_ratio(MapNode n, const ContentFeatures f)
 
 void ClientEnvironment::step(float dtime)
 {
-	DSTACK(FUNCTION_NAME);
-
 	/* Step time of day */
 	stepTimeOfDay(dtime);
 

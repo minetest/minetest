@@ -58,6 +58,7 @@ xgettext --package-name=minetest \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
 	--output $potfile \
+	--from-code=utf-8 \
 	`find src/ -name '*.cpp' -o -name '*.h'` \
 	`find builtin/ -name '*.lua'`
 

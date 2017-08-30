@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-04-23 14:54+0000\n"
 "Last-Translator: Mário <branco.ana8@gmail.com>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/minetest/"
@@ -39,7 +39,7 @@ msgstr "Ocorreu um erro:"
 msgid "Main menu"
 msgstr "Menu principal"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Ok"
 
@@ -51,7 +51,7 @@ msgstr "Reconectar"
 msgid "The server has requested a reconnect:"
 msgstr "O servidor requisitou uma reconexão:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "A carregar..."
 
@@ -165,8 +165,9 @@ msgid "Mapgen"
 msgstr "Geração de Mapa"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Mundo sem nome ou nenhum jogo selecionado"
+#, fuzzy
+msgid "No game selected"
+msgstr "Seleccionar Distância"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -226,6 +227,17 @@ msgid "< Back to Settings page"
 msgstr "< Voltar para as definições"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Formato: <offset>, <escala>, (<distânciaX>, <distânciaY>, <distânciaZ>), "
+"<seed>, <oitavos>, <persistência>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Navegar"
 
@@ -246,12 +258,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "O formato é de 3 números separados por vírgulas dentro de parêntesis."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Formato: <offset>, <escala>, (<distânciaX>, <distânciaY>, <distânciaZ>), "
-"<seed>, <oitavos>, <persistência>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -260,11 +268,6 @@ msgstr "Jogos"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mods"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
-"Opcionalmente a lacunaridade pode ser adicionada com uma vírgula na frente."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -286,14 +289,19 @@ msgstr "Os valores possíveis são: "
 msgid "Restore Default"
 msgstr "Restaurar valores por defeito"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Procurar"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Seleccionar diretório"
+#, fuzzy
+msgid "Select directory"
+msgstr "Seleccionar ficheiro de Mod:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Seleccionar ficheiro de Mod:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -339,42 +347,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Fechar repositório"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "A descarregar $1, por favor aguarde..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instalar"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Página $1 de $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Classificação"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Nome curto:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Instalado com sucesso:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Não ordenado"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "reinstalar"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -711,6 +683,10 @@ msgid "Start Singleplayer"
 msgstr "Iniciar Um Jogador"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Sem informações disponíveis"
 
@@ -837,10 +813,6 @@ msgid "Change Password"
 msgstr "Mudar Senha"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "A conectar ao servidor..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Continuar"
 
@@ -873,14 +845,6 @@ msgstr ""
 "- Clique direito: colocar/utilizar\n"
 "- Roda do rato: seleccionar item\n"
 "- T: chat\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "A criar cliente..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "A criar servidor..."
 
 #: src/game.cpp
 msgid ""
@@ -966,14 +930,6 @@ msgid "Remote server"
 msgstr "Anunciar servidor"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "A resolver endereço..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "A desligar..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Um Jogador"
 
@@ -1007,12 +963,23 @@ msgid "Proceed"
 msgstr "Continuar"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Use\" = descer"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Avançar"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Recuar"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Mudar teclas"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1025,6 +992,10 @@ msgstr "Comando"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Consola"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1041,6 +1012,10 @@ msgstr "Largar"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Avançar"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1097,13 +1072,31 @@ msgstr "Seleccionar Distância"
 msgid "Right"
 msgstr "Direita"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Captura de ecrã"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Agachar"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Ativar/Desativar câmera cinemática"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Ativar/Desativar vôo"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Ativar/Desativar correr"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1114,12 +1107,18 @@ msgid "Toggle fly"
 msgstr "Ativar/Desativar vôo"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Ativar/Desativar vôo"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Ativar/Desativar noclip"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Usar"
+msgid "Toggle noclip"
+msgstr "Ativar/Desativar noclip"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1412,6 +1411,10 @@ msgstr "Botão X 1"
 msgid "X Button 2"
 msgstr "Botão X 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "pt"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1629,12 +1632,17 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Tecla para avançar"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Informar automáticamente a lista de servidores."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "Tecla de autoexecução"
+msgid "Autosave Screen Size"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1922,7 +1930,8 @@ msgid "Continuous forward"
 msgstr "Avançar continuamente"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Avanço contínuo (apenas usado para testes)."
 
 #: src/settings_translation_file.cpp
@@ -2009,6 +2018,11 @@ msgstr "DPI"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Ativar dano"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Inclinação dos lagos no gerador de mapa plano"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2142,10 +2156,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Profundidade a partir da qual você encontrará caves massivas."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "Velocidade de descida"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2175,21 +2185,6 @@ msgstr "Ativar Particulas"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Desativar anti-batota"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr "Desabilitar as sequências de escape"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
-"Desabilitar as sequências de escape, por exemplo, colorimento de bate-papo.\n"
-"Use isto se você quiser executar um servidor com clientes pre-0.4.14 e para "
-"desabilitar as sequências de escape geradas por modificadores."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2284,11 +2279,6 @@ msgstr ""
 "(ex. texturas) quando se estiver a conectar ao servidor."
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable view bobbing"
-msgstr "Cair balançando"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2346,10 +2336,6 @@ msgid ""
 msgstr ""
 "Ativa mapeamento de oclusão de paralaxe.\n"
 "Requer sombreadores ativados."
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3242,8 +3228,9 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3450,6 +3437,10 @@ msgstr ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Limit of emerge queues on disk"
@@ -3794,6 +3785,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3843,18 +3844,6 @@ msgstr "Mapeamento MIP"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4122,6 +4111,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4178,6 +4173,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4206,10 +4205,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Captura de ecrã"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4439,6 +4434,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -5008,235 +5007,58 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ocultar conteúdo do pacote"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Caps Lock"
-
-#~ msgid "Comma"
-#~ msgstr "Virgula"
-
-#~ msgid "CrSel"
-#~ msgstr "Tecla CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "Tecla ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Tecla Final"
-
-#~ msgid "Junja"
-#~ msgstr "Tecla Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Tecla Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Tecla Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Menos"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Ponto"
-
-#~ msgid "Plus"
-#~ msgstr "Mais"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Controla o tamanho dos desertos e das praias no gerador de mapa v6.\n"
-#~ "Quando o bioma de neve está ativado 'mgv6_freq_desert' é ignorado."
-
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "Determina a forma do terreno\n"
-#~ "Os 3 números entre '[' e ']' controlam a escala do\n"
-#~ "terreno, os 3 números devem ser idênticos."
-
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Tamanho de cavernas lisas no Mapgen"
-
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Tamanho da caverna mapgen"
-
-#~ msgid "Mapgen fractal cave1 noise parameters"
-#~ msgstr "Parâmetros de ruído caverna1 no gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal cave2 noise parameters"
-#~ msgstr "Parâmetros de ruído caverna2 no gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal filler depth noise parameters"
-#~ msgstr ""
-#~ "Parâmetros de ruído da profundidade de enchimento no gerador de mapa "
-#~ "fractal"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Fractal do gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Iterações no gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal julia w"
-#~ msgstr "W do gerador de mapa fractal Julia"
-
-#~ msgid "Mapgen fractal julia x"
-#~ msgstr "X do gerador de mapa fractal Julia"
-
-#~ msgid "Mapgen fractal julia y"
-#~ msgstr "Y do gerador de mapa fractal Julia"
-
-#~ msgid "Mapgen fractal julia z"
-#~ msgstr "Z do gerador de mapa fractal Julia"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Deslocamento do gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Escala do gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal seabed noise parameters"
-#~ msgstr "Parâmetros de ruído do fundo do mar no gerador de mapa fractal"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "W do corte do gerador de mapa fractal"
-
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "Tamanho da Caverna no Mapgen v5"
-
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Tamanho da caverna no mapgen v7"
-
-#~ msgid ""
-#~ "Where the map generator stops.\n"
-#~ "Please note:\n"
-#~ "-    Limited to 31000 (setting above has no effect)\n"
-#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
-#~ "MapBlocks).\n"
-#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
-#~ "-    Only groups which are within the map_generation_limit are generated"
-#~ msgstr ""
-#~ "Limite da geração do mapa.\n"
-#~ "Note:\n"
-#~ "-    Limitado a 31000 (valor superior não tem efeito)\n"
-#~ "-    O gerador funciona em grupos de 80x80x80 cubos (5x5x5 MapBlocks).\n"
-#~ "-    Esses grupos têm um deslocamento de -32, -32 cubos em relação à "
-#~ "origem.\n"
-#~ "-    Apenas grupos dentro do limite definido por map_generation_limit são "
-#~ "gerados"
-
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr ""
-#~ "Dados de perfil detalhados do extra. Útil para desenvolvedores de extras."
-
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Dados de perfil detalhados do extra"
-
-#~ msgid "Useful for mod developers."
-#~ msgstr "Útil para desenvolvedores de extras."
-
-#~ msgid "No of course not!"
-#~ msgstr "Não, é claro que não!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Lista de Servidores Públicos"
-
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Gerar Normalmaps"
-
-#~ msgid "No!!!"
-#~ msgstr "Não!!!"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "A carregar..."
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Desativar Tudo"
+#~ msgid "Downloading"
+#~ msgstr "Descarregar"
 
-#, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "ativo"
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr "Botão esq: Mover todos os itens  Botão dir: Mover um item"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr ""
-#~ "Mensagem de Jogo: Impossível fazer cópia do extra \"$1\" para o jogo "
-#~ "\"$2\""
+#~ msgid "is required by:"
+#~ msgstr "é necessário pelo:"
 
-#~ msgid "GAMES"
-#~ msgstr "JOGOS"
+#~ msgid "Configuration saved.  "
+#~ msgstr "Configuração gravada.  "
 
-#~ msgid "Mods:"
-#~ msgstr "Extras:"
+#~ msgid "Warning: Configuration not consistent.  "
+#~ msgstr "Atenção: Configuração não compatível.  "
 
-#~ msgid "new game"
-#~ msgstr "novo jogo"
+#~ msgid "Cannot create world: Name contains invalid characters"
+#~ msgstr "Não foi possível criar mundo: Nome com caracteres inválidos"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "EDITAR JOGO"
+#~ msgid "Show Public"
+#~ msgstr "Mostrar Públicos"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Remover extra selecionado"
+#~ msgid "Show Favorites"
+#~ msgstr "Mostrar Favoritos"
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adicionar extra"
+#~ msgid "Leave address blank to start a local server."
+#~ msgstr "Deixe endereço em branco para iniciar servidor local."
 
-#~ msgid "CLIENT"
-#~ msgstr "CLIENTE"
+#~ msgid "Create world"
+#~ msgstr "Criar mundo"
 
-#~ msgid "START SERVER"
-#~ msgstr "INICIAR SERVIDOR"
+#~ msgid "Address required."
+#~ msgstr "Endereço necessário."
 
-#~ msgid "Name"
-#~ msgstr "Nome"
+#~ msgid "Cannot delete world: Nothing selected"
+#~ msgstr "Não foi possível eliminar mundo: Nada seleccionado"
 
-#~ msgid "Password"
-#~ msgstr "Senha"
+#~ msgid "Files to be deleted"
+#~ msgstr "Ficheiros para eliminar"
 
-#~ msgid "SETTINGS"
-#~ msgstr "DEFINIÇÕES"
+#~ msgid "Cannot create world: No games found"
+#~ msgstr "Não foi possível criar mundo: Não foram detectados jogos"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Pré-carregamento dos itens"
+#~ msgid "Cannot configure world: Nothing selected"
+#~ msgstr "Não foi possível configurar mundo: Nada seleccionado"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "Líquido Finito"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "Um Jogador"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACOTES DE TEXTURAS"
-
-#~ msgid "MODS"
-#~ msgstr "EXTRAS"
-
-#, fuzzy
-#~ msgid "Add mod:"
-#~ msgstr "<<-- Adicionar extra"
-
-#~ msgid ""
-#~ "Warning: Some mods are not configured yet.\n"
-#~ "They will be enabled by default when you save the configuration.  "
-#~ msgstr ""
-#~ "Atenção: Alguns mods ainda não estão configurados.\n"
-#~ "Eles vão ser ativados por predefinição quando guardar a configuração.  "
-
-#~ msgid ""
-#~ "Warning: Some configured mods are missing.\n"
-#~ "Their setting will be removed when you save the configuration.  "
-#~ msgstr ""
-#~ "Atenção: Alguns mods configurados estão em falta.\n"
-#~ "As suas definições vão ser removidas quando gravar a configuração.  "
+#~ msgid "Failed to delete all world files"
+#~ msgstr "Falhou a remoção de todos os ficheiros dos mundos"
 
 #~ msgid ""
 #~ "Default Controls:\n"
@@ -5263,55 +5085,312 @@ msgstr ""
 #~ "- ESC: Este menu\n"
 #~ "- T: Chat\n"
 
-#~ msgid "Failed to delete all world files"
-#~ msgstr "Falhou a remoção de todos os ficheiros dos mundos"
+#~ msgid ""
+#~ "Warning: Some configured mods are missing.\n"
+#~ "Their setting will be removed when you save the configuration.  "
+#~ msgstr ""
+#~ "Atenção: Alguns mods configurados estão em falta.\n"
+#~ "As suas definições vão ser removidas quando gravar a configuração.  "
 
-#~ msgid "Cannot configure world: Nothing selected"
-#~ msgstr "Não foi possível configurar mundo: Nada seleccionado"
-
-#~ msgid "Cannot create world: No games found"
-#~ msgstr "Não foi possível criar mundo: Não foram detectados jogos"
-
-#~ msgid "Files to be deleted"
-#~ msgstr "Ficheiros para eliminar"
-
-#~ msgid "Cannot delete world: Nothing selected"
-#~ msgstr "Não foi possível eliminar mundo: Nada seleccionado"
-
-#~ msgid "Address required."
-#~ msgstr "Endereço necessário."
-
-#~ msgid "Create world"
-#~ msgstr "Criar mundo"
-
-#~ msgid "Leave address blank to start a local server."
-#~ msgstr "Deixe endereço em branco para iniciar servidor local."
-
-#~ msgid "Show Favorites"
-#~ msgstr "Mostrar Favoritos"
-
-#~ msgid "Show Public"
-#~ msgstr "Mostrar Públicos"
-
-#~ msgid "Cannot create world: Name contains invalid characters"
-#~ msgstr "Não foi possível criar mundo: Nome com caracteres inválidos"
-
-#~ msgid "Warning: Configuration not consistent.  "
-#~ msgstr "Atenção: Configuração não compatível.  "
-
-#~ msgid "Configuration saved.  "
-#~ msgstr "Configuração gravada.  "
-
-#~ msgid "is required by:"
-#~ msgstr "é necessário pelo:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr "Botão esq: Mover todos os itens  Botão dir: Mover um item"
+#~ msgid ""
+#~ "Warning: Some mods are not configured yet.\n"
+#~ "They will be enabled by default when you save the configuration.  "
+#~ msgstr ""
+#~ "Atenção: Alguns mods ainda não estão configurados.\n"
+#~ "Eles vão ser ativados por predefinição quando guardar a configuração.  "
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarregar"
+#~ msgid "Add mod:"
+#~ msgstr "<<-- Adicionar extra"
+
+#~ msgid "MODS"
+#~ msgstr "EXTRAS"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACOTES DE TEXTURAS"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "Um Jogador"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Líquido Finito"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Pré-carregamento dos itens"
+
+#~ msgid "SETTINGS"
+#~ msgstr "DEFINIÇÕES"
+
+#~ msgid "Password"
+#~ msgstr "Senha"
+
+#~ msgid "Name"
+#~ msgstr "Nome"
+
+#~ msgid "START SERVER"
+#~ msgstr "INICIAR SERVIDOR"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENTE"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adicionar extra"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Remover extra selecionado"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "EDITAR JOGO"
+
+#~ msgid "new game"
+#~ msgstr "novo jogo"
+
+#~ msgid "Mods:"
+#~ msgstr "Extras:"
+
+#~ msgid "GAMES"
+#~ msgstr "JOGOS"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr ""
+#~ "Mensagem de Jogo: Impossível fazer cópia do extra \"$1\" para o jogo "
+#~ "\"$2\""
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "A carregar..."
+#~ msgid "If enabled, "
+#~ msgstr "ativo"
+
+#, fuzzy
+#~ msgid "If disabled "
+#~ msgstr "Desativar Tudo"
+
+#~ msgid "No!!!"
+#~ msgstr "Não!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Gerar Normalmaps"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Lista de Servidores Públicos"
+
+#~ msgid "No of course not!"
+#~ msgstr "Não, é claro que não!"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Útil para desenvolvedores de extras."
+
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Dados de perfil detalhados do extra"
+
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr ""
+#~ "Dados de perfil detalhados do extra. Útil para desenvolvedores de extras."
+
+#~ msgid ""
+#~ "Where the map generator stops.\n"
+#~ "Please note:\n"
+#~ "-    Limited to 31000 (setting above has no effect)\n"
+#~ "-    The map generator works in groups of 80x80x80 nodes (5x5x5 "
+#~ "MapBlocks).\n"
+#~ "-    Those groups have an offset of -32, -32 nodes from the origin.\n"
+#~ "-    Only groups which are within the map_generation_limit are generated"
+#~ msgstr ""
+#~ "Limite da geração do mapa.\n"
+#~ "Note:\n"
+#~ "-    Limitado a 31000 (valor superior não tem efeito)\n"
+#~ "-    O gerador funciona em grupos de 80x80x80 cubos (5x5x5 MapBlocks).\n"
+#~ "-    Esses grupos têm um deslocamento de -32, -32 cubos em relação à "
+#~ "origem.\n"
+#~ "-    Apenas grupos dentro do limite definido por map_generation_limit são "
+#~ "gerados"
+
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Tamanho da caverna no mapgen v7"
+
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "Tamanho da Caverna no Mapgen v5"
+
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "W do corte do gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal seabed noise parameters"
+#~ msgstr "Parâmetros de ruído do fundo do mar no gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Escala do gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Deslocamento do gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal julia z"
+#~ msgstr "Z do gerador de mapa fractal Julia"
+
+#~ msgid "Mapgen fractal julia y"
+#~ msgstr "Y do gerador de mapa fractal Julia"
+
+#~ msgid "Mapgen fractal julia x"
+#~ msgstr "X do gerador de mapa fractal Julia"
+
+#~ msgid "Mapgen fractal julia w"
+#~ msgstr "W do gerador de mapa fractal Julia"
+
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Iterações no gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Fractal do gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal filler depth noise parameters"
+#~ msgstr ""
+#~ "Parâmetros de ruído da profundidade de enchimento no gerador de mapa "
+#~ "fractal"
+
+#~ msgid "Mapgen fractal cave2 noise parameters"
+#~ msgstr "Parâmetros de ruído caverna2 no gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal cave1 noise parameters"
+#~ msgstr "Parâmetros de ruído caverna1 no gerador de mapa fractal"
+
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Tamanho da caverna mapgen"
+
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Tamanho de cavernas lisas no Mapgen"
+
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "Determina a forma do terreno\n"
+#~ "Os 3 números entre '[' e ']' controlam a escala do\n"
+#~ "terreno, os 3 números devem ser idênticos."
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Controla o tamanho dos desertos e das praias no gerador de mapa v6.\n"
+#~ "Quando o bioma de neve está ativado 'mgv6_freq_desert' é ignorado."
+
+#~ msgid "Plus"
+#~ msgstr "Mais"
+
+#~ msgid "Period"
+#~ msgstr "Ponto"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Menos"
+
+#~ msgid "Kanji"
+#~ msgstr "Tecla Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Tecla Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Tecla Junja"
+
+#~ msgid "Final"
+#~ msgstr "Tecla Final"
+
+#~ msgid "ExSel"
+#~ msgstr "Tecla ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "Tecla CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Virgula"
+
+#~ msgid "Capital"
+#~ msgstr "Caps Lock"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ocultar conteúdo do pacote"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "Cair balançando"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "Desabilitar as sequências de escape, por exemplo, colorimento de bate-"
+#~ "papo.\n"
+#~ "Use isto se você quiser executar um servidor com clientes pre-0.4.14 e "
+#~ "para desabilitar as sequências de escape geradas por modificadores."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "Desabilitar as sequências de escape"
+
+#~ msgid "Descending speed"
+#~ msgstr "Velocidade de descida"
+
+#~ msgid "Autorun key"
+#~ msgstr "Tecla de autoexecução"
+
+#~ msgid "Use"
+#~ msgstr "Usar"
+
+#~ msgid "Shutting down..."
+#~ msgstr "A desligar..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "A resolver endereço..."
+
+#~ msgid "Creating server..."
+#~ msgstr "A criar servidor..."
+
+#~ msgid "Creating client..."
+#~ msgstr "A criar cliente..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "A conectar ao servidor..."
+
+#~ msgid "re-Install"
+#~ msgstr "reinstalar"
+
+#~ msgid "Unsorted"
+#~ msgstr "Não ordenado"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "Instalado com sucesso:"
+
+#~ msgid "Shortname:"
+#~ msgstr "Nome curto:"
+
+#~ msgid "Rating"
+#~ msgstr "Classificação"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Página $1 de $2"
+
+#~ msgid "Install"
+#~ msgstr "Instalar"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "A descarregar $1, por favor aguarde..."
+
+#~ msgid "Close store"
+#~ msgstr "Fechar repositório"
+
+#~ msgid "Select path"
+#~ msgstr "Seleccionar diretório"
+
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr ""
+#~ "Opcionalmente a lacunaridade pode ser adicionada com uma vírgula na "
+#~ "frente."
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Mundo sem nome ou nenhum jogo selecionado"

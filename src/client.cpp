@@ -24,8 +24,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IFileSystem.h>
 #include "client.h"
 #include "network/clientopcodes.h"
+#include "network/connection.h"
 #include "network/networkpacket.h"
 #include "threading/mutex_auto_lock.h"
+#include "client/clientevent.h"
 #include "client/renderingengine.h"
 #include "util/auth.h"
 #include "util/directiontables.h"
@@ -50,6 +52,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "script/scripting_client.h"
 #include "game.h"
 #include "chatmessage.h"
+#include "translation.h"
 
 extern gui::IGUIEnvironment* guienv;
 
@@ -83,7 +86,7 @@ Client::Client(
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
-	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this),
+	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
@@ -219,7 +222,7 @@ bool Client::isShutdown()
 Client::~Client()
 {
 	m_shutdown = true;
-	m_con.Disconnect();
+	m_con->Disconnect();
 
 	m_mesh_update_thread.stop();
 	m_mesh_update_thread.wait();
@@ -249,18 +252,14 @@ Client::~Client()
 
 void Client::connect(Address address, bool is_local_server)
 {
-	DSTACK(FUNCTION_NAME);
-
 	initLocalMapSaving(address, m_address_name, is_local_server);
 
-	m_con.SetTimeoutMs(0);
-	m_con.Connect(address);
+	m_con->SetTimeoutMs(0);
+	m_con->Connect(address);
 }
 
 void Client::step(float dtime)
 {
-	DSTACK(FUNCTION_NAME);
-
 	// Limit a bit
 	if(dtime > 2.0)
 		dtime = 2.0;
@@ -423,9 +422,9 @@ void Client::step(float dtime)
 					sendDamage(damage);
 
 				// Add to ClientEvent queue
-				ClientEvent event;
-				event.type = CE_PLAYER_DAMAGE;
-				event.player_damage.amount = damage;
+				ClientEvent *event = new ClientEvent();
+				event->type = CE_PLAYER_DAMAGE;
+				event->player_damage.amount = damage;
 				m_client_event_queue.push(event);
 			}
 		}
@@ -683,8 +682,19 @@ bool Client::loadMedia(const std::string &data, const std::string &filename)
 		return true;
 	}
 
-	errorstream<<"Client: Don't know how to load file \""
-			<<filename<<"\""<<std::endl;
+	const char *translate_ext[] = {
+		".tr", NULL
+	};
+	name = removeStringEnd(filename, translate_ext);
+	if (!name.empty()) {
+		verbosestream << "Client: Loading translation: "
+				<< "\"" << filename << "\"" << std::endl;
+		g_translations->loadTranslation(data);
+		return true;
+	}
+
+	errorstream << "Client: Don't know how to load file \""
+		<< filename << "\"" << std::endl;
 	return false;
 }
 
@@ -759,7 +769,6 @@ void Client::initLocalMapSaving(const Address &address,
 
 void Client::ReceiveAll()
 {
-	DSTACK(FUNCTION_NAME);
 	u64 start_ms = porting::getTimeMs();
 	for(;;)
 	{
@@ -785,9 +794,8 @@ void Client::ReceiveAll()
 
 void Client::Receive()
 {
-	DSTACK(FUNCTION_NAME);
 	NetworkPacket pkt;
-	m_con.Receive(&pkt);
+	m_con->Receive(&pkt);
 	ProcessData(&pkt);
 }
 
@@ -802,8 +810,6 @@ inline void Client::handleCommand(NetworkPacket* pkt)
 */
 void Client::ProcessData(NetworkPacket *pkt)
 {
-	DSTACK(FUNCTION_NAME);
-
 	ToClientCommand command = (ToClientCommand) pkt->getCommand();
 	u32 sender_peer_id = pkt->getPeerId();
 
@@ -854,7 +860,7 @@ void Client::ProcessData(NetworkPacket *pkt)
 
 void Client::Send(NetworkPacket* pkt)
 {
-	m_con.Send(PEER_ID_SERVER,
+	m_con->Send(PEER_ID_SERVER,
 		serverCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		serverCommandFactoryTable[pkt->getCommand()].reliable);
@@ -1221,8 +1227,6 @@ void Client::sendChangePassword(const std::string &oldpassword,
 
 void Client::sendDamage(u8 damage)
 {
-	DSTACK(FUNCTION_NAME);
-
 	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u8));
 	pkt << damage;
 	Send(&pkt);
@@ -1230,8 +1234,6 @@ void Client::sendDamage(u8 damage)
 
 void Client::sendBreath(u16 breath)
 {
-	DSTACK(FUNCTION_NAME);
-
 	// Protocol v29 make this obsolete
 	if (m_proto_ver >= 29)
 		return;
@@ -1243,16 +1245,12 @@ void Client::sendBreath(u16 breath)
 
 void Client::sendRespawn()
 {
-	DSTACK(FUNCTION_NAME);
-
 	NetworkPacket pkt(TOSERVER_RESPAWN, 0);
 	Send(&pkt);
 }
 
 void Client::sendReady()
 {
-	DSTACK(FUNCTION_NAME);
-
 	NetworkPacket pkt(TOSERVER_CLIENT_READY,
 			1 + 1 + 1 + 1 + 2 + sizeof(char) * strlen(g_version_hash));
 
@@ -1297,7 +1295,7 @@ void Client::sendPlayerPos()
 	u16 our_peer_id;
 	{
 		//MutexAutoLock lock(m_con_mutex); //bulk comment-out
-		our_peer_id = m_con.GetPeerID();
+		our_peer_id = m_con->GetPeerID();
 	}
 
 	// Set peer id if not set already
@@ -1319,7 +1317,7 @@ void Client::sendPlayerItem(u16 item)
 	if(myplayer == NULL)
 		return;
 
-	u16 our_peer_id = m_con.GetPeerID();
+	u16 our_peer_id = m_con->GetPeerID();
 
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
@@ -1648,14 +1646,24 @@ void Client::addUpdateMeshTaskForNode(v3s16 nodepos, bool ack_to_server, bool ur
 	}
 }
 
-ClientEvent Client::getClientEvent()
+ClientEvent *Client::getClientEvent()
 {
 	FATAL_ERROR_IF(m_client_event_queue.empty(),
 			"Cannot getClientEvent, queue is empty.");
 
-	ClientEvent event = m_client_event_queue.front();
+	ClientEvent *event = m_client_event_queue.front();
 	m_client_event_queue.pop();
 	return event;
+}
+
+bool Client::connectedToServer()
+{
+	return m_con->Connected();
+}
+
+const Address Client::getServerAddress()
+{
+	return m_con->GetPeerAddress(PEER_ID_SERVER);
 }
 
 float Client::mediaReceiveProgress()
@@ -1768,13 +1776,13 @@ void Client::afterContentReceived()
 
 float Client::getRTT()
 {
-	return m_con.getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
+	return m_con->getPeerStat(PEER_ID_SERVER,con::AVG_RTT);
 }
 
 float Client::getCurRate()
 {
-	return (m_con.getLocalStat(con::CUR_INC_RATE) +
-			m_con.getLocalStat(con::CUR_DL_RATE));
+	return (m_con->getLocalStat(con::CUR_INC_RATE) +
+			m_con->getLocalStat(con::CUR_DL_RATE));
 }
 
 void Client::makeScreenshot()
@@ -1840,6 +1848,11 @@ void Client::makeScreenshot()
 bool Client::shouldShowMinimap() const
 {
 	return !m_minimap_disabled_by_server;
+}
+
+void Client::pushToEventQueue(ClientEvent *event)
+{
+	m_client_event_queue.push(event);
 }
 
 void Client::showGameChat(const bool show)

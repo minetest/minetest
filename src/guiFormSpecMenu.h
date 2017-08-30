@@ -66,7 +66,7 @@ class IFormSource
 {
 public:
 	virtual ~IFormSource() = default;
-	virtual std::string getForm() = 0;
+	virtual const std::string &getForm() const = 0;
 	// Fill in variables in field text
 	virtual std::string resolveText(const std::string &str) { return str; }
 };
@@ -203,7 +203,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 				const std::wstring &default_text, int id) :
 			fname(name),
 			flabel(label),
-			fdefault(unescape_enriched(default_text)),
+			fdefault(unescape_enriched(translate_string(default_text))),
 			fid(id),
 			send(false),
 			ftype(f_Unknown),
@@ -237,10 +237,9 @@ class GUIFormSpecMenu : public GUIModalMenu
 	struct TooltipSpec
 	{
 		TooltipSpec() = default;
-
-		TooltipSpec(const std::string &a_tooltip, irr::video::SColor a_bgcolor,
+		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
-			tooltip(utf8_to_wide(a_tooltip)),
+			tooltip(translate_string(a_tooltip)),
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
@@ -420,6 +419,7 @@ protected:
 	bool m_bgfullscreen;
 	bool m_slotborder;
 	video::SColor m_bgcolor;
+	video::SColor m_fullscreen_bgcolor;
 	video::SColor m_slotbg_n;
 	video::SColor m_slotbg_h;
 	video::SColor m_slotbordercolor;
@@ -555,7 +555,10 @@ public:
 		m_formspec = FORMSPEC_VERSION_STRING + formspec;
 	}
 
-	std::string getForm() { return m_formspec; }
+	const std::string &getForm() const
+	{
+		return m_formspec;
+	}
 
 	std::string m_formspec;
 };

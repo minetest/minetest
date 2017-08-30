@@ -317,7 +317,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				std::wstring text = unescape_enriched(utf8_to_wide(e->text));
+				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -354,11 +354,11 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
-				std::wstring text = unescape_enriched(utf8_to_wide(e->name));
+				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				font->draw(text.c_str(), size + pos, color);
 				std::ostringstream os;
 				os << distance << e->text;
-				text = unescape_enriched(utf8_to_wide(os.str()));
+				text = unescape_translate(utf8_to_wide(os.str()));
 				pos.Y += text_height;
 				font->draw(text.c_str(), size + pos, color);
 				break; }
@@ -399,24 +399,32 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	p += offset;
 
 	v2s32 steppos;
+	core::rect<s32> srchalfrect, dsthalfrect;
 	switch (drawdir) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-1, 0);
+			srchalfrect = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(0, 1);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
 			steppos = v2s32(0, -1);
+			srchalfrect = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
 			break;
 		default:
 			steppos = v2s32(1, 0);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
 	}
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
-	for (s32 i = 0; i < count / 2; i++)
-	{
+	for (s32 i = 0; i < count / 2; i++) {
 		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
 		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
 
@@ -425,13 +433,9 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		p += steppos;
 	}
 
-	if (count % 2 == 1)
-	{
-		core::rect<s32> srcrect(0, 0, srcd.Width / 2, srcd.Height);
-		core::rect<s32> dstrect(0,0, dstd.Width / 2, dstd.Height);
-
-		dstrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
+	if (count % 2 == 1) {
+		dsthalfrect += p;
+		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, NULL, colors, true);
 	}
 }
 

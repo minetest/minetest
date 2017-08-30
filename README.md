@@ -32,46 +32,47 @@ This game is not finished
 
 Default controls
 ----------------
-
 All controls are re-bindable using settings.
 Some can be changes in the key config dialog in the settings tab.
 
-- Move mouse: Look around
-- W, A, S, D: Move
-- Space: Jump/move up
-- Shift: Sneak/move down
-- Q: Drop itemstack
-- Shift + Q: Drop single item
-- Left mouse button: Dig/punch/take item
-- Right mouse button: Place/use
-- Shift + right mouse button: Build (without using)
-- I: Inventory menu
-- Mouse wheel: Select item
-- 0-9: Select item
-- Z: Zoom (needs zoom privilege)
-- T: Chat
-- /: Command
-- Esc: Pause menu/abort/exit (pauses only singleplayer game)
-- R: Enable/disable full range view
-- +: Increase view range
-- -: Decrease view range
-- K: Enable/disable fly mode (needs fly privilege)
-- J: Enable/disable fast mode (needs fast privilege)
-- H: Enable/disable noclip mode (needs noclip privilege)
-- E: Move fast in fast mode
-- F1:  Hide/show HUD
-- F2:  Hide/show chat
-- F3:  Disable/enable fog
-- F4:  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)
-- F5:  Cycle through debug info screens
-- F6:  Cycle through profiler info screens
-- F7:  Cycle through camera modes
-- F8:  Toggle cinematic mode
-- F9:  Cycle through minimap modes
-- Shift + F9: Change minimap orientation
-- F10: Show/hide console
-- F12: Take screenshot
-- P: Write stack traces into debug.txt
+| Button                        | Action                                                         |
+|-------------------------------|----------------------------------------------------------------|
+| Move mouse                    | Look around                                                    |
+| W, A, S, D                    | Move                                                           |
+| Space                         | Jump/move up                                                   |
+| Shift                         | Sneak/move down                                                |
+| Q                             | Drop itemstack                                                 |
+| Shift + Q                     | Drop single item                                               |
+| Left mouse button             | Dig/punch/take item                                            |
+| Right mouse button            | Place/use                                                      |
+| Shift + right mouse button    | Build (without using)                                          |
+| I                             | Inventory menu                                                 |
+| Mouse wheel                   | Select item                                                    |
+| 0-9                           | Select item                                                    |
+| Z                             | Zoom (needs zoom privilege)                                    |
+| T                             | Chat                                                           |
+| /                             | Command                                                        |
+| Esc                           | Pause menu/abort/exit (pauses only singleplayer game)          |
+| R                             | Enable/disable full range view                                 |
+| +                             | Increase view range                                            |
+| -                             | Decrease view range                                            |
+| K                             | Enable/disable fly mode (needs fly privilege)                  |
+| J                             | Enable/disable fast mode (needs fast privilege)                |
+| H                             | Enable/disable noclip mode (needs noclip privilege)            |
+| E                             | Move fast in fast mode                                         |
+| F1                            |  Hide/show HUD                                                 |
+| F2                            |  Hide/show chat                                                |
+| F3                            |  Disable/enable fog                                            |
+| F4                            |  Disable/enable camera update (Mapblocks are not updated anymore when disabled, disabled in release builds)  |
+| F5                            |  Cycle through debug info screens                              |
+| F6                            |  Cycle through profiler info screens                           |
+| F7                            |  Cycle through camera modes                                    |
+| F8                            |  Toggle cinematic mode                                         |
+| F9                            |  Cycle through minimap modes                                   |
+| Shift + F9                    | Change minimap orientation                                     |
+| F10                           | Show/hide console                                              |
+| F12                           | Take screenshot                                                |
+| P                             | Write stack traces into debug.txt                              |
 
 Paths
 -----
