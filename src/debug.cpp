@@ -56,8 +56,6 @@ void sanity_check_fn(const char *assertion, const char *file,
 	errorstream << file << ":" << line << ": " << function
 		<< ": An engine assumption '" << assertion << "' failed." << std::endl;
 
-	debug_stacks_print_to(errorstream);
-
 	abort();
 }
 
@@ -73,138 +71,7 @@ void fatal_error_fn(const char *msg, const char *file,
 	errorstream << file << ":" << line << ": " << function
 		<< ": A fatal error occured: " << msg << std::endl;
 
-	debug_stacks_print_to(errorstream);
-
 	abort();
-}
-
-/*
-	DebugStack
-*/
-
-struct DebugStack
-{
-	DebugStack(std::thread::id id);
-	void print(FILE *file, bool everything);
-	void print(std::ostream &os, bool everything);
-
-	std::thread::id thread_id;
-	char stack[DEBUG_STACK_SIZE][DEBUG_STACK_TEXT_SIZE];
-	int stack_i; // Points to the lowest empty position
-	int stack_max_i; // Highest i that was seen
-};
-
-DebugStack::DebugStack(std::thread::id id)
-{
-	thread_id = id;
-	stack_i = 0;
-	stack_max_i = 0;
-	memset(stack, 0, DEBUG_STACK_SIZE*DEBUG_STACK_TEXT_SIZE);
-}
-
-void DebugStack::print(FILE *file, bool everything)
-{
-	std::ostringstream os;
-	os << thread_id;
-	fprintf(file, "DEBUG STACK FOR THREAD %s:\n",
-		os.str().c_str());
-
-	for (int i = 0; i < stack_max_i; i++) {
-		if (i == stack_i && !everything)
-			break;
-
-		if (i < stack_i)
-			fprintf(file, "#%d  %s\n", i, stack[i]);
-		else
-			fprintf(file, "(Leftover data: #%d  %s)\n", i, stack[i]);
-	}
-
-	if (stack_i == DEBUG_STACK_SIZE)
-		fprintf(file, "Probably overflown.\n");
-}
-
-void DebugStack::print(std::ostream &os, bool everything)
-{
-	os<<"DEBUG STACK FOR THREAD "<<thread_id<<": "<<std::endl;
-
-	for(int i = 0; i < stack_max_i; i++) {
-		if(i == stack_i && !everything)
-			break;
-
-		if (i < stack_i)
-			os<<"#"<<i<<"  "<<stack[i]<<std::endl;
-		else
-			os<<"(Leftover data: #"<<i<<"  "<<stack[i]<<")"<<std::endl;
-	}
-
-	if (stack_i == DEBUG_STACK_SIZE)
-		os<<"Probably overflown."<<std::endl;
-}
-
-std::map<std::thread::id, DebugStack*> g_debug_stacks;
-std::mutex g_debug_stacks_mutex;
-
-void debug_stacks_print_to(std::ostream &os)
-{
-	MutexAutoLock lock(g_debug_stacks_mutex);
-
-	os<<"Debug stacks:"<<std::endl;
-
-	for (auto it : g_debug_stacks) {
-		it.second->print(os, false);
-	}
-}
-
-void debug_stacks_print()
-{
-	debug_stacks_print_to(errorstream);
-}
-
-DebugStacker::DebugStacker(const char *text)
-{
-	std::thread::id thread_id = std::this_thread::get_id();
-
-	MutexAutoLock lock(g_debug_stacks_mutex);
-
-	auto n = g_debug_stacks.find(thread_id);
-	if (n != g_debug_stacks.end()) {
-		m_stack = n->second;
-	} else {
-		/*DEBUGPRINT("Creating new debug stack for thread %x\n",
-				(unsigned int)thread_id);*/
-		m_stack = new DebugStack(thread_id);
-		g_debug_stacks[thread_id] = m_stack;
-	}
-
-	if (m_stack->stack_i >= DEBUG_STACK_SIZE) {
-		m_overflowed = true;
-	} else {
-		m_overflowed = false;
-
-		snprintf(m_stack->stack[m_stack->stack_i],
-				DEBUG_STACK_TEXT_SIZE, "%s", text);
-		m_stack->stack_i++;
-		if (m_stack->stack_i > m_stack->stack_max_i)
-			m_stack->stack_max_i = m_stack->stack_i;
-	}
-}
-
-DebugStacker::~DebugStacker()
-{
-	MutexAutoLock lock(g_debug_stacks_mutex);
-
-	if (m_overflowed)
-		return;
-
-	m_stack->stack_i--;
-
-	if (m_stack->stack_i == 0) {
-		std::thread::id thread_id = m_stack->thread_id;
-		/*DEBUGPRINT("Deleting debug stack for thread %x\n",
-				(unsigned int)thread_id);*/
-		delete m_stack;
-		g_debug_stacks.erase(thread_id);
-	}
 }
 
 #ifdef _MSC_VER

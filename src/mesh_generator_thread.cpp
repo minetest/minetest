@@ -74,8 +74,6 @@ MeshUpdateQueue::~MeshUpdateQueue()
 
 void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent)
 {
-	DSTACK(FUNCTION_NAME);
-
 	MutexAutoLock lock(m_mutex);
 
 	cleanupCache();

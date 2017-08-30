@@ -123,8 +123,6 @@ void TestConnection::testHelpers()
 
 void TestConnection::testConnectSendReceive()
 {
-	DSTACK("TestConnection::Run");
-
 	/*
 		Test some real connections
 

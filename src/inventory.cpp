@@ -57,9 +57,7 @@ ItemStack::ItemStack(const std::string &name_, u16 count_,
 
 void ItemStack::serialize(std::ostream &os) const
 {
-	DSTACK(FUNCTION_NAME);
-
-	if(empty())
+	if (empty())
 		return;
 
 	// Check how many parts of the itemstring are needed
@@ -84,8 +82,6 @@ void ItemStack::serialize(std::ostream &os) const
 
 void ItemStack::deSerialize(std::istream &is, IItemDefManager *itemdef)
 {
-	DSTACK(FUNCTION_NAME);
-
 	clear();
 
 	// Read name

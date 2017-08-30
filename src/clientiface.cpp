@@ -66,9 +66,6 @@ void RemoteClient::GetNextBlocks (
 		float dtime,
 		std::vector<PrioritySortedBlockTransfer> &dest)
 {
-	DSTACK(FUNCTION_NAME);
-
-
 	// Increment timers
 	m_nothing_to_send_pause_timer -= dtime;
 	m_nearest_unsent_reset_timer += dtime;
