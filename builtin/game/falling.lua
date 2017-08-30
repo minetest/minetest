@@ -308,19 +308,3 @@ local function on_punchnode(p, node)
 	core.check_for_falling(p)
 end
 core.register_on_punchnode(on_punchnode)
-
---
--- Globally exported functions
---
-
--- TODO remove this function after the 0.4.15 release
-function nodeupdate(p)
-	core.log("deprecated", "nodeupdate: deprecated, please use core.check_for_falling instead")
-	core.check_for_falling(p)
-end
-
--- TODO remove this function after the 0.4.15 release
-function nodeupdate_single(p)
-	core.log("deprecated", "nodeupdate_single: deprecated, please use core.check_single_for_falling instead")
-	core.check_single_for_falling(p)
-end
