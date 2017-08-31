@@ -3604,7 +3604,30 @@ bool Server::sendModChannelMessage(const std::string &channel, const std::string
 	if (!m_modchannel_mgr->channel_registered(channel))
 		return false;
 
-	// @TODO send message
-
+	broadcastModChannelMessage(channel, message, PEER_ID_SERVER);
 	return true;
+}
+
+void Server::broadcastModChannelMessage(const std::string &channel,
+		const std::string &message, u16 from_peer)
+{
+	const auto &peers = m_modchannel_mgr->get_channel_peers(channel);
+	if (peers.empty()) {
+		return;
+	}
+
+	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
+			2 + channel.size() + 2 + message.size());
+	resp_pkt << channel << message;
+	for (u16 peer_id : peers) {
+		// Ignore sender
+		if (peer_id == from_peer)
+			continue;
+
+		Send(peer_id, &resp_pkt);
+	}
+
+	if (from_peer != PEER_ID_SERVER) {
+		// @TODO, send event to local callbacks
+	}
 }

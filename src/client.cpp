@@ -1934,7 +1934,6 @@ bool Client::joinModChannel(const std::string &channel)
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
 	pkt << channel;
 	Send(&pkt);
-
 	return true;
 }
 
@@ -1946,7 +1945,6 @@ bool Client::leaveModChannel(const std::string &channel)
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
 	pkt << channel;
 	Send(&pkt);
-
 	return true;
 }
 

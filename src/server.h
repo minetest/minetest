@@ -393,6 +393,8 @@ private:
 			float thickness,
 			const v2f &speed);
 	void SendOverrideDayNightRatio(u16 peer_id, bool do_override, float ratio);
+	void broadcastModChannelMessage(const std::string &channel,
+			const std::string &message, u16 from_peer);
 
 	/*
 		Send a node removal/addition event to all clients except ignore_id.

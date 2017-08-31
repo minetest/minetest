@@ -1787,23 +1787,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		return;
 	}
 
-	const auto &peers = m_modchannel_mgr->get_channel_peers(channel_name);
-	if (peers.empty()) {
-		return;
-	}
-
 	// @TODO: filter, rate limit, properly check channel existence
-	// @TODO: transmit messages to SSM mods
-	// @TODO: move this function to dedicated function, it will be used by Lua API
-
-	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
-			2 + channel_name.size() + 2 + channel_msg.size());
-	resp_pkt << channel_name << channel_msg;
-	for (u16 peer_id : peers) {
-		// Ignore sender
-		if (peer_id == pkt->getPeerId())
-			continue;
-
-		Send(peer_id, &resp_pkt);
-	}
+	
+	broadcastModChannelMessage(channel_name, channel_msg, pkt->getPeerId());
 }
