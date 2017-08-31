@@ -169,8 +169,8 @@ public:
 
 	void ProcessData(NetworkPacket *pkt);
 
-	void Send(NetworkPacket* pkt);
-	void Send(u16 peer_id, NetworkPacket* pkt);
+	void Send(NetworkPacket *pkt);
+	void Send(u16 peer_id, NetworkPacket *pkt);
 
 	// Helper for handleCommand_PlayerPos and handleCommand_Interact
 	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -339,6 +339,10 @@ public:
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
+
+	bool joinModChannel(const std::string &channel);
+	bool leaveModChannel(const std::string &channel);
+	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 
 	// Bind address
 	Address m_bind_addr;

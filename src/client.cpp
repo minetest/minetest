@@ -1921,3 +1921,43 @@ std::string Client::getModStoragePath() const
 {
 	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
 }
+
+/*
+ * Mod channels
+ */
+
+bool Client::joinModChannel(const std::string &channel)
+{
+	if (m_modchannel_mgr->channel_registered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	return true;
+}
+
+bool Client::leaveModChannel(const std::string &channel)
+{
+	if (!m_modchannel_mgr->channel_registered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	return true;
+}
+
+bool Client::sendModChannelMessage(const std::string &channel, const std::string &message)
+{
+	if (!m_modchannel_mgr->channel_registered(channel))
+		return false;
+
+	// @TODO: do some client rate limiting
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_MSG, 2 + channel.size() + 2 + message.size());
+	pkt << channel << message;
+	Send(&pkt);
+	return true;
+}

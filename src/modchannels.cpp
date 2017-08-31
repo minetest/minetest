@@ -23,8 +23,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 bool ModChannel::register_consumer(u16 peer_id)
 {
 	// ignore if peer_id already joined
-	if (std::find(m_client_consumers.begin(), m_client_consumers.end(), peer_id)
-			!= m_client_consumers.end())
+	if (std::find(m_client_consumers.begin(), m_client_consumers.end(), peer_id) !=
+			m_client_consumers.end())
 		return false;
 
 	m_client_consumers.push_back(peer_id);
@@ -34,15 +34,17 @@ bool ModChannel::register_consumer(u16 peer_id)
 bool ModChannel::remove_consumer(u16 peer_id)
 {
 	bool found = false;
-	m_client_consumers.erase(std::remove_if(m_client_consumers.begin(),
-		m_client_consumers.end(),
-		[peer_id, &found](u16 p) {
-			if (p == peer_id)
-				found = true;
+	auto peer_removal_fct = [peer_id, &found](u16 p) {
+		if (p == peer_id)
+			found = true;
 
-			return p == peer_id;
-		}),
-		m_client_consumers.end());
+		return p == peer_id;
+	};
+
+	m_client_consumers.erase(
+			std::remove_if(m_client_consumers.begin(),
+					m_client_consumers.end(), peer_removal_fct),
+			m_client_consumers.end());
 
 	return found;
 }
@@ -90,7 +92,7 @@ void ModChannelMgr::leave_all_channels(u16 peer_id)
 }
 
 static std::vector<u16> empty_channel_list;
-const std::vector<u16>& ModChannelMgr::get_channel_peers(const std::string &channel) const
+const std::vector<u16> &ModChannelMgr::get_channel_peers(const std::string &channel) const
 {
 	const auto &channel_it = m_registered_channels.find(channel);
 	if (channel_it == m_registered_channels.end())

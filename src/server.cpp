@@ -1376,12 +1376,12 @@ void Server::printToConsoleOnly(const std::string &text)
 	}
 }
 
-void Server::Send(NetworkPacket* pkt)
+void Server::Send(NetworkPacket *pkt)
 {
 	Send(pkt->getPeerId(), pkt);
 }
 
-void Server::Send(u16 peer_id, NetworkPacket* pkt)
+void Server::Send(u16 peer_id, NetworkPacket *pkt)
 {
 	m_clients.send(peer_id,
 		clientCommandFactoryTable[pkt->getCommand()].channel,
@@ -3582,4 +3582,29 @@ void dedicated_server_loop(Server &server, bool &kill)
 		ServerList::sendAnnounce(ServerList::AA_DELETE,
 			server.m_bind_addr.getPort());
 #endif
+}
+
+/*
+ * Mod channels
+ */
+
+
+bool Server::joinModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->leave_channel(channel, PEER_ID_SERVER);
+}
+
+bool Server::leaveModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->join_channel(channel, PEER_ID_SERVER);
+}
+
+bool Server::sendModChannelMessage(const std::string &channel, const std::string &message)
+{
+	if (!m_modchannel_mgr->channel_registered(channel))
+		return false;
+
+	// @TODO send message
+
+	return true;
 }

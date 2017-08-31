@@ -660,6 +660,26 @@ enum ToServerCommand
 		[0] u16 TOSERVER_INIT2
 	*/
 
+	TOSERVER_MODCHANNEL_JOIN = 0x17,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 */
+
+	TOSERVER_MODCHANNEL_LEAVE = 0x18,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 */
+
+	TOSERVER_MODCHANNEL_MSG = 0x19,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 	u16 message length
+	 	std::string message
+	 */
+
 	TOSERVER_GETBLOCK = 0x20, // Obsolete
 	TOSERVER_ADDNODE = 0x21, // Obsolete
 	TOSERVER_REMOVENODE = 0x22, // Obsolete

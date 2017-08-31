@@ -427,6 +427,10 @@ public:
 		return m_csm_noderange_limit;
 	}
 
+	bool joinModChannel(const std::string &channel);
+	bool leaveModChannel(const std::string &channel);
+	bool sendModChannelMessage(const std::string &channel, const std::string &message);
+
 private:
 
 	// Virtual methods from con::PeerHandler

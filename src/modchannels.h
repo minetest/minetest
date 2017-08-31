@@ -33,10 +33,8 @@ public:
 
 	bool register_consumer(u16 peer_id);
 	bool remove_consumer(u16 peer_id);
-	const std::vector<u16> &get_channel_peers() const
-	{
-		return m_client_consumers;
-	}
+	const std::vector<u16> &get_channel_peers() const { return m_client_consumers; }
+
 private:
 	std::vector<u16> m_client_consumers;
 };
@@ -63,6 +61,8 @@ public:
 	bool channel_registered(const std::string &channel) const;
 	void leave_all_channels(u16 peer_id);
 	const std::vector<u16> &get_channel_peers(const std::string &channel) const;
+
 private:
-	std::unordered_map<std::string, std::unique_ptr<ModChannel>> m_registered_channels;
+	std::unordered_map<std::string, std::unique_ptr<ModChannel>>
+			m_registered_channels;
 };
