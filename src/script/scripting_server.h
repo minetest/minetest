@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_entity.h"
 #include "cpp_api/s_env.h"
 #include "cpp_api/s_inventory.h"
+#include "cpp_api/s_modchannels.h"
 #include "cpp_api/s_node.h"
 #include "cpp_api/s_player.h"
 #include "cpp_api/s_server.h"
@@ -36,6 +37,7 @@ class ServerScripting:
 		public ScriptApiDetached,
 		public ScriptApiEntity,
 		public ScriptApiEnv,
+		public ScriptApiModChannels,
 		public ScriptApiNode,
 		public ScriptApiPlayer,
 		public ScriptApiServer,

@@ -25,7 +25,11 @@ int ModApiChannels::l_mod_channel_join(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	getGameDef(L)->joinModChannel(luaL_checkstring(L, 1));
+	std::string channel = luaL_checkstring(L, 1);
+	if (channel.empty())
+		return 0;
+
+	getGameDef(L)->joinModChannel(channel);
 	return 0;
 }
 
@@ -34,7 +38,11 @@ int ModApiChannels::l_mod_channel_leave(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	getGameDef(L)->leaveModChannel(luaL_checkstring(L, 1));
+	std::string channel = luaL_checkstring(L, 1);
+	if (channel.empty())
+		return 0;
+
+	getGameDef(L)->leaveModChannel(channel);
 	return 0;
 }
 
@@ -43,9 +51,14 @@ int ModApiChannels::l_mod_channel_send_msg(lua_State *L)
 	if (!lua_isstring(L, 1))
 		return 0;
 
-	// @TODO serialize message
+	std::string channel = luaL_checkstring(L, 1);
+	if (channel.empty())
+		return 0;
 
-	getGameDef(L)->sendModChannelMessage(luaL_checkstring(L, 1), "blob");
+	// @TODO serialize message
+	std::string message = luaL_checkstring(L, 2);
+
+	getGameDef(L)->sendModChannelMessage(channel, message);
 	return 0;
 }
 

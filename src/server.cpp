@@ -3628,6 +3628,6 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 
 	if (from_peer != PEER_ID_SERVER) {
-		// @TODO, send event to local callbacks
+		m_script->on_modchannel_message(channel, message);
 	}
 }

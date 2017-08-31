@@ -1343,12 +1343,16 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	std::string channel_name, channel_msg;
 	*pkt >> channel_name >> channel_msg;
 
+	verbosestream << "Mod channel message received from server " << pkt->getPeerId()
+		<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
+
 	if (!m_modchannel_mgr->channel_registered(channel_name)) {
 		verbosestream << "Server sent us messages on unregistered channel "
 			<< channel_name << ", ignoring." << std::endl;
 		return;
 	}
-	// @TODO do sth with mod channel msg
+
+	m_script->on_modchannel_message(channel_name, channel_msg);
 }
 
 void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)

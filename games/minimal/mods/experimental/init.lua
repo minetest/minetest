@@ -2,6 +2,8 @@
 -- Experimental things
 --
 
+dofile(minetest.get_modpath("experimental").."/modchannels.lua")
+
 -- For testing random stuff
 
 experimental = {}

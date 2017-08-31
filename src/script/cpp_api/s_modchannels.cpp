@@ -1,6 +1,5 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
@@ -18,27 +17,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include "s_modchannels.h"
+#include "s_internal.h"
 
-#include "cpp_api/s_base.h"
-#include "cpp_api/s_client.h"
-#include "cpp_api/s_modchannels.h"
-#include "cpp_api/s_security.h"
-
-class Client;
-class LocalPlayer;
-class Camera;
-class ClientScripting:
-	virtual public ScriptApiBase,
-	public ScriptApiSecurity,
-	public ScriptApiClient,
-	public ScriptApiModChannels
+void ScriptApiModChannels::on_modchannel_message(const std::string &channel,
+	const std::string &message)
 {
-public:
-	ClientScripting(Client *client);
-	void on_client_ready(LocalPlayer *localplayer);
-	void on_camera_ready(Camera *camera);
+	SCRIPTAPI_PRECHECKHEADER
 
-private:
-	virtual void InitializeModApi(lua_State *L, int top);
-};
+	// Get core.registered_on_generateds
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_on_modchannel_message");
+	// Call callbacks
+	lua_pushstring(L, channel.c_str());
+	// @ TODO deserialize that
+	lua_pushstring(L, message.c_str());
+	runCallbacks(2, RUN_CALLBACKS_MODE_AND);
+}

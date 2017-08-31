@@ -14,6 +14,13 @@ core.register_on_connect(function()
 	print("Server ip: " .. server_info.ip)
 	print("Server address: " .. server_info.address)
 	print("Server port: " .. server_info.port)
+
+	core.mod_channel_join("experimental_preview")
+end)
+
+core.register_on_modchannel_message(function(channel, message)
+	print("[PREVIEW][modchannels] Received message `" .. message .. "` on channel `"
+			.. channel .. "`")
 end)
 
 core.register_on_placenode(function(pointed_thing, node)
@@ -98,6 +105,10 @@ core.after(2, function()
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
 	preview_minimap()
+end)
+
+core.after(4, function()
+	core.mod_channel_send_msg("experimental_preview", "preview talk to experimental")
 end)
 
 core.after(5, function()

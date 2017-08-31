@@ -1748,10 +1748,15 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->join_channel(channel_name, pkt->getPeerId()))
+	if (m_modchannel_mgr->join_channel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_OK;
-	else
+		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
+				<< std::endl;
+	} else {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_FAILURE;
+		infostream << "Peer " << pkt->getPeerId() << " tried to join channel "
+			<< channel_name << ", but was already registered." << std::endl;
+	}
 	resp_pkt << channel_name;
 	Send(&resp_pkt);
 }
@@ -1765,10 +1770,15 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->leave_channel(channel_name, pkt->getPeerId()))
+	if (m_modchannel_mgr->leave_channel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_OK;
-	else
-		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_FAILURE;
+		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
+				<< std::endl;
+	} else {
+		resp_pkt << (u8) MODCHANNEL_SIGNAL_LEAVE_FAILURE;
+		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
+				<< ", but was no registered." << std::endl;
+	}
 	resp_pkt << channel_name;
 	Send(&resp_pkt);
 }
@@ -1777,6 +1787,9 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 {
 	std::string channel_name, channel_msg;
 	*pkt >> channel_name >> channel_msg;
+
+	verbosestream << "Mod channel message received from peer " << pkt->getPeerId()
+			<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
 
 	// If channel not registered, signal it and ignore message
 	if (!m_modchannel_mgr->channel_registered(channel_name)) {
@@ -1787,7 +1800,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		return;
 	}
 
-	// @TODO: filter, rate limit, properly check channel existence
-	
+	// @TODO: filter, rate limit
+
 	broadcastModChannelMessage(channel_name, channel_msg, pkt->getPeerId());
 }
