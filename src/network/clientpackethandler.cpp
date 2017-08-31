@@ -1343,6 +1343,11 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	std::string channel_name, channel_msg;
 	*pkt >> channel_name >> channel_msg;
 
+	if (!m_modchannel_mgr->channel_registered(channel_name)) {
+		verbosestream << "Server sent us messages on unregistered channel "
+			<< channel_name << ", ignoring." << std::endl;
+		return;
+	}
 	// @TODO do sth with mod channel msg
 }
 
@@ -1355,5 +1360,23 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	*pkt >> signal_tmp >> channel;
 
 	signal = (ModChannelSignal)signal_tmp;
-	// @TODO: do sth with signal
+	// @TODO: send Signal to Lua API
+	switch (signal) {
+		case MODCHANNEL_SIGNAL_JOIN_OK:
+			m_modchannel_mgr->join_channel(channel, 0);
+			break;
+		case MODCHANNEL_SIGNAL_JOIN_FAILURE:
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_OK:
+			m_modchannel_mgr->leave_channel(channel, 0);
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_FAILURE:
+			break;
+		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+			break;
+		default:
+			warningstream << "Received unhandled mod channel signal ID "
+				<< signal << ", ignoring." << std::endl;
+			break;
+	}
 }

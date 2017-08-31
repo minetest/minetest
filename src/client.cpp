@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "mods.h"
 #include "profiler.h"
 #include "shader.h"
@@ -94,7 +95,8 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui_flags(game_ui_flags)
+	m_game_ui_flags(game_ui_flags),
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));

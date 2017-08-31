@@ -1778,13 +1778,23 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	std::string channel_name, channel_msg;
 	*pkt >> channel_name >> channel_msg;
 
-	// @TODO: filter, rate limit, properly check channel existence
-	// @TODO: transmit messages to SSM mods
-	// @TODO: move this function to dedicated function, it will be used by Lua API
+	// If channel not registered, signal it and ignore message
+	if (!m_modchannel_mgr->channel_registered(channel_name)) {
+		NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_SIGNAL, 1 + 2 + channel_name.size(),
+			pkt->getPeerId());
+		resp_pkt << (u8)MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED << channel_name;
+		Send(&resp_pkt);
+		return;
+	}
+
 	const auto &peers = m_modchannel_mgr->get_channel_peers(channel_name);
 	if (peers.empty()) {
 		return;
 	}
+
+	// @TODO: filter, rate limit, properly check channel existence
+	// @TODO: transmit messages to SSM mods
+	// @TODO: move this function to dedicated function, it will be used by Lua API
 
 	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
 			2 + channel_name.size() + 2 + channel_msg.size());

@@ -52,6 +52,7 @@ class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
+class ModChannelMgr;
 class MtEventManager;
 struct PointedThing;
 class MapDatabase;
@@ -582,4 +583,6 @@ private:
 	// CSM flavour limits byteflag
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 	u32 m_csm_noderange_limit = 8;
+
+	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
