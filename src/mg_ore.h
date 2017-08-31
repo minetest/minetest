@@ -42,6 +42,7 @@ enum OreType {
 	ORE_PUFF,
 	ORE_BLOB,
 	ORE_VEIN,
+	ORE_STRATUM,
 };
 
 extern FlagDesc flagdesc_ore[];
@@ -133,6 +134,20 @@ public:
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
 };
 
+class OreStratum : public Ore {
+public:
+	static const bool NEEDS_NOISE = true;
+
+	NoiseParams np_stratum_thickness;
+	Noise *noise_stratum_thickness = nullptr;
+
+	OreStratum() = default;
+	virtual ~OreStratum();
+
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+};
+
 class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
@@ -156,6 +171,8 @@ public:
 			return new OreBlob;
 		case ORE_VEIN:
 			return new OreVein;
+		case ORE_STRATUM:
+			return new OreStratum;
 		default:
 			return nullptr;
 		}

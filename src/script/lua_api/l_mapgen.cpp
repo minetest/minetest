@@ -73,6 +73,7 @@ struct EnumString ModApiMapgen::es_OreType[] =
 	{ORE_PUFF,    "puff"},
 	{ORE_BLOB,    "blob"},
 	{ORE_VEIN,    "vein"},
+	{ORE_STRATUM, "stratum"},
 	{0, NULL},
 };
 
@@ -1146,6 +1147,15 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 			orevein->random_factor = getfloatfield_default(L, index,
 				"random_factor", 1.f);
+
+			break;
+		}
+		case ORE_STRATUM: {
+			OreStratum *orestratum = (OreStratum *)ore;
+
+			lua_getfield(L, index, "np_stratum_thickness");
+			read_noiseparams(L, -1, &orestratum->np_stratum_thickness);
+			lua_pop(L, 1);
 
 			break;
 		}
