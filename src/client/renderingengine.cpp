@@ -114,7 +114,7 @@ RenderingEngine::~RenderingEngine()
 
 v2u32 RenderingEngine::getWindowSize() const
 {
-	return driver->getScreenSize();
+	return driver->getCurrentRenderTargetSize(); // HACK
 }
 
 void RenderingEngine::setResizable(bool resize)

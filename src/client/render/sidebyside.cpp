@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "sidebyside.h"
+#include <ICameraSceneNode.h>
+#include "hud.h"
 
 RenderingCoreSideBySide::RenderingCoreSideBySide(IrrlichtDevice *_device,
 		Client *_client, Hud *_hud, bool _horizontal)
@@ -28,7 +30,6 @@ RenderingCoreSideBySide::RenderingCoreSideBySide(IrrlichtDevice *_device,
 
 void RenderingCoreSideBySide::initTextures()
 {
-	screen = core::recti(0, 0, screensize.X, screensize.Y);
 	if (horizontal) {
 		image_size = {screensize.X, screensize.Y / 2};
 		rpos = v2s32(0, screensize.Y / 2);
@@ -40,29 +41,22 @@ void RenderingCoreSideBySide::initTextures()
 			image_size, "3d_render_left", video::ECF_A8R8G8B8);
 	right = driver->addRenderTargetTexture(
 			image_size, "3d_render_right", video::ECF_A8R8G8B8);
-	hud = driver->addRenderTargetTexture(
-			screensize, "3d_render_hud", video::ECF_A8R8G8B8);
 }
 
 void RenderingCoreSideBySide::clearTextures()
 {
 	driver->removeTexture(left);
 	driver->removeTexture(right);
-	driver->removeTexture(hud);
 }
 
 void RenderingCoreSideBySide::drawAll()
 {
+	cam->setAspectRatio(1.0 * image_size.Width / image_size.Height);
+	driver->OnResize(image_size); // HACK to make GUI smaller
 	renderBothImages();
-	driver->setRenderTarget(hud, true, true, video::SColor(0, 0, 0, 0));
-	drawHUD();
-	driver->setRenderTarget(nullptr, false, false, skycolor);
-
+	driver->OnResize(screensize);
 	driver->draw2DImage(left, {});
 	driver->draw2DImage(right, rpos);
-
-	driver->draw2DImage(hud, core::recti({}, image_size), screen, 0, 0, true);
-	driver->draw2DImage(hud, core::recti(rpos, image_size), screen, 0, 0, true);
 }
 
 void RenderingCoreSideBySide::useEye(bool _right)
@@ -73,6 +67,8 @@ void RenderingCoreSideBySide::useEye(bool _right)
 
 void RenderingCoreSideBySide::resetEye()
 {
+	hud->resizeHotbar();
+	drawHUD();
 	driver->setRenderTarget(nullptr, false, false, skycolor);
 	RenderingCoreStereo::resetEye();
 }

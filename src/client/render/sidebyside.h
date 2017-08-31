@@ -26,9 +26,7 @@ class RenderingCoreSideBySide : public RenderingCoreStereo
 protected:
 	video::ITexture *left = nullptr;
 	video::ITexture *right = nullptr;
-	video::ITexture *hud = nullptr;
 	bool horizontal = false;
-	core::recti screen;
 	core::dimension2du image_size;
 	v2s32 rpos;
 
