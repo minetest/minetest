@@ -1152,14 +1152,15 @@ void GenericCAO::updateAnimation()
 
 void GenericCAO::updateAnimationSpeed()
 {
-	if(m_animated_meshnode == NULL)
+	if (!m_animated_meshnode)
 		return;
+        
 	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
 }
 
 void GenericCAO::updateBonePosition()
 {
-	if(m_bone_position.empty() || !m_animated_meshnode)
+	if (m_bone_position.empty() || !m_animated_meshnode)
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render

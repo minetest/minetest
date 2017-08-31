@@ -610,7 +610,7 @@ int ObjectRef::l_set_animation_frame_speed(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	ServerActiveObject *co = getobject(ref);
-	if(co == NULL) return 0;
+	if (co == NULL) return 0;
 
 	// Do it
 	if(!lua_isnil(L, 2)) {

@@ -109,7 +109,6 @@ TestSAO proto_TestSAO(NULL, v3f(0,0,0));
  */
 
 UnitSAO::UnitSAO(ServerEnvironment *env, v3f pos):
-
 	ServerActiveObject(env, pos)
 {
 	// Initialize something to armor groups
@@ -447,7 +446,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(!m_animation_speed_sent) {
+	if (!m_animation_speed_sent) {
 		m_animation_speed_sent = true;
 		std::string str = gob_cmd_update_animation_speed(m_animation_speed);
 		// create message and add to list
@@ -455,7 +454,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_messages_out.push(aom);
 	}
 
-	if(!m_bone_position_sent) {
+	if (!m_bone_position_sent) {
 		m_bone_position_sent = true;
 		for (std::unordered_map<std::string, core::vector2d<v3f>>::const_iterator
 				ii = m_bone_position.begin(); ii != m_bone_position.end(); ++ii){
