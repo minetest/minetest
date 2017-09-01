@@ -3304,8 +3304,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_wielded_item(item)`: replaces the wielded item, returns `true` if successful
 * `set_armor_groups({group1=rating, group2=rating, ...})`
 * `get_armor_groups()`: returns a table with the armor group ratings
-* `set_animation({x=1,y=1}, frame_speed=15, frame_blend=0, frame_loop=true)`
+* `set_animation({x=1,y=1}, frame_speed=15.0, frame_blend=0, frame_loop=true)`
 * `get_animation()`: returns `range`, `frame_speed`, `frame_blend` and `frame_loop`
+* `set_animation_frame_speed(frame_speed=15.0)`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)

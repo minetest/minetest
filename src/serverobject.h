@@ -154,6 +154,8 @@ public:
 	{}
 	virtual void getAnimation(v2f *frames, float *frame_speed, float *frame_blend, bool *frame_loop)
 	{}
+	virtual void setAnimationSpeed(float frame_speed)
+	{}
 	virtual void setBonePosition(const std::string &bone, v3f position, v3f rotation)
 	{}
 	virtual void getBonePosition(const std::string &bone, v3f *position, v3f *lotation)

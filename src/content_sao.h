@@ -46,6 +46,7 @@ public:
 	const ItemGroupList &getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setAnimationSpeed(float frame_speed);
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
@@ -70,6 +71,7 @@ protected:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	bool m_animation_sent = false;
+        bool m_animation_speed_sent = false;
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
