@@ -108,6 +108,7 @@ public:
 	u8 serDtime() const;
 	u8 serSettings() const;
 	u16 serYawPitch() const;
+	// TODO: u16 instead of u8, add mouse buttons, future extensibility
 	u8 serKeys() const;
 	s8 serJoyForw() const;
 	s8 serJoySidew() const;
@@ -146,7 +147,7 @@ public:
 	void deserialize(const std::string logbytes);
 	void acknowledge(u32 dtime); // removes entries
 private:
-	u8 version; // agreed-upon version
+	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;
 	u8 last_acked_settings = 0;
 	std::deque<ControlLogEntry> log;

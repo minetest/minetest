@@ -287,23 +287,23 @@ std::string ControlLog::serialize(u32 bytes_max) const
 {
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
-	//u16 bytes = 0; // will calculate later
+	// TODO: last sent settings instead? They may change
+	//       during the log itself.
 	bool settings_included = false;
 
 	std::stringstream output;
 
 	output << version;
 	output << flags;
-	//output << bytes;
 
 	output << starttime;
 
-	int motion_model = 1;
-	int motion_model_version = 1;
+	u8 motion_model = 1;
+	u8 motion_model_version = 1;
 	int count = 0;
 
 	bool leftovers = false;
-	output << (u8)motion_model << (u8)motion_model_version;
+	output << motion_model << motion_model_version;
 	for( ControlLogEntry cle : log ) {
 		if (output.tellp() > bytes_max) {
 			leftovers = true;
@@ -336,5 +336,23 @@ std::string ControlLog::serialize(u32 bytes_max) const
 
 void ControlLog::deserialize(const std::string logbytes)
 {
+	u8 flags;
+
+	std::stringstream input(logbytes);
+	input >> version;
+	input >> flags;
+
+	input >> starttime;
+	u8 motion_model, motion_model_version;
+	input >> motion_model >> motion_model_version;
+
+	//bool leftovers = false;
+	int count = 0;
+	while ((unsigned)input.tellp() < logbytes.length()) {
+		u8 byte;
+		input >> byte;
+		count++;
+	}
+	dstream << "deserialized " << count << " bytes" << std::endl;
 }
 

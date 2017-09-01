@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "chatmessage.h"
+#include "controllog.h"
 #include "server.h"
 #include "log.h"
 #include "content_sao.h"
@@ -468,14 +469,27 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	fov = (f32)f32fov / 80.0f;
 	*pkt >> wanted_range;
 
+	if (pkt->getRemainingBytes() >= 1) {
+		// SERVER SIDE MOVEMENT: here we would unpack the control log
+		// from the client and replay it.
+		ControlLog log;
+		std::string logbytes(pkt->readLongString());
+		// deserializing does not validate it. The entries could be
+		// a bunch of lies
+		log.deserialize(logbytes);
+		// replay the log step by step:
+		// - apply controls
+		// - simulate physics
+		// see how far we can acknowledge
+		// send acknowledge
+		//   OR send reset
+	}
+
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
 
 	pitch = modulo360f(pitch);
 	yaw = wrapDegrees_0_360(yaw);
-
-	// SERVER SIDE MOVEMENT: here we would unpack the action log
-	// from the client and replay it.
 
 	playersao->setBasePosition(position);
 	player->setSpeed(speed);
