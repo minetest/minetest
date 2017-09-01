@@ -1126,7 +1126,7 @@ The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
 stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 varies the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
-unlimited. 
+unlimited.
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
 stratum's Y variation.
@@ -2496,6 +2496,9 @@ Call these functions only at load time!
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
     * Return `true` to by pass the player limit
+* `minetest.register_on_modchannel_message(func(channel_name, message))`
+	* Called when an incoming mod channel message is received
+	* You should have joined  some channels to receive events.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
@@ -2772,6 +2775,18 @@ and `minetest.auth_reload` call the authetification handler.
       unattached `group:attached_node` node to fall.
     * spread these updates to neighbours and can cause a cascade
       of nodes to fall.
+
+### Mod channels
+* `minetest.mod_channel_join(channel_name)`
+	* Server joins channel `channel_name`. If channel has no member it's created. You
+	  should listen from incoming messages with `minetest.register_on_modchannel_message`
+	  call to receive incoming messages
+* `minetest.mod_channel_leave(channel_name)`
+	* Server leaves channel `channel_name`. No more incoming or outgoing messages can be
+	  sent to this channel from server mods.
+* `minetest.mod_channel_send_msg(channel_name, message)`
+	* Send `message` though `channel_name`. You should have joined `channel_name` before.
+	  If `channel_name` was not joined, message will be dropped.
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`

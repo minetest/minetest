@@ -1368,15 +1368,25 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	switch (signal) {
 		case MODCHANNEL_SIGNAL_JOIN_OK:
 			m_modchannel_mgr->join_channel(channel, 0);
+			infostream << "Server ack our mod channel join on channel `" << channel
+				<< "`, joining." << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_JOIN_FAILURE:
+			infostream << "Server refused our mod channel join on channel `" << channel
+				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_LEAVE_OK:
 			m_modchannel_mgr->leave_channel(channel, 0);
+			infostream << "Server ack our mod channel leave on channel " << channel
+				<< "`, leaving." << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_LEAVE_FAILURE:
+			infostream << "Server refused our mod channel leave on channel `" << channel
+				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+			infostream << "Server tells us we sent a message on channel `" << channel
+				<< "` but we are not registered. Message was dropped." << std::endl;
 			break;
 		default:
 			warningstream << "Received unhandled mod channel signal ID "
