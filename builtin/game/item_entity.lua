@@ -62,7 +62,7 @@ core.register_entity(":__builtin:item", {
 			automatic_rotate = math.pi * 0.5,
 			wield_item = self.itemstring,
 		})
-		
+
 	end,
 
 	get_staticdata = function(self)
@@ -154,7 +154,7 @@ core.register_entity(":__builtin:item", {
 			is_slippery = slippery ~= 0
 			if is_slippery then
 				is_physical = true
-	
+
 				-- Horizontal deceleration
 				local slip_factor = 4.0 / (slippery + 4)
 				self.object:set_acceleration({
@@ -207,7 +207,12 @@ core.register_entity(":__builtin:item", {
 		end
 	end,
 
-	on_punch = function(self, hitter)
+	on_punch = function(self, hitter, ...)
+		local item_def = core.registered_items[self.itemstring]
+		if item_def and item_def.on_pickup and
+				not item_def.on_pickup(self, hitter, ...) then
+			return
+		end
 		local inv = hitter:get_inventory()
 		if inv and self.itemstring ~= "" then
 			local left = inv:add_item("main", self.itemstring)

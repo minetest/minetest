@@ -4239,6 +4239,28 @@ Definition tables
         ^ Shall drop item and return the leftover itemstack
         ^ The dropper may be any ObjectRef or nil.
         ^ default: minetest.item_drop ]]
+        on_pickup = func(item_luaentity, up_picker, time_from_last_punch, tool_capabilities, dir),
+        --[[
+        ^ Called when a dropped item is punched and shall be picked up.
+        ^ Shall remove dropped item and add itemstack to `up_picker`'s inventory.
+        ^ `item_luaentity` is the luaentity of the dropped item.
+        ^ The `up_picker` may be any `ObjectRef` or `nil`.
+        ^ Not setting it or returning `true` will result in:
+        ```lua
+        function(self, hitter)
+			local inv = hitter:get_inventory()
+			if inv and self.itemstring ~= "" then
+				local left = inv:add_item("main", self.itemstring)
+				if left and not left:is_empty() then
+					self:set_item(left)
+					return
+				end
+			end
+			self.itemstring = ""
+			self.object:remove()
+		end
+		```
+		]]
         on_use = func(itemstack, user, pointed_thing),
         --[[
         ^  default: nil
