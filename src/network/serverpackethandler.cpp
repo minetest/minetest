@@ -1748,7 +1748,7 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->join_channel(channel_name, pkt->getPeerId())) {
+	if (m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_OK;
 		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
 				<< std::endl;
@@ -1770,7 +1770,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->leave_channel(channel_name, pkt->getPeerId())) {
+	if (m_modchannel_mgr->leaveChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_OK;
 		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
 				<< std::endl;
@@ -1792,7 +1792,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 			<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
 
 	// If channel not registered, signal it and ignore message
-	if (!m_modchannel_mgr->channel_registered(channel_name)) {
+	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
 		NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_SIGNAL, 1 + 2 + channel_name.size(),
 			pkt->getPeerId());
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED << channel_name;

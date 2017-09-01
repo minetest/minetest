@@ -20,7 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include <algorithm>
 
-bool ModChannel::register_consumer(u16 peer_id)
+bool ModChannel::registerConsumer(u16 peer_id)
 {
 	// ignore if peer_id already joined
 	if (std::find(m_client_consumers.begin(), m_client_consumers.end(), peer_id) !=
@@ -31,7 +31,7 @@ bool ModChannel::register_consumer(u16 peer_id)
 	return true;
 }
 
-bool ModChannel::remove_consumer(u16 peer_id)
+bool ModChannel::removeConsumer(u16 peer_id)
 {
 	bool found = false;
 	auto peer_removal_fct = [peer_id, &found](u16 p) {
@@ -49,19 +49,19 @@ bool ModChannel::remove_consumer(u16 peer_id)
 	return found;
 }
 
-bool ModChannelMgr::channel_registered(const std::string &channel) const
+bool ModChannelMgr::channelRegistered(const std::string &channel) const
 {
 	return m_registered_channels.find(channel) != m_registered_channels.end();
 }
 
-void ModChannelMgr::register_channel(const std::string &channel)
+void ModChannelMgr::registerChannel(const std::string &channel)
 {
 	m_registered_channels[channel] = std::unique_ptr<ModChannel>(new ModChannel());
 }
 
-bool ModChannelMgr::remove_channel(const std::string &channel)
+bool ModChannelMgr::removeChannel(const std::string &channel)
 {
-	if (!channel_registered(channel)) {
+	if (!channelRegistered(channel)) {
 		return false;
 	}
 
@@ -69,34 +69,34 @@ bool ModChannelMgr::remove_channel(const std::string &channel)
 	return true;
 }
 
-bool ModChannelMgr::join_channel(const std::string &channel, u16 peer_id)
+bool ModChannelMgr::joinChannel(const std::string &channel, u16 peer_id)
 {
-	if (!channel_registered(channel))
-		register_channel(channel);
+	if (!channelRegistered(channel))
+		registerChannel(channel);
 
-	return m_registered_channels[channel]->register_consumer(peer_id);
+	return m_registered_channels[channel]->registerConsumer(peer_id);
 }
 
-bool ModChannelMgr::leave_channel(const std::string &channel, u16 peer_id)
+bool ModChannelMgr::leaveChannel(const std::string &channel, u16 peer_id)
 {
-	if (!channel_registered(channel))
+	if (!channelRegistered(channel))
 		return false;
 
-	return m_registered_channels[channel]->remove_consumer(peer_id);
+	return m_registered_channels[channel]->removeConsumer(peer_id);
 }
 
-void ModChannelMgr::leave_all_channels(u16 peer_id)
+void ModChannelMgr::leaveAllChannels(u16 peer_id)
 {
 	for (auto &channel_it : m_registered_channels)
-		channel_it.second->remove_consumer(peer_id);
+		channel_it.second->removeConsumer(peer_id);
 }
 
 static std::vector<u16> empty_channel_list;
-const std::vector<u16> &ModChannelMgr::get_channel_peers(const std::string &channel) const
+const std::vector<u16> &ModChannelMgr::getChannelPeers(const std::string &channel) const
 {
 	const auto &channel_it = m_registered_channels.find(channel);
 	if (channel_it == m_registered_channels.end())
 		return empty_channel_list;
 
-	return channel_it->second->get_channel_peers();
+	return channel_it->second->getChannelPeers();
 }

@@ -46,9 +46,9 @@ int ModApiChannels::l_mod_channel_leave(lua_State *L)
 	return 0;
 }
 
-int ModApiChannels::l_mod_channel_send_msg(lua_State *L)
+int ModApiChannels::l_mod_channel_send(lua_State *L)
 {
-	if (!lua_isstring(L, 1))
+	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
 		return 0;
 
 	std::string channel = luaL_checkstring(L, 1);
@@ -66,5 +66,5 @@ void ModApiChannels::Initialize(lua_State *L, int top)
 {
 	API_FCT(mod_channel_join);
 	API_FCT(mod_channel_leave);
-	API_FCT(mod_channel_send_msg);
+	API_FCT(mod_channel_send);
 }

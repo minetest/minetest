@@ -230,18 +230,18 @@ void TestGameDef::defineSomeNodes()
 
 bool TestGameDef::joinModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->join_channel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER);
 }
 
 bool TestGameDef::leaveModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->leave_channel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
 }
 
 bool TestGameDef::sendModChannelMessage(const std::string &channel,
 	const std::string &message)
 {
-	if (!m_modchannel_mgr->channel_registered(channel))
+	if (!m_modchannel_mgr->channelRegistered(channel))
 		return false;
 
 	return true;

@@ -108,7 +108,7 @@ core.after(2, function()
 end)
 
 core.after(4, function()
-	core.mod_channel_send_msg("experimental_preview", "preview talk to experimental")
+	core.mod_channel_send("experimental_preview", "preview talk to experimental")
 end)
 
 core.after(5, function()

@@ -2596,7 +2596,7 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 
 void Server::DisconnectPeer(u16 peer_id)
 {
-	m_modchannel_mgr->leave_all_channels(peer_id);
+	m_modchannel_mgr->leaveAllChannels(peer_id);
 	m_con->DisconnectPeer(peer_id);
 }
 
@@ -3591,17 +3591,17 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 bool Server::joinModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->leave_channel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
 }
 
 bool Server::leaveModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->join_channel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER);
 }
 
 bool Server::sendModChannelMessage(const std::string &channel, const std::string &message)
 {
-	if (!m_modchannel_mgr->channel_registered(channel))
+	if (!m_modchannel_mgr->channelRegistered(channel))
 		return false;
 
 	broadcastModChannelMessage(channel, message, PEER_ID_SERVER);
@@ -3611,7 +3611,7 @@ bool Server::sendModChannelMessage(const std::string &channel, const std::string
 void Server::broadcastModChannelMessage(const std::string &channel,
 		const std::string &message, u16 from_peer)
 {
-	const auto &peers = m_modchannel_mgr->get_channel_peers(channel);
+	const std::vector<u16> &peers = m_modchannel_mgr->getChannelPeers(channel);
 	if (peers.empty()) {
 		return;
 	}

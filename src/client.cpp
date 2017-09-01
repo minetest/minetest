@@ -1928,7 +1928,7 @@ std::string Client::getModStoragePath() const
 
 bool Client::joinModChannel(const std::string &channel)
 {
-	if (m_modchannel_mgr->channel_registered(channel))
+	if (m_modchannel_mgr->channelRegistered(channel))
 		return false;
 
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
@@ -1939,7 +1939,7 @@ bool Client::joinModChannel(const std::string &channel)
 
 bool Client::leaveModChannel(const std::string &channel)
 {
-	if (!m_modchannel_mgr->channel_registered(channel))
+	if (!m_modchannel_mgr->channelRegistered(channel))
 		return false;
 
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
@@ -1950,7 +1950,7 @@ bool Client::leaveModChannel(const std::string &channel)
 
 bool Client::sendModChannelMessage(const std::string &channel, const std::string &message)
 {
-	if (!m_modchannel_mgr->channel_registered(channel))
+	if (!m_modchannel_mgr->channelRegistered(channel))
 		return false;
 
 	// @TODO: do some client rate limiting

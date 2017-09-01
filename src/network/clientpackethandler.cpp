@@ -1346,7 +1346,7 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 	verbosestream << "Mod channel message received from server " << pkt->getPeerId()
 		<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
 
-	if (!m_modchannel_mgr->channel_registered(channel_name)) {
+	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
 		verbosestream << "Server sent us messages on unregistered channel "
 			<< channel_name << ", ignoring." << std::endl;
 		return;
@@ -1367,7 +1367,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	// @TODO: send Signal to Lua API
 	switch (signal) {
 		case MODCHANNEL_SIGNAL_JOIN_OK:
-			m_modchannel_mgr->join_channel(channel, 0);
+			m_modchannel_mgr->joinChannel(channel, 0);
 			infostream << "Server ack our mod channel join on channel `" << channel
 				<< "`, joining." << std::endl;
 			break;
@@ -1376,7 +1376,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_LEAVE_OK:
-			m_modchannel_mgr->leave_channel(channel, 0);
+			m_modchannel_mgr->leaveChannel(channel, 0);
 			infostream << "Server ack our mod channel leave on channel " << channel
 				<< "`, leaving." << std::endl;
 			break;

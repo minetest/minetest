@@ -31,9 +31,9 @@ public:
 	ModChannel() = default;
 	~ModChannel() = default;
 
-	bool register_consumer(u16 peer_id);
-	bool remove_consumer(u16 peer_id);
-	const std::vector<u16> &get_channel_peers() const { return m_client_consumers; }
+	bool registerConsumer(u16 peer_id);
+	bool removeConsumer(u16 peer_id);
+	const std::vector<u16> &getChannelPeers() const { return m_client_consumers; }
 
 private:
 	std::vector<u16> m_client_consumers;
@@ -54,13 +54,13 @@ public:
 	ModChannelMgr() = default;
 	~ModChannelMgr() = default;
 
-	void register_channel(const std::string &channel);
-	bool remove_channel(const std::string &channel);
-	bool join_channel(const std::string &channel, u16 peer_id);
-	bool leave_channel(const std::string &channel, u16 peer_id);
-	bool channel_registered(const std::string &channel) const;
-	void leave_all_channels(u16 peer_id);
-	const std::vector<u16> &get_channel_peers(const std::string &channel) const;
+	void registerChannel(const std::string &channel);
+	bool removeChannel(const std::string &channel);
+	bool joinChannel(const std::string &channel, u16 peer_id);
+	bool leaveChannel(const std::string &channel, u16 peer_id);
+	bool channelRegistered(const std::string &channel) const;
+	void leaveAllChannels(u16 peer_id);
+	const std::vector<u16> &getChannelPeers(const std::string &channel) const;
 
 private:
 	std::unordered_map<std::string, std::unique_ptr<ModChannel>>

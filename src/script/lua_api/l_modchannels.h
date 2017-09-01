@@ -32,7 +32,7 @@ private:
 	static int l_mod_channel_leave(lua_State *L);
 
 	// request_http_api()
-	static int l_mod_channel_send_msg(lua_State *L);
+	static int l_mod_channel_send(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
