@@ -628,7 +628,7 @@ Minetest namespace reference
   reliable or verifyable. Compatible forks will have a different name and
   version entirely. To check for the presence of engine features, test
   whether the functions exported by the wanted features exist. For example:
-  `if minetest.nodeupdate then ... end`.
+  `if minetest.check_for_falling then ... end`.
 
 ### Logging
 * `minetest.debug(...)`

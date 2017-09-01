@@ -135,7 +135,7 @@ minetest.register_on_punchnode(function(p, node)
 	if node.name == "experimental:tnt" then
 		minetest.remove_node(p)
 		minetest.add_entity(p, "experimental:tnt")
-		nodeupdate(p)
+		minetest.check_for_falling(p)
 	end
 end)
 
