@@ -807,6 +807,10 @@
 #    type: float
 # hud_scaling = 1.0
 
+#    Modifies the resolution of the hud grid.
+#    type: float
+# hud_grid_resolution = 1920.0
+
 #    Enables caching of facedir rotated meshes.
 #    type: bool
 # enable_mesh_cache = false

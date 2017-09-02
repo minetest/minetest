@@ -55,6 +55,7 @@ struct EnumString es_HudElementStat[] =
 	{HUD_STAT_ALIGN,  "alignment"},
 	{HUD_STAT_OFFSET, "offset"},
 	{HUD_STAT_WORLD_POS, "world_pos"},
+	{HUD_STAT_FONT_SIZE, "font_size"},
 	{0, NULL},
 };
 
@@ -1384,6 +1385,9 @@ int ObjectRef::l_hud_add(lua_State *L)
 	elem->world_pos = lua_istable(L, -1) ? read_v3f(L, -1) : v3f();
 	lua_pop(L, 1);
 
+	elem->font_size = getintfield_default(L, 2, "font_size", 0);
+	elem->texture_index = 0;
+
 	/* check for known deprecated element usage */
 	if ((elem->type  == HUD_ELEM_STATBAR) && (elem->size == v2s32())) {
 		log_deprecated(L,"Deprecated usage of statbar without size!");
@@ -1488,6 +1492,10 @@ int ObjectRef::l_hud_change(lua_State *L)
 			e->size = read_v2s32(L, 4);
 			value = &e->size;
 			break;
+		case HUD_STAT_FONT_SIZE:
+			e->font_size = luaL_checknumber(L, 4);
+			value = &e->font_size;
+			break;
 	}
 
 	getServer(L)->hudChange(player, id, stat, value);
@@ -1543,6 +1551,9 @@ int ObjectRef::l_hud_get(lua_State *L)
 
 	push_v3f(L, e->world_pos);
 	lua_setfield(L, -2, "world_pos");
+
+	lua_pushnumber(L, e->font_size);
+	lua_setfield(L, -2, "font_size");
 
 	return 1;
 }

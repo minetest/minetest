@@ -165,6 +165,7 @@ struct ItemStack
 	u16 count = 0;
 	u16 wear = 0;
 	ItemStackMetadata metadata;
+	s32 animation;
 };
 
 class InventoryList

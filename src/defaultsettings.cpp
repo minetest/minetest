@@ -200,6 +200,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
 	settings->setDefault("gui_scaling_filter_txr2img", "true");
+	settings->setDefault("hud_grid_resolution", "1920.0");
 	settings->setDefault("desynchronize_mapblock_texture_animation", "true");
 	settings->setDefault("hud_hotbar_max_width", "1.0");
 	settings->setDefault("enable_local_map_saving", "false");
@@ -427,6 +428,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("viewing_range", "25");
 	settings->setDefault("inventory_image_hack", "false");
 
+	/*
 	// Check for a device with a small screen
 	float x_inches = ((double) porting::getDisplaySize().X /
 			(160 * porting::getDisplayDensity()));
@@ -435,6 +437,8 @@ void set_default_settings(Settings *settings)
 	} else if (x_inches < 4.5) {
 		settings->setDefault("hud_scaling", "0.7");
 	}
+	*/
+
 	settings->setDefault("curl_verify_cert","false");
 #else
 	settings->setDefault("screen_dpi", "72");

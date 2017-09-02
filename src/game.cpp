@@ -3280,6 +3280,8 @@ void Game::handleClientEvent_HudAdd(ClientEvent *event, CameraOrientation *cam)
 	e->offset = *event->hudadd.offset;
 	e->world_pos = *event->hudadd.world_pos;
 	e->size = *event->hudadd.size;
+	e->font_size = event->hudadd.font_size;
+	e->texture_index = 0;
 
 	u32 new_id = player->addHud(e);
 	//if this isn't true our huds aren't consistent
@@ -3360,6 +3362,10 @@ void Game::handleClientEvent_HudChange(ClientEvent *event, CameraOrientation *ca
 
 		case HUD_STAT_SIZE:
 			e->size = *event->hudchange.v2s32data;
+			break;
+
+		case HUD_STAT_FONT_SIZE:
+			e->font_size = event->hudchange.data;
 			break;
 	}
 

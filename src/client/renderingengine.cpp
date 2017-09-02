@@ -665,6 +665,7 @@ video::ITexture *RenderingEngine::draw_hud(const v2u32 &screensize, bool show_hu
 			image, true, true, irr::video::SColor(255, 0, 0, 0));
 
 	if (show_hud) {
+		hud->updateScaling();
 		if (draw_crosshair)
 			hud->drawCrosshair();
 		hud->drawHotbar(client->getPlayerItem());
