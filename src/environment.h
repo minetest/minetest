@@ -107,10 +107,10 @@ protected:
 	/*
 	 * Below: values managed by m_time_lock
 	*/
-	// Time of day in milli-hours (0-23999); determines day and night
-	u32 m_time_of_day = 5250;
-	// Time of day in 0...1; start 5:15am unless overridden by game
-	float m_time_of_day_f = 5250.0f / 24000.0f;
+	// Time of day in milli-hours (0-23999), determines day and night
+	u32 m_time_of_day;
+	// Time of day in 0...1
+	float m_time_of_day_f;
 	// Stores the skew created by the float -> u32 conversion
 	// to be applied at next conversion, so that there is no real skew.
 	float m_time_conversion_skew = 0.0f;
