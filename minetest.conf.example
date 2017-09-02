@@ -1842,7 +1842,7 @@
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
 #    type: noise_params
-# mgcarpathian_np_mnt_var = 0, 1, (499, 499, 499), 2490, 5, 0.6, 2.0
+# mgcarpathian_np_mnt_var = 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
 
 #    First of 2 3D noises that together define tunnels.
 #    type: noise_params

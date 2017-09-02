@@ -74,7 +74,7 @@ public:
 
 	virtual MapgenType getType() const { return MAPGEN_CARPATHIAN; }
 
-	float getSteps(float noise1, float noise2);
+	float getSteps(float noise);
 	inline float getLerp(float noise1, float noise2, float mod);
 
 	virtual void makeChunk(BlockMakeData *data);

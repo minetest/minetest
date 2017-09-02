@@ -1501,7 +1501,7 @@ mgcarpathian_np_ridge_mnt (Ridged mountain size noise) noise_params 0, 12, (743,
 mgcarpathian_np_step_mnt (Step mountain size noise) noise_params 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
-mgcarpathian_np_mnt_var (Mountain variation noise) noise_params 0, 1, (499, 499, 499), 2490, 5, 0.6, 2.0
+mgcarpathian_np_mnt_var (Mountain variation noise) noise_params 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
 
 #    First of 2 3D noises that together define tunnels.
 mgcarpathian_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
