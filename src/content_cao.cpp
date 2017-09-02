@@ -659,6 +659,9 @@ void GenericCAO::updateLight(u8 light_at_pos)
 
 void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 {
+	if (m_fullbright)
+		return;
+
 	u8 li = decode_light(light_at_pos);
 	if (li != m_last_light)	{
 		m_last_light = li;
@@ -978,6 +981,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
+	m_fullbright = m_prop.fullbright;
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
