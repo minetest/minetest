@@ -106,6 +106,7 @@ private:
 	float m_step_distance_counter = 0.0f;
 	u8 m_last_light = 255;
 	bool m_is_visible = false;
+	s8 m_glow = 0;
 
 	std::vector<u16> m_children;
 
