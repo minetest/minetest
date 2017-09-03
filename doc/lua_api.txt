@@ -2447,6 +2447,11 @@ Call these functions only at load time!
 * `minetest.register_on_item_eat(func(hp_change, replace_with_item, itemstack, user, pointed_thing))`
     * Called when an item is eaten, by `minetest.item_eat`
     * Return `true` or `itemstack` to cancel the default item eat response (i.e.: hp increase)
+* `minetest.register_on_item_pickup(func(item_luaentity, up_picker, time_from_last_punch, tool_capabilities, dir))`
+    * Called when item shall be picked up.
+    * Newest functions are called first.
+    * If `true` is returned, the following functions are not called.
+    * If `false` is returned, the following functions are not called and the item is not picked up.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player, once with granter being the player name,
@@ -4245,22 +4250,24 @@ Definition tables
         ^ Shall remove dropped item and add itemstack to `up_picker`'s inventory.
         ^ `item_luaentity` is the luaentity of the dropped item.
         ^ The `up_picker` may be any `ObjectRef` or `nil`.
-        ^ Not setting it or returning `true` will result in:
-        ```lua
-        function(self, hitter)
-            local inv = hitter:get_inventory()
-            if not inv then
-                return
-            end
-            local left = inv:add_item("main", self.itemstring)
-            if left and not left:is_empty() then
-                self:set_item(left)
-                return
-            end
-            self.itemstring = ""
-            self.object:remove()
-        end
-        ```
+        ^ Not setting it or returning `true` will first call all functions that
+          are register on pickup (see `minetest.register_on_item_pickup`) and
+          then normally result in:
+          ```lua
+          function(self, hitter)
+              local inv = hitter:get_inventory()
+              if not inv then
+                  return
+              end
+              local left = inv:add_item("main", self.itemstring)
+              if left and not left:is_empty() then
+                  self:set_item(left)
+                  return
+              end
+              self.itemstring = ""
+              self.object:remove()
+          end
+          ```
         ]]
         on_use = func(itemstack, user, pointed_thing),
         --[[

@@ -11,6 +11,11 @@ function core.spawn_item(pos, item)
 	return obj
 end
 
+local registered_on_pickups = {}
+function core.register_on_item_pickup(f)
+	registered_on_pickups[#registered_on_pickups+1] = f
+end
+
 -- If item_entity_ttl is not set, enity will have default life time
 -- Setting it to -1 disables the feature
 
@@ -209,11 +214,23 @@ core.register_entity(":__builtin:item", {
 
 	on_punch = function(self, hitter, ...)
 		if self.itemstring ~= "" then
+			-- Call the on_pickup callback of item definition.
 			local item_def = core.registered_items[self.itemstring]
 			if item_def and item_def.on_pickup and
 					not item_def.on_pickup(self, hitter, ...) then
 				return
 			end
+			-- Call every function registered on pickup.
+			local success
+			for i = 1, #registered_on_pickups do
+				success = registered_on_pickups[i](self, hitter, ...)
+				if success then
+					break
+				elseif success == false then
+					return
+				end
+			end
+			-- Do the default case.
 			local inv = hitter:get_inventory()
 			if not inv then
 				return
