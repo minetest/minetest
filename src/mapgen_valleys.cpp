@@ -124,18 +124,18 @@ MapgenValleys::~MapgenValleys()
 }
 
 
-MapgenValleysParams::MapgenValleysParams()
+MapgenValleysParams::MapgenValleysParams():
+	np_cave1              (0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0),
+	np_cave2              (0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0),
+	np_filler_depth       (0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f),
+	np_inter_valley_fill  (0.f,   1.f,  v3f(256,  512,  256),  1993,  6, 0.8f,  2.f),
+	np_inter_valley_slope (0.5f,  0.5f, v3f(128,  128,  128),  746,   1, 1.f,   2.f),
+	np_rivers             (0.f,   1.f,  v3f(256,  256,  256),  -6050, 5, 0.6f,  2.f),
+	np_massive_caves      (0.f,   1.f,  v3f(768,  256,  768),  59033, 6, 0.63f, 2.f),
+	np_terrain_height     (-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f),
+	np_valley_depth       (5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f),
+	np_valley_profile     (0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f)
 {
-	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
-	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
-	np_filler_depth       = NoiseParams(0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f);
-	np_inter_valley_fill  = NoiseParams(0.f,   1.f,  v3f(256,  512,  256),  1993,  6, 0.8f,  2.f);
-	np_inter_valley_slope = NoiseParams(0.5f,  0.5f, v3f(128,  128,  128),  746,   1, 1.f,   2.f);
-	np_rivers             = NoiseParams(0.f,   1.f,  v3f(256,  256,  256),  -6050, 5, 0.6f,  2.f);
-	np_massive_caves      = NoiseParams(0.f,   1.f,  v3f(768,  256,  768),  59033, 6, 0.63f, 2.f);
-	np_terrain_height     = NoiseParams(-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f);
-	np_valley_depth       = NoiseParams(5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f);
-	np_valley_profile     = NoiseParams(0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f);
 }
 
 

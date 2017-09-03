@@ -80,15 +80,15 @@ MapgenV5::~MapgenV5()
 }
 
 
-MapgenV5Params::MapgenV5Params()
+MapgenV5Params::MapgenV5Params():
+	np_filler_depth (0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0),
+	np_factor       (0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
+	np_height       (0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0),
+	np_ground       (0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
+	np_cave1        (0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0),
+	np_cave2        (0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0),
+	np_cavern       (0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0)
 {
-	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
-	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
-	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);
-	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
-	np_cave1        = NoiseParams(0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0);
-	np_cave2        = NoiseParams(0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0);
-	np_cavern       = NoiseParams(0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0);
 }
 
 

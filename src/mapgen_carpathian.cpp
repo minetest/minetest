@@ -106,24 +106,24 @@ MapgenCarpathian::~MapgenCarpathian()
 }
 
 
-MapgenCarpathianParams::MapgenCarpathianParams()
+MapgenCarpathianParams::MapgenCarpathianParams():
+	np_base          (12, 1,  v3f(2557, 2557, 2557), 6538,  4, 0.8,  0.5),
+	np_filler_depth  (0,  1,  v3f(128,  128,  128),  261,   3, 0.7,  2.0),
+	np_height1       (0,  5,  v3f(251,  251,  251),  9613,  5, 0.5,  2.0),
+	np_height2       (0,  5,  v3f(383,  383,  383),  1949,  5, 0.5,  2.0),
+	np_height3       (0,  5,  v3f(509,  509,  509),  3211,  5, 0.5,  2.0),
+	np_height4       (0,  5,  v3f(631,  631,  631),  1583,  5, 0.5,  2.0),
+	np_hills_terrain (1,  1,  v3f(1301, 1301, 1301), 1692,  5, 0.5,  2.0),
+	np_ridge_terrain (1,  1,  v3f(1889, 1889, 1889), 3568,  5, 0.5,  2.0),
+	np_step_terrain  (1,  1,  v3f(1889, 1889, 1889), 4157,  5, 0.5,  2.0),
+	np_hills         (0,  3,  v3f(257,  257,  257),  6604,  6, 0.5,  2.0),
+	np_ridge_mnt     (0,  12, v3f(743,  743,  743),  5520,  6, 0.7,  2.0),
+	np_step_mnt      (0,  8,  v3f(509,  509,  509),  2590,  6, 0.6,  2.0),
+	np_mnt_var       (0,  1,  v3f(499,  499,  499),  2490,  5, 0.55, 2.0),
+	np_cave1         (0,  12, v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
+	np_cave2         (0,  12, v3f(67,   67,   67),   10325, 3, 0.5,  2.0),
+	np_cavern        (0,  1,  v3f(384,  128,  384),  723,   5, 0.63, 2.0)
 {
-	np_base          = NoiseParams(12, 1,  v3f(2557, 2557, 2557), 6538,  4, 0.8,  0.5);
-	np_filler_depth  = NoiseParams(0,  1,  v3f(128,  128,  128),  261,   3, 0.7,  2.0);
-	np_height1       = NoiseParams(0,  5,  v3f(251,  251,  251),  9613,  5, 0.5,  2.0);
-	np_height2       = NoiseParams(0,  5,  v3f(383,  383,  383),  1949,  5, 0.5,  2.0);
-	np_height3       = NoiseParams(0,  5,  v3f(509,  509,  509),  3211,  5, 0.5,  2.0);
-	np_height4       = NoiseParams(0,  5,  v3f(631,  631,  631),  1583,  5, 0.5,  2.0);
-	np_hills_terrain = NoiseParams(1,  1,  v3f(1301, 1301, 1301), 1692,  5, 0.5,  2.0);
-	np_ridge_terrain = NoiseParams(1,  1,  v3f(1889, 1889, 1889), 3568,  5, 0.5,  2.0);
-	np_step_terrain  = NoiseParams(1,  1,  v3f(1889, 1889, 1889), 4157,  5, 0.5,  2.0);
-	np_hills         = NoiseParams(0,  3,  v3f(257,  257,  257),  6604,  6, 0.5,  2.0);
-	np_ridge_mnt     = NoiseParams(0,  12, v3f(743,  743,  743),  5520,  6, 0.7,  2.0);
-	np_step_mnt      = NoiseParams(0,  8,  v3f(509,  509,  509),  2590,  6, 0.6,  2.0);
-	np_mnt_var       = NoiseParams(0,  1,  v3f(499,  499,  499),  2490,  5, 0.55, 2.0);
-	np_cave1         = NoiseParams(0,  12, v3f(61,   61,   61),   52534, 3, 0.5,  2.0);
-	np_cave2         = NoiseParams(0,  12, v3f(67,   67,   67),   10325, 3, 0.5,  2.0);
-	np_cavern        = NoiseParams(0,  1,  v3f(384,  128,  384),  723,   5, 0.63, 2.0);
 }
 
 

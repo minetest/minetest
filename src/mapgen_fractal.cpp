@@ -82,12 +82,12 @@ MapgenFractal::~MapgenFractal()
 }
 
 
-MapgenFractalParams::MapgenFractalParams()
+MapgenFractalParams::MapgenFractalParams():
+	np_seabed       (-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0),
+	np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
+	np_cave1        (0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
+	np_cave2        (0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
 {
-	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
-	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
-	np_cave2        = NoiseParams(0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0);
 }
 
 
