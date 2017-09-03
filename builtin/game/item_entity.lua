@@ -51,7 +51,7 @@ core.register_entity(":__builtin:item", {
 
 		local max_count = stack:get_stack_max()
 		local count = math.min(stack:get_count(), max_count)
-		local size = 0.2 + 0.1 * (count / max_count)
+		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
 
 		self.object:set_properties({
 			is_visible = true,
