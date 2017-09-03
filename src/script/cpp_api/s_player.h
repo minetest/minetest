@@ -35,6 +35,7 @@ public:
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);
+	bool can_bypass_userlimit(const std::string &name, const std::string &ip);
 	void on_joinplayer(ServerActiveObject *player);
 	void on_leaveplayer(ServerActiveObject *player, bool timeout);
 	void on_cheat(ServerActiveObject *player, const std::string &cheat_type);

@@ -86,3 +86,13 @@ core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
 	give_to_singleplayer = false,
 })
+
+core.register_on_userlimit_check(function(name, ip)
+	local privs = core.get_player_privs(name)
+	if privs["server"] ~= nil or privs["ban"] ~= nil or privs["privs"] ~= nil
+		or privs["password"] ~= nil then
+		return true
+	end
+
+	return false
+end)
