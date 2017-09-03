@@ -130,7 +130,7 @@ bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::s
 
 	// Get core.registered_on_prejoinplayers
 	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_on_userlimit_check");
+	lua_getfield(L, -1, "registered_can_bypass_userlimit");
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, ip.c_str());
 	runCallbacks(2, RUN_CALLBACKS_MODE_OR);

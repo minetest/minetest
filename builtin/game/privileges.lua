@@ -87,7 +87,7 @@ core.register_privilege("debug", {
 	give_to_singleplayer = false,
 })
 
-core.register_on_userlimit_check(function(name, ip)
+core.register_can_bypass_userlimit(function(name, ip)
 	local privs = core.get_player_privs(name)
-	return (privs["server"] or privs["ban"] or privs["privs"] or privs["password"])
+	return privs["server"] or privs["ban"] or privs["privs"] or privs["password"]
 end)
