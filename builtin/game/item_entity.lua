@@ -208,13 +208,16 @@ core.register_entity(":__builtin:item", {
 	end,
 
 	on_punch = function(self, hitter, ...)
-		local item_def = core.registered_items[self.itemstring]
-		if item_def and item_def.on_pickup and
-				not item_def.on_pickup(self, hitter, ...) then
-			return
-		end
-		local inv = hitter:get_inventory()
-		if inv and self.itemstring ~= "" then
+		if self.itemstring ~= "" then
+			local item_def = core.registered_items[self.itemstring]
+			if item_def and item_def.on_pickup and
+					not item_def.on_pickup(self, hitter, ...) then
+				return
+			end
+			local inv = hitter:get_inventory()
+			if not inv then
+				return
+			end
 			local left = inv:add_item("main", self.itemstring)
 			if left and not left:is_empty() then
 				self:set_item(left)

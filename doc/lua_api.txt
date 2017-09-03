@@ -4248,19 +4248,20 @@ Definition tables
         ^ Not setting it or returning `true` will result in:
         ```lua
         function(self, hitter)
-			local inv = hitter:get_inventory()
-			if inv and self.itemstring ~= "" then
-				local left = inv:add_item("main", self.itemstring)
-				if left and not left:is_empty() then
-					self:set_item(left)
-					return
-				end
-			end
-			self.itemstring = ""
-			self.object:remove()
-		end
-		```
-		]]
+            local inv = hitter:get_inventory()
+            if not inv then
+                return
+            end
+            local left = inv:add_item("main", self.itemstring)
+            if left and not left:is_empty() then
+                self:set_item(left)
+                return
+            end
+            self.itemstring = ""
+            self.object:remove()
+        end
+        ```
+        ]]
         on_use = func(itemstack, user, pointed_thing),
         --[[
         ^  default: nil
