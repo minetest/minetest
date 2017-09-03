@@ -1069,7 +1069,6 @@ within the currently generated chunk.
 The vertical top and bottom displacement of each puff are determined by the noise
 parameters `np_puff_top` and `np_puff_bottom`, respectively.
 
-
 ### `blob`
 Creates a deformed sphere of ore according to 3d perlin noise described by
 `noise_params`.  The maximum size of the blob is `clust_size`, and
@@ -1098,6 +1097,22 @@ to small changes.  The following is a decent set of parameters to work from:
 
 **WARNING**: Use this ore type *very* sparingly since it is ~200x more
 computationally expensive than any other ore.
+
+### `stratum`
+Creates a single undulating ore stratum that is continuous across mapchunk
+borders and horizontally spans the world.
+The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
+stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
+varies the stratum's vertical thickness (in units of nodes). Due to being
+continuous across mapchunk borders the stratum's vertical thickness is
+unlimited. 
+`y_min` and `y_max` define the limits of the ore generation and for performance
+reasons should be set as close together as possible but without clipping the
+stratum's Y variation.
+Each node in the stratum has a 1-in-`clust_scarcity` chance of being ore, so a
+solid-ore stratum would require a `clust_scarcity` of 1.
+The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
+`random_factor` are ignored by this ore type.
 
 Ore attributes
 --------------
@@ -4558,6 +4573,8 @@ Definition tables
     {
         ore_type = "scatter", -- See "Ore types"
         ore = "default:stone_with_coal",
+        ore_param2 = 3,
+    --  ^ Facedir rotation. Default is 0 (unchanged rotation)
         wherein = "default:stone",
     --  ^ a list of nodenames is supported too
         clust_scarcity = 8*8*8,
