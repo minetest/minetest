@@ -55,7 +55,7 @@ std::mutex log_message_mutex;
 
 #define PING_TIMEOUT 5.0
 
-BufferedPacket makePacket(Address &address, const SharedBuffer<u8> &data,
+BufferedPacket makePacket(Address &address, SharedBuffer<u8> data,
 		u32 protocol_id, u16 sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
@@ -125,7 +125,7 @@ void makeSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max, u16 seqnum
 	}
 }
 
-void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
+void makeAutoSplitPacket(SharedBuffer<u8> data, u32 chunksize_max,
 		u16 &split_seqnum, std::list<SharedBuffer<u8>> *list)
 {
 	u32 original_header_size = 1;
@@ -139,9 +139,7 @@ void makeAutoSplitPacket(const SharedBuffer<u8> &data, u32 chunksize_max,
 	list->push_back(makeOriginalPacket(data));
 }
 
-SharedBuffer<u8> makeReliablePacket(
-		const SharedBuffer<u8> &data,
-		u16 seqnum)
+SharedBuffer<u8> makeReliablePacket(SharedBuffer<u8> data, u16 seqnum)
 {
 	u32 header_size = 3;
 	u32 packet_size = data.getSize() + header_size;

@@ -330,7 +330,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacket &p, Channel *chan
 }
 
 bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
-	const SharedBuffer<u8> &data, bool reliable)
+	SharedBuffer<u8> data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 	if (!peer) {
