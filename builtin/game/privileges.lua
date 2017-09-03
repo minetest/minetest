@@ -89,8 +89,7 @@ core.register_privilege("debug", {
 
 core.register_on_userlimit_check(function(name, ip)
 	local privs = core.get_player_privs(name)
-	if privs["server"] ~= nil or privs["ban"] ~= nil or privs["privs"] ~= nil
-		or privs["password"] ~= nil then
+	if privs["server"] or privs["ban"] or privs["privs"] or privs["password"] then
 		return true
 	end
 
