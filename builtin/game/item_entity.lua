@@ -59,7 +59,7 @@ core.register_entity(":__builtin:item", {
 			textures = {itemname},
 			visual_size = {x = size, y = size},
 			collisionbox = {-size, -size, -size, size, size, size},
-			automatic_rotate = math.pi * 0.5,
+			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
 		})
 
