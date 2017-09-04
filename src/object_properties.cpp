@@ -58,7 +58,7 @@ std::string ObjectProperties::dump()
 	os << ", makes_footstep_sound=" << makes_footstep_sound;
 	os << ", automatic_rotate="<< automatic_rotate;
 	os << ", backface_culling="<< backface_culling;
-	os << ", fullbright=" << fullbright;
+	os << ", glow=" << glow;
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
@@ -107,7 +107,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
 	writeU8(os, can_zoom);
-	writeU8(os, fullbright);
+	writeS8(os, glow);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -155,5 +155,5 @@ void ObjectProperties::deSerialize(std::istream &is)
 	infotext = deSerializeString(is);
 	wield_item = deSerializeString(is);
 	can_zoom = readU8(is);
-	fullbright = readU8(is);
+	glow = readS8(is);
 }

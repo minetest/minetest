@@ -275,7 +275,7 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 	getboolfield(L, -1, "backface_culling", prop->backface_culling);
-	getboolfield(L, -1, "fullbright", prop->fullbright);
+	getintfield(L, -1, "glow", prop->glow);
 
 	getstringfield(L, -1, "nametag", prop->nametag);
 	lua_getfield(L, -1, "nametag_color");
