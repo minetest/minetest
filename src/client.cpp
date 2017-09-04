@@ -1934,6 +1934,8 @@ bool Client::joinModChannel(const std::string &channel)
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
 	pkt << channel;
 	Send(&pkt);
+
+	m_modchannel_mgr->joinChannel(channel, 0);
 	return true;
 }
 
@@ -1945,12 +1947,14 @@ bool Client::leaveModChannel(const std::string &channel)
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
 	pkt << channel;
 	Send(&pkt);
+
+	m_modchannel_mgr->leaveChannel(channel, 0);
 	return true;
 }
 
 bool Client::sendModChannelMessage(const std::string &channel, const std::string &message)
 {
-	if (!m_modchannel_mgr->channelRegistered(channel))
+	if (!m_modchannel_mgr->canWriteOnChannel(channel))
 		return false;
 
 	// @TODO: do some client rate limiting

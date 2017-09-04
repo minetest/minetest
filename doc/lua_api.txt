@@ -2496,9 +2496,10 @@ Call these functions only at load time!
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
     * Return `true` to by pass the player limit
-* `minetest.register_on_modchannel_message(func(channel_name, message))`
+* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You should have joined  some channels to receive events.
+    * If message comes from a server mod, `sender` field is an empty string.
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`

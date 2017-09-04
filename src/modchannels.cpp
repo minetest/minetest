@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "modchannels.h"
 #include <algorithm>
+#include <cassert>
 
 bool ModChannel::registerConsumer(u16 peer_id)
 {
@@ -49,14 +50,48 @@ bool ModChannel::removeConsumer(u16 peer_id)
 	return found;
 }
 
+bool ModChannel::canWrite() const
+{
+	return m_state == MODCHANNEL_STATE_READ_WRITE;
+}
+
+void ModChannel::setState(ModChannelState state)
+{
+	assert(state != MODCHANNEL_STATE_INIT);
+
+	m_state = state;
+}
+
 bool ModChannelMgr::channelRegistered(const std::string &channel) const
 {
 	return m_registered_channels.find(channel) != m_registered_channels.end();
 }
 
+bool ModChannelMgr::canWriteOnChannel(const std::string &channel) const
+{
+	const auto channel_it = m_registered_channels.find(channel);
+	if (channel_it == m_registered_channels.end()) {
+		return false;
+	}
+
+	return channel_it->second->canWrite();
+}
+
 void ModChannelMgr::registerChannel(const std::string &channel)
 {
-	m_registered_channels[channel] = std::unique_ptr<ModChannel>(new ModChannel());
+	m_registered_channels[channel] = std::unique_ptr<ModChannel>(new ModChannel(channel));
+}
+
+bool ModChannelMgr::setChannelState(const std::string &channel, ModChannelState state)
+{
+	if (!channelRegistered(channel)) {
+		return false;
+	}
+
+	auto channel_it = m_registered_channels.find(channel);
+	channel_it->second->setState(state);
+
+	return true;
 }
 
 bool ModChannelMgr::removeChannel(const std::string &channel)
@@ -82,7 +117,14 @@ bool ModChannelMgr::leaveChannel(const std::string &channel, u16 peer_id)
 	if (!channelRegistered(channel))
 		return false;
 
-	return m_registered_channels[channel]->removeConsumer(peer_id);
+	// Remove consumer from channel
+	bool consumerRemoved = m_registered_channels[channel]->removeConsumer(peer_id);
+
+	// If channel is empty, remove it
+	if (m_registered_channels[channel]->getChannelPeers().empty()) {
+		removeChannel(channel);
+	}
+	return consumerRemoved;
 }
 
 void ModChannelMgr::leaveAllChannels(u16 peer_id)

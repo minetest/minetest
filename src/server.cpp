@@ -3591,17 +3591,18 @@ void dedicated_server_loop(Server &server, bool &kill)
 
 bool Server::joinModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER) &&
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
 }
 
 bool Server::leaveModChannel(const std::string &channel)
 {
-	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER);
+	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
 }
 
 bool Server::sendModChannelMessage(const std::string &channel, const std::string &message)
 {
-	if (!m_modchannel_mgr->channelRegistered(channel))
+	if (!m_modchannel_mgr->canWriteOnChannel(channel))
 		return false;
 
 	broadcastModChannelMessage(channel, message, PEER_ID_SERVER);
@@ -3616,8 +3617,13 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 		return;
 	}
 
+	std::string sender;
+	if (from_peer != PEER_ID_SERVER) {
+		sender = getPlayerName(from_peer);
+	}
+
 	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
-			2 + channel.size() + 2 + message.size());
+			2 + channel.size() + 2 + sender.size() + 2 + message.size());
 	resp_pkt << channel << message;
 	for (u16 peer_id : peers) {
 		// Ignore sender
@@ -3628,6 +3634,6 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	}
 
 	if (from_peer != PEER_ID_SERVER) {
-		m_script->on_modchannel_message(channel, message);
+		m_script->on_modchannel_message(channel, sender, message);
 	}
 }

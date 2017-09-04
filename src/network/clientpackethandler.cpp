@@ -1336,15 +1336,14 @@ void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
  * Mod channels
  */
 
-// @TODO client should have a list of registered channels, to filter them directly in API
-// it should also verify if it joined channels here, and do some rate limit too
 void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 {
-	std::string channel_name, channel_msg;
-	*pkt >> channel_name >> channel_msg;
+	std::string channel_name, sender, channel_msg;
+	*pkt >> channel_name >> sender >> channel_msg;
 
 	verbosestream << "Mod channel message received from server " << pkt->getPeerId()
-		<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
+		<< " on channel " << channel_name << ". sender: `" << sender << "`, message: "
+		<< channel_msg << std::endl;
 
 	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
 		verbosestream << "Server sent us messages on unregistered channel "
@@ -1352,7 +1351,7 @@ void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 		return;
 	}
 
-	m_script->on_modchannel_message(channel_name, channel_msg);
+	m_script->on_modchannel_message(channel_name, sender, channel_msg);
 }
 
 void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
@@ -1367,16 +1366,17 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	// @TODO: send Signal to Lua API
 	switch (signal) {
 		case MODCHANNEL_SIGNAL_JOIN_OK:
-			m_modchannel_mgr->joinChannel(channel, 0);
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
 			infostream << "Server ack our mod channel join on channel `" << channel
 				<< "`, joining." << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_JOIN_FAILURE:
+			// Unable to join, remove channel
+			m_modchannel_mgr->leaveChannel(channel, 0);
 			infostream << "Server refused our mod channel join on channel `" << channel
 				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_LEAVE_OK:
-			m_modchannel_mgr->leaveChannel(channel, 0);
 			infostream << "Server ack our mod channel leave on channel " << channel
 				<< "`, leaving." << std::endl;
 			break;
@@ -1385,8 +1385,19 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+			// Generally unused, but ensure we don't do an implementation error
 			infostream << "Server tells us we sent a message on channel `" << channel
 				<< "` but we are not registered. Message was dropped." << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_SET_READ_ONLY:
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_ONLY);
+			infostream << "Server sets mod channel `" << channel
+					<< "` in read-only mode." << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_SET_READ_WRITE:
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
+			infostream << "Server sets mod channel `" << channel
+					<< "` in read-write mode." << std::endl;
 			break;
 		default:
 			warningstream << "Received unhandled mod channel signal ID "

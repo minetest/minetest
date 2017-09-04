@@ -683,10 +683,11 @@ Call these functions only at load time!
     * Called when the local player uses an item.
     * Newest functions are called first.
     * If any function returns true, the item use is not sent to server.
-* `minetest.register_on_modchannel_message(func(channel_name, message))`
+* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
     * Called when an incoming mod channel message is received
     * You must have joined some channels before, and server must acknowledge the
       join request.
+    * If message comes from a server mod, `sender` field is an empty string.
 
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle

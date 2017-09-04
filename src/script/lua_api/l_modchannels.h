@@ -25,13 +25,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class ModApiChannels : public ModApiBase
 {
 private:
-	// join_channel(name)
+	// mod_channel_join(name)
 	static int l_mod_channel_join(lua_State *L);
 
-	// leave_channel(name)
+	// mod_channel_leave(name)
 	static int l_mod_channel_leave(lua_State *L);
 
-	// request_http_api()
+	// mod_channel_send(name, message)
 	static int l_mod_channel_send(lua_State *L);
 
 public:

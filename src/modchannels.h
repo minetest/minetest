@@ -25,17 +25,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include "irrlichttypes.h"
 
+enum ModChannelState
+{
+	MODCHANNEL_STATE_INIT,
+	MODCHANNEL_STATE_READ_WRITE,
+	MODCHANNEL_STATE_READ_ONLY,
+};
+
 class ModChannel
 {
 public:
-	ModChannel() = default;
+	ModChannel(const std::string &name):
+			m_name(name) {}
 	~ModChannel() = default;
 
 	bool registerConsumer(u16 peer_id);
 	bool removeConsumer(u16 peer_id);
 	const std::vector<u16> &getChannelPeers() const { return m_client_consumers; }
+	bool canWrite() const;
+	void setState(ModChannelState state);
 
 private:
+	std::string m_name;
+	ModChannelState m_state = MODCHANNEL_STATE_INIT;
 	std::vector<u16> m_client_consumers;
 };
 
@@ -46,6 +58,8 @@ enum ModChannelSignal : u8
 	MODCHANNEL_SIGNAL_LEAVE_OK,
 	MODCHANNEL_SIGNAL_LEAVE_FAILURE,
 	MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED,
+	MODCHANNEL_SIGNAL_SET_READ_ONLY,
+	MODCHANNEL_SIGNAL_SET_READ_WRITE,
 };
 
 class ModChannelMgr
@@ -55,14 +69,23 @@ public:
 	~ModChannelMgr() = default;
 
 	void registerChannel(const std::string &channel);
-	bool removeChannel(const std::string &channel);
+	bool setChannelState(const std::string &channel, ModChannelState state);
 	bool joinChannel(const std::string &channel, u16 peer_id);
 	bool leaveChannel(const std::string &channel, u16 peer_id);
 	bool channelRegistered(const std::string &channel) const;
+	/**
+	 * This function check if a local mod can write on the channel
+	 *
+	 * @param channel
+	 * @return true if write is allowed
+	 */
+	bool canWriteOnChannel(const std::string &channel) const;
 	void leaveAllChannels(u16 peer_id);
 	const std::vector<u16> &getChannelPeers(const std::string &channel) const;
 
 private:
+	bool removeChannel(const std::string &channel);
+
 	std::unordered_map<std::string, std::unique_ptr<ModChannel>>
 			m_registered_channels;
 };
