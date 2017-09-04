@@ -2165,19 +2165,20 @@ Helper functions
 ----------------
 * `dump2(obj, name, dumped)`: returns a string which makes `obj` human readable,
         handles reference loops
-    * `obj`: anything, e.g. table TODO
+    * `obj`: arbitrary variable
     * `name`: string, default: `"_"`
     * `dumped`: table, default: `{}`
 * `dump(obj, dumped)`: returns a string which makes `obj` human readable
-    * `obj`: anything, e.g. table TODO
+    * `obj`: arbitrary variable
     * `dumped`: table, default: `{}`
 * `math.hypot(x, y)`
     * Get the hypotenuse of a triangle with legs x and y.
       Useful for distance calculation.
-* `math.sign(x, tolerance)`: returns `-1`, `0` or `1` TODO
+* `math.sign(x, tolerance)`: returns `-1`, `0` or `1`
     * Get the sign of a number.
-    * tolerance: number, returns `0` when the absolute value is within the
-      tolerance, default: `0.0`
+    * tolerance: number, default: `0.0`
+    * If the absolute value of `x` is within the `tolerance` or `x` is NaN,
+      `0` is returned.
 * `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
     * `separator`: string, default: `","`
     * `include_empty`: boolean, default: `false`
@@ -3669,10 +3670,10 @@ an itemstring, a table or `nil`.
 * `set_name(item_name)`: returns a boolean indicating whether the item was cleared
 * `get_count()`: Returns number of items on the stack.
 * `set_count(count)`: returns a boolean indicating whether the item was cleared
-    * `count`: number TODO
+    * `count`: number, unsigned 16 bit integer
 * `get_wear()`: returns tool wear (`0`-`65535`), `0` for non-tools.
 * `set_wear(wear)`: returns boolean indicating whether item was cleared
-    * `wear`: number, a 16 bit unsigned integer
+    * `wear`: number, unsigned 16 bit integer
 * `get_meta()`: returns ItemStackMetaRef. See section for more details
 * `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
@@ -3689,7 +3690,7 @@ an itemstring, a table or `nil`.
         or those of the hand if none are defined for this item type
 * `add_wear(amount)`
     * Increases wear by `amount` if the item is a tool
-    * `amount`: number TODO
+    * `amount`: number, integer
 * `add_item(item)`: returns leftover `ItemStack`
     * Put some item or stack onto this stack
 * `item_fits(item)`: returns `true` if item or stack can be fully added to
