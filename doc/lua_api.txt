@@ -2450,8 +2450,8 @@ Call these functions only at load time!
 * `minetest.register_on_item_pickup(func(item_luaentity, picker, time_from_last_punch, tool_capabilities, dir))`
     * Called when item is picked up by `picker`.
     * Newest functions are called first.
-    * If `true` is returned, the following functions are not called.
-    * If `false` is returned, the following functions are not called and the item is not picked up.
+    * If function returns `true`, remaining functions are not called.
+    * If function returns `false`, remaining functions are not called and the item is not picked up.
 * `minetest.register_on_priv_grant(function(name, granter, priv))`
     * Called when `granter` grants the priv `priv` to `name`.
     * Note that the callback will be called twice if it's done by a player, once with granter being the player name,
@@ -4247,13 +4247,13 @@ Definition tables
         on_pickup = func(item_luaentity, picker, time_from_last_punch, tool_capabilities, dir),
         --[[
         ^ Called when a dropped item is punched and picked up by `picker`.
-        ^ Shall remove dropped item and add itemstack to `picker`'s inventory or
-          return `true`.
+        ^ Function should remove dropped item and add itemstack to `picker`'s
+          inventory, or return true.
         ^ `item_luaentity` is the luaentity of the dropped item.
         ^ The `picker` may be any `ObjectRef` or `nil`.
-        ^ Not setting it or returning `true` will first call all functions that
-          are register on pickup (see `minetest.register_on_item_pickup`) and
-          then normally result in:
+        ^ Not setting this function or returning `true` will first call all functions
+          that are registered on pickup (see `minetest.register_on_item_pickup`)
+          and then normally result in:
           ```lua
           function(self, hitter)
               local inv = hitter:get_inventory()
