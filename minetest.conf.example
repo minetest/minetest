@@ -13,10 +13,8 @@
 #    http://wiki.minetest.net/
 
 #
-# Client
+# Controls
 #
-
-## Controls
 
 #    If enabled, you can place blocks at the position (feet + eye level) where you stand.
 #    This is helpful when working with nodeboxes in small areas.
@@ -416,62 +414,13 @@
 #    type: key
 # keymap_print_debug_stacks = KEY_KEY_P
 
-## Network
+#
+# Graphics
+#
 
-#    Address to connect to.
-#    Leave this blank to start a local server.
-#    Note that the address field in the main menu overrides this setting.
-#    type: string
-# address =
+## In-Game
 
-#    Port to connect to (UDP).
-#    Note that the port field in the main menu overrides this setting.
-#    type: int min: 1 max: 65535
-# remote_port = 30000
-
-#    Whether to support older servers before protocol version 25.
-#    Enable if you want to connect to 0.4.12 servers and before.
-#    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
-#    Disabling this option will protect your password better.
-#    type: bool
-# send_pre_v25_init = false
-
-#    Save the map received by the client on disk.
-#    type: bool
-# enable_local_map_saving = false
-
-#    Show entity selection boxes
-#    type: bool
-# show_entity_selectionbox = true
-
-#    Enable usage of remote media server (if provided by server).
-#    Remote servers offer a significantly faster way to download media (e.g. textures)
-#    when connecting to the server.
-#    type: bool
-# enable_remote_media_server = true
-
-#    Enable Lua modding support on client.
-#    This support is experimental and API can change.
-#    type: bool
-# enable_client_modding = false
-
-#    URL to the server list displayed in the Multiplayer Tab.
-#    type: string
-# serverlist_url = servers.minetest.net
-
-#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
-#    type: string
-# serverlist_file = favoriteservers.txt
-
-#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
-#    type: int
-# max_out_chat_queue_size = 20
-
-## Graphics
-
-### In-Game
-
-#### Basic
+### Basic
 
 #    Enable VBO
 #    type: bool
@@ -513,7 +462,7 @@
 #    type: bool
 # enable_particles = true
 
-#### Filtering
+### Filtering
 
 #    Use mip mapping to scale textures. May slightly increase performance.
 #    type: bool
@@ -559,7 +508,7 @@
 #    type: enum values: 0, 2, 3, 4
 # undersampling = 0
 
-#### Shaders
+### Shaders
 
 #    Shaders allow advanced visual effects and may increase performance on some video cards.
 #    This only works with the OpenGL video backend.
@@ -570,13 +519,13 @@
 #    type: path
 # shader_path =
 
-##### Tone Mapping
+#### Tone Mapping
 
 #    Enables filmic tone mapping
 #    type: bool
 # tone_mapping = false
 
-##### Bumpmapping
+#### Bumpmapping
 
 #    Enables bumpmapping for textures. Normalmaps need to be supplied by the texture pack
 #    or need to be auto-generated.
@@ -598,7 +547,7 @@
 #    type: int min: 0 max: 2
 # normalmaps_smooth = 0
 
-##### Parallax Occlusion
+#### Parallax Occlusion
 
 #    Enables parallax occlusion mapping.
 #    Requires shaders to be enabled.
@@ -626,7 +575,7 @@
 #    type: float
 # parallax_occlusion_bias = 0.04
 
-##### Waving Nodes
+#### Waving Nodes
 
 #    Set to true enables waving water.
 #    Requires shaders to be enabled.
@@ -652,7 +601,7 @@
 #    type: bool
 # enable_waving_plants = false
 
-#### Advanced
+### Advanced
 
 #    Arm inertia, gives a more realistic movement of
 #    the arm when the camera moves.
@@ -707,13 +656,13 @@
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
 #    This setting is for the client only and is ignored by the server.
-#    type: float min: 0.5 max: 3.0
+#    type: float min: 0.5 max: 3
 # display_gamma = 1.0
 
-#    type: float min: 0.0 max: 4.0
+#    type: float min: 0 max: 4
 # lighting_alpha = 0.0
 
-#    type: float min: 0.0 max: 4.0
+#    type: float min: 0 max: 4
 # lighting_beta = 0.0
 
 #    Path to texture directory. All textures are first searched from here.
@@ -763,7 +712,7 @@
 # console_alpha = 200
 
 #    Formspec full-screen background opacity (between 0 and 255).
-#    type: int
+#    type: int min: 0 max: 255
 # formspec_fullscreen_bg_opacity = 140
 
 #    Formspec full-screen background color (R,G,B).
@@ -771,7 +720,7 @@
 # formspec_fullscreen_bg_color = (0,0,0)
 
 #    Formspec default background opacity (between 0 and 255).
-#    type: int
+#    type: int min: 0 max: 255
 # formspec_default_bg_opacity = 140
 
 #    Formspec default background color (R,G,B).
@@ -864,7 +813,11 @@
 #    type: bool
 # opaque_water = false
 
-### Menus
+#    Show entity selection boxes
+#    type: bool
+# show_entity_selectionbox = true
+
+## Menus
 
 #    Use a cloud animation for the main menu background.
 #    type: bool
@@ -947,7 +900,7 @@
 #    type: int min: 0 max: 100
 # screenshot_quality = 0
 
-### Advanced
+## Advanced
 
 #    Adjust dpi configuration to your screen (non X11/Android only) e.g. for 4k screens.
 #    type: int
@@ -958,13 +911,66 @@
 #    type: bool
 # enable_console = false
 
-## Sound
+#
+# Sound
+#
 
 #    type: bool
 # enable_sound = true
 
 #    type: float min: 0 max: 1
 # sound_volume = 0.7
+
+#
+# Client
+#
+
+## Network
+
+#    Address to connect to.
+#    Leave this blank to start a local server.
+#    Note that the address field in the main menu overrides this setting.
+#    type: string
+# address =
+
+#    Port to connect to (UDP).
+#    Note that the port field in the main menu overrides this setting.
+#    type: int min: 1 max: 65535
+# remote_port = 30000
+
+#    Whether to support older servers before protocol version 25.
+#    Enable if you want to connect to 0.4.12 servers and before.
+#    Servers starting with 0.4.13 will work, 0.4.12-dev servers may work.
+#    Disabling this option will protect your password better.
+#    type: bool
+# send_pre_v25_init = false
+
+#    Save the map received by the client on disk.
+#    type: bool
+# enable_local_map_saving = false
+
+#    Enable usage of remote media server (if provided by server).
+#    Remote servers offer a significantly faster way to download media (e.g. textures)
+#    when connecting to the server.
+#    type: bool
+# enable_remote_media_server = true
+
+#    Enable Lua modding support on client.
+#    This support is experimental and API can change.
+#    type: bool
+# enable_client_modding = false
+
+#    URL to the server list displayed in the Multiplayer Tab.
+#    type: string
+# serverlist_url = servers.minetest.net
+
+#    File in client/serverlist/ that contains your favorite servers displayed in the Multiplayer Tab.
+#    type: string
+# serverlist_file = favoriteservers.txt
+
+#    Maximum size of the out chat queue. 0 to disable queueing and -1 to make the queue size unlimited
+#    type: int
+# max_out_chat_queue_size = 20
 
 ## Advanced
 
@@ -1189,6 +1195,10 @@
 #    Examples: 72 = 20min, 360 = 4min, 1 = 24hour, 0 = day/night/whatever stays unchanged.
 #    type: int
 # time_speed = 72
+
+#    Time of day when a new world is started, in millihours (0-23999).
+#    type: int min: 0 max: 23999
+# world_start_time = 5250
 
 #    Interval of saving important changes in the world, stated in seconds.
 #    type: float
