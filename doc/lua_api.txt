@@ -2163,32 +2163,47 @@ For the following functions `x` can be either a vector or a number:
 
 Helper functions
 ----------------
-* `dump2(obj, name="_", dumped={})`
-     * Return object serialized as a string, handles reference loops
-* `dump(obj, dumped={})`
-    * Return object serialized as a string
+* `dump2(obj, name, dumped)`: returns a string which makes `obj` human readable,
+        handles reference loops
+    * `obj`: anything, e.g. table TODO
+    * `name`: string, default: `"_"`
+    * `dumped`: table, default: `{}`
+* `dump(obj, dumped)`: returns a string which makes `obj` human readable
+    * `obj`: anything, e.g. table TODO
+    * `dumped`: table, default: `{}`
 * `math.hypot(x, y)`
     * Get the hypotenuse of a triangle with legs x and y.
       Useful for distance calculation.
-* `math.sign(x, tolerance)`
+* `math.sign(x, tolerance)`: returns `-1`, `0` or `1` TODO
     * Get the sign of a number.
-      Optional: Also returns `0` when the absolute value is within the tolerance (default: `0`)
-* `string.split(str, separator=",", include_empty=false, max_splits=-1, sep_is_pattern=false)`
-    * If `max_splits` is negative, do not limit splits.
-    * `sep_is_pattern` specifies if separator is a plain string or a pattern (regex).
-    * e.g. `string:split("a,b", ",") == {"a","b"}`
-* `string:trim()`
-    * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
-* `minetest.wrap_text(str, limit, [as_table])`: returns a string or table
-    * Adds newlines to the string to keep it within the specified character limit
-      Note that returned lines may be longer than the limit since it only splits at word borders.
-    * limit: Maximal amount of characters in one line
-    * as_table: optional, if true return table of lines instead of string
-* `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
-    * Convert position to a printable string
-      Optional: 'decimal_places' will round the x, y and z of the pos to the given decimal place.
-* `minetest.string_to_pos(string)`: returns a position
-    * Same but in reverse. Returns `nil` if the string can't be parsed to a position.
+    * tolerance: number, returns `0` when the absolute value is within the
+      tolerance, default: `0.0`
+* `string.split(str, separator, include_empty, max_splits, sep_is_pattern)`
+    * `separator`: string, default: `","`
+    * `include_empty`: boolean, default: `false`
+    * `max_splits`: number, if it's positive, splits aren't limited,
+      default: `-1`
+    * `sep_is_pattern`: boolean, it specifies whether separator is a plain
+      string or a pattern (regex), default: `false`
+    * e.g. `"a,b":split","` returns `{"a","b"}`
+* `string:trim()`: returns the string whithout whitespace pre- and suffixes
+    * e.g. `"\n \t\tfoo bar\t ":trim()` returns `"foo bar"`
+* `minetest.wrap_text(str, limit, as_table)`: returns a string or table
+    * Adds newlines to the string to keep it within the specified character
+      limit
+    * Note that the returned lines may be longer than the limit since it only
+      splits at word borders.
+    * `limit`: number, maximal amount of characters in one line
+    * `as_table`: boolean, if set to true, a table of lines instead of a string
+      is returned, default: `false`
+* `minetest.pos_to_string(pos, decimal_places)`: returns string `"(X,Y,Z)"`
+    * `pos`: table {x=X, y=Y, z=Z}
+    * Converts the position `pos` to a human-readable, printable string
+    * `decimal_places`: number, if specified, the x, y and z values of
+      the position are rounded to the given decimal place.
+* `minetest.string_to_pos(string)`: returns a position or `nil`
+    * Same but in reverse.
+    * If the string can't be parsed to a position, nothing is returned.
 * `minetest.string_to_area("(X1, Y1, Z1) (X2, Y2, Z2)")`: returns two positions
     * Converts a string representing an area box into two positions
 * `minetest.formspec_escape(string)`: returns a string
@@ -2542,7 +2557,7 @@ Call these functions only at load time!
 ### Authentication
 * `minetest.notify_authentication_modified(name)`
     * Should be called by the authentication handler if privileges changes.
-    * To report everybody, set `name=nil`.
+    * `name`: string, if ommited, everybody is reported
 * `minetest.check_password_entry(name, entry, password)`
     * Returns true if the "db entry" for a player with name matches given
     * password, false otherwise.
@@ -2581,12 +2596,15 @@ and `minetest.auth_reload` call the authetification handler.
 
 ### Environment access
 * `minetest.set_node(pos, node)`
-* `minetest.add_node(pos, node): alias set_node(pos, node)`
-    * Set node at position (`node = {name="foo", param1=0, param2=0}`)
+* `minetest.add_node(pos, node): alias to `minetest.set_node`
+    * Set node at position `pos`
+    * `node`: table `{name=string, param1=number, param2=number}`
+    * If param1 or param2 is omitted, it's set to `0`.
+    * e.g. `minetest.set_node({x=0, y=10, z=0}, {name="default:wood"})`
 * `minetest.swap_node(pos, node)`
     * Set node at position, but don't remove metadata
 * `minetest.remove_node(pos)`
-    * Equivalent to `set_node(pos, "air")`
+    * By default it does the same as `minetest.set_node(pos, {name="air"})`
 * `minetest.get_node(pos)`
     * Returns the node at the given position as table in the format
       `{name="node_name", param1=0, param2=0}`, returns `{name="ignore", param1=0, param2=0}`
@@ -3117,11 +3135,14 @@ These functions return the leftover itemstack.
     * `name`: `"breath"` or `"health"`
     * `hud_definition`: definition to replace builtin definition
 * `minetest.send_join_message(player_name)`
-    * Can be overridden by mods to change the join message
+    * This function can be overridden by mods to change the join message.
 * `minetest.send_leave_message(player_name, timed_out)`
-    * Can be overridden by mods to change the leave message
-* `minetest.hash_node_position({x=,y=,z=})`: returns an 48-bit integer
+    * This function can be overridden by mods to change the leave message.
+* `minetest.hash_node_position(pos)`: returns an 48-bit integer
+    * `pos`: table {x=number, y=number, z=number},
     * Gives a unique hash number for a node position (16+16+16=48bit)
+    * Currently it returns
+      `(pos.z + 32768) * 65536 * 65536 + (pos.y + 32768) * 65536 + pos.x + 32768`
 * `minetest.get_position_from_hash(hash)`: returns a position
     * Inverse transform of `minetest.hash_node_position`
 * `minetest.get_item_group(name, group)`: returns a rating
@@ -3424,7 +3445,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 
 ##### LuaEntitySAO-only (no-op for other objects)
 * `set_velocity(vel)`
-    * `vel` is a vector, e.g. `{x=0, y=2.3, z=1}`
+    * `vel` is a vector, e.g. `{x=0.0, y=2.3, z=1.0}`
 * `get_velocity()`: returns the velocity, a vector
 * `set_acceleration(acc)`
     * `acc` is a vector
@@ -3643,36 +3664,42 @@ It can be created via `ItemStack(x)`, where x is an `ItemStack`,
 an itemstring, a table or `nil`.
 
 #### Methods
-* `is_empty()`: Returns `true` if stack is empty.
-* `get_name()`: Returns item name (e.g. `"default:stone"`).
-* `set_name(item_name)`: Returns boolean whether item was cleared
+* `is_empty()`: returns `true` if stack is empty.
+* `get_name()`: returns item name (e.g. `"default:stone"`).
+* `set_name(item_name)`: returns a boolean indicating whether the item was cleared
 * `get_count()`: Returns number of items on the stack.
-* `set_count(count)`: Returns boolean whether item was cleared
-* `get_wear()`: Returns tool wear (`0`-`65535`), `0` for non-tools.
-* `set_wear(wear)`: Returns boolean whether item was cleared
-* `get_meta()`: Returns ItemStackMetaRef. See section for more details
+* `set_count(count)`: returns a boolean indicating whether the item was cleared
+    * `count`: number TODO
+* `get_wear()`: returns tool wear (`0`-`65535`), `0` for non-tools.
+* `set_wear(wear)`: returns boolean indicating whether item was cleared
+    * `wear`: number, a 16 bit unsigned integer
+* `get_meta()`: returns ItemStackMetaRef. See section for more details
 * `get_metadata()`: (DEPRECATED) Returns metadata (a string attached to an item stack).
 * `set_metadata(metadata)`: (DEPRECATED) Returns true.
 * `clear()`: removes all items from the stack, making it empty.
 * `replace(item)`: replace the contents of this stack.
     * `item` can also be an itemstring or table.
-* `to_string()`: Returns the stack in itemstring form.
-* `to_table()`: Returns the stack in Lua table form.
-* `get_stack_max()`: Returns the maximum size of the stack (depends on the item).
-* `get_free_space()`: Returns `get_stack_max() - get_count()`.
-* `is_known()`: Returns `true` if the item name refers to a defined item type.
-* `get_definition()`: Returns the item definition table.
-* `get_tool_capabilities()`: Returns the digging properties of the item,
-  or those of the hand if none are defined for this item type
-* `add_wear(amount)`: Increases wear by `amount` if the item is a tool.
-* `add_item(item)`: Put some item or stack onto this stack.
-   Returns leftover `ItemStack`.
-* `item_fits(item)`: Returns `true` if item or stack can be fully added to
-  this one.
-* `take_item(n=1)`: Take (and remove) up to `n` items from this stack.
-  Returns taken `ItemStack`.
-* `peek_item(n=1)`: copy (don't remove) up to `n` items from this stack.
-  Returns taken `ItemStack`.
+* `to_string()`: returns the stack in itemstring form.
+* `to_table()`: returns the stack in Lua table form.
+* `get_stack_max()`: returns the maximum size of the stack (depends on the item).
+* `get_free_space()`: returns `get_stack_max() - get_count()`.
+* `is_known()`: returns `true` if the item name refers to a defined item type.
+* `get_definition()`: returns the item definition table.
+* `get_tool_capabilities()`: returns the digging properties of the item,
+        or those of the hand if none are defined for this item type
+* `add_wear(amount)`
+    * Increases wear by `amount` if the item is a tool
+    * `amount`: number TODO
+* `add_item(item)`: returns leftover `ItemStack`
+    * Put some item or stack onto this stack
+* `item_fits(item)`: returns `true` if item or stack can be fully added to
+        this one.
+* `take_item(n)`: returns taken `ItemStack`
+    * Take (and remove) up to `n` items from this stack
+    * `n`: number, default: `1`
+* `peek_item(n)`: returns taken `ItemStack`
+    * Copy (don't remove) up to `n` items from this stack
+    * `n`: number, default: `1`
 
 ### `PseudoRandom`
 A 16-bit pseudorandom number generator.
