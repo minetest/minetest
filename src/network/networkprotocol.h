@@ -178,6 +178,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			Breaks compatibility with older clients.
 	PROTOCOL VERSION 36:
 		Backwards compatibility drop
+		Add 'can_zoom' to player object properties
 */
 
 #define LATEST_PROTOCOL_VERSION 36
