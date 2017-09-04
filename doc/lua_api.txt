@@ -2470,6 +2470,9 @@ Call these functions only at load time!
     * Called when `revoker` revokes the priv `priv` from `name`.
     * Note that the callback will be called twice if it's done by a player, once with revoker being the player name,
       and again with revoker being nil.
+* `minetest.register_can_bypass_userlimit(function(name, ip))`
+    * Called when `name` user connects with `ip`.
+    * Return `true` to by pass the player limit
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
