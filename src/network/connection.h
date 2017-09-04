@@ -330,6 +330,18 @@ struct ConnectionCommand
 	bool raw = false;
 
 	ConnectionCommand() = default;
+	ConnectionCommand &operator=(const ConnectionCommand &other)
+	{
+		type = other.type;
+		address = other.address;
+		peer_id = other.peer_id;
+		channelnum = other.channelnum;
+		// We must copy the buffer here to prevent race condition
+		data = SharedBuffer<u8>(*other.data, other.data.getSize());
+		reliable = other.reliable;
+		raw = other.raw;
+		return *this;
+	}
 
 	void serve(Address address_)
 	{
