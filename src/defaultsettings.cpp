@@ -142,8 +142,10 @@ void set_default_settings(Settings *settings)
 
 	// Visuals
 #ifdef NDEBUG
+	settings->setDefault("show_status", "false");
 	settings->setDefault("show_debug", "false");
 #else
+	settings->setDefault("show_status", "true");
 	settings->setDefault("show_debug", "true");
 #endif
 	settings->setDefault("fsaa", "0");

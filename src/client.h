@@ -408,6 +408,7 @@ public:
 	void showProfiler(bool show = true);
 	void showGameFog(bool show = true);
 	void showGameDebug(bool show = true);
+	void showGameStatus(bool show = true);
 
 	const Address getServerAddress();
 

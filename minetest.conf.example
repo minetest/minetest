@@ -978,6 +978,11 @@
 #    type: int
 # client_mapblock_limit = 5000
 
+#    Whether to show some basic status (can disabled by hitting F5).
+#    Contains current position, direction and node you're pointing at.
+#    type: bool
+# show_status = false
+
 #    Whether to show the client debug info (has the same effect as hitting F5).
 #    type: bool
 # show_debug = false

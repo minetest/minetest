@@ -809,6 +809,10 @@ client_unload_unused_data_timeout (Mapblock unload timeout) int 600
 #    Set to -1 for unlimited amount.
 client_mapblock_limit (Mapblock limit) int 5000
 
+#    Whether to show some basic status (can disabled by hitting F5).
+#    Contains current position, direction and node you're pointing at.
+show_status (Show basic status) bool false
+
 #    Whether to show the client debug info (has the same effect as hitting F5).
 show_debug (Show debug info) bool false
 
