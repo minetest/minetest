@@ -168,6 +168,18 @@ public:
 	/*
 		Copies whole buffer
 	*/
+	SharedBuffer(const Buffer<T> &buffer)
+	{
+		m_size = buffer.getSize();
+		if (m_size != 0) {
+				data = new T[m_size];
+				memcpy(data, *buffer, buffer.getSize());
+		}
+		else
+			data = NULL;
+		refcount = new unsigned int;
+		(*refcount) = 1;
+	}
 	~SharedBuffer()
 	{
 		drop();

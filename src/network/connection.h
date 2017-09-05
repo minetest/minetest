@@ -325,7 +325,7 @@ struct ConnectionCommand
 	Address address;
 	u16 peer_id = PEER_ID_INEXISTENT;
 	u8 channelnum = 0;
-	SharedBuffer<u8> data;
+	Buffer<u8> data;
 	bool reliable = false;
 	bool raw = false;
 
