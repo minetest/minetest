@@ -22,6 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_base.h"
 #include "config.h"
 
+class ModChannel;
+
 class ModApiChannels : public ModApiBase
 {
 private:
@@ -36,4 +38,21 @@ private:
 
 public:
 	static void Initialize(lua_State *L, int top);
+};
+
+class ModChannelRef : public ModApiBase
+{
+public:
+	ModChannelRef(ModChannel *modchannel);
+	~ModChannelRef() = default;
+
+	static void Register(lua_State *L);
+private:
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	ModChannel *m_modchannel = nullptr;
+
+	static const char className[];
+	static const luaL_Reg methods[];
 };

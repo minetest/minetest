@@ -68,3 +68,49 @@ void ModApiChannels::Initialize(lua_State *L, int top)
 	API_FCT(mod_channel_leave);
 	API_FCT(mod_channel_send);
 }
+
+/*
+ * ModChannelRef
+ */
+
+ModChannelRef::ModChannelRef(ModChannel *modchannel):
+	m_modchannel(modchannel)
+{
+}
+
+void ModChannelRef::Register(lua_State *L)
+{
+	lua_newtable(L);
+	int methodtable = lua_gettop(L);
+	luaL_newmetatable(L, className);
+	int metatable = lua_gettop(L);
+
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable); // hide metatable from lua getmetatable()
+
+	lua_pushliteral(L, "__index");
+	lua_pushvalue(L, methodtable);
+	lua_settable(L, metatable);
+
+	lua_pushliteral(L, "__gc");
+	lua_pushcfunction(L, gc_object);
+	lua_settable(L, metatable);
+
+	lua_pop(L, 1); // Drop metatable
+
+	luaL_openlib(L, 0, methods, 0); // fill methodtable
+	lua_pop(L, 1);			// Drop methodtable
+}
+
+int ModChannelRef::gc_object(lua_State *L)
+{
+	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
+	delete o;
+	return 0;
+}
+
+const char ModChannelRef::className[] = "ModChannelRef";
+const luaL_Reg ModChannelRef::methods[] = {
+	{0, 0},
+};

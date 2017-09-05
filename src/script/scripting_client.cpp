@@ -73,6 +73,7 @@ void ClientScripting::InitializeModApi(lua_State *L, int top)
 	NodeMetaRef::RegisterClient(L);
 	LuaLocalPlayer::Register(L);
 	LuaCamera::Register(L);
+	ModChannelRef::Register(L);
 
 	ModApiUtil::InitializeClient(L, top);
 	ModApiClient::Initialize(L, top);
