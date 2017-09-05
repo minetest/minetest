@@ -367,10 +367,6 @@ keymap_increase_viewing_range_min (View range increase key) key +
 #    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
 keymap_decrease_viewing_range_min (View range decrease key) key -
 
-#    Key for printing debug stacks. Used for development.
-#    See http://irrlicht.sourceforge.net/docu/namespaceirr.html#a54da2a0e231901735e3da1b0edf72eb3
-keymap_print_debug_stacks (Print stacks) key KEY_KEY_P
-
 [Graphics]
 
 [*In-Game]

@@ -135,7 +135,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("zoom_fov", "15");
 
 	// Some (temporary) keys for debugging
-	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
