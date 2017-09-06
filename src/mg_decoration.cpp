@@ -67,6 +67,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 void Decoration::resolveNodeNames()
 {
 	getIdsFromNrBacklog(&c_place_on);
@@ -192,15 +193,8 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
 			if (y < y_min_disp || y > y_max_disp || y < nmin.Y || y > nmax.Y)
 				continue;
 
-			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y) {
+			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y)
 				continue;
-#if 0
-				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
-				//add to queue
-				MutexAutoLock cutofflock(cutoff_mutex);
-				cutoffs.push_back(CutoffData(x, y, z, height));
-#endif
-			}
 
 			if (mg->biomemap && !biomes.empty()) {
 				std::unordered_set<u8>::const_iterator iter =
@@ -217,60 +211,6 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
 
 	return 0;
 }
-
-
-#if 0
-void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
-{
-	PcgRandom pr(blockseed + 53);
-	std::vector<CutoffData> handled_cutoffs;
-
-	// Copy over the cutoffs we're interested in so we don't needlessly hold a lock
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-			CutoffData cutoff = *i;
-			v3s16 p    = cutoff.p;
-			s16 height = cutoff.height;
-			if (p.X < nmin.X || p.X > nmax.X ||
-				p.Z < nmin.Z || p.Z > nmax.Z)
-				continue;
-			if (p.Y + height < nmin.Y || p.Y > nmax.Y)
-				continue;
-
-			handled_cutoffs.push_back(cutoff);
-		}
-	}
-
-	// Generate the cutoffs
-	for (size_t i = 0; i != handled_cutoffs.size(); i++) {
-		v3s16 p    = handled_cutoffs[i].p;
-		s16 height = handled_cutoffs[i].height;
-
-		if (p.Y + height > nmax.Y) {
-			//printf("Decoration at (%d %d %d) cut off again!\n", p.X, p.Y, p.Z);
-			cuttoffs.push_back(v3s16(p.X, p.Y, p.Z));
-		}
-
-		generate(mg, &pr, nmax.Y, nmin.Y - p.Y, v3s16(p.X, nmin.Y, p.Z));
-	}
-
-	// Remove cutoffs that were handled from the cutoff list
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-
-			for (size_t j = 0; j != handled_cutoffs.size(); j++) {
-				CutoffData coff = *i;
-				if (coff.p == handled_cutoffs[j].p)
-					i = cutoffs.erase(i);
-			}
-		}
-	}
-}
-#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -324,6 +264,7 @@ int DecoSimple::getHeight()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
 	// Schematic could have been unloaded but not the decoration
@@ -336,10 +277,16 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X - 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (schematic->size.Y - 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z - 1) / 2;
+
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (schematic->size.Y - 1) / 2;
+	else
+		p.Y += place_offset_y;
+	// Check shifted schematic base is in voxelmanip
+	if (p.Y < vm->m_area.MinEdge.Y)
+		return 0;
 
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
@@ -355,8 +302,8 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 int DecoSchematic::getHeight()
 {
 	// Account for a schematic being sunk into the ground by flag.
-	// When placed normally account for how a schematic is placed
-	// sunk 1 node into the ground.
+	// When placed normally account for how a schematic is by default placed
+	// sunk 1 node into the ground or is vertically shifted by 'y_offset'.
 	return (flags & DECO_PLACE_CENTER_Y) ?
-		(schematic->size.Y - 1) / 2 : schematic->size.Y - 1;
+		(schematic->size.Y - 1) / 2 : schematic->size.Y - 1 + place_offset_y;
 }

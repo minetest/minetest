@@ -4743,6 +4743,13 @@ The Biome API is still in an experimental phase and subject to change.
     --  ^ Flags for schematic decorations.  See 'Schematic attributes'.
         rotation = "90" -- rotate schematic 90 degrees on placement
     --  ^ Rotation can be "0", "90", "180", "270", or "random".
+        place_offset_y = 0,
+    --  ^ Y offset of the schematic base node layer relative to the 'place_on'
+    --  ^ node.
+    --  ^ Can be positive or negative. Default is 0.
+    --  ^ If the flag 'place_center_y' is set this parameter is ignored.
+    --  ^ If absent or 0 the schematic base node layer will be placed level
+    --  ^ with the 'place_on' node.
     }
 
 ### Chat command definition (`register_chatcommand`)

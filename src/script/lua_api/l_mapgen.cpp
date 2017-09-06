@@ -1018,6 +1018,8 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
 		ModApiMapgen::es_Rotation, ROTATE_0);
 
+	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
+
 	StringMap replace_names;
 	lua_getfield(L, index, "replacements");
 	if (lua_istable(L, -1))
