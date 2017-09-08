@@ -532,6 +532,9 @@ pause_fps_max (FPS in pause menu) int 20
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
+#	Near plane distance in nodes.
+near_plane (Near plane) float 0.1 0 1
+
 #    Width component of the initial window size.
 screen_w (Screen width) int 1024
 
