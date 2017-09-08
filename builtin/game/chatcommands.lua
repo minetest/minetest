@@ -629,6 +629,9 @@ core.register_chatcommand("spawnentity", {
 			core.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
+		if not minetest.registered_entities[entityname] then
+			return false, "Cannot spawn an unknown entity"
+		end
 		if p == "" then
 			p = player:getpos()
 		else
