@@ -194,13 +194,13 @@ int ObjectRef::l_punch(lua_State *L)
 	// If the punched is a player, and its HP changed
 	if (src_original_hp != co->getHP() &&
 			co->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	}
 
 	// If the puncher is a player, and its HP changed
 	if (dst_origin_hp != puncher->getHP() &&
 			puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher);
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)puncher, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, co));
 	}
 	return 0;
 }
@@ -236,7 +236,7 @@ int ObjectRef::l_set_hp(lua_State *L)
 	// Do it
 	co->setHP(hp);
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
 
 	// Return
 	return 0;
@@ -731,7 +731,7 @@ int ObjectRef::l_set_properties(lua_State *L)
 	if (prop->hp_max < co->getHP()) {
 		co->setHP(prop->hp_max);
 		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co);
+			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
 	}
 	co->notifyObjectPropertiesModified();
 	return 0;

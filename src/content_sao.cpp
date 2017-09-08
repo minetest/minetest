@@ -922,7 +922,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 			// No more breath, damage player
 			if (m_breath == 0) {
 				setHP(m_hp - c.drowning);
-				m_env->getGameDef()->SendPlayerHPOrDie(this);
+				m_env->getGameDef()->SendPlayerHPOrDie(this, PlayerHPChangeReason(PlayerHPChangeReason::DROWNING));
 			}
 		}
 	}
@@ -962,7 +962,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
 			setHP(newhp);
-			m_env->getGameDef()->SendPlayerHPOrDie(this);
+			m_env->getGameDef()->SendPlayerHPOrDie(this, PlayerHPChangeReason(PlayerHPChangeReason::NODE_DAMAGE));
 		}
 	}
 

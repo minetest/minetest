@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 
 struct ToolCapabilities;
+struct PlayerHPChangeReason;
 
 class ScriptApiPlayer : virtual public ScriptApiBase
 {
@@ -31,7 +32,7 @@ public:
 	virtual ~ScriptApiPlayer() = default;
 
 	void on_newplayer(ServerActiveObject *player);
-	void on_dieplayer(ServerActiveObject *player);
+	void on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason);
 	bool on_respawnplayer(ServerActiveObject *player);
 	bool on_prejoinplayer(const std::string &name, const std::string &ip,
 			std::string *reason);

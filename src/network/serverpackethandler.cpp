@@ -813,7 +813,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< std::endl;
 
 		playersao->setHP(playersao->getHP() - damage);
-		SendPlayerHPOrDie(playersao);
+		SendPlayerHPOrDie(playersao, PlayerHPChangeReason(PlayerHPChangeReason::FALL));
 	}
 }
 
@@ -1175,12 +1175,12 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			// If the object is a player and its HP changed
 			if (src_original_hp != pointed_object->getHP() &&
 					pointed_object->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
-				SendPlayerHPOrDie((PlayerSAO *)pointed_object);
+				SendPlayerHPOrDie((PlayerSAO *)pointed_object, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, playersao));
 			}
 
 			// If the puncher is a player and its HP changed
 			if (dst_origin_hp != playersao->getHP())
-				SendPlayerHPOrDie(playersao);
+				SendPlayerHPOrDie(playersao, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, pointed_object));
 		}
 
 	} // action == 0

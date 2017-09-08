@@ -1136,7 +1136,7 @@ previous.
 
 This combination results in noise varying very roughly between -2.0 and 2.0 and
 with an average value of 0.0, so `scale` and `offset` are then used to multiply
-and offset the noise variation. 
+and offset the noise variation.
 
 The final perlin noise variation is created as follows:
 
@@ -2773,6 +2773,16 @@ Call these functions only at load time!
     * Called after a new player has been created
 * `minetest.register_on_dieplayer(func(ObjectRef))`
     * Called when a player dies
+     * Called after a new player has been created
+* `minetest.register_on_dieplayer(func(ObjectRef, reason))`
+     * Called when a player dies
+     * Reason: a PlayerHPChangeReason table. Will always have a type
+               field with one of the following values:
+        * `set_hp` - A mod or the engine called `set_hp` without giving a reason. No additional fields.
+        * `punch` - Was punched. `reason.player` will hold the puncher, or nil if none.
+        * `fall` - No additional fields.
+        * `node_damage` - damage_per_second per a neighbouring node. No additional fields.
+        * `drowning` - No additional fields.
 * `minetest.register_on_punchplayer(func(player, hitter, time_from_last_punch, tool_capabilities, dir, damage))`
     * Called when a player is punched
     * `player` - ObjectRef - Player that was punched

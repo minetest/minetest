@@ -36,16 +36,20 @@ void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
 	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
 }
 
-void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player)
+void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, const PlayerHPChangeReason &reason)
 {
 	SCRIPTAPI_PRECHECKHEADER
 
-	// Get core.registered_on_dieplayers
+	// Get callback table
 	lua_getglobal(L, "core");
 	lua_getfield(L, -1, "registered_on_dieplayers");
-	// Call callbacks
+
+	// Push arguments
 	objectrefGetOrCreate(L, player);
-	runCallbacks(1, RUN_CALLBACKS_MODE_FIRST);
+	push_PlayerHPChangeReason(L, reason);
+
+	// Run callbacks
+	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
 }
 
 bool ScriptApiPlayer::on_punchplayer(ServerActiveObject *player,

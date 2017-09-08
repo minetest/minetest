@@ -417,3 +417,21 @@ public:
 	bool m_physics_override_new_move = true;
 	bool m_physics_override_sent = false;
 };
+
+
+struct PlayerHPChangeReason {
+	enum TYPE {
+		SET_HP,
+		PLAYER_PUNCH,
+		FALL,
+		NODE_DAMAGE,
+		DROWNING
+	};
+
+	TYPE type = SET_HP;
+	ServerActiveObject *player;
+
+	PlayerHPChangeReason(TYPE type, ServerActiveObject *player=NULL):
+			type(type), player(player)
+	{}
+};

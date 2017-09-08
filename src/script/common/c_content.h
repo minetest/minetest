@@ -62,6 +62,7 @@ struct HitParams;
 struct EnumString;
 struct NoiseParams;
 class Schematic;
+struct PlayerHPChangeReason;
 
 
 ContentFeatures    read_content_features     (lua_State *L, int index);
@@ -187,5 +188,7 @@ void               read_hud_element          (lua_State *L, HudElement *elem);
 void               push_hud_element          (lua_State *L, HudElement *elem);
 
 HudElementStat     read_hud_change           (lua_State *L, HudElement *elem, void **value);
+
+void               push_PlayerHPChangeReason (lua_State *L, const PlayerHPChangeReason &reason);
 
 extern struct EnumString es_TileAnimationType[];
