@@ -272,10 +272,7 @@ public:
 	 */
 	void ResendBlockIfOnWire(v3s16 p);
 
-	s32 SendingCount()
-	{
-		return m_blocks_sending.size();
-	}
+	u32 getSendingCount() const { return m_blocks_sending.size(); }
 
 	// Increments timeouts and removes timed-out blocks from list
 	// NOTE: This doesn't fix the server-not-sending-block bug

@@ -1049,12 +1049,10 @@
 ### Advanced
 
 #    Maximum number of blocks that are simultaneously sent per client.
+#    The maximum total count is calculated dynamically:
+#    max_total = ceil((#clients + max_users) * per_client / 4)
 #    type: int
 # max_simultaneous_block_sends_per_client = 10
-
-#    Maximum number of blocks that are simultaneously sent in total.
-#    type: int
-# max_simultaneous_block_sends_server_total = 40
 
 #    To reduce lag, block transfers are slowed down when a player is building something.
 #    This determines how long they are slowed down after placing or removing a node.

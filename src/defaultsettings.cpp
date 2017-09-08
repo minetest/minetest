@@ -298,7 +298,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
-	settings->setDefault("max_simultaneous_block_sends_server_total", "40");
 	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "minetest");
