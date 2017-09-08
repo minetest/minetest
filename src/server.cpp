@@ -2181,7 +2181,7 @@ void Server::SendBlocks(float dtime)
 
 	std::vector<PrioritySortedBlockTransfer> queue;
 
-	s32 total_sending = 0;
+	u32 total_sending = 0;
 
 	{
 		ScopeProfiler sp2(g_profiler, "Server: selecting blocks for sending");
@@ -2195,7 +2195,7 @@ void Server::SendBlocks(float dtime)
 			if (!client)
 				continue;
 
-			total_sending += client->SendingCount();
+			total_sending += client->getSendingCount();
 			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
 		}
 		m_clients.unlock();
@@ -2207,11 +2207,13 @@ void Server::SendBlocks(float dtime)
 	std::sort(queue.begin(), queue.end());
 
 	m_clients.lock();
-	s32 max_blocks_to_send =
-			g_settings->getS32("max_simultaneous_block_sends_server_total");
+
+	// Maximal total count calculation
+	// The per-client block sends is halved with the maximal online users
+	u32 max_blocks_to_send = (m_env->getPlayerCount() + g_settings->getU32("max_users")) *
+		g_settings->getU32("max_simultaneous_block_sends_per_client") / 4 + 1;
 
 	for (const PrioritySortedBlockTransfer &block_to_send : queue) {
-		//TODO: Calculate limit dynamically
 		if (total_sending >= max_blocks_to_send)
 			break;
 
