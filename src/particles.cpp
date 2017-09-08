@@ -601,21 +601,23 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
+	// No particles for "airlike" nodes
+	if (f.drawtype == NDT_AIRLIKE)
+		return;
+
 	// set the amount of particles here
 	for (u16 j = 0; j < 32; j++) {
 		addNodeParticle(gamedef, player, pos, n, f);
 	}
 }
 
-void ParticleManager::addPunchingParticles(IGameDef* gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
-{
-	addNodeParticle(gamedef, player, pos, n, f);
-}
-
 void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
+	// No particles for "airlike" nodes
+	if (f.drawtype == NDT_AIRLIKE)
+		return;
+
 	// Texture
 	u8 texid = myrand_range(0, 5);
 	const TileLayer &tile = f.tiles[texid].layers[0];

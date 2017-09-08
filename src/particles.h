@@ -185,9 +185,6 @@ public:
 	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
-	void addPunchingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
-		const MapNode &n, const ContentFeatures &f);
-
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
