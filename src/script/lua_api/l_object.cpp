@@ -234,9 +234,12 @@ int ObjectRef::l_set_hp(lua_State *L)
 	/*infostream<<"ObjectRef::l_set_hp(): id="<<co->getId()
 			<<" hp="<<hp<<std::endl;*/
 	// Do it
-	co->setHP(hp);
+
+	auto reason = PlayerHPChangeReason(PlayerHPChangeReason::SET_HP);
+
+	co->setHP(hp, reason);
 	if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+		getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);
 
 	// Return
 	return 0;
@@ -729,9 +732,10 @@ int ObjectRef::l_set_properties(lua_State *L)
 		return 0;
 	read_object_properties(L, 2, prop, getServer(L)->idef());
 	if (prop->hp_max < co->getHP()) {
-		co->setHP(prop->hp_max);
+		auto reason = PlayerHPChangeReason(PlayerHPChangeReason::SET_HP);
+		co->setHP(prop->hp_max, reason);
 		if (co->getType() == ACTIVEOBJECT_TYPE_PLAYER)
-			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+			getServer(L)->SendPlayerHPOrDie((PlayerSAO *)co, reason);
 	}
 	co->notifyObjectPropertiesModified();
 	return 0;

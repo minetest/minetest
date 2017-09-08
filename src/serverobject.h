@@ -46,6 +46,7 @@ class ServerEnvironment;
 struct ItemStack;
 struct ToolCapabilities;
 struct ObjectProperties;
+struct PlayerHPChangeReason;
 
 class ServerActiveObject : public ActiveObject
 {
@@ -139,7 +140,7 @@ public:
 	{ return 0; }
 	virtual void rightClick(ServerActiveObject *clicker)
 	{}
-	virtual void setHP(s16 hp)
+	virtual void setHP(s16 hp, const PlayerHPChangeReason &reason)
 	{}
 	virtual s16 getHP() const
 	{ return 0; }

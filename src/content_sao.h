@@ -245,7 +245,7 @@ public:
 		ServerActiveObject *puncher,
 		float time_from_last_punch);
 	void rightClick(ServerActiveObject *clicker) {}
-	void setHP(s16 hp);
+	void setHP(s16 hp, const PlayerHPChangeReason &reason);
 	void setHPRaw(s16 hp) { m_hp = hp; }
 	s16 readDamage();
 	u16 getBreath() const { return m_breath; }
@@ -425,7 +425,8 @@ struct PlayerHPChangeReason {
 		PLAYER_PUNCH,
 		FALL,
 		NODE_DAMAGE,
-		DROWNING
+		DROWNING,
+		RESPAWN
 	};
 
 	TYPE type = SET_HP;

@@ -1969,5 +1969,9 @@ void push_PlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason)
 		lua_pushstring(L, "drowning");
 		lua_setfield(L, -2, "type");
 		break;
+	case PlayerHPChangeReason::RESPAWN:
+		lua_pushstring(L, "respawned");
+		lua_setfield(L, -2, "type");
+		break;
 	}
 }

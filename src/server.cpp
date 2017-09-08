@@ -2493,7 +2493,7 @@ void Server::DiePlayer(session_t peer_id, const PlayerHPChangeReason &reason)
 			<< playersao->getPlayer()->getName()
 			<< " dies" << std::endl;
 
-	playersao->setHP(0);
+	playersao->setHP(0, reason);
 
 	// Trigger scripted stuff
 	m_script->on_dieplayer(playersao, reason);
@@ -2511,7 +2511,7 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max);
+	playersao->setHP(playersao->accessObjectProperties()->hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
 	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);

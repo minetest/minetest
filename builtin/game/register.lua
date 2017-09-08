@@ -529,11 +529,11 @@ end
 
 core.registered_on_player_hpchanges = { modifiers = { }, loggers = { } }
 
-function core.registered_on_player_hpchange(player, hp_change)
+function core.registered_on_player_hpchange(player, hp_change, reason)
 	local last = false
 	for i = #core.registered_on_player_hpchanges.modifiers, 1, -1 do
 		local func = core.registered_on_player_hpchanges.modifiers[i]
-		hp_change, last = func(player, hp_change)
+		hp_change, last = func(player, hp_change, reason)
 		if type(hp_change) ~= "number" then
 			local debuginfo = debug.getinfo(func)
 			error("The register_on_hp_changes function has to return a number at " ..
@@ -544,7 +544,7 @@ function core.registered_on_player_hpchange(player, hp_change)
 		end
 	end
 	for i, func in ipairs(core.registered_on_player_hpchanges.loggers) do
-		func(player, hp_change)
+		func(player, hp_change, reason)
 	end
 	return hp_change
 end

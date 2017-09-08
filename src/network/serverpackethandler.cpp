@@ -812,8 +812,9 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 				<< (int)damage << " hp at " << PP(playersao->getBasePosition() / BS)
 				<< std::endl;
 
-		playersao->setHP(playersao->getHP() - damage);
-		SendPlayerHPOrDie(playersao, PlayerHPChangeReason(PlayerHPChangeReason::FALL));
+		auto reason = PlayerHPChangeReason(PlayerHPChangeReason::FALL);
+		playersao->setHP(playersao->getHP() - damage, reason);
+		SendPlayerHPOrDie(playersao, reason);
 	}
 }
 
