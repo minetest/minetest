@@ -233,8 +233,26 @@ core.register_chatcommand("revoke", {
 					.. core.privs_to_string(revoke_privs, ' '))
 		end
 
-		return true, "Privileges of " .. revoke_name .. ": " ..
+		local msg = "Privileges of " .. revoke_name .. ": " ..
 				core.privs_to_string(core.get_player_privs(revoke_name), ' ')
+
+		if minetest.is_singleplayer() then
+			local count = 0
+			for priv, _ in pairs(revoke_privs) do
+				local def = minetest.registered_privileges[priv]
+				if def and def.give_to_singleplayer then
+					count = count + 1
+				end
+			end
+
+			if count > 0 then
+				msg = "Warning: Unable to revoke " .. count .. " privileges from singleplayer, as they are required.\n" .. msg
+			end
+		elseif revoke_name == minetest.settings:get("name") then
+			msg = "Warning: Privileges cannot be revoked from admins.\n" .. msg
+		end
+
+		return true, msg
 	end,
 })
 
