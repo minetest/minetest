@@ -4032,7 +4032,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features = client->getNodeDefManager()->get(n);
-			client->getParticleManager()->addDiggingParticles(client,
+			client->getParticleManager()->addNodeParticle(client,
 					player, nodepos, n, features);
 		}
 	}
