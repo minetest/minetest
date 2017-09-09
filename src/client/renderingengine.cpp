@@ -512,21 +512,21 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 {
 
 	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
+	v3f oldPosition = camera->getCameraNode()->getPosition();
+	v3f oldTarget = camera->getCameraNode()->getTarget();
 
 	irr::core::matrix4 startMatrix =
 			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
+	v3f focusPoint =
 			(camera->getCameraNode()->getTarget() -
 					camera->getCameraNode()->getAbsolutePosition())
 					.setLength(1) +
 			camera->getCameraNode()->getAbsolutePosition();
 
 	// Left eye...
-	irr::core::vector3df leftEye;
+	v3f leftEye;
 	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(irr::core::vector3df(
+	leftMove.setTranslation(v3f(
 			-g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
 	leftEye = (startMatrix * leftMove).getTranslation();
 
@@ -550,9 +550,9 @@ void RenderingEngine::draw_anaglyph_3d_mode(Camera *camera, bool show_hud, Hud *
 	guienv->drawAll();
 
 	// Right eye...
-	irr::core::vector3df rightEye;
+	v3f rightEye;
 	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
+	rightMove.setTranslation(v3f(
 			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
 	rightEye = (startMatrix * rightMove).getTranslation();
 
@@ -596,7 +596,7 @@ void RenderingEngine::init_texture(
 
 video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_sign psign,
 		const irr::core::matrix4 &startMatrix,
-		const irr::core::vector3df &focusPoint, bool show_hud, Camera *camera,
+		const v3f &focusPoint, bool show_hud, Camera *camera,
 		Hud *hud, bool draw_wield_tool, Client *client,
 		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
 {
@@ -620,9 +620,9 @@ video::ITexture *RenderingEngine::draw_image(const v2u32 &screensize, parallax_s
 			irr::video::SColor(255, skycolor.getRed(), skycolor.getGreen(),
 					skycolor.getBlue()));
 
-	irr::core::vector3df eye_pos;
+	v3f eye_pos;
 	irr::core::matrix4 movement;
-	movement.setTranslation(irr::core::vector3df(
+	movement.setTranslation(v3f(
 			(int)psign * g_settings->getFloat("3d_paralax_strength"), 0.0f,
 			0.0f));
 	eye_pos = (startMatrix * movement).getTranslation();
@@ -681,11 +681,11 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
 {
 	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
+	v3f oldPosition = camera->getCameraNode()->getPosition();
+	v3f oldTarget = camera->getCameraNode()->getTarget();
 	irr::core::matrix4 startMatrix =
 			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
+	v3f focusPoint =
 			(camera->getCameraNode()->getTarget() -
 					camera->getCameraNode()->getAbsolutePosition())
 					.setLength(1) +
@@ -697,9 +697,9 @@ void RenderingEngine::draw_interlaced_3d_mode(Camera *camera, bool show_hud, Hud
 			guienv, skycolor);
 
 	// Right eye...
-	irr::core::vector3df rightEye;
+	v3f rightEye;
 	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
+	rightMove.setTranslation(v3f(
 			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
 	rightEye = (startMatrix * rightMove).getTranslation();
 
@@ -738,11 +738,11 @@ void RenderingEngine::draw_sidebyside_3d_mode(Camera *camera, bool show_hud, Hud
 		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
 {
 	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
+	v3f oldPosition = camera->getCameraNode()->getPosition();
+	v3f oldTarget = camera->getCameraNode()->getTarget();
 	irr::core::matrix4 startMatrix =
 			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
+	v3f focusPoint =
 			(camera->getCameraNode()->getTarget() -
 					camera->getCameraNode()->getAbsolutePosition())
 					.setLength(1) +
@@ -801,11 +801,11 @@ void RenderingEngine::draw_top_bottom_3d_mode(Camera *camera, bool show_hud, Hud
 		gui::IGUIEnvironment *guienv, const video::SColor &skycolor)
 {
 	/* save current info */
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
+	v3f oldPosition = camera->getCameraNode()->getPosition();
+	v3f oldTarget = camera->getCameraNode()->getTarget();
 	irr::core::matrix4 startMatrix =
 			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
+	v3f focusPoint =
 			(camera->getCameraNode()->getTarget() -
 					camera->getCameraNode()->getAbsolutePosition())
 					.setLength(1) +
@@ -868,12 +868,12 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 		    << " with your Irrlicht version!" << std::endl;
 #else
 	/* preserve old setup*/
-	irr::core::vector3df oldPosition = camera->getCameraNode()->getPosition();
-	irr::core::vector3df oldTarget = camera->getCameraNode()->getTarget();
+	v3f oldPosition = camera->getCameraNode()->getPosition();
+	v3f oldTarget = camera->getCameraNode()->getTarget();
 
 	irr::core::matrix4 startMatrix =
 			camera->getCameraNode()->getAbsoluteTransformation();
-	irr::core::vector3df focusPoint =
+	v3f focusPoint =
 			(camera->getCameraNode()->getTarget() -
 					camera->getCameraNode()->getAbsolutePosition())
 					.setLength(1) +
@@ -882,9 +882,9 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 	// Left eye...
 	getVideoDriver()->setRenderTarget(irr::video::ERT_STEREO_LEFT_BUFFER);
 
-	irr::core::vector3df leftEye;
+	v3f leftEye;
 	irr::core::matrix4 leftMove;
-	leftMove.setTranslation(irr::core::vector3df(
+	leftMove.setTranslation(v3f(
 			-g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
 	leftEye = (startMatrix * leftMove).getTranslation();
 
@@ -908,9 +908,9 @@ void RenderingEngine::draw_pageflip_3d_mode(Camera *camera, bool show_hud, Hud *
 	// Right eye...
 	getVideoDriver()->setRenderTarget(irr::video::ERT_STEREO_RIGHT_BUFFER);
 
-	irr::core::vector3df rightEye;
+	v3f rightEye;
 	irr::core::matrix4 rightMove;
-	rightMove.setTranslation(irr::core::vector3df(
+	rightMove.setTranslation(v3f(
 			g_settings->getFloat("3d_paralax_strength"), 0.0f, 0.0f));
 	rightEye = (startMatrix * rightMove).getTranslation();
 
@@ -1003,8 +1003,8 @@ const char *RenderingEngine::getVideoDriverFriendlyName(irr::video::E_DRIVER_TYP
 	return driver_names[type];
 }
 
-void RenderingEngine::setCamera(Camera *camera, const irr::core::vector3df &position,
-		const irr::core::vector3df &target)
+void RenderingEngine::setCamera(Camera *camera, const v3f &position,
+		const v3f &target)
 {
 	camera->getCameraNode()->setPosition(position);
 	camera->getCameraNode()->updateAbsolutePosition();
