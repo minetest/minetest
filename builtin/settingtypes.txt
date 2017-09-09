@@ -15,7 +15,9 @@
 #    - filepath
 #    - key (will be ignored in GUI, since a special key change dialog exists)
 #    - flags
-#    - noise_params
+#    - noise_params_2d
+#    - noise_params_3d
+#    - v3f
 #
 # `type_args` can be:
 #   * int:
@@ -39,8 +41,15 @@
 #   * flags:
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
-#   * noise_params:
-#            TODO: these are currently treated like strings
+#   * noise_params_2d:
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            - default
+#   * noise_params_3d:
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
+#            - default
+#   * v3f:
+#            Format is (<X>, <Y>, <Z>)
+#            - default
 #
 # Comments directly above a setting are bound to this setting.
 # All other comments are ignored.
@@ -1239,7 +1248,7 @@ mapgen_limit (Map generation limit) int 31000 0 31000
 #    Global map generation attributes.
 #    In Mapgen v6 the 'decorations' flag controls all decorations except trees
 #    and junglegrass, in all other mapgens this flag controls all decorations.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_flags (Mapgen flags) flags caves,dungeons,light,decorations caves,dungeons,light,decorations,nocaves,nodungeons,nolight,nodecorations
 
@@ -1249,21 +1258,21 @@ projecting_dungeons (Projecting dungeons) bool true
 [*Biome API temperature and humidity noise parameters]
 
 #    Temperature variation for biomes.
-mg_biome_np_heat (Heat noise) noise_params 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0
+mg_biome_np_heat (Heat noise) noise_params_2d 50, 50, (1000, 1000, 1000), 5349, 3, 0.5, 2.0, eased
 
 #    Small-scale temperature variation for blending biomes on borders.
-mg_biome_np_heat_blend (Heat blend noise) noise_params 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0
+mg_biome_np_heat_blend (Heat blend noise) noise_params_2d 0, 1.5, (8, 8, 8), 13, 2, 1.0, 2.0, eased
 
 #    Humidity variation for biomes.
-mg_biome_np_humidity (Humidity noise) noise_params 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0
+mg_biome_np_humidity (Humidity noise) noise_params_2d 50, 50, (1000, 1000, 1000), 842, 3, 0.5, 2.0, eased
 
 #    Small-scale humidity variation for blending biomes on borders.
-mg_biome_np_humidity_blend (Humidity blend noise) noise_params 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0
+mg_biome_np_humidity_blend (Humidity blend noise) noise_params_2d 0, 1.5, (8, 8, 8), 90003, 2, 1.0, 2.0, eased
 
 [*Mapgen V5]
 
 #    Map generation attributes specific to Mapgen v5.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv5_spflags (Mapgen V5 specific flags) flags caverns caverns,nocaverns
 
@@ -1288,39 +1297,26 @@ mgv5_cavern_threshold (Cavern threshold) float 0.7
 [**Noises]
 
 #    Variation of biome filler depth.
-mgv5_np_filler_depth (Filler depth noise) noise_params 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0
+mgv5_np_filler_depth (Filler depth noise) noise_params_2d 0, 1, (150, 150, 150), 261, 4, 0.7, 2.0, eased
 
 #    Variation of terrain vertical scale.
 #    When noise is < -0.55 terrain is near-flat.
-mgv5_np_factor (Factor noise) noise_params 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0
+mgv5_np_factor (Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 0.45, 2.0, eased
 
 #    Y-level of average terrain surface.
-mgv5_np_height (Height noise) noise_params 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0
+mgv5_np_height (Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgv5_np_cave1 (Cave1 noise) noise_params 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
+mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgv5_np_cave2 (Cave2 noise) noise_params 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
+mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
 
 #    3D noise defining giant caverns.
-mgv5_np_cavern (Cavern noise) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
-#    TODO
-#    Noise parameters in group format, unsupported by advanced settings
-#    menu but settable in minetest.conf.
-#    See documentation of noise parameter formats in minetest.conf.example.
 #    3D noise defining terrain.
-#mgv5_np_ground = {
-#    offset      = 0
-#    scale       = 40
-#    spread      = (80, 80, 80)
-#    seed        = 983240
-#    octaves     = 4
-#    persistence = 0.55
-#    lacunarity  = 2.0
-#    flags       = "eased"
-#}
+mgv5_np_ground (Ground noise) noise_params_3d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2.0, eased
 
 [*Mapgen V6]
 
@@ -1328,7 +1324,7 @@ mgv5_np_cavern (Cavern noise) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 
 #    The 'snowbiomes' flag enables the new 5 biome system.
 #    When the new biome system is enabled jungles are automatically enabled and
 #    the 'jungles' flag is ignored.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv6_spflags (Mapgen V6 specific flags) flags jungles,biomeblend,mudflow,snowbiomes,trees jungles,biomeblend,mudflow,snowbiomes,flat,trees,nojungles,nobiomeblend,nomudflow,nosnowbiomes,noflat,notrees
 
@@ -1342,43 +1338,43 @@ mgv6_freq_beach (Beach noise threshold) float 0.15
 [**Noises]
 
 #    Y-level of lower terrain and lakebeds.
-mgv6_np_terrain_base (Terrain base noise) noise_params -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0
+mgv6_np_terrain_base (Terrain base noise) noise_params_2d -4, 20, (250, 250, 250), 82341, 5, 0.6, 2.0, eased
 
 #    Y-level of higher (cliff-top) terrain.
-mgv6_np_terrain_higher (Terrain higher noise) noise_params 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0
+mgv6_np_terrain_higher (Terrain higher noise) noise_params_2d 20, 16, (500, 500, 500), 85039, 5, 0.6, 2.0, eased
 
 #    Varies steepness of cliffs.
-mgv6_np_steepness (Steepness noise) noise_params 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0
+mgv6_np_steepness (Steepness noise) noise_params_2d 0.85, 0.5, (125, 125, 125), -932, 5, 0.7, 2.0, eased
 
 #    Defines areas of 'terrain_higher' (cliff-top terrain).
-mgv6_np_height_select (Height select noise) noise_params 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0
+mgv6_np_height_select (Height select noise) noise_params_2d 0.5, 1, (250, 250, 250), 4213, 5, 0.69, 2.0, eased
 
 #    Varies depth of biome surface nodes.
-mgv6_np_mud (Mud noise) noise_params 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0
+mgv6_np_mud (Mud noise) noise_params_2d 4, 2, (200, 200, 200), 91013, 3, 0.55, 2.0, eased
 
 #    Defines areas with sandy beaches.
-mgv6_np_beach (Beach noise) noise_params 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0
+mgv6_np_beach (Beach noise) noise_params_2d 0, 1, (250, 250, 250), 59420, 3, 0.50, 2.0, eased
 
 #    Temperature variation for biomes.
-mgv6_np_biome (Biome noise) noise_params 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0
+mgv6_np_biome (Biome noise) noise_params_2d 0, 1, (500, 500, 500), 9130, 3, 0.50, 2.0, eased
 
 #    Variation of number of caves.
-mgv6_np_cave (Cave noise) noise_params 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0
+mgv6_np_cave (Cave noise) noise_params_2d 6, 6, (250, 250, 250), 34329, 3, 0.50, 2.0, eased
 
 #    Humidity variation for biomes.
-mgv6_np_humidity (Humidity noise) noise_params 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0
+mgv6_np_humidity (Humidity noise) noise_params_2d 0.5, 0.5, (500, 500, 500), 72384, 3, 0.50, 2.0, eased
 
 #    Defines tree areas and tree density.
-mgv6_np_trees (Trees noise) noise_params 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0
+mgv6_np_trees (Trees noise) noise_params_2d 0, 1, (125, 125, 125), 2, 4, 0.66, 2.0, eased
 
 #    Defines areas where trees have apples.
-mgv6_np_apple_trees (Apple trees noise) noise_params 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0
+mgv6_np_apple_trees (Apple trees noise) noise_params_2d 0, 1, (100, 100, 100), 342902, 3, 0.45, 2.0, eased
 
 [*Mapgen V7]
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' enables the rivers.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
@@ -1419,54 +1415,54 @@ mgv7_cavern_threshold (Cavern threshold) float 0.7
 [**Noises]
 
 #    Y-level of higher (cliff-top) terrain.
-mgv7_np_terrain_base (Terrain base noise) noise_params 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0
+mgv7_np_terrain_base (Terrain base noise) noise_params_2d 4, 70, (600, 600, 600), 82341, 5, 0.6, 2.0, eased
 
 #    Y-level of lower terrain and lakebeds.
-mgv7_np_terrain_alt (Terrain alt noise) noise_params 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0
+mgv7_np_terrain_alt (Terrain alt noise) noise_params_2d 4, 25, (600, 600, 600), 5934, 5, 0.6, 2.0, eased
 
 #    Varies roughness of terrain.
 #    Defines the 'persistence' value for terrain_base and terrain_alt noises.
-mgv7_np_terrain_persist (Terrain persistence noise) noise_params 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0
+mgv7_np_terrain_persist (Terrain persistence noise) noise_params_2d 0.6, 0.1, (2000, 2000, 2000), 539, 3, 0.6, 2.0, eased
 
 #    Defines areas of higher (cliff-top) terrain and affects steepness of cliffs.
-mgv7_np_height_select (Height select noise) noise_params -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0
+mgv7_np_height_select (Height select noise) noise_params_2d -8, 16, (500, 500, 500), 4213, 6, 0.7, 2.0, eased
 
 #    Variation of biome filler depth.
-mgv7_np_filler_depth (Filler depth noise) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+mgv7_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
 #    Variation of maximum mountain height (in nodes).
-mgv7_np_mount_height (Mountain height noise) noise_params 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0
+mgv7_np_mount_height (Mountain height noise) noise_params_2d 256, 112, (1000, 1000, 1000), 72449, 3, 0.6, 2.0, eased
 
 #    Defines large-scale river channel structure.
-mgv7_np_ridge_uwater (Ridge underwater noise) noise_params 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0
+mgv7_np_ridge_uwater (Ridge underwater noise) noise_params_2d 0, 1, (1000, 1000, 1000), 85039, 5, 0.6, 2.0, eased
 
 #    Defines areas of floatland smooth terrain.
 #    Smooth floatlands occur when noise > 0.
-mgv7_np_floatland_base (Floatland base noise) noise_params -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0
+mgv7_np_floatland_base (Floatland base noise) noise_params_2d -0.6, 1.5, (600, 600, 600), 114, 5, 0.6, 2.0, eased
 
 #    Variation of hill height and lake depth on floatland smooth terrain.
-mgv7_np_float_base_height (Floatland base height noise) noise_params 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0
+mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 48, 24, (300, 300, 300), 907, 4, 0.7, 2.0, eased
 
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
-mgv7_np_mountain (Mountain noise) noise_params -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
+mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 
 #    3D noise defining structure of river canyon walls.
-mgv7_np_ridge (Ridge noise) noise_params 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
+mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
 #    3D noise defining giant caverns.
-mgv7_np_cavern (Cavern noise) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    First of 2 3D noises that together define tunnels.
-mgv7_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgv7_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgv7_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Carpathian]
 
 #    Map generation attributes specific to Mapgen Carpathian.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgcarpathian_spflags (Mapgen Carpathian specific flags) flags caverns caverns,nocaverns
 
@@ -1491,58 +1487,58 @@ mgcarpathian_cavern_threshold (Cavern threshold) float 0.7
 [**Noises]
 
 #    2D noise that defines the base ground level.
-mgcarpathian_np_base (Base ground noise) noise_params 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5
+mgcarpathian_np_base (Base ground noise) noise_params_2d 12, 1, (2557, 2557, 2557), 6538, 4, 0.8, 0.5, eased
 
 #    Variation of biome filler depth.
-mgcarpathian_np_filler_depth (Filler depth noise) noise_params 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0
+mgcarpathian_np_filler_depth (Filler depth noise) noise_params_2d 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0, eased
 
-#    First of 4 3D noises that together define hill/mountain range height.
-mgcarpathian_np_height1 (Hilliness1 noise) noise_params 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0
+#    First of 4 2D noises that together define hill/mountain range height.
+mgcarpathian_np_height1 (Hilliness1 noise) noise_params_2d 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0, eased
 
-#    Second of 4 3D noises that together define hill/mountain range height.
-mgcarpathian_np_height2 (Hilliness2 noise) noise_params 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0
+#    Second of 4 2D noises that together define hill/mountain range height.
+mgcarpathian_np_height2 (Hilliness2 noise) noise_params_2d 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0, eased
 
-#    Third of 4 3D noises that together define hill/mountain range height.
-mgcarpathian_np_height3 (Hilliness3 noise) noise_params 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0
+#    Third of 4 2D noises that together define hill/mountain range height.
+mgcarpathian_np_height3 (Hilliness3 noise) noise_params_2d 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0, eased
 
-#    Fourth of 4 3D noises that together define hill/mountain range height.
-mgcarpathian_np_height4 (Hilliness4 noise) noise_params 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0
+#    Fourth of 4 2D noises that together define hill/mountain range height.
+mgcarpathian_np_height4 (Hilliness4 noise) noise_params_2d 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0, eased
 
 #    2D noise that controls the size/occurance of rolling hills.
-mgcarpathian_np_hills_terrain (Rolling hills spread noise) noise_params 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0
+mgcarpathian_np_hills_terrain (Rolling hills spread noise) noise_params_2d 1, 1, (1301, 1301, 1301), 1692, 3, 0.5, 2.0, eased
 
 #    2D noise that controls the size/occurance of ridged mountain ranges.
-mgcarpathian_np_ridge_terrain (Ridge mountain spread noise) noise_params 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0
+mgcarpathian_np_ridge_terrain (Ridge mountain spread noise) noise_params_2d 1, 1, (1889, 1889, 1889), 3568, 3, 0.5, 2.0, eased
 
 #    2D noise that controls the size/occurance of step mountain ranges.
-mgcarpathian_np_step_terrain (Step mountain spread noise) noise_params 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0
+mgcarpathian_np_step_terrain (Step mountain spread noise) noise_params_2d 1, 1, (1889, 1889, 1889), 4157, 3, 0.5, 2.0, eased
 
 #    2D noise that controls the shape/size of rolling hills.
-mgcarpathian_np_hills (Rolling hill size noise) noise_params 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0
+mgcarpathian_np_hills (Rolling hill size noise) noise_params_2d 0, 3, (257, 257, 257), 6604, 6, 0.5, 2.0, eased
 
 #    2D noise that controls the shape/size of ridged mountains.
-mgcarpathian_np_ridge_mnt (Ridged mountain size noise) noise_params 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0
+mgcarpathian_np_ridge_mnt (Ridged mountain size noise) noise_params_2d 0, 12, (743, 743, 743), 5520, 6, 0.7, 2.0, eased
 
 #    2D noise that controls the shape/size of step mountains.
-mgcarpathian_np_step_mnt (Step mountain size noise) noise_params 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0
+mgcarpathian_np_step_mnt (Step mountain size noise) noise_params_2d 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0, eased
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
-mgcarpathian_np_mnt_var (Mountain variation noise) noise_params 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
+mgcarpathian_np_mnt_var (Mountain variation noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
 
 #    First of 2 3D noises that together define tunnels.
-mgcarpathian_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgcarpathian_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgcarpathian_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+mgcarpathian_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    3D noise defining giant caverns.
-mgcarpathian_np_cavern (Cavern noise) noise_params 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
+mgcarpathian_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 [*Mapgen Flat]
 
 #    Map generation attributes specific to Mapgen flat.
 #    Occasional lakes and hills can be added to the flat world.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mgflat_spflags (Mapgen Flat specific flags) flags nolakes,nohills lakes,hills,nolakes,nohills
 
@@ -1577,16 +1573,16 @@ mgflat_hill_steepness (Hill steepness) float 64.0
 [**Noises]
 
 #    Defines location and terrain of optional hills and lakes.
-mgflat_np_terrain (Terrain noise) noise_params 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0
+mgflat_np_terrain (Terrain noise) noise_params_2d 0, 1, (600, 600, 600), 7244, 5, 0.6, 2.0, eased
 
 #    Variation of biome filler depth.
-mgflat_np_filler_depth (Filler depth noise) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+mgflat_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgflat_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgflat_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Fractal]
 
@@ -1659,16 +1655,16 @@ mgfractal_julia_w (Julia w) float 0.33
 [**Noises]
 
 #    Y-level of seabed.
-mgfractal_np_seabed (Seabed noise) noise_params -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0
+mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 600, 600), 41900, 5, 0.6, 2.0, eased
 
 #    Variation of biome filler depth.
-mgfractal_np_filler_depth (Filler depth noise) noise_params 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0
+mgfractal_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgfractal_np_cave1 (Cave1 noise) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgfractal_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgfractal_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Valleys]
 
@@ -1676,7 +1672,7 @@ mgfractal_np_cave2 (Cave2 noise) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5
 #    'altitude_chill' makes higher elevations colder, which may cause biome issues.
 #    'humid_rivers' modifies the humidity around rivers and in areas where water would tend to pool,
 #    it may interfere with delicately adjusted biomes.
-#    Flags that are not specified in the flag string are not modified from the default.
+#    Flags that are not enabled are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
 mg_valleys_spflags (Mapgen Valleys specific flags) flags altitude_chill,humid_rivers altitude_chill,noaltitude_chill,humid_rivers,nohumid_rivers
 
@@ -1709,34 +1705,34 @@ mgvalleys_cave_width (Cave width) float 0.09
 [**Noises]
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave1 (Cave noise #1) noise_params 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
+mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave2 (Cave noise #2) noise_params 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
+mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # The depth of dirt or other filler
-mgvalleys_np_filler_depth (Filler Depth) noise_params 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0
+mgvalleys_np_filler_depth (Filler Depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
 # Massive caves form here.
-mgvalleys_np_massive_caves (Massive cave noise) noise_params 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
+mgvalleys_np_massive_caves (Massive cave noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
 # River noise -- rivers occur close to zero
-mgvalleys_np_rivers (River Noise) noise_params 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0
+mgvalleys_np_rivers (River Noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
 
 # Base terrain height
-mgvalleys_np_terrain_height (Terrain Height) noise_params -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0
+mgvalleys_np_terrain_height (Terrain Height) noise_params_2d -10, 50, (1024, 1024, 1024), 5202, 6, 0.4, 2.0, eased
 
 # Raises terrain to make valleys around the rivers
-mgvalleys_np_valley_depth (Valley Depth) noise_params 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0
+mgvalleys_np_valley_depth (Valley Depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
 
 # Slope and fill work together to modify the heights
-mgvalleys_np_inter_valley_fill (Valley Fill) noise_params 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
+mgvalleys_np_inter_valley_fill (Valley Fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
 # Amplifies the valleys
-mgvalleys_np_valley_profile (Valley Profile) noise_params 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0
+mgvalleys_np_valley_profile (Valley Profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased
 
 # Slope and fill work together to modify the heights
-mgvalleys_np_inter_valley_slope (Valley Slope) noise_params 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0
+mgvalleys_np_inter_valley_slope (Valley Slope) noise_params_2d 0.5, 0.5, (128, 128, 128), 746, 1, 1.0, 2.0, eased
 
 [*Advanced]
 

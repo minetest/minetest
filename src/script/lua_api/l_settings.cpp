@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_internal.h"
 #include "cpp_api/s_security.h"
 #include "settings.h"
+#include "noise.h"
 #include "log.h"
 
 
@@ -105,6 +106,24 @@ int LuaSettings::l_get_bool(lua_State* L)
 	return 1;
 }
 
+// get_np_group(self, key) -> value
+int LuaSettings::l_get_np_group(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkobject(L, 1);
+
+	std::string key = std::string(luaL_checkstring(L, 2));
+	if (o->m_settings->exists(key)) {
+		NoiseParams np;
+		o->m_settings->getNoiseParams(key, np);
+		push_noiseparams(L, &np);
+	} else {
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
 // set(self, key, value)
 int LuaSettings::l_set(lua_State* L)
 {
@@ -136,6 +155,23 @@ int LuaSettings::l_set_bool(lua_State* L)
 	o->m_settings->setBool(key, value);
 
 	return 1;
+}
+
+// set(self, key, value)
+int LuaSettings::l_set_np_group(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	LuaSettings *o = checkobject(L, 1);
+
+	std::string key = std::string(luaL_checkstring(L, 2));
+	NoiseParams value;
+	read_noiseparams(L, 3, &value);
+
+	SET_SECURITY_CHECK(L, key);
+
+	o->m_settings->setNoiseParams(key, value, false);
+
+	return 0;
 }
 
 // remove(self, key) -> success
@@ -264,8 +300,10 @@ const char LuaSettings::className[] = "Settings";
 const luaL_Reg LuaSettings::methods[] = {
 	luamethod(LuaSettings, get),
 	luamethod(LuaSettings, get_bool),
+	luamethod(LuaSettings, get_np_group),
 	luamethod(LuaSettings, set),
 	luamethod(LuaSettings, set_bool),
+	luamethod(LuaSettings, set_np_group),
 	luamethod(LuaSettings, remove),
 	luamethod(LuaSettings, get_names),
 	luamethod(LuaSettings, write),

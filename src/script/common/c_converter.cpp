@@ -51,6 +51,15 @@ if (value < F1000_MIN || value > F1000_MAX) { \
 #define CHECK_POS_TAB(index) CHECK_TYPE(index, "position", LUA_TTABLE)
 
 
+void push_float_string(lua_State *L, float value)
+{
+	std::stringstream ss;
+	std::string str;
+	ss << value;
+	str = ss.str();
+	lua_pushstring(L, str.c_str());
+}
+
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_newtable(L);
@@ -68,6 +77,26 @@ void push_v2f(lua_State *L, v2f p)
 	lua_pushnumber(L, p.X);
 	lua_setfield(L, -2, "x");
 	lua_pushnumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+}
+
+void push_v3_float_string(lua_State *L, v3f p)
+{
+	lua_newtable(L);
+	push_float_string(L, p.X);
+	lua_setfield(L, -2, "x");
+	push_float_string(L, p.Y);
+	lua_setfield(L, -2, "y");
+	push_float_string(L, p.Z);
+	lua_setfield(L, -2, "z");
+}
+
+void push_v2_float_string(lua_State *L, v2f p)
+{
+	lua_newtable(L);
+	push_float_string(L, p.X);
+	lua_setfield(L, -2, "x");
+	push_float_string(L, p.Y);
 	lua_setfield(L, -2, "y");
 }
 

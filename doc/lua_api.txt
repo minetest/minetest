@@ -1043,13 +1043,13 @@ Accumulates the absolute value of each noise gradient result.
 Noise parameters format example for 2D or 3D perlin noise or perlin noise maps:
 
     np_terrain = {
-        offset = 0,
-        scale = 1,
-        spread = {x=500, y=500, z=500},
+        offset = "0",
+        scale = "1",
+        spread = {x="500", y="500", z="500"},
         seed = 571347,
         octaves = 5,
-        persist = 0.63,
-        lacunarity = 2.0,
+        persist = "0.63",
+        lacunarity = "2.0",
         flags = "defaults, absvalue"
     }
     ^ A single noise parameter table can be used to get 2D or 3D noise,
@@ -4024,12 +4024,16 @@ It can be created via `Settings(filename)`.
 #### Methods
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
+* `get_np_group(key)`: returns a NoiseParams table
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set on the main settings object (`minetest.settings`).
 * `set_bool(key, value)`
     * See documentation for set() above.
+* `set_np_group(key, value)`
+    * `value` is a NoiseParams table.
+    * Also, see documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `write()`: returns a boolean (`true` for success)

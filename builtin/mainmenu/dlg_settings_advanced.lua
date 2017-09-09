@@ -25,6 +25,10 @@ local CHAR_CLASSES = {
 	FLAGS = "[%w_%-%.,]",
 }
 
+local function flags_to_table(flags)
+	return flags:gsub("%s+", ""):split(",", true) -- Remove all spaces and split
+end
+
 -- returns error message, or nil
 local function parse_setting_line(settings, line, read_all, base_level, allow_secure)
 	-- comment
@@ -111,7 +115,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
-	if setting_type == "string" or setting_type == "noise_params"
+	if setting_type == "string"
 			or setting_type == "key" or setting_type == "v3f" then
 		local default = remaining_line:match("^(.*)$")
 
@@ -129,6 +133,60 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			type = setting_type,
 			default = default,
 			comment = current_comment,
+		})
+		return
+	end
+
+	if setting_type == "noise_params_2d"
+			or setting_type == "noise_params_3d" then
+		local default = remaining_line:match("^(.*)$")
+
+		if not default then
+			return "Invalid string setting"
+		end
+
+		local values = {}
+		local ti = 1
+		local index = 1
+		for line in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+			index = default:find("[+-]?[%d.-e]+", index) + line:len()
+			table.insert(values, line)
+			ti = ti + 1
+			if ti > 9 then
+				break
+			end
+		end
+		index = default:find("[^, ]", index)
+		local flags = ""
+		if index then
+			flags = default:sub(index)
+			default = default:sub(1, index - 3) -- Make sure no flags in single-line format
+		end
+		table.insert(values, flags)
+
+		table.insert(settings, {
+			name = name,
+			readable_name = readable_name,
+			type = setting_type,
+			default = default,
+			default_table = {
+				offset = values[1],
+				scale = values[2],
+				spread = {
+					x = values[3],
+					y = values[4],
+					z = values[5]
+				},
+				seed = values[6],
+				octaves = values[7],
+				persistence = values[8],
+				lacunarity = values[9],
+				flags = values[10]
+			},
+			values = values,
+			comment = current_comment,
+			noise_params = true,
+			flags = flags_to_table("defaults,eased,absvalue")
 		})
 		return
 	end
@@ -236,7 +294,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = "flags",
 			default = default,
-			possible = possible,
+			possible = flags_to_table(possible),
 			comment = current_comment,
 		})
 		return
@@ -430,11 +488,61 @@ local function get_current_value(setting)
 	return value
 end
 
+local function get_current_np_group(setting)
+	local value = core.settings:get_np_group(setting.name)
+	local t = {}
+	if value == nil then
+		t = setting.values
+	else
+		table.insert(t, value.offset)
+		table.insert(t, value.scale)
+		table.insert(t, value.spread.x)
+		table.insert(t, value.spread.y)
+		table.insert(t, value.spread.z)
+		table.insert(t, value.seed)
+		table.insert(t, value.octaves)
+		table.insert(t, value.persistence)
+		table.insert(t, value.lacunarity)
+		table.insert(t, value.flags)
+	end
+	return t
+end
+
+local function get_current_np_group_as_string(setting)
+	local value = core.settings:get_np_group(setting.name)
+	local t
+	if value == nil then
+		t = setting.default
+	else
+		t = value.offset .. ", " ..
+			value.scale .. ", (" ..
+			value.spread.x .. ", " ..
+			value.spread.y .. ", " ..
+			value.spread.z .. "), " ..
+			value.seed .. ", " ..
+			value.octaves .. ", " ..
+			value.persistence .. ", " ..
+			value.lacunarity .. ", " ..
+			value.flags
+	end
+	return t
+end
+
+local checkboxes = {} -- handle checkboxes events
+
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
-	local formspec = "size[10,5.2,true]" ..
-			"button[5,4.5;2,1;btn_done;" .. fgettext("Save") .. "]" ..
-			"button[3,4.5;2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
+	local height = 5.2
+	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
+		-- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
+		height = 8.7
+	elseif setting.type == "flags" then
+		-- Checkboxes on 2 columns, with a vertical space of 1/2 unit
+		height = 5.2 + math.ceil(#setting.possible / 2) / 2
+	end
+	local formspec = "size[10," .. height .. ",true]" ..
+			"button[5," .. height - 0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
+			"button[3," .. height - 0.7 .. ";2,1;btn_cancel;" .. fgettext("Cancel") .. "]" ..
 			"tablecolumns[color;text]" ..
 			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
 			"table[0,0;10,3;info;"
@@ -457,21 +565,6 @@ local function create_change_setting_formspec(dialogdata)
 	end
 	for _, comment_line in ipairs(comment_text:split("\n", true)) do
 		formspec = formspec .. "," .. core.formspec_escape(comment_line) .. ","
-	end
-
-	if setting.type == "flags" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext("Please enter a comma seperated list of flags.") .. ","
-				.. "," .. fgettext("Possible values are: ")
-				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
-	elseif setting.type == "noise_params" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext("Format:") .. ","
-				.. "," .. fgettext("<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),") .. ","
-				.. "," .. fgettext("<seed>, <octaves>, <persistence>, <lacunarity>") .. ","
-	elseif setting.type == "v3f" then
-		formspec = formspec .. ",,"
-				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
 	end
 
 	formspec = formspec:sub(1, -2) -- remove trailing comma
@@ -514,8 +607,91 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(current_value) .. "]"
 				.. "button[8,3.75;2,1;btn_browser_" .. setting.type .. ";" .. fgettext("Browse") .. "]"
 
+	elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
+		local t = get_current_np_group(setting)
+		local dimension = 3
+		if setting.type == "noise_params_2d" then
+			dimension = 2
+		end
+
+		formspec = formspec
+				.. "label[0,2.5;(" .. dimension .. "D Noise)]"
+				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
+				.. core.formspec_escape(t[1] or "") .. "]"
+				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
+				.. core.formspec_escape(t[2] or "") .. "]"
+				.. "field[7.1,4;3.3,1;te_seed;Seed;" -- Seed
+				.. core.formspec_escape(t[6] or "") .. "]"
+				.. "label[0.5,4.7;Spread]" -- Spread
+				.. "field[2.0,5;2.8,1;te_spreadx;X;"
+				.. core.formspec_escape(t[3] or "") .. "]"
+				.. "field[4.8,5;2.8,1;te_spready;Y;"
+				.. core.formspec_escape(t[4] or "") .. "]"
+				.. "field[7.6,5;2.8,1;te_spreadz;Z;"
+				.. core.formspec_escape(t[5] or "") .. "]"
+				.. "field[0.5,6;3.3,1;te_octaves;Octaves;" -- Octaves
+				.. core.formspec_escape(t[7] or "") .. "]"
+				.. "field[3.8,6;3.3,1;te_persist;Persistance;" -- Persistance
+				.. core.formspec_escape(t[8] or "") .. "]"
+				.. "field[7.1,6;3.3,1;te_lacun;Lacunarity;" -- Lacunarity
+				.. core.formspec_escape(t[9] or "") .. "]"
+
+		local enabled_flags = flags_to_table(t[10])
+		local flags = {}
+		for _, name in ipairs(enabled_flags) do
+			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			flags[name] = true
+		end
+		-- Flags
+		formspec = formspec
+				.. "checkbox[0.5,6.5;cb_defaults;defaults;" -- defaults
+				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
+				.. "checkbox[5,6.5;cb_eased;eased;" -- eased
+				.. tostring(flags["eased"] == true) .. "]"
+				.. "checkbox[5,7.0;cb_absvalue;absvalue;" -- absvalue
+				.. tostring(flags["absvalue"] == true) .. "]"
+
+	elseif setting.type == "v3f" then
+		local val = get_current_value(setting)
+		local v3f = {}
+		for line in val:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+			table.insert(v3f, line)
+		end
+
+		formspec = formspec
+				.. "field[0.5,4;3.3,1;te_x;X;" -- X
+				.. core.formspec_escape(v3f[1] or "") .. "]"
+				.. "field[3.8,4;3.3,1;te_y;Y;" -- Y
+				.. core.formspec_escape(v3f[2] or "") .. "]"
+				.. "field[7.1,4;3.3,1;te_z;Z;" -- Z
+				.. core.formspec_escape(v3f[3] or "") .. "]"
+
+	elseif setting.type == "flags" then
+		local enabled_flags = flags_to_table(get_current_value(setting))
+		local flags = {}
+		for _, name in ipairs(enabled_flags) do
+			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			flags[name] = true
+		end
+		local flags_count = #setting.possible
+		for i, name in ipairs(setting.possible) do
+			local x = 0.5
+			local y = 3.5 + i / 2
+			if i - 1 >= flags_count / 2 then -- 2nd column
+				x = 5
+				y = y - flags_count / 4
+			end
+			local checkbox_name = "cb_" .. name
+			local is_enabled = flags[name] == true -- to get false if nil
+			checkboxes[checkbox_name] = is_enabled
+			formspec = formspec .. "checkbox["
+					.. x .. "," .. y
+					.. ";" .. checkbox_name .. ";"
+					.. name .. ";" .. tostring(is_enabled) .. "]"
+		end
+
 	else
-		-- TODO: fancy input for float, int, flags, noise_params, v3f
+		-- TODO: fancy input for float, int
 		local width = 10
 		local text = get_current_value(setting)
 		if dialogdata.error_message then
@@ -535,8 +711,8 @@ local function create_change_setting_formspec(dialogdata)
 end
 
 local function handle_change_setting_buttons(this, fields)
+	local setting = settings[selected_setting]
 	if fields["btn_done"] or fields["key_enter"] then
-		local setting = settings[selected_setting]
 		if setting.type == "bool" then
 			local new_value = fields["dd_setting_value"]
 			-- Note: new_value is the actual (translated) value shown in the dropdown
@@ -579,17 +755,49 @@ local function handle_change_setting_buttons(this, fields)
 			core.settings:set(setting.name, new_value)
 
 		elseif setting.type == "flags" then
-			local new_value = fields["te_setting_value"]
-			for _,value in ipairs(new_value:split(",", true)) do
-				value = value:trim()
-				local possible = "," .. setting.possible .. ","
-				if not possible:find("," .. value .. ",", 0, true) then
-					this.data.error_message = fgettext_ne("\"$1\" is not a valid flag.", value)
-					this.data.entered_text = fields["te_setting_value"]
-					core.update_formspec(this:get_formspec())
-					return true
+			local values = {}
+			for _, name in ipairs(setting.possible) do
+				if checkboxes["cb_" .. name] then
+					table.insert(values, name)
 				end
 			end
+
+			checkboxes = {}
+
+			local new_value = table.concat(values, ", ")
+			core.settings:set(setting.name, new_value)
+
+		elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
+			local np_flags = {}
+			for _, name in ipairs(setting.flags) do
+				if checkboxes["cb_" .. name] then
+					table.insert(np_flags, name)
+				end
+			end
+
+			checkboxes = {}
+
+			local new_value = {
+				offset = fields["te_offset"],
+				scale = fields["te_scale"],
+				spread = {
+					x = fields["te_spreadx"],
+					y = fields["te_spready"],
+					z = fields["te_spreadz"]
+				},
+				seed = fields["te_seed"],
+				octaves = fields["te_octaves"],
+				persistence = fields["te_persist"],
+				lacunarity = fields["te_lacun"],
+				flags = table.concat(np_flags, ", ")
+			}
+			core.settings:set_np_group(setting.name, new_value)
+
+		elseif setting.type == "v3f" then
+			local new_value = "("
+					.. fields["te_x"] .. ", "
+					.. fields["te_y"] .. ", "
+					.. fields["te_z"] .. ")"
 			core.settings:set(setting.name, new_value)
 
 		else
@@ -619,6 +827,16 @@ local function handle_change_setting_buttons(this, fields)
 	if fields["dlg_browse_path_accepted"] then
 		this.data.selected_path = fields["dlg_browse_path_accepted"]
 		core.update_formspec(this:get_formspec())
+	end
+
+	if setting.type == "flags"
+			or setting.type == "noise_params_2d"
+			or setting.type == "noise_params_3d" then
+		for name, value in pairs(fields) do
+			if name:sub(1, 3) == "cb_" then
+				checkboxes[name] = value == "true"
+			end
+		end
 	end
 
 	return false
@@ -658,6 +876,10 @@ local function create_settings_formspec(tabview, name, tabdata)
 
 		elseif entry.type == "key" then
 			-- ignore key settings, since we have a special dialog for them
+
+		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
+			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
+					.. core.formspec_escape(get_current_np_group_as_string(entry)) .. ","
 
 		else
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
@@ -743,7 +965,12 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			core.settings:set(setting.name, setting.default)
+			if setting.type == "noise_params_2d"
+					or setting.type == "noise_params_3d" then
+				core.settings:set_np_group(setting.name, setting.default_table)
+			else
+				core.settings:set(setting.name, setting.default)
+			end
 			core.settings:write()
 			core.update_formspec(this:get_formspec())
 		end

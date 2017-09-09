@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "common/c_content.h"
 #include "lua_api/l_base.h"
 
 class Settings;
@@ -38,11 +39,17 @@ private:
 	// get_bool(self, key) -> boolean
 	static int l_get_bool(lua_State *L);
 
+	// get_np_group(self, key) -> noiseparam
+	static int l_get_np_group(lua_State *L);
+
 	// set(self, key, value)
 	static int l_set(lua_State *L);
 
 	// set_bool(self, key, value)
 	static int l_set_bool(lua_State *L);
+
+	// set_np_group(self, key, value)
+	static int l_set_np_group(lua_State *L);
 
 	// remove(self, key) -> success
 	static int l_remove(lua_State *L);
