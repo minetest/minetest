@@ -616,9 +616,7 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(t[9] or "") .. "]"
 
 	elseif setting.type == "noise_params_group" then
-		print(dump(core.settings:get_np_group("mgv5_np_ground")))
 		local t = get_current_np_group(setting)
-		print(dump(t))
 
 		formspec = formspec
 				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
@@ -793,13 +791,11 @@ local function handle_change_setting_buttons(this, fields)
 		elseif setting.type == "noise_params_group" then
 			local np_flags = {}
 			for _, name in ipairs(setting.flags) do
-				print("cb_" .. name .. ": " .. (checkboxes["cb_" .. name] and "1" or "0"))
 				if checkboxes["cb_" .. name] then
 					table.insert(np_flags, name)
 				end
 			end
 
-			print(dump(np_flags))
 			checkboxes = {}
 
 			local new_value = {
