@@ -35,7 +35,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "debug.h" // For FATAL_ERROR
 #include <json/json.h>
-#include <content_sao.h>
 
 struct EnumString es_TileAnimationType[] =
 {
@@ -1793,6 +1792,7 @@ void push_objectRef(lua_State *L, const u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
+<<<<<<< HEAD
 
 void read_hud_element(lua_State *L, HudElement *elem)
 {
@@ -1975,3 +1975,5 @@ void push_PlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason)
 		break;
 	}
 }
+=======
+>>>>>>> s

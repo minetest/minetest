@@ -62,7 +62,6 @@ struct HitParams;
 struct EnumString;
 struct NoiseParams;
 class Schematic;
-struct PlayerHPChangeReason;
 
 
 ContentFeatures    read_content_features     (lua_State *L, int index);
