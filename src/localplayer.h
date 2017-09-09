@@ -92,6 +92,7 @@ public:
 	unsigned int last_keyPressed = 0;
 	u8 last_camera_fov = 0;
 	u8 last_wanted_range = 0;
+	u8 last_camera_inverted = 0;
 
 	float camera_impact = 0.0f;
 

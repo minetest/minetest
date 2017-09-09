@@ -105,8 +105,14 @@ void RemoteClient::GetNextBlocks (
 	// Camera position and direction
 	v3f camera_pos = sao->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
-	camera_dir.rotateYZBy(sao->getPitch());
-	camera_dir.rotateXZBy(sao->getYaw());
+	float pitch = sao->getPitch();
+	float yaw = sao->getYaw();
+	if (sao->getCameraInverted()) {
+		yaw += 180;
+		pitch = -pitch;
+	}
+	camera_dir.rotateYZBy(pitch);
+	camera_dir.rotateXZBy(yaw);
 
 	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
 			<<camera_dir.Z<<")"<<std::endl;*/

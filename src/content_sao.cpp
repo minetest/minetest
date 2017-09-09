@@ -1145,6 +1145,14 @@ void PlayerSAO::setFov(const float fov)
 	m_fov = fov;
 }
 
+void PlayerSAO::setCameraInverted(const bool camera_inverted)
+{
+	if (m_player && camera_inverted != m_camera_inverted)
+		m_player->setDirty(true);
+
+	m_camera_inverted = camera_inverted;
+}
+
 void PlayerSAO::setWantedRange(const s16 range)
 {
 	if (m_player && range != m_wanted_range)

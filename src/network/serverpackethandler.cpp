@@ -784,6 +784,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	// default behavior (in case an old client doesn't send these)
 	f32 fov = 0;
 	u8 wanted_range = 0;
+	bool camera_inverted = false;
 
 	if (pkt->getRemainingBytes() >= 4)
 		*pkt >> keyPressed;
@@ -793,6 +794,9 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	}
 	if (pkt->getRemainingBytes() >= 1)
 		*pkt >> wanted_range;
+
+	if (pkt->getRemainingBytes() >= 1)
+		*pkt >> camera_inverted;
 
 	v3f position((f32)ps.X / 100.0f, (f32)ps.Y / 100.0f, (f32)ps.Z / 100.0f);
 	v3f speed((f32)ss.X / 100.0f, (f32)ss.Y / 100.0f, (f32)ss.Z / 100.0f);
@@ -806,6 +810,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	playersao->setYaw(yaw);
 	playersao->setFov(fov);
 	playersao->setWantedRange(wanted_range);
+	playersao->setCameraInverted(camera_inverted);
 	player->keyPressed = keyPressed;
 	player->control.up = (keyPressed & 1);
 	player->control.down = (keyPressed & 2);

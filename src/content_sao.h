@@ -232,6 +232,9 @@ public:
 	void setWantedRange(const s16 range);
 	s16 getWantedRange() const { return m_wanted_range; }
 
+	void setCameraInverted(const bool camera_inverted);
+	bool getCameraInverted() const { return m_camera_inverted; }
+
 	/*
 		Interaction interface
 	*/
@@ -401,6 +404,7 @@ private:
 	f32 m_pitch = 0.0f;
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;
+	bool m_camera_inverted = false;
 
 	PlayerAttributes m_extra_attributes;
 	bool m_extended_attributes_modified = false;
