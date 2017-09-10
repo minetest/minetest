@@ -1487,6 +1487,8 @@ private:
 	bool m_first_loop_after_window_activation = false;
 	bool m_camera_offset_changed = false;
 
+	bool m_does_lost_focus_pause_game = false;
+
 #ifdef __ANDROID__
 	bool m_cache_hold_aux1;
 	bool m_android_chat_open;
@@ -1741,6 +1743,10 @@ void Game::run()
 
 		// Update if minimap has been disabled by the server
 		flags.show_minimap &= client->shouldShowMinimap();
+
+		if (m_does_lost_focus_pause_game && !device->isWindowFocused() && !isMenuActive()) {
+			showPauseMenu();
+		}
 	}
 }
 
@@ -4638,6 +4644,7 @@ void Game::readSettings()
 	m_cache_cam_smoothing = rangelim(m_cache_cam_smoothing, 0.01f, 1.0f);
 	m_cache_mouse_sensitivity = rangelim(m_cache_mouse_sensitivity, 0.001, 100.0);
 
+	m_does_lost_focus_pause_game = g_settings->getBool("pause_on_lost_focus");
 }
 
 /****************************************************************************/

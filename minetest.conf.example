@@ -994,6 +994,10 @@
 #    type: int
 # max_out_chat_queue_size = 20
 
+#    Open the pause menu when the window's focus is lost. Does not pause if a formspec is open.
+#    type: bool
+# pause_on_lost_focus = false
+
 ## Advanced
 
 #    Timeout for client to remove unused map data from memory.
