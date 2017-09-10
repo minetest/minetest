@@ -2781,7 +2781,7 @@ Call these functions only at load time!
      * `reason`: a PlayerHPChangeReason table. Will always have a type
                field with one of the following values:
         * `set_hp` - A mod or the engine called `set_hp` without giving a reason. No additional fields.
-        * `punch` - Was punched. `reason.player` will hold the puncher, or nil if none.
+        * `punch` - Was punched. `reason.puncher` will hold the puncher, or nil if none.
         * `fall` - No additional fields.
         * `node_damage` - damage_per_second per a neighbouring node. No additional fields.
         * `drowning` - No additional fields.

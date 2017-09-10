@@ -43,6 +43,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdarg>
 #include "script/common/c_content.h"
+#include "content_sao.h"
 #include <sstream>
 
 
@@ -381,7 +382,7 @@ void ScriptApiBase::objectrefGetOrCreate(lua_State *L,
 	}
 }
 
-void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason)
+void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason &reason)
 {
 	lua_newtable(L);
 
@@ -394,7 +395,11 @@ void ScriptApiBase::pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeR
 		lua_pushstring(L, "punch");
 		lua_setfield(L, -2, "type");
 
-		// TODO: push player
+		if (reason.player) {
+			objectrefGetOrCreate(L, reason.player);
+			lua_setfield(L, -2, "puncher");
+		}
+
 		break;
 	case PlayerHPChangeReason::FALL:
 		lua_pushstring(L, "fall");

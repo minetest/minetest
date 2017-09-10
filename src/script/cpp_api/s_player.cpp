@@ -46,7 +46,7 @@ void ScriptApiPlayer::on_dieplayer(ServerActiveObject *player, const PlayerHPCha
 
 	// Push arguments
 	objectrefGetOrCreate(L, player);
-	push_PlayerHPChangeReason(L, reason);
+	pushPlayerHPChangeReason(L, reason);
 
 	// Run callbacks
 	runCallbacks(2, RUN_CALLBACKS_MODE_FIRST);
@@ -89,7 +89,7 @@ s16 ScriptApiPlayer::on_player_hpchange(ServerActiveObject *player,
 	// Push arguments
 	objectrefGetOrCreate(L, player);
 	lua_pushnumber(L, hp_change);
-	push_PlayerHPChangeReason(L, reason);
+	pushPlayerHPChangeReason(L, reason);
 
 	// Call callbacks
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
