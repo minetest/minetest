@@ -420,7 +420,7 @@ public:
 
 
 struct PlayerHPChangeReason {
-	enum TYPE {
+	enum Type : u8 {
 		SET_HP,
 		PLAYER_PUNCH,
 		FALL,
@@ -429,10 +429,10 @@ struct PlayerHPChangeReason {
 		RESPAWN
 	};
 
-	TYPE type = SET_HP;
+	Type type = SET_HP;
 	ServerActiveObject *player;
 
-	PlayerHPChangeReason(TYPE type, ServerActiveObject *player=NULL):
+	PlayerHPChangeReason(Type type, ServerActiveObject *player=NULL):
 			type(type), player(player)
 	{}
 };

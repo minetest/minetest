@@ -1029,7 +1029,8 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 	if (playersao->isDead())
 		SendDeathscreen(peer_id, false, v3f(0,0,0));
 	else
-		SendPlayerHPOrDie(playersao, PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
+		SendPlayerHPOrDie(playersao,
+				PlayerHPChangeReason(PlayerHPChangeReason::SET_HP));
 
 	// Send Breath
 	SendPlayerBreath(playersao);
@@ -2511,7 +2512,8 @@ void Server::RespawnPlayer(session_t peer_id)
 			<< playersao->getPlayer()->getName()
 			<< " respawns" << std::endl;
 
-	playersao->setHP(playersao->accessObjectProperties()->hp_max, PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
+	playersao->setHP(playersao->accessObjectProperties()->hp_max,
+			PlayerHPChangeReason(PlayerHPChangeReason::RESPAWN));
 	playersao->setBreath(playersao->accessObjectProperties()->breath_max);
 
 	bool repositioned = m_script->on_respawnplayer(playersao);

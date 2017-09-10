@@ -1792,7 +1792,6 @@ void push_objectRef(lua_State *L, const u16 id)
 	lua_remove(L, -2); // object_refs
 	lua_remove(L, -2); // core
 }
-<<<<<<< HEAD
 
 void read_hud_element(lua_State *L, HudElement *elem)
 {
@@ -1975,5 +1974,3 @@ void push_PlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason)
 		break;
 	}
 }
-=======
->>>>>>> s

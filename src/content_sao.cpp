@@ -921,7 +921,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 			// No more breath, damage player
 			if (m_breath == 0) {
-				auto reason = PlayerHPChangeReason(PlayerHPChangeReason::DROWNING);
+				PlayerHPChangeReason reason(PlayerHPChangeReason::DROWNING);
 				setHP(m_hp - c.drowning, reason);
 				m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 			}
@@ -962,7 +962,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 
 		if (damage_per_second != 0 && m_hp > 0) {
 			s16 newhp = ((s32) damage_per_second > m_hp ? 0 : m_hp - damage_per_second);
-			auto reason = PlayerHPChangeReason(PlayerHPChangeReason::NODE_DAMAGE);
+			PlayerHPChangeReason reason(PlayerHPChangeReason::NODE_DAMAGE);
 			setHP(newhp, reason);
 			m_env->getGameDef()->SendPlayerHPOrDie(this, reason);
 		}
@@ -1210,7 +1210,8 @@ int PlayerSAO::punch(v3f dir,
 				hitparams.hp);
 
 	if (!damage_handled) {
-		setHP(getHP() - hitparams.hp, PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
+		setHP(getHP() - hitparams.hp,
+				PlayerHPChangeReason(PlayerHPChangeReason::PLAYER_PUNCH, puncher));
 	} else { // override client prediction
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
