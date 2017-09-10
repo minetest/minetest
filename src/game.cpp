@@ -2567,7 +2567,7 @@ void Game::processKeyInput()
 		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf), str, myround(new_volume * 100));
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
 		m_statustext = buf;
 		runData.statustext_time = 0;
@@ -2576,7 +2576,7 @@ void Game::processKeyInput()
 		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
 		const wchar_t *str = wgettext("Volume changed to %d%%");
-		swprintf(buf, sizeof(buf), str, myround(new_volume * 100));
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
 		delete[] str;
 		m_statustext = buf;
 		runData.statustext_time = 0;
@@ -2968,7 +2968,7 @@ void Game::toggleProfiler()
 	if (runData.profiler_current_page != 0) {
 		wchar_t buf[255];
 		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
-		swprintf(buf, sizeof(buf), str,
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
 				runData.profiler_current_page,
 				runData.profiler_max_page);
 		delete[] str;
@@ -2990,13 +2990,13 @@ void Game::increaseViewRange()
 	if (range_new > 4000) {
 		range_new = 4000;
 		str = wgettext("Viewing range is at maximum: %d");
-		swprintf(buf, sizeof(buf), str, range_new);
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
 		m_statustext = buf;
 
 	} else {
 		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf), str, range_new);
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
 		m_statustext = buf;
 	}
@@ -3015,12 +3015,12 @@ void Game::decreaseViewRange()
 	if (range_new < 20) {
 		range_new = 20;
 		str = wgettext("Viewing range is at minimum: %d");
-		swprintf(buf, sizeof(buf), str, range_new);
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
 		m_statustext = buf;
 	} else {
 		str = wgettext("Viewing range changed to %d");
-		swprintf(buf, sizeof(buf), str, range_new);
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
 		delete[] str;
 		m_statustext = buf;
 	}
