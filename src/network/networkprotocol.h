@@ -191,7 +191,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // The minimal version depends on whether
 // send_pre_v25_init is enabled or not
 #define CLIENT_PROTOCOL_VERSION_MIN 36
-#define CLIENT_PROTOCOL_VERSION_MIN_LEGACY 24
 #define CLIENT_PROTOCOL_VERSION_MAX LATEST_PROTOCOL_VERSION
 
 // Constant that differentiates the protocol from random data and other protocols
@@ -235,20 +234,6 @@ enum ToClientCommand
 	/*
 		Signals client that sudo mode auth failed.
 	*/
-	TOCLIENT_INIT_LEGACY = 0x10,
-	/*
-		Server's reply to TOSERVER_INIT.
-		Sent second after connected.
-
-		[0] u16 TOSERVER_INIT
-		[2] u8 deployed version
-		[3] v3s16 player's position + v3f(0,BS/2,0) floatToInt'd
-		[12] u64 map seed (new as of 2011-02-27)
-		[20] f1000 recommended send interval (in seconds) (new as of 14)
-
-		NOTE: The position in here is deprecated; position is
-		      explicitly sent afterwards
-	*/
 	TOCLIENT_ACCESS_DENIED = 0x0A,
 	/*
 		u8 reason
@@ -264,57 +249,11 @@ enum ToClientCommand
 	*/
 	TOCLIENT_REMOVENODE = 0x22,
 
-	TOCLIENT_PLAYERPOS = 0x23, // Obsolete
-	/*
-		[0] u16 command
-		// Followed by an arbitary number of these:
-		// Number is determined from packet length.
-		[N] u16 peer_id
-		[N+2] v3s32 position*100
-		[N+2+12] v3s32 speed*100
-		[N+2+12+12] s32 pitch*100
-		[N+2+12+12+4] s32 yaw*100
-	*/
-
-	TOCLIENT_PLAYERINFO = 0x24, // Obsolete
-	/*
-		[0] u16 command
-		// Followed by an arbitary number of these:
-		// Number is determined from packet length.
-		[N] u16 peer_id
-		[N] char[20] name
-	*/
-
-	TOCLIENT_OPT_BLOCK_NOT_FOUND = 0x25, // Obsolete
-
-	TOCLIENT_SECTORMETA = 0x26, // Obsolete
-	/*
-		[0] u16 command
-		[2] u8 sector count
-		[3...] v2s16 pos + sector metadata
-	*/
 
 	TOCLIENT_INVENTORY = 0x27,
 	/*
 		[0] u16 command
 		[2] serialized inventory
-	*/
-
-	TOCLIENT_OBJECTDATA = 0x28, // Obsolete
-	/*
-		Sent as unreliable.
-
-		u16 number of player positions
-		for each player:
-			u16 peer_id
-			v3s32 position*100
-			v3s32 speed*100
-			s32 pitch*100
-			s32 yaw*100
-		u16 count of blocks
-		for each block:
-			v3s16 blockpos
-			block objects
 	*/
 
 	TOCLIENT_TIME_OF_DAY = 0x29,
@@ -337,12 +276,6 @@ enum ToClientCommand
 		u8 message_type
 		u16 sendername length
 		wstring sendername
-		u16 length
-		wstring message
-	*/
-
-	TOCLIENT_CHAT_MESSAGE_OLD = 0x30, // Deprecated by proto v35
-	/*
 		u16 length
 		wstring message
 	*/
@@ -388,16 +321,6 @@ enum ToClientCommand
 	/*
 		u16 reason_length
 		wstring reason
-	*/
-
-	TOCLIENT_PLAYERITEM = 0x36, // Obsolete
-	/*
-		u16 count of player items
-		for all player items {
-			u16 peer id
-			u16 length of serialized item
-			string serialized item
-		}
 	*/
 
 	TOCLIENT_DEATHSCREEN = 0x37,
@@ -557,11 +480,6 @@ enum ToClientCommand
 		u8 collision_removal
 	*/
 
-	TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY = 0x48,
-	/*
-		u16 id
-	*/
-
 	TOCLIENT_HUDADD = 0x49,
 	/*
 		u32 id
@@ -679,7 +597,7 @@ enum ToClientCommand
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
-		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
+		Belonging to AUTH_MECHANISM_SRP.
 
 		std::string bytes_s
 		std::string bytes_B
@@ -701,18 +619,6 @@ enum ToServerCommand
 		std::string player name
 	*/
 
-	TOSERVER_INIT_LEGACY = 0x10,
-	/*
-		Sent first after connected.
-
-		[0] u16 TOSERVER_INIT_LEGACY
-		[2] u8 SER_FMT_VER_HIGHEST_READ
-		[3] u8[20] player_name
-		[23] u8[28] password (new in some version)
-		[51] u16 minimum supported network protocol version (added sometime)
-		[53] u16 maximum supported network protocol version (added later than the previous one)
-	*/
-
 	TOSERVER_INIT2 = 0x11,
 	/*
 		Sent as an ACK for TOCLIENT_INIT.
@@ -720,10 +626,6 @@ enum ToServerCommand
 
 		[0] u16 TOSERVER_INIT2
 	*/
-
-	TOSERVER_GETBLOCK=0x20, // Obsolete
-	TOSERVER_ADDNODE = 0x21, // Obsolete
-	TOSERVER_REMOVENODE = 0x22, // Obsolete
 
 	TOSERVER_PLAYERPOS = 0x23,
 	/*
@@ -755,50 +657,6 @@ enum ToServerCommand
 		...
 	*/
 
-	TOSERVER_ADDNODE_FROM_INVENTORY = 0x26, // Obsolete
-	/*
-		[0] u16 command
-		[2] v3s16 pos
-		[8] u16 i
-	*/
-
-	TOSERVER_CLICK_OBJECT = 0x27, // Obsolete
-	/*
-		length: 13
-		[0] u16 command
-		[2] u8 button (0=left, 1=right)
-		[3] v3s16 blockpos
-		[9] s16 id
-		[11] u16 item
-	*/
-
-	TOSERVER_GROUND_ACTION = 0x28, // Obsolete
-	/*
-		length: 17
-		[0] u16 command
-		[2] u8 action
-		[3] v3s16 nodepos_undersurface
-		[9] v3s16 nodepos_abovesurface
-		[15] u16 item
-		actions:
-		0: start digging (from undersurface)
-		1: place block (to abovesurface)
-		2: stop digging (all parameters ignored)
-		3: digging completed
-	*/
-
-	TOSERVER_RELEASE = 0x29, // Obsolete
-
-	// (oops, there is some gap here)
-
-	TOSERVER_SIGNTEXT = 0x30, // Old signs, obsolete
-	/*
-		v3s16 blockpos
-		s16 id
-		u16 textlen
-		textdata
-	*/
-
 	TOSERVER_INVENTORY_ACTION = 0x31,
 	/*
 		See InventoryAction in inventorymanager.h
@@ -810,34 +668,9 @@ enum ToServerCommand
 		wstring message
 	*/
 
-	TOSERVER_SIGNNODETEXT = 0x33, // obsolete
-	/*
-		v3s16 p
-		u16 textlen
-		textdata
-	*/
-
-	TOSERVER_CLICK_ACTIVEOBJECT = 0x34, // Obsolete
-	/*
-		length: 7
-		[0] u16 command
-		[2] u8 button (0=left, 1=right)
-		[3] u16 id
-		[5] u16 item
-	*/
-
 	TOSERVER_DAMAGE = 0x35,
 	/*
 		u8 amount
-	*/
-
-	TOSERVER_PASSWORD_LEGACY = 0x36,
-	/*
-		Sent to change password.
-
-		[0] u16 TOSERVER_PASSWORD
-		[2] u8[28] old password
-		[30] u8[28] new password
 	*/
 
 	TOSERVER_PLAYERITEM = 0x37,
@@ -866,8 +699,6 @@ enum ToServerCommand
 		2: digging completed
 		3: place block or item (to abovesurface)
 		4: use item
-
-		(Obsoletes TOSERVER_GROUND_ACTION and TOSERVER_CLICK_ACTIVEOBJECT.)
 	*/
 
 	TOSERVER_REMOVED_SOUNDS = 0x3a,
@@ -910,16 +741,6 @@ enum ToServerCommand
 		}
 	 */
 
-	TOSERVER_RECEIVED_MEDIA = 0x41,
-	/*
-		<no payload data>
-	*/
-
-	TOSERVER_BREATH = 0x42, // Obsolete
-	/*
-		u16 breath
-	*/
-
 	TOSERVER_CLIENT_READY = 0x43,
 	/*
 		u8 major
@@ -941,7 +762,7 @@ enum ToServerCommand
 
 	TOSERVER_SRP_BYTES_A = 0x51,
 	/*
-		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP,
+		Belonging to AUTH_MECHANISM_SRP,
 			depending on current_login_based_on.
 
 		std::string bytes_A
@@ -952,7 +773,7 @@ enum ToServerCommand
 
 	TOSERVER_SRP_BYTES_M = 0x52,
 	/*
-		Belonging to AUTH_MECHANISM_LEGACY_PASSWORD and AUTH_MECHANISM_SRP.
+		Belonging to AUTH_MECHANISM_SRP.
 
 		std::string bytes_M
 	*/

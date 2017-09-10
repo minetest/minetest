@@ -40,7 +40,7 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0d
 	null_command_handler, // 0x0e
 	null_command_handler, // 0x0f
-	{ "TOSERVER_INIT_LEGACY",              TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init_Legacy }, // 0x10
+	null_command_handler, // 0x10
 	{ "TOSERVER_INIT2",                    TOSERVER_STATE_NOT_CONNECTED, &Server::handleCommand_Init2 }, // 0x11
 	null_command_handler, // 0x12
 	null_command_handler, // 0x13
@@ -63,22 +63,22 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_GOTBLOCKS",                TOSERVER_STATE_STARTUP, &Server::handleCommand_GotBlocks }, // 0x24
 	{ "TOSERVER_DELETEDBLOCKS",            TOSERVER_STATE_INGAME, &Server::handleCommand_DeletedBlocks }, // 0x25
 	null_command_handler, // 0x26
-	{ "TOSERVER_CLICK_OBJECT",             TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x27
-	{ "TOSERVER_GROUND_ACTION",            TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x28
-	{ "TOSERVER_RELEASE",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x29
+	null_command_handler, // 0x27
+	null_command_handler, // 0x28
+	null_command_handler, // 0x29
 	null_command_handler, // 0x2a
 	null_command_handler, // 0x2b
 	null_command_handler, // 0x2c
 	null_command_handler, // 0x2d
 	null_command_handler, // 0x2e
 	null_command_handler, // 0x2f
-	{ "TOSERVER_SIGNTEXT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x30
+	null_command_handler, // 0x30
 	{ "TOSERVER_INVENTORY_ACTION",         TOSERVER_STATE_INGAME, &Server::handleCommand_InventoryAction }, // 0x31
 	{ "TOSERVER_CHAT_MESSAGE",             TOSERVER_STATE_INGAME, &Server::handleCommand_ChatMessage }, // 0x32
-	{ "TOSERVER_SIGNNODETEXT",             TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x33
-	{ "TOSERVER_CLICK_ACTIVEOBJECT",       TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x34
+	null_command_handler, // 0x33
+	null_command_handler, // 0x34
 	{ "TOSERVER_DAMAGE",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Damage }, // 0x35
-	{ "TOSERVER_PASSWORD_LEGACY",          TOSERVER_STATE_INGAME, &Server::handleCommand_Password }, // 0x36
+	null_command_handler, // 0x36
 	{ "TOSERVER_PLAYERITEM",               TOSERVER_STATE_INGAME, &Server::handleCommand_PlayerItem }, // 0x37
 	{ "TOSERVER_RESPAWN",                  TOSERVER_STATE_INGAME, &Server::handleCommand_Respawn }, // 0x38
 	{ "TOSERVER_INTERACT",                 TOSERVER_STATE_INGAME, &Server::handleCommand_Interact }, // 0x39
@@ -89,8 +89,8 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x3e
 	null_command_handler, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",            TOSERVER_STATE_STARTUP, &Server::handleCommand_RequestMedia }, // 0x40
-	{ "TOSERVER_RECEIVED_MEDIA",           TOSERVER_STATE_STARTUP, &Server::handleCommand_Deprecated }, // 0x41 not used by the server since protocol version 23
-	{ "TOSERVER_BREATH",                   TOSERVER_STATE_INGAME, &Server::handleCommand_Deprecated }, // 0x42 Old breath model which is now deprecated for anticheating
+	null_command_handler, // 0x41
+	null_command_handler, // 0x42
 	{ "TOSERVER_CLIENT_READY",             TOSERVER_STATE_STARTUP, &Server::handleCommand_ClientReady }, // 0x43
 	null_command_handler, // 0x44
 	null_command_handler, // 0x45
@@ -161,18 +161,18 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_factory,
 	null_command_factory,
 	{ "TOCLIENT_CHAT_MESSAGE",             0, true }, // 0x2F
-	{ "TOCLIENT_CHAT_MESSAGE_OLD",         0, true }, // 0x30
+	null_command_factory, // 0x30
 	{ "TOCLIENT_ACTIVE_OBJECT_REMOVE_ADD", 0, true }, // 0x31
 	{ "TOCLIENT_ACTIVE_OBJECT_MESSAGES",   0, true }, // 0x32 Special packet, sent by 0 (rel) and 1 (unrel) channel
 	{ "TOCLIENT_HP",                       0, true }, // 0x33
 	{ "TOCLIENT_MOVE_PLAYER",              0, true }, // 0x34
 	{ "TOCLIENT_ACCESS_DENIED_LEGACY",     0, true }, // 0x35
-	{ "TOCLIENT_PLAYERITEM",               0, false }, // 0x36 obsolete
+	null_command_factory, // 0x36
 	{ "TOCLIENT_DEATHSCREEN",              0, true }, // 0x37
 	{ "TOCLIENT_MEDIA",                    2, true }, // 0x38
-	{ "TOCLIENT_TOOLDEF",                  0, false }, // 0x39 obsolete
+	null_command_factory, // 0x39
 	{ "TOCLIENT_NODEDEF",                  0, true }, // 0x3a
-	{ "TOCLIENT_CRAFTITEMDEF",             0, false }, // 0x3b obsolete
+	null_command_factory, // 0x3b
 	{ "TOCLIENT_ANNOUNCE_MEDIA",           0, true }, // 0x3c
 	{ "TOCLIENT_ITEMDEF",                  0, true }, // 0x3d
 	null_command_factory,
@@ -185,7 +185,7 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVEMENT",                 0, true }, // 0x45
 	{ "TOCLIENT_SPAWN_PARTICLE",           0, true }, // 0x46
 	{ "TOCLIENT_ADD_PARTICLESPAWNER",      0, true }, // 0x47
-	{ "TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY",   0, true }, // 0x48
+	null_command_factory, // 0x48
 	{ "TOCLIENT_HUDADD",                   1, true }, // 0x49
 	{ "TOCLIENT_HUDRM",                    1, true }, // 0x4a
 	{ "TOCLIENT_HUDCHANGE",                0, true }, // 0x4b

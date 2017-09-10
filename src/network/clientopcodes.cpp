@@ -40,7 +40,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0D
 	null_command_handler, // 0x0E
 	null_command_handler, // 0x0F
-	{ "TOCLIENT_INIT",                    TOCLIENT_STATE_NOT_CONNECTED, &Client::handleCommand_InitLegacy }, // 0x10
+	null_command_handler, // 0x10
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
@@ -96,7 +96,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_MOVEMENT",                 TOCLIENT_STATE_CONNECTED, &Client::handleCommand_Movement }, // 0x45
 	{ "TOCLIENT_SPAWN_PARTICLE",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_SpawnParticle }, // 0x46
 	{ "TOCLIENT_ADD_PARTICLESPAWNER",      TOCLIENT_STATE_CONNECTED, &Client::handleCommand_AddParticleSpawner }, // 0x47
-	{ "TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY",   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_DeleteParticleSpawner }, // 0x48
+	null_command_handler,
 	{ "TOCLIENT_HUDADD",                   TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudAdd }, // 0x49
 	{ "TOCLIENT_HUDRM",                    TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudRemove }, // 0x4a
 	{ "TOCLIENT_HUDCHANGE",                TOCLIENT_STATE_CONNECTED, &Client::handleCommand_HudChange }, // 0x4b
@@ -143,7 +143,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x0d
 	null_command_factory, // 0x0e
 	null_command_factory, // 0x0F
-	{ "TOSERVER_INIT_LEGACY",        1, false }, // 0x10
+	null_command_factory, // 0x10
 	{ "TOSERVER_INIT2",              1, true }, // 0x11
 	null_command_factory, // 0x12
 	null_command_factory, // 0x13
@@ -166,22 +166,22 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	{ "TOSERVER_GOTBLOCKS",          2, true }, // 0x24
 	{ "TOSERVER_DELETEDBLOCKS",      2, true }, // 0x25
 	null_command_factory, // 0x26
-	{ "TOSERVER_CLICK_OBJECT",       0, false }, // 0x27
-	{ "TOSERVER_GROUND_ACTION",      0, false }, // 0x28
-	{ "TOSERVER_RELEASE",            0, false }, // 0x29
+	null_command_factory, // 0x27
+	null_command_factory, // 0x28
+	null_command_factory, // 0x29
 	null_command_factory, // 0x2a
 	null_command_factory, // 0x2b
 	null_command_factory, // 0x2c
 	null_command_factory, // 0x2d
 	null_command_factory, // 0x2e
 	null_command_factory, // 0x2f
-	{ "TOSERVER_SIGNTEXT",           0, false }, // 0x30
+	null_command_factory, // 0x30
 	{ "TOSERVER_INVENTORY_ACTION",   0, true }, // 0x31
 	{ "TOSERVER_CHAT_MESSAGE",       0, true }, // 0x32
-	{ "TOSERVER_SIGNNODETEXT",       0, false }, // 0x33
-	{ "TOSERVER_CLICK_ACTIVEOBJECT", 0, false }, // 0x34
+	null_command_factory, // 0x33
+	null_command_factory, // 0x34
 	{ "TOSERVER_DAMAGE",             0, true }, // 0x35
-	{ "TOSERVER_PASSWORD_LEGACY",    0, true }, // 0x36
+	null_command_factory, // 0x36
 	{ "TOSERVER_PLAYERITEM",         0, true }, // 0x37
 	{ "TOSERVER_RESPAWN",            0, true }, // 0x38
 	{ "TOSERVER_INTERACT",           0, true }, // 0x39
@@ -192,7 +192,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x3e
 	null_command_factory, // 0x3f
 	{ "TOSERVER_REQUEST_MEDIA",      1, true }, // 0x40
-	{ "TOSERVER_RECEIVED_MEDIA",     1, true }, // 0x41
+	null_command_factory, // 0x41
 	{ "TOSERVER_BREATH",             0, true }, // 0x42 old TOSERVER_BREATH. Ignored by servers
 	{ "TOSERVER_CLIENT_READY",       0, true }, // 0x43
 	null_command_factory, // 0x44

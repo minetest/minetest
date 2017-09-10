@@ -184,7 +184,6 @@ public:
 	void handleCommand_AuthAccept(NetworkPacket* pkt);
 	void handleCommand_AcceptSudoMode(NetworkPacket* pkt);
 	void handleCommand_DenySudoMode(NetworkPacket* pkt);
-	void handleCommand_InitLegacy(NetworkPacket* pkt);
 	void handleCommand_AccessDenied(NetworkPacket* pkt);
 	void handleCommand_RemoveNode(NetworkPacket* pkt);
 	void handleCommand_AddNode(NetworkPacket* pkt);
@@ -244,7 +243,6 @@ public:
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
-	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
 
@@ -447,7 +445,6 @@ private:
 	// helper method shared with clientpackethandler
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
-	void sendLegacyInit(const char* playerName, const char* playerPassword);
 	void sendInit(const std::string &playerName);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
