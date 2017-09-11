@@ -886,9 +886,9 @@ void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *
 	*pkt << position << speed << pitch << yaw << keyPressed;
 	*pkt << fov << wanted_range;
 
-	pkt->putLongString(myplayer->getControlLog().serialize(640));
-
-	std::string empty_log();
+	std::stringstream logbytes;
+	myplayer->getControlLog().serialize(logbytes, 640);
+	pkt->putLongString(logbytes.str());
 }
 
 void Client::interact(u8 action, const PointedThing& pointed)

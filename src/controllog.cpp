@@ -136,9 +136,8 @@ void ControlLogEntry::merge(const ControlLogEntry &other)
 	// the rest is supposedly identical
 }
 
-std::string ControlLogEntry::serialize(u8 flags, const ControlLogEntry *prev) const
+void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLogEntry *prev) const
 {
-	std::stringstream output;
 	if (!prev || (settings != prev->settings)) {
 		output << (u8)255 << settings;
 	}
@@ -150,12 +149,11 @@ std::string ControlLogEntry::serialize(u8 flags, const ControlLogEntry *prev) co
 	if (flags & 0x01) { // joystick
 		output << joy_forw << joy_sidew;
 	}
-	return output.str();
+	return;
 }
 
-void ControlLogEntry::deserialize(const std::string &from, u8 flags, const ControlLogEntry *prev)
+void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLogEntry *prev)
 {
-	std::stringstream input(from);
 	u8 i_dtime;
 	input >> i_dtime;
 	if (i_dtime == 255) {
@@ -196,13 +194,10 @@ void ControlLog::add(ControlLogEntry &cle)
 	}
 }
 
-// TODO: operator<<
-std::string ControlLog::serialize(u32 bytes_max) const
+void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 {
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
-
-	std::stringstream output;
 
 	output << version;
 	output << flags;
@@ -220,21 +215,20 @@ std::string ControlLog::serialize(u32 bytes_max) const
 			leftovers = true;
 			break;
 		}
-		output << cle.serialize(flags, prev_cle);
+		cle.serialize(output, flags, prev_cle);
 		prev_cle = &cle;
 	}
 	if (leftovers) {
 		output << (u8)253;
 	}
 
-	return output.str();
+	return;
 }
 
-void ControlLog::deserialize(const std::string logbytes)
+void ControlLog::deserialize(std::istream &input)
 {
 	u8 flags;
 
-	std::stringstream input(logbytes);
 	input >> version;
 	input >> flags;
 
@@ -243,14 +237,25 @@ void ControlLog::deserialize(const std::string logbytes)
 	input >> motion_model >> motion_model_version;
 
 	//bool leftovers = false;
+	//long int prev_tellg = input.tellg();
+	ControlLogEntry *prev_cle = NULL;
 	int count = 0;
-	while ((unsigned)input.tellp() < logbytes.length()) {
-		u8 dtime;
-		input >> dtime;
-		if (dtime <= 200) {
+	while (!input.eof()) {
+		int code = input.peek();
+		if (code < 0) {
+			break; // eof
+		} else if (code == 253) {
+			// leftovers
+			u8 marker;
+			input >> marker;
+		} else {
 			ControlLogEntry cle;
+			cle.deserialize(input, flags, prev_cle);
+			prev_cle = &cle;
+			count++;
 		}
 	}
-	dstream << "deserialized " << count << " bytes" << std::endl;
+	dstream << "deserialized " << count << " cles" << std::endl;
+	return;
 }
 

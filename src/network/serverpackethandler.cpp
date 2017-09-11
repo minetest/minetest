@@ -40,6 +40,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointedthing.h"
 #include "util/serialize.h"
 #include "util/srp.h"
+#include <sstream>
 
 void Server::handleCommand_Deprecated(NetworkPacket* pkt)
 {
@@ -473,7 +474,7 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
 		ControlLog log;
-		std::string logbytes(pkt->readLongString());
+		std::stringstream logbytes(pkt->readLongString());
 		// deserializing does not validate it. The entries could be
 		// a bunch of lies
 		log.deserialize(logbytes);

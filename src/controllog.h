@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include <deque>
 #include <string>
+#include <iostream>
 
 /*
 
@@ -105,8 +106,8 @@ public:
 	bool matches(const ControlLogEntry &other) const;
 	void merge(const ControlLogEntry &other);
 
-	std::string serialize(u8 flags, const ControlLogEntry *prev) const;
-	void deserialize(const std::string &from, u8 flags, const ControlLogEntry *prev);
+	void serialize(std::ostream &to, u8 flags, const ControlLogEntry *prev) const;
+	void deserialize(std::istream &from, u8 flags, const ControlLogEntry *prev);
 
 	u8 serDtime() const;
 	u8 serSettings() const;
@@ -150,8 +151,8 @@ class ControlLog
 public:
 	ControlLog();
 	void add(ControlLogEntry &cle); // position, too?
-	std::string serialize(u32 bytes=800) const; // up to bytes in length
-	void deserialize(const std::string logbytes);
+	void serialize(std::ostream &to, u32 bytes=800) const; // up to bytes in length
+	void deserialize(std::istream &from);
 	void acknowledge(u32 dtime); // removes entries
 private:
 	u8 version = 1; // agreed-upon version
