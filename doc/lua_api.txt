@@ -2158,9 +2158,11 @@ Helper functions
     * e.g. `string:split("a,b", ",") == {"a","b"}`
 * `string:trim()`
     * e.g. `string.trim("\n \t\tfoo bar\t ") == "foo bar"`
-* `minetest.wrap_text(str, limit)`: returns a string
-    * Adds new lines to the string to keep it within the specified character limit
+* `minetest.wrap_text(str, limit, [as_table])`: returns a string or table
+    * Adds newlines to the string to keep it within the specified character limit
+      Note that returned lines may be longer than the limit since it only splits at word borders.
     * limit: Maximal amount of characters in one line
+    * as_table: optional, if true return table of lines instead of string
 * `minetest.pos_to_string({x=X,y=Y,z=Z}, decimal_places))`: returns string `"(X,Y,Z)"`
     * Convert position to a printable string
       Optional: 'decimal_places' will round the x, y and z of the pos to the given decimal place.
