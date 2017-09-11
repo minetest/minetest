@@ -81,6 +81,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		bool column_is_open = false;  // Is column open to overground
 		bool is_under_river = false;  // Is column under river water
 		bool is_under_tunnel = false;  // Is tunnel or is under tunnel
+		bool is_top_filler_above = false;  // Is top or filler above node
 		// Indexes at column top
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
@@ -98,19 +99,22 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
 				vm->m_area.add_y(em, vi, -1)) {
-
 			content_t c = vm->m_data[vi].getContent();
+
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
 					c == biome->c_water) {
 				column_is_open = true;
+				is_top_filler_above = false;
 				continue;
 			}
 
 			if (c == biome->c_river_water) {
 				column_is_open = true;
 				is_under_river = true;
+				is_top_filler_above = false;
 				continue;
 			}
+
 			// Ground
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
@@ -119,12 +123,17 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_under_tunnel = true;
+				// If tunnel roof is top or filler, replace with stone
+				if (is_top_filler_above)
+					vm->m_data[vi + em.X] = MapNode(biome->c_stone);
+				is_top_filler_above = false;
 			} else if (column_is_open && is_under_tunnel &&
 					(c == biome->c_stone || c == biome->c_filler)) {
 				// Tunnel entrance floor, place biome surface nodes
 				if (is_under_river) {
 					if (nplaced < depth_riverbed) {
 						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						is_top_filler_above = true;
 						nplaced++;
 					} else {
 						// Disable top/filler placement
@@ -134,9 +143,11 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 					}
 				} else if (nplaced < depth_top) {
 					vm->m_data[vi] = MapNode(biome->c_top);
+					is_top_filler_above = true;
 					nplaced++;
 				} else if (nplaced < base_filler) {
 					vm->m_data[vi] = MapNode(biome->c_filler);
+					is_top_filler_above = true;
 					nplaced++;
 				} else {
 					// Disable top/filler placement
@@ -145,6 +156,10 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				}
 			} else {
 				// Not tunnel or tunnel entrance floor
+				// Check node for possible replacing with stone for tunnel roof
+				if (c == biome->c_top || c == biome->c_filler)
+					is_top_filler_above = true;
+
 				column_is_open = false;
 			}
 		}
