@@ -4240,6 +4240,13 @@ Definition tables
           on ground when the player places the item. Server will always update
           actual result to client in a short moment.
         ]]
+        node_dig_prediction = "air",
+        --[[
+        ^ if "", no prediction is made
+        ^ if "air", node is removed
+        ^ Otherwise should be name of node which the client immediately places
+          upon digging. Server will always update actual result shortly.
+        ]]
         sound = {
             breaks = "default_tool_break", -- tools only
             place = --[[<SimpleSoundSpec>]],

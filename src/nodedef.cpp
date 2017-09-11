@@ -335,6 +335,7 @@ void ContentFeatures::reset()
 	color = video::SColor(0xFFFFFFFF);
 	palette_name = "";
 	palette = NULL;
+	node_dig_prediction = "air";
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -422,6 +423,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// legacy
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
+
+	os << serializeString(node_dig_prediction);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -530,6 +533,10 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+
+	try {
+		node_dig_prediction = deSerializeString(is);
+	} catch(SerializationError &e) {};
 }
 
 #ifndef SERVER
