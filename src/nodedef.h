@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
-#include <list>
 #include "mapnode.h"
 #ifndef SERVER
 #include "client/tile.h"
@@ -41,8 +40,6 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
-
-typedef std::list<std::pair<content_t, int> > GroupItems;
 
 enum ContentParamType
 {
@@ -290,7 +287,7 @@ struct ContentFeatures
 	// for NDT_CONNECTED pairing
 	u8 connect_sides;
 	std::vector<std::string> connects_to;
-	std::set<content_t> connects_to_ids;
+	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
 	// Flowing liquid or snow, value = default level
@@ -424,7 +421,7 @@ public:
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
-	virtual bool getIds(const std::string &name, std::set<content_t> &result)
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 			const=0;
 	virtual const ContentFeatures &get(const std::string &name) const=0;
 
@@ -452,7 +449,7 @@ public:
 	// If not found, returns CONTENT_IGNORE
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
-	virtual bool getIds(const std::string &name, std::set<content_t> &result)
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 		const=0;
 	// If not found, returns the features of CONTENT_UNKNOWN
 	virtual const ContentFeatures &get(const std::string &name) const=0;
