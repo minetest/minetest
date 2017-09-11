@@ -43,6 +43,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #if USE_POSTGRESQL
 #include "database-postgresql.h"
 #endif
+#include <algorithm>
 
 #define LBM_NAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyz0123456789_:"
 
@@ -84,7 +85,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 	lbm_list.push_back(lbm_def);
 
 	for (const std::string &nodeTrigger: lbm_def->trigger_contents) {
-		std::set<content_t> c_ids;
+		std::vector<content_t> c_ids;
 		bool found = nodedef->getIds(nodeTrigger, c_ids);
 		if (!found) {
 			content_t c_id = gamedef->allocateUnknownNodeId(nodeTrigger);
@@ -94,7 +95,7 @@ void LBMContentMapping::addLBM(LoadingBlockModifierDef *lbm_def, IGameDef *gamed
 					<< "\" while loading LBM \"" << lbm_def->name << "\"." << std::endl;
 				continue;
 			}
-			c_ids.insert(c_id);
+			c_ids.push_back(c_id);
 		}
 
 		for (content_t c_id : c_ids) {
@@ -646,7 +647,8 @@ struct ActiveABM
 {
 	ActiveBlockModifier *abm;
 	int chance;
-	std::set<content_t> required_neighbors;
+	std::vector<content_t> required_neighbors;
+	bool check_required_neighbors; // false if required_neighbors is known to be empty
 };
 
 class ABMHandler
@@ -693,16 +695,17 @@ public:
 			}
 
 			// Trigger neighbors
-			const std::set<std::string> &required_neighbors_s =
+			const std::vector<std::string> &required_neighbors_s =
 				abm->getRequiredNeighbors();
 			for (const std::string &required_neighbor_s : required_neighbors_s) {
 				ndef->getIds(required_neighbor_s, aabm.required_neighbors);
 			}
+			aabm.check_required_neighbors = !required_neighbors_s.empty();
 
 			// Trigger contents
-			const std::set<std::string> &contents_s = abm->getTriggerContents();
+			const std::vector<std::string> &contents_s = abm->getTriggerContents();
 			for (const std::string &content_s : contents_s) {
-				std::set<content_t> ids;
+				std::vector<content_t> ids;
 				ndef->getIds(content_s, ids);
 				for (content_t c : ids) {
 					if (c >= m_aabms.size())
@@ -777,7 +780,7 @@ public:
 					continue;
 
 				// Check neighbors
-				if (!aabm.required_neighbors.empty()) {
+				if (aabm.check_required_neighbors) {
 					v3s16 p1;
 					for(p1.X = p0.X-1; p1.X <= p0.X+1; p1.X++)
 					for(p1.Y = p0.Y-1; p1.Y <= p0.Y+1; p1.Y++)
@@ -796,11 +799,8 @@ public:
 							MapNode n = map->getNodeNoEx(p1 + block->getPosRelative());
 							c = n.getContent();
 						}
-						std::set<content_t>::const_iterator k;
-						k = aabm.required_neighbors.find(c);
-						if(k != aabm.required_neighbors.end()){
+						if (CONTAINS(aabm.required_neighbors, c))
 							goto neighbor_found;
-						}
 					}
 					// No required neighbor found
 					continue;

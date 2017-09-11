@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "mapnode.h"
 #include <fstream> // Used in applyTextureOverrides()
+#include <algorithm>
 
 /*
 	NodeBox
@@ -485,7 +486,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	u16 connects_to_size = readU16(is);
 	connects_to_ids.clear();
 	for (u16 i = 0; i < connects_to_size; i++)
-		connects_to_ids.insert(readU16(is));
+		connects_to_ids.push_back(readU16(is));
 	post_effect_color.setAlpha(readU8(is));
 	post_effect_color.setRed(readU8(is));
 	post_effect_color.setGreen(readU8(is));
@@ -845,7 +846,7 @@ public:
 	inline virtual const ContentFeatures& get(const MapNode &n) const;
 	virtual bool getId(const std::string &name, content_t &result) const;
 	virtual content_t getId(const std::string &name) const;
-	virtual bool getIds(const std::string &name, std::set<content_t> &result) const;
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result) const;
 	virtual const ContentFeatures& get(const std::string &name) const;
 	content_t allocateId();
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
@@ -892,10 +893,10 @@ private:
 
 	std::unordered_map<std::string, content_t> m_name_id_mapping_with_aliases;
 
-	// A mapping from groups to a list of content_ts (and their levels)
-	// that belong to it.  Necessary for a direct lookup in getIds().
+	// A mapping from groups to a vector of content_ts that belong to it.
+	// Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
-	std::unordered_map<std::string, GroupItems> m_group_to_items;
+	std::unordered_map<std::string, std::vector<content_t>> m_group_to_items;
 
 	// Next possibly free id
 	content_t m_next_id;
@@ -1037,28 +1038,25 @@ content_t CNodeDefManager::getId(const std::string &name) const
 
 
 bool CNodeDefManager::getIds(const std::string &name,
-		std::set<content_t> &result) const
+		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0,6) != "group:") {
 		content_t id = CONTENT_IGNORE;
 		bool exists = getId(name, id);
 		if (exists)
-			result.insert(id);
+			result.push_back(id);
 		return exists;
 	}
 	std::string group = name.substr(6);
 
-	std::unordered_map<std::string, GroupItems>::const_iterator
+	std::unordered_map<std::string, std::vector<content_t>>::const_iterator
 		i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
 
-	const GroupItems &items = i->second;
-	for (const auto &item : items) {
-		if (item.second != 0)
-			result.insert(item.first);
-	}
+	const std::vector<content_t> &items = i->second;
+	result.insert(result.end(), items.begin(), items.end());
 	//printf("getIds: %dus\n", t.stop());
 	return true;
 }
@@ -1247,15 +1245,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 	// belongs to when a node is re-registered
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
-
-		std::unordered_map<std::string, GroupItems>::iterator
-			j = m_group_to_items.find(group_name);
-		if (j == m_group_to_items.end()) {
-			m_group_to_items[group_name].emplace_back(id, group.second);
-		} else {
-			GroupItems &items = j->second;
-			items.emplace_back(id, group.second);
-		}
+		m_group_to_items[group_name].push_back(id);
 	}
 	return id;
 }
@@ -1283,16 +1273,10 @@ void CNodeDefManager::removeNode(const std::string &name)
 	}
 
 	// Erase node content from all groups it belongs to
-	for (std::unordered_map<std::string, GroupItems>::iterator iter_groups =
+	for (std::unordered_map<std::string, std::vector<content_t>>::iterator iter_groups =
 			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
-		GroupItems &items = iter_groups->second;
-		for (GroupItems::iterator iter_groupitems = items.begin();
-				iter_groupitems != items.end();) {
-			if (iter_groupitems->first == id)
-				items.erase(iter_groupitems++);
-			else
-				++iter_groupitems;
-		}
+		std::vector<content_t> &items = iter_groups->second;
+		items.erase(std::remove(items.begin(), items.end(), id), items.end());
 
 		// Check if group is empty
 		if (items.empty())
@@ -1545,9 +1529,8 @@ void CNodeDefManager::mapNodeboxConnections()
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
-		for (std::vector<std::string>::const_iterator it = f.connects_to.begin();
-				it != f.connects_to.end(); ++it) {
-			getIds(*it, f.connects_to_ids);
+		for (const std::string &name : f.connects_to) {
+			getIds(name, f.connects_to_ids);
 		}
 	}
 }
@@ -1560,14 +1543,14 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 		return false;
 
 	// lookup target in connected set
-	if (f1.connects_to_ids.find(to.param0) == f1.connects_to_ids.end())
+	if (!CONTAINS(f1.connects_to_ids, to.param0))
 		return false;
 
 	const ContentFeatures &f2 = get(to);
 
 	if ((f2.drawtype == NDT_NODEBOX) && (f2.node_box.type == NODEBOX_CONNECTED))
 		// ignores actually looking if back connection exists
-		return (f2.connects_to_ids.find(from.param0) != f2.connects_to_ids.end());
+		return CONTAINS(f2.connects_to_ids, from.param0);
 
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
@@ -1686,11 +1669,7 @@ bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
 				success = false;
 			}
 		} else {
-			std::set<content_t> cids;
-			std::set<content_t>::iterator it;
-			m_ndef->getIds(name, cids);
-			for (it = cids.begin(); it != cids.end(); ++it)
-				result_out->push_back(*it);
+			m_ndef->getIds(name, *result_out);
 		}
 	}
 

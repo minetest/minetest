@@ -108,7 +108,7 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 		int id = lua_tonumber(L, -2);
 		int current_abm = lua_gettop(L);
 
-		std::set<std::string> trigger_contents;
+		std::vector<std::string> trigger_contents;
 		lua_getfield(L, current_abm, "nodenames");
 		if (lua_istable(L, -1)) {
 			int table = lua_gettop(L);
@@ -116,16 +116,16 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			while (lua_next(L, table)) {
 				// key at index -2 and value at index -1
 				luaL_checktype(L, -1, LUA_TSTRING);
-				trigger_contents.insert(lua_tostring(L, -1));
+				trigger_contents.push_back(lua_tostring(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
 		} else if (lua_isstring(L, -1)) {
-			trigger_contents.insert(lua_tostring(L, -1));
+			trigger_contents.push_back(lua_tostring(L, -1));
 		}
 		lua_pop(L, 1);
 
-		std::set<std::string> required_neighbors;
+		std::vector<std::string> required_neighbors;
 		lua_getfield(L, current_abm, "neighbors");
 		if (lua_istable(L, -1)) {
 			int table = lua_gettop(L);
@@ -133,12 +133,12 @@ void ScriptApiEnv::initializeEnvironment(ServerEnvironment *env)
 			while (lua_next(L, table)) {
 				// key at index -2 and value at index -1
 				luaL_checktype(L, -1, LUA_TSTRING);
-				required_neighbors.insert(lua_tostring(L, -1));
+				required_neighbors.push_back(lua_tostring(L, -1));
 				// removes value, keeps key for next iteration
 				lua_pop(L, 1);
 			}
 		} else if (lua_isstring(L, -1)) {
-			required_neighbors.insert(lua_tostring(L, -1));
+			required_neighbors.push_back(lua_tostring(L, -1));
 		}
 		lua_pop(L, 1);
 
