@@ -426,9 +426,9 @@ function core.item_drop(itemstack, dropper, pos)
 		local item = itemstack:take_item(cnt)
 		local obj = core.add_item(p, item)
 		if obj then
-			dir.x = dir.x * 2
-			dir.y = dir.y * 2 + 2
-			dir.z = dir.z * 2
+			dir.x = dir.x * 2.9
+			dir.y = dir.y * 2.9 + 2
+			dir.z = dir.z * 2.9
 			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
 			return itemstack
