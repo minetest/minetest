@@ -316,8 +316,8 @@ function core.wrap_text(text, max_length, as_table)
 	end
 
 	for word in text:gmatch('%S+') do
-		local current_length = #table.concat(line, ' ')
-		if current_length + #word + 1 >= max_length then
+		local cur_length = #table.concat(line, ' ')
+		if cur_length > 0 and cur_length + #word + 1 >= max_length then
 			-- word wouldn't fit on current line, move to next line
 			table.insert(result, table.concat(line, ' '))
 			line = {}
