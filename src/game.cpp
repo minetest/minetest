@@ -4104,7 +4104,17 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			    		client->getScript()->on_dignode(nodepos, wasnode)) {
 				return;
 			}
-			client->removeNode(nodepos);
+
+			const ContentFeatures &f = client->ndef()->get(wasnode);
+			if (f.node_dig_prediction == "air") {
+				client->removeNode(nodepos);
+			} else if (!f.node_dig_prediction.empty()) {
+				content_t id;
+				bool found = client->ndef()->getId(f.node_dig_prediction, id);
+				if (found)
+					client->addNode(nodepos, id, true);
+			}
+			// implicit else: no prediction
 		}
 
 		client->interact(2, pointed);

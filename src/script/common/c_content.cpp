@@ -737,6 +737,10 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
+	// Node immediately placed by client when node is dug
+	getstringfield(L, index, "node_dig_prediction",
+		f.node_dig_prediction);
+
 	return f;
 }
 
@@ -861,6 +865,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "legacy_facedir_simple");
 	lua_pushboolean(L, c.legacy_wallmounted);
 	lua_setfield(L, -2, "legacy_wallmounted");
+	lua_pushstring(L, c.node_dig_prediction.c_str());
+	lua_setfield(L, -2, "node_dig_prediction");
 }
 
 /******************************************************************************/
