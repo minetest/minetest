@@ -29,140 +29,70 @@ void ControlLogEntry::setDtime(float a_dtime)
 {
 	if (a_dtime <= 0.0f) {
 		dtime = 0;
+		overtime = 0;
 	} else {
-		dtime = 1000 * a_dtime; // milliseconds
+		u16 new_dtime = 1000 * a_dtime; // milliseconds
+		if (new_dtime < 200) {
+			dtime = new_dtime;
+			overtime = 0;
+		} else {
+			dtime = 200;
+			overtime = new_dtime - 200;
+		}
 	}
 }
 float ControlLogEntry::getDtime() const
 {
-	return dtime / 1000.0f;
+	return ((int)dtime + (int)overtime) / 1000.0f;
 }
 
-void ControlLogEntry::setFreeMove(bool a_free_move)
-{
-	free_move = a_free_move;
-}
-bool ControlLogEntry::getFreeMove() const
-{
-	return free_move;
-}
-
-void ControlLogEntry::setFastMove(bool a_fast_move)
-{
-	fast_move = a_fast_move;
-}
-bool ControlLogEntry::getFastMove() const
-{
-	return fast_move;
+#define CLE_ACCESSOR(attribute, name, flag) \
+void ControlLogEntry::set ## name (bool on)\
+{\
+	attribute = on ? attribute | flag : attribute & ~flag;\
+}\
+bool ControlLogEntry::get ## name () const\
+{\
+	return (attribute & flag) ? true : false;\
 }
 
-void ControlLogEntry::setContinuousForward(bool a_continuous_forward)
-{
-	continuous_forward = a_continuous_forward;
-}
-bool ControlLogEntry::getContinuousForward() const
-{
-	return continuous_forward;
-}
+CLE_ACCESSOR(settings, FreeMove,          0x01)
+CLE_ACCESSOR(settings, FastMove,          0x02)
+CLE_ACCESSOR(settings, ContinuousForward, 0x04)
+CLE_ACCESSOR(settings, AlwaysFlyFast,     0x08)
+CLE_ACCESSOR(settings, Aux1Descends,      0x10)
 
-void ControlLogEntry::setAlwaysFlyFast(bool a_always_fly_fast)
-{
-	always_fly_fast = a_always_fly_fast;
-}
-bool ControlLogEntry::getAlwaysFlyFast() const
-{
-	return always_fly_fast;
-}
+CLE_ACCESSOR(keys, Up,    0x01)
+CLE_ACCESSOR(keys, Down,  0x02)
+CLE_ACCESSOR(keys, Left,  0x04)
+CLE_ACCESSOR(keys, Right, 0x08)
+CLE_ACCESSOR(keys, Jump,  0x10)
+CLE_ACCESSOR(keys, Sneak, 0x20)
+CLE_ACCESSOR(keys, Aux1,  0x40)
 
-void ControlLogEntry::setAux1Descends(bool a_aux1_descends)
-{
-	aux1_descends = a_aux1_descends;
-}
-bool ControlLogEntry::getAux1Descends() const
-{
-	return aux1_descends;
-}
-
-void ControlLogEntry::setUp(bool a_up)
-{
-	up = a_up;
-}
-bool ControlLogEntry::getUp() const
-{
-	return up;
-}
-
-void ControlLogEntry::setDown(bool a_down)
-{
-	down = a_down;
-}
-bool ControlLogEntry::getDown() const
-{
-	return down;
-}
-
-void ControlLogEntry::setLeft(bool a_left)
-{
-	left = a_left;
-}
-bool ControlLogEntry::getLeft() const
-{
-	return left;
-}
-
-void ControlLogEntry::setRight(bool a_right)
-{
-	right = a_right;
-}
-bool ControlLogEntry::getRight() const
-{
-	return right;
-}
-
-void ControlLogEntry::setJump(bool a_jump)
-{
-	jump = a_jump;
-}
-bool ControlLogEntry::getJump() const
-{
-	return jump;
-}
-
-void ControlLogEntry::setSneak(bool a_sneak)
-{
-	sneak = a_sneak;
-}
-bool ControlLogEntry::getSneak() const
-{
-	return sneak;
-}
-
-void ControlLogEntry::setAux1(bool a_aux1)
-{
-	aux1 = a_aux1;
-}
-bool ControlLogEntry::getAux1() const
-{
-	return aux1;
-}
+#undef CLE_ACCESSOR
 
 void ControlLogEntry::setPitch(float a_pitch)
 {
-	// -63 - 63 (7 bits)
-	pitch = (s8)((a_pitch / 90.0f) * 63);	
+	// -63 - 63 -> 0-126 (7 bits)
+	u8 pitch = (u8)((a_pitch / 90.0f) * 63 + 63);
+	yaw_pitch = (yaw_pitch & 0xff80) | pitch;
 }
 float ControlLogEntry::getPitch() const
 {
-	return (pitch / 63.0f) * 90.0f;
+	u8 pitch = (u8)(yaw_pitch & 0x7f);
+	return (((int)pitch - 63) / 63.0f) * 90.0f;
 }
 
 void ControlLogEntry::setYaw(float a_yaw)
 {
 	// 0 - 511 (9 bits)
-	yaw = (u16)((a_yaw / 360.0f) * 512) & 0x1ff;
+	u16 yaw = (u16)((a_yaw / 360.0f) * 512) & 0x1ff;
+	yaw_pitch = (yaw_pitch & 0x7f) | ( yaw << 7);
 }
 float ControlLogEntry::getYaw() const
 {
+	u16 yaw = (u16)((yaw_pitch >> 7) & 0x1ff);
 	return (yaw / 512.f) * 360.0f;
 }
 
@@ -183,83 +113,67 @@ float ControlLogEntry::getJoySidew() const
 	return joy_sidew / 127.0f;
 }
 
-u8 ControlLogEntry::serDtime() const
-{
-	return (u8)dtime;
-}
-u8 ControlLogEntry::serSettings() const
-{
-	u8 result = 0;
-	if (free_move)
-		result = result | 0x01;
-	if (fast_move)
-		result = result | 0x02;
-	if (continuous_forward)
-		result = result | 0x04;
-	if (always_fly_fast)
-		result = result | 0x08;
-	if (aux1_descends)
-		result = result | 0x10;
-	return result;
-}
-u8 ControlLogEntry::serKeys() const
-{
-	u8 result = 0;
-	if (up)
-		result = result | 0x01;
-	if (down)
-		result = result | 0x02;
-	if (left)
-		result = result | 0x04;
-	if (right)
-		result = result | 0x08;
-	if (jump)
-		result = result | 0x10;
-	if (sneak)
-		result = result | 0x20;
-	if (aux1)
-		result = result | 0x40;
-	return result;
-}
-u16 ControlLogEntry::serYawPitch() const
-{
-	u16 result = 0;
-	result = result | (yaw & 0x1ff << 7);
-	result = result | (pitch & 0x7f);
-	return result;
-}
-s8 ControlLogEntry::serJoyForw() const
-{
-	return joy_forw;
-}
-s8 ControlLogEntry::serJoySidew() const
-{
-	return joy_sidew;
-}
 bool ControlLogEntry::matches(const ControlLogEntry &other) const
 {
 	return (
-		free_move == other.free_move &&
-		fast_move == other.fast_move &&
-		continuous_forward == other.continuous_forward &&
-		always_fly_fast == other.always_fly_fast &&
-		aux1_descends == other.aux1_descends &&
-		up == other.up &&
-		down == other.down &&
-		left == other.left &&
-		right == other.right &&
-		jump == other.jump &&
-		sneak == other.sneak &&
-		pitch == other.pitch &&
-		yaw == other.yaw &&
+		settings == other.settings &&
+		keys == other.keys &&
+		yaw_pitch == other.yaw_pitch &&
 		joy_forw == other.joy_forw &&
 		joy_sidew == other.joy_sidew
 	);
 }
 void ControlLogEntry::merge(const ControlLogEntry &other)
 {
-	dtime = dtime + other.dtime;
+	u16 new_dtime = dtime + overtime + other.dtime + other.overtime;
+	if (new_dtime > 200) {
+		dtime = 200;
+		overtime = new_dtime - 200;
+	} else {
+		dtime = new_dtime;
+		overtime = 0;
+	}
 	// the rest is supposedly identical
+}
+
+std::string ControlLogEntry::serialize(u8 flags, const ControlLogEntry *prev) const
+{
+	std::stringstream output;
+	if (!prev || (settings != prev->settings)) {
+		output << (u8)255 << settings;
+	}
+	output << dtime;
+	if (dtime >= 200) {
+		output << overtime;
+	}
+	output << keys << yaw_pitch;
+	if (flags & 0x01) { // joystick
+		output << joy_forw << joy_sidew;
+	}
+	return output.str();
+}
+
+void ControlLogEntry::deserialize(const std::string &from, u8 flags, const ControlLogEntry *prev)
+{
+	std::stringstream input(from);
+	u8 i_dtime;
+	input >> i_dtime;
+	if (i_dtime == 255) {
+		input >> settings;
+		input >> i_dtime; // start of next entry
+	}
+	if (i_dtime >= 200) {
+		dtime = i_dtime;
+		input >> overtime;
+	} else {
+		dtime = i_dtime;
+		overtime = 0;
+	}
+	input >> keys >> yaw_pitch;
+	if (flags & 0x01) { // joystick
+		input >> joy_forw >> joy_sidew;
+	}
+	return;
 }
 
 
@@ -287,9 +201,6 @@ std::string ControlLog::serialize(u32 bytes_max) const
 {
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
-	// TODO: last sent settings instead? They may change
-	//       during the log itself.
-	bool settings_included = false;
 
 	std::stringstream output;
 
@@ -300,32 +211,17 @@ std::string ControlLog::serialize(u32 bytes_max) const
 
 	u8 motion_model = 1;
 	u8 motion_model_version = 1;
-	int count = 0;
 
 	bool leftovers = false;
 	output << motion_model << motion_model_version;
+	ControlLogEntry *prev_cle = NULL;
 	for( ControlLogEntry cle : log ) {
-		if (output.tellp() > bytes_max) {
+		if (output.tellp() >= bytes_max) {
 			leftovers = true;
 			break;
 		}
-		if (cle.serSettings() != last_acked_settings && !settings_included) {
-			output << (u8)255 << cle.serSettings();
-			settings_included = true;
-		}
-		u16 overtime = 0;
-		if (cle.getDtime() > 200) {
-			overtime = cle.getDtime() - 200;
-			cle.setDtime(200);
-		}
-		output << cle.serDtime() << cle.serKeys() << cle.serYawPitch();
-		count++;
-		if (flags & 0x01) { // joystick
-			output << cle.serJoyForw() << cle.serJoySidew();
-		}
-		if (overtime) {
-			output << (u8)254 << (u16)overtime;
-		}
+		output << cle.serialize(flags, prev_cle);
+		prev_cle = &cle;
 	}
 	if (leftovers) {
 		output << (u8)253;
@@ -349,9 +245,11 @@ void ControlLog::deserialize(const std::string logbytes)
 	//bool leftovers = false;
 	int count = 0;
 	while ((unsigned)input.tellp() < logbytes.length()) {
-		u8 byte;
-		input >> byte;
-		count++;
+		u8 dtime;
+		input >> dtime;
+		if (dtime <= 200) {
+			ControlLogEntry cle;
+		}
 	}
 	dstream << "deserialized " << count << " bytes" << std::endl;
 }

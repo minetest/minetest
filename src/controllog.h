@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 overhead:
 - protocol version
-- motion model number + version 
+- motion model number + version
 
 global settings:
 - free_move
@@ -53,7 +53,7 @@ line item settings:
 if joystick enabled / detected:
 - forw_move_joystick_axis (8 bits)
 - side_move_joysticx_axis (8 bits)
-= 31 bits w/o joystick, 47 bits with 
+= 31 bits w/o joystick, 47 bits with
 
 */
 
@@ -105,6 +105,9 @@ public:
 	bool matches(const ControlLogEntry &other) const;
 	void merge(const ControlLogEntry &other);
 
+	std::string serialize(u8 flags, const ControlLogEntry *prev) const;
+	void deserialize(const std::string &from, u8 flags, const ControlLogEntry *prev);
+
 	u8 serDtime() const;
 	u8 serSettings() const;
 	u16 serYawPitch() const;
@@ -114,25 +117,29 @@ public:
 	s8 serJoySidew() const;
 
 private:
-	u16 dtime;
+	u8 dtime;
+	u16 overtime;
 
-	bool free_move;
-	bool fast_move;
-	bool continuous_forward;
-	bool always_fly_fast;
-	bool aux1_descends;
+	u8 settings;
+	// free_move;
+	// fast_move;
+	// continuous_forward;
+	// always_fly_fast;
+	// aux1_descends;
 	
-	bool up;
-	bool down;
-	bool left;
-	bool right;
+	u16 keys;
+	// up;
+	// down;
+	// left;
+	// right;
+	// jump;
+	// sneak;
+	// aux1;
+	// mouse and future extensions
 
-	bool jump;
-	bool sneak;
-	bool aux1;
-
-	s8 pitch;
-	u16 yaw; // 9 bits
+	u16 yaw_pitch;
+	// 7 bits signed:   pitch;
+	// 9 bits unsigned: yaw;
 
 	s8 joy_forw;
 	s8 joy_sidew;
