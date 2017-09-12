@@ -49,8 +49,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "5000");
-	settings->setDefault("enable_build_where_you_stand", "false" );
-	settings->setDefault("send_pre_v25_init", "false");
+	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
 	settings->setDefault("curl_file_download_timeout", "300000");

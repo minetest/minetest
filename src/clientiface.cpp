@@ -454,8 +454,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 		{
 		case CSE_AuthAccept:
 			m_state = CS_AwaitingInit2;
-			if ((chosen_mech == AUTH_MECHANISM_SRP)
-					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+			if (chosen_mech == AUTH_MECHANISM_SRP)
 				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
@@ -464,8 +463,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		case CSE_SetDenied:
 			m_state = CS_Denied;
-			if ((chosen_mech == AUTH_MECHANISM_SRP)
-					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+			if (chosen_mech == AUTH_MECHANISM_SRP)
 				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;
@@ -543,8 +541,7 @@ void RemoteClient::notifyEvent(ClientStateEvent event)
 			break;
 		case CSE_SudoSuccess:
 			m_state = CS_SudoMode;
-			if ((chosen_mech == AUTH_MECHANISM_SRP)
-					|| (chosen_mech == AUTH_MECHANISM_LEGACY_PASSWORD))
+			if (chosen_mech == AUTH_MECHANISM_SRP)
 				srp_verifier_delete((SRPVerifier *) auth_data);
 			chosen_mech = AUTH_MECHANISM_NONE;
 			break;

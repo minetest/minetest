@@ -1534,9 +1534,6 @@ void Server::SendInventory(PlayerSAO* playerSAO)
 
 void Server::SendChatMessage(u16 peer_id, const ChatMessage &message)
 {
-	NetworkPacket legacypkt(TOCLIENT_CHAT_MESSAGE_OLD, 0, peer_id);
-	legacypkt << message.message;
-
 	NetworkPacket pkt(TOCLIENT_CHAT_MESSAGE, 0, peer_id);
 	u8 version = 1;
 	u8 type = message.type;
@@ -1547,12 +1544,9 @@ void Server::SendChatMessage(u16 peer_id, const ChatMessage &message)
 		if (!player)
 			return;
 
-		if (player->protocol_version < 35)
-			Send(&legacypkt);
-		else
-			Send(&pkt);
+		Send(&pkt);
 	} else {
-		m_clients.sendToAllCompat(&pkt, &legacypkt, 35);
+		m_clients.sendToAll(&pkt);
 	}
 }
 
@@ -1668,17 +1662,15 @@ void Server::SendAddParticleSpawner(u16 peer_id, u16 protocol_version,
 
 void Server::SendDeleteParticleSpawner(u16 peer_id, u32 id)
 {
-	NetworkPacket pkt(TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY, 2, peer_id);
+	NetworkPacket pkt(TOCLIENT_DELETE_PARTICLESPAWNER, 4, peer_id);
 
 	// Ugly error in this packet
-	pkt << (u16) id;
+	pkt << id;
 
-	if (peer_id != PEER_ID_INEXISTENT) {
+	if (peer_id != PEER_ID_INEXISTENT)
 		Send(&pkt);
-	}
-	else {
+	else
 		m_clients.sendToAll(&pkt);
-	}
 
 }
 
@@ -2572,14 +2564,7 @@ void Server::DenySudoAccess(u16 peer_id)
 void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode reason,
 		const std::string &str_reason, bool reconnect)
 {
-	if (proto_ver >= 25) {
-		SendAccessDenied(peer_id, reason, str_reason, reconnect);
-	} else {
-		std::wstring wreason = utf8_to_wide(
-			reason == SERVER_ACCESSDENIED_CUSTOM_STRING ? str_reason :
-			accessDeniedStrings[(u8)reason]);
-		SendAccessDenied_Legacy(peer_id, wreason);
-	}
+	SendAccessDenied(peer_id, reason, str_reason, reconnect);
 
 	m_clients.event(peer_id, CSE_SetDenied);
 	m_con->DisconnectPeer(peer_id);
