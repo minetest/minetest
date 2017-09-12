@@ -920,10 +920,10 @@ void Client::deleteAuthData()
 		case AUTH_MECHANISM_FIRST_SRP:
 			break;
 		case AUTH_MECHANISM_SRP:
+		case AUTH_MECHANISM_LEGACY_PASSWORD:
 			srp_user_delete((SRPUser *) m_auth_data);
 			m_auth_data = NULL;
 			break;
-		case AUTH_MECHANISM_LEGACY_PASSWORD:
 		case AUTH_MECHANISM_NONE:
 			break;
 	}
@@ -938,6 +938,9 @@ AuthMechanism Client::choseAuthMech(const u32 mechs)
 
 	if (mechs & AUTH_MECHANISM_FIRST_SRP)
 		return AUTH_MECHANISM_FIRST_SRP;
+
+	if (mechs & AUTH_MECHANISM_LEGACY_PASSWORD)
+		return AUTH_MECHANISM_LEGACY_PASSWORD;
 
 	return AUTH_MECHANISM_NONE;
 }
@@ -974,8 +977,14 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			Send(&resp_pkt);
 			break;
 		}
-		case AUTH_MECHANISM_SRP: {
-			u8 legacy_based_on = 1;
+		case AUTH_MECHANISM_SRP:
+		case AUTH_MECHANISM_LEGACY_PASSWORD: {
+			u8 based_on = 1;
+
+			if (chosen_auth_mechanism == AUTH_MECHANISM_LEGACY_PASSWORD) {
+				m_password = translate_password(getPlayerName(), m_password);
+				based_on = 0;
+			}
 
 			std::string playername_u = lowercase(getPlayerName());
 			m_auth_data = srp_user_new(SRP_SHA256, SRP_NG_2048,
@@ -990,11 +999,10 @@ void Client::startAuth(AuthMechanism chosen_auth_mechanism)
 			FATAL_ERROR_IF(res != SRP_OK, "Creating local SRP user failed.");
 
 			NetworkPacket resp_pkt(TOSERVER_SRP_BYTES_A, 0);
-			resp_pkt << std::string(bytes_A, len_A) << legacy_based_on;
+			resp_pkt << std::string(bytes_A, len_A) << based_on;
 			Send(&resp_pkt);
 			break;
 		}
-		case AUTH_MECHANISM_LEGACY_PASSWORD:
 		case AUTH_MECHANISM_NONE:
 			break; // not handled in this method
 	}

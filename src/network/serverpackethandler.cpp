@@ -232,6 +232,9 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 				DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_SERVER_FAIL);
 				return;
 			}
+		} else if (base64_is_valid(encpwd)) {
+			auth_mechs |= AUTH_MECHANISM_LEGACY_PASSWORD;
+			client->enc_pwd = encpwd;
 		} else {
 			actionstream << "User " << playername
 				<< " tried to log in, but password field"
@@ -1578,7 +1581,8 @@ void Server::handleCommand_SrpBytesA(NetworkPacket* pkt)
 		<< "based_on=" << int(based_on) << " and len_A="
 		<< bytes_A.length() << "." << std::endl;
 
-	AuthMechanism chosen = AUTH_MECHANISM_SRP;
+	AuthMechanism chosen = (based_on == 0) ?
+		AUTH_MECHANISM_LEGACY_PASSWORD : AUTH_MECHANISM_SRP;
 
 	if (wantSudo) {
 		if (!client->isSudoMechAllowed(chosen)) {
@@ -1663,7 +1667,8 @@ void Server::handleCommand_SrpBytesM(NetworkPacket* pkt)
 		return;
 	}
 
-	if (client->chosen_mech != AUTH_MECHANISM_SRP) {
+	if (client->chosen_mech != AUTH_MECHANISM_SRP &&
+			client->chosen_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
 		actionstream << "Server: got SRP _M packet, while auth"
 			<< "is going on with mech " << client->chosen_mech
 			<< " from " << getPeerAddress(pkt->getPeerId()).serializeString()

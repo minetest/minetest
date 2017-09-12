@@ -86,7 +86,8 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 		// we recieved a TOCLIENT_HELLO while auth was already going on
 		errorstream << "Client: TOCLIENT_HELLO while auth was already going on"
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
-		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP) {
+		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
+				m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD) {
 			srp_user_delete((SRPUser *) m_auth_data);
 			m_auth_data = 0;
 		}
@@ -1294,7 +1295,8 @@ void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
 
 void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 {
-	if (m_chosen_auth_mech != AUTH_MECHANISM_SRP) {
+	if (m_chosen_auth_mech != AUTH_MECHANISM_SRP &&
+			m_chosen_auth_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
 		errorstream << "Client: Received SRP S_B login message,"
 			<< " but wasn't supposed to (chosen_mech="
 			<< m_chosen_auth_mech << ")." << std::endl;
