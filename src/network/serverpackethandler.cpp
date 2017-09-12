@@ -1749,14 +1749,17 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 
 	// Send signal to client to notify join succeed or not
 	if (m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
-		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_OK;
+		resp_pkt << (u8) MODCHANNEL_SIGNAL_JOIN_OK;
 		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
 				<< std::endl;
-	} else {
+	}
+#ifndef NDEBUG
+	else {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_FAILURE;
 		infostream << "Peer " << pkt->getPeerId() << " tried to join channel "
 			<< channel_name << ", but was already registered." << std::endl;
 	}
+#endif
 	resp_pkt << channel_name;
 	Send(&resp_pkt);
 }

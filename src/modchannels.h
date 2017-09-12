@@ -25,11 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <memory>
 #include "irrlichttypes.h"
 
-enum ModChannelState
+enum ModChannelState : u8
 {
 	MODCHANNEL_STATE_INIT,
 	MODCHANNEL_STATE_READ_WRITE,
 	MODCHANNEL_STATE_READ_ONLY,
+	MODCHANNEL_STATE_MAX,
 };
 
 class ModChannel
@@ -58,8 +59,7 @@ enum ModChannelSignal : u8
 	MODCHANNEL_SIGNAL_LEAVE_OK,
 	MODCHANNEL_SIGNAL_LEAVE_FAILURE,
 	MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED,
-	MODCHANNEL_SIGNAL_SET_READ_ONLY,
-	MODCHANNEL_SIGNAL_SET_READ_WRITE,
+	MODCHANNEL_SIGNAL_SET_STATE,
 };
 
 class ModChannelMgr

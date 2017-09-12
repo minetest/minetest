@@ -1376,6 +1376,7 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 			infostream << "Server refused our mod channel join on channel `" << channel
 				<< "`" << std::endl;
 			break;
+#ifndef NDEBUG
 		case MODCHANNEL_SIGNAL_LEAVE_OK:
 			infostream << "Server ack our mod channel leave on channel " << channel
 				<< "`, leaving." << std::endl;
@@ -1389,19 +1390,27 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 			infostream << "Server tells us we sent a message on channel `" << channel
 				<< "` but we are not registered. Message was dropped." << std::endl;
 			break;
-		case MODCHANNEL_SIGNAL_SET_READ_ONLY:
-			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_ONLY);
+#endif
+		case MODCHANNEL_SIGNAL_SET_STATE: {
+			u8 state;
+			*pkt >> state;
+
+			if (state == MODCHANNEL_STATE_INIT || state >= MODCHANNEL_STATE_MAX) {
+				infostream << "Received wrong channel state " << state
+						<< ", ignoring." << std::endl;
+				return;
+			}
+
+			m_modchannel_mgr->setChannelState(channel, (ModChannelState) state);
 			infostream << "Server sets mod channel `" << channel
 					<< "` in read-only mode." << std::endl;
 			break;
-		case MODCHANNEL_SIGNAL_SET_READ_WRITE:
-			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
-			infostream << "Server sets mod channel `" << channel
-					<< "` in read-write mode." << std::endl;
-			break;
+		}
 		default:
+#ifndef NDEBUG
 			warningstream << "Received unhandled mod channel signal ID "
 				<< signal << ", ignoring." << std::endl;
+#endif
 			break;
 	}
 }

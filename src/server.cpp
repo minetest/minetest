@@ -3618,7 +3618,13 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 		const std::string &message, u16 from_peer)
 {
 	const std::vector<u16> &peers = m_modchannel_mgr->getChannelPeers(channel);
-	if (peers.empty()) {
+	if (peers.empty())
+		return;
+
+	if (message.size() > STRING_MAX_LEN) {
+		warningstream << "ModChannel message too long, dropping before sending "
+				<< " (" << message.size() << " > " << STRING_MAX_LEN << ", channel: "
+				<< channel << ")" << std::endl;
 		return;
 	}
 

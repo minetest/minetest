@@ -616,6 +616,8 @@ enum ToClientCommand
 	/*
 		u16 channel name length
 	 	std::string channel name
+	 	u16 channel name sender
+	 	std::string channel name
 	 	u16 message length
 	 	std::string message
 	 */

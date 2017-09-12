@@ -22,7 +22,9 @@ end)
 core.register_on_modchannel_message(function(channel, sender, message)
 	print("[PREVIEW][modchannels] Received message `" .. message .. "` on channel `"
 			.. channel .. "` from sender `" .. sender .. "`")
-	mod_channel:send("CSM preview received " .. message)
+	core.after(1, function()
+		mod_channel:send("CSM preview received " .. message)
+	end)
 end)
 
 core.register_on_placenode(function(pointed_thing, node)

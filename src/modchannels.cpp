@@ -20,12 +20,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "modchannels.h"
 #include <algorithm>
 #include <cassert>
+#include "util/basic_macros.h"
 
 bool ModChannel::registerConsumer(u16 peer_id)
 {
+
 	// ignore if peer_id already joined
-	if (std::find(m_client_consumers.begin(), m_client_consumers.end(), peer_id) !=
-			m_client_consumers.end())
+	if (CONTAINS(m_client_consumers, peer_id))
 		return false;
 
 	m_client_consumers.push_back(peer_id);
@@ -92,9 +93,8 @@ void ModChannelMgr::registerChannel(const std::string &channel)
 
 bool ModChannelMgr::setChannelState(const std::string &channel, ModChannelState state)
 {
-	if (!channelRegistered(channel)) {
+	if (!channelRegistered(channel))
 		return false;
-	}
 
 	auto channel_it = m_registered_channels.find(channel);
 	channel_it->second->setState(state);
@@ -104,9 +104,8 @@ bool ModChannelMgr::setChannelState(const std::string &channel, ModChannelState 
 
 bool ModChannelMgr::removeChannel(const std::string &channel)
 {
-	if (!channelRegistered(channel)) {
+	if (!channelRegistered(channel))
 		return false;
-	}
 
 	m_registered_channels.erase(channel);
 	return true;

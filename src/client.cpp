@@ -1957,6 +1957,13 @@ bool Client::sendModChannelMessage(const std::string &channel, const std::string
 	if (!m_modchannel_mgr->canWriteOnChannel(channel))
 		return false;
 
+	if (message.size() > STRING_MAX_LEN) {
+		warningstream << "ModChannel message too long, dropping before sending "
+				<< " (" << message.size() << " > " << STRING_MAX_LEN << ", channel: "
+				<< channel << ")" << std::endl;
+		return false;
+	}
+
 	// @TODO: do some client rate limiting
 	NetworkPacket pkt(TOSERVER_MODCHANNEL_MSG, 2 + channel.size() + 2 + message.size());
 	pkt << channel << message;
