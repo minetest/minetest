@@ -52,8 +52,8 @@ public:
 private:
 	void runTimeouts(float dtime);
 	void rawSend(const BufferedPacket &packet);
-	bool rawSendAsPacket(u16 peer_id, u8 channelnum, SharedBuffer<u8> data,
-			bool reliable);
+	bool rawSendAsPacket(
+			u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
 
 	void processReliableCommand(ConnectionCommand &c);
 	void processNonReliableCommand(ConnectionCommand &c);
