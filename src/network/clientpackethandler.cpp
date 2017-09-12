@@ -169,9 +169,9 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 		// 13/03/15 Legacy code from 0.4.12 and lesser but is still used
 		// in some places of the server code
 		if (pkt->getSize() >= 2) {
-				std::wstring wide_reason;
-				*pkt >> wide_reason;
-				m_access_denied_reason = wide_to_utf8(wide_reason);
+			std::wstring wide_reason;
+			*pkt >> wide_reason;
+			m_access_denied_reason = wide_to_utf8(wide_reason);
 		}
 		return;
 	}
