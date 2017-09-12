@@ -308,59 +308,36 @@ function core.formspec_escape(text)
 end
 
 
-function core.wrap_text(text, charlimit)
-	local retval = {}
-
-	local current_idx = 1
-
-	local start,stop = string_find(text, " ", current_idx)
-	local nl_start,nl_stop = string_find(text, "\n", current_idx)
-	local gotnewline = false
-	if nl_start ~= nil and (start == nil or nl_start < start) then
-		start = nl_start
-		stop = nl_stop
-		gotnewline = true
+function core.wrap_text(text, limit)
+	local new_text = ""
+	if text:len() <= limit then
+		return text
 	end
-	local last_line = ""
-	while start ~= nil do
-		if string.len(last_line) + (stop-start) > charlimit then
-			retval[#retval + 1] = last_line
-			last_line = ""
-		end
-
-		if last_line ~= "" then
-			last_line = last_line .. " "
-		end
-
-		last_line = last_line .. string_sub(text, current_idx, stop - 1)
-
-		if gotnewline then
-			retval[#retval + 1] = last_line
-			last_line = ""
-			gotnewline = false
-		end
-		current_idx = stop+1
-
-		start,stop = string_find(text, " ", current_idx)
-		nl_start,nl_stop = string_find(text, "\n", current_idx)
-
-		if nl_start ~= nil and (start == nil or nl_start < start) then
-			start = nl_start
-			stop = nl_stop
-			gotnewline = true
+	while text:len() > limit do
+		local s = text:sub(1,limit)
+		local space = s:reverse():find(" ")
+		if limit == 1 then
+			local letter = s:sub(1,1)
+			new_text = new_text .. letter .. "\n"
+			text = text:sub(2, text:len())
+		else
+			if space == nil then
+				local split = s:sub(1,(limit - 1))
+				new_text = new_text .. split .. "-\n"
+				text = text:sub(split:len() + 1, 
+				text:len())
+			else
+				local last_space = (limit - space) + 1
+				new_text = new_text .. 
+				text:sub(1,last_space) .. "\n"
+				text = text:sub(last_space + 1, 
+				text:len())
+			end
 		end
 	end
-
-	--add last part of text
-	if string.len(last_line) + (string.len(text) - current_idx) > charlimit then
-			retval[#retval + 1] = last_line
-			retval[#retval + 1] = string_sub(text, current_idx)
-	else
-		last_line = last_line .. " " .. string_sub(text, current_idx)
-		retval[#retval + 1] = last_line
-	end
-
-	return retval
+	new_text = new_text .. text
+	text = ""
+	return new_text
 end
 
 --------------------------------------------------------------------------------
