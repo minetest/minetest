@@ -67,6 +67,14 @@ bool ModChannelMgr::channelRegistered(const std::string &channel) const
 	return m_registered_channels.find(channel) != m_registered_channels.end();
 }
 
+ModChannel *ModChannelMgr::getModChannel(const std::string &channel)
+{
+	if (!channelRegistered(channel))
+		return nullptr;
+
+	return m_registered_channels[channel].get();
+}
+
 bool ModChannelMgr::canWriteOnChannel(const std::string &channel) const
 {
 	const auto channel_it = m_registered_channels.find(channel);

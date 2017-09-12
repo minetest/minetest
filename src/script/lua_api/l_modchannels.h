@@ -30,12 +30,6 @@ private:
 	// mod_channel_join(name)
 	static int l_mod_channel_join(lua_State *L);
 
-	// mod_channel_leave(name)
-	static int l_mod_channel_leave(lua_State *L);
-
-	// mod_channel_send(name, message)
-	static int l_mod_channel_send(lua_State *L);
-
 public:
 	static void Initialize(lua_State *L, int top);
 };
@@ -47,9 +41,23 @@ public:
 	~ModChannelRef() = default;
 
 	static void Register(lua_State *L);
+	static void create(lua_State *L, ModChannel *channel);
+
+	// leave()
+	static int l_leave(lua_State *L);
+
+	// send(message)
+	static int l_send(lua_State *L);
+
+	// is_writeable()
+	static int l_is_writeable(lua_State *L);
+
 private:
 	// garbage collector
 	static int gc_object(lua_State *L);
+
+	static ModChannelRef *checkobject(lua_State *L, int narg);
+	static ModChannel *getobject(ModChannelRef *ref);
 
 	ModChannel *m_modchannel = nullptr;
 

@@ -1,5 +1,6 @@
 local modname = core.get_current_modname() or "??"
 local modstorage = core.get_mod_storage()
+local mod_channel
 
 dofile("preview:example.lua")
 -- This is an example function to ensure it's working properly, should be removed before merge
@@ -15,12 +16,13 @@ core.register_on_connect(function()
 	print("Server address: " .. server_info.address)
 	print("Server port: " .. server_info.port)
 
-	core.mod_channel_join("experimental_preview")
+	mod_channel = core.mod_channel_join("experimental_preview")
 end)
 
-core.register_on_modchannel_message(function(channel, message)
+core.register_on_modchannel_message(function(channel, sender, message)
 	print("[PREVIEW][modchannels] Received message `" .. message .. "` on channel `"
-			.. channel .. "`")
+			.. channel .. "` from sender `" .. sender .. "`")
+	mod_channel:send("CSM preview received " .. message)
 end)
 
 core.register_on_placenode(function(pointed_thing, node)
@@ -108,7 +110,9 @@ core.after(2, function()
 end)
 
 core.after(4, function()
-	core.mod_channel_send("experimental_preview", "preview talk to experimental")
+	if mod_channel:is_writeable() then
+		mod_channel:send("preview talk to experimental")
+	end
 end)
 
 core.after(5, function()

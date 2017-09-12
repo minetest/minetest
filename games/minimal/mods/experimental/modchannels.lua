@@ -1,15 +1,16 @@
 --
 -- Mod channels experimental handlers
 --
+local mod_channel = core.mod_channel_join("experimental_preview")
 
-core.after(2, function()
-	core.mod_channel_join("experimental_preview")
-end)
-
-core.register_on_modchannel_message(function(channel, message)
+core.register_on_modchannel_message(function(channel, sender, message)
 	print("[minimal][modchannels] Server received message `" .. message
-			.. "` on channel `" .. channel .. "`")
-	core.mod_channel_send("experimental_preview", "experimental answers to preview")
+			.. "` on channel `" .. channel .. "` from sender `" .. sender .. "`")
+
+	if mod_channel:is_writeable() then
+		mod_channel:send("experimental answers to preview")
+		mod_channel:leave()
+	end
 end)
 
 print("[minimal][modchannels] Code loaded!")

@@ -32,5 +32,5 @@ void ScriptApiModChannels::on_modchannel_message(const std::string &channel,
 	lua_pushstring(L, channel.c_str());
 	lua_pushstring(L, sender.c_str());
 	lua_pushstring(L, message.c_str());
-	runCallbacks(2, RUN_CALLBACKS_MODE_AND);
+	runCallbacks(3, RUN_CALLBACKS_MODE_AND);
 }

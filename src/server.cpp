@@ -3609,6 +3609,11 @@ bool Server::sendModChannelMessage(const std::string &channel, const std::string
 	return true;
 }
 
+ModChannel* Server::getModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->getModChannel(channel);
+}
+
 void Server::broadcastModChannelMessage(const std::string &channel,
 		const std::string &message, u16 from_peer)
 {
@@ -3624,7 +3629,7 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 
 	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
 			2 + channel.size() + 2 + sender.size() + 2 + message.size());
-	resp_pkt << channel << message;
+	resp_pkt << channel << sender << message;
 	for (u16 peer_id : peers) {
 		// Ignore sender
 		if (peer_id == from_peer)

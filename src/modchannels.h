@@ -39,12 +39,12 @@ public:
 			m_name(name) {}
 	~ModChannel() = default;
 
+	const std::string &getName() const { return m_name; }
 	bool registerConsumer(u16 peer_id);
 	bool removeConsumer(u16 peer_id);
 	const std::vector<u16> &getChannelPeers() const { return m_client_consumers; }
 	bool canWrite() const;
 	void setState(ModChannelState state);
-
 private:
 	std::string m_name;
 	ModChannelState m_state = MODCHANNEL_STATE_INIT;
@@ -73,6 +73,7 @@ public:
 	bool joinChannel(const std::string &channel, u16 peer_id);
 	bool leaveChannel(const std::string &channel, u16 peer_id);
 	bool channelRegistered(const std::string &channel) const;
+	ModChannel *getModChannel(const std::string &channel);
 	/**
 	 * This function check if a local mod can write on the channel
 	 *

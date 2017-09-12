@@ -17,8 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <cassert>
+#include <log.h>
 #include "lua_api/l_modchannels.h"
 #include "l_internal.h"
+#include "modchannels.h"
 
 int ModApiChannels::l_mod_channel_join(lua_State *L)
 {
@@ -30,43 +33,18 @@ int ModApiChannels::l_mod_channel_join(lua_State *L)
 		return 0;
 
 	getGameDef(L)->joinModChannel(channel);
-	return 0;
-}
+	ModChannel *channelObj = getGameDef(L)->getModChannel(channel);
+	assert(channelObj);
+	ModChannelRef::create(L, channelObj);
 
-int ModApiChannels::l_mod_channel_leave(lua_State *L)
-{
-	if (!lua_isstring(L, 1))
-		return 0;
-
-	std::string channel = luaL_checkstring(L, 1);
-	if (channel.empty())
-		return 0;
-
-	getGameDef(L)->leaveModChannel(channel);
-	return 0;
-}
-
-int ModApiChannels::l_mod_channel_send(lua_State *L)
-{
-	if (!lua_isstring(L, 1) || !lua_isstring(L, 2))
-		return 0;
-
-	std::string channel = luaL_checkstring(L, 1);
-	if (channel.empty())
-		return 0;
-
-	// @TODO serialize message
-	std::string message = luaL_checkstring(L, 2);
-
-	getGameDef(L)->sendModChannelMessage(channel, message);
-	return 0;
+	int object = lua_gettop(L);
+	lua_pushvalue(L, object);
+	return 1;
 }
 
 void ModApiChannels::Initialize(lua_State *L, int top)
 {
 	API_FCT(mod_channel_join);
-	API_FCT(mod_channel_leave);
-	API_FCT(mod_channel_send);
 }
 
 /*
@@ -78,6 +56,46 @@ ModChannelRef::ModChannelRef(ModChannel *modchannel):
 {
 }
 
+
+int ModChannelRef::l_leave(lua_State *L)
+{
+	ModChannelRef *ref = checkobject(L, 1);
+	ModChannel *channel = getobject(ref);
+	if (!channel)
+		return 0;
+
+	getGameDef(L)->leaveModChannel(channel->getName());
+	// Channel left, invalidate the channel object ptr
+	// This permits to invalidate every object action from Lua because core removed
+	// channel consuming link
+	ref->m_modchannel = nullptr;
+	return 0;
+}
+
+int ModChannelRef::l_send(lua_State *L)
+{
+	ModChannelRef *ref = checkobject(L, 1);
+	ModChannel *channel = getobject(ref);
+	if (!channel || !channel->canWrite())
+		return 0;
+
+	// @TODO serialize message
+	std::string message = luaL_checkstring(L, 2);
+
+	getGameDef(L)->sendModChannelMessage(channel->getName(), message);
+	return 0;
+}
+
+int ModChannelRef::l_is_writeable(lua_State *L)
+{
+	ModChannelRef *ref = checkobject(L, 1);
+	ModChannel *channel = getobject(ref);
+	if (!channel)
+		return 0;
+
+	lua_pushboolean(L, channel->canWrite());
+	return 1;
+}
 void ModChannelRef::Register(lua_State *L)
 {
 	lua_newtable(L);
@@ -103,6 +121,14 @@ void ModChannelRef::Register(lua_State *L)
 	lua_pop(L, 1);			// Drop methodtable
 }
 
+void ModChannelRef::create(lua_State *L, ModChannel *channel)
+{
+	ModChannelRef *o = new ModChannelRef(channel);
+	*(void **)(lua_newuserdata(L, sizeof(void *))) = o;
+	luaL_getmetatable(L, className);
+	lua_setmetatable(L, -2);
+}
+
 int ModChannelRef::gc_object(lua_State *L)
 {
 	ModChannelRef *o = *(ModChannelRef **)(lua_touserdata(L, 1));
@@ -110,7 +136,26 @@ int ModChannelRef::gc_object(lua_State *L)
 	return 0;
 }
 
+ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
+{
+	luaL_checktype(L, narg, LUA_TUSERDATA);
+
+	void *ud = luaL_checkudata(L, narg, className);
+	if (!ud)
+		luaL_typerror(L, narg, className);
+
+	return *(ModChannelRef **)ud;  // unbox pointer
+}
+
+ModChannel* ModChannelRef::getobject(ModChannelRef *ref)
+{
+	return ref->m_modchannel;
+}
+
 const char ModChannelRef::className[] = "ModChannelRef";
 const luaL_Reg ModChannelRef::methods[] = {
+	luamethod(ModChannelRef, leave),
+	luamethod(ModChannelRef, is_writeable),
+	luamethod(ModChannelRef, send),
 	{0, 0},
 };

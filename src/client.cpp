@@ -1963,3 +1963,8 @@ bool Client::sendModChannelMessage(const std::string &channel, const std::string
 	Send(&pkt);
 	return true;
 }
+
+ModChannel* Client::getModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->getModChannel(channel);
+}

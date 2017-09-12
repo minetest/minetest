@@ -73,6 +73,10 @@ public:
 	bool joinModChannel(const std::string &channel);
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
+	ModChannel *getModChannel(const std::string &channel)
+	{
+		return m_modchannel_mgr->getModChannel(channel);
+	}
 
 private:
 	IItemDefManager *m_itemdef = nullptr;

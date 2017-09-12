@@ -101,6 +101,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ObjectRef::Register(L);
 	LuaSettings::Register(L);
 	StorageRef::Register(L);
+	ModChannelRef::Register(L);
 
 	// Initialize mod api modules
 	ModApiCraft::Initialize(L, top);
