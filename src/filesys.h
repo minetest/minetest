@@ -68,8 +68,12 @@ std::string TempPath();
 
 /* Multiplatform */
 
-// The path itself not included
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst);
+/* The path itself not included, returns a list of all subpaths.
+   dst - vector that contains all the subpaths.
+   list files - include files in the list of subpaths.
+   ignore - paths that start with these charcters will not be listed.
+*/
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::vector<char> *ignore);
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);

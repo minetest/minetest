@@ -1739,8 +1739,17 @@ void Client::afterContentReceived()
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
 	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path))
-		m_nodedef->applyTextureOverrides(texture_path + DIR_DELIM + "override.txt");
+	if (!texture_path.empty() && fs::IsDir(texture_path)) {
+		std::vector<std::string> paths;
+		static char ignore[] = { '_', '.' };
+		std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);
+		paths.push_back(texture_path);
+		for (std::vector<std::string>::iterator i = paths.begin();
+			i != paths.end(); ++i) {
+			m_nodedef->applyTextureOverrides(*i + DIR_DELIM + "override.txt");
+		}
+	}
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;

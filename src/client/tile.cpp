@@ -130,10 +130,20 @@ std::string getTexturePath(const std::string &filename)
 		Check from texture_path
 	*/
 	const std::string &texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty()) {
-		std::string testpath = texture_path + DIR_DELIM + filename;
-		// Check all filename extensions. Returns "" if not found.
-		fullpath = getImagePath(testpath);
+	if (!texture_path.empty() && fs::IsDir(texture_path)) {
+		std::vector<std::string> paths;
+		static char ignore[] = { '_', '.' };
+		std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+		paths.push_back(texture_path);
+		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);
+		for (std::vector<std::string>::iterator i = paths.begin();
+			i != paths.end(); ++i) {
+			std::string testpath = *i + DIR_DELIM + filename;
+			// Check all filename extensions. Returns "" if not found.
+			fullpath = getImagePath(testpath);
+			if (fullpath != "")
+				break;
+		}
 	}
 
 	/*
