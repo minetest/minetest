@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
 #include "exceptions.h"
@@ -73,7 +74,7 @@ std::string TempPath();
    list files - include files in the list of subpaths.
    ignore - paths that start with these charcters will not be listed.
 */
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::vector<char> *ignore);
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::set<char> *ignore);
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);

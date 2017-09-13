@@ -132,7 +132,7 @@ std::string getTexturePath(const std::string &filename)
 	const std::string &texture_path = g_settings->get("texture_path");
 	if (!texture_path.empty() && fs::IsDir(texture_path)) {
 		std::vector<std::string> paths;
-		std::vector<char> chars_to_ignore = { '_', '.' };
+		std::set<char> chars_to_ignore = { '_', '.' };
 		paths.push_back(texture_path);
 		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);
 		for (const auto &path : paths) {

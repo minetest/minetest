@@ -380,26 +380,17 @@ std::string TempPath()
 
 #endif
 
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::vector<char> *ignore)
+void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::set<char> *ignore)
 {
 	std::vector<DirListNode> content = GetDirListing(path);
 	for (const auto &n : content) {
 		std::string fullpath = path + DIR_DELIM + n.name;
-		bool skip = false;
-
-		if (ignore)
-			for (char c : *ignore)
-				if (n.name[0] == c) {
-					skip = true;
-					break;
-				}
-
-		if (!skip) {
-			if (list_files || n.dir)
-				dst.push_back(fullpath);
-			if (n.dir)
-				GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
-		}
+		if (ignore && ignore->count(n.name[0]))
+			continue;
+		if (list_files || n.dir)
+			dst.push_back(fullpath);
+		if (n.dir)
+			GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
 	}
 }
 
