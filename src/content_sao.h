@@ -397,7 +397,7 @@ private:
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
-	u16 m_breath = PLAYER_MAX_BREATH;
+	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	f32 m_pitch = 0.0f;
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;

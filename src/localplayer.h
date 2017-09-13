@@ -173,7 +173,7 @@ private:
 	// ***** End of variables for temporary option *****
 
 	bool m_can_jump = false;
-	u16 m_breath = PLAYER_MAX_BREATH;
+	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	f32 m_yaw = 0.0f;
 	f32 m_pitch = 0.0f;
 	bool camera_barely_in_ceiling = false;

@@ -23,8 +23,8 @@ core.EMERGE_GENERATED   = 4
 core.MAP_BLOCKSIZE = 16
 -- Default maximal HP of a player
 core.PLAYER_MAX_HP_DEFAULT = 20
--- Maximal breath of a player
-core.PLAYER_MAX_BREATH = 11
+-- Default maximal breath of a player
+core.PLAYER_MAX_BREATH_DEFAULT = 11
 
 -- light.h
 -- Maximum value for node 'light_source' parameter

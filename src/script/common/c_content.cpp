@@ -193,6 +193,7 @@ void read_object_properties(lua_State *L, int index,
 	if (getintfield(L, -1, "hp_max", hp_max))
 		prop->hp_max = (s16)rangelim(hp_max, 0, S16_MAX);
 
+	getintfield(L, -1, "breath_max", prop->breath_max);
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
@@ -306,6 +307,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_newtable(L);
 	lua_pushnumber(L, prop->hp_max);
 	lua_setfield(L, -2, "hp_max");
+	lua_pushnumber(L, prop->breath_max);
+	lua_setfield(L, -2, "breath_max");
 	lua_pushboolean(L, prop->physical);
 	lua_setfield(L, -2, "physical");
 	lua_pushboolean(L, prop->collideWithObjects);
