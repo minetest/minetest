@@ -1741,13 +1741,11 @@ void Client::afterContentReceived()
 	std::string texture_path = g_settings->get("texture_path");
 	if (!texture_path.empty() && fs::IsDir(texture_path)) {
 		std::vector<std::string> paths;
-		static char ignore[] = { '_', '.' };
-		std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+		std::vector<char> chars_to_ignore = { '_', '.' };
 		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);
 		paths.push_back(texture_path);
-		for (std::vector<std::string>::iterator i = paths.begin();
-			i != paths.end(); ++i) {
-			m_nodedef->applyTextureOverrides(*i + DIR_DELIM + "override.txt");
+		for (const auto &path : paths) {
+			m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 		}
 	}
 	m_nodedef->setNodeRegistrationStatus(true);

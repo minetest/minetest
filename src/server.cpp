@@ -254,13 +254,10 @@ Server::Server(
 	if (!texture_path.empty() && fs::IsDir(texture_path)) {
 		std::vector<std::string> paths;
 		paths.push_back(texture_path);
-		static char ignore[] = { '_', '.' };
-		std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+		std::vector<char> chars_to_ignore = { '_', '.' };
 		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);;
-		for (std::vector<std::string>::iterator i = paths.begin();
-			i != paths.end(); ++i) {
-			m_nodedef->applyTextureOverrides(*i + DIR_DELIM + "override.txt");
-		}
+		for (const auto &path : paths)
+			m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 	}
 
 	m_nodedef->setNodeRegistrationStatus(true);
@@ -2259,8 +2256,7 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
 	std::string texturepack_path = porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server";
-	static char ignore[] = { '_', '.' };
-	std::vector<char> chars_to_ignore(ignore, ignore + ARRLEN(ignore));
+	std::vector<char> chars_to_ignore = { '_', '.' };
 	fs::GetRecursiveSubPaths(texturepack_path, paths, false, &chars_to_ignore);
 	paths.push_back(texturepack_path);
 	// Collect media file information from paths into cache

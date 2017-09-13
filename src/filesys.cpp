@@ -387,25 +387,18 @@ void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst
 		std::string fullpath = path + DIR_DELIM + n.name;
 		bool skip = false;
 
-		if (ignore != NULL){
-			std::vector<char> char_to_ignore = *ignore;
-			for (std::vector<char>::iterator i = char_to_ignore.begin();
-					i != char_to_ignore.end(); ++i) {
-				if (n.name[0] == *i) {
+		if (ignore)
+			for (char c : *ignore)
+				if (n.name[0] == c) {
 					skip = true;
 					break;
 				}
-			}
-		}
 
 		if (!skip) {
-			if (list_files || n.dir) {
+			if (list_files || n.dir)
 				dst.push_back(fullpath);
-			}
-
-			if (n.dir) {
+			if (n.dir)
 				GetRecursiveSubPaths(fullpath, dst, list_files, ignore);
-			}
 		}
 	}
 }
