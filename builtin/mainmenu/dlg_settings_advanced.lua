@@ -115,7 +115,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
-	if setting_type == "string" or setting_type == "noise_params"
+	if setting_type == "string"
 			or setting_type == "key" or setting_type == "v3f" then
 		local default = remaining_line:match("^(.*)$")
 
@@ -137,22 +137,21 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
-	if setting_type == "noise_params_group" then
+	if setting_type == "noise_params_2d"
+			or setting_type == "noise_params_3d" then
 		local default = remaining_line:match("^(.*)$")
 
 		if not default then
 			return "Invalid string setting"
 		end
 
-		default = default:split(":")
-
 		table.insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
-			default = default[1],
+			default = default,
 			comment = current_comment,
-			flags = flags_to_table(default[2]),
+			flags = flags_to_table("defaults,eased,absvalue,nodefaults,noeased,noabsvalue"),
 		})
 		return
 	end
@@ -461,16 +460,16 @@ local function get_current_np_group(setting)
 		value = setting.default
 		local ti = 1
 		local index = 1
-		for line in np:gmatch("[%d.-e]+") do -- All numeric characters
-			index = np:find("[%d.-e]+", index) + line:len()
+		for line in value:gmatch("[%d.-e]+") do -- All numeric characters
+			index = value:find("[%d.-e]+", index) + line:len()
 			table.insert(t, line)
 			ti = ti + 1
 			if ti > 9 then
 				break
 			end
 		end
-		index = np:find("[^, ]", index)
-		local flags = np:sub(index)
+		index = value:find("[^, ]", index)
+		local flags = value:sub(index)
 		table.insert(t, flags)
 	else
 		table.insert(t, value.offset)
@@ -513,9 +512,7 @@ local checkboxes = {} -- handle checkboxes events
 local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
 	local height = 5.2
-	if setting.type == "noise_params" then
-		height = 7.2
-	elseif setting.type == "noise_params_group" then
+	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 		height = 7.7 + math.ceil(#setting.flags / 2) / 2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
 	elseif setting.type == "flags" then
 		height = 5.2 + math.ceil(#setting.possible / 2) / 2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
@@ -587,38 +584,15 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(current_value) .. "]"
 				.. "button[8,3.75;2,1;btn_browser_" .. setting.type .. ";" .. fgettext("Browse") .. "]"
 
-	elseif setting.type == "noise_params" then
-		local np = get_current_value(setting)
-		local t = {}
-		for line in np:gmatch("[%d.-e]+") do -- All numeric characters
-			table.insert(t, line)
+	elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
+		local t = get_current_np_group(setting)
+		local dimension = 3
+		if setting.type == "noise_params_2d" then
+			dimension = 2
 		end
 
 		formspec = formspec
-				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
-				.. core.formspec_escape(t[1] or "") .. "]"
-				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
-				.. core.formspec_escape(t[2] or "") .. "]"
-				.. "field[7.1,4;3.3,1;te_seed;Seed;" -- Seed
-				.. core.formspec_escape(t[6] or "") .. "]"
-				.. "label[0.5,4.7;Spread]" -- Spread
-				.. "field[2.0,5;2.8,1;te_spreadx;X;"
-				.. core.formspec_escape(t[3] or "") .. "]"
-				.. "field[4.8,5;2.8,1;te_spready;Y;"
-				.. core.formspec_escape(t[4] or "") .. "]"
-				.. "field[7.6,5;2.8,1;te_spreadz;Z;"
-				.. core.formspec_escape(t[5] or "") .. "]"
-				.. "field[0.5,6;3.3,1;te_octaves;Octaves;" -- Octaves
-				.. core.formspec_escape(t[7] or "") .. "]"
-				.. "field[3.8,6;3.3,1;te_persist;Persistance;" -- Persistance
-				.. core.formspec_escape(t[8] or "") .. "]"
-				.. "field[7.1,6;3.3,1;te_lacun;Lacunarity;" -- Lacunarity
-				.. core.formspec_escape(t[9] or "") .. "]"
-
-	elseif setting.type == "noise_params_group" then
-		local t = get_current_np_group(setting)
-
-		formspec = formspec
+				.. "label[0,2.5;(" .. dimension .. "D Noise)]"
 				.. "field[0.5,4;3.3,1;te_offset;Offset;" -- Offset
 				.. core.formspec_escape(t[1] or "") .. "]"
 				.. "field[3.8,4;3.3,1;te_scale;Scale;" -- Scale
@@ -776,19 +750,7 @@ local function handle_change_setting_buttons(this, fields)
 			local new_value = table.concat(values, ", ")
 			core.settings:set(setting.name, new_value)
 
-		elseif setting.type == "noise_params" then
-			local new_value = fields["te_offset"] .. ", "
-					.. fields["te_scale"] .. ", ("
-					.. fields["te_spreadx"] .. ", "
-					.. fields["te_spready"] .. ", "
-					.. fields["te_spreadz"] .. "), "
-					.. fields["te_seed"] .. ", "
-					.. fields["te_octaves"] .. ", "
-					.. fields["te_persist"] .. ", "
-					.. fields["te_lacun"]
-			core.settings:set(setting.name, new_value)
-
-		elseif setting.type == "noise_params_group" then
+		elseif setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
 			local np_flags = {}
 			for _, name in ipairs(setting.flags) do
 				if checkboxes["cb_" .. name] then
@@ -850,7 +812,9 @@ local function handle_change_setting_buttons(this, fields)
 		core.update_formspec(this:get_formspec())
 	end
 
-	if setting.type == "flags" or setting.type == "noise_params_group" then
+	if setting.type == "flags"
+			or setting.type == "noise_params_2d"
+			or setting.type == "noise_params_3d" then
 		for name, value in pairs(fields) do
 			if name:sub(1, 3) == "cb_" then
 				checkboxes[name] = value == "true"
@@ -896,7 +860,7 @@ local function create_settings_formspec(tabview, name, tabdata)
 		elseif entry.type == "key" then
 			-- ignore key settings, since we have a special dialog for them
 
-		elseif entry.type == "noise_params_group" then
+		elseif entry.type == "noise_params_2d" or entry.type == "noise_params_3d" then
 			formspec = formspec .. "," .. (current_level + 1) .. "," .. core.formspec_escape(name) .. ","
 					.. core.formspec_escape(get_current_np_group_as_string(entry)) .. ","
 
