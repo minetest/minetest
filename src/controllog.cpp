@@ -45,6 +45,10 @@ float ControlLogEntry::getDtime() const
 {
 	return ((int)dtime + (int)overtime) / 1000.0f;
 }
+u32 ControlLogEntry::getDtimeU32() const
+{
+	return dtime + overtime;
+}
 
 #define CLE_ACCESSOR(attribute, name, flag) \
 void ControlLogEntry::set ## name (bool on)\
@@ -257,5 +261,19 @@ void ControlLog::deserialize(std::istream &input)
 	}
 	dstream << "deserialized " << count << " cles" << std::endl;
 	return;
+}
+
+u32 ControlLog::getStartTime() const
+{
+	return starttime;
+}
+
+u32 ControlLog::getFinishTime() const
+{
+	u32 finishtime = starttime;
+	for( ControlLogEntry cle : log ) {
+		finishtime += cle.getDtimeU32();
+	}
+	return finishtime;
 }
 

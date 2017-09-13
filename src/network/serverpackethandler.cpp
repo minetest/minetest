@@ -482,7 +482,9 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// - apply controls
 		// - simulate physics
 		// see how far we can acknowledge
+		u32 ackTime = log.getFinishTime();
 		// send acknowledge
+		ackTime = ackTime - ackTime;
 		//   OR send reset
 	}
 

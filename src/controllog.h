@@ -65,6 +65,7 @@ public:
 
 	void setDtime(float dtime);
 	float getDtime() const;
+	u32 getDtimeU32() const;
 
 	void setFreeMove(bool free_move);
 	bool getFreeMove() const;
@@ -153,7 +154,9 @@ public:
 	void add(ControlLogEntry &cle); // position, too?
 	void serialize(std::ostream &to, u32 bytes=800) const; // up to bytes in length
 	void deserialize(std::istream &from);
-	void acknowledge(u32 dtime); // removes entries
+	u32 getStartTime() const;
+	u32 getFinishTime() const;
+	void acknowledge(u32 time); // removes entries
 private:
 	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;
