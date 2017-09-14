@@ -763,6 +763,8 @@ enable_sound (Sound) bool true
 
 sound_volume (Volume) float 0.7 0.0 1.0
 
+mute_sound (Mute sound) bool false
+
 [Client]
 
 [*Network]

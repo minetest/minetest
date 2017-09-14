@@ -39,6 +39,8 @@ public:
 
 	void drawMenu();
 
+	bool acceptInput();
+
 	bool OnEvent(const SEvent& event);
 
 	bool pausesGame() { return true; }
