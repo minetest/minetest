@@ -2390,12 +2390,14 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 				else
 					tooltip_text = utf8_to_wide(desc);
 
-				// Show itemstring after tooltip
-				if(!item.name.empty() && m_tooltip_show_itemstring)
-					tooltip_text += utf8_to_wide(" [" + item.name + "]");
-				// Show itemstring as fallback for easier debugging
-				if (!item.name.empty() && tooltip_text.empty())
-					tooltip_text = utf8_to_wide(item.name);
+				if (!item.name.empty()){
+					//Append itemstring if enabled in settings
+					if (m_tooltip_show_itemstring){
+						if (!tooltip_text.empty())
+							tooltip_text.append(1,' ');
+						tooltip_text += utf8_to_wide("[" + item.name + "]");
+					}
+				}
 			}
 			if (!tooltip_text.empty()) {
 				showTooltip(tooltip_text, m_default_tooltip_color,
