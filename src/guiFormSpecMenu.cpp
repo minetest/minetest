@@ -112,7 +112,7 @@ GUIFormSpecMenu::GUIFormSpecMenu(JoystickController *joystick,
 	m_doubleclickdetect[1].pos = v2s32(0, 0);
 
 	m_tooltip_show_delay = (u32)g_settings->getS32("tooltip_show_delay");
-	m_tooltip_show_itemstring = g_settings->getBool("tooltip_show_itemstring");
+	m_tooltip_append_itemstring = g_settings->getBool("tooltip_append_itemstring");
 }
 
 GUIFormSpecMenu::~GUIFormSpecMenu()
@@ -2391,12 +2391,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 					tooltip_text = utf8_to_wide(desc);
 
 				if (!item.name.empty()) {
-					//Append itemstring if enabled in settings
 					if (tooltip_text.empty())
 						tooltip_text = utf8_to_wide(item.name);
-					if (m_tooltip_show_itemstring){
+					if (m_tooltip_append_itemstring)
 						tooltip_text += utf8_to_wide(" [" + item.name + "]");
-					}
 				}
 			}
 			if (!tooltip_text.empty()) {
