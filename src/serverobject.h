@@ -212,22 +212,26 @@ public:
 		  it anymore.
 		- Removal is delayed to preserve the id for the time during which
 		  it could be confused to some other object by some client.
-		- This is set to true by the step() method when the object wants
-		  to be deleted.
-		- This can be set to true by anything else too.
+		- This is usually set to true by the step() method when the object wants
+		  to be deleted but can be set by anything else too.
 	*/
-	bool m_removed = false;
+	bool m_pending_removal = false;
 
 	/*
-		This is set to true when an object should be removed from the active
-		object list but couldn't be removed because the id has to be
-		reserved for some client.
+		Same purpose as m_pending_removal but for deactivation.
+		deactvation = save static data in block, remove active object
 
-		The environment checks this periodically. If this is true and also
-		m_known_by_count is true, object is deleted from the active object
-		list.
+		If this is set alongside with m_pending_removal, removal takes
+		priority.
 	*/
 	bool m_pending_deactivation = false;
+
+	/*
+		A getter that unifies the above to answer the question:
+		"Can the environment still interact with this object?"
+	*/
+	inline bool isGone() const
+	{ return m_pending_removal || m_pending_deactivation; }
 
 	/*
 		Whether the object's static data has been stored to a block

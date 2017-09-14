@@ -1124,8 +1124,8 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 			playersao->noCheatDigStart(p_under);
 		}
 		else if (pointed.type == POINTEDTHING_OBJECT) {
-			// Skip if object has been removed
-			if (pointed_object->m_removed)
+			// Skip if object can't be interacted with anymore
+			if (pointed_object->isGone())
 				return;
 
 			actionstream<<player->getName()<<" punches object "
@@ -1283,8 +1283,8 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		if (pointed.type == POINTEDTHING_OBJECT) {
 			// Right click object
 
-			// Skip if object has been removed
-			if (pointed_object->m_removed)
+			// Skip if object can't be interacted with anymore
+			if (pointed_object->isGone())
 				return;
 
 			actionstream << player->getName() << " right-clicks object "

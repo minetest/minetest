@@ -140,15 +140,14 @@ int ObjectRef::l_remove(lua_State *L)
 		return 0;
 
 	const std::unordered_set<int> &child_ids = co->getAttachmentChildIds();
-	std::unordered_set<int>::const_iterator it;
-	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
+	for (int child_id : child_ids) {
 		// Child can be NULL if it was deleted earlier
-		if (ServerActiveObject *child = env->getActiveObject(*it))
+		if (ServerActiveObject *child = env->getActiveObject(child_id))
 			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
 	}
 
-	verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
-	co->m_removed = true;
+	verbosestream << "ObjectRef::l_remove(): id=" << co->getId() << std::endl;
+	co->m_pending_removal = true;
 	return 0;
 }
 
