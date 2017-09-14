@@ -179,6 +179,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	PROTOCOL VERSION 36:
 		Backwards compatibility drop
 		Add 'can_zoom' to player object properties
+		Add glow to object properties
 */
 
 #define LATEST_PROTOCOL_VERSION 36

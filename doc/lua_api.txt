@@ -4131,6 +4131,10 @@ Definition tables
     --  ^ Limit automatic rotation to this value in degrees per second,
     --    value < 0 no limit.
         backface_culling = true, -- false to disable backface_culling for model
+        glow = 0,
+    --  ^ Add this much extra lighting when calculating texture color.
+          value < 0 disables light's effect on texture color.
+          For faking self-lighting, UI style entities, or programmatic coloring in mods.
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
         infotext = "", -- by default empty, text to be shown when pointed at object

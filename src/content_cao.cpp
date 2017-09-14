@@ -659,7 +659,10 @@ void GenericCAO::updateLight(u8 light_at_pos)
 
 void GenericCAO::updateLightNoCheck(u8 light_at_pos)
 {
-	u8 li = decode_light(light_at_pos);
+	if (m_glow < 0)
+		return;
+
+	u8 li = decode_light(light_at_pos + m_glow);
 	if (li != m_last_light)	{
 		m_last_light = li;
 		video::SColor color(255,li,li,li);
@@ -978,6 +981,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
+	m_glow = m_prop.glow;
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {

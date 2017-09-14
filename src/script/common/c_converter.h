@@ -55,6 +55,8 @@ bool               getintfield(lua_State *L, int table,
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u8 &result);
 bool               getintfield(lua_State *L, int table,
+                             const char *fieldname, s8 &result);
+bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u16 &result);
 bool               getintfield(lua_State *L, int table,
                              const char *fieldname, u32 &result);
