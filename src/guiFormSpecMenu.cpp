@@ -2392,10 +2392,10 @@ void GUIFormSpecMenu::drawList(const ListDrawSpec &s, int phase,
 
 				if (!item.name.empty()){
 					//Append itemstring if enabled in settings
+					if (tooltip_text.empty())
+						tooltip_text += utf8_to_wide(item.name);
 					if (m_tooltip_show_itemstring){
-						if (!tooltip_text.empty())
-							tooltip_text.append(1,' ');
-						tooltip_text += utf8_to_wide("[" + item.name + "]");
+						tooltip_text += utf8_to_wide(" [" + item.name + "]");
 					}
 				}
 			}
