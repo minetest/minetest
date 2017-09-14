@@ -393,9 +393,9 @@ private:
 		A few helpers used by the three above methods
 	*/
 	void deleteStaticFromBlock(
-			ServerActiveObject* obj, u16 id, u32 mod_reason, bool no_emerge);
+			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
 	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
-			ServerActiveObject* obj, const StaticObject &s_obj, u32 mod_reason);
+			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*
 		Member variables

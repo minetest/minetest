@@ -2010,7 +2010,7 @@ void ServerEnvironment::deactivateFarObjects(bool _force_delete)
 }
 
 void ServerEnvironment::deleteStaticFromBlock(
-		ServerActiveObject* obj, u16 id, u32 mod_reason, bool no_emerge)
+		ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge)
 {
 	if (!obj->m_static_exists)
 		return;
@@ -2036,10 +2036,10 @@ void ServerEnvironment::deleteStaticFromBlock(
 
 bool ServerEnvironment::saveStaticToBlock(
 		v3s16 blockpos, u16 store_id,
-		ServerActiveObject* obj, const StaticObject &s_obj,
+		ServerActiveObject *obj, const StaticObject &s_obj,
 		u32 mod_reason)
 {
-	MapBlock *block = NULL;
+	MapBlock *block = nullptr;
 	try {
 		block = m_map->emergeBlock(blockpos);
 	} catch (InvalidPositionException &e) {
