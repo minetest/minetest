@@ -202,7 +202,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 	}
 }
 
-void ModConfiguration::addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods)
+void ModConfiguration::addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods)
 {
 	Settings conf;
 	std::set<std::string> load_mod_names;
@@ -325,7 +325,7 @@ ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
 
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFormConfig(worldmt, gamespec.addon_mods_paths);
+	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
 #ifndef SERVER
@@ -338,7 +338,7 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path):
 	paths.insert(path_user);
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
-	addModsFormConfig(settings_path, paths);
+	addModsFromConfig(settings_path, paths);
 }
 #endif
 
