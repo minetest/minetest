@@ -144,7 +144,6 @@ bool GUIVolumeChange::acceptInput()
 
 bool GUIVolumeChange::OnEvent(const SEvent& event)
 {
-	std::cout << "EVENT!" << std::endl;
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {
 			acceptInput();
