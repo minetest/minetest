@@ -25,7 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ServerActiveObject::ServerActiveObject(ServerEnvironment *env, v3f pos):
 	ActiveObject(0),
 	m_known_by_count(0),
-	m_removed(false),
+	m_pending_removal(false),
 	m_pending_deactivation(false),
 	m_static_exists(false),
 	m_static_block(1337,1337,1337),
