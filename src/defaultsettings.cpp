@@ -123,15 +123,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_slot21", "");
 	settings->setDefault("keymap_slot22", "");
 	settings->setDefault("keymap_slot23", "");
-	settings->setDefault("enable_build_where_you_stand", "false" );
-	settings->setDefault("3d_mode", "none");
-	settings->setDefault("3d_paralax_strength", "0.025");
-	settings->setDefault("aux1_descends", "false");
-	settings->setDefault("doubletap_jump", "false");
-	settings->setDefault("always_fly_fast", "true");
-	settings->setDefault("directional_colored_fog", "true");
-	settings->setDefault("tooltip_show_delay", "400");
-	settings->setDefault("zoom_fov", "15");
 
 	// Some (temporary) keys for debugging
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
@@ -152,6 +143,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("tooltip_show_delay", "400");
+	settings->setDefault("tooltip_append_itemstring", "false");
 	settings->setDefault("zoom_fov", "15");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
