@@ -59,7 +59,7 @@ public:
 		m_age += dtime;
 		if(m_age > 10)
 		{
-			m_removed = true;
+			m_pending_removal = true;
 			return;
 		}
 
@@ -415,7 +415,7 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 			infostream << "Remove SAO " << m_id << "(" << m_init_name
 				<< "), outside of limits" << std::endl;
 			m_pending_deactivation = true;
-			m_removed = true;
+			m_pending_removal = true;
 			return;
 		}
 	}
@@ -555,9 +555,9 @@ int LuaEntitySAO::punch(v3f dir,
 		ServerActiveObject *puncher,
 		float time_from_last_punch)
 {
-	if (!m_registered){
+	if (!m_registered) {
 		// Delete unknown LuaEntities when punched
-		m_removed = true;
+		m_pending_removal = true;
 		return 0;
 	}
 
@@ -601,7 +601,7 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0)
-		m_removed = true;
+		m_pending_removal = true;
 
 
 
@@ -1361,11 +1361,10 @@ void PlayerSAO::setWieldIndex(int i)
 	}
 }
 
-// Erase the peer id and make the object for removal
 void PlayerSAO::disconnected()
 {
 	m_peer_id = 0;
-	m_removed = true;
+	m_pending_removal = true;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
