@@ -797,6 +797,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	assert(m_peer_id != 0);	// pre-condition
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
+	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
@@ -817,6 +818,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
 	m_prop.can_zoom = true;
 	m_hp = m_prop.hp_max;
+	m_breath = m_prop.breath_max;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -943,7 +945,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & no drowning, breath
-		if (m_hp > 0 && m_breath < PLAYER_MAX_BREATH && c.drowning == 0)
+		if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
 			setBreath(m_breath + 1);
 	}
 
@@ -1274,7 +1276,7 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 	if (m_player && breath != m_breath)
 		m_player->setDirty(true);
 
-	m_breath = MYMIN(breath, PLAYER_MAX_BREATH);
+	m_breath = MYMIN(breath, m_prop.breath_max);
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);

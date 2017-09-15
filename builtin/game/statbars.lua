@@ -17,13 +17,22 @@ local breath_bar_definition =
 	hud_elem_type = "statbar",
 	position = { x=0.5, y=1 },
 	text = "bubble.png",
-	number = 20,
+	number = core.PLAYER_MAX_BREATH_DEFAULT,
 	direction = 0,
 	size = { x=24, y=24 },
 	offset = {x=25,y=-(48+24+16)},
 }
 
 local hud_ids = {}
+
+local function scaleToDefault(player, field)
+	-- Scale "hp" or "breath" to the default dimensions
+	local current = player["get_" .. field](player)
+	local nominal = core["PLAYER_MAX_".. field:upper() .. "_DEFAULT"]
+	local max_display = math.max(nominal,
+ 		math.max(player:get_properties()[field .. "_max"], current))
+ 	return current / max_display * nominal 
+end
 
 local function initialize_builtin_statbars(player)
 
@@ -47,31 +56,22 @@ local function initialize_builtin_statbars(player)
 
 	if player:hud_get_flags().healthbar and enable_damage then
  		if hud.id_healthbar == nil then
- 			local hp = player:get_hp()
- 			local max_display_hp = math.max(core.PLAYER_MAX_HP_DEFAULT,
- 				math.max(player:get_properties().hp_max, hp))
- 			-- Limit width of health bar: Scale to the default maximal HP
-			health_bar_definition.number =
-				hp / max_display_hp * core.PLAYER_MAX_HP_DEFAULT
-			hud.id_healthbar  = player:hud_add(health_bar_definition)
+ 			local hud_def = table.copy(health_bar_definition)
+			hud_def.number = scaleToDefault(player, "hp")
+			hud.id_healthbar = player:hud_add(hud_def)
 		end
-	else
-		if hud.id_healthbar ~= nil then
-			player:hud_remove(hud.id_healthbar)
-			hud.id_healthbar = nil
-		end
+	elseif hud.id_healthbar ~= nil then
+		player:hud_remove(hud.id_healthbar)
+		hud.id_healthbar = nil
 	end
 
-	if player:get_breath() < core.PLAYER_MAX_BREATH then
-		if player:hud_get_flags().breathbar and enable_damage then
-			if hud.id_breathbar == nil then
-				hud.id_breathbar = player:hud_add(breath_bar_definition)
-			end
-		else
-			if hud.id_breathbar ~= nil then
-				player:hud_remove(hud.id_breathbar)
-				hud.id_breathbar = nil
-			end
+	local breath_max = player:get_properties().breath_max
+	if player:hud_get_flags().breathbar and enable_damage and
+			player:get_breath() < breath_max then
+		if hud.id_breathbar == nil then
+ 			local hud_def = table.copy(breath_bar_definition)
+ 			hud_def.number = 2 * scaleToDefault(player, "breath")
+			hud.id_breathbar = player:hud_add(hud_def)
 		end
 	elseif hud.id_breathbar ~= nil then
 		player:hud_remove(hud.id_breathbar)
@@ -107,12 +107,8 @@ local function player_event_handler(player,eventname)
 		initialize_builtin_statbars(player)
 
 		if hud_ids[name].id_healthbar ~= nil then
- 			local hp = player:get_hp()
- 			local max_display_hp = math.max(core.PLAYER_MAX_HP_DEFAULT,
- 				math.max(player:get_properties().hp_max, hp))
- 			-- Limit width of health bar: Scale to the default maximal HP
-			local hp_count = hp / max_display_hp * core.PLAYER_MAX_HP_DEFAULT
-			player:hud_change(hud_ids[name].id_healthbar, "number", hp_count)
+			player:hud_change(hud_ids[name].id_healthbar,
+				"number", scaleToDefault(player, "hp"))
 			return true
 		end
 	end
@@ -121,7 +117,8 @@ local function player_event_handler(player,eventname)
 		initialize_builtin_statbars(player)
 
 		if hud_ids[name].id_breathbar ~= nil then
-			player:hud_change(hud_ids[name].id_breathbar, "number", player:get_breath() * 2)
+			player:hud_change(hud_ids[name].id_breathbar,
+				"number", 2 * scaleToDefault(player, "breath"))
 			return true
 		end
 	end

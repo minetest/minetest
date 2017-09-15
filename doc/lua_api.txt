@@ -3397,10 +3397,9 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_breath()`: returns players breath
 * `set_breath(value)`: sets players breath
      * values:
-        * `0`: player is drowning,
-        * `1`-`10`: remaining number of bubbles
-        * `11`: bubbles bar is not shown
-        * See constant: `minetest.PLAYER_MAX_BREATH`
+        * `0`: player is drowning
+        * max: bubbles bar is not shown
+        * See Object Properties for more information
 * `set_attribute(attribute, value)`:
     * Sets an extra attribute with value on player.
     * `value` must be a string.
@@ -4105,7 +4104,9 @@ Definition tables
 
     {
         hp_max = 1,
-    --  ^ For players, the maximal HP defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
+    --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
+        breath_max = 0,
+    --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
         physical = true,
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,

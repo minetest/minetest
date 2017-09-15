@@ -34,6 +34,7 @@ std::string ObjectProperties::dump()
 {
 	std::ostringstream os(std::ios::binary);
 	os << "hp_max=" << hp_max;
+	os << ", breath_max=" << breath_max;
 	os << ", physical=" << physical;
 	os << ", collideWithObjects=" << collideWithObjects;
 	os << ", weight=" << weight;
@@ -108,6 +109,7 @@ void ObjectProperties::serialize(std::ostream &os) const
 	os << serializeString(wield_item);
 	writeU8(os, can_zoom);
 	writeS8(os, glow);
+	writeU16(os, breath_max);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -155,5 +157,9 @@ void ObjectProperties::deSerialize(std::istream &is)
 	infotext = deSerializeString(is);
 	wield_item = deSerializeString(is);
 	can_zoom = readU8(is);
-	glow = readS8(is);
+
+	try {
+		glow = readS8(is);
+		breath_max = readU16(is);
+	} catch (SerializationError &e) {}
 }
