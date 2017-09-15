@@ -642,7 +642,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	std::vector<u16>::const_iterator iter = ids.begin();
 	for(u32 i = 0; iter != ids.end(); ++iter) {
 		ServerActiveObject *obj = env->getActiveObject(*iter);
-		if (!obj->m_removed) {
+		if (!obj->isGone()) {
 			// Insert object reference into table
 			script->objectrefGetOrCreate(L, obj);
 			lua_rawseti(L, -2, ++i);

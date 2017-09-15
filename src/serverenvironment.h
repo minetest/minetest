@@ -35,6 +35,7 @@ class PlayerDatabase;
 class PlayerSAO;
 class ServerEnvironment;
 class ActiveBlockModifier;
+struct StaticObject;
 class ServerActiveObject;
 class Server;
 class ServerScripting;
@@ -368,7 +369,7 @@ private:
 	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
 
 	/*
-		Remove all objects that satisfy (m_removed && m_known_by_count==0)
+		Remove all objects that satisfy (isGone() && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
 
@@ -387,6 +388,14 @@ private:
 		shall only be set so in the destructor of the environment.
 	*/
 	void deactivateFarObjects(bool force_delete);
+
+	/*
+		A few helpers used by the three above methods
+	*/
+	void deleteStaticFromBlock(
+			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
+	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
+			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*
 		Member variables
