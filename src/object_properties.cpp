@@ -158,8 +158,8 @@ void ObjectProperties::deSerialize(std::istream &is)
 	wield_item = deSerializeString(is);
 	can_zoom = readU8(is);
 
-	if (is.good()) {
+	try {
 		glow = readS8(is);
 		breath_max = readU16(is);
-	}
+	} catch (SerializationError &e) {}
 }
