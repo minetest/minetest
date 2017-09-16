@@ -133,30 +133,37 @@ void GUIVolumeChange::drawMenu()
 	gui::IGUIElement::draw();
 }
 
-bool GUIVolumeChange::acceptInput()
-{
-	gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
-	if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX)
-		g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
-
-	return true;
-}
-
 bool GUIVolumeChange::OnEvent(const SEvent& event)
 {
 	if (event.EventType == EET_KEY_INPUT_EVENT) {
 		if (event.KeyInput.Key == KEY_ESCAPE && event.KeyInput.PressedDown) {
-			acceptInput();
 			quitMenu();
 			return true;
 		}
 
 		if (event.KeyInput.Key == KEY_RETURN && event.KeyInput.PressedDown) {
-			acceptInput();
 			quitMenu();
 			return true;
 		}
 	} else if (event.EventType == EET_GUI_EVENT) {
+		if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED) {
+			gui::IGUIElement *e = getElementFromId(ID_soundMuteButton);
+			if (e != NULL && e->getType() == gui::EGUIET_CHECK_BOX) {
+				g_settings->setBool("mute_sound", ((gui::IGUICheckBox*)e)->isChecked());
+			}
+
+			Environment->setFocus(this);
+			return true;
+		}
+
+		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
+			if (event.GUIEvent.Caller->getID() == ID_soundExitButton) {
+				quitMenu();
+				return true;
+			}
+			Environment->setFocus(this);
+		}
+
 		if (event.GUIEvent.EventType == gui::EGET_ELEMENT_FOCUS_LOST
 				&& isVisible()) {
 			if (!canTakeFocus(event.GUIEvent.Element)) {
@@ -166,15 +173,6 @@ bool GUIVolumeChange::OnEvent(const SEvent& event)
 				return true;
 			}
 		}
-		if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED) {
-			if (event.GUIEvent.Caller->getID() == ID_soundExitButton) {
-				acceptInput();
-				quitMenu();
-				return true;
-			}
-			Environment->setFocus(this);
-		}
-
 		if (event.GUIEvent.EventType == gui::EGET_SCROLL_BAR_CHANGED) {
 			if (event.GUIEvent.Caller->getID() == ID_soundSlider) {
 				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
