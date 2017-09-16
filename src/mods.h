@@ -92,7 +92,7 @@ protected:
 	// adds all mods in the set.
 	void addMods(const std::vector<ModSpec> &new_mods);
 
-	void addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods);
+	void addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods);
 
 	void checkConflictsAndDeps();
 private:
