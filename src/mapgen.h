@@ -251,7 +251,7 @@ public:
 	virtual void generateDungeons(s16 max_stone_y,
 		MgStoneType stone_type, content_t biome_stone);
 	virtual void generateBiomes(MgStoneType *mgstone_type,
-		content_t *biome_stone, s16 biome_zero_level);
+		content_t *biome_stone);
 	virtual void dustTopNodes();
 
 protected:

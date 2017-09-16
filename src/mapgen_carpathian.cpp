@@ -245,7 +245,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	MgStoneType mgstone_type;
 	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -269,12 +269,10 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed,
-			node_min, node_max, water_level - 1);
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed,
-		node_min, node_max, water_level - 1);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

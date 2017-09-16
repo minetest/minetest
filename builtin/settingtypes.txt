@@ -1346,10 +1346,9 @@ mgv6_np_apple_trees (Apple trees noise) noise_params 0, 1, (100, 100, 100), 3429
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' enables the rivers.
-#    'biomerepeat' causes surface biomes to repeat in the floatlands.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns,biomerepeat mountains,ridges,floatlands,caverns,biomerepeat,nomountains,noridges,nofloatlands,nocaverns,nobiomerepeat
+mgv7_spflags (Mapgen V7 specific flags) flags mountains,ridges,nofloatlands,caverns mountains,ridges,floatlands,caverns,nomountains,noridges,nofloatlands,nocaverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 mgv7_mount_zero_level (Mountain zero level) int 0

@@ -54,8 +54,7 @@ public:
 	virtual void resolveNodeNames();
 
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
-	size_t placeDeco(Mapgen *mg, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, s16 deco_zero_level);
+	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
 	virtual int getHeight() = 0;
@@ -133,6 +132,5 @@ public:
 		}
 	}
 
-	size_t placeAllDecos(Mapgen *mg, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, s16 deco_zero_level = 0);
+	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
