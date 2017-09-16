@@ -3559,8 +3559,7 @@ void Game::updateSound(f32 dtime)
 	bool mute_sound = g_settings->getBool("mute_sound");
 	if (mute_sound) {
 		sound->setListenerGain(0.0f);
-	}
-	else {
+	} else {
 		// Check if volume is in the proper range, else fix it.
 		float old_volume = g_settings->getFloat("sound_volume");
 		float new_volume = rangelim(old_volume, 0.0f, 1.0f);

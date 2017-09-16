@@ -106,7 +106,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 300, 20);
-		rect = rect + v2s32(size.X/2-150, size.Y/2);
+		rect = rect + v2s32(size.X / 2 - 150, size.Y / 2);
 		gui::IGUIScrollBar *e = Environment->addScrollBar(true,
 			rect, this, ID_soundSlider);
 		e->setMax(100);
@@ -114,7 +114,7 @@ void GUIVolumeChange::regenerateGui(v2u32 screensize)
 	}
 	{
 		core::rect<s32> rect(0, 0, 160, 20);
-		rect = rect + v2s32(size.X/2 - 80, size.Y/2 - 35);
+		rect = rect + v2s32(size.X / 2 - 80, size.Y / 2 - 35);
 		const wchar_t *text = wgettext("Muted");
 		Environment->addCheckBox(g_settings->getBool("mute_sound"), rect, this,
 				ID_soundMuteButton, text);
