@@ -710,8 +710,8 @@ gui_scaling_filter_txr2img (GUI scaling filter txr2img) bool true
 #    Delay showing tooltips, stated in milliseconds.
 tooltip_show_delay (Tooltip delay) int 400
 
-#    Append itemstring to tooltip
-tooltip_append_itemstring (Append itemstring) bool false
+#    Append item name to tooltip.
+tooltip_append_itemname (Append item name) bool false
 
 #    Whether freetype fonts are used, requires freetype support to be compiled in.
 freetype (Freetype fonts) bool true
