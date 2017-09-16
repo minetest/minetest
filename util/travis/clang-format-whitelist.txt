@@ -183,6 +183,8 @@ src/nodemetadata.cpp
 src/nodemetadata.h
 src/nodetimer.cpp
 src/nodetimer.h
+src/node_with_def.cpp
+src/node_with_def.h
 src/noise.cpp
 src/noise.h
 src/objdef.cpp

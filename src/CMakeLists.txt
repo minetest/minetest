@@ -425,6 +425,7 @@ set(common_SRCS
 	nodedef.cpp
 	nodemetadata.cpp
 	nodetimer.cpp
+	node_with_def.cpp
 	noise.cpp
 	objdef.cpp
 	object_properties.cpp
