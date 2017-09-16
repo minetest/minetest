@@ -4609,8 +4609,6 @@ Definition tables
         y_min = -31000,
         y_max = 64,
     --  ^ Lower and upper limits for ore.
-    --  ^ Limits are relative to y = water_level - 1 for core mapgen, or
-    --  ^ relative to y = 0 for minetest.generate_ores().
         flags = "",
     --  ^ Attributes for this ore generation
         noise_threshold = 0.5,
@@ -4655,7 +4653,6 @@ Definition tables
         y_min = 1,
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
-    --  ^ Limits are relative to y = water_level - 1.
         heat_point = 0,
         humidity_point = 50,
     --  ^ Characteristic average temperature and humidity for the biome.
@@ -4692,8 +4689,6 @@ Definition tables
         y_min = -31000
         y_max = 31000
     --  ^ Lower and upper limits for decoration.
-    --  ^ Limits are relative to y = water_level - 1 for core mapgen, or
-    --  ^ relative to y = 0 for minetest.generate_decorations().
     --  ^ This parameter refers to the `y` position of the decoration base, so
     --    the actual maximum height would be `height_max + size.Y`.
         spawn_by = "default:water",

@@ -44,7 +44,6 @@ FlagDesc flagdesc_mapgen_v7[] = {
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
 	{"caverns",     MGV7_CAVERNS},
-	{"biomerepeat", MGV7_BIOMEREPEAT},
 	{NULL,          0}
 };
 
@@ -290,12 +289,6 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Get zero level for biomes and decorations
-	// Optionally repeat surface biomes in floatlands
-	s16 biome_zero_level = ((spflags & MGV7_FLOATLANDS) &&
-		(spflags & MGV7_BIOMEREPEAT) && node_max.Y >= shadow_limit) ?
-		floatland_level - 1 : water_level - 1;
-
 	// Generate base and mountain terrain
 	// An initial heightmap is no longer created here for use in generateRidgeTerrain()
 	s16 stone_surface_max_y = generateTerrain();
@@ -312,7 +305,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	MgStoneType mgstone_type;
 	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -336,12 +329,10 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed,
-			node_min, node_max, biome_zero_level);
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed,
-		node_min, node_max, water_level - 1);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

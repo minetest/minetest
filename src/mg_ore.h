@@ -70,8 +70,7 @@ public:
 
 	virtual void resolveNodeNames();
 
-	size_t placeOre(Mapgen *mg, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, s16 ore_zero_level);
+	size_t placeOre(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap) = 0;
 };
@@ -180,6 +179,5 @@ public:
 
 	void clear();
 
-	size_t placeAllOres(Mapgen *mg, u32 blockseed,
-		v3s16 nmin, v3s16 nmax, s16 ore_zero_level = 0);
+	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
