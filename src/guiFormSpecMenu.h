@@ -407,7 +407,7 @@ protected:
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
 	u64 m_tooltip_show_delay;
-	bool m_tooltip_append_itemstring;
+	bool m_tooltip_append_itemname;
 	u64 m_hovered_time = 0;
 	s32 m_old_tooltip_id = -1;
 
