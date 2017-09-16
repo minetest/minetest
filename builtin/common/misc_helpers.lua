@@ -425,11 +425,15 @@ if INIT == "game" then
 --Wrapper for rotate_and_place() to check for sneak and assume Creative mode
 --implies infinite stacks when performing a 6d rotation.
 --------------------------------------------------------------------------------
-
+	local creative_mode_cache = core.settings:get_bool("creative_mode")
+	local function is_creative(name)
+		return creative_mode_cache or
+				core.check_player_privs(name, {creative = true})
+	end
 
 	core.rotate_node = function(itemstack, placer, pointed_thing)
 		core.rotate_and_place(itemstack, placer, pointed_thing,
-				core.settings:get_bool("creative_mode"),
+				is_creative(placer:get_player_name()),
 				{invert_wall = placer:get_player_control().sneak})
 		return itemstack
 	end
