@@ -4630,9 +4630,6 @@ Definition tables
 
 ### Biome definition (`register_biome`)
 
-**Note**
-The Biome API is still in an experimental phase and subject to change.
-
     {
         name = "tundra",
         node_dust = "default:snow",
@@ -4659,13 +4656,6 @@ The Biome API is still in an experimental phase and subject to change.
         y_max = 31000,
     --  ^ Lower and upper limits for biome.
     --  ^ Limits are relative to y = water_level - 1.
-    --  ^ Because biome is not recalculated for every node in a node column
-    --  ^ some biome materials can exceed their limits, especially stone.
-    --  ^ For each node column in a mapchunk, biome is only recalculated at column
-    --  ^ top and at each of these surfaces:
-    --  ^ Ground below air, water below air, ground below water.
-    --  ^ The selected biome then stays in effect for all nodes below until
-    --  ^ column base or the next biome recalculation.
         heat_point = 0,
         humidity_point = 50,
     --  ^ Characteristic average temperature and humidity for the biome.
