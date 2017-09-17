@@ -722,6 +722,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 					nplaced++;
 				} else {
 					vm->m_data[vi] = MapNode(biome->c_stone);
+					nplaced = U16_MAX;  // Disable top/filler placement
 				}
 
 				air_above = false;
