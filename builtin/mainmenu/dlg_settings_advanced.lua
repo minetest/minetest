@@ -145,12 +145,30 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			return "Invalid string setting"
 		end
 
+		local values = {}
+		local ti = 1
+		local index = 1
+		for line in default:gmatch("[%d.-e]+") do -- All numeric characters
+			index = default:find("[%d.-e]+", index) + line:len()
+			table.insert(values, line)
+			ti = ti + 1
+			if ti > 9 then
+				break
+			end
+		end
+		index = default:find("[^, ]", index)
+		local flags = default:sub(index)
+		default = table.concat(values, ", ") -- Make sure no flags in single-line format
+		table.insert(values, flags)
+
 		table.insert(settings, {
 			name = name,
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
+			values = values,
 			comment = current_comment,
+			noise_params = true,
 			flags = flags_to_table("defaults,eased,absvalue,nodefaults,noeased,noabsvalue"),
 		})
 		return
@@ -457,20 +475,7 @@ local function get_current_np_group(setting)
 	local value = core.settings:get_np_group(setting.name)
 	local t = {}
 	if value == nil then
-		value = setting.default
-		local ti = 1
-		local index = 1
-		for line in value:gmatch("[%d.-e]+") do -- All numeric characters
-			index = value:find("[%d.-e]+", index) + line:len()
-			table.insert(t, line)
-			ti = ti + 1
-			if ti > 9 then
-				break
-			end
-		end
-		index = value:find("[^, ]", index)
-		local flags = value:sub(index)
-		table.insert(t, flags)
+		t = setting.values
 	else
 		table.insert(t, value.offset)
 		table.insert(t, value.scale)
@@ -488,10 +493,9 @@ end
 
 local function get_current_np_group_as_string(setting)
 	local value = core.settings:get_np_group(setting.name)
-	local t = ""
+	local t
 	if value == nil then
-		value = setting.default
-		t = value
+		t = setting.default
 	else
 		t = value.offset .. ", " ..
 			value.scale .. ", (" ..

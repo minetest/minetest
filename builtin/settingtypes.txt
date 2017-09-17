@@ -1284,7 +1284,7 @@ mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (50, 50, 50), 10325, 4, 0.5, 
 mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0, noeased
 
 #    3D noise defining terrain.
-mgv5_np_ground (Ground noise) noise_params_3d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2.0, noeased
+mgv5_np_ground (Ground noise) noise_params_3d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2.0, eased
 
 [*Mapgen V6]
 
