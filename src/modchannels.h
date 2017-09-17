@@ -36,8 +36,7 @@ enum ModChannelState : u8
 class ModChannel
 {
 public:
-	ModChannel(const std::string &name):
-			m_name(name) {}
+	ModChannel(const std::string &name) : m_name(name) {}
 	~ModChannel() = default;
 
 	const std::string &getName() const { return m_name; }
@@ -46,6 +45,7 @@ public:
 	const std::vector<u16> &getChannelPeers() const { return m_client_consumers; }
 	bool canWrite() const;
 	void setState(ModChannelState state);
+
 private:
 	std::string m_name;
 	ModChannelState m_state = MODCHANNEL_STATE_INIT;

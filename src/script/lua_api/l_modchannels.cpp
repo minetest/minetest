@@ -51,11 +51,7 @@ void ModApiChannels::Initialize(lua_State *L, int top)
  * ModChannelRef
  */
 
-ModChannelRef::ModChannelRef(ModChannel *modchannel):
-	m_modchannel(modchannel)
-{
-}
-
+ModChannelRef::ModChannelRef(ModChannel *modchannel) : m_modchannel(modchannel) {}
 
 int ModChannelRef::l_leave(lua_State *L)
 {
@@ -144,14 +140,15 @@ ModChannelRef *ModChannelRef::checkobject(lua_State *L, int narg)
 	if (!ud)
 		luaL_typerror(L, narg, className);
 
-	return *(ModChannelRef **)ud;  // unbox pointer
+	return *(ModChannelRef **)ud; // unbox pointer
 }
 
-ModChannel* ModChannelRef::getobject(ModChannelRef *ref)
+ModChannel *ModChannelRef::getobject(ModChannelRef *ref)
 {
 	return ref->m_modchannel;
 }
 
+// clang-format off
 const char ModChannelRef::className[] = "ModChannelRef";
 const luaL_Reg ModChannelRef::methods[] = {
 	luamethod(ModChannelRef, leave),
@@ -159,3 +156,4 @@ const luaL_Reg ModChannelRef::methods[] = {
 	luamethod(ModChannelRef, send),
 	{0, 0},
 };
+// clang-format on
