@@ -761,12 +761,12 @@ Call these functions only at load time!
     * must be called during mod load time
 
 ### Mod channels
-You can find mod channels communication scheme in `docs/mod channels.png`.
+![Mod channels communication scheme](docs/mod channels.png)
 
 * `minetest.mod_channel_join(channel_name)`
-    * Client joins channel `channel_name`. If channel has no member it's created. You
+    * Client joins channel `channel_name`, and creates it, if necessary. You
       should listen from incoming messages with `minetest.register_on_modchannel_message`
-      call to receive incoming messages. Warning, this function is asynchronous,
+      call to receive incoming messages. Warning, this function is asynchronous.
     * You should use a minetest.register_on_connect(function() ... end) to perform
       a successful channel join on client startup.
 
@@ -849,15 +849,15 @@ An interface to use mod channels on client and server
 
 #### Methods
 * `leave()`: leave the mod channel.
-    * Client leaves channel `channel_name`. 
+    * Client leaves channel `channel_name`.
     * No more incoming or outgoing messages can be sent to this channel from client mods.
     * This invalidate all future object usage
     * Ensure your set mod_channel to nil after that to free Lua resources
 * `is_writeable()`: returns true if channel is writeable and mod can send over it.
-* `send(message)`: Send `message` though the mod channel. 
+* `send(message)`: Send `message` though the mod channel.
     * If mod channel is not writeable or invalid, message will be dropped.
     * Message size is limited to 65535 characters by protocol.
-    
+
 ### Minimap
 An interface to manipulate minimap on client UI
 

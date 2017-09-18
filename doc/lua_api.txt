@@ -2778,10 +2778,10 @@ and `minetest.auth_reload` call the authetification handler.
       of nodes to fall.
 
 ### Mod channels
-You can find mod channels communication scheme in `docs/mod channels.png`.
+You can find mod channels communication scheme in `docs/mod_channels.png`.
 
 * `minetest.mod_channel_join(channel_name)`
-    * Server joins channel `channel_name`. If channel has no member it's created. You
+    * Server joins channel `channel_name`, and creates it if necessary. You
       should listen from incoming messages with `minetest.register_on_modchannel_message`
       call to receive incoming messages
 

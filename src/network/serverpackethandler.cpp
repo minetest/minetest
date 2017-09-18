@@ -1780,7 +1780,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 	} else {
 		resp_pkt << (u8) MODCHANNEL_SIGNAL_LEAVE_FAILURE;
 		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
-				<< ", but was no registered." << std::endl;
+				<< ", but was not registered." << std::endl;
 	}
 	resp_pkt << channel_name;
 	Send(&resp_pkt);
