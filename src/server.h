@@ -444,6 +444,7 @@ private:
 		bool reliable = true);
 	void SendCSMFlavourLimits(session_t peer_id);
 
+	void SendAckControlLog(u16 peer_id, u32 finish_time);
 	/*
 		Something random
 	*/

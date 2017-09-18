@@ -473,18 +473,21 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() >= 1) {
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
+		dstream << "# got " << pkt->getRemainingBytes() << " remaining bytes" << std::endl;
 		ControlLog log;
-		std::stringstream logbytes(pkt->readLongString());
+		std::string logbytes = pkt->readLongString();
+		dstream << "# got " << logbytes.length() << " logbytes" << std::endl;
+		std::stringstream logstream(logbytes);
 		// deserializing does not validate it. The entries could be
 		// a bunch of lies
-		log.deserialize(logbytes);
+		log.deserialize(logstream);
 		// replay the log step by step:
 		// - apply controls
 		// - simulate physics
 		// see how far we can acknowledge
 		u32 ackTime = log.getFinishTime();
 		// send acknowledge
-		ackTime = ackTime - ackTime;
+		SendAckControlLog(pkt->getPeerId(), ackTime);
 		//   OR send reset
 	}
 

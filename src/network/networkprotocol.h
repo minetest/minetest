@@ -187,6 +187,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 			'zoom_fov'.
 		Nodebox version 5
 		Add disconnected nodeboxes
+		Add TOCLIENT_ACK_CONTROL_LOG
 */
 
 #define LATEST_PROTOCOL_VERSION 36
@@ -635,6 +636,11 @@ enum ToClientCommand
 	 	u16 channel name length
 	 	std::string channel name
 	 */
+
+	TOCLIENT_ACK_CONTROL_LOG = 0x59,
+	/*
+	 	u32 timestamp
+	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*

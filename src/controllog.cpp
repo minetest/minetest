@@ -21,6 +21,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "controllog.h"
 #include "log.h"
 #include <sstream>
+#include <cerrno>
+#include <cstring>
 
 ControlLogEntry::ControlLogEntry()
 {
@@ -163,8 +165,6 @@ void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLog
 void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLogEntry *prev)
 {
 	u8 i_dtime;
-	//input.exceptions(input.failbit | input.badbit);
-	//try {
 	i_dtime = readU8(input);
 	if (i_dtime == 255) {
 		settings = readU8(input);
@@ -223,17 +223,23 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 	writeU8(output, motion_model);
 	writeU8(output, motion_model_version);
 	ControlLogEntry *prev_cle = NULL;
+	int count = 0;
 	for( ControlLogEntry cle : entries ) {
 		if (output.tellp() >= bytes_max) {
+			dstream << "over max bytes: " << output.tellp() << " >= " << bytes_max << std::endl;
 			leftovers = true;
 			break;
 		}
 		cle.serialize(output, flags, prev_cle);
 		prev_cle = &cle;
+		count++;
 	}
 	if (leftovers) {
 		writeU8(output, 253);
 	}
+	dstream << "serialized " << count;
+	if (leftovers) dstream << " with leftovers ";
+	dstream << std::endl;
 
 	return;
 }
@@ -291,3 +297,6 @@ u32 ControlLog::getFinishTime() const
 	return finishtime;
 }
 
+void ControlLog::acknowledge(u32 finish_time) {
+	dstream << "acknowledge " << finish_time << std::endl;
+}

@@ -1424,3 +1424,13 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	if (valid_signal)
 		m_script->on_modchannel_signal(channel, signal);
 }
+
+void Client::handleCommand_AckControlLog(NetworkPacket *pkt)
+{
+	u32 finish_time;
+	*pkt >> finish_time;
+	LocalPlayer *player = m_env.getLocalPlayer();
+	assert(player != NULL);
+
+	player->getControlLog().acknowledge(finish_time);
+}

@@ -1933,6 +1933,13 @@ void Server::SendCSMFlavourLimits(session_t peer_id)
 	Send(&pkt);
 }
 
+void Server::SendAckControlLog(u16 peer_id, u32 finish_time)
+{
+	NetworkPacket pkt(TOCLIENT_ACK_CONTROL_LOG, 4, peer_id);
+	pkt << finish_time;
+	Send(&pkt);
+}
+
 s32 Server::playSound(const SimpleSoundSpec &spec,
 		const ServerSoundParams &params)
 {

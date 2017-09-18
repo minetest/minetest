@@ -225,6 +225,7 @@ public:
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
+	void handleCommand_AckControlLog(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
