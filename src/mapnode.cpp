@@ -250,9 +250,8 @@ void transformNodeBox(const MapNode &n, const NodeBox &nodebox,
 		u8 axisdir = facedir>>2;
 		facedir&=0x03;
 		for (aabb3f box : fixed) {
-			if (nodebox.type == NODEBOX_LEVELED) {
-				box.MaxEdge.Y = -BS/2 + BS*((float)1/LEVELED_MAX) * n.getLevel(nodemgr);
-			}
+			if (nodebox.type == NODEBOX_LEVELED)
+				box.MaxEdge.Y = (-0.5f + n.getLevel(nodemgr) / 64.0f) * BS;
 
 			switch (axisdir) {
 			case 0:

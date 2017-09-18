@@ -15,8 +15,7 @@ Mods are contained and ran solely on the server side. Definitions and media
 files are automatically transferred to the client.
 
 If you see a deficiency in the API, feel free to attempt to add the
-functionality in the engine and API. You can send such improvements as
-source code patches to <celeron55@gmail.com>.
+functionality in the engine and API.
 
 Programming in Lua
 ------------------
@@ -824,6 +823,16 @@ node definition:
       0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
       facedir modulo 4 = rotation around that axis
     paramtype2 == "leveled"
+    ^ Only valid for "nodebox" with 'type = "leveled"', and "plantlike_rooted".
+      Leveled nodebox:
+        The level of the top face of the nodebox is stored in param2.
+        The other faces are defined by 'fixed = {}' like 'type = "fixed"' nodeboxes.
+        The nodebox height is param2 / 64 nodes.
+        The maximum accepted value of param2 is 127.
+      Rooted plantlike:
+        The height of the 'plantlike' section is stored in param2.
+        The height is param2 / 16 nodes.
+        The maximum accepted value of param2 is 127.
     paramtype2 == "degrotate"
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
@@ -885,8 +894,8 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `firelike`
 * `fencelike`
 * `raillike`
-* `nodebox` -- See below. (**Experimental!**)
-* `mesh` -- use models for nodes
+* `nodebox` -- See below
+* `mesh` -- Use models for nodes
 * `plantlike_rooted`
 
 `*_optional` drawtypes need less rendering time if deactivated (always client side).
@@ -895,12 +904,8 @@ Node boxes
 -----------
 Node selection boxes are defined using "node boxes"
 
-The `nodebox` node drawtype allows defining visual of nodes consisting of
-arbitrary number of boxes. It allows defining stuff like stairs. Only the
-`fixed` and `leveled` box type is supported for these.
-
-Please note that this is still experimental, and may be incompatibly
-changed in the future.
+The `nodebox` node drawtype allows defining nodes consisting of an arbitrary
+number of boxes. It allows defining stuff like stairs and slabs.
 
 A nodebox is defined as any of:
 
@@ -909,8 +914,16 @@ A nodebox is defined as any of:
         type = "regular"
     }
     {
-        -- A fixed box (facedir param2 is used, if applicable)
+        -- A fixed box (or boxes) (facedir param2 is used, if applicable)
         type = "fixed",
+        fixed = box OR {box1, box2, ...}
+    }
+    {
+        -- A variable height box (or boxes) with the top face position defined by
+        -- the node parameter 'leveled = ', or if 'paramtype2 == "leveled"' by
+        -- param2.
+        -- Other faces are defined by 'fixed = {}' as with 'type = "fixed"'.
+        type = "leveled",
         fixed = box OR {box1, box2, ...}
     }
     {
@@ -941,9 +954,6 @@ A `box` is defined as:
 A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
-
-`type = "leveled"` is same as `type = "fixed"`, but `y2` will be automatically
-set to level from `param2`.
 
 
 Meshes
@@ -4400,9 +4410,11 @@ Definition tables
         liquid_viscosity = 0, -- Higher viscosity = slower flow (max. 7)
         liquid_renewable = true, --[[
         ^ If true, a new liquid source can be created by placing two or more sources nearby ]]
-        leveled = 0, --[[
-        ^ Block contains level in param2. Value is default level, used for snow.
-        ^ Don't forget to use "leveled" type nodebox. ]]
+        leveled = 16, --[[
+        ^ Only valid for "nodebox" drawtype with 'type = "leveled"'.
+        ^ Allows defining the nodebox height without using param2.
+        ^ The nodebox height is 'leveled' / 64 nodes.
+        ^ The maximum value of 'leveled' is 127. ]]
         liquid_range = 8, -- number of flowing nodes around source (max. 8)
         drowning = 0, -- Player will take this amount of damage if no bubbles are left
         light_source = 0, --[[
