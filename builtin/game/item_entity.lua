@@ -33,7 +33,7 @@ core.register_entity(":__builtin:item", {
 	},
 
 	itemstring = "",
-	physical_state = true,
+	moving_state = true,
 	slippery_state = false,
 	age = 0,
 
@@ -148,16 +148,34 @@ core.register_entity(":__builtin:item", {
 		local vel = self.object:getvelocity()
 		local def = node and core.registered_nodes[node.name]
 		-- Ignore is nil -> stop until the block loaded
-		local is_physical = (def and not def.walkable) or vel.y ~= 0
+		local is_moving = (def and not def.walkable) or (vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0)
 		local is_slippery = false
 
-		if def and def.walkable and
-				(math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
+		if def and def.walkable then
+			if (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
+				local slippery = core.get_item_group(node.name, "slippery")
+				is_slippery = slippery ~= 0
+				if is_slippery then
+					-- Horizontal deceleration
+					local slip_factor = 4.0 / (slippery + 4)
+					self.object:set_acceleration({
+						x = -vel.x * slip_factor,
+						y = 0,
+						z = -vel.z * slip_factor
+					})
+				end
+			else
+			end
+		end
+
+		if def and def.walkable then
 			local slippery = core.get_item_group(node.name, "slippery")
 			is_slippery = slippery ~= 0
-			if is_slippery then
-				is_physical = true
-
+			if not is_slippery then
+				if vel.y == 0 then
+					is_moving = false
+				end
+			elseif (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
 				-- Horizontal deceleration
 				local slip_factor = 4.0 / (slippery + 4)
 				self.object:set_acceleration({
@@ -165,26 +183,22 @@ core.register_entity(":__builtin:item", {
 					y = 0,
 					z = -vel.z * slip_factor
 				})
+			elseif vel.y == 0 then
+				is_moving = false
 			end
 		end
 
-		if self.physical_state == is_physical and
+		if self.moving_state == is_moving and
 				self.slippery_state == is_slippery then
-			-- Do not update anything until the physical state changes
+			-- Do not update anything until the moving state changes
 			return
 		end
 
-		self.physical_state = is_physical
+		self.moving_state = is_moving
 		self.slippery_state = is_slippery
-		self.object:set_properties({
-			physical = is_physical
-		})
 
-		if is_slippery then
-			return
-		end
 
-		if is_physical then
+		if is_moving then
 			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 		else
 			self.object:set_acceleration({x = 0, y = 0, z = 0})
