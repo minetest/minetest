@@ -809,6 +809,11 @@ node definition:
       0 = y+    1 = z+    2 = z-    3 = x+    4 = x-    5 = y-
       facedir modulo 4 = rotation around that axis
     paramtype2 == "leveled"
+    ^ Only valid for "nodebox" with type = "leveled".
+        The level of the top face of the nodebox is stored in param2.
+        The other faces are defined by 'fixed = {}' like 'type = "fixed"' nodeboxes.
+        The nodebox height is param2 / 64 nodes.
+        The maximum accepted value of param2 is 127.
     paramtype2 == "degrotate"
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
