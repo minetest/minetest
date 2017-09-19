@@ -148,25 +148,9 @@ core.register_entity(":__builtin:item", {
 		local vel = self.object:getvelocity()
 		local def = node and core.registered_nodes[node.name]
 		-- Ignore is nil -> stop until the block loaded
-		local is_moving = (def and not def.walkable) or (vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0)
+		local is_moving = (def and not def.walkable) or
+				(vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0)
 		local is_slippery = false
-
-		if def and def.walkable then
-			if (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
-				local slippery = core.get_item_group(node.name, "slippery")
-				is_slippery = slippery ~= 0
-				if is_slippery then
-					-- Horizontal deceleration
-					local slip_factor = 4.0 / (slippery + 4)
-					self.object:set_acceleration({
-						x = -vel.x * slip_factor,
-						y = 0,
-						z = -vel.z * slip_factor
-					})
-				end
-			else
-			end
-		end
 
 		if def and def.walkable then
 			local slippery = core.get_item_group(node.name, "slippery")
@@ -197,7 +181,6 @@ core.register_entity(":__builtin:item", {
 		self.moving_state = is_moving
 		self.slippery_state = is_slippery
 
-
 		if is_moving then
 			self.object:set_acceleration({x = 0, y = -gravity, z = 0})
 		else
@@ -205,6 +188,10 @@ core.register_entity(":__builtin:item", {
 			self.object:set_velocity({x = 0, y = 0, z = 0})
 		end
 
+		--Only collect items if not moving
+		if is_moving then
+			return
+		end
 		-- Collect the items around to merge with
 		local own_stack = ItemStack(self.itemstring)
 		if own_stack:get_free_space() == 0 then
