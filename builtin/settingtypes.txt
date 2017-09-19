@@ -554,7 +554,7 @@ vsync (V-Sync) bool false
 fov (Field of view) int 72 30 160
 
 #    Field of view while zooming in degrees.
-#    This requires the "zoom" privilege on the server.
+#    This requires the "zoom" ability on the server.
 zoom_fov (Field of view for zoom) int 15 7 160
 
 #    Adjust the gamma encoding for the light tables. Higher numbers are brighter.
