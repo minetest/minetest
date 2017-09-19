@@ -827,12 +827,11 @@ node definition:
       Leveled nodebox:
         The level of the top face of the nodebox is stored in param2.
         The other faces are defined by 'fixed = {}' like 'type = "fixed"' nodeboxes.
-        The nodebox height is param2 / 64 nodes.
+        The nodebox height is (param2 / 64) nodes.
         The maximum accepted value of param2 is 127.
       Rooted plantlike:
         The height of the 'plantlike' section is stored in param2.
-        The height is param2 / 16 nodes.
-        The maximum accepted value of param2 is 127.
+        The height is (param2 / 16) nodes.
     paramtype2 == "degrotate"
     ^ The rotation of this node is stored in param2. Plants are rotated this way.
       Values range 0 - 179. The value stored in param2 is multiplied by two to
@@ -868,13 +867,14 @@ node definition:
       The palette should have 32 pixels.
     paramtype2 == "glasslikeliquidlevel"
     ^ Only valid for "glasslike_framed" or "glasslike_framed_optional" drawtypes.
-      param2 defines 64 levels of internal liquid.
+      param2 values 0-63 define 64 levels of internal liquid, 0 being empty and
+      63 being full.
       Liquid texture is defined using `special_tiles = {"modname_tilename.png"},`
 
 Nodes can also contain extra data. See "Node Metadata".
 
 Node drawtypes
----------------
+--------------
 There are a bunch of different looking node types.
 
 Look for examples in `games/minimal` or `games/minetest_game`.
@@ -895,13 +895,13 @@ Look for examples in `games/minimal` or `games/minetest_game`.
 * `fencelike`
 * `raillike`
 * `nodebox` -- See below
-* `mesh` -- Use models for nodes
-* `plantlike_rooted`
+* `mesh` -- Use models for nodes, see below
+* `plantlike_rooted` -- See below
 
 `*_optional` drawtypes need less rendering time if deactivated (always client side).
 
 Node boxes
------------
+----------
 Node selection boxes are defined using "node boxes"
 
 The `nodebox` node drawtype allows defining nodes consisting of an arbitrary
@@ -955,13 +955,24 @@ A box of a regular node would look like:
 
     {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
 
-
 Meshes
 ------
 If drawtype `mesh` is used, tiles should hold model materials textures.
 Only static meshes are implemented.
 For supported model formats see Irrlicht engine documentation.
 
+Rooted plantlike drawtype
+-------------------------
+The `plantlike_rooted` drawtype was developed to enable underwater plants
+without air bubbles around the plants.
+It consists of a base cube at the co-ordinates of the node (the seabed /
+lakebed / riverbed node) plus a 'plantlike' extension above with a height
+defined by param2 (maximum height 16 nodes). This extension visually passes
+through any nodes above the base cube without affecting them.
+The node is dug by digging the base cube.
+The base cube texture tiles are defined as normal, the plantlike extension
+uses the defined 'special tile', for example:
+`special_tiles = {{name = "default_papyrus.png", tileable_vertical = true}},`
 
 Noise Parameters
 ----------------
