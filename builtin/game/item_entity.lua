@@ -155,11 +155,7 @@ core.register_entity(":__builtin:item", {
 		if def and def.walkable then
 			local slippery = core.get_item_group(node.name, "slippery")
 			is_slippery = slippery ~= 0
-			if not is_slippery then
-				if vel.y == 0 then
-					is_moving = false
-				end
-			elseif (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
+			if is_slippery and (math.abs(vel.x) > 0.2 or math.abs(vel.z) > 0.2) then
 				-- Horizontal deceleration
 				local slip_factor = 4.0 / (slippery + 4)
 				self.object:set_acceleration({
