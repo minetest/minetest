@@ -140,14 +140,26 @@ BiomeGenOriginal::~BiomeGenOriginal()
 
 Biome *BiomeGenOriginal::calcBiomeAtPoint(v3s16 pos) const
 {
-	float heat =
-		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Z, m_params->seed);
-	float humidity =
-		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Z, m_params->seed) +
-		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Z, m_params->seed);
+	float heat = calcHeatAtPoint(v2s16(pos.X, pos.Z));
+	float humidity = calcHumidityAtPoint(v2s16(pos.X, pos.Z));
 
 	return calcBiomeFromNoise(heat, humidity, pos.Y);
+}
+
+
+float BiomeGenOriginal::calcHeatAtPoint(v2s16 pos) const
+{
+	return
+		NoisePerlin2D(&m_params->np_heat,       pos.X, pos.Y, m_params->seed) +
+		NoisePerlin2D(&m_params->np_heat_blend, pos.X, pos.Y, m_params->seed);
+}
+
+
+float BiomeGenOriginal::calcHumidityAtPoint(v2s16 pos) const
+{
+	return
+		NoisePerlin2D(&m_params->np_humidity,       pos.X, pos.Y, m_params->seed) +
+		NoisePerlin2D(&m_params->np_humidity_blend, pos.X, pos.Y, m_params->seed);
 }
 
 
