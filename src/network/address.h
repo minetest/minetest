@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ws2tcpip.h>
 #else
 #include <netinet/in.h>
+#include <sys/socket.h>
 #endif
 
 #include <ostream>
