@@ -473,10 +473,8 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 	if (pkt->getRemainingBytes() >= 1) {
 		// SERVER SIDE MOVEMENT: here we would unpack the control log
 		// from the client and replay it.
-		dstream << "# got " << pkt->getRemainingBytes() << " remaining bytes" << std::endl;
 		ControlLog log;
 		std::string logbytes = pkt->readLongString();
-		dstream << "# got " << logbytes.length() << " logbytes" << std::endl;
 		std::stringstream logstream(logbytes);
 		// deserializing does not validate it. The entries could be
 		// a bunch of lies

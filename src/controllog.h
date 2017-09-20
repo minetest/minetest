@@ -65,6 +65,7 @@ public:
 
 	void setDtime(float dtime);
 	float getDtime() const;
+	void setDtimeU32(u32 dtime);
 	u32 getDtimeU32() const;
 
 	void setFreeMove(bool free_move);

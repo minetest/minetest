@@ -34,19 +34,24 @@ void ControlLogEntry::setDtime(float a_dtime)
 		dtime = 0;
 		overtime = 0;
 	} else {
-		u16 new_dtime = 1000 * a_dtime; // milliseconds
-		if (new_dtime < 200) {
-			dtime = new_dtime;
-			overtime = 0;
-		} else {
-			dtime = 200;
-			overtime = new_dtime - 200;
-		}
+		u32 new_dtime = 1000 * a_dtime; // milliseconds
+		setDtimeU32(new_dtime);
 	}
 }
 float ControlLogEntry::getDtime() const
 {
-	return ((int)dtime + (int)overtime) / 1000.0f;
+	return getDtimeU32() / 1000.0f;
+}
+
+void ControlLogEntry::setDtimeU32(u32 a_dtime)
+{
+	if (a_dtime < 200) {
+		dtime = a_dtime;
+		overtime = 0;
+	} else {
+		dtime = 200;
+		overtime = a_dtime - 200;
+	}
 }
 u32 ControlLogEntry::getDtimeU32() const
 {
@@ -226,7 +231,6 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 	int count = 0;
 	for( ControlLogEntry cle : entries ) {
 		if (output.tellp() >= bytes_max) {
-			dstream << "over max bytes: " << output.tellp() << " >= " << bytes_max << std::endl;
 			leftovers = true;
 			break;
 		}
@@ -237,9 +241,6 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 	if (leftovers) {
 		writeU8(output, 253);
 	}
-	dstream << "serialized " << count;
-	if (leftovers) dstream << " with leftovers ";
-	dstream << std::endl;
 
 	return;
 }
@@ -278,7 +279,6 @@ void ControlLog::deserialize(std::istream &input)
 			count++;
 		}
 	}
-	dstream << "deserialized " << count << " cles" << std::endl;
 	return;
 }
 
@@ -293,10 +293,24 @@ u32 ControlLog::getFinishTime() const
 	for( ControlLogEntry cle : entries ) {
 		finishtime += cle.getDtimeU32();
 	}
-	dstream << "finishtime is " << finishtime << std::endl;
 	return finishtime;
 }
 
-void ControlLog::acknowledge(u32 finish_time) {
-	dstream << "acknowledge " << finish_time << std::endl;
+void ControlLog::acknowledge(u32 finishtime) {
+	dstream << "acknowledge " << finishtime << std::endl;
+	while (starttime < finishtime && !entries.empty()) {
+		ControlLogEntry cle = entries.front(); entries.pop_front();
+		u32 dtime = cle.getDtimeU32();
+		if (finishtime - starttime < dtime) {
+			// only consume part of this, put the rest back
+			cle.setDtimeU32(finishtime - starttime);
+			starttime = finishtime;
+			// don't acknowledge any more entries
+			break;
+		} else {
+			// eat the entire entry, try the next one.
+			starttime += dtime;
+		}
+	}
+	dstream << "new start time " << starttime << std::endl;
 }
