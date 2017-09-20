@@ -70,7 +70,7 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 	// Call function
 	LuaItemStack::create(L, item);
 
-	if (placer == nullptr)
+	if (!placer)
 		lua_pushnil(L);
 	else
 		objectrefGetOrCreate(L, placer);
