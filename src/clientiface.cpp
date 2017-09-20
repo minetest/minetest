@@ -90,13 +90,27 @@ void RemoteClient::GetNextBlocks (
 		return;
 	}
 
+	// get view range and camera fov from the client
+	s16 wanted_range = sao->getWantedRange();
+	float camera_fov = sao->getFov();
+	// if FOV, wanted_range are not available (old client), fall back to old default
+	if (wanted_range <= 0) wanted_range = 1000;
+	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
+
+	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
+	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
+	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
+
 	v3f playerpos = sao->getBasePosition();
 	const v3f &playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
-	if(playerspeed.getLength() > 1.0*BS)
-		playerspeeddir = playerspeed / playerspeed.getLength();
-	// Predict to next block
-	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
+	f32 playerspeedlen = playerspeed.getLength();
+	if(playerspeedlen > 1.0*BS)
+		playerspeeddir = playerspeed / playerspeedlen;
+
+	// Predict where player will be soon, load blocks around there first
+	v3f playerpos_predicted = playerpos + playerspeeddir *
+		MYMIN(playerspeedlen * BS, d_blocks_in_sight*0.5f);
 
 	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
@@ -168,18 +182,6 @@ void RemoteClient::GetNextBlocks (
 		time are actually sent.
 	*/
 	s32 new_nearest_unsent_d = -1;
-
-	// get view range and camera fov from the client
-	s16 wanted_range = sao->getWantedRange();
-	float camera_fov = sao->getFov();
-	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 1000;
-	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
-
-	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
-	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
-	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
-	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
 	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
