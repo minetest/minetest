@@ -149,7 +149,7 @@ core.register_entity(":__builtin:item", {
 		local def = node and core.registered_nodes[node.name]
 		-- Ignore is nil -> stop until the block loaded
 		local is_moving = (def and not def.walkable) or
-				(vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0)
+				vel.x ~= 0 or vel.y ~= 0 or vel.z ~= 0
 		local is_slippery = false
 
 		if def and def.walkable then
