@@ -1232,15 +1232,18 @@ void Client::sendPlayerPos()
 	u8 camera_fov    = map.getCameraFov();
 	u8 wanted_range  = map.getControl().wanted_range;
 
+	u32 control_log_time = myplayer->getControlLog().getSpannedTime();
+
 	// Save bandwidth by only updating position when something changed
-	// SERVER SIDE MOVEMENT: also only when control log is empty
+	// or there's more than one second of control log
 	if(myplayer->last_position        == myplayer->getPosition() &&
 			myplayer->last_speed        == myplayer->getSpeed()    &&
 			myplayer->last_pitch        == myplayer->getPitch()    &&
 			myplayer->last_yaw          == myplayer->getYaw()      &&
 			myplayer->last_keyPressed   == myplayer->keyPressed    &&
 			myplayer->last_camera_fov   == camera_fov              &&
-			myplayer->last_wanted_range == wanted_range)
+			myplayer->last_wanted_range == wanted_range            &&
+			control_log_time             < 1000)
 		return;
 
 	myplayer->last_position     = myplayer->getPosition();

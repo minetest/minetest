@@ -289,11 +289,15 @@ u32 ControlLog::getStartTime() const
 
 u32 ControlLog::getFinishTime() const
 {
-	u32 finishtime = starttime;
+	return starttime + getSpannedTime();
+}
+u32 ControlLog::getSpannedTime() const
+{
+	u32 spannedtime = 0;
 	for( ControlLogEntry cle : entries ) {
-		finishtime += cle.getDtimeU32();
+		spannedtime += cle.getDtimeU32();
 	}
-	return finishtime;
+	return spannedtime;
 }
 
 void ControlLog::acknowledge(u32 finishtime) {

@@ -157,6 +157,7 @@ public:
 	void deserialize(std::istream &from);
 	u32 getStartTime() const;
 	u32 getFinishTime() const;
+	u32 getSpannedTime() const;
 	void acknowledge(u32 time); // removes entries
 private:
 	u8 version = 1; // agreed-upon version
