@@ -296,9 +296,7 @@ void read_object_properties(lua_State *L, int index,
 	lua_pop(L, 1);
 
 	getstringfield(L, -1, "infotext", prop->infotext);
-	bool no_static_save;
-	getboolfield(L, -1, "no_static_save", no_static_save);
-	prop->static_save=!no_static_save;
+	getboolfield(L, -1, "static_save", prop->static_save);
 
 	lua_getfield(L, -1, "wield_item");
 	if (!lua_isnil(L, -1))
