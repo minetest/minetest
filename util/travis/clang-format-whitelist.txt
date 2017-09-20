@@ -379,7 +379,6 @@ src/util/string.h
 src/util/thread.h
 src/util/timetaker.cpp
 src/util/timetaker.h
-src/version.cpp
 src/version.h
 src/voxelalgorithms.cpp
 src/voxelalgorithms.h
