@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "util/serialize.h"
 #include "controllog.h"
 #include "log.h"
 #include <sstream>
@@ -143,15 +144,18 @@ void ControlLogEntry::merge(const ControlLogEntry &other)
 void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLogEntry *prev) const
 {
 	if (!prev || (settings != prev->settings)) {
-		output << (u8)255 << settings;
+		writeU8(output, 255);
+		writeU8(output, settings);
 	}
-	output << dtime;
+	writeU8(output, dtime);
 	if (dtime >= 200) {
-		output << overtime;
+		writeU16(output, overtime);
 	}
-	output << keys << yaw_pitch;
+	writeU16(output, keys);
+	writeU16(output, yaw_pitch);
 	if (flags & 0x01) { // joystick
-		output << joy_forw << joy_sidew;
+		writeS8(output, joy_forw);
+		writeS8(output, joy_sidew);
 	}
 	return;
 }
@@ -159,21 +163,25 @@ void ControlLogEntry::serialize(std::ostream &output, u8 flags, const ControlLog
 void ControlLogEntry::deserialize(std::istream &input, u8 flags, const ControlLogEntry *prev)
 {
 	u8 i_dtime;
-	input >> i_dtime;
+	//input.exceptions(input.failbit | input.badbit);
+	//try {
+	i_dtime = readU8(input);
 	if (i_dtime == 255) {
-		input >> settings;
-		input >> i_dtime; // start of next entry
+		settings = readU8(input);
+		i_dtime = readU8(input); // start of next entry
 	}
 	if (i_dtime >= 200) {
 		dtime = i_dtime;
-		input >> overtime;
+		overtime = readU16(input);
 	} else {
 		dtime = i_dtime;
 		overtime = 0;
 	}
-	input >> keys >> yaw_pitch;
+	keys = readU16(input);
+	yaw_pitch = readU16(input);
 	if (flags & 0x01) { // joystick
-		input >> joy_forw >> joy_sidew;
+		joy_forw = readS8(input);
+		joy_sidew = readS8(input);
 	}
 	return;
 }
@@ -186,15 +194,15 @@ ControlLog::ControlLog()
 
 void ControlLog::add(ControlLogEntry &cle)
 {
-	if (log.size()) {
-		ControlLogEntry &cur = log.back();
+	if (entries.size()) {
+		ControlLogEntry &cur = entries.back();
 		if (cur.matches(cle)) {
 			cur.merge(cle); // in-place
 		} else {
-			log.push_back(cle);
+			entries.push_back(cle);
 		}
 	} else {
-		log.push_back(cle);
+		entries.push_back(cle);
 	}
 }
 
@@ -203,18 +211,19 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 	// loop to find flags (with/without joystick)
 	u8 flags = 0;
 
-	output << version;
-	output << flags;
+	writeU8(output, version);
+	writeU8(output, flags);
 
-	output << starttime;
+	writeU32(output, starttime);
 
 	u8 motion_model = 1;
 	u8 motion_model_version = 1;
 
 	bool leftovers = false;
-	output << motion_model << motion_model_version;
+	writeU8(output, motion_model);
+	writeU8(output, motion_model_version);
 	ControlLogEntry *prev_cle = NULL;
-	for( ControlLogEntry cle : log ) {
+	for( ControlLogEntry cle : entries ) {
 		if (output.tellp() >= bytes_max) {
 			leftovers = true;
 			break;
@@ -223,7 +232,7 @@ void ControlLog::serialize(std::ostream &output, u32 bytes_max) const
 		prev_cle = &cle;
 	}
 	if (leftovers) {
-		output << (u8)253;
+		writeU8(output, 253);
 	}
 
 	return;
@@ -233,12 +242,15 @@ void ControlLog::deserialize(std::istream &input)
 {
 	u8 flags;
 
-	input >> version;
-	input >> flags;
+	version = readU8(input);
+	flags   = readU8(input);
 
-	input >> starttime;
+	starttime = readU32(input);
 	u8 motion_model, motion_model_version;
-	input >> motion_model >> motion_model_version;
+	motion_model = readU8(input);
+	motion_model_version = readU8(input);
+	motion_model = motion_model - motion_model;
+	motion_model_version = motion_model_version - motion_model_version;
 
 	//bool leftovers = false;
 	//long int prev_tellg = input.tellg();
@@ -250,11 +262,12 @@ void ControlLog::deserialize(std::istream &input)
 			break; // eof
 		} else if (code == 253) {
 			// leftovers
-			u8 marker;
-			input >> marker;
+			u8 marker = readU8(input);
+			marker = marker - marker;
 		} else {
 			ControlLogEntry cle;
 			cle.deserialize(input, flags, prev_cle);
+			add(cle);
 			prev_cle = &cle;
 			count++;
 		}
@@ -271,9 +284,10 @@ u32 ControlLog::getStartTime() const
 u32 ControlLog::getFinishTime() const
 {
 	u32 finishtime = starttime;
-	for( ControlLogEntry cle : log ) {
+	for( ControlLogEntry cle : entries ) {
 		finishtime += cle.getDtimeU32();
 	}
+	dstream << "finishtime is " << finishtime << std::endl;
 	return finishtime;
 }
 

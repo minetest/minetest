@@ -161,7 +161,7 @@ private:
 	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;
 	u8 last_acked_settings = 0;
-	std::deque<ControlLogEntry> log;
+	std::deque<ControlLogEntry> entries;
 };
 
 #endif
