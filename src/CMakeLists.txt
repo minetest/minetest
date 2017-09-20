@@ -452,7 +452,6 @@ set(common_SRCS
 	tool.cpp
 	translation.cpp
 	treegen.cpp
-	version.cpp
 	voxel.cpp
 	voxelalgorithms.cpp
 	${common_network_SRCS}

@@ -228,7 +228,6 @@ LOCAL_SRC_FILES := \
 		jni/src/tileanimation.cpp                 \
 		jni/src/tool.cpp                          \
 		jni/src/treegen.cpp                       \
-		jni/src/version.cpp                       \
 		jni/src/voxel.cpp                         \
 		jni/src/voxelalgorithms.cpp               \
 		jni/src/util/areastore.cpp                \

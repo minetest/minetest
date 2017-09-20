@@ -19,6 +19,33 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-extern const char *g_version_string;
-extern const char *g_version_hash;
-extern const char *g_build_info;
+#include "config.h"
+
+#if defined(__ANDROID__)
+	#include "android_version.h"
+	#include "android_version_githash.h"
+#elif defined(USE_CMAKE_CONFIG_H)
+	#include "cmake_config_githash.h"
+#endif
+
+#ifndef VERSION_GITHASH
+	#define VERSION_GITHASH VERSION_STRING
+#endif
+
+#define STRINGIFY(x) #x
+#define STR(x) STRINGIFY(x)
+
+constexpr const char* g_version_string = VERSION_STRING;
+constexpr const char* g_version_hash = VERSION_GITHASH;
+constexpr const char* g_build_info =
+#ifdef __STDC__
+	"Build date: " __DATE__ " " __TIME__ "\n"
+#endif
+	"BUILD_TYPE=" BUILD_TYPE "\n"
+	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n"
+	"USE_GETTEXT=" STR(USE_GETTEXT) "\n"
+	"USE_SOUND=" STR(USE_SOUND) "\n"
+	"USE_CURL=" STR(USE_CURL) "\n"
+	"USE_FREETYPE=" STR(USE_FREETYPE) "\n"
+	"USE_LUAJIT=" STR(USE_LUAJIT) "\n"
+	"STATIC_SHAREDIR=" STR(STATIC_SHAREDIR);
