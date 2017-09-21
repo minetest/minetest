@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <sstream>
+#include <cmath>
 #include "clientiface.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
@@ -94,12 +95,6 @@ void RemoteClient::GetNextBlocks (
 	s16 wanted_range = sao->getWantedRange();
 	float camera_fov = sao->getFov();
 
-	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0)
-		wanted_range = 1000;
-	if (camera_fov <= 0.0f)
-		camera_fov = (72.0f * M_PI / 180.0f) * 4.0f / 3.0f;
-
 	const s16 full_d_max = std::min(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = std::min(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
@@ -112,6 +107,8 @@ void RemoteClient::GetNextBlocks (
 		playerspeeddir = playerspeed / playerspeedlen;
 
 	// Predict where player will be soon, load blocks around there first
+	// We use the client-reported speed as an indicator, but do not move the
+	// center point further than 1/2 the visible range away
 	v3f playerpos_predicted = playerpos + playerspeeddir *
 		rangelim(playerspeedlen * BS, MAP_BLOCKSIZE * BS, d_blocks_in_sight * 0.5f);
 
@@ -190,7 +187,7 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = std::min(g_settings->getS16("max_block_generate_distance"), wanted_range);
 
 	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
+	s16 max_d_increment_at_time = 1;
 	if(d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
