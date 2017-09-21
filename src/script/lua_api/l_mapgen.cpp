@@ -487,6 +487,60 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 }
 
 
+// get_biome_id_at_pos(pos)
+// pos = {x=num, y=num, z=num}
+int ModApiMapgen::l_get_biome_id_at_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v3s16 pos = read_v3s16(L, 1);
+
+	// How to get biomegen?
+
+	// Currently the only biomegen is biomegen original
+	if (biomegen->getType() != BIOMEGEN_ORIGINAL)
+		return 0;
+	
+	// ??????????
+
+	lua_pushinteger(L, biome->index);
+
+	return 1;
+}
+
+
+// get_heat_at_pos(pos)
+// pos = {x=num, y=num}
+int ModApiMapgen::l_get_heat_at_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v2s16 pos = read_v2s16(L, 1);
+
+	// ?????????
+	
+	lua_pushnumber(L, heat);
+
+	return 1;
+}
+
+
+// get_humidity_at_pos(pos)
+// pos = {x=num, y=num}
+int ModApiMapgen::l_get_humidity_at_pos(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v2s16 pos = read_v2s16(L, 1);
+
+	// ?????????
+	
+	lua_pushnumber(L, humidity);
+
+	return 1;
+}
+
+
 // get_mapgen_object(objectname)
 // returns the requested object used during map generation
 int ModApiMapgen::l_get_mapgen_object(lua_State *L)
@@ -1510,6 +1564,9 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_biome_id);
+	API_FCT(get_biome_id_at_pos);
+	API_FCT(get_heat_at_pos);
+	API_FCT(get_humidity_at_pos);
 	API_FCT(get_mapgen_object);
 
 	API_FCT(get_mapgen_params);

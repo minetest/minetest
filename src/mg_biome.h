@@ -161,6 +161,9 @@ public:
 	BiomeGenType getType() const { return BIOMEGEN_ORIGINAL; }
 
 	Biome *calcBiomeAtPoint(v3s16 pos) const;
+	float calcHeatAtPoint(v2s16 pos) const;
+	float calcHumidityAtPoint(v2s16 pos) const;
+
 	void calcBiomeNoise(v3s16 pmin);
 
 	biome_t *getBiomes(s16 *heightmap);

@@ -28,6 +28,18 @@ private:
 	// returns the biome id used in biomemap
 	static int l_get_biome_id(lua_State *L);
 
+	// get_biome_id_at_pos(pos)
+	// returns the biome id at pos
+	static int l_get_biome_id_at_pos(lua_State *L);
+
+	// get_heat_at_pos(pos)
+	// returns the biome heat noise at pos
+	static int l_get_heat_at_pos(lua_State *L);
+
+	// get_humidity_at_pos(pos)
+	// returns the biome humidity noise at pos
+	static int l_get_humidity_at_pos(lua_State *L);
+
 	// get_mapgen_object(objectname)
 	// returns the requested object used during map generation
 	static int l_get_mapgen_object(lua_State *L);
