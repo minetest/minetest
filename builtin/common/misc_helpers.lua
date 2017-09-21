@@ -349,10 +349,7 @@ if INIT == "game" then
 					itemstack, pointed_thing)
 			return
 		end
-		local fdir = 0
-		if placer then
-			fdir = core.dir_to_facedir(placer:get_look_dir())
-		end
+		local fdir = placer and core.dir_to_facedir(placer:get_look_dir()) or 0
 		local wield_name = itemstack:get_name()
 
 		local above = pointed_thing.above
@@ -372,10 +369,7 @@ if INIT == "game" then
 			iswall = false
 		end
 
-		local name = ""
-		if placer then
-			name = placer:get_player_name()
-		end
+		local name = placer and placer:get_player_name() or ""
 		if core.is_protected(pos, name) then
 			core.record_protection_violation(pos, name)
 			return
@@ -438,12 +432,8 @@ if INIT == "game" then
 	end
 
 	core.rotate_node = function(itemstack, placer, pointed_thing)
-		local name = ""
-		local invert_wall = false
-		if placer then
-			name = placer:get_player_name()
-			invert_wall = placer:get_player_control().sneak
-		end
+		local name = placer and placer:get_player_name() or ""
+		local invert_wall = placer and placer:get_player_control().sneak or false
 		core.rotate_and_place(itemstack, placer, pointed_thing,
 				is_creative(name),
 				{invert_wall = invert_wall})
