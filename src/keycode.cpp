@@ -359,13 +359,13 @@ const KeyPress CancelKey("KEY_CANCEL");
 */
 
 // A simple cache for quicker lookup
-std::map<std::string, KeyPress> g_key_setting_cache;
+std::unordered_map<std::string, KeyPress> g_key_setting_cache;
 
 KeyPress getKeySetting(const char *settingname)
 {
-	std::map<std::string, KeyPress>::iterator n;
+	std::unordered_map<std::string, KeyPress>::iterator n;
 	n = g_key_setting_cache.find(settingname);
-	if(n != g_key_setting_cache.end())
+	if (n != g_key_setting_cache.end())
 		return n->second;
 
 	KeyPress k(g_settings->get(settingname).c_str());
