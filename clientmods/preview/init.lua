@@ -27,6 +27,11 @@ core.register_on_modchannel_message(function(channel, sender, message)
 	end)
 end)
 
+core.register_on_modchannel_message(function(channel, signal)
+	print("[PREVIEW][modchannels] Received signal id `" .. signal .. "` on channel `"
+			.. channel)
+end)
+
 core.register_on_placenode(function(pointed_thing, node)
 	print("The local player place a node!")
 	print("pointed_thing :" .. dump(pointed_thing))

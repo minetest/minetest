@@ -1363,6 +1363,8 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 	*pkt >> signal_tmp >> channel;
 
 	signal = (ModChannelSignal)signal_tmp;
+
+	bool valid_signal = true;
 	// @TODO: send Signal to Lua API
 	switch (signal) {
 		case MODCHANNEL_SIGNAL_JOIN_OK:
@@ -1411,6 +1413,11 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 			warningstream << "Received unhandled mod channel signal ID "
 				<< signal << ", ignoring." << std::endl;
 #endif
+			valid_signal = false;
 			break;
 	}
+
+	// If signal is valid, forward it to client side mods
+	if (valid_signal)
+		m_script->on_modchannel_signal(channel, signal);
 }
