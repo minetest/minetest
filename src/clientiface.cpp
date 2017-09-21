@@ -93,9 +93,12 @@ void RemoteClient::GetNextBlocks (
 	// get view range and camera fov from the client
 	s16 wanted_range = sao->getWantedRange();
 	float camera_fov = sao->getFov();
+
 	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 1000;
-	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
+	if (wanted_range <= 0)
+		wanted_range = 1000;
+	if (camera_fov <= 0.0f)
+		camera_fov = (72.0f * M_PI / 180.0f) * 4.0f / 3.0f;
 
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
@@ -105,12 +108,12 @@ void RemoteClient::GetNextBlocks (
 	const v3f &playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	f32 playerspeedlen = playerspeed.getLength();
-	if(playerspeedlen > 1.0*BS)
+	if (playerspeedlen > 1.0f * BS)
 		playerspeeddir = playerspeed / playerspeedlen;
 
 	// Predict where player will be soon, load blocks around there first
 	v3f playerpos_predicted = playerpos + playerspeeddir *
-		MYMIN(playerspeedlen * BS, d_blocks_in_sight*0.5f);
+		rangelim(playerspeedlen * BS, MAP_BLOCKSIZE * BS, d_blocks_in_sight * 0.5f);
 
 	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
