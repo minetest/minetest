@@ -27,7 +27,7 @@ core.register_on_modchannel_message(function(channel, sender, message)
 	end)
 end)
 
-core.register_on_modchannel_message(function(channel, signal)
+core.register_on_modchannel_signal(function(channel, signal)
 	print("[PREVIEW][modchannels] Received signal id `" .. signal .. "` on channel `"
 			.. channel)
 end)

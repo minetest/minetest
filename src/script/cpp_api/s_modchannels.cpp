@@ -45,6 +45,6 @@ void ScriptApiModChannels::on_modchannel_signal(const std::string &channel,
 	lua_getfield(L, -1, "registered_on_modchannel_signal");
 	// Call callbacks
 	lua_pushstring(L, channel.c_str());
-	lua_pushinteger(L, signal);
+	lua_pushinteger(L, (int) signal);
 	runCallbacks(2, RUN_CALLBACKS_MODE_AND);
 }
