@@ -100,8 +100,8 @@ void RemoteClient::GetNextBlocks (
 	if (camera_fov <= 0.0f)
 		camera_fov = (72.0f * M_PI / 180.0f) * 4.0f / 3.0f;
 
-	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
-	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
+	const s16 full_d_max = std::min(g_settings->getS16("max_block_send_distance"), wanted_range);
+	const s16 d_opt = std::min(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 
 	v3f playerpos = sao->getBasePosition();
@@ -187,7 +187,7 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
+	s16 d_max_gen = std::min(g_settings->getS16("max_block_generate_distance"), wanted_range);
 
 	// Don't loop very much at a time
 	s16 max_d_increment_at_time = 2;
