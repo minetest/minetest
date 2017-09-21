@@ -283,7 +283,7 @@ bool ScriptApiEntity::luaentity_on_death(u16 id, ServerActiveObject *killer)
 	objectrefGetOrCreate(L, killer);  // killer reference
 
 	setOriginFromTable(object);
-	PCALL_RES(lua_pcall(L, 6, 1, error_handler));
+	PCALL_RES(lua_pcall(L, 2, 1, error_handler));
 
 	bool retval = lua_toboolean(L, -1);
 	lua_pop(L, 2); // Pop object and error handler
