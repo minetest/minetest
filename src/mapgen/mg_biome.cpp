@@ -84,8 +84,66 @@ void BiomeManager::clear()
 	m_objects.resize(1);
 }
 
-////////////////////////////////////////////////////////////////////////////////
 
+// For BiomeGen type 'BiomeGenOriginal'
+float BiomeManager::getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
+	NoiseParams &np_heat_blend, u64 seed)
+{
+	return
+		NoisePerlin2D(&np_heat,       pos.X, pos.Z, seed) +
+		NoisePerlin2D(&np_heat_blend, pos.X, pos.Z, seed);
+}
+
+
+// For BiomeGen type 'BiomeGenOriginal'
+float BiomeManager::getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
+	NoiseParams &np_humidity_blend, u64 seed)
+{
+	return
+		NoisePerlin2D(&np_humidity,       pos.X, pos.Z, seed) +
+		NoisePerlin2D(&np_humidity_blend, pos.X, pos.Z, seed);
+}
+
+
+// For BiomeGen type 'BiomeGenOriginal'
+Biome *BiomeManager::getBiomeFromNoiseOriginal(float heat, float humidity, s16 y)
+{
+	Biome *biome_closest = nullptr;
+	Biome *biome_closest_blend = nullptr;
+	float dist_min = FLT_MAX;
+	float dist_min_blend = FLT_MAX;
+
+	for (size_t i = 1; i < getNumObjects(); i++) {
+		Biome *b = (Biome *)getRaw(i);
+		if (!b || y > b->y_max + b->vertical_blend || y < b->y_min)
+			continue;
+
+		float d_heat = heat - b->heat_point;
+		float d_humidity = humidity - b->humidity_point;
+		float dist = (d_heat * d_heat) + (d_humidity * d_humidity);
+
+		if (y <= b->y_max) { // Within y limits of biome b
+			if (dist < dist_min) {
+				dist_min = dist;
+				biome_closest = b;
+			}
+		} else if (dist < dist_min_blend) { // Blend area above biome b
+			dist_min_blend = dist;
+			biome_closest_blend = b;
+		}
+	}
+
+	mysrand(y + (heat - humidity) * 2);
+	if (biome_closest_blend &&
+			myrand_range(0, biome_closest_blend->vertical_blend) >=
+			y - biome_closest_blend->y_max)
+		return biome_closest_blend;
+
+	return (biome_closest) ? biome_closest : (Biome *)getRaw(BIOME_NONE);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 
 void BiomeParamsOriginal::readParams(const Settings *settings)
 {

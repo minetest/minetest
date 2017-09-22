@@ -463,7 +463,7 @@ size_t get_biome_list(lua_State *L, int index,
 ///////////////////////////////////////////////////////////////////////////////
 
 // get_biome_id(biomename)
-// returns the biome id used in biomemap
+// returns the biome id as used in biomemap and returned by 'get_biome_data()'
 int ModApiMapgen::l_get_biome_id(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -483,6 +483,154 @@ int ModApiMapgen::l_get_biome_id(lua_State *L)
 		return 0;
 
 	lua_pushinteger(L, biome->index);
+
+	return 1;
+}
+
+
+// get_heat(pos)
+// returns the heat at the position
+int ModApiMapgen::l_get_heat(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v3s16 pos = read_v3s16(L, 1);
+
+	NoiseParams np_heat;
+	NoiseParams np_heat_blend;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat",
+			&np_heat) ||
+			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat_blend",
+			&np_heat_blend))
+		return 0;
+
+	std::string value;
+	if (!settingsmgr->getMapSetting("seed", &value))
+		return 0;
+	std::istringstream ss(value);
+	u64 seed;
+	ss >> seed;
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	if (!bmgr)
+		return 0;
+
+	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
+	if (!heat)
+		return 0;
+
+	lua_pushnumber(L, heat);
+
+	return 1;
+}
+
+
+// get_humidity(pos)
+// returns the humidity at the position
+int ModApiMapgen::l_get_humidity(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v3s16 pos = read_v3s16(L, 1);
+
+	NoiseParams np_humidity;
+	NoiseParams np_humidity_blend;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity",
+			&np_humidity) ||
+			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity_blend",
+			&np_humidity_blend))
+		return 0;
+
+	std::string value;
+	if (!settingsmgr->getMapSetting("seed", &value))
+		return 0;
+	std::istringstream ss(value);
+	u64 seed;
+	ss >> seed;
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	if (!bmgr)
+		return 0;
+
+	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
+		np_humidity_blend, seed);
+	if (!humidity)
+		return 0;
+
+	lua_pushnumber(L, humidity);
+
+	return 1;
+}
+
+
+// get_biome_data(pos)
+// returns a table containing the biome id, heat and humidity at the position
+int ModApiMapgen::l_get_biome_data(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	v3s16 pos = read_v3s16(L, 1);
+
+	NoiseParams np_heat;
+	NoiseParams np_heat_blend;
+	NoiseParams np_humidity;
+	NoiseParams np_humidity_blend;
+
+	MapSettingsManager *settingsmgr =
+		getServer(L)->getEmergeManager()->map_settings_mgr;
+
+	if (!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat",
+			&np_heat) ||
+			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_heat_blend",
+			&np_heat_blend) ||
+			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity",
+			&np_humidity) ||
+			!settingsmgr->getMapSettingNoiseParams("mg_biome_np_humidity_blend",
+			&np_humidity_blend))
+		return 0;
+
+	std::string value;
+	if (!settingsmgr->getMapSetting("seed", &value))
+		return 0;
+	std::istringstream ss(value);
+	u64 seed;
+	ss >> seed;
+
+	BiomeManager *bmgr = getServer(L)->getEmergeManager()->biomemgr;
+	if (!bmgr)
+		return 0;
+
+	float heat = bmgr->getHeatAtPosOriginal(pos, np_heat, np_heat_blend, seed);
+	if (!heat)
+		return 0;
+
+	float humidity = bmgr->getHumidityAtPosOriginal(pos, np_humidity,
+		np_humidity_blend, seed);
+	if (!humidity)
+		return 0;
+
+	Biome *biome = (Biome *)bmgr->getBiomeFromNoiseOriginal(heat, humidity, pos.Y);
+	if (!biome || biome->index == OBJDEF_INVALID_INDEX)
+		return 0;
+
+	lua_newtable(L);
+
+	lua_pushinteger(L, biome->index);
+	lua_setfield(L, -2, "biome");
+
+	lua_pushnumber(L, heat);
+	lua_setfield(L, -2, "heat");
+
+	lua_pushnumber(L, humidity);
+	lua_setfield(L, -2, "humidity");
 
 	return 1;
 }
@@ -1520,6 +1668,9 @@ int ModApiMapgen::l_serialize_schematic(lua_State *L)
 void ModApiMapgen::Initialize(lua_State *L, int top)
 {
 	API_FCT(get_biome_id);
+	API_FCT(get_heat);
+	API_FCT(get_humidity);
+	API_FCT(get_biome_data);
 	API_FCT(get_mapgen_object);
 
 	API_FCT(get_mapgen_params);

@@ -225,6 +225,13 @@ public:
 
 	virtual void clear();
 
+	// For BiomeGen type 'BiomeGenOriginal'
+	float getHeatAtPosOriginal(v3s16 pos, NoiseParams &np_heat,
+		NoiseParams &np_heat_blend, u64 seed);
+	float getHumidityAtPosOriginal(v3s16 pos, NoiseParams &np_humidity,
+		NoiseParams &np_humidity_blend, u64 seed);
+	Biome *getBiomeFromNoiseOriginal(float heat, float humidity, s16 y);
+
 private:
 	Server *m_server;
 

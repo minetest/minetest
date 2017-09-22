@@ -25,8 +25,20 @@ class ModApiMapgen : public ModApiBase
 {
 private:
 	// get_biome_id(biomename)
-	// returns the biome id used in biomemap
+	// returns the biome id as used in biomemap and returned by 'get_biome_data()'
 	static int l_get_biome_id(lua_State *L);
+
+	// get_heat(pos)
+	// returns the heat at the position
+	static int l_get_heat(lua_State *L);
+
+	// get_humidity(pos)
+	// returns the humidity at the position
+	static int l_get_humidity(lua_State *L);
+
+	// get_biome_data(pos)
+	// returns a table containing the biome id, heat and humidity at the position
+	static int l_get_biome_data(lua_State *L);
 
 	// get_mapgen_object(objectname)
 	// returns the requested object used during map generation

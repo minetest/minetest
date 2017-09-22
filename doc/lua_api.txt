@@ -2816,58 +2816,93 @@ and `minetest.auth_reload` call the authentication handler.
     * Return voxel manipulator object.
     * Loads the manipulator from the map if positions are passed.
 * `minetest.set_gen_notify(flags, {deco_ids})`
-    * Set the types of on-generate notifications that should be collected
-    * `flags` is a flag field with the available flags: `dungeon`, `temple`, `cave_begin`,
-      `cave_end`, `large_cave_begin`, `large_cave_end`, `decoration`
-    * The second parameter is a list of IDS of decorations which notification is requested for
-* `get_gen_notify()`: returns a flagstring and a table with the `deco_id`s
+    * Set the types of on-generate notifications that should be collected.
+    * `flags` is a flag field with the available flags:
+        * dungeon
+        * temple
+        * cave_begin
+        * cave_end
+        * large_cave_begin
+        * large_cave_end
+        * decoration
+    * The second parameter is a list of IDS of decorations which notification
+      is requested for.
+* `get_gen_notify()`
+    * Returns a flagstring and a table with the `deco_id`s.
 * `minetest.get_mapgen_object(objectname)`
     * Return requested mapgen object if available (see "Mapgen objects")
+* `minetest.get_heat(pos)`
+    * Returns the heat at the position, or `nil` on failure.
+* `minetest.get_humidity(pos)`
+    * Returns the humidity at the position, or `nil` on failure.
+* `minetest.get_biome_data(pos)`
+    * Returns a table containing:
+        * `biome` the biome id of the biome at that position
+        * `heat` the heat at the position
+        * `humidity` the humidity at the position
+    * Or returns `nil` on failure.
 * `minetest.get_biome_id(biome_name)`
-    * Returns the biome id, as used in the biomemap Mapgen object, for a
-      given biome_name string.
-* `minetest.get_mapgen_params()` Returns mapgen parameters, a table containing
-  `mgname`, `seed`, `chunksize`, `water_level`, and `flags`.
-    * Deprecated: use `minetest.get_mapgen_setting(name)` instead
+    * Returns the biome id, as used in the biomemap Mapgen object and returned
+      by `minetest.get_biome_data(pos)`, for a given biome_name string.
+* `minetest.get_mapgen_params()`
+    * Deprecated: use `minetest.get_mapgen_setting(name)` instead.
+    * Returns a table containing:
+        * `mgname`
+        * `seed`
+        * `chunksize`
+        * `water_level`
+        * `flags`
 * `minetest.set_mapgen_params(MapgenParams)`
-    * Deprecated: use `minetest.set_mapgen_setting(name, value, override)` instead
-    * Set map generation parameters
-    * Function cannot be called after the registration period; only initialization
-      and `on_mapgen_init`
-    * Takes a table as an argument with the fields `mgname`, `seed`, `water_level`,
-      and `flags`.
-        * Leave field unset to leave that parameter unchanged
-        * `flags` contains a comma-delimited string of flags to set,
-          or if the prefix `"no"` is attached, clears instead.
-        * `flags` is in the same format and has the same options as `mg_flags` in `minetest.conf`
+    * Deprecated: use `minetest.set_mapgen_setting(name, value, override)`
+      instead.
+    * Set map generation parameters.
+    * Function cannot be called after the registration period; only
+      initialization and `on_mapgen_init`.
+    * Takes a table as an argument with the fields:
+        * `mgname`
+        * `seed`
+        * `chunksize`
+        * `water_level`
+        * `flags`
+    * Leave field unset to leave that parameter unchanged.
+    * `flags` contains a comma-delimited string of flags to set, or if the
+      prefix `"no"` is attached, clears instead.
+    * `flags` is in the same format and has the same options as `mg_flags` in
+      `minetest.conf`.
 * `minetest.get_mapgen_setting(name)`
-    * Gets the *active* mapgen setting (or nil if none exists) in string format with the following
-      order of precedence:
+    * Gets the *active* mapgen setting (or nil if none exists) in string
+      format with the following order of precedence:
         1) Settings loaded from map_meta.txt or overrides set during mod execution
         2) Settings set by mods without a metafile override
         3) Settings explicitly set in the user config file, minetest.conf
         4) Settings set as the user config default
 * `minetest.get_mapgen_setting_noiseparams(name)`
-    * Same as above, but returns the value as a NoiseParams table if the setting `name` exists
-      and is a valid NoiseParams
+    * Same as above, but returns the value as a NoiseParams table if the
+      setting `name` exists and is a valid NoiseParams.
 * `minetest.set_mapgen_setting(name, value, [override_meta])`
-    * Sets a mapgen param to `value`, and will take effect if the corresponding mapgen setting
-      is not already present in map_meta.txt.
-    * `override_meta` is an optional boolean (default: `false`). If this is set to true,
-      the setting will become the active setting regardless of the map metafile contents.
-    * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`
+    * Sets a mapgen param to `value`, and will take effect if the corresponding
+      mapgen setting is not already present in map_meta.txt.
+    * `override_meta` is an optional boolean (default: `false`). If this is set
+      to true, the setting will become the active setting regardless of the map
+      metafile contents.
+    * Note: to set the seed, use `"seed"`, not `"fixed_map_seed"`.
 * `minetest.set_mapgen_setting_noiseparams(name, value, [override_meta])`
-   * Same as above, except value is a NoiseParams table.
+    * Same as above, except value is a NoiseParams table.
 * `minetest.set_noiseparams(name, noiseparams, set_default)`
-    * Sets the noiseparams setting of `name` to the noiseparams table specified in `noiseparams`.
-    * `set_default` is an optional boolean (default: `true`) that specifies whether the setting
-      should be applied to the default config or current active config
-* `minetest.get_noiseparams(name)`: returns a table of the noiseparams for name
+    * Sets the noiseparams setting of `name` to the noiseparams table specified
+      in `noiseparams`.
+    * `set_default` is an optional boolean (default: `true`) that specifies
+      whether the setting should be applied to the default config or current
+      active config.
+* `minetest.get_noiseparams(name)`
+    * Returns a table of the noiseparams for name.
 * `minetest.generate_ores(vm, pos1, pos2)`
-    * Generate all registered ores within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
+    * Generate all registered ores within the VoxelManip `vm` and in the area
+      from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
 * `minetest.generate_decorations(vm, pos1, pos2)`
-    * Generate all registered decorations within the VoxelManip `vm` and in the area from `pos1` to `pos2`.
+    * Generate all registered decorations within the VoxelManip `vm` and in the
+      area from `pos1` to `pos2`.
     * `pos1` and `pos2` are optional and default to mapchunk minp and maxp.
 * `minetest.clear_objects([options])`
     * Clear all objects in the environment
