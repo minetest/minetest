@@ -192,8 +192,8 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Skip collision detection if noclip mode is used
-	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool noclip = m_client->checkLocalPrivilege("noclip") &&
+	bool fly_allowed = checkPrivilege("fly");
+	bool noclip = checkPrivilege("noclip") &&
 		g_settings->getBool("noclip");
 	bool free_move = g_settings->getBool("free_move") && fly_allowed;
 
@@ -527,8 +527,8 @@ void LocalPlayer::_applyControl(const ControlLogEntry &cle, Environment *env)
 	v3f speedH = v3f(0,0,0); // Horizontal (X, Z)
 	v3f speedV = v3f(0,0,0); // Vertical (Y)
 
-	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool fast_allowed = m_client->checkLocalPrivilege("fast");
+	bool fly_allowed = checkPrivilege("fly");
+	bool fast_allowed = checkPrivilege("fast");
 
 	bool free_move = fly_allowed && cle.getFreeMove();
 	bool fast_move = fast_allowed && cle.getFastMove();
@@ -817,8 +817,8 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	}
 
 	// Skip collision detection if noclip mode is used
-	bool fly_allowed = m_client->checkLocalPrivilege("fly");
-	bool noclip = m_client->checkLocalPrivilege("noclip") &&
+	bool fly_allowed = checkPrivilege("fly");
+	bool noclip = checkPrivilege("noclip") &&
 		g_settings->getBool("noclip");
 	bool free_move = noclip && fly_allowed && g_settings->getBool("free_move");
 	if (free_move) {
@@ -1116,4 +1116,9 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 		return core::clamp(1.0f / (slippery + 1), 0.001f, 1.0f);
 	}
 	return 1.0f;
+}
+
+bool LocalPlayer::checkPrivilege(const std::string &priv) const
+{
+	return m_client->checkLocalPrivilege(priv);
 }

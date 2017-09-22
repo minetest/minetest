@@ -167,6 +167,8 @@ protected:
 	v3f m_speed;
 
 	std::vector<HudElement *> hud;
+
+	virtual bool checkPrivilege(const std::string &priv) const = 0;
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread

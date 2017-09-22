@@ -147,6 +147,9 @@ public:
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
 	ControlLog &getControlLog() { return m_control_log; }
 
+protected:
+	virtual bool checkPrivilege(const std::string &priv) const;
+
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);

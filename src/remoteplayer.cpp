@@ -36,7 +36,7 @@ bool RemotePlayer::m_setting_cache_loaded = false;
 float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
-RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
+RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef, Server *server):
 	Player(name, idef)
 {
 	if (!RemotePlayer::m_setting_cache_loaded) {
@@ -66,6 +66,8 @@ RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
 	m_cloud_params.height = 120.0f;
 	m_cloud_params.thickness = 16.0f;
 	m_cloud_params.speed = v2f(0.0f, -2.0f);
+
+	m_server = server;
 }
 
 void RemotePlayer::serializeExtraAttributes(std::string &output)
@@ -217,4 +219,9 @@ const RemotePlayerChatResult RemotePlayer::canSendChatMessage()
 
 	m_chat_message_allowance -= 1.0f;
 	return RPLAYER_CHATRESULT_OK;
+}
+
+bool RemotePlayer::checkPrivilege(const std::string &priv) const
+{
+	return m_server ? m_server->checkPriv(m_name, priv) : false;
 }
