@@ -42,10 +42,10 @@
 #            Flags are always separated by comma without spaces.
 #            - default possible_flags
 #   * noise_params_2d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>, <default flags>
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
 #            - default
 #   * noise_params_3d:
-#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>, <default flags>
+#            Format is <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistance>, <lacunarity>[, <default flags>]
 #            - default
 #   * v3f:
 #            Format is (<X>, <Y>, <Z>)
@@ -1275,13 +1275,13 @@ mgv5_np_factor (Factor noise) noise_params_2d 0, 1, (250, 250, 250), 920381, 3, 
 mgv5_np_height (Height noise) noise_params_2d 0, 10, (250, 250, 250), 84174, 4, 0.5, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0, noeased
+mgv5_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (50, 50, 50), 52534, 4, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0, noeased
+mgv5_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (50, 50, 50), 10325, 4, 0.5, 2.0
 
 #    3D noise defining giant caverns.
-mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0, noeased
+mgv5_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    3D noise defining terrain.
 mgv5_np_ground (Ground noise) noise_params_3d 0, 40, (80, 80, 80), 983240, 4, 0.55, 2.0, eased
@@ -1413,19 +1413,19 @@ mgv7_np_float_base_height (Floatland base height noise) noise_params_2d 48, 24, 
 
 #    3D noise defining mountain structure and height.
 #    Also defines structure of floatland mountain terrain.
-mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0, noeased
+mgv7_np_mountain (Mountain noise) noise_params_3d -0.6, 1, (250, 350, 250), 5333, 5, 0.63, 2.0
 
 #    3D noise defining structure of river canyon walls.
-mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0, noeased
+mgv7_np_ridge (Ridge noise) noise_params_3d 0, 1, (100, 100, 100), 6467, 4, 0.75, 2.0
 
 #    3D noise defining giant caverns.
-mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0, noeased
+mgv7_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 #    First of 2 3D noises that together define tunnels.
-mgv7_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0, noeased
+mgv7_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0, noeased
+mgv7_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Carpathian]
 
@@ -1491,16 +1491,16 @@ mgcarpathian_np_ridge_mnt (Ridged mountain size noise) noise_params_2d 0, 12, (7
 mgcarpathian_np_step_mnt (Step mountain size noise) noise_params_2d 0, 8, (509, 509, 509), 2590, 6, 0.6, 2.0, eased
 
 #    3D noise for mountain overhangs, cliffs, etc. Usually small variations.
-mgcarpathian_np_mnt_var (Mountain variation noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0, noeased
+mgcarpathian_np_mnt_var (Mountain variation noise) noise_params_3d 0, 1, (499, 499, 499), 2490, 5, 0.55, 2.0
 
 #    First of 2 3D noises that together define tunnels.
-mgcarpathian_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0, noeased
+mgcarpathian_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgcarpathian_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0, noeased
+mgcarpathian_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 #    3D noise defining giant caverns.
-mgcarpathian_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0, noeased
+mgcarpathian_np_cavern (Cavern noise) noise_params_3d 0, 1, (384, 128, 384), 723, 5, 0.63, 2.0
 
 [*Mapgen Flat]
 
@@ -1547,10 +1547,10 @@ mgflat_np_terrain (Terrain noise) noise_params_2d 0, 1, (600, 600, 600), 7244, 5
 mgflat_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0, noeased
+mgflat_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0, noeased
+mgflat_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Fractal]
 
@@ -1629,10 +1629,10 @@ mgfractal_np_seabed (Seabed noise) noise_params_2d -14, 9, (600, 600, 600), 4190
 mgfractal_np_filler_depth (Filler depth noise) noise_params_2d 0, 1.2, (150, 150, 150), 261, 3, 0.7, 2.0, eased
 
 #    First of 2 3D noises that together define tunnels.
-mgfractal_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0, noeased
+mgfractal_np_cave1 (Cave1 noise) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 #    Second of 2 3D noises that together define tunnels.
-mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0, noeased
+mgfractal_np_cave2 (Cave2 noise) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 [*Mapgen Valleys]
 
@@ -1673,16 +1673,16 @@ mgvalleys_cave_width (Cave width) float 0.09
 [**Noises]
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0, noeased
+mgvalleys_np_cave1 (Cave noise #1) noise_params_3d 0, 12, (61, 61, 61), 52534, 3, 0.5, 2.0
 
 # Caves and tunnels form at the intersection of the two noises
-mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0, noeased
+mgvalleys_np_cave2 (Cave noise #2) noise_params_3d 0, 12, (67, 67, 67), 10325, 3, 0.5, 2.0
 
 # The depth of dirt or other filler
 mgvalleys_np_filler_depth (Filler Depth) noise_params_2d 0, 1.2, (256, 256, 256), 1605, 3, 0.5, 2.0, eased
 
 # Massive caves form here.
-mgvalleys_np_massive_caves (Massive cave noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0, noeased
+mgvalleys_np_massive_caves (Massive cave noise) noise_params_3d 0, 1, (768, 256, 768), 59033, 6, 0.63, 2.0
 
 # River noise -- rivers occur close to zero
 mgvalleys_np_rivers (River Noise) noise_params_2d 0, 1, (256, 256, 256), -6050, 5, 0.6, 2.0, eased
@@ -1694,7 +1694,7 @@ mgvalleys_np_terrain_height (Terrain Height) noise_params_2d -10, 50, (1024, 102
 mgvalleys_np_valley_depth (Valley Depth) noise_params_2d 5, 4, (512, 512, 512), -1914, 1, 1.0, 2.0, eased
 
 # Slope and fill work together to modify the heights
-mgvalleys_np_inter_valley_fill (Valley Fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0, noeased
+mgvalleys_np_inter_valley_fill (Valley Fill) noise_params_3d 0, 1, (256, 512, 256), 1993, 6, 0.8, 2.0
 
 # Amplifies the valleys
 mgvalleys_np_valley_profile (Valley Profile) noise_params_2d 0.6, 0.5, (512, 512, 512), 777, 1, 1.0, 2.0, eased

@@ -148,8 +148,8 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		local values = {}
 		local ti = 1
 		local index = 1
-		for line in default:gmatch("[%d.-e]+") do -- All numeric characters
-			index = default:find("[%d.-e]+", index) + line:len()
+		for line in default:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
+			index = default:find("[+-]?[%d.-e]+", index) + line:len()
 			table.insert(values, line)
 			ti = ti + 1
 			if ti > 9 then
@@ -157,8 +157,11 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			end
 		end
 		index = default:find("[^, ]", index)
-		local flags = default:sub(index)
-		default = table.concat(values, ", ") -- Make sure no flags in single-line format
+		local flags = ""
+		if index then
+			flags = default:sub(index)
+			default = default:sub(1, index - 3) -- Make sure no flags in single-line format
+		end
 		table.insert(values, flags)
 
 		table.insert(settings, {
@@ -166,10 +169,24 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 			readable_name = readable_name,
 			type = setting_type,
 			default = default,
+			default_table = {
+				offset = values[1],
+				scale = values[2],
+				spread = {
+					x = values[3],
+					y = values[4],
+					z = values[5]
+				},
+				seed = values[6],
+				octaves = values[7],
+				persistence = values[8],
+				lacunarity = values[9],
+				flags = values[10]
+			},
 			values = values,
 			comment = current_comment,
 			noise_params = true,
-			flags = flags_to_table("defaults,eased,absvalue,nodefaults,noeased,noabsvalue"),
+			flags = flags_to_table("defaults,eased,absvalue")
 		})
 		return
 	end
@@ -642,7 +659,7 @@ local function create_change_setting_formspec(dialogdata)
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
 		local v3f = {}
-		for line in val:gmatch("[%d.-e]+") do -- All numeric characters
+		for line in val:gmatch("[+-]?[%d.-e]+") do -- All numeric characters
 			table.insert(v3f, line)
 		end
 
@@ -952,7 +969,12 @@ local function handle_settings_buttons(this, fields, tabname, tabdata)
 	if fields["btn_restore"] then
 		local setting = settings[selected_setting]
 		if setting and setting.type ~= "category" then
-			core.settings:set(setting.name, setting.default)
+			if setting.type == "noise_params_2d"
+					or setting.type == "noise_params_3d" then
+				core.settings:set_np_group(setting.name, setting.default_table)
+			else
+				core.settings:set(setting.name, setting.default)
+			end
 			core.settings:write()
 			core.update_formspec(this:get_formspec())
 		end
