@@ -534,7 +534,7 @@ local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
 	local height = 5.2
 	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
-		height = 7.7 + math.ceil(#setting.flags / 2) / 2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
+		height = 8.7 -- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
 	elseif setting.type == "flags" then
 		height = 5.2 + math.ceil(#setting.possible / 2) / 2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
 	end
@@ -639,22 +639,14 @@ local function create_change_setting_formspec(dialogdata)
 		for _, name in ipairs(enabled_flags) do
 			flags[name] = true -- Index by name, to avoid iterating over all enabled_flags for every possible flag.
 		end
-		local flags_count = #setting.flags
-		for i, name in ipairs(setting.flags) do
-			local x = 0.5
-			local y = 6.0 + i/2
-			if i-1 >= flags_count/2 then -- 2nd column
-				x = 5
-				y = y - flags_count/4
-			end
-			local checkbox_name = "cb_" .. name
-			local is_enabled = flags[name] == true -- to get false if nil
-			checkboxes[checkbox_name] = is_enabled
-			formspec = formspec .. "checkbox["
-					.. x .. "," .. y
-					.. ";" .. checkbox_name .. ";"
-					.. name .. ";" .. tostring(is_enabled) .. "]"
-		end
+		-- Flags
+		formspec = formspec
+				.. "checkbox[0.5,6.5;cb_defaults;defaults;" -- defaults
+				.. tostring(flags["defaults"] == true) .. "]" -- to get false if nil
+				.. "checkbox[5,6.5;cb_eased;eased;" -- eased
+				.. tostring(flags["eased"] == true) .. "]"
+				.. "checkbox[5,7.0;cb_absvalue;absvalue;" -- absvalue
+				.. tostring(flags["absvalue"] == true) .. "]"
 
 	elseif setting.type == "v3f" then
 		local val = get_current_value(setting)
