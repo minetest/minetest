@@ -23,7 +23,7 @@ core.register_on_modchannel_message(function(channel, sender, message)
 	print("[PREVIEW][modchannels] Received message `" .. message .. "` on channel `"
 			.. channel .. "` from sender `" .. sender .. "`")
 	core.after(1, function()
-		mod_channel:send("CSM preview received " .. message)
+		mod_channel:send_all("CSM preview received " .. message)
 	end)
 end)
 
@@ -118,7 +118,7 @@ end)
 
 core.after(4, function()
 	if mod_channel:is_writeable() then
-		mod_channel:send("preview talk to experimental")
+		mod_channel:send_all("preview talk to experimental")
 	end
 end)
 

@@ -1748,18 +1748,17 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
+	if (g_settings->getBool("enable_mod_channels") &&
+			m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8) MODCHANNEL_SIGNAL_JOIN_OK;
 		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
 				<< std::endl;
 	}
-#ifndef NDEBUG
 	else {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_JOIN_FAILURE;
 		infostream << "Peer " << pkt->getPeerId() << " tried to join channel "
 			<< channel_name << ", but was already registered." << std::endl;
 	}
-#endif
 	resp_pkt << channel_name;
 	Send(&resp_pkt);
 }
@@ -1773,7 +1772,8 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (m_modchannel_mgr->leaveChannel(channel_name, pkt->getPeerId())) {
+	if (g_settings->getBool("enable_mod_channels") &&
+			m_modchannel_mgr->leaveChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_OK;
 		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
 				<< std::endl;
@@ -1793,6 +1793,11 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 
 	verbosestream << "Mod channel message received from peer " << pkt->getPeerId()
 			<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
+
+	// If mod channels are not enabled, discard message
+	if (!g_settings->getBool("enable_mod_channels")) {
+		return;
+	}
 
 	// If channel not registered, signal it and ignore message
 	if (!m_modchannel_mgr->channelRegistered(channel_name)) {

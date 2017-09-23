@@ -1378,21 +1378,23 @@ void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
 			infostream << "Server refused our mod channel join on channel `" << channel
 				<< "`" << std::endl;
 			break;
-#ifndef NDEBUG
 		case MODCHANNEL_SIGNAL_LEAVE_OK:
+#ifndef NDEBUG
 			infostream << "Server ack our mod channel leave on channel " << channel
 				<< "`, leaving." << std::endl;
+#endif
 			break;
 		case MODCHANNEL_SIGNAL_LEAVE_FAILURE:
 			infostream << "Server refused our mod channel leave on channel `" << channel
 				<< "`" << std::endl;
 			break;
 		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+#ifndef NDEBUG
 			// Generally unused, but ensure we don't do an implementation error
 			infostream << "Server tells us we sent a message on channel `" << channel
 				<< "` but we are not registered. Message was dropped." << std::endl;
-			break;
 #endif
+			break;
 		case MODCHANNEL_SIGNAL_SET_STATE: {
 			u8 state;
 			*pkt >> state;

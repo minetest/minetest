@@ -8,7 +8,7 @@ core.register_on_modchannel_message(function(channel, sender, message)
 			.. "` on channel `" .. channel .. "` from sender `" .. sender .. "`")
 
 	if mod_channel:is_writeable() then
-		mod_channel:send("experimental answers to preview")
+		mod_channel:send_all("experimental answers to preview")
 		mod_channel:leave()
 	end
 end)

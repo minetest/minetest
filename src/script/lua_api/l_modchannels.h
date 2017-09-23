@@ -47,7 +47,7 @@ public:
 	static int l_leave(lua_State *L);
 
 	// send(message)
-	static int l_send(lua_State *L);
+	static int l_send_all(lua_State *L);
 
 	// is_writeable()
 	static int l_is_writeable(lua_State *L);

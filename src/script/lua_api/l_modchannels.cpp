@@ -68,7 +68,7 @@ int ModChannelRef::l_leave(lua_State *L)
 	return 0;
 }
 
-int ModChannelRef::l_send(lua_State *L)
+int ModChannelRef::l_send_all(lua_State *L)
 {
 	ModChannelRef *ref = checkobject(L, 1);
 	ModChannel *channel = getobject(ref);
@@ -153,7 +153,7 @@ const char ModChannelRef::className[] = "ModChannelRef";
 const luaL_Reg ModChannelRef::methods[] = {
 	luamethod(ModChannelRef, leave),
 	luamethod(ModChannelRef, is_writeable),
-	luamethod(ModChannelRef, send),
+	luamethod(ModChannelRef, send_all),
 	{0, 0},
 };
 // clang-format on

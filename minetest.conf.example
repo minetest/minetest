@@ -1126,6 +1126,10 @@
 #    type: bool
 # enable_pvp = true
 
+#    Enable mod channels.
+#    type: bool
+# enable_mod_channels = false
+
 #    If this is set, players will always (re)spawn at the given position.
 #    type: string
 # static_spawnpoint =
