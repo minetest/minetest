@@ -36,6 +36,7 @@ with this program; ifnot, write to the Free Software Foundation, Inc.,
 	#include <AL/alc.h>
 	#include <AL/alext.h>
 #endif
+#include <cmath>
 #include <vorbis/vorbisfile.h>
 #include <assert.h>
 #include "log.h"
@@ -331,7 +332,7 @@ public:
 			return;
 		}
 
-		alDistanceModel(AL_INVERSE_DISTANCE);
+		alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 
 		infostream<<"Audio: Initialized: OpenAL "<<alGetString(AL_VERSION)
 				<<", using "<<alcGetString(m_device, ALC_DEVICE_SPECIFIER)
@@ -407,7 +408,7 @@ public:
 		alSource3f(sound->source_id, AL_POSITION, 0, 0, 0);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-		volume = MYMAX(0.0, volume);
+		volume = std::max(0.0f, volume);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSound");
@@ -428,9 +429,14 @@ public:
 		alSourcei(sound->source_id, AL_SOURCE_RELATIVE, false);
 		alSource3f(sound->source_id, AL_POSITION, pos.X, pos.Y, pos.Z);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
-		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 30.0);
+		// Use alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED) and set reference
+		// distance to clamp gain at <1 node distance, to avoid excessive
+		// volume when closer
+		alSourcef(sound->source_id, AL_REFERENCE_DISTANCE, 10.0f);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-		volume = MYMAX(0.0, volume);
+		// Multiply by 3 to compensate for reducing AL_REFERENCE_DISTANCE from
+		// the previous value of 30 to the new value of 10
+		volume = std::max(0.0f, volume * 3.0f);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcePlay(sound->source_id);
 		warn_if_error(alGetError(), "createPlayingSoundAt");
