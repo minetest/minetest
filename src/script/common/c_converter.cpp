@@ -71,6 +71,15 @@ void push_v2f(lua_State *L, v2f p)
 	lua_setfield(L, -2, "y");
 }
 
+void push_float_string(lua_State *L, float value)
+{
+	std::stringstream ss;
+	std::string str;
+	ss << value;
+	str = ss.str();
+	lua_pushstring(L, str.c_str());
+}
+
 v2s16 read_v2s16(lua_State *L, int index)
 {
 	v2s16 p;
