@@ -1,6 +1,5 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
 Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
@@ -21,24 +20,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "cpp_api/s_base.h"
-#include "cpp_api/s_client.h"
-#include "cpp_api/s_modchannels.h"
-#include "cpp_api/s_security.h"
+#include "modchannels.h"
 
-class Client;
-class LocalPlayer;
-class Camera;
-class ClientScripting:
-	virtual public ScriptApiBase,
-	public ScriptApiSecurity,
-	public ScriptApiClient,
-	public ScriptApiModChannels
+class ScriptApiModChannels : virtual public ScriptApiBase
 {
 public:
-	ClientScripting(Client *client);
-	void on_client_ready(LocalPlayer *localplayer);
-	void on_camera_ready(Camera *camera);
-
-private:
-	virtual void InitializeModApi(lua_State *L, int top);
+	void on_modchannel_message(const std::string &channel, const std::string &sender,
+			const std::string &message);
+	void on_modchannel_signal(const std::string &channel, ModChannelSignal signal);
 };

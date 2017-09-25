@@ -47,9 +47,9 @@ const ToServerCommandHandler toServerCommandTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_handler, // 0x14
 	null_command_handler, // 0x15
 	null_command_handler, // 0x16
-	null_command_handler, // 0x17
-	null_command_handler, // 0x18
-	null_command_handler, // 0x19
+	{ "TOSERVER_MODCHANNEL_JOIN",          TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelJoin }, // 0x17
+	{ "TOSERVER_MODCHANNEL_LEAVE",         TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelLeave }, // 0x18
+	{ "TOSERVER_MODCHANNEL_MSG",           TOSERVER_STATE_INGAME, &Server::handleCommand_ModChannelMsg }, // 0x19
 	null_command_handler, // 0x1a
 	null_command_handler, // 0x1b
 	null_command_handler, // 0x1c
@@ -200,8 +200,8 @@ const ClientCommandFactory clientCommandFactoryTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CLOUD_PARAMS",             0, true }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               0, true }, // 0x55
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       0, true }, // 0x56
-	null_command_factory,
-	null_command_factory,
+	{ "TOCLIENT_MODCHANNEL_MSG",           0, true}, // 0x57
+	{ "TOCLIENT_MODCHANNEL_SIGNAL",        0, true}, // 0x58
 	null_command_factory,
 	null_command_factory,
 	null_command_factory,

@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "mods.h"
 #include "profiler.h"
 #include "shader.h"
@@ -94,7 +95,8 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui_flags(game_ui_flags)
+	m_game_ui_flags(game_ui_flags),
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -1918,4 +1920,58 @@ void Client::unregisterModStorage(const std::string &name)
 std::string Client::getModStoragePath() const
 {
 	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
+}
+
+/*
+ * Mod channels
+ */
+
+bool Client::joinModChannel(const std::string &channel)
+{
+	if (m_modchannel_mgr->channelRegistered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	m_modchannel_mgr->joinChannel(channel, 0);
+	return true;
+}
+
+bool Client::leaveModChannel(const std::string &channel)
+{
+	if (!m_modchannel_mgr->channelRegistered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	m_modchannel_mgr->leaveChannel(channel, 0);
+	return true;
+}
+
+bool Client::sendModChannelMessage(const std::string &channel, const std::string &message)
+{
+	if (!m_modchannel_mgr->canWriteOnChannel(channel))
+		return false;
+
+	if (message.size() > STRING_MAX_LEN) {
+		warningstream << "ModChannel message too long, dropping before sending "
+				<< " (" << message.size() << " > " << STRING_MAX_LEN << ", channel: "
+				<< channel << ")" << std::endl;
+		return false;
+	}
+
+	// @TODO: do some client rate limiting
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_MSG, 2 + channel.size() + 2 + message.size());
+	pkt << channel << message;
+	Send(&pkt);
+	return true;
+}
+
+ModChannel* Client::getModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->getModChannel(channel);
 }

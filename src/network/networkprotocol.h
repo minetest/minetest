@@ -180,6 +180,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Backwards compatibility drop
 		Add 'can_zoom' to player object properties
 		Add glow to object properties
+		Mod channels
 */
 
 #define LATEST_PROTOCOL_VERSION 36
@@ -611,6 +612,22 @@ enum ToClientCommand
 			u8[len] player name
 	*/
 
+	TOCLIENT_MODCHANNEL_MSG = 0x57,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 	u16 channel name sender
+	 	std::string channel name
+	 	u16 message length
+	 	std::string message
+	 */
+	TOCLIENT_MODCHANNEL_SIGNAL = 0x58,
+	/*
+		u8 signal id
+	 	u16 channel name length
+	 	std::string channel name
+	 */
+
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
 	/*
 		Belonging to AUTH_MECHANISM_SRP.
@@ -644,6 +661,26 @@ enum ToServerCommand
 
 		[0] u16 TOSERVER_INIT2
 	*/
+
+	TOSERVER_MODCHANNEL_JOIN = 0x17,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 */
+
+	TOSERVER_MODCHANNEL_LEAVE = 0x18,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 */
+
+	TOSERVER_MODCHANNEL_MSG = 0x19,
+	/*
+		u16 channel name length
+	 	std::string channel name
+	 	u16 message length
+	 	std::string message
+	 */
 
 	TOSERVER_GETBLOCK = 0x20, // Obsolete
 	TOSERVER_ADDNODE = 0x21, // Obsolete

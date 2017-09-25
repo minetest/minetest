@@ -683,6 +683,12 @@ Call these functions only at load time!
     * Called when the local player uses an item.
     * Newest functions are called first.
     * If any function returns true, the item use is not sent to server.
+* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
+    * Called when an incoming mod channel message is received
+    * You must have joined some channels before, and server must acknowledge the
+      join request.
+    * If message comes from a server mod, `sender` field is an empty string.
+
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`
@@ -753,6 +759,16 @@ Call these functions only at load time!
 * `minetest.get_mod_storage()`:
     * returns reference to mod private `StorageRef`
     * must be called during mod load time
+
+### Mod channels
+![Mod channels communication scheme](docs/mod channels.png)
+
+* `minetest.mod_channel_join(channel_name)`
+    * Client joins channel `channel_name`, and creates it, if necessary. You
+      should listen from incoming messages with `minetest.register_on_modchannel_message`
+      call to receive incoming messages. Warning, this function is asynchronous.
+    * You should use a minetest.register_on_connect(function() ... end) to perform
+      a successful channel join on client startup.
 
 ### Misc.
 * `minetest.parse_json(string[, nullvalue])`: returns something
@@ -827,9 +843,25 @@ Call these functions only at load time!
 Class reference
 ---------------
 
+### ModChannel
+
+An interface to use mod channels on client and server
+
+#### Methods
+* `leave()`: leave the mod channel.
+    * Client leaves channel `channel_name`.
+    * No more incoming or outgoing messages can be sent to this channel from client mods.
+    * This invalidate all future object usage
+    * Ensure your set mod_channel to nil after that to free Lua resources
+* `is_writeable()`: returns true if channel is writeable and mod can send over it.
+* `send_all(message)`: Send `message` though the mod channel.
+    * If mod channel is not writeable or invalid, message will be dropped.
+    * Message size is limited to 65535 characters by protocol.
+
 ### Minimap
 An interface to manipulate minimap on client UI
 
+#### Methods
 * `show()`: shows the minimap (if not disabled by server)
 * `hide()`: hides the minimap
 * `set_pos(pos)`: sets the minimap position on screen

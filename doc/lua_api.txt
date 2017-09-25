@@ -1126,7 +1126,7 @@ The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
 stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 varies the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
-unlimited. 
+unlimited.
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
 stratum's Y variation.
@@ -2496,6 +2496,20 @@ Call these functions only at load time!
 * `minetest.register_can_bypass_userlimit(function(name, ip))`
     * Called when `name` user connects with `ip`.
     * Return `true` to by pass the player limit
+* `minetest.register_on_modchannel_message(func(channel_name, sender, message))`
+    * Called when an incoming mod channel message is received
+    * You should have joined  some channels to receive events.
+    * If message comes from a server mod, `sender` field is an empty string.
+* `minetest.register_on_modchannel_signal(func(channel_name, signal))`
+    * Called when a valid incoming mod channel signal is received
+    * Signal id permit to react to server mod channel events
+    * Possible values are:
+      0: join_ok
+      1: join_failed
+      2: leave_ok
+      3: leave_failed
+      4: event_on_not_joined_channel
+      5: state_changed
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
@@ -2772,6 +2786,14 @@ and `minetest.auth_reload` call the authetification handler.
       unattached `group:attached_node` node to fall.
     * spread these updates to neighbours and can cause a cascade
       of nodes to fall.
+
+### Mod channels
+You can find mod channels communication scheme in `docs/mod_channels.png`.
+
+* `minetest.mod_channel_join(channel_name)`
+    * Server joins channel `channel_name`, and creates it if necessary. You
+      should listen from incoming messages with `minetest.register_on_modchannel_message`
+      call to receive incoming messages
 
 ### Inventory
 `minetest.get_inventory(location)`: returns an `InvRef`
@@ -3255,6 +3277,21 @@ These functions return the leftover itemstack.
 
 Class reference
 ---------------
+
+### ModChannel
+
+An interface to use mod channels on client and server
+
+#### Methods
+* `leave()`: leave the mod channel.
+    * Server leaves channel `channel_name`.
+    * No more incoming or outgoing messages can be sent to this channel from server mods.
+    * This invalidate all future object usage
+    * Ensure your set mod_channel to nil after that to free Lua resources
+* `is_writeable()`: returns true if channel is writeable and mod can send over it.
+* `send_all(message)`: Send `message` though the mod channel.
+    * If mod channel is not writeable or invalid, message will be dropped.
+    * Message size is limited to 65535 characters by protocol.
 
 ### `MetaDataRef`
 See `StorageRef`, `NodeMetaRef` and `ItemStackMetaRef`.

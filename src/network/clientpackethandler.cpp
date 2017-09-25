@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapsector.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "nodedef.h"
 #include "serialization.h"
 #include "server.h"
@@ -1329,4 +1330,96 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
 	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
+}
+
+/*
+ * Mod channels
+ */
+
+void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
+{
+	std::string channel_name, sender, channel_msg;
+	*pkt >> channel_name >> sender >> channel_msg;
+
+	verbosestream << "Mod channel message received from server " << pkt->getPeerId()
+		<< " on channel " << channel_name << ". sender: `" << sender << "`, message: "
+		<< channel_msg << std::endl;
+
+	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
+		verbosestream << "Server sent us messages on unregistered channel "
+			<< channel_name << ", ignoring." << std::endl;
+		return;
+	}
+
+	m_script->on_modchannel_message(channel_name, sender, channel_msg);
+}
+
+void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
+{
+	u8 signal_tmp;
+	ModChannelSignal signal;
+	std::string channel;
+
+	*pkt >> signal_tmp >> channel;
+
+	signal = (ModChannelSignal)signal_tmp;
+
+	bool valid_signal = true;
+	// @TODO: send Signal to Lua API
+	switch (signal) {
+		case MODCHANNEL_SIGNAL_JOIN_OK:
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
+			infostream << "Server ack our mod channel join on channel `" << channel
+				<< "`, joining." << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_JOIN_FAILURE:
+			// Unable to join, remove channel
+			m_modchannel_mgr->leaveChannel(channel, 0);
+			infostream << "Server refused our mod channel join on channel `" << channel
+				<< "`" << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_OK:
+#ifndef NDEBUG
+			infostream << "Server ack our mod channel leave on channel " << channel
+				<< "`, leaving." << std::endl;
+#endif
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_FAILURE:
+			infostream << "Server refused our mod channel leave on channel `" << channel
+				<< "`" << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+#ifndef NDEBUG
+			// Generally unused, but ensure we don't do an implementation error
+			infostream << "Server tells us we sent a message on channel `" << channel
+				<< "` but we are not registered. Message was dropped." << std::endl;
+#endif
+			break;
+		case MODCHANNEL_SIGNAL_SET_STATE: {
+			u8 state;
+			*pkt >> state;
+
+			if (state == MODCHANNEL_STATE_INIT || state >= MODCHANNEL_STATE_MAX) {
+				infostream << "Received wrong channel state " << state
+						<< ", ignoring." << std::endl;
+				return;
+			}
+
+			m_modchannel_mgr->setChannelState(channel, (ModChannelState) state);
+			infostream << "Server sets mod channel `" << channel
+					<< "` in read-only mode." << std::endl;
+			break;
+		}
+		default:
+#ifndef NDEBUG
+			warningstream << "Received unhandled mod channel signal ID "
+				<< signal << ", ignoring." << std::endl;
+#endif
+			valid_signal = false;
+			break;
+	}
+
+	// If signal is valid, forward it to client side mods
+	if (valid_signal)
+		m_script->on_modchannel_signal(channel, signal);
 }

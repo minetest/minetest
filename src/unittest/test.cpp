@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "itemdef.h"
 #include "gamedef.h"
+#include "modchannels.h"
 #include "mods.h"
 #include "util/numeric.h"
 
@@ -69,6 +70,13 @@ public:
 	virtual std::string getModStoragePath() const { return "."; }
 	virtual bool registerModStorage(ModMetadata *meta) { return true; }
 	virtual void unregisterModStorage(const std::string &name) {}
+	bool joinModChannel(const std::string &channel);
+	bool leaveModChannel(const std::string &channel);
+	bool sendModChannelMessage(const std::string &channel, const std::string &message);
+	ModChannel *getModChannel(const std::string &channel)
+	{
+		return m_modchannel_mgr->getModChannel(channel);
+	}
 
 private:
 	IItemDefManager *m_itemdef = nullptr;
@@ -81,10 +89,12 @@ private:
 	scene::ISceneManager *m_scenemgr = nullptr;
 	IRollbackManager *m_rollbackmgr = nullptr;
 	EmergeManager *m_emergemgr = nullptr;
+	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };
 
 
-TestGameDef::TestGameDef()
+TestGameDef::TestGameDef() :
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	m_itemdef = createItemDefManager();
 	m_nodedef = createNodeDefManager();
@@ -220,6 +230,25 @@ void TestGameDef::defineSomeNodes()
 	f.is_ground_content = true;
 	idef->registerItem(itemdef);
 	t_CONTENT_BRICK = ndef->set(f.name, f);
+}
+
+bool TestGameDef::joinModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER);
+}
+
+bool TestGameDef::leaveModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
+}
+
+bool TestGameDef::sendModChannelMessage(const std::string &channel,
+	const std::string &message)
+{
+	if (!m_modchannel_mgr->channelRegistered(channel))
+		return false;
+
+	return true;
 }
 
 ////

@@ -51,6 +51,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_sao.h"
 #include "mods.h"
 #include "event_manager.h"
+#include "modchannels.h"
 #include "serverlist.h"
 #include "util/string.h"
 #include "rollback.h"
@@ -168,7 +169,8 @@ Server::Server(
 	m_event(new EventManager()),
 	m_uptime(0),
 	m_clients(m_con),
-	m_admin_chat(iface)
+	m_admin_chat(iface),
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	m_lag = g_settings->getFloat("dedicated_server_step");
 
@@ -1374,9 +1376,14 @@ void Server::printToConsoleOnly(const std::string &text)
 	}
 }
 
-void Server::Send(NetworkPacket* pkt)
+void Server::Send(NetworkPacket *pkt)
 {
-	m_clients.send(pkt->getPeerId(),
+	Send(pkt->getPeerId(), pkt);
+}
+
+void Server::Send(u16 peer_id, NetworkPacket *pkt)
+{
+	m_clients.send(peer_id,
 		clientCommandFactoryTable[pkt->getCommand()].channel,
 		pkt,
 		clientCommandFactoryTable[pkt->getCommand()].reliable);
@@ -2567,7 +2574,7 @@ void Server::DenyAccessVerCompliant(u16 peer_id, u16 proto_ver, AccessDeniedCode
 	SendAccessDenied(peer_id, reason, str_reason, reconnect);
 
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con->DisconnectPeer(peer_id);
+	DisconnectPeer(peer_id);
 }
 
 
@@ -2575,7 +2582,7 @@ void Server::DenyAccess(u16 peer_id, AccessDeniedCode reason, const std::string 
 {
 	SendAccessDenied(peer_id, reason, custom_reason);
 	m_clients.event(peer_id, CSE_SetDenied);
-	m_con->DisconnectPeer(peer_id);
+	DisconnectPeer(peer_id);
 }
 
 // 13/03/15: remove this function when protocol version 25 will become
@@ -2584,6 +2591,12 @@ void Server::DenyAccess_Legacy(u16 peer_id, const std::wstring &reason)
 {
 	SendAccessDenied_Legacy(peer_id, reason);
 	m_clients.event(peer_id, CSE_SetDenied);
+	DisconnectPeer(peer_id);
+}
+
+void Server::DisconnectPeer(u16 peer_id)
+{
+	m_modchannel_mgr->leaveAllChannels(peer_id);
 	m_con->DisconnectPeer(peer_id);
 }
 
@@ -3569,4 +3582,69 @@ void dedicated_server_loop(Server &server, bool &kill)
 		ServerList::sendAnnounce(ServerList::AA_DELETE,
 			server.m_bind_addr.getPort());
 #endif
+}
+
+/*
+ * Mod channels
+ */
+
+
+bool Server::joinModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->joinChannel(channel, PEER_ID_SERVER) &&
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
+}
+
+bool Server::leaveModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->leaveChannel(channel, PEER_ID_SERVER);
+}
+
+bool Server::sendModChannelMessage(const std::string &channel, const std::string &message)
+{
+	if (!m_modchannel_mgr->canWriteOnChannel(channel))
+		return false;
+
+	broadcastModChannelMessage(channel, message, PEER_ID_SERVER);
+	return true;
+}
+
+ModChannel* Server::getModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->getModChannel(channel);
+}
+
+void Server::broadcastModChannelMessage(const std::string &channel,
+		const std::string &message, u16 from_peer)
+{
+	const std::vector<u16> &peers = m_modchannel_mgr->getChannelPeers(channel);
+	if (peers.empty())
+		return;
+
+	if (message.size() > STRING_MAX_LEN) {
+		warningstream << "ModChannel message too long, dropping before sending "
+				<< " (" << message.size() << " > " << STRING_MAX_LEN << ", channel: "
+				<< channel << ")" << std::endl;
+		return;
+	}
+
+	std::string sender;
+	if (from_peer != PEER_ID_SERVER) {
+		sender = getPlayerName(from_peer);
+	}
+
+	NetworkPacket resp_pkt(TOCLIENT_MODCHANNEL_MSG,
+			2 + channel.size() + 2 + sender.size() + 2 + message.size());
+	resp_pkt << channel << sender << message;
+	for (u16 peer_id : peers) {
+		// Ignore sender
+		if (peer_id == from_peer)
+			continue;
+
+		Send(peer_id, &resp_pkt);
+	}
+
+	if (from_peer != PEER_ID_SERVER) {
+		m_script->on_modchannel_message(channel, sender, message);
+	}
 }

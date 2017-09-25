@@ -111,8 +111,8 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	{ "TOCLIENT_CLOUD_PARAMS",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_CloudParams }, // 0x54
 	{ "TOCLIENT_FADE_SOUND",               TOCLIENT_STATE_CONNECTED, &Client::handleCommand_FadeSound }, // 0x55
 	{ "TOCLIENT_UPDATE_PLAYER_LIST",       TOCLIENT_STATE_CONNECTED, &Client::handleCommand_UpdatePlayerList }, // 0x56
-	null_command_handler,
-	null_command_handler,
+	{ "TOCLIENT_MODCHANNEL_MSG",           TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelMsg }, // 0x57
+	{ "TOCLIENT_MODCHANNEL_SIGNAL",        TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ModChannelSignal }, // 0x58
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
@@ -150,9 +150,9 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 	null_command_factory, // 0x14
 	null_command_factory, // 0x15
 	null_command_factory, // 0x16
-	null_command_factory, // 0x17
-	null_command_factory, // 0x18
-	null_command_factory, // 0x19
+	{ "TOSERVER_MODCHANNEL_JOIN", 0, true }, // 0x17
+	{ "TOSERVER_MODCHANNEL_LEAVE", 0, true }, // 0x18
+	{ "TOSERVER_MODCHANNEL_MSG", 0, true }, // 0x19
 	null_command_factory, // 0x1a
 	null_command_factory, // 0x1b
 	null_command_factory, // 0x1c

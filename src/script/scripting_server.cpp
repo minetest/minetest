@@ -30,6 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "lua_api/l_item.h"
 #include "lua_api/l_itemstackmeta.h"
 #include "lua_api/l_mapgen.h"
+#include "lua_api/l_modchannels.h"
 #include "lua_api/l_nodemeta.h"
 #include "lua_api/l_nodetimer.h"
 #include "lua_api/l_noise.h"
@@ -100,6 +101,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ObjectRef::Register(L);
 	LuaSettings::Register(L);
 	StorageRef::Register(L);
+	ModChannelRef::Register(L);
 
 	// Initialize mod api modules
 	ModApiCraft::Initialize(L, top);
@@ -113,6 +115,7 @@ void ServerScripting::InitializeModApi(lua_State *L, int top)
 	ModApiUtil::Initialize(L, top);
 	ModApiHttp::Initialize(L, top);
 	ModApiStorage::Initialize(L, top);
+	ModApiChannels::Initialize(L, top);
 }
 
 void log_deprecated(const std::string &message)
