@@ -51,7 +51,9 @@ void ModApiChannels::Initialize(lua_State *L, int top)
  * ModChannelRef
  */
 
-ModChannelRef::ModChannelRef(ModChannel *modchannel) : m_modchannel(modchannel) {}
+ModChannelRef::ModChannelRef(ModChannel *modchannel) : m_modchannel(modchannel)
+{
+}
 
 int ModChannelRef::l_leave(lua_State *L)
 {

@@ -221,7 +221,6 @@ void sendAnnounce(AnnounceAction action,
 		server["damage"]       = g_settings->getBool("enable_damage");
 		server["password"]     = g_settings->getBool("disallow_empty_password");
 		server["pvp"]          = g_settings->getBool("enable_pvp");
-		server["mod_channels"]          = g_settings->getBool("enable_mod_channels");
 		server["uptime"]       = (int) uptime;
 		server["game_time"]    = game_time;
 		server["clients"]      = (int) clients_names.size();
