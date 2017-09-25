@@ -101,17 +101,16 @@ void RemoteClient::GetNextBlocks (
 
 	v3f playerpos = sao->getBasePosition();
 	const v3f &playerspeed = player->getSpeed();
-	v3f playerspeeddir(0,0,0);
-	f32 playerspeedlen = playerspeed.getLength();
-	if (playerspeedlen > 1.0f * BS)
-		playerspeeddir = playerspeed / playerspeedlen;
+	v3f playerpos_predicted = playerpos;
 
 	// Predict where player will be soon, load blocks around there first
 	// We use the client-reported speed as an indicator, but do not move the
 	// center point further than 1/2 the visible range away
-	v3f playerpos_predicted = playerpos + playerspeeddir *
-		rangelim(playerspeedlen * BS, MAP_BLOCKSIZE * BS, d_blocks_in_sight * 0.5f);
-
+	f32 playerspeedlen = playerspeed.getLength();
+	if (playerspeedlen > 1.0f * BS) {
+		playerpos_predicted += playerspeed / playerspeedlen *
+			rangelim(playerspeedlen * BS, MAP_BLOCKSIZE * BS, d_blocks_in_sight * 0.5f);
+	}
 	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
 	v3s16 center = getNodeBlockPos(center_nodepos);
