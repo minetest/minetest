@@ -143,6 +143,7 @@ public:
 
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
+	virtual void triggerJumpEvent() { /* noop in remote */ };
 
 private:
 	/*

@@ -675,8 +675,7 @@ void LocalPlayer::_applyControl(const ControlLogEntry &cle, Environment *env)
 				speedJ.Y = movement_speed_jump * physics_override_jump;
 				setSpeed(speedJ);
 
-				MtEvent *e = new SimpleTriggerEvent("PlayerJump");
-				m_client->event()->put(e);
+				triggerJumpEvent();
 			}
 		}
 		else if(in_liquid)
@@ -1126,4 +1125,10 @@ bool LocalPlayer::checkPrivilege(const std::string &priv) const
 bool LocalPlayer::isAttached() const
 {
 	return is_attached;
+}
+
+void LocalPlayer::triggerJumpEvent()
+{
+	MtEvent *e = new SimpleTriggerEvent("PlayerJump");
+	m_client->event()->put(e);
 }

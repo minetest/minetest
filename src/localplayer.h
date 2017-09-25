@@ -53,15 +53,6 @@ public:
 	// doesn't support health points
 	u16 hp = 0;
 	bool is_attached = false;
-	bool touching_ground = false;
-	// This oscillates so that the player jumps a bit above the surface
-	bool in_liquid = false;
-	// This is more stable and defines the maximum speed of the player
-	bool in_liquid_stable = false;
-	// Gets the viscosity of water to calculate friction
-	u8 liquid_viscosity = 0;
-	bool is_climbing = false;
-	bool swimming_vertical = false;
 
 	float physics_override_speed = 1.0f;
 	float physics_override_jump = 1.0f;
@@ -151,6 +142,7 @@ public:
 
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;
+	virtual void triggerJumpEvent();
 
 private:
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);

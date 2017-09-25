@@ -163,6 +163,17 @@ public:
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
 
+	bool touching_ground = false;
+	// This oscillates so that the player jumps a bit above the surface
+	bool in_liquid = false;
+	// This is more stable and defines the maximum speed of the player
+	bool in_liquid_stable = false;
+	// Gets the viscosity of water to calculate friction
+	u8 liquid_viscosity = 0;
+	bool is_climbing = false;
+	bool swimming_vertical = false;
+	bool is_slipping = false;
+
 	virtual bool isAttached() const = 0;
 protected:
 	char m_name[PLAYERNAME_SIZE];
@@ -171,6 +182,7 @@ protected:
 	std::vector<HudElement *> hud;
 
 	virtual bool checkPrivilege(const std::string &priv) const = 0;
+	virtual void triggerJumpEvent() = 0;
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
