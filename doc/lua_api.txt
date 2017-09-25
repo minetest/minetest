@@ -4128,6 +4128,8 @@ Definition tables
     --  ^ For players: Defaults to `minetest.PLAYER_MAX_HP_DEFAULT`
         breath_max = 0,
     --  ^ For players only. Defaults to `minetest.PLAYER_MAX_BREATH_DEFAULT`
+        can_zoom = true,
+    --  ^ For players only. Enables the zoom feature. Defaults to true
         physical = true,
         collide_with_objects = true, -- collide with other objects if physical = true
         weight = 5,
