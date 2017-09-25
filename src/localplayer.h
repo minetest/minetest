@@ -52,7 +52,7 @@ public:
 	// Initialize hp to 0, so that no hearts will be shown if server
 	// doesn't support health points
 	u16 hp = 0;
-	bool isAttached = false;
+	bool is_attached = false;
 	bool touching_ground = false;
 	// This oscillates so that the player jumps a bit above the surface
 	bool in_liquid = false;
@@ -146,6 +146,8 @@ public:
 	float getZoomFOV() const { return m_zoom_fov; }
 	void setZoomFOV(float zoom_fov) { m_zoom_fov = zoom_fov; }
 	ControlLog &getControlLog() { return m_control_log; }
+	virtual bool isAttached() const;
+	virtual void setAttached(bool attached) { is_attached = attached; }
 
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;

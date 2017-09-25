@@ -74,7 +74,7 @@ int LuaLocalPlayer::l_is_attached(lua_State *L)
 {
 	LocalPlayer *player = getobject(L, 1);
 
-	lua_pushboolean(L, player->isAttached);
+	lua_pushboolean(L, player->isAttached());
 	return 1;
 }
 

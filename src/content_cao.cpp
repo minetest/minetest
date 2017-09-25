@@ -434,7 +434,7 @@ void GenericCAO::removeFromScene(bool permanent)
 		LocalPlayer* player = m_env->getLocalPlayer();
 		if (this == player->parent) {
 			player->parent = NULL;
-			player->isAttached = false;
+			player->setAttached(false);
 		}
 	}
 
@@ -763,7 +763,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 			// Apply animations if input detected and not attached
 			// or set idle animation
-			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached) {
+			if ((new_anim.X + new_anim.Y) > 0 && !player->isAttached()) {
 				allow_update = true;
 				m_animation_range = new_anim;
 				m_animation_speed = new_speed;
@@ -1216,7 +1216,7 @@ void GenericCAO::updateAttachments()
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
-			player->isAttached = false;
+			player->setAttached(false);
 		}
 	}
 	else // Attach
@@ -1238,7 +1238,7 @@ void GenericCAO::updateAttachments()
 		}
 		if (m_is_local_player) {
 			LocalPlayer *player = m_env->getLocalPlayer();
-			player->isAttached = true;
+			player->setAttached(true);
 		}
 	}
 }

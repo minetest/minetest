@@ -186,7 +186,7 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f position = getPosition();
 
 	// Copy parent position if local player is attached
-	if (isAttached) {
+	if (isAttached()) {
 		setPosition(overridePosition);
 		return;
 	}
@@ -515,7 +515,7 @@ void LocalPlayer::_applyControl(const ControlLogEntry &cle, Environment *env)
 	setYaw(cle.getYaw());
 
 	// Nullify speed and don't run positioning code if the player is attached
-	if(isAttached)
+	if(isAttached())
 	{
 		setSpeed(v3f(0,0,0));
 		return;
@@ -810,7 +810,7 @@ void LocalPlayer::old_move(f32 dtime, Environment *env, f32 pos_max_d,
 	v3f position = getPosition();
 
 	// Copy parent position if local player is attached
-	if (isAttached) {
+	if (isAttached()) {
 		setPosition(overridePosition);
 		m_sneak_node_exists = false;
 		return;
@@ -1121,4 +1121,9 @@ float LocalPlayer::getSlipFactor(Environment *env, const v3f &speedH)
 bool LocalPlayer::checkPrivilege(const std::string &priv) const
 {
 	return m_client->checkLocalPrivilege(priv);
+}
+
+bool LocalPlayer::isAttached() const
+{
+	return is_attached;
 }

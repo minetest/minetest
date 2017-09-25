@@ -139,6 +139,7 @@ public:
 	session_t getPeerId() const { return m_peer_id; }
 
 	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
+	virtual bool isAttached() const;
 
 protected:
 	virtual bool checkPrivilege(const std::string &priv) const;

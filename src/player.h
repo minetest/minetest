@@ -162,6 +162,8 @@ public:
 
 	u32 hud_flags;
 	s32 hud_hotbar_itemcount;
+
+	virtual bool isAttached() const = 0;
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;

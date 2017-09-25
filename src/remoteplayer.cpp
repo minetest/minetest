@@ -225,3 +225,8 @@ bool RemotePlayer::checkPrivilege(const std::string &priv) const
 {
 	return m_server ? m_server->checkPriv(m_name, priv) : false;
 }
+
+bool RemotePlayer::isAttached() const
+{
+	return m_sao->isAttached();
+}
