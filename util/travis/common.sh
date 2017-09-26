@@ -13,9 +13,9 @@ set_linux_compiler_env() {
 	elif [[ "${COMPILER}" == "clang-3.6" ]]; then
 		export CC=clang-3.6
 		export CXX=clang++-3.6
-	elif [[ "${COMPILER}" == "clang-4.0" ]]; then
-		export CC=clang-4.0
-		export CXX=clang++-4.0
+	elif [[ "${COMPILER}" == "clang-5.0" ]]; then
+		export CC=clang-5.0
+		export CXX=clang++-5.0
 	fi
 }
 
@@ -45,7 +45,7 @@ TRIGGER_COMPILE_PATHS="src/.*\.(c|cpp|h)|CMakeLists.txt|cmake/Modules/|util/trav
 
 needs_compile() {
 	RANGE="$TRAVIS_COMMIT_RANGE"
-	if [[ "$(git diff --name-only $RANGE -- 2>/dev/null)" == "" ]]; then 
+	if [[ "$(git diff --name-only $RANGE -- 2>/dev/null)" == "" ]]; then
 		RANGE="$TRAVIS_COMMIT^...$TRAVIS_COMMIT"
 		echo "Fixed range: $RANGE"
 	fi
