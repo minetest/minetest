@@ -47,6 +47,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mainmenumanager.h"
 #include "mapblock.h"
 #include "minimap.h"
+#include "network/networkexceptions.h"
 #include "nodedef.h"         // Needed for determining pointing to nodes
 #include "nodemetadata.h"
 #include "particles.h"
@@ -1231,7 +1232,7 @@ protected:
 			const SubgameSpec &gamespec);
 	bool initSound();
 	bool createSingleplayerServer(const std::string &map_dir,
-			const SubgameSpec &gamespec, u16 port, std::string *address);
+			const SubgameSpec &gamespec, u16 port);
 
 	// Client creation
 	bool createClient(const std::string &playername,
@@ -1824,7 +1825,7 @@ bool Game::init(
 
 	// Create a server if not connecting to an existing one
 	if (address->empty()) {
-		if (!createSingleplayerServer(map_dir, gamespec, port, address))
+		if (!createSingleplayerServer(map_dir, gamespec, port))
 			return false;
 	}
 
@@ -1859,34 +1860,11 @@ bool Game::initSound()
 }
 
 bool Game::createSingleplayerServer(const std::string &map_dir,
-		const SubgameSpec &gamespec, u16 port, std::string *address)
+		const SubgameSpec &gamespec, u16 port)
 {
 	showOverlayMessage("Creating server...", 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
-	Address bind_addr(0, 0, 0, 0, port);
-
-	if (g_settings->getBool("ipv6_server")) {
-		bind_addr.setAddress((IPv6AddressBytes *) NULL);
-	}
-
-	try {
-		bind_addr.Resolve(bind_str.c_str());
-	} catch (ResolveError &e) {
-		infostream << "Resolving bind address \"" << bind_str
-			   << "\" failed: " << e.what()
-			   << " -- Listening on all addresses." << std::endl;
-	}
-
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to listen on " +
-				bind_addr.serializeString() +
-				" because IPv6 is disabled";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
-	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
+	server = new Server(map_dir, gamespec, simple_singleplayer_mode, false, port);
 	server->start();
 
 	return true;
@@ -1900,6 +1878,8 @@ bool Game::createClient(const std::string &playername,
 	draw_control = new MapDrawControl;
 	if (!draw_control)
 		return false;
+
+	showOverlayMessage("Connecting to server...", 0, 15);
 
 	bool could_connect, connect_aborted;
 
@@ -2088,117 +2068,91 @@ bool Game::connectToServer(const std::string &playername,
 {
 	*connect_ok = false;	// Let's not be overly optimistic
 	*aborted = false;
-	bool local_server_mode = false;
 
-	showOverlayMessage("Resolving address...", 0, 15);
-
-	Address connect_address(0, 0, 0, 0, port);
-
-	try {
-		connect_address.Resolve(address->c_str());
-
-		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
-			//connect_address.Resolve("localhost");
-			if (connect_address.isIPv6()) {
-				IPv6AddressBytes addr_bytes;
-				addr_bytes.bytes[15] = 1;
-				connect_address.setAddress(&addr_bytes);
-			} else {
-				connect_address.setAddress(127, 0, 0, 1);
-			}
-			local_server_mode = true;
-		}
-	} catch (ResolveError &e) {
-		*error_message = std::string("Couldn't resolve address: ") + e.what();
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
-	if (connect_address.isIPv6() && !g_settings->getBool("enable_ipv6")) {
-		*error_message = "Unable to connect to " +
-				connect_address.serializeString() +
-				" because IPv6 is disabled";
-		errorstream << *error_message << std::endl;
-		return false;
-	}
-
-	client = new Client(playername.c_str(), password, *address,
+	client = new Client(playername.c_str(), password,
 			*draw_control, texture_src, shader_src,
 			itemdef_manager, nodedef_manager, sound, eventmgr,
-			connect_address.isIPv6(), &flags);
+			false, &flags);
 
 	if (!client)
 		return false;
 
-	infostream << "Connecting to server at ";
-	connect_address.print(&infostream);
-	infostream << std::endl;
+	infostream << "Connecting to server at " << *address << ":" << port << std::endl;
 
-	client->connect(connect_address,
-		simple_singleplayer_mode || local_server_mode);
+	// If address is empty, set it to localhost if we are in singleplayer
+	// else set it to all addresses
+	if (address->empty()) {
+		*address = simple_singleplayer_mode ? "localhost" : "0.0.0.0";
+	}
+
+	if (!client->connect(*address, port, simple_singleplayer_mode)) {
+		*error_message = client->getConnectionError();
+		return false;
+	}
 
 	/*
 		Wait for server to accept connection
 	*/
 
-	try {
-		input->clear();
+	input->clear();
 
-		FpsControl fps_control = { 0 };
-		f32 dtime;
-		f32 wait_time = 0; // in seconds
+	FpsControl fps_control = { 0 };
+	f32 dtime;
+	f32 wait_time = 0; // in seconds
 
-		fps_control.last_time = RenderingEngine::get_timer_time();
+	fps_control.last_time = RenderingEngine::get_timer_time();
 
-		client->loadMods();
-		client->initMods();
+	client->loadMods();
+	client->initMods();
 
-		while (RenderingEngine::run()) {
+	while (RenderingEngine::run()) {
 
-			limitFps(&fps_control, &dtime);
+		limitFps(&fps_control, &dtime);
 
-			// Update client and server
-			client->step(dtime);
-
-			if (server != NULL)
-				server->step(dtime);
-
-			// End condition
-			if (client->getState() == LC_Init) {
-				*connect_ok = true;
-				break;
-			}
-
-			// Break conditions
-			if (client->accessDenied()) {
-				*error_message = "Access denied. Reason: "
-						+ client->accessDeniedReason();
-				*reconnect_requested = client->reconnectRequested();
-				errorstream << *error_message << std::endl;
-				break;
-			}
-
-			if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
-				*aborted = true;
-				infostream << "Connect aborted [Escape]" << std::endl;
-				break;
-			}
-
-			wait_time += dtime;
-			// Only time out if we aren't waiting for the server we started
-			if (!address->empty() && wait_time > 10) {
-				*error_message = "Connection timed out.";
-				errorstream << *error_message << std::endl;
-				break;
-			}
-
-			// Update status
-			showOverlayMessage("Connecting to server...", dtime, 20);
+		if (client->connectedToServer()) {
+			*connect_ok = true;
+			showOverlayMessage("Connected.", dtime, 22);
+			client->sendInit();
+			break;
 		}
-	} catch (con::PeerNotFoundException &e) {
-		// TODO: Should something be done here? At least an info/error
-		// message?
-		return false;
+
+		// Update client and server
+		client->step(dtime);
+
+		if (server)
+			server->step(dtime);
+
+		// Break conditions
+		if (client->accessDenied()) {
+			*error_message = "Access denied. Reason: "
+					+ client->accessDeniedReason();
+			*reconnect_requested = client->reconnectRequested();
+			errorstream << *error_message << std::endl;
+			break;
+		}
+
+		if (wasKeyDown(KeyType::ESC) || input->wasKeyDown(CancelKey)) {
+			*aborted = true;
+			infostream << "Connect aborted [Escape]" << std::endl;
+			break;
+		}
+
+		if (client->isConnectionInError()) {
+			*error_message = client->getConnectionError();
+			errorstream << *error_message << std::endl;
+			break;
+		}
+
+		wait_time += dtime;
+		// Only time out if we aren't waiting for the server we started
+		if (*address != "localhost" && wait_time > 30) {
+			*error_message = "Connection timed out.";
+			errorstream << *error_message << std::endl;
+			break;
+		}
+
+		// Update status
+		showOverlayMessage("Connecting to server...", dtime, 20);
 	}
 
 	return true;
@@ -2220,7 +2174,7 @@ bool Game::getServerContent(bool *aborted)
 		// Update client and server
 		client->step(dtime);
 
-		if (server != NULL)
+		if (server)
 			server->step(dtime);
 
 		// End condition
@@ -2233,7 +2187,7 @@ bool Game::getServerContent(bool *aborted)
 		if (!checkConnection())
 			return false;
 
-		if (client->getState() < LC_Init) {
+		if (!client->connectedToServer()) {
 			*error_message = "Client disconnected";
 			errorstream << *error_message << std::endl;
 			return false;
@@ -2269,7 +2223,8 @@ bool Game::getServerContent(bool *aborted)
 
 			if ((USE_CURL == 0) ||
 					(!g_settings->getBool("enable_remote_media_server"))) {
-				float cur = client->getCurRate();
+				// @TODO if possible with asio
+				float cur = 0.0f;
 				std::string cur_unit = gettext("KiB/s");
 
 				if (cur > 900) {
@@ -4418,8 +4373,7 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		   << (stats.dtime_jitter.max_fraction * 100.0) << " %"
 		   << std::setprecision(1)
 		   << ", view_range = " << draw_control->wanted_range
-		   << std::setprecision(3)
-		   << ", RTT = " << client->getRTT() << " s";
+		   << std::setprecision(3);
 		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
@@ -4740,17 +4694,16 @@ void Game::showPauseMenu()
 		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
-	const std::string &address = client->getAddressName();
+	const std::string &address = client->getServerAddress();
 	static const std::string mode = strgettext("- Mode: ");
 	if (!simple_singleplayer_mode) {
-		Address serverAddress = client->getServerAddress();
 		if (!address.empty()) {
 			os << mode << strgettext("Remote server") << "\n"
 					<< strgettext("- Address: ") << address;
 		} else {
 			os << mode << strgettext("Hosting server");
 		}
-		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+		os << "\n" << strgettext("- Port: ") << client->getServerPort() << "\n";
 	} else {
 		os << mode << strgettext("Singleplayer") << "\n";
 	}

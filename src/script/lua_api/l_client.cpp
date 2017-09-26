@@ -260,13 +260,12 @@ int ModApiClient::l_sound_stop(lua_State *L)
 int ModApiClient::l_get_server_info(lua_State *L)
 {
 	Client *client = getClient(L);
-	Address serverAddress = client->getServerAddress();
 	lua_newtable(L);
-	lua_pushstring(L, client->getAddressName().c_str());
+	lua_pushstring(L, client->getServerAddress().c_str());
 	lua_setfield(L, -2, "address");
-	lua_pushstring(L, serverAddress.serializeString().c_str());
+	lua_pushstring(L, client->getServerAddress().c_str());
 	lua_setfield(L, -2, "ip");
-	lua_pushinteger(L, serverAddress.getPort());
+	lua_pushinteger(L, client->getServerPort());
 	lua_setfield(L, -2, "port");
 	lua_pushinteger(L, client->getProtoVersion());
 	lua_setfield(L, -2, "protocol_version");

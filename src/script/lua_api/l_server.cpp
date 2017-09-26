@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "cpp_api/s_base.h"
+#include "network/networkexceptions.h"
 #include "server.h"
 #include "environment.h"
 #include "remoteplayer.h"
@@ -124,8 +125,8 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	}
 	try
 	{
-		Address addr = getServer(L)->getPeerAddress(player->getPeerId());
-		std::string ip_str = addr.serializeString();
+		asio::ip::address addr = getServer(L)->getPeerAddress(player->getPeerId());
+		std::string ip_str = addr.to_string();
 		lua_pushstring(L, ip_str.c_str());
 		return 1;
 	} catch (const con::PeerNotFoundException &) {
@@ -147,7 +148,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;
 	}
 
-	Address addr;
+	asio::ip::address addr;
 	try
 	{
 		addr = getServer(L)->getPeerAddress(player->getPeerId());
@@ -157,7 +158,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;
 	}
 
-	float min_rtt,max_rtt,avg_rtt,min_jitter,max_jitter,avg_jitter;
 	ClientState state;
 	u32 uptime;
 	u16 prot_vers;
@@ -171,16 +171,6 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;                                                              \
 	}
 
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_RTT, &min_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_RTT, &max_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_JITTER,
-		&min_jitter))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_JITTER,
-		&max_jitter))
-	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
-		&avg_jitter))
-
 	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
 		&prot_vers, &major, &minor, &patch, &vers_string))
 
@@ -188,41 +178,17 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	int table = lua_gettop(L);
 
 	lua_pushstring(L,"address");
-	lua_pushstring(L, addr.serializeString().c_str());
+	lua_pushstring(L, addr.to_string().c_str());
 	lua_settable(L, table);
 
 	lua_pushstring(L,"ip_version");
-	if (addr.getFamily() == AF_INET) {
+	if (addr.is_v4()) {
 		lua_pushnumber(L, 4);
-	} else if (addr.getFamily() == AF_INET6) {
+	} else if (addr.is_v6()) {
 		lua_pushnumber(L, 6);
 	} else {
 		lua_pushnumber(L, 0);
 	}
-	lua_settable(L, table);
-
-	lua_pushstring(L,"min_rtt");
-	lua_pushnumber(L, min_rtt);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"max_rtt");
-	lua_pushnumber(L, max_rtt);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"avg_rtt");
-	lua_pushnumber(L, avg_rtt);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"min_jitter");
-	lua_pushnumber(L, min_jitter);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"max_jitter");
-	lua_pushnumber(L, max_jitter);
-	lua_settable(L, table);
-
-	lua_pushstring(L,"avg_jitter");
-	lua_pushnumber(L, avg_jitter);
 	lua_settable(L, table);
 
 	lua_pushstring(L,"connection_uptime");
@@ -255,7 +221,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	lua_settable(L, table);
 
 	lua_pushstring(L,"state");
-	lua_pushstring(L,ClientInterface::state2Name(state).c_str());
+	lua_pushstring(L,ClientIface::state2Name(state).c_str());
 	lua_settable(L, table);
 #endif
 
@@ -292,9 +258,9 @@ int ModApiServer::l_ban_player(lua_State *L)
 	}
 	try
 	{
-		Address addr = getServer(L)->getPeerAddress(
+		asio::ip::address addr = getServer(L)->getPeerAddress(
 			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->getPeerId());
-		std::string ip_str = addr.serializeString();
+		std::string ip_str = addr.to_string();
 		getServer(L)->setIpBanned(ip_str, name);
 	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;

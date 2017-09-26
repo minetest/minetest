@@ -36,6 +36,10 @@ class MapBlock;
 class ServerEnvironment;
 class EmergeManager;
 
+namespace network {
+class ServerConnection;
+}
+
 /*
  * State Transitions
 
@@ -162,12 +166,8 @@ class EmergeManager;
                                                     +-----------------------------+
 
 */
-namespace con {
-	class Connection;
-}
 
-
-// Also make sure to update the ClientInterface::statenames
+// Also make sure to update the ClientIface::statenames
 // array when modifying these enums
 
 enum ClientState
@@ -417,13 +417,13 @@ private:
 
 typedef std::unordered_map<u16, RemoteClient*> RemoteClientMap;
 
-class ClientInterface {
+class ClientIface {
 public:
 
 	friend class Server;
 
-	ClientInterface(const std::shared_ptr<con::Connection> &con);
-	~ClientInterface();
+	ClientIface(const std::shared_ptr<network::ServerConnection> &con);
+	~ClientIface();
 
 	/* run sync step */
 	void step(float dtime);
@@ -438,7 +438,7 @@ public:
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
 	/* send message to client */
-	void send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
+	void send(session_t peer_id, NetworkPacket *pkt);
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);
@@ -492,7 +492,7 @@ private:
 	void UpdatePlayerList();
 
 	// Connection
-	std::shared_ptr<con::Connection> m_con;
+	std::shared_ptr<network::ServerConnection> m_con;
 	std::mutex m_clients_mutex;
 	// Connected clients (behind the con mutex)
 	RemoteClientMap m_clients;

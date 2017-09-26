@@ -22,7 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <algorithm>
 #include "network/connection.h"
+#include "network/networkexceptions.h"
 #include "network/networkprotocol.h"
+#include "network/serverconnection.h"
 #include "network/serveropcodes.h"
 #include "ban.h"
 #include "environment.h"
@@ -98,15 +100,8 @@ void *ServerThread::run()
 	while (!stopRequested()) {
 		try {
 			m_server->AsyncRunStep();
-
 			m_server->Receive();
-
-		} catch (con::NoIncomingDataException &e) {
-		} catch (con::PeerNotFoundException &e) {
-			infostream<<"Server: PeerNotFoundException"<<std::endl;
 		} catch (ClientNotFoundException &e) {
-		} catch (con::ConnectionBindFailed &e) {
-			m_server->setAsyncFatalError(e.what());
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(
 					"ServerThread::run Lua: " + std::string(e.what()));
@@ -149,27 +144,22 @@ Server::Server(
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		Address bind_addr,
 		bool dedicated,
+		u16 port,
 		ChatInterface *iface
 	):
-	m_bind_addr(bind_addr),
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
 	m_dedicated(dedicated),
 	m_async_fatal_error(""),
-	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
-			512,
-			CONNECTION_TIMEOUT,
-			m_bind_addr.isIPv6(),
-			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
 	m_craftdef(createCraftDefManager()),
 	m_event(new EventManager()),
 	m_uptime(0),
-	m_clients(m_con),
+	m_con_thread(std::make_shared<network::ServerConnectionThread>(this, port)),
+	m_clients(m_con_thread->get_connection()),
 	m_admin_chat(iface),
 	m_modchannel_mgr(new ModChannelMgr())
 {
@@ -369,15 +359,14 @@ Server::~Server()
 
 void Server::start()
 {
-	infostream << "Starting server on " << m_bind_addr.serializeString()
+	infostream << "Starting server on " << m_con_thread->getBindAddr()
 			<< "..." << std::endl;
 
 	// Stop thread if already running
 	m_thread->stop();
 
 	// Initialize connection
-	m_con->SetTimeoutMs(30);
-	m_con->Serve(m_bind_addr);
+	m_con_thread->start();
 
 	// Start thread
 	m_thread->start();
@@ -392,8 +381,7 @@ void Server::start()
 		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
 	actionstream << "World at [" << m_path_world << "]" << std::endl;
 	actionstream << "Server for gameid=\"" << m_gamespec.id
-			<< "\" listening on " << m_bind_addr.serializeString() << ":"
-			<< m_bind_addr.getPort() << "." << std::endl;
+			<< "\" listening on " << m_con_thread->getBindAddr() << "." << std::endl;
 }
 
 void Server::stop()
@@ -402,9 +390,7 @@ void Server::stop()
 
 	// Stop threads (set run=false first so both start stopping)
 	m_thread->stop();
-	//m_emergethread.setRun(false);
 	m_thread->wait();
-	//m_emergethread.stop();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
@@ -465,7 +451,7 @@ void Server::AsyncRunStep(bool initial_step)
 		m_uptime.set(m_uptime.get() + dtime);
 	}
 
-	handlePeerChanges();
+	handleNetworkSessionChanges();
 
 	/*
 		Update time of day and overall game time
@@ -565,7 +551,7 @@ void Server::AsyncRunStep(bool initial_step)
 				g_settings->getBool("server_announce")) {
 			ServerList::sendAnnounce(counter ? ServerList::AA_UPDATE :
 						ServerList::AA_START,
-					m_bind_addr.getPort(),
+					m_con_thread->getPort(),
 					m_clients.getPlayerNames(),
 					m_uptime.get(),
 					m_env->getGameTime(),
@@ -973,15 +959,18 @@ void Server::AsyncRunStep(bool initial_step)
 
 void Server::Receive()
 {
-	session_t peer_id;
+	NetworkPacket *pkt = m_con_thread->get_connection()->getNextPacket();
+	// If no packet, nothing to do
+	if (!pkt)
+		return;
+
+	// Store NetworkPacket in unique_ptr to make a safe-removal
+	std::unique_ptr<NetworkPacket> pktPtr(pkt);
+
+	session_t peer_id = pkt->getPeerId();
+
 	try {
-		NetworkPacket pkt;
-		m_con->Receive(&pkt);
-		peer_id = pkt.getPeerId();
-		ProcessData(&pkt);
-	} catch (const con::InvalidIncomingDataException &e) {
-		infostream << "Server::Receive(): InvalidIncomingDataException: what()="
-				<< e.what() << std::endl;
+		ProcessData(pktPtr.get());
 	} catch (const SerializationError &e) {
 		infostream << "Server::Receive(): SerializationError: what()="
 				<< e.what() << std::endl;
@@ -1057,8 +1046,8 @@ PlayerSAO* Server::StageTwoClientInit(session_t peer_id)
 		// Send information about server to player in chat
 		SendChatMessage(peer_id, ChatMessage(CHATMESSAGE_TYPE_SYSTEM, getStatusString()));
 	}
-	Address addr = getPeerAddress(player->getPeerId());
-	std::string ip_str = addr.serializeString();
+	asio::ip::address addr = getPeerAddress(player->getPeerId());
+	std::string ip_str = addr.to_string();
 	actionstream<<player->getName() <<" [" << ip_str << "] joins game. " << std::endl;
 	/*
 		Print out action
@@ -1092,8 +1081,8 @@ void Server::ProcessData(NetworkPacket *pkt)
 	u32 peer_id = pkt->getPeerId();
 
 	try {
-		Address address = getPeerAddress(peer_id);
-		std::string addr_s = address.serializeString();
+		asio::ip::address address = getPeerAddress(peer_id);
+		std::string addr_s = address.to_string();
 
 		if(m_banmanager->isIpBanned(addr_s)) {
 			std::string ban_name = m_banmanager->getBanName(addr_s);
@@ -1279,29 +1268,6 @@ void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 	m_clients.unlock();
 }
 
-void Server::peerAdded(con::Peer *peer)
-{
-	verbosestream<<"Server::peerAdded(): peer->id="
-			<<peer->id<<std::endl;
-
-	m_peer_change_queue.push(con::PeerChange(con::PEER_ADDED, peer->id, false));
-}
-
-void Server::deletingPeer(con::Peer *peer, bool timeout)
-{
-	verbosestream<<"Server::deletingPeer(): peer->id="
-			<<peer->id<<", timeout="<<timeout<<std::endl;
-
-	m_clients.event(peer->id, CSE_Disconnect);
-	m_peer_change_queue.push(con::PeerChange(con::PEER_REMOVED, peer->id, timeout));
-}
-
-bool Server::getClientConInfo(session_t peer_id, con::rtt_stat_type type, float* retval)
-{
-	*retval = m_con->getPeerStat(peer_id,type);
-	return *retval != -1;
-}
-
 bool Server::getClientInfo(
 		session_t    peer_id,
 		ClientState* state,
@@ -1337,30 +1303,29 @@ bool Server::getClientInfo(
 	return true;
 }
 
-void Server::handlePeerChanges()
+/**
+ * Asynchronous session change
+ * This is only used when session is removed
+ */
+void Server::handleNetworkSessionChanges()
 {
-	while(!m_peer_change_queue.empty())
-	{
-		con::PeerChange c = m_peer_change_queue.front();
-		m_peer_change_queue.pop();
+	std::unique_lock<std::mutex> lock(m_session_change_queue_mtx);
 
-		verbosestream<<"Server: Handling peer change: "
-				<<"id="<<c.peer_id<<", timeout="<<c.timeout
-				<<std::endl;
+	while (!m_session_change_queue.empty()) {
+		network::SessionChange change = m_session_change_queue.front();
+		m_session_change_queue.pop();
 
-		switch(c.type)
-		{
-		case con::PEER_ADDED:
-			m_clients.CreateClient(c.peer_id);
-			break;
+		verbosestream << "Server: Handling session change: " << "id="
+				<< change.session_id << std::endl;
 
-		case con::PEER_REMOVED:
-			DeleteClient(c.peer_id, c.timeout?CDR_TIMEOUT:CDR_LEAVE);
-			break;
-
-		default:
-			FATAL_ERROR("Invalid peer change event received!");
-			break;
+		switch (change.type) {
+			case network::SessionChange::REMOVED:
+				m_clients.event(change.session_id, CSE_Disconnect);
+				DeleteClient(change.session_id, CDR_LEAVE);
+				break;
+			default:
+				FATAL_ERROR("Invalid peer change event received!");
+				break;
 		}
 	}
 }
@@ -1382,10 +1347,7 @@ void Server::Send(NetworkPacket *pkt)
 
 void Server::Send(session_t peer_id, NetworkPacket *pkt)
 {
-	m_clients.send(peer_id,
-		clientCommandFactoryTable[pkt->getCommand()].channel,
-		pkt,
-		clientCommandFactoryTable[pkt->getCommand()].reliable);
+	m_clients.send(peer_id, pkt);
 }
 
 void Server::SendMovement(session_t peer_id)
@@ -1916,9 +1878,8 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 	pkt.putRawString(datas.c_str(), datas.size());
 
-	m_clients.send(pkt.getPeerId(),
-			reliable ? clientCommandFactoryTable[pkt.getCommand()].channel : 1,
-			&pkt, reliable);
+	// @TODO old behaviour sent reliability to sessionmgr
+	m_clients.send(pkt.getPeerId(), &pkt);
 }
 
 void Server::SendCSMFlavourLimits(session_t peer_id)
@@ -1998,7 +1959,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 	for (const u16 dst_client : dst_clients) {
 		if (play_sound || m_clients.getProtocolVersion(dst_client) >= 32) {
 			psound.clients.insert(dst_client);
-			m_clients.send(dst_client, 0, &pkt, true);
+			m_clients.send(dst_client, &pkt);
 		}
 	}
 	return id;
@@ -2018,7 +1979,7 @@ void Server::stopSound(s32 handle)
 	for (std::unordered_set<session_t>::const_iterator si = psound.clients.begin();
 			si != psound.clients.end(); ++si) {
 		// Send as reliable
-		m_clients.send(*si, 0, &pkt, true);
+		m_clients.send(*si, &pkt);
 	}
 	// Remove sound reference
 	m_playing_sounds.erase(i);
@@ -2046,16 +2007,16 @@ void Server::fadeSound(s32 handle, float step, float gain)
 	NetworkPacket compat_pkt(TOCLIENT_STOP_SOUND, 4);
 	compat_pkt << handle;
 
-	for (std::unordered_set<u16>::iterator it = psound.clients.begin();
+	for (std::unordered_set<session_t>::iterator it = psound.clients.begin();
 			it != psound.clients.end();) {
 		if (m_clients.getProtocolVersion(*it) >= 32) {
 			// Send as reliable
-			m_clients.send(*it, 0, &pkt, true);
+			m_clients.send(*it, &pkt);
 			++it;
 		} else {
 			compat_psound.clients.insert(*it);
 			// Stop old sound
-			m_clients.send(*it, 0, &compat_pkt, true);
+			m_clients.send(*it, &compat_pkt);
 			psound.clients.erase(it++);
 		}
 	}
@@ -2098,7 +2059,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		}
 
 		// Send as reliable
-		m_clients.send(client_id, 0, &pkt, true);
+		m_clients.send(client_id, &pkt);
 	}
 }
 
@@ -2138,7 +2099,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 		// Send as reliable
 		if (pkt.getSize() > 0)
-			m_clients.send(client_id, 0, &pkt, true);
+			m_clients.send(client_id, &pkt);
 	}
 }
 
@@ -2198,7 +2159,7 @@ void Server::SendBlocks(float dtime)
 				continue;
 
 			total_sending += client->getSendingCount();
-			client->GetNextBlocks(m_env,m_emerge, dtime, queue);
+			client->GetNextBlocks(m_env, m_emerge, dtime, queue);
 		}
 		m_clients.unlock();
 	}
@@ -2501,7 +2462,7 @@ void Server::sendDetachedInventory(const std::string &name, session_t peer_id)
 			return m_clients.sendToAll(&pkt);
 		RemotePlayer *p = m_env->getPlayer(check.c_str());
 		if (p)
-			m_clients.send(p->getPeerId(), 0, &pkt, true);
+			m_clients.send(p->getPeerId(), &pkt);
 	} else {
 		if (check.empty() || getPlayerName(peer_id) == check)
 			Send(&pkt);
@@ -2601,7 +2562,7 @@ void Server::DenyAccess_Legacy(session_t peer_id, const std::wstring &reason)
 void Server::DisconnectPeer(session_t peer_id)
 {
 	m_modchannel_mgr->leaveAllChannels(peer_id);
-	m_con->DisconnectPeer(peer_id);
+	m_con_thread->get_connection()->disconnect(peer_id);
 }
 
 void Server::acceptAuth(session_t peer_id, bool forSudoMode)
@@ -2847,7 +2808,7 @@ void Server::handleAdminChat(const ChatEventChat *evt)
 
 RemoteClient *Server::getClient(session_t peer_id, ClientState state_min)
 {
-	RemoteClient *client = getClientNoEx(peer_id,state_min);
+	RemoteClient *client = getClientNoEx(peer_id, state_min);
 	if(!client)
 		throw ClientNotFoundException("Client not found");
 
@@ -3110,9 +3071,9 @@ const std::string& Server::hudGetHotbarSelectedImage(RemotePlayer *player) const
 	return player->getHotbarSelectedImage();
 }
 
-Address Server::getPeerAddress(session_t peer_id)
+asio::ip::address Server::getPeerAddress(session_t peer_id)
 {
-	return m_con->GetPeerAddress(peer_id);
+	return m_con_thread->get_connection()->getPeerAddress(peer_id);
 }
 
 bool Server::setLocalPlayerAnimations(RemotePlayer *player,
@@ -3587,8 +3548,7 @@ void dedicated_server_loop(Server &server, bool &kill)
 	infostream << "Dedicated server quitting" << std::endl;
 #if USE_CURL
 	if (g_settings->getBool("server_announce"))
-		ServerList::sendAnnounce(ServerList::AA_DELETE,
-			server.m_bind_addr.getPort());
+		ServerList::sendAnnounce(ServerList::AA_DELETE, server.getBoundport());
 #endif
 }
 
@@ -3655,4 +3615,15 @@ void Server::broadcastModChannelMessage(const std::string &channel,
 	if (from_peer != PEER_ID_SERVER) {
 		m_script->on_modchannel_message(channel, sender, message);
 	}
+}
+
+void Server::pushSessionChange(network::SessionChange change)
+{
+	std::unique_lock<std::mutex> lock(m_session_change_queue_mtx);
+	m_session_change_queue.push(change);
+}
+
+u16 Server::getBoundport() const
+{
+	return m_con_thread->getPort();
 }

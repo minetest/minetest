@@ -28,8 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "inventorymanager.h"
 #include "subgame.h"
 #include "tileanimation.h" // struct TileAnimationParams
-#include "network/peerhandler.h"
-#include "network/address.h"
+#include "network/sessionchange.h"
 #include "util/numeric.h"
 #include "util/thread.h"
 #include "util/basic_macros.h"
@@ -40,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <map>
 #include <vector>
+#include <asio/ip/address.hpp>
 
 class ChatEvent;
 struct ChatEventChat;
@@ -60,6 +60,9 @@ class ServerScripting;
 class ServerEnvironment;
 struct SimpleSoundSpec;
 class ServerThread;
+namespace network {
+class ServerConnectionThread;
+}
 
 enum ClientDeletionReason {
 	CDR_LEAVE,
@@ -106,7 +109,7 @@ struct ServerPlayingSound
 	std::unordered_set<session_t> clients; // peer ids
 };
 
-class Server : public con::PeerHandler, public MapEventReceiver,
+class Server : public MapEventReceiver,
 		public InventoryManager, public IGameDef
 {
 public:
@@ -118,8 +121,8 @@ public:
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		Address bind_addr,
 		bool dedicated,
+		u16 port = 0,
 		ChatInterface *iface = nullptr
 	);
 	~Server();
@@ -296,7 +299,7 @@ public:
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
 	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
-	Address getPeerAddress(session_t peer_id);
+	asio::ip::address getPeerAddress(session_t peer_id);
 
 	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
@@ -314,10 +317,6 @@ public:
 
 	bool overrideDayNightRatio(RemotePlayer *player, bool do_override, float brightness);
 
-	/* con::PeerHandler implementation. */
-	void peerAdded(con::Peer *peer);
-	void deletingPeer(con::Peer *peer, bool timeout);
-
 	void DenySudoAccess(session_t peer_id);
 	void DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
 		const std::string &str_reason = "", bool reconnect = false);
@@ -326,7 +325,6 @@ public:
 	void acceptAuth(session_t peer_id, bool forSudoMode);
 	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
 	void DisconnectPeer(session_t peer_id);
-	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
 	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
 			std::string* vers_string);
@@ -346,8 +344,8 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
-	// Bind address
-	Address m_bind_addr;
+	void pushSessionChange(network::SessionChange change);
+	u16 getBoundport() const;
 
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
@@ -491,7 +489,7 @@ private:
 	*/
 	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
 
-	void handlePeerChanges();
+	void handleNetworkSessionChanges();
 
 	/*
 		Variables
@@ -521,9 +519,6 @@ private:
 
 	// Environment
 	ServerEnvironment *m_env = nullptr;
-
-	// server connection
-	std::shared_ptr<con::Connection> m_con;
 
 	// Ban checking
 	BanManager *m_banmanager = nullptr;
@@ -577,17 +572,22 @@ private:
 	float m_time_of_day_send_timer = 0.0f;
 	// Uptime of server in seconds
 	MutexedVariable<double> m_uptime;
-	/*
-	 Client interface
-	 */
-	ClientInterface m_clients;
+
+	// server connection
+	std::shared_ptr<network::ServerConnectionThread> m_con_thread;
 
 	/*
-		Peer change queue.
+		Client interface
+	 */
+	ClientIface m_clients;
+
+	/*
+		NetworkSession change queue.
 		Queues stuff from peerAdded() and deletingPeer() to
-		handlePeerChanges()
+		handleNetworkSessionChanges()
 	*/
-	std::queue<con::PeerChange> m_peer_change_queue;
+	std::mutex m_session_change_queue_mtx;
+	std::queue<network::SessionChange> m_session_change_queue;
 
 	/*
 		Random stuff

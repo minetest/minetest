@@ -35,7 +35,7 @@ public:
 
 	~NetworkPacket();
 
-	void putRawPacket(u8 *data, u32 datasize, session_t peer_id);
+	void putRawPacket(const std::vector<u8> &data, session_t peer_id);
 
 	// Getters
 	u32 getSize() const { return m_datasize; }
