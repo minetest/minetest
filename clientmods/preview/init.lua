@@ -17,6 +17,12 @@ core.register_on_connect(function()
 	print("Server port: " .. server_info.port)
 
 	mod_channel = core.mod_channel_join("experimental_preview")
+
+	core.after(4, function()
+		if mod_channel:is_writeable() then
+			mod_channel:send_all("preview talk to experimental")
+		end
+	end)
 end)
 
 core.register_on_modchannel_message(function(channel, sender, message)
@@ -114,12 +120,6 @@ core.after(2, function()
 	modstorage:set_string("current_mod", modname)
 	print(modstorage:get_string("current_mod"))
 	preview_minimap()
-end)
-
-core.after(4, function()
-	if mod_channel:is_writeable() then
-		mod_channel:send_all("preview talk to experimental")
-	end
 end)
 
 core.after(5, function()
