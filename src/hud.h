@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include "irrlichttypes_extrabloated.h"
+#include "texture_pool.h"
 #include <string>
 
 #define HUD_DIR_LEFT_RIGHT 0
@@ -71,7 +72,8 @@ enum HudElementStat {
 	HUD_STAT_ALIGN,
 	HUD_STAT_OFFSET,
 	HUD_STAT_WORLD_POS,
-	HUD_STAT_SIZE
+	HUD_STAT_SIZE,
+	HUD_STAT_FONT_SIZE
 };
 
 struct HudElement {
@@ -87,6 +89,8 @@ struct HudElement {
 	v2f offset;
 	v3f world_pos;
 	v2s32 size;
+	u32 font_size = 0;
+	s32 texture_index = 0;
 };
 
 #ifndef SERVER
@@ -124,6 +128,7 @@ public:
 		Inventory *inventory);
 	~Hud();
 
+	void updateScaling();
 	void drawHotbar(u16 playeritem);
 	void resizeHotbar();
 	void drawCrosshair();
@@ -153,9 +158,10 @@ private:
 	void drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 		s32 inv_offset, InventoryList *mainlist, u16 selectitem, u16 direction);
 
-	void drawItem(const ItemStack &item, const core::rect<s32>& rect,
+	void drawItem(ItemStack &item, const core::rect<s32>& rect,
 		bool selected);
 
+	float m_hud_grid_resolution;
 	float m_hud_scaling; // cached minetest setting
 	v3s16 m_camera_offset;
 	v2u32 m_screensize;
@@ -179,6 +185,9 @@ private:
 		HIGHLIGHT_BOX,
 		HIGHLIGHT_HALO,
 		HIGHLIGHT_NONE } m_mode;
+
+	TexturePool m_texture_pool;
+	u32 m_font_size;
 };
 
 enum ItemRotationKind {

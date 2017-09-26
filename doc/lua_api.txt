@@ -4860,7 +4860,11 @@ Definition tables
     --  ^ Left corner position of element
         name = "<name>",
         scale = {x=2, y=2},
-        text = "<text>",
+        text = "<text>:8,500",
+    --  ^ So an image named "<text>:8,500" will load 8 numbered images
+    --  ("<text>_1", "<text>_2", etc.) and play them with a 500 ms interval.
+        font_size = 20,
+    --  ^ If it is omitted or set to zero, then the default font size is used.
         number = 2,
         item = 3,
     --  ^ Selected item in inventory.  0 for no item selected.

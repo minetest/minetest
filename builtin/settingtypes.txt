@@ -636,6 +636,10 @@ hud_hotbar_max_width (Maximum hotbar width) float 1.0
 #    Modifies the size of the hudbar elements.
 hud_scaling (HUD scale factor) float 1.0
 
+#    Modifies the resolution of the hud grid.
+#    Small screen devices can use a lower hud grid resolution, like 960.0.
+hud_grid_resolution (HUD grid resolution) float 1920.0
+
 #    Enables caching of facedir rotated meshes.
 enable_mesh_cache (Mesh cache) bool false
 

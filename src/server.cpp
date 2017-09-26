@@ -1687,7 +1687,7 @@ void Server::SendHUDAdd(u16 peer_id, u32 id, HudElement *form)
 
 	pkt << id << (u8) form->type << form->pos << form->name << form->scale
 			<< form->text << form->number << form->item << form->dir
-			<< form->align << form->offset << form->world_pos << form->size;
+			<< form->align << form->offset << form->world_pos << form->size << form->font_size;
 
 	Send(&pkt);
 }
@@ -1724,6 +1724,7 @@ void Server::SendHUDChange(u16 peer_id, u32 id, HudElementStat stat, void *value
 		case HUD_STAT_NUMBER:
 		case HUD_STAT_ITEM:
 		case HUD_STAT_DIR:
+		case HUD_STAT_FONT_SIZE:
 		default:
 			pkt << *(u32 *) value;
 			break;
