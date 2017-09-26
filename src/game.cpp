@@ -2553,14 +2553,12 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		float volume = g_settings->getFloat("sound_volume");
-		if (volume < 0.001f) {
-			g_settings->setFloat("sound_volume", 1.0f);
-			showStatusTextSimple("Volume changed to 100%");
-		} else {
-			g_settings->setFloat("sound_volume", 0.0f);
-			showStatusTextSimple("Volume changed to 0%");
-		}
+		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		g_settings->setBool("mute_sound", new_mute_sound);
+		if (new_mute_sound)
+			showStatusTextSimple("Sound muted");
+		else
+			showStatusTextSimple("Sound unmuted");
 		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
@@ -3558,13 +3556,18 @@ void Game::updateSound(f32 dtime)
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
 
-	// Check if volume is in the proper range, else fix it.
-	float old_volume = g_settings->getFloat("sound_volume");
-	float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-	sound->setListenerGain(new_volume);
+	bool mute_sound = g_settings->getBool("mute_sound");
+	if (mute_sound) {
+		sound->setListenerGain(0.0f);
+	} else {
+		// Check if volume is in the proper range, else fix it.
+		float old_volume = g_settings->getFloat("sound_volume");
+		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
+		sound->setListenerGain(new_volume);
 
-	if (old_volume != new_volume) {
-		g_settings->setFloat("sound_volume", new_volume);
+		if (old_volume != new_volume) {
+			g_settings->setFloat("sound_volume", new_volume);
+		}
 	}
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
