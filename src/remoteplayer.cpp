@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 #include "server.h"
 #include "settings.h"
+#include "convert_json.h"
 
 /*
 	RemotePlayer
@@ -76,8 +77,8 @@ void RemotePlayer::serializeExtraAttributes(std::string &output)
 		json_root[attr.first] = attr.second;
 	}
 
-	Json::FastWriter writer;
-	output = writer.write(json_root);
+	output = fastWriteJson(json_root);
+
 	m_sao->setExtendedAttributeModified(false);
 }
 
@@ -120,9 +121,13 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 		try {
 			const std::string &extended_attributes = args.get("extended_attributes");
-			Json::Reader reader;
+			std::istringstream iss(extended_attributes);
+			Json::CharReaderBuilder builder;
+			builder.settings_["collectComments"] = false;
+			std::string errs;
+
 			Json::Value attr_root;
-			reader.parse(extended_attributes, attr_root);
+			Json::parseFromStream(builder, iss, &attr_root, &errs);
 
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
 			for (const auto &it : attr_list) {

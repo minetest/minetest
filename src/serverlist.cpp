@@ -185,8 +185,8 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 		list.append(it);
 	}
 	root["list"] = list;
-	Json::FastWriter writer;
-	return writer.write(root);
+
+	return fastWriteJson(root);
 }
 
 
@@ -249,10 +249,9 @@ void sendAnnounce(AnnounceAction action,
 			server["lag"] = lag;
 	}
 
-	Json::FastWriter writer;
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
-	fetch_request.post_fields["json"] = writer.write(server);
+	fetch_request.post_fields["json"] = fastWriteJson(server);
 	fetch_request.multipart = true;
 	httpfetch_async(fetch_request);
 }
