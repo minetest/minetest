@@ -406,7 +406,7 @@ public:
 		alSource3f(sound->source_id, AL_POSITION, 0, 0, 0);
 		alSource3f(sound->source_id, AL_VELOCITY, 0, 0, 0);
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-		volume = std::max(0.0f, volume);
+		volume = std::fmax(0.0f, volume);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
 		alSourcePlay(sound->source_id);
@@ -435,7 +435,7 @@ public:
 		alSourcei(sound->source_id, AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
 		// Multiply by 3 to compensate for reducing AL_REFERENCE_DISTANCE from
 		// the previous value of 30 to the new value of 10
-		volume = std::max(0.0f, volume * 3.0f);
+		volume = std::fmax(0.0f, volume * 3.0f);
 		alSourcef(sound->source_id, AL_GAIN, volume);
 		alSourcef(sound->source_id, AL_PITCH, pitch);
 		alSourcePlay(sound->source_id);
