@@ -363,7 +363,7 @@ private:
 	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
 	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
-	void SendDeathscreen(session_t peer_id,bool set_camera_point_target,
+	void SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target);
 	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
 	void SendNodeDef(session_t peer_id, INodeDefManager *nodedef, u16 protocol_version);
@@ -475,12 +475,12 @@ private:
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
-	RemoteClient* getClient(session_t peer_id,ClientState state_min = CS_Active);
-	RemoteClient* getClientNoEx(session_t peer_id,ClientState state_min = CS_Active);
+	RemoteClient* getClient(session_t peer_id, ClientState state_min = CS_Active);
+	RemoteClient* getClientNoEx(session_t peer_id, ClientState state_min = CS_Active);
 
 	// When called, environment mutex should be locked
 	std::string getPlayerName(session_t peer_id);
-	PlayerSAO* getPlayerSAO(session_t peer_id);
+	PlayerSAO *getPlayerSAO(session_t peer_id);
 
 	/*
 		Get a player from memory or creates one.

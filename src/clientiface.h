@@ -453,7 +453,7 @@ public:
 	ClientState getClientState(session_t peer_id);
 
 	/* set client playername */
-	void setPlayerName(session_t peer_id,std::string name);
+	void setPlayerName(session_t peer_id, const std::string &name);
 
 	/* get protocol version of client */
 	u16 getProtocolVersion(session_t peer_id);

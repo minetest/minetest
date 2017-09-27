@@ -1461,7 +1461,7 @@ void Server::SendAccessDenied_Legacy(session_t peer_id,const std::wstring &reaso
 	Send(&pkt);
 }
 
-void Server::SendDeathscreen(session_t peer_id,bool set_camera_point_target,
+void Server::SendDeathscreen(session_t peer_id, bool set_camera_point_target,
 		v3f camera_point_target)
 {
 	NetworkPacket pkt(TOCLIENT_DEATHSCREEN, 1 + sizeof(v3f), peer_id);
@@ -2844,7 +2844,7 @@ void Server::handleAdminChat(const ChatEventChat *evt)
 	}
 }
 
-RemoteClient* Server::getClient(session_t peer_id, ClientState state_min)
+RemoteClient *Server::getClient(session_t peer_id, ClientState state_min)
 {
 	RemoteClient *client = getClientNoEx(peer_id,state_min);
 	if(!client)
@@ -2852,7 +2852,7 @@ RemoteClient* Server::getClient(session_t peer_id, ClientState state_min)
 
 	return client;
 }
-RemoteClient* Server::getClientNoEx(session_t peer_id, ClientState state_min)
+RemoteClient *Server::getClientNoEx(session_t peer_id, ClientState state_min)
 {
 	return m_clients.getClientNoEx(peer_id, state_min);
 }
@@ -2865,7 +2865,7 @@ std::string Server::getPlayerName(session_t peer_id)
 	return player->getName();
 }
 
-PlayerSAO* Server::getPlayerSAO(session_t peer_id)
+PlayerSAO *Server::getPlayerSAO(session_t peer_id)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	if (!player)

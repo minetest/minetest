@@ -755,7 +755,7 @@ ClientState ClientInterface::getClientState(session_t peer_id)
 	return n->second->getState();
 }
 
-void ClientInterface::setPlayerName(session_t peer_id,std::string name)
+void ClientInterface::setPlayerName(session_t peer_id, const std::string &name)
 {
 	MutexAutoLock clientslock(m_clients_mutex);
 	RemoteClientMap::iterator n = m_clients.find(peer_id);
