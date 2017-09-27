@@ -606,9 +606,9 @@ ClientInterface::~ClientInterface()
 	}
 }
 
-std::vector<u16> ClientInterface::getClientIDs(ClientState min_state)
+std::vector<session_t> ClientInterface::getClientIDs(ClientState min_state)
 {
-	std::vector<u16> reply;
+	std::vector<session_t> reply;
 	MutexAutoLock clientslock(m_clients_mutex);
 
 	for (const auto &m_client : m_clients) {
@@ -642,14 +642,14 @@ void ClientInterface::step(float dtime)
 void ClientInterface::UpdatePlayerList()
 {
 	if (m_env) {
-		std::vector<u16> clients = getClientIDs();
+		std::vector<session_t> clients = getClientIDs();
 		m_clients_names.clear();
 
 
-		if(!clients.empty())
+		if (!clients.empty())
 			infostream<<"Players:"<<std::endl;
 
-		for (u16 i : clients) {
+		for (session_t i : clients) {
 			RemotePlayer *player = m_env->getPlayer(i);
 
 			if (player == NULL)

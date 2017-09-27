@@ -422,7 +422,7 @@ public:
 	void step(float dtime);
 
 	/* get list of active client id's */
-	std::vector<u16> getClientIDs(ClientState min_state=CS_Active);
+	std::vector<session_t> getClientIDs(ClientState min_state=CS_Active);
 
 	/* verify is server user limit was reached */
 	bool isUserLimitReached();

@@ -1270,10 +1270,10 @@ void Server::setInventoryModified(const InventoryLocation &loc, bool playerSend)
 
 void Server::SetBlocksNotSent(std::map<v3s16, MapBlock *>& block)
 {
-	std::vector<u16> clients = m_clients.getClientIDs();
+	std::vector<session_t> clients = m_clients.getClientIDs();
 	m_clients.lock();
 	// Set the modified blocks unsent for all the clients
-	for (const u16 client_id : clients) {
+	for (const session_t client_id : clients) {
 			if (RemoteClient *client = m_clients.lockedGetClientNoEx(client_id))
 				client->SetBlocksNotSent(block);
 	}
@@ -1584,9 +1584,9 @@ void Server::SendSpawnParticle(session_t peer_id, u16 protocol_version,
 			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE * BS;
 
 	if (peer_id == PEER_ID_INEXISTENT) {
-		std::vector<u16> clients = m_clients.getClientIDs();
+		std::vector<session_t> clients = m_clients.getClientIDs();
 
-		for (const u16 client_id : clients) {
+		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 			if (!player)
 				continue;
@@ -1633,8 +1633,8 @@ void Server::SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 {
 	if (peer_id == PEER_ID_INEXISTENT) {
 		// This sucks and should be replaced:
-		std::vector<u16> clients = m_clients.getClientIDs();
-		for (const u16 client_id : clients) {
+		std::vector<session_t> clients = m_clients.getClientIDs();
+		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 			if (!player)
 				continue;
@@ -1941,7 +1941,7 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		return -1;
 
 	// Filter destination clients
-	std::vector<u16> dst_clients;
+	std::vector<session_t> dst_clients;
 	if(!params.to_player.empty()) {
 		RemotePlayer *player = m_env->getPlayer(params.to_player.c_str());
 		if(!player){
@@ -1956,9 +1956,9 @@ s32 Server::playSound(const SimpleSoundSpec &spec,
 		}
 		dst_clients.push_back(player->peer_id);
 	} else {
-		std::vector<u16> clients = m_clients.getClientIDs();
+		std::vector<session_t> clients = m_clients.getClientIDs();
 
-		for (const u16 client_id : clients) {
+		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 			if (!player)
 				continue;
@@ -2016,7 +2016,7 @@ void Server::stopSound(s32 handle)
 	NetworkPacket pkt(TOCLIENT_STOP_SOUND, 4);
 	pkt << handle;
 
-	for (std::unordered_set<u16>::const_iterator si = psound.clients.begin();
+	for (std::unordered_set<session_t>::const_iterator si = psound.clients.begin();
 			si != psound.clients.end(); ++si) {
 		// Send as reliable
 		m_clients.send(*si, 0, &pkt, true);
@@ -2080,8 +2080,8 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	NetworkPacket pkt(TOCLIENT_REMOVENODE, 6);
 	pkt << p;
 
-	std::vector<u16> clients = m_clients.getClientIDs();
-	for (u16 client_id : clients) {
+	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (session_t client_id : clients) {
 		if (far_players) {
 			// Get player
 			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
@@ -2110,8 +2110,8 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	std::vector<u16> clients = m_clients.getClientIDs();
-	for (const u16 client_id : clients) {
+	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (const session_t client_id : clients) {
 		if (far_players) {
 			// Get player
 			if (RemotePlayer *player = m_env->getPlayer(client_id)) {
@@ -2145,9 +2145,9 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 
 void Server::setBlockNotSent(v3s16 p)
 {
-	std::vector<u16> clients = m_clients.getClientIDs();
+	std::vector<session_t> clients = m_clients.getClientIDs();
 	m_clients.lock();
-	for (const u16 i : clients) {
+	for (const session_t i : clients) {
 		RemoteClient *client = m_clients.lockedGetClientNoEx(i);
 		client->SetBlockNotSent(p);
 	}
@@ -2189,10 +2189,10 @@ void Server::SendBlocks(float dtime)
 	{
 		ScopeProfiler sp2(g_profiler, "Server: selecting blocks for sending");
 
-		std::vector<u16> clients = m_clients.getClientIDs();
+		std::vector<session_t> clients = m_clients.getClientIDs();
 
 		m_clients.lock();
-		for (const u16 client_id : clients) {
+		for (const session_t client_id : clients) {
 			RemoteClient *client = m_clients.lockedGetClientNoEx(client_id, CS_Active);
 
 			if (!client)
@@ -2675,9 +2675,9 @@ void Server::DeleteClient(session_t peer_id, ClientDeletionReason reason)
 		{
 			if (player && reason != CDR_DENY) {
 				std::ostringstream os(std::ios_base::binary);
-				std::vector<u16> clients = m_clients.getClientIDs();
+				std::vector<session_t> clients = m_clients.getClientIDs();
 
-				for (const u16 client_id : clients) {
+				for (const session_t client_id : clients) {
 					// Get player
 					RemotePlayer *player = m_env->getPlayer(client_id);
 					if (!player)
@@ -2812,7 +2812,7 @@ std::wstring Server::handleChat(const std::string &name, const std::wstring &wna
 	*/
 	actionstream << "CHAT: " << wide_to_narrow(unescape_enriched(line)) << std::endl;
 
-	std::vector<u16> clients = m_clients.getClientIDs();
+	std::vector<session_t> clients = m_clients.getClientIDs();
 
 	/*
 		Send the message back to the inital sender
@@ -2886,8 +2886,8 @@ std::wstring Server::getStatusString()
 	// Information about clients
 	bool first = true;
 	os<<L", clients={";
-	std::vector<u16> clients = m_clients.getClientIDs();
-	for (u16 client_id : clients) {
+	std::vector<session_t> clients = m_clients.getClientIDs();
+	for (session_t client_id : clients) {
 		// Get player
 		RemotePlayer *player = m_env->getPlayer(client_id);
 		// Get name of player
@@ -2927,8 +2927,8 @@ bool Server::checkPriv(const std::string &name, const std::string &priv)
 void Server::reportPrivsModified(const std::string &name)
 {
 	if (name.empty()) {
-		std::vector<u16> clients = m_clients.getClientIDs();
-		for (const u16 client_id : clients) {
+		std::vector<session_t> clients = m_clients.getClientIDs();
+		for (const session_t client_id : clients) {
 			RemotePlayer *player = m_env->getPlayer(client_id);
 			reportPrivsModified(player->getName());
 		}
@@ -3622,7 +3622,7 @@ ModChannel* Server::getModChannel(const std::string &channel)
 }
 
 void Server::broadcastModChannelMessage(const std::string &channel,
-		const std::string &message, u16 from_peer)
+		const std::string &message, session_t from_peer)
 {
 	const std::vector<u16> &peers = m_modchannel_mgr->getChannelPeers(channel);
 	if (peers.empty())
