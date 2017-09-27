@@ -103,7 +103,7 @@ struct ServerPlayingSound
 {
 	ServerSoundParams params;
 	SimpleSoundSpec spec;
-	std::unordered_set<SessionId> clients; // peer ids
+	std::unordered_set<session_t> clients; // peer ids
 };
 
 class Server : public con::PeerHandler, public MapEventReceiver,
@@ -133,7 +133,7 @@ public:
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
 	void Receive();
-	PlayerSAO* StageTwoClientInit(SessionId peer_id);
+	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*
 	 * Command Handlers
@@ -170,7 +170,7 @@ public:
 	void ProcessData(NetworkPacket *pkt);
 
 	void Send(NetworkPacket *pkt);
-	void Send(SessionId peer_id, NetworkPacket *pkt);
+	void Send(session_t peer_id, NetworkPacket *pkt);
 
 	// Helper for handleCommand_PlayerPos and handleCommand_Interact
 	void process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
@@ -296,7 +296,7 @@ public:
 	void hudSetHotbarSelectedImage(RemotePlayer *player, std::string name);
 	const std::string &hudGetHotbarSelectedImage(RemotePlayer *player) const;
 
-	Address getPeerAddress(SessionId peer_id);
+	Address getPeerAddress(session_t peer_id);
 
 	bool setLocalPlayerAnimations(RemotePlayer *player, v2s32 animation_frames[4],
 			f32 frame_speed);
@@ -318,16 +318,16 @@ public:
 	void peerAdded(con::Peer *peer);
 	void deletingPeer(con::Peer *peer, bool timeout);
 
-	void DenySudoAccess(SessionId peer_id);
-	void DenyAccessVerCompliant(SessionId peer_id, u16 proto_ver, AccessDeniedCode reason,
+	void DenySudoAccess(session_t peer_id);
+	void DenyAccessVerCompliant(session_t peer_id, u16 proto_ver, AccessDeniedCode reason,
 		const std::string &str_reason = "", bool reconnect = false);
-	void DenyAccess(SessionId peer_id, AccessDeniedCode reason,
+	void DenyAccess(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason = "");
-	void acceptAuth(SessionId peer_id, bool forSudoMode);
-	void DenyAccess_Legacy(SessionId peer_id, const std::wstring &reason);
-	void DisconnectPeer(SessionId peer_id);
-	bool getClientConInfo(SessionId peer_id, con::rtt_stat_type type, float* retval);
-	bool getClientInfo(SessionId peer_id,ClientState* state, u32* uptime,
+	void acceptAuth(session_t peer_id, bool forSudoMode);
+	void DenyAccess_Legacy(session_t peer_id, const std::wstring &reason);
+	void DisconnectPeer(session_t peer_id);
+	bool getClientConInfo(session_t peer_id, con::rtt_stat_type type, float *retval);
+	bool getClientInfo(session_t peer_id, ClientState *state, u32 *uptime,
 			u8* ser_vers, u16* prot_vers, u8* major, u8* minor, u8* patch,
 			std::string* vers_string);
 
@@ -336,7 +336,7 @@ public:
 	void SendPlayerHPOrDie(PlayerSAO *player);
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
-	void SendMovePlayer(SessionId peer_id);
+	void SendMovePlayer(session_t peer_id);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);
@@ -357,49 +357,49 @@ private:
 	friend class EmergeThread;
 	friend class RemoteClient;
 
-	void SendMovement(SessionId peer_id);
-	void SendHP(SessionId peer_id, u16 hp);
-	void SendBreath(SessionId peer_id, u16 breath);
-	void SendAccessDenied(SessionId peer_id, AccessDeniedCode reason,
+	void SendMovement(session_t peer_id);
+	void SendHP(session_t peer_id, u16 hp);
+	void SendBreath(session_t peer_id, u16 breath);
+	void SendAccessDenied(session_t peer_id, AccessDeniedCode reason,
 		const std::string &custom_reason, bool reconnect = false);
-	void SendAccessDenied_Legacy(SessionId peer_id, const std::wstring &reason);
-	void SendDeathscreen(SessionId peer_id,bool set_camera_point_target,
+	void SendAccessDenied_Legacy(session_t peer_id, const std::wstring &reason);
+	void SendDeathscreen(session_t peer_id,bool set_camera_point_target,
 		v3f camera_point_target);
-	void SendItemDef(SessionId peer_id, IItemDefManager *itemdef, u16 protocol_version);
-	void SendNodeDef(SessionId peer_id, INodeDefManager *nodedef, u16 protocol_version);
+	void SendItemDef(session_t peer_id, IItemDefManager *itemdef, u16 protocol_version);
+	void SendNodeDef(session_t peer_id, INodeDefManager *nodedef, u16 protocol_version);
 
 	/* mark blocks not sent for all clients */
 	void SetBlocksNotSent(std::map<v3s16, MapBlock *>& block);
 
 
-	void SendChatMessage(SessionId peer_id, const ChatMessage &message);
-	void SendTimeOfDay(SessionId peer_id, u16 time, f32 time_speed);
-	void SendPlayerHP(SessionId peer_id);
+	void SendChatMessage(session_t peer_id, const ChatMessage &message);
+	void SendTimeOfDay(session_t peer_id, u16 time, f32 time_speed);
+	void SendPlayerHP(session_t peer_id);
 
-	void SendLocalPlayerAnimations(SessionId peer_id, v2s32 animation_frames[4],
+	void SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],
 		f32 animation_speed);
-	void SendEyeOffset(SessionId peer_id, v3f first, v3f third);
-	void SendPlayerPrivileges(SessionId peer_id);
-	void SendPlayerInventoryFormspec(SessionId peer_id);
-	void SendShowFormspecMessage(SessionId peer_id, const std::string &formspec,
+	void SendEyeOffset(session_t peer_id, v3f first, v3f third);
+	void SendPlayerPrivileges(session_t peer_id);
+	void SendPlayerInventoryFormspec(session_t peer_id);
+	void SendShowFormspecMessage(session_t peer_id, const std::string &formspec,
 		const std::string &formname);
-	void SendHUDAdd(SessionId peer_id, u32 id, HudElement *form);
-	void SendHUDRemove(SessionId peer_id, u32 id);
-	void SendHUDChange(SessionId peer_id, u32 id, HudElementStat stat, void *value);
-	void SendHUDSetFlags(SessionId peer_id, u32 flags, u32 mask);
-	void SendHUDSetParam(SessionId peer_id, u16 param, const std::string &value);
-	void SendSetSky(SessionId peer_id, const video::SColor &bgcolor,
+	void SendHUDAdd(session_t peer_id, u32 id, HudElement *form);
+	void SendHUDRemove(session_t peer_id, u32 id);
+	void SendHUDChange(session_t peer_id, u32 id, HudElementStat stat, void *value);
+	void SendHUDSetFlags(session_t peer_id, u32 flags, u32 mask);
+	void SendHUDSetParam(session_t peer_id, u16 param, const std::string &value);
+	void SendSetSky(session_t peer_id, const video::SColor &bgcolor,
 			const std::string &type, const std::vector<std::string> &params,
 			bool &clouds);
-	void SendCloudParams(SessionId peer_id, float density,
+	void SendCloudParams(session_t peer_id, float density,
 			const video::SColor &color_bright,
 			const video::SColor &color_ambient,
 			float height,
 			float thickness,
 			const v2f &speed);
-	void SendOverrideDayNightRatio(SessionId peer_id, bool do_override, float ratio);
+	void SendOverrideDayNightRatio(session_t peer_id, bool do_override, float ratio);
 	void broadcastModChannelMessage(const std::string &channel,
-			const std::string &message, SessionId from_peer);
+			const std::string &message, session_t from_peer);
 
 	/*
 		Send a node removal/addition event to all clients except ignore_id.
@@ -415,21 +415,21 @@ private:
 	void setBlockNotSent(v3s16 p);
 
 	// Environment and Connection must be locked when called
-	void SendBlockNoLock(SessionId peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
+	void SendBlockNoLock(session_t peer_id, MapBlock *block, u8 ver, u16 net_proto_version);
 
 	// Sends blocks to clients (locks env and con on its own)
 	void SendBlocks(float dtime);
 
 	void fillMediaCache();
-	void sendMediaAnnouncement(SessionId peer_id, const std::string &lang_code);
-	void sendRequestedMedia(SessionId peer_id,
+	void sendMediaAnnouncement(session_t peer_id, const std::string &lang_code);
+	void sendRequestedMedia(session_t peer_id,
 			const std::vector<std::string> &tosend);
 
-	void sendDetachedInventory(const std::string &name, SessionId peer_id);
-	void sendDetachedInventories(SessionId peer_id);
+	void sendDetachedInventory(const std::string &name, session_t peer_id);
+	void sendDetachedInventories(session_t peer_id);
 
 	// Adds a ParticleSpawner on peer with peer_id (PEER_ID_INEXISTENT == all)
-	void SendAddParticleSpawner(SessionId peer_id, u16 protocol_version,
+	void SendAddParticleSpawner(session_t peer_id, u16 protocol_version,
 		u16 amount, float spawntime,
 		v3f minpos, v3f maxpos,
 		v3f minvel, v3f maxvel,
@@ -441,28 +441,28 @@ private:
 		bool vertical, const std::string &texture, u32 id,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	void SendDeleteParticleSpawner(SessionId peer_id, u32 id);
+	void SendDeleteParticleSpawner(session_t peer_id, u32 id);
 
 	// Spawns particle on peer with peer_id (PEER_ID_INEXISTENT == all)
-	void SendSpawnParticle(SessionId peer_id, u16 protocol_version,
+	void SendSpawnParticle(session_t peer_id, u16 protocol_version,
 		v3f pos, v3f velocity, v3f acceleration,
 		float expirationtime, float size,
 		bool collisiondetection, bool collision_removal,
 		bool vertical, const std::string &texture,
 		const struct TileAnimationParams &animation, u8 glow);
 
-	u32 SendActiveObjectRemoveAdd(SessionId peer_id, const std::string &datas);
-	void SendActiveObjectMessages(SessionId peer_id, const std::string &datas,
+	u32 SendActiveObjectRemoveAdd(session_t peer_id, const std::string &datas);
+	void SendActiveObjectMessages(session_t peer_id, const std::string &datas,
 		bool reliable = true);
-	void SendCSMFlavourLimits(SessionId peer_id);
+	void SendCSMFlavourLimits(session_t peer_id);
 
 	/*
 		Something random
 	*/
 
-	void DiePlayer(SessionId peer_id);
-	void RespawnPlayer(SessionId peer_id);
-	void DeleteClient(SessionId peer_id, ClientDeletionReason reason);
+	void DiePlayer(session_t peer_id);
+	void RespawnPlayer(session_t peer_id);
+	void DeleteClient(session_t peer_id, ClientDeletionReason reason);
 	void UpdateCrafting(RemotePlayer *player);
 
 	void handleChatInterfaceEvent(ChatEvent *evt);
@@ -475,12 +475,12 @@ private:
 	void handleAdminChat(const ChatEventChat *evt);
 
 	// When called, connection mutex should be locked
-	RemoteClient* getClient(SessionId peer_id,ClientState state_min=CS_Active);
-	RemoteClient* getClientNoEx(SessionId peer_id,ClientState state_min=CS_Active);
+	RemoteClient* getClient(session_t peer_id,ClientState state_min = CS_Active);
+	RemoteClient* getClientNoEx(session_t peer_id,ClientState state_min = CS_Active);
 
 	// When called, environment mutex should be locked
-	std::string getPlayerName(SessionId peer_id);
-	PlayerSAO* getPlayerSAO(SessionId peer_id);
+	std::string getPlayerName(session_t peer_id);
+	PlayerSAO* getPlayerSAO(session_t peer_id);
 
 	/*
 		Get a player from memory or creates one.
@@ -489,7 +489,7 @@ private:
 
 		Call with env and con locked.
 	*/
-	PlayerSAO *emergePlayer(const char *name, SessionId peer_id, u16 proto_version);
+	PlayerSAO *emergePlayer(const char *name, session_t peer_id, u16 proto_version);
 
 	void handlePeerChanges();
 
@@ -633,7 +633,7 @@ private:
 		this peed id as the disabled recipient
 		This is behind m_env_mutex
 	*/
-	SessionId m_ignore_map_edit_events_peer_id = 0;
+	session_t m_ignore_map_edit_events_peer_id = 0;
 
 	// media files known to server
 	std::unordered_map<std::string, MediaInfo> m_media;

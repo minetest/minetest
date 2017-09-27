@@ -197,7 +197,7 @@ class RemotePlayer;
 class PlayerSAO : public UnitSAO
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, SessionId peer_id_,
+	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 			bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
@@ -313,7 +313,7 @@ public:
 	void disconnected();
 
 	RemotePlayer *getPlayer() { return m_player; }
-	SessionId getPeerID() const { return m_peer_id; }
+	session_t getPeerID() const { return m_peer_id; }
 
 	// Cheat prevention
 
@@ -374,7 +374,7 @@ private:
 	void unlinkPlayerSessionAndSave();
 
 	RemotePlayer *m_player = nullptr;
-	SessionId m_peer_id = 0;
+	session_t m_peer_id = 0;
 	Inventory *m_inventory = nullptr;
 	s16 m_damage = 0;
 

@@ -1218,7 +1218,7 @@ void Client::sendPlayerPos()
 
 	//infostream << "Sending Player Position information" << std::endl;
 
-	SessionId our_peer_id = m_con->GetPeerID();
+	session_t our_peer_id = m_con->GetPeerID();
 
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
@@ -1239,7 +1239,7 @@ void Client::sendPlayerItem(u16 item)
 	if(myplayer == NULL)
 		return;
 
-	SessionId our_peer_id = m_con->GetPeerID();
+	session_t our_peer_id = m_con->GetPeerID();
 
 	// Set peer id if not set already
 	if(myplayer->peer_id == PEER_ID_INEXISTENT)
