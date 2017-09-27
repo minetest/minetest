@@ -52,8 +52,8 @@ public:
 private:
 	void runTimeouts(float dtime);
 	void rawSend(const BufferedPacket &packet);
-	bool rawSendAsPacket(
-		session_t peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
+	bool rawSendAsPacket(session_t peer_id, u8 channelnum, SharedBuffer<u8> data,
+			bool reliable);
 
 	void processReliableCommand(ConnectionCommand &c);
 	void processNonReliableCommand(ConnectionCommand &c);
@@ -108,7 +108,8 @@ private:
 	// If found, sets peer_id and dst
 	bool getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst);
 
-	bool checkIncomingBuffers(Channel *channel, session_t &peer_id, SharedBuffer<u8> &dst);
+	bool checkIncomingBuffers(
+			Channel *channel, session_t &peer_id, SharedBuffer<u8> &dst);
 
 	/*
 		Processes a packet with the basic header stripped out.
@@ -119,7 +120,7 @@ private:
 			reliable: true if recursing into a reliable packet
 	*/
 	SharedBuffer<u8> processPacket(Channel *channel, SharedBuffer<u8> packetdata,
-		session_t peer_id, u8 channelnum, bool reliable);
+			session_t peer_id, u8 channelnum, bool reliable);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
 			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,
