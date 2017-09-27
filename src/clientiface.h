@@ -205,7 +205,7 @@ enum ClientStateEvent
 */
 struct PrioritySortedBlockTransfer
 {
-	PrioritySortedBlockTransfer(float a_priority, const v3s16 &a_pos, u16 a_peer_id)
+	PrioritySortedBlockTransfer(float a_priority, const v3s16 &a_pos, session_t a_peer_id)
 	{
 		priority = a_priority;
 		pos = a_pos;
@@ -217,7 +217,7 @@ struct PrioritySortedBlockTransfer
 	}
 	float priority;
 	v3s16 pos;
-	u16 peer_id;
+	session_t peer_id;
 };
 
 class RemoteClient
@@ -227,7 +227,7 @@ public:
 	// NOTE: If client is made allowed to exist while peer doesn't,
 	//       this has to be set to 0 when there is no peer.
 	//       Also, the client must be moved to some other container.
-	u16 peer_id = PEER_ID_INEXISTENT;
+	session_t peer_id = PEER_ID_INEXISTENT;
 	// The serialization version to use with the client
 	u8 serialization_version = SER_FMT_VER_INVALID;
 	//
@@ -431,38 +431,39 @@ public:
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
 	/* send message to client */
-	void send(u16 peer_id, u8 channelnum, NetworkPacket* pkt, bool reliable);
+	void send(session_t peer_id, u8 channelnum, NetworkPacket *pkt, bool reliable);
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);
 	void sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt, u16 min_proto_ver);
 
 	/* delete a client */
-	void DeleteClient(u16 peer_id);
+	void DeleteClient(session_t peer_id);
 
 	/* create client */
-	void CreateClient(u16 peer_id);
+	void CreateClient(session_t peer_id);
 
 	/* get a client by peer_id */
-	RemoteClient* getClientNoEx(u16 peer_id,  ClientState state_min=CS_Active);
+	RemoteClient *getClientNoEx(session_t peer_id,  ClientState state_min = CS_Active);
 
 	/* get client by peer_id (make sure you have list lock before!*/
-	RemoteClient* lockedGetClientNoEx(u16 peer_id,  ClientState state_min=CS_Active);
+	RemoteClient *lockedGetClientNoEx(session_t peer_id,  ClientState state_min = CS_Active);
 
 	/* get state of client by id*/
-	ClientState getClientState(u16 peer_id);
+	ClientState getClientState(session_t peer_id);
 
 	/* set client playername */
-	void setPlayerName(u16 peer_id,std::string name);
+	void setPlayerName(session_t peer_id, const std::string &name);
 
 	/* get protocol version of client */
-	u16 getProtocolVersion(u16 peer_id);
+	u16 getProtocolVersion(session_t peer_id);
 
 	/* set client version */
-	void setClientVersion(u16 peer_id, u8 major, u8 minor, u8 patch, std::string full);
+	void setClientVersion(session_t peer_id, u8 major, u8 minor, u8 patch,
+			const std::string &full);
 
 	/* event to update client state */
-	void event(u16 peer_id, ClientStateEvent event);
+	void event(session_t peer_id, ClientStateEvent event);
 
 	/* Set environment. Do not call this function if environment is already set */
 	void setEnv(ServerEnvironment *env)

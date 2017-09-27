@@ -56,7 +56,7 @@ std::mutex log_message_mutex;
 #define PING_TIMEOUT 5.0
 
 BufferedPacket makePacket(Address &address, SharedBuffer<u8> data,
-		u32 protocol_id, u16 sender_peer_id, u8 channel)
+		u32 protocol_id, session_t sender_peer_id, u8 channel)
 {
 	u32 packet_size = data.getSize() + BASE_HEADER_SIZE;
 	BufferedPacket p(packet_size);
@@ -501,7 +501,7 @@ void IncomingSplitBuffer::removeUnreliableTimedOuts(float dtime, float timeout)
 	ConnectionCommand
  */
 
-void ConnectionCommand::send(u16 peer_id_, u8 channelnum_, NetworkPacket *pkt,
+void ConnectionCommand::send(session_t peer_id_, u8 channelnum_, NetworkPacket *pkt,
 	bool reliable_)
 {
 	type = CONNCMD_SEND;
@@ -1198,10 +1198,10 @@ void Connection::TriggerSend()
 	m_sendThread->Trigger();
 }
 
-PeerHelper Connection::getPeerNoEx(u16 peer_id)
+PeerHelper Connection::getPeerNoEx(session_t peer_id)
 {
 	MutexAutoLock peerlock(m_peers_mutex);
-	std::map<u16, Peer*>::iterator node = m_peers.find(peer_id);
+	std::map<session_t, Peer *>::iterator node = m_peers.find(peer_id);
 
 	if (node == m_peers.end()) {
 		return PeerHelper(NULL);
@@ -1237,17 +1237,7 @@ u16 Connection::lookupPeer(Address& sender)
 	return PEER_ID_INEXISTENT;
 }
 
-std::list<Peer*> Connection::getPeers()
-{
-	std::list<Peer*> list;
-	for (auto &p : m_peers) {
-		Peer *peer = p.second;
-		list.push_back(peer);
-	}
-	return list;
-}
-
-bool Connection::deletePeer(u16 peer_id, bool timeout)
+bool Connection::deletePeer(session_t peer_id, bool timeout)
 {
 	Peer *peer = 0;
 
@@ -1316,7 +1306,7 @@ bool Connection::Connected()
 	if (m_peers.size() != 1)
 		return false;
 
-	std::map<u16, Peer*>::iterator node = m_peers.find(PEER_ID_SERVER);
+	std::map<session_t, Peer *>::iterator node = m_peers.find(PEER_ID_SERVER);
 	if (node == m_peers.end())
 		return false;
 
@@ -1371,8 +1361,8 @@ void Connection::Receive(NetworkPacket* pkt)
 	throw NoIncomingDataException("No incoming data");
 }
 
-void Connection::Send(u16 peer_id, u8 channelnum,
-		NetworkPacket* pkt, bool reliable)
+void Connection::Send(session_t peer_id, u8 channelnum,
+		NetworkPacket *pkt, bool reliable)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 
@@ -1382,7 +1372,7 @@ void Connection::Send(u16 peer_id, u8 channelnum,
 	putCommand(c);
 }
 
-Address Connection::GetPeerAddress(u16 peer_id)
+Address Connection::GetPeerAddress(session_t peer_id)
 {
 	PeerHelper peer = getPeerNoEx(peer_id);
 
@@ -1393,7 +1383,7 @@ Address Connection::GetPeerAddress(u16 peer_id)
 	return peer_address;
 }
 
-float Connection::getPeerStat(u16 peer_id, rtt_stat_type type)
+float Connection::getPeerStat(session_t peer_id, rtt_stat_type type)
 {
 	PeerHelper peer = getPeerNoEx(peer_id);
 	if (!peer) return -1;
@@ -1440,7 +1430,7 @@ u16 Connection::createPeer(Address& sender, MTProtocols protocol, int fd)
 	// Somebody wants to make a new connection
 
 	// Get a unique peer id (2 or higher)
-	u16 peer_id_new = m_next_remote_peer_id;
+	session_t peer_id_new = m_next_remote_peer_id;
 	u16 overflow =  MAX_UDP_PEERS;
 
 	/*
@@ -1508,14 +1498,14 @@ const std::string Connection::getDesc()
 			itos(m_udpSocket.GetHandle())+"/"+itos(m_peer_id)+")";
 }
 
-void Connection::DisconnectPeer(u16 peer_id)
+void Connection::DisconnectPeer(session_t peer_id)
 {
 	ConnectionCommand discon;
 	discon.disconnect_peer(peer_id);
 	putCommand(discon);
 }
 
-void Connection::sendAck(u16 peer_id, u8 channelnum, u16 seqnum)
+void Connection::sendAck(session_t peer_id, u8 channelnum, u16 seqnum)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
 

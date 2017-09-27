@@ -206,6 +206,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define TEXTURENAME_ALLOWED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.-"
 
+typedef u16 session_t;
+
 enum ToClientCommand
 {
 	TOCLIENT_HELLO = 0x02,

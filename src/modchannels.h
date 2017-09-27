@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <vector>
 #include <memory>
+#include "network/networkprotocol.h"
 #include "irrlichttypes.h"
 
 enum ModChannelState : u8
@@ -40,8 +41,8 @@ public:
 	~ModChannel() = default;
 
 	const std::string &getName() const { return m_name; }
-	bool registerConsumer(u16 peer_id);
-	bool removeConsumer(u16 peer_id);
+	bool registerConsumer(session_t peer_id);
+	bool removeConsumer(session_t peer_id);
 	const std::vector<u16> &getChannelPeers() const { return m_client_consumers; }
 	bool canWrite() const;
 	void setState(ModChannelState state);
@@ -70,8 +71,8 @@ public:
 
 	void registerChannel(const std::string &channel);
 	bool setChannelState(const std::string &channel, ModChannelState state);
-	bool joinChannel(const std::string &channel, u16 peer_id);
-	bool leaveChannel(const std::string &channel, u16 peer_id);
+	bool joinChannel(const std::string &channel, session_t peer_id);
+	bool leaveChannel(const std::string &channel, session_t peer_id);
 	bool channelRegistered(const std::string &channel) const;
 	ModChannel *getModChannel(const std::string &channel);
 	/**
@@ -81,7 +82,7 @@ public:
 	 * @return true if write is allowed
 	 */
 	bool canWriteOnChannel(const std::string &channel) const;
-	void leaveAllChannels(u16 peer_id);
+	void leaveAllChannels(session_t peer_id);
 	const std::vector<u16> &getChannelPeers(const std::string &channel) const;
 
 private:

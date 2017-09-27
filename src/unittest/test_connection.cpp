@@ -81,7 +81,7 @@ void TestConnection::testHelpers()
 {
 	// Some constants for testing
 	u32 proto_id = 0x12345678;
-	u16 peer_id = 123;
+	session_t peer_id = 123;
 	u8 channel = 2;
 	SharedBuffer<u8> data1(1);
 	data1[0] = 100;
@@ -94,7 +94,7 @@ void TestConnection::testHelpers()
 		We should now have a packet with this data:
 		Header:
 			[0] u32 protocol_id
-			[4] u16 sender_peer_id
+			[4] session_t sender_peer_id
 			[6] u8 channel
 		Data:
 			[7] u8 data1[0]
@@ -264,7 +264,7 @@ void TestConnection::testConnectSendReceive()
 		UASSERT(memcmp(*sentdata, *recvdata, recvdata.getSize()) == 0);
 	}
 
-	u16 peer_id_client = 2;
+	session_t peer_id_client = 2;
 	/*
 		Send a large packet
 	*/
@@ -296,7 +296,7 @@ void TestConnection::testConnectSendReceive()
 
 		SharedBuffer<u8> recvdata;
 		infostream << "** running client.Receive()" << std::endl;
-		u16 peer_id = 132;
+		session_t peer_id = 132;
 		u16 size = 0;
 		bool received = false;
 		u64 timems0 = porting::getTimeMs();

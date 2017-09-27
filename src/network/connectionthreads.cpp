@@ -53,7 +53,7 @@ std::mutex log_conthread_mutex;
 
 #define WINDOW_SIZE 5
 
-static u16 readPeerId(u8 *packetdata)
+static session_t readPeerId(u8 *packetdata)
 {
 	return readU16(&packetdata[4]);
 }
@@ -138,12 +138,12 @@ void ConnectionSendThread::Trigger()
 
 bool ConnectionSendThread::packetsQueued()
 {
-	std::list<u16> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
 
 	if (!m_outgoing_queue.empty() && !peerIds.empty())
 		return true;
 
-	for (u16 peerId : peerIds) {
+	for (session_t peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 
 		if (!peer)
@@ -165,10 +165,10 @@ bool ConnectionSendThread::packetsQueued()
 
 void ConnectionSendThread::runTimeouts(float dtime)
 {
-	std::list<u16> timeouted_peers;
-	std::list<u16> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> timeouted_peers;
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
 
-	for (u16 &peerId : peerIds) {
+	for (session_t &peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 
 		if (!peer)
@@ -231,7 +231,7 @@ void ConnectionSendThread::runTimeouts(float dtime)
 
 			for (std::list<BufferedPacket>::iterator k = timed_outs.begin();
 				k != timed_outs.end(); ++k) {
-				u16 peer_id = readPeerId(*(k->data));
+				session_t peer_id = readPeerId(*(k->data));
 				u8 channelnum = readChannel(*(k->data));
 				u16 seqnum = readU16(&(k->data[BASE_HEADER_SIZE + 1]));
 
@@ -329,7 +329,7 @@ void ConnectionSendThread::sendAsPacketReliable(BufferedPacket &p, Channel *chan
 	rawSend(p);
 }
 
-bool ConnectionSendThread::rawSendAsPacket(u16 peer_id, u8 channelnum,
+bool ConnectionSendThread::rawSendAsPacket(session_t peer_id, u8 channelnum,
 	SharedBuffer<u8> data, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
@@ -557,14 +557,14 @@ void ConnectionSendThread::disconnect()
 
 
 	// Send to all
-	std::list<u16> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
-	for (u16 peerid : peerids) {
+	for (session_t peerid : peerids) {
 		sendAsPacket(peerid, 0, data, false);
 	}
 }
 
-void ConnectionSendThread::disconnect_peer(u16 peer_id)
+void ConnectionSendThread::disconnect_peer(session_t peer_id)
 {
 	LOG(dout_con << m_connection->getDesc() << " disconnecting peer" << std::endl);
 
@@ -586,7 +586,7 @@ void ConnectionSendThread::disconnect_peer(u16 peer_id)
 	dynamic_cast<UDPPeer *>(&peer)->m_pending_disconnect = true;
 }
 
-void ConnectionSendThread::send(u16 peer_id, u8 channelnum,
+void ConnectionSendThread::send(session_t peer_id, u8 channelnum,
 	SharedBuffer<u8> data)
 {
 	assert(channelnum < CHANNEL_COUNT); // Pre-condition
@@ -629,18 +629,18 @@ void ConnectionSendThread::sendReliable(ConnectionCommand &c)
 
 void ConnectionSendThread::sendToAll(u8 channelnum, SharedBuffer<u8> data)
 {
-	std::list<u16> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
-	for (u16 peerid : peerids) {
+	for (session_t peerid : peerids) {
 		send(peerid, channelnum, data);
 	}
 }
 
 void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
 {
-	std::list<u16> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
-	for (u16 peerid : peerids) {
+	for (session_t peerid : peerids) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerid);
 
 		if (!peer)
@@ -652,11 +652,11 @@ void ConnectionSendThread::sendToAllReliable(ConnectionCommand &c)
 
 void ConnectionSendThread::sendPackets(float dtime)
 {
-	std::list<u16> peerIds = m_connection->getPeerIDs();
-	std::list<u16> pendingDisconnect;
-	std::map<u16, bool> pending_unreliable;
+	std::list<session_t> peerIds = m_connection->getPeerIDs();
+	std::list<session_t> pendingDisconnect;
+	std::map<session_t, bool> pending_unreliable;
 
-	for (u16 peerId : peerIds) {
+	for (session_t peerId : peerIds) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerId);
 		//peer may have been removed
 		if (!peer) {
@@ -780,14 +780,14 @@ void ConnectionSendThread::sendPackets(float dtime)
 		}
 	}
 
-	for (u16 peerId : pendingDisconnect) {
+	for (session_t peerId : pendingDisconnect) {
 		if (!pending_unreliable[peerId]) {
 			m_connection->deletePeer(peerId, false);
 		}
 	}
 }
 
-void ConnectionSendThread::sendAsPacket(u16 peer_id, u8 channelnum,
+void ConnectionSendThread::sendAsPacket(session_t peer_id, u8 channelnum,
 	SharedBuffer<u8> data, bool ack)
 {
 	OutgoingPacket packet(peer_id, channelnum, data, false, ack);
@@ -835,9 +835,9 @@ void *ConnectionReceiveThread::run()
 		if (debug_print_timer > 20.0) {
 			debug_print_timer -= 20.0;
 
-			std::list<u16> peerids = m_connection->getPeerIDs();
+			std::list<session_t> peerids = m_connection->getPeerIDs();
 
-			for (std::list<u16>::iterator i = peerids.begin();
+			for (std::list<session_t>::iterator i = peerids.begin();
 					i != peerids.end();
 					i++)
 			{
@@ -910,7 +910,7 @@ void ConnectionReceiveThread::receive()
 		try {
 			if (packet_queued) {
 				bool data_left = true;
-				u16 peer_id;
+				session_t peer_id;
 				SharedBuffer<u8> resultdata;
 				while (data_left) {
 					try {
@@ -943,7 +943,7 @@ void ConnectionReceiveThread::receive()
 				continue;
 			}
 
-			u16 peer_id = readPeerId(*packetdata);
+			session_t peer_id = readPeerId(*packetdata);
 			u8 channelnum = readChannel(*packetdata);
 
 			if (channelnum > CHANNEL_COUNT - 1) {
@@ -1044,11 +1044,11 @@ void ConnectionReceiveThread::receive()
 	}
 }
 
-bool ConnectionReceiveThread::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst)
+bool ConnectionReceiveThread::getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst)
 {
-	std::list<u16> peerids = m_connection->getPeerIDs();
+	std::list<session_t> peerids = m_connection->getPeerIDs();
 
-	for (u16 peerid : peerids) {
+	for (session_t peerid : peerids) {
 		PeerHelper peer = m_connection->getPeerNoEx(peerid);
 		if (!peer)
 			continue;
@@ -1066,7 +1066,7 @@ bool ConnectionReceiveThread::getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst
 }
 
 bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
-	u16 &peer_id, SharedBuffer<u8> &dst)
+	session_t &peer_id, SharedBuffer<u8> &dst)
 {
 	u16 firstseqnum = 0;
 	if (channel->incoming_reliables.getFirstSeqnum(firstseqnum)) {
@@ -1098,7 +1098,7 @@ bool ConnectionReceiveThread::checkIncomingBuffers(Channel *channel,
 }
 
 SharedBuffer<u8> ConnectionReceiveThread::processPacket(Channel *channel,
-	SharedBuffer<u8> packetdata, u16 peer_id, u8 channelnum, bool reliable)
+	SharedBuffer<u8> packetdata, session_t peer_id, u8 channelnum, bool reliable)
 {
 	PeerHelper peer = m_connection->getPeerNoEx(peer_id);
 
@@ -1197,7 +1197,7 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 		if (packetdata.getSize() < 4)
 			throw InvalidIncomingDataException
 				("packetdata.getSize() < 4 (SET_PEER_ID header size)");
-		u16 peer_id_new = readU16(&packetdata[2]);
+		session_t peer_id_new = readU16(&packetdata[2]);
 		LOG(dout_con << m_connection->getDesc() << "Got new peer id: " << peer_id_new
 			<< "... " << std::endl);
 

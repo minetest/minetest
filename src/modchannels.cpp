@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <cassert>
 #include "util/basic_macros.h"
 
-bool ModChannel::registerConsumer(u16 peer_id)
+bool ModChannel::registerConsumer(session_t peer_id)
 {
 
 	// ignore if peer_id already joined
@@ -33,7 +33,7 @@ bool ModChannel::registerConsumer(u16 peer_id)
 	return true;
 }
 
-bool ModChannel::removeConsumer(u16 peer_id)
+bool ModChannel::removeConsumer(session_t peer_id)
 {
 	bool found = false;
 	auto peer_removal_fct = [peer_id, &found](u16 p) {
@@ -112,7 +112,7 @@ bool ModChannelMgr::removeChannel(const std::string &channel)
 	return true;
 }
 
-bool ModChannelMgr::joinChannel(const std::string &channel, u16 peer_id)
+bool ModChannelMgr::joinChannel(const std::string &channel, session_t peer_id)
 {
 	if (!channelRegistered(channel))
 		registerChannel(channel);
@@ -120,7 +120,7 @@ bool ModChannelMgr::joinChannel(const std::string &channel, u16 peer_id)
 	return m_registered_channels[channel]->registerConsumer(peer_id);
 }
 
-bool ModChannelMgr::leaveChannel(const std::string &channel, u16 peer_id)
+bool ModChannelMgr::leaveChannel(const std::string &channel, session_t peer_id)
 {
 	if (!channelRegistered(channel))
 		return false;
@@ -135,7 +135,7 @@ bool ModChannelMgr::leaveChannel(const std::string &channel, u16 peer_id)
 	return consumerRemoved;
 }
 
-void ModChannelMgr::leaveAllChannels(u16 peer_id)
+void ModChannelMgr::leaveAllChannels(session_t peer_id)
 {
 	for (auto &channel_it : m_registered_channels)
 		channel_it.second->removeConsumer(peer_id);

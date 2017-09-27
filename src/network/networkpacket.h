@@ -22,23 +22,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ctime>
 #include "util/pointer.h"
 #include "util/numeric.h"
+#include "networkprotocol.h"
 #include <SColor.h>
 
 class NetworkPacket
 {
 
 public:
-	NetworkPacket(u16 command, u32 datasize, u16 peer_id);
+	NetworkPacket(u16 command, u32 datasize, session_t peer_id);
 	NetworkPacket(u16 command, u32 datasize);
 	NetworkPacket() = default;
 
 	~NetworkPacket();
 
-	void putRawPacket(u8 *data, u32 datasize, u16 peer_id);
+	void putRawPacket(u8 *data, u32 datasize, session_t peer_id);
 
 	// Getters
-	u32 getSize() { return m_datasize; }
-	u16 getPeerId() { return m_peer_id; }
+	u32 getSize() const { return m_datasize; }
+	session_t getPeerId() const { return m_peer_id; }
 	u16 getCommand() { return m_command; }
 	const u32 getRemainingBytes() const { return m_datasize - m_read_offset; }
 	const char *getRemainingString() { return getString(m_read_offset); }
@@ -135,5 +136,5 @@ private:
 	u32 m_datasize = 0;
 	u32 m_read_offset = 0;
 	u16 m_command = 0;
-	u16 m_peer_id = 0;
+	session_t m_peer_id = 0;
 };

@@ -19,6 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include "networkprotocol.h"
+
 namespace con
 {
 
@@ -53,21 +55,22 @@ public:
 	virtual void deletingPeer(Peer *peer, bool timeout) = 0;
 };
 
-enum PeerChangeType
+enum PeerChangeType : u8
 {
 	PEER_ADDED,
 	PEER_REMOVED
 };
+
 struct PeerChange
 {
-	PeerChange(PeerChangeType t, u16 _peer_id, bool _timeout)
+	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout)
 	    : type(t), peer_id(_peer_id), timeout(_timeout)
 	{
 	}
 	PeerChange() = delete;
 
 	PeerChangeType type;
-	u16 peer_id;
+	session_t peer_id;
 	bool timeout;
 };
 }

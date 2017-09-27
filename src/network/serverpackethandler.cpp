@@ -356,7 +356,7 @@ void Server::handleCommand_RequestMedia(NetworkPacket* pkt)
 
 void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 {
-	u16 peer_id = pkt->getPeerId();
+	session_t peer_id = pkt->getPeerId();
 
 	PlayerSAO* playersao = StageTwoClientInit(peer_id);
 

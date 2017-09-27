@@ -247,7 +247,7 @@ bool EmergeManager::isRunning()
 
 
 bool EmergeManager::enqueueBlockEmerge(
-	u16 peer_id,
+	session_t peer_id,
 	v3s16 blockpos,
 	bool allow_generate,
 	bool ignore_queue_limits)
@@ -264,7 +264,7 @@ bool EmergeManager::enqueueBlockEmerge(
 
 bool EmergeManager::enqueueBlockEmergeEx(
 	v3s16 blockpos,
-	u16 peer_id,
+	session_t peer_id,
 	u16 flags,
 	EmergeCompletionCallback callback,
 	void *callback_param)

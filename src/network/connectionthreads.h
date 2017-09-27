@@ -53,22 +53,22 @@ private:
 	void runTimeouts(float dtime);
 	void rawSend(const BufferedPacket &packet);
 	bool rawSendAsPacket(
-			u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
+		session_t peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
 
 	void processReliableCommand(ConnectionCommand &c);
 	void processNonReliableCommand(ConnectionCommand &c);
 	void serve(Address bind_address);
 	void connect(Address address);
 	void disconnect();
-	void disconnect_peer(u16 peer_id);
-	void send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data);
+	void disconnect_peer(session_t peer_id);
+	void send(session_t peer_id, u8 channelnum, SharedBuffer<u8> data);
 	void sendReliable(ConnectionCommand &c);
 	void sendToAll(u8 channelnum, SharedBuffer<u8> data);
 	void sendToAllReliable(ConnectionCommand &c);
 
 	void sendPackets(float dtime);
 
-	void sendAsPacket(u16 peer_id, u8 channelnum, SharedBuffer<u8> data,
+	void sendAsPacket(session_t peer_id, u8 channelnum, SharedBuffer<u8> data,
 			bool ack = false);
 
 	void sendAsPacketReliable(BufferedPacket &p, Channel *channel);
@@ -106,9 +106,9 @@ private:
 	// Returns next data from a buffer if possible
 	// If found, returns true; if not, false.
 	// If found, sets peer_id and dst
-	bool getFromBuffers(u16 &peer_id, SharedBuffer<u8> &dst);
+	bool getFromBuffers(session_t &peer_id, SharedBuffer<u8> &dst);
 
-	bool checkIncomingBuffers(Channel *channel, u16 &peer_id, SharedBuffer<u8> &dst);
+	bool checkIncomingBuffers(Channel *channel, session_t &peer_id, SharedBuffer<u8> &dst);
 
 	/*
 		Processes a packet with the basic header stripped out.
@@ -119,7 +119,7 @@ private:
 			reliable: true if recursing into a reliable packet
 	*/
 	SharedBuffer<u8> processPacket(Channel *channel, SharedBuffer<u8> packetdata,
-			u16 peer_id, u8 channelnum, bool reliable);
+		session_t peer_id, u8 channelnum, bool reliable);
 
 	SharedBuffer<u8> handlePacketType_Control(Channel *channel,
 			SharedBuffer<u8> packetdata, Peer *peer, u8 channelnum,

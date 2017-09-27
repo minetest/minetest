@@ -405,7 +405,7 @@ ServerMap & ServerEnvironment::getServerMap()
 	return *m_map;
 }
 
-RemotePlayer *ServerEnvironment::getPlayer(const u16 peer_id)
+RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 {
 	for (RemotePlayer *player : m_players) {
 		if (player->peer_id == peer_id)
@@ -523,7 +523,7 @@ void ServerEnvironment::savePlayer(RemotePlayer *player)
 }
 
 PlayerSAO *ServerEnvironment::loadPlayer(RemotePlayer *player, bool *new_player,
-	u16 peer_id, bool is_singleplayer)
+	session_t peer_id, bool is_singleplayer)
 {
 	PlayerSAO *playersao = new PlayerSAO(this, player, peer_id, is_singleplayer);
 	// Create player if it doesn't exist

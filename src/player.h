@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irrlichttypes_bloated.h"
 #include "inventory.h"
 #include "constants.h"
+#include "network/networkprotocol.h"
 #include "util/basic_macros.h"
 #include <list>
 #include <mutex>
@@ -146,7 +147,7 @@ public:
 	v2s32 local_animations[4];
 	float local_animation_speed;
 
-	u16 peer_id = PEER_ID_INEXISTENT;
+	session_t peer_id = PEER_ID_INEXISTENT;
 
 	std::string inventory_formspec;
 
