@@ -24,6 +24,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "network/networkprotocol.h"
 #include "util/basic_macros.h"
+#include "environment.h"
+#include "controllog.h"
 #include <list>
 #include <mutex>
 
@@ -173,8 +175,37 @@ public:
 	bool is_climbing = false;
 	bool swimming_vertical = false;
 	bool is_slipping = false;
+	bool m_can_jump = false;
+	f32 m_yaw = 0.0f;
+	f32 m_pitch = 0.0f;
+
+	float physics_override_speed = 1.0f;
+	float physics_override_jump = 1.0f;
+	float physics_override_gravity = 1.0f;
+	bool physics_override_sneak = true;
+	bool physics_override_sneak_glitch = false;
+	// Temporary option for old move code
+	bool physics_override_new_move = true;
+
 
 	virtual bool isAttached() const = 0;
+
+	void setYaw(f32 yaw) { m_yaw = yaw; }
+	f32 getYaw() const { return m_yaw; }
+
+	void setPitch(f32 pitch) { m_pitch = pitch; }
+	f32 getPitch() const { return m_pitch; }
+
+	inline void setPosition(const v3f &position)
+	{
+		m_position = position;
+		m_sneak_node_exists = false;
+	}
+
+	v3f getPosition() const { return m_position; }
+
+	v3s16 getStandingNodePos();
+
 protected:
 	char m_name[PLAYERNAME_SIZE];
 	v3f m_speed;
@@ -183,6 +214,17 @@ protected:
 
 	virtual bool checkPrivilege(const std::string &priv) const = 0;
 	virtual void triggerJumpEvent() = 0;
+	void _applyControl(const ControlLogEntry &cle, Environment *env);
+	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
+	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
+	float getSlipFactor(Environment *env, const v3f &speedH);
+	v3f m_position;
+
+	// Whether the player is allowed to sneak
+	bool m_sneak_node_exists = false;
+
+	v3s16 m_standing_node;
+	v3s16 m_sneak_node = v3s16(32767, 32767, 32767);
 private:
 	// Protect some critical areas
 	// hud for example can be modified by EmergeThread
