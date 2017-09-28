@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include <sstream>
-#include <cmath>
 #include "clientiface.h"
 #include "network/connection.h"
 #include "network/serveropcodes.h"
@@ -106,10 +105,16 @@ void RemoteClient::GetNextBlocks (
 	// Limit to 0.0f in case player moves backwards.
 	// When a player moves forward but looks down or backwards the adjustment will be 0.
 	// (note that playerspeed is not normalized, that way we save a few vector operations)
-	const f32 adjust = std::max(camera_dir.dotProduct(playerspeed), 0.0f) / BS;
+	f32 adjust = camera_dir.dotProduct(playerspeed) / BS;
 
 	// Predict where player will be soon. Just add the speed. The factor two tested well.
-	v3f playerpos_predicted = playerpos + playerspeed * 2.0f;
+	// if the player moves backwards (adjust < 0), do not adjust the center
+	v3f playerpos_predicted = playerpos;
+	if (adjust > 0.0f) {
+		playerpos_predicted += playerspeed * 2.0f;
+	} else {
+		adjust = 0.0f;
+	}
 
 	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
 
