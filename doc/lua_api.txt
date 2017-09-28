@@ -3142,8 +3142,6 @@ These functions return the leftover itemstack.
 * `minetest.hash_node_position(pos)`: returns an 48-bit integer
     * `pos`: table {x=number, y=number, z=number},
     * Gives a unique hash number for a node position (16+16+16=48bit)
-    * Currently it returns
-      `(pos.z + 32768) * 65536 * 65536 + (pos.y + 32768) * 65536 + pos.x + 32768`
 * `minetest.get_position_from_hash(hash)`: returns a position
     * Inverse transform of `minetest.hash_node_position`
 * `minetest.get_item_group(name, group)`: returns a rating
