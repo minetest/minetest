@@ -491,7 +491,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	cle.setJoyForw(control.forw_move_joystick_axis / 32767.f);
 	cle.setJoySidew(control.sidew_move_joystick_axis / 32767.f);
 
-	_applyControl(cle, env);
+	applyControlLogEntry(cle, env);
 
 	// append entry to actual log
 	m_control_log.add(cle);

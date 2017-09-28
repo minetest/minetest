@@ -159,6 +159,10 @@ public:
 	u32 getFinishTime() const;
 	u32 getSpannedTime() const;
 	void acknowledge(u32 time); // removes entries
+	const std::deque<ControlLogEntry> &getEntries() const
+	{
+		return entries;
+	}
 private:
 	u8 version = 1; // agreed-upon version
 	u32 starttime = 0;

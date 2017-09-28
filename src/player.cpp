@@ -129,7 +129,7 @@ void Player::clearHud()
 	}
 }
 
-void Player::_applyControl(const ControlLogEntry &cle, Environment *env)
+void Player::applyControlLogEntry(const ControlLogEntry &cle, Environment *env)
 {
 
 	// SERVER SIDE MOVEMENT: this method will need to be abstracted into:

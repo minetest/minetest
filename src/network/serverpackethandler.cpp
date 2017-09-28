@@ -479,9 +479,15 @@ void Server::process_PlayerPos(RemotePlayer *player, PlayerSAO *playersao,
 		// deserializing does not validate it. The entries could be
 		// a bunch of lies
 		log.deserialize(logstream);
+		// prune the log of already acknowledged controls
+		// check that the remainder does not exceed 2 seconds dtime,
+		//   else reject
 		// replay the log step by step:
-		// - apply controls
-		// - simulate physics
+		for( const ControlLogEntry cle : log.getEntries() ) {
+			// - apply controls
+			player->applyControlLogEntry(cle, &getEnv());
+			// - simulate physics
+		}
 		// see how far we can acknowledge
 		u32 ackTime = log.getFinishTime();
 		// send acknowledge

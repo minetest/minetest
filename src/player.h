@@ -205,6 +205,7 @@ public:
 	v3f getPosition() const { return m_position; }
 
 	v3s16 getStandingNodePos();
+	void applyControlLogEntry(const ControlLogEntry &cle, Environment *env);
 
 protected:
 	char m_name[PLAYERNAME_SIZE];
@@ -214,7 +215,6 @@ protected:
 
 	virtual bool checkPrivilege(const std::string &priv) const = 0;
 	virtual void triggerJumpEvent() = 0;
-	void _applyControl(const ControlLogEntry &cle, Environment *env);
 	void accelerateHorizontal(const v3f &target_speed, const f32 max_increase);
 	void accelerateVertical(const v3f &target_speed, const f32 max_increase);
 	float getSlipFactor(Environment *env, const v3f &speedH);
