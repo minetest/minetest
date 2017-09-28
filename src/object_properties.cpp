@@ -66,6 +66,7 @@ std::string ObjectProperties::dump()
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
 	os << ", can_zoom=" << can_zoom;
+	os << ", static_save=" << static_save;
 	return os.str();
 }
 

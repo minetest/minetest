@@ -294,7 +294,10 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_max_rotation_per_sec = luaL_checknumber(L, -1);
 	}
 	lua_pop(L, 1);
+
 	getstringfield(L, -1, "infotext", prop->infotext);
+	getboolfield(L, -1, "static_save", prop->static_save);
+
 	lua_getfield(L, -1, "wield_item");
 	if (!lua_isnil(L, -1))
 		prop->wield_item = read_item(L, -1, idef).getItemString();
@@ -376,6 +379,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
+	lua_pushboolean(L, prop->static_save);
+	lua_setfield(L, -2, "static_save");
 	lua_pushlstring(L, prop->wield_item.c_str(), prop->wield_item.size());
 	lua_setfield(L, -2, "wield_item");
 }

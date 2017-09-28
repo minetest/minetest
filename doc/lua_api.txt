@@ -4199,6 +4199,10 @@ Definition tables
         nametag = "", -- by default empty, for players their name is shown if empty
         nametag_color = <color>, -- sets color of nametag as ColorSpec
         infotext = "", -- by default empty, text to be shown when pointed at object
+        static_save = true,
+    --  ^ If false, never save this object statically. It will simply be deleted when the block gets unloaded.
+    --  ^ The get_staticdata() callback is never called then.
+    --  ^ Defaults to 'true'
     }
 
 ### Entity definition (`register_entity`)
