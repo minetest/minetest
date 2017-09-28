@@ -3503,7 +3503,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `get_inventory_formspec()`: returns a formspec string
 * `get_player_control()`: returns table with player pressed keys
     * The table consists of fields with boolean value representing the pressed
-      keys, the fields are LMB, RMB, jump, sneak, aux1, left, right, up and down
+      keys, the fields are jump, right, left, LMB, RMB, sneak, aux1, down and up
     * example: `{jump=false, right=true, left=false, LMB=false, RMB=false,
       sneak=true, aux1=false, down=false, up=false}`
 * `get_player_control_bits()`: returns integer with bit packed player pressed keys
