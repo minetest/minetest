@@ -3182,7 +3182,7 @@ This is basically a reference to a C++ `ServerActiveObject`
 * `set_attach(parent, bone, position, rotation)`
     * `bone`: string
     * `position`: `{x=num, y=num, z=num}` (relative)
-    * `rotation`: `{x=num, y=num, z=num}`
+    * `rotation`: `{x=num, y=num, z=num}` = Rotation on each axis, in degrees
 * `get_attach()`: returns parent, bone, position, rotation or nil if it isn't attached
 * `set_detach()`
 * `set_bone_position(bone, position, rotation)`
