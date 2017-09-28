@@ -379,6 +379,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
+	lua_pushboolean(L, prop->static_save);
+	lua_setfield(L, -2, "static_save");
 	lua_pushlstring(L, prop->wield_item.c_str(), prop->wield_item.size());
 	lua_setfield(L, -2, "wield_item");
 }
