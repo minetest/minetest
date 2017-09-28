@@ -838,13 +838,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
-					false, bind_addr.isIPv6(), true, &iface);
+					false, bind_addr, true, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
 			g_term_console.start();
 
-			server.start(bind_addr);
+			server.start();
 			// Run server
 			dedicated_server_loop(server, kill);
 		} catch (const ModError &e) {
@@ -872,8 +872,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr.isIPv6(), true);
-			server.start(bind_addr);
+				bind_addr, true);
+			server.start();
 
 			// Run server
 			bool &kill = *porting::signal_handler_killstatus();

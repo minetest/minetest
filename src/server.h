@@ -118,14 +118,14 @@ public:
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6,
+		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface = nullptr
 	);
 	~Server();
 	DISABLE_CLASS_COPY(Server);
 
-	void start(Address bind_addr);
+	void start();
 	void stop();
 	// This is mainly a way to pass the time to the server.
 	// Actual processing is done in an another thread.
