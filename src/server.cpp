@@ -149,10 +149,11 @@ Server::Server(
 		const std::string &path_world,
 		const SubgameSpec &gamespec,
 		bool simple_singleplayer_mode,
-		bool ipv6,
+		Address bind_addr,
 		bool dedicated,
 		ChatInterface *iface
 	):
+	m_bind_addr(bind_addr),
 	m_path_world(path_world),
 	m_gamespec(gamespec),
 	m_simple_singleplayer_mode(simple_singleplayer_mode),
@@ -161,7 +162,7 @@ Server::Server(
 	m_con(std::make_shared<con::Connection>(PROTOCOL_ID,
 			512,
 			CONNECTION_TIMEOUT,
-			ipv6,
+			m_bind_addr.isIPv6(),
 			this)),
 	m_itemdef(createItemDefManager()),
 	m_nodedef(createNodeDefManager()),
@@ -366,35 +367,33 @@ Server::~Server()
 	}
 }
 
-void Server::start(Address bind_addr)
+void Server::start()
 {
-	m_bind_addr = bind_addr;
-
-	infostream<<"Starting server on "
-			<< bind_addr.serializeString() <<"..."<<std::endl;
+	infostream << "Starting server on " << m_bind_addr.serializeString()
+			<< "..." << std::endl;
 
 	// Stop thread if already running
 	m_thread->stop();
 
 	// Initialize connection
 	m_con->SetTimeoutMs(30);
-	m_con->Serve(bind_addr);
+	m_con->Serve(m_bind_addr);
 
 	// Start thread
 	m_thread->start();
 
 	// ASCII art for the win!
 	actionstream
-	<<"        .__               __                   __   "<<std::endl
-	<<"  _____ |__| ____   _____/  |_  ____   _______/  |_ "<<std::endl
-	<<" /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\"<<std::endl
-	<<"|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  "<<std::endl
-	<<"|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  "<<std::endl
-	<<"      \\/        \\/     \\/          \\/     \\/        "<<std::endl;
-	actionstream<<"World at ["<<m_path_world<<"]"<<std::endl;
-	actionstream<<"Server for gameid=\""<<m_gamespec.id
-			<<"\" listening on "<<bind_addr.serializeString()<<":"
-			<<bind_addr.getPort() << "."<<std::endl;
+		<< "        .__               __                   __   " << std::endl
+		<< "  _____ |__| ____   _____/  |_  ____   _______/  |_ " << std::endl
+		<< " /     \\|  |/    \\_/ __ \\   __\\/ __ \\ /  ___/\\   __\\" << std::endl
+		<< "|  Y Y  \\  |   |  \\  ___/|  | \\  ___/ \\___ \\  |  |  " << std::endl
+		<< "|__|_|  /__|___|  /\\___  >__|  \\___  >____  > |__|  " << std::endl
+		<< "      \\/        \\/     \\/          \\/     \\/        " << std::endl;
+	actionstream << "World at [" << m_path_world << "]" << std::endl;
+	actionstream << "Server for gameid=\"" << m_gamespec.id
+			<< "\" listening on " << m_bind_addr.serializeString() << ":"
+			<< m_bind_addr.getPort() << "." << std::endl;
 }
 
 void Server::stop()
