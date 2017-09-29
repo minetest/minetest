@@ -1190,7 +1190,7 @@ void Client::sendReady()
 void Client::sendPlayerPos()
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
 
 	ClientMap &map = m_env.getClientMap();
@@ -1216,16 +1216,6 @@ void Client::sendPlayerPos()
 	myplayer->last_camera_fov   = camera_fov;
 	myplayer->last_wanted_range = wanted_range;
 
-	//infostream << "Sending Player Position information" << std::endl;
-
-	session_t our_peer_id = m_con->GetPeerID();
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-
-	assert(myplayer->peer_id == our_peer_id);
-
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(myplayer, &map, &pkt);
@@ -1236,15 +1226,8 @@ void Client::sendPlayerPos()
 void Client::sendPlayerItem(u16 item)
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
-
-	session_t our_peer_id = m_con->GetPeerID();
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-	assert(myplayer->peer_id == our_peer_id);
 
 	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
 
