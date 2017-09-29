@@ -841,7 +841,7 @@ Please do not try to access the reference until the camera is initialized, other
 * `get_camera_mode()`
     * Returns with same syntax as above
 * `get_fov()`
-	* All values are in degrees
+    * All values are in degrees
     * Returns:
 
 ```lua
@@ -849,17 +849,17 @@ Please do not try to access the reference until the camera is initialized, other
          x = float,        -- Horizontal FOV
          y = float,        -- Vertical FOV
          max = float,      -- The maximum of x and y
-         actual = integer, -- What the FOV of the player would be (not adjusted for zooming)
-         zoom = integer    -- What the FOV of the player when zooming would be
+         actual = integer, -- What the FOV of the player is (not adjusted for zooming)
+         zoom = integer    -- What the FOV of the player when zooming is
      }
 ```
 
 * `set_fov(fov_degrees, [persist])`
-	* Sets the FOV for the local player
-	* Pass true to the second argument to save the zoom fov to the setting.
+    * Sets the FOV for the local player
+    * Pass true to the second argument to save the zoom fov to the setting.
 * `set_zoom_fov(fov_degrees, [persist])`
-	* Sets the FOV for the local player when zoomed in
-	* Pass true to the second argument to save the zoom fov to the setting.
+    * Sets the FOV for the local player when zoomed in
+    * Pass true to the second argument to save the zoom fov to the setting.
 * `get_pos()`
     * Returns position of camera with view bobbing
 * `get_offset()`
