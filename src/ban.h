@@ -17,20 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef BAN_HEADER
-#define BAN_HEADER
+#pragma once
 
 #include "util/string.h"
 #include "threading/thread.h"
-#include "threading/mutex.h"
 #include "exceptions.h"
 #include <map>
 #include <string>
+#include <mutex>
 
 class BanManager
 {
 public:
-	BanManager(const std::string &bannfilepath);
+	BanManager(const std::string &banfilepath);
 	~BanManager();
 	void load();
 	void save();
@@ -43,10 +42,8 @@ public:
 	bool isModified();
 
 private:
-	Mutex m_mutex;
-	std::string m_banfilepath;
+	std::mutex m_mutex;
+	std::string m_banfilepath = "";
 	StringMap m_ips;
-	bool m_modified;
+	bool m_modified = false;
 };
-
-#endif

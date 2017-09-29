@@ -27,63 +27,60 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 void ToolCapabilities::serialize(std::ostream &os, u16 protocol_version) const
 {
-	writeU8(os, 2); // version (protocol >= 18)
+	writeU8(os, 3); // protocol_version >= 36
 	writeF1000(os, full_punch_interval);
 	writeS16(os, max_drop_level);
 	writeU32(os, groupcaps.size());
-	for (ToolGCMap::const_iterator i = groupcaps.begin(); i != groupcaps.end(); ++i) {
-		const std::string *name = &i->first;
-		const ToolGroupCap *cap = &i->second;
+	for (const auto &groupcap : groupcaps) {
+		const std::string *name = &groupcap.first;
+		const ToolGroupCap *cap = &groupcap.second;
 		os << serializeString(*name);
 		writeS16(os, cap->uses);
 		writeS16(os, cap->maxlevel);
 		writeU32(os, cap->times.size());
-		for (UNORDERED_MAP<int, float>::const_iterator
-				j = cap->times.begin(); j != cap->times.end(); ++j) {
-			writeS16(os, j->first);
-			writeF1000(os, j->second);
+		for (const auto &time : cap->times) {
+			writeS16(os, time.first);
+			writeF1000(os, time.second);
 		}
 	}
 
 	writeU32(os, damageGroups.size());
 
-	for (DamageGroup::const_iterator i = damageGroups.begin();
-			i != damageGroups.end(); ++i) {
-		os << serializeString(i->first);
-		writeS16(os, i->second);
+	for (const auto &damageGroup : damageGroups) {
+		os << serializeString(damageGroup.first);
+		writeS16(os, damageGroup.second);
 	}
 }
 
 void ToolCapabilities::deSerialize(std::istream &is)
 {
 	int version = readU8(is);
-	if(version != 1 && version != 2) throw SerializationError(
-			"unsupported ToolCapabilities version");
+	if (version < 3)
+		throw SerializationError("unsupported ToolCapabilities version");
+
 	full_punch_interval = readF1000(is);
 	max_drop_level = readS16(is);
 	groupcaps.clear();
 	u32 groupcaps_size = readU32(is);
-	for(u32 i=0; i<groupcaps_size; i++){
+	for (u32 i = 0; i < groupcaps_size; i++) {
 		std::string name = deSerializeString(is);
 		ToolGroupCap cap;
 		cap.uses = readS16(is);
 		cap.maxlevel = readS16(is);
 		u32 times_size = readU32(is);
-		for(u32 i=0; i<times_size; i++){
+		for(u32 i = 0; i < times_size; i++) {
 			int level = readS16(is);
 			float time = readF1000(is);
 			cap.times[level] = time;
 		}
 		groupcaps[name] = cap;
 	}
-	if(version == 2)
-	{
-		u32 damage_groups_size = readU32(is);
-		for(u32 i=0; i<damage_groups_size; i++){
-			std::string name = deSerializeString(is);
-			s16 rating = readS16(is);
-			damageGroups[name] = rating;
-		}
+
+	u32 damage_groups_size = readU32(is);
+	for (u32 i = 0; i < damage_groups_size; i++) {
+		std::string name = deSerializeString(is);
+		s16 rating = readS16(is);
+		damageGroups[name] = rating;
 	}
 }
 
@@ -107,15 +104,14 @@ DigParams getDigParams(const ItemGroupList &groups,
 	bool result_diggable = false;
 	float result_time = 0.0;
 	float result_wear = 0.0;
-	std::string result_main_group = "";
+	std::string result_main_group;
 
 	int level = itemgroup_get(groups, "level");
 	//infostream<<"level="<<level<<std::endl;
-	for (ToolGCMap::const_iterator i = tp->groupcaps.begin();
-		 	i != tp->groupcaps.end(); ++i) {
-		const std::string &name = i->first;
+	for (const auto &groupcap : tp->groupcaps) {
+		const std::string &name = groupcap.first;
 		//infostream<<"group="<<name<<std::endl;
-		const ToolGroupCap &cap = i->second;
+		const ToolGroupCap &cap = groupcap.second;
 		int rating = itemgroup_get(groups, name);
 		float time = 0;
 		bool time_exists = cap.getTime(rating, &time);
@@ -159,14 +155,14 @@ HitParams getHitParams(const ItemGroupList &armor_groups,
 	s16 damage = 0;
 	float full_punch_interval = tp->full_punch_interval;
 
-	for (DamageGroup::const_iterator i = tp->damageGroups.begin();
-			i != tp->damageGroups.end(); ++i) {
-		s16 armor = itemgroup_get(armor_groups, i->first);
-		damage += i->second * rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
+	for (const auto &damageGroup : tp->damageGroups) {
+		s16 armor = itemgroup_get(armor_groups, damageGroup.first);
+		damage += damageGroup.second
+				* rangelim(time_from_last_punch / full_punch_interval, 0.0, 1.0)
 				* armor / 100.0;
 	}
 
-	return HitParams(damage, 0);
+	return {damage, 0};
 }
 
 HitParams getHitParams(const ItemGroupList &armor_groups,
@@ -183,12 +179,13 @@ PunchDamageResult getPunchDamage(
 ){
 	bool do_hit = true;
 	{
-		if(do_hit && punchitem){
-			if(itemgroup_get(armor_groups, "punch_operable") &&
-					(toolcap == NULL || punchitem->name == ""))
+		if (do_hit && punchitem) {
+			if (itemgroup_get(armor_groups, "punch_operable") &&
+					(toolcap == NULL || punchitem->name.empty()))
 				do_hit = false;
 		}
-		if(do_hit){
+
+		if (do_hit) {
 			if(itemgroup_get(armor_groups, "immortal"))
 				do_hit = false;
 		}

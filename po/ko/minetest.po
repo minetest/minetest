@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2017-03-05 03:12+0000\n"
 "Last-Translator: Han So Ri <2_0_2_0_@naver.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -38,7 +38,7 @@ msgstr "오류가 발생하였습니다:"
 msgid "Main menu"
 msgstr "주 메뉴"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "확인"
 
@@ -50,7 +50,7 @@ msgstr "재접속"
 msgid "The server has requested a reconnect:"
 msgstr "재연결이 필요합니다:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "로딩중..."
 
@@ -161,8 +161,9 @@ msgid "Mapgen"
 msgstr "맵젠"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"
+#, fuzzy
+msgid "No game selected"
+msgstr "범위 선택"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -222,6 +223,17 @@ msgid "< Back to Settings page"
 msgstr "설정 페이지로 돌아가기"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "열기"
 
@@ -242,12 +254,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "3개의 수가 쉼표와 괄호로 구분되는 형식입니다."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"형식: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -256,10 +264,6 @@ msgstr "게임"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "모드"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -281,14 +285,19 @@ msgstr "가능한 값: "
 msgid "Restore Default"
 msgstr "기본값 복원"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "검색"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "경로 선택"
+#, fuzzy
+msgid "Select directory"
+msgstr "선택한 모드 파일:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "선택한 모드 파일:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -331,42 +340,6 @@ msgstr "설치 모드: 모드 팩 $1 (이)의 올바른 폴더를 찾을 수 없
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "스토어 닫기"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "$1 를(을) 다운로드중입니다. 기다려주세요..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "설치"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "$2페이지 중 $1"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "순위"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "짧은 이름:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "설치 완료:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "기타"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "재설치"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -704,6 +677,10 @@ msgid "Start Singleplayer"
 msgstr "싱글 플레이어 시작"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "정보가 없습니다"
 
@@ -830,10 +807,6 @@ msgid "Change Password"
 msgstr "비밀번호 변경"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "서버 연결중..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "계속"
 
@@ -865,14 +838,6 @@ msgstr ""
 "-마우스 오른쪽: 배치/사용\n"
 "-마우스 휠: 아이템 선택\n"
 "-T: 채팅\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "클라이언트 만드는 중..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "서버 만드는 중..."
 
 #: src/game.cpp
 msgid ""
@@ -958,14 +923,6 @@ msgid "Remote server"
 msgstr "원격 포트"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "주소 분석중..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "서버가 닫혔습니다..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "싱글 플레이어"
 
@@ -999,12 +956,23 @@ msgid "Proceed"
 msgstr "계속하기"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Use\" = 내려가기"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "앞으로"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "뒤로"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "키 변경"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1017,6 +985,11 @@ msgstr "명령어"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "콘솔"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Dec. range"
+msgstr "보여지는 범위"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1033,6 +1006,11 @@ msgstr "떨어뜨리기"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "앞으로"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Inc. range"
+msgstr "보여지는 범위"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1090,13 +1068,31 @@ msgstr "범위 선택"
 msgid "Right"
 msgstr "오른쪽"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "스크린샷"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "살금살금"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "시네마틱 스위치"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "비행 스위치"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "고속 스위치"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1107,12 +1103,18 @@ msgid "Toggle fly"
 msgstr "비행 스위치"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "비행 스위치"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "자유시점 스위치"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "사용"
+msgid "Toggle noclip"
+msgstr "자유시점 스위치"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1410,6 +1412,10 @@ msgstr "X 버튼 1"
 msgid "X Button 2"
 msgstr "X 버튼 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ko"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1609,12 +1615,17 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "앞으로 키"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "자동 실행 키"
+msgid "Autosave Screen Size"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1900,7 +1911,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1986,6 +1997,10 @@ msgstr "감도(DPI)"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "데미지"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2120,10 +2135,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "깊이 내려가면 당신은 거대한 동굴을 발견할 것입니다."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "하강 속도"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2151,21 +2162,6 @@ msgstr "입자 효과"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Anticheat를 사용 안함"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr "이스케이프 시퀀스 사용 안함"
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
-"이스케이프 시퀀스 사용 안함, 예: 채팅 채색.\n"
-"만약 당신이 pre-0.4.14클라이언트를 사용하길 원하거나 모드에 의해 생성되는 이"
-"스케이프 시퀀스를 사용하지 않길 원한다면 이것을 사용하세요."
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2255,11 +2251,6 @@ msgstr ""
 "공합니다.(예: 텍스처)"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable view bobbing"
-msgstr "보기 만료"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2320,10 +2311,6 @@ msgid ""
 msgstr ""
 "시차 교합 맵핑 적용.\n"
 "쉐이더를 활성화 해야 합니다."
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
@@ -3227,11 +3214,15 @@ msgstr ""
 "html#a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
+"고속 모드 스위치 키입니다.\n"
+"Http://irrlicht.sourceforge.net/docu/namespaceirr."
+"html#a54da2a0e231901735e3da1b0edf72eb3 참조"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3446,6 +3437,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3792,6 +3787,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 "ms 에서 파일을 다운로드하면 (예 : 모드 다운로드) 최대 시간이 걸릴 수 있습니"
@@ -3845,18 +3850,6 @@ msgstr "밉매핑(Mipmapping)"
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
 msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr "Modstore 정보 URL"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr "Modstore 다운로드 URL"
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
-msgstr "Modstore 모드 리스트 URL"
 
 #: src/settings_translation_file.cpp
 msgid "Monospace font path"
@@ -4146,6 +4139,12 @@ msgid "Remote port"
 msgstr "원격 포트"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 #, fuzzy
 msgid "Replaces the default main menu with a custom one."
 msgstr "기본 주 메뉴를 커스텀 메뉴로 바꿉니다."
@@ -4207,6 +4206,10 @@ msgid "Save the map received by the client on disk."
 msgstr "디스크에 클라이언트에서 받은 맵을 저장 합니다."
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr "서버로부터 받은 맵을 저장"
 
@@ -4230,10 +4233,6 @@ msgstr "화면 높이"
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr "화면 너비"
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "스크린샷"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4484,6 +4483,10 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
 msgstr "엄격한 프로토콜 검사"
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Support older servers"
@@ -5078,43 +5081,6 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "숨겨진 맵 콘텐츠"
-
-#~ msgid "Attn"
-#~ msgstr "담당자"
-
-#~ msgid "Capital"
-#~ msgstr "자본"
-
-#~ msgid "Comma"
-#~ msgstr "쉼표"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "최종"
-
-#~ msgid "Minus"
-#~ msgstr "마이너스"
-
-#~ msgid "Period"
-#~ msgstr "기간"
-
-#~ msgid "Plus"
-#~ msgstr "플러스"
-
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
-#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
-
 #~ msgid ""
 #~ "Determines terrain shape.\n"
 #~ "The 3 numbers in brackets control the scale of the\n"
@@ -5123,3 +5089,123 @@ msgstr ""
 #~ "지형 모양을 결정합니다.\n"
 #~ "괄호안의 3개의 숫자는 지형의 규모를 조정합니다.\n"
 #~ "3개의 숫자는 동일해야 합니다."
+
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "Mapgen v6에서 사막과 해변의 크기를 조정합니다.\n"
+#~ "Snowbiomes 사용 하는 경우에 'mgv6_freq_desert'은 무시 됩니다."
+
+#~ msgid "Plus"
+#~ msgstr "플러스"
+
+#~ msgid "Period"
+#~ msgstr "기간"
+
+#~ msgid "Minus"
+#~ msgstr "마이너스"
+
+#~ msgid "Final"
+#~ msgstr "최종"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "쉼표"
+
+#~ msgid "Capital"
+#~ msgstr "자본"
+
+#~ msgid "Attn"
+#~ msgstr "담당자"
+
+#~ msgid "Hide mp content"
+#~ msgstr "숨겨진 맵 콘텐츠"
+
+#~ msgid "Modstore mods list URL"
+#~ msgstr "Modstore 모드 리스트 URL"
+
+#~ msgid "Modstore download URL"
+#~ msgstr "Modstore 다운로드 URL"
+
+#~ msgid "Modstore details URL"
+#~ msgstr "Modstore 정보 URL"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "보기 만료"
+
+#~ msgid ""
+#~ "Disable escape sequences, e.g. chat coloring.\n"
+#~ "Use this if you want to run a server with pre-0.4.14 clients and you want "
+#~ "to disable\n"
+#~ "the escape sequences generated by mods."
+#~ msgstr ""
+#~ "이스케이프 시퀀스 사용 안함, 예: 채팅 채색.\n"
+#~ "만약 당신이 pre-0.4.14클라이언트를 사용하길 원하거나 모드에 의해 생성되는 "
+#~ "이스케이프 시퀀스를 사용하지 않길 원한다면 이것을 사용하세요."
+
+#~ msgid "Disable escape sequences"
+#~ msgstr "이스케이프 시퀀스 사용 안함"
+
+#~ msgid "Descending speed"
+#~ msgstr "하강 속도"
+
+#~ msgid "Autorun key"
+#~ msgstr "자동 실행 키"
+
+#~ msgid "Use"
+#~ msgstr "사용"
+
+#~ msgid "Shutting down..."
+#~ msgstr "서버가 닫혔습니다..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "주소 분석중..."
+
+#~ msgid "Creating server..."
+#~ msgstr "서버 만드는 중..."
+
+#~ msgid "Creating client..."
+#~ msgstr "클라이언트 만드는 중..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "서버 연결중..."
+
+#~ msgid "re-Install"
+#~ msgstr "재설치"
+
+#~ msgid "Unsorted"
+#~ msgstr "기타"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "설치 완료:"
+
+#~ msgid "Shortname:"
+#~ msgstr "짧은 이름:"
+
+#~ msgid "Rating"
+#~ msgstr "순위"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "$2페이지 중 $1"
+
+#~ msgid "Install"
+#~ msgstr "설치"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "$1 를(을) 다운로드중입니다. 기다려주세요..."
+
+#~ msgid "Close store"
+#~ msgstr "스토어 닫기"
+
+#~ msgid "Select path"
+#~ msgstr "경로 선택"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "게임을 선택하지 않았거나 게임 이름이 없습니다"

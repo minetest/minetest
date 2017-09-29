@@ -31,8 +31,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#define VERSION_GITHASH VERSION_STRING
 #endif
 
-
 const char *g_version_string = VERSION_STRING;
 const char *g_version_hash = VERSION_GITHASH;
-const char *g_build_info = "VER=" VERSION_GITHASH " " BUILD_INFO;
-
+const char *g_build_info = BUILD_INFO;

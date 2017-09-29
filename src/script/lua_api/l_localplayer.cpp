@@ -20,10 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "l_localplayer.h"
 #include "l_internal.h"
 #include "script/common/c_converter.h"
+#include "localplayer.h"
 
-LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m)
+LuaLocalPlayer::LuaLocalPlayer(LocalPlayer *m) : m_localplayer(m)
 {
-	m_localplayer = m;
 }
 
 void LuaLocalPlayer::create(lua_State *L, LocalPlayer *m)

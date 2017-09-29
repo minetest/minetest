@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef OBJDEF_HEADER
-#define OBJDEF_HEADER
+#pragma once
 
 #include "util/basic_macros.h"
 #include "porting.h"
@@ -44,7 +43,7 @@ enum ObjDefType {
 
 class ObjDef {
 public:
-	virtual ~ObjDef() {}
+	virtual ~ObjDef() = default;
 
 	u32 index;
 	u32 uid;
@@ -59,6 +58,7 @@ class ObjDefManager {
 public:
 	ObjDefManager(IGameDef *gamedef, ObjDefType type);
 	virtual ~ObjDefManager();
+	DISABLE_CLASS_COPY(ObjDefManager);
 
 	virtual const char *getObjectTitle() const { return "ObjDef"; }
 
@@ -91,9 +91,4 @@ protected:
 	INodeDefManager *m_ndef;
 	std::vector<ObjDef *> m_objects;
 	ObjDefType m_objtype;
-
-private:
-	DISABLE_CLASS_COPY(ObjDefManager);
 };
-
-#endif

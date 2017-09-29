@@ -113,7 +113,7 @@ void TestNoise::testNoiseInvalidParams()
 		NoiseParams np_highmem(4, 70, v3f(1, 1, 1), 5, 60, 0.7, 10.0);
 		Noise noise_highmem_3d(&np_highmem, 1337, 200, 200, 200);
 		noise_highmem_3d.perlinMap3D(0, 0, 0, NULL);
-	} catch (InvalidNoiseParamsException) {
+	} catch (InvalidNoiseParamsException &) {
 		exception_thrown = true;
 	}
 

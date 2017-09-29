@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,10 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_ORE_HEADER
-#define MG_ORE_HEADER
+#pragma once
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -31,13 +31,10 @@ class MMVManip;
 
 /////////////////// Ore generation flags
 
-#define OREFLAG_ABSHEIGHT     0x01
+#define OREFLAG_ABSHEIGHT     0x01 // Non-functional but kept to not break flags
 #define OREFLAG_PUFF_CLIFFS   0x02
 #define OREFLAG_PUFF_ADDITIVE 0x04
 #define OREFLAG_USE_NOISE     0x08
-
-#define ORE_RANGE_ACTUAL 1
-#define ORE_RANGE_MIRROR 2
 
 enum OreType {
 	ORE_SCATTER,
@@ -45,6 +42,7 @@ enum OreType {
 	ORE_PUFF,
 	ORE_BLOB,
 	ORE_VEIN,
+	ORE_STRATUM,
 };
 
 extern FlagDesc flagdesc_ore[];
@@ -61,13 +59,13 @@ public:
 	s16 y_min;
 	s16 y_max;
 	u8 ore_param2;		// to set node-specific attributes
-	u32 flags;          // attributes for this ore
+	u32 flags = 0;          // attributes for this ore
 	float nthresh;      // threshold for noise at which an ore is placed
 	NoiseParams np;     // noise for distribution of clusters (NULL for uniform scattering)
-	Noise *noise;
-	UNORDERED_SET<u8> biomes;
+	Noise *noise = nullptr;
+	std::unordered_set<u8> biomes;
 
-	Ore();
+	Ore() = default;;
 	virtual ~Ore();
 
 	virtual void resolveNodeNames();
@@ -103,10 +101,10 @@ public:
 
 	NoiseParams np_puff_top;
 	NoiseParams np_puff_bottom;
-	Noise *noise_puff_top;
-	Noise *noise_puff_bottom;
+	Noise *noise_puff_top = nullptr;
+	Noise *noise_puff_bottom = nullptr;
 
-	OrePuff();
+	OrePuff() = default;
 	virtual ~OrePuff();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
@@ -126,10 +124,24 @@ public:
 	static const bool NEEDS_NOISE = true;
 
 	float random_factor;
-	Noise *noise2;
+	Noise *noise2 = nullptr;
 
-	OreVein();
+	OreVein() = default;
 	virtual ~OreVein();
+
+	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
+		v3s16 nmin, v3s16 nmax, u8 *biomemap);
+};
+
+class OreStratum : public Ore {
+public:
+	static const bool NEEDS_NOISE = true;
+
+	NoiseParams np_stratum_thickness;
+	Noise *noise_stratum_thickness = nullptr;
+
+	OreStratum() = default;
+	virtual ~OreStratum();
 
 	virtual void generate(MMVManip *vm, int mapseed, u32 blockseed,
 		v3s16 nmin, v3s16 nmax, u8 *biomemap);
@@ -138,7 +150,7 @@ public:
 class OreManager : public ObjDefManager {
 public:
 	OreManager(IGameDef *gamedef);
-	virtual ~OreManager() {}
+	virtual ~OreManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -158,8 +170,10 @@ public:
 			return new OreBlob;
 		case ORE_VEIN:
 			return new OreVein;
+		case ORE_STRATUM:
+			return new OreStratum;
 		default:
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -167,5 +181,3 @@ public:
 
 	size_t placeAllOres(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
-
-#endif

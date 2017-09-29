@@ -16,8 +16,8 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-#ifndef L_METADATA_H_
-#define L_METADATA_H_
+
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "lua_api/l_base.h"
@@ -31,7 +31,8 @@ class Metadata;
 class MetaDataRef : public ModApiBase
 {
 public:
-	virtual ~MetaDataRef() {}
+	virtual ~MetaDataRef() = default;
+
 protected:
 	static MetaDataRef *checkobject(lua_State *L, int narg);
 
@@ -71,5 +72,3 @@ protected:
 	// equals(self, other)
 	static int l_equals(lua_State *L);
 };
-
-#endif /* L_NODEMETA_H_ */

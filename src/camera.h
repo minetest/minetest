@@ -17,12 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CAMERA_HEADER
-#define CAMERA_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "inventory.h"
-#include "mesh.h"
 #include "client/tile.h"
 #include "util/numeric.h"
 #include "constants.h"
@@ -30,8 +28,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <ISceneNode.h>
 #include <list>
 #include "settings.h" // For g_settings
-
-#include "client.h"
 
 class LocalPlayer;
 struct MapDrawControl;
@@ -41,15 +37,18 @@ class WieldMeshSceneNode;
 struct Nametag {
 	Nametag(scene::ISceneNode *a_parent_node,
 			const std::string &a_nametag_text,
-			const video::SColor &a_nametag_color):
+			const video::SColor &a_nametag_color,
+			const v3f &a_nametag_pos):
 		parent_node(a_parent_node),
 		nametag_text(a_nametag_text),
-		nametag_color(a_nametag_color)
+		nametag_color(a_nametag_color),
+		nametag_pos(a_nametag_pos)
 	{
 	}
 	scene::ISceneNode *parent_node;
 	std::string nametag_text;
 	video::SColor nametag_color;
+	v3f nametag_pos;
 };
 
 enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
@@ -62,8 +61,7 @@ enum CameraMode {CAMERA_MODE_FIRST, CAMERA_MODE_THIRD, CAMERA_MODE_THIRD_FRONT};
 class Camera
 {
 public:
-	Camera(scene::ISceneManager* smgr, MapDrawControl& draw_control,
-			Client *client);
+	Camera(MapDrawControl &draw_control, Client *client);
 	~Camera();
 
 	// Get camera scene node.
@@ -144,7 +142,7 @@ public:
 	// Update the camera from the local player's position.
 	// busytime is used to adjust the viewing range.
 	void update(LocalPlayer* player, f32 frametime, f32 busytime,
-			f32 tool_reload_ratio, ClientEnvironment &c_env);
+			f32 tool_reload_ratio);
 
 	// Update render distance
 	void updateViewingRange();
@@ -184,7 +182,8 @@ public:
 	}
 
 	Nametag *addNametag(scene::ISceneNode *parent_node,
-		std::string nametag_text, video::SColor nametag_color);
+		const std::string &nametag_text, video::SColor nametag_color,
+		const v3f &pos);
 
 	void removeNametag(Nametag *nametag);
 
@@ -192,20 +191,21 @@ public:
 
 	void drawNametags();
 
+	inline void addArmInertia(f32 player_yaw);
+
 private:
 	// Nodes
-	scene::ISceneNode* m_playernode;
-	scene::ISceneNode* m_headnode;
-	scene::ICameraSceneNode* m_cameranode;
+	scene::ISceneNode *m_playernode = nullptr;
+	scene::ISceneNode *m_headnode = nullptr;
+	scene::ICameraSceneNode *m_cameranode = nullptr;
 
-	scene::ISceneManager* m_wieldmgr;
-	WieldMeshSceneNode* m_wieldnode;
+	scene::ISceneManager *m_wieldmgr = nullptr;
+	WieldMeshSceneNode *m_wieldnode = nullptr;
 
 	// draw control
 	MapDrawControl& m_draw_control;
 
 	Client *m_client;
-	video::IVideoDriver *m_driver;
 
 	// Absolute camera position
 	v3f m_camera_position;
@@ -214,41 +214,46 @@ private:
 	// Camera offset
 	v3s16 m_camera_offset;
 
+	v2f m_wieldmesh_offset = v2f(55.0f, -35.0f);
+	v2f m_arm_dir;
+	v2f m_cam_vel;
+	v2f m_cam_vel_old;
+	v2f m_last_cam_pos;
+
 	// Field of view and aspect ratio stuff
-	f32 m_aspect;
-	f32 m_fov_x;
-	f32 m_fov_y;
+	f32 m_aspect = 1.0f;
+	f32 m_fov_x = 1.0f;
+	f32 m_fov_y = 1.0f;
 
 	// View bobbing animation frame (0 <= m_view_bobbing_anim < 1)
-	f32 m_view_bobbing_anim;
+	f32 m_view_bobbing_anim = 0.0f;
 	// If 0, view bobbing is off (e.g. player is standing).
 	// If 1, view bobbing is on (player is walking).
 	// If 2, view bobbing is getting switched off.
-	s32 m_view_bobbing_state;
+	s32 m_view_bobbing_state = 0;
 	// Speed of view bobbing animation
-	f32 m_view_bobbing_speed;
+	f32 m_view_bobbing_speed = 0.0f;
 	// Fall view bobbing
-	f32 m_view_bobbing_fall;
+	f32 m_view_bobbing_fall = 0.0f;
 
 	// Digging animation frame (0 <= m_digging_anim < 1)
-	f32 m_digging_anim;
+	f32 m_digging_anim = 0.0f;
 	// If -1, no digging animation
 	// If 0, left-click digging animation
 	// If 1, right-click digging animation
-	s32 m_digging_button;
+	s32 m_digging_button = -1;
 
 	// Animation when changing wielded item
-	f32 m_wield_change_timer;
+	f32 m_wield_change_timer = 0.125f;
 	ItemStack m_wield_item_next;
 
-	CameraMode m_camera_mode;
+	CameraMode m_camera_mode = CAMERA_MODE_FIRST;
 
 	f32 m_cache_fall_bobbing_amount;
 	f32 m_cache_view_bobbing_amount;
 	f32 m_cache_fov;
 	f32 m_cache_zoom_fov;
+	bool m_arm_inertia;
 
 	std::list<Nametag *> m_nametags;
 };
-
-#endif

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
-"PO-Revision-Date: 2017-04-18 12:21+0000\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
+"PO-Revision-Date: 2017-05-29 12:33+0000\n"
 "Last-Translator: BreadW <toshiharu.uno@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/minetest/"
 "minetest/ja/>\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2.14-dev\n"
+"X-Generator: Weblate 2.14.1\n"
 
 #: builtin/client/init.lua
 msgid "Respawn"
@@ -34,7 +34,7 @@ msgstr "エラーが発生しました:"
 msgid "Main menu"
 msgstr "メインメニュー"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "決定"
 
@@ -46,7 +46,7 @@ msgstr "再接続"
 msgid "The server has requested a reconnect:"
 msgstr "サーバが再接続を要求しました:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -83,18 +83,16 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
-#, fuzzy
 msgid "Dependencies:"
-msgstr "依存Mod:"
+msgstr "依存:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Disable MP"
-msgstr "Modパックを無効化"
+msgstr "Modパック無効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
-#, fuzzy
 msgid "Disable all"
-msgstr "Modパックを無効化"
+msgstr "全て無効化"
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Enable MP"
@@ -114,11 +112,11 @@ msgstr ""
 
 #: builtin/mainmenu/dlg_config_world.lua
 msgid "Mod:"
-msgstr "Mod名:"
+msgstr "Mod:"
 
 #: builtin/mainmenu/dlg_config_world.lua builtin/mainmenu/tab_mods.lua
 msgid "Optional dependencies:"
-msgstr ""
+msgstr "任意:"
 
 #: builtin/mainmenu/dlg_config_world.lua
 #: builtin/mainmenu/dlg_settings_advanced.lua src/guiKeyChangeMenu.cpp
@@ -159,8 +157,9 @@ msgid "Mapgen"
 msgstr "ワールドタイプ"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "ワールド名が入力されていないか、ゲームが選択されていません"
+#, fuzzy
+msgid "No game selected"
+msgstr "視野の範囲を変更"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -220,6 +219,17 @@ msgid "< Back to Settings page"
 msgstr "< 設定ページに戻る"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "参照"
 
@@ -240,13 +250,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "括弧内に3つの数字をカンマで区切って入力してください。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"書式: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -255,11 +260,6 @@ msgstr "ゲーム"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mod"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "空隙性の値は、必要に応じ読みやすくカンマを付けることができます。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
@@ -282,26 +282,29 @@ msgstr "可能な値: "
 msgid "Restore Default"
 msgstr "初期設定に戻す"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "検索"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "場所を選択"
+#, fuzzy
+msgid "Select directory"
+msgstr "Modファイルを選択:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Modファイルを選択:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
 msgstr "パラメータ名を表示"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "The value must be at least $1."
 msgstr "値は$1より大きくなければなりません。"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-#, fuzzy
 msgid "The value must not be larger than $1."
 msgstr "値は$1より小さくなければなりません。"
 
@@ -331,43 +334,7 @@ msgstr "Modインストール: Modパック$1に適したフォルダ名が不�
 
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "ストアを閉じる"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "$1をダウンロードしています、しばらくお待ちください..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "インストール"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "ページ $1 / $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "評価"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "省略名:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "インストールが完了しました:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "未分類"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "再インストール"
+msgstr "サブゲームのMod"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -390,9 +357,8 @@ msgid "Previous Core Developers"
 msgstr "以前の開発者"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Announce Server"
-msgstr "サーバを公開"
+msgstr "公開サーバ"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Bind Address"
@@ -411,19 +377,16 @@ msgid "Enable Damage"
 msgstr "ダメージ有効"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Game"
-msgstr "ゲームを非表示"
+msgstr "ゲームホスト"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Host Server"
-msgstr "サーバ"
+msgstr "ホストサーバ"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Local Game"
-msgstr "ゲームスタート"
+msgstr "ローカルゲーム"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Name/Password"
@@ -438,9 +401,8 @@ msgid "No world created or selected!"
 msgstr "ワールドが作成または選択されていません！"
 
 #: builtin/mainmenu/tab_local.lua
-#, fuzzy
 msgid "Play Game"
-msgstr "プレイヤ名"
+msgstr "ゲームプレイ"
 
 #: builtin/mainmenu/tab_local.lua
 msgid "Port"
@@ -464,7 +426,7 @@ msgstr "Modの情報:"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No dependencies."
-msgstr ""
+msgstr "依存なし。"
 
 #: builtin/mainmenu/tab_mods.lua
 msgid "No mod description available"
@@ -519,9 +481,8 @@ msgid "Ping"
 msgstr ""
 
 #: builtin/mainmenu/tab_online.lua
-#, fuzzy
 msgid "Play Online"
-msgstr "プレイヤ名"
+msgstr "オンラインプレイ"
 
 #: builtin/mainmenu/tab_online.lua builtin/mainmenu/tab_simple_main.lua
 msgid "PvP enabled"
@@ -557,7 +518,7 @@ msgstr "シングルプレイヤーのワールドをリセットしてよろし
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Autosave screen size"
-msgstr ""
+msgstr "画面の大きさを自動保存"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Bilinear Filter"
@@ -636,9 +597,8 @@ msgid "Reset singleplayer world"
 msgstr "シングルプレイヤーのワールドをリセット"
 
 #: builtin/mainmenu/tab_settings.lua
-#, fuzzy
 msgid "Screen:"
-msgstr "スクリーンショット"
+msgstr "画面:"
 
 #: builtin/mainmenu/tab_settings.lua
 msgid "Settings"
@@ -703,6 +663,10 @@ msgstr "メイン"
 #: builtin/mainmenu/tab_simple_main.lua
 msgid "Start Singleplayer"
 msgstr "シングルプレイ開始"
+
+#: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
 
 #: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
@@ -785,42 +749,36 @@ msgstr ""
 "詳細はdebug.txtを確認してください。"
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Address: "
-msgstr "バインドアドレス"
+msgstr "- アドレス: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Creative Mode: "
-msgstr "クリエイティブモード"
+msgstr "- クリエイティブモード: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Damage: "
-msgstr "ダメージ"
+msgstr "- ダメージ: "
 
 #: src/game.cpp
 msgid "- Mode: "
-msgstr ""
+msgstr "- モード: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Port: "
-msgstr "ポート"
+msgstr "- ポート: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Public: "
-msgstr "公開サーバ"
+msgstr "- 公開サーバ: "
 
 #: src/game.cpp
 msgid "- PvP: "
-msgstr ""
+msgstr "- PvP: "
 
 #: src/game.cpp
-#, fuzzy
 msgid "- Server Name: "
-msgstr "サーバ名"
+msgstr "- サーバ名: "
 
 #: src/game.cpp
 msgid "Change Keys"
@@ -831,15 +789,11 @@ msgid "Change Password"
 msgstr "パスワード変更"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "サーバに接続中..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "再開"
 
 #: src/game.cpp
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Controls:\n"
 "- %s: move forwards\n"
@@ -856,25 +810,20 @@ msgid ""
 "- Mouse wheel: select item\n"
 "- %s: chat\n"
 msgstr ""
-"デフォルトの操作:\n"
-"- WASD: 移動\n"
-"- スペース: ジャンプ/登る\n"
-"- Shift: スニーク/降りる\n"
-"- Q: アイテムを落とす\n"
-"- I: インベントリ\n"
+"操作:\n"
+"- %s: 前進\n"
+"- %s: 後退\n"
+"- %s: 左\n"
+"- %s: 右\n"
+"- %s: ジャンプ/登る\n"
+"- %s: スニーク/降りる\n"
+"- %s: アイテムを落とす\n"
+"- %s: インベントリ\n"
 "- マウス: 見回す\n"
 "- 左クリック: 破壊/パンチ\n"
 "- 右クリック: 設置/使用\n"
-"- マウスホイール: アイテム選択\n"
-"- T: チャット\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "クライアントを作成中..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "サーバを作成中..."
+"- ホイール: アイテム選択\n"
+"- %s: チャット\n"
 
 #: src/game.cpp
 msgid ""
@@ -914,17 +863,15 @@ msgstr "終了"
 
 #: src/game.cpp
 msgid "Game info:"
-msgstr ""
+msgstr "ゲーム情報:"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Game paused"
-msgstr "ゲーム"
+msgstr "ポーズメニュー"
 
 #: src/game.cpp
-#, fuzzy
 msgid "Hosting server"
-msgstr "サーバを作成中..."
+msgstr "ホスティングサーバ"
 
 #: src/game.cpp
 msgid "Item definitions..."
@@ -948,24 +895,16 @@ msgstr "ノードを定義中..."
 
 #: src/game.cpp
 msgid "Off"
-msgstr ""
+msgstr "オフ"
 
 #: src/game.cpp
 msgid "On"
-msgstr ""
+msgstr "オン"
 
 #: src/game.cpp
 #, fuzzy
 msgid "Remote server"
 msgstr "サーバを公開"
-
-#: src/game.cpp
-msgid "Resolving address..."
-msgstr "アドレスを解決中..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "終了中..."
 
 #: src/game.cpp
 msgid "Singleplayer"
@@ -976,17 +915,19 @@ msgid "Sound Volume"
 msgstr "音量"
 
 #: src/game.cpp
-#, c-format
+#, fuzzy, c-format
 msgid "Volume changed to %d%%"
-msgstr ""
+msgstr "音量を %d%% に変更"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Volume changed to 0%"
-msgstr ""
+msgstr "音量を 0% に変更"
 
 #: src/game.cpp
+#, fuzzy
 msgid "Volume changed to 100%"
-msgstr ""
+msgstr "音量を 100% に変更"
 
 #: src/game.cpp src/guiFormSpecMenu.cpp
 msgid "ok"
@@ -1001,12 +942,23 @@ msgid "Proceed"
 msgstr "決定"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "「使用」で降りる"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "前進"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "後退"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "キー変更"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1021,8 +973,12 @@ msgid "Console"
 msgstr "コンソール"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Dec. volume"
+msgid "Dec. range"
 msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. volume"
+msgstr "音量を下げる"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Double tap \"jump\" to toggle fly"
@@ -1037,9 +993,12 @@ msgid "Forward"
 msgstr "前進"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
+msgid "Inc. range"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Inc. volume"
-msgstr "音量"
+msgstr "音量を上げる"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Inventory"
@@ -1064,22 +1023,20 @@ msgid "Left"
 msgstr "左"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Local command"
-msgstr "コマンド"
+msgstr "ローカルコマンド"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Mute"
-msgstr ""
+msgstr "消音"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Next item"
-msgstr "PageDown"
+msgstr "次のアイテム"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Prev. item"
-msgstr ""
+msgstr "前のアイテム"
 
 #: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
 msgid "Print stacks"
@@ -1093,40 +1050,59 @@ msgstr "視野の範囲を変更"
 msgid "Right"
 msgstr "右"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "スクリーンショット"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "スニーク"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
-msgstr "映画風カメラ"
+msgstr "映画風モード切替"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
+msgid "Toggle HUD"
+msgstr "飛行モード切替"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "高速移動モード切替"
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
-msgstr "高速移動モード"
+msgstr "高速移動モード切替"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "Toggle fly"
-msgstr "飛行モード"
+msgstr "飛行モード切替"
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
-msgid "Toggle noclip"
-msgstr "すり抜けモード"
+msgid "Toggle fog"
+msgstr "飛行モード切替"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "使用"
+#, fuzzy
+msgid "Toggle minimap"
+msgstr "すり抜けモード切替"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Toggle noclip"
+msgstr "すり抜けモード切替"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
 msgstr "ズーム"
 
 #: src/guiKeyChangeMenu.cpp
-#, fuzzy
 msgid "press key"
 msgstr "キー入力待ち"
 
@@ -1168,7 +1144,7 @@ msgstr "Back"
 
 #: src/keycode.cpp
 msgid "Caps Lock"
-msgstr ""
+msgstr "Caps Lock"
 
 #: src/keycode.cpp
 msgid "Clear"
@@ -1214,7 +1190,6 @@ msgid "IME Convert"
 msgstr "変換"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "IME Escape"
 msgstr "Escape"
 
@@ -1224,7 +1199,6 @@ msgid "IME Mode Change"
 msgstr "モード変更"
 
 #: src/keycode.cpp
-#, fuzzy
 msgid "IME Nonconvert"
 msgstr "無変換"
 
@@ -1412,6 +1386,10 @@ msgstr "Xボタン1"
 #: src/keycode.cpp
 msgid "X Button 2"
 msgstr "Xボタン2"
+
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ja"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1634,12 +1612,18 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
+msgid "Automatic forwards key"
+msgstr "前キー"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
 msgid "Automaticaly report to the serverlist."
 msgstr "自動的にサーバ一覧に報告します。"
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
-msgstr "オートランキー"
+#, fuzzy
+msgid "Autosave Screen Size"
+msgstr "画面の大きさを自動保存"
 
 #: src/settings_translation_file.cpp
 msgid "Backward key"
@@ -1688,7 +1672,6 @@ msgid "Bits per pixel (aka color depth) in fullscreen mode."
 msgstr "フルスクリーンモードでの1ピクセル(色深度)あたりのビット数。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Build inside player"
 msgstr "プレイヤーの位置に設置"
 
@@ -1701,12 +1684,10 @@ msgid "Bumpmapping"
 msgstr "バンプマッピング"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera smoothing"
-msgstr "滑らかなカメラ"
+msgstr "カメラの滑らかさ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Camera smoothing in cinematic mode"
 msgstr "映画風モードでのカメラの滑らかさ"
 
@@ -1911,7 +1892,7 @@ msgstr "ガラスを繋げる"
 
 #: src/settings_translation_file.cpp
 msgid "Connect to external media server"
-msgstr "外部メディアサーバに接続中"
+msgstr "外部メディアサーバに接続"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -1942,7 +1923,7 @@ msgstr "オートラン"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "オートラン (テスト用)。"
 
 #: src/settings_translation_file.cpp
@@ -2038,6 +2019,11 @@ msgid "Damage"
 msgstr "ダメージ"
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "視差遮蔽マッピング"
+
+#: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
 msgstr "デバッグ情報切り替えキー"
 
@@ -2046,9 +2032,8 @@ msgid "Debug log level"
 msgstr "デバッグログのレベル"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Dec. volume key"
-msgstr "HUD切り替えキー"
+msgstr "音量を下げるキー"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2179,11 +2164,6 @@ msgstr "あなたが大きい洞穴を見つける深さ。"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
-msgid "Descending speed"
-msgstr "降りる速度"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2212,18 +2192,6 @@ msgstr "パーティクル"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "対チート機関無効化"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2256,7 +2224,7 @@ msgstr "マップ生成のデバッグ情報を出力します。"
 
 #: src/settings_translation_file.cpp
 msgid "Enable Joysticks"
-msgstr ""
+msgstr "ジョイスティックを有効化"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2270,7 +2238,7 @@ msgstr "有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable console window"
-msgstr ""
+msgstr "コンソールウィンドウを有効化"
 
 #: src/settings_translation_file.cpp
 msgid "Enable creative mode for new created maps."
@@ -2327,11 +2295,6 @@ msgstr ""
 "ください。\n"
 "サーバーに接続するとき、遠隔サーバーはメディア（例えばテクスチャー）をダウン"
 "ロードするかなりより高速道を提供します。"
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Enable view bobbing"
-msgstr "落下による上下の揺れ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -2399,10 +2362,6 @@ msgstr ""
 "シェーダーが有効である必要があります。"
 
 #: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Engine profiling data print interval"
 msgstr ""
 
@@ -2420,9 +2379,8 @@ msgstr ""
 "き起こすかもしれません。"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "FPS in pause menu"
-msgstr "ポーズメニューのFPS"
+msgstr "ポーズメニューでのFPS"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2463,19 +2421,16 @@ msgid "Fast key"
 msgstr "高速移動キー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fast mode acceleration"
-msgstr "高速モードの加速度"
+msgstr "高速移動モードの加速度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fast mode speed"
-msgstr "高速モードの速度"
+msgstr "高速移動モードの速度"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Fast movement"
-msgstr "高速移動"
+msgstr "高速移動モード"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2586,9 +2541,8 @@ msgid "Fly key"
 msgstr "飛行キー"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Flying"
-msgstr "飛行"
+msgstr "飛行モード"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2610,12 +2564,10 @@ msgid "Font path"
 msgstr "フォントパス"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font shadow"
 msgstr "フォントの影"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Font shadow alpha"
 msgstr "フォントの影の透過"
 
@@ -2629,7 +2581,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Font size"
-msgstr ""
+msgstr "フォントの大きさ"
 
 #: src/settings_translation_file.cpp
 msgid "Format of screenshots."
@@ -2723,7 +2675,7 @@ msgstr "グラフィック"
 
 #: src/settings_translation_file.cpp
 msgid "Gravity"
-msgstr ""
+msgstr "重力"
 
 #: src/settings_translation_file.cpp
 #, fuzzy
@@ -2947,9 +2899,8 @@ msgid "In-game chat console height, between 0.1 (10%) and 1.0 (100%)."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Inc. volume key"
-msgstr "コンソールキー"
+msgstr "音量を上げるキー"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -3008,11 +2959,11 @@ msgstr "インベントリキー"
 
 #: src/settings_translation_file.cpp
 msgid "Invert mouse"
-msgstr ""
+msgstr "マウスの反転"
 
 #: src/settings_translation_file.cpp
 msgid "Invert vertical mouse movement."
-msgstr ""
+msgstr "マウスの上下の動きを反転させます。"
 
 #: src/settings_translation_file.cpp
 msgid "Item entity TTL"
@@ -3262,7 +3213,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3381,7 +3332,7 @@ msgstr "マップ生成フラグ"
 
 #: src/settings_translation_file.cpp
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #: src/settings_translation_file.cpp
 msgid "Large cave depth"
@@ -3436,6 +3387,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3700,11 +3655,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS"
-msgstr ""
+msgstr "最大FPS"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum FPS when game is paused."
-msgstr ""
+msgstr "ポーズメニューでの最大FPS。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum forceloaded blocks"
@@ -3782,12 +3737,22 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr "ファイルダウンロード (例: Modのダウンロード)の最大経過時間。"
 
 #: src/settings_translation_file.cpp
 msgid "Maximum users"
-msgstr ""
+msgstr "最大ユーザー数"
 
 #: src/settings_translation_file.cpp
 msgid "Menus"
@@ -3834,18 +3799,6 @@ msgid "Modifies the size of the hudbar elements."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid "Monospace font path"
 msgstr ""
 
@@ -3863,7 +3816,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity"
-msgstr ""
+msgstr "マウスの感度"
 
 #: src/settings_translation_file.cpp
 msgid "Mouse sensitivity multiplier."
@@ -3914,11 +3867,11 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "New users need to input this password."
-msgstr ""
+msgstr "新しいユーザーはこのパスワードを入力する必要があります。"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip"
-msgstr ""
+msgstr "すり抜けモード"
 
 #: src/settings_translation_file.cpp
 msgid "Noclip key"
@@ -3974,7 +3927,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Opaque liquids"
-msgstr ""
+msgstr "不透明な水"
 
 #: src/settings_translation_file.cpp
 msgid "Overall bias of parallax occlusion effect, usually scale/2."
@@ -4108,6 +4061,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4165,6 +4124,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4190,22 +4153,16 @@ msgid "Screen width"
 msgstr "画面幅"
 
 #: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "スクリーンショット"
-
-#: src/settings_translation_file.cpp
 msgid "Screenshot folder"
-msgstr ""
+msgstr "スクリーンショットのフォルダ"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot format"
-msgstr "スクリーンショット"
+msgstr "スクリーンショットのファイル形式"
 
 #: src/settings_translation_file.cpp
-#, fuzzy
 msgid "Screenshot quality"
-msgstr "スクリーンショット"
+msgstr "スクリーンショットの品質"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4333,7 +4290,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Shutdown message"
-msgstr ""
+msgstr "サーバ終了時のメッセージ"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4420,6 +4377,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4570,7 +4531,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Time speed"
-msgstr ""
+msgstr "時間の速さ"
 
 #: src/settings_translation_file.cpp
 msgid "Timeout for client to remove unused map data from memory."
@@ -4609,7 +4570,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Trusted mods"
-msgstr ""
+msgstr "信頼するMod"
 
 #: src/settings_translation_file.cpp
 msgid ""
@@ -4981,96 +4942,53 @@ msgstr "cURL並行処理制限"
 msgid "cURL timeout"
 msgstr "cURLタイムアウト"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Modパックの内容を非表示"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "テクスチャ読み込み中..."
 
-#~ msgid "Attn"
-#~ msgstr "Attn"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "メニューの大きさとして設定されている数値: "
 
-#~ msgid "Capital"
-#~ msgstr "Capital"
+#~ msgid "Touch free target"
+#~ msgstr "タッチ位置を自由にする"
 
-#~ msgid "Comma"
-#~ msgstr "カンマ"
+#~ msgid " KB/s"
+#~ msgstr " KB/秒"
 
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
+#~ msgid " MB/s"
+#~ msgstr " MB/秒"
 
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "ドライバーを変更するためMinetestを再起動します"
 
-#~ msgid "Final"
-#~ msgstr "Final"
+#~ msgid "If enabled, "
+#~ msgstr "有効化の場合 "
 
-#~ msgid "Junja"
-#~ msgstr "Junja"
+#~ msgid "If disabled "
+#~ msgstr "無効化の場合 "
 
-#~ msgid "Kana"
-#~ msgstr "かな"
+#~ msgid "No!!!"
+#~ msgstr "いいえ！！！"
 
-#~ msgid "Kanji"
-#~ msgstr "漢字"
+#~ msgid "Generate Normalmaps"
+#~ msgstr "ノーマルマップの生成"
 
-#~ msgid "Minus"
-#~ msgstr "マイナス"
+#~ msgid "Public Serverlist"
+#~ msgstr "公開サーバ一覧"
 
-#~ msgid "PA1"
-#~ msgstr "PA1"
+#~ msgid "No of course not!"
+#~ msgstr "いいえ！"
 
-#~ msgid "Period"
-#~ msgstr "ピリオド"
-
-#~ msgid "Plus"
-#~ msgstr "プラス"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Mod開発に便利。"
 
 #, fuzzy
-#~ msgid ""
-#~ "Controls size of deserts and beaches in Mapgen v6.\n"
-#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
-#~ msgstr ""
-#~ "砂漠の規制サイズとMapgen v6のビーチ。\n"
-#~ "snowbiomesが許可されるとき、『mgv6_freq_desert』は無視されます。"
+#~ msgid "Detailed mod profiling"
+#~ msgstr "詳細なModのプロファイル化"
 
 #, fuzzy
-#~ msgid ""
-#~ "Determines terrain shape.\n"
-#~ "The 3 numbers in brackets control the scale of the\n"
-#~ "terrain, the 3 numbers should be identical."
-#~ msgstr ""
-#~ "地形形を決定します。\n"
-#~ "ブラケットの3番号は地形の目盛りを制御します、\n"
-#~ "3番号は同一でなければなりません。"
-
-#, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "マップ生成フラグ"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "視差遮蔽マッピング"
-
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "マップ生成フラグ"
-
-#~ msgid "Mapgen fractal slice w"
-#~ msgstr "マップ生成フラグ"
-
-#, fuzzy
-#~ msgid "Mapgen v5 cave width"
-#~ msgstr "ワールドタイプ"
-
-#, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "ワールドタイプ"
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
 
 #~ msgid ""
 #~ "Where the map generator stops.\n"
@@ -5090,49 +5008,158 @@ msgstr "cURLタイムアウト"
 #~ "-    グループはmap_generation_limit内で生成されたものに限ります。"
 
 #, fuzzy
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "詳細なModのプロファイルデータです。Mod開発者に便利です。"
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "ワールドタイプ"
 
 #, fuzzy
-#~ msgid "Detailed mod profiling"
-#~ msgstr "詳細なModのプロファイル化"
+#~ msgid "Mapgen v5 cave width"
+#~ msgstr "ワールドタイプ"
 
-#~ msgid "Useful for mod developers."
-#~ msgstr "Mod開発に便利。"
+#~ msgid "Mapgen fractal slice w"
+#~ msgstr "マップ生成フラグ"
 
-#~ msgid "No of course not!"
-#~ msgstr "いいえ！"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "マップ生成フラグ"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "公開サーバ一覧"
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "マップ生成フラグ"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "ノーマルマップの生成"
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "視差遮蔽マッピング"
 
-#~ msgid "No!!!"
-#~ msgstr "いいえ！！！"
-
-#~ msgid "If disabled "
-#~ msgstr "無効化の場合 "
-
-#~ msgid "If enabled, "
-#~ msgstr "有効化の場合 "
-
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "ドライバーを変更するためMinetestを再起動します"
-
-#~ msgid " MB/s"
-#~ msgstr " MB/秒"
-
-#~ msgid " KB/s"
-#~ msgstr " KB/秒"
-
-#~ msgid "Touch free target"
-#~ msgstr "タッチ位置を自由にする"
-
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "メニューの大きさとして設定されている数値: "
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "マップ生成フラグ"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "テクスチャ読み込み中..."
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "マップ生成フラグ"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "マップ生成フラグ"
+
+#, fuzzy
+#~ msgid ""
+#~ "Determines terrain shape.\n"
+#~ "The 3 numbers in brackets control the scale of the\n"
+#~ "terrain, the 3 numbers should be identical."
+#~ msgstr ""
+#~ "地形形を決定します。\n"
+#~ "ブラケットの3番号は地形の目盛りを制御します、\n"
+#~ "3番号は同一でなければなりません。"
+
+#, fuzzy
+#~ msgid ""
+#~ "Controls size of deserts and beaches in Mapgen v6.\n"
+#~ "When snowbiomes are enabled 'mgv6_freq_desert' is ignored."
+#~ msgstr ""
+#~ "砂漠の規制サイズとMapgen v6のビーチ。\n"
+#~ "snowbiomesが許可されるとき、『mgv6_freq_desert』は無視されます。"
+
+#~ msgid "Plus"
+#~ msgstr "プラス"
+
+#~ msgid "Period"
+#~ msgstr "ピリオド"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "マイナス"
+
+#~ msgid "Kanji"
+#~ msgstr "漢字"
+
+#~ msgid "Kana"
+#~ msgstr "かな"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "カンマ"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Modパックの内容を非表示"
+
+#, fuzzy
+#~ msgid "Enable view bobbing"
+#~ msgstr "落下による上下の揺れ"
+
+#, fuzzy
+#~ msgid "Descending speed"
+#~ msgstr "降りる速度"
+
+#~ msgid "Autorun key"
+#~ msgstr "オートランキー"
+
+#~ msgid "Use"
+#~ msgstr "使用"
+
+#~ msgid "Shutting down..."
+#~ msgstr "終了中..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "アドレスを解決中..."
+
+#~ msgid "Creating server..."
+#~ msgstr "サーバを作成中..."
+
+#~ msgid "Creating client..."
+#~ msgstr "クライアントを作成中..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "サーバに接続中..."
+
+#~ msgid "re-Install"
+#~ msgstr "再インストール"
+
+#~ msgid "Unsorted"
+#~ msgstr "未分類"
+
+#~ msgid "Successfully installed:"
+#~ msgstr "インストールが完了しました:"
+
+#~ msgid "Shortname:"
+#~ msgstr "省略名:"
+
+#~ msgid "Rating"
+#~ msgstr "評価"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "ページ $1 / $2"
+
+#~ msgid "Install"
+#~ msgstr "インストール"
+
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "$1をダウンロードしています、しばらくお待ちください..."
+
+#~ msgid "Close store"
+#~ msgstr "ストアを閉じる"
+
+#~ msgid "Select path"
+#~ msgstr "場所を選択"
+
+#, fuzzy
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "空隙性の値は、必要に応じ読みやすくカンマを付けることができます。"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "ワールド名が入力されていないか、ゲームが選択されていません"

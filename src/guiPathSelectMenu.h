@@ -17,8 +17,7 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUIFILESELECTMENU_H_
-#define GUIFILESELECTMENU_H_
+#pragma once
 
 #include <string>
 
@@ -31,10 +30,8 @@ class GUIFileSelectMenu : public GUIModalMenu
 public:
 	GUIFileSelectMenu(gui::IGUIEnvironment *env, gui::IGUIElement *parent, s32 id,
 			IMenuManager *menumgr, const std::string &title,
-			const std::string &formid);
+			const std::string &formid, bool is_file_select);
 	~GUIFileSelectMenu();
-
-	void removeChildren();
 
 	/*
 	 Remove and re-add (or reposition) stuff
@@ -51,13 +48,12 @@ private:
 	void acceptInput();
 
 	std::wstring m_title;
-	bool m_accepted;
+	bool m_accepted = false;
 
-	gui::IGUIFileOpenDialog *m_fileOpenDialog;
+	gui::IGUIFileOpenDialog *m_fileOpenDialog = nullptr;
 
-	TextDest *m_text_dst;
+	TextDest *m_text_dst = nullptr;
 
 	std::string m_formname;
+	bool m_file_select_dialog;
 };
-
-#endif /* GUIFILESELECTMENU_H_ */

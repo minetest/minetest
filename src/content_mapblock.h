@@ -17,9 +17,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_MAPBLOCK_HEADER
-#define CONTENT_MAPBLOCK_HEADER
-#include "util/numeric.h"
+#pragma once
+
 #include "nodedef.h"
 #include <IMeshManipulator.h>
 
@@ -39,7 +38,6 @@ public:
 	MeshCollector *collector;
 
 	INodeDefManager *nodedef;
-	scene::ISceneManager *smgr;
 	scene::IMeshManipulator *meshmanip;
 
 // options
@@ -63,12 +61,14 @@ public:
 	video::SColor blendLightColor(const v3f &vertex_pos);
 	video::SColor blendLightColor(const v3f &vertex_pos, const v3f &vertex_normal);
 
-	void useTile(int index, bool disable_backface_culling);
-	void useDefaultTile(bool set_color = true);
-	void getTile(const v3s16 &direction, TileSpec &tile);
+	void useTile(int index = 0, u8 set_flags = MATERIAL_FLAG_CRACK_OVERLAY,
+		u8 reset_flags = 0, bool special = false);
+	void getTile(v3s16 direction, TileSpec *tile);
+	void getSpecialTile(int index, TileSpec *tile, bool apply_crack = false);
 
 // face drawing
-	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0));
+	void drawQuad(v3f *vertices, const v3s16 &normal = v3s16(0, 0, 0),
+		float vertical_tiling = 1.0);
 
 // cuboid drawing!
 	void drawCuboid(const aabb3f &box, TileSpec *tiles, int tilecount,
@@ -112,9 +112,11 @@ public:
 	int rotate_degree;
 	bool random_offset_Y;
 	int face_num;
+	float plant_height;
 
 	void drawPlantlikeQuad(float rotation, float quad_offset = 0,
 		bool offset_top_only = false);
+	void drawPlantlike();
 
 // firelike-specific
 	void drawFirelikeQuad(float rotation, float opening_angle,
@@ -128,6 +130,7 @@ public:
 	void drawTorchlikeNode();
 	void drawSignlikeNode();
 	void drawPlantlikeNode();
+	void drawPlantlikeRootedNode();
 	void drawFirelikeNode();
 	void drawFencelikeNode();
 	void drawRaillikeNode();
@@ -142,5 +145,3 @@ public:
 	MapblockMeshGenerator(MeshMakeData *input, MeshCollector *output);
 	void generate();
 };
-
-#endif

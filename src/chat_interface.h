@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CHAT_INTERFACE_H
-#define CHAT_INTERFACE_H
+#pragma once
 
 #include "util/container.h"
 #include <string>
@@ -78,5 +77,3 @@ struct ChatInterface {
 	MutexedQueue<ChatEvent *> command_queue; // chat backend --> server
 	MutexedQueue<ChatEvent *> outgoing_queue; // server --> chat backend
 };
-
-#endif

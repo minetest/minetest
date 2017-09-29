@@ -17,16 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SETTINGS_HEADER
-#define SETTINGS_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
 #include "util/string.h"
-#include "threading/mutex.h"
 #include <string>
-#include "util/cpp11_container.h"
 #include <list>
 #include <set>
+#include <mutex>
 
 class Settings;
 struct NoiseParams;
@@ -45,7 +43,7 @@ typedef std::vector<
 	>
 > SettingsCallbackList;
 
-typedef UNORDERED_MAP<std::string, SettingsCallbackList> SettingsCallbackMap;
+typedef std::unordered_map<std::string, SettingsCallbackList> SettingsCallbackMap;
 
 enum ValueType {
 	VALUETYPE_STRING,
@@ -74,15 +72,10 @@ struct ValueSpec {
 };
 
 struct SettingsEntry {
-	SettingsEntry() :
-		group(NULL),
-		is_group(false)
-	{}
+	SettingsEntry() = default;
 
 	SettingsEntry(const std::string &value_) :
-		value(value_),
-		group(NULL),
-		is_group(false)
+		value(value_)
 	{}
 
 	SettingsEntry(Settings *group_) :
@@ -90,16 +83,17 @@ struct SettingsEntry {
 		is_group(true)
 	{}
 
-	std::string value;
-	Settings *group;
-	bool is_group;
+	std::string value = "";
+	Settings *group = nullptr;
+	bool is_group = false;
 };
 
-typedef UNORDERED_MAP<std::string, SettingsEntry> SettingEntries;
+typedef std::unordered_map<std::string, SettingsEntry> SettingEntries;
 
 class Settings {
 public:
-	Settings() {}
+	Settings() = default;
+
 	~Settings();
 
 	Settings & operator += (const Settings &other);
@@ -140,6 +134,7 @@ public:
 	bool getBool(const std::string &name) const;
 	u16 getU16(const std::string &name) const;
 	s16 getS16(const std::string &name) const;
+	u32 getU32(const std::string &name) const;
 	s32 getS32(const std::string &name) const;
 	u64 getU64(const std::string &name) const;
 	float getFloat(const std::string &name) const;
@@ -233,12 +228,9 @@ private:
 
 	SettingsCallbackMap m_callbacks;
 
-	mutable Mutex m_callback_mutex;
+	mutable std::mutex m_callback_mutex;
 
 	// All methods that access m_settings/m_defaults directly should lock this.
-	mutable Mutex m_mutex;
+	mutable std::mutex m_mutex;
 
 };
-
-#endif
-

@@ -29,12 +29,12 @@
    john@suckerfreegames.com
 */
 
-#ifndef __C_GUI_TTFONT_H_INCLUDED__
-#define __C_GUI_TTFONT_H_INCLUDED__
+#pragma once
 
 #include <irrlicht.h>
 #include <ft2build.h>
 #include <vector>
+#include "irrUString.h"
 #include "util/enriched_string.h"
 #include FT_FREETYPE_H
 
@@ -268,7 +268,7 @@ namespace gui
 			virtual void draw(const core::stringw& text, const core::rect<s32>& position,
 				video::SColor color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
-			
+
 			virtual void draw(const EnrichedString& text, const core::rect<s32>& position,
 				video::SColor color, bool hcenter=false, bool vcenter=false,
 				const core::rect<s32>* clip=0);
@@ -389,5 +389,3 @@ namespace gui
 
 } // end namespace gui
 } // end namespace irr
-
-#endif // __C_GUI_TTFONT_H_INCLUDED__

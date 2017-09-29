@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -41,11 +43,6 @@ MapgenSinglenode::MapgenSinglenode(int mapgenid,
 
 	MapNode n_node(c_node);
 	set_light = (ndef->get(n_node).sunlight_propagates) ? LIGHT_SUN : 0x00;
-}
-
-
-MapgenSinglenode::~MapgenSinglenode()
-{
 }
 
 

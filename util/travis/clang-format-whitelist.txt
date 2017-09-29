@@ -3,10 +3,6 @@ src/ban.cpp
 src/camera.cpp
 src/camera.h
 src/cavegen.cpp
-src/cguittfont/CGUITTFont.cpp
-src/cguittfont/CGUITTFont.h
-src/cguittfont/irrUString.h
-src/cguittfont/xCGUITTFont.h
 src/chat.cpp
 src/chat.h
 src/chat_interface.h
@@ -61,8 +57,6 @@ src/daynightratio.h
 src/debug.cpp
 src/debug.h
 src/defaultsettings.cpp
-src/drawscene.cpp
-src/drawscene.h
 src/dungeongen.cpp
 src/dungeongen.h
 src/emerge.cpp
@@ -89,7 +83,8 @@ src/guiChatConsole.cpp
 src/guiChatConsole.h
 src/guiEngine.cpp
 src/guiEngine.h
-src/guiFileSelectMenu.cpp
+src/guiPathSelectMenu.cpp
+src/guiPathSelectMenu.h
 src/guiFormSpecMenu.cpp
 src/guiFormSpecMenu.h
 src/guiKeyChangeMenu.cpp
@@ -112,6 +107,9 @@ src/inventory.cpp
 src/inventory.h
 src/inventorymanager.cpp
 src/inventorymanager.h
+src/irrlicht_changes/CGUITTFont.cpp
+src/irrlicht_changes/CGUITTFont.h
+src/irrlicht_changes/irrUString.h
 src/irrlicht_changes/static_text.cpp
 src/irrlicht_changes/static_text.h
 src/irrlichttypes.h
@@ -131,6 +129,8 @@ src/mapblock_mesh.cpp
 src/mapblock_mesh.h
 src/map.cpp
 src/mapgen.cpp
+src/mapgen_carpathian.cpp
+src/mapgen_carpathian.h
 src/mapgen_flat.cpp
 src/mapgen_fractal.cpp
 src/mapgen.h
@@ -171,8 +171,8 @@ src/network/clientopcodes.h
 src/network/clientpackethandler.cpp
 src/network/connection.cpp
 src/network/connection.h
+src/network/connectionthreads.cpp
 src/network/networkpacket.cpp
-src/network/networkpacket.h
 src/network/networkprotocol.h
 src/network/serveropcodes.cpp
 src/network/serveropcodes.h
@@ -304,8 +304,6 @@ src/settings_translation_file.cpp
 src/shader.cpp
 src/shader.h
 src/sky.cpp
-src/socket.cpp
-src/socket.h
 src/sound.cpp
 src/sound_openal.cpp
 src/sound_openal.h
@@ -328,6 +326,7 @@ src/tileanimation.cpp
 src/tool.cpp
 src/tool.h
 src/touchscreengui.cpp
+src/translation.cpp
 src/treegen.cpp
 src/treegen.h
 src/unittest/test_areastore.cpp

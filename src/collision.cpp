@@ -39,7 +39,6 @@ struct NearbyCollisionInfo {
 	NearbyCollisionInfo(bool is_ul, bool is_obj, int bouncy,
 			const v3s16 &pos, const aabb3f &box) :
 		is_unloaded(is_ul),
-		is_step_up(false),
 		is_object(is_obj),
 		bouncy(bouncy),
 		position(pos),
@@ -47,7 +46,7 @@ struct NearbyCollisionInfo {
 	{}
 
 	bool is_unloaded;
-	bool is_step_up;
+	bool is_step_up = false;
 	bool is_object;
 	int bouncy;
 	v3s16 position;
@@ -189,9 +188,8 @@ bool wouldCollideWithCeiling(
 
 	assert(y_increase >= 0);	// pre-condition
 
-	for (std::vector<NearbyCollisionInfo>::const_iterator it = cinfo.begin();
-			it != cinfo.end(); ++it) {
-		const aabb3f &staticbox = it->box;
+	for (const auto &it : cinfo) {
+		const aabb3f &staticbox = it.box;
 		if ((movingbox.MaxEdge.Y - d <= staticbox.MinEdge.Y) &&
 				(movingbox.MaxEdge.Y + y_increase > staticbox.MinEdge.Y) &&
 				(movingbox.MinEdge.X < staticbox.MaxEdge.X) &&
@@ -204,7 +202,7 @@ bool wouldCollideWithCeiling(
 	return false;
 }
 
-static inline void getNeighborConnectingFace(v3s16 p, INodeDefManager *nodedef,
+static inline void getNeighborConnectingFace(const v3s16 &p, INodeDefManager *nodedef,
 		Map *map, MapNode n, int v, int *neighbors)
 {
 	MapNode n2 = map->getNodeNoEx(p);
@@ -229,13 +227,13 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	/*
 		Calculate new velocity
 	*/
-	if (dtime > 0.5) {
+	if (dtime > 0.5f) {
 		if (!time_notification_done) {
 			time_notification_done = true;
 			infostream << "collisionMoveSimple: maximum step interval exceeded,"
 					" lost movement details!"<<std::endl;
 		}
-		dtime = 0.5;
+		dtime = 0.5f;
 	} else {
 		time_notification_done = false;
 	}
@@ -256,25 +254,28 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	std::vector<NearbyCollisionInfo> cinfo;
 	{
 	//TimeTaker tt2("collisionMoveSimple collect boxes");
-	ScopeProfiler sp(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
+	ScopeProfiler sp2(g_profiler, "collisionMoveSimple collect boxes avg", SPT_AVG);
 
-	v3s16 oldpos_i = floatToInt(*pos_f, BS);
-	v3s16 newpos_i = floatToInt(*pos_f + *speed_f * dtime, BS);
-	s16 min_x = MYMIN(oldpos_i.X, newpos_i.X) + (box_0.MinEdge.X / BS) - 1;
-	s16 min_y = MYMIN(oldpos_i.Y, newpos_i.Y) + (box_0.MinEdge.Y / BS) - 1;
-	s16 min_z = MYMIN(oldpos_i.Z, newpos_i.Z) + (box_0.MinEdge.Z / BS) - 1;
-	s16 max_x = MYMAX(oldpos_i.X, newpos_i.X) + (box_0.MaxEdge.X / BS) + 1;
-	s16 max_y = MYMAX(oldpos_i.Y, newpos_i.Y) + (box_0.MaxEdge.Y / BS) + 1;
-	s16 max_z = MYMAX(oldpos_i.Z, newpos_i.Z) + (box_0.MaxEdge.Z / BS) + 1;
+	v3f newpos_f = *pos_f + *speed_f * dtime;
+	v3f minpos_f(
+		MYMIN(pos_f->X, newpos_f.X),
+		MYMIN(pos_f->Y, newpos_f.Y) + 0.01f * BS, // bias rounding, player often at +/-n.5
+		MYMIN(pos_f->Z, newpos_f.Z)
+	);
+	v3f maxpos_f(
+		MYMAX(pos_f->X, newpos_f.X),
+		MYMAX(pos_f->Y, newpos_f.Y),
+		MYMAX(pos_f->Z, newpos_f.Z)
+	);
+	v3s16 min = floatToInt(minpos_f + box_0.MinEdge, BS) - v3s16(1, 1, 1);
+	v3s16 max = floatToInt(maxpos_f + box_0.MaxEdge, BS) + v3s16(1, 1, 1);
 
 	bool any_position_valid = false;
 
-	for(s16 x = min_x; x <= max_x; x++)
-	for(s16 y = min_y; y <= max_y; y++)
-	for(s16 z = min_z; z <= max_z; z++)
-	{
-		v3s16 p(x,y,z);
-
+	v3s16 p;
+	for (p.X = min.X; p.X <= max.X; p.X++)
+	for (p.Y = min.Y; p.Y <= max.Y; p.Y++)
+	for (p.Z = min.Z; p.Z <= max.Z; p.Z++) {
 		bool is_position_valid;
 		MapNode n = map->getNodeNoEx(p, &is_position_valid);
 
@@ -284,12 +285,15 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			any_position_valid = true;
 			INodeDefManager *nodedef = gamedef->getNodeDefManager();
 			const ContentFeatures &f = nodedef->get(n);
-			if(f.walkable == false)
+
+			if (!f.walkable)
 				continue;
+
 			int n_bouncy_value = itemgroup_get(f.groups, "bouncy");
 
 			int neighbors = 0;
-			if (f.drawtype == NDT_NODEBOX && f.node_box.type == NODEBOX_CONNECTED) {
+			if (f.drawtype == NDT_NODEBOX &&
+				f.node_box.type == NODEBOX_CONNECTED) {
 				v3s16 p2 = p;
 
 				p2.Y++;
@@ -317,20 +321,15 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			}
 			std::vector<aabb3f> nodeboxes;
 			n.getCollisionBoxes(gamedef->ndef(), &nodeboxes, neighbors);
-			for(std::vector<aabb3f>::iterator
-					i = nodeboxes.begin();
-					i != nodeboxes.end(); ++i)
-			{
-				aabb3f box = *i;
-				box.MinEdge += v3f(x, y, z)*BS;
-				box.MaxEdge += v3f(x, y, z)*BS;
-				cinfo.push_back(NearbyCollisionInfo(false,
-					false, n_bouncy_value, p, box));
+			for (auto box : nodeboxes) {
+				box.MinEdge += intToFloat(p, BS);
+				box.MaxEdge += intToFloat(p, BS);
+				cinfo.emplace_back(false, false, n_bouncy_value, p, box);
 			}
 		} else {
 			// Collide with unloaded nodes
 			aabb3f box = getNodeBox(p, BS);
-			cinfo.push_back(NearbyCollisionInfo(true, false, 0, p, box));
+			cinfo.emplace_back(true, false, 0, p, box);
 		}
 	}
 
@@ -345,7 +344,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	if(collideWithObjects)
 	{
-		ScopeProfiler sp(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
+		ScopeProfiler sp2(g_profiler, "collisionMoveSimple objects avg", SPT_AVG);
 		//TimeTaker tt3("collisionMoveSimple collect object boxes");
 
 		/* add object boxes to cinfo */
@@ -356,10 +355,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		if (c_env != 0) {
 			f32 distance = speed_f->getLength();
 			std::vector<DistanceSortedActiveObject> clientobjects;
-			c_env->getActiveObjects(*pos_f, distance * 1.5, clientobjects);
-			for (size_t i=0; i < clientobjects.size(); i++) {
-				if ((self == 0) || (self != clientobjects[i].obj)) {
-					objects.push_back((ActiveObject*)clientobjects[i].obj);
+			c_env->getActiveObjects(*pos_f, distance * 1.5f, clientobjects);
+			for (auto &clientobject : clientobjects) {
+				if (!self || (self != clientobject.obj)) {
+					objects.push_back((ActiveObject*) clientobject.obj);
 				}
 			}
 		}
@@ -370,10 +369,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 			if (s_env != NULL) {
 				f32 distance = speed_f->getLength();
 				std::vector<u16> s_objects;
-				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5);
-				for (std::vector<u16>::iterator iter = s_objects.begin(); iter != s_objects.end(); ++iter) {
-					ServerActiveObject *current = s_env->getActiveObject(*iter);
-					if ((self == 0) || (self != current)) {
+				s_env->getObjectsInsideRadius(s_objects, *pos_f, distance * 1.5f);
+				for (u16 obj_id : s_objects) {
+					ServerActiveObject *current = s_env->getActiveObject(obj_id);
+					if (!self || (self != current)) {
 						objects.push_back((ActiveObject*)current);
 					}
 				}
@@ -384,11 +383,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				iter != objects.end(); ++iter) {
 			ActiveObject *object = *iter;
 
-			if (object != NULL) {
+			if (object) {
 				aabb3f object_collisionbox;
 				if (object->getCollisionBox(&object_collisionbox) &&
 						object->collideWithObjects()) {
-					cinfo.push_back(NearbyCollisionInfo(false, true, 0, v3s16(), object_collisionbox));
+					cinfo.emplace_back(false, true, 0, v3s16(), object_collisionbox);
 				}
 			}
 		}
@@ -402,7 +401,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 		Collision uncertainty radius
 		Make it a bit larger than the maximum distance of movement
 	*/
-	f32 d = pos_max_d * 1.1;
+	f32 d = pos_max_d * 1.1f;
 	// A fairly large value in here makes moving smoother
 	//f32 d = 0.15*BS;
 
@@ -411,9 +410,9 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 
 	int loopcount = 0;
 
-	while(dtime > BS * 1e-10) {
+	while(dtime > BS * 1e-10f) {
 		//TimeTaker tt3("collisionMoveSimple dtime loop");
-        	ScopeProfiler sp(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
+        	ScopeProfiler sp2(g_profiler, "collisionMoveSimple dtime loop avg", SPT_AVG);
 
 		// Avoid infinite loop
 		loopcount++;
@@ -469,8 +468,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 							d));
 
 			// Get bounce multiplier
-			bool bouncy = (nearest_info.bouncy >= 1);
-			float bounce = -(float)nearest_info.bouncy / 100.0;
+			float bounce = -(float)nearest_info.bouncy / 100.0f;
 
 			// Move to the point of collision and reduce dtime by nearest_dtime
 			if (nearest_dtime < 0) {
@@ -499,7 +497,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				info.type = COLLISION_NODE;
 
 			info.node_p = nearest_info.position;
-			info.bouncy = bouncy;
 			info.old_speed = *speed_f;
 
 			// Set the speed component that caused the collision to zero
@@ -513,7 +510,6 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				else
 					speed_f->X = 0;
 				result.collides = true;
-				result.collides_xz = true;
 			} else if (nearest_collided == 1) { // Y
 				if(fabs(speed_f->Y) > BS * 3)
 					speed_f->Y *= bounce;
@@ -526,11 +522,10 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				else
 					speed_f->Z = 0;
 				result.collides = true;
-				result.collides_xz = true;
 			}
 
 			info.new_speed = *speed_f;
-			if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1 * BS)
+			if (info.new_speed.getDistanceFrom(info.old_speed) < 0.1f * BS)
 				is_collision = false;
 
 			if (is_collision) {
@@ -545,8 +540,7 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 	aabb3f box = box_0;
 	box.MinEdge += *pos_f;
 	box.MaxEdge += *pos_f;
-	for (u32 boxindex = 0; boxindex < cinfo.size(); boxindex++) {
-		NearbyCollisionInfo &box_info = cinfo[boxindex];
+	for (const auto &box_info : cinfo) {
 		const aabb3f &cbox = box_info.box;
 
 		/*
@@ -567,13 +561,11 @@ collisionMoveResult collisionMoveSimple(Environment *env, IGameDef *gamedef,
 				box.MinEdge += *pos_f;
 				box.MaxEdge += *pos_f;
 			}
-			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15 * BS) {
+			if (fabs(cbox.MaxEdge.Y - box.MinEdge.Y) < 0.15f * BS) {
 				result.touching_ground = true;
 
 				if (box_info.is_object)
 					result.standing_on_object = true;
-				if (box_info.is_unloaded)
-					result.standing_on_unloaded = true;
 			}
 		}
 	}

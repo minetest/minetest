@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODETIMER_HEADER
-#define NODETIMER_HEADER
+#pragma once
 
 #include "irr_v3d.h"
 #include <iostream>
@@ -36,18 +35,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 class NodeTimer
 {
 public:
-	NodeTimer(): timeout(0.), elapsed(0.) {}
+	NodeTimer() = default;
 	NodeTimer(const v3s16 &position_):
-		timeout(0.), elapsed(0.), position(position_) {}
+		position(position_) {}
 	NodeTimer(f32 timeout_, f32 elapsed_, v3s16 position_):
 		timeout(timeout_), elapsed(elapsed_), position(position_) {}
-	~NodeTimer() {}
-	
+	~NodeTimer() = default;
+
 	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
-	
-	f32 timeout;
-	f32 elapsed;
+
+	f32 timeout = 0.0f;
+	f32 elapsed = 0.0f;
 	v3s16 position;
 };
 
@@ -58,12 +57,12 @@ public:
 class NodeTimerList
 {
 public:
-	NodeTimerList(): m_next_trigger_time(-1.), m_time(0.) {}
-	~NodeTimerList() {}
-	
+	NodeTimerList() = default;
+	~NodeTimerList() = default;
+
 	void serialize(std::ostream &os, u8 map_format_version) const;
 	void deSerialize(std::istream &is, u8 map_format_version);
-	
+
 	// Get timer
 	NodeTimer get(const v3s16 &p) {
 		std::map<v3s16, std::multimap<double, NodeTimer>::iterator>::iterator n =
@@ -118,19 +117,12 @@ public:
 		m_next_trigger_time = -1.;
 	}
 
-	inline double getNextTriggerTime() {
-		return m_next_trigger_time;
-	}
-
 	// Move forward in time, returns elapsed timers
 	std::vector<NodeTimer> step(float dtime);
 
 private:
 	std::multimap<double, NodeTimer> m_timers;
 	std::map<v3s16, std::multimap<double, NodeTimer>::iterator> m_iterators;
-	double m_next_trigger_time;
-	double m_time;
+	double m_next_trigger_time = -1.0;
+	double m_time = 0.0;
 };
-
-#endif
-

@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_MAINMENU_H_
-#define L_MAINMENU_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 
@@ -86,7 +85,7 @@ private:
 
 	static int l_show_keys_menu(lua_State *L);
 
-	static int l_show_file_open_dialog(lua_State *L);
+	static int l_show_path_select_dialog(lua_State *L);
 
 	static int l_set_topleft_text(lua_State *L);
 
@@ -108,6 +107,8 @@ private:
 
 	static int l_get_modpath(lua_State *L);
 
+	static int l_get_clientmodpath(lua_State *L);
+
 	static int l_get_gamepath(lua_State *L);
 
 	static int l_get_texturepath(lua_State *L);
@@ -121,10 +122,6 @@ private:
 	static int l_copy_dir(lua_State *L);
 
 	static int l_extract_zip(lua_State *L);
-
-	static int l_get_modstore_details(lua_State *L);
-
-	static int l_get_modstore_list(lua_State *L);
 
 	static int l_download_file(lua_State *L);
 
@@ -153,5 +150,3 @@ public:
 	static void InitializeAsync(lua_State *L, int top);
 
 };
-
-#endif /* L_MAINMENU_H_ */

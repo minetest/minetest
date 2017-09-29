@@ -23,10 +23,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <math.h>
+#include <cmath>
 #include "noise.h"
 #include <iostream>
-#include <string.h> // memset
+#include <cstring> // memset
 #include "debug.h"
 #include "util/numeric.h"
 #include "util/string.h"
@@ -47,8 +47,8 @@ typedef float (*Interp3dFxn)(
 		float x, float y, float z);
 
 float cos_lookup[16] = {
-	1.0,  0.9238,  0.7071,  0.3826, 0, -0.3826, -0.7071, -0.9238,
-	1.0, -0.9238, -0.7071, -0.3826, 0,  0.3826,  0.7071,  0.9238
+	1.0f,  0.9238f,  0.7071f,  0.3826f, .0f, -0.3826f, -0.7071f, -0.9238f,
+	1.0f, -0.9238f, -0.7071f, -0.3826f, .0f,  0.3826f,  0.7071f,  0.9238f
 };
 
 FlagDesc flagdesc_noiseparams[] = {
@@ -130,7 +130,9 @@ s32 PcgRandom::range(s32 min, s32 max)
 	if (max < min)
 		throw PrngException("Invalid range (max < min)");
 
-	u32 bound = max - min + 1;
+	// We have to cast to s64 because otherwise this could overflow,
+	// and signed overflow is undefined behavior.
+	u32 bound = (s64)max - (s64)min + 1;
 	return range(bound) + min;
 }
 
@@ -260,8 +262,8 @@ float noise2d_gradient(float x, float y, s32 seed, bool eased)
 	// Interpolate
 	if (eased)
 		return biLinearInterpolation(v00, v10, v01, v11, xl, yl);
-	else
-		return biLinearInterpolationNoEase(v00, v10, v01, v11, xl, yl);
+
+	return biLinearInterpolationNoEase(v00, v10, v01, v11, xl, yl);
 }
 
 
@@ -290,12 +292,12 @@ float noise3d_gradient(float x, float y, float z, s32 seed, bool eased)
 			v000, v100, v010, v110,
 			v001, v101, v011, v111,
 			xl, yl, zl);
-	} else {
-		return triLinearInterpolationNoEase(
-			v000, v100, v010, v110,
-			v001, v101, v011, v111,
-			xl, yl, zl);
 	}
+
+	return triLinearInterpolationNoEase(
+		v000, v100, v010, v110,
+		v001, v101, v011, v111,
+		xl, yl, zl);
 }
 
 
@@ -432,10 +434,6 @@ Noise::Noise(NoiseParams *np_, s32 seed, u32 sx, u32 sy, u32 sz)
 	this->sx   = sx;
 	this->sy   = sy;
 	this->sz   = sz;
-
-	this->persist_buf  = NULL;
-	this->gradient_buf = NULL;
-	this->result       = NULL;
 
 	allocBuffers();
 }
@@ -780,7 +778,7 @@ float *Noise::perlinMap3D(float x, float y, float z, float *persistence_map)
 
 
 void Noise::updateResults(float g, float *gmap,
-	float *persistence_map, size_t bufsize)
+	const float *persistence_map, size_t bufsize)
 {
 	// This looks very ugly, but it is 50-70% faster than having
 	// conditional statements inside the loop

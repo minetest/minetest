@@ -29,6 +29,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include <util/numeric.h>
 #include "intlGUIEditBox.h"
 
 #if defined(_IRR_COMPILE_WITH_GUI_) && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
@@ -61,13 +62,9 @@ namespace gui
 intlGUIEditBox::intlGUIEditBox(const wchar_t* text, bool border,
 		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
 		const core::rect<s32>& rectangle)
-	: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
-	Border(border), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
-	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
-	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
-	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
-	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
-	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
+	: IGUIEditBox(environment, parent, id, rectangle),
+	Border(border),
+	FrameRect(rectangle)
 {
 	#ifdef _DEBUG
 	setDebugName("intlintlGUIEditBox");
@@ -633,8 +630,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		if ( !this->IsEnabled )
 			break;
 
-		if (Text.size())
-		{
+		if (!Text.empty()) {
 			core::stringw s;
 
 			if (MarkBegin != MarkEnd)
@@ -673,8 +669,7 @@ bool intlGUIEditBox::processKey(const SEvent& event)
 		if ( !this->IsEnabled )
 			break;
 
-		if (Text.size() != 0)
-		{
+		if (!Text.empty()) {
 			core::stringw s;
 
 			if (MarkBegin != MarkEnd)
@@ -823,8 +818,7 @@ void intlGUIEditBox::draw()
 		const bool prevOver = OverrideColorEnabled;
 		const video::SColor prevColor = OverrideColor;
 
-		if (Text.size())
-		{
+		if (!Text.empty()) {
 			if (!IsEnabled && !OverrideColorEnabled)
 			{
 				OverrideColorEnabled = true;
@@ -911,7 +905,7 @@ void intlGUIEditBox::draw()
 					// draw marked text
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
 
-					if (s.size())
+					if (!s.empty())
 						font->draw(s.c_str(), CurrentTextRect,
 							OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
 							false, true, &localClipRect);
@@ -1060,24 +1054,22 @@ bool intlGUIEditBox::processMouse(const SEvent& event)
 		else
 		{
 			if (!AbsoluteClippingRect.isPointInside(
-				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
-			{
+				core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y))) {
 				return false;
 			}
-			else
-			{
-				// move cursor
-				CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 
-                s32 newMarkBegin = MarkBegin;
-				if (!MouseMarking)
-					newMarkBegin = CursorPos;
 
-				MouseMarking = true;
-				setTextMarkers( newMarkBegin, CursorPos);
-				calculateScrollPos();
-				return true;
-			}
+			// move cursor
+			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
+
+			s32 newMarkBegin = MarkBegin;
+			if (!MouseMarking)
+				newMarkBegin = CursorPos;
+
+			MouseMarking = true;
+			setTextMarkers( newMarkBegin, CursorPos);
+			calculateScrollPos();
+			return true;
 		}
 	default:
 		break;
@@ -1096,41 +1088,39 @@ s32 intlGUIEditBox::getCursorPos(s32 x, s32 y)
 
 	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
-	core::stringw *txtLine=0;
-	s32 startPos=0;
-	x+=3;
+	core::stringw *txtLine = NULL;
+	s32 startPos = 0;
+	u32 curr_line_idx = 0;
+	x += 3;
 
-	for (u32 i=0; i < lineCount; ++i)
-	{
-		setTextRect(i);
-		if (i == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
+	for (; curr_line_idx < lineCount; ++curr_line_idx) {
+		setTextRect(curr_line_idx);
+		if (curr_line_idx == 0 && y < CurrentTextRect.UpperLeftCorner.Y)
 			y = CurrentTextRect.UpperLeftCorner.Y;
-		if (i == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y )
+		if (curr_line_idx == lineCount - 1 && y > CurrentTextRect.LowerRightCorner.Y)
 			y = CurrentTextRect.LowerRightCorner.Y;
 
 		// is it inside this region?
-		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y)
-		{
+		if (y >= CurrentTextRect.UpperLeftCorner.Y && y <= CurrentTextRect.LowerRightCorner.Y) {
 			// we've found the clicked line
-			txtLine = (WordWrap || MultiLine) ? &BrokenText[i] : &Text;
-			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[i] : 0;
+			txtLine = (WordWrap || MultiLine) ? &BrokenText[curr_line_idx] : &Text;
+			startPos = (WordWrap || MultiLine) ? BrokenTextPositions[curr_line_idx] : 0;
 			break;
 		}
 	}
 
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
-	else if (x > CurrentTextRect.LowerRightCorner.X + 1)
-		x = CurrentTextRect.LowerRightCorner.X + 1;
+	else if (x > CurrentTextRect.LowerRightCorner.X)
+		x = CurrentTextRect.LowerRightCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	s32 idx = font->getCharacterFromPos(txtLine->c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+	// Special handling for last line, if we are on limits, add 1 extra shift because idx
+	// will be the last char, not null char of the wstring
+	if (curr_line_idx == lineCount - 1 && x == CurrentTextRect.LowerRightCorner.X)
+		idx++;
 
-	// click was on or left of the line
-	if (idx != -1)
-		return idx + startPos;
-
-	// click was off the right edge of the last line, go to end.
-	return txtLine->size() + startPos;
+	return rangelim(idx + startPos, 0, S32_MAX);
 }
 
 
@@ -1190,8 +1180,7 @@ void intlGUIEditBox::breakText()
 
 		if (c == L' ' || c == 0 || i == (size-1))
 		{
-			if (word.size())
-			{
+			if (!word.empty()) {
 				// here comes the next whitespace, look if
 				// we can break the last word to the next line.
 				s32 whitelgth = font->getDimension(whitespace.c_str()).Width;
@@ -1493,7 +1482,7 @@ void intlGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
 	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
 
-	if (!ch.size())
+	if (ch.empty())
 		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
 	else
 		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);

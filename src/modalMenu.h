@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MODALMENU_HEADER
-#define MODALMENU_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #ifdef HAVE_TOUCHSCREENGUI
@@ -48,11 +47,7 @@ public:
 		IGUIElement(gui::EGUIET_ELEMENT, env, parent, id,
 				core::rect<s32>(0,0,100,100))
 	{
-		//m_force_regenerate_gui = false;
-
 		m_menumgr = menumgr;
-		m_allow_focus_removal = false;
-		m_screensize_old = v2u32(0,0);
 
 		setVisible(true);
 		Environment->setFocus(this);
@@ -116,16 +111,12 @@ public:
 	{
 		const core::list<gui::IGUIElement*> &children = getChildren();
 		core::list<gui::IGUIElement*> children_copy;
-		for(core::list<gui::IGUIElement*>::ConstIterator
-				i = children.begin(); i != children.end(); i++)
-		{
-			children_copy.push_back(*i);
+		for (gui::IGUIElement *i : children) {
+			children_copy.push_back(i);
 		}
-		for(core::list<gui::IGUIElement*>::Iterator
-				i = children_copy.begin();
-				i != children_copy.end(); i++)
-		{
-			(*i)->remove();
+
+		for (gui::IGUIElement *i : children_copy) {
+			i->remove();
 		}
 	}
 
@@ -142,9 +133,5 @@ private:
 	IMenuManager *m_menumgr;
 	// This might be necessary to expose to the implementation if it
 	// wants to launch other menus
-	bool m_allow_focus_removal;
+	bool m_allow_focus_removal = false;
 };
-
-
-#endif
-

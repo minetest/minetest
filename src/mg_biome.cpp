@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -50,22 +51,17 @@ BiomeManager::BiomeManager(Server *server) :
 	b->heat_point      = 0.0;
 	b->humidity_point  = 0.0;
 
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("mapgen_water_source");
-	b->m_nodenames.push_back("mapgen_water_source");
-	b->m_nodenames.push_back("mapgen_river_water_source");
-	b->m_nodenames.push_back("mapgen_stone");
-	b->m_nodenames.push_back("ignore");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("mapgen_water_source");
+	b->m_nodenames.emplace_back("mapgen_water_source");
+	b->m_nodenames.emplace_back("mapgen_river_water_source");
+	b->m_nodenames.emplace_back("mapgen_stone");
+	b->m_nodenames.emplace_back("ignore");
 	m_ndef->pendNodeResolve(b);
 
 	add(b);
-}
-
-
-BiomeManager::~BiomeManager()
-{
 }
 
 

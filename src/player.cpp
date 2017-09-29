@@ -30,11 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 Player::Player(const char *name, IItemDefManager *idef):
-	inventory(idef),
-	peer_id(PEER_ID_INEXISTENT),
-	keyPressed(0),
-// protected
-	m_speed(0,0,0)
+	inventory(idef)
 {
 	strlcpy(m_name, name, PLAYERNAME_SIZE);
 
@@ -74,7 +70,8 @@ Player::Player(const char *name, IItemDefManager *idef):
 	hud_flags =
 		HUD_FLAG_HOTBAR_VISIBLE    | HUD_FLAG_HEALTHBAR_VISIBLE |
 		HUD_FLAG_CROSSHAIR_VISIBLE | HUD_FLAG_WIELDITEM_VISIBLE |
-		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE;
+		HUD_FLAG_BREATHBAR_VISIBLE | HUD_FLAG_MINIMAP_VISIBLE   |
+		HUD_FLAG_MINIMAP_RADAR_VISIBLE;
 
 	hud_hotbar_itemcount = HUD_HOTBAR_ITEMCOUNT_DEFAULT;
 }

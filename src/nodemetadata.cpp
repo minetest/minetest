@@ -44,15 +44,13 @@ void NodeMetadata::serialize(std::ostream &os, u8 version, bool disk) const
 {
 	int num_vars = disk ? m_stringvars.size() : countNonPrivate();
 	writeU32(os, num_vars);
-	for (StringMap::const_iterator
-			it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		bool priv = isPrivate(it->first);
+	for (const auto &sv : m_stringvars) {
+		bool priv = isPrivate(sv.first);
 		if (!disk && priv)
 			continue;
 
-		os << serializeString(it->first);
-		os << serializeLongString(it->second);
+		os << serializeString(sv.first);
+		os << serializeLongString(sv.second);
 		if (version >= 2)
 			writeU8(os, (priv) ? 1 : 0);
 	}
@@ -86,7 +84,7 @@ void NodeMetadata::clear()
 
 bool NodeMetadata::empty() const
 {
-	return Metadata::empty() && m_inventory->getLists().size() == 0;
+	return Metadata::empty() && m_inventory->getLists().empty();
 }
 
 
@@ -103,10 +101,8 @@ int NodeMetadata::countNonPrivate() const
 	// m_privatevars can contain names not actually present
 	// DON'T: return m_stringvars.size() - m_privatevars.size();
 	int n = 0;
-	for (StringMap::const_iterator
-			it = m_stringvars.begin();
-			it != m_stringvars.end(); ++it) {
-		if (isPrivate(it->first) == false)
+	for (const auto &sv : m_stringvars) {
+		if (!isPrivate(sv.first))
 			n++;
 	}
 	return n;
@@ -132,12 +128,9 @@ void NodeMetadataList::serialize(std::ostream &os, u8 blockver, bool disk) const
 	writeU8(os, version);
 	writeU16(os, count);
 
-	for(std::map<v3s16, NodeMetadata*>::const_iterator
-			i = m_data.begin();
-			i != m_data.end(); ++i)
-	{
-		v3s16 p = i->first;
-		NodeMetadata *data = i->second;
+	for (const auto &it : m_data) {
+		v3s16 p = it.first;
+		NodeMetadata *data = it.second;
 		if (data->empty())
 			continue;
 

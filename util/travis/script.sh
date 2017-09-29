@@ -10,22 +10,15 @@ if [[ "$LINT" == "1" ]]; then
 	exit 0
 fi
 
-if [[ $PLATFORM == "Unix" ]]; then
+set_linux_compiler_env
+
+if [[ ${PLATFORM} == "Unix" ]]; then
 	mkdir -p travisbuild
 	cd travisbuild || exit 1
 
 	CMAKE_FLAGS=''
-	if [[ $COMPILER == "g++-6" ]]; then
-		export CC=gcc-6
-		export CXX=g++-6
-	fi
 
-	# Clang builds with FreeType fail on Travis
-	if [[ $CC == "clang" ]]; then
-		CMAKE_FLAGS+=' -DENABLE_FREETYPE=FALSE'
-	fi
-
-	if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+	if [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
 		CMAKE_FLAGS+=' -DCUSTOM_GETTEXT_PATH=/usr/local/opt/gettext'
 	fi
 
@@ -33,12 +26,12 @@ if [[ $PLATFORM == "Unix" ]]; then
 		-DRUN_IN_PLACE=TRUE \
 		-DENABLE_GETTEXT=TRUE \
 		-DBUILD_SERVER=TRUE \
-		$CMAKE_FLAGS ..
+		${CMAKE_FLAGS} ..
 	make -j2
 
 	echo "Running unit tests."
 	CMD="../bin/minetest --run-unittests"
-	if [[ "$VALGRIND" == "1" ]]; then
+	if [[ "${VALGRIND}" == "1" ]]; then
 		valgrind --leak-check=full --leak-check-heuristics=all --undef-value-errors=no --error-exitcode=9 ${CMD} && exit 0
 	else
 		${CMD} && exit 0

@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,10 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_DECORATION_HEADER
-#define MG_DECORATION_HEADER
+#pragma once
 
-#include "util/cpp11_container.h"
+#include <unordered_set>
 #include "objdef.h"
 #include "noise.h"
 #include "nodedef.h"
@@ -46,50 +46,33 @@ enum DecorationType {
 extern FlagDesc flagdesc_deco[];
 
 
-#if 0
-struct CutoffData {
-	VoxelArea a;
-	Decoration *deco;
-	//v3s16 p;
-	//v3s16 size;
-	//s16 height;
-
-	CutoffData(s16 x, s16 y, s16 z, s16 h) {
-		p = v3s16(x, y, z);
-		height = h;
-	}
-};
-#endif
-
 class Decoration : public ObjDef, public NodeResolver {
 public:
-	Decoration();
-	virtual ~Decoration();
+	Decoration() = default;
+	virtual ~Decoration() = default;
 
 	virtual void resolveNodeNames();
 
 	bool canPlaceDecoration(MMVManip *vm, v3s16 p);
 	size_t placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
-	//size_t placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p) = 0;
 	virtual int getHeight() = 0;
 
-	u32 flags;
-	int mapseed;
+	u32 flags = 0;
+	int mapseed = 0;
 	std::vector<content_t> c_place_on;
-	s16 sidelen;
+	s16 sidelen = 1;
 	s16 y_min;
 	s16 y_max;
-	float fill_ratio;
+	float fill_ratio = 0.0f;
 	NoiseParams np;
 	std::vector<content_t> c_spawnby;
 	s16 nspawnby;
 
-	UNORDERED_SET<u8> biomes;
-	//std::list<CutoffData> cutoffs;
-	//Mutex cutoff_mutex;
+	std::unordered_set<u8> biomes;
 };
+
 
 class DecoSimple : public Decoration {
 public:
@@ -103,15 +86,17 @@ public:
 	u8 deco_param2;
 };
 
+
 class DecoSchematic : public Decoration {
 public:
-	DecoSchematic();
+	DecoSchematic() = default;
 
 	virtual size_t generate(MMVManip *vm, PcgRandom *pr, v3s16 p);
 	virtual int getHeight();
 
 	Rotation rotation;
-	Schematic *schematic;
+	s16 place_offset_y = 0;
+	Schematic *schematic = nullptr;
 };
 
 
@@ -122,10 +107,11 @@ public:
 };
 */
 
+
 class DecorationManager : public ObjDefManager {
 public:
 	DecorationManager(IGameDef *gamedef);
-	virtual ~DecorationManager() {}
+	virtual ~DecorationManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -148,5 +134,3 @@ public:
 
 	size_t placeAllDecos(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax);
 };
-
-#endif

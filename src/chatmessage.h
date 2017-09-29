@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,27 +17,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MT_CPP11CONTAINER_HEADER
-#define MT_CPP11CONTAINER_HEADER
+#pragma once
 
-#if __cplusplus >= 201103L
-#define USE_UNORDERED_CONTAINERS
-#endif
+#include <string>
+#include <ctime>
 
-#if _MSC_VER >= 1600
-#define USE_UNORDERED_CONTAINERS
-#endif
+enum ChatMessageType
+{
+	CHATMESSAGE_TYPE_RAW = 0,
+	CHATMESSAGE_TYPE_NORMAL = 1,
+	CHATMESSAGE_TYPE_ANNOUNCE = 2,
+	CHATMESSAGE_TYPE_SYSTEM = 3,
+	CHATMESSAGE_TYPE_MAX = 4,
+};
 
-#ifdef USE_UNORDERED_CONTAINERS
-#include <unordered_map>
-#include <unordered_set>
-#define UNORDERED_MAP std::unordered_map
-#define UNORDERED_SET std::unordered_set
-#else
-#include <map>
-#include <set>
-#define UNORDERED_MAP std::map
-#define UNORDERED_SET std::set
-#endif
+struct ChatMessage
+{
+	ChatMessage(const std::wstring &m = L"") : message(m) {}
 
-#endif
+	ChatMessage(ChatMessageType t, const std::wstring &m, const std::wstring &s = L"",
+			std::time_t ts = std::time(0))
+	    : type(t), message(m), sender(s), timestamp(ts)
+	{
+	}
+
+	ChatMessageType type = CHATMESSAGE_TYPE_RAW;
+	std::wstring message = L"";
+	std::wstring sender = L"";
+	std::time_t timestamp = std::time(0);
+};

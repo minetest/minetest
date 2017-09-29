@@ -17,18 +17,17 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PROFILER_HEADER
-#define PROFILER_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
+#include <cassert>
 #include <string>
 #include <map>
+#include <ostream>
 
-#include "threading/mutex.h"
 #include "threading/mutex_auto_lock.h"
 #include "util/timetaker.h"
 #include "util/numeric.h"      // paging()
-#include "debug.h"             // assert()
 
 #define MAX_PROFILER_TEXT_ROWS 20
 
@@ -43,9 +42,7 @@ extern Profiler *g_profiler;
 class Profiler
 {
 public:
-	Profiler()
-	{
-	}
+	Profiler() = default;
 
 	void add(const std::string &name, float value)
 	{
@@ -83,11 +80,8 @@ public:
 	void clear()
 	{
 		MutexAutoLock lock(m_mutex);
-		for(std::map<std::string, float>::iterator
-				i = m_data.begin();
-				i != m_data.end(); ++i)
-		{
-			i->second = 0;
+		for (auto &it : m_data) {
+			it.second = 0;
 		}
 		m_avgcounts.clear();
 	}
@@ -177,7 +171,7 @@ public:
 	}
 
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::map<std::string, float> m_data;
 	std::map<std::string, int> m_avgcounts;
 	std::map<std::string, float> m_graphvalues;
@@ -193,54 +187,11 @@ class ScopeProfiler
 {
 public:
 	ScopeProfiler(Profiler *profiler, const std::string &name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	// name is copied
-	ScopeProfiler(Profiler *profiler, const char *name,
-			enum ScopeProfilerType type = SPT_ADD):
-		m_profiler(profiler),
-		m_name(name),
-		m_timer(NULL),
-		m_type(type)
-	{
-		if(m_profiler)
-			m_timer = new TimeTaker(m_name.c_str());
-	}
-	~ScopeProfiler()
-	{
-		if(m_timer)
-		{
-			float duration_ms = m_timer->stop(true);
-			float duration = duration_ms / 1000.0;
-			if(m_profiler){
-				switch(m_type){
-				case SPT_ADD:
-					m_profiler->add(m_name, duration);
-					break;
-				case SPT_AVG:
-					m_profiler->avg(m_name, duration);
-					break;
-				case SPT_GRAPH_ADD:
-					m_profiler->graphAdd(m_name, duration);
-					break;
-				}
-			}
-			delete m_timer;
-		}
-	}
+			ScopeProfilerType type = SPT_ADD);
+	~ScopeProfiler();
 private:
-	Profiler *m_profiler;
+	Profiler *m_profiler = nullptr;
 	std::string m_name;
-	TimeTaker *m_timer;
+	TimeTaker *m_timer = nullptr;
 	enum ScopeProfilerType m_type;
 };
-
-#endif
-

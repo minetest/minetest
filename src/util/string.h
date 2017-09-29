@@ -17,12 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_STRING_HEADER
-#define UTIL_STRING_HEADER
+#pragma once
 
 #include "irrlichttypes_bloated.h"
-#include "cpp11_container.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -30,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include <iomanip>
 #include <cctype>
+#include <unordered_map>
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
@@ -55,7 +54,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	(((unsigned char)(x) < 0xe0) ? 2 :     \
 	(((unsigned char)(x) < 0xf0) ? 3 : 4))
 
-typedef UNORDERED_MAP<std::string, std::string> StringMap;
+typedef std::unordered_map<std::string, std::string> StringMap;
 
 struct FlagDesc {
 	const char *name;
@@ -204,6 +203,56 @@ inline bool str_starts_with(const std::basic_string<T> &str,
 			case_insensitive);
 }
 
+
+/**
+ * Check whether \p str ends with the string suffix. If \p case_insensitive
+ * is true then the check is case insensitve (default is false; i.e. case is
+ * significant).
+ *
+ * @param str
+ * @param suffix
+ * @param case_insensitive
+ * @return true if the str begins with suffix
+ */
+template <typename T>
+inline bool str_ends_with(const std::basic_string<T> &str,
+		const std::basic_string<T> &suffix,
+		bool case_insensitive = false)
+{
+	if (str.size() < suffix.size())
+		return false;
+
+	size_t start = str.size() - suffix.size();
+	if (!case_insensitive)
+		return str.compare(start, suffix.size(), suffix) == 0;
+
+	for (size_t i = 0; i < suffix.size(); ++i)
+		if (tolower(str[start + i]) != tolower(suffix[i]))
+			return false;
+	return true;
+}
+
+
+/**
+ * Check whether \p str ends with the string suffix. If \p case_insensitive
+ * is true then the check is case insensitve (default is false; i.e. case is
+ * significant).
+ *
+ * @param str
+ * @param suffix
+ * @param case_insensitive
+ * @return true if the str begins with suffix
+ */
+template <typename T>
+inline bool str_ends_with(const std::basic_string<T> &str,
+		const T *suffix,
+		bool case_insensitive = false)
+{
+	return str_ends_with(str, std::basic_string<T>(suffix),
+			case_insensitive);
+}
+
+
 /**
  * Splits a string into its component parts separated by the character
  * \p delimiter.
@@ -232,12 +281,12 @@ inline std::vector<std::basic_string<T> > str_split(
  */
 inline std::string lowercase(const std::string &str)
 {
-	std::string s2 = "";
+	std::string s2;
 
 	s2.reserve(str.size());
 
-	for (size_t i = 0; i < str.size(); i++)
-		s2 += tolower(str[i]);
+	for (char i : str)
+		s2 += tolower(i);
 
 	return s2;
 }
@@ -599,6 +648,12 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
 	return tokens;
 }
 
+std::wstring translate_string(const std::wstring &s);
+
+inline std::wstring unescape_translate(const std::wstring &s) {
+	return unescape_enriched(translate_string(s));
+}
+
 /**
  * Checks that all characters in \p to_check are a decimal digits.
  *
@@ -608,8 +663,8 @@ std::vector<std::basic_string<T> > split(const std::basic_string<T> &s, T delim)
  */
 inline bool is_number(const std::string &to_check)
 {
-	for (size_t i = 0; i < to_check.size(); i++)
-		if (!std::isdigit(to_check[i]))
+	for (char i : to_check)
+		if (!std::isdigit(i))
 			return false;
 
 	return !to_check.empty();
@@ -648,6 +703,3 @@ inline const std::string duration_to_string(int sec)
 
 	return ss.str();
 }
-
-
-#endif

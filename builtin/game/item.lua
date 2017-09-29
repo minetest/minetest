@@ -155,11 +155,45 @@ function core.yaw_to_dir(yaw)
 	return {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
 end
 
-function core.get_node_drops(nodename, toolname)
+function core.is_colored_paramtype(ptype)
+	return (ptype == "color") or (ptype == "colorfacedir") or
+		(ptype == "colorwallmounted")
+end
+
+function core.strip_param2_color(param2, paramtype2)
+	if not core.is_colored_paramtype(paramtype2) then
+		return nil
+	end
+	if paramtype2 == "colorfacedir" then
+		param2 = math.floor(param2 / 32) * 32
+	elseif paramtype2 == "colorwallmounted" then
+		param2 = math.floor(param2 / 8) * 8
+	end
+	-- paramtype2 == "color" requires no modification.
+	return param2
+end
+
+function core.get_node_drops(node, toolname)
+	-- Compatibility, if node is string
+	local nodename = node
+	local param2 = 0
+	-- New format, if node is table
+	if (type(node) == "table") then
+		nodename = node.name
+		param2 = node.param2
+	end
 	local def = core.registered_nodes[nodename]
 	local drop = def and def.drop
+	local ptype = def and def.paramtype2
+	-- get color, if there is color (otherwise nil)
+	local palette_index = core.strip_param2_color(param2, ptype)
 	if drop == nil then
 		-- default drop
+		if palette_index then
+			local stack = ItemStack(nodename)
+			stack:get_meta():set_int("palette_index", palette_index)
+			return {stack:to_string()}
+		end
 		return {nodename}
 	elseif type(drop) == "string" then
 		-- itemstring drop
@@ -195,6 +229,12 @@ function core.get_node_drops(nodename, toolname)
 		if good_rarity and good_tool then
 			got_count = got_count + 1
 			for _, add_item in ipairs(item.items) do
+				-- add color, if necessary
+				if item.inherit_color and palette_index then
+					local stack = ItemStack(add_item)
+					stack:get_meta():set_int("palette_index", palette_index)
+					add_item = stack:to_string()
+				end
 				got_items[#got_items+1] = add_item
 			end
 			if drop.max_items ~= nil and got_count == drop.max_items then
@@ -258,7 +298,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		.. def.name .. " at " .. core.pos_to_string(place_to))
 
 	local oldnode = core.get_node(place_to)
-	local newnode = {name = def.name, param1 = 0, param2 = param2}
+	local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
 
 	-- Calculate direction for wall mounted stuff like torches and signs
 	if def.place_param2 ~= nil then
@@ -283,6 +323,25 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 			}
 			newnode.param2 = core.dir_to_facedir(dir)
 			core.log("action", "facedir: " .. newnode.param2)
+		end
+	end
+
+	local metatable = itemstack:get_meta():to_table().fields
+
+	-- Transfer color information
+	if metatable.palette_index and not def.place_param2 then
+		local color_divisor = nil
+		if def.paramtype2 == "color" then
+			color_divisor = 1
+		elseif def.paramtype2 == "colorwallmounted" then
+			color_divisor = 8
+		elseif def.paramtype2 == "colorfacedir" then
+			color_divisor = 32
+		end
+		if color_divisor then
+			local color = math.floor(metatable.palette_index / color_divisor)
+			local other = newnode.param2 % color_divisor
+			newnode.param2 = color * color_divisor + other
 		end
 	end
 
@@ -361,19 +420,16 @@ end
 
 function core.item_drop(itemstack, dropper, pos)
 	if dropper and dropper:is_player() then
-		local v = dropper:get_look_dir()
-		local p = {x=pos.x, y=pos.y+1.2, z=pos.z}
-		local cs = itemstack:get_count()
-		if dropper:get_player_control().sneak then
-			cs = 1
-		end
-		local item = itemstack:take_item(cs)
+		local dir = dropper:get_look_dir()
+		local p = {x = pos.x, y = pos.y + 1.2, z = pos.z}
+		local cnt = itemstack:get_count()
+		local item = itemstack:take_item(cnt)
 		local obj = core.add_item(p, item)
 		if obj then
-			v.x = v.x*2
-			v.y = v.y*2 + 2
-			v.z = v.z*2
-			obj:setvelocity(v)
+			dir.x = dir.x * 2.9
+			dir.y = dir.y * 2.9 + 2
+			dir.z = dir.z * 2.9
+			obj:set_velocity(dir)
 			obj:get_luaentity().dropped_by = dropper:get_player_name()
 			return itemstack
 		end
@@ -474,7 +530,7 @@ function core.node_dig(pos, node, digger)
 		.. node.name .. " at " .. core.pos_to_string(pos))
 
 	local wielded = digger:get_wielded_item()
-	local drops = core.get_node_drops(node.name, wielded:get_name())
+	local drops = core.get_node_drops(node, wielded:get_name())
 
 	local wdef = wielded:get_definition()
 	local tp = wielded:get_tool_capabilities()
@@ -528,6 +584,18 @@ function core.node_dig(pos, node, digger)
 		local node_copy = {name=node.name, param1=node.param1, param2=node.param2}
 		callback(pos_copy, node_copy, digger)
 	end
+end
+
+function core.itemstring_with_palette(item, palette_index)
+	local stack = ItemStack(item) -- convert to ItemStack
+	stack:get_meta():set_int("palette_index", palette_index)
+	return stack:to_string()
+end
+
+function core.itemstring_with_color(item, colorstring)
+	local stack = ItemStack(item) -- convert to ItemStack
+	stack:get_meta():set_string("color", colorstring)
+	return stack:to_string()
 end
 
 -- This is used to allow mods to redefine core.item_place and so on

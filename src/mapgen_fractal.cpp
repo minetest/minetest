@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -49,17 +49,19 @@ FlagDesc flagdesc_mapgen_fractal[] = {
 MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags    = params->spflags;
-	this->cave_width = params->cave_width;
-	this->fractal    = params->fractal;
-	this->iterations = params->iterations;
-	this->scale      = params->scale;
-	this->offset     = params->offset;
-	this->slice_w    = params->slice_w;
-	this->julia_x    = params->julia_x;
-	this->julia_y    = params->julia_y;
-	this->julia_z    = params->julia_z;
-	this->julia_w    = params->julia_w;
+	spflags          = params->spflags;
+	cave_width       = params->cave_width;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	fractal          = params->fractal;
+	iterations       = params->iterations;
+	scale            = params->scale;
+	offset           = params->offset;
+	slice_w          = params->slice_w;
+	julia_x          = params->julia_x;
+	julia_y          = params->julia_y;
+	julia_z          = params->julia_z;
+	julia_w          = params->julia_w;
 
 	//// 2D terrain noise
 	noise_seabed       = new Noise(&params->np_seabed, seed, csize.X, csize.Z);
@@ -68,8 +70,8 @@ MapgenFractal::MapgenFractal(int mapgenid, MapgenFractalParams *params, EmergeMa
 	MapgenBasic::np_cave1 = params->np_cave1;
 	MapgenBasic::np_cave2 = params->np_cave2;
 
-	this->formula = fractal / 2 + fractal % 2;
-	this->julia   = fractal % 2 == 0;
+	formula = fractal / 2 + fractal % 2;
+	julia   = fractal % 2 == 0;
 }
 
 
@@ -80,40 +82,30 @@ MapgenFractal::~MapgenFractal()
 }
 
 
-MapgenFractalParams::MapgenFractalParams()
+MapgenFractalParams::MapgenFractalParams():
+	np_seabed       (-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0),
+	np_filler_depth (0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
+	np_cave1        (0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
+	np_cave2        (0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
 {
-	spflags    = 0;
-	cave_width = 0.09;
-	fractal    = 1;
-	iterations = 11;
-	scale      = v3f(4096.0, 1024.0, 4096.0);
-	offset     = v3f(1.79, 0.0, 0.0);
-	slice_w    = 0.0;
-	julia_x    = 0.33;
-	julia_y    = 0.33;
-	julia_z    = 0.33;
-	julia_w    = 0.33;
-
-	np_seabed       = NoiseParams(-14, 9,   v3f(600, 600, 600), 41900, 5, 0.6, 2.0);
-	np_filler_depth = NoiseParams(0,   1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0,   12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
-	np_cave2        = NoiseParams(0,   12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0);
 }
 
 
 void MapgenFractalParams::readParams(const Settings *settings)
 {
-	settings->getFlagStrNoEx("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal);
-	settings->getFloatNoEx("mgfractal_cave_width", cave_width);
-	settings->getU16NoEx("mgfractal_fractal",      fractal);
-	settings->getU16NoEx("mgfractal_iterations",   iterations);
-	settings->getV3FNoEx("mgfractal_scale",        scale);
-	settings->getV3FNoEx("mgfractal_offset",       offset);
-	settings->getFloatNoEx("mgfractal_slice_w",    slice_w);
-	settings->getFloatNoEx("mgfractal_julia_x",    julia_x);
-	settings->getFloatNoEx("mgfractal_julia_y",    julia_y);
-	settings->getFloatNoEx("mgfractal_julia_z",    julia_z);
-	settings->getFloatNoEx("mgfractal_julia_w",    julia_w);
+	settings->getFlagStrNoEx("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal);
+	settings->getFloatNoEx("mgfractal_cave_width",     cave_width);
+	settings->getS16NoEx("mgfractal_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgfractal_lava_depth",       lava_depth);
+	settings->getU16NoEx("mgfractal_fractal",          fractal);
+	settings->getU16NoEx("mgfractal_iterations",       iterations);
+	settings->getV3FNoEx("mgfractal_scale",            scale);
+	settings->getV3FNoEx("mgfractal_offset",           offset);
+	settings->getFloatNoEx("mgfractal_slice_w",        slice_w);
+	settings->getFloatNoEx("mgfractal_julia_x",        julia_x);
+	settings->getFloatNoEx("mgfractal_julia_y",        julia_y);
+	settings->getFloatNoEx("mgfractal_julia_z",        julia_z);
+	settings->getFloatNoEx("mgfractal_julia_w",        julia_w);
 
 	settings->getNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->getNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
@@ -124,17 +116,19 @@ void MapgenFractalParams::readParams(const Settings *settings)
 
 void MapgenFractalParams::writeParams(Settings *settings) const
 {
-	settings->setFlagStr("mgfractal_spflags",  spflags, flagdesc_mapgen_fractal, U32_MAX);
-	settings->setFloat("mgfractal_cave_width", cave_width);
-	settings->setU16("mgfractal_fractal",      fractal);
-	settings->setU16("mgfractal_iterations",   iterations);
-	settings->setV3F("mgfractal_scale",        scale);
-	settings->setV3F("mgfractal_offset",       offset);
-	settings->setFloat("mgfractal_slice_w",    slice_w);
-	settings->setFloat("mgfractal_julia_x",    julia_x);
-	settings->setFloat("mgfractal_julia_y",    julia_y);
-	settings->setFloat("mgfractal_julia_z",    julia_z);
-	settings->setFloat("mgfractal_julia_w",    julia_w);
+	settings->setFlagStr("mgfractal_spflags",      spflags, flagdesc_mapgen_fractal, U32_MAX);
+	settings->setFloat("mgfractal_cave_width",     cave_width);
+	settings->setS16("mgfractal_large_cave_depth", large_cave_depth);
+	settings->setS16("mgfractal_lava_depth",       lava_depth);
+	settings->setU16("mgfractal_fractal",          fractal);
+	settings->setU16("mgfractal_iterations",       iterations);
+	settings->setV3F("mgfractal_scale",            scale);
+	settings->setV3F("mgfractal_offset",           offset);
+	settings->setFloat("mgfractal_slice_w",        slice_w);
+	settings->setFloat("mgfractal_julia_x",        julia_x);
+	settings->setFloat("mgfractal_julia_y",        julia_y);
+	settings->setFloat("mgfractal_julia_z",        julia_z);
+	settings->setFloat("mgfractal_julia_w",        julia_w);
 
 	settings->setNoiseParams("mgfractal_np_seabed",       np_seabed);
 	settings->setNoiseParams("mgfractal_np_filler_depth", np_filler_depth);
@@ -162,7 +156,8 @@ int MapgenFractal::getSpawnLevelAtPoint(v2s16 p)
 			air_count = 0;
 		} else if (solid_below) {  // Air above solid node
 			air_count++;
-			if (air_count == 2)
+			// 3 to account for snowblock dust
+			if (air_count == 3)
 				return y - 2;
 		}
 	}
@@ -205,13 +200,16 @@ void MapgenFractal::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes();
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	if (flags & MG_CAVES)
-		generateCaves(stone_surface_max_y, MGFRACTAL_LARGE_CAVE_DEPTH);
+		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -268,32 +266,38 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 	float nw = 0.0f;
 
 	for (u16 iter = 0; iter < iterations; iter++) {
-
-		if (formula == 1) {  // 4D "Roundy"
+		switch (formula) {
+		default:
+		case 1: // 4D "Roundy"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 2) {  // 4D "Squarry"
+			break;
+		case 2: // 4D "Squarry"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow - oy * oz) + cw;
-		} else if (formula == 3) {  // 4D "Mandy Cousin"
+			break;
+		case 3: // 4D "Mandy Cousin"
 			nx = ox * ox - oy * oy - oz * oz + ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz + oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 4) {  // 4D "Variation"
+			break;
+		case 4: // 4D "Variation"
 			nx = ox * ox - oy * oy - oz * oz - ow * ow + cx;
 			ny = 2.0f * (ox * oy + oz * ow) + cy;
 			nz = 2.0f * (ox * oz - oy * ow) + cz;
 			nw = 2.0f * (ox * ow + oy * oz) + cw;
-		} else if (formula == 5) {  // 3D "Mandelbrot/Mandelbar"
+			break;
+		case 5: // 3D "Mandelbrot/Mandelbar"
 			nx = ox * ox - oy * oy - oz * oz + cx;
 			ny = 2.0f * ox * oy + cy;
 			nz = -2.0f * ox * oz + cz;
-		} else if (formula == 6) {  // 3D "Christmas Tree"
+			break;
+		case 6: // 3D "Christmas Tree"
 			// Altering the formula here is necessary to avoid division by zero
 			if (fabs(oz) < 0.000000001f) {
 				nx = ox * ox - oy * oy - oz * oz + cx;
@@ -305,7 +309,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = a * (oy * oy - oz * oz) + cy;
 				nz = a * 2.0f * oy * oz + cz;
 			}
-		} else if (formula == 7) {  // 3D "Mandelbulb"
+			break;
+		case 7: // 3D "Mandelbulb"
 			if (fabs(oy) < 0.000000001f) {
 				nx = ox * ox - oz * oz + cx;
 				ny = cy;
@@ -316,7 +321,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = 2.0f * ox * oy * a + cy;
 				nz = -2.0f * oz * sqrt(ox * ox + oy * oy) + cz;
 			}
-		} else if (formula == 8) {  // 3D "Cosine Mandelbulb"
+			break;
+		case 8: // 3D "Cosine Mandelbulb"
 			if (fabs(oy) < 0.000000001f) {
 				nx = 2.0f * ox * oz + cx;
 				ny = 4.0f * oy * oz + cy;
@@ -327,7 +333,8 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				ny = 2.0f * ox * oy * a + cy;
 				nz = oz * oz - ox * ox - oy * oy + cz;
 			}
-		} else if (formula == 9) {  // 4D "Mandelbulb"
+			break;
+		case 9: // 4D "Mandelbulb"
 			float rxy = sqrt(ox * ox + oy * oy);
 			float rxyz = sqrt(ox * ox + oy * oy + oz * oz);
 			if (fabs(ow) < 0.000000001f && fabs(oz) < 0.000000001f) {
@@ -343,6 +350,7 @@ bool MapgenFractal::getFractalAtPoint(s16 x, s16 y, s16 z)
 				nz = -2.0f * rxy * oz * a + cz;
 				nw = 2.0f * rxyz * ow + cw;
 			}
+			break;
 		}
 
 		if (nx * nx + ny * ny + nz * nz + nw * nw > 4.0f)

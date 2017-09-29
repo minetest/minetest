@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ROLLBACK_INTERFACE_HEADER
-#define ROLLBACK_INTERFACE_HEADER
+#pragma once
 
 #include "irr_v3d.h"
 #include <string>
@@ -35,8 +34,8 @@ class InventoryManager;
 struct RollbackNode
 {
 	std::string name;
-	int param1;
-	int param2;
+	int param1 = 0;
+	int param2 = 0;
 	std::string meta;
 
 	bool operator == (const RollbackNode &other)
@@ -46,10 +45,7 @@ struct RollbackNode
 	}
 	bool operator != (const RollbackNode &other) { return !(*this == other); }
 
-	RollbackNode():
-		param1(0),
-		param2(0)
-	{}
+	RollbackNode() = default;
 
 	RollbackNode(Map *map, v3s16 p, IGameDef *gamedef);
 };
@@ -61,27 +57,23 @@ struct RollbackAction
 		TYPE_NOTHING,
 		TYPE_SET_NODE,
 		TYPE_MODIFY_INVENTORY_STACK,
-	} type;
+	} type = TYPE_NOTHING;
 
-	time_t unix_time;
+	time_t unix_time = 0;
 	std::string actor;
-	bool actor_is_guess;
+	bool actor_is_guess = false;
 
 	v3s16 p;
 	RollbackNode n_old;
 	RollbackNode n_new;
-	
+
 	std::string inventory_location;
 	std::string inventory_list;
 	u32 inventory_index;
 	bool inventory_add;
 	ItemStack inventory_stack;
 
-	RollbackAction():
-		type(TYPE_NOTHING),
-		unix_time(0),
-		actor_is_guess(false)
-	{}
+	RollbackAction() = default;
 
 	void setSetNode(v3s16 p_, const RollbackNode &n_old_,
 			const RollbackNode &n_new_)
@@ -93,7 +85,7 @@ struct RollbackAction
 	}
 
 	void setModifyInventoryStack(const std::string &inventory_location_,
-			const std::string &inventory_list_, int index_,
+			const std::string &inventory_list_, u32 index_,
 			bool add_, const ItemStack &inventory_stack_)
 	{
 		type = TYPE_MODIFY_INVENTORY_STACK;
@@ -103,13 +95,13 @@ struct RollbackAction
 		inventory_add = add_;
 		inventory_stack = inventory_stack_;
 	}
-	
+
 	// String should not contain newlines or nulls
 	std::string toString() const;
-	
+
 	// Eg. flowing water level changes are not important
 	bool isImportant(IGameDef *gamedef) const;
-	
+
 	bool getPosition(v3s16 *dst) const;
 
 	bool applyRevert(Map *map, InventoryManager *imgr, IGameDef *gamedef) const;
@@ -126,7 +118,7 @@ public:
 	virtual std::string getSuspect(v3s16 p, float nearness_shortcut,
 	                               float min_nearness) = 0;
 
-	virtual ~IRollbackManager() {};
+	virtual ~IRollbackManager() = default;;
 	virtual void flush() = 0;
 	// Get all actors that did something to position p, but not further than
 	// <seconds> in history
@@ -163,5 +155,3 @@ private:
 	std::string old_actor;
 	bool old_actor_guess;
 };
-
-#endif

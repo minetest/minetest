@@ -32,9 +32,9 @@ static inline s16 unsigned_to_signed(u16 i, u16 max_positive)
 {
 	if (i < max_positive) {
 		return i;
-	} else {
-		return i - (max_positive * 2);
 	}
+
+	return i - (max_positive * 2);
 }
 
 

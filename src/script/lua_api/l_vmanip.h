@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_VMANIP_H_
-#define L_VMANIP_H_
+#pragma once
 
 #include <map>
 #include "irr_v3d.h"
@@ -35,7 +34,7 @@ class LuaVoxelManip : public ModApiBase
 {
 private:
 	std::map<v3s16, MapBlock *> modified_blocks;
-	bool is_mapgen_vm;
+	bool is_mapgen_vm = false;
 
 	static const char className[];
 	static const luaL_Reg methods[];
@@ -65,7 +64,7 @@ private:
 	static int l_get_emerged_area(lua_State *L);
 
 public:
-	MMVManip *vm;
+	MMVManip *vm = nullptr;
 
 	LuaVoxelManip(MMVManip *mmvm, bool is_mapgen_vm);
 	LuaVoxelManip(Map *map, v3s16 p1, v3s16 p2);
@@ -80,5 +79,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif /* L_VMANIP_H_ */

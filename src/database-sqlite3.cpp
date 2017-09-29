@@ -114,12 +114,8 @@ int Database_SQLite3::busyHandler(void *data, int count)
 
 
 Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string &dbname) :
-	m_database(NULL),
-	m_initialized(false),
 	m_savedir(savedir),
-	m_dbname(dbname),
-	m_stmt_begin(NULL),
-	m_stmt_end(NULL)
+	m_dbname(dbname)
 {
 }
 
@@ -203,13 +199,8 @@ Database_SQLite3::~Database_SQLite3()
 
 MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir):
 	Database_SQLite3(savedir, "map"),
-	MapDatabase(),
-	m_stmt_read(NULL),
-	m_stmt_write(NULL),
-	m_stmt_list(NULL),
-	m_stmt_delete(NULL)
+	MapDatabase()
 {
-
 }
 
 MapDatabaseSQLite3::~MapDatabaseSQLite3()
@@ -334,24 +325,10 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
 
 PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir):
 	Database_SQLite3(savedir, "players"),
-	PlayerDatabase(),
-	m_stmt_player_load(NULL),
-	m_stmt_player_add(NULL),
-	m_stmt_player_update(NULL),
-	m_stmt_player_remove(NULL),
-	m_stmt_player_list(NULL),
-	m_stmt_player_load_inventory(NULL),
-	m_stmt_player_load_inventory_items(NULL),
-	m_stmt_player_add_inventory(NULL),
-	m_stmt_player_add_inventory_items(NULL),
-	m_stmt_player_remove_inventory(NULL),
-	m_stmt_player_remove_inventory_items(NULL),
-	m_stmt_player_metadata_load(NULL),
-	m_stmt_player_metadata_remove(NULL),
-	m_stmt_player_metadata_add(NULL)
+	PlayerDatabase()
 {
-
 }
+
 PlayerDatabaseSQLite3::~PlayerDatabaseSQLite3()
 {
 	FINALIZE_STATEMENT(m_stmt_player_load)
@@ -544,10 +521,10 @@ void PlayerDatabaseSQLite3::savePlayer(RemotePlayer *player)
 	sqlite3_reset(m_stmt_player_metadata_remove);
 
 	const PlayerAttributes &attrs = sao->getExtendedAttributes();
-	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
+	for (const auto &attr : attrs) {
 		str_to_sqlite(m_stmt_player_metadata_add, 1, player->getName());
-		str_to_sqlite(m_stmt_player_metadata_add, 2, it->first);
-		str_to_sqlite(m_stmt_player_metadata_add, 3, it->second);
+		str_to_sqlite(m_stmt_player_metadata_add, 2, attr.first);
+		str_to_sqlite(m_stmt_player_metadata_add, 3, attr.second);
 		sqlite3_vrfy(sqlite3_step(m_stmt_player_metadata_add), SQLITE_DONE);
 		sqlite3_reset(m_stmt_player_metadata_add);
 	}
@@ -588,7 +565,7 @@ bool PlayerDatabaseSQLite3::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->addItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
+				invList->changeItem(sqlite_to_uint(m_stmt_player_load_inventory_items, 0), stack);
 			}
 		}
 		sqlite3_reset(m_stmt_player_load_inventory_items);

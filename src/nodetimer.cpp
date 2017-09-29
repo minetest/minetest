@@ -60,12 +60,10 @@ void NodeTimerList::serialize(std::ostream &os, u8 map_format_version) const
 		writeU16(os, m_timers.size());
 	}
 
-	for (std::multimap<double, NodeTimer>::const_iterator
-			i = m_timers.begin();
-			i != m_timers.end(); ++i) {
-		NodeTimer t = i->second;
+	for (const auto &timer : m_timers) {
+		NodeTimer t = timer.second;
 		NodeTimer nt = NodeTimer(t.timeout,
-			t.timeout - (f32)(i->first - m_time), t.position);
+			t.timeout - (f32)(timer.first - m_time), t.position);
 		v3s16 p = t.position;
 
 		u16 p16 = p.Z * MAP_BLOCKSIZE * MAP_BLOCKSIZE + p.Y * MAP_BLOCKSIZE + p.X;

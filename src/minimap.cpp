@@ -18,16 +18,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "minimap.h"
-#include "threading/mutex_auto_lock.h"
-#include "threading/semaphore.h"
+#include "client.h"
 #include "clientmap.h"
 #include "settings.h"
-#include "nodedef.h"
-#include "porting.h"
-#include "util/numeric.h"
-#include "util/string.h"
+#include "shader.h"
 #include "mapblock.h"
-#include <math.h>
+#include "client/renderingengine.h"
 
 
 ////
@@ -36,16 +32,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 MinimapUpdateThread::~MinimapUpdateThread()
 {
-	for (std::map<v3s16, MinimapMapblock *>::iterator
-			it = m_blocks_cache.begin();
-			it != m_blocks_cache.end(); ++it) {
-		delete it->second;
+	for (auto &it : m_blocks_cache) {
+		delete it.second;
 	}
 
-	for (std::deque<QueuedMinimapUpdate>::iterator
-			it = m_update_queue.begin();
-			it != m_update_queue.end(); ++it) {
-		QueuedMinimapUpdate &q = *it;
+	for (auto &q : m_update_queue) {
 		delete q.data;
 	}
 }
@@ -56,10 +47,7 @@ bool MinimapUpdateThread::pushBlockUpdate(v3s16 pos, MinimapMapblock *data)
 
 	// Find if block is already in queue.
 	// If it is, update the data and quit.
-	for (std::deque<QueuedMinimapUpdate>::iterator
-			it = m_update_queue.begin();
-			it != m_update_queue.end(); ++it) {
-		QueuedMinimapUpdate &q = *it;
+	for (QueuedMinimapUpdate &q : m_update_queue) {
 		if (q.pos == pos) {
 			delete q.data;
 			q.data = data;
@@ -127,7 +115,6 @@ void MinimapUpdateThread::doUpdate()
 
 void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 {
-	v3s16 region(size, 0, size);
 	v3s16 pos_min(pos.X - size / 2, pos.Y - height / 2, pos.Z - size / 2);
 	v3s16 pos_max(pos_min.X + size - 1, pos.Y + height / 2, pos_min.Z + size - 1);
 	v3s16 blockpos_min = getNodeBlockPos(pos_min);
@@ -184,10 +171,10 @@ void MinimapUpdateThread::getMap(v3s16 pos, s16 size, s16 height)
 //// Mapper
 ////
 
-Minimap::Minimap(IrrlichtDevice *device, Client *client)
+Minimap::Minimap(Client *client)
 {
 	this->client    = client;
-	this->driver    = device->getVideoDriver();
+	this->driver    = RenderingEngine::get_video_driver();
 	this->m_tsrc    = client->getTextureSource();
 	this->m_shdrsrc = client->getShaderSource();
 	this->m_ndef    = client->getNodeDefManager();
@@ -204,8 +191,6 @@ Minimap::Minimap(IrrlichtDevice *device, Client *client)
 	data->mode              = MINIMAP_MODE_OFF;
 	data->is_radar          = false;
 	data->map_invalidated   = true;
-	data->heightmap_image   = NULL;
-	data->minimap_image     = NULL;
 	data->texture           = NULL;
 	data->heightmap_texture = NULL;
 	data->minimap_shape_round = g_settings->getBool("minimap_shape_round");
@@ -275,23 +260,23 @@ void Minimap::toggleMinimapShape()
 void Minimap::setMinimapShape(MinimapShape shape)
 {
 	MutexAutoLock lock(m_mutex);
-	
+
 	if (shape == MINIMAP_SHAPE_SQUARE)
 		data->minimap_shape_round = false;
 	else if (shape == MINIMAP_SHAPE_ROUND)
 		data->minimap_shape_round = true;
-	
+
 	g_settings->setBool("minimap_shape_round", data->minimap_shape_round);
-	m_minimap_update_thread->deferUpdate();	
+	m_minimap_update_thread->deferUpdate();
 }
 
 MinimapShape Minimap::getMinimapShape()
 {
 	if (data->minimap_shape_round) {
 		return MINIMAP_SHAPE_ROUND;
-	} else {
-		return MINIMAP_SHAPE_SQUARE;
 	}
+
+	return MINIMAP_SHAPE_SQUARE;
 }
 
 void Minimap::setMinimapMode(MinimapMode mode)
@@ -446,9 +431,9 @@ v3f Minimap::getYawVec()
 			cos(m_angle * core::DEGTORAD),
 			sin(m_angle * core::DEGTORAD),
 			1.0);
-	} else {
-		return v3f(1.0, 0.0, 1.0);
 	}
+
+	return v3f(1.0, 0.0, 1.0);
 }
 
 scene::SMeshBuffer *Minimap::getMinimapMeshBuffer()
@@ -480,7 +465,7 @@ void Minimap::drawMinimap()
 		return;
 
 	updateActiveMarkers();
-	v2u32 screensize = porting::getWindowSize();
+	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 	const u32 size = 0.25 * screensize.Y;
 
 	core::rect<s32> oldViewPort = driver->getViewPort();
@@ -580,9 +565,8 @@ void Minimap::updateActiveMarkers()
 
 	m_active_markers.clear();
 
-	for (std::list<Nametag *>::const_iterator i = nametags.begin();
-			i != nametags.end(); ++i) {
-		v3s16 pos = floatToInt((*i)->parent_node->getPosition() +
+	for (Nametag *nametag : nametags) {
+		v3s16 pos = floatToInt(nametag->parent_node->getPosition() +
 			intToFloat(client->getCamera()->getOffset(), BS), BS);
 		pos -= data->pos - v3s16(data->map_size / 2,
 				data->scan_height / 2,
@@ -598,8 +582,9 @@ void Minimap::updateActiveMarkers()
 		if (!mask_col.getAlpha()) {
 			continue;
 		}
-		m_active_markers.push_back(v2f(((float)pos.X / (float)MINIMAP_MAX_SX) - 0.5,
-			(1.0 - (float)pos.Z / (float)MINIMAP_MAX_SY) - 0.5));
+
+		m_active_markers.emplace_back(((float)pos.X / (float)MINIMAP_MAX_SX) - 0.5,
+			(1.0 - (float)pos.Z / (float)MINIMAP_MAX_SY) - 0.5);
 	}
 }
 
@@ -607,7 +592,7 @@ void Minimap::updateActiveMarkers()
 //// MinimapMapblock
 ////
 
-void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos)
+void MinimapMapblock::getMinimapNodes(VoxelManipulator *vmanip, const v3s16 &pos)
 {
 
 	for (s16 x = 0; x < MAP_BLOCKSIZE; x++)

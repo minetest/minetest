@@ -28,40 +28,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	CachedMapBlockData
 */
 
-CachedMapBlockData::CachedMapBlockData():
-	p(-1337,-1337,-1337),
-	data(NULL),
-	refcount_from_queue(0),
-	last_used_timestamp(time(0))
-{
-}
-
 CachedMapBlockData::~CachedMapBlockData()
 {
 	assert(refcount_from_queue == 0);
 
-	if (data)
-		delete[] data;
+	delete[] data;
 }
 
 /*
 	QueuedMeshUpdate
 */
 
-QueuedMeshUpdate::QueuedMeshUpdate():
-	p(-1337,-1337,-1337),
-	ack_block_to_server(false),
-	urgent(false),
-	crack_level(-1),
-	crack_pos(0,0,0),
-	data(NULL)
-{
-}
-
 QueuedMeshUpdate::~QueuedMeshUpdate()
 {
-	if (data)
-		delete data;
+	delete data;
 }
 
 /*
@@ -83,22 +63,17 @@ MeshUpdateQueue::~MeshUpdateQueue()
 {
 	MutexAutoLock lock(m_mutex);
 
-	for (std::map<v3s16, CachedMapBlockData *>::iterator i = m_cache.begin();
-			i != m_cache.end(); ++i) {
-		delete i->second;
+	for (auto &i : m_cache) {
+		delete i.second;
 	}
 
-	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
-			i != m_queue.end(); ++i) {
-		QueuedMeshUpdate *q = *i;
+	for (QueuedMeshUpdate *q : m_queue) {
 		delete q;
 	}
 }
 
 void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool urgent)
 {
-	DSTACK(FUNCTION_NAME);
-
 	MutexAutoLock lock(m_mutex);
 
 	cleanupCache();
@@ -136,9 +111,7 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 		Find if block is already in queue.
 		If it is, update the data and quit.
 	*/
-	for (std::vector<QueuedMeshUpdate*>::iterator i = m_queue.begin();
-			i != m_queue.end(); ++i) {
-		QueuedMeshUpdate *q = *i;
+	for (QueuedMeshUpdate *q : m_queue) {
 		if (q->p == p) {
 			// NOTE: We are not adding a new position to the queue, thus
 			//       refcount_from_queue stays the same.
@@ -161,8 +134,8 @@ void MeshUpdateQueue::addBlock(Map *map, v3s16 p, bool ack_block_to_server, bool
 	m_queue.push_back(q);
 
 	// This queue entry is a new reference to the cached blocks
-	for (size_t i=0; i<cached_blocks.size(); i++) {
-		cached_blocks[i]->refcount_from_queue++;
+	for (CachedMapBlockData *cached_block : cached_blocks) {
+		cached_block->refcount_from_queue++;
 	}
 }
 
@@ -211,19 +184,19 @@ CachedMapBlockData* MeshUpdateQueue::cacheBlock(Map *map, v3s16 p, UpdateMode mo
 			cached_block->data = NULL;
 		}
 		return cached_block;
-	} else {
-		// Not yet in cache
-		CachedMapBlockData *cached_block = new CachedMapBlockData();
-		m_cache[p] = cached_block;
-		MapBlock *b = map->getBlockNoCreateNoEx(p);
-		if (b) {
-			cached_block->data =
-					new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
-			memcpy(cached_block->data, b->getData(),
-					MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * sizeof(MapNode));
-		}
-		return cached_block;
 	}
+
+	// Not yet in cache
+	CachedMapBlockData *cached_block = new CachedMapBlockData();
+	m_cache[p] = cached_block;
+	MapBlock *b = map->getBlockNoCreateNoEx(p);
+	if (b) {
+		cached_block->data =
+				new MapNode[MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE];
+		memcpy(cached_block->data, b->getData(),
+				MAP_BLOCKSIZE * MAP_BLOCKSIZE * MAP_BLOCKSIZE * sizeof(MapNode));
+	}
+	return cached_block;
 }
 
 CachedMapBlockData* MeshUpdateQueue::getCachedBlock(const v3s16 &p)
@@ -243,7 +216,7 @@ void MeshUpdateQueue::fillDataFromMapBlockCache(QueuedMeshUpdate *q)
 
 	data->fillBlockDataBegin(q->p);
 
-	int t_now = time(0);
+	std::time_t t_now = std::time(0);
 
 	// Collect data for 3*3*3 blocks from cache
 	v3s16 dp;

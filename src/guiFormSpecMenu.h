@@ -17,9 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-
-#ifndef GUIINVENTORYMENU_HEADER
-#define GUIINVENTORYMENU_HEADER
+#pragma once
 
 #include <utility>
 #include <stack>
@@ -55,7 +53,8 @@ typedef enum {
 
 struct TextDest
 {
-	virtual ~TextDest() {}
+	virtual ~TextDest() = default;
+
 	// This is deprecated I guess? -celeron55
 	virtual void gotText(const std::wstring &text) {}
 	virtual void gotText(const StringMap &fields) = 0;
@@ -66,8 +65,8 @@ struct TextDest
 class IFormSource
 {
 public:
-	virtual ~IFormSource(){}
-	virtual std::string getForm() = 0;
+	virtual ~IFormSource() = default;
+	virtual const std::string &getForm() const = 0;
 	// Fill in variables in field text
 	virtual std::string resolveText(const std::string &str) { return str; }
 };
@@ -76,10 +75,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 {
 	struct ItemSpec
 	{
-		ItemSpec() :
-			i(-1)
-		{
-		}
+		ItemSpec() = default;
 
 		ItemSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
@@ -94,14 +90,13 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 		InventoryLocation inventoryloc;
 		std::string listname;
-		s32 i;
+		s32 i = -1;
 	};
 
 	struct ListDrawSpec
 	{
-		ListDrawSpec()
-		{
-		}
+		ListDrawSpec() = default;
+
 		ListDrawSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname,
 				v2s32 a_pos, v2s32 a_geom, s32 a_start_item_i):
@@ -122,9 +117,8 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct ListRingSpec
 	{
-		ListRingSpec()
-		{
-		}
+		ListRingSpec() = default;
+
 		ListRingSpec(const InventoryLocation &a_inventoryloc,
 				const std::string &a_listname):
 			inventoryloc(a_inventoryloc),
@@ -203,14 +197,13 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct FieldSpec
 	{
-		FieldSpec()
-		{
-		}
+		FieldSpec() = default;
+
 		FieldSpec(const std::string &name, const std::wstring &label,
 				const std::wstring &default_text, int id) :
 			fname(name),
 			flabel(label),
-			fdefault(unescape_enriched(default_text)),
+			fdefault(unescape_enriched(translate_string(default_text))),
 			fid(id),
 			send(false),
 			ftype(f_Unknown),
@@ -243,10 +236,10 @@ class GUIFormSpecMenu : public GUIModalMenu
 
 	struct TooltipSpec
 	{
-		TooltipSpec() {}
-		TooltipSpec(const std::string &a_tooltip, irr::video::SColor a_bgcolor,
+		TooltipSpec() = default;
+		TooltipSpec(const std::wstring &a_tooltip, irr::video::SColor a_bgcolor,
 				irr::video::SColor a_color):
-			tooltip(utf8_to_wide(a_tooltip)),
+			tooltip(translate_string(a_tooltip)),
 			bgcolor(a_bgcolor),
 			color(a_color)
 		{
@@ -287,8 +280,7 @@ class GUIFormSpecMenu : public GUIModalMenu
 	};
 
 public:
-	GUIFormSpecMenu(irr::IrrlichtDevice* dev,
-			JoystickController *joystick,
+	GUIFormSpecMenu(JoystickController *joystick,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			Client *client,
@@ -310,18 +302,14 @@ public:
 	// form_src is deleted by this GUIFormSpecMenu
 	void setFormSource(IFormSource *form_src)
 	{
-		if (m_form_src != NULL) {
-			delete m_form_src;
-		}
+		delete m_form_src;
 		m_form_src = form_src;
 	}
 
 	// text_dst is deleted by this GUIFormSpecMenu
 	void setTextDest(TextDest *text_dst)
 	{
-		if (m_text_dst != NULL) {
-			delete m_text_dst;
-		}
+		delete m_text_dst;
 		m_text_dst = text_dst;
 	}
 
@@ -382,7 +370,6 @@ protected:
 	v2s32 pos_offset;
 	std::stack<v2s32> container_stack;
 
-	irr::IrrlichtDevice* m_device;
 	InventoryManager *m_invmgr;
 	ISimpleTextureSource *m_tsrc;
 	Client *m_client;
@@ -390,14 +377,13 @@ protected:
 	std::string m_formspec_string;
 	InventoryLocation m_current_inventory_location;
 
-
 	std::vector<ListDrawSpec> m_inventorylists;
 	std::vector<ListRingSpec> m_inventory_rings;
 	std::vector<ImageDrawSpec> m_backgrounds;
 	std::vector<ImageDrawSpec> m_images;
 	std::vector<ImageDrawSpec> m_itemimages;
 	std::vector<BoxDrawSpec> m_boxes;
-	UNORDERED_MAP<std::string, bool> field_close_on_enter;
+	std::unordered_map<std::string, bool> field_close_on_enter;
 	std::vector<FieldSpec> m_fields;
 	std::vector<StaticTextSpec> m_static_texts;
 	std::vector<std::pair<FieldSpec,GUITable*> > m_tables;
@@ -406,9 +392,9 @@ protected:
 	std::vector<std::pair<FieldSpec,gui::IGUIScrollBar*> > m_scrollbars;
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
-	ItemSpec *m_selected_item;
-	u32 m_selected_amount;
-	bool m_selected_dragging;
+	ItemSpec *m_selected_item = nullptr;
+	u32 m_selected_amount = 0;
+	bool m_selected_dragging = false;
 
 	// WARNING: BLACK MAGIC
 	// Used to guess and keep up with some special things the server can do.
@@ -418,22 +404,23 @@ protected:
 
 	v2s32 m_pointer;
 	v2s32 m_old_pointer;  // Mouse position after previous mouse event
-	gui::IGUIStaticText *m_tooltip_element;
+	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
-	u32 m_tooltip_show_delay;
-	s64 m_hovered_time;
-	s32 m_old_tooltip_id;
-	std::wstring m_old_tooltip;
+	u64 m_tooltip_show_delay;
+	bool m_tooltip_append_itemname;
+	u64 m_hovered_time = 0;
+	s32 m_old_tooltip_id = -1;
 
-	bool m_rmouse_auto_place;
+	bool m_rmouse_auto_place = false;
 
-	bool m_allowclose;
-	bool m_lock;
+	bool m_allowclose = true;
+	bool m_lock = false;
 	v2u32 m_lockscreensize;
 
 	bool m_bgfullscreen;
 	bool m_slotborder;
 	video::SColor m_bgcolor;
+	video::SColor m_fullscreen_bgcolor;
 	video::SColor m_slotbg_n;
 	video::SColor m_slotbg_h;
 	video::SColor m_slotbordercolor;
@@ -443,8 +430,8 @@ protected:
 private:
 	IFormSource        *m_form_src;
 	TextDest           *m_text_dst;
-	unsigned int        m_formspec_version;
-	std::string         m_focused_element;
+	u32                 m_formspec_version = 0;
+	std::string         m_focused_element = "";
 	JoystickController *m_joystick;
 
 	typedef struct {
@@ -460,7 +447,7 @@ private:
 		GUITable::TableOptions table_options;
 		GUITable::TableColumns table_columns;
 		// used to restore table selection/scroll/treeview state
-		UNORDERED_MAP<std::string, GUITable::DynamicData> table_dyndata;
+		std::unordered_map<std::string, GUITable::DynamicData> table_dyndata;
 	} parserData;
 
 	typedef struct {
@@ -471,7 +458,7 @@ private:
 	} fs_key_pendig;
 
 	fs_key_pendig current_keys_pending;
-	std::string current_field_enter_pending;
+	std::string current_field_enter_pending = "";
 
 	void parseElement(parserData* data, const std::string &element);
 
@@ -517,6 +504,9 @@ private:
 
 	void tryClose();
 
+	void showTooltip(const std::wstring &text, const irr::video::SColor &color,
+		const irr::video::SColor &bgcolor);
+
 	/**
 	 * check if event is part of a double click
 	 * @param event event to evaluate
@@ -532,7 +522,7 @@ private:
 	clickpos m_doubleclickdetect[2];
 
 	int m_btn_height;
-	gui::IGUIFont *m_font;
+	gui::IGUIFont *m_font = nullptr;
 
 	std::wstring getLabelByID(s32 id);
 	std::string getNameByID(s32 id);
@@ -559,18 +549,17 @@ public:
 	{
 	}
 
-	~FormspecFormSource()
-	{
-	}
+	~FormspecFormSource() = default;
 
 	void setForm(const std::string &formspec)
 	{
 		m_formspec = FORMSPEC_VERSION_STRING + formspec;
 	}
 
-	std::string getForm() { return m_formspec; }
+	const std::string &getForm() const
+	{
+		return m_formspec;
+	}
 
 	std::string m_formspec;
 };
-
-#endif

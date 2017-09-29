@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTMAP_HEADER
-#define CLIENTMAP_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "map.h"
@@ -28,30 +27,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MapDrawControl
 {
-	MapDrawControl():
-		range_all(false),
-		wanted_range(0),
-		wanted_max_blocks(0),
-		show_wireframe(false),
-		blocks_drawn(0),
-		blocks_would_have_drawn(0),
-		farthest_drawn(0)
-	{
-	}
 	// Overrides limits by drawing everything
-	bool range_all;
+	bool range_all = false;
 	// Wanted drawing range
-	float wanted_range;
+	float wanted_range = 0.0f;
 	// Maximum number of blocks to draw
-	u32 wanted_max_blocks;
+	u32 wanted_max_blocks = 0;
 	// show a wire frame for debugging
-	bool show_wireframe;
-	// Number of blocks rendered is written here by the renderer
-	u32 blocks_drawn;
-	// Number of blocks that would have been drawn in wanted_range
-	u32 blocks_would_have_drawn;
-	// Distance to the farthest block drawn
-	float farthest_drawn;
+	bool show_wireframe = false;
 };
 
 class Client;
@@ -69,12 +52,10 @@ public:
 	ClientMap(
 			Client *client,
 			MapDrawControl &control,
-			scene::ISceneNode* parent,
-			scene::ISceneManager* mgr,
 			s32 id
 	);
 
-	~ClientMap();
+	virtual ~ClientMap() = default;
 
 	s32 mapType() const
 	{
@@ -86,7 +67,7 @@ public:
 		ISceneNode::drop();
 	}
 
-	void updateCamera(v3f pos, v3f dir, f32 fov, v3s16 offset)
+	void updateCamera(const v3f &pos, const v3f &dir, f32 fov, const v3s16 &offset)
 	{
 		m_camera_position = pos;
 		m_camera_direction = dir;
@@ -121,7 +102,7 @@ public:
 
 	void getBlocksInViewRange(v3s16 cam_pos_nodes,
 		v3s16 *p_blocks_min, v3s16 *p_blocks_max);
-	void updateDrawList(video::IVideoDriver* driver);
+	void updateDrawList();
 	void renderMap(video::IVideoDriver* driver, s32 pass);
 
 	int getBackgroundBrightness(float max_d, u32 daylight_factor,
@@ -137,13 +118,14 @@ public:
 private:
 	Client *m_client;
 
-	aabb3f m_box;
+	aabb3f m_box = aabb3f(-BS * 1000000, -BS * 1000000, -BS * 1000000,
+		BS * 1000000, BS * 1000000, BS * 1000000);
 
 	MapDrawControl &m_control;
 
-	v3f m_camera_position;
-	v3f m_camera_direction;
-	f32 m_camera_fov;
+	v3f m_camera_position = v3f(0,0,0);
+	v3f m_camera_direction = v3f(0,0,1);
+	f32 m_camera_fov = M_PI;
 	v3s16 m_camera_offset;
 
 	std::map<v3s16, MapBlock*> m_drawlist;
@@ -154,6 +136,3 @@ private:
 	bool m_cache_bilinear_filter;
 	bool m_cache_anistropic_filter;
 };
-
-#endif
-

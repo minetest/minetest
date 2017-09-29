@@ -32,9 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 LuaSettings::LuaSettings(Settings *settings, const std::string &filename) :
 	m_settings(settings),
-	m_filename(filename),
-	m_is_own_settings(false),
-	m_write_allowed(true)
+	m_filename(filename)
 {
 }
 
@@ -200,10 +198,9 @@ int LuaSettings::l_to_table(lua_State* L)
 	std::vector<std::string> keys = o->m_settings->getNames();
 
 	lua_newtable(L);
-	for (unsigned int i=0; i < keys.size(); i++)
-	{
-		lua_pushstring(L, o->m_settings->get(keys[i]).c_str());
-		lua_setfield(L, -2, keys[i].c_str());
+	for (const std::string &key : keys) {
+		lua_pushstring(L, o->m_settings->get(key).c_str());
+		lua_setfield(L, -2, key.c_str());
 	}
 
 	return 1;

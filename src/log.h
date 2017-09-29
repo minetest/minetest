@@ -17,14 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef LOG_HEADER
-#define LOG_HEADER
+#pragma once
 
 #include <map>
 #include <queue>
 #include <string>
 #include <fstream>
-#include "threads.h"
+#include <thread>
+#include <mutex>
 #include "irrlichttypes.h"
 
 class ILogOutput;
@@ -78,8 +78,8 @@ private:
 	// written to when one thread has access currently).
 	// Works on all known architectures (x86, ARM, MIPS).
 	volatile bool m_silenced_levels[LL_MAX];
-	std::map<threadid_t, std::string> m_thread_names;
-	mutable Mutex m_mutex;
+	std::map<std::thread::id, std::string> m_thread_names;
+	mutable std::mutex m_mutex;
 	bool m_trace_enabled;
 };
 
@@ -205,12 +205,7 @@ extern std::ostream dstream;
 #define dout_con (*dout_con_ptr)
 #define derr_con (*derr_con_ptr)
 #define dout_server (*dout_server_ptr)
-#define derr_server (*derr_server_ptr)
 
 #ifndef SERVER
 	#define dout_client (*dout_client_ptr)
-	#define derr_client (*derr_client_ptr)
-#endif
-
-
 #endif

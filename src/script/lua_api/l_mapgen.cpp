@@ -73,6 +73,7 @@ struct EnumString ModApiMapgen::es_OreType[] =
 	{ORE_PUFF,    "puff"},
 	{ORE_BLOB,    "blob"},
 	{ORE_VEIN,    "vein"},
+	{ORE_STRATUM, "stratum"},
 	{0, NULL},
 };
 
@@ -100,7 +101,7 @@ Biome *get_or_load_biome(lua_State *L, int index,
 	BiomeManager *biomemgr);
 Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef);
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list);
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list);
 
 Schematic *get_or_load_schematic(lua_State *L, int index,
 	SchematicManager *schemmgr, StringMap *replace_names);
@@ -244,7 +245,7 @@ bool read_schematic_def(lua_State *L, int index,
 	schem->schemdata = new MapNode[numnodes];
 
 	size_t names_base = names->size();
-	UNORDERED_MAP<std::string, content_t> name_id_map;
+	std::unordered_map<std::string, content_t> name_id_map;
 
 	u32 i = 0;
 	for (lua_pushnil(L); lua_next(L, -2); i++, lua_pop(L, 1)) {
@@ -266,7 +267,7 @@ bool read_schematic_def(lua_State *L, int index,
 		u8 param2 = getintfield_default(L, -1, "param2", 0);
 
 		//// Find or add new nodename-to-ID mapping
-		UNORDERED_MAP<std::string, content_t>::iterator it = name_id_map.find(name);
+		std::unordered_map<std::string, content_t>::iterator it = name_id_map.find(name);
 		content_t name_index;
 		if (it != name_id_map.end()) {
 			name_index = it->second;
@@ -409,7 +410,7 @@ Biome *read_biome_def(lua_State *L, int index, INodeDefManager *ndef)
 
 
 size_t get_biome_list(lua_State *L, int index,
-	BiomeManager *biomemgr, UNORDERED_SET<u8> *biome_id_list)
+	BiomeManager *biomemgr, std::unordered_set<u8> *biome_id_list)
 {
 	if (index < 0)
 		index = lua_gettop(L) + 1 + index;
@@ -731,7 +732,7 @@ int ModApiMapgen::l_set_mapgen_setting(lua_State *L)
 
 	const char *name   = luaL_checkstring(L, 1);
 	const char *value  = luaL_checkstring(L, 2);
-	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
 
 	if (!settingsmgr->setMapSetting(name, value, override_meta)) {
 		errorstream << "set_mapgen_setting: cannot set '"
@@ -760,7 +761,7 @@ int ModApiMapgen::l_set_mapgen_setting_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool override_meta = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : false;
+	bool override_meta = lua_isboolean(L, 3) && lua_toboolean(L, 3);
 
 	if (!settingsmgr->setMapSettingNoiseParams(name, &np, override_meta)) {
 		errorstream << "set_mapgen_setting_noiseparams: cannot set '"
@@ -786,7 +787,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 		return 0;
 	}
 
-	bool set_default = lua_isboolean(L, 3) ? lua_toboolean(L, 3) : true;
+	bool set_default = !lua_isboolean(L, 3) || lua_toboolean(L, 3);
 
 	g_settings->setNoiseParams(name, np, set_default);
 
@@ -847,9 +848,8 @@ int ModApiMapgen::l_get_gen_notify(lua_State *L)
 
 	lua_newtable(L);
 	int i = 1;
-	for (std::set<u32>::iterator it = emerge->gen_notify_on_deco_ids.begin();
-			it != emerge->gen_notify_on_deco_ids.end(); ++it) {
-		lua_pushnumber(L, *it);
+	for (u32 gen_notify_on_deco_id : emerge->gen_notify_on_deco_ids) {
+		lua_pushnumber(L, gen_notify_on_deco_id);
 		lua_rawseti(L, -2, i);
 		i++;
 	}
@@ -1018,6 +1018,8 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
 		ModApiMapgen::es_Rotation, ROTATE_0);
 
+	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
+
 	StringMap replace_names;
 	lua_getfield(L, index, "replacements");
 	if (lua_istable(L, -1))
@@ -1147,6 +1149,15 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 
 			orevein->random_factor = getfloatfield_default(L, index,
 				"random_factor", 1.f);
+
+			break;
+		}
+		case ORE_STRATUM: {
+			OreStratum *orestratum = (OreStratum *)ore;
+
+			lua_getfield(L, index, "np_stratum_thickness");
+			read_noiseparams(L, -1, &orestratum->np_stratum_thickness);
+			lua_pop(L, 1);
 
 			break;
 		}
@@ -1322,7 +1333,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 				lua_pop(L, 1);
 
 				u8 prob = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
-				prob_list.push_back(std::make_pair(pos, prob));
+				prob_list.emplace_back(pos, prob);
 			}
 
 			lua_pop(L, 1);
@@ -1336,7 +1347,7 @@ int ModApiMapgen::l_create_schematic(lua_State *L)
 			if (lua_istable(L, -1)) {
 				s16 ypos = getintfield_default(L, -1, "ypos", 0);
 				u8 prob  = getintfield_default(L, -1, "prob", MTSCHEM_PROB_ALWAYS);
-				slice_prob_list.push_back(std::make_pair(ypos, prob));
+				slice_prob_list.emplace_back(ypos, prob);
 			}
 
 			lua_pop(L, 1);

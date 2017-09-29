@@ -42,8 +42,8 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 		Client *client, ClientEnvironment *env)
 {
 	// Find factory function
-	UNORDERED_MAP<u16, Factory>::iterator n = m_types.find(type);
-	if(n == m_types.end()) {
+	auto n = m_types.find(type);
+	if (n == m_types.end()) {
 		// If factory is not found, just return.
 		warningstream << "ClientActiveObject: No factory for type="
 				<< (int)type << std::endl;
@@ -57,8 +57,8 @@ ClientActiveObject* ClientActiveObject::create(ActiveObjectType type,
 
 void ClientActiveObject::registerType(u16 type, Factory f)
 {
-	UNORDERED_MAP<u16, Factory>::iterator n = m_types.find(type);
-	if(n != m_types.end())
+	auto n = m_types.find(type);
+	if (n != m_types.end())
 		return;
 	m_types[type] = f;
 }

@@ -37,8 +37,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 using namespace irr::core;
 
-extern Settings *g_settings;
-
 const char** touchgui_button_imagenames = (const char*[]) {
 	"up_arrow.png",
 	"down_arrow.png",
@@ -130,19 +128,10 @@ static void load_button_texture(button_info* btn, const char* path,
 
 AutoHideButtonBar::AutoHideButtonBar(IrrlichtDevice *device,
 		IEventReceiver* receiver) :
-			m_texturesource(NULL),
 			m_driver(device->getVideoDriver()),
 			m_guienv(device->getGUIEnvironment()),
-			m_receiver(receiver),
-			m_active(false),
-			m_visible(true),
-			m_timeout(0),
-			m_timeout_value(3),
-			m_initialized(false),
-			m_dir(AHBB_Dir_Right_Left)
+			m_receiver(receiver)
 {
-	m_screensize = device->getVideoDriver()->getScreenSize();
-
 }
 
 void AutoHideButtonBar::init(ISimpleTextureSource* tsrc,
@@ -365,7 +354,7 @@ void AutoHideButtonBar::step(float dtime)
 
 void AutoHideButtonBar::deactivate()
 {
-	if (m_visible == true) {
+	if (m_visible) {
 		m_starter.guibutton->setVisible(true);
 		m_starter.guibutton->setEnabled(true);
 	}
@@ -416,16 +405,7 @@ void AutoHideButtonBar::show()
 TouchScreenGUI::TouchScreenGUI(IrrlichtDevice *device, IEventReceiver* receiver):
 	m_device(device),
 	m_guienv(device->getGUIEnvironment()),
-	m_camera_yaw_change(0.0),
-	m_camera_pitch(0.0),
-	m_visible(false),
-	m_move_id(-1),
 	m_receiver(receiver),
-	m_move_has_really_moved(false),
-	m_move_downtime(0),
-	m_move_sent_as_mouse_event(false),
-	// use some downlocation way off screen as init value  to avoid invalid behaviour
-	m_move_downlocation(v2s32(-10000, -10000)),
 	m_settingsbar(device, receiver),
 	m_rarecontrolsbar(device, receiver)
 {
@@ -474,8 +454,6 @@ void TouchScreenGUI::init(ISimpleTextureSource* tsrc)
 	u32 button_size      = getGuiButtonSize();
 	m_visible            = true;
 	m_texturesource      = tsrc;
-	m_control_pad_rect   = rect<s32>(0, m_screensize.Y - 3 * button_size,
-			3 * button_size, m_screensize.Y);
 	/*
 	draw control pad
 	0 1 2
@@ -922,7 +900,7 @@ bool TouchScreenGUI::doubleTapDetection()
 	m_key_events[1].x         = m_move_downlocation.X;
 	m_key_events[1].y         = m_move_downlocation.Y;
 
-	u32 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
+	u64 delta = porting::getDeltaMs(m_key_events[0].down_time, porting::getTimeMs());
 	if (delta > 400)
 		return false;
 
@@ -1006,7 +984,7 @@ void TouchScreenGUI::step(float dtime)
 			(!m_move_has_really_moved) &&
 			(!m_move_sent_as_mouse_event)) {
 
-		u32 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
+		u64 delta = porting::getDeltaMs(m_move_downtime, porting::getTimeMs());
 
 		if (delta > MIN_DIG_TIME_MS) {
 			m_shootline = m_device

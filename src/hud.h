@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef HUD_HEADER
-#define HUD_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include <string>
@@ -35,12 +34,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Note that these visibility flags do not determine if the hud items are
 // actually drawn, but rather, whether to draw the item should the rest
 // of the game state permit it.
-#define HUD_FLAG_HOTBAR_VISIBLE    (1 << 0)
-#define HUD_FLAG_HEALTHBAR_VISIBLE (1 << 1)
-#define HUD_FLAG_CROSSHAIR_VISIBLE (1 << 2)
-#define HUD_FLAG_WIELDITEM_VISIBLE (1 << 3)
-#define HUD_FLAG_BREATHBAR_VISIBLE (1 << 4)
-#define HUD_FLAG_MINIMAP_VISIBLE   (1 << 5)
+#define HUD_FLAG_HOTBAR_VISIBLE        (1 << 0)
+#define HUD_FLAG_HEALTHBAR_VISIBLE     (1 << 1)
+#define HUD_FLAG_CROSSHAIR_VISIBLE     (1 << 2)
+#define HUD_FLAG_WIELDITEM_VISIBLE     (1 << 3)
+#define HUD_FLAG_BREATHBAR_VISIBLE     (1 << 4)
+#define HUD_FLAG_MINIMAP_VISIBLE       (1 << 5)
+#define HUD_FLAG_MINIMAP_RADAR_VISIBLE (1 << 6)
 
 #define HUD_PARAM_HOTBAR_ITEMCOUNT 1
 #define HUD_PARAM_HOTBAR_IMAGE 2
@@ -114,14 +114,13 @@ public:
 
 	video::SColor crosshair_argb;
 	video::SColor selectionbox_argb;
-	bool use_crosshair_image;
-	std::string hotbar_image;
-	bool use_hotbar_image;
-	std::string hotbar_selected_image;
-	bool use_hotbar_selected_image;
+	bool use_crosshair_image = false;
+	std::string hotbar_image = "";
+	bool use_hotbar_image = false;
+	std::string hotbar_selected_image = "";
+	bool use_hotbar_selected_image = false;
 
-	Hud(video::IVideoDriver *driver,scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
+	Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory);
 	~Hud();
 
@@ -170,7 +169,7 @@ private:
 	v3f m_selection_pos;
 	v3f m_selection_pos_with_offset;
 
-	scene::IMesh* m_selection_mesh;
+	scene::IMesh *m_selection_mesh = nullptr;
 	video::SColor m_selection_mesh_color;
 	v3f m_selected_face_normal;
 
@@ -196,7 +195,5 @@ void drawItemStack(video::IVideoDriver *driver,
 		const core::rect<s32> *clip,
 		Client *client,
 		ItemRotationKind rotation_kind);
-
-#endif
 
 #endif

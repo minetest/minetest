@@ -70,8 +70,7 @@ std::vector<ServerListSpec> getOnline()
 {
 	std::ostringstream geturl;
 
-	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
-		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+	u16 proto_version_min = CLIENT_PROTOCOL_VERSION_MIN;
 
 	geturl << g_settings->get("serverlist_url") <<
 		"/list?proto_version_min=" << proto_version_min <<
@@ -89,9 +88,9 @@ std::vector<ServerListSpec> getOnline()
 		return server_list;
 	}
 
-	for (unsigned int i = 0; i < root.size(); i++) {
-		if (root[i].isObject()) {
-			server_list.push_back(root[i]);
+	for (const Json::Value &i : root) {
+		if (i.isObject()) {
+			server_list.push_back(i);
 		}
 	}
 
@@ -167,14 +166,12 @@ std::vector<ServerListSpec> deSerialize(const std::string &liststring)
 const std::string serialize(const std::vector<ServerListSpec> &serverlist)
 {
 	std::string liststring;
-	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
-			it != serverlist.end();
-			++it) {
+	for (const ServerListSpec &it : serverlist) {
 		liststring += "[server]\n";
-		liststring += (*it)["name"].asString() + '\n';
-		liststring += (*it)["address"].asString() + '\n';
-		liststring += (*it)["port"].asString() + '\n';
-		liststring += (*it)["description"].asString() + '\n';
+		liststring += it["name"].asString() + '\n';
+		liststring += it["address"].asString() + '\n';
+		liststring += it["port"].asString() + '\n';
+		liststring += it["description"].asString() + '\n';
 		liststring += '\n';
 	}
 	return liststring;
@@ -184,14 +181,12 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 {
 	Json::Value root;
 	Json::Value list(Json::arrayValue);
-	for (std::vector<ServerListSpec>::const_iterator it = serverlist.begin();
-			it != serverlist.end();
-			++it) {
-		list.append(*it);
+	for (const ServerListSpec &it : serverlist) {
+		list.append(it);
 	}
 	root["list"] = list;
-	Json::FastWriter writer;
-	return writer.write(root);
+
+	return fastWriteJson(root);
 }
 
 
@@ -231,12 +226,11 @@ void sendAnnounce(AnnounceAction action,
 		server["clients"]      = (int) clients_names.size();
 		server["clients_max"]  = g_settings->getU16("max_users");
 		server["clients_list"] = Json::Value(Json::arrayValue);
-		for (std::vector<std::string>::const_iterator it = clients_names.begin();
-				it != clients_names.end();
-				++it) {
-			server["clients_list"].append(*it);
+		for (const std::string &clients_name : clients_names) {
+			server["clients_list"].append(clients_name);
 		}
-		if (gameid != "") server["gameid"] = gameid;
+		if (!gameid.empty())
+			server["gameid"] = gameid;
 	}
 
 	if (action == AA_START) {
@@ -246,9 +240,8 @@ void sendAnnounce(AnnounceAction action,
 		server["privs"]             = g_settings->get("default_privs");
 		server["can_see_far_names"] = g_settings->getS16("player_transfer_distance") <= 0;
 		server["mods"]              = Json::Value(Json::arrayValue);
-		for (std::vector<ModSpec>::const_iterator it = mods.begin();
-				it != mods.end(); ++it) {
-			server["mods"].append(it->name);
+		for (const ModSpec &mod : mods) {
+			server["mods"].append(mod.name);
 		}
 		actionstream << "Announcing to " << g_settings->get("serverlist_url") << std::endl;
 	} else if (action == AA_UPDATE) {
@@ -256,10 +249,9 @@ void sendAnnounce(AnnounceAction action,
 			server["lag"] = lag;
 	}
 
-	Json::FastWriter writer;
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
-	fetch_request.post_fields["json"] = writer.write(server);
+	fetch_request.post_fields["json"] = fastWriteJson(server);
 	fetch_request.multipart = true;
 	httpfetch_async(fetch_request);
 }

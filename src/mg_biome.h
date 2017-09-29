@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2013 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MG_BIOME_HEADER
-#define MG_BIOME_HEADER
+#pragma once
 
 #include "objdef.h"
 #include "nodedef.h"
@@ -83,14 +83,15 @@ enum BiomeGenType {
 struct BiomeParams {
 	virtual void readParams(const Settings *settings) = 0;
 	virtual void writeParams(Settings *settings) const = 0;
-	virtual ~BiomeParams() {}
+	virtual ~BiomeParams() = default;
 
 	s32 seed;
 };
 
 class BiomeGen {
 public:
-	virtual ~BiomeGen() {}
+	virtual ~BiomeGen() = default;
+
 	virtual BiomeGenType getType() const = 0;
 
 	// Calculates the biome at the exact position provided.  This function can
@@ -116,10 +117,10 @@ public:
 	virtual Biome *getBiomeAtIndex(size_t index, s16 y) const = 0;
 
 	// Result of calcBiomes bulk computation.
-	biome_t *biomemap;
+	biome_t *biomemap = nullptr;
 
 protected:
-	BiomeManager *m_bmgr;
+	BiomeManager *m_bmgr = nullptr;
 	v3s16 m_pmin;
 	v3s16 m_csize;
 };
@@ -188,7 +189,7 @@ private:
 class BiomeManager : public ObjDefManager {
 public:
 	BiomeManager(Server *server);
-	virtual ~BiomeManager();
+	virtual ~BiomeManager() = default;
 
 	const char *getObjectTitle() const
 	{
@@ -227,6 +228,3 @@ private:
 	Server *m_server;
 
 };
-
-
-#endif

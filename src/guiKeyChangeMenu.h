@@ -19,12 +19,10 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GUIKEYCHANGEMENU_HEADER
-#define GUIKEYCHANGEMENU_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
-#include "client.h"
 #include "gettext.h"
 #include "keycode.h"
 #include <string>
@@ -58,6 +56,8 @@ public:
 
 	bool OnEvent(const SEvent &event);
 
+	bool pausesGame() { return true; }
+
 private:
 	void init_keys();
 
@@ -65,13 +65,10 @@ private:
 
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
-	bool shift_down;
-
-	s32 activeKey;
+	bool shift_down = false;
+	s32 activeKey = -1;
 
 	std::vector<KeyPress> key_used;
-	gui::IGUIStaticText *key_used_text;
+	gui::IGUIStaticText *key_used_text = nullptr;
 	std::vector<key_setting *> key_settings;
 };
-
-#endif

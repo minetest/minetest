@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "map.h"
 #include "nodedef.h"
-#include "profiler.h"
 #include "settings.h"
 
 //#define DGEN_USE_TORCHES
@@ -97,6 +96,8 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	if (nval_density < 1.0f)
 		return;
 
+	static const bool preserve_ignore = !g_settings->getBool("projecting_dungeons");
+
 	this->vm = vm;
 	this->blockseed = bseed;
 	random.seed(bseed + 2);
@@ -105,14 +106,16 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	vm->clearFlag(VMANIP_FLAG_DUNGEON_INSIDE | VMANIP_FLAG_DUNGEON_PRESERVE);
 
 	if (dp.only_in_ground) {
-		// Set all air and water to be untouchable
-		// to make dungeons open to caves and open air
+		// Set all air and water to be untouchable to make dungeons open to
+		// caves and open air. Optionally set ignore to be untouchable to
+		// prevent protruding dungeons.
 		for (s16 z = nmin.Z; z <= nmax.Z; z++) {
 			for (s16 y = nmin.Y; y <= nmax.Y; y++) {
 				u32 i = vm->m_area.index(nmin.X, y, z);
 				for (s16 x = nmin.X; x <= nmax.X; x++) {
 					content_t c = vm->m_data[i].getContent();
 					if (c == CONTENT_AIR || c == dp.c_water ||
+							(preserve_ignore && c == CONTENT_IGNORE) ||
 							c == dp.c_river_water)
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;
@@ -147,7 +150,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 
 void DungeonGen::makeDungeon(v3s16 start_padding)
 {
-	v3s16 areasize = vm->m_area.getExtent();
+	const v3s16 &areasize = vm->m_area.getExtent();
 	v3s16 roomsize;
 	v3s16 roomplace;
 
@@ -197,7 +200,7 @@ void DungeonGen::makeDungeon(v3s16 start_padding)
 		}
 	}
 	// No place found
-	if (fits == false)
+	if (!fits)
 		return;
 
 	/*
@@ -560,7 +563,7 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 		v3s16 doorplace;
 		v3s16 doordir;
 		bool r = findPlaceForDoor(doorplace, doordir);
-		if (r == false)
+		if (!r)
 			continue;
 		v3s16 roomplace;
 		// X east, Z north, Y up
@@ -592,7 +595,7 @@ bool DungeonGen::findPlaceForRoomDoor(v3s16 roomsize, v3s16 &result_doorplace,
 				break;
 			}
 		}
-		if (fits == false) {
+		if (!fits) {
 			// Find new place
 			continue;
 		}
@@ -621,12 +624,12 @@ v3s16 rand_ortho_dir(PseudoRandom &random, bool diagonal_dirs)
 		} while ((dir.X == 0 || dir.Z == 0) && trycount < 10);
 
 		return dir;
-	} else {
-		if (random.next() % 2 == 0)
-			return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
-		else
-			return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
 	}
+
+	if (random.next() % 2 == 0)
+		return random.next() % 2 ? v3s16(-1, 0, 0) : v3s16(1, 0, 0);
+
+	return random.next() % 2 ? v3s16(0, 0, -1) : v3s16(0, 0, 1);
 }
 
 
@@ -669,6 +672,6 @@ int dir_to_facedir(v3s16 d)
 {
 	if (abs(d.X) > abs(d.Z))
 		return d.X < 0 ? 3 : 1;
-	else
-		return d.Z < 0 ? 2 : 0;
+
+	return d.Z < 0 ? 2 : 0;
 }

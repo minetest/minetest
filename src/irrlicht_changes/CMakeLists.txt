@@ -1,7 +1,16 @@
 if (BUILD_CLIENT)
 	set(client_irrlicht_changes_SRCS
 		${CMAKE_CURRENT_SOURCE_DIR}/static_text.cpp
-		PARENT_SCOPE
 	)
+
+	if (ENABLE_FREETYPE)
+		set(client_irrlicht_changes_SRCS ${client_irrlicht_changes_SRCS}
+			${CMAKE_CURRENT_SOURCE_DIR}/CGUITTFont.cpp
+		)
+	endif()
+
+	# CMake require us to set a local scope and then parent scope
+	# Else the last set win in parent scope
+	set(client_irrlicht_changes_SRCS ${client_irrlicht_changes_SRCS} PARENT_SCOPE)
 endif()
 

@@ -92,7 +92,7 @@ core.register_chatcommand("admin", {
 })
 
 core.register_chatcommand("privs", {
-	params = "<name>",
+	params = "[<name>]",
 	description = "Print privileges of player",
 	func = function(caller, param)
 		param = param:trim()
@@ -132,6 +132,9 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 	if privs_unknown ~= "" then
 		return false, privs_unknown
 	end
+	for priv, _ in pairs(grantprivs) do
+		core.run_priv_callbacks(grantname, priv, caller, "grant")
+	end
 	core.set_player_privs(grantname, privs)
 	core.log("action", caller..' granted ('..core.privs_to_string(grantprivs, ', ')..') privileges to '..grantname)
 	if grantname ~= caller then
@@ -145,7 +148,7 @@ local function handle_grant_command(caller, grantname, grantprivstr)
 end
 
 core.register_chatcommand("grant", {
-	params = "<name> <privilege>|all",
+	params = "<name> (<privilege> | all)",
 	description = "Give privilege to player",
 	func = function(name, param)
 		local grantname, grantprivstr = string.match(param, "([^ ]+) (.+)")
@@ -157,7 +160,7 @@ core.register_chatcommand("grant", {
 })
 
 core.register_chatcommand("grantme", {
-	params = "<privilege>|all",
+	params = "<privilege> | all",
 	description = "Grant privileges to yourself",
 	func = function(name, param)
 		if param == "" then
@@ -168,7 +171,7 @@ core.register_chatcommand("grantme", {
 })
 
 core.register_chatcommand("revoke", {
-	params = "<name> <privilege>|all",
+	params = "<name> (<privilege> | all)",
 	description = "Remove privilege from player",
 	privs = {},
 	func = function(name, param)
@@ -193,12 +196,18 @@ core.register_chatcommand("revoke", {
 			end
 		end
 		if revoke_priv_str == "all" then
+			revoke_privs = privs
 			privs = {}
 		else
 			for priv, _ in pairs(revoke_privs) do
 				privs[priv] = nil
 			end
 		end
+
+		for priv, _ in pairs(revoke_privs) do
+			core.run_priv_callbacks(revoke_name, priv, name, "revoke")
+		end
+
 		core.set_player_privs(revoke_name, privs)
 		core.log("action", name..' revoked ('
 				..core.privs_to_string(revoke_privs, ', ')
@@ -305,7 +314,7 @@ core.register_chatcommand("remove_player", {
 })
 
 core.register_chatcommand("teleport", {
-	params = "<X>,<Y>,<Z> | <to_name> | <name> <X>,<Y>,<Z> | <name> <to_name>",
+	params = "<X>,<Y>,<Z> | <to_name> | (<name> <X>,<Y>,<Z>) | (<name> <to_name>)",
 	description = "Teleport to player or position",
 	privs = {teleport=true},
 	func = function(name, param)
@@ -413,7 +422,7 @@ core.register_chatcommand("teleport", {
 })
 
 core.register_chatcommand("set", {
-	params = "[-n] <name> <value> | <name>",
+	params = "([-n] <name> <value>) | <name>",
 	description = "Set or read server configuration setting",
 	privs = {server=true},
 	func = function(name, param)
@@ -468,9 +477,9 @@ local function emergeblocks_progress_update(ctx)
 end
 
 core.register_chatcommand("emergeblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
 	description = "Load (or, if nonexistent, generate) map blocks "
-		.. "contained in area pos1 to pos2",
+		.. "contained in area pos1 to pos2 (<pos1> and <pos2> must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -494,8 +503,9 @@ core.register_chatcommand("emergeblocks", {
 })
 
 core.register_chatcommand("deleteblocks", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "Delete map blocks contained in area pos1 to pos2",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
+	description = "Delete map blocks contained in area pos1 to pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)",
 	privs = {server=true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -513,8 +523,9 @@ core.register_chatcommand("deleteblocks", {
 })
 
 core.register_chatcommand("fixlight", {
-	params = "(here [radius]) | (<pos1> <pos2>)",
-	description = "Resets lighting in the area between pos1 and pos2",
+	params = "(here [<radius>]) | (<pos1> <pos2>)",
+	description = "Resets lighting in the area between pos1 and pos2 "
+		.. "(<pos1> and <pos2> must be in parentheses)",
 	privs = {server = true},
 	func = function(name, param)
 		local p1, p2 = parse_range_str(name, param)
@@ -618,6 +629,9 @@ core.register_chatcommand("spawnentity", {
 			core.log("error", "Unable to spawn entity, player is nil")
 			return false, "Unable to spawn entity, player is nil"
 		end
+		if not minetest.registered_entities[entityname] then
+			return false, "Cannot spawn an unknown entity"
+		end
 		if p == "" then
 			p = player:getpos()
 		else
@@ -661,7 +675,7 @@ core.register_on_punchnode(function(pos, node, puncher)
 end)
 
 core.register_chatcommand("rollback_check", {
-	params = "[<range>] [<seconds>] [limit]",
+	params = "[<range>] [<seconds>] [<limit>]",
 	description = "Check who last touched a node or a node near it"
 			.. " within the time specified by <seconds>. Default: range = 0,"
 			.. " seconds = 86400 = 24h, limit = 5",
@@ -714,7 +728,7 @@ core.register_chatcommand("rollback_check", {
 })
 
 core.register_chatcommand("rollback", {
-	params = "<player name> [<seconds>] | :<actor> [<seconds>]",
+	params = "(<name> [<seconds>]) | (:<actor> [<seconds>])",
 	description = "Revert actions of a player. Default for <seconds> is 60",
 	privs = {rollback=true},
 	func = function(name, param)
@@ -806,8 +820,8 @@ core.register_chatcommand("days", {
 })
 
 core.register_chatcommand("shutdown", {
-	description = "Shutdown server",
-	params = "[delay_in_seconds(0..inf) or -1 for cancel] [reconnect] [message]",
+	params = "[<delay_in_seconds> | -1] [reconnect] [<message>]",
+	description = "Shutdown server (-1 cancels a delayed shutdown)",
 	privs = {server=true},
 	func = function(name, param)
 		local delay, reconnect, message = param:match("([^ ][-]?[0-9]+)([^ ]+)(.*)")
@@ -845,7 +859,7 @@ core.register_chatcommand("ban", {
 })
 
 core.register_chatcommand("unban", {
-	params = "<name/ip>",
+	params = "<name> | <IP_address>",
 	description = "Remove IP ban",
 	privs = {ban=true},
 	func = function(name, param)
@@ -858,7 +872,7 @@ core.register_chatcommand("unban", {
 })
 
 core.register_chatcommand("kick", {
-	params = "<name> [reason]",
+	params = "<name> [<reason>]",
 	description = "Kick a player",
 	privs = {kick=true},
 	func = function(name, param)
@@ -877,7 +891,7 @@ core.register_chatcommand("kick", {
 })
 
 core.register_chatcommand("clearobjects", {
-	params = "[full|quick]",
+	params = "[full | quick]",
 	description = "Clear all objects in world",
 	privs = {server=true},
 	func = function(name, param)
@@ -923,7 +937,7 @@ core.register_chatcommand("msg", {
 })
 
 core.register_chatcommand("last-login", {
-	params = "[name]",
+	params = "[<name>]",
 	description = "Get the last login time of a player",
 	func = function(name, param)
 		if param == "" then
@@ -940,7 +954,7 @@ core.register_chatcommand("last-login", {
 })
 
 core.register_chatcommand("clearinv", {
-	params = "[name]",
+	params = "[<name>]",
 	description = "Clear the inventory of yourself or another player",
 	func = function(name, param)
 		local player

@@ -17,14 +17,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PARTICLES_HEADER
-#define PARTICLES_HEADER
+#pragma once
 
 #include <iostream>
 #include "irrlichttypes_extrabloated.h"
 #include "client/tile.h"
 #include "localplayer.h"
-#include "environment.h"
 #include "tileanimation.h"
 
 struct ClientEvent;
@@ -38,7 +36,6 @@ class Particle : public scene::ISceneNode
 	public:
 	Particle(
 		IGameDef* gamedef,
-		scene::ISceneManager* mgr,
 		LocalPlayer *player,
 		ClientEnvironment *env,
 		v3f pos,
@@ -56,7 +53,7 @@ class Particle : public scene::ISceneNode
 		u8 glow,
 		video::SColor color = video::SColor(0xFFFFFFFF)
 	);
-	~Particle();
+	~Particle() = default;
 
 	virtual const aabb3f &getBoundingBox() const
 	{
@@ -86,7 +83,7 @@ private:
 	void updateVertices();
 
 	video::S3DVertex m_vertices[4];
-	float m_time;
+	float m_time = 0.0f;
 	float m_expiration;
 
 	ClientEnvironment *m_env;
@@ -110,8 +107,8 @@ private:
 	bool m_vertical;
 	v3s16 m_camera_offset;
 	struct TileAnimationParams m_animation;
-	float m_animation_time;
-	int m_animation_frame;
+	float m_animation_time = 0.0f;
+	int m_animation_frame = 0;
 	u8 m_glow;
 };
 
@@ -119,7 +116,6 @@ class ParticleSpawner
 {
 	public:
 	ParticleSpawner(IGameDef* gamedef,
-		scene::ISceneManager *smgr,
 		LocalPlayer *player,
 		u16 amount,
 		float time,
@@ -137,7 +133,7 @@ class ParticleSpawner
 		const struct TileAnimationParams &anim, u8 glow,
 		ParticleManager* p_manager);
 
-	~ParticleSpawner();
+	~ParticleSpawner() = default;
 
 	void step(float dtime, ClientEnvironment *env);
 
@@ -148,7 +144,6 @@ class ParticleSpawner
 	ParticleManager* m_particlemanager;
 	float m_time;
 	IGameDef *m_gamedef;
-	scene::ISceneManager *m_smgr;
 	LocalPlayer *m_player;
 	u16 m_amount;
 	float m_spawntime;
@@ -185,19 +180,13 @@ public:
 	void step (float dtime);
 
 	void handleParticleEvent(ClientEvent *event, Client *client,
-			scene::ISceneManager* smgr, LocalPlayer *player);
+			LocalPlayer *player);
 
-	void addDiggingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
+	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f);
 
-	void addPunchingParticles(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
-
-	void addNodeParticle(IGameDef* gamedef, scene::ISceneManager* smgr,
-		LocalPlayer *player, v3s16 pos, const MapNode &n,
-		const ContentFeatures &f);
+	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+		const MapNode &n, const ContentFeatures &f);
 
 protected:
 	void addParticle(Particle* toadd);
@@ -213,8 +202,6 @@ private:
 	std::map<u32, ParticleSpawner*> m_particle_spawners;
 
 	ClientEnvironment* m_env;
-	Mutex m_particle_list_lock;
-	Mutex m_spawner_list_lock;
+	std::mutex m_particle_list_lock;
+	std::mutex m_spawner_list_lock;
 };
-
-#endif

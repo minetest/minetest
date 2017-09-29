@@ -17,20 +17,19 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_BASE_H_
-#define S_BASE_H_
+#pragma once
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <mutex>
+#include "util/basic_macros.h"
 
 extern "C" {
 #include <lua.h>
 }
 
 #include "irrlichttypes.h"
-#include "threads.h"
-#include "threading/mutex.h"
-#include "threading/mutex_auto_lock.h"
 #include "common/c_types.h"
 #include "common/c_internal.h"
 
@@ -41,18 +40,24 @@ extern "C" {
 // use that name to bypass security!
 #define BUILTIN_MOD_NAME "*builtin*"
 
-#define PCALL_RES(RES) do {                 \
+#define PCALL_RES(RES) {                    \
 	int result_ = (RES);                    \
 	if (result_ != 0) {                     \
 		scriptError(result_, __FUNCTION__); \
 	}                                       \
-} while (0)
+}
 
 #define runCallbacks(nargs, mode) \
 	runCallbacksRaw((nargs), (mode), __FUNCTION__)
 
 #define setOriginFromTable(index) \
 	setOriginFromTableRaw(index, __FUNCTION__)
+
+enum class ScriptingType: u8 {
+	Client,
+	Server,
+	MainMenu
+};
 
 class Server;
 #ifndef SERVER
@@ -67,10 +72,15 @@ class ScriptApiBase {
 public:
 	ScriptApiBase();
 	virtual ~ScriptApiBase();
+	DISABLE_CLASS_COPY(ScriptApiBase);
 
 	// These throw a ModError on failure
 	void loadMod(const std::string &script_path, const std::string &mod_name);
 	void loadScript(const std::string &script_path);
+
+#ifndef SERVER
+	void loadModFromMemory(const std::string &mod_name);
+#endif
 
 	void runCallbacksRaw(int nargs,
 		RunCallbacksMode mode, const char *fxn);
@@ -81,6 +91,8 @@ public:
 
 	IGameDef *getGameDef() { return m_gamedef; }
 	Server* getServer();
+	void setType(ScriptingType type) { m_type = type; }
+	ScriptingType getType() { return m_type; }
 #ifndef SERVER
 	Client* getClient();
 #endif
@@ -116,22 +128,21 @@ protected:
 
 	void objectrefGetOrCreate(lua_State *L, ServerActiveObject *cobj);
 
-	RecursiveMutex  m_luastackmutex;
+	std::recursive_mutex m_luastackmutex;
 	std::string     m_last_run_mod;
-	bool            m_secure;
+	bool            m_secure = false;
 #ifdef SCRIPTAPI_LOCK_DEBUG
 	int             m_lock_recursion_count;
-	threadid_t      m_owning_thread;
+	std::thread::id m_owning_thread;
 #endif
 
 private:
 	static int luaPanic(lua_State *L);
 
-	lua_State*      m_luastack;
+	lua_State      *m_luastack = nullptr;
 
-	IGameDef*       m_gamedef;
-	Environment*    m_environment;
-	GUIEngine*      m_guiengine;
+	IGameDef       *m_gamedef = nullptr;
+	Environment    *m_environment = nullptr;
+	GUIEngine      *m_guiengine = nullptr;
+	ScriptingType  m_type;
 };
-
-#endif /* S_BASE_H_ */

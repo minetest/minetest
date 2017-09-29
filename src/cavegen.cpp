@@ -73,7 +73,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 	noise_cave1->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 	noise_cave2->perlinMap3D(nmin.X, nmin.Y - 1, nmin.Z);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index2d = 0;  // Biomemap index
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
@@ -81,6 +81,7 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		bool column_is_open = false;  // Is column open to overground
 		bool is_under_river = false;  // Is column under river water
 		bool is_under_tunnel = false;  // Is tunnel or is under tunnel
+		bool is_top_filler_above = false;  // Is top or filler above node
 		// Indexes at column top
 		u32 vi = vm->m_area.index(x, nmax.Y, z);
 		u32 index3d = (z - nmin.Z) * m_zstride_1d + m_csize.Y * m_ystride +
@@ -98,17 +99,22 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 		for (s16 y = nmax.Y; y >= nmin.Y - 1; y--,
 				index3d -= m_ystride,
 				vm->m_area.add_y(em, vi, -1)) {
-
 			content_t c = vm->m_data[vi].getContent();
+
 			if (c == CONTENT_AIR || c == biome->c_water_top ||
 					c == biome->c_water) {
 				column_is_open = true;
-				continue;
-			} else if (c == biome->c_river_water) {
-				column_is_open = true;
-				is_under_river = true;
+				is_top_filler_above = false;
 				continue;
 			}
+
+			if (c == biome->c_river_water) {
+				column_is_open = true;
+				is_under_river = true;
+				is_top_filler_above = false;
+				continue;
+			}
+
 			// Ground
 			float d1 = contour(noise_cave1->result[index3d]);
 			float d2 = contour(noise_cave2->result[index3d]);
@@ -117,12 +123,17 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				// In tunnel and ground content, excavate
 				vm->m_data[vi] = MapNode(CONTENT_AIR);
 				is_under_tunnel = true;
+				// If tunnel roof is top or filler, replace with stone
+				if (is_top_filler_above)
+					vm->m_data[vi + em.X] = MapNode(biome->c_stone);
+				is_top_filler_above = false;
 			} else if (column_is_open && is_under_tunnel &&
 					(c == biome->c_stone || c == biome->c_filler)) {
 				// Tunnel entrance floor, place biome surface nodes
 				if (is_under_river) {
 					if (nplaced < depth_riverbed) {
 						vm->m_data[vi] = MapNode(biome->c_riverbed);
+						is_top_filler_above = true;
 						nplaced++;
 					} else {
 						// Disable top/filler placement
@@ -132,9 +143,11 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 					}
 				} else if (nplaced < depth_top) {
 					vm->m_data[vi] = MapNode(biome->c_top);
+					is_top_filler_above = true;
 					nplaced++;
 				} else if (nplaced < base_filler) {
 					vm->m_data[vi] = MapNode(biome->c_filler);
+					is_top_filler_above = true;
 					nplaced++;
 				} else {
 					// Disable top/filler placement
@@ -143,6 +156,10 @@ void CavesNoiseIntersection::generateCaves(MMVManip *vm,
 				}
 			} else {
 				// Not tunnel or tunnel entrance floor
+				// Check node for possible replacing with stone for tunnel roof
+				if (c == biome->c_top || c == biome->c_filler)
+					is_top_filler_above = true;
+
 				column_is_open = false;
 			}
 		}
@@ -208,7 +225,7 @@ bool CavernsNoise::generateCaverns(MMVManip *vm, v3s16 nmin, v3s16 nmax)
 
 	//// Place nodes
 	bool near_cavern = false;
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	u32 index2d = 0;
 
 	for (s16 z = nmin.Z; z <= nmax.Z; z++)
@@ -258,7 +275,8 @@ CavesRandomWalk::CavesRandomWalk(
 	s32 seed,
 	int water_level,
 	content_t water_source,
-	content_t lava_source)
+	content_t lava_source,
+	int lava_depth)
 {
 	assert(ndef);
 
@@ -267,7 +285,7 @@ CavesRandomWalk::CavesRandomWalk(
 	this->seed           = seed;
 	this->water_level    = water_level;
 	this->np_caveliquids = &nparams_caveliquids;
-	this->lava_depth     = DEFAULT_LAVA_DEPTH;
+	this->lava_depth     = lava_depth;
 
 	c_water_source = water_source;
 	if (c_water_source == CONTENT_IGNORE)
@@ -514,7 +532,7 @@ void CavesRandomWalk::carveRoute(v3f vec, float f, bool randomize_xz)
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -818,7 +836,7 @@ void CavesV6::carveRoute(v3f vec, float f, bool randomize_xz,
 				v3s16 p(cp.X + x0, cp.Y + y0, cp.Z + z0);
 				p += of;
 
-				if (vm->m_area.contains(p) == false)
+				if (!vm->m_area.contains(p))
 					continue;
 
 				u32 i = vm->m_area.index(p);
@@ -857,7 +875,8 @@ inline s16 CavesV6::getSurfaceFromHeightmap(v3s16 p)
 			p.X >= node_min.X && p.X <= node_max.X) {
 		u32 index = (p.Z - node_min.Z) * ystride + (p.X - node_min.X);
 		return heightmap[index];
-	} else {
-		return water_level;
 	}
+
+	return water_level;
+
 }

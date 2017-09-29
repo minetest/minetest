@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "porting.h"  // strlcpy
 #include "server.h"
 #include "settings.h"
+#include "convert_json.h"
 
 /*
 	RemotePlayer
@@ -36,15 +37,7 @@ float RemotePlayer::m_setting_chat_message_limit_per_10sec = 0.0f;
 u16 RemotePlayer::m_setting_chat_message_limit_trigger_kick = 0;
 
 RemotePlayer::RemotePlayer(const char *name, IItemDefManager *idef):
-	Player(name, idef),
-	protocol_version(0),
-	m_sao(NULL),
-	m_dirty(false),
-	m_last_chat_message_sent(time(NULL)),
-	m_chat_message_allowance(5.0f),
-	m_message_rate_overhead(0),
-	hud_hotbar_image(""),
-	hud_hotbar_selected_image("")
+	Player(name, idef)
 {
 	if (!RemotePlayer::m_setting_cache_loaded) {
 		RemotePlayer::m_setting_chat_message_limit_per_10sec =
@@ -80,12 +73,12 @@ void RemotePlayer::serializeExtraAttributes(std::string &output)
 	assert(m_sao);
 	Json::Value json_root;
 	const PlayerAttributes &attrs = m_sao->getExtendedAttributes();
-	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
-		json_root[(*it).first] = (*it).second;
+	for (const auto &attr : attrs) {
+		json_root[attr.first] = attr.second;
 	}
 
-	Json::FastWriter writer;
-	output = writer.write(json_root);
+	output = fastWriteJson(json_root);
+
 	m_sao->setExtendedAttributeModified(false);
 }
 
@@ -108,7 +101,7 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 		try {
 			sao->setHPRaw(args.getS32("hp"));
 		} catch(SettingNotFoundException &e) {
-			sao->setHPRaw(PLAYER_MAX_HP);
+			sao->setHPRaw(PLAYER_MAX_HP_DEFAULT);
 		}
 
 		try {
@@ -128,15 +121,18 @@ void RemotePlayer::deSerialize(std::istream &is, const std::string &playername,
 
 		try {
 			const std::string &extended_attributes = args.get("extended_attributes");
-			Json::Reader reader;
+			std::istringstream iss(extended_attributes);
+			Json::CharReaderBuilder builder;
+			builder.settings_["collectComments"] = false;
+			std::string errs;
+
 			Json::Value attr_root;
-			reader.parse(extended_attributes, attr_root);
+			Json::parseFromStream(builder, iss, &attr_root, &errs);
 
 			const Json::Value::Members attr_list = attr_root.getMemberNames();
-			for (Json::Value::Members::const_iterator it = attr_list.begin();
-					it != attr_list.end(); ++it) {
-				Json::Value attr_value = attr_root[*it];
-				sao->setExtendedAttribute(*it, attr_value.asString());
+			for (const auto &it : attr_list) {
+				Json::Value attr_value = attr_root[it];
+				sao->setExtendedAttribute(it, attr_value.asString());
 			}
 		} catch (SettingNotFoundException &e) {}
 	}
@@ -173,7 +169,7 @@ void RemotePlayer::serialize(std::ostream &os)
 	args.setFloat("yaw", m_sao->getYaw());
 	args.setS32("breath", m_sao->getBreath());
 
-	std::string extended_attrs = "";
+	std::string extended_attrs;
 	serializeExtraAttributes(extended_attrs);
 	args.set("extended_attributes", extended_attrs);
 

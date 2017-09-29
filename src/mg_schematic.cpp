@@ -1,6 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2014 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -36,9 +37,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 SchematicManager::SchematicManager(Server *server) :
-	ObjDefManager(server, OBJDEF_SCHEMATIC)
+	ObjDefManager(server, OBJDEF_SCHEMATIC),
+	m_server(server)
 {
-	m_server = server;
 }
 
 
@@ -55,7 +56,7 @@ void SchematicManager::clear()
 			DecoSchematic *dschem = dynamic_cast<DecoSchematic *>(deco);
 			if (dschem)
 				dschem->schematic = NULL;
-		} catch (std::bad_cast) {
+		} catch (const std::bad_cast &) {
 		}
 	}
 
@@ -67,12 +68,7 @@ void SchematicManager::clear()
 
 
 Schematic::Schematic()
-{
-	schemdata   = NULL;
-	slice_probs = NULL;
-	flags       = 0;
-	size        = v3s16(0, 0, 0);
-}
+= default;
 
 
 Schematic::~Schematic()
@@ -560,14 +556,14 @@ void Schematic::applyProbabilities(v3s16 p0,
 void generate_nodelist_and_update_ids(MapNode *nodes, size_t nodecount,
 	std::vector<std::string> *usednodes, INodeDefManager *ndef)
 {
-	UNORDERED_MAP<content_t, content_t> nodeidmap;
+	std::unordered_map<content_t, content_t> nodeidmap;
 	content_t numids = 0;
 
 	for (size_t i = 0; i != nodecount; i++) {
 		content_t id;
 		content_t c = nodes[i].getContent();
 
-		UNORDERED_MAP<content_t, content_t>::const_iterator it = nodeidmap.find(c);
+		std::unordered_map<content_t, content_t>::const_iterator it = nodeidmap.find(c);
 		if (it == nodeidmap.end()) {
 			id = numids;
 			numids++;

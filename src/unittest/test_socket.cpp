@@ -20,8 +20,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "test.h"
 
 #include "log.h"
-#include "socket.h"
 #include "settings.h"
+#include "network/socket.h"
 
 class TestSocket : public TestBase {
 public:

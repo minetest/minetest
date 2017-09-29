@@ -17,15 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_NUMERIC_HEADER
-#define UTIL_NUMERIC_HEADER
+#pragma once
 
 #include "basic_macros.h"
 #include "../irrlichttypes.h"
 #include "../irr_v2d.h"
 #include "../irr_v3d.h"
 #include "../irr_aabb3d.h"
-#include "../threading/mutex.h"
 
 #define rangelim(d, min, max) ((d) < (min) ? (min) : ((d) > (max) ? (max) : (d)))
 #define myfloor(x) ((x) < 0.0 ? (int)(x) - 1 : (int)(x))
@@ -270,12 +268,12 @@ inline v3f intToFloat(v3s16 p, f32 d)
 inline aabb3f getNodeBox(v3s16 p, float d)
 {
 	return aabb3f(
-		(float)p.X * d - 0.5 * d,
-		(float)p.Y * d - 0.5 * d,
-		(float)p.Z * d - 0.5 * d,
-		(float)p.X * d + 0.5 * d,
-		(float)p.Y * d + 0.5 * d,
-		(float)p.Z * d + 0.5 * d
+		(float)p.X * d - 0.5f * d,
+		(float)p.Y * d - 0.5f * d,
+		(float)p.Z * d - 0.5f * d,
+		(float)p.X * d + 0.5f * d,
+		(float)p.Y * d + 0.5f * d,
+		(float)p.Z * d + 0.5f * d
 	);
 }
 
@@ -283,7 +281,8 @@ inline aabb3f getNodeBox(v3s16 p, float d)
 class IntervalLimiter
 {
 public:
-	IntervalLimiter() : m_accumulator(0) {}
+	IntervalLimiter() = default;
+
 	/*
 		dtime: time from last call to this method
 		wanted_interval: interval wanted
@@ -301,7 +300,7 @@ public:
 	}
 
 private:
-	float m_accumulator;
+	float m_accumulator = 0.0f;
 };
 
 
@@ -364,5 +363,3 @@ inline u32 npot2(u32 orig) {
 	orig |= orig >> 16;
 	return orig + 1;
 }
-
-#endif

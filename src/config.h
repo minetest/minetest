@@ -3,8 +3,7 @@
 	Otherwise use default values
 */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #define STRINGIFY(x) #x
 #define STR(x) STRINGIFY(x)
@@ -30,13 +29,12 @@
 	#endif
 #endif
 
-#define BUILD_INFO "BUILD_TYPE=" BUILD_TYPE \
-		" RUN_IN_PLACE=" STR(RUN_IN_PLACE) \
-		" USE_GETTEXT=" STR(USE_GETTEXT) \
-		" USE_SOUND=" STR(USE_SOUND) \
-		" USE_CURL=" STR(USE_CURL) \
-		" USE_FREETYPE=" STR(USE_FREETYPE) \
-		" USE_LUAJIT=" STR(USE_LUAJIT) \
-		" STATIC_SHAREDIR=" STR(STATIC_SHAREDIR)
-
-#endif
+#define BUILD_INFO \
+	"BUILD_TYPE=" BUILD_TYPE "\n"          \
+	"RUN_IN_PLACE=" STR(RUN_IN_PLACE) "\n" \
+	"USE_GETTEXT=" STR(USE_GETTEXT) "\n"   \
+	"USE_SOUND=" STR(USE_SOUND) "\n"       \
+	"USE_CURL=" STR(USE_CURL) "\n"         \
+	"USE_FREETYPE=" STR(USE_FREETYPE) "\n" \
+	"USE_LUAJIT=" STR(USE_LUAJIT) "\n"     \
+	"STATIC_SHAREDIR=" STR(STATIC_SHAREDIR);

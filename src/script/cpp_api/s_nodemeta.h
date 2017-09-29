@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef S_NODEMETA_H_
-#define S_NODEMETA_H_
+#pragma once
 
 #include "cpp_api/s_base.h"
 #include "cpp_api/s_item.h"
@@ -31,8 +30,8 @@ class ScriptApiNodemeta
 		  public ScriptApiItem
 {
 public:
-	ScriptApiNodemeta();
-	virtual ~ScriptApiNodemeta();
+	ScriptApiNodemeta() = default;
+	virtual ~ScriptApiNodemeta() = default;
 
 	// Return number of accepted items to be moved
 	int nodemeta_inventory_AllowMove(v3s16 p,
@@ -63,5 +62,3 @@ public:
 private:
 
 };
-
-#endif /* S_NODEMETA_H_ */

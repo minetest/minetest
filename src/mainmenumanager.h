@@ -17,14 +17,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAINMENUMANAGER_HEADER
-#define MAINMENUMANAGER_HEADER
+#pragma once
 
 /*
 	All kinds of stuff that needs to be exposed from main.cpp
 */
-#include "debug.h" // assert
 #include "modalMenu.h"
+#include <cassert>
 #include <list>
 
 class IGameCallback
@@ -49,12 +48,11 @@ class MainMenuManager : public IMenuManager
 public:
 	virtual void createdMenu(gui::IGUIElement *menu)
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin();
-				i != m_stack.end(); ++i)
-		{
-			assert(*i != menu);
+#ifndef NDEBUG
+		for (gui::IGUIElement *i : m_stack) {
+			assert(i != menu);
 		}
+#endif
 
 		if(!m_stack.empty())
 			m_stack.back()->setVisible(false);
@@ -104,10 +102,8 @@ public:
 
 	bool pausesGame()
 	{
-		for(std::list<gui::IGUIElement*>::iterator
-				i = m_stack.begin(); i != m_stack.end(); ++i)
-		{
-			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(*i);
+		for (gui::IGUIElement *i : m_stack) {
+			GUIModalMenu *mm = dynamic_cast<GUIModalMenu*>(i);
 			if (mm && mm->pausesGame())
 				return true;
 		}
@@ -124,23 +120,12 @@ extern bool isMenuActive();
 class MainGameCallback : public IGameCallback
 {
 public:
-	MainGameCallback(IrrlichtDevice *a_device):
-		disconnect_requested(false),
-		changepassword_requested(false),
-		changevolume_requested(false),
-		keyconfig_requested(false),
-		shutdown_requested(false),
-		keyconfig_changed(false),
-		device(a_device)
-	{
-	}
+	MainGameCallback() = default;
+	virtual ~MainGameCallback() = default;
 
 	virtual void exitToOS()
 	{
 		shutdown_requested = true;
-#ifndef __ANDROID__
-		device->closeDevice();
-#endif
 	}
 
 	virtual void disconnect()
@@ -169,18 +154,13 @@ public:
 	}
 
 
-	bool disconnect_requested;
-	bool changepassword_requested;
-	bool changevolume_requested;
-	bool keyconfig_requested;
-	bool shutdown_requested;
+	bool disconnect_requested = false;
+	bool changepassword_requested = false;
+	bool changevolume_requested = false;
+	bool keyconfig_requested = false;
+	bool shutdown_requested = false;
 
-	bool keyconfig_changed;
-
-	IrrlichtDevice *device;
+	bool keyconfig_changed = false;
 };
 
 extern MainGameCallback *g_gamecallback;
-
-#endif
-

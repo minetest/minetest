@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2014-2017 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_V5_HEADER
-#define MAPGEN_V5_HEADER
+#pragma once
 
 #include "mapgen.h"
-
-#define MGV5_LARGE_CAVE_DEPTH -256
 
 ///////// Mapgen V5 flags
 #define MGV5_CAVERNS 0x01
@@ -34,11 +31,13 @@ extern FlagDesc flagdesc_mapgen_v5[];
 
 struct MapgenV5Params : public MapgenParams
 {
-	u32 spflags;
-	float cave_width;
-	s16 cavern_limit;
-	s16 cavern_taper;
-	float cavern_threshold;
+	u32 spflags = MGV5_CAVERNS;
+	float cave_width = 0.125f;
+	s16 large_cave_depth = -256;
+	s16 lava_depth = -256;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 256;
+	float cavern_threshold = 0.7f;
 
 	NoiseParams np_filler_depth;
 	NoiseParams np_factor;
@@ -49,7 +48,7 @@ struct MapgenV5Params : public MapgenParams
 	NoiseParams np_cavern;
 
 	MapgenV5Params();
-	~MapgenV5Params() {}
+	~MapgenV5Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -68,9 +67,8 @@ public:
 	int generateBaseTerrain();
 
 private:
+	s16 large_cave_depth;
 	Noise *noise_factor;
 	Noise *noise_height;
 	Noise *noise_ground;
 };
-
-#endif

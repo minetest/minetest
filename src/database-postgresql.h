@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_POSTGRESQL_HEADER
-#define DATABASE_POSTGRESQL_HEADER
+#pragma once
 
 #include <string>
 #include <libpq-fe.h>
@@ -104,15 +103,15 @@ private:
 
 	// Attributes
 	std::string m_connect_string;
-	PGconn *m_conn;
-	int m_pgversion;
+	PGconn *m_conn = nullptr;
+	int m_pgversion = 0;
 };
 
 class MapDatabasePostgreSQL : private Database_PostgreSQL, public MapDatabase
 {
 public:
 	MapDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~MapDatabasePostgreSQL() {}
+	virtual ~MapDatabasePostgreSQL() = default;
 
 	bool saveBlock(const v3s16 &pos, const std::string &data);
 	void loadBlock(const v3s16 &pos, std::string *block);
@@ -131,7 +130,7 @@ class PlayerDatabasePostgreSQL : private Database_PostgreSQL, public PlayerDatab
 {
 public:
 	PlayerDatabasePostgreSQL(const std::string &connect_string);
-	virtual ~PlayerDatabasePostgreSQL() {}
+	virtual ~PlayerDatabasePostgreSQL() = default;
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
@@ -145,6 +144,3 @@ protected:
 private:
 	bool playerDataExists(const std::string &playername);
 };
-
-#endif
-

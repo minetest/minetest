@@ -1,6 +1,8 @@
 /*
 Minetest
-Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2010-2015 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2015-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,12 +19,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_HEADER
-#define MAPGEN_HEADER
+#pragma once
 
 #include "noise.h"
 #include "nodedef.h"
-#include "mapnode.h"
 #include "util/string.h"
 #include "util/container.h"
 
@@ -77,11 +77,11 @@ enum GenNotifyType {
 	NUM_GENNOTIFY_TYPES
 };
 
-// TODO(hmmmm/paramat): make stone type selection dynamic
 enum MgStoneType {
 	MGSTONE_STONE,
 	MGSTONE_DESERT_STONE,
 	MGSTONE_SANDSTONE,
+	MGSTONE_OTHER,
 };
 
 struct GenNotifyEvent {
@@ -92,7 +92,7 @@ struct GenNotifyEvent {
 
 class GenerateNotifier {
 public:
-	GenerateNotifier();
+	GenerateNotifier() = default;
 	GenerateNotifier(u32 notify_on, std::set<u32> *notify_on_deco_ids);
 
 	void setNotifyOn(u32 notify_on);
@@ -103,7 +103,7 @@ public:
 		bool peek_events=false);
 
 private:
-	u32 m_notify_on;
+	u32 m_notify_on = 0;
 	std::set<u32> *m_notify_on_deco_ids;
 	std::list<GenNotifyEvent> m_notify_events;
 };
@@ -116,34 +116,38 @@ enum MapgenType {
 	MAPGEN_FRACTAL,
 	MAPGEN_VALLEYS,
 	MAPGEN_SINGLENODE,
+	MAPGEN_CARPATHIAN,
 	MAPGEN_INVALID,
 };
 
 struct MapgenParams {
-	MapgenType mgtype;
-	s16 chunksize;
-	u64 seed;
-	s16 water_level;
-	s16 mapgen_limit;
-	u32 flags;
-
-	BiomeParams *bparams;
-
-	MapgenParams() :
-		mgtype(MAPGEN_DEFAULT),
-		chunksize(5),
-		seed(0),
-		water_level(1),
-		mapgen_limit(MAX_MAP_GENERATION_LIMIT),
-		flags(MG_CAVES | MG_LIGHT | MG_DECORATIONS),
-		bparams(NULL)
-	{
-	}
-
+	MapgenParams() = default;
 	virtual ~MapgenParams();
+
+	MapgenType mgtype = MAPGEN_DEFAULT;
+	s16 chunksize = 5;
+	u64 seed = 0;
+	s16 water_level = 1;
+	s16 mapgen_limit = MAX_MAP_GENERATION_LIMIT;
+	u32 flags = MG_CAVES | MG_LIGHT | MG_DECORATIONS;
+
+	BiomeParams *bparams = nullptr;
+
+	s16 mapgen_edge_min = -MAX_MAP_GENERATION_LIMIT;
+	s16 mapgen_edge_max = MAX_MAP_GENERATION_LIMIT;
 
 	virtual void readParams(const Settings *settings);
 	virtual void writeParams(Settings *settings) const;
+
+	bool saoPosOverLimit(const v3f &p);
+	s32 getSpawnRangeMax();
+
+private:
+	void calcMapgenEdges();
+
+	float m_sao_limit_min = -MAX_MAP_GENERATION_LIMIT * BS;
+	float m_sao_limit_max = MAX_MAP_GENERATION_LIMIT * BS;
+	bool m_mapgen_edges_calculated = false;
 };
 
 
@@ -158,27 +162,28 @@ struct MapgenParams {
 */
 class Mapgen {
 public:
-	s32 seed;
-	int water_level;
-	int mapgen_limit;
-	u32 flags;
-	bool generating;
-	int id;
+	s32 seed = 0;
+	int water_level = 0;
+	int mapgen_limit = 0;
+	u32 flags = 0;
+	bool generating = false;
+	int id = -1;
 
-	MMVManip *vm;
-	INodeDefManager *ndef;
+	MMVManip *vm = nullptr;
+	INodeDefManager *ndef = nullptr;
 
 	u32 blockseed;
-	s16 *heightmap;
-	biome_t *biomemap;
+	s16 *heightmap = nullptr;
+	biome_t *biomemap = nullptr;
 	v3s16 csize;
 
-	BiomeGen *biomegen;
+	BiomeGen *biomegen = nullptr;
 	GenerateNotifier gennotify;
 
-	Mapgen();
+	Mapgen() = default;
 	Mapgen(int mapgenid, MapgenParams *params, EmergeManager *emerge);
-	virtual ~Mapgen();
+	virtual ~Mapgen() = default;
+	DISABLE_CLASS_COPY(Mapgen);
 
 	virtual MapgenType getType() const { return MAPGEN_INVALID; }
 
@@ -220,7 +225,6 @@ private:
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.
 	inline bool isLiquidHorizontallyFlowable(u32 vi, v3s16 em);
-	DISABLE_CLASS_COPY(Mapgen);
 };
 
 /*
@@ -244,8 +248,10 @@ public:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
-	virtual void generateDungeons(s16 max_stone_y, MgStoneType stone_type);
-	virtual MgStoneType generateBiomes();
+	virtual void generateDungeons(s16 max_stone_y,
+		MgStoneType stone_type, content_t biome_stone);
+	virtual void generateBiomes(MgStoneType *mgstone_type,
+		content_t *biome_stone);
 	virtual void dustTopNodes();
 
 protected:
@@ -289,6 +295,5 @@ protected:
 	float cavern_limit;
 	float cavern_taper;
 	float cavern_threshold;
+	int lava_depth;
 };
-
-#endif

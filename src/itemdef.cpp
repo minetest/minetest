@@ -67,7 +67,9 @@ ItemDefinition& ItemDefinition::operator=(const ItemDefinition &def)
 	name = def.name;
 	description = def.description;
 	inventory_image = def.inventory_image;
+	inventory_overlay = def.inventory_overlay;
 	wield_image = def.wield_image;
+	wield_overlay = def.wield_overlay;
 	wield_scale = def.wield_scale;
 	stack_max = def.stack_max;
 	usable = def.usable;
@@ -105,18 +107,17 @@ void ItemDefinition::reset()
 	name = "";
 	description = "";
 	inventory_image = "";
+	inventory_overlay = "";
 	wield_image = "";
+	wield_overlay = "";
 	palette_image = "";
 	color = video::SColor(0xFFFFFFFF);
 	wield_scale = v3f(1.0, 1.0, 1.0);
 	stack_max = 99;
 	usable = false;
 	liquids_pointable = false;
-	if(tool_capabilities)
-	{
-		delete tool_capabilities;
-		tool_capabilities = NULL;
-	}
+	delete tool_capabilities;
+	tool_capabilities = NULL;
 	groups.clear();
 	sound_place = SimpleSoundSpec();
 	sound_place_failed = SimpleSoundSpec();
@@ -127,8 +128,9 @@ void ItemDefinition::reset()
 
 void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 {
-
-	writeU8(os, 3); // version (proto > 20)
+	// protocol_version >= 36
+	u8 version = 5;
+	writeU8(os, version);
 	writeU8(os, type);
 	os << serializeString(name);
 	os << serializeString(description);
@@ -138,7 +140,7 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	writeS16(os, stack_max);
 	writeU8(os, usable);
 	writeU8(os, liquids_pointable);
-	std::string tool_capabilities_s = "";
+	std::string tool_capabilities_s;
 	if(tool_capabilities){
 		std::ostringstream tmp_os(std::ios::binary);
 		tool_capabilities->serialize(tmp_os, protocol_version);
@@ -146,10 +148,9 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	}
 	os << serializeString(tool_capabilities_s);
 	writeU16(os, groups.size());
-	for (ItemGroupList::const_iterator
-			i = groups.begin(); i != groups.end(); ++i){
-		os << serializeString(i->first);
-		writeS16(os, i->second);
+	for (const auto &group : groups) {
+		os << serializeString(group.first);
+		writeS16(os, group.second);
 	}
 	os << serializeString(node_placement_prediction);
 	os << serializeString(sound_place.name);
@@ -158,7 +159,12 @@ void ItemDefinition::serialize(std::ostream &os, u16 protocol_version) const
 	os << serializeString(sound_place_failed.name);
 	writeF1000(os, sound_place_failed.gain);
 	os << serializeString(palette_image);
-	writeU32(os, color.color);
+	writeARGB8(os, color);
+
+	writeF1000(os, sound_place.pitch);
+	writeF1000(os, sound_place_failed.pitch);
+	os << serializeString(inventory_overlay);
+	os << serializeString(wield_overlay);
 }
 
 void ItemDefinition::deSerialize(std::istream &is)
@@ -168,8 +174,9 @@ void ItemDefinition::deSerialize(std::istream &is)
 
 	// Deserialize
 	int version = readU8(is);
-	if(version < 1 || version > 3)
+	if (version < 5)
 		throw SerializationError("unsupported ItemDefinition version");
+
 	type = (enum ItemType)readU8(is);
 	name = deSerializeString(is);
 	description = deSerializeString(is);
@@ -193,31 +200,27 @@ void ItemDefinition::deSerialize(std::istream &is)
 		int value = readS16(is);
 		groups[name] = value;
 	}
-	if(version == 1){
-		// We cant be sure that node_placement_prediction is send in version 1
-		try{
-			node_placement_prediction = deSerializeString(is);
-		}catch(SerializationError &e) {};
-		// Set the old default sound
-		sound_place.name = "default_place_node";
-		sound_place.gain = 0.5;
-	} else if(version >= 2) {
-		node_placement_prediction = deSerializeString(is);
-		//deserializeSimpleSoundSpec(sound_place, is);
-		sound_place.name = deSerializeString(is);
-		sound_place.gain = readF1000(is);
-	}
-	if(version == 3) {
-		range = readF1000(is);
-	}
+
+	node_placement_prediction = deSerializeString(is);
+	//deserializeSimpleSoundSpec(sound_place, is);
+	sound_place.name = deSerializeString(is);
+	sound_place.gain = readF1000(is);
+	range = readF1000(is);
+
+	sound_place_failed.name = deSerializeString(is);
+	sound_place_failed.gain = readF1000(is);
+	palette_image = deSerializeString(is);
+	color = readARGB8(is);
+
+	sound_place.pitch = readF1000(is);
+	sound_place_failed.pitch = readF1000(is);
+	inventory_overlay = deSerializeString(is);
+	wield_overlay = deSerializeString(is);
+
 	// If you add anything here, insert it primarily inside the try-catch
 	// block to not need to increase the version.
-	try {
-		sound_place_failed.name = deSerializeString(is);
-		sound_place_failed.gain = readF1000(is);
-		palette_image = deSerializeString(is);
-		color.set(readU32(is));
-	} catch(SerializationError &e) {};
+	//try {
+	//} catch(SerializationError &e) {};
 }
 
 /*
@@ -237,7 +240,6 @@ class CItemDefManager: public IWritableItemDefManager
 
 		ClientCached():
 			inventory_texture(NULL),
-			wield_mesh(),
 			palette(NULL)
 		{}
 	};
@@ -248,7 +250,7 @@ public:
 	{
 
 #ifndef SERVER
-		m_main_thread = thr_get_current_thread_id();
+		m_main_thread = std::this_thread::get_id();
 #endif
 		clear();
 	}
@@ -256,20 +258,15 @@ public:
 	{
 #ifndef SERVER
 		const std::vector<ClientCached*> &values = m_clientcached.getValues();
-		for(std::vector<ClientCached*>::const_iterator
-				i = values.begin(); i != values.end(); ++i)
-		{
-			ClientCached *cc = *i;
+		for (ClientCached *cc : values) {
 			if (cc->wield_mesh.mesh)
 				cc->wield_mesh.mesh->drop();
 			delete cc;
 		}
 
 #endif
-		for (std::map<std::string, ItemDefinition*>::iterator iter =
-				m_item_definitions.begin(); iter != m_item_definitions.end();
-				++iter) {
-			delete iter->second;
+		for (auto &item_definition : m_item_definitions) {
+			delete item_definition.second;
 		}
 		m_item_definitions.clear();
 	}
@@ -295,15 +292,12 @@ public:
 	virtual void getAll(std::set<std::string> &result) const
 	{
 		result.clear();
-		for(std::map<std::string, ItemDefinition *>::const_iterator
-				it = m_item_definitions.begin();
-				it != m_item_definitions.end(); ++it) {
-			result.insert(it->first);
+		for (const auto &item_definition : m_item_definitions) {
+			result.insert(item_definition.first);
 		}
-		for (StringMap::const_iterator
-				it = m_aliases.begin();
-				it != m_aliases.end(); ++it) {
-			result.insert(it->first);
+
+		for (const auto &alias : m_aliases) {
+			result.insert(alias.first);
 		}
 	}
 	virtual bool isKnown(const std::string &name_) const
@@ -323,7 +317,7 @@ public:
 				<<name<<"\""<<std::endl;
 
 		// This is not thread-safe
-		sanity_check(thr_is_current_thread(m_main_thread));
+		sanity_check(std::this_thread::get_id() == m_main_thread);
 
 		// Skip if already in cache
 		ClientCached *cc = NULL;
@@ -339,7 +333,7 @@ public:
 
 		// Create an inventory texture
 		cc->inventory_texture = NULL;
-		if(def.inventory_image != "")
+		if (!def.inventory_image.empty())
 			cc->inventory_texture = tsrc->getTexture(def.inventory_image);
 
 		ItemStack item = ItemStack();
@@ -359,36 +353,32 @@ public:
 	{
 		ClientCached *cc = NULL;
 		m_clientcached.get(name, &cc);
-		if(cc)
+		if (cc)
 			return cc;
 
-		if(thr_is_current_thread(m_main_thread))
-		{
+		if (std::this_thread::get_id() == m_main_thread) {
 			return createClientCachedDirect(name, client);
 		}
-		else
-		{
-			// We're gonna ask the result to be put into here
-			static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
-			// Throw a request in
-			m_get_clientcached_queue.add(name, 0, 0, &result_queue);
-			try{
-				while(true) {
-					// Wait result for a second
-					GetResult<std::string, ClientCached*, u8, u8>
-						result = result_queue.pop_front(1000);
+		// We're gonna ask the result to be put into here
+		static ResultQueue<std::string, ClientCached*, u8, u8> result_queue;
 
-					if (result.key == name) {
-						return result.item;
-					}
+		// Throw a request in
+		m_get_clientcached_queue.add(name, 0, 0, &result_queue);
+		try {
+			while(true) {
+				// Wait result for a second
+				GetResult<std::string, ClientCached*, u8, u8>
+					result = result_queue.pop_front(1000);
+
+				if (result.key == name) {
+					return result.item;
 				}
 			}
-			catch(ItemNotFoundException &e)
-			{
-				errorstream<<"Waiting for clientcached " << name << " timed out."<<std::endl;
-				return &m_dummy_clientcached;
-			}
+		} catch(ItemNotFoundException &e) {
+			errorstream << "Waiting for clientcached " << name
+				<< " timed out." << std::endl;
+			return &m_dummy_clientcached;
 		}
 	}
 	// Get item inventory texture
@@ -426,13 +416,12 @@ public:
 		// Look for direct color definition
 		const std::string &colorstring = stack.metadata.getString("color", 0);
 		video::SColor directcolor;
-		if ((colorstring != "")
-				&& parseColorString(colorstring, directcolor, true))
+		if (!colorstring.empty() && parseColorString(colorstring, directcolor, true))
 			return directcolor;
 		// See if there is a palette
 		Palette *palette = getPalette(stack.name, client);
 		const std::string &index = stack.metadata.getString("palette_index", 0);
-		if ((palette != NULL) && (index != ""))
+		if (palette && !index.empty())
 			return (*palette)[mystoi(index, 0, 255)];
 		// Fallback color
 		return get(stack.name).color;
@@ -481,7 +470,7 @@ public:
 	{
 		verbosestream<<"ItemDefManager: registering \""<<def.name<<"\""<<std::endl;
 		// Ensure that the "" item (the hand) always has ToolCapabilities
-		if(def.name == "")
+		if (def.name.empty())
 			FATAL_ERROR_IF(!def.tool_capabilities, "Hand does not have ToolCapabilities");
 
 		if(m_item_definitions.count(def.name) == 0)
@@ -583,7 +572,7 @@ private:
 	StringMap m_aliases;
 #ifndef SERVER
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
+	std::thread::id m_main_thread;
 	// A reference to this can be returned when nothing is found, to avoid NULLs
 	mutable ClientCached m_dummy_clientcached;
 	// Cached textures and meshes

@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "log.h"
 #include "client.h"
 #include "inventory.h"
+#include "shader.h"
 #include "client/tile.h"
 #include "localplayer.h"
 #include "camera.h"
@@ -33,32 +34,29 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "guiscalingfilter.h"
 #include "mesh.h"
 #include "wieldmesh.h"
-#include <IGUIStaticText.h>
+#include "client/renderingengine.h"
 
 #ifdef HAVE_TOUCHSCREENGUI
 #include "touchscreengui.h"
 #endif
 
-Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
-		gui::IGUIEnvironment* guienv, Client *client, LocalPlayer *player,
+Hud::Hud(gui::IGUIEnvironment *guienv, Client *client, LocalPlayer *player,
 		Inventory *inventory)
 {
-	this->driver      = driver;
-	this->smgr        = smgr;
+	driver            = RenderingEngine::get_video_driver();
 	this->guienv      = guienv;
 	this->client      = client;
 	this->player      = player;
 	this->inventory   = inventory;
 
 	m_hud_scaling      = g_settings->getFloat("hud_scaling");
-	m_screensize       = v2u32(0, 0);
-	m_displaycenter    = v2s32(0, 0);
-	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
+	m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
+		RenderingEngine::getDisplayDensity() + 0.5f);
 	m_hotbar_imagesize *= m_hud_scaling;
 	m_padding = m_hotbar_imagesize / 12;
 
-	for (unsigned int i = 0; i < 4; i++)
-		hbar_colors[i] = video::SColor(255, 255, 255, 255);
+	for (auto &hbar_color : hbar_colors)
+		hbar_color = video::SColor(255, 255, 255, 255);
 
 	tsrc = client->getTextureSource();
 
@@ -77,16 +75,9 @@ Hud::Hud(video::IVideoDriver *driver, scene::ISceneManager* smgr,
 
 	use_crosshair_image = tsrc->isKnownSourceImage("crosshair.png");
 
-	hotbar_image = "";
-	use_hotbar_image = false;
-	hotbar_selected_image = "";
-	use_hotbar_selected_image = false;
-
-	m_selection_mesh = NULL;
 	m_selection_boxes.clear();
 	m_halo_boxes.clear();
 
-	m_selection_pos = v3f(0.0, 0.0, 0.0);
 	std::string mode_setting = g_settings->get("node_highlighting");
 
 	if (mode_setting == "halo") {
@@ -129,78 +120,78 @@ void Hud::drawItem(const ItemStack &item, const core::rect<s32>& rect,
 		bool selected)
 {
 	if (selected) {
-			/* draw hihlighting around selected item */
-			if (use_hotbar_selected_image) {
-				core::rect<s32> imgrect2 = rect;
-				imgrect2.UpperLeftCorner.X  -= (m_padding*2);
-				imgrect2.UpperLeftCorner.Y  -= (m_padding*2);
-				imgrect2.LowerRightCorner.X += (m_padding*2);
-				imgrect2.LowerRightCorner.Y += (m_padding*2);
-					video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
-					core::dimension2di imgsize(texture->getOriginalSize());
-				draw2DImageFilterScaled(driver, texture, imgrect2,
-						core::rect<s32>(core::position2d<s32>(0,0), imgsize),
-						NULL, hbar_colors, true);
-			} else {
-				video::SColor c_outside(255,255,0,0);
-				//video::SColor c_outside(255,0,0,0);
-				//video::SColor c_inside(255,192,192,192);
-				s32 x1 = rect.UpperLeftCorner.X;
-				s32 y1 = rect.UpperLeftCorner.Y;
-				s32 x2 = rect.LowerRightCorner.X;
-				s32 y2 = rect.LowerRightCorner.Y;
-				// Black base borders
-				driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-					v2s32(x1 - m_padding, y1 - m_padding),
-					v2s32(x2 + m_padding, y1)
-					), NULL);
-				driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-					v2s32(x1 - m_padding, y2),
-					v2s32(x2 + m_padding, y2 + m_padding)
-					), NULL);
-				driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-					v2s32(x1 - m_padding, y1),
-						v2s32(x1, y2)
-					), NULL);
-				driver->draw2DRectangle(c_outside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-					v2s32(x2 + m_padding, y2)
-					), NULL);
-				/*// Light inside borders
-				driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1 - padding/2),
-						v2s32(x2 + padding/2, y1)
-					), NULL);
-				driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y2),
-						v2s32(x2 + padding/2, y2 + padding/2)
-					), NULL);
-				driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x1 - padding/2, y1),
-						v2s32(x1, y2)
-					), NULL);
-				driver->draw2DRectangle(c_inside,
-					core::rect<s32>(
-						v2s32(x2, y1),
-						v2s32(x2 + padding/2, y2)
-					), NULL);
-				*/
-			}
+		/* draw hihlighting around selected item */
+		if (use_hotbar_selected_image) {
+			core::rect<s32> imgrect2 = rect;
+			imgrect2.UpperLeftCorner.X  -= (m_padding*2);
+			imgrect2.UpperLeftCorner.Y  -= (m_padding*2);
+			imgrect2.LowerRightCorner.X += (m_padding*2);
+			imgrect2.LowerRightCorner.Y += (m_padding*2);
+				video::ITexture *texture = tsrc->getTexture(hotbar_selected_image);
+				core::dimension2di imgsize(texture->getOriginalSize());
+			draw2DImageFilterScaled(driver, texture, imgrect2,
+					core::rect<s32>(core::position2d<s32>(0,0), imgsize),
+					NULL, hbar_colors, true);
+		} else {
+			video::SColor c_outside(255,255,0,0);
+			//video::SColor c_outside(255,0,0,0);
+			//video::SColor c_inside(255,192,192,192);
+			s32 x1 = rect.UpperLeftCorner.X;
+			s32 y1 = rect.UpperLeftCorner.Y;
+			s32 x2 = rect.LowerRightCorner.X;
+			s32 y2 = rect.LowerRightCorner.Y;
+			// Black base borders
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+				v2s32(x1 - m_padding, y1 - m_padding),
+				v2s32(x2 + m_padding, y1)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+				v2s32(x1 - m_padding, y2),
+				v2s32(x2 + m_padding, y2 + m_padding)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+				v2s32(x1 - m_padding, y1),
+					v2s32(x1, y2)
+				), NULL);
+			driver->draw2DRectangle(c_outside,
+				core::rect<s32>(
+					v2s32(x2, y1),
+				v2s32(x2 + m_padding, y2)
+				), NULL);
+			/*// Light inside borders
+			driver->draw2DRectangle(c_inside,
+				core::rect<s32>(
+					v2s32(x1 - padding/2, y1 - padding/2),
+					v2s32(x2 + padding/2, y1)
+				), NULL);
+			driver->draw2DRectangle(c_inside,
+				core::rect<s32>(
+					v2s32(x1 - padding/2, y2),
+					v2s32(x2 + padding/2, y2 + padding/2)
+				), NULL);
+			driver->draw2DRectangle(c_inside,
+				core::rect<s32>(
+					v2s32(x1 - padding/2, y1),
+					v2s32(x1, y2)
+				), NULL);
+			driver->draw2DRectangle(c_inside,
+				core::rect<s32>(
+					v2s32(x2, y1),
+					v2s32(x2 + padding/2, y2)
+				), NULL);
+			*/
 		}
-
-		video::SColor bgcolor2(128, 0, 0, 0);
-		if (!use_hotbar_image)
-			driver->draw2DRectangle(bgcolor2, rect, NULL);
-		drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
-			client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
 	}
+
+	video::SColor bgcolor2(128, 0, 0, 0);
+	if (!use_hotbar_image)
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
+	drawItemStack(driver, g_fontengine->getFont(), item, rect, NULL,
+		client, selected ? IT_ROT_SELECTED : IT_ROT_NONE);
+}
 
 //NOTE: selectitem = 0 -> no selected; selectitem 1-based
 void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
@@ -222,14 +213,14 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 
 	// Position of upper left corner of bar
 	v2s32 pos = screen_offset;
-	pos.X *= m_hud_scaling * porting::getDisplayDensity();
-	pos.Y *= m_hud_scaling * porting::getDisplayDensity();
+	pos.X *= m_hud_scaling * RenderingEngine::getDisplayDensity();
+	pos.Y *= m_hud_scaling * RenderingEngine::getDisplayDensity();
 	pos += upperleftpos;
 
 	// Store hotbar_image in member variable, used by drawItem()
 	if (hotbar_image != player->hotbar_image) {
 		hotbar_image = player->hotbar_image;
-		if (hotbar_image != "")
+		if (!hotbar_image.empty())
 			use_hotbar_image = tsrc->isKnownSourceImage(hotbar_image);
 		else
 			use_hotbar_image = false;
@@ -238,7 +229,7 @@ void Hud::drawItems(v2s32 upperleftpos, v2s32 screen_offset, s32 itemcount,
 	// Store hotbar_selected_image in member variable, used by drawItem()
 	if (hotbar_selected_image != player->hotbar_selected_image) {
 		hotbar_selected_image = player->hotbar_selected_image;
-		if (hotbar_selected_image != "")
+		if (!hotbar_selected_image.empty())
 			use_hotbar_selected_image = tsrc->isKnownSourceImage(hotbar_selected_image);
 		else
 			use_hotbar_selected_image = false;
@@ -326,7 +317,7 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, e->scale.X, text_height * e->scale.Y);
-				std::wstring text = unescape_enriched(utf8_to_wide(e->text));
+				std::wstring text = unescape_translate(utf8_to_wide(e->text));
 				core::dimension2d<u32> textsize = font->getDimension(text.c_str());
 				v2s32 offset((e->align.X - 1.0) * (textsize.Width / 2),
 				             (e->align.Y - 1.0) * (textsize.Height / 2));
@@ -346,7 +337,8 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 				v3f p_pos = player->getPosition() / BS;
 				v3f w_pos = e->world_pos * BS;
 				float distance = floor(10 * p_pos.getDistanceFrom(e->world_pos)) / 10;
-				scene::ICameraSceneNode* camera = smgr->getActiveCamera();
+				scene::ICameraSceneNode* camera =
+					RenderingEngine::get_scene_manager()->getActiveCamera();
 				w_pos -= intToFloat(camera_offset, BS);
 				core::matrix4 trans = camera->getProjectionMatrix();
 				trans *= camera->getViewMatrix();
@@ -362,11 +354,11 @@ void Hud::drawLuaElements(const v3s16 &camera_offset)
 										 (e->number >> 8)  & 0xFF,
 										 (e->number >> 0)  & 0xFF);
 				core::rect<s32> size(0, 0, 200, 2 * text_height);
-				std::wstring text = unescape_enriched(utf8_to_wide(e->name));
+				std::wstring text = unescape_translate(utf8_to_wide(e->name));
 				font->draw(text.c_str(), size + pos, color);
 				std::ostringstream os;
 				os << distance << e->text;
-				text = unescape_enriched(utf8_to_wide(os.str()));
+				text = unescape_translate(utf8_to_wide(os.str()));
 				pos.Y += text_height;
 				font->draw(text.c_str(), size + pos, color);
 				break; }
@@ -393,7 +385,7 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	if (size == v2s32()) {
 		dstd = srcd;
 	} else {
-		float size_factor = m_hud_scaling * porting::getDisplayDensity();
+		float size_factor = m_hud_scaling * RenderingEngine::getDisplayDensity();
 		dstd.Height = size.Y * size_factor;
 		dstd.Width  = size.X * size_factor;
 		offset.X *= size_factor;
@@ -407,24 +399,32 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 	p += offset;
 
 	v2s32 steppos;
+	core::rect<s32> srchalfrect, dsthalfrect;
 	switch (drawdir) {
 		case HUD_DIR_RIGHT_LEFT:
 			steppos = v2s32(-1, 0);
+			srchalfrect = core::rect<s32>(srcd.Width / 2, 0, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(dstd.Width / 2, 0, dstd.Width, dstd.Height);
 			break;
 		case HUD_DIR_TOP_BOTTOM:
 			steppos = v2s32(0, 1);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width, srcd.Height / 2);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width, dstd.Height / 2);
 			break;
 		case HUD_DIR_BOTTOM_TOP:
 			steppos = v2s32(0, -1);
+			srchalfrect = core::rect<s32>(0, srcd.Height / 2, srcd.Width, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, dstd.Height / 2, dstd.Width, dstd.Height);
 			break;
 		default:
 			steppos = v2s32(1, 0);
+			srchalfrect = core::rect<s32>(0, 0, srcd.Width / 2, srcd.Height);
+			dsthalfrect = core::rect<s32>(0, 0, dstd.Width / 2, dstd.Height);
 	}
 	steppos.X *= dstd.Width;
 	steppos.Y *= dstd.Height;
 
-	for (s32 i = 0; i < count / 2; i++)
-	{
+	for (s32 i = 0; i < count / 2; i++) {
 		core::rect<s32> srcrect(0, 0, srcd.Width, srcd.Height);
 		core::rect<s32> dstrect(0,0, dstd.Width, dstd.Height);
 
@@ -433,13 +433,9 @@ void Hud::drawStatbar(v2s32 pos, u16 corner, u16 drawdir, std::string texture,
 		p += steppos;
 	}
 
-	if (count % 2 == 1)
-	{
-		core::rect<s32> srcrect(0, 0, srcd.Width / 2, srcd.Height);
-		core::rect<s32> dstrect(0,0, dstd.Width / 2, dstd.Height);
-
-		dstrect += p;
-		draw2DImageFilterScaled(driver, stat_texture, dstrect, srcrect, NULL, colors, true);
+	if (count % 2 == 1) {
+		dsthalfrect += p;
+		draw2DImageFilterScaled(driver, stat_texture, dsthalfrect, srchalfrect, NULL, colors, true);
 	}
 }
 
@@ -458,7 +454,8 @@ void Hud::drawHotbar(u16 playeritem) {
 	s32 width = hotbar_itemcount * (m_hotbar_imagesize + m_padding * 2);
 	v2s32 pos = centerlowerpos - v2s32(width / 2, m_hotbar_imagesize + m_padding * 3);
 
-	if ( (float) width / (float) porting::getWindowSize().X <=
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+	if ( (float) width / (float) window_size.X <=
 			g_settings->getFloat("hud_hotbar_max_width")) {
 		if (player->hud_flags & HUD_FLAG_HOTBAR_VISIBLE) {
 			drawItems(pos, v2s32(0, 0), hotbar_itemcount, 0, mainlist, playeritem + 1, 0);
@@ -579,7 +576,7 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 		m_selection_mesh = NULL;
 	}
 
-	if (!m_selection_boxes.size()) {
+	if (m_selection_boxes.empty()) {
 		// No pointed object
 		return;
 	}
@@ -604,10 +601,8 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 	aabb3f halo_box(100.0, 100.0, 100.0, -100.0, -100.0, -100.0);
 	m_halo_boxes.clear();
 
-	for (std::vector<aabb3f>::iterator
-			i = m_selection_boxes.begin();
-			i != m_selection_boxes.end(); ++i) {
-		halo_box.addInternalBox(*i);
+	for (const auto &selection_box : m_selection_boxes) {
+		halo_box.addInternalBox(selection_box);
 	}
 
 	m_halo_boxes.push_back(halo_box);
@@ -616,17 +611,20 @@ void Hud::updateSelectionMesh(const v3s16 &camera_offset)
 }
 
 void Hud::resizeHotbar() {
-	if (m_screensize != porting::getWindowSize()) {
-		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE * porting::getDisplayDensity() + 0.5);
+	const v2u32 &window_size = RenderingEngine::get_instance()->getWindowSize();
+
+	if (m_screensize != window_size) {
+		m_hotbar_imagesize = floor(HOTBAR_IMAGE_SIZE *
+			RenderingEngine::getDisplayDensity() + 0.5);
 		m_hotbar_imagesize *= m_hud_scaling;
 		m_padding = m_hotbar_imagesize / 12;
-		m_screensize = porting::getWindowSize();
+		m_screensize = window_size;
 		m_displaycenter = v2s32(m_screensize.X/2,m_screensize.Y/2);
 	}
 }
 
 struct MeshTimeInfo {
-	s64 time;
+	u64 time;
 	scene::IMesh *mesh;
 };
 
@@ -639,7 +637,7 @@ void drawItemStack(video::IVideoDriver *driver,
 		ItemRotationKind rotation_kind)
 {
 	static MeshTimeInfo rotation_time_infos[IT_ROT_NONE];
-	static bool enable_animations =
+	static thread_local bool enable_animations =
 		g_settings->getBool("inventory_items_animations");
 
 	if (item.empty()) {
@@ -698,7 +696,10 @@ void drawItemStack(video::IVideoDriver *driver,
 				if (p->override_base)
 					c = p->color;
 			}
-			colorizeMeshBuffer(buf, &c);
+			if (imesh->needs_shading)
+				colorizeMeshBuffer(buf, &c);
+			else
+				setMeshBufferColor(buf, c);
 			video::SMaterial &material = buf->getMaterial();
 			material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 			material.Lighting = false;

@@ -22,10 +22,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <queue>
 #include <sstream>
 #include <utility>
-#include <string.h>
+#include <cstring>
 #include <IGUISkin.h>
 #include <IGUIFont.h>
 #include <IGUIScrollBar.h>
+#include "client/renderingengine.h"
 #include "debug.h"
 #include "log.h"
 #include "client/tile.h"
@@ -47,22 +48,7 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 		ISimpleTextureSource *tsrc
 ):
 	gui::IGUIElement(gui::EGUIET_ELEMENT, env, parent, id, rectangle),
-	m_tsrc(tsrc),
-	m_is_textlist(false),
-	m_has_tree_column(false),
-	m_selected(-1),
-	m_sel_column(0),
-	m_sel_doubleclick(false),
-	m_keynav_time(0),
-	m_keynav_buffer(L""),
-	m_border(true),
-	m_color(255, 255, 255, 255),
-	m_background(255, 0, 0, 0),
-	m_highlight(255, 70, 100, 50),
-	m_highlight_text(255, 255, 255, 255),
-	m_rowheight(1),
-	m_font(NULL),
-	m_scrollbar(NULL)
+	m_tsrc(tsrc)
 {
 	assert(tsrc != NULL);
 
@@ -94,7 +80,8 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 	updateAbsolutePosition();
 
 	core::rect<s32> relative_rect = m_scrollbar->getRelativePosition();
-	s32 width = (relative_rect.getWidth()/(2.0/3.0)) * porting::getDisplayDensity() *
+	s32 width = (relative_rect.getWidth()/(2.0/3.0)) *
+			RenderingEngine::getDisplayDensity() *
 			g_settings->getFloat("gui_scaling");
 	m_scrollbar->setRelativePosition(core::rect<s32>(
 			relative_rect.LowerRightCorner.X-width,relative_rect.UpperLeftCorner.Y,
@@ -104,12 +91,12 @@ GUITable::GUITable(gui::IGUIEnvironment *env,
 
 GUITable::~GUITable()
 {
-	for (size_t i = 0; i < m_rows.size(); ++i)
-		delete[] m_rows[i].cells;
+	for (GUITable::Row &row : m_rows)
+		delete[] row.cells;
 
 	if (m_font)
 		m_font->drop();
-	
+
 	m_scrollbar->remove();
 }
 
@@ -118,9 +105,9 @@ GUITable::Option GUITable::splitOption(const std::string &str)
 	size_t equal_pos = str.find('=');
 	if (equal_pos == std::string::npos)
 		return GUITable::Option(str, "");
-	else
-		return GUITable::Option(str.substr(0, equal_pos),
-				str.substr(equal_pos + 1));
+
+	return GUITable::Option(str.substr(0, equal_pos),
+			str.substr(equal_pos + 1));
 }
 
 void GUITable::setTextList(const std::vector<std::string> &content,
@@ -207,9 +194,9 @@ void GUITable::setTable(const TableOptions &options,
 	// Handle table options
 	video::SColor default_color(255, 255, 255, 255);
 	s32 opendepth = 0;
-	for (size_t k = 0; k < options.size(); ++k) {
-		const std::string &name = options[k].name;
-		const std::string &value = options[k].value;
+	for (const Option &option : options) {
+		const std::string &name = option.name;
+		const std::string &value = option.value;
 		if (name == "color")
 			parseColorString(value, m_color, false);
 		else if (name == "background")
@@ -237,7 +224,7 @@ void GUITable::setTable(const TableOptions &options,
 	// Append empty strings to content if there is an incomplete row
 	s32 cellcount = rowcount * colcount;
 	while (content.size() < (u32) cellcount)
-		content.push_back("");
+		content.emplace_back("");
 
 	// Create temporary rows (for processing columns)
 	struct TempRow {
@@ -302,9 +289,9 @@ void GUITable::setTable(const TableOptions &options,
 			width = myround(em * 1.5); // default indent width
 		}
 
-		for (size_t k = 0; k < columns[j].options.size(); ++k) {
-			const std::string &name = columns[j].options[k].name;
-			const std::string &value = columns[j].options[k].value;
+		for (const Option &option : columns[j].options) {
+			const std::string &name = option.name;
+			const std::string &value = option.value;
 			if (name == "padding")
 				padding = myround(stof(value) * em);
 			else if (name == "tooltip")
@@ -417,7 +404,7 @@ void GUITable::setTable(const TableOptions &options,
 			for (s32 i = 0; i < rowcount; ++i) {
 				video::SColor cellcolor(255, 255, 255, 255);
 				if (parseColorString(content[i * colcount + j], cellcolor, true))
-					rows[i].colors.push_back(std::make_pair(cellcolor, j+span));
+					rows[i].colors.emplace_back(cellcolor, j+span);
 			}
 		}
 		else if (columntype == COLUMN_TYPE_INDENT ||
@@ -494,8 +481,8 @@ void GUITable::setTable(const TableOptions &options,
 void GUITable::clear()
 {
 	// Clean up cells and rows
-	for (size_t i = 0; i < m_rows.size(); ++i)
-		delete[] m_rows[i].cells;
+	for (GUITable::Row &row : m_rows)
+		delete[] row.cells;
 	m_rows.clear();
 	m_visible_rows.clear();
 
@@ -567,7 +554,9 @@ void GUITable::setSelected(s32 index)
 	s32 rowcount = m_rows.size();
 	if (rowcount == 0 || index < 0) {
 		return;
-	} else if (index >= rowcount) {
+	}
+
+	if (index >= rowcount) {
 		index = rowcount - 1;
 	}
 
@@ -806,7 +795,8 @@ bool GUITable::OnEvent(const SEvent &event)
 
 			return true;
 		}
-		else if (event.KeyInput.PressedDown && (
+
+		if (event.KeyInput.PressedDown && (
 				event.KeyInput.Key == KEY_LEFT ||
 				event.KeyInput.Key == KEY_RIGHT)) {
 			// Open/close subtree via keyboard
@@ -955,13 +945,12 @@ s32 GUITable::allocString(const std::string &text)
 	if (it == m_alloc_strings.end()) {
 		s32 id = m_strings.size();
 		std::wstring wtext = utf8_to_wide(text);
-		m_strings.push_back(core::stringw(wtext.c_str()));
+		m_strings.emplace_back(wtext.c_str());
 		m_alloc_strings.insert(std::make_pair(text, id));
 		return id;
 	}
-	else {
-		return it->second;
-	}
+
+	return it->second;
 }
 
 s32 GUITable::allocImage(const std::string &imagename)
@@ -973,9 +962,8 @@ s32 GUITable::allocImage(const std::string &imagename)
 		m_alloc_images.insert(std::make_pair(imagename, id));
 		return id;
 	}
-	else {
-		return it->second;
-	}
+
+	return it->second;
 }
 
 void GUITable::allocationComplete()
@@ -990,8 +978,8 @@ const GUITable::Row* GUITable::getRow(s32 i) const
 {
 	if (i >= 0 && i < (s32) m_visible_rows.size())
 		return &m_rows[m_visible_rows[i]];
-	else
-		return NULL;
+
+	return NULL;
 }
 
 bool GUITable::doesRowStartWith(const Row *row, const core::stringw &str) const
@@ -1027,11 +1015,10 @@ s32 GUITable::getRowAt(s32 y, bool &really_hovering) const
 		really_hovering = true;
 		return i;
 	}
-	else if (i < 0)
+	if (i < 0)
 		return 0;
-	else
-		return rowcount - 1;
 
+	return rowcount - 1;
 }
 
 s32 GUITable::getCellAt(s32 x, s32 row_i) const
@@ -1051,7 +1038,8 @@ s32 GUITable::getCellAt(s32 x, s32 row_i) const
 
 		if (rel_x >= cell->xmin && rel_x <= cell->xmax)
 			return pivot;
-		else if (rel_x < cell->xmin)
+
+		if (rel_x < cell->xmin)
 			jmax = pivot - 1;
 		else
 			jmin = pivot + 1;
@@ -1061,8 +1049,8 @@ s32 GUITable::getCellAt(s32 x, s32 row_i) const
 			rel_x >= row->cells[jmin].xmin &&
 			rel_x <= row->cells[jmin].xmax)
 		return jmin;
-	else
-		return -1;
+
+	return -1;
 }
 
 void GUITable::autoScroll()

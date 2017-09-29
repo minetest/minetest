@@ -18,12 +18,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SHADER_HEADER
-#define SHADER_HEADER
+#pragma once
 
 #include <IMaterialRendererServices.h>
-#include "irrlichttypes_extrabloated.h"
-#include "threads.h"
+#include "irrlichttypes_bloated.h"
 #include <string>
 
 class IGameDef;
@@ -45,17 +43,14 @@ std::string getShaderPath(const std::string &name_of_shader,
 		const std::string &filename);
 
 struct ShaderInfo {
-	std::string name;
-	video::E_MATERIAL_TYPE base_material;
-	video::E_MATERIAL_TYPE material;
-	u8 drawtype;
-	u8 material_type;
-	s32 user_data;
+	std::string name = "";
+	video::E_MATERIAL_TYPE base_material = video::EMT_SOLID;
+	video::E_MATERIAL_TYPE material = video::EMT_SOLID;
+	u8 drawtype = 0;
+	u8 material_type = 0;
 
-	ShaderInfo(): name(""), base_material(video::EMT_SOLID),
-		material(video::EMT_SOLID),
-		drawtype(0), material_type(0) {}
-	virtual ~ShaderInfo() {}
+	ShaderInfo() = default;
+	virtual ~ShaderInfo() = default;
 };
 
 /*
@@ -69,7 +64,7 @@ namespace irr { namespace video {
 
 class IShaderConstantSetter {
 public:
-	virtual ~IShaderConstantSetter(){};
+	virtual ~IShaderConstantSetter() = default;
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel) = 0;
 };
@@ -77,7 +72,7 @@ public:
 
 class IShaderConstantSetterFactory {
 public:
-	virtual ~IShaderConstantSetterFactory() {};
+	virtual ~IShaderConstantSetterFactory() = default;
 	virtual IShaderConstantSetter* create() = 0;
 };
 
@@ -86,11 +81,11 @@ template <typename T, std::size_t count=1>
 class CachedShaderSetting {
 	const char *m_name;
 	T m_sent[count];
-	bool has_been_set;
+	bool has_been_set = false;
 	bool is_pixel;
 protected:
 	CachedShaderSetting(const char *name, bool is_pixel) :
-		m_name(name), has_been_set(false), is_pixel(is_pixel)
+		m_name(name), is_pixel(is_pixel)
 	{}
 public:
 	void set(const T value[count], video::IMaterialRendererServices *services)
@@ -127,8 +122,9 @@ public:
 
 class IShaderSource {
 public:
-	IShaderSource(){}
-	virtual ~IShaderSource(){}
+	IShaderSource() = default;
+	virtual ~IShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
@@ -138,8 +134,9 @@ public:
 
 class IWritableShaderSource : public IShaderSource {
 public:
-	IWritableShaderSource(){}
-	virtual ~IWritableShaderSource(){}
+	IWritableShaderSource() = default;
+	virtual ~IWritableShaderSource() = default;
+
 	virtual u32 getShaderIdDirect(const std::string &name,
 		const u8 material_type, const u8 drawtype){return 0;}
 	virtual ShaderInfo getShaderInfo(u32 id){return ShaderInfo();}
@@ -153,9 +150,7 @@ public:
 	virtual void addShaderConstantSetterFactory(IShaderConstantSetterFactory *setter) = 0;
 };
 
-IWritableShaderSource* createShaderSource(IrrlichtDevice *device);
+IWritableShaderSource *createShaderSource();
 
 void dumpShaderProgram(std::ostream &output_stream,
 	const std::string &program_type, const std::string &program);
-
-#endif

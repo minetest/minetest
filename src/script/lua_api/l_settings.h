@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_SETTINGS_H_
-#define L_SETTINGS_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 
@@ -57,10 +56,10 @@ private:
 	// to_table(self) -> {[key1]=value1,...}
 	static int l_to_table(lua_State *L);
 
-	Settings *m_settings;
+	Settings *m_settings = nullptr;
 	std::string m_filename;
-	bool m_is_own_settings;
-	bool m_write_allowed;
+	bool m_is_own_settings = false;
+	bool m_write_allowed = true;
 
 public:
 	LuaSettings(Settings *settings, const std::string &filename);
@@ -77,5 +76,3 @@ public:
 
 	static void Register(lua_State *L);
 };
-
-#endif

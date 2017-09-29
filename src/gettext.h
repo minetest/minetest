@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GETTEXT_HEADER
-#define GETTEXT_HEADER
+#pragma once
 
 #include "config.h" // for USE_GETTEXT
+#include <string>
 
 #if USE_GETTEXT
 	#include <libintl.h>
@@ -58,5 +58,3 @@ inline std::string strgettext(const std::string &text)
 {
 	return gettext(text.c_str());
 }
-
-#endif

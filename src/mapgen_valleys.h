@@ -1,8 +1,7 @@
 /*
 Minetest Valleys C
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
-Copyright (C) 2016 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
  (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
@@ -25,8 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_VALLEYS_HEADER
-#define MAPGEN_VALLEYS_HEADER
+#pragma once
 
 #include "mapgen.h"
 
@@ -47,15 +45,15 @@ class BiomeGenOriginal;
 
 
 struct MapgenValleysParams : public MapgenParams {
-	u32 spflags;
-	s16 large_cave_depth;
-	s16 massive_cave_depth;
-	u16 altitude_chill;
-	u16 lava_features;
-	u16 river_depth;
-	u16 river_size;
-	u16 water_features;
-	float cave_width;
+	u32 spflags = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
+	s16 large_cave_depth = -33;
+	s16 massive_cave_depth = -256; // highest altitude of massive caves
+	u16 altitude_chill = 90; // The altitude at which temperature drops by 20C.
+	u16 lava_features = 0; // How often water will occur in caves.
+	u16 river_depth = 4; // How deep to carve river channels.
+	u16 river_size = 5; // How wide to make rivers.
+	u16 water_features = 0; // How often water will occur in caves.
+	float cave_width = 0.09f;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 	NoiseParams np_filler_depth;
@@ -68,7 +66,7 @@ struct MapgenValleysParams : public MapgenParams {
 	NoiseParams np_valley_profile;
 
 	MapgenValleysParams();
-	~MapgenValleysParams() {}
+	~MapgenValleysParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -134,5 +132,3 @@ private:
 
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 };
-
-#endif

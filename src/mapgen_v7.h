@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2013-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
+Copyright (C) 2014-2017 paramat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -18,16 +18,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_V7_HEADER
-#define MAPGEN_V7_HEADER
+#pragma once
 
 #include "mapgen.h"
 
-//////////// Mapgen V7 flags
-#define MGV7_MOUNTAINS  0x01
-#define MGV7_RIDGES     0x02
-#define MGV7_FLOATLANDS 0x04
-#define MGV7_CAVERNS    0x08
+///////////// Mapgen V7 flags
+#define MGV7_MOUNTAINS   0x01
+#define MGV7_RIDGES      0x02
+#define MGV7_FLOATLANDS  0x04
+#define MGV7_CAVERNS     0x08
+#define MGV7_BIOMEREPEAT 0x10 // Now unused
 
 class BiomeManager;
 
@@ -35,15 +35,18 @@ extern FlagDesc flagdesc_mapgen_v7[];
 
 
 struct MapgenV7Params : public MapgenParams {
-	u32 spflags;
-	float cave_width;
-	float float_mount_density;
-	float float_mount_height;
-	s16 floatland_level;
-	s16 shadow_limit;
-	s16 cavern_limit;
-	s16 cavern_taper;
-	float cavern_threshold;
+	u32 spflags = MGV7_MOUNTAINS | MGV7_RIDGES | MGV7_CAVERNS;
+	s16 mount_zero_level = 0;
+	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
+	float float_mount_density = 0.6f;
+	float float_mount_height = 128.0f;
+	s16 floatland_level = 1280;
+	s16 shadow_limit = 1024;
+	s16 cavern_limit = -256;
+	s16 cavern_taper = 256;
+	float cavern_threshold = 0.7f;
 
 	NoiseParams np_terrain_base;
 	NoiseParams np_terrain_alt;
@@ -61,7 +64,7 @@ struct MapgenV7Params : public MapgenParams {
 	NoiseParams np_cave2;
 
 	MapgenV7Params();
-	~MapgenV7Params() {}
+	~MapgenV7Params() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -88,6 +91,8 @@ public:
 	void generateRidgeTerrain();
 
 private:
+	s16 mount_zero_level;
+	s16 large_cave_depth;
 	float float_mount_density;
 	float float_mount_height;
 	s16 floatland_level;
@@ -104,5 +109,3 @@ private:
 	Noise *noise_mountain;
 	Noise *noise_ridge;
 };
-
-#endif

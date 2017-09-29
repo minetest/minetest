@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2016 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
+Copyright (C) 2017 nerzhul, Loic Blot <loic.blot@unix-experience.fr>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,16 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MT_CPP11_HEADER
-#define MT_CPP11_HEADER
+#pragma once
 
-#if __cplusplus < 201103L || _MSC_VER < 1600
-#define USE_CPP11_FAKE_KEYWORD
-#endif
+#include "cpp_api/s_base.h"
+#include "modchannels.h"
 
-#ifdef USE_CPP11_FAKE_KEYWORD
-#define constexpr const
-#define nullptr NULL
-#endif
-
-#endif
+class ScriptApiModChannels : virtual public ScriptApiBase
+{
+public:
+	void on_modchannel_message(const std::string &channel, const std::string &sender,
+			const std::string &message);
+	void on_modchannel_signal(const std::string &channel, ModChannelSignal signal);
+};

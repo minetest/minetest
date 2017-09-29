@@ -215,11 +215,11 @@ void TestVoxelAlgorithms::testVoxelLineIterator(INodeDefManager *ndef)
 	for (f32 x = -9.1; x < 9; x += 3.124) {
 	for (f32 y = -9.2; y < 9; y += 3.123) {
 	for (f32 z = -9.3; z < 9; z += 3.122) {
-		lines.push_back(core::line3d<f32>(-x, -y, -z, x, y, z));
+		lines.emplace_back(-x, -y, -z, x, y, z);
 	}
 	}
 	}
-	lines.push_back(core::line3d<f32>(0, 0, 0, 0, 0, 0));
+	lines.emplace_back(0, 0, 0, 0, 0, 0);
 	// Test every line
 	std::vector<core::line3d<f32> >::iterator it = lines.begin();
 	for (; it < lines.end(); it++) {

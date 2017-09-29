@@ -196,7 +196,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		return
 	end
 
-	if setting_type == "path" then
+	if setting_type == "path" or setting_type == "filepath" then
 		local default = remaining_line:match("^(.*)$")
 
 		if not default then
@@ -206,7 +206,7 @@ local function parse_setting_line(settings, line, read_all, base_level, allow_se
 		table.insert(settings, {
 			name = name,
 			readable_name = readable_name,
-			type = "path",
+			type = setting_type,
 			default = default,
 			comment = current_comment,
 		})
@@ -264,7 +264,7 @@ end
 -- read_all: whether to ignore certain setting types for GUI or not
 -- parse_mods: whether to parse settingtypes.txt in mods and games
 local function parse_config_file(read_all, parse_mods)
-	local builtin_path = core.get_builtin_path() .. DIR_DELIM .. FILENAME
+	local builtin_path = core.get_builtin_path() .. FILENAME
 	local file = io.open(builtin_path, "r")
 	local settings = {}
 	if not file then
@@ -466,8 +466,9 @@ local function create_change_setting_formspec(dialogdata)
 				.. core.formspec_escape(setting.possible:gsub(",", ", ")) .. ","
 	elseif setting.type == "noise_params" then
 		formspec = formspec .. ",,"
-				.. "," .. fgettext("Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, <octaves>, <persistence>") .. ","
-				.. "," .. fgettext("Optionally the lacunarity can be appended with a leading comma.") .. ","
+				.. "," .. fgettext("Format:") .. ","
+				.. "," .. fgettext("<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),") .. ","
+				.. "," .. fgettext("<seed>, <octaves>, <persistence>, <lacunarity>") .. ","
 	elseif setting.type == "v3f" then
 		formspec = formspec .. ",,"
 				.. "," .. fgettext_ne("Format is 3 numbers separated by commas and inside brackets.") .. ","
@@ -504,14 +505,14 @@ local function create_change_setting_formspec(dialogdata)
 		end
 		formspec = formspec .. ";" .. selected_index .. "]"
 
-	elseif setting.type == "path" then
+	elseif setting.type == "path" or setting.type == "filepath" then
 		local current_value = dialogdata.selected_path
 		if not current_value then
 			current_value = get_current_value(setting)
 		end
 		formspec = formspec .. "field[0.5,4;7.5,1;te_setting_value;;"
 				.. core.formspec_escape(current_value) .. "]"
-				.. "button[8,3.75;2,1;btn_browser_path;" .. fgettext("Browse") .. "]"
+				.. "button[8,3.75;2,1;btn_browser_" .. setting.type .. ";" .. fgettext("Browse") .. "]"
 
 	else
 		-- TODO: fancy input for float, int, flags, noise_params, v3f
@@ -606,7 +607,13 @@ local function handle_change_setting_buttons(this, fields)
 	end
 
 	if fields["btn_browser_path"] then
-		core.show_file_open_dialog("dlg_browse_path", fgettext_ne("Select path"))
+		core.show_path_select_dialog("dlg_browse_path",
+			fgettext_ne("Select directory"), false)
+	end
+
+	if fields["btn_browser_filepath"] then
+		core.show_path_select_dialog("dlg_browse_path",
+			fgettext_ne("Select file"), true)
 	end
 
 	if fields["dlg_browse_path_accepted"] then
@@ -767,6 +774,7 @@ function create_adv_settings_dlg()
 				return dlg
 end
 
--- Generate minetest.conf.example and settings_translation_file.cpp
+-- Uncomment to generate minetest.conf.example and settings_translation_file.cpp
+-- For RUN_IN_PLACE the generated files may appear in the bin folder
 
---assert(loadfile(core.get_builtin_path()..DIR_DELIM.."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))
+--assert(loadfile(core.get_builtin_path().."mainmenu"..DIR_DELIM.."generate_from_settingtypes.lua"))(parse_config_file(true, false))

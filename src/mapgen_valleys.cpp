@@ -1,8 +1,7 @@
 /*
 Minetest Valleys C
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
-Copyright (C) 2016 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 Duane Robertson <duane@duanerobertson.com>
+Copyright (C) 2016-2017 paramat
 
 Based on Valleys Mapgen by Gael de Sailly
  (https://forum.minetest.net/viewtopic.php?f=9&t=11430)
@@ -31,7 +30,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock.h"
 #include "mapnode.h"
 #include "map.h"
-#include "content_sao.h"
 #include "nodedef.h"
 #include "voxelalgorithms.h"
 #include "settings.h" // For g_settings
@@ -67,19 +65,19 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	: MapgenBasic(mapgenid, params, emerge)
 {
 	// NOTE: MapgenValleys has a hard dependency on BiomeGenOriginal
-	this->m_bgen = (BiomeGenOriginal *)biomegen;
+	m_bgen = (BiomeGenOriginal *)biomegen;
 
 	BiomeParamsOriginal *bp = (BiomeParamsOriginal *)params->bparams;
 
-	this->spflags            = params->spflags;
-	this->altitude_chill     = params->altitude_chill;
-	this->large_cave_depth   = params->large_cave_depth;
-	this->lava_features_lim  = rangelim(params->lava_features, 0, 10);
-	this->massive_cave_depth = params->massive_cave_depth;
-	this->river_depth_bed    = params->river_depth + 1.f;
-	this->river_size_factor  = params->river_size / 100.f;
-	this->water_features_lim = rangelim(params->water_features, 0, 10);
-	this->cave_width         = params->cave_width;
+	spflags            = params->spflags;
+	altitude_chill     = params->altitude_chill;
+	large_cave_depth   = params->large_cave_depth;
+	lava_features_lim  = rangelim(params->lava_features, 0, 10);
+	massive_cave_depth = params->massive_cave_depth;
+	river_depth_bed    = params->river_depth + 1.f;
+	river_size_factor  = params->river_size / 100.f;
+	water_features_lim = rangelim(params->water_features, 0, 10);
+	cave_width         = params->cave_width;
 
 	//// 2D Terrain noise
 	noise_filler_depth       = new Noise(&params->np_filler_depth,       seed, csize.X, csize.Z);
@@ -97,13 +95,13 @@ MapgenValleys::MapgenValleys(int mapgenid, MapgenValleysParams *params, EmergeMa
 	noise_cave2             = new Noise(&params->np_cave2,             seed, csize.X, csize.Y + 1, csize.Z);
 	noise_massive_caves     = new Noise(&params->np_massive_caves,     seed, csize.X, csize.Y + 1, csize.Z);
 
-	this->humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
-	this->use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
-	this->humidity_adjust    = bp->np_humidity.offset - 50.f;
+	humid_rivers       = (spflags & MGVALLEYS_HUMID_RIVERS);
+	use_altitude_chill = (spflags & MGVALLEYS_ALT_CHILL);
+	humidity_adjust    = bp->np_humidity.offset - 50.f;
 
 	// a small chance of overflows if the settings are very high
-	this->cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
-	this->lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
+	cave_water_max_height = water_level + MYMAX(0, water_features_lim - 4) * 50;
+	lava_max_height       = water_level + MYMAX(0, lava_features_lim - 4) * 50;
 
 	tcave_cache = new float[csize.Y + 2];
 }
@@ -126,28 +124,18 @@ MapgenValleys::~MapgenValleys()
 }
 
 
-MapgenValleysParams::MapgenValleysParams()
+MapgenValleysParams::MapgenValleysParams():
+	np_cave1              (0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0),
+	np_cave2              (0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0),
+	np_filler_depth       (0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f),
+	np_inter_valley_fill  (0.f,   1.f,  v3f(256,  512,  256),  1993,  6, 0.8f,  2.f),
+	np_inter_valley_slope (0.5f,  0.5f, v3f(128,  128,  128),  746,   1, 1.f,   2.f),
+	np_rivers             (0.f,   1.f,  v3f(256,  256,  256),  -6050, 5, 0.6f,  2.f),
+	np_massive_caves      (0.f,   1.f,  v3f(768,  256,  768),  59033, 6, 0.63f, 2.f),
+	np_terrain_height     (-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f),
+	np_valley_depth       (5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f),
+	np_valley_profile     (0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f)
 {
-	spflags            = MGVALLEYS_HUMID_RIVERS | MGVALLEYS_ALT_CHILL;
-	altitude_chill     = 90; // The altitude at which temperature drops by 20C.
-	large_cave_depth   = -33;
-	lava_features      = 0;  // How often water will occur in caves.
-	massive_cave_depth = -256;  // highest altitude of massive caves
-	river_depth        = 4;  // How deep to carve river channels.
-	river_size         = 5;  // How wide to make rivers.
-	water_features     = 0;  // How often water will occur in caves.
-	cave_width         = 0.09;
-
-	np_cave1              = NoiseParams(0,     12,   v3f(61,   61,   61),   52534, 3, 0.5,   2.0);
-	np_cave2              = NoiseParams(0,     12,   v3f(67,   67,   67),   10325, 3, 0.5,   2.0);
-	np_filler_depth       = NoiseParams(0.f,   1.2f, v3f(256,  256,  256),  1605,  3, 0.5f,  2.f);
-	np_inter_valley_fill  = NoiseParams(0.f,   1.f,  v3f(256,  512,  256),  1993,  6, 0.8f,  2.f);
-	np_inter_valley_slope = NoiseParams(0.5f,  0.5f, v3f(128,  128,  128),  746,   1, 1.f,   2.f);
-	np_rivers             = NoiseParams(0.f,   1.f,  v3f(256,  256,  256),  -6050, 5, 0.6f,  2.f);
-	np_massive_caves      = NoiseParams(0.f,   1.f,  v3f(768,  256,  768),  59033, 6, 0.63f, 2.f);
-	np_terrain_height     = NoiseParams(-10.f, 50.f, v3f(1024, 1024, 1024), 5202,  6, 0.4f,  2.f);
-	np_valley_depth       = NoiseParams(5.f,   4.f,  v3f(512,  512,  512),  -1914, 1, 1.f,   2.f);
-	np_valley_profile     = NoiseParams(0.6f,  0.5f, v3f(512,  512,  512),  777,   1, 1.f,   2.f);
 }
 
 
@@ -247,7 +235,9 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 	updateHeightmap(node_min, node_max);
 
 	// Place biome-specific nodes and build biomemap
-	MgStoneType stone_type = generateBiomes();
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	// Cave creation.
 	if (flags & MG_CAVES)
@@ -255,7 +245,7 @@ void MapgenValleys::makeChunk(BlockMakeData *data)
 
 	// Dungeon creation
 	if ((flags & MG_DUNGEONS) && node_max.Y < 50)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -442,8 +432,8 @@ int MapgenValleys::getSpawnLevelAtPoint(v2s16 p)
 	if (level_at_point <= water_level ||
 			level_at_point > water_level + 32)
 		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-	else
-		return level_at_point;
+
+	return level_at_point;
 }
 
 
@@ -484,7 +474,7 @@ int MapgenValleys::generateTerrain()
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 index_2d = 0;
 
@@ -606,7 +596,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 	MapNode n_lava(c_lava_source);
 	MapNode n_water(c_river_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 
 	// Cave blend distance near YMIN, YMAX
 	const float massive_cave_blend = 128.f;
@@ -677,7 +667,8 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 			// Saves some time.
 			if (y > terrain + 10)
 				continue;
-			else if (y < terrain - 40)
+
+			if (y < terrain - 40)
 				underground = true;
 
 			// Dig massive caves.
@@ -744,7 +735,7 @@ void MapgenValleys::generateCaves(s16 max_stone_y, s16 large_cave_depth)
 		u32 bruises_count = ps.range(0, 2);
 		for (u32 i = 0; i < bruises_count; i++) {
 			CavesRandomWalk cave(ndef, &gennotify, seed, water_level,
-				c_water_source, c_lava_source);
+				c_water_source, c_lava_source, lava_max_height);
 
 			cave.makeCave(vm, node_min, node_max, &ps, true, max_stone_y, heightmap);
 		}

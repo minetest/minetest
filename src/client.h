@@ -17,17 +17,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENT_HEADER
-#define CLIENT_HEADER
+#pragma once
 
-#include "network/connection.h"
 #include "clientenvironment.h"
 #include "irrlichttypes_extrabloated.h"
-#include "threading/mutex.h"
 #include <ostream>
 #include <map>
 #include <set>
 #include <vector>
+#include <unordered_set>
 #include "clientobject.h"
 #include "gamedef.h"
 #include "inventorymanager.h"
@@ -37,10 +35,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapnode.h"
 #include "tileanimation.h"
 #include "mesh_generator_thread.h"
+#include "network/address.h"
+#include "network/peerhandler.h"
+#include <fstream>
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
+struct ClientEvent;
 struct MeshMakeData;
+struct ChatMessage;
 class MapBlockMesh;
 class IWritableTextureSource;
 class IWritableShaderSource;
@@ -49,6 +52,7 @@ class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
+class ModChannelMgr;
 class MtEventManager;
 struct PointedThing;
 class MapDatabase;
@@ -56,142 +60,14 @@ class Minimap;
 struct MinimapMapblock;
 class Camera;
 class NetworkPacket;
+namespace con {
+class Connection;
+}
 
 enum LocalClientState {
 	LC_Created,
 	LC_Init,
 	LC_Ready
-};
-
-enum ClientEventType
-{
-	CE_NONE,
-	CE_PLAYER_DAMAGE,
-	CE_PLAYER_FORCE_MOVE,
-	CE_DEATHSCREEN,
-	CE_SHOW_FORMSPEC,
-	CE_SHOW_LOCAL_FORMSPEC,
-	CE_SPAWN_PARTICLE,
-	CE_ADD_PARTICLESPAWNER,
-	CE_DELETE_PARTICLESPAWNER,
-	CE_HUDADD,
-	CE_HUDRM,
-	CE_HUDCHANGE,
-	CE_SET_SKY,
-	CE_OVERRIDE_DAY_NIGHT_RATIO,
-	CE_CLOUD_PARAMS,
-};
-
-struct ClientEvent
-{
-	ClientEventType type;
-	union{
-		//struct{
-		//} none;
-		struct{
-			u8 amount;
-		} player_damage;
-		struct{
-			f32 pitch;
-			f32 yaw;
-		} player_force_move;
-		struct{
-			bool set_camera_point_target;
-			f32 camera_point_target_x;
-			f32 camera_point_target_y;
-			f32 camera_point_target_z;
-		} deathscreen;
-		struct{
-			std::string *formspec;
-			std::string *formname;
-		} show_formspec;
-		//struct{
-		//} textures_updated;
-		struct{
-			v3f *pos;
-			v3f *vel;
-			v3f *acc;
-			f32 expirationtime;
-			f32 size;
-			bool collisiondetection;
-			bool collision_removal;
-			bool vertical;
-			std::string *texture;
-			struct TileAnimationParams animation;
-			u8 glow;
-		} spawn_particle;
-		struct{
-			u16 amount;
-			f32 spawntime;
-			v3f *minpos;
-			v3f *maxpos;
-			v3f *minvel;
-			v3f *maxvel;
-			v3f *minacc;
-			v3f *maxacc;
-			f32 minexptime;
-			f32 maxexptime;
-			f32 minsize;
-			f32 maxsize;
-			bool collisiondetection;
-			bool collision_removal;
-			u16 attached_id;
-			bool vertical;
-			std::string *texture;
-			u32 id;
-			struct TileAnimationParams animation;
-			u8 glow;
-		} add_particlespawner;
-		struct{
-			u32 id;
-		} delete_particlespawner;
-		struct{
-			u32 id;
-			u8 type;
-			v2f *pos;
-			std::string *name;
-			v2f *scale;
-			std::string *text;
-			u32 number;
-			u32 item;
-			u32 dir;
-			v2f *align;
-			v2f *offset;
-			v3f *world_pos;
-			v2s32 * size;
-		} hudadd;
-		struct{
-			u32 id;
-		} hudrm;
-		struct{
-			u32 id;
-			HudElementStat stat;
-			v2f *v2fdata;
-			std::string *sdata;
-			u32 data;
-			v3f *v3fdata;
-			v2s32 * v2s32data;
-		} hudchange;
-		struct{
-			video::SColor *bgcolor;
-			std::string *type;
-			std::vector<std::string> *params;
-			bool clouds;
-		} set_sky;
-		struct{
-			bool do_override;
-			float ratio_f;
-		} override_day_night_ratio;
-		struct {
-			f32 density;
-			u32 color_bright;
-			u32 color_ambient;
-			f32 height;
-			f32 thickness;
-			f32 speed_x;
-			f32 speed_y;
-		} cloud_params;
-	};
 };
 
 /*
@@ -201,9 +77,7 @@ struct ClientEvent
 class PacketCounter
 {
 public:
-	PacketCounter()
-	{
-	}
+	PacketCounter() = default;
 
 	void add(u16 command)
 	{
@@ -220,23 +94,15 @@ public:
 
 	void clear()
 	{
-		for(std::map<u16, u16>::iterator
-				i = m_packets.begin();
-				i != m_packets.end(); ++i)
-		{
-			i->second = 0;
+		for (auto &m_packet : m_packets) {
+			m_packet.second = 0;
 		}
 	}
 
 	void print(std::ostream &o)
 	{
-		for(std::map<u16, u16>::iterator
-				i = m_packets.begin();
-				i != m_packets.end(); ++i)
-		{
-			o<<"cmd "<<i->first
-					<<" count "<<i->second
-					<<std::endl;
+		for (const auto &m_packet : m_packets) {
+			o << "cmd "<< m_packet.first <<" count "<< m_packet.second << std::endl;
 		}
 	}
 
@@ -256,7 +122,6 @@ public:
 	*/
 
 	Client(
-			IrrlichtDevice *device,
 			const char *playername,
 			const std::string &password,
 			const std::string &address_name,
@@ -272,7 +137,18 @@ public:
 	);
 
 	~Client();
+	DISABLE_CLASS_COPY(Client);
 
+	// Load local mods into memory
+	void loadMods();
+	void scanModSubfolder(const std::string &mod_name, const std::string &mod_path,
+				std::string mod_subpath);
+	inline void scanModIntoMemory(const std::string &mod_name, const std::string &mod_path)
+	{
+		scanModSubfolder(mod_name, mod_path, "");
+	}
+
+	// Initizle the mods
 	void initMods();
 
 	/*
@@ -309,14 +185,14 @@ public:
 	void handleCommand_AuthAccept(NetworkPacket* pkt);
 	void handleCommand_AcceptSudoMode(NetworkPacket* pkt);
 	void handleCommand_DenySudoMode(NetworkPacket* pkt);
-	void handleCommand_InitLegacy(NetworkPacket* pkt);
 	void handleCommand_AccessDenied(NetworkPacket* pkt);
 	void handleCommand_RemoveNode(NetworkPacket* pkt);
 	void handleCommand_AddNode(NetworkPacket* pkt);
 	void handleCommand_BlockData(NetworkPacket* pkt);
 	void handleCommand_Inventory(NetworkPacket* pkt);
 	void handleCommand_TimeOfDay(NetworkPacket* pkt);
-	void handleCommand_ChatMessage(NetworkPacket* pkt);
+	void handleCommand_ChatMessageOld(NetworkPacket *pkt);
+	void handleCommand_ChatMessage(NetworkPacket *pkt);
 	void handleCommand_ActiveObjectRemoveAdd(NetworkPacket* pkt);
 	void handleCommand_ActiveObjectMessages(NetworkPacket* pkt);
 	void handleCommand_Movement(NetworkPacket* pkt);
@@ -348,7 +224,11 @@ public:
 	void handleCommand_OverrideDayNightRatio(NetworkPacket* pkt);
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
+	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
+	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
+	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
+	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -366,7 +246,6 @@ public:
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
-	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
 
@@ -381,6 +260,14 @@ public:
 
 	// Causes urgent mesh updates (unlike Map::add/removeNodeWithEvent)
 	void removeNode(v3s16 p);
+
+	/**
+	 * Helper function for Client Side Modding
+	 * Flavour is applied there, this should not be used for core engine
+	 * @param p
+	 * @param is_valid_position
+	 * @return
+	 */
 	MapNode getNode(v3s16 p, bool *is_valid_position);
 	void addNode(v3s16 p, MapNode n, bool remove_metadata = true);
 
@@ -416,6 +303,9 @@ public:
 	bool checkPrivilege(const std::string &priv) const
 	{ return (m_privileges.count(priv) != 0); }
 
+	const std::unordered_set<std::string> &getPrivilegeList() const
+	{ return m_privileges; }
+
 	bool getChatMessage(std::wstring &message);
 	void typeChatMessage(const std::wstring& message);
 
@@ -431,7 +321,7 @@ public:
 
 	bool hasClientEvents() const { return !m_client_event_queue.empty(); }
 	// Get event from queue. If queue is empty, it triggers an assertion failure.
-	ClientEvent getClientEvent();
+	ClientEvent * getClientEvent();
 
 	bool accessDenied() const { return m_access_denied; }
 
@@ -452,17 +342,16 @@ public:
 	bool nodedefReceived()
 	{ return m_nodedef_received; }
 	bool mediaReceived()
-	{ return m_media_downloader == NULL; }
+	{ return !m_media_downloader; }
 
 	u8 getProtoVersion()
 	{ return m_proto_ver; }
 
-	bool connectedToServer()
-	{ return m_con.Connected(); }
+	bool connectedToServer();
 
 	float mediaReceiveProgress();
 
-	void afterContentReceived(IrrlichtDevice *device);
+	void afterContentReceived();
 
 	float getRTT();
 	float getCurRate();
@@ -481,7 +370,6 @@ public:
 	ITextureSource* getTextureSource();
 	virtual IShaderSource* getShaderSource();
 	IShaderSource *shsrc() { return getShaderSource(); }
-	scene::ISceneManager* getSceneManager();
 	virtual u16 allocateUnknownNodeId(const std::string &name);
 	virtual ISoundManager* getSoundManager();
 	virtual MtEventManager* getEventManager();
@@ -489,6 +377,7 @@ public:
 	bool checkLocalPrivilege(const std::string &priv)
 	{ return checkPrivilege(priv); }
 	virtual scene::IAnimatedMesh* getMesh(const std::string &filename);
+	const std::string* getModFile(const std::string &filename);
 
 	virtual std::string getModStoragePath() const;
 	virtual bool registerModStorage(ModMetadata *meta);
@@ -502,39 +391,46 @@ public:
 
 	LocalClientState getState() { return m_state; }
 
-	void makeScreenshot(IrrlichtDevice *device);
+	void makeScreenshot();
 
-	inline void pushToChatQueue(const std::wstring &input)
+	inline void pushToChatQueue(ChatMessage *cec)
 	{
-		m_chat_queue.push(input);
+		m_chat_queue.push(cec);
 	}
 
 	ClientScripting *getScript() { return m_script; }
 	const bool moddingEnabled() const { return m_modding_enabled; }
 
-	inline void pushToEventQueue(const ClientEvent &event)
-	{
-		m_client_event_queue.push(event);
-	}
+	void pushToEventQueue(ClientEvent *event);
 
-	void showGameChat(const bool show = true);
-	void showGameHud(const bool show = true);
-	void showMinimap(const bool show = true);
-	void showProfiler(const bool show = true);
-	void showGameFog(const bool show = true);
-	void showGameDebug(const bool show = true);
+	void showGameChat(bool show = true);
+	void showGameHud(bool show = true);
+	void showMinimap(bool show = true);
+	void showProfiler(bool show = true);
+	void showGameFog(bool show = true);
+	void showGameDebug(bool show = true);
 
-	IrrlichtDevice *getDevice() const { return m_device; }
-
-	const Address getServerAddress()
-	{
-		return m_con.GetPeerAddress(PEER_ID_SERVER);
-	}
+	const Address getServerAddress();
 
 	const std::string &getAddressName() const
 	{
 		return m_address_name;
 	}
+
+	inline bool checkCSMFlavourLimit(CSMFlavourLimit flag) const
+	{
+		return m_csm_flavour_limits & flag;
+	}
+
+	u32 getCSMNodeRangeLimit() const
+	{
+		return m_csm_noderange_limit;
+	}
+
+	bool joinModChannel(const std::string &channel);
+	bool leaveModChannel(const std::string &channel);
+	bool sendModChannelMessage(const std::string &channel, const std::string &message);
+	ModChannel *getModChannel(const std::string &channel);
 
 private:
 
@@ -557,7 +453,6 @@ private:
 	// helper method shared with clientpackethandler
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
-	void sendLegacyInit(const char* playerName, const char* playerPassword);
 	void sendInit(const std::string &playerName);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
@@ -570,11 +465,11 @@ private:
 
 	bool canSendChatMessage() const;
 
-	float m_packetcounter_timer;
-	float m_connection_reinit_timer;
-	float m_avg_rtt_timer;
-	float m_playerpos_send_timer;
-	float m_ignore_damage_timer; // Used after server moves player
+	float m_packetcounter_timer = 0.0f;
+	float m_connection_reinit_timer = 0.1f;
+	float m_avg_rtt_timer = 0.0f;
+	float m_playerpos_send_timer = 0.0f;
+	float m_ignore_damage_timer = 0.0f; // Used after server moves player
 	IntervalLimiter m_map_timer_and_unload_interval;
 
 	IWritableTextureSource *m_tsrc;
@@ -588,12 +483,11 @@ private:
 	MeshUpdateThread m_mesh_update_thread;
 	ClientEnvironment m_env;
 	ParticleManager m_particle_manager;
-	con::Connection m_con;
+	std::unique_ptr<con::Connection> m_con;
 	std::string m_address_name;
-	IrrlichtDevice *m_device;
-	Camera *m_camera;
-	Minimap *m_minimap;
-	bool m_minimap_disabled_by_server;
+	Camera *m_camera = nullptr;
+	Minimap *m_minimap = nullptr;
+	bool m_minimap_disabled_by_server = false;
 	// Server serialization version
 	u8 m_server_ser_ver;
 
@@ -602,30 +496,30 @@ private:
 	// and aren't accurate. We simply just don't know, because
 	// the server didn't send the version back then.
 	// If 0, server init hasn't been received yet.
-	u8 m_proto_ver;
+	u8 m_proto_ver = 0;
 
-	u16 m_playeritem;
-	bool m_inventory_updated;
-	Inventory *m_inventory_from_server;
-	float m_inventory_from_server_age;
+	u16 m_playeritem = 0;
+	bool m_inventory_updated = false;
+	Inventory *m_inventory_from_server = nullptr;
+	float m_inventory_from_server_age = 0.0f;
 	PacketCounter m_packetcounter;
 	// Block mesh animation parameters
-	float m_animation_time;
-	int m_crack_level;
+	float m_animation_time = 0.0f;
+	int m_crack_level = -1;
 	v3s16 m_crack_pos;
 	// 0 <= m_daynight_i < DAYNIGHT_CACHE_COUNT
 	//s32 m_daynight_i;
 	//u32 m_daynight_ratio;
-	std::queue<std::wstring> m_chat_queue;
 	std::queue<std::wstring> m_out_chat_queue;
 	u32 m_last_chat_message_sent;
-	float m_chat_message_allowance;
+	float m_chat_message_allowance = 5.0f;
+	std::queue<ChatMessage *> m_chat_queue;
 
 	// The authentication methods we can use to enter sudo mode (=change password)
 	u32 m_sudo_auth_methods;
 
 	// The seed returned by the server in TOCLIENT_INIT is stored here
-	u64 m_map_seed;
+	u64 m_map_seed = 0;
 
 	// Auth data
 	std::string m_playername;
@@ -634,60 +528,66 @@ private:
 	std::string m_new_password;
 	// Usable by auth mechanisms.
 	AuthMechanism m_chosen_auth_mech;
-	void * m_auth_data;
+	void *m_auth_data = nullptr;
 
 
-	bool m_access_denied;
-	bool m_access_denied_reconnect;
-	std::string m_access_denied_reason;
-	std::queue<ClientEvent> m_client_event_queue;
-	bool m_itemdef_received;
-	bool m_nodedef_received;
+	bool m_access_denied = false;
+	bool m_access_denied_reconnect = false;
+	std::string m_access_denied_reason = "";
+	std::queue<ClientEvent *> m_client_event_queue;
+	bool m_itemdef_received = false;
+	bool m_nodedef_received = false;
 	ClientMediaDownloader *m_media_downloader;
 
 	// time_of_day speed approximation for old protocol
-	bool m_time_of_day_set;
-	float m_last_time_of_day_f;
-	float m_time_of_day_update_timer;
+	bool m_time_of_day_set = false;
+	float m_last_time_of_day_f = -1.0f;
+	float m_time_of_day_update_timer = 0.0f;
 
 	// An interval for generally sending object positions and stuff
-	float m_recommended_send_interval;
+	float m_recommended_send_interval = 0.1f;
 
 	// Sounds
-	float m_removed_sounds_check_timer;
+	float m_removed_sounds_check_timer = 0.0f;
 	// Mapping from server sound ids to our sound ids
-	UNORDERED_MAP<s32, int> m_sounds_server_to_client;
+	std::unordered_map<s32, int> m_sounds_server_to_client;
 	// And the other way!
-	UNORDERED_MAP<int, s32> m_sounds_client_to_server;
+	std::unordered_map<int, s32> m_sounds_client_to_server;
 	// And relations to objects
-	UNORDERED_MAP<int, u16> m_sounds_to_objects;
+	std::unordered_map<int, u16> m_sounds_to_objects;
 
 	// Privileges
-	UNORDERED_SET<std::string> m_privileges;
+	std::unordered_set<std::string> m_privileges;
 
 	// Detached inventories
 	// key = name
-	UNORDERED_MAP<std::string, Inventory*> m_detached_inventories;
+	std::unordered_map<std::string, Inventory*> m_detached_inventories;
 
 	// Storage for mesh data for creating multiple instances of the same mesh
 	StringMap m_mesh_data;
+
+	StringMap m_mod_files;
 
 	// own state
 	LocalClientState m_state;
 
 	// Used for saving server map to disk client-side
-	MapDatabase *m_localdb;
+	MapDatabase *m_localdb = nullptr;
 	IntervalLimiter m_localdb_save_interval;
 	u16 m_cache_save_interval;
 
-	ClientScripting *m_script;
+	ClientScripting *m_script = nullptr;
 	bool m_modding_enabled;
-	UNORDERED_MAP<std::string, ModMetadata *> m_mod_storages;
-	float m_mod_storage_save_timer;
+	std::unordered_map<std::string, ModMetadata *> m_mod_storages;
+	float m_mod_storage_save_timer = 10.0f;
+	std::vector<ModSpec> m_mods;
 	GameUIFlags *m_game_ui_flags;
 
-	bool m_shutdown;
-	DISABLE_CLASS_COPY(Client);
-};
+	bool m_shutdown = false;
 
-#endif // !CLIENT_HEADER
+	// CSM flavour limits byteflag
+	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
+	u32 m_csm_noderange_limit = 8;
+
+	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+};

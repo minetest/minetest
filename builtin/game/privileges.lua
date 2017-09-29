@@ -82,11 +82,12 @@ core.register_privilege("rollback", {
 	description = "Can use the rollback functionality",
 	give_to_singleplayer = false,
 })
-core.register_privilege("zoom", {
-	description = "Can zoom the camera",
-	give_to_singleplayer = false,
-})
 core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
 	give_to_singleplayer = false,
 })
+
+core.register_can_bypass_userlimit(function(name, ip)
+	local privs = core.get_player_privs(name)
+	return privs["server"] or privs["ban"] or privs["privs"] or privs["password"]
+end)

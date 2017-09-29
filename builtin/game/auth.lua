@@ -4,31 +4,6 @@
 -- Authentication handler
 --
 
-function core.string_to_privs(str, delim)
-	assert(type(str) == "string")
-	delim = delim or ','
-	local privs = {}
-	for _, priv in pairs(string.split(str, delim)) do
-		privs[priv:trim()] = true
-	end
-	return privs
-end
-
-function core.privs_to_string(privs, delim)
-	assert(type(privs) == "table")
-	delim = delim or ','
-	local list = {}
-	for priv, bool in pairs(privs) do
-		if bool then
-			list[#list + 1] = priv
-		end
-	end
-	return table.concat(list, delim)
-end
-
-assert(core.string_to_privs("a,b").b == true)
-assert(core.privs_to_string({a=true,b=true}) == "a,b")
-
 core.auth_file_path = core.get_worldpath().."/auth.txt"
 core.auth_table = {}
 
@@ -150,6 +125,21 @@ core.builtin_auth_handler = {
 				core.get_password_hash(name,
 					core.settings:get("default_password")))
 		end
+
+		-- Run grant callbacks
+		for priv, _ in pairs(privileges) do
+			if not core.auth_table[name].privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "grant")
+			end
+		end
+
+		-- Run revoke callbacks
+		for priv, _ in pairs(core.auth_table[name].privileges) do
+			if not privileges[priv] then
+				core.run_priv_callbacks(name, priv, nil, "revoke")
+			end
+		end
+
 		core.auth_table[name].privileges = privileges
 		core.notify_authentication_modified(name)
 		save_auth_file()

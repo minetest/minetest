@@ -27,21 +27,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/numeric.h"
 
 ChatBuffer::ChatBuffer(u32 scrollback):
-	m_scrollback(scrollback),
-	m_unformatted(),
-	m_cols(0),
-	m_rows(0),
-	m_scroll(0),
-	m_formatted(),
-	m_empty_formatted_line()
+	m_scrollback(scrollback)
 {
 	if (m_scrollback == 0)
 		m_scrollback = 1;
 	m_empty_formatted_line.first = true;
-}
-
-ChatBuffer::~ChatBuffer()
-{
 }
 
 void ChatBuffer::addLine(std::wstring name, std::wstring text)
@@ -85,9 +75,8 @@ const ChatLine& ChatBuffer::getLine(u32 index) const
 
 void ChatBuffer::step(f32 dtime)
 {
-	for (u32 i = 0; i < m_unformatted.size(); ++i)
-	{
-		m_unformatted[i].age += dtime;
+	for (ChatLine &line : m_unformatted) {
+		line.age += dtime;
 	}
 }
 
@@ -204,8 +193,8 @@ const ChatFormattedLine& ChatBuffer::getFormattedLine(u32 row) const
 	s32 index = m_scroll + (s32) row;
 	if (index >= 0 && index < (s32) m_formatted.size())
 		return m_formatted[index];
-	else
-		return m_empty_formatted_line;
+
+	return m_empty_formatted_line;
 }
 
 void ChatBuffer::scroll(s32 rows)
@@ -363,10 +352,11 @@ s32 ChatBuffer::getTopScrollPos() const
 	s32 rows = (s32) m_rows;
 	if (rows == 0)
 		return 0;
-	else if (formatted_count <= rows)
+
+	if (formatted_count <= rows)
 		return formatted_count - rows;
-	else
-		return 0;
+
+	return 0;
 }
 
 s32 ChatBuffer::getBottomScrollPos() const
@@ -375,28 +365,15 @@ s32 ChatBuffer::getBottomScrollPos() const
 	s32 rows = (s32) m_rows;
 	if (rows == 0)
 		return 0;
-	else
-		return formatted_count - rows;
+
+	return formatted_count - rows;
 }
 
 
 
 ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
 	m_prompt(prompt),
-	m_line(L""),
-	m_history(),
-	m_history_index(0),
-	m_history_limit(history_limit),
-	m_cols(0),
-	m_view(0),
-	m_cursor(0),
-	m_cursor_len(0),
-	m_nick_completion_start(0),
-	m_nick_completion_end(0)
-{
-}
-
-ChatPrompt::~ChatPrompt()
+	m_history_limit(history_limit)
 {
 }
 
@@ -499,18 +476,15 @@ void ChatPrompt::nickCompletion(const std::list<std::string>& names, bool backwa
 
 	// find all names that start with the selected prefix
 	std::vector<std::wstring> completions;
-	for (std::list<std::string>::const_iterator
-			i = names.begin();
-			i != names.end(); ++i)
-	{
-		if (str_starts_with(narrow_to_wide(*i), prefix, true))
-		{
-			std::wstring completion = narrow_to_wide(*i);
+	for (const std::string &name : names) {
+		if (str_starts_with(narrow_to_wide(name), prefix, true)) {
+			std::wstring completion = narrow_to_wide(name);
 			if (prefix_start == 0)
 				completion += L": ";
 			completions.push_back(completion);
 		}
 	}
+
 	if (completions.empty())
 		return;
 
@@ -673,13 +647,10 @@ ChatBackend::ChatBackend():
 {
 }
 
-ChatBackend::~ChatBackend()
-{
-}
-
 void ChatBackend::addMessage(std::wstring name, std::wstring text)
 {
 	// Note: A message may consist of multiple lines, for example the MOTD.
+	text = translate_string(text);
 	WStrfnd fnd(text);
 	while (!fnd.at_end())
 	{

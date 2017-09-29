@@ -17,11 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_ENV_H_
-#define L_ENV_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "serverenvironment.h"
+#include "raycast.h"
 
 class ModApiEnvMod : public ModApiBase {
 private:
@@ -159,6 +159,9 @@ private:
 	// line_of_sight(pos1, pos2, stepsize) -> true/false
 	static int l_line_of_sight(lua_State *L);
 
+	// raycast(pos1, pos2, objects, liquids) -> Raycast
+	static int l_raycast(lua_State *L);
+
 	// find_path(pos1, pos2, searchdistance,
 	//     max_jump, max_drop, algorithm) -> table containing path
 	static int l_find_path(lua_State *L);
@@ -185,15 +188,15 @@ class LuaABM : public ActiveBlockModifier {
 private:
 	int m_id;
 
-	std::set<std::string> m_trigger_contents;
-	std::set<std::string> m_required_neighbors;
+	std::vector<std::string> m_trigger_contents;
+	std::vector<std::string> m_required_neighbors;
 	float m_trigger_interval;
 	u32 m_trigger_chance;
 	bool m_simple_catch_up;
 public:
 	LuaABM(lua_State *L, int id,
-			const std::set<std::string> &trigger_contents,
-			const std::set<std::string> &required_neighbors,
+			const std::vector<std::string> &trigger_contents,
+			const std::vector<std::string> &required_neighbors,
 			float trigger_interval, u32 trigger_chance, bool simple_catch_up):
 		m_id(id),
 		m_trigger_contents(trigger_contents),
@@ -203,11 +206,11 @@ public:
 		m_simple_catch_up(simple_catch_up)
 	{
 	}
-	virtual std::set<std::string> getTriggerContents()
+	virtual const std::vector<std::string> &getTriggerContents() const
 	{
 		return m_trigger_contents;
 	}
-	virtual std::set<std::string> getRequiredNeighbors()
+	virtual const std::vector<std::string> &getRequiredNeighbors() const
 	{
 		return m_required_neighbors;
 	}
@@ -245,6 +248,47 @@ public:
 	virtual void trigger(ServerEnvironment *env, v3s16 p, MapNode n);
 };
 
+//! Lua wrapper for RaycastState objects
+class LuaRaycast : public ModApiBase
+{
+private:
+	static const char className[];
+	static const luaL_Reg methods[];
+	//! Inner state
+	RaycastState state;
+
+	// Exported functions
+
+	// garbage collector
+	static int gc_object(lua_State *L);
+
+	/*!
+	 * Raycast:next() -> pointed_thing
+	 * Returns the next pointed thing on the ray.
+	 */
+	static int l_next(lua_State *L);
+public:
+	//! Constructor with the same arguments as RaycastState.
+	LuaRaycast(
+		const core::line3d<f32> &shootline,
+		bool objects_pointable,
+		bool liquids_pointable) :
+		state(shootline, objects_pointable, liquids_pointable)
+	{}
+
+	//! Creates a LuaRaycast and leaves it on top of the stack.
+	static int create_object(lua_State *L);
+
+	/*!
+	 * Returns the Raycast from the stack or throws an error.
+	 * @param narg location of the RaycastState in the stack
+	 */
+	static LuaRaycast *checkobject(lua_State *L, int narg);
+
+	//! Registers Raycast as a Lua userdata type.
+	static void Register(lua_State *L);
+};
+
 struct ScriptCallbackState {
 	ServerScripting *script;
 	int callback_ref;
@@ -252,5 +296,3 @@ struct ScriptCallbackState {
 	unsigned int refcount;
 	std::string origin;
 };
-
-#endif /* L_ENV_H_ */

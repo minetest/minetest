@@ -17,13 +17,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CLIENTOBJECT_HEADER
-#define CLIENTOBJECT_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "activeobject.h"
-#include <map>
-#include "util/cpp11_container.h"
+#include <unordered_map>
 
 class ClientEnvironment;
 class ITextureSource;
@@ -39,15 +37,14 @@ public:
 	ClientActiveObject(u16 id, Client *client, ClientEnvironment *env);
 	virtual ~ClientActiveObject();
 
-	virtual void addToScene(scene::ISceneManager *smgr, ITextureSource *tsrc,
-			IrrlichtDevice *irr){}
-	virtual void removeFromScene(bool permanent){}
+	virtual void addToScene(ITextureSource *tsrc) {};
+	virtual void removeFromScene(bool permanent) {}
 	// 0 <= light_at_pos <= LIGHT_SUN
 	virtual void updateLight(u8 light_at_pos){}
 	virtual void updateLightNoCheck(u8 light_at_pos){}
 	virtual v3s16 getLightPosition(){return v3s16(0,0,0);}
-	virtual aabb3f *getSelectionBox() { return NULL; }
 	virtual bool getCollisionBox(aabb3f *toset) const { return false; }
+	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
 	virtual v3f getPosition(){ return v3f(0,0,0); }
 	virtual float getYaw() const { return 0; }
@@ -89,7 +86,7 @@ protected:
 	ClientEnvironment *m_env;
 private:
 	// Used for creating objects based on type
-	static UNORDERED_MAP<u16, Factory> m_types;
+	static std::unordered_map<u16, Factory> m_types;
 };
 
 struct DistanceSortedActiveObject
@@ -108,5 +105,3 @@ struct DistanceSortedActiveObject
 		return d < other.d;
 	}
 };
-
-#endif

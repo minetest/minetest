@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2016-10-25 11:59+0000\n"
 "Last-Translator: Jakub Vaněk <vanek.jakub4@seznam.cz>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/minetest/minetest/"
@@ -39,7 +39,7 @@ msgstr "Nastala chyba:"
 msgid "Main menu"
 msgstr "Hlavní nabídka"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "OK"
 
@@ -51,7 +51,7 @@ msgstr "Znovu se připojit"
 msgid "The server has requested a reconnect:"
 msgstr "Server vyžaduje znovupřipojení se:"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Nahrávám..."
 
@@ -165,8 +165,9 @@ msgid "Mapgen"
 msgstr "Generátor mapy"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Nebyla vybrána podhra nebo název"
+#, fuzzy
+msgid "No game selected"
+msgstr "Změna dohledu"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -226,6 +227,17 @@ msgid "< Back to Settings page"
 msgstr "< Zpět do Nastavení"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+"Formát: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
+"<octaves>, <persistence>"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr "Procházet"
 
@@ -246,12 +258,8 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr "Formát jsou tři čísla uvnitř závorek oddělená čárkami."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
-"Formát: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Games"
@@ -260,10 +268,6 @@ msgstr "Hry"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Mody"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr "Lakunarita může být specifikována spolu s předcházející čárkou."
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -285,14 +289,19 @@ msgstr "Možné hodnoty jsou: "
 msgid "Restore Default"
 msgstr "Obnovit výchozí"
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr "Hledání"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Select path"
-msgstr "Vyberte cestu"
+#, fuzzy
+msgid "Select directory"
+msgstr "Vybrat soubor s modem:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Vybrat soubor s modem:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -336,42 +345,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr "Zavřít obchod"
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr "Stahuji $1, prosím čekejte..."
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instalovat"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Strana $1 z $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Hodnocení"
-
-#: builtin/mainmenu/store.lua
-msgid "Shortname:"
-msgstr "Zkratka:"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr "Úspěšně nainstalováno:"
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr "Neřazené"
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Přeinstalovat"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -713,6 +686,10 @@ msgid "Start Singleplayer"
 msgstr "Start místní hry"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Informace nejsou dostupné"
 
@@ -840,10 +817,6 @@ msgid "Change Password"
 msgstr "Změnit heslo"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Připojuji se k serveru..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Pokračovat"
 
@@ -876,14 +849,6 @@ msgstr ""
 "- Myš(pravé tl.): položit, použít\n"
 "- Myš(kolečko): vybrat přihrádku\n"
 "- T: chat\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Vytvářím klienta..."
-
-#: src/game.cpp
-msgid "Creating server..."
-msgstr "Vytvářím server..."
 
 #: src/game.cpp
 msgid ""
@@ -969,14 +934,6 @@ msgid "Remote server"
 msgstr "Vzdálený port"
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Překládám adresu..."
-
-#: src/game.cpp
-msgid "Shutting down..."
-msgstr "Vypínání..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Místní hra"
 
@@ -1010,12 +967,23 @@ msgid "Proceed"
 msgstr "Pokračovat"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Použít\" = slézt dolů"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Vpřed"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Vzad"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Změnit nastavení kláves"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1028,6 +996,10 @@ msgstr "Příkaz"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Konzole"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1044,6 +1016,10 @@ msgstr "Zahodit"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Vpřed"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1102,13 +1078,31 @@ msgstr "Změna dohledu"
 msgid "Right"
 msgstr "Doprava"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+msgid "Screenshot"
+msgstr "Snímek obrazovky"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Plížit se"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 msgid "Toggle Cinematic"
 msgstr "Plynulý pohyb kamery"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Létání"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
+msgstr "Turbo"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Toggle fast"
@@ -1119,12 +1113,18 @@ msgid "Toggle fly"
 msgstr "Létání"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Létání"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Duch"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Použít"
+msgid "Toggle noclip"
+msgstr "Duch"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1417,6 +1417,10 @@ msgstr "X Tlačítko 1"
 msgid "X Button 2"
 msgstr "X Tlačítko 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "cs"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1619,11 +1623,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Vpřed"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr "Automaticky hlásit seznamu serverů."
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1891,7 +1900,8 @@ msgid "Continuous forward"
 msgstr "Neustálý pohyb vpřed"
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+#, fuzzy
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr "Neustálý pohyb vpřed (jen pro testování)."
 
 #: src/settings_translation_file.cpp
@@ -1974,6 +1984,10 @@ msgstr "DPI"
 #: src/settings_translation_file.cpp
 msgid "Damage"
 msgstr "Zranění"
+
+#: src/settings_translation_file.cpp
+msgid "Darkness sharpness"
+msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2102,10 +2116,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr "Hloubka pod kterou najdete obrovské jeskyně."
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr "Rychlost slézání"
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2135,18 +2145,6 @@ msgstr "Částice"
 #: src/settings_translation_file.cpp
 msgid "Disable anticheat"
 msgstr "Zakázat anticheat"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2237,10 +2235,6 @@ msgstr ""
 "média (např. textury) při připojování k serveru."
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2287,10 +2281,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3113,7 +3103,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3285,6 +3275,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3626,6 +3620,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3675,18 +3679,6 @@ msgstr "Mip-mapování"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3953,6 +3945,12 @@ msgid "Remote port"
 msgstr "Vzdálený port"
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4011,6 +4009,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4034,10 +4036,6 @@ msgstr "Výška obrazovky"
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr "Šířka obrazovky"
-
-#: src/settings_translation_file.cpp
-msgid "Screenshot"
-msgstr "Snímek obrazovky"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4266,6 +4264,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4813,172 +4815,229 @@ msgstr "cURL limit paralelních stahování"
 msgid "cURL timeout"
 msgstr "cURL timeout"
 
-#~ msgid "Hide mp content"
-#~ msgstr "Skrýt obsahy balíčků"
+#~ msgid "Preload inventory textures"
+#~ msgstr "Přednačíst inventářové textury"
 
-#~ msgid "Start Game"
-#~ msgstr "Spustit hru"
+#~ msgid "Scaling factor applied to menu elements: "
+#~ msgstr "Měřítko aplikované na prvky menu: "
 
-#~ msgid "Attn"
-#~ msgstr "Attn"
+#~ msgid "Touch free target"
+#~ msgstr "Středový kurzor"
 
-#~ msgid "Capital"
-#~ msgstr "Klávesa velkého písmene"
+#~ msgid " KB/s"
+#~ msgstr " KB/s"
 
-#~ msgid "Comma"
-#~ msgstr "Čárka"
+#~ msgid " MB/s"
+#~ msgstr " MB/s"
 
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
+#~ msgid "Downloading"
+#~ msgstr "Stahuji"
 
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
 
-#~ msgid "Final"
-#~ msgstr "Final"
+#~ msgid "GAMES"
+#~ msgstr "HRY"
 
-#~ msgid "Junja"
-#~ msgstr "Junja"
+#~ msgid "Mods:"
+#~ msgstr "Mody:"
 
-#~ msgid "Kana"
-#~ msgstr "Kana"
+#~ msgid "new game"
+#~ msgstr "nová hra"
 
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
+#~ msgid "EDIT GAME"
+#~ msgstr "UPRAVIT HRU"
 
-#~ msgid "Minus"
-#~ msgstr "Mínus"
+#~ msgid "Remove selected mod"
+#~ msgstr "Odstranit vybraný mod"
 
-#~ msgid "PA1"
-#~ msgstr "PA1"
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Přidat mod"
 
-#~ msgid "Period"
-#~ msgstr "Tečka"
+#~ msgid "CLIENT"
+#~ msgstr "KLIENT"
 
-#~ msgid "Plus"
-#~ msgstr "Plus"
+#~ msgid "START SERVER"
+#~ msgstr "MÍSTNÍ SERVER"
+
+#~ msgid "Name"
+#~ msgstr "Jméno"
+
+#~ msgid "Password"
+#~ msgstr "Heslo"
+
+#~ msgid "SETTINGS"
+#~ msgstr "NASTAVENÍ"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Přednačíst textury předmětů"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Konečná voda"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "HRA JEDNOHO HRÁČE"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "BALÍČKY TEXTUR"
+
+#~ msgid "MODS"
+#~ msgstr "MODY"
+
+#~ msgid "Add mod:"
+#~ msgstr "Přidat mod:"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Levý klik: Přesunout všechny předměty, Pravý klik: Přesunout jeden předmět"
+
+#~ msgid "Restart minetest for driver change to take effect"
+#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
+
+#~ msgid "If enabled, "
+#~ msgstr "Je-li povoleno, "
+
+#~ msgid "If disabled "
+#~ msgstr "Je-li zakázáno "
+
+#~ msgid "\""
+#~ msgstr "\""
+
+#~ msgid "No!!!"
+#~ msgstr "Ne!!!"
+
+#~ msgid "Generate Normalmaps"
+#~ msgstr "Generovat normálové mapy"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Seznam veřejných serverů"
+
+#~ msgid "No of course not!"
+#~ msgstr "Jistě že ne!"
+
+#~ msgid "Useful for mod developers."
+#~ msgstr "Užitečné pro vývojáře modů."
+
+#~ msgid "Detailed mod profiling"
+#~ msgstr "Detailní profilování modů"
+
+#~ msgid "Detailed mod profile data. Useful for mod developers."
+#~ msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen plochy"
-
-#, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen plochy"
+#~ msgid "Mapgen v7 cave width"
+#~ msgstr "Mapgen v7"
 
 #, fuzzy
 #~ msgid "Mapgen v5 cave width"
 #~ msgstr "Mapgen v5"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
-#~ msgstr "Mapgen v7"
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen plochy"
 
-#~ msgid "Detailed mod profile data. Useful for mod developers."
-#~ msgstr "Detailní profilovací data modů. Užitečné pro vývojáře modů."
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen plochy"
 
-#~ msgid "Detailed mod profiling"
-#~ msgstr "Detailní profilování modů"
+#~ msgid "Plus"
+#~ msgstr "Plus"
 
-#~ msgid "Useful for mod developers."
-#~ msgstr "Užitečné pro vývojáře modů."
+#~ msgid "Period"
+#~ msgstr "Tečka"
 
-#~ msgid "No of course not!"
-#~ msgstr "Jistě že ne!"
+#~ msgid "PA1"
+#~ msgstr "PA1"
 
-#~ msgid "Public Serverlist"
-#~ msgstr "Seznam veřejných serverů"
+#~ msgid "Minus"
+#~ msgstr "Mínus"
 
-#~ msgid "Generate Normalmaps"
-#~ msgstr "Generovat normálové mapy"
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
 
-#~ msgid "No!!!"
-#~ msgstr "Ne!!!"
+#~ msgid "Kana"
+#~ msgstr "Kana"
 
-#~ msgid "\""
-#~ msgstr "\""
+#~ msgid "Junja"
+#~ msgstr "Junja"
 
-#~ msgid "If disabled "
-#~ msgstr "Je-li zakázáno "
+#~ msgid "Final"
+#~ msgstr "Final"
 
-#~ msgid "If enabled, "
-#~ msgstr "Je-li povoleno, "
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
 
-#~ msgid "Restart minetest for driver change to take effect"
-#~ msgstr "Aby se změna ovladače projevila, restartujte Minetest"
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
 
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Levý klik: Přesunout všechny předměty, Pravý klik: Přesunout jeden předmět"
+#~ msgid "Comma"
+#~ msgstr "Čárka"
 
-#~ msgid "Add mod:"
-#~ msgstr "Přidat mod:"
+#~ msgid "Capital"
+#~ msgstr "Klávesa velkého písmene"
 
-#~ msgid "MODS"
-#~ msgstr "MODY"
+#~ msgid "Attn"
+#~ msgstr "Attn"
 
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "BALÍČKY TEXTUR"
+#~ msgid "Start Game"
+#~ msgstr "Spustit hru"
 
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "HRA JEDNOHO HRÁČE"
+#~ msgid "Hide mp content"
+#~ msgstr "Skrýt obsahy balíčků"
 
-#~ msgid "Finite Liquid"
-#~ msgstr "Konečná voda"
+#~ msgid "Descending speed"
+#~ msgstr "Rychlost slézání"
 
-#~ msgid "Preload item visuals"
-#~ msgstr "Přednačíst textury předmětů"
+#~ msgid "Use"
+#~ msgstr "Použít"
 
-#~ msgid "SETTINGS"
-#~ msgstr "NASTAVENÍ"
+#~ msgid "Shutting down..."
+#~ msgstr "Vypínání..."
 
-#~ msgid "Password"
-#~ msgstr "Heslo"
+#~ msgid "Resolving address..."
+#~ msgstr "Překládám adresu..."
 
-#~ msgid "Name"
-#~ msgstr "Jméno"
+#~ msgid "Creating server..."
+#~ msgstr "Vytvářím server..."
 
-#~ msgid "START SERVER"
-#~ msgstr "MÍSTNÍ SERVER"
+#~ msgid "Creating client..."
+#~ msgstr "Vytvářím klienta..."
 
-#~ msgid "CLIENT"
-#~ msgstr "KLIENT"
+#~ msgid "Connecting to server..."
+#~ msgstr "Připojuji se k serveru..."
 
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Přidat mod"
+#~ msgid "re-Install"
+#~ msgstr "Přeinstalovat"
 
-#~ msgid "Remove selected mod"
-#~ msgstr "Odstranit vybraný mod"
+#~ msgid "Unsorted"
+#~ msgstr "Neřazené"
 
-#~ msgid "EDIT GAME"
-#~ msgstr "UPRAVIT HRU"
+#~ msgid "Successfully installed:"
+#~ msgstr "Úspěšně nainstalováno:"
 
-#~ msgid "new game"
-#~ msgstr "nová hra"
+#~ msgid "Shortname:"
+#~ msgstr "Zkratka:"
 
-#~ msgid "Mods:"
-#~ msgstr "Mody:"
+#~ msgid "Rating"
+#~ msgstr "Hodnocení"
 
-#~ msgid "GAMES"
-#~ msgstr "HRY"
+#~ msgid "Page $1 of $2"
+#~ msgstr "Strana $1 z $2"
 
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nepovedlo se zkopírovat mod \"$1\" do hry \"$2\""
+#~ msgid "Install"
+#~ msgstr "Instalovat"
 
-#~ msgid "Downloading"
-#~ msgstr "Stahuji"
+#~ msgid "Downloading $1, please wait..."
+#~ msgstr "Stahuji $1, prosím čekejte..."
 
-#~ msgid " MB/s"
-#~ msgstr " MB/s"
+#~ msgid "Close store"
+#~ msgstr "Zavřít obchod"
 
-#~ msgid " KB/s"
-#~ msgstr " KB/s"
+#~ msgid "Select path"
+#~ msgstr "Vyberte cestu"
 
-#~ msgid "Touch free target"
-#~ msgstr "Středový kurzor"
+#~ msgid "Optionally the lacunarity can be appended with a leading comma."
+#~ msgstr "Lakunarita může být specifikována spolu s předcházející čárkou."
 
-#~ msgid "Scaling factor applied to menu elements: "
-#~ msgstr "Měřítko aplikované na prvky menu: "
-
-#~ msgid "Preload inventory textures"
-#~ msgstr "Přednačíst inventářové textury"
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Nebyla vybrána podhra nebo název"

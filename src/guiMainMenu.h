@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GUIMAINMENU_HEADER
-#define GUIMAINMENU_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
 #include "modalMenu.h"
@@ -27,14 +26,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct MainMenuDataForScript {
 
-	MainMenuDataForScript() :
-		reconnect_requested(false)
-	{}
+	MainMenuDataForScript() = default;
 
 	// Whether the server has requested a reconnect
-	bool reconnect_requested;
-
-	std::string errormessage;
+	bool reconnect_requested = false;
+	std::string errormessage = "";
 };
 
 struct MainMenuData {
@@ -46,23 +42,14 @@ struct MainMenuData {
 	std::string name;
 	std::string password;
 	// Whether to reconnect
-	bool do_reconnect;
+	bool do_reconnect = false;
 
 	// Server options
-	bool enable_public;
-	int selected_world;
-	bool simple_singleplayer_mode;
+	int selected_world = 0;
+	bool simple_singleplayer_mode = false;
 
 	// Data to be passed to the script
 	MainMenuDataForScript script_data;
 
-	MainMenuData():
-		do_reconnect(false),
-		enable_public(false),
-		selected_world(0),
-		simple_singleplayer_mode(false)
-	{}
+	MainMenuData() = default;
 };
-
-#endif
-

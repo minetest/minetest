@@ -247,17 +247,20 @@ local function formspec(tabview, name, tabdata)
 					.. dump(core.settings:get_bool("enable_waving_plants")) .. "]"
 	else
 		tab_string = tab_string ..
-			"tablecolumns[color;text]" ..
-			"tableoptions[background=#00000000;highlight=#00000000;border=false]" ..
-			"table[8.33,0.7;3.5,4;shaders;" ..
-				"#888888," .. fgettext("Bump Mapping") .. "," ..
-				"#888888," .. fgettext("Tone Mapping") .. "," ..
-				"#888888," .. fgettext("Normal Mapping") .. "," ..
-				"#888888," .. fgettext("Parallax Occlusion") .. "," ..
-				"#888888," .. fgettext("Waving Water") .. "," ..
-				"#888888," .. fgettext("Waving Leaves") .. "," ..
-				"#888888," .. fgettext("Waving Plants") .. "," ..
-				";1]"
+			"label[8.38,0.7;" .. core.colorize("#888888",
+					fgettext("Bump Mapping")) .. "]" ..
+			"label[8.38,1.2;" .. core.colorize("#888888",
+					fgettext("Tone Mapping")) .. "]" ..
+			"label[8.38,1.7;" .. core.colorize("#888888",
+					fgettext("Normal Mapping")) .. "]" ..
+			"label[8.38,2.2;" .. core.colorize("#888888",
+					fgettext("Parallax Occlusion")) .. "]" ..
+			"label[8.38,2.7;" .. core.colorize("#888888",
+					fgettext("Waving Water")) .. "]" ..
+			"label[8.38,3.2;" .. core.colorize("#888888",
+					fgettext("Waving Leaves")) .. "]" ..
+			"label[8.38,3.7;" .. core.colorize("#888888",
+					fgettext("Waving Plants")) .. "]"
 	end
 
 	return tab_string

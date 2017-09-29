@@ -32,7 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 
 #if USE_FREETYPE
-	#include "xCGUITTFont.h"
+	#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 inline u32 clamp_u8(s32 value)
@@ -54,22 +54,7 @@ GUIChatConsole::GUIChatConsole(
 	m_chat_backend(backend),
 	m_client(client),
 	m_menumgr(menumgr),
-	m_screensize(v2u32(0,0)),
-	m_animate_time_old(porting::getTimeMs()),
-	m_open(false),
-	m_close_on_enter(false),
-	m_height(0),
-	m_desired_height(0),
-	m_desired_height_fraction(0.0),
-	m_height_speed(5.0),
-	m_open_inhibited(0),
-	m_cursor_blink(0.0),
-	m_cursor_blink_speed(0.0),
-	m_cursor_height(0.0),
-	m_background(NULL),
-	m_background_color(255, 0, 0, 0),
-	m_font(NULL),
-	m_fontsize(0, 0)
+	m_animate_time_old(porting::getTimeMs())
 {
 	// load background settings
 	s32 console_alpha = g_settings->getS32("console_alpha");
@@ -91,12 +76,9 @@ GUIChatConsole::GUIChatConsole(
 
 	m_font = g_fontengine->getFont(FONT_SIZE_UNSPECIFIED, FM_Mono);
 
-	if (m_font == NULL)
-	{
+	if (!m_font) {
 		errorstream << "GUIChatConsole: Unable to load mono font ";
-	}
-	else
-	{
+	} else {
 		core::dimension2d<u32> dim = m_font->getDimension(L"M");
 		m_fontsize = v2u32(dim.Width, dim.Height);
 		m_font->grab();
@@ -204,8 +186,8 @@ void GUIChatConsole::draw()
 		// scale current console height to new window size
 		if (m_screensize.Y != 0)
 			m_height = m_height * screensize.Y / m_screensize.Y;
-		m_desired_height = m_desired_height_fraction * m_screensize.Y;
 		m_screensize = screensize;
+		m_desired_height = m_desired_height_fraction * m_screensize.Y;
 		reformatConsole();
 	}
 
@@ -231,6 +213,7 @@ void GUIChatConsole::reformatConsole()
 	s32 rows = m_desired_height / m_fontsize.Y - 1; // make room for the input prompt
 	if (cols <= 0 || rows <= 0)
 		cols = rows = 0;
+	recalculateConsolePosition();
 	m_chat_backend->reformat(cols, rows);
 }
 
@@ -334,9 +317,7 @@ void GUIChatConsole::drawText()
 		if (y + line_height < 0)
 			continue;
 
-		for (u32 i = 0; i < line.fragments.size(); ++i)
-		{
-			const ChatFormattedFragment& fragment = line.fragments[i];
+		for (const ChatFormattedFragment &fragment : line.fragments) {
 			s32 x = (fragment.column + 1) * m_fontsize.X;
 			core::rect<s32> destrect(
 				x, y, x + m_fontsize.X * fragment.text.size(), y + m_fontsize.Y);
@@ -344,7 +325,7 @@ void GUIChatConsole::drawText()
 
 			#if USE_FREETYPE
 			// Draw colored text if FreeType is enabled
-				irr::gui::CGUITTFont *tmp = static_cast<irr::gui::CGUITTFont*>(m_font);
+				irr::gui::CGUITTFont *tmp = dynamic_cast<irr::gui::CGUITTFont *>(m_font);
 				tmp->draw(
 					fragment.text,
 					destrect,
@@ -368,7 +349,7 @@ void GUIChatConsole::drawText()
 
 void GUIChatConsole::drawPrompt()
 {
-	if (m_font == NULL)
+	if (!m_font)
 		return;
 
 	u32 row = m_chat_backend->getConsoleBuffer().getRows();
@@ -428,8 +409,7 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 	if(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
 	{
 		// Key input
-		if(KeyPress(event.KeyInput) == getKeySetting("keymap_console"))
-		{
+		if (KeyPress(event.KeyInput) == getKeySetting("keymap_console")) {
 			closeConsole();
 
 			// inhibit open so the_game doesn't reopen immediately
@@ -437,8 +417,8 @@ bool GUIChatConsole::OnEvent(const SEvent& event)
 			m_close_on_enter = false;
 			return true;
 		}
-		else if(event.KeyInput.Key == KEY_ESCAPE)
-		{
+
+		if (event.KeyInput.Key == KEY_ESCAPE) {
 			closeConsoleAtOnce();
 			m_close_on_enter = false;
 			// inhibit open so the_game doesn't reopen immediately

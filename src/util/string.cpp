@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "hex.h"
 #include "../porting.h"
+#include "../translation.h"
 
 #include <algorithm>
 #include <sstream>
@@ -167,7 +168,7 @@ std::string wide_to_utf8(const std::wstring &input)
 
 wchar_t *utf8_to_wide_c(const char *str)
 {
-	std::wstring ret = utf8_to_wide(std::string(str)).c_str();
+	std::wstring ret = utf8_to_wide(std::string(str));
 	size_t len = ret.length();
 	wchar_t *ret_c = new wchar_t[len + 1];
 	memset(ret_c, 0, (len + 1) * sizeof(wchar_t));
@@ -308,8 +309,8 @@ std::string wide_to_narrow(const std::wstring &wcs)
 	size_t len = wcstombs(*mbs, wcs.c_str(), mbl);
 	if (len == (size_t)(-1))
 		return "Character conversion failed!";
-	else
-		mbs[len] = 0;
+
+	mbs[len] = 0;
 	return *mbs;
 }
 
@@ -321,8 +322,7 @@ std::string urlencode(const std::string &str)
 	// followed by two hex digits. See RFC 3986, section 2.3.
 	static const char url_hex_chars[] = "0123456789ABCDEF";
 	std::ostringstream oss(std::ios::binary);
-	for (u32 i = 0; i < str.size(); i++) {
-		unsigned char c = str[i];
+	for (unsigned char c : str) {
 		if (isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~') {
 			oss << c;
 		} else {
@@ -743,4 +743,202 @@ static bool parseNamedColorString(const std::string &value, video::SColor &color
 void str_replace(std::string &str, char from, char to)
 {
 	std::replace(str.begin(), str.end(), from, to);
+}
+
+/* Translated strings have the following format:
+ * \x1bT marks the beginning of a translated string
+ * \x1bE marks its end
+ *
+ * \x1bF marks the beginning of an argument, and \x1bE its end.
+ *
+ * Arguments are *not* translated, as they may contain escape codes.
+ * Thus, if you want a translated argument, it should be inside \x1bT/\x1bE tags as well.
+ *
+ * This representation is chosen so that clients ignoring escape codes will
+ * see untranslated strings.
+ *
+ * For instance, suppose we have a string such as "@1 Wool" with the argument "White"
+ * The string will be sent as "\x1bT\x1bF\x1bTWhite\x1bE\x1bE Wool\x1bE"
+ * To translate this string, we extract what is inside \x1bT/\x1bE tags.
+ * When we notice the \x1bF tag, we recursively extract what is there up to the \x1bE end tag,
+ * translating it as well.
+ * We get the argument "White", translated, and create a template string with "@1" instead of it.
+ * We finally get the template "@1 Wool" that was used in the beginning, which we translate
+ * before filling it again.
+ */
+
+void translate_all(const std::wstring &s, size_t &i, std::wstring &res);
+
+void translate_string(const std::wstring &s, const std::wstring &textdomain,
+		size_t &i, std::wstring &res) {
+	std::wostringstream output;
+	std::vector<std::wstring> args;
+	int arg_number = 1;
+	while (i < s.length()) {
+		// Not an escape sequence: just add the character.
+		if (s[i] != '\x1b') {
+			output.put(s[i]);
+			// The character is a literal '@'; add it twice
+			// so that it is not mistaken for an argument.
+			if (s[i] == L'@')
+				output.put(L'@');
+			++i;
+			continue;
+		}
+
+		// We have an escape sequence: locate it and its data
+		// It is either a single character, or it begins with '('
+		// and extends up to the following ')', with '\' as an escape character.
+		++i;
+		size_t start_index = i;
+		size_t length;
+		if (i == s.length()) {
+			length = 0;
+		} else if (s[i] == L'(') {
+			++i;
+			++start_index;
+			while (i < s.length() && s[i] != L')') {
+				if (s[i] == L'\\')
+					++i;
+				++i;
+			}
+			length = i - start_index;
+			++i;
+			if (i > s.length())
+				i = s.length();
+		} else {
+			++i;
+			length = 1;
+		}
+		std::wstring escape_sequence(s, start_index, length);
+
+		// The escape sequence is now reconstructed.
+		std::vector<std::wstring> parts = split(escape_sequence, L'@');
+		if (parts[0] == L"E") {
+			// "End of translation" escape sequence. We are done locating the string to translate.
+			break;
+		} else if (parts[0] == L"F") {
+			// "Start of argument" escape sequence.
+			// Recursively translate the argument, and add it to the argument list.
+			// Add an "@n" instead of the argument to the template to translate.
+			if (arg_number >= 10) {
+				errorstream << "Ignoring too many arguments to translation" << std::endl;
+				std::wstring arg;
+				translate_all(s, i, arg);
+				args.push_back(arg);
+				continue;
+			}
+			output.put(L'@');
+			output << arg_number;
+			++arg_number;
+			std::wstring arg;
+			translate_all(s, i, arg);
+			args.push_back(arg);
+		} else {
+			// This is an escape sequence *inside* the template string to translate itself.
+			// This should not happen, show an error message.
+			errorstream << "Ignoring escape sequence '" << wide_to_narrow(escape_sequence) << "' in translation" << std::endl;
+		}
+	}
+
+	// Translate the template.
+	std::wstring toutput = g_translations->getTranslation(textdomain, output.str());
+
+	// Put back the arguments in the translated template.
+	std::wostringstream result;
+	size_t j = 0;
+	while (j < toutput.length()) {
+		// Normal character, add it to output and continue.
+		if (toutput[j] != L'@' || j == toutput.length() - 1) {
+			result.put(toutput[j]);
+			++j;
+			continue;
+		}
+
+		++j;
+		// Literal escape for '@'.
+		if (toutput[j] == L'@') {
+			result.put(L'@');
+			++j;
+			continue;
+		}
+
+		// Here we have an argument; get its index and add the translated argument to the output.
+		int arg_index = toutput[j] - L'1';
+		++j;
+		if (0 <= arg_index && (size_t)arg_index < args.size()) {
+			result << args[arg_index];
+		} else {
+			// This is not allowed: show an error message
+			errorstream << "Ignoring out-of-bounds argument escape sequence in translation" << std::endl;
+		}
+	}
+	res = result.str();
+}
+
+void translate_all(const std::wstring &s, size_t &i, std::wstring &res) {
+	std::wostringstream output;
+	while (i < s.length()) {
+		// Not an escape sequence: just add the character.
+		if (s[i] != '\x1b') {
+			output.put(s[i]);
+			++i;
+			continue;
+		}
+
+		// We have an escape sequence: locate it and its data
+		// It is either a single character, or it begins with '('
+		// and extends up to the following ')', with '\' as an escape character.
+		size_t escape_start = i;
+		++i;
+		size_t start_index = i;
+		size_t length;
+		if (i == s.length()) {
+			length = 0;
+		} else if (s[i] == L'(') {
+			++i;
+			++start_index;
+			while (i < s.length() && s[i] != L')') {
+				if (s[i] == L'\\') {
+					++i;
+				}
+				++i;
+			}
+			length = i - start_index;
+			++i;
+			if (i > s.length())
+				i = s.length();
+		} else {
+			++i;
+			length = 1;
+		}
+		std::wstring escape_sequence(s, start_index, length);
+
+		// The escape sequence is now reconstructed.
+		std::vector<std::wstring> parts = split(escape_sequence, L'@');
+		if (parts[0] == L"E") {
+			// "End of argument" escape sequence. Exit.
+			break;
+		} else if (parts[0] == L"T") {
+			// Beginning of translated string.
+			std::wstring textdomain;
+			if (parts.size() > 1)
+				textdomain = parts[1];
+			std::wstring translated;
+			translate_string(s, textdomain, i, translated);
+			output << translated;
+		} else {
+			// Another escape sequence, such as colors. Preserve it.
+			output << std::wstring(s, escape_start, i - escape_start);
+		}
+	}
+
+	res = output.str();
+}
+
+std::wstring translate_string(const std::wstring &s) {
+	size_t i = 0;
+	std::wstring res;
+	translate_all(s, i, res);
+	return res;
 }

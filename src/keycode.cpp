@@ -246,9 +246,9 @@ static const struct table_key table[] = {
 
 struct table_key lookup_keyname(const char *name)
 {
-	for (u16 i = 0; i < ARRLEN(table); i++) {
-		if (strcmp(table[i].Name, name) == 0)
-			return table[i];
+	for (const auto &table_key : table) {
+		if (strcmp(table_key.Name, name) == 0)
+			return table_key;
 	}
 
 	throw UnknownKeycode(name);
@@ -256,9 +256,9 @@ struct table_key lookup_keyname(const char *name)
 
 struct table_key lookup_keykey(irr::EKEY_CODE key)
 {
-	for (u16 i = 0; i < ARRLEN(table); i++) {
-		if (table[i].Key == key)
-			return table[i];
+	for (const auto &table_key : table) {
+		if (table_key.Key == key)
+			return table_key;
 	}
 
 	std::ostringstream os;
@@ -268,21 +268,15 @@ struct table_key lookup_keykey(irr::EKEY_CODE key)
 
 struct table_key lookup_keychar(wchar_t Char)
 {
-	for (u16 i = 0; i < ARRLEN(table); i++) {
-		if (table[i].Char == Char)
-			return table[i];
+	for (const auto &table_key : table) {
+		if (table_key.Char == Char)
+			return table_key;
 	}
 
 	std::ostringstream os;
 	os << "<Char " << hex_encode((char*) &Char, sizeof(wchar_t)) << ">";
 	throw UnknownKeycode(os.str().c_str());
 }
-
-KeyPress::KeyPress() :
-	Key(irr::KEY_KEY_CODES_COUNT),
-	Char(L'\0'),
-	m_name("")
-{}
 
 KeyPress::KeyPress(const char *name)
 {
@@ -291,7 +285,9 @@ KeyPress::KeyPress(const char *name)
 		Char = L'\0';
 		m_name = "";
 		return;
-	} else if (strlen(name) <= 4) {
+	}
+
+	if (strlen(name) <= 4) {
 		// Lookup by resulting character
 		int chars_read = mbtowc(&Char, name, 1);
 		FATAL_ERROR_IF(chars_read != 1, "Unexpected multibyte character");
@@ -345,7 +341,7 @@ const char *KeyPress::sym() const
 
 const char *KeyPress::name() const
 {
-	if (m_name == "")
+	if (m_name.empty())
 		return "";
 	const char *ret;
 	if (valid_kcode(Key))
@@ -357,23 +353,19 @@ const char *KeyPress::name() const
 
 const KeyPress EscapeKey("KEY_ESCAPE");
 const KeyPress CancelKey("KEY_CANCEL");
-const KeyPress NumberKey[] = {
-	KeyPress("0"), KeyPress("1"), KeyPress("2"), KeyPress("3"), KeyPress("4"),
-	KeyPress("5"), KeyPress("6"), KeyPress("7"), KeyPress("8"), KeyPress("9")
-};
 
 /*
 	Key config
 */
 
 // A simple cache for quicker lookup
-std::map<std::string, KeyPress> g_key_setting_cache;
+std::unordered_map<std::string, KeyPress> g_key_setting_cache;
 
 KeyPress getKeySetting(const char *settingname)
 {
-	std::map<std::string, KeyPress>::iterator n;
+	std::unordered_map<std::string, KeyPress>::iterator n;
 	n = g_key_setting_cache.find(settingname);
-	if(n != g_key_setting_cache.end())
+	if (n != g_key_setting_cache.end())
 		return n->second;
 
 	KeyPress k(g_settings->get(settingname).c_str());

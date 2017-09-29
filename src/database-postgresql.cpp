@@ -23,9 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "database-postgresql.h"
 
 #ifdef _WIN32
-        #ifndef WIN32_LEAN_AND_MEAN
-                #define WIN32_LEAN_AND_MEAN
-        #endif
         // Without this some of the network functions are not found on mingw
         #ifndef _WIN32_WINNT
                 #define _WIN32_WINNT 0x0501
@@ -36,16 +33,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <netinet/in.h>
 #endif
 
-#include "log.h"
+#include "debug.h"
 #include "exceptions.h"
 #include "settings.h"
 #include "content_sao.h"
 #include "remoteplayer.h"
 
 Database_PostgreSQL::Database_PostgreSQL(const std::string &connect_string) :
-	m_connect_string(connect_string),
-	m_conn(NULL),
-	m_pgversion(0)
+	m_connect_string(connect_string)
 {
 	if (m_connect_string.empty()) {
 		throw SettingNotFoundException(
@@ -494,7 +489,8 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 	std::vector<const InventoryList*> inventory_lists = sao->getInventory()->getLists();
 	for (u16 i = 0; i < inventory_lists.size(); i++) {
 		const InventoryList* list = inventory_lists[i];
-		std::string name = list->getName(), width = itos(list->getWidth()),
+		const std::string &name = list->getName();
+		std::string width = itos(list->getWidth()),
 			inv_id = itos(i), lsize = itos(list->getSize());
 
 		const char* inv_values[] = {
@@ -523,11 +519,11 @@ void PlayerDatabasePostgreSQL::savePlayer(RemotePlayer *player)
 
 	execPrepared("remove_player_metadata", 1, rmvalues);
 	const PlayerAttributes &attrs = sao->getExtendedAttributes();
-	for (PlayerAttributes::const_iterator it = attrs.begin(); it != attrs.end(); ++it) {
+	for (const auto &attr : attrs) {
 		const char *meta_values[] = {
 			player->getName(),
-			it->first.c_str(),
-			it->second.c_str()
+			attr.first.c_str(),
+			attr.second.c_str()
 		};
 		execPrepared("save_player_metadata", 3, meta_values);
 	}
@@ -586,7 +582,7 @@ bool PlayerDatabasePostgreSQL::loadPlayer(RemotePlayer *player, PlayerSAO *sao)
 			if (itemStr.length() > 0) {
 				ItemStack stack;
 				stack.deSerialize(itemStr);
-				invList->addItem(pg_to_uint(results2, row2, 0), stack);
+				invList->changeItem(pg_to_uint(results2, row2, 0), stack);
 			}
 		}
 		PQclear(results2);
@@ -627,7 +623,7 @@ void PlayerDatabasePostgreSQL::listPlayers(std::vector<std::string> &res)
 
 	int numrows = PQntuples(results);
 	for (int row = 0; row < numrows; row++)
-		res.push_back(PQgetvalue(results, row, 0));
+		res.emplace_back(PQgetvalue(results, row, 0));
 
 	PQclear(results);
 }

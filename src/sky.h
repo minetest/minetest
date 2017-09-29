@@ -21,8 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "camera.h"
 #include "irrlichttypes_extrabloated.h"
 
-#ifndef SKY_HEADER
-#define SKY_HEADER
+#pragma once
 
 #define SKY_MATERIAL_COUNT 5
 #define SKY_STAR_COUNT 200
@@ -34,8 +33,7 @@ class Sky : public scene::ISceneNode
 {
 public:
 	//! constructor
-	Sky(scene::ISceneNode *parent, scene::ISceneManager *mgr, s32 id,
-			ITextureSource *tsrc);
+	Sky(s32 id, ITextureSource *tsrc);
 
 	virtual void OnRegisterSceneNode();
 
@@ -65,8 +63,8 @@ public:
 		return m_visible ? m_skycolor : m_fallback_bg_color;
 	}
 
-	bool getCloudsVisible() { return m_clouds_visible && m_clouds_enabled; }
-	const video::SColorf &getCloudColor() { return m_cloudcolor_f; }
+	bool getCloudsVisible() const { return m_clouds_visible && m_clouds_enabled; }
+	const video::SColorf &getCloudColor() const { return m_cloudcolor_f; }
 
 	void setVisible(bool visible) { m_visible = visible; }
 	// Set only from set_sky API
@@ -75,6 +73,12 @@ public:
 	{
 		m_fallback_bg_color = fallback_bg_color;
 	}
+	void overrideColors(const video::SColor &bgcolor, const video::SColor &skycolor)
+	{
+		m_bgcolor = bgcolor;
+		m_skycolor = skycolor;
+	}
+	void setBodiesVisible(bool visible) { m_bodies_visible = visible; }
 
 private:
 	aabb3f m_box;
@@ -117,29 +121,28 @@ private:
 		return result;
 	}
 
-	bool m_visible;
-	video::SColor m_fallback_bg_color; // Used when m_visible=false
-	bool m_first_update;
+	bool m_visible = true;
+	// Used when m_visible=false
+	video::SColor m_fallback_bg_color = video::SColor(255, 255, 255, 255);
+	bool m_first_update = true;
 	float m_time_of_day;
 	float m_time_brightness;
 	bool m_sunlight_seen;
-	float m_brightness;
-	float m_cloud_brightness;
+	float m_brightness = 0.5f;
+	float m_cloud_brightness = 0.5f;
 	bool m_clouds_visible; // Whether clouds are disabled due to player underground
-	bool m_clouds_enabled; // Initialised to true, reset only by set_sky API
+	bool m_clouds_enabled = true; // Initialised to true, reset only by set_sky API
 	bool m_directional_colored_fog;
-	video::SColorf m_bgcolor_bright_f;
-	video::SColorf m_skycolor_bright_f;
-	video::SColorf m_cloudcolor_bright_f;
+	bool m_bodies_visible = true; // sun, moon, stars
+	video::SColorf m_bgcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_skycolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
+	video::SColorf m_cloudcolor_bright_f = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f);
 	video::SColor m_bgcolor;
 	video::SColor m_skycolor;
 	video::SColorf m_cloudcolor_f;
 	v3f m_stars[SKY_STAR_COUNT];
-	video::S3DVertex m_star_vertices[SKY_STAR_COUNT * 4];
 	video::ITexture *m_sun_texture;
 	video::ITexture *m_moon_texture;
 	video::ITexture *m_sun_tonemap;
 	video::ITexture *m_moon_tonemap;
 };
-
-#endif

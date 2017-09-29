@@ -151,8 +151,6 @@ if(ENABLE_FREETYPE)
 	if(FREETYPE_FOUND)
 		message(STATUS "Freetype enabled.")
 		set(USE_FREETYPE TRUE)
-		set(CGUITTFONT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/cguittfont")
-		set(CGUITTFONT_LIBRARY cguittfont)
 	endif()
 endif(ENABLE_FREETYPE)
 
@@ -265,6 +263,8 @@ if(WIN32)
 		add_definitions ( /D "_CRT_SECURE_NO_DEPRECATE" /W1 )
 		# Get M_PI to work
 		add_definitions(/D "_USE_MATH_DEFINES")
+		# Dont define min/max macros in minwindef.h
+		add_definitions(/D "NOMINMAX")
 	else() # Probably MinGW = GCC
 		set(PLATFORM_LIBS "")
 	endif()
@@ -293,6 +293,9 @@ if(WIN32)
 		set(OGG_DLL "" CACHE FILEPATH "Path to libogg.dll for installation (optional)")
 		set(VORBIS_DLL "" CACHE FILEPATH "Path to libvorbis.dll for installation (optional)")
 		set(VORBISFILE_DLL "" CACHE FILEPATH "Path to libvorbisfile.dll for installation (optional)")
+	endif()
+	if(USE_LUAJIT)
+		set(LUA_DLL "" CACHE FILEPATH "Path to lua51.dll for installation (optional)")
 	endif()
 else()
 	# Unix probably
@@ -370,7 +373,6 @@ set(common_SRCS
 	chat.cpp
 	clientiface.cpp
 	collision.cpp
-	content_abm.cpp
 	content_mapnode.cpp
 	content_nodemeta.cpp
 	content_sao.cpp
@@ -403,6 +405,7 @@ set(common_SRCS
 	map_settings_manager.cpp
 	mapblock.cpp
 	mapgen.cpp
+	mapgen_carpathian.cpp
 	mapgen_flat.cpp
 	mapgen_fractal.cpp
 	mapgen_singlenode.cpp
@@ -417,6 +420,7 @@ set(common_SRCS
 	mg_decoration.cpp
 	mg_ore.cpp
 	mg_schematic.cpp
+	modchannels.cpp
 	mods.cpp
 	nameidmapping.cpp
 	nodedef.cpp
@@ -430,9 +434,9 @@ set(common_SRCS
 	porting.cpp
 	profiler.cpp
 	quicktune.cpp
+	raycast.cpp
 	reflowscan.cpp
 	remoteplayer.cpp
-	raycast.cpp
 	rollback.cpp
 	rollback_interface.cpp
 	serialization.cpp
@@ -441,13 +445,13 @@ set(common_SRCS
 	serverlist.cpp
 	serverobject.cpp
 	settings.cpp
-	socket.cpp
 	sound.cpp
 	staticobject.cpp
 	subgame.cpp
 	terminal_chat_console.cpp
 	tileanimation.cpp
 	tool.cpp
+	translation.cpp
 	treegen.cpp
 	version.cpp
 	voxel.cpp
@@ -503,13 +507,12 @@ set(client_SRCS
 	content_cso.cpp
 	content_mapblock.cpp
 	convert_json.cpp
-	drawscene.cpp
 	filecache.cpp
 	fontengine.cpp
 	game.cpp
 	guiChatConsole.cpp
 	guiEngine.cpp
-	guiFileSelectMenu.cpp
+	guiPathSelectMenu.cpp
 	guiFormSpecMenu.cpp
 	guiKeyChangeMenu.cpp
 	guiPasswordChange.cpp
@@ -561,7 +564,7 @@ include_directories(
 
 
 if(USE_FREETYPE)
-	include_directories(${FREETYPE_INCLUDE_DIRS} ${CGUITTFONT_INCLUDE_DIR})
+	include_directories(${FREETYPE_INCLUDE_DIRS})
 endif()
 
 if(USE_CURL)
@@ -620,7 +623,6 @@ if(BUILD_CLIENT)
 		target_link_libraries(
 			${PROJECT_NAME}
 			${FREETYPE_LIBRARY}
-			${CGUITTFONT_LIBRARY}
 		)
 	endif()
 	if (USE_CURSES)
@@ -708,9 +710,12 @@ include(CheckCXXCompilerFlag)
 
 if(MSVC)
 	# Visual Studio
-
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D WIN32_LEAN_AND_MEAN /MP")
 	# EHa enables SEH exceptions (used for catching segfaults)
-	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MT /GS- /Zi /arch:SSE /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	set(CMAKE_CXX_FLAGS_RELEASE "/EHa /Ox /GL /FD /MT /GS- /Zi /fp:fast /D NDEBUG /D _HAS_ITERATOR_DEBUGGING=0 /TP")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:SSE")
+	endif()
 	#set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /NODEFAULTLIB:\"libcmtd.lib\" /NODEFAULTLIB:\"libcmt.lib\"")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "/LTCG /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
 
@@ -728,9 +733,10 @@ if(MSVC)
 	# /MT = Link statically with standard library stuff
 	set(CMAKE_C_FLAGS_RELEASE "/O2 /Ob2 /MT")
 else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	# Probably GCC
 	if(APPLE)
-		SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
+		SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -pagezero_size 10000 -image_base 100000000" )
 	endif()
 	if(WARN_ALL)
 		set(RELEASE_WARNING_FLAGS "-Wall")
@@ -752,6 +758,7 @@ else()
 
 	if(MINGW)
 		set(OTHER_FLAGS "${OTHER_FLAGS} -mthreads -fexceptions")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWIN32_LEAN_AND_MEAN")
 	endif()
 
 	set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG ${RELEASE_WARNING_FLAGS} ${WARNING_FLAGS} ${OTHER_FLAGS} -Wall -pipe -funroll-loops")
@@ -807,6 +814,9 @@ if(WIN32)
 	endif()
 	if(LEVELDB_DLL)
 		install(FILES ${LEVELDB_DLL} DESTINATION ${BINDIR})
+	endif()
+	if(LUA_DLL)
+		install(FILES ${LUA_DLL} DESTINATION ${BINDIR})
 	endif()
 endif()
 
@@ -877,11 +887,4 @@ if (USE_GETTEXT)
 	endforeach()
 
 	add_custom_target(translations ALL COMMENT "mo update" DEPENDS ${MO_FILES})
-endif()
-
-
-# Subdirectories
-
-if (BUILD_CLIENT AND USE_FREETYPE)
-	add_subdirectory(cguittfont)
 endif()

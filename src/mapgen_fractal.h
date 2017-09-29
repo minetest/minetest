@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 Fractal formulas from http://www.bugman123.com/Hypercomplex/index.html
 by Paul Nylander, and from http://www.fractalforums.com, thank you.
@@ -21,12 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MAPGEN_FRACTAL_HEADER
-#define MAPGEN_FRACTAL_HEADER
+#pragma once
 
 #include "mapgen.h"
-
-#define MGFRACTAL_LARGE_CAVE_DEPTH -33
 
 class BiomeManager;
 
@@ -34,24 +31,26 @@ extern FlagDesc flagdesc_mapgen_fractal[];
 
 struct MapgenFractalParams : public MapgenParams
 {
-	u32 spflags;
-	float cave_width;
-	u16 fractal;
-	u16 iterations;
-	v3f scale;
-	v3f offset;
-	float slice_w;
-	float julia_x;
-	float julia_y;
-	float julia_z;
-	float julia_w;
+	u32 spflags = 0;
+	float cave_width = 0.09f;
+	s16 large_cave_depth = -33;
+	s16 lava_depth = -256;
+	u16 fractal = 1;
+	u16 iterations = 11;
+	v3f scale = v3f(4096.0, 1024.0, 4096.0);
+	v3f offset = v3f(1.52, 0.0, 0.0);
+	float slice_w = 0.0f;
+	float julia_x = 0.267f;
+	float julia_y = 0.2f;
+	float julia_z = 0.133f;
+	float julia_w = 0.067f;
 	NoiseParams np_seabed;
 	NoiseParams np_filler_depth;
 	NoiseParams np_cave1;
 	NoiseParams np_cave2;
 
 	MapgenFractalParams();
-	~MapgenFractalParams() {}
+	~MapgenFractalParams() = default;
 
 	void readParams(const Settings *settings);
 	void writeParams(Settings *settings) const;
@@ -74,6 +73,7 @@ private:
 	u16 formula;
 	bool julia;
 
+	s16 large_cave_depth;
 	u16 fractal;
 	u16 iterations;
 	v3f scale;
@@ -85,5 +85,3 @@ private:
 	float julia_w;
 	Noise *noise_seabed;
 };
-
-#endif

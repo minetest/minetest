@@ -17,11 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef NODEMETADATA_HEADER
-#define NODEMETADATA_HEADER
+#pragma once
 
+#include <unordered_set>
 #include "metadata.h"
-#include "util/cpp11_container.h"
 
 /*
 	NodeMetadata stores arbitary amounts of data for special blocks.
@@ -63,7 +62,7 @@ private:
 	int countNonPrivate() const;
 
 	Inventory *m_inventory;
-	UNORDERED_SET<std::string> m_privatevars;
+	std::unordered_set<std::string> m_privatevars;
 };
 
 
@@ -95,5 +94,3 @@ private:
 
 	std::map<v3s16, NodeMetadata *> m_data;
 };
-
-#endif

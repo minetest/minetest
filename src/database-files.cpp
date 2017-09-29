@@ -44,7 +44,7 @@ void PlayerDatabaseFiles::serialize(std::ostringstream &os, RemotePlayer *player
 	args.setFloat("yaw", player->getPlayerSAO()->getYaw());
 	args.setS32("breath", player->getPlayerSAO()->getBreath());
 
-	std::string extended_attrs = "";
+	std::string extended_attrs;
 	player->serializeExtraAttributes(extended_attrs);
 	args.set("extended_attributes", extended_attrs);
 
@@ -174,6 +174,6 @@ void PlayerDatabaseFiles::listPlayers(std::vector<std::string> &res)
 		player.deSerialize(is, "", &playerSAO);
 		is.close();
 
-		res.push_back(player.getName());
+		res.emplace_back(player.getName());
 	}
 }

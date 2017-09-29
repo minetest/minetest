@@ -20,12 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "particles.h"
 #include "client.h"
 #include "collision.h"
-#include <stdlib.h>
+#include "client/clientevent.h"
+#include "client/renderingengine.h"
 #include "util/numeric.h"
 #include "light.h"
 #include "environment.h"
 #include "clientmap.h"
 #include "mapnode.h"
+#include "nodedef.h"
 #include "client.h"
 #include "settings.h"
 
@@ -42,7 +44,6 @@ v3f random_v3f(v3f min, v3f max)
 
 Particle::Particle(
 	IGameDef *gamedef,
-	scene::ISceneManager* smgr,
 	LocalPlayer *player,
 	ClientEnvironment *env,
 	v3f pos,
@@ -60,7 +61,8 @@ Particle::Particle(
 	u8 glow,
 	video::SColor color
 ):
-	scene::ISceneNode(smgr->getRootSceneNode(), smgr)
+	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
+		RenderingEngine::get_scene_manager())
 {
 	// Misc
 	m_gamedef = gamedef;
@@ -76,8 +78,6 @@ Particle::Particle(
 	m_texpos = texpos;
 	m_texsize = texsize;
 	m_animation = anim;
-	m_animation_frame = 0;
-	m_animation_time = 0.0;
 
 	// Color
 	m_base_color = color;
@@ -88,7 +88,6 @@ Particle::Particle(
 	m_velocity = velocity;
 	m_acceleration = acceleration;
 	m_expiration = expirationtime;
-	m_time = 0;
 	m_player = player;
 	m_size = size;
 	m_collisiondetection = collisiondetection;
@@ -106,10 +105,6 @@ Particle::Particle(
 
 	// Init model
 	updateVertices();
-}
-
-Particle::~Particle()
-{
 }
 
 void Particle::OnRegisterSceneNode()
@@ -229,17 +224,16 @@ void Particle::updateVertices()
 		0, 0, 0, 0, m_color, tx0, ty0);
 
 	v3s16 camera_offset = m_env->getCameraOffset();
-	for(u16 i=0; i<4; i++)
-	{
+	for (video::S3DVertex &vertex : m_vertices) {
 		if (m_vertical) {
 			v3f ppos = m_player->getPosition()/BS;
-			m_vertices[i].Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
+			vertex.Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
 		} else {
-			m_vertices[i].Pos.rotateYZBy(m_player->getPitch());
-			m_vertices[i].Pos.rotateXZBy(m_player->getYaw());
+			vertex.Pos.rotateYZBy(m_player->getPitch());
+			vertex.Pos.rotateXZBy(m_player->getYaw());
 		}
-		m_box.addInternalPoint(m_vertices[i].Pos);
-		m_vertices[i].Pos += m_pos*BS - intToFloat(camera_offset, BS);
+		m_box.addInternalPoint(vertex.Pos);
+		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
 	}
 }
 
@@ -247,7 +241,7 @@ void Particle::updateVertices()
 	ParticleSpawner
 */
 
-ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, LocalPlayer *player,
+ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
 	u16 amount, float time,
 	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
 	float minexptime, float maxexptime, float minsize, float maxsize,
@@ -258,7 +252,6 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	m_particlemanager(p_manager)
 {
 	m_gamedef = gamedef;
-	m_smgr = smgr;
 	m_player = player;
 	m_amount = amount;
 	m_spawntime = time;
@@ -288,13 +281,11 @@ ParticleSpawner::ParticleSpawner(IGameDef* gamedef, scene::ISceneManager *smgr, 
 	}
 }
 
-ParticleSpawner::~ParticleSpawner() {}
-
 void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 {
 	m_time += dtime;
 
-	static const float radius =
+	static thread_local const float radius =
 			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
 
 	bool unloaded = false;
@@ -347,7 +338,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 						Particle* toadd = new Particle(
 							m_gamedef,
-							m_smgr,
 							m_player,
 							env,
 							pos,
@@ -408,7 +398,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 
 					Particle* toadd = new Particle(
 						m_gamedef,
-						m_smgr,
 						m_player,
 						env,
 						pos,
@@ -510,7 +499,7 @@ void ParticleManager::clearAll ()
 }
 
 void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
-		scene::ISceneManager* smgr, LocalPlayer *player)
+	LocalPlayer *player)
 {
 	switch (event->type) {
 		case CE_DELETE_PARTICLESPAWNER: {
@@ -536,7 +525,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
 
-			ParticleSpawner* toadd = new ParticleSpawner(client, smgr, player,
+			ParticleSpawner *toadd = new ParticleSpawner(client, player,
 					event->add_particlespawner.amount,
 					event->add_particlespawner.spawntime,
 					*event->add_particlespawner.minpos,
@@ -581,7 +570,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 			video::ITexture *texture =
 				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
-			Particle* toadd = new Particle(client, smgr, player, m_env,
+			Particle *toadd = new Particle(client, player, m_env,
 					*event->spawn_particle.pos,
 					*event->spawn_particle.vel,
 					*event->spawn_particle.acc,
@@ -610,26 +599,25 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
 }
 
 void ParticleManager::addDiggingParticles(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
-	for (u16 j = 0; j < 32; j++) // set the amount of particles here
-	{
-		addNodeParticle(gamedef, smgr, player, pos, n, f);
+	// No particles for "airlike" nodes
+	if (f.drawtype == NDT_AIRLIKE)
+		return;
+
+	// set the amount of particles here
+	for (u16 j = 0; j < 32; j++) {
+		addNodeParticle(gamedef, player, pos, n, f);
 	}
 }
 
-void ParticleManager::addPunchingParticles(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
-{
-	addNodeParticle(gamedef, smgr, player, pos, n, f);
-}
-
 void ParticleManager::addNodeParticle(IGameDef* gamedef,
-	scene::ISceneManager* smgr, LocalPlayer *player, v3s16 pos,
-	const MapNode &n, const ContentFeatures &f)
+	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
 {
+	// No particles for "airlike" nodes
+	if (f.drawtype == NDT_AIRLIKE)
+		return;
+
 	// Texture
 	u8 texid = myrand_range(0, 5);
 	const TileLayer &tile = f.tiles[texid].layers[0];
@@ -639,7 +627,7 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	// Only use first frame of animated texture
 	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
-		texture = tile.frames[0].texture;
+		texture = (*tile.frames)[0].texture;
 	else
 		texture = tile.texture;
 
@@ -670,7 +658,6 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	Particle* toadd = new Particle(
 		gamedef,
-		smgr,
 		player,
 		m_env,
 		particlepos,

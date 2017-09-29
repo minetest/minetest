@@ -23,19 +23,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/string.h"
 #include "util/container.h"
 #include "util/thread.h"
-#include "util/numeric.h"
-#include "irrlichttypes_extrabloated.h"
-#include "debug.h"
 #include "filesys.h"
 #include "settings.h"
 #include "mesh.h"
-#include "log.h"
 #include "gamedef.h"
 #include "util/strfnd.h"
-#include "util/string.h" // for parseColorString()
 #include "imagefilters.h"
 #include "guiscalingfilter.h"
-#include "nodedef.h"
+#include "renderingengine.h"
 
 
 #ifdef __ANDROID__
@@ -95,13 +90,13 @@ std::string getImagePath(std::string path)
 		NULL
 	};
 	// If there is no extension, add one
-	if (removeStringEnd(path, extensions) == "")
+	if (removeStringEnd(path, extensions).empty())
 		path = path + ".png";
 	// Check paths until something is found to exist
 	const char **ext = extensions;
 	do{
 		bool r = replace_ext(path, *ext);
-		if (r == false)
+		if (!r)
 			return "";
 		if (fs::PathExists(path))
 			return path;
@@ -123,7 +118,7 @@ std::string getImagePath(std::string path)
 */
 std::string getTexturePath(const std::string &filename)
 {
-	std::string fullpath = "";
+	std::string fullpath;
 	/*
 		Check from cache
 	*/
@@ -135,7 +130,7 @@ std::string getTexturePath(const std::string &filename)
 		Check from texture_path
 	*/
 	const std::string &texture_path = g_settings->get("texture_path");
-	if (texture_path != "") {
+	if (!texture_path.empty()) {
 		std::string testpath = texture_path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
@@ -144,7 +139,7 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from default data directory
 	*/
-	if (fullpath == "")
+	if (fullpath.empty())
 	{
 		std::string base_path = porting::path_share + DIR_DELIM + "textures"
 				+ DIR_DELIM + "base" + DIR_DELIM + "pack";
@@ -192,14 +187,12 @@ class SourceImageCache
 {
 public:
 	~SourceImageCache() {
-		for (std::map<std::string, video::IImage*>::iterator iter = m_images.begin();
-				iter != m_images.end(); ++iter) {
-			iter->second->drop();
+		for (auto &m_image : m_images) {
+			m_image.second->drop();
 		}
 		m_images.clear();
 	}
-	void insert(const std::string &name, video::IImage *img,
-			bool prefer_local, video::IVideoDriver *driver)
+	void insert(const std::string &name, video::IImage *img, bool prefer_local)
 	{
 		assert(img); // Pre-condition
 		// Remove old image
@@ -216,8 +209,9 @@ public:
 		// Try to use local texture instead if asked to
 		if (prefer_local){
 			std::string path = getTexturePath(name);
-			if (path != ""){
-				video::IImage *img2 = driver->createImageFromFile(path.c_str());
+			if (!path.empty()) {
+				video::IImage *img2 = RenderingEngine::get_video_driver()->
+					createImageFromFile(path.c_str());
 				if (img2){
 					toadd = img2;
 					need_to_grab = false;
@@ -238,7 +232,7 @@ public:
 		return NULL;
 	}
 	// Primarily fetches from cache, secondarily tries to read from filesystem
-	video::IImage* getOrLoad(const std::string &name, IrrlichtDevice *device)
+	video::IImage *getOrLoad(const std::string &name)
 	{
 		std::map<std::string, video::IImage*>::iterator n;
 		n = m_images.find(name);
@@ -246,9 +240,9 @@ public:
 			n->second->grab(); // Grab for caller
 			return n->second;
 		}
-		video::IVideoDriver* driver = device->getVideoDriver();
+		video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 		std::string path = getTexturePath(name);
-		if (path == ""){
+		if (path.empty()) {
 			infostream<<"SourceImageCache::getOrLoad(): No path found for \""
 					<<name<<"\""<<std::endl;
 			return NULL;
@@ -274,7 +268,7 @@ private:
 class TextureSource : public IWritableTextureSource
 {
 public:
-	TextureSource(IrrlichtDevice *device);
+	TextureSource();
 	virtual ~TextureSource();
 
 	/*
@@ -343,12 +337,6 @@ public:
 
 	virtual Palette* getPalette(const std::string &name);
 
-	// Returns a pointer to the irrlicht device
-	virtual IrrlichtDevice* getDevice()
-	{
-		return m_device;
-	}
-
 	bool isKnownSourceImage(const std::string &name)
 	{
 		bool is_known = false;
@@ -356,7 +344,7 @@ public:
 		if (cache_found)
 			return is_known;
 		// Not found in cache; find out if a local file exists
-		is_known = (getTexturePath(name) != "");
+		is_known = (!getTexturePath(name).empty());
 		m_source_image_existence.set(name, is_known);
 		return is_known;
 	}
@@ -386,9 +374,7 @@ public:
 private:
 
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
-	// The irrlicht device
-	IrrlichtDevice *m_device;
+	std::thread::id m_main_thread;
 
 	// Cache of source images
 	// This should be only accessed from the main thread
@@ -417,7 +403,7 @@ private:
 	// Maps a texture name to an index in the former.
 	std::map<std::string, u32> m_name_to_id;
 	// The two former containers are behind this mutex
-	Mutex m_textureinfo_cache_mutex;
+	std::mutex m_textureinfo_cache_mutex;
 
 	// Queued texture fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_texture_queue;
@@ -427,7 +413,7 @@ private:
 	std::vector<video::ITexture*> m_texture_trash;
 
 	// Maps image file names to loaded palettes.
-	UNORDERED_MAP<std::string, Palette> m_palettes;
+	std::unordered_map<std::string, Palette> m_palettes;
 
 	// Cached settings needed for making textures from meshes
 	bool m_setting_trilinear_filter;
@@ -435,20 +421,17 @@ private:
 	bool m_setting_anisotropic_filter;
 };
 
-IWritableTextureSource* createTextureSource(IrrlichtDevice *device)
+IWritableTextureSource *createTextureSource()
 {
-	return new TextureSource(device);
+	return new TextureSource();
 }
 
-TextureSource::TextureSource(IrrlichtDevice *device):
-		m_device(device)
+TextureSource::TextureSource()
 {
-	assert(m_device); // Pre-condition
-
-	m_main_thread = thr_get_current_thread_id();
+	m_main_thread = std::this_thread::get_id();
 
 	// Add a NULL TextureInfo as the first index, named ""
-	m_textureinfo_cache.push_back(TextureInfo(""));
+	m_textureinfo_cache.emplace_back("");
 	m_name_to_id[""] = 0;
 
 	// Cache some settings
@@ -461,25 +444,18 @@ TextureSource::TextureSource(IrrlichtDevice *device):
 
 TextureSource::~TextureSource()
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	unsigned int textures_before = driver->getTextureCount();
 
-	for (std::vector<TextureInfo>::iterator iter =
-			m_textureinfo_cache.begin();
-			iter != m_textureinfo_cache.end(); ++iter)
-	{
+	for (const auto &iter : m_textureinfo_cache) {
 		//cleanup texture
-		if (iter->texture)
-			driver->removeTexture(iter->texture);
+		if (iter.texture)
+			driver->removeTexture(iter.texture);
 	}
 	m_textureinfo_cache.clear();
 
-	for (std::vector<video::ITexture*>::iterator iter =
-			m_texture_trash.begin(); iter != m_texture_trash.end();
-			++iter) {
-		video::ITexture *t = *iter;
-
+	for (auto t : m_texture_trash) {
 		//cleanup trashed texture
 		driver->removeTexture(t);
 	}
@@ -508,43 +484,35 @@ u32 TextureSource::getTextureId(const std::string &name)
 	/*
 		Get texture
 	*/
-	if (thr_is_current_thread(m_main_thread))
-	{
+	if (std::this_thread::get_id() == m_main_thread) {
 		return generateTexture(name);
 	}
-	else
-	{
-		infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
-		// We're gonna ask the result to be put into here
-		static ResultQueue<std::string, u32, u8, u8> result_queue;
 
-		// Throw a request in
-		m_get_texture_queue.add(name, 0, 0, &result_queue);
+	infostream<<"getTextureId(): Queued: name=\""<<name<<"\""<<std::endl;
 
-		/*infostream<<"Waiting for texture from main thread, name=\""
-				<<name<<"\""<<std::endl;*/
+	// We're gonna ask the result to be put into here
+	static ResultQueue<std::string, u32, u8, u8> result_queue;
 
-		try
-		{
-			while(true) {
-				// Wait result for a second
-				GetResult<std::string, u32, u8, u8>
-					result = result_queue.pop_front(1000);
+	// Throw a request in
+	m_get_texture_queue.add(name, 0, 0, &result_queue);
 
-				if (result.key == name) {
-					return result.item;
-				}
+	try {
+		while(true) {
+			// Wait result for a second
+			GetResult<std::string, u32, u8, u8>
+				result = result_queue.pop_front(1000);
+
+			if (result.key == name) {
+				return result.item;
 			}
 		}
-		catch(ItemNotFoundException &e)
-		{
-			errorstream<<"Waiting for texture " << name << " timed out."<<std::endl;
-			return 0;
-		}
+	} catch(ItemNotFoundException &e) {
+		errorstream << "Waiting for texture " << name << " timed out." << std::endl;
+		return 0;
 	}
 
-	infostream<<"getTextureId(): Failed"<<std::endl;
+	infostream << "getTextureId(): Failed" << std::endl;
 
 	return 0;
 }
@@ -596,7 +564,7 @@ u32 TextureSource::generateTexture(const std::string &name)
 	//infostream << "generateTexture(): name=\"" << name << "\"" << std::endl;
 
 	// Empty name means texture 0
-	if (name == "") {
+	if (name.empty()) {
 		infostream<<"generateTexture(): name is empty"<<std::endl;
 		return 0;
 	}
@@ -616,13 +584,13 @@ u32 TextureSource::generateTexture(const std::string &name)
 	/*
 		Calling only allowed from main thread
 	*/
-	if (!thr_is_current_thread(m_main_thread)) {
+	if (std::this_thread::get_id() != m_main_thread) {
 		errorstream<<"TextureSource::generateTexture() "
 				"called not from main thread"<<std::endl;
 		return 0;
 	}
 
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	video::IImage *img = generateImage(name);
@@ -695,12 +663,12 @@ video::ITexture* TextureSource::getTextureForMesh(const std::string &name, u32 *
 Palette* TextureSource::getPalette(const std::string &name)
 {
 	// Only the main thread may load images
-	sanity_check(thr_is_current_thread(m_main_thread));
+	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	if (name == "")
+	if (name.empty())
 		return NULL;
 
-	UNORDERED_MAP<std::string, Palette>::iterator it = m_palettes.find(name);
+	auto it = m_palettes.find(name);
 	if (it == m_palettes.end()) {
 		// Create palette
 		video::IImage *img = generateImage(name);
@@ -738,7 +706,7 @@ Palette* TextureSource::getPalette(const std::string &name)
 		img->drop();
 		// Fill in remaining elements
 		while (new_palette.size() < 256)
-			new_palette.push_back(video::SColor(0xFFFFFFFF));
+			new_palette.emplace_back(0xFFFFFFFF);
 		m_palettes[name] = new_palette;
 		it = m_palettes.find(name);
 	}
@@ -771,9 +739,9 @@ void TextureSource::insertSourceImage(const std::string &name, video::IImage *im
 {
 	//infostream<<"TextureSource::insertSourceImage(): name="<<name<<std::endl;
 
-	sanity_check(thr_is_current_thread(m_main_thread));
+	sanity_check(std::this_thread::get_id() == m_main_thread);
 
-	m_sourcecache.insert(name, img, true, m_device->getVideoDriver());
+	m_sourcecache.insert(name, img, true);
 	m_source_image_existence.set(name, true);
 }
 
@@ -781,26 +749,25 @@ void TextureSource::rebuildImagesAndTextures()
 {
 	MutexAutoLock lock(m_textureinfo_cache_mutex);
 
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Recreate textures
-	for (u32 i=0; i<m_textureinfo_cache.size(); i++){
-		TextureInfo *ti = &m_textureinfo_cache[i];
-		video::IImage *img = generateImage(ti->name);
+	for (TextureInfo &ti : m_textureinfo_cache) {
+		video::IImage *img = generateImage(ti.name);
 #ifdef __ANDROID__
 		img = Align2Npot2(img, driver);
 #endif
 		// Create texture from resulting image
 		video::ITexture *t = NULL;
 		if (img) {
-			t = driver->addTexture(ti->name.c_str(), img);
-			guiScalingCache(io::path(ti->name.c_str()), driver, img);
+			t = driver->addTexture(ti.name.c_str(), img);
+			guiScalingCache(io::path(ti.name.c_str()), driver, img);
 			img->drop();
 		}
-		video::ITexture *t_old = ti->texture;
+		video::ITexture *t_old = ti.texture;
 		// Replace texture
-		ti->texture = t;
+		ti.texture = t;
 
 		if (t_old)
 			m_texture_trash.push_back(t_old);
@@ -810,7 +777,7 @@ void TextureSource::rebuildImagesAndTextures()
 video::ITexture* TextureSource::generateTextureFromMesh(
 		const TextureFromMeshParams &params)
 {
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 #ifdef __ANDROID__
@@ -935,8 +902,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	}
 #endif
 
-	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET) == false)
-	{
+	if (!driver->queryFeature(video::EVDF_RENDER_TO_TARGET)) {
 		static bool warned = false;
 		if (!warned)
 		{
@@ -967,7 +933,7 @@ video::ITexture* TextureSource::generateTextureFromMesh(
 	}
 
 	// Get a scene manager
-	scene::ISceneManager *smgr_main = m_device->getSceneManager();
+	scene::ISceneManager *smgr_main = RenderingEngine::get_scene_manager();
 	assert(smgr_main);
 	scene::ISceneManager *smgr = smgr_main->createNewSceneManager();
 	assert(smgr);
@@ -1064,10 +1030,6 @@ video::IImage* TextureSource::generateImage(const std::string &name)
 	if (last_separator_pos != -1) {
 		baseimg = generateImage(name.substr(0, last_separator_pos));
 	}
-
-
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	sanity_check(driver);
 
 	/*
 		Parse out the last part of the name of the image and act
@@ -1196,18 +1158,17 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 		video::IImage *& baseimg)
 {
 	const char escape = '\\'; // same as in generateImage()
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	sanity_check(driver);
 
 	// Stuff starting with [ are special commands
-	if (part_of_name.size() == 0 || part_of_name[0] != '[')
-	{
-		video::IImage *image = m_sourcecache.getOrLoad(part_of_name, m_device);
+	if (part_of_name.empty() || part_of_name[0] != '[') {
+		video::IImage *image = m_sourcecache.getOrLoad(part_of_name);
 #ifdef __ANDROID__
 		image = Align2Npot2(image, driver);
 #endif
 		if (image == NULL) {
-			if (part_of_name != "") {
+			if (!part_of_name.empty()) {
 
 				// Do not create normalmap dummies
 				if (part_of_name.find("_normal.png") != std::string::npos) {
@@ -1275,7 +1236,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				blit_with_alpha(image, baseimg, pos_from, pos_to, dim);
 			} else if (dim.Width * dim.Height < dim_dst.Width * dim_dst.Height) {
 				// Upscale overlying image
-				video::IImage* scaled_image = m_device->getVideoDriver()->
+				video::IImage *scaled_image = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim_dst);
 				image->copyToScaling(scaled_image);
 
@@ -1283,7 +1244,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				scaled_image->drop();
 			} else {
 				// Upscale base image
-				video::IImage* scaled_base = m_device->getVideoDriver()->
+				video::IImage *scaled_base = RenderingEngine::get_video_driver()->
 					createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->copyToScaling(scaled_base);
 				baseimg->drop();
@@ -1333,7 +1294,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 					horizontally tiled.
 				*/
 				video::IImage *img_crack = m_sourcecache.getOrLoad(
-					"crack_anylength.png", m_device);
+					"crack_anylength.png");
 
 				if (img_crack) {
 					draw_crack(img_crack, baseimg,
@@ -1358,7 +1319,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				baseimg = driver->createImage(video::ECF_A8R8G8B8, dim);
 				baseimg->fill(video::SColor(0,0,0,0));
 			}
-			while (sf.at_end() == false) {
+			while (!sf.at_end()) {
 				u32 x = stoi(sf.next(","));
 				u32 y = stoi(sf.next("="));
 				std::string filename = unescape_string(sf.next_esc(":", escape), escape);
@@ -1855,7 +1816,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			u32 height = stoi(sf.next(""));
 			core::dimension2d<u32> dim(width, height);
 
-			video::IImage* image = m_device->getVideoDriver()->
+			video::IImage *image = RenderingEngine::get_video_driver()->
 				createImage(video::ECF_A8R8G8B8, dim);
 			baseimg->copyToScaling(image);
 			baseimg->drop();
@@ -1911,13 +1872,13 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 
 			std::string mode = sf.next("");
 			u32 mask = 0;
-			if (mode.find("a") != std::string::npos)
+			if (mode.find('a') != std::string::npos)
 				mask |= 0xff000000UL;
-			if (mode.find("r") != std::string::npos)
+			if (mode.find('r') != std::string::npos)
 				mask |= 0x00ff0000UL;
-			if (mode.find("g") != std::string::npos)
+			if (mode.find('g') != std::string::npos)
 				mask |= 0x0000ff00UL;
-			if (mode.find("b") != std::string::npos)
+			if (mode.find('b') != std::string::npos)
 				mask |= 0x000000ffUL;
 
 			core::dimension2d<u32> dim = baseimg->getDimension();
@@ -2255,9 +2216,8 @@ u32 parseImageTransform(const std::string& s)
 				pos++;
 				break;
 			}
-			else if (!(name_i.empty()) &&
-				lowercase(s.substr(pos, name_i.size())) == name_i)
-			{
+
+			if (!(name_i.empty()) && lowercase(s.substr(pos, name_i.size())) == name_i) {
 				transform = i;
 				pos += name_i.size();
 				break;
@@ -2284,8 +2244,8 @@ core::dimension2d<u32> imageTransformDimension(u32 transform, core::dimension2d<
 {
 	if (transform % 2 == 0)
 		return dim;
-	else
-		return core::dimension2d<u32>(dim.Height, dim.Width);
+
+	return core::dimension2d<u32>(dim.Height, dim.Width);
 }
 
 void imageTransform(u32 transform, video::IImage *src, video::IImage *dst)
@@ -2340,12 +2300,12 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 	std::string fname_base = name;
 	static const char *normal_ext = "_normal.png";
 	static const u32 normal_ext_size = strlen(normal_ext);
-	size_t pos = fname_base.find(".");
+	size_t pos = fname_base.find('.');
 	std::string fname_normal = fname_base.substr(0, pos) + normal_ext;
 	if (isKnownSourceImage(fname_normal)) {
 		// look for image extension and replace it
 		size_t i = 0;
-		while ((i = fname_base.find(".", i)) != std::string::npos) {
+		while ((i = fname_base.find('.', i)) != std::string::npos) {
 			fname_base.replace(i, 4, normal_ext);
 			i += normal_ext_size;
 		}
@@ -2356,7 +2316,7 @@ video::ITexture* TextureSource::getNormalTexture(const std::string &name)
 
 video::SColor TextureSource::getTextureAverageColor(const std::string &name)
 {
-	video::IVideoDriver *driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 	video::SColor c(0, 0, 0, 0);
 	video::ITexture *texture = getTexture(name);
 	video::IImage *image = driver->createImage(texture,
@@ -2399,15 +2359,16 @@ video::ITexture *TextureSource::getShaderFlagsTexture(bool normalmap_present)
 
 	if (isKnownSourceImage(tname)) {
 		return getTexture(tname);
-	} else {
-		video::IVideoDriver *driver = m_device->getVideoDriver();
-		video::IImage *flags_image = driver->createImage(
-			video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
-		sanity_check(flags_image != NULL);
-		video::SColor c(255, normalmap_present ? 255 : 0, 0, 0);
-		flags_image->setPixel(0, 0, c);
-		insertSourceImage(tname, flags_image);
-		flags_image->drop();
-		return getTexture(tname);
 	}
+
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
+	video::IImage *flags_image = driver->createImage(
+		video::ECF_A8R8G8B8, core::dimension2d<u32>(1, 1));
+	sanity_check(flags_image != NULL);
+	video::SColor c(255, normalmap_present ? 255 : 0, 0, 0);
+	flags_image->setPixel(0, 0, c);
+	insertSourceImage(tname, flags_image);
+	flags_image->drop();
+	return getTexture(tname);
+
 }

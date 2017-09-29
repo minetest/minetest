@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2014-2017 paramat
+Copyright (C) 2014-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -48,11 +48,13 @@ FlagDesc flagdesc_mapgen_v5[] = {
 MapgenV5::MapgenV5(int mapgenid, MapgenV5Params *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags          = params->spflags;
-	this->cave_width       = params->cave_width;
-	this->cavern_limit     = params->cavern_limit;
-	this->cavern_taper     = params->cavern_taper;
-	this->cavern_threshold = params->cavern_threshold;
+	spflags          = params->spflags;
+	cave_width       = params->cave_width;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	cavern_limit     = params->cavern_limit;
+	cavern_taper     = params->cavern_taper;
+	cavern_threshold = params->cavern_threshold;
 
 	// Terrain noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
@@ -78,21 +80,15 @@ MapgenV5::~MapgenV5()
 }
 
 
-MapgenV5Params::MapgenV5Params()
+MapgenV5Params::MapgenV5Params():
+	np_filler_depth (0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0),
+	np_factor       (0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0),
+	np_height       (0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0),
+	np_ground       (0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED),
+	np_cave1        (0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0),
+	np_cave2        (0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0),
+	np_cavern       (0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0)
 {
-	spflags          = MGV5_CAVERNS;
-	cave_width       = 0.125;
-	cavern_limit     = -256;
-	cavern_taper     = 256;
-	cavern_threshold = 0.7;
-
-	np_filler_depth = NoiseParams(0, 1,  v3f(150, 150, 150), 261,    4, 0.7,  2.0);
-	np_factor       = NoiseParams(0, 1,  v3f(250, 250, 250), 920381, 3, 0.45, 2.0);
-	np_height       = NoiseParams(0, 10, v3f(250, 250, 250), 84174,  4, 0.5,  2.0);
-	np_ground       = NoiseParams(0, 40, v3f(80,  80,  80),  983240, 4, 0.55, 2.0, NOISE_FLAG_EASED);
-	np_cave1        = NoiseParams(0, 12, v3f(50,  50,  50),  52534,  4, 0.5,  2.0);
-	np_cave2        = NoiseParams(0, 12, v3f(50,  50,  50),  10325,  4, 0.5,  2.0);
-	np_cavern       = NoiseParams(0, 1,  v3f(384, 128, 384), 723,    5, 0.63, 2.0);
 }
 
 
@@ -100,6 +96,8 @@ void MapgenV5Params::readParams(const Settings *settings)
 {
 	settings->getFlagStrNoEx("mgv5_spflags",        spflags, flagdesc_mapgen_v5);
 	settings->getFloatNoEx("mgv5_cave_width",       cave_width);
+	settings->getS16NoEx("mgv5_large_cave_depth",   large_cave_depth);
+	settings->getS16NoEx("mgv5_lava_depth",         lava_depth);
 	settings->getS16NoEx("mgv5_cavern_limit",       cavern_limit);
 	settings->getS16NoEx("mgv5_cavern_taper",       cavern_taper);
 	settings->getFloatNoEx("mgv5_cavern_threshold", cavern_threshold);
@@ -118,6 +116,8 @@ void MapgenV5Params::writeParams(Settings *settings) const
 {
 	settings->setFlagStr("mgv5_spflags",        spflags, flagdesc_mapgen_v5, U32_MAX);
 	settings->setFloat("mgv5_cave_width",       cave_width);
+	settings->setS16("mgv5_large_cave_depth",   large_cave_depth);
+	settings->setS16("mgv5_lava_depth",         lava_depth);
 	settings->setS16("mgv5_cavern_limit",       cavern_limit);
 	settings->setS16("mgv5_cavern_taper",       cavern_taper);
 	settings->setFloat("mgv5_cavern_threshold", cavern_threshold);
@@ -134,7 +134,6 @@ void MapgenV5Params::writeParams(Settings *settings) const
 
 int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 {
-	//TimeTaker t("getGroundLevelAtPoint", NULL, PRECISION_MICRO);
 
 	float f = 0.55 + NoisePerlin2D(&noise_factor->np, p.X, p.Y, seed);
 	if (f < 0.01)
@@ -143,25 +142,27 @@ int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 		f *= 1.6;
 	float h = NoisePerlin2D(&noise_height->np, p.X, p.Y, seed);
 
-	for (s16 y = 128; y >= -128; y--) {
+	// noise_height 'offset' is the average level of terrain. At least 50% of
+	// terrain will be below this.
+	// Raising the maximum spawn level above 'water_level + 16' is necessary
+	// for when noise_height 'offset' is set much higher than water_level.
+	s16 max_spawn_y = MYMAX(noise_height->np.offset, water_level + 16);
+
+	// Starting spawn search at max_spawn_y + 128 ensures 128 nodes of open
+	// space above spawn position. Avoids spawning in possibly sealed voids.
+	for (s16 y = max_spawn_y + 128; y >= water_level; y--) {
 		float n_ground = NoisePerlin3D(&noise_ground->np, p.X, y, p.Y, seed);
 
 		if (n_ground * f > y - h) {  // If solid
-			// If either top 2 nodes of search are solid this is inside a
-			// mountain or floatland with possibly no space for the player to spawn.
-			if (y >= 127) {
+			if (y < water_level || y > max_spawn_y)
 				return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-			} else {  // Ground below at least 2 nodes of empty space
-				if (y <= water_level || y > water_level + 16)
-					return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
-				else
-					return y;
-			}
+
+			// y + 2 because y is surface and due to biome 'dust' nodes.
+			return y + 2;
 		}
 	}
-
-	//printf("getGroundLevelAtPoint: %dus\n", t.stop());
-	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn position, no ground found
+	// Unsuitable spawn position, no ground found
+	return MAX_MAP_GENERATION_LIMIT;
 }
 
 
@@ -200,7 +201,10 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes();
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -215,12 +219,12 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 			// large caverns and floating blobs of overgenerated liquid.
 			generateCaves(stone_surface_max_y, -MAX_MAP_GENERATION_LIMIT);
 		else
-			generateCaves(stone_surface_max_y, MGV5_LARGE_CAVE_DEPTH);
+			generateCaves(stone_surface_max_y, large_cave_depth);
 	}
 
 	// Generate dungeons and desert temples
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

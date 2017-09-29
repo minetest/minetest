@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_INVENTORY_H_
-#define L_INVENTORY_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 
@@ -93,7 +92,7 @@ private:
 	// Returns true if the item completely fits into the list
 	static int l_room_for_item(lua_State *L);
 
-	// contains_item(self, listname, itemstack or itemstring or table or nil) -> true/false
+	// contains_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> true/false
 	// Returns true if the list contains the given count of the given item name
 	static int l_contains_item(lua_State *L);
 
@@ -107,7 +106,7 @@ private:
 public:
 	InvRef(const InventoryLocation &loc);
 
-	~InvRef();
+	~InvRef() = default;
 
 	// Creates an InvRef and leaves it on top of stack
 	// Not callable from Lua; all references are created on the C side.
@@ -126,5 +125,3 @@ private:
 public:
 	static void Initialize(lua_State *L, int top);
 };
-
-#endif /* L_INVENTORY_H_ */

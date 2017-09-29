@@ -17,11 +17,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CAVEGEN_HEADER
-#define CAVEGEN_HEADER
+#pragma once
 
 #define VMANIP_FLAG_CAVE VOXELFLAG_CHECKED1
-#define DEFAULT_LAVA_DEPTH (-256)
 
 class GenerateNotifier;
 
@@ -157,7 +155,7 @@ public:
 	CavesRandomWalk(INodeDefManager *ndef, GenerateNotifier *gennotify = NULL,
 			s32 seed = 0, int water_level = 1,
 			content_t water_source = CONTENT_IGNORE,
-			content_t lava_source = CONTENT_IGNORE);
+			content_t lava_source = CONTENT_IGNORE, int lava_depth = -256);
 
 	// vm and ps are mandatory parameters.
 	// If heightmap is NULL, the surface level at all points is assumed to
@@ -242,5 +240,3 @@ private:
 
 	inline s16 getSurfaceFromHeightmap(v3s16 p);
 };
-
-#endif

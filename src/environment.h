@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef ENVIRONMENT_HEADER
-#define ENVIRONMENT_HEADER
+#pragma once
 
 /*
 	This class is the game's environment.
@@ -33,22 +32,24 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <list>
 #include <queue>
 #include <map>
+#include <atomic>
+#include <mutex>
 #include "irr_v3d.h"
-#include "activeobject.h"
-#include "util/numeric.h"
-#include "threading/mutex.h"
-#include "threading/atomic.h"
 #include "network/networkprotocol.h" // for AccessDeniedCode
+#include "util/basic_macros.h"
 
 class IGameDef;
 class Map;
+struct PointedThing;
+class RaycastState;
 
 class Environment
 {
 public:
 	// Environment will delete the map passed to the constructor
 	Environment(IGameDef *gamedef);
-	virtual ~Environment();
+	virtual ~Environment() = default;
+	DISABLE_CLASS_COPY(Environment);
 
 	/*
 		Step everything in environment.
@@ -75,29 +76,50 @@ public:
 
 	u32 getDayCount();
 
+	/*!
+	 * Gets the objects pointed by the shootline as
+	 * pointed things.
+	 * If this is a client environment, the local player
+	 * won't be returned.
+	 * @param[in]  shootline_on_map the shootline for
+	 * the test in world coordinates
+	 *
+	 * @param[out] objects          found objects
+	 */
+	virtual void getSelectedActiveObjects(const core::line3d<f32> &shootline_on_map,
+			std::vector<PointedThing> &objects) = 0;
+
+	/*!
+	 * Returns the next node or object the shootline meets.
+	 * @param state current state of the raycast
+	 * @result output, will contain the next pointed thing
+	 */
+	void continueRaycast(RaycastState *state, PointedThing *result);
+
 	// counter used internally when triggering ABMs
 	u32 m_added_objects;
 
 	IGameDef *getGameDef() { return m_gamedef; }
+
 protected:
-	GenericAtomic<float> m_time_of_day_speed;
+	std::atomic<float> m_time_of_day_speed;
 
 	/*
 	 * Below: values managed by m_time_lock
 	*/
-	// Time of day in milli-hours (0-23999); determines day and night
+	// Time of day in milli-hours (0-23999), determines day and night
 	u32 m_time_of_day;
 	// Time of day in 0...1
 	float m_time_of_day_f;
 	// Stores the skew created by the float -> u32 conversion
 	// to be applied at next conversion, so that there is no real skew.
-	float m_time_conversion_skew;
+	float m_time_conversion_skew = 0.0f;
 	// Overriding the day-night ratio is useful for custom sky visuals
-	bool m_enable_day_night_ratio_override;
-	u32 m_day_night_ratio_override;
+	bool m_enable_day_night_ratio_override = false;
+	u32 m_day_night_ratio_override = 0.0f;
 	// Days from the server start, accounts for time shift
 	// in game (e.g. /time or bed usage)
-	Atomic<u32> m_day_count;
+	std::atomic<u32> m_day_count;
 	/*
 	 * Above: values managed by m_time_lock
 	*/
@@ -119,9 +141,5 @@ protected:
 	IGameDef *m_gamedef;
 
 private:
-	Mutex m_time_lock;
-
-	DISABLE_CLASS_COPY(Environment);
+	std::mutex m_time_lock;
 };
-
-#endif

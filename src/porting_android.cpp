@@ -31,7 +31,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <sstream>
 #include <exception>
-#include <stdlib.h>
+#include <cstdlib>
 
 #ifdef GPROF
 #include "prof.h"

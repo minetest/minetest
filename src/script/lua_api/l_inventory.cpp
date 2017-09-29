@@ -23,7 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "common/c_converter.h"
 #include "common/c_content.h"
 #include "server.h"
-#include "player.h"
+#include "remoteplayer.h"
 
 /*
 	InvRef
@@ -325,8 +325,8 @@ int InvRef::l_room_for_item(lua_State *L)
 	return 1;
 }
 
-// contains_item(self, listname, itemstack or itemstring or table or nil) -> true/false
-// Returns true if the list contains the given count of the given item name
+// contains_item(self, listname, itemstack or itemstring or table or nil, [match_meta]) -> true/false
+// Returns true if the list contains the given count of the given item
 int InvRef::l_contains_item(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -334,8 +334,11 @@ int InvRef::l_contains_item(lua_State *L)
 	const char *listname = luaL_checkstring(L, 2);
 	ItemStack item = read_item(L, 3, getServer(L)->idef());
 	InventoryList *list = getlist(L, ref, listname);
-	if(list){
-		lua_pushboolean(L, list->containsItem(item));
+	bool match_meta = false;
+	if (lua_isboolean(L, 4))
+		match_meta = lua_toboolean(L, 4);
+	if (list) {
+		lua_pushboolean(L, list->containsItem(item, match_meta));
 	} else {
 		lua_pushboolean(L, false);
 	}
@@ -403,10 +406,6 @@ int InvRef::l_get_location(lua_State *L)
 
 InvRef::InvRef(const InventoryLocation &loc):
 	m_loc(loc)
-{
-}
-
-InvRef::~InvRef()
 {
 }
 
@@ -496,28 +495,29 @@ int ModApiInventory::l_get_inventory(lua_State *L)
 		v3s16 pos = check_v3s16(L, -1);
 		loc.setNodeMeta(pos);
 
-		if(getServer(L)->getInventory(loc) != NULL)
+		if (getServer(L)->getInventory(loc) != NULL)
 			InvRef::create(L, loc);
 		else
 			lua_pushnil(L);
 		return 1;
-	} else {
-		NO_MAP_LOCK_REQUIRED;
-		if(type == "player"){
-			std::string name = checkstringfield(L, 1, "name");
-			loc.setPlayer(name);
-		} else if(type == "detached"){
-			std::string name = checkstringfield(L, 1, "name");
-			loc.setDetached(name);
-		}
-
-		if(getServer(L)->getInventory(loc) != NULL)
-			InvRef::create(L, loc);
-		else
-			lua_pushnil(L);
-		return 1;
-		// END NO_MAP_LOCK_REQUIRED;
 	}
+
+	NO_MAP_LOCK_REQUIRED;
+	if (type == "player") {
+		std::string name = checkstringfield(L, 1, "name");
+		loc.setPlayer(name);
+	} else if (type == "detached") {
+		std::string name = checkstringfield(L, 1, "name");
+		loc.setDetached(name);
+	}
+
+	if (getServer(L)->getInventory(loc) != NULL)
+		InvRef::create(L, loc);
+	else
+		lua_pushnil(L);
+	return 1;
+	// END NO_MAP_LOCK_REQUIRED;
+
 }
 
 // create_detached_inventory_raw(name, [player_name])

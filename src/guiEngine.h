@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef GUI_ENGINE_H_
-#define GUI_ENGINE_H_
+#pragma once
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -43,7 +42,7 @@ typedef enum {
 } texture_layer;
 
 typedef struct {
-	video::ITexture* texture;
+	video::ITexture *texture = nullptr;
 	bool             tile;
 	unsigned int     minsize;
 } image_definition;
@@ -68,7 +67,7 @@ public:
 	 * default constructor
 	 * @param engine the engine data is transmitted for further processing
 	 */
-	TextDestGuiEngine(GUIEngine* engine);
+	TextDestGuiEngine(GUIEngine* engine) : m_engine(engine) {};
 
 	/**
 	 * receive fields transmitted by guiFormSpecMenu
@@ -84,7 +83,7 @@ public:
 
 private:
 	/** target to transmit data to */
-	GUIEngine* m_engine;
+	GUIEngine *m_engine = nullptr;
 };
 
 /** GUIEngine specific implementation of ISimpleTextureSource */
@@ -95,7 +94,7 @@ public:
 	 * default constructor
 	 * @param driver the video driver to load textures from
 	 */
-	MenuTextureSource(video::IVideoDriver *driver);
+	MenuTextureSource(video::IVideoDriver *driver) : m_driver(driver) {};
 
 	/**
 	 * destructor, removes all loaded textures
@@ -107,11 +106,11 @@ public:
 	 * @param name path to the texture
 	 * @param id receives the texture ID, always 0 in this implementation
 	 */
-	video::ITexture* getTexture(const std::string &name, u32 *id = NULL);
+	video::ITexture *getTexture(const std::string &name, u32 *id = NULL);
 
 private:
 	/** driver to get textures from */
-	video::IVideoDriver *m_driver;
+	video::IVideoDriver *m_driver = nullptr;
 	/** set of texture names to delete */
 	std::set<std::string> m_to_delete;
 };
@@ -150,13 +149,11 @@ public:
 	 * @param smgr scene manager to add scene elements to
 	 * @param data struct to transfer data to main game handling
 	 */
-	GUIEngine(irr::IrrlichtDevice* dev,
-			JoystickController *joystick,
-			gui::IGUIElement* parent,
+	GUIEngine(JoystickController *joystick,
+			gui::IGUIElement *parent,
 			IMenuManager *menumgr,
-			scene::ISceneManager* smgr,
-			MainMenuData* data,
-			bool& kill);
+			MainMenuData *data,
+			bool &kill);
 
 	/** default destructor */
 	virtual ~GUIEngine();
@@ -164,7 +161,7 @@ public:
 	/**
 	 * return MainMenuScripting interface
 	 */
-	MainMenuScripting* getScriptIface()
+	MainMenuScripting *getScriptIface()
 	{
 		return m_script;
 	}
@@ -192,60 +189,58 @@ private:
 	/** update size of topleftext element */
 	void updateTopLeftTextSize();
 
-	/** device to draw at */
-	irr::IrrlichtDevice*     m_device;
 	/** parent gui element */
-	gui::IGUIElement*        m_parent;
+	gui::IGUIElement        *m_parent = nullptr;
 	/** manager to add menus to */
-	IMenuManager*            m_menumanager;
+	IMenuManager            *m_menumanager = nullptr;
 	/** scene manager to add scene elements to */
-	scene::ISceneManager*    m_smgr;
+	scene::ISceneManager    *m_smgr = nullptr;
 	/** pointer to data beeing transfered back to main game handling */
-	MainMenuData*            m_data;
+	MainMenuData            *m_data = nullptr;
 	/** pointer to texture source */
-	ISimpleTextureSource*    m_texture_source;
+	ISimpleTextureSource    *m_texture_source = nullptr;
 	/** pointer to soundmanager*/
-	ISoundManager*           m_sound_manager;
+	ISoundManager           *m_sound_manager = nullptr;
 
 	/** representation of form source to be used in mainmenu formspec */
-	FormspecFormSource*      m_formspecgui;
+	FormspecFormSource      *m_formspecgui = nullptr;
 	/** formspec input receiver */
-	TextDestGuiEngine*       m_buttonhandler;
+	TextDestGuiEngine       *m_buttonhandler = nullptr;
 	/** the formspec menu */
-	GUIFormSpecMenu*         m_menu;
+	GUIFormSpecMenu         *m_menu = nullptr;
 
 	/** reference to kill variable managed by SIGINT handler */
-	bool&                    m_kill;
+	bool                    &m_kill;
 
 	/** variable used to abort menu and return back to main game handling */
-	bool                     m_startgame;
+	bool                     m_startgame = false;
 
 	/** scripting interface */
-	MainMenuScripting*       m_script;
+	MainMenuScripting       *m_script = nullptr;
 
 	/** script basefolder */
-	std::string              m_scriptdir;
+	std::string              m_scriptdir = "";
 
 	/**
 	 * draw background layer
 	 * @param driver to use for drawing
 	 */
-	void drawBackground(video::IVideoDriver* driver);
+	void drawBackground(video::IVideoDriver *driver);
 	/**
 	 * draw overlay layer
 	 * @param driver to use for drawing
 	 */
-	void drawOverlay(video::IVideoDriver* driver);
+	void drawOverlay(video::IVideoDriver *driver);
 	/**
 	 * draw header layer
 	 * @param driver to use for drawing
 	 */
-	void drawHeader(video::IVideoDriver* driver);
+	void drawHeader(video::IVideoDriver *driver);
 	/**
 	 * draw footer layer
 	 * @param driver to use for drawing
 	 */
-	void drawFooter(video::IVideoDriver* driver);
+	void drawFooter(video::IVideoDriver *driver);
 
 	/**
 	 * load a texture for a specified layer
@@ -272,7 +267,7 @@ private:
 	void setTopleftText(const std::string &text);
 
 	/** pointer to gui element shown at topleft corner */
-	irr::gui::IGUIStaticText*	m_irr_toplefttext;
+	irr::gui::IGUIStaticText *m_irr_toplefttext = nullptr;
 	/** and text that is in it */
 	EnrichedString m_toplefttext;
 
@@ -290,13 +285,13 @@ private:
 		/** absolute time of last cloud processing */
 		u32     lasttime;
 		/** pointer to cloud class */
-		Clouds* clouds;
+		Clouds *clouds = nullptr;
 		/** camera required for drawing clouds */
-		scene::ICameraSceneNode* camera;
+		scene::ICameraSceneNode *camera = nullptr;
 	};
 
 	/** is drawing of clouds enabled atm */
-	bool        m_clouds_enabled;
+	bool        m_clouds_enabled = true;
 	/** data used to draw clouds */
 	clouddata   m_cloud;
 
@@ -307,7 +302,3 @@ private:
 
 
 };
-
-
-
-#endif /* GUI_ENGINE_H_ */

@@ -17,22 +17,21 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef MINIMAP_HEADER
-#define MINIMAP_HEADER
+#pragma once
 
 #include "irrlichttypes_extrabloated.h"
-#include "client.h"
+#include "util/thread.h"
 #include "voxel.h"
-#include "threading/mutex.h"
-#include "threading/semaphore.h"
 #include <map>
 #include <string>
 #include <vector>
-#include "camera.h"
+
+class Client;
+class ITextureSource;
+class IShaderSource;
 
 #define MINIMAP_MAX_SX 512
 #define MINIMAP_MAX_SY 512
-
 
 enum MinimapMode {
 	MINIMAP_MODE_OFF,
@@ -64,7 +63,7 @@ struct MinimapPixel {
 };
 
 struct MinimapMapblock {
-	void getMinimapNodes(VoxelManipulator *vmanip, v3s16 pos);
+	void getMinimapNodes(VoxelManipulator *vmanip, const v3s16 &pos);
 
 	MinimapPixel data[MAP_BLOCKSIZE * MAP_BLOCKSIZE];
 };
@@ -79,21 +78,19 @@ struct MinimapData {
 	MinimapPixel minimap_scan[MINIMAP_MAX_SX * MINIMAP_MAX_SY];
 	bool map_invalidated;
 	bool minimap_shape_round;
-	video::IImage *minimap_image;
-	video::IImage *heightmap_image;
-	video::IImage *minimap_mask_round;
-	video::IImage *minimap_mask_square;
-	video::ITexture *texture;
-	video::ITexture *heightmap_texture;
-	video::ITexture *minimap_overlay_round;
-	video::ITexture *minimap_overlay_square;
-	video::ITexture *player_marker;
-	video::ITexture *object_marker_red;
+	video::IImage *minimap_mask_round = nullptr;
+	video::IImage *minimap_mask_square = nullptr;
+	video::ITexture *texture = nullptr;
+	video::ITexture *heightmap_texture = nullptr;
+	video::ITexture *minimap_overlay_round = nullptr;
+	video::ITexture *minimap_overlay_square = nullptr;
+	video::ITexture *player_marker = nullptr;
+	video::ITexture *object_marker_red = nullptr;
 };
 
 struct QueuedMinimapUpdate {
 	v3s16 pos;
-	MinimapMapblock *data;
+	MinimapMapblock *data = nullptr;
 };
 
 class MinimapUpdateThread : public UpdateThread {
@@ -106,20 +103,20 @@ public:
 	bool pushBlockUpdate(v3s16 pos, MinimapMapblock *data);
 	bool popBlockUpdate(QueuedMinimapUpdate *update);
 
-	MinimapData *data;
+	MinimapData *data = nullptr;
 
 protected:
 	virtual void doUpdate();
 
 private:
-	Mutex m_queue_mutex;
+	std::mutex m_queue_mutex;
 	std::deque<QueuedMinimapUpdate> m_update_queue;
 	std::map<v3s16, MinimapMapblock *> m_blocks_cache;
 };
 
 class Minimap {
 public:
-	Minimap(IrrlichtDevice *device, Client *client);
+	Minimap(Client *client);
 	~Minimap();
 
 	void addBlock(v3s16 pos, MinimapMapblock *data);
@@ -161,8 +158,6 @@ private:
 	bool m_enable_shaders;
 	u16 m_surface_mode_scan_height;
 	f32 m_angle;
-	Mutex m_mutex;
+	std::mutex m_mutex;
 	std::list<v2f> m_active_markers;
 };
-
-#endif

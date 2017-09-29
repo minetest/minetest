@@ -19,9 +19,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "guiEngine.h"
 
-#include <fstream>
 #include <IGUIStaticText.h>
 #include <ICameraSceneNode.h>
+#include "client/renderingengine.h"
 #include "scripting_mainmenu.h"
 #include "util/numeric.h"
 #include "config.h"
@@ -46,14 +46,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 
 /******************************************************************************/
-/** TextDestGuiEngine                                                         */
-/******************************************************************************/
-TextDestGuiEngine::TextDestGuiEngine(GUIEngine* engine)
-{
-	m_engine = engine;
-}
-
-/******************************************************************************/
 void TextDestGuiEngine::gotText(const StringMap &fields)
 {
 	m_engine->getScriptIface()->handleMainMenuButtons(fields);
@@ -66,26 +58,17 @@ void TextDestGuiEngine::gotText(const std::wstring &text)
 }
 
 /******************************************************************************/
-/** MenuTextureSource                                                         */
-/******************************************************************************/
-MenuTextureSource::MenuTextureSource(video::IVideoDriver *driver)
-{
-	m_driver = driver;
-}
-
-/******************************************************************************/
 MenuTextureSource::~MenuTextureSource()
 {
-	for (std::set<std::string>::iterator it = m_to_delete.begin();
-			it != m_to_delete.end(); ++it) {
-		const char *tname = (*it).c_str();
+	for (const std::string &texture_to_delete : m_to_delete) {
+		const char *tname = texture_to_delete.c_str();
 		video::ITexture *texture = m_driver->getTexture(tname);
 		m_driver->removeTexture(texture);
 	}
 }
 
 /******************************************************************************/
-video::ITexture* MenuTextureSource::getTexture(const std::string &name, u32 *id)
+video::ITexture *MenuTextureSource::getTexture(const std::string &name, u32 *id)
 {
 	if(id)
 		*id = 0;
@@ -130,40 +113,26 @@ void MenuMusicFetcher::fetchSounds(const std::string &name,
 /******************************************************************************/
 /** GUIEngine                                                                 */
 /******************************************************************************/
-GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
-						JoystickController *joystick,
-						gui::IGUIElement* parent,
-						IMenuManager *menumgr,
-						scene::ISceneManager* smgr,
-						MainMenuData* data,
-						bool& kill) :
-	m_device(dev),
+GUIEngine::GUIEngine(JoystickController *joystick,
+		gui::IGUIElement *parent,
+		IMenuManager *menumgr,
+		MainMenuData *data,
+		bool &kill) :
 	m_parent(parent),
 	m_menumanager(menumgr),
-	m_smgr(smgr),
+	m_smgr(RenderingEngine::get_scene_manager()),
 	m_data(data),
-	m_texture_source(NULL),
-	m_sound_manager(NULL),
-	m_formspecgui(0),
-	m_buttonhandler(0),
-	m_menu(0),
-	m_kill(kill),
-	m_startgame(false),
-	m_script(0),
-	m_scriptdir(""),
-	m_irr_toplefttext(0),
-	m_clouds_enabled(true),
-	m_cloud()
+	m_kill(kill)
 {
 	//initialize texture pointers
-	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
-		m_textures[i].texture = NULL;
+	for (image_definition &texture : m_textures) {
+		texture.texture = NULL;
 	}
 	// is deleted by guiformspec!
 	m_buttonhandler = new TextDestGuiEngine(this);
 
 	//create texture source
-	m_texture_source = new MenuTextureSource(m_device->getVideoDriver());
+	m_texture_source = new MenuTextureSource(RenderingEngine::get_video_driver());
 
 	//create soundmanager
 	MenuMusicFetcher soundfetcher;
@@ -181,15 +150,14 @@ GUIEngine::GUIEngine(	irr::IrrlichtDevice* dev,
 	rect += v2s32(4, 0);
 
 	m_irr_toplefttext =
-		addStaticText(m_device->getGUIEnvironment(), m_toplefttext,
+		addStaticText(RenderingEngine::get_gui_env(), m_toplefttext,
 			rect, false, true, 0, -1);
 
 	//create formspecsource
 	m_formspecgui = new FormspecFormSource("");
 
 	/* Create menu */
-	m_menu = new GUIFormSpecMenu(m_device,
-			joystick,
+	m_menu = new GUIFormSpecMenu(joystick,
 			m_parent,
 			-1,
 			m_menumanager,
@@ -256,27 +224,27 @@ void GUIEngine::run()
 {
 	// Always create clouds because they may or may not be
 	// needed based on the game selected
-	video::IVideoDriver* driver = m_device->getVideoDriver();
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	cloudInit();
 
 	unsigned int text_height = g_fontengine->getTextHeight();
 
-	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screenW"),
-		g_settings->getU16("screenH"));
+	irr::core::dimension2d<u32> previous_screen_size(g_settings->getU16("screen_w"),
+		g_settings->getU16("screen_h"));
 
-	while (m_device->run() && (!m_startgame) && (!m_kill)) {
+	while (RenderingEngine::run() && (!m_startgame) && (!m_kill)) {
 
 		const irr::core::dimension2d<u32> &current_screen_size =
-			m_device->getVideoDriver()->getScreenSize();
+			RenderingEngine::get_video_driver()->getScreenSize();
 		// Verify if window size has changed and save it if it's the case
 		// Ensure evaluating settings->getBool after verifying screensize
 		// First condition is cheaper
 		if (previous_screen_size != current_screen_size &&
 				current_screen_size != irr::core::dimension2d<u32>(0,0) &&
 				g_settings->getBool("autosave_screensize")) {
-			g_settings->setU16("screenW", current_screen_size.Width);
-			g_settings->setU16("screenH", current_screen_size.Height);
+			g_settings->setU16("screen_w", current_screen_size.Width);
+			g_settings->setU16("screen_h", current_screen_size.Height);
 			previous_screen_size = current_screen_size;
 		}
 
@@ -299,7 +267,7 @@ void GUIEngine::run()
 		drawHeader(driver);
 		drawFooter(driver);
 
-		m_device->getGUIEnvironment()->drawAll();
+		RenderingEngine::get_gui_env()->drawAll();
 
 		driver->endScene();
 
@@ -319,10 +287,7 @@ void GUIEngine::run()
 /******************************************************************************/
 GUIEngine::~GUIEngine()
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
-
-	if(m_sound_manager != &dummySoundManager){
+	if (m_sound_manager != &dummySoundManager){
 		delete m_sound_manager;
 		m_sound_manager = NULL;
 	}
@@ -333,9 +298,9 @@ GUIEngine::~GUIEngine()
 	m_irr_toplefttext->setText(L"");
 
 	//clean up texture pointers
-	for (unsigned int i = 0; i < TEX_LAYER_MAX; i++) {
-		if (m_textures[i].texture != NULL)
-			driver->removeTexture(m_textures[i].texture);
+	for (image_definition &texture : m_textures) {
+		if (texture.texture)
+			RenderingEngine::get_video_driver()->removeTexture(texture.texture);
 	}
 
 	delete m_texture_source;
@@ -347,21 +312,21 @@ GUIEngine::~GUIEngine()
 /******************************************************************************/
 void GUIEngine::cloudInit()
 {
-	m_cloud.clouds = new Clouds(m_smgr->getRootSceneNode(),
-			m_smgr, -1, rand(), 100);
-	m_cloud.clouds->update(v2f(0, 0), video::SColor(255,200,200,255));
+	m_cloud.clouds = new Clouds(m_smgr, -1, rand());
+	m_cloud.clouds->setHeight(100.0f);
+	m_cloud.clouds->update(v3f(0, 0, 0), video::SColor(255,200,200,255));
 
 	m_cloud.camera = m_smgr->addCameraSceneNode(0,
 				v3f(0,0,0), v3f(0, 60, 100));
 	m_cloud.camera->setFarValue(10000);
 
-	m_cloud.lasttime = m_device->getTimer()->getTime();
+	m_cloud.lasttime = RenderingEngine::get_timer_time();
 }
 
 /******************************************************************************/
 void GUIEngine::cloudPreProcess()
 {
-	u32 time = m_device->getTimer()->getTime();
+	u32 time = RenderingEngine::get_timer_time();
 
 	if(time > m_cloud.lasttime)
 		m_cloud.dtime = (time - m_cloud.lasttime) / 1000.0;
@@ -383,7 +348,7 @@ void GUIEngine::cloudPostProcess()
 	u32 busytime_u32;
 
 	// not using getRealTime is necessary for wine
-	u32 time = m_device->getTimer()->getTime();
+	u32 time = RenderingEngine::get_timer_time();
 	if(time > m_cloud.lasttime)
 		busytime_u32 = time - m_cloud.lasttime;
 	else
@@ -392,14 +357,14 @@ void GUIEngine::cloudPostProcess()
 	// FPS limiter
 	u32 frametime_min = 1000./fps_max;
 
-	if(busytime_u32 < frametime_min) {
+	if (busytime_u32 < frametime_min) {
 		u32 sleeptime = frametime_min - busytime_u32;
-		m_device->sleep(sleeptime);
+		RenderingEngine::get_raw_device()->sleep(sleeptime);
 	}
 }
 
 /******************************************************************************/
-void GUIEngine::drawBackground(video::IVideoDriver* driver)
+void GUIEngine::drawBackground(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
@@ -441,7 +406,7 @@ void GUIEngine::drawBackground(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawOverlay(video::IVideoDriver* driver)
+void GUIEngine::drawOverlay(video::IVideoDriver *driver)
 {
 	v2u32 screensize = driver->getScreenSize();
 
@@ -460,7 +425,7 @@ void GUIEngine::drawOverlay(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawHeader(video::IVideoDriver* driver)
+void GUIEngine::drawHeader(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
@@ -494,7 +459,7 @@ void GUIEngine::drawHeader(video::IVideoDriver* driver)
 }
 
 /******************************************************************************/
-void GUIEngine::drawFooter(video::IVideoDriver* driver)
+void GUIEngine::drawFooter(video::IVideoDriver *driver)
 {
 	core::dimension2d<u32> screensize = driver->getScreenSize();
 
@@ -529,17 +494,14 @@ void GUIEngine::drawFooter(video::IVideoDriver* driver)
 bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 		bool tile_image, unsigned int minsize)
 {
-	video::IVideoDriver* driver = m_device->getVideoDriver();
-	FATAL_ERROR_IF(driver == 0, "Could not get video driver");
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
-	if (m_textures[layer].texture != NULL)
-	{
+	if (m_textures[layer].texture) {
 		driver->removeTexture(m_textures[layer].texture);
 		m_textures[layer].texture = NULL;
 	}
 
-	if ((texturepath == "") || !fs::PathExists(texturepath))
-	{
+	if (texturepath.empty() || !fs::PathExists(texturepath)) {
 		return false;
 	}
 
@@ -547,8 +509,7 @@ bool GUIEngine::setTexture(texture_layer layer, std::string texturepath,
 	m_textures[layer].tile    = tile_image;
 	m_textures[layer].minsize = minsize;
 
-	if (m_textures[layer].texture == NULL)
-	{
+	if (!m_textures[layer].texture) {
 		return false;
 	}
 
@@ -586,7 +547,7 @@ bool GUIEngine::downloadFile(const std::string &url, const std::string &target)
 /******************************************************************************/
 void GUIEngine::setTopleftText(const std::string &text)
 {
-	m_toplefttext = utf8_to_wide(text);
+	m_toplefttext = translate_string(utf8_to_wide(text));
 
 	updateTopLeftTextSize();
 }
@@ -600,7 +561,7 @@ void GUIEngine::updateTopLeftTextSize()
 
 	m_irr_toplefttext->remove();
 	m_irr_toplefttext =
-		addStaticText(m_device->getGUIEnvironment(), m_toplefttext,
+		addStaticText(RenderingEngine::get_gui_env(), m_toplefttext,
 			rect, false, true, 0, -1);
 }
 

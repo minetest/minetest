@@ -2,7 +2,7 @@ BasedOnStyle: LLVM
 IndentWidth: 8
 UseTab: Always
 BreakBeforeBraces: Custom
-Standard: Cpp03
+Standard: Cpp11
 BraceWrapping:
   AfterClass: true
   AfterControlStatement: false

@@ -17,10 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef WIELDMESH_HEADER
-#define WIELDMESH_HEADER
+#pragma once
 
 #include <string>
+#include <vector>
 #include "irrlichttypes_extrabloated.h"
 
 struct ItemStack;
@@ -38,13 +38,13 @@ struct ItemPartColor
 	 * will be used instead of the specific color of the
 	 * buffer.
 	 */
-	bool override_base;
+	bool override_base = false;
 	/*!
 	 * The color of the buffer.
 	 */
-	video::SColor color;
+	video::SColor color = 0;
 
-	ItemPartColor() : override_base(false), color(0) {}
+	ItemPartColor() = default;
 
 	ItemPartColor(bool override, video::SColor color)
 	    : override_base(override), color(color)
@@ -54,13 +54,18 @@ struct ItemPartColor
 
 struct ItemMesh
 {
-	scene::IMesh *mesh;
+	scene::IMesh *mesh = nullptr;
 	/*!
 	 * Stores the color of each mesh buffer.
 	 */
 	std::vector<ItemPartColor> buffer_colors;
+	/*!
+	 * If false, all faces of the item should have the same brightness.
+	 * Disables shading based on normal vectors.
+	 */
+	bool needs_shading = true;
 
-	ItemMesh() : mesh(NULL), buffer_colors() {}
+	ItemMesh() = default;
 };
 
 /*
@@ -69,13 +74,12 @@ struct ItemMesh
 class WieldMeshSceneNode : public scene::ISceneNode
 {
 public:
-	WieldMeshSceneNode(scene::ISceneNode *parent, scene::ISceneManager *mgr,
-			s32 id = -1, bool lighting = false);
+	WieldMeshSceneNode(scene::ISceneManager *mgr, s32 id = -1, bool lighting = false);
 	virtual ~WieldMeshSceneNode();
 
-	void setCube(const ContentFeatures &f, v3f wield_scale, ITextureSource *tsrc);
-	void setExtruded(const std::string &imagename, v3f wield_scale,
-			ITextureSource *tsrc, u8 num_frames);
+	void setCube(const ContentFeatures &f, v3f wield_scale);
+	void setExtruded(const std::string &imagename, const std::string &overlay_image,
+			v3f wield_scale, ITextureSource *tsrc, u8 num_frames);
 	void setItem(const ItemStack &item, Client *client);
 
 	// Sets the vertex color of the wield mesh.
@@ -92,7 +96,7 @@ private:
 	void changeToMesh(scene::IMesh *mesh);
 
 	// Child scene node with the current wield mesh
-	scene::IMeshSceneNode *m_meshnode;
+	scene::IMeshSceneNode *m_meshnode = nullptr;
 	video::E_MATERIAL_TYPE m_material_type;
 
 	// True if EMF_LIGHTING should be enabled.
@@ -121,7 +125,8 @@ private:
 
 void getItemMesh(Client *client, const ItemStack &item, ItemMesh *result);
 
-scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename);
+scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename,
+		const std::string &overlay_name);
 
 /*!
  * Applies overlays, textures and optionally materials to the given mesh and
@@ -131,6 +136,5 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
  * \param colors returns the colors of the mesh buffers in the mesh.
  */
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
-		bool set_material, video::E_MATERIAL_TYPE *mattype,
+		bool set_material, const video::E_MATERIAL_TYPE *mattype,
 		std::vector<ItemPartColor> *colors);
-#endif

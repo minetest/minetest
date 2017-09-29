@@ -1,7 +1,6 @@
 // Filled in by the build system
 
-#ifndef CMAKE_CONFIG_H
-#define CMAKE_CONFIG_H
+#pragma once
 
 #define PROJECT_NAME "@PROJECT_NAME@"
 #define PROJECT_NAME_C "@PROJECT_NAME_CAPITALIZED@"
@@ -34,6 +33,3 @@
 #cmakedefine01 CURSES_HAVE_NCURSES_CURSES_H
 #cmakedefine01 CURSES_HAVE_NCURSESW_NCURSES_H
 #cmakedefine01 CURSES_HAVE_NCURSESW_CURSES_H
-
-#endif
-

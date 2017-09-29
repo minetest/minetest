@@ -1,7 +1,7 @@
 /*
 Minetest
-Copyright (C) 2010-2015 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
-Copyright (C) 2010-2015 paramat, Matt Gregory
+Copyright (C) 2015-2017 paramat
+Copyright (C) 2015-2016 kwolekr, Ryan Kwolek <kwolekr@minetest.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -51,14 +51,15 @@ FlagDesc flagdesc_mapgen_flat[] = {
 MapgenFlat::MapgenFlat(int mapgenid, MapgenFlatParams *params, EmergeManager *emerge)
 	: MapgenBasic(mapgenid, params, emerge)
 {
-	this->spflags          = params->spflags;
-	this->ground_level     = params->ground_level;
-	this->large_cave_depth = params->large_cave_depth;
-	this->cave_width       = params->cave_width;
-	this->lake_threshold   = params->lake_threshold;
-	this->lake_steepness   = params->lake_steepness;
-	this->hill_threshold   = params->hill_threshold;
-	this->hill_steepness   = params->hill_steepness;
+	spflags          = params->spflags;
+	ground_level     = params->ground_level;
+	large_cave_depth = params->large_cave_depth;
+	lava_depth       = params->lava_depth;
+	cave_width       = params->cave_width;
+	lake_threshold   = params->lake_threshold;
+	lake_steepness   = params->lake_steepness;
+	hill_threshold   = params->hill_threshold;
+	hill_steepness   = params->hill_steepness;
 
 	// 2D noise
 	noise_filler_depth = new Noise(&params->np_filler_depth, seed, csize.X, csize.Z);
@@ -80,21 +81,12 @@ MapgenFlat::~MapgenFlat()
 }
 
 
-MapgenFlatParams::MapgenFlatParams()
+MapgenFlatParams::MapgenFlatParams():
+	np_terrain      (0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0),
+	np_filler_depth (0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
+	np_cave1        (0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
+	np_cave2        (0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
 {
-	spflags          = 0;
-	ground_level     = 8;
-	large_cave_depth = -33;
-	cave_width       = 0.09;
-	lake_threshold   = -0.45;
-	lake_steepness   = 48.0;
-	hill_threshold   = 0.45;
-	hill_steepness   = 64.0;
-
-	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
-	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
-	np_cave2        = NoiseParams(0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0);
 }
 
 
@@ -103,6 +95,7 @@ void MapgenFlatParams::readParams(const Settings *settings)
 	settings->getFlagStrNoEx("mgflat_spflags",      spflags, flagdesc_mapgen_flat);
 	settings->getS16NoEx("mgflat_ground_level",     ground_level);
 	settings->getS16NoEx("mgflat_large_cave_depth", large_cave_depth);
+	settings->getS16NoEx("mgflat_lava_depth",       lava_depth);
 	settings->getFloatNoEx("mgflat_cave_width",     cave_width);
 	settings->getFloatNoEx("mgflat_lake_threshold", lake_threshold);
 	settings->getFloatNoEx("mgflat_lake_steepness", lake_steepness);
@@ -121,6 +114,7 @@ void MapgenFlatParams::writeParams(Settings *settings) const
 	settings->setFlagStr("mgflat_spflags",      spflags, flagdesc_mapgen_flat, U32_MAX);
 	settings->setS16("mgflat_ground_level",     ground_level);
 	settings->setS16("mgflat_large_cave_depth", large_cave_depth);
+	settings->setS16("mgflat_lava_depth",       lava_depth);
 	settings->setFloat("mgflat_cave_width",     cave_width);
 	settings->setFloat("mgflat_lake_threshold", lake_threshold);
 	settings->setFloat("mgflat_lake_steepness", lake_steepness);
@@ -154,10 +148,11 @@ int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 
 	if (ground_level < water_level)  // Ocean world, allow spawn in water
 		return MYMAX(level_at_point, water_level);
-	else if (level_at_point > water_level)
+
+	if (level_at_point > water_level)
 		return level_at_point;  // Spawn on land
-	else
-		return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
+
+	return MAX_MAP_GENERATION_LIMIT;  // Unsuitable spawn point
 }
 
 
@@ -195,13 +190,16 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Init biome generator, place biome-specific nodes, and build biomemap
 	biomegen->calcBiomeNoise(node_min);
-	MgStoneType stone_type = generateBiomes();
+
+	MgStoneType mgstone_type;
+	content_t biome_stone;
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, stone_type);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
@@ -234,7 +232,7 @@ s16 MapgenFlat::generateTerrain()
 	MapNode n_stone(c_stone);
 	MapNode n_water(c_water_source);
 
-	v3s16 em = vm->m_area.getExtent();
+	const v3s16 &em = vm->m_area.getExtent();
 	s16 stone_surface_max_y = -MAX_MAP_GENERATION_LIMIT;
 	u32 ni2d = 0;
 

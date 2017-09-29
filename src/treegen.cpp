@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/pointer.h"
 #include "util/numeric.h"
 #include "map.h"
+#include "mapblock.h"
 #include "serverenvironment.h"
 #include "nodedef.h"
 #include "treegen.h"
@@ -57,7 +58,6 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-2, -1, -2), v3s16(2, 2, 2));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
@@ -93,7 +93,7 @@ void make_tree(MMVManip &vmanip, v3s16 p0,
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE)) {
 				if (leaves_d[i] == 1) {
@@ -131,10 +131,8 @@ treegen::error spawn_ltree(ServerEnvironment *env, v3s16 p0,
 	// Send a MEET_OTHER event
 	MapEditEvent event;
 	event.type = MEET_OTHER;
-	for (std::map<v3s16, MapBlock*>::iterator
-			i = modified_blocks.begin();
-			i != modified_blocks.end(); ++i)
-		event.modified_blocks.insert(i->first);
+	for (auto &modified_block : modified_blocks)
+		event.modified_blocks.insert(modified_block.first);
 	map->dispatchEvent(&event);
 	return SUCCESS;
 }
@@ -182,7 +180,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 	//generate axiom
 	std::string axiom = tree_definition.initial_axiom;
 	for (s16 i = 0; i < iterations; i++) {
-		std::string temp = "";
+		std::string temp;
 		for (s16 j = 0; j < (s16)axiom.size(); j++) {
 			char axiom_char = axiom.at(j);
 			switch (axiom_char) {
@@ -403,7 +401,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 					v3f(position.X, position.Y, position.Z - 1),
 					tree_definition
 				);
-			} if (stack_orientation.empty() == false) {
+			} if (!stack_orientation.empty()) {
 				s16 size = 1;
 				for (x = -size; x <= size; x++)
 				for (y = -size; y <= size; y++)
@@ -527,7 +525,7 @@ treegen::error make_ltree(MMVManip &vmanip, v3s16 p0,
 void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -540,13 +538,16 @@ void tree_node_placement(MMVManip &vmanip, v3f p0, MapNode node)
 void tree_trunk_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
-	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
-			&& vmanip.m_data[vi].getContent() != CONTENT_IGNORE)
+	content_t current_node = vmanip.m_data[vi].getContent();
+	if (current_node != CONTENT_AIR && current_node != CONTENT_IGNORE
+			&& current_node != tree_definition.leavesnode.getContent()
+			&& current_node != tree_definition.leaves2node.getContent()
+			&& current_node != tree_definition.fruitnode.getContent())
 		return;
-	vmanip.m_data[vmanip.m_area.index(p1)] = tree_definition.trunknode;
+	vmanip.m_data[vi] = tree_definition.trunknode;
 }
 
 
@@ -557,7 +558,7 @@ void tree_leaves_placement(MMVManip &vmanip, v3f p0,
 	if (ps.range(1, 100) > 100 - tree_definition.leaves2_chance)
 		leavesnode = tree_definition.leaves2node;
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -581,7 +582,7 @@ void tree_single_leaves_placement(MMVManip &vmanip, v3f p0,
 	if (ps.range(1, 100) > 100 - tree_definition.leaves2_chance)
 		leavesnode = tree_definition.leaves2node;
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -594,7 +595,7 @@ void tree_single_leaves_placement(MMVManip &vmanip, v3f p0,
 void tree_fruit_placement(MMVManip &vmanip, v3f p0, TreeDef &tree_definition)
 {
 	v3s16 p1 = v3s16(myround(p0.X), myround(p0.Y), myround(p0.Z));
-	if (vmanip.m_area.contains(p1) == false)
+	if (!vmanip.m_area.contains(p1))
 		return;
 	u32 vi = vmanip.m_area.index(p1);
 	if (vmanip.m_data[vi].getContent() != CONTENT_AIR
@@ -731,7 +732,7 @@ void make_jungletree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE)) {
 				if (leaves_d[i] == 1)
@@ -780,7 +781,6 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 	p1.Y -= 1;
 
 	VoxelArea leaves_a(v3s16(-3, -6, -3), v3s16(3, 3, 3));
-	//SharedPtr<u8> leaves_d(new u8[leaves_a.getVolume()]);
 	Buffer<u8> leaves_d(leaves_a.getVolume());
 	for (s32 i = 0; i < leaves_a.getVolume(); i++)
 		leaves_d[i] = 0;
@@ -804,12 +804,9 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 	}
 
 	// Centre top nodes
-	u32 i = leaves_a.index(v3s16(0, 1, 0));
-	leaves_d[i] = 1;
-	i = leaves_a.index(v3s16(0, 2, 0));
-	leaves_d[i] = 1;
-	i = leaves_a.index(v3s16(0, 3, 0));
-	leaves_d[i] = 2;
+	leaves_d[leaves_a.index(v3s16(0, 1, 0))] = 1;
+	leaves_d[leaves_a.index(v3s16(0, 2, 0))] = 1;
+	leaves_d[leaves_a.index(v3s16(0, 3, 0))] = 2;
 
 	// Lower branches
 	s16 my = -6;
@@ -822,7 +819,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 		for (s16 zz = zi; zz <= zi + 1; zz++) {
 			u32 i = leaves_a.index(v3s16(xi, yy, zz));
 			u32 ia = leaves_a.index(v3s16(xi, yy + 1, zz));
-			for (s16 xx = xi; xx <= xi + 1; xx++) {
+			for (s32 xx = xi; xx <= xi + 1; xx++) {
 				leaves_d[i] = 1;
 				if (leaves_d[ia] == 0)
 					leaves_d[ia] = 2;
@@ -857,7 +854,7 @@ void make_pine_tree(MMVManip &vmanip, v3s16 p0, INodeDefManager *ndef, s32 seed)
 		u32 vi = vmanip.m_area.index(pmin + p1);
 		for (s16 x = leaves_a.MinEdge.X; x <= leaves_a.MaxEdge.X; x++) {
 			v3s16 p(x, y, z);
-			if (vmanip.m_area.contains(p + p1) == true &&
+			if (vmanip.m_area.contains(p + p1) &&
 					(vmanip.m_data[vi].getContent() == CONTENT_AIR ||
 					vmanip.m_data[vi].getContent() == CONTENT_IGNORE ||
 					vmanip.m_data[vi] == snownode)) {

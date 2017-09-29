@@ -1,6 +1,6 @@
 /*
 Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+Copyright (C) 2017 Nore, Nathanaël Courant <nore@mesecons.net>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -17,16 +17,26 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CONTENT_ABM_HEADER
-#define CONTENT_ABM_HEADER
+#pragma once
 
-class ServerEnvironment;
-class INodeDefManager;
+#include <unordered_map>
+#include <string>
 
-/*
-	Legacy ActiveBlockModifiers
-*/
+class Translations;
+extern Translations *g_translations;
 
-void add_legacy_abms(ServerEnvironment *env, INodeDefManager *nodedef);
+class Translations
+{
+public:
+	Translations() = default;
 
-#endif
+	~Translations();
+
+	void loadTranslation(const std::string &data);
+	void clear();
+	const std::wstring &getTranslation(
+			const std::wstring &textdomain, const std::wstring &s);
+
+private:
+	std::unordered_map<std::wstring, std::wstring> m_translations;
+};

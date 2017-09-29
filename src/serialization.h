@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef SERIALIZATION_HEADER
-#define SERIALIZATION_HEADER
+#pragma once
 
 #include "irrlichttypes.h"
 #include "exceptions.h"
@@ -86,14 +85,11 @@ inline bool ser_ver_supported(s32 v) {
 	Misc. serialization functions
 */
 
-void compressZlib(SharedBuffer<u8> data, std::ostream &os, int level = -1);
+void compressZlib(const u8 *data, size_t data_size, std::ostream &os, int level = -1);
 void compressZlib(const std::string &data, std::ostream &os, int level = -1);
 void decompressZlib(std::istream &is, std::ostream &os);
 
 // These choose between zlib and a self-made one according to version
-void compress(SharedBuffer<u8> data, std::ostream &os, u8 version);
+void compress(const SharedBuffer<u8> &data, std::ostream &os, u8 version);
 //void compress(const std::string &data, std::ostream &os, u8 version);
 void decompress(std::istream &is, std::ostream &os, u8 version);
-
-#endif
-

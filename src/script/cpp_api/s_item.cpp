@@ -69,7 +69,12 @@ bool ScriptApiItem::item_OnPlace(ItemStack &item,
 
 	// Call function
 	LuaItemStack::create(L, item);
-	objectrefGetOrCreate(L, placer);
+
+	if (!placer)
+		lua_pushnil(L);
+	else
+		objectrefGetOrCreate(L, placer);
+
 	pushPointedThing(pointed);
 	PCALL_RES(lua_pcall(L, 3, 1, error_handler));
 	if (!lua_isnil(L, -1)) {
@@ -113,12 +118,12 @@ bool ScriptApiItem::item_OnUse(ItemStack &item,
 bool ScriptApiItem::item_OnSecondaryUse(ItemStack &item, ServerActiveObject *user)
 {
 	SCRIPTAPI_PRECHECKHEADER
-	
+
 	int error_handler = PUSH_ERROR_HANDLER(L);
-	
+
 	if (!getItemCallback(item.name.c_str(), "on_secondary_use"))
 		return false;
-	
+
 	LuaItemStack::create(L, item);
 	objectrefGetOrCreate(L, user);
 	PointedThing pointed;
@@ -237,7 +242,9 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
 	// Should be a function or nil
 	if (lua_type(L, -1) == LUA_TFUNCTION) {
 		return true;
-	} else if (!lua_isnil(L, -1)) {
+	}
+
+	if (!lua_isnil(L, -1)) {
 		errorstream << "Item \"" << name << "\" callback \""
 			<< callbackname << "\" is not a function" << std::endl;
 	}

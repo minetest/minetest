@@ -16,16 +16,16 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
+
 #include "fontengine.h"
-#include "log.h"
+#include "client/renderingengine.h"
 #include "config.h"
 #include "porting.h"
-#include "constants.h"
 #include "filesys.h"
 
 #if USE_FREETYPE
 #include "gettext.h"
-#include "xCGUITTFont.h"
+#include "irrlicht_changes/CGUITTFont.h"
 #endif
 
 /** maximum size distance for getting a "similar" font size */
@@ -43,16 +43,11 @@ static void font_setting_changed(const std::string &name, void *userdata)
 /******************************************************************************/
 FontEngine::FontEngine(Settings* main_settings, gui::IGUIEnvironment* env) :
 	m_settings(main_settings),
-	m_env(env),
-	m_font_cache(),
-	m_currentMode(FM_Standard),
-	m_lastMode(),
-	m_lastSize(0),
-	m_lastFont(NULL)
+	m_env(env)
 {
 
-	for (unsigned int i = 0; i < FM_MaxMode; i++) {
-		m_default_size[i] = (FontMode) FONT_SIZE_UNSPECIFIED;
+	for (u32 &i : m_default_size) {
+		i = (FontMode) FONT_SIZE_UNSPECIFIED;
 	}
 
 	assert(m_settings != NULL); // pre-condition
@@ -118,15 +113,13 @@ FontEngine::~FontEngine()
 /******************************************************************************/
 void FontEngine::cleanCache()
 {
-	for ( unsigned int i = 0; i < FM_MaxMode; i++) {
+	for (auto &font_cache_it : m_font_cache) {
 
-		for (std::map<unsigned int, irr::gui::IGUIFont*>::iterator iter
-				= m_font_cache[i].begin();
-				iter != m_font_cache[i].end(); ++iter) {
-			iter->second->drop();
-			iter->second = NULL;
+		for (auto &font_it : font_cache_it) {
+			font_it.second->drop();
+			font_it.second = NULL;
 		}
-		m_font_cache[i].clear();
+		font_cache_it.clear();
 	}
 }
 
@@ -319,10 +312,8 @@ void FontEngine::initFont(unsigned int basesize, FontMode mode)
 		if (! is_yes(m_settings->get("freetype"))) {
 			return;
 		}
-		unsigned int size = floor(
-				porting::getDisplayDensity() *
-				m_settings->getFloat("gui_scaling") *
-				basesize);
+		unsigned int size = floor(RenderingEngine::getDisplayDensity() *
+				m_settings->getFloat("gui_scaling") * basesize);
 		u32 font_shadow       = 0;
 		u32 font_shadow_alpha = 0;
 
@@ -377,7 +368,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 {
 	assert(mode == FM_Simple || mode == FM_SimpleMono); // pre-condition
 
-	std::string font_path = "";
+	std::string font_path;
 	if (mode == FM_Simple) {
 		font_path = m_settings->get("font_path");
 	} else {
@@ -400,7 +391,7 @@ void FontEngine::initSimpleFont(unsigned int basesize, FontMode mode)
 		basesize = DEFAULT_FONT_SIZE;
 
 	unsigned int size = floor(
-			porting::getDisplayDensity() *
+			RenderingEngine::getDisplayDensity() *
 			m_settings->getFloat("gui_scaling") *
 			basesize);
 

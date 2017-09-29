@@ -17,12 +17,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef UTIL_THREAD_HEADER
-#define UTIL_THREAD_HEADER
+#pragma once
 
 #include "../irrlichttypes.h"
 #include "../threading/thread.h"
-#include "../threading/mutex.h"
 #include "../threading/mutex_auto_lock.h"
 #include "porting.h"
 #include "log.h"
@@ -51,7 +49,7 @@ public:
 	// You pretty surely want to grab the lock when accessing this
 	T m_value;
 private:
-	Mutex m_mutex;
+	std::mutex m_mutex;
 };
 
 /*
@@ -80,8 +78,8 @@ public:
 template<typename Key, typename T, typename Caller, typename CallerData>
 class GetRequest {
 public:
-	GetRequest() {}
-	~GetRequest() {}
+	GetRequest() = default;
+	~GetRequest() = default;
 
 	GetRequest(const Key &a_key): key(a_key)
 	{
@@ -191,7 +189,7 @@ class UpdateThread : public Thread
 {
 public:
 	UpdateThread(const std::string &name) : Thread(name + "Update") {}
-	~UpdateThread() {}
+	~UpdateThread() = default;
 
 	void deferUpdate() { m_update_sem.post(); }
 
@@ -205,7 +203,6 @@ public:
 
 	void *run()
 	{
-		DSTACK(FUNCTION_NAME);
 		BEGIN_DEBUG_EXCEPTION_HANDLER
 
 		while (!stopRequested()) {
@@ -229,6 +226,3 @@ protected:
 private:
 	Semaphore m_update_sem;
 };
-
-#endif
-

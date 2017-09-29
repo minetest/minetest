@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <IMaterialRenderer.h>
 #include <IMaterialRendererServices.h>
 #include <IShaderConstantSetCallBack.h>
+#include "client/renderingengine.h"
 #include "EShaderTypes.h"
 #include "log.h"
 #include "gamedef.h"
@@ -55,7 +56,7 @@ std::string getShaderPath(const std::string &name_of_shader,
 		const std::string &filename)
 {
 	std::string combined = name_of_shader + DIR_DELIM + filename;
-	std::string fullpath = "";
+	std::string fullpath;
 	/*
 		Check from cache
 	*/
@@ -67,8 +68,7 @@ std::string getShaderPath(const std::string &name_of_shader,
 		Check from shader_path
 	*/
 	std::string shader_path = g_settings->get("shader_path");
-	if(shader_path != "")
-	{
+	if (!shader_path.empty()) {
 		std::string testpath = shader_path + DIR_DELIM + combined;
 		if(fs::PathExists(testpath))
 			fullpath = testpath;
@@ -77,8 +77,7 @@ std::string getShaderPath(const std::string &name_of_shader,
 	/*
 		Check from default data directory
 	*/
-	if(fullpath == "")
-	{
+	if (fullpath.empty()) {
 		std::string rel_path = std::string("client") + DIR_DELIM
 				+ "shaders" + DIR_DELIM
 				+ name_of_shader + DIR_DELIM
@@ -109,9 +108,9 @@ public:
 		// Try to use local shader instead if asked to
 		if(prefer_local){
 			std::string path = getShaderPath(name_of_shader, filename);
-			if(path != ""){
+			if(!path.empty()){
 				std::string p = readFile(path);
-				if(p != ""){
+				if (!p.empty()) {
 					m_programs[combined] = p;
 					return;
 				}
@@ -139,7 +138,7 @@ public:
 		if (n != m_programs.end())
 			return n->second;
 		std::string path = getShaderPath(name_of_shader, filename);
-		if (path == "") {
+		if (path.empty()) {
 			infostream << "SourceShaderCache::getOrLoad(): No path found for \""
 				<< combined << "\"" << std::endl;
 			return "";
@@ -147,7 +146,7 @@ public:
 		infostream << "SourceShaderCache::getOrLoad(): Loading path \""
 			<< path << "\"" << std::endl;
 		std::string p = readFile(path);
-		if (p != "") {
+		if (!p.empty()) {
 			m_programs[combined] = p;
 			return p;
 		}
@@ -177,16 +176,16 @@ class ShaderCallback : public video::IShaderConstantSetCallBack
 	std::vector<IShaderConstantSetter*> m_setters;
 
 public:
-	ShaderCallback(const std::vector<IShaderConstantSetterFactory*> &factories)
+	ShaderCallback(const std::vector<IShaderConstantSetterFactory *> &factories)
 	{
-		for (u32 i = 0; i < factories.size(); ++i)
-			m_setters.push_back(factories[i]->create());
+		for (IShaderConstantSetterFactory *factory : factories)
+			m_setters.push_back(factory->create());
 	}
 
 	~ShaderCallback()
 	{
-		for (u32 i = 0; i < m_setters.size(); ++i)
-			delete m_setters[i];
+		for (IShaderConstantSetter *setter : m_setters)
+			delete setter;
 	}
 
 	virtual void OnSetConstants(video::IMaterialRendererServices *services, s32 userData)
@@ -196,8 +195,8 @@ public:
 
 		bool is_highlevel = userData;
 
-		for (u32 i = 0; i < m_setters.size(); ++i)
-			m_setters[i]->onSetConstants(services, is_highlevel);
+		for (IShaderConstantSetter *setter : m_setters)
+			setter->onSetConstants(services, is_highlevel);
 	}
 };
 
@@ -216,7 +215,7 @@ public:
 		m_world_view_proj("mWorldViewProj"),
 		m_world("mWorld")
 	{}
-	~MainShaderConstantSetter() {}
+	~MainShaderConstantSetter() = default;
 
 	virtual void onSetConstants(video::IMaterialRendererServices *services,
 			bool is_highlevel)
@@ -260,7 +259,7 @@ public:
 class ShaderSource : public IWritableShaderSource
 {
 public:
-	ShaderSource(IrrlichtDevice *device);
+	ShaderSource();
 	~ShaderSource();
 
 	/*
@@ -308,9 +307,7 @@ public:
 private:
 
 	// The id of the thread that is allowed to use irrlicht directly
-	threadid_t m_main_thread;
-	// The irrlicht device
-	IrrlichtDevice *m_device;
+	std::thread::id m_main_thread;
 
 	// Cache of source shaders
 	// This should be only accessed from the main thread
@@ -320,7 +317,7 @@ private:
 	// The first position contains a dummy shader.
 	std::vector<ShaderInfo> m_shaderinfo_cache;
 	// The former container is behind this mutex
-	Mutex m_shaderinfo_cache_mutex;
+	std::mutex m_shaderinfo_cache_mutex;
 
 	// Queued shader fetches (to be processed by the main thread)
 	RequestQueue<std::string, u32, u8, u8> m_get_shader_queue;
@@ -332,37 +329,33 @@ private:
 	std::vector<ShaderCallback *> m_callbacks;
 };
 
-IWritableShaderSource* createShaderSource(IrrlichtDevice *device)
+IWritableShaderSource *createShaderSource()
 {
-	return new ShaderSource(device);
+	return new ShaderSource();
 }
 
 /*
 	Generate shader given the shader name.
 */
 ShaderInfo generate_shader(const std::string &name,
-		u8 material_type, u8 drawtype,
-		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
+		u8 material_type, u8 drawtype, std::vector<ShaderCallback *> &callbacks,
+		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache);
 
 /*
 	Load shader programs
 */
-void load_shaders(std::string name, SourceShaderCache *sourcecache,
+void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel);
 
-ShaderSource::ShaderSource(IrrlichtDevice *device):
-		m_device(device)
+ShaderSource::ShaderSource()
 {
-	assert(m_device); // Pre-condition
-
-	m_main_thread = thr_get_current_thread_id();
+	m_main_thread = std::this_thread::get_id();
 
 	// Add a dummy ShaderInfo as the first index, named ""
-	m_shaderinfo_cache.push_back(ShaderInfo());
+	m_shaderinfo_cache.emplace_back();
 
 	// Add main global constant setter
 	addShaderConstantSetterFactory(new MainShaderConstantSetterFactory());
@@ -370,13 +363,11 @@ ShaderSource::ShaderSource(IrrlichtDevice *device):
 
 ShaderSource::~ShaderSource()
 {
-	for (std::vector<ShaderCallback *>::iterator iter = m_callbacks.begin();
-			iter != m_callbacks.end(); ++iter) {
-		delete *iter;
+	for (ShaderCallback *callback : m_callbacks) {
+		delete callback;
 	}
-	for (std::vector<IShaderConstantSetterFactory *>::iterator iter = m_setter_factories.begin();
-			iter != m_setter_factories.end(); ++iter) {
-		delete *iter;
+	for (IShaderConstantSetterFactory *setter_factorie : m_setter_factories) {
+		delete setter_factorie;
 	}
 }
 
@@ -387,36 +378,34 @@ u32 ShaderSource::getShader(const std::string &name,
 		Get shader
 	*/
 
-	if (thr_is_current_thread(m_main_thread)) {
+	if (std::this_thread::get_id() == m_main_thread) {
 		return getShaderIdDirect(name, material_type, drawtype);
-	} else {
-		/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
-
-		// We're gonna ask the result to be put into here
-
-		static ResultQueue<std::string, u32, u8, u8> result_queue;
-
-		// Throw a request in
-		m_get_shader_queue.add(name, 0, 0, &result_queue);
-
-		/* infostream<<"Waiting for shader from main thread, name=\""
-				<<name<<"\""<<std::endl;*/
-
-		while(true) {
-			GetResult<std::string, u32, u8, u8>
-				result = result_queue.pop_frontNoEx();
-
-			if (result.key == name) {
-				return result.item;
-			}
-			else {
-				errorstream << "Got shader with invalid name: " << result.key << std::endl;
-			}
-		}
-
 	}
 
-	infostream<<"getShader(): Failed"<<std::endl;
+	/*errorstream<<"getShader(): Queued: name=\""<<name<<"\""<<std::endl;*/
+
+	// We're gonna ask the result to be put into here
+
+	static ResultQueue<std::string, u32, u8, u8> result_queue;
+
+	// Throw a request in
+	m_get_shader_queue.add(name, 0, 0, &result_queue);
+
+	/* infostream<<"Waiting for shader from main thread, name=\""
+			<<name<<"\""<<std::endl;*/
+
+	while(true) {
+		GetResult<std::string, u32, u8, u8>
+			result = result_queue.pop_frontNoEx();
+
+		if (result.key == name) {
+			return result.item;
+		}
+
+		errorstream << "Got shader with invalid name: " << result.key << std::endl;
+	}
+
+	infostream << "getShader(): Failed" << std::endl;
 
 	return 0;
 }
@@ -430,7 +419,7 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	//infostream<<"getShaderIdDirect(): name=\""<<name<<"\""<<std::endl;
 
 	// Empty name means shader 0
-	if(name == ""){
+	if (name.empty()) {
 		infostream<<"getShaderIdDirect(): name is empty"<<std::endl;
 		return 0;
 	}
@@ -446,14 +435,14 @@ u32 ShaderSource::getShaderIdDirect(const std::string &name,
 	/*
 		Calling only allowed from main thread
 	*/
-	if (!thr_is_current_thread(m_main_thread)) {
+	if (std::this_thread::get_id() != m_main_thread) {
 		errorstream<<"ShaderSource::getShaderIdDirect() "
 				"called not from main thread"<<std::endl;
 		return 0;
 	}
 
 	ShaderInfo info = generate_shader(name, material_type, drawtype,
-			m_device, m_callbacks, m_setter_factories, &m_sourcecache);
+			m_callbacks, m_setter_factories, &m_sourcecache);
 
 	/*
 		Add shader to caches (add dummy shaders too)
@@ -494,7 +483,7 @@ void ShaderSource::insertSourceShader(const std::string &name_of_shader,
 			"name_of_shader=\""<<name_of_shader<<"\", "
 			"filename=\""<<filename<<"\""<<std::endl;*/
 
-	sanity_check(thr_is_current_thread(m_main_thread));
+	sanity_check(std::this_thread::get_id() == m_main_thread);
 
 	m_sourcecache.insert(name_of_shader, filename, program, true);
 }
@@ -514,11 +503,11 @@ void ShaderSource::rebuildShaders()
 	*/
 
 	// Recreate shaders
-	for(u32 i=0; i<m_shaderinfo_cache.size(); i++){
-		ShaderInfo *info = &m_shaderinfo_cache[i];
-		if(info->name != ""){
+	for (ShaderInfo &i : m_shaderinfo_cache) {
+		ShaderInfo *info = &i;
+		if (!info->name.empty()) {
 			*info = generate_shader(info->name, info->material_type,
-					info->drawtype, m_device, m_callbacks,
+					info->drawtype, m_callbacks,
 					m_setter_factories, &m_sourcecache);
 		}
 	}
@@ -526,8 +515,8 @@ void ShaderSource::rebuildShaders()
 
 
 ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtype,
-		IrrlichtDevice *device, std::vector<ShaderCallback *> &callbacks,
-		const std::vector<IShaderConstantSetterFactory*> &setter_factories,
+		std::vector<ShaderCallback *> &callbacks,
+		const std::vector<IShaderConstantSetterFactory *> &setter_factories,
 		SourceShaderCache *sourcecache)
 {
 	ShaderInfo shaderinfo;
@@ -535,24 +524,19 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	shaderinfo.material_type = material_type;
 	shaderinfo.drawtype = drawtype;
 	shaderinfo.material = video::EMT_SOLID;
-	switch(material_type){
-		case TILE_MATERIAL_BASIC:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			break;
-		case TILE_MATERIAL_ALPHA:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			break;
-		case TILE_MATERIAL_LIQUID_TRANSPARENT:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			break;
-		case TILE_MATERIAL_LIQUID_OPAQUE:
-			shaderinfo.base_material = video::EMT_SOLID;
-			break;
-		case TILE_MATERIAL_WAVING_LEAVES:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-			break;
-		case TILE_MATERIAL_WAVING_PLANTS:
-			shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
+	switch (material_type) {
+	case TILE_MATERIAL_OPAQUE:
+	case TILE_MATERIAL_LIQUID_OPAQUE:
+		shaderinfo.base_material = video::EMT_SOLID;
+		break;
+	case TILE_MATERIAL_ALPHA:
+	case TILE_MATERIAL_LIQUID_TRANSPARENT:
+		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+		break;
+	case TILE_MATERIAL_BASIC:
+	case TILE_MATERIAL_WAVING_LEAVES:
+	case TILE_MATERIAL_WAVING_PLANTS:
+		shaderinfo.base_material = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 		break;
 	}
 
@@ -560,8 +544,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	if (!enable_shaders)
 		return shaderinfo;
 
-	video::IVideoDriver* driver = device->getVideoDriver();
-	sanity_check(driver);
+	video::IVideoDriver *driver = RenderingEngine::get_video_driver();
 
 	video::IGPUProgrammingServices *gpu = driver->getGPUProgrammingServices();
 	if(!gpu){
@@ -582,7 +565,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 			enable_shaders, vertex_program, pixel_program,
 			geometry_program, is_highlevel);
 	// Check hardware/driver support
-	if(vertex_program != "" &&
+	if (!vertex_program.empty() &&
 			!driver->queryFeature(video::EVDF_VERTEX_SHADER_1_1) &&
 			!driver->queryFeature(video::EVDF_ARB_VERTEX_PROGRAM_1)){
 		infostream<<"generate_shader(): vertex shaders disabled "
@@ -590,7 +573,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 				<<std::endl;
 		vertex_program = "";
 	}
-	if(pixel_program != "" &&
+	if (!pixel_program.empty() &&
 			!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) &&
 			!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1)){
 		infostream<<"generate_shader(): pixel shaders disabled "
@@ -598,7 +581,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 				<<std::endl;
 		pixel_program = "";
 	}
-	if(geometry_program != "" &&
+	if (!geometry_program.empty() &&
 			!driver->queryFeature(video::EVDF_GEOMETRY_SHADER)){
 		infostream<<"generate_shader(): geometry shaders disabled "
 				"because of missing driver/hardware support."
@@ -607,7 +590,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	}
 
 	// If no shaders are used, don't make a separate material type
-	if(vertex_program == "" && pixel_program == "" && geometry_program == "")
+	if (vertex_program.empty() && pixel_program.empty() && geometry_program.empty())
 		return shaderinfo;
 
 	// Create shaders header
@@ -629,7 +612,8 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"NDT_NODEBOX",
 		"NDT_GLASSLIKE_FRAMED",
 		"NDT_FIRELIKE",
-		"NDT_GLASSLIKE_FRAMED_OPTIONAL"
+		"NDT_GLASSLIKE_FRAMED_OPTIONAL",
+		"NDT_PLANTLIKE_ROOTED",
 	};
 
 	for (int i = 0; i < 14; i++){
@@ -646,10 +630,11 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 		"TILE_MATERIAL_LIQUID_TRANSPARENT",
 		"TILE_MATERIAL_LIQUID_OPAQUE",
 		"TILE_MATERIAL_WAVING_LEAVES",
-		"TILE_MATERIAL_WAVING_PLANTS"
+		"TILE_MATERIAL_WAVING_PLANTS",
+		"TILE_MATERIAL_OPAQUE"
 	};
 
-	for (int i = 0; i < 6; i++){
+	for (int i = 0; i < 7; i++){
 		shaders_header += "#define ";
 		shaders_header += materialTypes[i];
 		shaders_header += " ";
@@ -836,7 +821,7 @@ ShaderInfo generate_shader(const std::string &name, u8 material_type, u8 drawtyp
 	return shaderinfo;
 }
 
-void load_shaders(std::string name, SourceShaderCache *sourcecache,
+void load_shaders(const std::string &name, SourceShaderCache *sourcecache,
 		video::E_DRIVER_TYPE drivertype, bool enable_shaders,
 		std::string &vertex_program, std::string &pixel_program,
 		std::string &geometry_program, bool &is_highlevel)
@@ -861,7 +846,7 @@ void load_shaders(std::string name, SourceShaderCache *sourcecache,
 			pixel_program = sourcecache->getOrLoad(name, "opengl_fragment.glsl");
 			geometry_program = sourcecache->getOrLoad(name, "opengl_geometry.glsl");
 		}
-		if(vertex_program != "" || pixel_program != "" || geometry_program != ""){
+		if (!vertex_program.empty() || !pixel_program.empty() || !geometry_program.empty()){
 			is_highlevel = true;
 			return;
 		}
@@ -877,7 +862,7 @@ void dumpShaderProgram(std::ostream &output_stream,
 	size_t pos = 0;
 	size_t prev = 0;
 	s16 line = 1;
-	while ((pos = program.find("\n", prev)) != std::string::npos) {
+	while ((pos = program.find('\n', prev)) != std::string::npos) {
 		output_stream << line++ << ": "<< program.substr(prev, pos - prev) <<
 			std::endl;
 		prev = pos + 1;

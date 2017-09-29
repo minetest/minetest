@@ -27,16 +27,15 @@ local basepath = core.get_builtin_path()
 defaulttexturedir = core.get_texturepath_share() .. DIR_DELIM .. "base" ..
 					DIR_DELIM .. "pack" .. DIR_DELIM
 
-dofile(basepath .. DIR_DELIM .. "common" .. DIR_DELIM .. "async_event.lua")
-dofile(basepath .. DIR_DELIM .. "common" .. DIR_DELIM .. "filterlist.lua")
-dofile(basepath .. DIR_DELIM .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
-dofile(basepath .. DIR_DELIM .. "fstk" .. DIR_DELIM .. "dialog.lua")
-dofile(basepath .. DIR_DELIM .. "fstk" .. DIR_DELIM .. "tabview.lua")
-dofile(basepath .. DIR_DELIM .. "fstk" .. DIR_DELIM .. "ui.lua")
+dofile(basepath .. "common" .. DIR_DELIM .. "async_event.lua")
+dofile(basepath .. "common" .. DIR_DELIM .. "filterlist.lua")
+dofile(basepath .. "fstk" .. DIR_DELIM .. "buttonbar.lua")
+dofile(basepath .. "fstk" .. DIR_DELIM .. "dialog.lua")
+dofile(basepath .. "fstk" .. DIR_DELIM .. "tabview.lua")
+dofile(basepath .. "fstk" .. DIR_DELIM .. "ui.lua")
 dofile(menupath .. DIR_DELIM .. "common.lua")
 dofile(menupath .. DIR_DELIM .. "gamemgr.lua")
 dofile(menupath .. DIR_DELIM .. "modmgr.lua")
-dofile(menupath .. DIR_DELIM .. "store.lua")
 dofile(menupath .. DIR_DELIM .. "textures.lua")
 
 dofile(menupath .. DIR_DELIM .. "dlg_config_world.lua")
@@ -151,13 +150,6 @@ local function init_globals()
 	end
 	ui.set_default("maintab")
 	tv_main:show()
-
-	-- Create modstore ui
-	if PLATFORM == "Android" then
-		modstore.init({x = 12, y = 6}, 3, 2)
-	else
-		modstore.init({x = 12, y = 8}, 4, 3)
-	end
 
 	ui.update()
 

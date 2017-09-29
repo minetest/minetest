@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: minetest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-21 17:40+0200\n"
+"POT-Creation-Date: 2017-08-24 18:42+0200\n"
 "PO-Revision-Date: 2016-03-17 15:28+0000\n"
 "Last-Translator: Lordmusic Player <lordmusicplro1@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/minetest/"
@@ -41,7 +41,7 @@ msgstr "A apărut o eroare:"
 msgid "Main menu"
 msgstr "Meniul Principal"
 
-#: builtin/fstk/ui.lua builtin/mainmenu/store.lua
+#: builtin/fstk/ui.lua
 msgid "Ok"
 msgstr "Ok"
 
@@ -53,7 +53,7 @@ msgstr "Reconectează-te"
 msgid "The server has requested a reconnect:"
 msgstr "Serverul cere o reconectare :"
 
-#: builtin/mainmenu/common.lua src/game.cpp
+#: builtin/mainmenu/common.lua
 msgid "Loading..."
 msgstr "Se încarcă..."
 
@@ -165,8 +165,9 @@ msgid "Mapgen"
 msgstr "Mapgen"
 
 #: builtin/mainmenu/dlg_create_world.lua
-msgid "No worldname given or no game selected"
-msgstr "Jocul nu are nume, sau nu ai selectat un joc"
+#, fuzzy
+msgid "No game selected"
+msgstr "Selectare distanță"
 
 #: builtin/mainmenu/dlg_create_world.lua
 msgid "Seed"
@@ -226,6 +227,14 @@ msgid "< Back to Settings page"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>),"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+msgid "<seed>, <octaves>, <persistence>, <lacunarity>"
+msgstr ""
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Browse"
 msgstr ""
 
@@ -248,9 +257,7 @@ msgid "Format is 3 numbers separated by commas and inside brackets."
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
-msgid ""
-"Format: <offset>, <scale>, (<spreadX>, <spreadY>, <spreadZ>), <seed>, "
-"<octaves>, <persistence>"
+msgid "Format:"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
@@ -260,10 +267,6 @@ msgstr "Jocuri"
 #: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_mods.lua
 msgid "Mods"
 msgstr "Moduri"
-
-#: builtin/mainmenu/dlg_settings_advanced.lua
-msgid "Optionally the lacunarity can be appended with a leading comma."
-msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Please enter a comma seperated list of flags."
@@ -285,15 +288,19 @@ msgstr ""
 msgid "Restore Default"
 msgstr ""
 
-#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/store.lua
-#: builtin/mainmenu/tab_online.lua
+#: builtin/mainmenu/dlg_settings_advanced.lua builtin/mainmenu/tab_online.lua
 msgid "Search"
 msgstr ""
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 #, fuzzy
-msgid "Select path"
-msgstr "Selectează"
+msgid "Select directory"
+msgstr "Selectează Fișierul Modului:"
+
+#: builtin/mainmenu/dlg_settings_advanced.lua
+#, fuzzy
+msgid "Select file"
+msgstr "Selectează Fișierul Modului:"
 
 #: builtin/mainmenu/dlg_settings_advanced.lua
 msgid "Show technical names"
@@ -337,43 +344,6 @@ msgstr ""
 #: builtin/mainmenu/modmgr.lua
 msgid "Subgame Mods"
 msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Close store"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Downloading $1, please wait..."
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Install"
-msgstr "Instalează"
-
-#: builtin/mainmenu/store.lua
-msgid "Page $1 of $2"
-msgstr "Pagina $1 din $2"
-
-#: builtin/mainmenu/store.lua
-msgid "Rating"
-msgstr "Notă"
-
-#: builtin/mainmenu/store.lua
-#, fuzzy
-msgid "Shortname:"
-msgstr "Numele lumii"
-
-#: builtin/mainmenu/store.lua
-msgid "Successfully installed:"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "Unsorted"
-msgstr ""
-
-#: builtin/mainmenu/store.lua
-msgid "re-Install"
-msgstr "Reinstalează"
 
 #: builtin/mainmenu/tab_credits.lua
 msgid "Active Contributors"
@@ -744,6 +714,10 @@ msgid "Start Singleplayer"
 msgstr "Singleplayer"
 
 #: builtin/mainmenu/tab_texturepacks.lua
+msgid "Default textures will be used."
+msgstr ""
+
+#: builtin/mainmenu/tab_texturepacks.lua
 msgid "No information available"
 msgstr "Nici o informație disponibilă"
 
@@ -874,10 +848,6 @@ msgid "Change Password"
 msgstr "Schimbă Parola"
 
 #: src/game.cpp
-msgid "Connecting to server..."
-msgstr "Se conectează la server..."
-
-#: src/game.cpp
 msgid "Continue"
 msgstr "Continuă"
 
@@ -910,15 +880,6 @@ msgstr ""
 "- Click dreapta: pune/folosește\n"
 "- Rotiță mouse: selectează obiect\n"
 "- T: chat\n"
-
-#: src/game.cpp
-msgid "Creating client..."
-msgstr "Se creează clientul..."
-
-#: src/game.cpp
-#, fuzzy
-msgid "Creating server..."
-msgstr "Se crează serverul..."
 
 #: src/game.cpp
 msgid ""
@@ -991,15 +952,6 @@ msgid "Remote server"
 msgstr ""
 
 #: src/game.cpp
-msgid "Resolving address..."
-msgstr "Se rezolvă adresa..."
-
-#: src/game.cpp
-#, fuzzy
-msgid "Shutting down..."
-msgstr "Se închide..."
-
-#: src/game.cpp
 msgid "Singleplayer"
 msgstr "Singleplayer"
 
@@ -1033,12 +985,23 @@ msgid "Proceed"
 msgstr "Continuă"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "\"Use\" = climb down"
+#, fuzzy
+msgid "\"Special\" = climb down"
 msgstr "\"Aleargă\" = coboară"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Autoforward"
+msgstr "Înainte"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Backward"
 msgstr "Înapoi"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Change camera"
+msgstr "Modifică tastele"
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Chat"
@@ -1051,6 +1014,10 @@ msgstr "Comandă"
 #: src/guiKeyChangeMenu.cpp
 msgid "Console"
 msgstr "Consloă"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Dec. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 msgid "Dec. volume"
@@ -1067,6 +1034,10 @@ msgstr "Aruncă"
 #: src/guiKeyChangeMenu.cpp
 msgid "Forward"
 msgstr "Înainte"
+
+#: src/guiKeyChangeMenu.cpp
+msgid "Inc. range"
+msgstr ""
 
 #: src/guiKeyChangeMenu.cpp
 #, fuzzy
@@ -1124,13 +1095,32 @@ msgstr "Selectare distanță"
 msgid "Right"
 msgstr "Dreapta"
 
+#: src/guiKeyChangeMenu.cpp src/settings_translation_file.cpp
+#, fuzzy
+msgid "Screenshot"
+msgstr "PrintScreen"
+
 #: src/guiKeyChangeMenu.cpp
 msgid "Sneak"
 msgstr "Furișează"
 
 #: src/guiKeyChangeMenu.cpp
+msgid "Special"
+msgstr ""
+
+#: src/guiKeyChangeMenu.cpp
 #, fuzzy
 msgid "Toggle Cinematic"
+msgstr "Intră pe rapid"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle HUD"
+msgstr "Intră pe zbor"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle chat log"
 msgstr "Intră pe rapid"
 
 #: src/guiKeyChangeMenu.cpp
@@ -1142,12 +1132,18 @@ msgid "Toggle fly"
 msgstr "Intră pe zbor"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Toggle noclip"
+#, fuzzy
+msgid "Toggle fog"
+msgstr "Intră pe zbor"
+
+#: src/guiKeyChangeMenu.cpp
+#, fuzzy
+msgid "Toggle minimap"
 msgstr "Intră pe noclip"
 
 #: src/guiKeyChangeMenu.cpp
-msgid "Use"
-msgstr "Aleargă"
+msgid "Toggle noclip"
+msgstr "Intră pe noclip"
 
 #: src/guiKeyChangeMenu.cpp src/keycode.cpp
 msgid "Zoom"
@@ -1440,6 +1436,10 @@ msgstr "X Butonul 1"
 msgid "X Button 2"
 msgstr "X Butonul 2"
 
+#: src/network/clientpackethandler.cpp
+msgid "LANG_CODE"
+msgstr "ro"
+
 #: src/settings_translation_file.cpp
 msgid ""
 "(X,Y,Z) offset of fractal from world centre in units of 'scale'.\n"
@@ -1624,11 +1624,16 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Automatic forwards key"
+msgstr "Înainte"
+
+#: src/settings_translation_file.cpp
 msgid "Automaticaly report to the serverlist."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Autorun key"
+msgid "Autosave Screen Size"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1903,7 +1908,7 @@ msgid "Continuous forward"
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Continuous forward movement (only used for testing)."
+msgid "Continuous forward movement, toggled by autoforward key."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -1985,6 +1990,11 @@ msgstr ""
 #, fuzzy
 msgid "Damage"
 msgstr "Activează Daune"
+
+#: src/settings_translation_file.cpp
+#, fuzzy
+msgid "Darkness sharpness"
+msgstr "Mapgen"
 
 #: src/settings_translation_file.cpp
 msgid "Debug info toggle key"
@@ -2112,10 +2122,6 @@ msgid "Depth below which you'll find massive caves."
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Descending speed"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Description of server, to be displayed when players join and in the "
 "serverlist."
@@ -2144,18 +2150,6 @@ msgstr "Activează tot"
 #, fuzzy
 msgid "Disable anticheat"
 msgstr "Activează particulele"
-
-#: src/settings_translation_file.cpp
-msgid "Disable escape sequences"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid ""
-"Disable escape sequences, e.g. chat coloring.\n"
-"Use this if you want to run a server with pre-0.4.14 clients and you want to "
-"disable\n"
-"the escape sequences generated by mods."
-msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Disallow empty passwords"
@@ -2243,10 +2237,6 @@ msgid ""
 msgstr ""
 
 #: src/settings_translation_file.cpp
-msgid "Enable view bobbing"
-msgstr ""
-
-#: src/settings_translation_file.cpp
 msgid ""
 "Enable view bobbing and amount of view bobbing.\n"
 "For example: 0 for no view bobbing; 1.0 for normal; 2.0 for double."
@@ -2295,10 +2285,6 @@ msgstr ""
 msgid ""
 "Enables parallax occlusion mapping.\n"
 "Requires shaders to be enabled."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Enables view bobbing when walking."
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3125,7 +3111,7 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid ""
-"Key for toggling autorun.\n"
+"Key for toggling autoforward.\n"
 "See http://irrlicht.sourceforge.net/docu/namespaceirr."
 "html#a54da2a0e231901735e3da1b0edf72eb3"
 msgstr ""
@@ -3300,6 +3286,10 @@ msgid ""
 "-    action\n"
 "-    info\n"
 "-    verbose"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Lightness sharpness"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3656,6 +3646,16 @@ msgid "Maximum simultaneous block sends total"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Maximum size of the out chat queue"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid ""
+"Maximum size of the out chat queue. 0 to disable queueing and -1 to make the "
+"queue size unlimited"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Maximum time in ms a file download (e.g. a mod download) may take."
 msgstr ""
 
@@ -3707,18 +3707,6 @@ msgstr "Mip Mapping"
 
 #: src/settings_translation_file.cpp
 msgid "Modifies the size of the hudbar elements."
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore details URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore download URL"
-msgstr ""
-
-#: src/settings_translation_file.cpp
-msgid "Modstore mods list URL"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -3985,6 +3973,12 @@ msgid "Remote port"
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid ""
+"Remove color codes from incoming chat messages\n"
+"Use this to stop players from being able to use color in their messages"
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Replaces the default main menu with a custom one."
 msgstr ""
 
@@ -4043,6 +4037,10 @@ msgid "Save the map received by the client on disk."
 msgstr ""
 
 #: src/settings_translation_file.cpp
+msgid "Save window size automatically when modified."
+msgstr ""
+
+#: src/settings_translation_file.cpp
 msgid "Saving map received from server"
 msgstr ""
 
@@ -4066,11 +4064,6 @@ msgstr ""
 #: src/settings_translation_file.cpp
 msgid "Screen width"
 msgstr ""
-
-#: src/settings_translation_file.cpp
-#, fuzzy
-msgid "Screenshot"
-msgstr "PrintScreen"
 
 #: src/settings_translation_file.cpp
 msgid "Screenshot folder"
@@ -4308,6 +4301,10 @@ msgstr ""
 
 #: src/settings_translation_file.cpp
 msgid "Strict protocol checking"
+msgstr ""
+
+#: src/settings_translation_file.cpp
+msgid "Strip color codes"
 msgstr ""
 
 #: src/settings_translation_file.cpp
@@ -4860,74 +4857,92 @@ msgstr ""
 msgid "cURL timeout"
 msgstr ""
 
-#~ msgid "Hide mp content"
-#~ msgstr "Ascunde conținutul mp"
-
-#~ msgid "Attn"
-#~ msgstr "Attn"
-
-#~ msgid "Capital"
-#~ msgstr "Capital"
-
-#~ msgid "Comma"
-#~ msgstr "Virgulă"
-
-#~ msgid "CrSel"
-#~ msgstr "CrSel"
-
-#~ msgid "ExSel"
-#~ msgstr "ExSel"
-
-#~ msgid "Final"
-#~ msgstr "Final"
-
-#~ msgid "Junja"
-#~ msgstr "Junja"
-
-#~ msgid "Kana"
-#~ msgstr "Kana"
-
-#~ msgid "Kanji"
-#~ msgstr "Kanji"
-
-#~ msgid "Minus"
-#~ msgstr "Minus"
-
-#~ msgid "PA1"
-#~ msgstr "PA1"
-
-#~ msgid "Period"
-#~ msgstr "Punct"
-
-#~ msgid "Plus"
-#~ msgstr "Plus"
+#, fuzzy
+#~ msgid "Preload inventory textures"
+#~ msgstr "Se încarcă..."
 
 #, fuzzy
-#~ msgid "Mapgen flat cave width"
-#~ msgstr "Mapgen"
+#~ msgid "Downloading"
+#~ msgstr "Descarcă"
+
+#~ msgid "Left click: Move all items, Right click: Move single item"
+#~ msgstr ""
+#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+
+#~ msgid "Add mod:"
+#~ msgstr "Adăugaţi mod:"
+
+#~ msgid "MODS"
+#~ msgstr "MODURI"
+
+#~ msgid "TEXTURE PACKS"
+#~ msgstr "PACHETE DE TEXTURĂ"
+
+#~ msgid "SINGLE PLAYER"
+#~ msgstr "SINGLE PLAYER"
+
+#~ msgid "Finite Liquid"
+#~ msgstr "Lichid finit"
+
+#~ msgid "Preload item visuals"
+#~ msgstr "Pre-încarcă imaginile obiectelor"
+
+#~ msgid "SETTINGS"
+#~ msgstr "SETĂRI"
+
+#~ msgid "Password"
+#~ msgstr "Parolă"
+
+#~ msgid "Name"
+#~ msgstr "Nume"
+
+#~ msgid "START SERVER"
+#~ msgstr "DESCHIDE SERVERUL"
+
+#~ msgid "CLIENT"
+#~ msgstr "CLIENT"
+
+#~ msgid "<<-- Add mod"
+#~ msgstr "<<-- Adaugă modul"
+
+#~ msgid "Remove selected mod"
+#~ msgstr "Șterge modul selectat"
+
+#~ msgid "EDIT GAME"
+#~ msgstr "MODIFICĂ JOCUL"
+
+#~ msgid "new game"
+#~ msgstr "joc nou"
+
+#~ msgid "Mods:"
+#~ msgstr "Moduri:"
+
+#~ msgid "GAMES"
+#~ msgstr "JOCURI"
+
+#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
+#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
 
 #, fuzzy
-#~ msgid "Mapgen fractal cave width"
-#~ msgstr "Mapgen"
+#~ msgid "If enabled, "
+#~ msgstr "activat"
 
 #, fuzzy
-#~ msgid "Mapgen fractal fractal"
-#~ msgstr "Mapgen"
+#~ msgid "If disabled "
+#~ msgstr "Dezactivează MP"
+
+#~ msgid "Public Serverlist"
+#~ msgstr "Listă de servere publică"
+
+#~ msgid "No of course not!"
+#~ msgstr "Nu, sigur că nu!"
 
 #, fuzzy
-#~ msgid "Mapgen fractal iterations"
-#~ msgstr "Mapgen"
+#~ msgid "Useful for mod developers."
+#~ msgstr "Dezvoltatori de bază"
 
 #, fuzzy
-#~ msgid "Mapgen fractal offset"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal scale"
-#~ msgstr "Mapgen"
-
-#, fuzzy
-#~ msgid "Mapgen fractal slice w"
+#~ msgid "Mapgen v7 cave width"
 #~ msgstr "Mapgen"
 
 #, fuzzy
@@ -4935,89 +4950,114 @@ msgstr ""
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Mapgen v7 cave width"
+#~ msgid "Mapgen fractal slice w"
 #~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Useful for mod developers."
-#~ msgstr "Dezvoltatori de bază"
-
-#~ msgid "No of course not!"
-#~ msgstr "Nu, sigur că nu!"
-
-#~ msgid "Public Serverlist"
-#~ msgstr "Listă de servere publică"
+#~ msgid "Mapgen fractal scale"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "If disabled "
-#~ msgstr "Dezactivează MP"
+#~ msgid "Mapgen fractal offset"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "If enabled, "
-#~ msgstr "activat"
-
-#~ msgid "Gamemgr: Unable to copy mod \"$1\" to game \"$2\""
-#~ msgstr "Gamemgr: Nu se poate copia modul \"$1\" în jocul \"$2\""
-
-#~ msgid "GAMES"
-#~ msgstr "JOCURI"
-
-#~ msgid "Mods:"
-#~ msgstr "Moduri:"
-
-#~ msgid "new game"
-#~ msgstr "joc nou"
-
-#~ msgid "EDIT GAME"
-#~ msgstr "MODIFICĂ JOCUL"
-
-#~ msgid "Remove selected mod"
-#~ msgstr "Șterge modul selectat"
-
-#~ msgid "<<-- Add mod"
-#~ msgstr "<<-- Adaugă modul"
-
-#~ msgid "CLIENT"
-#~ msgstr "CLIENT"
-
-#~ msgid "START SERVER"
-#~ msgstr "DESCHIDE SERVERUL"
-
-#~ msgid "Name"
-#~ msgstr "Nume"
-
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
-#~ msgid "SETTINGS"
-#~ msgstr "SETĂRI"
-
-#~ msgid "Preload item visuals"
-#~ msgstr "Pre-încarcă imaginile obiectelor"
-
-#~ msgid "Finite Liquid"
-#~ msgstr "Lichid finit"
-
-#~ msgid "SINGLE PLAYER"
-#~ msgstr "SINGLE PLAYER"
-
-#~ msgid "TEXTURE PACKS"
-#~ msgstr "PACHETE DE TEXTURĂ"
-
-#~ msgid "MODS"
-#~ msgstr "MODURI"
-
-#~ msgid "Add mod:"
-#~ msgstr "Adăugaţi mod:"
-
-#~ msgid "Left click: Move all items, Right click: Move single item"
-#~ msgstr ""
-#~ "Click stânga: Mută toate obiectele, Click dreapta: Mută un singur obiect"
+#~ msgid "Mapgen fractal iterations"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Descarcă"
+#~ msgid "Mapgen fractal fractal"
+#~ msgstr "Mapgen"
 
 #, fuzzy
-#~ msgid "Preload inventory textures"
-#~ msgstr "Se încarcă..."
+#~ msgid "Mapgen fractal cave width"
+#~ msgstr "Mapgen"
+
+#, fuzzy
+#~ msgid "Mapgen flat cave width"
+#~ msgstr "Mapgen"
+
+#~ msgid "Plus"
+#~ msgstr "Plus"
+
+#~ msgid "Period"
+#~ msgstr "Punct"
+
+#~ msgid "PA1"
+#~ msgstr "PA1"
+
+#~ msgid "Minus"
+#~ msgstr "Minus"
+
+#~ msgid "Kanji"
+#~ msgstr "Kanji"
+
+#~ msgid "Kana"
+#~ msgstr "Kana"
+
+#~ msgid "Junja"
+#~ msgstr "Junja"
+
+#~ msgid "Final"
+#~ msgstr "Final"
+
+#~ msgid "ExSel"
+#~ msgstr "ExSel"
+
+#~ msgid "CrSel"
+#~ msgstr "CrSel"
+
+#~ msgid "Comma"
+#~ msgstr "Virgulă"
+
+#~ msgid "Capital"
+#~ msgstr "Capital"
+
+#~ msgid "Attn"
+#~ msgstr "Attn"
+
+#~ msgid "Hide mp content"
+#~ msgstr "Ascunde conținutul mp"
+
+#~ msgid "Use"
+#~ msgstr "Aleargă"
+
+#, fuzzy
+#~ msgid "Shutting down..."
+#~ msgstr "Se închide..."
+
+#~ msgid "Resolving address..."
+#~ msgstr "Se rezolvă adresa..."
+
+#, fuzzy
+#~ msgid "Creating server..."
+#~ msgstr "Se crează serverul..."
+
+#~ msgid "Creating client..."
+#~ msgstr "Se creează clientul..."
+
+#~ msgid "Connecting to server..."
+#~ msgstr "Se conectează la server..."
+
+#~ msgid "re-Install"
+#~ msgstr "Reinstalează"
+
+#, fuzzy
+#~ msgid "Shortname:"
+#~ msgstr "Numele lumii"
+
+#~ msgid "Rating"
+#~ msgstr "Notă"
+
+#~ msgid "Page $1 of $2"
+#~ msgstr "Pagina $1 din $2"
+
+#~ msgid "Install"
+#~ msgstr "Instalează"
+
+#, fuzzy
+#~ msgid "Select path"
+#~ msgstr "Selectează"
+
+#~ msgid "No worldname given or no game selected"
+#~ msgstr "Jocul nu are nume, sau nu ai selectat un joc"

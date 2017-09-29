@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef PATHFINDER_H_
-#define PATHFINDER_H_
+#pragma once
 
 /******************************************************************************/
 /* Includes                                                                   */
@@ -62,5 +61,3 @@ std::vector<v3s16> get_path(ServerEnvironment *env,
 							unsigned int max_jump,
 							unsigned int max_drop,
 							PathAlgorithm algo);
-
-#endif /* PATHFINDER_H_ */

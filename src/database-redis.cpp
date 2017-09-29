@@ -38,7 +38,7 @@ Database_Redis::Database_Redis(Settings &conf)
 	try {
 		tmp = conf.get("redis_address");
 		hash = conf.get("redis_hash");
-	} catch (SettingNotFoundException) {
+	} catch (SettingNotFoundException &) {
 		throw SettingNotFoundException("Set redis_address and "
 			"redis_hash in world.mt to use the redis backend");
 	}

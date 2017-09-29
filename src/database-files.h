@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_FILES_HEADER
-#define DATABASE_FILES_HEADER
+#pragma once
 
 // !!! WARNING !!!
 // This backend is intended to be used on Minetest 0.4.16 only for the transition backend
@@ -30,7 +29,7 @@ class PlayerDatabaseFiles : public PlayerDatabase
 {
 public:
 	PlayerDatabaseFiles(const std::string &savedir) : m_savedir(savedir) {}
-	virtual ~PlayerDatabaseFiles() {}
+	virtual ~PlayerDatabaseFiles() = default;
 
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
@@ -42,5 +41,3 @@ private:
 
 	std::string m_savedir;
 };
-
-#endif

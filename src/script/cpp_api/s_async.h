@@ -17,17 +17,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef CPP_API_ASYNC_EVENTS_HEADER
-#define CPP_API_ASYNC_EVENTS_HEADER
+#pragma once
 
 #include <vector>
 #include <deque>
 #include <map>
 
-#include "threading/thread.h"
-#include "threading/mutex.h"
 #include "threading/semaphore.h"
-#include "debug.h"
+#include "threading/thread.h"
 #include "lua.h"
 #include "cpp_api/s_base.h"
 
@@ -40,24 +37,18 @@ class AsyncEngine;
 // Data required to queue a job
 struct LuaJobInfo
 {
-	LuaJobInfo() :
-		serializedFunction(""),
-		serializedParams(""),
-		serializedResult(""),
-		id(0),
-		valid(false)
-	{}
+	LuaJobInfo() = default;
 
 	// Function to be called in async environment
-	std::string serializedFunction;
+	std::string serializedFunction = "";
 	// Parameter to be passed to function
-	std::string serializedParams;
+	std::string serializedParams = "";
 	// Result of function call
-	std::string serializedResult;
+	std::string serializedResult = "";
 	// JobID used to identify a job and match it to callback
-	unsigned int id;
+	unsigned int id = 0;
 
-	bool valid;
+	bool valid = false;
 };
 
 // Asynchronous working environment
@@ -69,7 +60,7 @@ public:
 	void *run();
 
 private:
-	AsyncEngine *jobDispatcher;
+	AsyncEngine *jobDispatcher = nullptr;
 };
 
 // Asynchornous thread and job management
@@ -77,7 +68,7 @@ class AsyncEngine {
 	friend class AsyncWorkerThread;
 	typedef void (*StateInitializer)(lua_State *L, int top);
 public:
-	AsyncEngine();
+	AsyncEngine() = default;
 	~AsyncEngine();
 
 	/**
@@ -138,22 +129,22 @@ protected:
 
 private:
 	// Variable locking the engine against further modification
-	bool initDone;
+	bool initDone = false;
 
 	// Internal store for registred state initializers
 	std::vector<StateInitializer> stateInitializers;
 
 	// Internal counter to create job IDs
-	unsigned int jobIdCounter;
+	unsigned int jobIdCounter = 0;
 
 	// Mutex to protect job queue
-	Mutex jobQueueMutex;
+	std::mutex jobQueueMutex;
 
 	// Job queue
 	std::deque<LuaJobInfo> jobQueue;
 
 	// Mutex to protect result queue
-	Mutex resultQueueMutex;
+	std::mutex resultQueueMutex;
 	// Result queue
 	std::deque<LuaJobInfo> resultQueue;
 
@@ -163,5 +154,3 @@ private:
 	// Counter semaphore for job dispatching
 	Semaphore jobQueueCounter;
 };
-
-#endif // CPP_API_ASYNC_EVENTS_HEADER

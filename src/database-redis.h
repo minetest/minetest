@@ -17,8 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef DATABASE_REDIS_HEADER
-#define DATABASE_REDIS_HEADER
+#pragma once
 
 #include "config.h"
 
@@ -45,10 +44,8 @@ public:
 	void listAllLoadableBlocks(std::vector<v3s16> &dst);
 
 private:
-	redisContext *ctx;
-	std::string hash;
+	redisContext *ctx = nullptr;
+	std::string hash = "";
 };
 
 #endif // USE_REDIS
-
-#endif

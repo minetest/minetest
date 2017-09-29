@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef L_CLIENT_H_
-#define L_CLIENT_H_
+#pragma once
 
 #include "lua_api/l_base.h"
 #include "itemdef.h"
@@ -65,9 +64,6 @@ private:
 	static int l_set_last_run_mod(lua_State *L);
 
 	// get_node(pos)
-	static int l_get_node(lua_State *L);
-
-	// get_node_or_nil(pos)
 	static int l_get_node_or_nil(lua_State *L);
 
 	// get_wielded_item()
@@ -89,10 +85,15 @@ private:
 	// get_node_def(nodename)
 	static int l_get_node_def(lua_State *L);
 
+	// take_screenshot()
 	static int l_take_screenshot(lua_State *L);
+
+	// get_privilege_list()
+	static int l_get_privilege_list(lua_State *L);
+
+	// get_builtin_path()
+	static int l_get_builtin_path(lua_State *L);
 
 public:
 	static void Initialize(lua_State *L, int top);
 };
-
-#endif

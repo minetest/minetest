@@ -18,8 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#ifndef FILECACHE_HEADER
-#define FILECACHE_HEADER
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -41,5 +40,3 @@ private:
 	bool loadByPath(const std::string &path, std::ostream &os);
 	bool updateByPath(const std::string &path, const std::string &data);
 };
-
-#endif
