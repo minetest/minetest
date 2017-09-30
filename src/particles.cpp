@@ -317,6 +317,11 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					v3f ppos = m_player->getPosition() / BS;
 					v3f pos = random_v3f(m_minpos, m_maxpos);
 
+					// Need to apply this first or the following check
+					// will be wrong for attached spawners
+					if (is_attached)
+						pos += attached_pos;
+
 					if (pos.getDistanceFrom(ppos) <= radius) {
 						v3f vel = random_v3f(m_minvel, m_maxvel);
 						v3f acc = random_v3f(m_minacc, m_maxacc);
@@ -324,7 +329,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 						if (is_attached) {
 							// Apply attachment yaw and position
 							pos.rotateXZBy(attached_yaw);
-							pos += attached_pos;
 							vel.rotateXZBy(attached_yaw);
 							acc.rotateXZBy(attached_yaw);
 						}
@@ -377,6 +381,11 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				v3f ppos = m_player->getPosition() / BS;
 				v3f pos = random_v3f(m_minpos, m_maxpos);
 
+				// Need to apply this first or the following check
+				// will be wrong for attached spawners
+				if (is_attached)
+					pos += attached_pos;
+
 				if (pos.getDistanceFrom(ppos) <= radius) {
 					v3f vel = random_v3f(m_minvel, m_maxvel);
 					v3f acc = random_v3f(m_minacc, m_maxacc);
@@ -384,7 +393,6 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					if (is_attached) {
 						// Apply attachment yaw and position
 						pos.rotateXZBy(attached_yaw);
-						pos += attached_pos;
 						vel.rotateXZBy(attached_yaw);
 						acc.rotateXZBy(attached_yaw);
 					}
