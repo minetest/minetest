@@ -848,7 +848,7 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
-	m_player->peer_id = m_peer_id;
+	m_player->setPeerId(m_peer_id);
 	m_last_good_position = m_base_position;
 }
 
@@ -1359,7 +1359,7 @@ void PlayerSAO::disconnected()
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
-	m_player->peer_id = 0;
+	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
 	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);

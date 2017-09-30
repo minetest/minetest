@@ -408,7 +408,7 @@ ServerMap & ServerEnvironment::getServerMap()
 RemotePlayer *ServerEnvironment::getPlayer(const session_t peer_id)
 {
 	for (RemotePlayer *player : m_players) {
-		if (player->peer_id == peer_id)
+		if (player->getPeerId() == peer_id)
 			return player;
 	}
 	return NULL;
@@ -431,8 +431,8 @@ void ServerEnvironment::addPlayer(RemotePlayer *player)
 		Exception: there can be multiple players with peer_id=0
 	*/
 	// If peer id is non-zero, it has to be unique.
-	if (player->peer_id != 0)
-		FATAL_ERROR_IF(getPlayer(player->peer_id) != NULL, "Peer id not unique");
+	if (player->getPeerId() != PEER_ID_INEXISTENT)
+		FATAL_ERROR_IF(getPlayer(player->getPeerId()) != NULL, "Peer id not unique");
 	// Name has to be unique.
 	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");
 	// Add.
@@ -487,7 +487,7 @@ void ServerEnvironment::kickAllPlayers(AccessDeniedCode reason,
 	const std::string &str_reason, bool reconnect)
 {
 	for (RemotePlayer *player : m_players) {
-		m_server->DenyAccessVerCompliant(player->peer_id,
+		m_server->DenyAccessVerCompliant(player->getPeerId(),
 			player->protocol_version, reason, str_reason, reconnect);
 	}
 }
@@ -1124,7 +1124,7 @@ void ServerEnvironment::step(float dtime)
 		ScopeProfiler sp(g_profiler, "SEnv: handle players avg", SPT_AVG);
 		for (RemotePlayer *player : m_players) {
 			// Ignore disconnected players
-			if (player->peer_id == 0)
+			if (player->getPeerId() == PEER_ID_INEXISTENT)
 				continue;
 
 			// Move
@@ -1143,7 +1143,7 @@ void ServerEnvironment::step(float dtime)
 		std::vector<v3s16> players_blockpos;
 		for (RemotePlayer *player: m_players) {
 			// Ignore disconnected players
-			if (player->peer_id == 0)
+			if (player->getPeerId() == PEER_ID_INEXISTENT)
 				continue;
 
 			PlayerSAO *playersao = player->getPlayerSAO();
