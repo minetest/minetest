@@ -320,7 +320,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 					// Need to apply this first or the following check
 					// will be wrong for attached spawners
 					if (is_attached)
-					  pos += attached_pos;
+						pos += attached_pos;
 
 					if (pos.getDistanceFrom(ppos) <= radius) {
 						v3f vel = random_v3f(m_minvel, m_maxvel);
@@ -384,7 +384,7 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 				// Need to apply this first or the following check
 				// will be wrong for attached spawners
 				if (is_attached)
-				  pos += attached_pos;
+					pos += attached_pos;
 
 				if (pos.getDistanceFrom(ppos) <= radius) {
 					v3f vel = random_v3f(m_minvel, m_maxvel);
