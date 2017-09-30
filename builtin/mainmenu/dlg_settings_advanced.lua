@@ -534,9 +534,11 @@ local function create_change_setting_formspec(dialogdata)
 	local setting = settings[selected_setting]
 	local height = 5.2
 	if setting.type == "noise_params_2d" or setting.type == "noise_params_3d" then
-		height = 8.7 -- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
+		-- Three flags, checkboxes on 2 columns, with a vertical space of 1/2 unit
+		height = 8.7
 	elseif setting.type == "flags" then
-		height = 5.2 + math.ceil(#setting.possible / 2) / 2 -- Checkboxes on 2 columns, with a vertical space of 1/2 unit
+		-- Checkboxes on 2 columns, with a vertical space of 1/2 unit
+		height = 5.2 + math.ceil(#setting.possible / 2) / 2
 	end
 	local formspec = "size[10," .. height .. ",true]" ..
 			"button[5," .. height - 0.7 .. ";2,1;btn_done;" .. fgettext("Save") .. "]" ..
@@ -637,7 +639,8 @@ local function create_change_setting_formspec(dialogdata)
 		local enabled_flags = flags_to_table(t[10])
 		local flags = {}
 		for _, name in ipairs(enabled_flags) do
-			flags[name] = true -- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			flags[name] = true
 		end
 		-- Flags
 		formspec = formspec
@@ -667,15 +670,16 @@ local function create_change_setting_formspec(dialogdata)
 		local enabled_flags = flags_to_table(get_current_value(setting))
 		local flags = {}
 		for _, name in ipairs(enabled_flags) do
-			flags[name] = true -- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			-- Index by name, to avoid iterating over all enabled_flags for every possible flag.
+			flags[name] = true
 		end
 		local flags_count = #setting.possible
 		for i, name in ipairs(setting.possible) do
 			local x = 0.5
-			local y = 3.5 + i/2
-			if i-1 >= flags_count/2 then -- 2nd column
+			local y = 3.5 + i / 2
+			if i - 1 >= flags_count / 2 then -- 2nd column
 				x = 5
-				y = y - flags_count/4
+				y = y - flags_count / 4
 			end
 			local checkbox_name = "cb_" .. name
 			local is_enabled = flags[name] == true -- to get false if nil

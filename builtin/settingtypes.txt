@@ -1460,16 +1460,16 @@ mgcarpathian_np_base (Base ground noise) noise_params_2d 12, 1, (2557, 2557, 255
 #    Variation of biome filler depth.
 mgcarpathian_np_filler_depth (Filler depth noise) noise_params_2d 0, 1, (128, 128, 128), 261, 3, 0.7, 2.0, eased
 
-#    First of 4 3D noises that together define hill/mountain range height.
+#    First of 4 2D noises that together define hill/mountain range height.
 mgcarpathian_np_height1 (Hilliness1 noise) noise_params_2d 0, 5, (251, 251, 251), 9613, 5, 0.5, 2.0, eased
 
-#    Second of 4 3D noises that together define hill/mountain range height.
+#    Second of 4 2D noises that together define hill/mountain range height.
 mgcarpathian_np_height2 (Hilliness2 noise) noise_params_2d 0, 5, (383, 383, 383), 1949, 5, 0.5, 2.0, eased
 
-#    Third of 4 3D noises that together define hill/mountain range height.
+#    Third of 4 2D noises that together define hill/mountain range height.
 mgcarpathian_np_height3 (Hilliness3 noise) noise_params_2d 0, 5, (509, 509, 509), 3211, 5, 0.5, 2.0, eased
 
-#    Fourth of 4 3D noises that together define hill/mountain range height.
+#    Fourth of 4 2D noises that together define hill/mountain range height.
 mgcarpathian_np_height4 (Hilliness4 noise) noise_params_2d 0, 5, (631, 631, 631), 1583, 5, 0.5, 2.0, eased
 
 #    2D noise that controls the size/occurance of rolling hills.
