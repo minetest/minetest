@@ -106,12 +106,6 @@ int LuaSettings::l_get_bool(lua_State* L)
 	return 1;
 }
 
-void lua_pushtablestring(lua_State* L , char* key , char* value) {
-	lua_pushstring(L, key);
-	lua_pushstring(L, value);
-	lua_settable(L, -3);
-}
-
 // get_np_group(self, key) -> value
 int LuaSettings::l_get_np_group(lua_State* L)
 {
