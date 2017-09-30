@@ -431,7 +431,7 @@ void ServerEnvironment::addPlayer(RemotePlayer *player)
 		Exception: there can be multiple players with peer_id=0
 	*/
 	// If peer id is non-zero, it has to be unique.
-	if (player->getPeerId() != 0)
+	if (player->getPeerId() != PEER_ID_INEXISTENT)
 		FATAL_ERROR_IF(getPlayer(player->getPeerId()) != NULL, "Peer id not unique");
 	// Name has to be unique.
 	FATAL_ERROR_IF(getPlayer(player->getName()) != NULL, "Player name not unique");

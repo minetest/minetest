@@ -181,9 +181,8 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
 		&avg_jitter))
 
-	ERET(getServer(L)->getClientInfo(player->getPeerId(),
-										&state, &uptime, &ser_vers, &prot_vers,
-										&major, &minor, &patch, &vers_string))
+	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
+		&prot_vers, &major, &minor, &patch, &vers_string))
 
 	lua_newtable(L);
 	int table = lua_gettop(L);
