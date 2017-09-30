@@ -1098,12 +1098,17 @@ Creates a deformed sphere of ore according to 3d perlin noise described by
 ### `vein`
 Creates veins of ore varying in density by according to the intersection of two
 instances of 3d perlin noise with diffferent seeds, both described by
-`noise_params`.  `random_factor` varies the influence random chance has on
-placement of an ore inside the vein, which is `1` by default. Note that
-modifying this parameter may require adjusting `noise_threshold`.
+`noise_params`.
+
+`random_factor` varies the influence random chance has on placement of an ore
+inside the vein, which is `1` by default. Note that modifying this parameter may
+require adjusting `noise_threshold`.
+
 The parameters `clust_scarcity`, `clust_num_ores`, and `clust_size` are ignored
-by this ore type.  This ore type is difficult to control since it is sensitive
-to small changes.  The following is a decent set of parameters to work from:
+by this ore type.
+
+This ore type is difficult to control since it is sensitive to small changes.
+The following is a decent set of parameters to work from:
 
 	noise_params = {
 	    offset  = 0,
@@ -1122,16 +1127,24 @@ computationally expensive than any other ore.
 ### `stratum`
 Creates a single undulating ore stratum that is continuous across mapchunk
 borders and horizontally spans the world.
+
 The 2D perlin noise described by `noise_params` varies the Y co-ordinate of the
 stratum midpoint. The 2D perlin noise described by `np_stratum_thickness`
 varies the stratum's vertical thickness (in units of nodes). Due to being
 continuous across mapchunk borders the stratum's vertical thickness is
 unlimited.
+
 `y_min` and `y_max` define the limits of the ore generation and for performance
 reasons should be set as close together as possible but without clipping the
 stratum's Y variation.
+
+If either of the 2 noise parameters are omitted the ore will occur from y_min
+to y_max in a simple horizontal stratum. As this does not compute noise
+performance improves, and is ideal for placing many layers.
+
 Each node in the stratum has a 1-in-`clust_scarcity` chance of being ore, so a
 solid-ore stratum would require a `clust_scarcity` of 1.
+
 The parameters `clust_num_ores`, `clust_size`, `noise_threshold` and
 `random_factor` are ignored by this ore type.
 
@@ -4713,24 +4726,36 @@ Definition tables
     --  ^ Number of ores in a cluster
         clust_size = 3,
     --  ^ Size of the bounding box of the cluster
-    --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes are coal ore
+    --  ^ In this example, there is a 3x3x3 cluster where 8 out of the 27 nodes
+    --  ^ are coal ore.
         y_min = -31000,
         y_max = 64,
     --  ^ Lower and upper limits for ore.
         flags = "",
     --  ^ Attributes for this ore generation
         noise_threshold = 0.5,
-    --  ^ If noise is above this threshold, ore is placed.  Not needed for a uniform distribution
-        noise_params = {offset=0, scale=1, spread={x=100, y=100, z=100}, seed=23, octaves=3, persist=0.70}
-    --  ^ NoiseParams structure describing the perlin noise used for ore distribution.
-    --  ^ Needed for sheet ore_type.  Omit from scatter ore_type for a uniform ore distribution
+    --  ^ If noise is above this threshold, ore is placed. Not needed for a
+    --  ^ uniform distribution.
+        noise_params = {
+            offset = 0,
+            scale = 1,
+            spread = {x = 100, y = 100, z = 100},
+            seed = 23,
+            octaves = 3,
+            persist = 0.7
+        },
+    --  ^ NoiseParams structure describing one of the perlin noises used for ore
+    --  ^ distribution.
+    --  ^ Omit from "scatter" ore for a uniform ore distribution.
+    --  ^ Omit from "stratum ore for a simple horizontal strata from y_min to y_max.
         random_factor = 1.0,
     --  ^ Multiplier of the randomness contribution to the noise value at any
     --  ^ given point to decide if ore should be placed.  Set to 0 for solid veins.
     --  ^ This parameter is only valid for ore_type == "vein".
         biomes = {"desert", "rainforest"}
-    --  ^ List of biomes in which this decoration occurs.  Occurs in all biomes if this is omitted,
-    --  ^ and ignored if the Mapgen being used does not support biomes.
+    --  ^ List of biomes in which this decoration occurs.
+    --  ^ Occurs in all biomes if this is omitted, and ignored if the Mapgen being
+    --  ^ used does not support biomes.
     --  ^ Can be a list of (or a single) biome names, IDs, or definitions.
     }
 

@@ -135,7 +135,7 @@ public:
 
 class OreStratum : public Ore {
 public:
-	static const bool NEEDS_NOISE = true;
+	static const bool NEEDS_NOISE = false;
 
 	NoiseParams np_stratum_thickness;
 	Noise *noise_stratum_thickness = nullptr;

@@ -1156,7 +1156,9 @@ int ModApiMapgen::l_register_ore(lua_State *L)
 			OreStratum *orestratum = (OreStratum *)ore;
 
 			lua_getfield(L, index, "np_stratum_thickness");
-			read_noiseparams(L, -1, &orestratum->np_stratum_thickness);
+			// If thickness noise missing unset 'use noise' flag
+			if (!read_noiseparams(L, -1, &orestratum->np_stratum_thickness))
+				ore->flags &= ~OREFLAG_USE_NOISE;
 			lua_pop(L, 1);
 
 			break;
