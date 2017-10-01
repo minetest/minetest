@@ -305,12 +305,12 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 		acc.rotateXZBy(attached_yaw);
 	}
 
-	float exptime = rand()/(float)RAND_MAX
-			*(m_maxexptime-m_minexptime)
-			+m_minexptime;
-	float size = rand()/(float)RAND_MAX
-			*(m_maxsize-m_minsize)
-			+m_minsize;
+	float exptime = rand() / (float)RAND_MAX
+			* (m_maxexptime - m_minexptime)
+			+ m_minexptime;
+	float size = rand() / (float)RAND_MAX
+			* (m_maxsize-m_minsize)
+			+ m_minsize;
 
 	m_particlemanager->addParticle(new Particle(
 		m_gamedef,
@@ -353,39 +353,33 @@ void ParticleSpawner::step(float dtime, ClientEnvironment* env)
 		}
 	}
 
-	if (m_spawntime != 0) // Spawner exists for a predefined timespan
-	{
-		for(std::vector<float>::iterator i = m_spawntimes.begin();
-				i != m_spawntimes.end();)
-		{
-			if ((*i) <= m_time && m_amount > 0)
-			{
+	if (m_spawntime != 0) {
+		// Spawner exists for a predefined timespan
+		for (std::vector<float>::iterator i = m_spawntimes.begin();
+				i != m_spawntimes.end();) {
+			if ((*i) <= m_time && m_amount > 0) {
 				m_amount--;
 
 				// Pretend to, but don't actually spawn a particle if it is
 				// attached to an unloaded object or distant from player.
-				if (!unloaded) {
+				if (!unloaded)
 					spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
-				}
+
 				i = m_spawntimes.erase(i);
-			}
-			else
-			{
+			} else {
 				++i;
 			}
 		}
-	}
-	else // Spawner exists for an infinity timespan, spawn on a per-second base
-	{
+	} else {
+		// Spawner exists for an infinity timespan, spawn on a per-second base
+
 		// Skip this step if attached to an unloaded object
 		if (unloaded)
 			return;
-		for (int i = 0; i <= m_amount; i++)
-		{
-			if (rand()/(float)RAND_MAX < dtime)
-			{
+
+		for (int i = 0; i <= m_amount; i++) {
+			if (rand() / (float)RAND_MAX < dtime)
 				spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
-			}
 		}
 	}
 }
