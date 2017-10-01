@@ -329,6 +329,8 @@ public:
 		m_full_version = full;
 	}
 
+	const v3f &estimateVelocity(const v3f &newPos, float dtime);
+
 	/* read version information */
 	u8 getMajor() const { return m_version_major; }
 	u8 getMinor() const { return m_version_minor; }
@@ -353,6 +355,9 @@ private:
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer = 0.0f;
+	v3f m_last_pos;
+	v3f m_velocity;
+	float m_velocity_timer = -0.1f;
 
 	/*
 		Blocks that are currently on the line.

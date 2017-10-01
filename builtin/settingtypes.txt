@@ -877,6 +877,12 @@ full_block_send_enable_min_time_from_building (Delay in sending blocks after bui
 #    client number.
 max_packets_per_iteration (Max. packets per iteration) int 1024
 
+#    Threshold at which the direction of a player's speed overrides the camera direction
+#    for view cone retrieval.
+#    This can help with cart movements and falling where blocks are otherwise not
+#    retrieved fast enough.
+speed_direction_override (Player Speed Direction Override) float 6.0 1.0 100.0
+
 [*Game]
 
 #    Default game when creating a new world.

@@ -60,6 +60,24 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
+const v3f &RemoteClient::estimateVelocity(const v3f &newPos, float dtime)
+{
+	// starting condition
+	if (m_velocity_timer < 0.0f) {
+		m_last_pos = newPos;
+		m_velocity_timer = 0.0f;
+	}
+	m_velocity_timer += dtime;
+	// update the velocity 5x per second
+	if (m_velocity_timer > 0.2f) {
+		// exponential dampening, pos is a bit noise otherwise
+		m_velocity = (newPos - m_last_pos) / m_velocity_timer * 0.2f + m_velocity * 0.8f;
+		m_last_pos = newPos;
+		m_velocity_timer = 0.0f;
+	}
+	return m_velocity;
+}
+
 void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
@@ -91,7 +109,7 @@ void RemoteClient::GetNextBlocks (
 	}
 
 	v3f playerpos = sao->getBasePosition();
-	const v3f &playerspeed = player->getSpeed();
+	const v3f &playerspeed = estimateVelocity(playerpos, dtime);
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
@@ -170,11 +188,8 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	// get view range and camera fov from the client
-	s16 wanted_range = sao->getWantedRange();
+	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
-	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 1000;
-	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
 
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
@@ -185,7 +200,7 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
 
 	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
+	s16 max_d_increment_at_time = 1;
 	if(d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
@@ -196,6 +211,7 @@ void RemoteClient::GetNextBlocks (
 
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
+	const float speed_dir_override = g_settings->getFloat("speed_direction_override");
 
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
@@ -249,8 +265,9 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
+			const v3f cone_dir = playerspeed.getLength() < speed_dir_override * BS ? camera_dir : playerspeeddir;
 			f32 dist;
-			if (!isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist)) {
+			if (!isBlockInSight(p, camera_pos, cone_dir, camera_fov, d_blocks_in_sight, &dist)) {
 				continue;
 			}
 
