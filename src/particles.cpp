@@ -289,8 +289,10 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 
 	// Need to apply this first or the following check
 	// will be wrong for attached spawners
-	if (is_attached)
+	if (is_attached) {
+		pos.rotateXZBy(attached_yaw);
 		pos += attached_pos;
+	}
 
 	if (pos.getDistanceFrom(ppos) > radius)
 		return;
@@ -299,8 +301,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 	v3f acc = random_v3f(m_minacc, m_maxacc);
 
 	if (is_attached) {
-		// Apply attachment yaw and position
-		pos.rotateXZBy(attached_yaw);
+		// Apply attachment yaw
 		vel.rotateXZBy(attached_yaw);
 		acc.rotateXZBy(attached_yaw);
 	}
@@ -309,7 +310,7 @@ void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
 			* (m_maxexptime - m_minexptime)
 			+ m_minexptime;
 	float size = rand() / (float)RAND_MAX
-			* (m_maxsize-m_minsize)
+			* (m_maxsize - m_minsize)
 			+ m_minsize;
 
 	m_particlemanager->addParticle(new Particle(
