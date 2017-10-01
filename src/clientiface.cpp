@@ -60,6 +60,24 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
+LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
+{
+	if (!sao->isAttached())
+		return nullptr;
+
+	int id;
+	std::string bone;
+	v3f dummy;
+	sao->getAttachment(&id, &bone, &dummy, &dummy);
+	ServerActiveObject *ao = env->getActiveObject(id);
+	while (id && ao) {
+		ao->getAttachment(&id, &bone, &dummy, &dummy);
+		if (id)
+			ao = env->getActiveObject(id);
+	}
+	return dynamic_cast<LuaEntitySAO *>(ao);
+}
+
 void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
@@ -91,7 +109,9 @@ void RemoteClient::GetNextBlocks (
 	}
 
 	v3f playerpos = sao->getBasePosition();
-	const v3f &playerspeed = player->getSpeed();
+	// if the player is attached, get the velocity from the attached object
+	LuaEntitySAO *lsao = getAttachedObject(sao, env);
+	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
@@ -170,11 +190,8 @@ void RemoteClient::GetNextBlocks (
 	s32 new_nearest_unsent_d = -1;
 
 	// get view range and camera fov from the client
-	s16 wanted_range = sao->getWantedRange();
+	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
-	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 1000;
-	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
 
 	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
 	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
@@ -185,7 +202,7 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
 
 	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
+	s16 max_d_increment_at_time = 1;
 	if(d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
@@ -247,10 +264,16 @@ void RemoteClient::GetNextBlocks (
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
 				FOV setting. The default of 72 degrees is fine.
+				Also retrieve a smaller view cone in the direction of the player's
+				movement.
+				(0.1 is about 4 degrees)
 			*/
-
 			f32 dist;
-			if (!isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist)) {
+			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,
+						d_blocks_in_sight, &dist) ||
+					(playerspeed.getLength() > 1.0f * BS &&
+					isBlockInSight(p, camera_pos, playerspeeddir, 0.1f,
+						d_blocks_in_sight)))) {
 				continue;
 			}
 
