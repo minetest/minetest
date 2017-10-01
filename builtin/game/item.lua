@@ -255,11 +255,13 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	local oldnode_under = core.get_node_or_nil(under)
 	local above = pointed_thing.above
 	local oldnode_above = core.get_node_or_nil(above)
-	local playername = placer:get_player_name()
+	local playername = placer and placer:get_player_name() or ""
 
 	if not oldnode_under or not oldnode_above then
-		core.log("info", playername .. " tried to place"
-			.. " node in unloaded position " .. core.pos_to_string(above))
+		local message_start = placer and (playername .. " tried to place") or
+			"Command issued to place"
+		core.log("info", message_start .. " node in unloaded position "
+			.. core.pos_to_string(above))
 		return itemstack, false
 	end
 
@@ -285,7 +287,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 	end
 
 	if core.is_protected(place_to, playername) and
-			not minetest.check_player_privs(placer, "protection_bypass") then
+			not minetest.check_player_privs(playername, "protection_bypass") then
 		core.log("action", playername
 				.. " tried to place " .. def.name
 				.. " at protected position "
@@ -312,7 +314,7 @@ function core.item_place_node(itemstack, placer, pointed_thing, param2)
 		}
 		newnode.param2 = core.dir_to_wallmounted(dir)
 	-- Calculate the direction for furnaces and chests and stuff
-	elseif (def.paramtype2 == "facedir" or
+	elseif placer and (def.paramtype2 == "facedir" or
 			def.paramtype2 == "colorfacedir") and not param2 then
 		local placer_pos = placer:getpos()
 		if placer_pos then
