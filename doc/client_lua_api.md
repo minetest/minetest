@@ -689,6 +689,10 @@ Call these functions only at load time!
       join request.
     * If message comes from a server mod, `sender` field is an empty string.
 
+* `minetest.register_on_inventory_open(func(inventory))`
+    * Called when the local player open inventory
+    * Newest functions are called first
+    * If any function returns true, inventory doesn't open
 ### Sounds
 * `minetest.sound_play(spec, parameters)`: returns a handle
     * `spec` is a `SimpleSoundSpec`

@@ -2671,14 +2671,17 @@ void Game::openInventory()
 	infostream << "the_game: " << "Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
-	TextDest *txt_dst = new TextDestPlayerInventory(client);
-
-	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
-	cur_formname = "";
 
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
-	current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+
+	if (!client->moddingEnabled()
+			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
+		TextDest *txt_dst = new TextDestPlayerInventory(client);
+		create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+		cur_formname = "";
+		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+	}
 }
 
 
