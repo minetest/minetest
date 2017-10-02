@@ -293,7 +293,7 @@ end)
 -- A test entity for testing animated and yaw-modulated sprites
 --
 
-minetest.register_entity("experimental:testentity", {
+minetest.register_npc("experimental:testentity", {
 	-- Static definition
 	physical = true, -- Collides with things
 	-- weight = 5,

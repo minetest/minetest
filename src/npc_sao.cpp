@@ -57,18 +57,18 @@ void NpcSAO::addedToEnvironment(u32 dtime_s)
 {
 	ServerActiveObject::addedToEnvironment(dtime_s);
 
-	// Create entity from name
+	// Create npc from name
 	m_registered = m_env->getScriptIface()->luanpc_Add(m_id, m_init_name.c_str());
 
 	if(m_registered){
 		// Get properties
 		m_env->getScriptIface()->
-				luaentity_GetProperties(m_id, &m_prop);
+				luanpc_GetProperties(m_id, &m_prop);
 		// Initialize HP from properties
 		m_hp = m_prop.hp_max;
-		// Activate entity, supplying serialized state
+		// Activate npc, supplying serialized state
 		m_env->getScriptIface()->
-				luaentity_Activate(m_id, m_init_state, dtime_s);
+				luanpc_Activate(m_id, m_init_state, dtime_s);
 	} else {
 		m_prop.infotext = m_init_name;
 	}
