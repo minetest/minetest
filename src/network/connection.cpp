@@ -46,7 +46,6 @@ void ConnectionWorker::enqueueForSending(NetworkPacket *pkt)
 
 void ConnectionWorker::sendPacket()
 {
-
 	asio::async_write(m_socket, asio::buffer(m_send_queue.front()->data(),
 		m_send_queue.front()->size()),
 		[this](std::error_code ec, std::size_t /*length*/) {

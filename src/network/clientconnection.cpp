@@ -29,7 +29,8 @@ namespace network {
 ClientConnection::ClientConnection(asio::io_service &io_service) :
 	ConnectionWorker(io_service, tcp::socket(io_service)),
 	m_state(STATE_STARTUP),
-	m_io_service(io_service)
+	m_io_service(io_service),
+	m_udp_socket(io_service, udp::endpoint(udp::v4(), 0))
 {
 }
 
@@ -150,6 +151,15 @@ std::string ClientConnection::getConnectionError()
 	return m_last_error;
 }
 
+/**
+ * set ClientConnection session id
+ * if already set, an assertion is triggered
+ *
+ * Re-use TCP remote informations to send UDP pings to server (every 5 seconds)
+ *
+ * This permits to ensure NAT traversal for outgoing and incoming server packets
+ * @param session_id
+ */
 void ClientConnection::setSessionId(session_t session_id)
 {
 	// we should not set it twice
@@ -157,9 +167,46 @@ void ClientConnection::setSessionId(session_t session_id)
 
 	m_session_id = session_id;
 
-	async_task(1000, [] {
+	udp::resolver resolver(m_io_service);
 
+	m_udp_endpoint = udp::endpoint(
+		m_socket.remote_endpoint().address(),
+		m_socket.remote_endpoint().port()
+	);
+
+	async_task(5000, [this] () {
+		sendUdpPing();
 	});
+}
+
+/**
+ * UDP ping is a tiny packet
+ * - protocol id (4 bytes)
+ * - command (1 byte)
+ * - session ID (8 bytes)
+ */
+void ClientConnection::sendUdpPing()
+{
+	std::vector<u8> buf(4 + 1 + 8);
+	writeU32(&buf[0], PROTOCOL_ID);
+	writeU8(&buf[4], 1);
+	writeU64(&buf[5], m_session_id);
+
+	// Send UDP ping asynchronously
+
+	auto self(shared_from_this());
+	m_udp_socket.async_send_to(asio::buffer(buf, buf.size()), m_udp_endpoint,
+		[this, self] (std::error_code ec, std::size_t /*length*/) {
+			// If no error happen, send next ping in 5 seconds
+			if (!ec) {
+				async_task(5000, [this]() {
+					sendUdpPing();
+				});
+			} else {
+				disconnect();
+			}
+		}
+	);
 }
 
 void ClientConnection::send(NetworkPacket *pkt)

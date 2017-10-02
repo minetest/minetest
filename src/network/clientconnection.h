@@ -21,12 +21,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <asio/io_service.hpp>
 #include <asio/ip/tcp.hpp>
+#include <asio/ip/udp.hpp>
 #include "threading/thread.h"
 #include "irrlichttypes.h"
 #include "connection.h"
 #include "networkprotocol.h"
 
 using asio::ip::tcp;
+using asio::ip::udp;
 
 class NetworkPacket;
 
@@ -83,6 +85,7 @@ public:
 	void setSessionId(session_t session_id);
 private:
 	void readBody();
+	void sendUdpPing();
 
 	std::atomic<State> m_state;
 
@@ -96,6 +99,9 @@ private:
 
 	asio::io_service &m_io_service;
 	tcp::resolver::iterator m_endpoint_iterator;
+
+	udp::socket m_udp_socket;
+	udp::endpoint m_udp_endpoint;
 
 	std::mutex m_recv_queue_mtx;
 	std::queue<NetworkPacket *> m_recv_queue;
