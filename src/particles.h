@@ -117,7 +117,7 @@ private:
 
 class ParticleSpawner
 {
-	public:
+public:
 	ParticleSpawner(IGameDef* gamedef,
 		scene::ISceneManager *smgr,
 		LocalPlayer *player,
@@ -144,8 +144,12 @@ class ParticleSpawner
 	bool get_expired ()
 	{ return (m_amount <= 0) && m_spawntime != 0; }
 
-	private:
-	ParticleManager* m_particlemanager;
+private:
+	void spawnParticle(ClientEnvironment *env, float radius,
+			bool is_attached, const v3f &attached_pos,
+			float attached_yaw);
+
+	ParticleManager *m_particlemanager;
 	float m_time;
 	IGameDef *m_gamedef;
 	scene::ISceneManager *m_smgr;
