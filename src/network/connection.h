@@ -21,9 +21,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <vector>
 #include <asio/ip/tcp.hpp>
+#include <asio/ip/udp.hpp>
 #include "irrlichttypes.h"
+#include "networkprotocol.h"
 
 using asio::ip::tcp;
+using asio::ip::udp;
 
 class NetworkPacket;
 
@@ -35,17 +38,18 @@ namespace network
 enum UdpCommandId : u8
 {
 	UDPCMD_PING = 1,
+	UDPCMD_DATA = 2,
 };
 
-class Connection
+struct SendBuffer
 {
-public:
-	virtual ~Connection() {}
-	virtual void send(NetworkPacket *pkt) = 0;
+	std::vector<u8> data;
+	bool reliable = true;
 };
 
-class ConnectionWorker : public Connection,
-	public std::enable_shared_from_this<ConnectionWorker>
+typedef std::shared_ptr<SendBuffer> SendBufferPtr;
+
+class ConnectionWorker : public std::enable_shared_from_this<ConnectionWorker>
 {
 public:
 	ConnectionWorker(asio::io_service &io_service, tcp::socket socket) :
@@ -57,16 +61,25 @@ public:
 	virtual void disconnect() = 0;
 protected:
 	void readHeader();
-	virtual void readBody() = 0;
+	virtual void readBody();
 
-	void enqueueForSending(NetworkPacket *pkt);
+	virtual void pushPacketToQueue() = 0;
+
+	virtual udp::socket &getUDPSocket() = 0;
+
+	void enqueueForSending(NetworkPacket *pkt, bool reliable);
 	void sendPacket();
 
 	static const uint8_t HEADER_LEN = 4;
+	static const uint8_t UDP_HEADER_LEN = 13;
 
 	asio::io_service &m_io_service;
 
 	tcp::socket m_socket;
+
+	udp::endpoint m_udp_endpoint;
+
+	session_t m_session_id = 0;
 
 	// Data buffers when reading from asio sockets
 	std::array<u8, HEADER_LEN> m_hdr_buf{};
@@ -79,7 +92,7 @@ protected:
 	uint32_t m_packetbuf_cursor = 0;
 
 	// Write buffers (sending)
-	std::deque<std::shared_ptr<std::vector<u8>>> m_send_queue;
+	std::deque<SendBufferPtr> m_send_queue;
 };
 
 }

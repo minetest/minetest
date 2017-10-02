@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <asio/io_service.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/ip/udp.hpp>
+#include <utility>
 #include "threading/thread.h"
 #include "irrlichttypes.h"
 #include "connection.h"
@@ -34,6 +35,8 @@ class NetworkPacket;
 
 namespace network
 {
+
+class ClientUDPPingThread;
 
 class ClientConnection : public ConnectionWorker
 {
@@ -83,16 +86,22 @@ public:
 	}
 
 	void setSessionId(session_t session_id);
+
+	void sendUDPPing();
 private:
-	void readBody();
-	void sendUdpPing();
+	void pushPacketToQueue();
+	void receiveUDPData();
+	void readUDPBody(std::size_t size);
+
+	udp::socket &getUDPSocket()
+	{
+		return m_udp_socket;
+	}
 
 	std::atomic<State> m_state;
 
 	std::string m_address;
 	u16 m_port = 0;
-
-	session_t m_session_id = 0;
 
 	std::mutex m_last_error_mtx;
 	std::string m_last_error;
@@ -100,11 +109,30 @@ private:
 	asio::io_service &m_io_service;
 	tcp::resolver::iterator m_endpoint_iterator;
 
+	udp::endpoint m_udp_sender_endpoint;
 	udp::socket m_udp_socket;
-	udp::endpoint m_udp_endpoint;
+
+	std::array<u8, MAX_DATABUF_SIZE> m_udp_databuffer;
 
 	std::mutex m_recv_queue_mtx;
 	std::queue<NetworkPacket *> m_recv_queue;
+
+	std::unique_ptr<ClientUDPPingThread> m_udp_ping_thread;
+
+};
+
+class ClientUDPPingThread : public Thread
+{
+public:
+	ClientUDPPingThread(ClientConnection *conn) :
+		Thread("ClientUDPPingThread"),
+		m_client_connection(conn) {}
+
+protected:
+	void *run();
+
+private:
+	ClientConnection *m_client_connection;
 };
 
 class ClientConnectionThread : public Thread

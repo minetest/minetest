@@ -38,56 +38,30 @@ asio::ip::address ServerSession::getAddress()
 	return m_socket.remote_endpoint().address();
 }
 
+void ServerSession::setUDPEndpoint(const udp::endpoint &endpoint)
+{
+	// Ensure we didn't set the endpoint twice
+	assert(!m_udp_endpoint_set);
+	m_udp_endpoint = udp::endpoint(endpoint.address(), endpoint.port());
+	m_udp_endpoint_set = true;
+}
+
+udp::socket& ServerSession::getUDPSocket()
+{
+	return m_server_con->getUDPSocket();
+}
+
 void ServerSession::disconnect()
 {
-	if (m_socket.is_open())
-		m_socket.close();
-
 	m_server_con->unregisterSession(m_session_id);
 }
 
-void ServerSession::send(NetworkPacket *pkt)
+void ServerSession::pushPacketToQueue()
 {
-	// @TODO handle udp non reliable packets too
-	// Don't forget to handle serverCommandFactoryTable[pkt->getCommand()].reliable
-
-	ConnectionWorker::enqueueForSending(pkt);
-}
-
-void ServerSession::readBody()
-{
-	auto self(shared_from_this());
-
-	size_t bytes_to_read = std::min<size_t>(m_packet_waited_len - m_packetbuf_cursor,
-		MAX_DATABUF_SIZE);
-
-	m_socket.async_read_some(asio::buffer(m_data_buf, bytes_to_read),
-		[this, self](std::error_code ec, std::size_t length) {
-			if (!ec) {
-				memcpy(&m_packetbuf[m_packetbuf_cursor], &m_data_buf[0], length);
-				m_packetbuf_cursor += length;
-
-				// The whole packet is read
-				if (m_packetbuf_cursor == m_packet_waited_len) {
-					// Create a new NetworkPacket
-					NetworkPacket *pkt = new NetworkPacket();
-					pkt->putRawPacket(m_packetbuf, m_session_id);
-					m_server_con->enqueuePacket(pkt);
-					// Read next packet
-					readHeader();
-				// We read more data than needed, it's not normal, disconnect user
-				} else if (m_packetbuf_cursor > m_packet_waited_len) {
-					disconnect();
-				} else {
-					// Else we need to read the next chunk
-					readBody();
-				}
-
-			} else {
-				disconnect();
-			}
-		}
-	);
+	// Create a new NetworkPacket
+	NetworkPacket *pkt = new NetworkPacket();
+	pkt->putRawPacket(m_packetbuf, m_session_id);
+	m_server_con->enqueuePacket(pkt);
 }
 
 ServerConnection::ServerConnection(Server *server, asio::io_service &io_service,
@@ -100,6 +74,7 @@ ServerConnection::ServerConnection(Server *server, asio::io_service &io_service,
 		g_settings->getBool("ipv6_server") ? udp::v6() : udp::v4(), port)),
 	m_server(server)
 {
+	m_udp_socket.set_option(asio::socket_base::reuse_address(true));
 }
 
 void ServerConnection::start()
@@ -115,8 +90,11 @@ void ServerConnection::stop()
 void ServerConnection::do_accept()
 {
 	auto self(shared_from_this());
+
 	m_tcp_acceptor.async_accept(m_tcp_socket, [this, self](std::error_code ec) {
 		if (!ec) {
+			m_tcp_socket.set_option(asio::socket_base::reuse_address(true));
+
 			ServerSessionPtr serverSession =
 				std::make_shared<ServerSession>(m_io_service, std::move(m_tcp_socket), self);
 
@@ -132,26 +110,33 @@ void ServerConnection::do_accept()
 		do_accept();
 	});
 
-	// UDP socket need address re-use
-	asio::socket_base::reuse_address option(true);
-	m_udp_socket.set_option(option);
+	receiveUDPData();
+}
+
+void ServerConnection::receiveUDPData()
+{
+	auto self(shared_from_this());
 
 	// add a callback to receive data
 	m_udp_socket.async_receive_from(asio::buffer(m_udp_databuffer, MAX_DATABUF_SIZE),
 		m_udp_sender_endpoint, [this, self] (std::error_code ec, std::size_t recv_size) {
-			// If UDP header is not 5 bytes long, ignore
-			if (recv_size < UDP_HEADER_LEN) {
-				return;
+			if (!ec) {
+				// If UDP header is not 13 bytes long, ignore
+				if (recv_size < UDP_HEADER_LEN) {
+					return;
+				}
+
+				u32 protocol_id = readU32(&m_udp_databuffer[0]);
+
+				// Ignore invalid protocol id
+				if (protocol_id != PROTOCOL_ID) {
+					return;
+				}
+
+				readUDPBody(recv_size);
+
+				receiveUDPData();
 			}
-
-			u32 protocol_id = readU32(&m_udp_databuffer[0]);
-
-			// Ignore invalid protocol id
-			if (protocol_id != PROTOCOL_ID) {
-				return;
-			}
-
-			readUDPBody(recv_size);
 		}
 	);
 }
@@ -159,24 +144,43 @@ void ServerConnection::do_accept()
 void ServerConnection::readUDPBody(std::size_t size)
 {
 	u8 command = readU8(&m_udp_databuffer[4]);
+	u64 session_id = readU64(&m_udp_databuffer[5]);
+
+	auto session_it = m_sessions.find(session_id);
+	// Unregistered session, ignore
+	if (session_it == m_sessions.end())
+		return;
+
+	std::shared_ptr<ServerSession> sessionPtr = session_it->second;
+
+	if (m_udp_sender_endpoint.address() != sessionPtr->getAddress()) {
+		errorstream << m_udp_sender_endpoint.address()
+			<< "tries to spoof session ID " << session_id << " attached with IP "
+			<< sessionPtr->getAddress() << "!!" << std::endl;
+		return;
+	}
 
 	switch (command) {
-		case UDPCMD_PING: {
-			// Ignore invalid packet
-			if (size != UDP_HEADER_LEN + sizeof(u64))
+		case UDPCMD_PING:
+			// Set udp endpoint if not set
+			if (!sessionPtr->isUDPEndpointSet())
+				sessionPtr->setUDPEndpoint(m_udp_sender_endpoint);
+			break;
+		case UDPCMD_DATA: {
+			// If size < header + payload length + command id, ignore it's invalid
+			if (size < UDP_HEADER_LEN + 4 + 2)
 				return;
 
-			u64 session_id = readU64(&m_udp_databuffer[5]);
+			u32 packet_size = readU32(&m_udp_databuffer[13]);
 
-			auto session_it = m_sessions.find(session_id);
-			// Unregistered session, ignore
-			if (session_it == m_sessions.end())
-				return;
+			std::vector<u8> udp_packetbuf;
+			udp_packetbuf.resize(packet_size);
+			memcpy(&udp_packetbuf[0], &m_udp_databuffer[17], packet_size);
 
-			errorstream << "Hey it's session " << session_id << std::endl;
-			if (m_udp_sender_endpoint.address() == session_it->second->getAddress()) {
-				errorstream << "Hey it's same guy" << std::endl;
-			}
+			// Create a new NetworkPacket
+			NetworkPacket *pkt = new NetworkPacket();
+			pkt->putRawPacket(udp_packetbuf, session_id);
+			enqueuePacket(pkt);
 			break;
 		}
 		default:
@@ -185,12 +189,12 @@ void ServerConnection::readUDPBody(std::size_t size)
 	}
 }
 
-void ServerConnection::send(NetworkPacket *pkt)
+void ServerConnection::send(NetworkPacket *pkt, bool reliable)
 {
-	send(pkt->getPeerId(), pkt);
+	send(pkt->getPeerId(), pkt, reliable);
 }
 
-void ServerConnection::send(session_t session_id, NetworkPacket *pkt)
+void ServerConnection::send(session_t session_id, NetworkPacket *pkt, bool reliable)
 {
 	std::unique_lock<std::recursive_mutex> lock(m_sessions_mtx);
 	auto session_it = m_sessions.find(session_id);
@@ -199,7 +203,7 @@ void ServerConnection::send(session_t session_id, NetworkPacket *pkt)
 	if (session_it == m_sessions.end())
 		return;
 
-	session_it->second->enqueueForSending(pkt);
+	session_it->second->enqueueForSending(pkt, reliable);
 }
 
 void ServerConnection::disconnect(session_t session_id)
@@ -314,10 +318,8 @@ void *ServerConnectionThread::run()
 void ServerConnectionThread::stop()
 {
 	m_server_connection->stop();
-
 	if (!m_io_service.stopped())
 		m_io_service.stop();
-
 	Thread::stop();
 }
 

@@ -129,7 +129,7 @@ const ServerCommandFactory serverCommandFactoryTable[TOSERVER_NUM_MSG_TYPES] =
 {
 	null_command_factory, // 0x00
 	null_command_factory, // 0x01
-	{ "TOSERVER_INIT",               1, false }, // 0x02
+	{ "TOSERVER_INIT",               1, true }, // 0x02
 	null_command_factory, // 0x03
 	null_command_factory, // 0x04
 	null_command_factory, // 0x05

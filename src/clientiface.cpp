@@ -688,9 +688,9 @@ void ClientIface::UpdatePlayerList()
 	}
 }
 
-void ClientIface::send(session_t peer_id, NetworkPacket *pkt)
+void ClientIface::send(session_t peer_id, NetworkPacket *pkt, bool reliable)
 {
-	m_con->send(peer_id, pkt);
+	m_con->send(peer_id, pkt, reliable);
 }
 
 void ClientIface::sendToAll(NetworkPacket *pkt)
@@ -700,7 +700,8 @@ void ClientIface::sendToAll(NetworkPacket *pkt)
 		RemoteClient *client = client_it.second;
 
 		if (client->net_proto_version != 0) {
-			m_con->send(client->peer_id, pkt);
+			m_con->send(client->peer_id, pkt,
+				clientCommandFactoryTable[pkt->getCommand()].reliable);
 		}
 	}
 }
@@ -723,7 +724,8 @@ void ClientIface::sendToAllCompat(NetworkPacket *pkt, NetworkPacket *legacypkt,
 			continue;
 		}
 
-		m_con->send(client->peer_id, pkt_to_send);
+		m_con->send(client->peer_id, pkt_to_send,
+			clientCommandFactoryTable[pkt->getCommand()].reliable);
 	}
 }
 

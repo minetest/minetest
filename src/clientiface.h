@@ -438,7 +438,7 @@ public:
 	const std::vector<std::string> &getPlayerNames() const { return m_clients_names; }
 
 	/* send message to client */
-	void send(session_t peer_id, NetworkPacket *pkt);
+	void send(session_t peer_id, NetworkPacket *pkt, bool reliable = true);
 
 	/* send to all clients */
 	void sendToAll(NetworkPacket *pkt);

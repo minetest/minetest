@@ -1878,8 +1878,7 @@ void Server::SendActiveObjectMessages(session_t peer_id, const std::string &data
 
 	pkt.putRawString(datas.c_str(), datas.size());
 
-	// @TODO old behaviour sent reliability to sessionmgr
-	m_clients.send(pkt.getPeerId(), &pkt);
+	m_clients.send(pkt.getPeerId(), &pkt, reliable);
 }
 
 void Server::SendCSMFlavourLimits(session_t peer_id)

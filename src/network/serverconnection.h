@@ -25,7 +25,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <unordered_map>
 #include <queue>
 #include "connection.h"
-#include "networkprotocol.h"
 #include "threading/thread.h"
 
 class Server;
@@ -46,6 +45,7 @@ public:
 	ServerSession(asio::io_service &io_service,
 			tcp::socket socket, std::shared_ptr<ServerConnection> serverCon) :
 		ConnectionWorker(io_service, std::move(socket)),
+		m_udp_endpoint_set(false),
 		m_server_con(serverCon)
 	{}
 
@@ -61,27 +61,32 @@ public:
 
 	void disconnect();
 
-	void send(NetworkPacket *pkt);
-
 	asio::ip::address getAddress();
+
+	void setUDPEndpoint(const udp::endpoint &endpoint);
+
+	bool isUDPEndpointSet() const
+	{
+		return m_udp_endpoint_set;
+	}
+
+	udp::socket &getUDPSocket();
 private:
-	void readBody();
+	void pushPacketToQueue();
 
-	session_t m_session_id;
-
+	std::atomic_bool m_udp_endpoint_set;
 	std::shared_ptr<ServerConnection> m_server_con;
 };
 
 typedef std::shared_ptr<ServerSession> ServerSessionPtr;
 
-class ServerConnection : public Connection,
-	public std::enable_shared_from_this<ServerConnection>
+class ServerConnection : public std::enable_shared_from_this<ServerConnection>
 {
 public:
 	ServerConnection(Server *server, asio::io_service &io_service, u16 port);
 
-	virtual void send(NetworkPacket *pkt);
-	virtual void send(session_t session_id, NetworkPacket *pkt);
+	virtual void send(NetworkPacket *pkt, bool reliable);
+	void send(session_t session_id, NetworkPacket *pkt, bool reliable);
 
 	void disconnect(session_t session_id);
 
@@ -100,8 +105,14 @@ public:
 	{
 		m_server_session_mgr = sessMgr;
 	}
+
+	udp::socket &getUDPSocket()
+	{
+		return m_udp_socket;
+	}
 private:
 	void do_accept();
+	void receiveUDPData();
 	session_t registerSession(ServerSessionPtr session);
 
 	void readUDPBody(std::size_t size);
@@ -127,7 +138,7 @@ private:
 	Server *m_server;
 	ClientIface *m_server_session_mgr = nullptr;
 
-	static const uint8_t UDP_HEADER_LEN = 5;
+	static const uint8_t UDP_HEADER_LEN = 13;
 };
 
 class ServerConnectionThread : public Thread
