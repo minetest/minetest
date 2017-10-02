@@ -68,7 +68,7 @@ void MeshMakeData::fill(MapBlock *block)
 
 	fillBlockData(v3s16(0,0,0), block->getData());
 
-	// Get map for reading neigbhor blocks
+	// Get map for reading neighbor blocks
 	Map *map = block->getParent();
 
 	for (const v3s16 &dir : g_26dirs) {
@@ -194,19 +194,8 @@ u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 	Calculate smooth lighting at the XYZ- corner of p.
 	Both light banks
 */
-static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
+static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeData *data, bool node_solid)
 {
-	static const v3s16 dirs8[8] = {
-		v3s16(0,0,0),
-		v3s16(0,0,1),
-		v3s16(0,1,0),
-		v3s16(0,1,1),
-		v3s16(1,0,0),
-		v3s16(1,1,0),
-		v3s16(1,0,1),
-		v3s16(1,1,1),
-	};
-
 	INodeDefManager *ndef = data->m_client->ndef();
 
 	u16 ambient_occlusion = 0;
@@ -214,17 +203,57 @@ static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
 	u8 light_source_max = 0;
 	u16 light_day = 0;
 	u16 light_night = 0;
+	bool corner_obstructed = true;
+	bool index4_obstructed = true;
+	bool index5_obstructed = true;
+	bool index6_obstructed = true;
+	bool index7_obstructed = true;
 
-	for (const v3s16 &dir : dirs8) {
-		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p - dir);
+	for (int i = 0; i < 8; ++i) {
+		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 
 		// if it's CONTENT_IGNORE we can't do any light calculations
 		if (n.getContent() == CONTENT_IGNORE)
 			continue;
 
 		const ContentFeatures &f = ndef->get(n);
+		if (node_solid) {
+			if ((i == 4 && corner_obstructed)) {
+				ambient_occlusion++;
+				continue;
+			}
+			// Only the 4 nodes in face-direction can contribute light
+			else if (i > 4) {
+				continue;
+			} else if (i < 2 && f.param_type == CPT_LIGHT){
+				corner_obstructed = false;
+			}
+		}
+		else {
+			if (f.param_type == CPT_LIGHT) {
+				if (i == 1 || i == 2)
+					index4_obstructed = false;
+				if (i == 1 || i == 3)
+					index5_obstructed = false;
+				if (i == 2 || i == 3)
+					index6_obstructed = false;
+				if ((i == 4 && !index4_obstructed) ||
+						(i == 5 && !index5_obstructed) ||
+						(i == 6 && !index6_obstructed))
+					index7_obstructed = false;
+			}
+			if ((i == 4 && index4_obstructed) ||
+					(i == 5 && index5_obstructed) ||
+					(i == 6 && index6_obstructed) ||
+					(i == 7 && index7_obstructed)) {
+				ambient_occlusion++;
+				continue;
+			}
+		}
+
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
+
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
 			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
@@ -236,11 +265,13 @@ static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
 		}
 	}
 
-	if(light_count == 0)
-		return 0xffff;
+	if(light_count == 0) {
+		light_day = light_night = 0;
+	} else {
+		light_day /= light_count;
+		light_night /= light_count;
+	}
 
-	light_day /= light_count;
-	light_night /= light_count;
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;
@@ -283,20 +314,62 @@ static u16 getSmoothLightCombined(const v3s16 &p, MeshMakeData *data)
 /*
 	Calculate smooth lighting at the given corner of p.
 	Both light banks.
+	Node at p is solid, and thus the lighting is face-dependent.
 */
-u16 getSmoothLight(v3s16 p, v3s16 corner, MeshMakeData *data)
+u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corner, MeshMakeData *data)
 {
-	if (corner.X == 1)
-		++p.X;
-	// else corner.X == -1
-	if (corner.Y == 1)
-		++p.Y;
-	// else corner.Y == -1
-	if (corner.Z == 1)
-		++p.Z;
-	// else corner.Z == -1
+	v3s16 neighbor_offset1, neighbor_offset2;
 
-	return getSmoothLightCombined(p, data);
+	if (face_dir.X != 0) {
+		neighbor_offset1 = v3s16(0, corner.Y, 0);
+		neighbor_offset2 = v3s16(0, 0, corner.Z);
+	} else if (face_dir.Y != 0) {
+		neighbor_offset1 = v3s16(0, 0, corner.Z);
+		neighbor_offset2 = v3s16(corner.X, 0, 0);
+	} else if (face_dir.Z != 0) {
+		neighbor_offset1 = v3s16(corner.X,0,0);
+		neighbor_offset2 = v3s16(0,corner.Y,0);
+	}
+
+	const v3s16 dirs8[8] = {
+		// Always shine light
+		neighbor_offset1 + face_dir,
+		neighbor_offset2 + face_dir,
+		v3s16(0,0,0),
+		face_dir,
+
+		// Can be obstructed
+		neighbor_offset1 + neighbor_offset2 + face_dir,
+
+		// Only for ambient occlusion
+		neighbor_offset1,
+		neighbor_offset2,
+		neighbor_offset1 + neighbor_offset2
+	};
+	return getSmoothLightCombined(p, dirs8, data, true);
+}
+
+/*
+	Calculate smooth lighting at the given corner of p.
+	Both light banks.
+	Node at p is not solid, and the lighting is not face-dependent.
+*/
+u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData *data)
+{
+	const v3s16 dirs8[8] = {
+		// Always shine light
+		v3s16(0,0,0),
+		v3s16(corner.X,0,0),
+		v3s16(0,corner.Y,0),
+		v3s16(0,0,corner.Z),
+		v3s16(corner.X,corner.Y,0),
+		v3s16(corner.X,0,corner.Z),
+		v3s16(0,corner.Y,corner.Z),
+
+		// Can be obstructed
+		v3s16(corner.X,corner.Y,corner.Z)
+	};
+	return getSmoothLightCombined(p, dirs8, data, false);
 }
 
 void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
@@ -350,7 +423,7 @@ void final_color_blend(video::SColor *result,
 /*
 	vertex_dirs: v3s16[4]
 */
-static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 {
 	/*
 		If looked from outside the node towards the face, the corners are:
@@ -816,7 +889,7 @@ static void getTileInfo(
 
 		v3s16 light_p = blockpos_nodes + p_corrected;
 		for (u16 i = 0; i < 4; i++)
-			lights[i] = getSmoothLight(light_p, vertex_dirs[i], data);
+			lights[i] = getSmoothLightSolid(light_p, face_dir_corrected, vertex_dirs[i], data);
 	}
 }
 
