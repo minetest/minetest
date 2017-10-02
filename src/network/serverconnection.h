@@ -103,7 +103,8 @@ public:
 private:
 	void do_accept();
 	session_t registerSession(ServerSessionPtr session);
-	bool sessionRegistered(session_t session_id);
+
+	void readUDPBody(std::size_t size);
 
 	asio::io_service &m_io_service;
 
@@ -125,6 +126,8 @@ private:
 
 	Server *m_server;
 	ClientIface *m_server_session_mgr = nullptr;
+
+	static const uint8_t UDP_HEADER_LEN = 5;
 };
 
 class ServerConnectionThread : public Thread

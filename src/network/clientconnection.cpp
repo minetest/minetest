@@ -54,8 +54,9 @@ bool ClientConnection::connect(const std::string &addr, u16 port)
 	m_address = addr;
 	m_port = port;
 
+	auto self(shared_from_this());
 	asio::async_connect(m_socket, m_endpoint_iterator,
-		[this](std::error_code ec, const tcp::resolver::iterator &) {
+		[this, self](std::error_code ec, const tcp::resolver::iterator &) {
 			if (!ec) {
 				m_state = STATE_CONNECTED;
 				readHeader();
@@ -174,7 +175,8 @@ void ClientConnection::setSessionId(session_t session_id)
 		m_socket.remote_endpoint().port()
 	);
 
-	async_task(5000, [this] () {
+	auto self(shared_from_this());
+	async_task(5000, [this, self] () {
 		sendUdpPing();
 	});
 }
@@ -187,9 +189,9 @@ void ClientConnection::setSessionId(session_t session_id)
  */
 void ClientConnection::sendUdpPing()
 {
-	std::vector<u8> buf(4 + 1 + 8);
+	std::vector<u8> buf(sizeof(u32) + sizeof(u8) + sizeof(u64));
 	writeU32(&buf[0], PROTOCOL_ID);
-	writeU8(&buf[4], 1);
+	writeU8(&buf[4], UDPCMD_PING);
 	writeU64(&buf[5], m_session_id);
 
 	// Send UDP ping asynchronously
@@ -199,7 +201,7 @@ void ClientConnection::sendUdpPing()
 		[this, self] (std::error_code ec, std::size_t /*length*/) {
 			// If no error happen, send next ping in 5 seconds
 			if (!ec) {
-				async_task(5000, [this]() {
+				async_task(5000, [this, self]() {
 					sendUdpPing();
 				});
 			} else {

@@ -132,14 +132,57 @@ void ServerConnection::do_accept()
 		do_accept();
 	});
 
-	// Udp socket need address re-use
+	// UDP socket need address re-use
 	asio::socket_base::reuse_address option(true);
 	m_udp_socket.set_option(option);
-	m_udp_socket.async_receive_from(asio::buffer(m_udp_databuffer, HEADER_LEN),
-		m_udp_sender_endpoint, [] (std::error_code ec, std::size_t sent) {
-			//do_receive();
+
+	// add a callback to receive data
+	m_udp_socket.async_receive_from(asio::buffer(m_udp_databuffer, MAX_DATABUF_SIZE),
+		m_udp_sender_endpoint, [this, self] (std::error_code ec, std::size_t recv_size) {
+			// If UDP header is not 5 bytes long, ignore
+			if (recv_size < UDP_HEADER_LEN) {
+				return;
+			}
+
+			u32 protocol_id = readU32(&m_udp_databuffer[0]);
+
+			// Ignore invalid protocol id
+			if (protocol_id != PROTOCOL_ID) {
+				return;
+			}
+
+			readUDPBody(recv_size);
 		}
 	);
+}
+
+void ServerConnection::readUDPBody(std::size_t size)
+{
+	u8 command = readU8(&m_udp_databuffer[4]);
+
+	switch (command) {
+		case UDPCMD_PING: {
+			// Ignore invalid packet
+			if (size != UDP_HEADER_LEN + sizeof(u64))
+				return;
+
+			u64 session_id = readU64(&m_udp_databuffer[5]);
+
+			auto session_it = m_sessions.find(session_id);
+			// Unregistered session, ignore
+			if (session_it == m_sessions.end())
+				return;
+
+			errorstream << "Hey it's session " << session_id << std::endl;
+			if (m_udp_sender_endpoint.address() == session_it->second->getAddress()) {
+				errorstream << "Hey it's same guy" << std::endl;
+			}
+			break;
+		}
+		default:
+			// Ignore invalid commands
+			break;
+	}
 }
 
 void ServerConnection::send(NetworkPacket *pkt)
@@ -241,12 +284,6 @@ void ServerConnection::unregisterSession(session_t session_id)
 
 	SessionChange sessionChange(session_id, SessionChange::REMOVED);
 	m_server->pushSessionChange(sessionChange);
-}
-
-bool ServerConnection::sessionRegistered(session_t session_id)
-{
-	std::unique_lock<std::recursive_mutex> lock(m_sessions_mtx);
-	return m_sessions.find(session_id) != m_sessions.end();
 }
 
 /**

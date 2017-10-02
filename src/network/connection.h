@@ -32,6 +32,11 @@ class NetworkPacket;
 namespace network
 {
 
+enum UdpCommandId : u8
+{
+	UDPCMD_PING = 1,
+};
+
 class Connection
 {
 public:
