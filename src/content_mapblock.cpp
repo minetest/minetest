@@ -276,7 +276,7 @@ void MapblockMeshGenerator::drawCuboid(const aabb3f &box,
 void MapblockMeshGenerator::getSmoothLightFrame()
 {
 	for (int k = 0; k < 8; ++k) {
-		u16 light = getSmoothLight(blockpos_nodes + p, light_dirs[k], data);
+		u16 light = getSmoothLightTransparent(blockpos_nodes + p, light_dirs[k], data);
 		frame.lightsA[k] = light & 0xff;
 		frame.lightsB[k] = light >> 8;
 	}
