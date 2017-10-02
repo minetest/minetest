@@ -12,7 +12,7 @@ function core.register_privilege(name, param)
 			def.give_to_singleplayer = true
 		end
 		if def.give_to_admin == nil then
-			def.give_to_admin = true
+			def.give_to_admin = def.give_to_singleplayer
 		end
 		if def.description == nil then
 			def.description = "(no description)"
@@ -36,17 +36,14 @@ core.register_privilege("privs", "Can modify privileges")
 core.register_privilege("teleport", {
 	description = "Can use /teleport command",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("bring", {
 	description = "Can teleport other players",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("settime", {
 	description = "Can use /time",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("server", {
 	description = "Can do server maintenance stuff",
@@ -56,7 +53,6 @@ core.register_privilege("server", {
 core.register_privilege("protection_bypass", {
 	description = "Can bypass node protection in the world",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("ban", {
 	description = "Can ban and unban players",
@@ -71,7 +67,6 @@ core.register_privilege("kick", {
 core.register_privilege("give", {
 	description = "Can use /give and /giveme",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("password", {
 	description = "Can use /setpassword and /clearpassword",
@@ -81,22 +76,18 @@ core.register_privilege("password", {
 core.register_privilege("fly", {
 	description = "Can fly using the free_move mode",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("fast", {
 	description = "Can walk fast using the fast_move mode",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("noclip", {
 	description = "Can fly through walls",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("rollback", {
 	description = "Can use the rollback functionality",
 	give_to_singleplayer = false,
-	give_to_admin = false,
 })
 core.register_privilege("debug", {
 	description = "Allows enabling various debug options that may affect gameplay",
