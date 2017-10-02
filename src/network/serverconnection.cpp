@@ -33,6 +33,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 namespace network
 {
 
+asio::ip::address ServerSession::getAddress()
+{
+	return m_socket.remote_endpoint().address();
+}
+
 void ServerSession::disconnect()
 {
 	if (m_socket.is_open())
@@ -189,13 +194,15 @@ asio::ip::address ServerConnection::getListeningAddress() const
 
 asio::ip::address ServerConnection::getPeerAddress(session_t session_id)
 {
-	if (!sessionRegistered(session_id)) {
+	std::unique_lock<std::recursive_mutex> lock(m_sessions_mtx);
+	auto session_it = m_sessions.find(session_id);
+
+	if (session_it == m_sessions.end()) {
 		throw con::PeerNotFoundException(
 			std::string("Session " + std::to_string(session_id) + " not found").c_str());
 	}
 
-	// @TODO
-	return asio::ip::address();
+	return session_it->second->getAddress();
 }
 
 session_t ServerConnection::registerSession(ServerSessionPtr session)

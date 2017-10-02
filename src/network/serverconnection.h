@@ -62,6 +62,8 @@ public:
 	void disconnect();
 
 	void send(NetworkPacket *pkt);
+
+	asio::ip::address getAddress();
 private:
 	void readBody();
 
