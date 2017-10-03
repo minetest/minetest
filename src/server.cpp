@@ -1870,8 +1870,6 @@ void Server::SendMovePlayer(session_t peer_id)
 void Server::SendKnockBack(const u16 peer_id, const v3f &direction, const f32 time_knockback,
 		u16 id_player_knockback)
 {
-	DSTACK(FUNCTION_NAME);
-
 	RemotePlayer *player = m_env->getPlayer(peer_id);
 	assert(player);
 	PlayerSAO *sao = player->getPlayerSAO();

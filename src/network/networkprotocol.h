@@ -630,7 +630,7 @@ enum ToClientCommand
 	 	std::string channel name
 	 */
 
-	TOCLIENT_KNOCK_BACK = 0x56,
+	TOCLIENT_KNOCK_BACK = 0x59,
 	/*
 	 	u16 id_player_knockback
 	 	v3f direction
