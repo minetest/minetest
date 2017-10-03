@@ -60,24 +60,6 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-const v3f &RemoteClient::estimateVelocity(const v3f &newPos, float dtime)
-{
-	// starting condition
-	if (m_velocity_timer < 0.0f) {
-		m_last_pos = newPos;
-		m_velocity_timer = 0.0f;
-	}
-	m_velocity_timer += dtime;
-	// update the velocity 5x per second
-	if (m_velocity_timer > 0.2f) {
-		// exponential dampening, pos is a bit noise otherwise
-		m_velocity = (newPos - m_last_pos) / m_velocity_timer * 0.2f + m_velocity * 0.8f;
-		m_last_pos = newPos;
-		m_velocity_timer = 0.0f;
-	}
-	return m_velocity;
-}
-
 void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
@@ -109,7 +91,7 @@ void RemoteClient::GetNextBlocks (
 	}
 
 	v3f playerpos = sao->getBasePosition();
-	const v3f &playerspeed = estimateVelocity(playerpos, dtime);
+	const v3f &playerspeed = player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();

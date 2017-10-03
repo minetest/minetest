@@ -47,12 +47,15 @@ public:
 	virtual bool getSelectionBox(aabb3f *toset) const { return false; }
 	virtual bool collideWithObjects() const { return false; }
 	virtual v3f getPosition(){ return v3f(0,0,0); }
+	virtual v3f getVelocity(){ return v3f(0,0,0); }
 	virtual float getYaw() const { return 0; }
 	virtual scene::ISceneNode *getSceneNode() { return NULL; }
 	virtual scene::IAnimatedMeshSceneNode *getAnimatedMeshSceneNode() { return NULL; }
 	virtual bool isLocalPlayer() const {return false;}
 	virtual void setAttachments() {}
 	virtual bool doShowSelectionBox(){return true;}
+
+	virtual ClientActiveObject *getParent() const { return nullptr; }
 
 	// Step object in time
 	virtual void step(float dtime, ClientEnvironment *env){}

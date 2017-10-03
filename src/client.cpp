@@ -842,8 +842,20 @@ void Client::Send(NetworkPacket* pkt)
 // Will fill up 12 + 12 + 4 + 4 + 4 bytes
 void writePlayerPos(LocalPlayer *myplayer, ClientMap *clientMap, NetworkPacket *pkt)
 {
+	v3f sf;
+	if (myplayer->isAttached) {
+		// if the player is attached,
+		// get the velocity from the attached objects
+		ClientActiveObject *p = myplayer->parent;
+		while (p->getParent()) {
+			// find the "top" object
+			p = p->getParent();
+		}
+		sf = p->getVelocity() * 100;
+	} else {
+		sf = myplayer->getSpeed() * 100;
+	}
 	v3f pf           = myplayer->getPosition() * 100;
-	v3f sf           = myplayer->getSpeed() * 100;
 	s32 pitch        = myplayer->getPitch() * 100;
 	s32 yaw          = myplayer->getYaw() * 100;
 	u32 keyPressed   = myplayer->keyPressed;

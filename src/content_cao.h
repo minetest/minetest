@@ -138,6 +138,7 @@ public:
 	virtual bool getSelectionBox(aabb3f *toset) const;
 
 	v3f getPosition();
+	v3f getVelocity(){ return m_velocity; }
 	inline float getYaw() const
 	{
 		return m_yaw;
