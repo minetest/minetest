@@ -149,6 +149,8 @@ void ClientConnection::setSessionId(session_t session_id)
 		m_socket.remote_endpoint().address(),
 		m_socket.remote_endpoint().port()
 	);
+
+	receiveUDPData();
 }
 
 /**
@@ -234,9 +236,11 @@ void ClientConnection::readUDPBody(std::size_t size)
 
 			// Create a new NetworkPacket
 			NetworkPacket *pkt = new NetworkPacket();
-			pkt->putRawPacket(m_packetbuf, PEER_ID_SERVER);
-			std::unique_lock<std::mutex> lock(m_recv_queue_mtx);
-			m_recv_queue.push(pkt);
+			pkt->putRawPacket(udp_packetbuf, PEER_ID_SERVER);
+			{
+				std::unique_lock<std::mutex> lock(m_recv_queue_mtx);
+				m_recv_queue.push(pkt);
+			}
 			break;
 		}
 		default:

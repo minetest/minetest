@@ -253,7 +253,7 @@ if(NOT MSVC)
 endif()
 
 # Use cmake_config.h
-add_definitions(-DUSE_CMAKE_CONFIG_H -DASIO_STANDALONE)
+add_definitions(-DUSE_CMAKE_CONFIG_H -DASIO_STANDALONE -DBOOST_ASIO_HAS_STD_CHRONO)
 
 if(WIN32)
 	# Windows
