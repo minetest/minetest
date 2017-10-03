@@ -209,6 +209,9 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 	bool index6_obstructed = true;
 	bool index7_obstructed = true;
 
+	static thread_local const bool edge_obstruction =
+		g_settings->getBool("smooth_lighting_edge_obstruction");
+
 	for (int i = 0; i < 8; ++i) {
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 
@@ -217,37 +220,39 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 			continue;
 
 		const ContentFeatures &f = ndef->get(n);
-		if (node_solid) {
-			if ((i == 4 && corner_obstructed)) {
-				ambient_occlusion++;
-				continue;
+		if (edge_obstruction) {
+			if (node_solid) {
+				if ((i == 4 && corner_obstructed)) {
+					ambient_occlusion++;
+					continue;
+				}
+				// Only the 4 nodes in face-direction can contribute light
+				else if (i > 4) {
+					continue;
+				} else if (i < 2 && f.param_type == CPT_LIGHT){
+					corner_obstructed = false;
+				}
 			}
-			// Only the 4 nodes in face-direction can contribute light
-			else if (i > 4) {
-				continue;
-			} else if (i < 2 && f.param_type == CPT_LIGHT){
-				corner_obstructed = false;
-			}
-		}
-		else {
-			if (f.param_type == CPT_LIGHT) {
-				if (i == 1 || i == 2)
-					index4_obstructed = false;
-				if (i == 1 || i == 3)
-					index5_obstructed = false;
-				if (i == 2 || i == 3)
-					index6_obstructed = false;
-				if ((i == 4 && !index4_obstructed) ||
-						(i == 5 && !index5_obstructed) ||
-						(i == 6 && !index6_obstructed))
-					index7_obstructed = false;
-			}
-			if ((i == 4 && index4_obstructed) ||
-					(i == 5 && index5_obstructed) ||
-					(i == 6 && index6_obstructed) ||
-					(i == 7 && index7_obstructed)) {
-				ambient_occlusion++;
-				continue;
+			else {
+				if (f.param_type == CPT_LIGHT) {
+					if (i == 1 || i == 2)
+						index4_obstructed = false;
+					if (i == 1 || i == 3)
+						index5_obstructed = false;
+					if (i == 2 || i == 3)
+						index6_obstructed = false;
+					if ((i == 4 && !index4_obstructed) ||
+							(i == 5 && !index5_obstructed) ||
+							(i == 6 && !index6_obstructed))
+						index7_obstructed = false;
+				}
+				if ((i == 4 && index4_obstructed) ||
+						(i == 5 && index5_obstructed) ||
+						(i == 6 && index6_obstructed) ||
+						(i == 7 && index7_obstructed)) {
+					ambient_occlusion++;
+					continue;
+				}
 			}
 		}
 

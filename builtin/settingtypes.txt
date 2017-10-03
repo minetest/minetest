@@ -392,6 +392,10 @@ connected_glass (Connect glass) bool false
 #    Disable for speed or for different looks.
 smooth_lighting (Smooth lighting) bool true
 
+#    Enable obstruction detection of neighboring corners for smooth lighting.
+#    If enabled, the behaviour is consistent with disabled smooth lighting.
+smooth_lighting_edge_obstruction (Edge obstruction for smooth lighting) bool true
+
 #    Clouds are a client side effect.
 enable_clouds (Clouds) bool true
 
