@@ -213,6 +213,9 @@ void Client::Stop()
 		m_localdb->endSave();
 	}
 
+	m_con->stop();
+	m_con->wait();
+
 	delete m_script;
 }
 
@@ -232,6 +235,8 @@ Client::~Client()
 		delete r.mesh;
 	}
 
+	m_con->stop();
+	m_con->wait();
 
 	delete m_inventory_from_server;
 

@@ -66,6 +66,7 @@ public:
 
 private:
 	void pushPacketToQueue();
+	void notifySocketClosed();
 
 	std::atomic_bool m_udp_endpoint_set;
 	std::shared_ptr<ServerConnection> m_server_con;

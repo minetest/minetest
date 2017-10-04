@@ -135,7 +135,7 @@ public:
 	void step(float dtime);
 	// This is run by ServerThread and does the actual processing
 	void AsyncRunStep(bool initial_step=false);
-	void Receive();
+	bool Receive();
 	PlayerSAO* StageTwoClientInit(session_t peer_id);
 
 	/*

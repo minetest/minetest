@@ -38,7 +38,7 @@ namespace network
 
 class ClientUDPPingThread;
 
-class ClientConnection : public ConnectionWorker
+class ClientConnection : public ConnectionWorker, private UDPConnection
 {
 public:
 	ClientConnection(asio::io_service &io_service);
@@ -64,7 +64,7 @@ public:
 	 */
 	enum State : u8
 	{
-		STATE_STARTUP,
+		STATE_DISCONNECTED,
 		STATE_CONNECTED,
 		STATE_STARTED,
 	};
@@ -79,6 +79,7 @@ public:
 
 private:
 	void pushPacketToQueue();
+	void notifySocketClosed();
 	void receiveUDPData();
 	void readUDPBody(std::size_t size);
 
@@ -104,6 +105,8 @@ private:
 	std::queue<NetworkPacket *> m_recv_queue;
 
 	std::unique_ptr<ClientUDPPingThread> m_udp_ping_thread;
+
+	u8 m_connect_try = 0;
 };
 
 class ClientUDPPingThread : public Thread
@@ -129,6 +132,7 @@ public:
 
 	std::shared_ptr<ClientConnection> get_connection() { return m_client_connection; }
 
+	void stop();
 protected:
 	void *run();
 

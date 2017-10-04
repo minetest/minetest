@@ -53,6 +53,13 @@ udp::socket& ServerSession::getUDPSocket()
 
 void ServerSession::disconnect()
 {
+	m_io_service.post([this]() {
+		// Close socket and silently ignore if it's already closed
+		try {
+			m_socket.close();
+		} catch (std::exception &e) {}
+	});
+
 	m_server_con->unregisterSession(m_session_id);
 }
 
@@ -60,8 +67,13 @@ void ServerSession::pushPacketToQueue()
 {
 	// Create a new NetworkPacket
 	NetworkPacket *pkt = new NetworkPacket();
-	pkt->putRawPacket(m_packetbuf, m_session_id);
+	pkt->putRawPacket(m_data_buf, m_session_id);
 	m_server_con->enqueuePacket(pkt);
+}
+
+void ServerSession::notifySocketClosed()
+{
+	disconnect();
 }
 
 ServerConnection::ServerConnection(Server *server, asio::io_service &io_service,
@@ -84,7 +96,11 @@ void ServerConnection::start()
 
 void ServerConnection::stop()
 {
-	m_tcp_acceptor.close();
+	m_io_service.post([this]() {
+		m_tcp_acceptor.close();
+		m_udp_socket.close();
+	});
+	m_sessions.clear();
 }
 
 void ServerConnection::do_accept()
@@ -94,12 +110,14 @@ void ServerConnection::do_accept()
 	m_tcp_acceptor.async_accept(m_tcp_socket, [this, self](std::error_code ec) {
 		if (!ec) {
 			m_tcp_socket.set_option(asio::socket_base::reuse_address(true));
+			m_tcp_socket.set_option(asio::socket_base::keep_alive(true));
 
 			ServerSessionPtr serverSession =
 				std::make_shared<ServerSession>(m_io_service, std::move(m_tcp_socket), self);
 
 			if (!registerSession(serverSession)) {
-				errorstream << "Failed to register session" << std::endl;
+				errorstream << "Failed to register session, disconnecting user."
+					<< std::endl;
 				serverSession->disconnect();
 				return;
 			}
@@ -304,22 +322,21 @@ ServerConnectionThread::ServerConnectionThread(Server *server, u16 port) :
 
 ServerConnectionThread::~ServerConnectionThread()
 {
-	stop();
 }
 
 void *ServerConnectionThread::run()
 {
 	m_server_connection->start();
-	m_io_service.run();
-
+	while (!stopRequested()) {
+		m_io_service.run();
+	}
 	return nullptr;
 }
 
 void ServerConnectionThread::stop()
 {
 	m_server_connection->stop();
-	if (!m_io_service.stopped())
-		m_io_service.stop();
+	m_io_service.stop();
 	Thread::stop();
 }
 

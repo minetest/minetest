@@ -100,7 +100,9 @@ void *ServerThread::run()
 	while (!stopRequested()) {
 		try {
 			m_server->AsyncRunStep();
-			m_server->Receive();
+			// Handle packets, if no packet is handled, sleep server for 50ms
+			if (!m_server->Receive())
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		} catch (ClientNotFoundException &e) {
 		} catch (LuaError &e) {
 			m_server->setAsyncFatalError(
@@ -391,6 +393,8 @@ void Server::stop()
 	// Stop threads (set run=false first so both start stopping)
 	m_thread->stop();
 	m_thread->wait();
+	m_con_thread->stop();
+	m_con_thread->wait();
 
 	infostream<<"Server: Threads stopped"<<std::endl;
 }
@@ -957,12 +961,12 @@ void Server::AsyncRunStep(bool initial_step)
 	}
 }
 
-void Server::Receive()
+bool Server::Receive()
 {
 	NetworkPacket *pkt = m_con_thread->get_connection()->getNextPacket();
 	// If no packet, nothing to do
 	if (!pkt)
-		return;
+		return false;
 
 	// Store NetworkPacket in unique_ptr to make a safe-removal
 	std::unique_ptr<NetworkPacket> pktPtr(pkt);
@@ -981,6 +985,8 @@ void Server::Receive()
 	} catch (const con::PeerNotFoundException &e) {
 		// Do nothing
 	}
+
+	return true;
 }
 
 PlayerSAO* Server::StageTwoClientInit(session_t peer_id)

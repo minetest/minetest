@@ -2275,6 +2275,12 @@ inline bool Game::checkConnection()
 		return false;
 	}
 
+	if (client->isConnectionInError()) {
+		*error_message = client->getConnectionError();
+		errorstream << *error_message << std::endl;
+		return false;
+	}
+
 	return true;
 }
 

@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #pragma once
 
 #include <vector>
+#include <mutex>
 #include <asio/ip/tcp.hpp>
 #include <asio/ip/udp.hpp>
 #include "irrlichttypes.h"
@@ -64,6 +65,7 @@ protected:
 	virtual void readBody();
 
 	virtual void pushPacketToQueue() = 0;
+	virtual void notifySocketClosed() = 0;
 
 	virtual udp::socket &getUDPSocket() = 0;
 
@@ -83,16 +85,22 @@ protected:
 
 	// Data buffers when reading from asio sockets
 	std::array<u8, HEADER_LEN> m_hdr_buf{};
-	std::array<u8, MAX_DATABUF_SIZE> m_data_buf{};
 
 	// raw packet
 	uint32_t m_packet_waited_len = 0;
-	std::vector<u8> m_packetbuf;
+	std::vector<u8> m_data_buf;
 	// writing cursor when reading data chunks
-	uint32_t m_packetbuf_cursor = 0;
+	uint32_t m_read_cursor = 0;
 
 	// Write buffers (sending)
 	std::deque<SendBufferPtr> m_send_queue;
+	std::recursive_mutex m_send_queue_mtx;
+};
+
+class UDPConnection
+{
+protected:
+	std::vector<u8> m_udp_sendbuf;
 };
 
 }

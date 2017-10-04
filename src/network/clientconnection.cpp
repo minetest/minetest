@@ -31,7 +31,7 @@ namespace network {
  */
 ClientConnection::ClientConnection(asio::io_service &io_service) :
 	ConnectionWorker(io_service, tcp::socket(io_service)),
-	m_state(STATE_STARTUP),
+	m_state(STATE_DISCONNECTED),
 	m_io_service(io_service),
 	m_udp_socket(io_service, udp::endpoint(udp::v6(), 0)),
 	m_udp_ping_thread(new ClientUDPPingThread(this))
@@ -42,7 +42,6 @@ ClientConnection::~ClientConnection()
 {
 	// Kill the thread, this permits to bypass the thread sleep time
 	m_udp_ping_thread->kill();
-	disconnect();
 }
 
 bool ClientConnection::connect(const std::string &addr, u16 port)
@@ -62,15 +61,26 @@ bool ClientConnection::connect(const std::string &addr, u16 port)
 
 	auto self(shared_from_this());
 	asio::async_connect(m_socket, m_endpoint_iterator,
-		[this, self](std::error_code ec, const tcp::resolver::iterator &) {
+		[this, self, addr, port](std::error_code ec, const tcp::resolver::iterator &) {
 			if (!ec) {
 				m_udp_ping_thread->start();
+				// Enable TCP keepalives
+				m_socket.set_option(asio::socket_base::keep_alive(true));
 				m_state = STATE_CONNECTED;
 				readHeader();
 			} else {
-				std::unique_lock<std::mutex> lock(m_last_error_mtx);
-				m_last_error = "Failed to connect to server: " +
-					ec.message();
+				m_connect_try++;
+				// On connection failure retry 2 seconds later
+				std::this_thread::sleep_for(std::chrono::seconds(2));
+				if (m_connect_try < 3) {
+					connect(addr, port);
+				} else {
+					std::unique_lock<std::mutex> lock(m_last_error_mtx);
+					m_last_error = "Failed to connect to server: " +
+						ec.message();
+					// Reset tries
+					m_connect_try = 0;
+				}
 			}
 		}
 	);
@@ -80,20 +90,26 @@ bool ClientConnection::connect(const std::string &addr, u16 port)
 
 void ClientConnection::disconnect()
 {
-	if (m_socket.is_open()) {
-		m_socket.close();
-	}
+	m_socket.close();
+	m_udp_socket.close();
+	m_state = STATE_DISCONNECTED;
+	m_last_error = "Connection lost.";
+}
+
+void ClientConnection::notifySocketClosed()
+{
+	disconnect();
 }
 
 bool ClientConnection::isConnected() const
 {
-	return m_socket.is_open();
+	return m_socket.is_open() && m_state >= STATE_CONNECTED;
 }
 
 void ClientConnection::pushPacketToQueue()
 {
 	NetworkPacket *pkt = new NetworkPacket();
-	pkt->putRawPacket(m_packetbuf, PEER_ID_SERVER);
+	pkt->putRawPacket(m_data_buf, PEER_ID_SERVER);
 	std::unique_lock<std::mutex> lock(m_recv_queue_mtx);
 	m_recv_queue.push(pkt);
 }
@@ -165,17 +181,22 @@ void ClientConnection::sendUDPPing()
 	if (m_session_id == 0)
 		return;
 
-	std::vector<u8> buf(UDP_HEADER_LEN);
-	writeU32(&buf[0], PROTOCOL_ID);
-	writeU8(&buf[4], UDPCMD_PING);
-	writeU64(&buf[5], m_session_id);
+	if (m_udp_sendbuf.size() != UDP_HEADER_LEN)
+		m_udp_sendbuf.resize(UDP_HEADER_LEN);
+
+	writeU32(&m_udp_sendbuf[0], PROTOCOL_ID);
+	writeU8(&m_udp_sendbuf[4], UDPCMD_PING);
+	writeU64(&m_udp_sendbuf[5], m_session_id);
 
 	// Send UDP ping asynchronously
 	auto self(shared_from_this());
-	m_udp_socket.async_send_to(asio::buffer(buf, buf.size()), m_udp_endpoint,
-		[this, self] (std::error_code ec, std::size_t /*length*/) {
+	m_udp_socket.async_send_to(asio::buffer(m_udp_sendbuf.data(), m_udp_sendbuf.size()),
+		m_udp_endpoint, [this, self] (std::error_code ec, std::size_t /*length*/) {
 			// If error happen, disconnect user
 			if (ec) {
+				errorstream << "Failed to send UDP packet to "
+					<< m_udp_endpoint << ". Error: " << ec.message()
+					<< std::endl;
 				disconnect();
 			}
 		}
@@ -213,12 +234,14 @@ void ClientConnection::receiveUDPData()
 void ClientConnection::readUDPBody(std::size_t size)
 {
 	u8 command = readU8(&m_udp_databuffer[4]);
-	u64 session_id = readU64(&m_udp_databuffer[5]);
+	//u64 session_id = readU64(&m_udp_databuffer[5]);
 
-//	if (m_udp_sender_endpoint.address() != sessionPtr->getAddress()) {
+	//asio::ip::address remote_addr = m_socket.remote_endpoint().address();
+
+//	if (m_udp_sender_endpoint.address() != remote_addr) {
 //		errorstream << m_udp_sender_endpoint.address()
-//			<< "tries to spoof session ID " << session_id << " attached with IP "
-//			<< sessionPtr->getAddress() << "!!" << std::endl;
+//			<< " tries to spoof session ID " << session_id << " attached with IP "
+//			<< remote_addr << "!!" << std::endl;
 //		return;
 //	}
 
@@ -263,12 +286,22 @@ ClientConnectionThread::ClientConnectionThread() :
 
 ClientConnectionThread::~ClientConnectionThread()
 {
-	stop();
+}
+
+void ClientConnectionThread::stop()
+{
+	m_io_service.post([this] {
+		m_client_connection->disconnect();
+	});
+	m_io_service.stop();
+	Thread::stop();
 }
 
 void *ClientConnectionThread::run()
 {
-	m_io_service.run();
+	while (!stopRequested()) {
+		m_io_service.run();
+	}
 	return nullptr;
 }
 

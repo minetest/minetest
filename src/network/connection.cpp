@@ -52,6 +52,8 @@ void ConnectionWorker::enqueueForSending(NetworkPacket *pkt, bool reliable)
 	}
 
 	m_io_service.post([this, write_buf]() {
+			std::unique_lock<std::recursive_mutex> lock(m_send_queue_mtx);
+
 			bool write_in_progress = !m_send_queue.empty();
 			m_send_queue.push_back(write_buf);
 			if (!write_in_progress) {
@@ -64,67 +66,95 @@ void ConnectionWorker::enqueueForSending(NetworkPacket *pkt, bool reliable)
 void ConnectionWorker::sendPacket()
 {
 	// Socket not opened, ignore sending packets
-	if (!m_socket.is_open())
+	if (!m_socket.is_open()) {
+		notifySocketClosed();
 		return;
+	}
+
+	std::unique_lock<std::recursive_mutex> lock(m_send_queue_mtx);
 
 	SendBufferPtr sendBuf = m_send_queue.front();
+	bool reliable = sendBuf->reliable;
 
 	auto self(shared_from_this());
 
+	auto async_write_callback = [this, self, reliable] (std::error_code ec, std::size_t) {
+		std::unique_lock<std::recursive_mutex> lock_(m_send_queue_mtx);
+		m_send_queue.pop_front();
+
+		if (!ec) {
+			if (!m_send_queue.empty()) {
+				sendPacket();
+			}
+		} else {
+			errorstream << "Failed to send " << (!reliable ? "un": "")
+				<< "reliable packet";
+
+			if (m_socket.is_open()) {
+				errorstream << " to " << m_socket.remote_endpoint();
+			}
+			errorstream << ", disconnecting user. Error: " << ec.message()
+				<< std::endl;
+			disconnect();
+		}
+	};
+
 	if (sendBuf->reliable) {
 		asio::async_write(m_socket, asio::buffer(sendBuf->data.data(),
-			sendBuf->data.size()),
-			[this](std::error_code ec, std::size_t /*length*/) {
-				m_send_queue.pop_front();
-
-				if (!ec) {
-					if (!m_send_queue.empty()) {
-						sendPacket();
-					}
-				} else {
-					disconnect();
-				}
-			}
-		);
+			sendBuf->data.size()), async_write_callback);
 	}
 	else {
 		getUDPSocket().async_send_to(asio::buffer(sendBuf->data.data(),
-				sendBuf->data.size()), m_udp_endpoint,
-			[this, self] (std::error_code ec, std::size_t ) {
-				m_send_queue.pop_front();
-
-				if (!ec) {
-					if (!m_send_queue.empty()) {
-						sendPacket();
-					}
-				}
-				if (ec) {
-					disconnect();
-				}
-			}
-		);
+				sendBuf->data.size()), m_udp_endpoint, async_write_callback);
 	}
 }
 
 void ConnectionWorker::readHeader()
 {
+	size_t bytes_to_read = std::min<size_t>(HEADER_LEN - m_read_cursor,
+		HEADER_LEN);
+
 	auto self(shared_from_this());
-	m_socket.async_read_some(asio::buffer(m_hdr_buf, HEADER_LEN),
+	m_socket.async_read_some(asio::buffer(&m_hdr_buf[m_read_cursor], bytes_to_read),
 		[this, self](std::error_code ec, std::size_t length) {
 			if (!ec) {
+				m_read_cursor += length;
+
+				assert(length <= HEADER_LEN);
+
+				// If header is incomplete continue reading
+				if (m_read_cursor < HEADER_LEN) {
+					readHeader();
+					return;
+				}
+
 				m_packet_waited_len = readU32(&m_hdr_buf[0]);
 				if (m_packet_waited_len == 0) {
+					errorstream << "Packet waited length is zero. Disconnecting "
+						<< m_socket.remote_endpoint() << std::endl;
 					disconnect();
 					return;
 				}
 
+				if (m_packet_waited_len > U16_MAX)
+					errorstream << "Huge packet awaited, size: " << m_packet_waited_len << std::endl;
+				m_read_cursor = 0;
+
 				// New header, prepare packet buffer
-				m_packetbuf.clear();
-				m_packetbuf.resize(m_packet_waited_len);
-				m_packetbuf_cursor = 0;
+				m_data_buf.clear();
+				m_data_buf.resize(m_packet_waited_len);
 
 				readBody();
 			} else {
+				errorstream << "Failed to read packet header";
+				try {
+					errorstream << " from " << m_socket.remote_endpoint();
+				} catch (std::exception &) {
+					errorstream << "peer";
+				}
+
+				errorstream << ", disconnecting user. Error: " << ec.message()
+					<< std::endl;
 				disconnect();
 			}
 		}
@@ -133,24 +163,32 @@ void ConnectionWorker::readHeader()
 
 void ConnectionWorker::readBody()
 {
+	// Read maximum of m_packet_waited_len or difference between packet length and
+	// current cursor position if we didn't read all data (this should not happen)
+	size_t bytes_to_read = std::min<size_t>(m_packet_waited_len - m_read_cursor,
+		m_packet_waited_len);
+
 	auto self(shared_from_this());
-
-	size_t bytes_to_read = std::min<size_t>(m_packet_waited_len - m_packetbuf_cursor,
-		MAX_DATABUF_SIZE);
-
-	m_socket.async_read_some(asio::buffer(m_data_buf, bytes_to_read),
+	m_socket.async_read_some(asio::buffer(&m_data_buf[m_read_cursor], bytes_to_read),
 		[this, self](std::error_code ec, std::size_t length) {
 			if (!ec) {
-				memcpy(&m_packetbuf[m_packetbuf_cursor], &m_data_buf[0], length);
-				m_packetbuf_cursor += length;
+				m_read_cursor += length;
 
 				// The whole packet is read
-				if (m_packetbuf_cursor == m_packet_waited_len) {
+				if (m_read_cursor == m_packet_waited_len) {
 					pushPacketToQueue();
+
+					m_read_cursor = 0;
+
 					// Read next packet
 					readHeader();
-					// We read more data than needed, it's not normal, disconnect user
-				} else if (m_packetbuf_cursor > m_packet_waited_len) {
+				// We read more data than needed, it's not normal, disconnect user
+				} else if (m_read_cursor > m_packet_waited_len) {
+					errorstream << "Failed to send packet to "
+						<< m_socket.remote_endpoint()
+						<< ". Error: Packet cursor outside waited len ("
+						<< m_read_cursor << " < " << m_packet_waited_len << ")"
+						<< std::endl;
 					disconnect();
 				} else {
 					// Else we need to read the next chunk
@@ -158,6 +196,14 @@ void ConnectionWorker::readBody()
 				}
 
 			} else {
+				errorstream << "Failed to read packet body";
+				try {
+					errorstream << "from " << m_socket.remote_endpoint();
+				} catch (std::exception &) {
+					errorstream << "peer";
+				}
+				errorstream << ", disconnecting user. Error: " << ec.message()
+					<< std::endl;
 				disconnect();
 			}
 		}
