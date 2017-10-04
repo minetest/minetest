@@ -25,7 +25,7 @@ install_linux_deps() {
 	sudo apt-get install libirrlicht-dev cmake libbz2-dev libpng12-dev \
 		libjpeg-dev libxxf86vm-dev libgl1-mesa-dev libsqlite3-dev \
 		libhiredis-dev libogg-dev libgmp-dev libvorbis-dev libopenal-dev \
-		gettext libpq-dev libleveldb-dev libasio-dev
+		gettext libpq-dev libleveldb-dev
 }
 
 # Mac OSX build only

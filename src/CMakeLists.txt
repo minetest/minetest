@@ -33,6 +33,10 @@ if(NOT (BUILD_CLIENT OR BUILD_SERVER))
 	set(BUILD_SERVER TRUE)
 endif()
 
+option(ENABLE_SYSTEM_ASIO "Enable using a system-wide JSONCPP. May be outdated buggy version." FALSE)
+if (NOT ENABLE_SYSTEM_ASIO)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib/asio/include)
+endif()
 
 option(ENABLE_CURL "Enable cURL support for fetching media" TRUE)
 set(USE_CURL FALSE)
@@ -253,7 +257,7 @@ if(NOT MSVC)
 endif()
 
 # Use cmake_config.h
-add_definitions(-DUSE_CMAKE_CONFIG_H -DASIO_STANDALONE -DBOOST_ASIO_HAS_STD_CHRONO)
+add_definitions(-DUSE_CMAKE_CONFIG_H -DASIO_STANDALONE)
 
 if(WIN32)
 	# Windows
