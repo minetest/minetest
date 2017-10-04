@@ -76,9 +76,10 @@ class ServerActiveObject;
 class ScriptApiBase {
 public:
 	ScriptApiBase(ScriptingType  type);
+	// fake constructor to allow script API classes (e.g ScriptApiEnv) to virtually inherit from this one.
 	ScriptApiBase()
 	{
-		FATAL_ERROR_IF(true, "ScriptApiBase created without ScriptingType!");
+		FATAL_ERROR("ScriptApiBase created without ScriptingType!");
 	}
 	virtual ~ScriptApiBase();
 	DISABLE_CLASS_COPY(ScriptApiBase);
@@ -110,18 +111,6 @@ public:
 	void setOriginFromTableRaw(int index, const char *fxn);
 
 	void clientOpenLibs(lua_State *L);
-	const std::unordered_map<std::string, lua_CFunction> m_libs = {
-		{ "", luaopen_base },
-		{ LUA_LOADLIBNAME, luaopen_package },
-		{ LUA_TABLIBNAME,  luaopen_table   },
-		{ LUA_OSLIBNAME,   luaopen_os      },
-		{ LUA_STRLIBNAME,  luaopen_string  },
-		{ LUA_MATHLIBNAME, luaopen_math    },
-		{ LUA_DBLIBNAME,   luaopen_debug   },
-#if USE_LUAJIT
-		{ LUA_JITLIBNAME,  luaopen_jit     },
-#endif
-	};
 
 protected:
 	friend class LuaABM;
