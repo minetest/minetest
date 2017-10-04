@@ -49,15 +49,9 @@ public:
 	bool connect(const std::string &addr, u16 port);
 	bool isConnected() const;
 	NetworkPacket *getNextPacket();
-	u16 getServerPort() const
-	{
-		return m_port;
-	}
+	u16 getServerPort() const { return m_port; }
 
-	const std::string &getServerAddress() const
-	{
-		return m_address;
-	}
+	const std::string &getServerAddress() const { return m_address; }
 
 	bool isConnectionInError();
 	std::string getConnectionError();
@@ -75,28 +69,20 @@ public:
 		STATE_STARTED,
 	};
 
-	void setState(State s)
-	{
-		m_state = s;
-	}
+	void setState(State s) { m_state = s; }
 
-	State getState() const
-	{
-		return m_state;
-	}
+	State getState() const { return m_state; }
 
 	void setSessionId(session_t session_id);
 
 	void sendUDPPing();
+
 private:
 	void pushPacketToQueue();
 	void receiveUDPData();
 	void readUDPBody(std::size_t size);
 
-	udp::socket &getUDPSocket()
-	{
-		return m_udp_socket;
-	}
+	udp::socket &getUDPSocket() { return m_udp_socket; }
 
 	std::atomic<State> m_state;
 
@@ -118,15 +104,15 @@ private:
 	std::queue<NetworkPacket *> m_recv_queue;
 
 	std::unique_ptr<ClientUDPPingThread> m_udp_ping_thread;
-
 };
 
 class ClientUDPPingThread : public Thread
 {
 public:
-	ClientUDPPingThread(ClientConnection *conn) :
-		Thread("ClientUDPPingThread"),
-		m_client_connection(conn) {}
+	ClientUDPPingThread(ClientConnection *conn)
+	    : Thread("ClientUDPPingThread"), m_client_connection(conn)
+	{
+	}
 
 protected:
 	void *run();
@@ -141,17 +127,14 @@ public:
 	ClientConnectionThread();
 	~ClientConnectionThread();
 
-	std::shared_ptr<ClientConnection> get_connection()
-	{
-		return m_client_connection;
-	}
+	std::shared_ptr<ClientConnection> get_connection() { return m_client_connection; }
 
 protected:
 	void *run();
+
 private:
 	// This must be initialized before m_client_connection
 	asio::io_service m_io_service;
 	std::shared_ptr<ClientConnection> m_client_connection;
 };
-
 }

@@ -41,23 +41,18 @@ class ServerConnection;
 class ServerSession : public ConnectionWorker
 {
 	friend class ServerConnection;
+
 public:
-	ServerSession(asio::io_service &io_service,
-			tcp::socket socket, std::shared_ptr<ServerConnection> serverCon) :
-		ConnectionWorker(io_service, std::move(socket)),
-		m_udp_endpoint_set(false),
-		m_server_con(serverCon)
-	{}
-
-	~ServerSession()
+	ServerSession(asio::io_service &io_service, tcp::socket socket,
+			std::shared_ptr<ServerConnection> serverCon)
+	    : ConnectionWorker(io_service, std::move(socket)), m_udp_endpoint_set(false),
+	      m_server_con(serverCon)
 	{
-		disconnect();
 	}
 
-	void start()
-	{
-		readHeader();
-	}
+	~ServerSession() { disconnect(); }
+
+	void start() { readHeader(); }
 
 	void disconnect();
 
@@ -65,12 +60,10 @@ public:
 
 	void setUDPEndpoint(const udp::endpoint &endpoint);
 
-	bool isUDPEndpointSet() const
-	{
-		return m_udp_endpoint_set;
-	}
+	bool isUDPEndpointSet() const { return m_udp_endpoint_set; }
 
 	udp::socket &getUDPSocket();
+
 private:
 	void pushPacketToQueue();
 
@@ -101,15 +94,10 @@ public:
 
 	void unregisterSession(session_t session_id);
 
-	void setClientIface(ClientIface *sessMgr)
-	{
-		m_server_session_mgr = sessMgr;
-	}
+	void setClientIface(ClientIface *sessMgr) { m_server_session_mgr = sessMgr; }
 
-	udp::socket &getUDPSocket()
-	{
-		return m_udp_socket;
-	}
+	udp::socket &getUDPSocket() { return m_udp_socket; }
+
 private:
 	void do_accept();
 	void receiveUDPData();
@@ -149,23 +137,17 @@ public:
 
 	void stop();
 
-	std::shared_ptr<ServerConnection> get_connection()
-	{
-		return m_server_connection;
-	}
+	std::shared_ptr<ServerConnection> get_connection() { return m_server_connection; }
 
 	std::string getBindAddr() const;
-	u16 getPort() const
-	{
-		return m_port;
-	}
+	u16 getPort() const { return m_port; }
+
 protected:
 	void *run();
+
 private:
 	u16 m_port;
 	asio::io_service m_io_service;
 	std::shared_ptr<ServerConnection> m_server_connection;
 };
-
 }
-

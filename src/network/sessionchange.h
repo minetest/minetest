@@ -33,12 +33,9 @@ struct SessionChange
 
 	SessionChange() = delete;
 
-	SessionChange(session_t s, Type t) :
-		session_id(s), type(t)
-	{}
+	SessionChange(session_t s, Type t) : session_id(s), type(t) {}
 
 	session_t session_id;
 	Type type;
-
 };
 }
