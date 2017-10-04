@@ -60,6 +60,24 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
+LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env) {
+	LuaEntitySAO *lsao = nullptr;
+	if (sao->isAttached()) {
+		int id;
+		std::string bone;
+		v3f dummy;
+		sao->getAttachment(&id, &bone, &dummy, &dummy);
+		ServerActiveObject *ao = env->getActiveObject(id);
+		while (id && ao) {
+			ao->getAttachment(&id, &bone, &dummy, &dummy);
+			if (id)
+				ao = env->getActiveObject(id);
+		}
+		lsao = dynamic_cast<LuaEntitySAO *>(ao);
+	}
+	return lsao;
+}
+
 void RemoteClient::GetNextBlocks (
 		ServerEnvironment *env,
 		EmergeManager * emerge,
@@ -91,7 +109,9 @@ void RemoteClient::GetNextBlocks (
 	}
 
 	v3f playerpos = sao->getBasePosition();
-	const v3f &playerspeed = player->getSpeed();
+	// if the player is attached, get the velocity from the attached object
+	LuaEntitySAO *lsao = getAttachedObject(sao, env);
+	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
 	v3f playerspeeddir(0,0,0);
 	if(playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
@@ -193,7 +213,10 @@ void RemoteClient::GetNextBlocks (
 
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
+
 	const float speed_dir_override = g_settings->getFloat("speed_direction_override");
+	const v3f cone_dir = playerspeed.getLength() < speed_dir_override * BS ? camera_dir : playerspeeddir;
+	//infostream << " Speed: " << playerspeed.getLength() << " override " << speed_dir_override * BS << std::endl;
 
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
@@ -247,7 +270,6 @@ void RemoteClient::GetNextBlocks (
 				FOV setting. The default of 72 degrees is fine.
 			*/
 
-			const v3f cone_dir = playerspeed.getLength() < speed_dir_override * BS ? camera_dir : playerspeeddir;
 			f32 dist;
 			if (!isBlockInSight(p, camera_pos, cone_dir, camera_fov, d_blocks_in_sight, &dist)) {
 				continue;
