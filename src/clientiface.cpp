@@ -214,10 +214,6 @@ void RemoteClient::GetNextBlocks (
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
 
-	const float speed_dir_override = g_settings->getFloat("speed_direction_override");
-	const v3f cone_dir = playerspeed.getLength() < speed_dir_override * BS ? camera_dir : playerspeeddir;
-	//infostream << " Speed: " << playerspeed.getLength() << " override " << speed_dir_override * BS << std::endl;
-
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
 		/*
@@ -271,7 +267,9 @@ void RemoteClient::GetNextBlocks (
 			*/
 
 			f32 dist;
-			if (!isBlockInSight(p, camera_pos, cone_dir, camera_fov, d_blocks_in_sight, &dist)) {
+			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist) ||
+			      (playerspeed.getLength() > 1.0*BS &&
+			       isBlockInSight(p, camera_pos, playerspeeddir, camera_fov / 10.0f, d_blocks_in_sight)))) {
 				continue;
 			}
 
