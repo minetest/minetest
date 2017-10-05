@@ -519,19 +519,16 @@ function core.handle_node_drops(pos, drops, digger)
 			return item
 		end
 	end
-	
-	if digger and digger:get_inventory() then
-		local _, dropped_item
-		for _, dropped_item in ipairs(drops) do
-			local left = give_item(dropped_item)
-			if not left:is_empty() then
-				local p = {
-					x = pos.x + math.random()/2-0.25,
-					y = pos.y + math.random()/2-0.25,
-					z = pos.z + math.random()/2-0.25,
-				}
-				core.add_item(p, left)
-			end
+
+	for _, dropped_item in pairs(drops) do
+		local left = give_item(dropped_item)
+		if not left:is_empty() then
+			local p = {
+				x = pos.x + math.random()/2-0.25,
+				y = pos.y + math.random()/2-0.25,
+				z = pos.z + math.random()/2-0.25,
+			}
+			core.add_item(p, left)
 		end
 	end
 end
