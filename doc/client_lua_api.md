@@ -688,7 +688,16 @@ Call these functions only at load time!
     * You must have joined some channels before, and server must acknowledge the
       join request.
     * If message comes from a server mod, `sender` field is an empty string.
-
+* `minetest.register_on_modchannel_signal(func(channel_name, signal))`
+    * Called when a valid incoming mod channel signal is received
+    * Signal id permit to react to server mod channel events
+    * Possible values are:
+      0: join_ok
+      1: join_failed
+      2: leave_ok
+      3: leave_failed
+      4: event_on_not_joined_channel
+      5: state_changed
 * `minetest.register_on_inventory_open(func(inventory))`
     * Called when the local player open inventory
     * Newest functions are called first

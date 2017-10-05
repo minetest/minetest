@@ -2529,16 +2529,6 @@ Call these functions only at load time!
     * Called when an incoming mod channel message is received
     * You should have joined  some channels to receive events.
     * If message comes from a server mod, `sender` field is an empty string.
-* `minetest.register_on_modchannel_signal(func(channel_name, signal))`
-    * Called when a valid incoming mod channel signal is received
-    * Signal id permit to react to server mod channel events
-    * Possible values are:
-      0: join_ok
-      1: join_failed
-      2: leave_ok
-      3: leave_failed
-      4: event_on_not_joined_channel
-      5: state_changed
 
 ### Other registration functions
 * `minetest.register_chatcommand(cmd, chatcommand definition)`
