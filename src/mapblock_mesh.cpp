@@ -194,7 +194,8 @@ u16 getFaceLight(MapNode n, MapNode n2, v3s16 face_dir, INodeDefManager *ndef)
 	Calculate smooth lighting at the XYZ- corner of p.
 	Both light banks
 */
-static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeData *data, bool node_solid)
+static u16 getSmoothLightCombined(const v3s16 &p,
+	const std::array<v3s16,8> &dirs, MeshMakeData *data, bool node_solid)
 {
 	INodeDefManager *ndef = data->m_client->ndef();
 
@@ -213,6 +214,14 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 		g_settings->getBool("smooth_lighting_edge_obstruction");
 
 	for (int i = 0; i < 8; ++i) {
+		if (edge_obstruction && !node_solid && ((i == 4 && index4_obstructed) ||
+				(i == 5 && index5_obstructed) ||
+				(i == 6 && index6_obstructed) ||
+				(i == 7 && index7_obstructed))) {
+			ambient_occlusion++;
+			continue;
+		}
+
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 
 		// if it's CONTENT_IGNORE we can't do any light calculations
@@ -226,9 +235,10 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 					ambient_occlusion++;
 					continue;
 				}
-				// Only the 4 nodes in face-direction can contribute light
-				else if (i > 4) {
-					continue;
+				// Only the 4 nodes in front of the face (and
+				// the corner's node) can contribute light
+				if (i > 4) {
+					break;
 				} else if (i < 2 && f.param_type == CPT_LIGHT){
 					corner_obstructed = false;
 				}
@@ -245,13 +255,6 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 							(i == 5 && !index5_obstructed) ||
 							(i == 6 && !index6_obstructed))
 						index7_obstructed = false;
-				}
-				if ((i == 4 && index4_obstructed) ||
-						(i == 5 && index5_obstructed) ||
-						(i == 6 && index6_obstructed) ||
-						(i == 7 && index7_obstructed)) {
-					ambient_occlusion++;
-					continue;
 				}
 			}
 		}
@@ -270,13 +273,15 @@ static u16 getSmoothLightCombined(const v3s16 &p, const v3s16 *dirs, MeshMakeDat
 		}
 	}
 
-	if(light_count == 0) {
+	if (edge_obstruction && node_solid)
+		ambient_occlusion += 3;
+
+	if (light_count == 0) {
 		light_day = light_night = 0;
 	} else {
 		light_day /= light_count;
 		light_night /= light_count;
 	}
-
 
 	// Boost brightness around light sources
 	bool skip_ambient_occlusion_day = false;
@@ -325,6 +330,14 @@ u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corn
 {
 	v3s16 neighbor_offset1, neighbor_offset2;
 
+	/*
+	 * face_dir, neighbor_offset1 and neighbor_offset2 define an
+	 * orthonormal basis which is used to define the offsets of the 8
+	 * surrounding nodes and to differentiate the "distance" (by going only
+	 * along directly neighboring nodes) relative to the node at p.
+	 * Apart from the node at p, only the 4 nodes which contain face_dir
+	 * can contribute light.
+	 */
 	if (face_dir.X != 0) {
 		neighbor_offset1 = v3s16(0, corner.Y, 0);
 		neighbor_offset2 = v3s16(0, 0, corner.Z);
@@ -336,7 +349,7 @@ u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corn
 		neighbor_offset2 = v3s16(0,corner.Y,0);
 	}
 
-	const v3s16 dirs8[8] = {
+	const std::array<v3s16,8> dirs = {{
 		// Always shine light
 		neighbor_offset1 + face_dir,
 		neighbor_offset2 + face_dir,
@@ -346,12 +359,12 @@ u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corn
 		// Can be obstructed
 		neighbor_offset1 + neighbor_offset2 + face_dir,
 
-		// Only for ambient occlusion
+		// Do not shine light, only for ambient occlusion
 		neighbor_offset1,
 		neighbor_offset2,
 		neighbor_offset1 + neighbor_offset2
-	};
-	return getSmoothLightCombined(p, dirs8, data, true);
+	}};
+	return getSmoothLightCombined(p, dirs, data, true);
 }
 
 /*
@@ -361,7 +374,7 @@ u16 getSmoothLightSolid(const v3s16 &p, const v3s16 &face_dir, const v3s16 &corn
 */
 u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData *data)
 {
-	const v3s16 dirs8[8] = {
+	const std::array<v3s16,8> dirs = {{
 		// Always shine light
 		v3s16(0,0,0),
 		v3s16(corner.X,0,0),
@@ -373,8 +386,8 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 
 		// Can be obstructed
 		v3s16(corner.X,corner.Y,corner.Z)
-	};
-	return getSmoothLightCombined(p, dirs8, data, false);
+	}};
+	return getSmoothLightCombined(p, dirs, data, false);
 }
 
 void get_sunlight_color(video::SColorf *sunlight, u32 daynight_ratio){
@@ -428,7 +441,7 @@ void final_color_blend(video::SColor *result,
 /*
 	vertex_dirs: v3s16[4]
 */
-void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 {
 	/*
 		If looked from outside the node towards the face, the corners are:
