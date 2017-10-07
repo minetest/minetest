@@ -476,6 +476,12 @@ pause_fps_max (FPS in pause menu) int 20
 #    View distance in nodes.
 viewing_range (Viewing range) int 100 20 4000
 
+#   Camera near plane distance in nodes, between 0 and 0.5
+#   Most users will not need to change this.
+#   Increasing can reduce artifacting on weaker GPUs.
+#   0.1 = Default, 0.25 = Good value for weaker tablets.
+near_plane (Near plane) float 0.1 0 0.5
+
 #    Width component of the initial window size.
 screenW (Screen width) int 800
 
