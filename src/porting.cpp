@@ -197,11 +197,11 @@ std::string get_sysinfo()
 	#ifdef _WIN64
 	oss << "x86_64";
 	#else
-		BOOL is64 = FALSE;
-		if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
-			oss << "x86_64"; // 32-bit app on 64-bit OS
-		else
-			oss << "x86";
+	BOOL is64 = FALSE;
+	if (IsWow64Process(GetCurrentProcess(), &is64) && is64)
+		oss << "x86_64"; // 32-bit app on 64-bit OS
+	else
+		oss << "x86";
 	#endif
 
 	delete[] lpVersionInfo;
