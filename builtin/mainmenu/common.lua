@@ -56,10 +56,10 @@ function image_column(tooltip, flagname)
 		"0=" .. core.formspec_escape(defaulttexturedir .. "blank.png") .. "," ..
 		"1=" .. core.formspec_escape(defaulttexturedir ..
 			(flagname and "server_flags_" .. flagname .. ".png" or "blank.png")) .. "," ..
-		"2=" .. core.formspec_escape(defaulttexturedir .. "server_ping_4.png") .. "," ..
-		"3=" .. core.formspec_escape(defaulttexturedir .. "server_ping_3.png") .. "," ..
-		"4=" .. core.formspec_escape(defaulttexturedir .. "server_ping_2.png") .. "," ..
-		"5=" .. core.formspec_escape(defaulttexturedir .. "server_ping_1.png")
+		"2=" .. core.formspec_escape(defaulttexturedir .. "server_load_1.png") .. "," ..
+		"3=" .. core.formspec_escape(defaulttexturedir .. "server_load_2.png") .. "," ..
+		"4=" .. core.formspec_escape(defaulttexturedir .. "server_load_3.png") .. "," ..
+		"5=" .. core.formspec_escape(defaulttexturedir .. "server_load_4.png")
 end
 
 --------------------------------------------------------------------------------
@@ -102,13 +102,17 @@ function render_serverlist_row(spec, is_favorite)
 		details = "0,"
 	end
 
-	if spec.ping then
-		local ping = spec.ping * 1000
-		if ping <= 50 then
+	if spec.lag then
+		-- our default server step was 0.1, so most clients will
+		-- show values around 0.101 or so when idle. After having
+		-- looked at typical spread, I've determined that .205+ or
+		-- so really doesn't show that often, so we mark those as
+		-- "high" load.
+		if spec.lag < 0.125 then
 			details = details .. "2,"
-		elseif ping <= 100 then
+		elseif spec.lag < 0.225 then
 			details = details .. "3,"
-		elseif ping <= 250 then
+		elseif spec.lag < 0.275 then
 			details = details .. "4,"
 		else
 			details = details .. "5,"

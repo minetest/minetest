@@ -438,6 +438,13 @@ int ModApiMainMenu::l_get_favorites(lua_State *L)
 			lua_settable(L, top_lvl2);
 		}
 
+		if (server.isMember("lag")) {
+			float lag = server["lag"].asFloat();
+			lua_pushstring(L, "lag");
+			lua_pushnumber(L, lag);
+			lua_settable(L, top_lvl2);
+		}
+
 		lua_settable(L, top);
 		index++;
 	}
