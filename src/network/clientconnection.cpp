@@ -36,6 +36,7 @@ ClientConnection::ClientConnection(asio::io_service &io_service) :
 	m_udp_socket(io_service, udp::endpoint(udp::v6(), 0)),
 	m_udp_ping_thread(new ClientUDPPingThread(this))
 {
+	m_udp_socket.set_option(asio::socket_base::reuse_address(true));
 }
 
 ClientConnection::~ClientConnection()
@@ -160,6 +161,14 @@ void ClientConnection::setSessionId(session_t session_id)
 	m_session_id = session_id;
 
 	udp::resolver resolver(m_io_service);
+
+	// On Windows if remote endpoint is IPv4, we have a problem with UDP IPv6 opened
+	// socket. Close it and re-open it in V4 mode
+	if (m_socket.remote_endpoint().address().is_v4()
+		&& m_udp_socket.local_endpoint().address().is_v6()) {
+		m_udp_socket.close();
+		m_udp_socket.open(udp::v4());
+	}
 
 	m_udp_endpoint = udp::endpoint(
 		m_socket.remote_endpoint().address(),
