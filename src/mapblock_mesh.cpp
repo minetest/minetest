@@ -28,6 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "content_mapblock.h"
 #include "util/directiontables.h"
 #include "client/renderingengine.h"
+#include <array>
 
 /*
 	MeshMakeData
