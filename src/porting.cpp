@@ -32,6 +32,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include <windows.h>
 	#include <wincrypt.h>
 	#include <algorithm>
+	#include <shlwapi.h>
 #endif
 #if !defined(_WIN32)
 	#include <unistd.h>
@@ -181,20 +182,26 @@ bool detectMSVCBuildDir(const std::string &path)
 std::string get_sysinfo()
 {
 #ifdef _WIN32
-	OSVERSIONINFO osvi;
-	std::ostringstream oss;
-	std::string tmp;
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&osvi);
-	tmp = osvi.szCSDVersion;
-	std::replace(tmp.begin(), tmp.end(), ' ', '_');
 
-	oss << "Windows/" << osvi.dwMajorVersion << "."
-		<< osvi.dwMinorVersion;
-	if (osvi.szCSDVersion[0])
-		oss << "-" << tmp;
-	oss << " ";
+	std::ostringstream oss;
+	LPSTR filePath = new char[MAX_PATH];
+	UINT blockSize;
+	VS_FIXEDFILEINFO *fixedFileInfo;
+
+	GetSystemDirectoryA(filePath, MAX_PATH);
+	PathAppendA(filePath, "kernel32.dll");
+
+	DWORD dwVersionSize = GetFileVersionInfoSizeA(filePath, NULL);
+	LPBYTE lpVersionInfo = new BYTE[dwVersionSize];
+
+	GetFileVersionInfoA(filePath, 0, dwVersionSize, lpVersionInfo);
+	VerQueryValueA(lpVersionInfo, "\\", (LPVOID *)&fixedFileInfo, &blockSize);
+
+	oss << "Windows/"
+		<< HIWORD(fixedFileInfo->dwProductVersionMS) << '.' // Major
+		<< LOWORD(fixedFileInfo->dwProductVersionMS) << '.' // Minor
+		<< HIWORD(fixedFileInfo->dwProductVersionLS) << ' '; // Build
+
 	#ifdef _WIN64
 	oss << "x86_64";
 	#else
@@ -204,6 +211,9 @@ std::string get_sysinfo()
 	else
 		oss << "x86";
 	#endif
+
+	delete[] lpVersionInfo;
+	delete[] filePath;
 
 	return oss.str();
 #else
