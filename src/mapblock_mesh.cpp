@@ -237,13 +237,11 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 				}
 				// Only the 4 nodes in front of the face (and
 				// the corner's node) can contribute light
-				if (i > 4) {
+				if (i > 4)
 					break;
-				} else if (i < 2 && f.param_type == CPT_LIGHT){
+				else if (i < 2 && f.param_type == CPT_LIGHT)
 					corner_obstructed = false;
-				}
-			}
-			else {
+			} else {
 				if (f.param_type == CPT_LIGHT) {
 					if (i == 1 || i == 2)
 						index4_obstructed = false;
