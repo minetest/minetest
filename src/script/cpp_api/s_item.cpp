@@ -211,7 +211,8 @@ bool ScriptApiItem::item_CraftPredict(ItemStack &item, ServerActiveObject *user,
 // function onto the stack
 // If core.registered_items[name] doesn't exist, core.nodedef_default
 // is tried instead so unknown items can still be manipulated to some degree
-bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
+bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
+		const v3s16 *p)
 {
 	lua_State* L = getStack();
 
@@ -225,7 +226,10 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname)
 	if(lua_type(L, -1) != LUA_TTABLE)
 	{
 		// Report error and clean up
-		errorstream << "Item \"" << name << "\" not defined" << std::endl;
+		errorstream << "Item \"" << name << "\" not defined";
+		if (p)
+			errorstream << " at position " << PP(*p);
+		errorstream << std::endl;
 		lua_pop(L, 1);
 
 		// Try core.nodedef_default instead
