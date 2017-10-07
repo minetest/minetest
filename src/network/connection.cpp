@@ -142,7 +142,6 @@ void ConnectionWorker::readHeader()
 
 				// New header, prepare packet buffer
 				m_data_buf.clear();
-				m_data_buf.resize(m_packet_waited_len);
 
 				readBody();
 			} else {
@@ -166,7 +165,9 @@ void ConnectionWorker::readBody()
 	// Read maximum of m_packet_waited_len or difference between packet length and
 	// current cursor position if we didn't read all data (this should not happen)
 	size_t bytes_to_read = std::min<size_t>(m_packet_waited_len - m_read_cursor,
-		m_packet_waited_len);
+		MAX_DATABUF_SIZE);
+
+	m_data_buf.resize(m_data_buf.size() + bytes_to_read);
 
 	auto self(shared_from_this());
 	m_socket.async_read_some(asio::buffer(&m_data_buf[m_read_cursor], bytes_to_read),
@@ -196,9 +197,9 @@ void ConnectionWorker::readBody()
 				}
 
 			} else {
-				errorstream << "Failed to read packet body";
+				errorstream << "Failed to read packet body from ";
 				try {
-					errorstream << "from " << m_socket.remote_endpoint();
+					errorstream << m_socket.remote_endpoint();
 				} catch (std::exception &) {
 					errorstream << "peer";
 				}

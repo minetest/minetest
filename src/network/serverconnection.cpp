@@ -56,7 +56,8 @@ void ServerSession::disconnect()
 	m_io_service.post([this]() {
 		// Close socket and silently ignore if it's already closed
 		try {
-			m_socket.close();
+			if (m_socket.is_open())
+				m_socket.close();
 		} catch (std::exception &e) {}
 	});
 
@@ -109,8 +110,17 @@ void ServerConnection::do_accept()
 
 	m_tcp_acceptor.async_accept(m_tcp_socket, [this, self](std::error_code ec) {
 		if (!ec) {
-			m_tcp_socket.set_option(asio::socket_base::reuse_address(true));
-			m_tcp_socket.set_option(asio::socket_base::keep_alive(true));
+			try {
+				m_tcp_socket.set_option(asio::socket_base::reuse_address(true));
+				m_tcp_socket.set_option(asio::socket_base::keep_alive(true));
+			} catch (std::exception &e) {
+				errorstream << "Failed to set TCP options for peer, ignoring connection."
+					<< std::endl;
+
+				// Return in the accept "loop"
+				do_accept();
+				return;
+			}
 
 			ServerSessionPtr serverSession =
 				std::make_shared<ServerSession>(m_io_service, std::move(m_tcp_socket), self);
