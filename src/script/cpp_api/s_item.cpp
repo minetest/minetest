@@ -223,8 +223,7 @@ bool ScriptApiItem::getItemCallback(const char *name, const char *callbackname,
 	lua_getfield(L, -1, name);
 	lua_remove(L, -2); // Remove registered_items
 	// Should be a table
-	if(lua_type(L, -1) != LUA_TTABLE)
-	{
+	if (lua_type(L, -1) != LUA_TTABLE) {
 		// Report error and clean up
 		errorstream << "Item \"" << name << "\" not defined";
 		if (p)
