@@ -107,7 +107,7 @@ bool ScriptApiNode::node_on_punch(v3s16 p, MapNode node,
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_punch", &p))
 		return false;
 
 	// Call function
@@ -130,7 +130,7 @@ bool ScriptApiNode::node_on_dig(v3s16 p, MapNode node,
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_dig", &p))
 		return false;
 
 	// Call function
@@ -151,7 +151,7 @@ void ScriptApiNode::node_on_construct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_construct", &p))
 		return;
 
 	// Call function
@@ -169,7 +169,7 @@ void ScriptApiNode::node_on_destruct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_destruct", &p))
 		return;
 
 	// Call function
@@ -187,7 +187,7 @@ bool ScriptApiNode::node_on_flood(v3s16 p, MapNode node, MapNode newnode)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_flood", &p))
 		return false;
 
 	// Call function
@@ -208,7 +208,7 @@ void ScriptApiNode::node_after_destruct(v3s16 p, MapNode node)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "after_destruct", &p))
 		return;
 
 	// Call function
@@ -227,7 +227,7 @@ bool ScriptApiNode::node_on_timer(v3s16 p, MapNode node, f32 dtime)
 	INodeDefManager *ndef = getServer()->ndef();
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_timer", &p))
 		return false;
 
 	// Call function
@@ -255,7 +255,7 @@ void ScriptApiNode::node_on_receive_fields(v3s16 p,
 		return;
 
 	// Push callback function on stack
-	if (!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields"))
+	if (!getItemCallback(ndef->get(node).name.c_str(), "on_receive_fields", &p))
 		return;
 
 	// Call function
