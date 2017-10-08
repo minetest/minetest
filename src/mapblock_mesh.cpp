@@ -206,70 +206,67 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 	bool corner_obstructed = true;
-	bool index4_obstructed = true;
-	bool index5_obstructed = true;
-	bool index6_obstructed = true;
-	bool index7_obstructed = true;
 
 	static thread_local const bool edge_obstruction =
 		g_settings->getBool("smooth_lighting_edge_obstruction");
 
-	for (int i = 0; i < 8; ++i) {
-		if (edge_obstruction && !node_solid && ((i == 4 && index4_obstructed) ||
-				(i == 5 && index5_obstructed) ||
-				(i == 6 && index6_obstructed) ||
-				(i == 7 && index7_obstructed))) {
-			ambient_occlusion++;
-			continue;
-		}
-
-		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
-
-		// if it's CONTENT_IGNORE we can't do any light calculations
-		if (n.getContent() == CONTENT_IGNORE)
-			continue;
-
-		const ContentFeatures &f = ndef->get(n);
-		if (edge_obstruction) {
-			if (node_solid) {
-				if ((i == 4 && corner_obstructed)) {
-					ambient_occlusion++;
-					continue;
-				}
-				// Only the 4 nodes in front of the face (and
-				// the corner's node) can contribute light
-				if (i > 4)
-					break;
-				else if (i < 2 && f.param_type == CPT_LIGHT)
-					corner_obstructed = false;
-			} else {
-				if (f.param_type == CPT_LIGHT) {
-					if (i == 1 || i == 2)
-						index4_obstructed = false;
-					if (i == 1 || i == 3)
-						index5_obstructed = false;
-					if (i == 2 || i == 3)
-						index6_obstructed = false;
-					if ((i == 4 && !index4_obstructed) ||
-							(i == 5 && !index5_obstructed) ||
-							(i == 6 && !index6_obstructed))
-						index7_obstructed = false;
-				}
-			}
-		}
-
+	auto add_node = [&] (MapNode n, const ContentFeatures &f) {
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
-
 		// Check f.solidness because fast-style leaves look better this way
 		if (f.param_type == CPT_LIGHT && f.solidness != 2) {
 			light_day += decode_light(n.getLightNoChecks(LIGHTBANK_DAY, &f));
-			light_night += decode_light(
-				n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
+			light_night += decode_light(n.getLightNoChecks(LIGHTBANK_NIGHT, &f));
 			light_count++;
 		} else {
 			ambient_occlusion++;
 		}
+	};
+	auto add_node_1 = [&] (MapNode n) {
+		add_node(n, ndef->get(n));
+	};
+	if (edge_obstruction) {
+		if (node_solid) {
+			for (int i = 0; i < 4; ++i) {
+				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+				const ContentFeatures &f = ndef->get(n);
+				if (i < 2 && f.light_propagates)
+					corner_obstructed = false;
+				add_node(n, f);
+			}
+			if (corner_obstructed)
+				ambient_occlusion++;
+			else
+				add_node_1(data->m_vmanip.getNodeNoExNoEmerge(p + dirs[4]));
+		} else {
+			std::array<bool, 8> obstructed = { 0, 0, 0, 0, 1, 1, 1, 1 };
+			for (int i = 0; i < 4; ++i) {
+				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+				const ContentFeatures &f = ndef->get(n);
+				if (f.light_propagates) {
+					if (i == 1 || i == 2)
+						obstructed[4] = false;
+					if (i == 1 || i == 3)
+						obstructed[5] = false;
+					if (i == 2 || i == 3)
+						obstructed[6] = false;
+				}
+				add_node(n, f);
+			}
+			for (int i = 4; i < 8; ++i) {
+				if (obstructed[i]) {
+					ambient_occlusion++;
+					continue;
+				}
+				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+				const ContentFeatures &f = ndef->get(n);
+				if (f.light_propagates)
+					obstructed[7] = false;
+				add_node(n, f);
+			}		}
+	} else {
+		for (int i = 0; i < 8; ++i)
+			add_node_1(data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]));
 	}
 
 	if (edge_obstruction && node_solid)
