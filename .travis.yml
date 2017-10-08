@@ -61,7 +61,7 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-3.6
 
-    - env: PLATFORM=Unix COMPILER=clang-4.0
+    - env: PLATFORM=Unix COMPILER=clang-5.0
       compiler: clang
       os: linux
       addons:
