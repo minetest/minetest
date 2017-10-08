@@ -1738,16 +1738,9 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path)) {
-		std::vector<std::string> paths;
-		std::set<char> chars_to_ignore = { '_', '.' };
-		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);
-		paths.push_back(texture_path);
-		for (const auto &path : paths) {
-			m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
-		}
-	}
+	auto paths = fs::GetRecursiveDirs(g_settings->get("texture_path"));
+	for (const auto &path : paths)
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();
 	delete[] text;

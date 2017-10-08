@@ -67,6 +67,12 @@ bool DeleteSingleFileOrEmptyDirectory(const std::string &path);
 // Returns path to temp directory, can return "" on error
 std::string TempPath();
 
+/* Returns a list of subdirectories, including the path itself, but excluding
+       hidden directories (whose names start with . or _)
+*/
+void GetRecursiveDirs(std::vector<std::string> &dirs, const std::string &dir);
+std::vector<std::string> GetRecursiveDirs(const std::string &dir);
+
 /* Multiplatform */
 
 /* The path itself not included, returns a list of all subpaths.

@@ -250,15 +250,9 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	std::string texture_path = g_settings->get("texture_path");
-	if (!texture_path.empty() && fs::IsDir(texture_path)) {
-		std::vector<std::string> paths;
-		paths.push_back(texture_path);
-		std::set<char> chars_to_ignore = { '_', '.' };
-		fs::GetRecursiveSubPaths(texture_path, paths, false, &chars_to_ignore);;
-		for (const auto &path : paths)
-			m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
-	}
+	auto paths = fs::GetRecursiveDirs(g_settings->get("texture_path"));
+	for (const auto &path : paths)
+		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
 
@@ -2255,10 +2249,8 @@ void Server::fillMediaCache()
 		paths.push_back(mod.path + DIR_DELIM + "models");
 		paths.push_back(mod.path + DIR_DELIM + "locale");
 	}
-	std::string texturepack_path = porting::path_user + DIR_DELIM + "textures" + DIR_DELIM + "server";
-	std::set<char> chars_to_ignore = { '_', '.' };
-	fs::GetRecursiveSubPaths(texturepack_path, paths, false, &chars_to_ignore);
-	paths.push_back(texturepack_path);
+	fs::GetRecursiveDirs(paths, porting::path_user + DIR_DELIM +
+			"textures" + DIR_DELIM + "server");
 	// Collect media file information from paths into cache
 	for (const std::string &mediapath : paths) {
 		std::vector<fs::DirListNode> dirlist = fs::GetDirListing(mediapath);
