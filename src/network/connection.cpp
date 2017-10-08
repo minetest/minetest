@@ -99,13 +99,19 @@ void ConnectionWorker::sendPacket()
 		}
 	};
 
+	/*
+	 * If packet is reliable, send to opened TCP socket
+	 * If packet is unreliable and UDP endpoint is set send it
+	 * In other cases drop packet
+	 */
 	if (sendBuf->reliable) {
 		asio::async_write(m_socket, asio::buffer(sendBuf->data.data(),
 			sendBuf->data.size()), async_write_callback);
-	}
-	else {
+	} else if (m_udp_endpoint_set) {
 		getUDPSocket().async_send_to(asio::buffer(sendBuf->data.data(),
 				sendBuf->data.size()), m_udp_endpoint, async_write_callback);
+	} else {
+		m_send_queue.pop_front();
 	}
 }
 

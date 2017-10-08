@@ -176,6 +176,7 @@ void ClientConnection::setSessionId(session_t session_id)
 		m_socket.remote_endpoint().address(),
 		m_socket.remote_endpoint().port()
 	);
+	m_udp_endpoint_set = true;
 
 	receiveUDPData();
 }
@@ -237,6 +238,14 @@ void ClientConnection::receiveUDPData()
 				readUDPBody(recv_size);
 
 				receiveUDPData();
+			} else {
+				errorstream << "Failed to receive UDP packet from ";
+				try {
+					errorstream << m_udp_socket.remote_endpoint();
+				} catch (std::exception &) {
+					errorstream << "peer";
+				}
+				errorstream << ". Error: " << ec.message() << std::endl;
 			}
 		}
 	);

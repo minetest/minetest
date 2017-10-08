@@ -45,7 +45,7 @@ class ServerSession : public ConnectionWorker
 public:
 	ServerSession(asio::io_service &io_service, tcp::socket socket,
 			std::shared_ptr<ServerConnection> serverCon)
-	    : ConnectionWorker(io_service, std::move(socket)), m_udp_endpoint_set(false),
+	    : ConnectionWorker(io_service, std::move(socket)),
 	      m_server_con(serverCon)
 	{
 	}
@@ -68,7 +68,6 @@ private:
 	void pushPacketToQueue();
 	void notifySocketClosed();
 
-	std::atomic_bool m_udp_endpoint_set;
 	std::shared_ptr<ServerConnection> m_server_con;
 };
 

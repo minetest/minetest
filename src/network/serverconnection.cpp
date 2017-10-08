@@ -164,6 +164,14 @@ void ServerConnection::receiveUDPData()
 				readUDPBody(recv_size);
 
 				receiveUDPData();
+			} else {
+				errorstream << "Failed to receive UDP packet from ";
+				try {
+					errorstream << m_udp_socket.remote_endpoint();
+				} catch (std::exception &) {
+					errorstream << "peer";
+				}
+				errorstream << ". Error: " << ec.message() << std::endl;
 			}
 		}
 	);

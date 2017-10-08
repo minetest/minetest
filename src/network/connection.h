@@ -19,6 +19,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
+#include <atomic>
 #include <vector>
 #include <mutex>
 #include <asio/ip/tcp.hpp>
@@ -55,7 +56,8 @@ class ConnectionWorker : public std::enable_shared_from_this<ConnectionWorker>
 public:
 	ConnectionWorker(asio::io_service &io_service, tcp::socket socket) :
 		m_io_service(io_service),
-		m_socket(std::move(socket))
+		m_socket(std::move(socket)),
+		m_udp_endpoint_set(false)
 	{}
 	virtual ~ConnectionWorker() {}
 
@@ -82,6 +84,7 @@ protected:
 	tcp::socket m_socket;
 
 	udp::endpoint m_udp_endpoint;
+	std::atomic_bool m_udp_endpoint_set;
 
 	session_t m_session_id = 0;
 
