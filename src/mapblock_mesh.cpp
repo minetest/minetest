@@ -210,7 +210,9 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	static thread_local const bool edge_obstruction =
 		g_settings->getBool("smooth_lighting_edge_obstruction");
 
-	auto add_node = [&] (MapNode n, const ContentFeatures &f) {
+	auto add_node = [&] (int i) {
+		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
+		const ContentFeatures &f = ndef->get(n);
 		if (f.light_source > light_source_max)
 			light_source_max = f.light_source;
 		// Check f.solidness because fast-style leaves look better this way
@@ -221,28 +223,24 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		} else {
 			ambient_occlusion++;
 		}
-	};
-	auto add_node_1 = [&] (MapNode n) {
-		add_node(n, ndef->get(n));
+		return f;
 	};
 	if (edge_obstruction) {
 		if (node_solid) {
 			for (int i = 0; i < 4; ++i) {
-				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
-				const ContentFeatures &f = ndef->get(n);
+				const ContentFeatures &f = add_node(i);
 				if (i < 2 && f.light_propagates)
 					corner_obstructed = false;
-				add_node(n, f);
+
 			}
 			if (corner_obstructed)
 				ambient_occlusion++;
 			else
-				add_node_1(data->m_vmanip.getNodeNoExNoEmerge(p + dirs[4]));
+				add_node(4);
 		} else {
 			std::array<bool, 8> obstructed = { 0, 0, 0, 0, 1, 1, 1, 1 };
 			for (int i = 0; i < 4; ++i) {
-				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
-				const ContentFeatures &f = ndef->get(n);
+				const ContentFeatures &f = add_node(i);
 				if (f.light_propagates) {
 					if (i == 1 || i == 2)
 						obstructed[4] = false;
@@ -251,22 +249,20 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 					if (i == 2 || i == 3)
 						obstructed[6] = false;
 				}
-				add_node(n, f);
 			}
 			for (int i = 4; i < 8; ++i) {
 				if (obstructed[i]) {
 					ambient_occlusion++;
 					continue;
 				}
-				MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
-				const ContentFeatures &f = ndef->get(n);
+				const ContentFeatures &f = add_node(i);
 				if (f.light_propagates)
 					obstructed[7] = false;
-				add_node(n, f);
-			}		}
+			}
+		}
 	} else {
 		for (int i = 0; i < 8; ++i)
-			add_node_1(data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]));
+			add_node(i);
 	}
 
 	if (edge_obstruction && node_solid)
