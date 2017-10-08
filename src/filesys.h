@@ -80,7 +80,10 @@ std::vector<std::string> GetRecursiveDirs(const std::string &dir);
    list files - include files in the list of subpaths.
    ignore - paths that start with these charcters will not be listed.
 */
-void GetRecursiveSubPaths(const std::string &path, std::vector<std::string> &dst, bool list_files, const std::set<char> *ignore);
+void GetRecursiveSubPaths(const std::string &path,
+		  std::vector<std::string> &dst,
+		  bool list_files,
+		  const std::set<char> *ignore = nullptr);
 
 // Tries to delete all, returns false if any failed
 bool DeletePaths(const std::vector<std::string> &paths);
