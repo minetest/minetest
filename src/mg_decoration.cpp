@@ -227,6 +227,9 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
 
+	u8 param2 = (deco_param2_max > 0) ?
+		pr->range(deco_param2, deco_param2_max) : deco_param2;
+
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	const v3s16 &em = vm->m_area.getExtent();
@@ -239,7 +242,7 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 				!force_placement)
 			break;
 
-		vm->m_data[vi] = MapNode(c_place, 0, deco_param2);
+		vm->m_data[vi] = MapNode(c_place, 0, param2);
 	}
 
 	return 1;
