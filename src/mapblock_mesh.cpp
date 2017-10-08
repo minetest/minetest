@@ -209,7 +209,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	static thread_local const bool edge_obstruction =
 		g_settings->getBool("smooth_lighting_edge_obstruction");
 
-	auto add_node = [&] (int i) {
+	auto add_node = [&] (int i) -> const ContentFeatures& {
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 		const ContentFeatures &f = ndef->get(n);
 		if (f.light_source > light_source_max)
@@ -228,9 +228,10 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		if (node_solid) {
 			ambient_occlusion = 3;
 			bool corner_obstructed = true;
-			for (int i = 0; i < 2; ++i)
+			for (int i = 0; i < 2; ++i) {
 				if (add_node(i).light_propagates)
 					corner_obstructed = false;
+			}
 			add_node(2);
 			add_node(3);
 			if (corner_obstructed)
@@ -238,7 +239,7 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			else
 				add_node(4);
 		} else {
-			std::array<bool, 4> obstructed = { 1, 1, 1, 1 };
+			std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
 			add_node(0);
 			bool opaque1 = !add_node(1).light_propagates;
 			bool opaque2 = !add_node(2).light_propagates;
@@ -246,11 +247,12 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 			obstructed[0] = opaque1 && opaque2;
 			obstructed[1] = opaque1 && opaque3;
 			obstructed[2] = opaque2 && opaque3;
-			for (int k = 0; k < 4; ++k)
+			for (int k = 0; k < 4; ++k) {
 				if (obstructed[k])
 					ambient_occlusion++;
 				else if (add_node(k + 4).light_propagates)
 					obstructed[3] = false;
+			}
 		}
 	} else {
 		for (int i = 0; i < 8; ++i)
@@ -361,11 +363,11 @@ u16 getSmoothLightTransparent(const v3s16 &p, const v3s16 &corner, MeshMakeData 
 		v3s16(corner.X,0,0),
 		v3s16(0,corner.Y,0),
 		v3s16(0,0,corner.Z),
+
+		// Can be obstructed
 		v3s16(corner.X,corner.Y,0),
 		v3s16(corner.X,0,corner.Z),
 		v3s16(0,corner.Y,corner.Z),
-
-		// Can be obstructed
 		v3s16(corner.X,corner.Y,corner.Z)
 	}};
 	return getSmoothLightCombined(p, dirs, data, false);
