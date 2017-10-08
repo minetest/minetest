@@ -22,8 +22,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static Profiler main_profiler;
 Profiler *g_profiler = &main_profiler;
 ScopeProfiler::ScopeProfiler(
-		Profiler *profiler, const std::string &name, ScopeProfilerType type)
-    : m_profiler(profiler), m_name(name), m_type(type)
+		Profiler *profiler, const std::string &name, ScopeProfilerType type) :
+		m_profiler(profiler),
+		m_name(name), m_type(type)
 {
 	if (m_profiler)
 		m_timer = new TimeTaker(m_name);

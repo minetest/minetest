@@ -63,8 +63,8 @@ enum PeerChangeType : u8
 
 struct PeerChange
 {
-	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout)
-	    : type(t), peer_id(_peer_id), timeout(_timeout)
+	PeerChange(PeerChangeType t, session_t _peer_id, bool _timeout) :
+			type(t), peer_id(_peer_id), timeout(_timeout)
 	{
 	}
 	PeerChange() = delete;
