@@ -64,7 +64,6 @@ bool ClientConnection::connect(const std::string &addr, u16 port)
 	asio::async_connect(m_socket, m_endpoint_iterator,
 		[this, self, addr, port](std::error_code ec, const tcp::resolver::iterator &) {
 			if (!ec) {
-				m_udp_ping_thread->start();
 				// Enable TCP keepalives
 				m_socket.set_option(asio::socket_base::keep_alive(true));
 				m_state = STATE_CONNECTED;
@@ -169,6 +168,7 @@ void ClientConnection::setSessionId(session_t session_id)
 		&& m_udp_socket.local_endpoint().address().is_v6()) {
 		m_udp_socket.close();
 		m_udp_socket.open(udp::v4());
+		m_udp_socket.set_option(asio::socket_base::reuse_address(true));
 	}
 #endif
 
@@ -177,6 +177,8 @@ void ClientConnection::setSessionId(session_t session_id)
 		m_socket.remote_endpoint().port()
 	);
 	m_udp_endpoint_set = true;
+
+	m_udp_ping_thread->start();
 
 	receiveUDPData();
 }
@@ -190,7 +192,7 @@ void ClientConnection::setSessionId(session_t session_id)
 void ClientConnection::sendUDPPing()
 {
 	// if session is unknown don't send
-	if (m_session_id == 0)
+	if (m_session_id == 0 || !m_udp_endpoint_set)
 		return;
 
 	if (m_udp_sendbuf.size() != UDP_HEADER_LEN)
@@ -207,8 +209,7 @@ void ClientConnection::sendUDPPing()
 			// If error happen, disconnect user
 			if (ec) {
 				errorstream << "Failed to send UDP packet to "
-					<< m_udp_endpoint << ". Error: " << ec.message()
-					<< std::endl;
+					<< m_udp_endpoint << ". Error: " << ec.message() << std::endl;
 				disconnect();
 			}
 		}
