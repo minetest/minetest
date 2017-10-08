@@ -1738,8 +1738,7 @@ void Client::afterContentReceived()
 	text = wgettext("Initializing nodes...");
 	RenderingEngine::draw_load_screen(text, guienv, m_tsrc, 0, 72);
 	m_nodedef->updateAliases(m_itemdef);
-	auto paths = fs::GetRecursiveDirs(g_settings->get("texture_path"));
-	for (const auto &path : paths)
+	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
 		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 	m_nodedef->setNodeRegistrationStatus(true);
 	m_nodedef->runNodeResolveCallbacks();

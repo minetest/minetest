@@ -129,8 +129,7 @@ std::string getTexturePath(const std::string &filename)
 	/*
 		Check from texture_path
 	*/
-	auto paths = fs::GetRecursiveDirs(g_settings->get("texture_path"));
-	for (const auto &path : paths) {
+	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path"))) {
 		std::string testpath = path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);

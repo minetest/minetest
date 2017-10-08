@@ -250,8 +250,7 @@ Server::Server(
 	m_nodedef->updateAliases(m_itemdef);
 
 	// Apply texture overrides from texturepack/override.txt
-	auto paths = fs::GetRecursiveDirs(g_settings->get("texture_path"));
-	for (const auto &path : paths)
+	for (const auto &path : fs::GetRecursiveDirs(g_settings->get("texture_path")))
 		m_nodedef->applyTextureOverrides(path + DIR_DELIM + "override.txt");
 
 	m_nodedef->setNodeRegistrationStatus(true);
