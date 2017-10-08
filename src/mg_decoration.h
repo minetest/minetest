@@ -84,6 +84,7 @@ public:
 	s16 deco_height;
 	s16 deco_height_max;
 	u8 deco_param2;
+	u8 deco_param2_max;
 };
 
 

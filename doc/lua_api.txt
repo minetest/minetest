@@ -4842,6 +4842,10 @@ Definition tables
     --  ^ If absent, the parameter 'height' is used as a constant.
         param2 = 0,
     --  ^ Param2 value of placed decoration node.
+    --  ^ If param2_max is not 0, this is the lower bound of the randomly selected param2.
+        param2_max = 0,
+    --  ^ Upper bound of the randomly selected param2.
+    --  ^ If absent, the parameter 'param2' is used as a constant.
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",

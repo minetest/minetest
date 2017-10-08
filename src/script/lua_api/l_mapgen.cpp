@@ -981,6 +981,7 @@ bool read_deco_simple(lua_State *L, DecoSimple *deco)
 {
 	int index = 1;
 	int param2;
+	int param2_max;
 
 	deco->deco_height     = getintfield_default(L, index, "height", 1);
 	deco->deco_height_max = getintfield_default(L, index, "height_max", 0);
@@ -993,6 +994,7 @@ bool read_deco_simple(lua_State *L, DecoSimple *deco)
 
 	size_t nnames = getstringlistfield(L, index, "decoration", &deco->m_nodenames);
 	deco->m_nnlistsizes.push_back(nnames);
+
 	if (nnames == 0) {
 		errorstream << "register_decoration: no decoration nodes "
 			"defined" << std::endl;
@@ -1000,12 +1002,16 @@ bool read_deco_simple(lua_State *L, DecoSimple *deco)
 	}
 
 	param2 = getintfield_default(L, index, "param2", 0);
-	if ((param2 < 0) || (param2 > 255)) {
-		errorstream << "register_decoration: param2 out of bounds (0-255)"
+	param2_max = getintfield_default(L, index, "param2_max", 0);
+
+	if (param2 < 0 || param2 > 255 || param2_max < 0 || param2_max > 255) {
+		errorstream << "register_decoration: param2 or param2_max out of bounds (0-255)"
 			<< std::endl;
 		return false;
 	}
+
 	deco->deco_param2 = (u8)param2;
+	deco->deco_param2_max = (u8)param2_max;
 
 	return true;
 }
