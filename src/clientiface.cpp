@@ -61,21 +61,20 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 }
 
 LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env) {
-	LuaEntitySAO *lsao = nullptr;
-	if (sao->isAttached()) {
-		int id;
-		std::string bone;
-		v3f dummy;
-		sao->getAttachment(&id, &bone, &dummy, &dummy);
-		ServerActiveObject *ao = env->getActiveObject(id);
-		while (id && ao) {
-			ao->getAttachment(&id, &bone, &dummy, &dummy);
-			if (id)
-				ao = env->getActiveObject(id);
-		}
-		lsao = dynamic_cast<LuaEntitySAO *>(ao);
+	if (!sao->isAttached()) {
+		return nullptr;
 	}
-	return lsao;
+	int id;
+	std::string bone;
+	v3f dummy;
+	sao->getAttachment(&id, &bone, &dummy, &dummy);
+	ServerActiveObject *ao = env->getActiveObject(id);
+	while (id && ao) {
+		ao->getAttachment(&id, &bone, &dummy, &dummy);
+		if (id)
+			ao = env->getActiveObject(id);
+	}
+	return dynamic_cast<LuaEntitySAO *>(ao);
 }
 
 void RemoteClient::GetNextBlocks (
@@ -268,7 +267,7 @@ void RemoteClient::GetNextBlocks (
 
 			f32 dist;
 			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist) ||
-				(playerspeed.getLength() > 1.0 * BS &&
+				(playerspeed.getLength() > 1.0f * BS &&
 				isBlockInSight(p, camera_pos, playerspeeddir, camera_fov / 10.0f, d_blocks_in_sight)))) {
 				continue;
 			}
