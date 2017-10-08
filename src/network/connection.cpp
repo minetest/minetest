@@ -136,6 +136,15 @@ void ConnectionWorker::readHeader()
 					return;
 				}
 
+				if (m_packet_waited_len >= MAX_ALLOWED_PACKET_SIZE) {
+					errorstream << "Packet waited length is too big ("
+						<< m_packet_waited_len << " > " << MAX_ALLOWED_PACKET_SIZE
+						<< ". Disconnecting from " << m_socket.remote_endpoint()
+						<< std::endl;
+					disconnect();
+					return;
+				}
+
 				if (m_packet_waited_len > U16_MAX)
 					errorstream << "Huge packet awaited, size: " << m_packet_waited_len << std::endl;
 				m_read_cursor = 0;
@@ -145,9 +154,9 @@ void ConnectionWorker::readHeader()
 
 				readBody();
 			} else {
-				errorstream << "Failed to read packet header";
+				errorstream << "Failed to read packet header from ";
 				try {
-					errorstream << " from " << m_socket.remote_endpoint();
+					errorstream << m_socket.remote_endpoint();
 				} catch (std::exception &) {
 					errorstream << "peer";
 				}

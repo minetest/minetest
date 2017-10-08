@@ -74,6 +74,8 @@ protected:
 
 	static const uint8_t HEADER_LEN = 4;
 	static const uint8_t UDP_HEADER_LEN = 13;
+	// 100MB is the maximum allowed packet size
+	static constexpr const uint32_t MAX_ALLOWED_PACKET_SIZE = 100 * 1024 * 1024;
 
 	asio::io_service &m_io_service;
 

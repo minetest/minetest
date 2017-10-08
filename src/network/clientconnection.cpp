@@ -162,6 +162,7 @@ void ClientConnection::setSessionId(session_t session_id)
 
 	udp::resolver resolver(m_io_service);
 
+#if defined(_WIN32)
 	// On Windows if remote endpoint is IPv4, we have a problem with UDP IPv6 opened
 	// socket. Close it and re-open it in V4 mode
 	if (m_socket.remote_endpoint().address().is_v4()
@@ -169,6 +170,7 @@ void ClientConnection::setSessionId(session_t session_id)
 		m_udp_socket.close();
 		m_udp_socket.open(udp::v4());
 	}
+#endif
 
 	m_udp_endpoint = udp::endpoint(
 		m_socket.remote_endpoint().address(),
