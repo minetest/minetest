@@ -60,7 +60,8 @@ void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 	}
 }
 
-LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env) {
+LuaEntitySAO *getAttachedObject(PlayerSAO *sao, ServerEnvironment *env)
+{
 	if (!sao->isAttached())
 		return nullptr;
 
