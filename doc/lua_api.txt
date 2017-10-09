@@ -1918,9 +1918,10 @@ examples.
 * if <close_on_enter> is false, pressing enter in the field will submit the form but not close it
 * defaults to true when not specified (ie: no tag for a field)
 
-#### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>;<scrollbar>]`
+#### `textarea[<X>,<Y>;<W>,<H>;<name>;<label>;<default>]`
 * Same as fields above, but with multi-line input
-* if <scrollbar> is true an auto vertical scrollbar is added
+* if the text overflows a vertical scrollbar is added
+* if the name is empty the textarea is readonly. The label is not displayed then
 
 #### `label[<X>,<Y>;<label>]`
 * `x` and `y` work as per field

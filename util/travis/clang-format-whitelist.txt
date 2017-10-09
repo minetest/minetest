@@ -81,6 +81,8 @@ src/gettext.cpp
 src/gettext.h
 src/guiChatConsole.cpp
 src/guiChatConsole.h
+src/guiEditBoxWithScrollbar.cpp
+src/guiEditBoxWithScrollbar.h
 src/guiEngine.cpp
 src/guiEngine.h
 src/guiPathSelectMenu.cpp
