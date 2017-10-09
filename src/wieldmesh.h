@@ -46,8 +46,8 @@ struct ItemPartColor
 
 	ItemPartColor() = default;
 
-	ItemPartColor(bool override, video::SColor color)
-	    : override_base(override), color(color)
+	ItemPartColor(bool override, video::SColor color) :
+			override_base(override), color(color)
 	{
 	}
 };
