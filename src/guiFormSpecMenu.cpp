@@ -1073,7 +1073,6 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 	std::string name = parts[2];
 	std::string label = parts[3];
 	std::string default_val = parts[4];
-	bool has_vscrollbar = parts.size() > 5 ? is_yes(parts[5]) : false;
 
 	MY_CHECKPOS(type,0);
 	MY_CHECKGEOM(type,1);
@@ -1118,27 +1117,25 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 
 	bool is_editable = !name.empty();
 
-	if (is_editable) {
+	if (is_editable)
 		spec.send = true;
-	}
 	
 		gui::IGUIEditBox *e;
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 	if (g_settings->getBool("freetype")) {
-		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.flabel.c_str(),
-			true, Environment, this, spec.fid, rect, is_editable, has_vscrollbar);
+		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+			true, Environment, this, spec.fid, rect, is_editable, true);
 		e->drop();
 	} else {
 #else
 	{
 #endif
-		e = new GUIEditBoxWithScrollBar(spec.flabel.c_str(), true,
-			Environment, this, spec.fid, rect, is_editable, has_vscrollbar);
+		e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
+			Environment, this, spec.fid, rect, is_editable, true);
 	}
 
-	if (is_editable && spec.fname == data->focused_fieldname) {
+	if (is_editable && spec.fname == data->focused_fieldname)
 		Environment->setFocus(e);
-	}
 
 	if (e) {
 		if (type == "textarea")
@@ -1157,13 +1154,12 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 			e->OnEvent(evt);
 		}
 	}
-	if (is_editable) {
-		if (label.length() >= 1) {
-			int font_height = g_fontengine->getTextHeight();
-			rect.UpperLeftCorner.Y -= font_height;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
-			addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
-		}
+
+	if (is_editable && !label.empty()) {
+		int font_height = g_fontengine->getTextHeight();
+		rect.UpperLeftCorner.Y -= font_height;
+		rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + font_height;
+		addStaticText(Environment, spec.flabel.c_str(), rect, false, true, this, 0);
 	}
 
 	if (parts.size() >= 6) {
