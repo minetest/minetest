@@ -219,6 +219,10 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (c_decos.empty())
 		return 0;
 
+	// Check for a negative place_offset_y causing placement below the voxelmanip
+	if (p.Y + 1 + place_offset_y < vm->m_area.MinEdge.Y)
+		return 0;
+
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
@@ -234,9 +238,10 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
+	vm->m_area.add_y(em, vi, place_offset_y);
+
 	for (int i = 0; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
-
 		content_t c = vm->m_data[vi].getContent();
 		if (c != CONTENT_AIR && c != CONTENT_IGNORE &&
 				!force_placement)
@@ -251,7 +256,8 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 int DecoSimple::getHeight()
 {
-	return (deco_height_max > 0) ? deco_height_max : deco_height;
+	return ((deco_height_max > 0) ? deco_height_max : deco_height)
+		+ place_offset_y;
 }
 
 
