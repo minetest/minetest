@@ -58,9 +58,11 @@ void NetworkPacket::putRawPacket(u8 *data, u32 datasize, u16 peer_id)
 	m_datasize = datasize - 2;
 	m_peer_id = peer_id;
 
+	m_data.resize(m_datasize);
+
 	// split command and datas
 	m_command = readU16(&data[0]);
-	m_data = std::vector<u8>(&data[2], &data[2 + m_datasize]);
+	memcpy(&m_data[0], &data[2], m_datasize);
 }
 
 const char* NetworkPacket::getString(u32 from_offset)
