@@ -206,9 +206,6 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 	u16 light_day = 0;
 	u16 light_night = 0;
 
-	static thread_local const bool edge_obstruction =
-		g_settings->getBool("smooth_lighting_edge_obstruction");
-
 	auto add_node = [&] (int i) -> const ContentFeatures& {
 		MapNode n = data->m_vmanip.getNodeNoExNoEmerge(p + dirs[i]);
 		const ContentFeatures &f = ndef->get(n);
@@ -224,39 +221,35 @@ static u16 getSmoothLightCombined(const v3s16 &p,
 		}
 		return f;
 	};
-	if (edge_obstruction) {
-		if (node_solid) {
-			ambient_occlusion = 3;
-			bool corner_obstructed = true;
-			for (int i = 0; i < 2; ++i) {
-				if (add_node(i).light_propagates)
-					corner_obstructed = false;
-			}
-			add_node(2);
-			add_node(3);
-			if (corner_obstructed)
-				ambient_occlusion++;
-			else
-				add_node(4);
-		} else {
-			std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
-			add_node(0);
-			bool opaque1 = !add_node(1).light_propagates;
-			bool opaque2 = !add_node(2).light_propagates;
-			bool opaque3 = !add_node(3).light_propagates;
-			obstructed[0] = opaque1 && opaque2;
-			obstructed[1] = opaque1 && opaque3;
-			obstructed[2] = opaque2 && opaque3;
-			for (int k = 0; k < 4; ++k) {
-				if (obstructed[k])
-					ambient_occlusion++;
-				else if (add_node(k + 4).light_propagates)
-					obstructed[3] = false;
-			}
+
+	if (node_solid) {
+		ambient_occlusion = 3;
+		bool corner_obstructed = true;
+		for (int i = 0; i < 2; ++i) {
+			if (add_node(i).light_propagates)
+				corner_obstructed = false;
 		}
+		add_node(2);
+		add_node(3);
+		if (corner_obstructed)
+			ambient_occlusion++;
+		else
+			add_node(4);
 	} else {
-		for (int i = 0; i < 8; ++i)
-			add_node(i);
+		std::array<bool, 4> obstructed = {{ 1, 1, 1, 1 }};
+		add_node(0);
+		bool opaque1 = !add_node(1).light_propagates;
+		bool opaque2 = !add_node(2).light_propagates;
+		bool opaque3 = !add_node(3).light_propagates;
+		obstructed[0] = opaque1 && opaque2;
+		obstructed[1] = opaque1 && opaque3;
+		obstructed[2] = opaque2 && opaque3;
+		for (int k = 0; k < 4; ++k) {
+			if (obstructed[k])
+				ambient_occlusion++;
+			else if (add_node(k + 4).light_propagates)
+				obstructed[3] = false;
+		}
 	}
 
 	if (light_count == 0) {
