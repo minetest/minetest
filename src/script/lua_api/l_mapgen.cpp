@@ -906,12 +906,13 @@ int ModApiMapgen::l_register_decoration(lua_State *L)
 		return 0;
 	}
 
-	deco->name       = getstringfield_default(L, index, "name", "");
-	deco->fill_ratio = getfloatfield_default(L, index, "fill_ratio", 0.02);
-	deco->y_min      = getintfield_default(L, index, "y_min", -31000);
-	deco->y_max      = getintfield_default(L, index, "y_max", 31000);
-	deco->nspawnby   = getintfield_default(L, index, "num_spawn_by", -1);
-	deco->sidelen    = getintfield_default(L, index, "sidelen", 8);
+	deco->name           = getstringfield_default(L, index, "name", "");
+	deco->fill_ratio     = getfloatfield_default(L, index, "fill_ratio", 0.02);
+	deco->y_min          = getintfield_default(L, index, "y_min", -31000);
+	deco->y_max          = getintfield_default(L, index, "y_max", 31000);
+	deco->nspawnby       = getintfield_default(L, index, "num_spawn_by", -1);
+	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
+	deco->sidelen        = getintfield_default(L, index, "sidelen", 8);
 	if (deco->sidelen <= 0) {
 		errorstream << "register_decoration: sidelen must be "
 			"greater than 0" << std::endl;
@@ -1023,8 +1024,6 @@ bool read_deco_schematic(lua_State *L, SchematicManager *schemmgr, DecoSchematic
 
 	deco->rotation = (Rotation)getenumfield(L, index, "rotation",
 		ModApiMapgen::es_Rotation, ROTATE_0);
-
-	deco->place_offset_y = getintfield_default(L, index, "place_offset_y", 0);
 
 	StringMap replace_names;
 	lua_getfield(L, index, "replacements");

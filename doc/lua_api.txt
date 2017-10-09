@@ -4814,20 +4814,19 @@ Definition tables
         y_min = -31000
         y_max = 31000
     --  ^ Lower and upper limits for decoration.
-    --  ^ This parameter refers to the `y` position of the decoration base, so
-    --    the actual maximum height would be `height_max + size.Y`.
+    --  ^ These parameters refer to the Y co-ordinate of the 'place_on' node.
         spawn_by = "default:water",
     --  ^ Node (or list of nodes) that the decoration only spawns next to.
     --  ^ Checks two horizontal planes of neighbouring nodes (including diagonal neighbours),
-    --  ^ one plane at Y = surface and one plane at Y = surface = + 1.
+    --  ^ one plane level with the 'place_on' node and a plane one node above that.
         num_spawn_by = 1,
     --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
     --  ^ If absent or -1, decorations occur next to any nodes.
         flags = "liquid_surface, force_placement",
     --  ^ Flags for all decoration types.
-    --  ^ "liquid_surface": Instead of placement on the highest solid surface
-    --  ^ in a mapchunk column, placement is on the highest liquid surface.
-    --  ^ Placement is disabled if solid nodes are found above the liquid surface.
+    --  ^ "liquid_surface": Instead of placement on the highest solid surface in
+    --  ^ a mapchunk column, placement is on the highest liquid surface. Placement
+    --  ^ is disabled if solid nodes are found above the liquid surface.
     --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced by the decoration.
 
         ----- Simple-type parameters
@@ -4835,17 +4834,23 @@ Definition tables
     --  ^ The node name used as the decoration.
     --  ^ If instead a list of strings, a randomly selected node from the list is placed as the decoration.
         height = 1,
-    --  ^ Number of nodes high the decoration is made.
-    --  ^ If height_max is not 0, this is the lower bound of the randomly selected height.
+    --  ^ Decoration height in nodes.
+    --  ^ If height_max is not 0, this is the lower limit of a randomly selected height.
         height_max = 0,
-    --  ^ Number of nodes the decoration can be at maximum.
+    --  ^ Upper limit of the randomly selected height.
     --  ^ If absent, the parameter 'height' is used as a constant.
         param2 = 0,
-    --  ^ Param2 value of placed decoration node.
-    --  ^ If param2_max is not 0, this is the lower bound of the randomly selected param2.
+    --  ^ Param2 value of decoration nodes.
+    --  ^ If param2_max is not 0, this is the lower limit of a randomly selected param2.
         param2_max = 0,
-    --  ^ Upper bound of the randomly selected param2.
+    --  ^ Upper limit of the randomly selected param2.
     --  ^ If absent, the parameter 'param2' is used as a constant.
+        place_offset_y = 0,
+    --  ^ Y offset of the decoration base node relative to the standard
+    --  ^ base node position for simple decorations.
+    --  ^ Can be positive or negative. Default is 0.
+    --  ^ Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
+    --  ^ to the 'place_on' node.
 
         ----- Schematic-type parameters
         schematic = "foobar.mts",
