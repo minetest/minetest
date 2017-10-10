@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <asio/ip/tcp.hpp>
 #include <asio/ip/udp.hpp>
 #include <utility>
+#include "threading/semaphore.h"
 #include "threading/thread.h"
 #include "irrlichttypes.h"
 #include "connection.h"
@@ -117,11 +118,18 @@ public:
 	{
 	}
 
+	void stop()
+	{
+		Thread::stop();
+		m_sem.post();
+	}
+
 protected:
 	void *run();
 
 private:
 	ClientConnection *m_client_connection;
+	Semaphore m_sem;
 };
 
 class ClientConnectionThread : public Thread

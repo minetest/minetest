@@ -41,8 +41,8 @@ ClientConnection::ClientConnection(asio::io_service &io_service) :
 
 ClientConnection::~ClientConnection()
 {
-	// Kill the thread, this permits to bypass the thread sleep time
-	m_udp_ping_thread->kill();
+	m_udp_ping_thread->stop();
+	m_udp_ping_thread->wait();
 }
 
 bool ClientConnection::connect(const std::string &addr, u16 port)
@@ -330,9 +330,10 @@ void *ClientConnectionThread::run()
 void* ClientUDPPingThread::run()
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 	while (!stopRequested()) {
 		m_client_connection->sendUDPPing();
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+		m_sem.wait(5 * 1000);
 	}
 
 	return nullptr;
