@@ -56,8 +56,8 @@ void ServerSession::disconnect()
 	m_io_service.post([this]() {
 		// Close socket and silently ignore if it's already closed
 		try {
-			if (m_socket.is_open())
-				m_socket.close();
+			m_socket.shutdown(m_socket.shutdown_both);
+			m_socket.close();
 		} catch (std::exception &e) {}
 	});
 
