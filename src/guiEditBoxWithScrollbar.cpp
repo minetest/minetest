@@ -131,7 +131,7 @@ video::SColor GUIEditBoxWithScrollBar::getOverrideColor() const
 //! Turns the border on or off
 void GUIEditBoxWithScrollBar::setDrawBorder(bool border)
 {
-	border = border;
+	m_border = border;
 }
 
 //! Sets whether to draw the background
@@ -257,7 +257,7 @@ bool GUIEditBoxWithScrollBar::processKey(const SEvent& event)
 	if (!m_writable) {
 		return false;
 	}
-	
+
 	if (!event.KeyInput.PressedDown)
 		return false;
 
@@ -791,7 +791,7 @@ void GUIEditBoxWithScrollBar::draw()
 					} else {
 						mend = font->getDimension(txt_line->c_str()).Width;
 					}
-						
+
 
 					m_current_text_rect.UpperLeftCorner.X += mbegin;
 					m_current_text_rect.LowerRightCorner.X = m_current_text_rect.UpperLeftCorner.X + mend - mbegin;
@@ -1041,7 +1041,7 @@ void GUIEditBoxWithScrollBar::breakText()
 		bool line_break = false;
 
 		if (c == L'\r') { // Mac or Windows breaks
-		
+
 			line_break = true;
 			c = 0;
 			if (Text[i + 1] == L'\n') { // Windows breaks
@@ -1433,7 +1433,7 @@ void GUIEditBoxWithScrollBar::updateVScrollBar()
 	}
 
 	// check if a vertical scrollbar is needed ?
-	if (getTextDimension().Height > m_frame_rect.getHeight()) {
+	if (getTextDimension().Height > (u32) m_frame_rect.getHeight()) {
 		m_frame_rect.LowerRightCorner.X -= m_scrollbar_width;
 
 		s32 scrollymax = getTextDimension().Height - m_frame_rect.getHeight();

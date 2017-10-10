@@ -1517,7 +1517,7 @@ void intlGUIEditBox::updateVScrollBar()
 	}
 
 	// check if a vertical scrollbar is needed ?
-	if (getTextDimension().Height > FrameRect.getHeight()) {
+	if (getTextDimension().Height > (u32) FrameRect.getHeight()) {
 		s32 scrollymax = getTextDimension().Height - FrameRect.getHeight();
 		if (scrollymax != m_vscrollbar->getMax()) {
 			m_vscrollbar->setMax(scrollymax);
