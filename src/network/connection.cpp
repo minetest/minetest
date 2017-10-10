@@ -32,10 +32,11 @@ void ConnectionWorker::enqueueForSending(NetworkPacket *pkt, bool reliable)
 	write_buf->reliable = reliable;
 
 	if (reliable) {
-		write_buf->data.resize(pkt->getSize() + 2 + 4);
-		writeU32(&(write_buf->data)[0], pkt->getSize() + 2); // total payload size
-		writeU16(&(write_buf->data)[4], pkt->getCommand()); // command
-		memcpy(&(write_buf->data)[6], pkt->getU8Ptr(0), pkt->getSize()); // payload
+		write_buf->data.resize(pkt->getSize() + 2 + 4 + 4);
+		writeU32(&(write_buf->data)[0], PROTOCOL_ID);
+		writeU32(&(write_buf->data)[4], pkt->getSize() + 2); // total payload size
+		writeU16(&(write_buf->data)[8], pkt->getCommand()); // command
+		memcpy(&(write_buf->data)[10], pkt->getU8Ptr(0), pkt->getSize()); // payload
 	}
 	else {
 		// Session id not already inited, ignore sending
@@ -134,7 +135,15 @@ void ConnectionWorker::readHeader()
 					return;
 				}
 
-				m_packet_waited_len = readU32(&m_hdr_buf[0]);
+				u32 protocol_id = readU32(&m_hdr_buf[0]);
+				if (protocol_id != PROTOCOL_ID) {
+					verbosestream << "Invalid protocol ID in header. Disconnecting "
+						<< m_socket.remote_endpoint() << std::endl;
+					disconnect();
+					return;
+				}
+
+				m_packet_waited_len = readU32(&m_hdr_buf[4]);
 				if (m_packet_waited_len == 0) {
 					errorstream << "Packet waited length is zero. Disconnecting "
 						<< m_socket.remote_endpoint() << std::endl;
