@@ -168,6 +168,7 @@ void ClientConnection::setSessionId(session_t session_id)
 		&& m_udp_socket.local_endpoint().address().is_v6()) {
 		m_udp_socket.close();
 		m_udp_socket.open(udp::v4());
+		m_udp_socket.bind(udp::endpoint(udp::v4(), 0));
 		m_udp_socket.set_option(asio::socket_base::reuse_address(true));
 	}
 #endif
