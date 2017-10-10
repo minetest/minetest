@@ -25,8 +25,18 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace network
 {
+
+// See https://tools.ietf.org/html/rfc1122 page 55
+// it's 576 without UDP datagram header and IP header
+#define MAX_UDP_PAYLOAD_SAFE_SIZE 508
+
 void ConnectionWorker::enqueueForSending(NetworkPacket *pkt, bool reliable)
 {
+	// If packet is greater than 508 byte, it's not safe to send it as it
+	// fallback to reliable to ensure integrity
+	if (!reliable && pkt->getSize() + 2 + 4 + UDP_HEADER_LEN > MAX_UDP_PAYLOAD_SAFE_SIZE)
+		reliable = true;
+
 	// Write packet to buffer
 	SendBufferPtr write_buf = std::make_shared<SendBuffer>();
 	write_buf->reliable = reliable;
@@ -66,20 +76,20 @@ void ConnectionWorker::enqueueForSending(NetworkPacket *pkt, bool reliable)
 
 void ConnectionWorker::sendPacket()
 {
+	std::unique_lock<std::recursive_mutex> lock(m_send_queue_mtx);
+
 	// Socket not opened, ignore sending packets
 	if (!m_socket.is_open()) {
+		m_send_queue.pop_front();
 		notifySocketClosed();
 		return;
 	}
 
-	std::unique_lock<std::recursive_mutex> lock(m_send_queue_mtx);
-
 	SendBufferPtr sendBuf = m_send_queue.front();
-	bool reliable = sendBuf->reliable;
 
 	auto self(shared_from_this());
 
-	auto async_write_callback = [this, self, reliable] (std::error_code ec, std::size_t) {
+	auto async_write_callback = [this, self, sendBuf] (std::error_code ec, std::size_t) {
 		std::unique_lock<std::recursive_mutex> lock_(m_send_queue_mtx);
 		m_send_queue.pop_front();
 
@@ -88,7 +98,7 @@ void ConnectionWorker::sendPacket()
 				sendPacket();
 			}
 		} else {
-			errorstream << "Failed to send " << (!reliable ? "un": "")
+			errorstream << "Failed to send " << (!sendBuf->reliable ? "un": "")
 				<< "reliable packet";
 
 			if (m_socket.is_open()) {
@@ -145,14 +155,14 @@ void ConnectionWorker::readHeader()
 
 				m_packet_waited_len = readU32(&m_hdr_buf[4]);
 				if (m_packet_waited_len == 0) {
-					errorstream << "Packet waited length is zero. Disconnecting "
+					verbosestream << "Packet waited length is zero. Disconnecting "
 						<< m_socket.remote_endpoint() << std::endl;
 					disconnect();
 					return;
 				}
 
 				if (m_packet_waited_len >= MAX_ALLOWED_PACKET_SIZE) {
-					errorstream << "Packet waited length is too big ("
+					verbosestream << "Packet waited length is too big ("
 						<< m_packet_waited_len << " > " << MAX_ALLOWED_PACKET_SIZE
 						<< ". Disconnecting from " << m_socket.remote_endpoint()
 						<< std::endl;
@@ -160,8 +170,6 @@ void ConnectionWorker::readHeader()
 					return;
 				}
 
-				if (m_packet_waited_len > U16_MAX)
-					errorstream << "Huge packet awaited, size: " << m_packet_waited_len << std::endl;
 				m_read_cursor = 0;
 
 				// New header, prepare packet buffer
@@ -169,14 +177,14 @@ void ConnectionWorker::readHeader()
 
 				readBody();
 			} else {
-				errorstream << "Failed to read packet header from ";
+				infostream << "Failed to read packet header from ";
 				try {
-					errorstream << m_socket.remote_endpoint();
+					infostream << m_socket.remote_endpoint();
 				} catch (std::exception &) {
-					errorstream << "peer";
+					infostream << "peer";
 				}
 
-				errorstream << ", disconnecting user. Error: " << ec.message()
+				infostream << ", disconnecting user. Error: " << ec.message()
 					<< std::endl;
 				disconnect();
 			}
@@ -221,13 +229,13 @@ void ConnectionWorker::readBody()
 				}
 
 			} else {
-				errorstream << "Failed to read packet body from ";
+				infostream << "Failed to read packet body from ";
 				try {
-					errorstream << m_socket.remote_endpoint();
+					infostream << m_socket.remote_endpoint();
 				} catch (std::exception &) {
-					errorstream << "peer";
+					infostream << "peer";
 				}
-				errorstream << ", disconnecting user. Error: " << ec.message()
+				infostream << ", disconnecting user. Error: " << ec.message()
 					<< std::endl;
 				disconnect();
 			}

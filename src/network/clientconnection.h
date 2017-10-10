@@ -113,8 +113,8 @@ private:
 class ClientUDPPingThread : public Thread
 {
 public:
-	ClientUDPPingThread(ClientConnection *conn)
-	    : Thread("ClientUDPPingThread"), m_client_connection(conn)
+	ClientUDPPingThread(ClientConnection *conn) :
+			Thread("ClientUDPPingThread"), m_client_connection(conn)
 	{
 	}
 
@@ -141,6 +141,7 @@ public:
 	std::shared_ptr<ClientConnection> get_connection() { return m_client_connection; }
 
 	void stop();
+
 protected:
 	void *run();
 

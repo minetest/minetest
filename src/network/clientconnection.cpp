@@ -196,12 +196,13 @@ void ClientConnection::sendUDPPing()
 	if (m_session_id == 0 || !m_udp_endpoint_set)
 		return;
 
-	if (m_udp_sendbuf.size() != UDP_HEADER_LEN)
-		m_udp_sendbuf.resize(UDP_HEADER_LEN);
+	if (m_udp_sendbuf.size() != UDP_HEADER_LEN + sizeof(s64))
+		m_udp_sendbuf.resize(UDP_HEADER_LEN + sizeof(s64));
 
 	writeU32(&m_udp_sendbuf[0], PROTOCOL_ID);
 	writeU8(&m_udp_sendbuf[4], UDPCMD_PING);
 	writeU64(&m_udp_sendbuf[5], m_session_id);
+	writeS64(&m_udp_sendbuf[13], std::time(nullptr));
 
 	// Send UDP ping asynchronously
 	auto self(shared_from_this());
@@ -209,7 +210,7 @@ void ClientConnection::sendUDPPing()
 		m_udp_endpoint, [this, self] (std::error_code ec, std::size_t /*length*/) {
 			// If error happen, disconnect user
 			if (ec) {
-				errorstream << "Failed to send UDP packet to "
+				infostream << "Failed to send UDP packet to "
 					<< m_udp_endpoint << ". Error: " << ec.message() << std::endl;
 				disconnect();
 			}
@@ -226,9 +227,13 @@ void ClientConnection::receiveUDPData()
 		m_udp_sender_endpoint, [this, self] (std::error_code ec, std::size_t recv_size) {
 			if (!ec) {
 				// If UDP header is not 13 bytes long, ignore
-				if (recv_size < UDP_HEADER_LEN) {
+				if (recv_size < UDP_HEADER_LEN)
 					return;
-				}
+
+				// if session is unknown ignore incoming packets
+				// they are rogue packets
+				if (m_session_id == 0 || !m_udp_endpoint_set)
+					return;
 
 				u32 protocol_id = readU32(&m_udp_databuffer[0]);
 
@@ -241,31 +246,46 @@ void ClientConnection::receiveUDPData()
 
 				receiveUDPData();
 			} else {
-				errorstream << "Failed to receive UDP packet from ";
+				infostream << "Failed to receive UDP packet from ";
 				try {
-					errorstream << m_udp_socket.remote_endpoint();
+					infostream << m_udp_socket.remote_endpoint();
 				} catch (std::exception &) {
-					errorstream << "peer";
+					infostream << "peer";
 				}
-				errorstream << ". Error: " << ec.message() << std::endl;
+				infostream << ". Error: " << ec.message() << std::endl;
 			}
 		}
 	);
 }
 
+static asio::ip::address ip4toip6mapped(const std::string &ip)
+{
+	asio::ip::address a = asio::ip::address::from_string(ip);
+	if (a.is_v4())
+		return asio::ip::address_v6::v4_mapped(a.to_v4());
+
+	return a;
+}
+
 void ClientConnection::readUDPBody(std::size_t size)
 {
 	u8 command = readU8(&m_udp_databuffer[4]);
-	//u64 session_id = readU64(&m_udp_databuffer[5]);
+	u64 session_id = readU64(&m_udp_databuffer[5]);
 
-	//asio::ip::address remote_addr = m_socket.remote_endpoint().address();
+	asio::ip::address remote_addr = m_udp_endpoint.address();
+	asio::ip::address incoming_addr = m_udp_sender_endpoint.address();
 
-//	if (m_udp_sender_endpoint.address() != remote_addr) {
-//		errorstream << m_udp_sender_endpoint.address()
-//			<< " tries to spoof session ID " << session_id << " attached with IP "
-//			<< remote_addr << "!!" << std::endl;
-//		return;
-//	}
+	// If incoming address is IPv6 and we talk to IPv4, try to convert remote to v6
+	// because incoming 127.0.0.1 is represented as :ffff:127.0.0.1 in singleplayer
+	if (incoming_addr.is_v6() && remote_addr.is_v4()) {
+		remote_addr = ip4toip6mapped(remote_addr.to_string());
+	}
+
+	if (incoming_addr != remote_addr) {
+		errorstream << remote_addr << " tries to spoof session ID " << session_id
+			<< " attached with IP " << remote_addr << "!!" << std::endl;
+		return;
+	}
 
 	switch (command) {
 		case UDPCMD_DATA: {

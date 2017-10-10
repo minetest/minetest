@@ -44,9 +44,9 @@ class ServerSession : public ConnectionWorker
 
 public:
 	ServerSession(asio::io_service &io_service, tcp::socket socket,
-			std::shared_ptr<ServerConnection> serverCon)
-	    : ConnectionWorker(io_service, std::move(socket)),
-	      m_server_con(serverCon)
+			std::shared_ptr<ServerConnection> serverCon) :
+			ConnectionWorker(io_service, std::move(socket)),
+			m_server_con(serverCon)
 	{
 	}
 

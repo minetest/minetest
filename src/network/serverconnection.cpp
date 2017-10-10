@@ -114,7 +114,7 @@ void ServerConnection::do_accept()
 				m_tcp_socket.set_option(asio::socket_base::reuse_address(true));
 				m_tcp_socket.set_option(asio::socket_base::keep_alive(true));
 			} catch (std::exception &e) {
-				errorstream << "Failed to set TCP options for peer, ignoring connection."
+				infostream << "Failed to set TCP options for peer, ignoring connection."
 					<< std::endl;
 
 				// Return in the accept "loop"
@@ -126,7 +126,7 @@ void ServerConnection::do_accept()
 				std::make_shared<ServerSession>(m_io_service, std::move(m_tcp_socket), self);
 
 			if (!registerSession(serverSession)) {
-				errorstream << "Failed to register session, disconnecting user."
+				warningstream << "Failed to register session, disconnecting user."
 					<< std::endl;
 				serverSession->disconnect();
 				return;
@@ -165,13 +165,13 @@ void ServerConnection::receiveUDPData()
 
 				receiveUDPData();
 			} else {
-				errorstream << "Failed to receive UDP packet from ";
+				infostream << "Failed to receive UDP packet from ";
 				try {
-					errorstream << m_udp_socket.remote_endpoint();
+					infostream << m_udp_socket.remote_endpoint();
 				} catch (std::exception &) {
-					errorstream << "peer";
+					infostream << "peer";
 				}
-				errorstream << ". Error: " << ec.message() << std::endl;
+				infostream << ". Error: " << ec.message() << std::endl;
 			}
 		}
 	);
