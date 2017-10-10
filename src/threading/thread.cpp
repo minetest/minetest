@@ -103,8 +103,8 @@ Thread::~Thread()
 	kill();
 
 	// Make sure start finished mutex is unlocked before it's destroyed
-	m_start_finished_mutex.try_lock();
-	m_start_finished_mutex.unlock();
+	if (m_start_finished_mutex.try_lock())
+		m_start_finished_mutex.unlock();
 
 }
 
@@ -267,6 +267,10 @@ DWORD WINAPI Thread::threadProc(LPVOID param)
 	thr->m_retval = thr->run();
 
 	thr->m_running = false;
+	// Unlock m_start_finished_mutex to prevent data race condition on Windows.
+	// On Windows with VS2017 build TerminateThread is called and this mutex is not
+	// released. We try to unlock it from caller thread and it's refused by system.
+	thr->m_start_finished_mutex.unlock();
 	g_logger.deregisterThread();
 
 	// 0 is returned here to avoid an unnecessary ifdef clause
