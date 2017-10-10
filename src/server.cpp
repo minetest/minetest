@@ -1884,6 +1884,7 @@ void Server::SendKnockBack(const u16 peer_id, const v3f &direction, const f32 ti
 			<< " time_knockback=" << time_knockback
 			<< std::endl;
 
+	// Todo: use active_block_range
 	static const s16 active_block_range = g_settings->getS16("active_block_range");
 	SendPacketInRange(sao->getBasePosition(), 2000, &pkt);
 }

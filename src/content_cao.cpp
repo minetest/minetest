@@ -830,7 +830,8 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	} else {
 		v3f lastpos = pos_translator.vect_show;
 
-		if(m_prop.physical) {
+		if (m_prop.physical)
+		{
 			if (m_knockback_timer > 0.0f) {
 				m_knockback_timer -= dtime;
 				// If the player is dead, stop the movement.
@@ -839,7 +840,7 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 				}
 				// If the timer is finished go down the player.
 				else if (m_knockback_timer <= 0.0f) {
-					m_velocity = v3f(0, -m_env->getLocalPlayer()->movement_gravity * BS, 0);
+					m_velocity = v3f(m_velocity.X, -m_env->getLocalPlayer()->movement_gravity, m_velocity.Z);
 				}
 			}
 

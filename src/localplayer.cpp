@@ -467,6 +467,10 @@ void LocalPlayer::move(f32 dtime, Environment *env, f32 pos_max_d)
 
 void LocalPlayer::applyControl(float dtime, Environment *env)
 {
+	if (m_knockback_timer > 0.0f) {
+		m_knockback_timer -= dtime;
+		return;
+	}
 	// Clear stuff
 	swimming_vertical = false;
 
@@ -684,9 +688,10 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	float slip_factor = getSlipFactor(env, speedH);
 	// Accelerate to target speed with maximum increment
 	accelerateHorizontal(speedH * physics_override_speed,
-			incH * physics_override_speed * slip_factor);
+						 incH * physics_override_speed * slip_factor);
 	accelerateVertical(speedV * physics_override_speed,
-			incV * physics_override_speed);
+					   incV * physics_override_speed);
+	}
 }
 
 v3s16 LocalPlayer::getStandingNodePos()
@@ -724,6 +729,7 @@ v3f LocalPlayer::getEyeOffset() const
 
 void LocalPlayer::knockback(const v3f &direction, f32 time_knockback)
 {
+	m_knockback_timer = time_knockback;
 	accelerateHorizontal(direction, 300);
 	accelerateVertical(direction, 300);
 }

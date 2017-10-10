@@ -638,7 +638,6 @@ enum ToClientCommand
 	*/
 
 	TOCLIENT_SRP_BYTES_S_B = 0x60,
-
 	/*
 		Belonging to AUTH_MECHANISM_SRP.
 
