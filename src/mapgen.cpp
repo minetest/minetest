@@ -299,6 +299,41 @@ void Mapgen::updateHeightmap(v3s16 nmin, v3s16 nmax)
 	}
 }
 
+
+void Mapgen::getSurfaces(v2s16 p2d, s16 ymin, s16 ymax,
+	s16 *floors, s16 *ceilings, u16 *num_floors, u16 *num_ceilings)
+{
+	u16 floor_i = 0;
+	u16 ceiling_i = 0;
+	const v3s16 &em = vm->m_area.getExtent();
+
+	bool is_walkable = false;
+	u32 vi = vm->m_area.index(p2d.X, ymax, p2d.Y);
+	MapNode mn_max = vm->m_data[vi];
+	bool walkable_above = ndef->get(mn_max).walkable;
+	vm->m_area.add_y(em, vi, -1);
+
+	for (s16 y = ymax - 1; y >= ymin; y--) {
+		MapNode mn = vm->m_data[vi];
+		is_walkable = ndef->get(mn).walkable;
+
+		if (is_walkable && !walkable_above) {
+			floors[floor_i] = y;
+			floor_i++;
+		} else if (!is_walkable && walkable_above) {
+			ceilings[ceiling_i] = y + 1;
+			ceiling_i++;
+		}
+
+		vm->m_area.add_y(em, vi, -1);
+		walkable_above = is_walkable;
+	}
+
+	*num_floors = floor_i;
+	*num_ceilings = ceiling_i;
+}
+
+
 inline bool Mapgen::isLiquidHorizontallyFlowable(u32 vi, v3s16 em)
 {
 	u32 vi_neg_x = vi;

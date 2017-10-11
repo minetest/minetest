@@ -4849,12 +4849,22 @@ Definition tables
         num_spawn_by = 1,
     --  ^ Number of spawn_by nodes that must be surrounding the decoration position to occur.
     --  ^ If absent or -1, decorations occur next to any nodes.
-        flags = "liquid_surface, force_placement",
+        flags = "liquid_surface, force_placement, all_floors, all_ceilings",
     --  ^ Flags for all decoration types.
-    --  ^ "liquid_surface": Instead of placement on the highest solid surface in
-    --  ^ a mapchunk column, placement is on the highest liquid surface. Placement
-    --  ^ is disabled if solid nodes are found above the liquid surface.
-    --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced by the decoration.
+    --  ^ "liquid_surface": Instead of placement on the highest solid surface
+    --  ^   in a mapchunk column, placement is on the highest liquid surface.
+    --  ^   Placement is disabled if solid nodes are found above the liquid
+    --  ^   surface.
+    --  ^ "force_placement": Nodes other than "air" and "ignore" are replaced
+    --  ^   by the decoration.
+    --  ^ "all_floors", "all_ceilings": Instead of placement on the highest
+    --  ^   surface in a mapchunk the decoration is placed on all floor and/or
+    --  ^   ceiling surfaces, for example in caves.
+    --  ^   Ceiling decorations act as an inversion of floor decorations so the
+    --  ^   effect of 'place_offset_y' is inverted.
+    --  ^   If a single decoration registration has both flags the floor and
+    --  ^   ceiling decorations will be aligned vertically and may sometimes
+    --  ^   meet to form a column.
 
         ----- Simple-type parameters
         decoration = "default:grass",
@@ -4873,9 +4883,10 @@ Definition tables
     --  ^ Upper limit of the randomly selected param2.
     --  ^ If absent, the parameter 'param2' is used as a constant.
         place_offset_y = 0,
-    --  ^ Y offset of the decoration base node relative to the standard
-    --  ^ base node position for simple decorations.
+    --  ^ Y offset of the decoration base node relative to the standard base
+    --  ^ node position.
     --  ^ Can be positive or negative. Default is 0.
+    --  ^ Effect is inverted for "all_ceilings" decorations.
     --  ^ Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
     --  ^ to the 'place_on' node.
 
@@ -4908,12 +4919,13 @@ Definition tables
         rotation = "90" -- rotate schematic 90 degrees on placement
     --  ^ Rotation can be "0", "90", "180", "270", or "random".
         place_offset_y = 0,
+    --  ^ If the flag 'place_center_y' is set this parameter is ignored.
     --  ^ Y offset of the schematic base node layer relative to the 'place_on'
     --  ^ node.
     --  ^ Can be positive or negative. Default is 0.
-    --  ^ If the flag 'place_center_y' is set this parameter is ignored.
-    --  ^ If absent or 0 the schematic base node layer will be placed level
-    --  ^ with the 'place_on' node.
+    --  ^ Effect is inverted for "all_ceilings" decorations.
+    --  ^ Ignored by 'y_min', 'y_max' and 'spawn_by' checks, which always refer
+    --  ^ to the 'place_on' node.
     }
 
 ### Chat command definition (`register_chatcommand`)

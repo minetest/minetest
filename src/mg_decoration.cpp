@@ -34,6 +34,8 @@ FlagDesc flagdesc_deco[] = {
 	{"place_center_z",  DECO_PLACE_CENTER_Z},
 	{"force_placement", DECO_FORCE_PLACEMENT},
 	{"liquid_surface",  DECO_LIQUID_SURFACE},
+	{"all_floors",      DECO_ALL_FLOORS},
+	{"all_ceilings",    DECO_ALL_CEILINGS},
 	{NULL,              0}
 };
 
@@ -169,33 +171,79 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 		for (u32 i = 0; i < deco_count; i++) {
 			s16 x = ps.range(p2d_min.X, p2d_max.X);
 			s16 z = ps.range(p2d_min.Y, p2d_max.Y);
-
 			int mapindex = carea_size * (z - nmin.Z) + (x - nmin.X);
 
-			s16 y = -MAX_MAP_GENERATION_LIMIT;
-			if (flags & DECO_LIQUID_SURFACE)
-				y = mg->findLiquidSurface(v2s16(x, z), nmin.Y, nmax.Y);
-			else if (mg->heightmap)
-				y = mg->heightmap[mapindex];
-			else
-				y = mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+			if ((flags & DECO_ALL_FLOORS) ||
+					(flags & DECO_ALL_CEILINGS)) {
+				// All-surfaces decorations
+				// Check biome of column
+				if (mg->biomemap && !biomes.empty()) {
+					std::unordered_set<u8>::const_iterator iter =
+						biomes.find(mg->biomemap[mapindex]);
+					if (iter == biomes.end())
+						continue;
+				}
 
-			if (y < y_min || y > y_max || y < nmin.Y || y > nmax.Y)
-				continue;
+				// Get all floors and ceilings in node column
+				u16 size = (nmax.Y - nmin.Y + 1) / 2;
+				s16 floors[size];
+				s16 ceilings[size];
+				u16 num_floors = 0;
+				u16 num_ceilings = 0;
 
-			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y)
-				continue;
+				mg->getSurfaces(v2s16(x, z), nmin.Y, nmax.Y,
+					floors, ceilings, &num_floors, &num_ceilings);
 
-			if (mg->biomemap && !biomes.empty()) {
-				std::unordered_set<u8>::const_iterator iter =
-					biomes.find(mg->biomemap[mapindex]);
-				if (iter == biomes.end())
+				if ((flags & DECO_ALL_FLOORS) && num_floors > 0) {
+					// Floor decorations
+					for (u16 fi = 0; fi < num_floors; fi++) {
+						s16 y = floors[fi];
+						if (y < y_min || y > y_max)
+							continue;
+
+						v3s16 pos(x, y, z);
+						if (generate(mg->vm, &ps, pos, false))
+							mg->gennotify.addEvent(
+									GENNOTIFY_DECORATION, pos, index);
+					}
+				}
+
+				if ((flags & DECO_ALL_CEILINGS) && num_ceilings > 0) {
+					// Ceiling decorations
+					for (u16 ci = 0; ci < num_ceilings; ci++) {
+						s16 y = ceilings[ci];
+						if (y < y_min || y > y_max)
+							continue;
+
+						v3s16 pos(x, y, z);
+						if (generate(mg->vm, &ps, pos, true))
+							mg->gennotify.addEvent(
+									GENNOTIFY_DECORATION, pos, index);
+					}
+				}
+			} else { // Heightmap decorations
+				s16 y = -MAX_MAP_GENERATION_LIMIT;
+				if (flags & DECO_LIQUID_SURFACE)
+					y = mg->findLiquidSurface(v2s16(x, z), nmin.Y, nmax.Y);
+				else if (mg->heightmap)
+					y = mg->heightmap[mapindex];
+				else
+					y = mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
+
+				if (y < y_min || y > y_max || y < nmin.Y || y > nmax.Y)
 					continue;
-			}
 
-			v3s16 pos(x, y, z);
-			if (generate(mg->vm, &ps, pos))
-				mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
+				if (mg->biomemap && !biomes.empty()) {
+					std::unordered_set<u8>::const_iterator iter =
+						biomes.find(mg->biomemap[mapindex]);
+					if (iter == biomes.end())
+						continue;
+				}
+
+				v3s16 pos(x, y, z);
+				if (generate(mg->vm, &ps, pos, false))
+					mg->gennotify.addEvent(GENNOTIFY_DECORATION, pos, index);
+			}
 		}
 	}
 
@@ -213,58 +261,79 @@ void DecoSimple::resolveNodeNames()
 }
 
 
-size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 {
 	// Don't bother if there aren't any decorations to place
 	if (c_decos.empty())
 		return 0;
 
-	// Check for a negative place_offset_y causing placement below the voxelmanip
-	if (p.Y + 1 + place_offset_y < vm->m_area.MinEdge.Y)
-		return 0;
-
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
-	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
+	// Check for placement outside the voxelmanip volume
+	if (ceiling) {
+		// Ceiling decorations
+		// 'place offset y' is inverted
+		if (p.Y - place_offset_y - std::max(deco_height, deco_height_max) <
+				vm->m_area.MinEdge.Y)
+			return 0;
 
+		if (p.Y - 1 - place_offset_y > vm->m_area.MaxEdge.Y)
+			return 0;
+
+	} else { // Heightmap and floor decorations
+		if (p.Y + place_offset_y + std::max(deco_height, deco_height_max) >
+				vm->m_area.MaxEdge.Y)
+			return 0;
+
+		if (p.Y + 1 + place_offset_y < vm->m_area.MinEdge.Y)
+			return 0;
+	}
+
+	content_t c_place = c_decos[pr->range(0, c_decos.size() - 1)];
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
-
 	u8 param2 = (deco_param2_max > 0) ?
 		pr->range(deco_param2, deco_param2_max) : deco_param2;
-
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
-	vm->m_area.add_y(em, vi, place_offset_y);
 
-	for (int i = 0; i < height; i++) {
-		vm->m_area.add_y(em, vi, 1);
-		content_t c = vm->m_data[vi].getContent();
-		if (c != CONTENT_AIR && c != CONTENT_IGNORE &&
-				!force_placement)
-			break;
+	if (ceiling) {
+		// Ceiling decorations
+		// 'place offset y' is inverted
+		vm->m_area.add_y(em, vi, -place_offset_y);
 
-		vm->m_data[vi] = MapNode(c_place, 0, param2);
+		for (int i = 0; i < height; i++) {
+			vm->m_area.add_y(em, vi, -1);
+			content_t c = vm->m_data[vi].getContent();
+			if (c != CONTENT_AIR && c != CONTENT_IGNORE && !force_placement)
+				break;
+
+			vm->m_data[vi] = MapNode(c_place, 0, param2);
+		}
+	} else { // Heightmap and floor decorations
+		vm->m_area.add_y(em, vi, place_offset_y);
+
+		for (int i = 0; i < height; i++) {
+			vm->m_area.add_y(em, vi, 1);
+			content_t c = vm->m_data[vi].getContent();
+			if (c != CONTENT_AIR && c != CONTENT_IGNORE && !force_placement)
+				break;
+
+			vm->m_data[vi] = MapNode(c_place, 0, param2);
+		}
 	}
 
 	return 1;
 }
 
 
-int DecoSimple::getHeight()
-{
-	return ((deco_height_max > 0) ? deco_height_max : deco_height)
-		+ place_offset_y;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
-size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
+size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p, bool ceiling)
 {
 	// Schematic could have been unloaded but not the decoration
 	// In this case generate() does nothing (but doesn't *fail*)
@@ -274,35 +343,35 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
+	if (flags & DECO_PLACE_CENTER_Y) {
+		p.Y -= (schematic->size.Y - 1) / 2;
+	} else {
+		// Only apply 'place offset y' if not 'deco place center y'
+		if (ceiling)
+			// Shift down so that schematic top layer is level with ceiling
+			// 'place offset y' is inverted
+			p.Y -= (place_offset_y + schematic->size.Y - 1);
+		else
+			p.Y += place_offset_y;
+	}
+
+	// Check schematic top and base are in voxelmanip
+	if (p.Y + schematic->size.Y - 1 > vm->m_area.MaxEdge.Y)
+		return 0;
+
+	if (p.Y < vm->m_area.MinEdge.Y)
+		return 0;
+
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X - 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z - 1) / 2;
 
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (schematic->size.Y - 1) / 2;
-	else
-		p.Y += place_offset_y;
-	// Check shifted schematic base is in voxelmanip
-	if (p.Y < vm->m_area.MinEdge.Y)
-		return 0;
-
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
-
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	schematic->blitToVManip(vm, p, rot, force_placement);
 
 	return 1;
-}
-
-
-int DecoSchematic::getHeight()
-{
-	// Account for a schematic being sunk into the ground by flag.
-	// When placed normally account for how a schematic is by default placed
-	// sunk 1 node into the ground or is vertically shifted by 'y_offset'.
-	return (flags & DECO_PLACE_CENTER_Y) ?
-		(schematic->size.Y - 1) / 2 : schematic->size.Y - 1 + place_offset_y;
 }
