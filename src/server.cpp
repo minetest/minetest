@@ -1283,8 +1283,8 @@ void Server::SendPacketInRange(const v3f &pos, u32 range, NetworkPacket *pkt)
 {
 	std::vector<u16> clients = m_clients.getClientIDs();
 
-	for (std::vector<u16>::iterator i = clients.begin(); i != clients.end(); ++i) {
-		RemotePlayer *player = m_env->getPlayer(*i);
+	for (const session_t client_id : clients) {
+		RemotePlayer *player = m_env->getPlayer(client_id);
 		assert(player);
 
 		PlayerSAO *sao = player->getPlayerSAO();
@@ -1293,7 +1293,7 @@ void Server::SendPacketInRange(const v3f &pos, u32 range, NetworkPacket *pkt)
 		if (sao->getBasePosition().getDistanceFrom(pos) > range)
 			continue;
 
-		m_clients.send(*i, 0, pkt, true);
+		m_clients.send(client_id, 0, pkt, true);
 	}
 }
 
@@ -1867,7 +1867,7 @@ void Server::SendMovePlayer(session_t peer_id)
 	Send(&pkt);
 }
 
-void Server::SendKnockBack(const u16 peer_id, const v3f &direction, const f32 time_knockback,
+void Server::SendKnockBack(const session_t peer_id, const v3f &direction, const f32 time_knockback,
 		u16 id_player_knockback)
 {
 	RemotePlayer *player = m_env->getPlayer(peer_id);
@@ -1886,7 +1886,7 @@ void Server::SendKnockBack(const u16 peer_id, const v3f &direction, const f32 ti
 
 	// Todo: use active_block_range
 	static const s16 active_block_range = g_settings->getS16("active_block_range");
-	SendPacketInRange(sao->getBasePosition(), 2000, &pkt);
+	SendPacketInRange(sao->getBasePosition(), 9999999999999, &pkt);
 }
 
 void Server::SendLocalPlayerAnimations(session_t peer_id, v2s32 animation_frames[4],

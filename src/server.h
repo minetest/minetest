@@ -337,7 +337,7 @@ public:
 	void SendPlayerBreath(PlayerSAO *sao);
 	void SendInventory(PlayerSAO* playerSAO);
 	void SendMovePlayer(session_t peer_id);
-	void SendKnockBack(const u16 peer_id, const v3f &direction, const f32 time_knockback, u16 id_player_knockback);
+	void SendKnockBack(const session_t peer_id, const v3f &direction, const f32 time_knockback, u16 id_player_knockback);
 
 	virtual bool registerModStorage(ModMetadata *storage);
 	virtual void unregisterModStorage(const std::string &name);

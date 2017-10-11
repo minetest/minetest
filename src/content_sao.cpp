@@ -1024,8 +1024,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 	}
 
 	// If the object is attached client-side, don't waste bandwidth sending its position to clients
-	if (m_position_not_sent && !isAttached() && !m_knockback)
-	{
+	if (m_position_not_sent && !isAttached() && !m_knockback) {
 		m_position_not_sent = false;
 		float update_interval = m_env->getSendRecommendedInterval();
 		v3f pos;
@@ -1246,7 +1245,6 @@ int PlayerSAO::punch(v3f dir,
 					m_knockback_timer = time_reset_knockback;
 					m_knockback = true;
 					m_env->getGameDef()->SendKnockBack(m_peer_id, direction, m_knockback_timer, getId());
-					m_knockback_timer;
 				}
 			}
 		}

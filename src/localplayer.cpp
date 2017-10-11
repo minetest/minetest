@@ -690,8 +690,7 @@ void LocalPlayer::applyControl(float dtime, Environment *env)
 	accelerateHorizontal(speedH * physics_override_speed,
 						 incH * physics_override_speed * slip_factor);
 	accelerateVertical(speedV * physics_override_speed,
-					   incV * physics_override_speed);
-	}
+						 incV * physics_override_speed);
 }
 
 v3s16 LocalPlayer::getStandingNodePos()
