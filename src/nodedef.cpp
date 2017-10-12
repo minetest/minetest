@@ -169,12 +169,12 @@ void NodeBox::deSerialize(std::istream &is)
 	TileDef
 */
 
-#define TILE_FLAG_BACKFACE_CULLING 0x0001
-#define TILE_FLAG_TILEABLE_HORIZONTAL 0x0002
-#define TILE_FLAG_TILEABLE_VERTICAL 0x0004
-#define TILE_FLAG_HAS_COLOR 0x0008
-#define TILE_FLAG_HAS_SCALE 0x0010
-#define TILE_FLAG_HAS_ALIGN_STYLE 0x0020
+#define TILE_FLAG_BACKFACE_CULLING	(1 << 0)
+#define TILE_FLAG_TILEABLE_HORIZONTAL	(1 << 1)
+#define TILE_FLAG_TILEABLE_VERTICAL	(1 << 2)
+#define TILE_FLAG_HAS_COLOR	(1 << 3)
+#define TILE_FLAG_HAS_SCALE	(1 << 4)
+#define TILE_FLAG_HAS_ALIGN_STYLE	(1 << 5)
 
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
