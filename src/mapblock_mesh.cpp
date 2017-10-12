@@ -399,6 +399,31 @@ static void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
 	}
 }
 
+static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u, float *v)
+{
+	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
+		base -= scale;
+	if (dir == v3s16(0,0,1)) {
+		*u = -base.X;
+		*v = -base.Y;
+	} else if (dir == v3s16(0,0,-1)) {
+		*u = base.X;
+		*v = -base.Y;
+	} else if (dir == v3s16(1,0,0)) {
+		*u = base.Z;
+		*v = -base.Y;
+	} else if (dir == v3s16(-1,0,0)) {
+		*u = -base.Z;
+		*v = -base.Y;
+	} else if (dir == v3s16(0,1,0)) {
+		*u = base.X;
+		*v = -base.Z;
+	} else if (dir == v3s16(0,-1,0)) {
+		*u = base.X;
+		*v = base.Z;
+	}
+}
+
 struct FastFace
 {
 	TileLayer layer;
@@ -410,10 +435,11 @@ struct FastFace
 	 */
 	bool vertex_0_2_connected;
 	u8 layernum;
+	bool world_aligned;
 };
 
 static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li3,
-	const v3f &p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
+	v3f tp, v3f p, v3s16 dir, v3f scale, std::vector<FastFace> &dest)
 {
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
@@ -426,6 +452,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
 	getNodeVertexDirs(dir, vertex_dirs);
+	if (tile.world_aligned)
+		getNodeTextureCoords(tp, scale, dir, &x0, &y0);
 
 	v3s16 t;
 	u16 t1;
@@ -604,6 +632,8 @@ static void makeFastFace(const TileSpec &tile, u16 li0, u16 li1, u16 li2, u16 li
 
 		face.layer = *layer;
 		face.layernum = layernum;
+
+		face.world_aligned = tile.world_aligned;
 	}
 }
 
@@ -739,7 +769,7 @@ void getNodeTile(MapNode mn, v3s16 p, v3s16 dir, MeshMakeData *data, TileSpec &t
 	};
 	u16 tile_index = facedir * 16 + dir_i;
 	getNodeTileN(mn, p, dir_to_tile[tile_index], data, tile);
-	tile.rotation = dir_to_tile[tile_index + 1];
+	tile.rotation = tile.world_aligned ? 0 : dir_to_tile[tile_index + 1];
 }
 
 static void getTileInfo(
@@ -898,7 +928,7 @@ static void updateFastFaceRow(
 					scale.Z = continuous_tiles_count;
 
 				makeFastFace(tile, lights[0], lights[1], lights[2], lights[3],
-						sp, face_dir_corrected, scale, dest);
+						pf, sp, face_dir_corrected, scale, dest);
 
 				g_profiler->avg("Meshgen: faces drawn by tiling", 0);
 				for (int i = 1; i < continuous_tiles_count; i++)
@@ -1025,7 +1055,7 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				f.vertex_0_2_connected ? indices : indices_alternate;
 
 			collector.append(f.layer, f.vertices, 4, indices_p, 6,
-				f.layernum);
+				f.layernum, f.world_aligned);
 		}
 	}
 
@@ -1061,6 +1091,9 @@ MapBlockMesh::MapBlockMesh(MeshMakeData *data, v3s16 camera_offset):
 				os << m_tsrc->getTextureName(p.layer.texture_id) << "^[crack";
 				if (p.layer.material_flags & MATERIAL_FLAG_CRACK_OVERLAY)
 					os << "o";  // use ^[cracko
+				u8 tiles = p.layer.scale;
+				if (tiles > 1)
+					os << ":" << (u32)tiles;
 				os << ":" << (u32)p.layer.animation_frame_count << ":";
 				m_crack_materials.insert(std::make_pair(
 						std::pair<u8, u32>(layer, i), os.str()));
@@ -1325,13 +1358,15 @@ void MeshCollector::append(const TileSpec &tile,
 		const TileLayer *layer = &tile.layers[layernum];
 		if (layer->texture_id == 0)
 			continue;
-		append(*layer, vertices, numVertices, indices, numIndices, layernum);
+		append(*layer, vertices, numVertices, indices, numIndices,
+			layernum, tile.world_aligned);
 	}
 }
 
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
-		const u16 *indices, u32 numIndices, u8 layernum)
+		const u16 *indices, u32 numIndices, u8 layernum,
+		bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
@@ -1355,20 +1390,24 @@ void MeshCollector::append(const TileLayer &layer,
 		p = &(*buffers)[buffers->size() - 1];
 	}
 
+	f32 scale = 1.0;
+	if (use_scale)
+		scale = 1.0 / layer.scale;
+
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
 		vertex_count = p->tangent_vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
 
 			video::S3DVertexTangents vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, vertices[i].TCoords);
+					vertices[i].Color, scale * vertices[i].TCoords);
 			p->tangent_vertices.push_back(vert);
 		}
 	} else {
 		vertex_count = p->vertices.size();
 		for (u32 i = 0; i < numVertices; i++) {
 			video::S3DVertex vert(vertices[i].Pos, vertices[i].Normal,
-					vertices[i].Color, vertices[i].TCoords);
+					vertices[i].Color, scale * vertices[i].TCoords);
 
 			p->vertices.push_back(vert);
 		}
@@ -1394,14 +1433,15 @@ void MeshCollector::append(const TileSpec &tile,
 		if (layer->texture_id == 0)
 			continue;
 		append(*layer, vertices, numVertices, indices, numIndices, pos,
-				c, light_source, layernum);
+				c, light_source, layernum, tile.world_aligned);
 	}
 }
 
 void MeshCollector::append(const TileLayer &layer,
 		const video::S3DVertex *vertices, u32 numVertices,
 		const u16 *indices, u32 numIndices,
-		v3f pos, video::SColor c, u8 light_source, u8 layernum)
+		v3f pos, video::SColor c, u8 light_source, u8 layernum,
+		bool use_scale)
 {
 	if (numIndices > 65535) {
 		dstream << "FIXME: MeshCollector::append() called with numIndices="
@@ -1425,6 +1465,10 @@ void MeshCollector::append(const TileLayer &layer,
 		p = &(*buffers)[buffers->size() - 1];
 	}
 
+	f32 scale = 1.0;
+	if (use_scale)
+		scale = 1.0 / layer.scale;
+
 	video::SColor original_c = c;
 	u32 vertex_count;
 	if (m_use_tangent_vertices) {
@@ -1435,7 +1479,7 @@ void MeshCollector::append(const TileLayer &layer,
 				applyFacesShading(c, vertices[i].Normal);
 			}
 			video::S3DVertexTangents vert(vertices[i].Pos + pos,
-					vertices[i].Normal, c, vertices[i].TCoords);
+					vertices[i].Normal, c, scale * vertices[i].TCoords);
 			p->tangent_vertices.push_back(vert);
 		}
 	} else {
@@ -1446,7 +1490,7 @@ void MeshCollector::append(const TileLayer &layer,
 				applyFacesShading(c, vertices[i].Normal);
 			}
 			video::S3DVertex vert(vertices[i].Pos + pos, vertices[i].Normal, c,
-				vertices[i].TCoords);
+				scale * vertices[i].TCoords);
 			p->vertices.push_back(vert);
 		}
 	}

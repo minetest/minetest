@@ -137,4 +137,4 @@ scene::SMesh *getExtrudedMesh(ITextureSource *tsrc, const std::string &imagename
  */
 void postProcessNodeMesh(scene::SMesh *mesh, const ContentFeatures &f, bool use_shaders,
 		bool set_material, const video::E_MATERIAL_TYPE *mattype,
-		std::vector<ItemPartColor> *colors);
+		std::vector<ItemPartColor> *colors, bool apply_scale = false);

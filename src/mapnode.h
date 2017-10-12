@@ -240,7 +240,7 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
-	u8 getFaceDir(INodeDefManager *nodemgr) const;
+	u8 getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted = false) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
 

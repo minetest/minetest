@@ -180,6 +180,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 		Backwards compatibility drop
 		Add 'can_zoom' to player object properties
 		Add glow to object properties
+		Change TileDef serialization format.
+		Add world-aligned tiles.
 		Mod channels
 */
 

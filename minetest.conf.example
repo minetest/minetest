@@ -489,6 +489,8 @@
 #    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
 #    have a visible effect unless bilinear/trilinear/anisotropic filtering is
 #    enabled.
+#    This is also used as the base node texture size for world-aligned
+#    texture autoscaling.
 #    type: int
 # texture_min_size = 64
 
@@ -807,6 +809,24 @@
 #    Makes all liquids opaque
 #    type: bool
 # opaque_water = false
+
+#    Textures on a node may be aligned either to the node or to the world.
+#    The former mode sutis better things like machines, furniture, etc., while
+#    the latter makes stairs and microblocks fit surroundings better.
+#    However, as this possibility is new, thus may not be used by older servers,
+#    this option allows enforcing it for certain node types. Note though that
+#    that is considered EXPERIMENTAL and may not work properly.
+#    type: enum values: disable, enable, force_solid, force_nodebox
+# world_aligned_mode = enable
+
+#    World-aligned textures may be scaled to span several nodes. However,
+#    the server may not send the scale you want, especially if you use
+#    a specially-designed texture pack; with this option, the client tries
+#    to determine the scale automatically basing on the texture size.
+#    See also texture_min_size.
+#    Warning: this option is EXPERIMENTAL!
+#    type: enum values: disable, enable, force
+# autoscale_mode = disable
 
 #    Show entity selection boxes
 #    type: bool
