@@ -1280,12 +1280,16 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 
 			// Crack image number and overlay option
+			// Format: crack[o][:<tiles>]:<frame_count>:<frame>
 			bool use_overlay = (part_of_name[6] == 'o');
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			s32 frame_count = stoi(sf.next(":"));
 			s32 progression = stoi(sf.next(":"));
 			s32 tiles = 1;
+			// Check whether there is the <tiles> argument, that is,
+			// whether there are 3 arguments. If so, shift values
+			// as the first and not the last argument is optional.
 			auto s = sf.next(":");
 			if (!s.empty()) {
 				tiles = frame_count;

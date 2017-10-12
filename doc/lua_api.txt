@@ -284,11 +284,19 @@ on top of `cobble.png`.
 
 ### Advanced texture modifiers
 
-#### `[crack:<n>:<p>`
+#### Crack
+* `[crack:<n>:<p>`
+* `[cracko:<n>:<p>`
+* `[crack:<t>:<n>:<p>`
+* `[cracko:<t>:<n>:<p>`
+
+Parameters:
+* `<t>` = tile count (in each direction)
 * `<n>` = animation frame count
 * `<p>` = current animation frame
 
 Draw a step of the crack animation on the texture.
+`crack` draws it normally, while `cracko` lays it over, keeping transparent pixels intact.
 
 Example:
 
@@ -4431,8 +4439,8 @@ Definition tables
     * scale is used to make texture span several (exactly `scale`) nodes,
           instead of just one, in each direction. Works for world-aligned
           textures only.
-          Note that as the effect is applied on per-mapblock basis,
-          (16/scale) should be integer or you may get wrong results.
+          Note that as the effect is applied on per-mapblock basis, `16` should
+          be equally divisible by `scale` or you may get wrong results.
 * `{name="image.png", color=ColorSpec}`
     * the texture's color will be multiplied with this color.
     * the tile's color overrides the owning node's color in all cases.
