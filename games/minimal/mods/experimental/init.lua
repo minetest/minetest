@@ -506,20 +506,20 @@ minetest.register_node("experimental:tiled", {
         tiles = {{
                 name = "experimental_tiled.png",
                 align_style = "world",
-                scale = 4,
+                scale = 8,
         }},
         groups = {cracky=2},
 })
 
 stairs.register_stair_and_slab("tiled_n", "experimental:tiled",
 		{cracky=2},
-		{{name="experimental_tiled.png", align_style="node", scale=4}},
+		{{name="experimental_tiled.png", align_style="node", scale=8}},
 		"Tiled stair (node-aligned)",
 		"Tiled slab (node-aligned)")
 
 stairs.register_stair_and_slab("tiled", "experimantal:tiled",
 		{cracky=2},
-		{{name="experimental_tiled.png", align_style="world", scale=4}},
+		{{name="experimental_tiled.png", align_style="world", scale=8}},
 		"Tiled stair",
 		"Tiled slab")
 
