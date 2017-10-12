@@ -403,24 +403,27 @@ static void getNodeTextureCoords(v3f base, const v3f &scale, v3s16 dir, float *u
 {
 	if (dir.X > 0 || dir.Y > 0 || dir.Z < 0)
 		base -= scale;
+	base.X += 1;
+	base.Y += 1;
+	base.Z += 1;
 	if (dir == v3s16(0,0,1)) {
 		*u = -base.X;
 		*v = -base.Y;
 	} else if (dir == v3s16(0,0,-1)) {
 		*u = base.X;
-		*v = -base.Y;
+		*v = -base.Y-1;
 	} else if (dir == v3s16(1,0,0)) {
 		*u = base.Z;
-		*v = -base.Y;
+		*v = -base.Y-1;
 	} else if (dir == v3s16(-1,0,0)) {
 		*u = -base.Z;
 		*v = -base.Y;
 	} else if (dir == v3s16(0,1,0)) {
 		*u = base.X;
-		*v = -base.Z;
+		*v = -base.Z-1;
 	} else if (dir == v3s16(0,-1,0)) {
-		*u = base.X;
-		*v = base.Z;
+		*u = base.X-1;
+		*v = base.Z-1;
 	}
 }
 
