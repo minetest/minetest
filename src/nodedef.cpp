@@ -230,10 +230,7 @@ void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
 		color.setGreen(readU8(is));
 		color.setBlue(readU8(is));
 	}
-	if (has_scale)
-		scale = readU8(is);
-	else
-		scale = 0;
+	scale = has_scale ? readU8(is) : 0;
 	if (has_align_style)
 		align_style = static_cast<AlignStyle>(readU8(is));
 	else
@@ -609,8 +606,8 @@ static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
 			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
 		auto texture_size = layer->texture->getOriginalSize();
 		float base_size = tsettings.node_texture_size;
-		float size = std::min(texture_size.Width, texture_size.Height);
-		layer->scale = std::max(base_size, size) / base_size;
+		float size = std::fmin(texture_size.Width, texture_size.Height);
+		layer->scale = std::fmax(base_size, size) / base_size;
 	} else if (has_scale) {
 		layer->scale = tiledef.scale;
 	} else {
