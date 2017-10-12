@@ -4323,7 +4323,7 @@ inline static const char *yawToDirectionString(int yaw)
 
 void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &cam)
 {
-	v2u32 screensize = driver->getScreenSize();
+	v2u32 screensize = RenderingEngine::get_instance()->getWindowSize();
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
 	v3f player_position = player->getPosition();
 
