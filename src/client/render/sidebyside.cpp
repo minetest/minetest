@@ -37,6 +37,7 @@ void RenderingCoreSideBySide::initTextures()
 		image_size = {screensize.X / 2, screensize.Y};
 		rpos = v2s32(screensize.X / 2, 0);
 	}
+	virtual_size = image_size;
 	left = driver->addRenderTargetTexture(
 			image_size, "3d_render_left", video::ECF_A8R8G8B8);
 	right = driver->addRenderTargetTexture(
@@ -51,7 +52,6 @@ void RenderingCoreSideBySide::clearTextures()
 
 void RenderingCoreSideBySide::drawAll()
 {
-	cam->setAspectRatio(1.0 * image_size.Width / image_size.Height);
 	driver->OnResize(image_size); // HACK to make GUI smaller
 	renderBothImages();
 	driver->OnResize(screensize);

@@ -31,6 +31,7 @@ RenderingCore::RenderingCore(IrrlichtDevice *_device, Client *_client, Hud *_hud
       mapper(client->getMinimap()), hud(_hud)
 {
 	screensize = driver->getScreenSize();
+	virtual_size = screensize;
 }
 
 RenderingCore::~RenderingCore()
@@ -46,6 +47,7 @@ void RenderingCore::initialize()
 
 void RenderingCore::updateScreenSize()
 {
+	virtual_size = screensize;
 	clearTextures();
 	initTextures();
 }

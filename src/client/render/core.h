@@ -30,6 +30,7 @@ class RenderingCore
 {
 protected:
 	v2u32 screensize;
+	v2u32 virtual_size;
 	video::SColor skycolor;
 	bool show_hud;
 	bool show_minimap;
@@ -69,4 +70,6 @@ public:
 	void initialize();
 	void draw(video::SColor _skycolor, bool _show_hud, bool _show_minimap,
 			bool _draw_wield_tool, bool _draw_crosshair);
+
+	inline v2u32 getVirtualSize() const { return virtual_size; }
 };
