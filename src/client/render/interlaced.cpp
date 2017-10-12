@@ -38,7 +38,7 @@ void RenderingCoreInterlaced::initMaterial()
 	mat.ZWriteEnable = false;
 	u32 shader = s->getShader("3d_interlaced_merge", TILE_MATERIAL_BASIC, 0);
 	mat.MaterialType = s->getShaderInfo(shader).material;
-	for (int k = 0; k != 3; ++k) {
+	for (int k = 0; k < 3; ++k) {
 		mat.TextureLayer[k].AnisotropicFilter = false;
 		mat.TextureLayer[k].BilinearFilter = false;
 		mat.TextureLayer[k].TrilinearFilter = false;
@@ -71,7 +71,7 @@ void RenderingCoreInterlaced::clearTextures()
 void RenderingCoreInterlaced::initMask()
 {
 	u8 *data = reinterpret_cast<u8 *>(mask->lock());
-	for (unsigned j = 0; j < screensize.Y; j++) {
+	for (u32 j = 0; j < screensize.Y; j++) {
 		u8 val = j % 2 ? 0xff : 0x00;
 		memset(data, val, 4 * screensize.X);
 		data += 4 * screensize.X;
