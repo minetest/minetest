@@ -107,10 +107,10 @@ int LuaSettings::l_get_bool(lua_State* L)
 }
 
 // get_np_group(self, key) -> value
-int LuaSettings::l_get_np_group(lua_State* L)
+int LuaSettings::l_get_np_group(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
@@ -158,10 +158,10 @@ int LuaSettings::l_set_bool(lua_State* L)
 }
 
 // set(self, key, value)
-int LuaSettings::l_set_np_group(lua_State* L)
+int LuaSettings::l_set_np_group(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
-	LuaSettings* o = checkobject(L, 1);
+	LuaSettings *o = checkobject(L, 1);
 
 	std::string key = std::string(luaL_checkstring(L, 2));
 	NoiseParams value;
