@@ -1119,18 +1119,21 @@ void GUIFormSpecMenu::parseTextArea(parserData* data, std::vector<std::string>& 
 
 	if (is_editable)
 		spec.send = true;
-	
-		gui::IGUIEditBox *e;
+
+	gui::IGUIEditBox *e = nullptr;
+	const wchar_t *text = spec.fdefault.empty() ?
+		wlabel.c_str() : spec.fdefault.c_str();
+
 #if USE_FREETYPE && IRRLICHT_VERSION_MAJOR == 1 && IRRLICHT_VERSION_MINOR < 9
 	if (g_settings->getBool("freetype")) {
-		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(spec.fdefault.c_str(),
+		e = (gui::IGUIEditBox *) new gui::intlGUIEditBox(text,
 			true, Environment, this, spec.fid, rect, is_editable, true);
 		e->drop();
 	} else {
 #else
 	{
 #endif
-		e = new GUIEditBoxWithScrollBar(spec.fdefault.c_str(), true,
+		e = new GUIEditBoxWithScrollBar(text, true,
 			Environment, this, spec.fid, rect, is_editable, true);
 	}
 
