@@ -90,23 +90,35 @@ void RemoteClient::GetNextBlocks (
 		return;
 	}
 
-	v3f playerpos = sao->getBasePosition();
-	const v3f &playerspeed = player->getSpeed();
-	v3f playerspeeddir(0,0,0);
-	if(playerspeed.getLength() > 1.0*BS)
-		playerspeeddir = playerspeed / playerspeed.getLength();
-	// Predict to next block
-	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
-
-	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
-
-	v3s16 center = getNodeBlockPos(center_nodepos);
-
 	// Camera position and direction
 	v3f camera_pos = sao->getEyePosition();
 	v3f camera_dir = v3f(0,0,1);
 	camera_dir.rotateYZBy(sao->getPitch());
 	camera_dir.rotateXZBy(sao->getYaw());
+
+	v3f playerpos = sao->getBasePosition();
+	const v3f &playerspeed = player->getSpeed();
+
+	// Calculate a general "adjustment value".
+	// The magnitude of this depends on the speed and the angle between
+	// the players velocity and the camera direction.
+	// Limit to 0.0f in case player moves backwards.
+	// When a player moves forward but looks down or backwards the adjustment will be 0.
+	// (note that playerspeed is not normalized, that way we save a few vector operations)
+	f32 adjust = camera_dir.dotProduct(playerspeed) / BS;
+
+	// Predict where player will be soon. Just add the speed. The factor two tested well.
+	// if the player moves backwards (adjust < 0), do not adjust the center
+	v3f playerpos_predicted = playerpos;
+	if (adjust > 0.0f) {
+		playerpos_predicted += playerspeed * 2.0f;
+	} else {
+		adjust = 0.0f;
+	}
+
+	v3s16 center_nodepos = floatToInt(playerpos_predicted, BS);
+
+	v3s16 center = getNodeBlockPos(center_nodepos);
 
 	/*infostream<<"camera_dir=("<<camera_dir.X<<","<<camera_dir.Y<<","
 			<<camera_dir.Z<<")"<<std::endl;*/
@@ -172,20 +184,25 @@ void RemoteClient::GetNextBlocks (
 	// get view range and camera fov from the client
 	s16 wanted_range = sao->getWantedRange();
 	float camera_fov = sao->getFov();
-	// if FOV, wanted_range are not available (old client), fall back to old default
-	if (wanted_range <= 0) wanted_range = 1000;
-	if (camera_fov <= 0) camera_fov = (72.0*M_PI/180) * 4./3.;
 
-	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
-	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
+	// When the player moves and looks forward, try to send some extra blocks if possible.
+	wanted_range += adjust / MAP_BLOCKSIZE;
+
+	const s16 full_d_max = std::min(g_settings->getS16("max_block_send_distance"), wanted_range);
+	const s16 d_opt = std::min(g_settings->getS16("block_send_optimize_distance"), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
-	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
+	s16 d_max_gen = std::min(g_settings->getS16("max_block_generate_distance"), wanted_range);
+
+	// Reduce the field of view when a player moves and looks forward.
+	// Why 50? It works well with speeds between 0 and 100 (adjusted for BS).
+	camera_fov = camera_fov / (1 + adjust / 50.0f);
+
+	//infostream << "Adjusted Fov " << camera_fov << " adjust " << adjust << " Wanted " << wanted_range << " adj center " << PP(playerspeed*2) << std::endl;
 
 	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 2;
+	s16 max_d_increment_at_time = 1;
 	if(d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
