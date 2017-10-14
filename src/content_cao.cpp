@@ -830,22 +830,21 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 	} else {
 		v3f lastpos = pos_translator.vect_show;
 
-		if(m_prop.physical)
-		{
+		if (m_prop.physical) {
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
+
+			v3f extent = box.getExtent();
+			// Calculate the maximum distance per iteration, apply limits
+			f32 pos_max_d = MYMIN(extent.X, MYMIN(extent.Y, extent.Z));
+			pos_max_d = rangelim(pos_max_d / 2, 0.05 * BS, 0.25 * BS);
+
 			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.125; // Distance per iteration
-			v3f p_pos = m_position;
-			v3f p_velocity = m_velocity;
-			moveresult = collisionMoveSimple(env,env->getGameDef(),
+			moveresult = collisionMoveSimple(env, env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
-					&p_pos, &p_velocity, m_acceleration,
+					&m_position, &m_velocity, m_acceleration,
 					this, m_prop.collideWithObjects);
-			// Apply results
-			m_position = p_pos;
-			m_velocity = p_velocity;
 
 			bool is_end_position = moveresult.collides;
 			pos_translator.update(m_position, is_end_position, dtime);

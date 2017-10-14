@@ -347,24 +347,21 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	}
 	else
 	{
-		if(m_prop.physical){
+		if (m_prop.physical) {
 			aabb3f box = m_prop.collisionbox;
 			box.MinEdge *= BS;
 			box.MaxEdge *= BS;
+
+			v3f extent = box.getExtent();
+			// Calculate the maximum distance per iteration, apply limits
+			f32 pos_max_d = MYMIN(extent.X, MYMIN(extent.Y, extent.Z));
+			pos_max_d = rangelim(pos_max_d / 2, 0.05 * BS, 0.25 * BS);
+
 			collisionMoveResult moveresult;
-			f32 pos_max_d = BS*0.25; // Distance per iteration
-			v3f p_pos = m_base_position;
-			v3f p_velocity = m_velocity;
-			v3f p_acceleration = m_acceleration;
 			moveresult = collisionMoveSimple(m_env, m_env->getGameDef(),
 					pos_max_d, box, m_prop.stepheight, dtime,
-					&p_pos, &p_velocity, p_acceleration,
+					&m_base_position, &m_velocity, m_acceleration,
 					this, m_prop.collideWithObjects);
-
-			// Apply results
-			m_base_position = p_pos;
-			m_velocity = p_velocity;
-			m_acceleration = p_acceleration;
 		} else {
 			m_base_position += dtime * m_velocity + 0.5 * dtime
 					* dtime * m_acceleration;
