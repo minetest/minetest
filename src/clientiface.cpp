@@ -264,13 +264,16 @@ void RemoteClient::GetNextBlocks (
 				Don't generate or send if not in sight
 				FIXME This only works if the client uses a small enough
 				FOV setting. The default of 72 degrees is fine.
-				Also retrieve a smaller view cone in the direction of the player's movement.
+				Also retrieve a smaller view cone in the direction of the player's
+				movement.
 				(0.1 is about 4 degrees)
 			*/
 			f32 dist;
-			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov, d_blocks_in_sight, &dist) ||
+			if (!(isBlockInSight(p, camera_pos, camera_dir, camera_fov,
+						d_blocks_in_sight, &dist) ||
 				(playerspeed.getLength() > 1.0f * BS &&
-				isBlockInSight(p, camera_pos, playerspeeddir, 0.1f, d_blocks_in_sight)))) {
+				isBlockInSight(p, camera_pos, playerspeeddir, 0.1f,
+						d_blocks_in_sight)))) {
 				continue;
 			}
 
