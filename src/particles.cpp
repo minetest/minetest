@@ -598,6 +598,8 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 
 	float size = rand() % 64 / 512.;
 	float visual_size = BS * size;
+	if (tile.scale)
+		size /= tile.scale;
 	v2f texsize(size * 2, size * 2);
 	v2f texpos;
 	texpos.X = ((rand() % 64) / 64. - texsize.X);
