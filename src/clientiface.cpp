@@ -122,7 +122,7 @@ void RemoteClient::GetNextBlocks (
 	LuaEntitySAO *lsao = getAttachedObject(sao, env);
 	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
 	v3f playerspeeddir(0,0,0);
-	if (playerspeed.getLength() > 1.0*BS)
+	if (playerspeed.getLength() > 1.0f * BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
 	// Predict to next block
 	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
@@ -153,8 +153,8 @@ void RemoteClient::GetNextBlocks (
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 
 	// Reset periodically to workaround for some bugs or stuff
-	if (m_nearest_unsent_reset_timer > 20.0) {
-		m_nearest_unsent_reset_timer = 0;
+	if (m_nearest_unsent_reset_timer > 20.0f) {
+		m_nearest_unsent_reset_timer = 0.0f;
 		m_nearest_unsent_d = 0;
 		//infostream<<"Resetting m_nearest_unsent_d for "
 		//		<<server->getPlayerName(peer_id)<<std::endl;
@@ -368,14 +368,14 @@ queue_full_break:
 	// emerging, continue next time browsing from here
 	if (nearest_emerged_d != -1) {
 		new_nearest_unsent_d = nearest_emerged_d;
-	} else if(nearest_emergefull_d != -1){
+	} else if (nearest_emergefull_d != -1) {
 		new_nearest_unsent_d = nearest_emergefull_d;
 	} else {
-		if(d > full_d_max){
+		if (d > full_d_max) {
 			new_nearest_unsent_d = 0;
-			m_nothing_to_send_pause_timer = 2.0;
+			m_nothing_to_send_pause_timer = 2.0f;
 		} else {
-			if(nearest_sent_d != -1)
+			if (nearest_sent_d != -1)
 				new_nearest_unsent_d = nearest_sent_d;
 			else
 				new_nearest_unsent_d = d;
@@ -404,7 +404,7 @@ void RemoteClient::SentBlock(v3s16 p)
 		m_blocks_modified.erase(p);
 
 	if (m_blocks_sending.find(p) == m_blocks_sending.end())
-		m_blocks_sending[p] = 0.0;
+		m_blocks_sending[p] = 0.0f;
 	else
 		infostream<<"RemoteClient::SentBlock(): Sent block"
 				" already in m_blocks_sending"<<std::endl;
@@ -607,7 +607,7 @@ ClientInterface::ClientInterface(const std::shared_ptr<con::Connection> & con)
 :
 	m_con(con),
 	m_env(NULL),
-	m_print_info_timer(0.0)
+	m_print_info_timer(0.0f)
 {
 
 }
@@ -652,9 +652,8 @@ bool ClientInterface::isUserLimitReached()
 void ClientInterface::step(float dtime)
 {
 	m_print_info_timer += dtime;
-	if(m_print_info_timer >= 30.0)
-	{
-		m_print_info_timer = 0.0;
+	if (m_print_info_timer >= 30.0f) {
+		m_print_info_timer = 0.0f;
 		UpdatePlayerList();
 	}
 }
