@@ -126,20 +126,21 @@ EmergeManager::EmergeManager(Server *server)
 	// This is because the *only* thread ever starting or stopping
 	// EmergeThreads should be the ServerThread.
 
-	enable_mapgen_debug_info = g_settings->getBool("enable_mapgen_debug_info");
+	Settings *settings = server->getSettings();
+	enable_mapgen_debug_info = settings->getBool("enable_mapgen_debug_info");
 
 	// If unspecified, leave a proc for the main thread and one for
 	// some other misc thread
 	s16 nthreads = 0;
-	if (!g_settings->getS16NoEx("num_emerge_threads", nthreads))
+	if (!settings->getS16NoEx("num_emerge_threads", nthreads))
 		nthreads = Thread::getNumberOfProcessors() - 2;
 	if (nthreads < 1)
 		nthreads = 1;
 
-	m_qlimit_total = g_settings->getU16("emergequeue_limit_total");
-	if (!g_settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
+	m_qlimit_total = settings->getU16("emergequeue_limit_total");
+	if (!settings->getU16NoEx("emergequeue_limit_diskonly", m_qlimit_diskonly))
 		m_qlimit_diskonly = nthreads * 5 + 1;
-	if (!g_settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))
+	if (!settings->getU16NoEx("emergequeue_limit_generate", m_qlimit_generate))
 		m_qlimit_generate = nthreads + 1;
 
 	// don't trust user input for something very important like this
@@ -632,8 +633,7 @@ void *EmergeThread::run()
 				ScopeProfiler sp(g_profiler,
 					"EmergeThread: Mapgen::makeChunk", SPT_AVG);
 				TimeTaker t("mapgen::make_block()");
-
-				m_mapgen->makeChunk(&bmdata);
+				m_mapgen->makeChunk(&bmdata, m_server->getSettings());
 
 				if (!enable_mapgen_debug_info)
 					t.stop(true); // Hide output

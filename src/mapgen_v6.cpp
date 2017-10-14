@@ -481,7 +481,7 @@ u32 MapgenV6::get_blockseed(u64 seed, v3s16 p)
 
 //////////////////////// Map generator
 
-void MapgenV6::makeChunk(BlockMakeData *data)
+void MapgenV6::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -600,7 +600,7 @@ void MapgenV6::makeChunk(BlockMakeData *data)
 		}
 
 		DungeonGen dgen(ndef, &gennotify, &dp);
-		dgen.generate(vm, blockseed, full_node_min, full_node_max);
+		dgen.generate(vm, blockseed, full_node_min, full_node_max, server_settings);
 	}
 
 	// Add top and bottom side of water to transforming_liquid queue

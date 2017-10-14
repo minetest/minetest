@@ -876,7 +876,7 @@ bool MapgenBasic::generateCaverns(s16 max_stone_y)
 
 
 void MapgenBasic::generateDungeons(s16 max_stone_y,
-	MgStoneType stone_type, content_t biome_stone)
+	MgStoneType stone_type, content_t biome_stone, Settings *server_settings)
 {
 	if (max_stone_y < node_min.Y)
 		return;
@@ -955,7 +955,8 @@ void MapgenBasic::generateDungeons(s16 max_stone_y,
 	}
 
 	DungeonGen dgen(ndef, &gennotify, &dp);
-	dgen.generate(vm, blockseed, full_node_min, full_node_max);
+	bool projecting_dungeons = server_settings->getBool("projecting_dungeons");
+	dgen.generate(vm, blockseed, full_node_min, full_node_max, projecting_dungeons);
 }
 
 
@@ -1036,9 +1037,8 @@ MapgenParams::~MapgenParams()
 void MapgenParams::readParams(const Settings *settings)
 {
 	std::string seed_str;
-	const char *seed_name = (settings == g_settings) ? "fixed_map_seed" : "seed";
 
-	if (settings->getNoEx(seed_name, seed_str)) {
+	if (settings->getNoEx("seed", seed_str)) {
 		if (!seed_str.empty())
 			seed = read_seed(seed_str.c_str());
 		else

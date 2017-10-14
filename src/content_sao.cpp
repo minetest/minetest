@@ -1185,7 +1185,7 @@ int PlayerSAO::punch(v3f dir,
 		return 0;
 
 	// No effect if PvP disabled
-	if (!g_settings->getBool("enable_pvp")) {
+	if (!m_env->getGameDef()->getSettings()->getBool("enable_pvp")) {
 		if (puncher->getType() == ACTIVEOBJECT_TYPE_PLAYER) {
 			std::string str = gob_cmd_punched(0, getHP());
 			// create message and add to list
@@ -1254,7 +1254,8 @@ void PlayerSAO::setHP(s16 hp)
 	else if (hp > m_prop.hp_max)
 		hp = m_prop.hp_max;
 
-	if (hp < oldhp && !g_settings->getBool("enable_damage")) {
+	Settings *settings = m_env->getGameDef()->getSettings();
+	if (hp < oldhp && !settings->getBool("enable_damage")) {
 		return;
 	}
 
@@ -1374,7 +1375,7 @@ std::string PlayerSAO::getPropertyPacket()
 bool PlayerSAO::checkMovementCheat()
 {
 	if (isAttached() || m_is_singleplayer ||
-			g_settings->getBool("disable_anticheat")) {
+			m_env->getGameDef()->getSettings()->getBool("disable_anticheat")) {
 		m_last_good_position = m_base_position;
 		return false;
 	}

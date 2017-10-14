@@ -64,7 +64,7 @@ void TestSocket::testIPv4Socket()
 	 */
 	std::string bind_str = g_settings->get("bind_address");
 	try {
-		bind_addr.Resolve(bind_str.c_str());
+		bind_addr.Resolve(bind_str.c_str(), g_settings->getBool("enable_ipv6"));
 
 		if (!bind_addr.isIPv6()) {
 			address = bind_addr;

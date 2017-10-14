@@ -18,6 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "common/c_internal.h"
+#include "cpp_api/s_base.h"
+#include "server.h"
+#include "client.h"
 #include "debug.h"
 #include "log.h"
 #include "settings.h"
@@ -140,7 +143,11 @@ void log_deprecated(lua_State *L, const std::string &message)
 
 	// Only read settings on first call
 	if (!configured) {
-		std::string value = g_settings->get("deprecated_lua_api_handling");
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+		ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+		lua_pop(L, 1);
+		Settings *settings = script->getGameDef()->getSettings();
+		std::string value = settings->get("deprecated_lua_api_handling");
 		if (value == "log") {
 			do_log = true;
 		} else if (value == "error") {

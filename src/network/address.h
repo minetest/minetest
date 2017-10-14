@@ -53,7 +53,7 @@ public:
 	bool operator==(const Address &address);
 	bool operator!=(const Address &address);
 	// Resolve() may throw ResolveError (address is unchanged in this case)
-	void Resolve(const char *name);
+	void Resolve(const char *name, bool is_ipv6);
 	struct sockaddr_in getAddress() const;
 	unsigned short getPort() const;
 	void setAddress(u32 address);

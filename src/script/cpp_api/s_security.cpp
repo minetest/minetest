@@ -481,10 +481,20 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 
 	std::string abs_path = fs::AbsolutePath(path);
 
+	// Get server from registry
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
+	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
+	lua_pop(L, 1);
+	const IGameDef *gamedef = script->getGameDef();
+	if (!gamedef)
+		return false;
+
 	if (!abs_path.empty()) {
 		// Don't allow accessing the settings file
-		str = fs::AbsolutePath(g_settings_path);
-		if (str == abs_path) return false;
+		std::string server_setting_path = script->getServer()->getSettingsPath();
+		if (abs_path == fs::AbsolutePath(g_settings_path) ||
+				abs_path == fs::AbsolutePath(server_setting_path))
+			return false;
 	}
 
 	// If we couldn't find the absolute path (path doesn't exist) then
@@ -513,14 +523,6 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 	// directory in worldmods if worldmods doesn't exist.
 	if (!removed.empty())
 		abs_path += DIR_DELIM + removed;
-
-	// Get server from registry
-	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_SCRIPTAPI);
-	ScriptApiBase *script = (ScriptApiBase *) lua_touserdata(L, -1);
-	lua_pop(L, 1);
-	const IGameDef *gamedef = script->getGameDef();
-	if (!gamedef)
-		return false;
 
 	// Get mod name
 	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_CURRENT_MOD_NAME);
@@ -571,6 +573,9 @@ bool ScriptApiSecurity::checkPath(lua_State *L, const char *path,
 				fs::PathStartsWith(abs_path, str + DIR_DELIM + "game")) {
 			return false;
 		}
+		// Don't allow access to the settings file
+		if (fs::AbsolutePath(str + DIR_DELIM + "world.mt") == abs_path)
+			return false;
 		// Allow all other paths in world path
 		if (fs::PathStartsWith(abs_path, str)) {
 			if (write_allowed) *write_allowed = true;

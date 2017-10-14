@@ -205,7 +205,7 @@ public:
 	void propagateSunlight(v3s16 nmin, v3s16 nmax, bool propagate_shadow);
 	void spreadLight(v3s16 nmin, v3s16 nmax);
 
-	virtual void makeChunk(BlockMakeData *data) {}
+	virtual void makeChunk(BlockMakeData *data, Settings *server_settings) {}
 	virtual int getGroundLevelAtPoint(v2s16 p) { return 0; }
 
 	// getSpawnLevelAtPoint() is a function within each mapgen that returns a
@@ -252,7 +252,7 @@ public:
 	virtual void generateCaves(s16 max_stone_y, s16 large_cave_depth);
 	virtual bool generateCaverns(s16 max_stone_y);
 	virtual void generateDungeons(s16 max_stone_y,
-		MgStoneType stone_type, content_t biome_stone);
+		MgStoneType stone_type, content_t biome_stone, Settings *server_settings);
 	virtual void generateBiomes(MgStoneType *mgstone_type,
 		content_t *biome_stone);
 	virtual void dustTopNodes();

@@ -352,6 +352,9 @@ public:
 	// Environment mutex (envlock)
 	std::mutex m_env_mutex;
 
+	inline Settings *getSettings() { return &m_conf; }
+	inline std::string getSettingsPath() const { return m_settings_path; }
+
 private:
 
 	friend class EmergeThread;
@@ -499,6 +502,9 @@ private:
 
 	// World directory
 	std::string m_path_world;
+	// config file
+	std::string m_settings_path;
+	Settings m_conf;
 	// Subgame specification
 	SubgameSpec m_gamespec;
 	// If true, do not allow multiple players and hide some multiplayer

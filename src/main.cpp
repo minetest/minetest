@@ -85,9 +85,10 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
 static void startup_message();
 static bool read_config_file(const Settings &cmd_args);
 static void init_log_streams(const Settings &cmd_args);
+static void set_log_level(std::string level);
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args);
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args);
+static void game_configure_port(GameParams *game_params, const Settings &cmd_args, Settings *settings);
 
 static bool game_configure_world(GameParams *game_params, const Settings &cmd_args);
 static bool get_world_from_cmdline(GameParams *game_params, const Settings &cmd_args);
@@ -99,7 +100,7 @@ static bool game_configure_subgame(GameParams *game_params, const Settings &cmd_
 static bool get_game_from_cmdline(GameParams *game_params, const Settings &cmd_args);
 static bool determine_subgame(GameParams *game_params);
 
-static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args);
+static bool run_dedicated_server(GameParams &game_params, const Settings &cmd_args);
 static bool migrate_map_database(const GameParams &game_params, const Settings &cmd_args);
 
 /**********************************************************************/
@@ -202,6 +203,9 @@ int main(int argc, char *argv[])
 		return run_dedicated_server(game_params, cmd_args) ? 0 : 1;
 
 #ifndef SERVER
+	// Initialize HTTP fetcher
+	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
+
 	ClientLauncher launcher;
 	retval = launcher.run(game_params, cmd_args) ? 0 : 1;
 #else
@@ -437,9 +441,6 @@ static bool init_common(const Settings &cmd_args, int argc, char *argv[])
 	srand(time(0));
 	mysrand(time(0));
 
-	// Initialize HTTP fetcher
-	httpfetch_init(g_settings->getS32("curl_parallel_limit"));
-
 	init_gettext(porting::path_locale.c_str(),
 		g_settings->get("language"), argc, argv);
 
@@ -507,43 +508,44 @@ static void init_log_streams(const Settings &cmd_args)
 	if (cmd_args.exists("logfile"))
 		log_filename = cmd_args.get("logfile");
 
-	g_logger.removeOutput(&file_log_output);
 	std::string conf_loglev = g_settings->get("debug_log_level");
+	if (log_filename.empty())  // No logging
+		return;
+	g_logger.removeOutput(&file_log_output);
 
+	verbosestream << "log_filename = " << log_filename << std::endl;
+
+	file_log_output.open(log_filename);
+	set_log_level(conf_loglev);
+}
+
+static void set_log_level(std::string level)
+{
 	// Old integer format
-	if (std::isdigit(conf_loglev[0])) {
+	if (std::isdigit(level[0])) {
 		warningstream << "Deprecated use of debug_log_level with an "
 			"integer value; please update your configuration." << std::endl;
 		static const char *lev_name[] =
 			{"", "error", "action", "info", "verbose"};
-		int lev_i = atoi(conf_loglev.c_str());
+		int lev_i = atoi(level.c_str());
 		if (lev_i < 0 || lev_i >= (int)ARRLEN(lev_name)) {
 			warningstream << "Supplied invalid debug_log_level!"
 				"  Assuming action level." << std::endl;
 			lev_i = 2;
 		}
-		conf_loglev = lev_name[lev_i];
+		level = lev_name[lev_i];
 	}
 
-	if (log_filename.empty() || conf_loglev.empty())  // No logging
-		return;
-
-	LogLevel log_level = Logger::stringToLevel(conf_loglev);
+	LogLevel log_level = Logger::stringToLevel(level);
 	if (log_level == LL_MAX) {
 		warningstream << "Supplied unrecognized debug_log_level; "
 			"using maximum." << std::endl;
 	}
-
-	verbosestream << "log_filename = " << log_filename << std::endl;
-
-	file_log_output.open(log_filename);
 	g_logger.addOutputMaxLevel(&file_log_output, log_level);
 }
 
 static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 {
-	game_configure_port(game_params, cmd_args);
-
 	if (!game_configure_world(game_params, cmd_args)) {
 		errorstream << "No world path specified or found." << std::endl;
 		return false;
@@ -554,12 +556,12 @@ static bool game_configure(GameParams *game_params, const Settings &cmd_args)
 	return true;
 }
 
-static void game_configure_port(GameParams *game_params, const Settings &cmd_args)
+static void game_configure_port(GameParams *game_params, const Settings &cmd_args, Settings *settings)
 {
 	if (cmd_args.exists("port"))
 		game_params->socket_port = cmd_args.getU16("port");
 	else
-		game_params->socket_port = g_settings->getU16("port");
+		game_params->socket_port = settings->getU16("port");
 
 	if (game_params->socket_port == 0)
 		game_params->socket_port = DEFAULT_SERVER_PORT;
@@ -774,28 +776,40 @@ static bool determine_subgame(GameParams *game_params)
 /*****************************************************************************
  * Dedicated server
  *****************************************************************************/
-static bool run_dedicated_server(const GameParams &game_params, const Settings &cmd_args)
+static bool run_dedicated_server(GameParams &game_params, const Settings &cmd_args)
 {
 	verbosestream << _("Using world path") << " ["
 	              << game_params.world_path << "]" << std::endl;
 	verbosestream << _("Using gameid") << " ["
 	              << game_params.game_spec.id << "]" << std::endl;
 
+	Settings server_conf;
+	set_default_settings(&server_conf);
+	std::string settings_path = game_params.world_path + DIR_DELIM + "world.mt";
+	server_conf.readConfigFile(settings_path.c_str());
+	override_default_settings(&server_conf, g_settings);
+
+	game_configure_port(&game_params, cmd_args, &server_conf);
+	set_log_level(server_conf.get("debug_log_level"));
+
+	// Initialize HTTP fetcher
+	httpfetch_init(server_conf.getS32("curl_parallel_limit"));
+
 	// Bind address
-	std::string bind_str = g_settings->get("bind_address");
+	std::string bind_str = server_conf.get("bind_address");
 	Address bind_addr(0, 0, 0, 0, game_params.socket_port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (server_conf.getBool("ipv6_server")) {
 		bind_addr.setAddress((IPv6AddressBytes*) NULL);
 	}
 	try {
-		bind_addr.Resolve(bind_str.c_str());
+		bind_addr.Resolve(bind_str.c_str(), server_conf.getBool("enable_ipv6"));
 	} catch (ResolveError &e) {
 		infostream << "Resolving bind address \"" << bind_str
 		           << "\" failed: " << e.what()
 		           << " -- Listening on all addresses." << std::endl;
 	}
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !server_conf.getBool("enable_ipv6")) {
 		errorstream << "Unable to listen on "
 		            << bind_addr.serializeString()
 		            << L" because IPv6 is disabled" << std::endl;
@@ -812,7 +826,7 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 	if (cmd_args.exists("terminal")) {
 #if USE_CURSES
 		bool name_ok = true;
-		std::string admin_nick = g_settings->get("name");
+		std::string admin_nick = server_conf.get("name");
 
 		name_ok = name_ok && !admin_nick.empty();
 		name_ok = name_ok && string_allowed(admin_nick, PLAYERNAME_ALLOWED_CHARS);
@@ -916,8 +930,8 @@ static bool migrate_map_database(const GameParams &game_params, const Settings &
 		return false;
 	}
 
-	MapDatabase *old_db = ServerMap::createDatabase(backend, game_params.world_path, world_mt),
-		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path, world_mt);
+	MapDatabase *old_db = ServerMap::createDatabase(backend, game_params.world_path, &world_mt),
+		*new_db = ServerMap::createDatabase(migrate_to, game_params.world_path, &world_mt);
 
 	u32 count = 0;
 	time_t last_update_time = 0;

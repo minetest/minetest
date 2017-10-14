@@ -135,7 +135,7 @@ public:
 	void savePlayer(RemotePlayer *player);
 	bool loadPlayer(RemotePlayer *player, PlayerSAO *sao);
 	bool removePlayer(const std::string &name);
-	void listPlayers(std::vector<std::string> &res);
+	void listPlayers(std::vector<std::string> &res, Settings *settings);
 
 protected:
 	virtual void createDatabase();

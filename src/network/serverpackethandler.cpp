@@ -142,7 +142,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 
 	client->net_proto_version = net_proto_version;
 
-	if ((g_settings->getBool("strict_protocol_version_checking") &&
+	if (m_conf.getBool("strict_protocol_version_checking") &&
 			net_proto_version != LATEST_PROTOCOL_VERSION) ||
 			net_proto_version < SERVER_PROTOCOL_VERSION_MIN ||
 			net_proto_version > SERVER_PROTOCOL_VERSION_MAX) {
@@ -203,11 +203,11 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	// Enforce user limit.
 	// Don't enforce for users that have some admin right or mod permits it.
 	if (m_clients.isUserLimitReached() &&
-			playername != g_settings->get("name") &&
+			playername != m_conf.get("name") &&
 			!m_script->can_bypass_userlimit(playername, addr_s)) {
 		actionstream << "Server: " << playername << " tried to join from "
 				<< addr_s << ", but there" << " are already max_users="
-				<< g_settings->getU16("max_users") << " players." << std::endl;
+				<< m_conf.getU16("max_users") << " players." << std::endl;
 		DenyAccess(pkt->getPeerId(), SERVER_ACCESSDENIED_TOO_MANY_USERS);
 		return;
 	}
@@ -245,7 +245,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			return;
 		}
 	} else {
-		std::string default_password = g_settings->get("default_password");
+		std::string default_password = m_conf.get("default_password");
 		if (default_password.length() == 0) {
 			auth_mechs |= AUTH_MECHANISM_FIRST_SRP;
 		} else {
@@ -317,7 +317,7 @@ void Server::handleCommand_Init2(NetworkPacket* pkt)
 
 	// Send time of day
 	u16 time = m_env->getTimeOfDay();
-	float time_speed = g_settings->getFloat("time_speed");
+	float time_speed = m_conf.getFloat("time_speed");
 	SendTimeOfDay(pkt->getPeerId(), time, time_speed);
 
 	SendCSMFlavourLimits(pkt->getPeerId());
@@ -788,7 +788,7 @@ void Server::handleCommand_Damage(NetworkPacket* pkt)
 		return;
 	}
 
-	if (g_settings->getBool("enable_damage")) {
+	if (m_conf.getBool("enable_damage")) {
 		if (playersao->isDead()) {
 			verbosestream << "Server::ProcessData(): Info: "
 				"Ignoring damage as player " << player->getName()
@@ -1062,7 +1062,7 @@ void Server::handleCommand_Interact(NetworkPacket* pkt)
 		(only when digging or placing things)
 	*/
 	static thread_local const bool enable_anticheat =
-			!g_settings->getBool("disable_anticheat");
+			!m_conf.getBool("disable_anticheat");
 
 	if ((action == 0 || action == 2 || action == 3 || action == 4) &&
 			(enable_anticheat && !isSingleplayer())) {
@@ -1510,7 +1510,7 @@ void Server::handleCommand_FirstSrp(NetworkPacket* pkt)
 		}
 
 		if (!isSingleplayer() &&
-				g_settings->getBool("disallow_empty_password") &&
+				m_conf.getBool("disallow_empty_password") &&
 				is_empty == 1) {
 			actionstream << "Server: " << playername
 					<< " supplied empty password from " << addr_s << std::endl;
@@ -1750,7 +1750,7 @@ void Server::handleCommand_ModChannelJoin(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (g_settings->getBool("enable_mod_channels") &&
+	if (m_conf.getBool("enable_mod_channels") &&
 			m_modchannel_mgr->joinChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8) MODCHANNEL_SIGNAL_JOIN_OK;
 		infostream << "Peer " << pkt->getPeerId() << " joined channel " << channel_name
@@ -1774,7 +1774,7 @@ void Server::handleCommand_ModChannelLeave(NetworkPacket *pkt)
 		pkt->getPeerId());
 
 	// Send signal to client to notify join succeed or not
-	if (g_settings->getBool("enable_mod_channels") &&
+	if (m_conf.getBool("enable_mod_channels") &&
 			m_modchannel_mgr->leaveChannel(channel_name, pkt->getPeerId())) {
 		resp_pkt << (u8)MODCHANNEL_SIGNAL_LEAVE_OK;
 		infostream << "Peer " << pkt->getPeerId() << " left channel " << channel_name
@@ -1797,7 +1797,7 @@ void Server::handleCommand_ModChannelMsg(NetworkPacket *pkt)
 			<< " on channel " << channel_name << " message: " << channel_msg << std::endl;
 
 	// If mod channels are not enabled, discard message
-	if (!g_settings->getBool("enable_mod_channels")) {
+	if (!m_conf.getBool("enable_mod_channels")) {
 		return;
 	}
 

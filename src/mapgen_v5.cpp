@@ -166,7 +166,7 @@ int MapgenV5::getSpawnLevelAtPoint(v2s16 p)
 }
 
 
-void MapgenV5::makeChunk(BlockMakeData *data)
+void MapgenV5::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -224,7 +224,7 @@ void MapgenV5::makeChunk(BlockMakeData *data)
 
 	// Generate dungeons and desert temples
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone, server_settings);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

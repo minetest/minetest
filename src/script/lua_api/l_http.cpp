@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include "debug.h"
 #include "log.h"
+#include "server.h"
 
 #include <algorithm>
 #include <iomanip>
@@ -153,13 +154,14 @@ int ModApiHttp::l_request_http_api(lua_State *L)
 	if (!lua_isstring(L, -1)) {
 		return 0;
 	}
+	Settings *settings = getServer(L)->getSettings();
 
 	const char *mod_name = lua_tostring(L, -1);
-	std::string http_mods = g_settings->get("secure.http_mods");
+	std::string http_mods = settings->get("secure.http_mods");
 	http_mods.erase(std::remove(http_mods.begin(), http_mods.end(), ' '), http_mods.end());
 	std::vector<std::string> mod_list_http = str_split(http_mods, ',');
 
-	std::string trusted_mods = g_settings->get("secure.trusted_mods");
+	std::string trusted_mods = settings->get("secure.trusted_mods");
 	trusted_mods.erase(std::remove(trusted_mods.begin(), trusted_mods.end(), ' '), trusted_mods.end());
 	std::vector<std::string> mod_list_trusted = str_split(trusted_mods, ',');
 

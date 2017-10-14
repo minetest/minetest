@@ -48,10 +48,6 @@ bool MapSettingsManager::getMapSetting(
 	if (m_map_settings->getNoEx(name, *value_out))
 		return true;
 
-	// Compatibility kludge
-	if (m_user_settings == g_settings && name == "seed")
-		return m_user_settings->getNoEx("fixed_map_seed", *value_out);
-
 	return m_user_settings->getNoEx(name, *value_out);
 }
 

@@ -555,8 +555,8 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	std::deque<v3s16> must_reflow;
 
 	std::vector<std::pair<v3s16, MapNode> > changed_nodes;
-
-	u32 liquid_loop_max = g_settings->getS32("liquid_loop_max");
+	Settings *settings = m_gamedef->getSettings();
+	u32 liquid_loop_max = settings->getS32("liquid_loop_max");
 	u32 loop_max = liquid_loop_max;
 
 #if 0
@@ -566,7 +566,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	 */
 	if (m_transforming_liquid.size() > loop_max * 2) {
 		// "Burst" mode
-		float server_step = g_settings->getFloat("dedicated_server_step");
+		float server_step = settings->getFloat("dedicated_server_step");
 		if (m_transforming_liquid_loop_count_multiplier - 1.0 < server_step)
 			m_transforming_liquid_loop_count_multiplier *= 1.0 + server_step / 10;
 	} else {
@@ -875,7 +875,7 @@ void Map::transformLiquids(std::map<v3s16, MapBlock*> &modified_blocks,
 	/* ----------------------------------------------------------------------
 	 * Manage the queue so that it does not grow indefinately
 	 */
-	u16 time_until_purge = g_settings->getU16("liquid_queue_purge_time");
+	u16 time_until_purge = settings->getU16("liquid_queue_purge_time");
 
 	if (time_until_purge == 0)
 		return; // Feature disabled
@@ -1139,7 +1139,7 @@ bool Map::isBlockOccluded(MapBlock *block, v3s16 cam_pos_nodes) {
 ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 		EmergeManager *emerge):
 	Map(dout_server, gamedef),
-	settings_mgr(g_settings, savedir + DIR_DELIM + "map_meta.txt"),
+	settings_mgr(gamedef->getSettings(), savedir + DIR_DELIM + "map_meta.txt"),
 	m_emerge(emerge)
 {
 	verbosestream<<FUNCTION_NAME<<std::endl;
@@ -1152,18 +1152,13 @@ ServerMap::ServerMap(const std::string &savedir, IGameDef *gamedef,
 	*/
 
 	// Determine which database backend to use
-	std::string conf_path = savedir + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("backend")) {
+	Settings *conf = gamedef->getSettings();
+	if (!conf->exists("backend")) {
 		// fall back to sqlite3
-		conf.set("backend", "sqlite3");
+		conf->set("backend", "sqlite3");
 	}
-	std::string backend = conf.get("backend");
+	std::string backend = conf->get("backend");
 	dbase = createDatabase(backend, savedir, conf);
-
-	if (!conf.updateConfigFile(conf_path.c_str()))
-		errorstream << "ServerMap::ServerMap(): Failed to update world.mt!" << std::endl;
 
 	m_savedir = savedir;
 	m_map_saving_enabled = false;
@@ -1896,10 +1891,10 @@ void ServerMap::listAllLoadedBlocks(std::vector<v3s16> &dst)
 MapDatabase *ServerMap::createDatabase(
 	const std::string &name,
 	const std::string &savedir,
-	Settings &conf)
+	Settings *conf)
 {
 	if (name == "sqlite3")
-		return new MapDatabaseSQLite3(savedir);
+		return new MapDatabaseSQLite3(savedir, conf);
 	if (name == "dummy")
 		return new Database_Dummy();
 	#if USE_LEVELDB
@@ -1913,7 +1908,7 @@ MapDatabase *ServerMap::createDatabase(
 	#if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
-		conf.getNoEx("pgsql_connection", connect_string);
+		conf->getNoEx("pgsql_connection", connect_string);
 		return new MapDatabasePostgreSQL(connect_string);
 	}
 	#endif
@@ -2095,7 +2090,7 @@ void ServerMap::loadBlock(std::string *blob, v3s16 p3d, MapSector *sector, bool 
 		// TODO: Block should be marked as invalid in memory so that it is
 		// not touched but the game can run
 
-		if(g_settings->getBool("ignore_world_load_errors")){
+		if(m_gamedef->getSettings()->getBool("ignore_world_load_errors")){
 			errorstream<<"Ignoring block load error. Duck and cover! "
 					<<"(ignore_world_load_errors)"<<std::endl;
 		} else {

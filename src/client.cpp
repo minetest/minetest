@@ -87,7 +87,8 @@ Client::Client(
 		tsrc, this
 	),
 	m_particle_manager(&m_env),
-	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, ipv6, this)),
+	m_con(new con::Connection(PROTOCOL_ID, 512, CONNECTION_TIMEOUT,
+			g_settings->getU16("max_packets_per_iteration"), ipv6, this)),
 	m_address_name(address_name),
 	m_server_ser_ver(SER_FMT_VER_INVALID),
 	m_last_chat_message_sent(time(NULL)),
@@ -735,7 +736,7 @@ void Client::initLocalMapSaving(const Address &address,
 
 	fs::CreateAllDirs(world_path);
 
-	m_localdb = new MapDatabaseSQLite3(world_path);
+	m_localdb = new MapDatabaseSQLite3(world_path, g_settings);
 	m_localdb->beginSave();
 	actionstream << "Local map saving started, map will be saved at '" << world_path << "'" << std::endl;
 }

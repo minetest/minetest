@@ -208,7 +208,7 @@ float MapgenCarpathian::getSteps(float noise)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void MapgenCarpathian::makeChunk(BlockMakeData *data)
+void MapgenCarpathian::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -265,7 +265,7 @@ void MapgenCarpathian::makeChunk(BlockMakeData *data)
 
 	// Generate dungeons
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone, server_settings);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

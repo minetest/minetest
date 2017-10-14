@@ -348,25 +348,18 @@ ServerEnvironment::ServerEnvironment(ServerMap *map,
 	m_path_world(path_world)
 {
 	// Determine which database backend to use
-	std::string conf_path = path_world + DIR_DELIM + "world.mt";
-	Settings conf;
-	bool succeeded = conf.readConfigFile(conf_path.c_str());
-	if (!succeeded || !conf.exists("player_backend")) {
+	Settings* conf = m_server->getSettings();
+	if (!conf->exists("player_backend")) {
 		// fall back to files
-		conf.set("player_backend", "files");
+		conf->set("player_backend", "files");
 		warningstream << "/!\\ You are using old player file backend. "
 				<< "This backend is deprecated and will be removed in next release /!\\"
 				<< std::endl << "Switching to SQLite3 or PostgreSQL is advised, "
 				<< "please read http://wiki.minetest.net/Database_backends." << std::endl;
-
-		if (!conf.updateConfigFile(conf_path.c_str())) {
-			errorstream << "ServerEnvironment::ServerEnvironment(): "
-				<< "Failed to update world.mt!" << std::endl;
-		}
 	}
 
 	std::string name;
-	conf.getNoEx("player_backend", name);
+	conf->getNoEx("player_backend", name);
 	m_player_database = openPlayerDatabase(name, path_world, conf);
 }
 
@@ -1038,7 +1031,8 @@ void ServerEnvironment::clearObjects(ClearObjectsMode mode)
 	// Remove objects in all loadable blocks
 	u32 unload_interval = U32_MAX;
 	if (mode == CLEAR_OBJECTS_MODE_FULL) {
-		unload_interval = g_settings->getS32("max_clearobjects_extra_loaded_blocks");
+		Settings *settings = m_server->getSettings();
+		unload_interval = settings->getS32("max_clearobjects_extra_loaded_blocks");
 		unload_interval = MYMAX(unload_interval, 1);
 	}
 	u32 report_interval = loadable_blocks.size() / 10;
@@ -1104,7 +1098,7 @@ void ServerEnvironment::step(float dtime)
 	// NOTE: This is kind of funny on a singleplayer game, but doesn't
 	// really matter that much.
 	static thread_local const float server_step =
-			g_settings->getFloat("dedicated_server_step");
+			m_server->getSettings()->getFloat("dedicated_server_step");
 	m_recommended_send_interval = server_step;
 
 	/*
@@ -1157,7 +1151,7 @@ void ServerEnvironment::step(float dtime)
 			Update list of active blocks, collecting changes
 		*/
 		static thread_local const s16 active_block_range =
-				g_settings->getS16("active_block_range");
+				m_server->getSettings()->getS16("active_block_range");
 		std::set<v3s16> blocks_removed;
 		std::set<v3s16> blocks_added;
 		m_active_blocks.update(players_blockpos, active_block_range,
@@ -1797,7 +1791,8 @@ void ServerEnvironment::activateObjects(MapBlock *block, u32 dtime_s)
 		<<"activating objects of block "<<PP(block->getPos())
 		<<" ("<<block->m_static_objects.m_stored.size()
 		<<" objects)"<<std::endl;
-	bool large_amount = (block->m_static_objects.m_stored.size() > g_settings->getU16("max_objects_per_block"));
+	bool large_amount = (block->m_static_objects.m_stored.size() >
+		m_server->getSettings()->getU16("max_objects_per_block"));
 	if (large_amount) {
 		errorstream<<"suspiciously large amount of objects detected: "
 			<<block->m_static_objects.m_stored.size()<<" in "
@@ -2053,7 +2048,7 @@ bool ServerEnvironment::saveStaticToBlock(
 				<< " when saving static data of object to it. id=" << store_id << std::endl;
 		return false;
 	}
-	if (block->m_static_objects.m_stored.size() >= g_settings->getU16("max_objects_per_block")) {
+	if (block->m_static_objects.m_stored.size() >= m_server->getSettings()->getU16("max_objects_per_block")) {
 		warningstream << "ServerEnv: Trying to store id = " << store_id
 				<< " statically but block " << PP(blockpos)
 				<< " already contains "
@@ -2073,18 +2068,18 @@ bool ServerEnvironment::saveStaticToBlock(
 }
 
 PlayerDatabase *ServerEnvironment::openPlayerDatabase(const std::string &name,
-		const std::string &savedir, const Settings &conf)
+		const std::string &savedir, Settings* conf)
 {
 
 	if (name == "sqlite3")
-		return new PlayerDatabaseSQLite3(savedir);
+		return new PlayerDatabaseSQLite3(savedir, conf);
 
 	if (name == "dummy")
 		return new Database_Dummy();
 #if USE_POSTGRESQL
 	if (name == "postgresql") {
 		std::string connect_string;
-		conf.getNoEx("pgsql_player_connection", connect_string);
+		conf->getNoEx("pgsql_player_connection", connect_string);
 		return new PlayerDatabasePostgreSQL(connect_string);
 	}
 #endif
@@ -2130,16 +2125,16 @@ bool ServerEnvironment::migratePlayersDatabase(const GameParams &game_params,
 
 	try {
 		PlayerDatabase *srcdb = ServerEnvironment::openPlayerDatabase(backend,
-			game_params.world_path, world_mt);
+			game_params.world_path, &world_mt);
 		PlayerDatabase *dstdb = ServerEnvironment::openPlayerDatabase(migrate_to,
-			game_params.world_path, world_mt);
+			game_params.world_path, &world_mt);
 
 		std::vector<std::string> player_list;
-		srcdb->listPlayers(player_list);
+		srcdb->listPlayers(player_list, g_settings);
 		for (std::vector<std::string>::const_iterator it = player_list.begin();
 			it != player_list.end(); ++it) {
 			actionstream << "Migrating player " << it->c_str() << std::endl;
-			RemotePlayer player(it->c_str(), NULL);
+			RemotePlayer player(it->c_str(), NULL, g_settings);
 			PlayerSAO playerSAO(NULL, &player, 15000, false);
 
 			srcdb->loadPlayer(&player, &playerSAO);

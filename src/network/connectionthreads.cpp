@@ -67,11 +67,11 @@ static u8 readChannel(u8 *packetdata)
 /******************************************************************************/
 
 ConnectionSendThread::ConnectionSendThread(unsigned int max_packet_size,
-	float timeout) :
+	float timeout, u16 max_packets_per_iteration) :
 	Thread("ConnectionSend"),
 	m_max_packet_size(max_packet_size),
 	m_timeout(timeout),
-	m_max_data_packets_per_iteration(g_settings->getU16("max_packets_per_iteration"))
+	m_max_data_packets_per_iteration(max_packets_per_iteration)
 {
 }
 
@@ -794,8 +794,9 @@ void ConnectionSendThread::sendAsPacket(session_t peer_id, u8 channelnum,
 	m_outgoing_queue.push(packet);
 }
 
-ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size) :
-	Thread("ConnectionReceive")
+ConnectionReceiveThread::ConnectionReceiveThread(unsigned int max_packet_size, u16 max_packets) :
+	Thread("ConnectionReceive"),
+	m_max_packet_count(max_packets)
 {
 }
 
@@ -1231,12 +1232,12 @@ SharedBuffer<u8> ConnectionReceiveThread::handlePacketType_Control(Channel *chan
 			<< peer->id << std::endl);
 
 		if (!m_connection->deletePeer(peer->id, false)) {
-			derr_con << m_connection->getDesc() << "DISCO: Peer not found" << std::endl;
+			derr_con << m_connection->getDesc() << "DIm_max_data_packets_per_iterationSCO: Peer not found" << std::endl;
 		}
 
 		throw ProcessedSilentlyException("Got a DISCO");
 	} else if (controltype == CONTROLTYPE_ENABLE_BIG_SEND_WINDOW) {
-		dynamic_cast<UDPPeer *>(peer)->setNonLegacyPeer();
+		dynamic_cast<UDPPeer *>(peer)->setNonLegacyPeer(m_max_packet_count);
 		throw ProcessedSilentlyException("Got non legacy control");
 	} else {
 		LOG(derr_con << m_connection->getDesc()

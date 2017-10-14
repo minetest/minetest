@@ -156,7 +156,7 @@ int MapgenFlat::getSpawnLevelAtPoint(v2s16 p)
 }
 
 
-void MapgenFlat::makeChunk(BlockMakeData *data)
+void MapgenFlat::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
@@ -199,7 +199,7 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 		generateCaves(stone_surface_max_y, large_cave_depth);
 
 	if (flags & MG_DUNGEONS)
-		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone);
+		generateDungeons(stone_surface_max_y, mgstone_type, biome_stone, server_settings);
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)

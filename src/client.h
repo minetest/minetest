@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "network/address.h"
 #include "network/peerhandler.h"
 #include <fstream>
+#include "settings.h"
 
 #define CLIENT_CHAT_MESSAGE_LIMIT_PER_10S 10.0f
 
@@ -431,6 +432,11 @@ public:
 	bool leaveModChannel(const std::string &channel);
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
+
+	Settings *getSettings()
+	{
+		return g_settings;
+	}
 
 private:
 

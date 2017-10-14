@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
-
 #pragma once
 
 #include <string>
@@ -24,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "irr_v3d.h"
 #include "irrlichttypes.h"
 #include "util/basic_macros.h"
+#include "settings.h"
 
 class Database
 {
@@ -59,5 +59,5 @@ public:
 	virtual void savePlayer(RemotePlayer *player) = 0;
 	virtual bool loadPlayer(RemotePlayer *player, PlayerSAO *sao) = 0;
 	virtual bool removePlayer(const std::string &name) = 0;
-	virtual void listPlayers(std::vector<std::string> &res) = 0;
+	virtual void listPlayers(std::vector<std::string> &res, Settings *settings) = 0;
 };

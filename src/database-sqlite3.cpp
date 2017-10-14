@@ -113,9 +113,10 @@ int Database_SQLite3::busyHandler(void *data, int count)
 }
 
 
-Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string &dbname) :
+Database_SQLite3::Database_SQLite3(const std::string &savedir, const std::string &dbname, Settings *conf) :
 	m_savedir(savedir),
-	m_dbname(dbname)
+	m_dbname(dbname),
+	m_conf(conf)
 {
 }
 
@@ -164,7 +165,7 @@ void Database_SQLite3::openDatabase()
 	}
 
 	std::string query_str = std::string("PRAGMA synchronous = ")
-			 + itos(g_settings->getU16("sqlite_synchronous"));
+			 + itos(m_conf->getU16("sqlite_synchronous"));
 	SQLOK(sqlite3_exec(m_database, query_str.c_str(), NULL, NULL, NULL),
 		"Failed to modify sqlite3 synchronous mode");
 	SQLOK(sqlite3_exec(m_database, "PRAGMA foreign_keys = ON", NULL, NULL, NULL),
@@ -197,8 +198,8 @@ Database_SQLite3::~Database_SQLite3()
  * Map database
  */
 
-MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir):
-	Database_SQLite3(savedir, "map"),
+MapDatabaseSQLite3::MapDatabaseSQLite3(const std::string &savedir, Settings *conf):
+	Database_SQLite3(savedir, "map", conf),
 	MapDatabase()
 {
 }
@@ -323,8 +324,8 @@ void MapDatabaseSQLite3::listAllLoadableBlocks(std::vector<v3s16> &dst)
  * Player Database
  */
 
-PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir):
-	Database_SQLite3(savedir, "players"),
+PlayerDatabaseSQLite3::PlayerDatabaseSQLite3(const std::string &savedir, Settings *conf):
+	Database_SQLite3(savedir, "players", conf),
 	PlayerDatabase()
 {
 }
@@ -595,7 +596,7 @@ bool PlayerDatabaseSQLite3::removePlayer(const std::string &name)
 	return true;
 }
 
-void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res)
+void PlayerDatabaseSQLite3::listPlayers(std::vector<std::string> &res, Settings *settings)
 {
 	verifyDatabase();
 

@@ -111,7 +111,7 @@ bool Address::operator!=(const Address &address)
 	return !(*this == address);
 }
 
-void Address::Resolve(const char *name)
+void Address::Resolve(const char *name, bool is_ipv6)
 {
 	if (!name || name[0] == 0) {
 		if (m_addr_family == AF_INET) {
@@ -129,7 +129,7 @@ void Address::Resolve(const char *name)
 	hints.ai_socktype = 0;
 	hints.ai_protocol = 0;
 	hints.ai_flags = 0;
-	if (g_settings->getBool("enable_ipv6")) {
+	if (is_ipv6) {
 		// AF_UNSPEC allows both IPv6 and IPv4 addresses to be returned
 		hints.ai_family = AF_UNSPEC;
 	} else {

@@ -84,7 +84,7 @@ DungeonGen::DungeonGen(INodeDefManager *ndef,
 }
 
 
-void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
+void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax, bool project_dungeons)
 {
 	assert(vm);
 
@@ -95,8 +95,6 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 	float nval_density = NoisePerlin3D(&dp.np_density, nmin.X, nmin.Y, nmin.Z, dp.seed);
 	if (nval_density < 1.0f)
 		return;
-
-	static const bool preserve_ignore = !g_settings->getBool("projecting_dungeons");
 
 	this->vm = vm;
 	this->blockseed = bseed;
@@ -115,7 +113,7 @@ void DungeonGen::generate(MMVManip *vm, u32 bseed, v3s16 nmin, v3s16 nmax)
 				for (s16 x = nmin.X; x <= nmax.X; x++) {
 					content_t c = vm->m_data[i].getContent();
 					if (c == CONTENT_AIR || c == dp.c_water ||
-							(preserve_ignore && c == CONTENT_IGNORE) ||
+							(!project_dungeons && c == CONTENT_IGNORE) ||
 							c == dp.c_river_water)
 						vm->m_flags[i] |= VMANIP_FLAG_DUNGEON_PRESERVE;
 					i++;

@@ -350,7 +350,7 @@ public:
 private:
 
 	static PlayerDatabase *openPlayerDatabase(const std::string &name,
-			const std::string &savedir, const Settings &conf);
+			const std::string &savedir, Settings* conf);
 	/*
 		Internal ActiveObject interface
 		-------------------------------------------

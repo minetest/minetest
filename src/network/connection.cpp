@@ -923,12 +923,12 @@ bool UDPPeer::getAddress(MTProtocols type,Address& toset)
 	return false;
 }
 
-void UDPPeer::setNonLegacyPeer()
+void UDPPeer::setNonLegacyPeer(u16 max_packets_per_iteration)
 {
 	m_legacy_peer = false;
 	for(unsigned int i=0; i< CHANNEL_COUNT; i++)
 	{
-		channels->setWindowSize(g_settings->getU16("max_packets_per_iteration"));
+		channels->setWindowSize(max_packets_per_iteration);
 	}
 }
 
@@ -1146,11 +1146,11 @@ SharedBuffer<u8> UDPPeer::addSplitPacket(u8 channel, const BufferedPacket &toadd
 */
 
 Connection::Connection(u32 protocol_id, u32 max_packet_size, float timeout,
-		bool ipv6, PeerHandler *peerhandler) :
+		u16 max_packets, bool ipv6, PeerHandler *peerhandler) :
 	m_udpSocket(ipv6),
 	m_protocol_id(protocol_id),
-	m_sendThread(new ConnectionSendThread(max_packet_size, timeout)),
-	m_receiveThread(new ConnectionReceiveThread(max_packet_size)),
+	m_sendThread(new ConnectionSendThread(max_packet_size, timeout, max_packets)),
+	m_receiveThread(new ConnectionReceiveThread(max_packet_size, max_packets)),
 	m_bc_peerhandler(peerhandler)
 
 {

@@ -789,7 +789,7 @@ int ModApiMapgen::l_set_noiseparams(lua_State *L)
 
 	bool set_default = !lua_isboolean(L, 3) || lua_toboolean(L, 3);
 
-	g_settings->setNoiseParams(name, np, set_default);
+	getServer(L)->getSettings()->setNoiseParams(name, np, set_default);
 
 	return 0;
 }
@@ -803,7 +803,7 @@ int ModApiMapgen::l_get_noiseparams(lua_State *L)
 	std::string name = luaL_checkstring(L, 1);
 
 	NoiseParams np;
-	if (!g_settings->getNoiseParams(name, np))
+	if (!getServer(L)->getSettings()->getNoiseParams(name, np))
 		return 0;
 
 	push_noiseparams(L, &np);

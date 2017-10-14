@@ -55,6 +55,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "raycast.h"
 #include "server.h"
 #include "settings.h"
+#include "defaultsettings.h"
 #include "shader.h"
 #include "sky.h"
 #include "subgame.h"
@@ -918,7 +919,6 @@ bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_de
 				    << ") - Position not loaded" << std::endl;
 		}
 	}
-
 	return false;
 }
 
@@ -1866,22 +1866,28 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 {
 	showOverlayMessage("Creating server...", 0, 5);
 
-	std::string bind_str = g_settings->get("bind_address");
+	Settings conf;
+	set_default_settings(&conf);
+	std::string server_config_filepath = map_dir + DIR_DELIM + "world.mt";
+	conf.readConfigFile(server_config_filepath.c_str());
+	override_default_settings(&conf, g_settings);
+
+	std::string bind_str = conf.get("bind_address");
 	Address bind_addr(0, 0, 0, 0, port);
 
-	if (g_settings->getBool("ipv6_server")) {
+	if (conf.getBool("ipv6_server")) {
 		bind_addr.setAddress((IPv6AddressBytes *) NULL);
 	}
 
 	try {
-		bind_addr.Resolve(bind_str.c_str());
+		bind_addr.Resolve(bind_str.c_str(), conf.getBool("enable_ipv6"));
 	} catch (ResolveError &e) {
 		infostream << "Resolving bind address \"" << bind_str
 			   << "\" failed: " << e.what()
 			   << " -- Listening on all addresses." << std::endl;
 	}
 
-	if (bind_addr.isIPv6() && !g_settings->getBool("enable_ipv6")) {
+	if (bind_addr.isIPv6() && !conf.getBool("enable_ipv6")) {
 		*error_message = "Unable to listen on " +
 				bind_addr.serializeString() +
 				" because IPv6 is disabled";
@@ -2098,7 +2104,7 @@ bool Game::connectToServer(const std::string &playername,
 	Address connect_address(0, 0, 0, 0, port);
 
 	try {
-		connect_address.Resolve(address->c_str());
+		connect_address.Resolve(address->c_str(), g_settings->getBool("enable_ipv6"));
 
 		if (connect_address.isZero()) { // i.e. INADDR_ANY, IN6ADDR_ANY
 			//connect_address.Resolve("localhost");

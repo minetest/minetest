@@ -48,7 +48,7 @@ MapgenSinglenode::MapgenSinglenode(int mapgenid,
 
 //////////////////////// Map generator
 
-void MapgenSinglenode::makeChunk(BlockMakeData *data)
+void MapgenSinglenode::makeChunk(BlockMakeData *data, Settings *server_settings)
 {
 	// Pre-conditions
 	assert(data->vmanip);
