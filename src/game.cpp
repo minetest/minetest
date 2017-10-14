@@ -4765,39 +4765,41 @@ void Game::showPauseMenu()
 		<< "textarea[0.4,0.25;3.9,6.25;;" << PROJECT_NAME_C " " VERSION_STRING "\n"
 		<< "\n"
 		<<  strgettext("Game info:") << "\n";
-	const std::string &address = client->getAddressName();
+	const ServerInfo *server_info = client->getServerInfo();
+
 	static const std::string mode = strgettext("- Mode: ");
+	static const std::string on = strgettext("On");
+	static const std::string off = strgettext("Off");
+
+	const std::string &damage = server_info->enable_damage ? on : off;
+	const std::string &creative = server_info->creative_mode ? on : off;
+	const std::string &announced = server_info->server_announce ? on : off;
+	const std::string &pvp = server_info->enable_pvp ? on : off;
+
+	const std::string &address = client->getAddressName();
+	std::string server_name = server_info->server_name;
+	str_formspec_escape(server_name);
+
+	std::string connection_info = "";
 	if (!simple_singleplayer_mode) {
 		Address serverAddress = client->getServerAddress();
 		if (!address.empty()) {
-			os << mode << strgettext("Remote server") << "\n"
-					<< strgettext("- Address: ") << address;
+			os << mode << strgettext("Remote server") << "\n";
+			connection_info += strgettext("- Address: ") + address + "\n";
 		} else {
-			os << mode << strgettext("Hosting server");
+			os << mode << strgettext("Hosting server") << "\n";
 		}
-		os << "\n" << strgettext("- Port: ") << serverAddress.getPort() << "\n";
+		connection_info += strgettext("- Port: ") + std::to_string(serverAddress.getPort()) + "\n";
 	} else {
 		os << mode << strgettext("Singleplayer") << "\n";
 	}
-	if (simple_singleplayer_mode || address.empty()) {
-		static const std::string on = strgettext("On");
-		static const std::string off = strgettext("Off");
-		const std::string &damage = g_settings->getBool("enable_damage") ? on : off;
-		const std::string &creative = g_settings->getBool("creative_mode") ? on : off;
-		const std::string &announced = g_settings->getBool("server_announce") ? on : off;
-		os << strgettext("- Damage: ") << damage << "\n"
-				<< strgettext("- Creative Mode: ") << creative << "\n";
-		if (!simple_singleplayer_mode) {
-			const std::string &pvp = g_settings->getBool("enable_pvp") ? on : off;
-			os << strgettext("- PvP: ") << pvp << "\n"
-					<< strgettext("- Public: ") << announced << "\n";
-			std::string server_name = g_settings->get("server_name");
-			str_formspec_escape(server_name);
-			if (announced == on && !server_name.empty())
-				os << strgettext("- Server Name: ") << server_name;
 
-		}
-	}
+	if (announced == on && !server_name.empty())
+		os << strgettext("- Server Name: ") << server_name << "\n";
+	os << connection_info << strgettext("- Damage: ") << damage << "\n"
+			<< strgettext("- Creative Mode: ") << creative << "\n";
+	os << strgettext("- PvP: ") << pvp << "\n"
+			<< strgettext("- Public: ") << announced;
 	os << ";]";
 
 	/* Create menu */

@@ -41,7 +41,7 @@ const ToClientCommandHandler toClientCommandTable[TOCLIENT_NUM_MSG_TYPES] =
 	null_command_handler, // 0x0E
 	null_command_handler, // 0x0F
 	null_command_handler, // 0x10
-	null_command_handler,
+	{ "TOCLIENT_SERVER_INFO",             TOCLIENT_STATE_CONNECTED, &Client::handleCommand_ServerInfo }, // 0x11
 	null_command_handler,
 	null_command_handler,
 	null_command_handler,
