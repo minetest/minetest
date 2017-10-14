@@ -114,6 +114,14 @@ private:
 class ClientScripting;
 class GameUI;
 
+struct ServerInfo {
+	bool enable_damage;
+	bool creative_mode;
+	bool server_announce;
+	bool enable_pvp;
+	std::string server_name;
+};
+
 class Client : public con::PeerHandler, public InventoryManager, public IGameDef
 {
 public:
@@ -226,6 +234,7 @@ public:
 	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
+	void handleCommand_ServerInfo(NetworkPacket *pkt);
 
 	void ProcessData(NetworkPacket *pkt);
 
@@ -427,6 +436,8 @@ public:
 	bool sendModChannelMessage(const std::string &channel, const std::string &message);
 	ModChannel *getModChannel(const std::string &channel);
 
+	const ServerInfo &getServerInfo() const { return m_server_info; }
+
 private:
 	void loadMods();
 	bool checkBuiltinIntegrity();
@@ -595,4 +606,6 @@ private:
 	u32 m_csm_noderange_limit = 8;
 
 	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
+
+	ServerInfo m_server_info;
 };

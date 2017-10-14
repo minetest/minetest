@@ -394,6 +394,19 @@ void Server::handleCommand_ClientReady(NetworkPacket* pkt)
 	}
 	m_clients.send(peer_id, 0, &list_pkt, true);
 
+	NetworkPacket server_info(TOCLIENT_SERVER_INFO, 0, peer_id);
+
+	bool is_public = false;
+	if (!m_simple_singleplayer_mode)
+		is_public = g_settings->getBool("server_announce");
+
+	server_info << g_settings->getBool("enable_damage")
+		<< g_settings->getBool("creative_mode")
+		<< is_public
+		<< g_settings->getBool("enable_pvp")
+		<< g_settings->get("server_name");
+	m_clients.send(peer_id, 0, &server_info, true);
+
 	NetworkPacket notice_pkt(TOCLIENT_UPDATE_PLAYER_LIST, 0, PEER_ID_INEXISTENT);
 	// (u16) 1 + std::string represents a pseudo vector serialization representation
 	notice_pkt << (u8) PLAYER_LIST_ADD << (u16) 1 << std::string(playersao->getPlayer()->getName());
