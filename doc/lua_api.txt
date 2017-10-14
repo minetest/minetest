@@ -4432,7 +4432,7 @@ Definition tables
 	  when displacement mapping is used
 	  Directions are from the point of view of the tile texture,
 	  not the node it's on
-    * align style determines will the texture be rotated with the node
+    * align style determines whether the texture will be rotated with the node
           or kept aligned with its surroundings. "user" means that client
           setting will be used, similar to `glasslike_framed_optional`.
           Note: supported by solid nodes and nodeboxes only.
