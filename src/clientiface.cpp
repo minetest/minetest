@@ -282,10 +282,8 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Don't send already sent blocks
 			*/
-			if(m_blocks_sent.find(p) != m_blocks_sent.end())
-			{
+			if (m_blocks_sent.find(p) != m_blocks_sent.end())
 				continue;
-			}
 
 			/*
 				Check if map has this block
