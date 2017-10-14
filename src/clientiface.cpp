@@ -52,6 +52,17 @@ std::string ClientInterface::state2Name(ClientState state)
 	return statenames[state];
 }
 
+RemoteClient::RemoteClient() :
+	m_max_simul_sends(g_settings->getU16("max_simultaneous_block_sends_per_client")),
+	m_min_time_from_building(
+		g_settings->getFloat("full_block_send_enable_min_time_from_building")),
+	m_max_send_distance(g_settings->getS16("max_block_send_distance")),
+	m_block_optimize_distance(g_settings->getS16("block_send_optimize_distance")),
+	m_max_gen_distance(g_settings->getS16("max_block_generate_distance")),
+	m_occ_cull(g_settings->getBool("server_side_occlusion_culling"))
+{
+}
+
 void RemoteClient::ResendBlockIfOnWire(v3s16 p)
 {
 	// if this block is on wire, mark it for sending again as soon as possible
@@ -101,8 +112,7 @@ void RemoteClient::GetNextBlocks (
 		return;
 
 	// Won't send anything if already sending
-	if(m_blocks_sending.size() >= g_settings->getU16
-			("max_simultaneous_block_sends_per_client"))
+	if(m_blocks_sending.size() >= m_max_simul_sends)
 	{
 		//infostream<<"Not sending any blocks, Queue full."<<std::endl;
 		return;
@@ -158,9 +168,7 @@ void RemoteClient::GetNextBlocks (
 
 	//infostream<<"d_start="<<d_start<<std::endl;
 
-	u16 max_simul_sends_setting = g_settings->getU16
-			("max_simultaneous_block_sends_per_client");
-	u16 max_simul_sends_usually = max_simul_sends_setting;
+	u16 max_simul_sends_usually = m_max_simul_sends;
 
 	/*
 		Check the time from last addNode/removeNode.
@@ -168,8 +176,7 @@ void RemoteClient::GetNextBlocks (
 		Decrease send rate if player is building stuff.
 	*/
 	m_time_from_building += dtime;
-	if(m_time_from_building < g_settings->getFloat(
-				"full_block_send_enable_min_time_from_building"))
+	if(m_time_from_building < m_min_time_from_building)
 	{
 		max_simul_sends_usually
 			= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
@@ -193,13 +200,13 @@ void RemoteClient::GetNextBlocks (
 	s16 wanted_range = sao->getWantedRange() + 1;
 	float camera_fov = sao->getFov();
 
-	const s16 full_d_max = MYMIN(g_settings->getS16("max_block_send_distance"), wanted_range);
-	const s16 d_opt = MYMIN(g_settings->getS16("block_send_optimize_distance"), wanted_range);
+	const s16 full_d_max = std::min(m_max_send_distance, wanted_range);
+	const s16 d_opt = std::min(m_block_optimize_distance, wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = MYMIN(g_settings->getS16("max_block_generate_distance"), wanted_range);
+	s16 d_max_gen = std::min(m_max_gen_distance, wanted_range);
 
 	// Don't loop very much at a time
 	s16 max_d_increment_at_time = 1;
@@ -212,7 +219,6 @@ void RemoteClient::GetNextBlocks (
 	//bool queue_is_full = false;
 
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
-	const bool occ_cull = g_settings->getBool("server_side_occlusion_culling");
 
 	s16 d;
 	for(d = d_start; d <= d_max; d++) {
@@ -239,7 +245,7 @@ void RemoteClient::GetNextBlocks (
 
 			// If block is very close, allow full maximum
 			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
-				max_simul_dynamic = max_simul_sends_setting;
+				max_simul_dynamic = m_max_simul_sends;
 
 			// Don't select too many blocks for sending
 			if (num_blocks_selected >= max_simul_dynamic) {
@@ -319,7 +325,7 @@ void RemoteClient::GetNextBlocks (
 						continue;
 				}
 
-				if (occ_cull && !block_is_invalid &&
+				if (m_occ_cull && !block_is_invalid &&
 						env->getMap().isBlockOccluded(block, cam_pos_nodes)) {
 					continue;
 				}
