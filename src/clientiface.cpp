@@ -99,7 +99,7 @@ void RemoteClient::GetNextBlocks (
 	m_nothing_to_send_pause_timer -= dtime;
 	m_nearest_unsent_reset_timer += dtime;
 
-	if(m_nothing_to_send_pause_timer >= 0)
+	if (m_nothing_to_send_pause_timer >= 0)
 		return;
 
 	RemotePlayer *player = env->getPlayer(peer_id);
@@ -112,8 +112,7 @@ void RemoteClient::GetNextBlocks (
 		return;
 
 	// Won't send anything if already sending
-	if(m_blocks_sending.size() >= m_max_simul_sends)
-	{
+	if (m_blocks_sending.size() >= m_max_simul_sends) {
 		//infostream<<"Not sending any blocks, Queue full."<<std::endl;
 		return;
 	}
@@ -123,7 +122,7 @@ void RemoteClient::GetNextBlocks (
 	LuaEntitySAO *lsao = getAttachedObject(sao, env);
 	const v3f &playerspeed = lsao? lsao->getVelocity() : player->getSpeed();
 	v3f playerspeeddir(0,0,0);
-	if(playerspeed.getLength() > 1.0*BS)
+	if (playerspeed.getLength() > 1.0*BS)
 		playerspeeddir = playerspeed / playerspeed.getLength();
 	// Predict to next block
 	v3f playerpos_predicted = playerpos + playerspeeddir*MAP_BLOCKSIZE*BS;
@@ -145,8 +144,7 @@ void RemoteClient::GetNextBlocks (
 		Get the starting value of the block finder radius.
 	*/
 
-	if(m_last_center != center)
-	{
+	if (m_last_center != center) {
 		m_nearest_unsent_d = 0;
 		m_last_center = center;
 	}
@@ -155,8 +153,7 @@ void RemoteClient::GetNextBlocks (
 			<<m_nearest_unsent_reset_timer<<std::endl;*/
 
 	// Reset periodically to workaround for some bugs or stuff
-	if(m_nearest_unsent_reset_timer > 20.0)
-	{
+	if (m_nearest_unsent_reset_timer > 20.0) {
 		m_nearest_unsent_reset_timer = 0;
 		m_nearest_unsent_d = 0;
 		//infostream<<"Resetting m_nearest_unsent_d for "
@@ -176,8 +173,7 @@ void RemoteClient::GetNextBlocks (
 		Decrease send rate if player is building stuff.
 	*/
 	m_time_from_building += dtime;
-	if(m_time_from_building < m_min_time_from_building)
-	{
+	if (m_time_from_building < m_min_time_from_building) {
 		max_simul_sends_usually
 			= LIMITED_MAX_SIMULTANEOUS_BLOCK_SENDS;
 	}
@@ -210,7 +206,7 @@ void RemoteClient::GetNextBlocks (
 
 	// Don't loop very much at a time
 	s16 max_d_increment_at_time = 1;
-	if(d_max > d_start + max_d_increment_at_time)
+	if (d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
 	s32 nearest_emerged_d = -1;
@@ -221,7 +217,7 @@ void RemoteClient::GetNextBlocks (
 	const v3s16 cam_pos_nodes = floatToInt(camera_pos, BS);
 
 	s16 d;
-	for(d = d_start; d <= d_max; d++) {
+	for (d = d_start; d <= d_max; d++) {
 		/*
 			Get the border/face dot coordinates of a "d-radiused"
 			box
@@ -229,7 +225,7 @@ void RemoteClient::GetNextBlocks (
 		std::vector<v3s16> list = FacePositionCache::getFacePositions(d);
 
 		std::vector<v3s16>::iterator li;
-		for(li = list.begin(); li != list.end(); ++li) {
+		for (li = list.begin(); li != list.end(); ++li) {
 			v3s16 p = *li + center;
 
 			/*
@@ -244,7 +240,7 @@ void RemoteClient::GetNextBlocks (
 			u16 max_simul_dynamic = max_simul_sends_usually;
 
 			// If block is very close, allow full maximum
-			if(d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
+			if (d <= BLOCK_SEND_DISABLE_LIMITS_MAX_D)
 				max_simul_dynamic = m_max_simul_sends;
 
 			// Don't select too many blocks for sending
@@ -286,11 +282,9 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Don't send already sent blocks
 			*/
+			if(m_blocks_sent.find(p) != m_blocks_sent.end())
 			{
-				if(m_blocks_sent.find(p) != m_blocks_sent.end())
-				{
-					continue;
-				}
+				continue;
 			}
 
 			/*
@@ -343,8 +337,7 @@ void RemoteClient::GetNextBlocks (
 			/*
 				Add inexistent block to emerge queue.
 			*/
-			if(block == NULL || surely_not_found_on_disk || block_is_invalid)
-			{
+			if (block == NULL || surely_not_found_on_disk || block_is_invalid) {
 				if (emerge->enqueueBlockEmerge(peer_id, p, generate)) {
 					if (nearest_emerged_d == -1)
 						nearest_emerged_d = d;
@@ -358,7 +351,7 @@ void RemoteClient::GetNextBlocks (
 				continue;
 			}
 
-			if(nearest_sent_d == -1)
+			if (nearest_sent_d == -1)
 				nearest_sent_d = d;
 
 			/*
@@ -375,7 +368,7 @@ queue_full_break:
 
 	// If nothing was found for sending and nothing was queued for
 	// emerging, continue next time browsing from here
-	if(nearest_emerged_d != -1){
+	if (nearest_emerged_d != -1) {
 		new_nearest_unsent_d = nearest_emerged_d;
 	} else if(nearest_emergefull_d != -1){
 		new_nearest_unsent_d = nearest_emergefull_d;
@@ -391,7 +384,7 @@ queue_full_break:
 		}
 	}
 
-	if(new_nearest_unsent_d != -1)
+	if (new_nearest_unsent_d != -1)
 		m_nearest_unsent_d = new_nearest_unsent_d;
 }
 
@@ -412,7 +405,7 @@ void RemoteClient::SentBlock(v3s16 p)
 	if (m_blocks_modified.find(p) != m_blocks_modified.end())
 		m_blocks_modified.erase(p);
 
-	if(m_blocks_sending.find(p) == m_blocks_sending.end())
+	if (m_blocks_sending.find(p) == m_blocks_sending.end())
 		m_blocks_sending[p] = 0.0;
 	else
 		infostream<<"RemoteClient::SentBlock(): Sent block"
@@ -424,9 +417,9 @@ void RemoteClient::SetBlockNotSent(v3s16 p)
 	m_nearest_unsent_d = 0;
 	m_nothing_to_send_pause_timer = 0;
 
-	if(m_blocks_sending.find(p) != m_blocks_sending.end())
+	if (m_blocks_sending.find(p) != m_blocks_sending.end())
 		m_blocks_sending.erase(p);
-	if(m_blocks_sent.find(p) != m_blocks_sent.end())
+	if (m_blocks_sent.find(p) != m_blocks_sent.end())
 		m_blocks_sent.erase(p);
 	m_blocks_modified.insert(p);
 }
@@ -440,9 +433,9 @@ void RemoteClient::SetBlocksNotSent(std::map<v3s16, MapBlock*> &blocks)
 		v3s16 p = block.first;
 		m_blocks_modified.insert(p);
 
-		if(m_blocks_sending.find(p) != m_blocks_sending.end())
+		if (m_blocks_sending.find(p) != m_blocks_sending.end())
 			m_blocks_sending.erase(p);
-		if(m_blocks_sent.find(p) != m_blocks_sent.end())
+		if (m_blocks_sent.find(p) != m_blocks_sent.end())
 			m_blocks_sent.erase(p);
 	}
 }
