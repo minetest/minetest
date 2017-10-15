@@ -133,7 +133,7 @@ std::string getTexturePath(const std::string &filename)
 		std::string testpath = path + DIR_DELIM + filename;
 		// Check all filename extensions. Returns "" if not found.
 		fullpath = getImagePath(testpath);
-		if (fullpath != "")
+		if (!fullpath.empty())
 			break;
 	}
 
