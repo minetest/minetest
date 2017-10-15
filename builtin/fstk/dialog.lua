@@ -30,7 +30,7 @@ end
 local dialog_metatable = {
 	eventhandler = dialog_event_handler,
 	get_formspec = function(self)
-				if not self.hidden then return self.formspec(self.data) end
+				if not self.hidden then return self.formspec(self.data, self.name, self) end
 			end,
 	handle_buttons = function(self,fields)
 				if not self.hidden then return self.buttonhandler(self,fields) end
