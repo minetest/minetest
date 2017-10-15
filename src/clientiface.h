@@ -246,7 +246,7 @@ public:
 	bool isMechAllowed(AuthMechanism mech)
 	{ return allowed_auth_mechs & mech; }
 
-	RemoteClient() = default;
+	RemoteClient();
 	~RemoteClient() = default;
 
 	/*
@@ -353,6 +353,13 @@ private:
 	s16 m_nearest_unsent_d = 0;
 	v3s16 m_last_center;
 	float m_nearest_unsent_reset_timer = 0.0f;
+
+	const u16 m_max_simul_sends;
+	const float m_min_time_from_building;
+	const s16 m_max_send_distance;
+	const s16 m_block_optimize_distance;
+	const s16 m_max_gen_distance;
+	const bool m_occ_cull;
 
 	/*
 		Blocks that are currently on the line.
