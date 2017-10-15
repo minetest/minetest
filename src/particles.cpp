@@ -1,23 +1,3 @@
-/*
-Minetest
-Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation; either version 2.1 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
-
-#include "particles.h"
 #include "client.h"
 #include "collision.h"
 #include "client/clientevent.h"
@@ -30,565 +10,647 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "nodedef.h"
 #include "client.h"
 #include "settings.h"
+#include <array>
 
-/*
-	Utility
-*/
-
-v3f random_v3f(v3f min, v3f max)
+static v3f random_v3f(v3f min, v3f max)
 {
-	return v3f( rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
-			rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
-			rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
+	return v3f(rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
+		rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
+		rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
 }
 
-Particle::Particle(
-	IGameDef *gamedef,
-	LocalPlayer *player,
-	ClientEnvironment *env,
-	v3f pos,
-	v3f velocity,
-	v3f acceleration,
-	float expirationtime,
-	float size,
-	bool collisiondetection,
-	bool collision_removal,
-	bool vertical,
-	video::ITexture *texture,
-	v2f texpos,
-	v2f texsize,
-	const struct TileAnimationParams &anim,
-	u8 glow,
-	video::SColor color
-):
-	scene::ISceneNode(RenderingEngine::get_scene_manager()->getRootSceneNode(),
-		RenderingEngine::get_scene_manager())
+static irr::core::matrix4 bottomUpTextureMatrix(float scale_x, float scale_y,
+	float coord_x, float coord_y)
 {
-	// Misc
-	m_gamedef = gamedef;
-	m_env = env;
-
-	// Texture
-	m_material.setFlag(video::EMF_LIGHTING, false);
-	m_material.setFlag(video::EMF_BACK_FACE_CULLING, false);
-	m_material.setFlag(video::EMF_BILINEAR_FILTER, false);
-	m_material.setFlag(video::EMF_FOG_ENABLE, true);
-	m_material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-	m_material.setTexture(0, texture);
-	m_texpos = texpos;
-	m_texsize = texsize;
-	m_animation = anim;
-
-	// Color
-	m_base_color = color;
-	m_color = color;
-
-	// Particle related
-	m_pos = pos;
-	m_velocity = velocity;
-	m_acceleration = acceleration;
-	m_expiration = expirationtime;
-	m_player = player;
-	m_size = size;
-	m_collisiondetection = collisiondetection;
-	m_collision_removal = collision_removal;
-	m_vertical = vertical;
-	m_glow = glow;
-
-	// Irrlicht stuff
-	m_collisionbox = aabb3f
-			(-size/2,-size/2,-size/2,size/2,size/2,size/2);
-	this->setAutomaticCulling(scene::EAC_OFF);
-
-	// Init lighting
-	updateLight();
-
-	// Init model
-	updateVertices();
+	// Transposed 3x3 2D-transformation matrix padded to 4x4
+	irr::core::matrix4 texture_matrix (irr::core::matrix4::EM4CONST_IDENTITY);
+	// Rotation and scaling
+	texture_matrix[0] = -scale_x;
+	texture_matrix[5] = -scale_y;
+	// Translation
+	texture_matrix[8] = scale_x + coord_x;
+	texture_matrix[9] = scale_y + coord_y;
+	return texture_matrix;
 }
 
-void Particle::OnRegisterSceneNode()
+class CameraOffsetAffector : public irr::scene::IParticleAffector
 {
-	if (IsVisible)
-		SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT_EFFECT);
-
-	ISceneNode::OnRegisterSceneNode();
-}
-
-void Particle::render()
-{
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	driver->setMaterial(m_material);
-	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-
-	u16 indices[] = {0,1,2, 2,3,0};
-	driver->drawVertexPrimitiveList(m_vertices, 4,
-			indices, 2, video::EVT_STANDARD,
-			scene::EPT_TRIANGLES, video::EIT_16BIT);
-}
-
-void Particle::step(float dtime)
-{
-	m_time += dtime;
-	if (m_collisiondetection) {
-		aabb3f box = m_collisionbox;
-		v3f p_pos = m_pos * BS;
-		v3f p_velocity = m_velocity * BS;
-		collisionMoveResult r = collisionMoveSimple(m_env,
-			m_gamedef, BS * 0.5, box, 0, dtime, &p_pos,
-			&p_velocity, m_acceleration * BS);
-		if (m_collision_removal && r.collides) {
-			// force expiration of the particle
-			m_expiration = -1.0;
-		} else {
-			m_pos = p_pos / BS;
-			m_velocity = p_velocity / BS;
-		}
-	} else {
-		m_velocity += m_acceleration * dtime;
-		m_pos += m_velocity * dtime;
-	}
-	if (m_animation.type != TAT_NONE) {
-		m_animation_time += dtime;
-		int frame_length_i, frame_count;
-		m_animation.determineParams(
-				m_material.getTexture(0)->getSize(),
-				&frame_count, &frame_length_i, NULL);
-		float frame_length = frame_length_i / 1000.0;
-		while (m_animation_time > frame_length) {
-			m_animation_frame++;
-			m_animation_time -= frame_length;
-		}
+public:
+	CameraOffsetAffector(const ClientEnvironment &env,
+		irr::scene::IParticleSystemSceneNode *ps, const LocalPlayer &player)
+		: env(env), ps(ps), player(player)
+	{
 	}
 
-	// Update lighting
-	updateLight();
+	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	{
+		v3s16 camera_offset = env.getCameraOffset();
+		v3f ps_offset = intToFloat(old_camera_offset - camera_offset, BS);
+		ps->setPosition(ps->getPosition() + ps_offset);
+		old_camera_offset = camera_offset;
+	}
 
-	// Update model
-	updateVertices();
-}
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	{
+                return irr::scene::EPAT_NONE;
+        }
+private:
+	const ClientEnvironment &env;
+	irr::scene::IParticleSystemSceneNode *const ps;
+	v3s16 old_camera_offset;
+	bool vertical;
+	const LocalPlayer &player;
+	v3f position;
+};
 
-void Particle::updateLight()
+static video::SColor getParticleLightColor(ClientEnvironment *env, const v3f &position,
+	IGameDef *gamedef, u8 glow, const video::SColor &base_color)
 {
 	u8 light = 0;
-	bool pos_ok;
+	bool pos_ok = true;
 
 	v3s16 p = v3s16(
-		floor(m_pos.X+0.5),
-		floor(m_pos.Y+0.5),
-		floor(m_pos.Z+0.5)
-	);
-	MapNode n = m_env->getClientMap().getNodeNoEx(p, &pos_ok);
+		floor(position.X+0.5),
+		floor(position.Y+0.5),
+		floor(position.Z+0.5));
+
+	MapNode map_node = env->getClientMap().getNodeNoEx(p, &pos_ok);
+
 	if (pos_ok)
-		light = n.getLightBlend(m_env->getDayNightRatio(), m_gamedef->ndef());
+		light = map_node.getLightBlend(env->getDayNightRatio(), gamedef->ndef());
 	else
-		light = blend_light(m_env->getDayNightRatio(), LIGHT_SUN, 0);
+		light = blend_light(env->getDayNightRatio(), LIGHT_SUN, 0);
 
-	u8 m_light = decode_light(light + m_glow);
-	m_color.set(255,
-		m_light * m_base_color.getRed() / 255,
-		m_light * m_base_color.getGreen() / 255,
-		m_light * m_base_color.getBlue() / 255);
+	u8 m_light = decode_light(light + glow);
+	return video::SColor (255,
+		m_light * base_color.getRed() / 255,
+		m_light * base_color.getGreen() / 255,
+		m_light * base_color.getBlue() / 255);
 }
 
-void Particle::updateVertices()
+class LightingAffector : public irr::scene::IParticleAffector
 {
-	f32 tx0, tx1, ty0, ty1;
-
-	if (m_animation.type != TAT_NONE) {
-		const v2u32 texsize = m_material.getTexture(0)->getSize();
-		v2f texcoord, framesize_f;
-		v2u32 framesize;
-		texcoord = m_animation.getTextureCoords(texsize, m_animation_frame);
-		m_animation.determineParams(texsize, NULL, NULL, &framesize);
-		framesize_f = v2f(framesize.X / (float) texsize.X, framesize.Y / (float) texsize.Y);
-
-		tx0 = m_texpos.X + texcoord.X;
-		tx1 = m_texpos.X + texcoord.X + framesize_f.X * m_texsize.X;
-		ty0 = m_texpos.Y + texcoord.Y;
-		ty1 = m_texpos.Y + texcoord.Y + framesize_f.Y * m_texsize.Y;
-	} else {
-		tx0 = m_texpos.X;
-		tx1 = m_texpos.X + m_texsize.X;
-		ty0 = m_texpos.Y;
-		ty1 = m_texpos.Y + m_texsize.Y;
-	}
-
-	m_vertices[0] = video::S3DVertex(-m_size / 2, -m_size / 2,
-		0, 0, 0, 0, m_color, tx0, ty1);
-	m_vertices[1] = video::S3DVertex(m_size / 2, -m_size / 2,
-		0, 0, 0, 0, m_color, tx1, ty1);
-	m_vertices[2] = video::S3DVertex(m_size / 2, m_size / 2,
-		0, 0, 0, 0, m_color, tx1, ty0);
-	m_vertices[3] = video::S3DVertex(-m_size / 2, m_size / 2,
-		0, 0, 0, 0, m_color, tx0, ty0);
-
-	v3s16 camera_offset = m_env->getCameraOffset();
-	for (video::S3DVertex &vertex : m_vertices) {
-		if (m_vertical) {
-			v3f ppos = m_player->getPosition()/BS;
-			vertex.Pos.rotateXZBy(atan2(ppos.Z-m_pos.Z, ppos.X-m_pos.X)/core::DEGTORAD+90);
-		} else {
-			vertex.Pos.rotateYZBy(m_player->getPitch());
-			vertex.Pos.rotateXZBy(m_player->getYaw());
-		}
-		m_box.addInternalPoint(vertex.Pos);
-		vertex.Pos += m_pos*BS - intToFloat(camera_offset, BS);
-	}
-}
-
-/*
-	ParticleSpawner
-*/
-
-ParticleSpawner::ParticleSpawner(IGameDef *gamedef, LocalPlayer *player,
-	u16 amount, float time,
-	v3f minpos, v3f maxpos, v3f minvel, v3f maxvel, v3f minacc, v3f maxacc,
-	float minexptime, float maxexptime, float minsize, float maxsize,
-	bool collisiondetection, bool collision_removal, u16 attached_id, bool vertical,
-	video::ITexture *texture, u32 id, const struct TileAnimationParams &anim,
-	u8 glow,
-	ParticleManager *p_manager) :
-	m_particlemanager(p_manager)
-{
-	m_gamedef = gamedef;
-	m_player = player;
-	m_amount = amount;
-	m_spawntime = time;
-	m_minpos = minpos;
-	m_maxpos = maxpos;
-	m_minvel = minvel;
-	m_maxvel = maxvel;
-	m_minacc = minacc;
-	m_maxacc = maxacc;
-	m_minexptime = minexptime;
-	m_maxexptime = maxexptime;
-	m_minsize = minsize;
-	m_maxsize = maxsize;
-	m_collisiondetection = collisiondetection;
-	m_collision_removal = collision_removal;
-	m_attached_id = attached_id;
-	m_vertical = vertical;
-	m_texture = texture;
-	m_time = 0;
-	m_animation = anim;
-	m_glow = glow;
-
-	for (u16 i = 0; i<=m_amount; i++)
+public:
+	LightingAffector(ClientEnvironment *env, IGameDef *gamedef,
+		u8 glow, const video::SColor &base_color = video::SColor(0xFFFFFFFF))
+		:env(env), gamedef(gamedef), glow(glow),
+		base_color(base_color)
 	{
-		float spawntime = (float)rand()/(float)RAND_MAX*m_spawntime;
-		m_spawntimes.push_back(spawntime);
-	}
-}
-
-void ParticleSpawner::spawnParticle(ClientEnvironment *env, float radius,
-	bool is_attached, const v3f &attached_pos, float attached_yaw)
-{
-	v3f ppos = m_player->getPosition() / BS;
-	v3f pos = random_v3f(m_minpos, m_maxpos);
-
-	// Need to apply this first or the following check
-	// will be wrong for attached spawners
-	if (is_attached) {
-		pos.rotateXZBy(attached_yaw);
-		pos += attached_pos;
 	}
 
-	if (pos.getDistanceFrom(ppos) > radius)
-		return;
-
-	v3f vel = random_v3f(m_minvel, m_maxvel);
-	v3f acc = random_v3f(m_minacc, m_maxacc);
-
-	if (is_attached) {
-		// Apply attachment yaw
-		vel.rotateXZBy(attached_yaw);
-		acc.rotateXZBy(attached_yaw);
-	}
-
-	float exptime = rand() / (float)RAND_MAX
-			* (m_maxexptime - m_minexptime)
-			+ m_minexptime;
-	float size = rand() / (float)RAND_MAX
-			* (m_maxsize - m_minsize)
-			+ m_minsize;
-
-	m_particlemanager->addParticle(new Particle(
-		m_gamedef,
-		m_player,
-		env,
-		pos,
-		vel,
-		acc,
-		exptime,
-		size,
-		m_collisiondetection,
-		m_collision_removal,
-		m_vertical,
-		m_texture,
-		v2f(0.0, 0.0),
-		v2f(1.0, 1.0),
-		m_animation,
-		m_glow
-	));
-}
-
-void ParticleSpawner::step(float dtime, ClientEnvironment* env)
-{
-	m_time += dtime;
-
-	static thread_local const float radius =
-			g_settings->getS16("max_block_send_distance") * MAP_BLOCKSIZE;
-
-	bool unloaded = false;
-	bool is_attached = false;
-	v3f attached_pos = v3f(0,0,0);
-	float attached_yaw = 0;
-	if (m_attached_id != 0) {
-		if (ClientActiveObject *attached = env->getActiveObject(m_attached_id)) {
-			attached_pos = attached->getPosition() / BS;
-			attached_yaw = attached->getYaw();
-			is_attached = true;
-		} else {
-			unloaded = true;
+	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	{
+		for (u32 i = 0; i < count; ++i) {
+			v3f pos = particlearray[i].pos -
+				intToFloat(env->getCameraOffset(), BS);
+			color = getParticleLightColor(env, pos / BS,
+				gamedef, glow, base_color);
+			particlearray[i].color = color;
 		}
 	}
 
-	if (m_spawntime != 0) {
-		// Spawner exists for a predefined timespan
-		for (std::vector<float>::iterator i = m_spawntimes.begin();
-				i != m_spawntimes.end();) {
-			if ((*i) <= m_time && m_amount > 0) {
-				m_amount--;
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	{
+                return irr::scene::EPAT_NONE;
+        }
+private:
+	ClientEnvironment *env;
+	IGameDef *gamedef;
+	u8 glow;
+	video::SColor base_color;
 
-				// Pretend to, but don't actually spawn a particle if it is
-				// attached to an unloaded object or distant from player.
-				if (!unloaded)
-					spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
+	video::SColor color;
+};
 
-				i = m_spawntimes.erase(i);
+class AnimationAffector : public irr::scene::IParticleAffector
+{
+public:
+	AnimationAffector (irr::scene::IParticleSystemSceneNode *ps,
+		const struct TileAnimationParams &anim)
+		: anim(anim), texture_matrix(ps->getMaterial(0).getTextureMatrix(0)),
+		texsize(ps->getMaterial(0).getTexture(0)->getSize())
+	{
+		v2u32 framesize;
+		anim.determineParams(ps->getMaterial(0).getTexture(0)->getSize(),
+			&frame_count, &frame_length_i, &framesize);
+		framesize_ratio = v2f(framesize.X / (float) texsize.X,
+			framesize.Y / (float) texsize.Y);
+	}
+
+	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	{
+		if (last_time == 0) {
+			last_time = now;
+			return;
+		}
+
+		animation_time += (now - last_time) / 1000.f;
+		last_time = now;
+		float frame_length = frame_length_i / 1000.f;
+
+		animation_frame += (int) (animation_time / frame_length);
+		animation_frame %= frame_count;
+		animation_time = fmodf(animation_time, frame_length);
+
+		v2f texcoord = anim.getTextureCoords(texsize, animation_frame);
+		texture_matrix = bottomUpTextureMatrix(framesize_ratio.X, framesize_ratio.Y, texcoord.X, texcoord.Y);
+	}
+
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	{
+                return irr::scene::EPAT_NONE;
+        }
+private:
+	const struct TileAnimationParams anim;
+	float animation_time = 0.f;
+	int animation_frame = 0;
+	int frame_length_i, frame_count;
+	core::matrix4 &texture_matrix;
+	const v2u32 texsize;
+	v2f framesize_ratio;
+	u32 last_time = 0;
+};
+
+class CollisionAffector : public irr::scene::IParticleAffector
+{
+public:
+	CollisionAffector(ClientEnvironment *env,
+		irr::scene::IParticleSystemSceneNode *ps, bool collision_removal)
+		: env(env), ps(ps), last_time(0), collision_removal(collision_removal)
+	{
+	}
+
+	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	{
+		if (last_time == 0) {
+			last_time = now;
+			return;
+		}
+		f32 dtime = (now - last_time) / 1000.0f;
+		last_time = now;
+
+		for (u32 i = 0; i < count; ++i) {
+			irr::scene::SParticle &p = particlearray[i];
+			float half_width = p.size.Width / 2;
+			aabb3f box {-half_width,-half_width,-half_width,half_width,half_width,half_width};
+			v3f camera_offset = intToFloat(env->getCameraOffset(),BS);
+
+			v3f position = p.pos + camera_offset;
+			v3f velocity = p.vector * 100.f;
+
+			collisionMoveResult r = collisionMoveSimple(env, env->getGameDef(),
+					BS * 0.5, box, 0, dtime, &position, &velocity,
+					v3f {0.f, 0.f, 0.f});
+
+			if (collision_removal && r.collides) {
+				p.endTime = 0;
 			} else {
-				++i;
+				p.vector = velocity * 0.01f;
+				p.pos = position - camera_offset;
 			}
 		}
-	} else {
-		// Spawner exists for an infinity timespan, spawn on a per-second base
+	}
 
-		// Skip this step if attached to an unloaded object
-		if (unloaded)
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	{
+                return irr::scene::EPAT_NONE;
+        }
+private:
+	ClientEnvironment *env;
+	irr::scene::IParticleSystemSceneNode *const ps;
+	u32 last_time;
+	const bool collision_removal;
+};
+
+class AccelerationAffector : public irr::scene::IParticleAffector
+{
+public:
+	AccelerationAffector(const v3f &minacc, const v3f &maxacc)
+		: last_time(0)
+	{
+		disabled = minacc.X == 0 && minacc.Y == 0 && minacc.Z == 0 &&
+		maxacc.X == 0 && maxacc.Y == 0 && maxacc.Z == 0;
+		acc = random_v3f(minacc,maxacc);
+	}
+	AccelerationAffector(const v3f &acc)
+		: acc(acc), disabled(acc.getLengthSQ() == 0.f), last_time(0)
+	{
+	}
+
+	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
+	{
+		if (last_time == 0) {
+			last_time = now;
 			return;
-
-		for (int i = 0; i <= m_amount; i++) {
-			if (rand() / (float)RAND_MAX < dtime)
-				spawnParticle(env, radius, is_attached, attached_pos, attached_yaw);
+		}
+		float dtime = (now - last_time) / 1000.f;
+		last_time = now;
+		for (u32 i = 0; i < count; ++i) {
+			particlearray[i].vector += dtime * acc * 0.01;
 		}
 	}
+
+        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	{
+                return irr::scene::EPAT_NONE;
+        }
+private:
+	v3f acc;
+	bool disabled;
+	u32 last_time;
+};
+class CustomEmitter : public irr::scene::IParticleEmitter
+{
+public:
+	// unused pure virtual methods
+        virtual void setDirection( const core::vector3df& newDirection ) {  }
+        virtual void setMinParticlesPerSecond( u32 minPPS ) {  }
+        virtual void setMaxParticlesPerSecond( u32 maxPPS ) {  }
+        virtual void setMinStartColor( const video::SColor& color ) {  }
+        virtual void setMaxStartColor( const video::SColor& color ) {  }
+        virtual void setMaxLifeTime( const u32 t ) {  }
+        virtual void setMinLifeTime( const u32 t ) { }
+        virtual u32 getMaxLifeTime() const { return 1; }
+        virtual u32 getMinLifeTime() const { return 1; }
+        virtual void setMaxAngleDegrees(const s32 t ) {  }
+        virtual s32 getMaxAngleDegrees() const { return 0; }
+        virtual void setMaxStartSize( const core::dimension2df& size ) { }
+        virtual void setMinStartSize( const core::dimension2df& size ) {  }
+        virtual void setCenter( const core::vector3df& center ) {  }
+        virtual void setRadius( f32 radius ) {  }
+        virtual const core::vector3df& getDirection() const { return direction; }
+        virtual u32 getMinParticlesPerSecond() const { return 1; }
+        virtual u32 getMaxParticlesPerSecond() const { return 1; }
+        virtual const video::SColor& getMinStartColor() const { return minStartColor; }
+        virtual const video::SColor& getMaxStartColor() const { return maxStartColor; }
+        virtual const core::dimension2df& getMaxStartSize() const { return max_size; }
+        virtual const core::dimension2df& getMinStartSize() const { return min_size; }
+        virtual const core::vector3df& getCenter() const { return center; }
+        virtual f32 getRadius() const { return 1.; }
+        virtual irr::scene::E_PARTICLE_EMITTER_TYPE getType() const
+	{
+                return irr::scene::EPET_COUNT;
+	}
+protected:
+	core::dimension2df min_size, max_size;
+private:
+	// unused
+	const v3f direction;
+	const video::SColor minStartColor, maxStartColor;
+	const v3f center;
+};
+
+class SingleEmitter : public CustomEmitter
+{
+public:
+	SingleEmitter(irr::scene::ISceneManager *smgr,
+		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color, u32 number,
+		f32 expirationtime):
+		smgr(smgr), ps(ps), number(number), deletion_time (0),
+		expirationtime(expirationtime), random_properties (true)
+	{
+		particles.reserve(number);
+	}
+
+	SingleEmitter(irr::scene::ISceneManager *smgr,
+		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color,
+		f32 expirationtime, f32 size, const v3f &pos, const v3f &vel):
+		smgr(smgr), ps(ps), number(1), deletion_time (0),
+		expirationtime(expirationtime), size(size), pos(pos), vel(vel),
+		random_properties(false)
+	{
+		particles.reserve(number);
+	}
+
+	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
+	{
+		if (number == 0) {
+			if (now > deletion_time)
+				smgr->addToDeletionQueue(ps);
+			return 0;
+		}
+
+		deletion_time = now + 1000;
+
+		irr::scene::SParticle p;
+		p.color = color;
+		p.startColor = p.color;
+		for (u32 i = 0; i < number; ++i) {
+			if (random_properties) {
+				pos = {rand() % 100 / 200.f - 0.25f,
+					rand() % 100 / 200.f - 0.25f,
+					rand() % 100 / 200.f - 0.25f};
+				vel = {(rand() % 100 / 50.f - 1.f) / 1.5f,
+					rand() % 100 / 35.f,
+					(rand() % 100 / 50.f - 1.f) / 1.5f};
+				size = rand() % 64 / 512.f * BS;
+			}
+			p.pos.set(pos);
+			p.startVector = p.vector = vel * 0.01;
+
+			p.startTime = now;
+			p.endTime = now + (u32) (rand() % 100 * 10.f);
+
+			p.startSize = core::dimension2df(size,size);
+			p.size = p.startSize;
+			particles.push_back(p);
+		}
+		outArray = particles.data();
+		number = 0;
+		return particles.size();
+	}
+private:
+	irr::scene::ISceneManager *smgr;
+	irr::scene::IParticleSystemSceneNode *ps;
+	u32 number;
+	std::vector<irr::scene::SParticle> particles;
+	u32 deletion_time;
+	f32 expirationtime;
+	video::SColor color;
+
+	f32 size;
+	v3f pos, vel;
+	const bool random_properties;
+};
+
+class ContinuousEmitter : public CustomEmitter
+{
+public:
+	ContinuousEmitter(irr::scene::ISceneManager *smgr,
+		ClientEnvironment *env, irr::scene::IParticleSystemSceneNode *ps,
+		u16 amount, f32 spawntime, const v3f &minrelpos, const v3f &maxrelpos,
+		const v3f &minvel, const v3f &maxvel, f32 minexptime,
+		f32 maxexptime, f32 minsize, f32 maxsize, u16 attached_id)
+		: smgr(smgr), env(env), ps(ps), amount(amount),
+		spawntime(spawntime), minrelpos(minrelpos), maxrelpos(maxrelpos),
+		minvel(minvel), maxvel(maxvel), minexptime(minexptime),
+		maxexptime(maxexptime), minsize(minsize), maxsize(maxsize),
+		attached_id(attached_id), expired_time(0), emitting_time(0.f)
+	{
+		time_for_particle = spawntime == 0 ? 1.f / (float) amount :
+			spawntime / (float) amount;
+	}
+
+	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
+	{
+		if (spawntime != 0) {
+			expired_time += timeSinceLastCall;
+			if (expired_time / 1000.f >= maxexptime + spawntime)
+				smgr->addToDeletionQueue(ps);
+		}
+
+		emitting_time += timeSinceLastCall / 1000.f;
+		if (emitting_time >= time_for_particle) {
+			emitting_time = 0.f;
+			p.color = video::SColor(0xFFFFFFFF);
+			p.startColor = p.color;
+
+			p.pos = random_v3f(minrelpos, maxrelpos);
+			v3f vel = random_v3f(minvel, maxvel);
+			if (attached_id != 0) {
+				ClientActiveObject *attached =
+					env->getActiveObject(attached_id);
+				if (attached) {
+					vel.rotateXZBy(attached->getYaw());
+					p.pos.rotateXZBy(attached->getYaw());
+					ps->setPosition(attached->getPosition());
+				} else {
+					return 0;
+				}
+			}
+			p.startVector = p.vector = random_v3f(minvel, maxvel) * 0.01;
+			float size = minsize + (float) rand() / (float) RAND_MAX *
+				(maxsize - minsize);
+			p.size = core::dimension2df(size,size);
+
+			p.startTime = now;
+			p.endTime = now + (u32) ((minexptime +
+				(float) rand() / (float) RAND_MAX *
+				(maxexptime - minexptime)) * 1000.f);
+
+			outArray = &p;
+			return 1;
+		}
+		return 0;
+	}
+private:
+	irr::scene::ISceneManager *smgr;
+	ClientEnvironment *env;
+	irr::scene::IParticleSystemSceneNode *ps;
+	const u16 amount;
+	f32 spawntime;
+	const v3f minrelpos, maxrelpos, minvel, maxvel;
+	const f32 minexptime, maxexptime;
+	const f32 minsize, maxsize;
+	const u16 attached_id;
+
+	u32 expired_time;
+	float emitting_time;
+	float time_for_particle;
+
+	irr::scene::SParticle p;
+
+};
+
+ParticleManager::ParticleManager(ClientEnvironment *env)
+	:m_env(env)
+{
+	m_smgr = RenderingEngine::get_scene_manager();
 }
-
-
-ParticleManager::ParticleManager(ClientEnvironment* env) :
-	m_env(env)
-{}
 
 ParticleManager::~ParticleManager()
 {
-	clearAll();
 }
 
-void ParticleManager::step(float dtime)
-{
-	stepParticles (dtime);
-	stepSpawners (dtime);
-}
-
-void ParticleManager::stepSpawners (float dtime)
-{
-	MutexAutoLock lock(m_spawner_list_lock);
-	for (std::map<u32, ParticleSpawner*>::iterator i =
-			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
-		if (i->second->get_expired())
-		{
-			delete i->second;
-			m_particle_spawners.erase(i++);
-		}
-		else
-		{
-			i->second->step(dtime, m_env);
-			++i;
-		}
-	}
-}
-
-void ParticleManager::stepParticles (float dtime)
-{
-	MutexAutoLock lock(m_particle_list_lock);
-	for(std::vector<Particle*>::iterator i = m_particles.begin();
-			i != m_particles.end();)
-	{
-		if ((*i)->get_expired())
-		{
-			(*i)->remove();
-			delete *i;
-			i = m_particles.erase(i);
-		}
-		else
-		{
-			(*i)->step(dtime);
-			++i;
-		}
-	}
-}
-
-void ParticleManager::clearAll ()
-{
-	MutexAutoLock lock(m_spawner_list_lock);
-	MutexAutoLock lock2(m_particle_list_lock);
-	for(std::map<u32, ParticleSpawner*>::iterator i =
-			m_particle_spawners.begin();
-			i != m_particle_spawners.end();)
-	{
-		delete i->second;
-		m_particle_spawners.erase(i++);
-	}
-
-	for(std::vector<Particle*>::iterator i =
-			m_particles.begin();
-			i != m_particles.end();)
-	{
-		(*i)->remove();
-		delete *i;
-		i = m_particles.erase(i);
-	}
-}
-
-void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client,
-	LocalPlayer *player)
+void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, LocalPlayer *player)
 {
 	switch (event->type) {
-		case CE_DELETE_PARTICLESPAWNER: {
-			MutexAutoLock lock(m_spawner_list_lock);
-			if (m_particle_spawners.find(event->delete_particlespawner.id) !=
-					m_particle_spawners.end()) {
-				delete m_particle_spawners.find(event->delete_particlespawner.id)->second;
-				m_particle_spawners.erase(event->delete_particlespawner.id);
-			}
-			// no allocated memory in delete event
-			break;
+	case CE_DELETE_PARTICLESPAWNER: {
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
+				event->delete_particlespawner.id);
+		if (node)
+			m_smgr->addToDeletionQueue(node);
+		
+		// No allocated memory in delete event
+		break;
+	}
+	case CE_ADD_PARTICLESPAWNER: {
+		scene::ISceneNode *node = m_smgr->getSceneNodeFromId(
+				event->add_particlespawner.id);
+		if (node)
+			m_smgr->addToDeletionQueue(node);
+
+
+		scene::IParticleSystemSceneNode *ps =
+			m_smgr->addParticleSystemSceneNode(false,
+				RenderingEngine::get_scene_manager()->getRootSceneNode(),
+				event->add_particlespawner.id);
+
+		ps->getMaterial(0).getTextureMatrix(0) = bottomUpTextureMatrix(1.f,1.f,0.f,0.f);
+
+		v3f minpos = *event->add_particlespawner.minpos * BS;
+		v3f maxpos = *event->add_particlespawner.maxpos * BS;
+		v3f meanpos = (minpos + maxpos) / 2.f;
+
+		scene::IParticlePointEmitter *continous_emitter =
+			new ContinuousEmitter(m_smgr, m_env, ps,
+			event->add_particlespawner.amount,
+			event->add_particlespawner.spawntime,
+			minpos - meanpos,
+			maxpos - meanpos,
+			*event->add_particlespawner.minvel,
+			*event->add_particlespawner.maxvel,
+			event->add_particlespawner.minexptime,
+			event->add_particlespawner.maxexptime,
+			event->add_particlespawner.minsize,
+			event->add_particlespawner.maxsize,
+			event->add_particlespawner.attached_id);
+
+		ps->setEmitter(continous_emitter);
+		continous_emitter->drop();
+		ps->setAutomaticCulling(scene::EAC_FRUSTUM_BOX);
+
+		scene::IParticleAffector *camera_offset_affector =
+			new CameraOffsetAffector(*m_env, ps,*player);
+		ps->addAffector(camera_offset_affector);
+		camera_offset_affector->drop();
+
+		video::ITexture *texture = client->tsrc()->getTextureForMesh(
+			*(event->add_particlespawner.texture));
+		ps->setMaterialTexture(0, texture);
+
+		ps->setMaterialFlag(video::EMF_LIGHTING, false);
+		ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+		ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+		const struct TileAnimationParams &anim = event->add_particlespawner.animation;
+		if (anim.type != TAT_NONE) {
+			scene::IParticleAffector *animation_affector =
+				new AnimationAffector(ps, anim);
+			ps->addAffector(animation_affector);
+			animation_affector->drop();
 		}
-		case CE_ADD_PARTICLESPAWNER: {
-			{
-				MutexAutoLock lock(m_spawner_list_lock);
-				if (m_particle_spawners.find(event->add_particlespawner.id) !=
-						m_particle_spawners.end()) {
-					delete m_particle_spawners.find(event->add_particlespawner.id)->second;
-					m_particle_spawners.erase(event->add_particlespawner.id);
-				}
-			}
 
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(*(event->add_particlespawner.texture));
+		scene::IParticleAffector *acceleration_affector =
+			new AccelerationAffector(*event->add_particlespawner.minacc,
+				*event->add_particlespawner.maxacc);
+		ps->addAffector(acceleration_affector);
+		acceleration_affector->drop();
 
-			ParticleSpawner *toadd = new ParticleSpawner(client, player,
-					event->add_particlespawner.amount,
-					event->add_particlespawner.spawntime,
-					*event->add_particlespawner.minpos,
-					*event->add_particlespawner.maxpos,
-					*event->add_particlespawner.minvel,
-					*event->add_particlespawner.maxvel,
-					*event->add_particlespawner.minacc,
-					*event->add_particlespawner.maxacc,
-					event->add_particlespawner.minexptime,
-					event->add_particlespawner.maxexptime,
-					event->add_particlespawner.minsize,
-					event->add_particlespawner.maxsize,
-					event->add_particlespawner.collisiondetection,
-					event->add_particlespawner.collision_removal,
-					event->add_particlespawner.attached_id,
-					event->add_particlespawner.vertical,
-					texture,
-					event->add_particlespawner.id,
-					event->add_particlespawner.animation,
-					event->add_particlespawner.glow,
-					this);
-
-			/* delete allocated content of event */
-			delete event->add_particlespawner.minpos;
-			delete event->add_particlespawner.maxpos;
-			delete event->add_particlespawner.minvel;
-			delete event->add_particlespawner.maxvel;
-			delete event->add_particlespawner.minacc;
-			delete event->add_particlespawner.texture;
-			delete event->add_particlespawner.maxacc;
-
-			{
-				MutexAutoLock lock(m_spawner_list_lock);
-				m_particle_spawners.insert(
-						std::pair<u32, ParticleSpawner*>(
-								event->add_particlespawner.id,
-								toadd));
-			}
-			break;
+		if (event->add_particlespawner.collisiondetection) {
+			scene::IParticleAffector *collision_affector =
+				new CollisionAffector(m_env, ps,
+					event->add_particlespawner.collision_removal);
+			ps->addAffector(collision_affector);
+			collision_affector->drop();
 		}
-		case CE_SPAWN_PARTICLE: {
-			video::ITexture *texture =
-				client->tsrc()->getTextureForMesh(*(event->spawn_particle.texture));
 
-			Particle *toadd = new Particle(client, player, m_env,
-					*event->spawn_particle.pos,
-					*event->spawn_particle.vel,
-					*event->spawn_particle.acc,
-					event->spawn_particle.expirationtime,
-					event->spawn_particle.size,
-					event->spawn_particle.collisiondetection,
-					event->spawn_particle.collision_removal,
-					event->spawn_particle.vertical,
-					texture,
-					v2f(0.0, 0.0),
-					v2f(1.0, 1.0),
-					event->spawn_particle.animation,
-					event->spawn_particle.glow);
+		scene::IParticleAffector *lighting_affector =
+			new LightingAffector(m_env, client, 0);
+		ps->addAffector(lighting_affector);
+		lighting_affector->drop();
 
-			addParticle(toadd);
+		ps->setDebugDataVisible(irr::scene::EDS_BBOX);
 
-			delete event->spawn_particle.pos;
-			delete event->spawn_particle.vel;
-			delete event->spawn_particle.acc;
-			delete event->spawn_particle.texture;
+		// Delete allocated content of event
+		delete event->add_particlespawner.minpos;
+		delete event->add_particlespawner.maxpos;
+		delete event->add_particlespawner.minvel;
+		delete event->add_particlespawner.maxvel;
+		delete event->add_particlespawner.minacc;
+		delete event->add_particlespawner.maxacc;
+		delete event->add_particlespawner.texture;
+		break;
+	}
+	case CE_SPAWN_PARTICLE: {
+		scene::IParticleSystemSceneNode *ps =
+			m_smgr->addParticleSystemSceneNode(false);
 
-			break;
+		ps->getMaterial(0).getTextureMatrix(0) = bottomUpTextureMatrix(1.f,1.f,0.f,0.f);
+
+		v3f pos = *event->spawn_particle.pos;
+		v3s16 camera_offset = m_env->getCameraOffset();
+		v3f particle_pos = pos * BS - intToFloat(camera_offset, BS);
+		ps->setPosition(particle_pos);
+
+		// Deletes ps after the particles have vanished
+		scene::IParticleEmitter *em = new SingleEmitter(m_smgr, ps,
+			event->spawn_particle.glow,
+			event->spawn_particle.expirationtime,
+			event->spawn_particle.size,
+			*event->spawn_particle.pos * BS,
+			*event->spawn_particle.vel * BS);
+		ps->setEmitter(em);
+		em->drop();
+
+		scene::IParticleAffector *gravity_affector =
+			ps->createGravityAffector(*event->spawn_particle.acc * BS, 0);
+		ps->addAffector(gravity_affector);
+		gravity_affector->drop();
+
+		if (event->spawn_particle.collisiondetection){
+			scene::IParticleAffector *collision_affector =
+				new CollisionAffector(m_env, ps,
+				event->spawn_particle.collision_removal);
+			ps->addAffector(collision_affector);
+			collision_affector->drop();
 		}
-		default: break;
+
+		scene::IParticleAffector *lighting_affector =
+			new LightingAffector(m_env, client, 0);
+		ps->addAffector(lighting_affector);
+		lighting_affector->drop();
+
+		video::ITexture *texture =
+			client->tsrc()->getTextureForMesh(
+				*(event->spawn_particle.texture));
+		ps->setMaterialTexture(0, texture);
+
+		ps->setMaterialFlag(video::EMF_LIGHTING, false);
+		ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+		ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+		ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+		ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+		// Delete allocated content of event
+		delete event->spawn_particle.pos;
+		delete event->spawn_particle.vel;
+		delete event->spawn_particle.acc;
+		delete event->spawn_particle.texture;
+		break;
+	}
+	default:
+		break;
 	}
 }
 
-void ParticleManager::addDiggingParticles(IGameDef* gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
+void ParticleManager::addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+	const MapNode &n, const ContentFeatures &f)
+{
+	// Set the amount of particles here
+	addNodeParticle(gamedef, player, pos, n, f, 32);
+}
+
+void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
+	const MapNode &n, const ContentFeatures &f, u32 number)
 {
 	// No particles for "airlike" nodes
 	if (f.drawtype == NDT_AIRLIKE)
 		return;
 
-	// set the amount of particles here
-	for (u16 j = 0; j < 32; j++) {
-		addNodeParticle(gamedef, player, pos, n, f);
-	}
-}
+	scene::IParticleSystemSceneNode* ps =
+		m_smgr->addParticleSystemSceneNode(false);
 
-void ParticleManager::addNodeParticle(IGameDef* gamedef,
-	LocalPlayer *player, v3s16 pos, const MapNode &n, const ContentFeatures &f)
-{
-	// No particles for "airlike" nodes
-	if (f.drawtype == NDT_AIRLIKE)
-		return;
+	v3s16 camera_offset = m_env->getCameraOffset();
+	v3f particle_pos = intToFloat(pos - camera_offset, BS);
+	ps->setPosition(particle_pos);
 
 	// Texture
 	u8 texid = myrand_range(0, 5);
 	const TileLayer &tile = f.tiles[texid].layers[0];
 	video::ITexture *texture;
-	struct TileAnimationParams anim;
-	anim.type = TAT_NONE;
 
 	// Only use first frame of animated texture
 	if (tile.material_flags & MATERIAL_FLAG_ANIMATION)
@@ -596,57 +658,49 @@ void ParticleManager::addNodeParticle(IGameDef* gamedef,
 	else
 		texture = tile.texture;
 
-	float size = rand() % 64 / 512.;
-	float visual_size = BS * size;
-	if (tile.scale)
-		size /= tile.scale;
-	v2f texsize(size * 2, size * 2);
-	v2f texpos;
-	texpos.X = ((rand() % 64) / 64. - texsize.X);
-	texpos.Y = ((rand() % 64) / 64. - texsize.Y);
-
-	// Physics
-	v3f velocity((rand() % 100 / 50. - 1) / 1.5,
-			rand() % 100 / 35.,
-			(rand() % 100 / 50. - 1) / 1.5);
-
-	v3f acceleration(0,-9,0);
-	v3f particlepos = v3f(
-		(f32) pos.X + rand() %100 /200. - 0.25,
-		(f32) pos.Y + rand() %100 /200. - 0.25,
-		(f32) pos.Z + rand() %100 /200. - 0.25
-	);
-
 	video::SColor color;
 	if (tile.has_color)
 		color = tile.color;
 	else
 		n.getColor(f, &color);
 
-	Particle* toadd = new Particle(
-		gamedef,
-		player,
-		m_env,
-		particlepos,
-		velocity,
-		acceleration,
-		rand() % 100 / 100., // expiration time
-		visual_size,
-		true,
-		false,
-		false,
-		texture,
-		texpos,
-		texsize,
-		anim,
-		0,
-		color);
 
-	addParticle(toadd);
-}
+	// Deletes ps after the particles have vanished
+	scene::IParticleEmitter *em = new SingleEmitter(m_smgr,ps,color,number, 1.f);
 
-void ParticleManager::addParticle(Particle* toadd)
-{
-	MutexAutoLock lock(m_particle_list_lock);
-	m_particles.push_back(toadd);
+	ps->setEmitter(em);
+	em->drop();
+
+	scene::IParticleAffector *acceleration_affector =
+		new AccelerationAffector(v3f(0.f, -9.f, 0.f));
+	ps->addAffector(acceleration_affector);
+	acceleration_affector->drop();
+
+	scene::IParticleAffector *collision_affector =
+		new CollisionAffector(m_env, ps, false);
+	ps->addAffector(collision_affector);
+	collision_affector->drop();
+
+	scene::IParticleAffector *lighting_affector =
+		new LightingAffector(m_env, gamedef, 0);
+	ps->addAffector(lighting_affector);
+	lighting_affector->drop();
+
+	ps->setMaterialTexture(0, texture);
+
+	ps->setMaterialFlag(video::EMF_LIGHTING, false);
+	ps->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+	ps->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+	ps->setMaterialFlag(video::EMF_FOG_ENABLE, true);
+	ps->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+	// Take a square (quarter the size of the texture) at a random position
+	float tile_scale = tile.scale ? (float) tile.scale : 1.f;
+	float scale_factor = 0.25 / tile_scale;
+	v2f texpos;
+	texpos.X = (rand() % 48) / 64.f;
+	texpos.Y = (rand() % 48) / 64.f;
+
+	ps->getMaterial(0).getTextureMatrix(0) = bottomUpTextureMatrix(scale_factor, scale_factor,
+			texpos.X, texpos.Y);
 }
