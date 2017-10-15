@@ -618,6 +618,13 @@
 #    type: int min: 20 max: 4000
 # viewing_range = 100
 
+#    Camera near plane distance in nodes, between 0 and 0.5
+#    Most users will not need to change this.
+#    Increasing can reduce artifacting on weaker GPUs.
+#    0.1 = Default, 0.25 = Good value for weaker tablets.
+#    type: float min: 0 max: 0.5
+# near_plane = 0.1
+
 #    Width component of the initial window size.
 #    type: int
 # screen_w = 1024
@@ -647,7 +654,7 @@
 # fov = 72
 
 #    Field of view while zooming in degrees.
-#    This requires the "zoom" privilege on the server.
+#    Requires to be allowed by server-sided mods.
 #    type: int min: 7 max: 160
 # zoom_fov = 15
 
@@ -740,6 +747,10 @@
 #    type: int min: 0 max: 255
 # crosshair_alpha = 255
 
+#    Maximum number of recent chat items to show
+#    type: int min: 3 max: 99
+# recent_chat_size = 6
+
 #    Whether node texture animations should be desynchronized per mapblock.
 #    type: bool
 # desynchronize_mapblock_texture_animation = true
@@ -811,7 +822,7 @@
 # opaque_water = false
 
 #    Textures on a node may be aligned either to the node or to the world.
-#    The former mode sutis better things like machines, furniture, etc., while
+#    The former mode suits better things like machines, furniture, etc., while
 #    the latter makes stairs and microblocks fit surroundings better.
 #    However, as this possibility is new, thus may not be used by older servers,
 #    this option allows enforcing it for certain node types. Note though that
@@ -862,6 +873,10 @@
 #    Delay showing tooltips, stated in milliseconds.
 #    type: int
 # tooltip_show_delay = 400
+
+#    Append item name to tooltip.
+#    type: bool
+# tooltip_append_itemname = false
 
 #    Whether freetype fonts are used, requires freetype support to be compiled in.
 #    type: bool
@@ -935,6 +950,9 @@
 
 #    type: float min: 0 max: 1
 # sound_volume = 0.7
+
+#    type: bool
+# mute_sound = false
 
 #
 # Client
@@ -1146,7 +1164,7 @@
 #    type: bool
 # enable_pvp = true
 
-#    Enable mod channels.
+#    Enable mod channels support.
 #    type: bool
 # enable_mod_channels = false
 
@@ -1666,11 +1684,10 @@
 
 #    Map generation attributes specific to Mapgen v7.
 #    'ridges' enables the rivers.
-#    'biomerepeat' causes surface biomes to repeat in the floatlands.
 #    Flags that are not specified in the flag string are not modified from the default.
 #    Flags starting with 'no' are used to explicitly disable them.
-#    type: flags possible values: mountains, ridges, floatlands, caverns, biomerepeat, nomountains, noridges, nofloatlands, nocaverns, nobiomerepeat
-# mgv7_spflags = mountains,ridges,nofloatlands,caverns,biomerepeat
+#    type: flags possible values: mountains, ridges, floatlands, caverns, nomountains, noridges, nofloatlands, nocaverns
+# mgv7_spflags = mountains,ridges,nofloatlands,caverns
 
 #    Y of mountain density gradient zero level. Used to shift mountains vertically.
 #    type: int
