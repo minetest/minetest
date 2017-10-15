@@ -912,7 +912,7 @@ public:
 					ItemStack is;
 					is.deSerialize(out.item, gamedef->idef());
 					if (!is.isKnown(gamedef->idef())) {
-						errorstream << "trying to craft nonexistent " << out.item << ", ignoring recipe" << std::endl;
+						infostream << "trying to craft non-existent " << out.item << ", ignoring recipe" << std::endl;
 						continue;
 					}
 
