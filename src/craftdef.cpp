@@ -907,8 +907,18 @@ public:
 					<< " against " << def->dump() << std::endl;*/
 
 				if (def->check(input, gamedef)) {
+					// Check if the crafted node/item exists
+					CraftOutput out = def->getOutput(input, gamedef);
+					ItemStack is;
+					is.deSerialize(out.item, gamedef->idef());
+					if (!is.isKnown(gamedef->idef())) {
+						errorstream << "trying to craft nonexistant " << out.item << ", ignoring recipe" << std::endl;
+						continue;
+					}
+
 					// Get output, then decrement input (if requested)
-					output = def->getOutput(input, gamedef);
+					output = out;
+                    
 					if (decrementInput)
 						def->decrementInput(input, output_replacement, gamedef);
 					/*errorstream << "Check RETURNS TRUE" << std::endl;*/
