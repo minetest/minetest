@@ -2,7 +2,7 @@ stairs = {}
 
 -- Node will be called stairs:stair_<subname>
 function stairs.register_stair(subname, recipeitem, groups, images, description)
-	minetest.register_node("stairs:stair_" .. subname, {
+	minetest.register_node(":stairs:stair_" .. subname, {
 		description = description,
 		drawtype = "nodebox",
 		tiles = images,
@@ -31,7 +31,7 @@ end
 
 -- Node will be called stairs:slab_<subname>
 function stairs.register_slab(subname, recipeitem, groups, images, description)
-	minetest.register_node("stairs:slab_" .. subname, {
+	minetest.register_node(":stairs:slab_" .. subname, {
 		description = description,
 		drawtype = "nodebox",
 		tiles = images,

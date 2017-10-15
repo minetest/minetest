@@ -545,7 +545,7 @@ static void apply_mask(video::IImage *mask, video::IImage *dst,
 // Draw or overlay a crack
 static void draw_crack(video::IImage *crack, video::IImage *dst,
 		bool use_overlay, s32 frame_count, s32 progression,
-		video::IVideoDriver *driver);
+		video::IVideoDriver *driver, u8 tiles = 1);
 
 // Brighten image
 void brighten(video::IImage *image);
@@ -1280,11 +1280,22 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 			}
 
 			// Crack image number and overlay option
+			// Format: crack[o][:<tiles>]:<frame_count>:<frame>
 			bool use_overlay = (part_of_name[6] == 'o');
 			Strfnd sf(part_of_name);
 			sf.next(":");
 			s32 frame_count = stoi(sf.next(":"));
 			s32 progression = stoi(sf.next(":"));
+			s32 tiles = 1;
+			// Check whether there is the <tiles> argument, that is,
+			// whether there are 3 arguments. If so, shift values
+			// as the first and not the last argument is optional.
+			auto s = sf.next(":");
+			if (!s.empty()) {
+				tiles = frame_count;
+				frame_count = progression;
+				progression = stoi(s);
+			}
 
 			if (progression >= 0) {
 				/*
@@ -1299,7 +1310,7 @@ bool TextureSource::generateImagePart(std::string part_of_name,
 				if (img_crack) {
 					draw_crack(img_crack, baseimg,
 						use_overlay, frame_count,
-						progression, driver);
+						progression, driver, tiles);
 					img_crack->drop();
 				}
 			}
@@ -2102,74 +2113,78 @@ static void apply_mask(video::IImage *mask, video::IImage *dst,
 	}
 }
 
+video::IImage *create_crack_image(video::IImage *crack, s32 frame_index,
+		core::dimension2d<u32> size, u8 tiles, video::IVideoDriver *driver)
+{
+	core::dimension2d<u32> strip_size = crack->getDimension();
+	core::dimension2d<u32> frame_size(strip_size.Width, strip_size.Width);
+	core::dimension2d<u32> tile_size(size / tiles);
+	s32 frame_count = strip_size.Height / strip_size.Width;
+	if (frame_index >= frame_count)
+		frame_index = frame_count - 1;
+	core::rect<s32> frame(v2s32(0, frame_index * frame_size.Height), frame_size);
+	video::IImage *result = nullptr;
+
+// extract crack frame
+	video::IImage *crack_tile = driver->createImage(video::ECF_A8R8G8B8, tile_size);
+	if (!crack_tile)
+		return nullptr;
+	if (tile_size == frame_size) {
+		crack->copyTo(crack_tile, v2s32(0, 0), frame);
+	} else {
+		video::IImage *crack_frame = driver->createImage(video::ECF_A8R8G8B8, frame_size);
+		if (!crack_frame)
+			goto exit__has_tile;
+		crack->copyTo(crack_frame, v2s32(0, 0), frame);
+		crack_frame->copyToScaling(crack_tile);
+		crack_frame->drop();
+	}
+	if (tiles == 1)
+		return crack_tile;
+
+// tile it
+	result = driver->createImage(video::ECF_A8R8G8B8, size);
+	if (!result)
+		goto exit__has_tile;
+	result->fill({});
+	for (u8 i = 0; i < tiles; i++)
+		for (u8 j = 0; j < tiles; j++)
+			crack_tile->copyTo(result, v2s32(i * tile_size.Width, j * tile_size.Height));
+
+exit__has_tile:
+	crack_tile->drop();
+	return result;
+}
+
 static void draw_crack(video::IImage *crack, video::IImage *dst,
 		bool use_overlay, s32 frame_count, s32 progression,
-		video::IVideoDriver *driver)
+		video::IVideoDriver *driver, u8 tiles)
 {
 	// Dimension of destination image
 	core::dimension2d<u32> dim_dst = dst->getDimension();
-	// Dimension of original image
-	core::dimension2d<u32> dim_crack = crack->getDimension();
-	// Count of crack stages
-	s32 crack_count = dim_crack.Height / dim_crack.Width;
 	// Limit frame_count
 	if (frame_count > (s32) dim_dst.Height)
 		frame_count = dim_dst.Height;
 	if (frame_count < 1)
 		frame_count = 1;
-	// Limit progression
-	if (progression > crack_count-1)
-		progression = crack_count-1;
-	// Dimension of a single crack stage
-	core::dimension2d<u32> dim_crack_cropped(
-		dim_crack.Width,
-		dim_crack.Width
-	);
 	// Dimension of the scaled crack stage,
 	// which is the same as the dimension of a single destination frame
-	core::dimension2d<u32> dim_crack_scaled(
+	core::dimension2d<u32> frame_size(
 		dim_dst.Width,
 		dim_dst.Height / frame_count
 	);
-	// Create cropped and scaled crack images
-	video::IImage *crack_cropped = driver->createImage(
-			video::ECF_A8R8G8B8, dim_crack_cropped);
-	video::IImage *crack_scaled = driver->createImage(
-			video::ECF_A8R8G8B8, dim_crack_scaled);
+	video::IImage *crack_scaled = create_crack_image(crack, progression,
+			frame_size, tiles, driver);
+	if (!crack_scaled)
+		return;
 
-	if (crack_cropped && crack_scaled)
-	{
-		// Crop crack image
-		v2s32 pos_crack(0, progression*dim_crack.Width);
-		crack->copyTo(crack_cropped,
-				v2s32(0,0),
-				core::rect<s32>(pos_crack, dim_crack_cropped));
-		// Scale crack image by copying
-		crack_cropped->copyToScaling(crack_scaled);
-		// Copy or overlay crack image onto each frame
-		for (s32 i = 0; i < frame_count; ++i)
-		{
-			v2s32 dst_pos(0, dim_crack_scaled.Height * i);
-			if (use_overlay)
-			{
-				blit_with_alpha_overlay(crack_scaled, dst,
-						v2s32(0,0), dst_pos,
-						dim_crack_scaled);
-			}
-			else
-			{
-				blit_with_alpha(crack_scaled, dst,
-						v2s32(0,0), dst_pos,
-						dim_crack_scaled);
-			}
-		}
+	auto blit = use_overlay ? blit_with_alpha_overlay : blit_with_alpha;
+	for (s32 i = 0; i < frame_count; ++i) {
+		v2s32 dst_pos(0, frame_size.Height * i);
+		blit(crack_scaled, dst, v2s32(0,0), dst_pos, frame_size);
 	}
 
-	if (crack_scaled)
-		crack_scaled->drop();
-
-	if (crack_cropped)
-		crack_cropped->drop();
+	crack_scaled->drop();
 }
 
 void brighten(video::IImage *image)

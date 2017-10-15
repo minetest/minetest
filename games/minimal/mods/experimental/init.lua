@@ -501,6 +501,57 @@ minetest.register_node("experimental:tester_node_1", {
 	end,
 })
 
+minetest.register_node("experimental:tiled", {
+        description = "Tiled stone",
+        tiles = {{
+                name = "experimental_tiled.png",
+                align_style = "world",
+                scale = 8,
+        }},
+        groups = {cracky=2},
+})
+
+stairs.register_stair_and_slab("tiled_n", "experimental:tiled",
+		{cracky=2},
+		{{name="experimental_tiled.png", align_style="node", scale=8}},
+		"Tiled stair (node-aligned)",
+		"Tiled slab (node-aligned)")
+
+stairs.register_stair_and_slab("tiled", "experimantal:tiled",
+		{cracky=2},
+		{{name="experimental_tiled.png", align_style="world", scale=8}},
+		"Tiled stair",
+		"Tiled slab")
+
+minetest.register_craft({
+	output = 'experimental:tiled 4',
+	recipe = {
+		{'default:cobble', '', 'default:cobble'},
+		{'', '', ''},
+		{'default:cobble', '', 'default:cobble'},
+	}
+})
+
+minetest.register_craft({
+	output = 'stairs:stair_tiled',
+	recipe = {{'stairs:stair_tiled_n'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:stair_tiled_n',
+	recipe = {{'stairs:stair_tiled'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:slab_tiled',
+	recipe = {{'stairs:slab_tiled_n'}}
+})
+
+minetest.register_craft({
+	output = 'stairs:slab_tiled_n',
+	recipe = {{'stairs:slab_tiled'}}
+})
+
 minetest.register_craftitem("experimental:tester_tool_1", {
 	description = "Tester Tool 1",
 	inventory_image = "experimental_tester_tool_1.png",

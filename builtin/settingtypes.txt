@@ -431,7 +431,9 @@ texture_clean_transparent (Clean transparent textures) bool false
 #    memory.  Powers of 2 are recommended.  Setting this higher than 1 may not
 #    have a visible effect unless bilinear/trilinear/anisotropic filtering is
 #    enabled.
-texture_min_size (Minimum texture size for filters) int 64
+#    This is also used as the base node texture size for world-aligned
+#    texture autoscaling.
+texture_min_size (Minimum texture size) int 64
 
 #    Experimental option, might cause visible spaces between blocks
 #    when set to higher number than 0.
@@ -686,6 +688,22 @@ fog_start (Fog Start) float 0.4 0.0 0.99
 
 #    Makes all liquids opaque
 opaque_water (Opaque liquids) bool false
+
+#    Textures on a node may be aligned either to the node or to the world.
+#    The former mode suits better things like machines, furniture, etc., while
+#    the latter makes stairs and microblocks fit surroundings better.
+#    However, as this possibility is new, thus may not be used by older servers,
+#    this option allows enforcing it for certain node types. Note though that
+#    that is considered EXPERIMENTAL and may not work properly.
+world_aligned_mode (World-aligned textures mode) enum enable disable,enable,force_solid,force_nodebox
+
+#    World-aligned textures may be scaled to span several nodes. However,
+#    the server may not send the scale you want, especially if you use
+#    a specially-designed texture pack; with this option, the client tries
+#    to determine the scale automatically basing on the texture size.
+#    See also texture_min_size.
+#    Warning: this option is EXPERIMENTAL!
+autoscale_mode (Autoscaling mode) enum disable disable,enable,force
 
 #    Show entity selection boxes
 show_entity_selectionbox (Show entity selection boxes) bool true

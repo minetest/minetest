@@ -172,12 +172,13 @@ fake_function() {
 	gettext("Use trilinear filtering when scaling textures.");
 	gettext("Clean transparent textures");
 	gettext("Filtered textures can blend RGB values with fully-transparent neighbors,\nwhich PNG optimizers usually discard, sometimes resulting in a dark or\nlight edge to transparent textures.  Apply this filter to clean that up\nat texture load time.");
-	gettext("Minimum texture size for filters");
-	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels.  This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory.  Powers of 2 are recommended.  Setting this higher than 1 may not\nhave a visible effect unless bilinear/trilinear/anisotropic filtering is\nenabled.");
+	gettext("Minimum texture size");
+	gettext("When using bilinear/trilinear/anisotropic filters, low-resolution textures\ncan be blurred, so automatically upscale them with nearest-neighbor\ninterpolation to preserve crisp pixels.  This sets the minimum texture size\nfor the upscaled textures; higher values look sharper, but require more\nmemory.  Powers of 2 are recommended.  Setting this higher than 1 may not\nhave a visible effect unless bilinear/trilinear/anisotropic filtering is\nenabled.\nThis is also used as the base node texture size for world-aligned\ntexture autoscaling.");
 	gettext("FSAA");
 	gettext("Experimental option, might cause visible spaces between blocks\nwhen set to higher number than 0.");
 	gettext("Undersampling");
 	gettext("Undersampling is similar to using lower screen resolution, but it applies\nto the game world only, keeping the GUI intact.\nIt should give significant performance boost at the cost of less detailed image.");
+	gettext("Autoscaling mode");
 	gettext("Shaders");
 	gettext("Shaders");
 	gettext("Shaders allow advanced visual effects and may increase performance on some video cards.\nThis only works with the OpenGL video backend.");
@@ -303,6 +304,10 @@ fake_function() {
 	gettext("Fraction of the visible distance at which fog starts to be rendered");
 	gettext("Opaque liquids");
 	gettext("Makes all liquids opaque");
+	gettext("World-aligned textures mode");
+	gettext("Textures on a node may be aligned either to the node or to the world.\nThe former mode sutis better things like machines, furniture, etc., while\nthe latter makes stairs and microblocks fit surroundings better.\nHowever, as this possibility is new, thus may not be used by older servers,\nthis option allows enforcing it for certain node types. Note though that\nthat is considered EXPERIMENTAL and may not work properly.");
+	gettext("Autoscaling mode");
+	gettext("World-aligned textures may be scaled to span several nodes. However,\nthe server may not send the scale you want, especially if you use\na specially-designed texture pack; with this option, the client tries\nto determine the scale automatically basing on the texture size.\nSee also min_texture_size.\nWarning: this option is EXPERIMENTAL!");
 	gettext("Menus");
 	gettext("Clouds in menu");
 	gettext("Use a cloud animation for the main menu background.");
