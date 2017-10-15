@@ -369,6 +369,13 @@ s32 ChatBuffer::getBottomScrollPos() const
 	return formatted_count - rows;
 }
 
+void ChatBuffer::resize(u32 scrollback) {
+	m_scrollback = scrollback;
+	if (m_unformatted.size() > m_scrollback)
+	{
+		deleteOldest(m_unformatted.size() - m_scrollback);
+	}	
+}
 
 
 ChatPrompt::ChatPrompt(const std::wstring &prompt, u32 history_limit):
@@ -729,6 +736,11 @@ void ChatBackend::reformat(u32 cols, u32 rows)
 void ChatBackend::clearRecentChat()
 {
 	m_recent_buffer.clear();
+}
+
+
+void ChatBackend::applySettings(Settings* settings) {
+	m_recent_buffer.resize(settings->getU32("recent_chat_size"));
 }
 
 void ChatBackend::step(float dtime)

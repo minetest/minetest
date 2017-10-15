@@ -634,6 +634,9 @@ crosshair_color (Crosshair color) string (255,255,255)
 #    Crosshair alpha (opaqueness, between 0 and 255).
 crosshair_alpha (Crosshair alpha) int 255 0 255
 
+#    Maximum number of recent chat items to show
+recent_chat_size (Recent Chat Messages) int 6 3 99
+
 #    Whether node texture animations should be desynchronized per mapblock.
 desynchronize_mapblock_texture_animation (Desynchronize block animation) bool true
 

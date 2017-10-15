@@ -25,6 +25,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "irrlichttypes.h"
 #include "util/enriched_string.h"
+#include "settings.h"
 
 // Chat console related classes
 
@@ -118,6 +119,7 @@ public:
 	u32 formatChatLine(const ChatLine& line, u32 cols,
 			std::vector<ChatFormattedLine>& destination) const;
 
+    void resize(u32 scrollback);
 protected:
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
@@ -281,6 +283,9 @@ public:
 	void scrollPageDown();
 	void scrollPageUp();
 
+    // Resize recent buffer based on settings
+    void applySettings(Settings* settings);
+    
 private:
 	ChatBuffer m_console_buffer;
 	ChatBuffer m_recent_buffer;
