@@ -739,8 +739,8 @@ void ChatBackend::clearRecentChat()
 }
 
 
-void ChatBackend::applySettings(Settings* settings) {
-	m_recent_buffer.resize(settings->getU32("recent_chat_size"));
+void ChatBackend::applySettings() {
+	m_recent_buffer.resize(g_settings->getU32("recent_chat_size"));
 }
 
 void ChatBackend::step(float dtime)

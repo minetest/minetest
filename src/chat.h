@@ -284,7 +284,7 @@ public:
 	void scrollPageUp();
 
     // Resize recent buffer based on settings
-    void applySettings(Settings* settings);
+    void applySettings();
     
 private:
 	ChatBuffer m_console_buffer;
