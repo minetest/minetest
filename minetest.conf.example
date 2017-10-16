@@ -747,7 +747,7 @@
 #    type: int min: 0 max: 255
 # crosshair_alpha = 255
 
-#    Maximum number of recent chat items to show
+#    Maximum number of recent chat lines to show
 #    type: int min: 2 max: 20
 # recent_chat_lines = 6
 
