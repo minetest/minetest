@@ -46,6 +46,8 @@ enum
 	GUI_ID_KEY_LEFT_BUTTON,
 	GUI_ID_KEY_RIGHT_BUTTON,
 	GUI_ID_KEY_USE_BUTTON,
+	GUI_ID_KEY_DIG_BUTTON,
+	GUI_ID_KEY_PLACE_BUTTON,
 	GUI_ID_KEY_FLY_BUTTON,
 	GUI_ID_KEY_FAST_BUTTON,
 	GUI_ID_KEY_JUMP_BUTTON,
@@ -274,11 +276,29 @@ bool GUIKeyChangeMenu::resetMenu()
 }
 bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
-	if (event.EventType == EET_KEY_INPUT_EVENT && activeKey >= 0
-			&& event.KeyInput.PressedDown) {
+	if (activeKey >= 0 &&
+			((event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown) ||
+			(event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+			(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ||
+			event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)))) {
+
+		// If the desired key comes from the keyboard, the event's
+		// KeyInput can be used. However, if the desired key is a mouse
+		// button then a KeyInput has to be created artificially.
+		irr::SEvent::SKeyInput s;
+		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+				s.Key = KEY_LBUTTON;
+			} else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
+				s.Key = KEY_RBUTTON;
+			}
+			s.Char = 0;
+		} else {
+			s = event.KeyInput;
+		}
 
 		bool prefer_character = shift_down;
-		KeyPress kp(event.KeyInput, prefer_character);
+		KeyPress kp(s, prefer_character);
 
 		bool shift_went_down = false;
 		if(!shift_down &&
@@ -406,6 +426,8 @@ void GUIKeyChangeMenu::init_keys()
 	this->add_key(GUI_ID_KEY_USE_BUTTON,       wgettext("Special"),          "keymap_special1");
 	this->add_key(GUI_ID_KEY_JUMP_BUTTON,      wgettext("Jump"),             "keymap_jump");
 	this->add_key(GUI_ID_KEY_SNEAK_BUTTON,     wgettext("Sneak"),            "keymap_sneak");
+	this->add_key(GUI_ID_KEY_DIG_BUTTON,       wgettext("Dig"),              "keymap_dig");
+	this->add_key(GUI_ID_KEY_PLACE_BUTTON,     wgettext("Place"),            "keymap_place");
 	this->add_key(GUI_ID_KEY_DROP_BUTTON,      wgettext("Drop"),             "keymap_drop");
 	this->add_key(GUI_ID_KEY_INVENTORY_BUTTON, wgettext("Inventory"),        "keymap_inventory");
 	this->add_key(GUI_ID_KEY_HOTBAR_PREV_BUTTON,wgettext("Prev. item"),      "keymap_hotbar_previous");
