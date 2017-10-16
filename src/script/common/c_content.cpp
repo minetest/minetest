@@ -1588,7 +1588,7 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 		np->flags);
 	lua_setfield(L, -2, "flags");
 
-	push_v3f(L, np->spread);
+	push_v3_float_string(L, np->spread);
 	lua_setfield(L, -2, "spread");
 }
 

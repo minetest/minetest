@@ -63,6 +63,26 @@ void push_float_string(lua_State *L, float value)
 void push_v3f(lua_State *L, v3f p)
 {
 	lua_newtable(L);
+	lua_tonumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_tonumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+	lua_tonumber(L, p.Z);
+	lua_setfield(L, -2, "z");
+}
+
+void push_v2f(lua_State *L, v2f p)
+{
+	lua_newtable(L);
+	lua_tonumber(L, p.X);
+	lua_setfield(L, -2, "x");
+	lua_tonumber(L, p.Y);
+	lua_setfield(L, -2, "y");
+}
+
+void push_v3_float_string(lua_State *L, v3f p)
+{
+	lua_newtable(L);
 	push_float_string(L, p.X);
 	lua_setfield(L, -2, "x");
 	push_float_string(L, p.Y);
@@ -71,7 +91,7 @@ void push_v3f(lua_State *L, v3f p)
 	lua_setfield(L, -2, "z");
 }
 
-void push_v2f(lua_State *L, v2f p)
+void push_v2_float_string(lua_State *L, v2f p)
 {
 	lua_newtable(L);
 	push_float_string(L, p.X);

@@ -100,6 +100,8 @@ size_t              read_stringlist     (lua_State *L, int index,
                                          std::vector<std::string> *result);
 
 void                push_float_string   (lua_State *L, float value);
+void                push_v3_float_string(lua_State *L, v3f p);
+void                push_v2_float_string(lua_State *L, v2f p);
 void                push_v2s16          (lua_State *L, v2s16 p);
 void                push_v2s32          (lua_State *L, v2s32 p);
 void                push_v3s16          (lua_State *L, v3s16 p);
