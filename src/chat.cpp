@@ -741,7 +741,7 @@ void ChatBackend::clearRecentChat()
 void ChatBackend::applySettings()
 {
 	u32 recent_lines = g_settings->getU32("recent_chat_lines");
-	recent_lines = MYMIN(20, MYMAX(2, recent_lines));
+	recent_lines = rangelim(recent_lines, 2, 20);
 	m_recent_buffer.resize(recent_lines);
 }
 
