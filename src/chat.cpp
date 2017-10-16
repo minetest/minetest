@@ -373,9 +373,7 @@ void ChatBuffer::resize(u32 scrollback)
 {
 	m_scrollback = scrollback;
 	if (m_unformatted.size() > m_scrollback)
-	{
 		deleteOldest(m_unformatted.size() - m_scrollback);
-	}	
 }
 
 
@@ -742,7 +740,9 @@ void ChatBackend::clearRecentChat()
 
 void ChatBackend::applySettings()
 {
-	m_recent_buffer.resize(g_settings->getU32("recent_chat_lines"));
+	u32 recent_lines = g_settings->getU32("recent_chat_lines");
+	recent_lines = MIN(20, MAX(2, recent_lines));
+	m_recent_buffer.resize(recent_lines);
 }
 
 void ChatBackend::step(float dtime)
