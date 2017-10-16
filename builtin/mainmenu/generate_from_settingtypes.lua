@@ -50,7 +50,7 @@ local function create_minetest_conf_example()
 			local group_format = false
 			if entry.noise_params and entry.values then
 				if (entry.type == "noise_params_2d" and entry.values[10] ~= "eased")
-					or (entry.type == "noise_params_3d" and entry.values[10] ~= "noeased") then
+					or (entry.type == "noise_params_3d" and entry.values[10] ~= "") then
 					group_format = true
 				end
 			end
