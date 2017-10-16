@@ -119,7 +119,7 @@ public:
 	u32 formatChatLine(const ChatLine& line, u32 cols,
 			std::vector<ChatFormattedLine>& destination) const;
 
-    void resize(u32 scrollback);
+	void resize(u32 scrollback);
 protected:
 	s32 getTopScrollPos() const;
 	s32 getBottomScrollPos() const;
@@ -283,8 +283,8 @@ public:
 	void scrollPageDown();
 	void scrollPageUp();
 
-    // Resize recent buffer based on settings
-    void applySettings(Settings* settings);
+	// Resize recent buffer based on settings
+	void applySettings();
     
 private:
 	ChatBuffer m_console_buffer;

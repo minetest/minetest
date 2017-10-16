@@ -310,7 +310,7 @@ fake_function() {
 	gettext("Crosshair alpha");
 	gettext("Crosshair alpha (opaqueness, between 0 and 255).");
 	gettext("Recent Chat Messages");
-	gettext("Maximum number of recent chat items to show");
+	gettext("Maximum number of recent chat lines to show");
 	gettext("Desynchronize block animation");
 	gettext("Whether node texture animations should be desynchronized per mapblock.");
 	gettext("Maximum hotbar width");

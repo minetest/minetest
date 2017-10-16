@@ -747,9 +747,9 @@
 #    type: int min: 0 max: 255
 # crosshair_alpha = 255
 
-#    Maximum number of recent chat items to show
-#    type: int min: 3 max: 99
-# recent_chat_size = 6
+#    Maximum number of recent chat messages to show
+#    type: int min: 2 max: 20
+# recent_chat_messages = 6
 
 #    Whether node texture animations should be desynchronized per mapblock.
 #    type: bool

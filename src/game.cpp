@@ -2051,8 +2051,8 @@ bool Game::initGui()
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 
-    // Make sure the size of the recent messages buffer is right
-    chat_backend->applySettings(g_settings);
+	// Make sure the size of the recent messages buffer is right
+	chat_backend->applySettings();
     
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
