@@ -1054,6 +1054,8 @@ void KeyCache::populate()
 	key[KeyType::JUMP]         = getKeySetting("keymap_jump");
 	key[KeyType::SPECIAL1]     = getKeySetting("keymap_special1");
 	key[KeyType::SNEAK]        = getKeySetting("keymap_sneak");
+	key[KeyType::DIG]          = getKeySetting("keymap_dig");
+	key[KeyType::PLACE]        = getKeySetting("keymap_place");
 
 	key[KeyType::AUTOFORWARD]  = getKeySetting("keymap_autoforward");
 
@@ -1142,7 +1144,7 @@ struct GameRunData {
 	u16 new_playeritem;
 	PointedThing pointed_old;
 	bool digging;
-	bool ldown_for_dig;
+	bool btn_down_for_dig;
 	bool dig_instantly;
 	bool digging_blocked;
 	bool left_punch;
@@ -1151,7 +1153,7 @@ struct GameRunData {
 	float nodig_delay_timer;
 	float dig_time;
 	float dig_time_complete;
-	float repeat_rightclick_timer;
+	float repeat_place_timer;
 	float object_hit_delay_timer;
 	float time_from_last_punch;
 	ClientActiveObject *selected_object;
@@ -1479,7 +1481,7 @@ private:
 	bool m_cache_enable_free_move;
 	f32  m_cache_mouse_sensitivity;
 	f32  m_cache_joystick_frustum_sensitivity;
-	f32  m_repeat_right_click_time;
+	f32  m_repeat_place_time;
 	f32  m_cache_cam_smoothing;
 	f32  m_cache_fog_start;
 
@@ -1530,7 +1532,7 @@ Game::Game() :
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("joystick_frustum_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->registerChangedCallback("repeat_rightclick_time",
+	g_settings->registerChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
 	g_settings->registerChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -1589,7 +1591,7 @@ Game::~Game()
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("mouse_sensitivity",
 		&settingChangedCallback, this);
-	g_settings->deregisterChangedCallback("repeat_rightclick_time",
+	g_settings->deregisterChangedCallback("repeat_place_time",
 		&settingChangedCallback, this);
 	g_settings->deregisterChangedCallback("noclip",
 		&settingChangedCallback, this);
@@ -3637,7 +3639,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 
 	PointedThing pointed = updatePointedThing(shootline,
 			playeritem_def.liquids_pointable,
-			!runData.ldown_for_dig,
+			!runData.btn_down_for_dig,
 			camera_offset);
 
 	if (pointed != runData.pointed_old) {
@@ -3645,7 +3647,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		hud->updateSelectionMesh(camera_offset);
 	}
 
-	if (runData.digging_blocked && !isLeftPressed()) {
+	if (runData.digging_blocked && !isKeyDown(KeyType::DIG)) {
 		// allow digging again if button is not pressed
 		runData.digging_blocked = false;
 	}
@@ -3656,8 +3658,8 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		- pointing away from node
 	*/
 	if (runData.digging) {
-		if (getLeftReleased()) {
-			infostream << "Left button released"
+		if (!isKeyDown(KeyType::DIG)) {
+			infostream << "Dig button released"
 			           << " (stopped digging)" << std::endl;
 			runData.digging = false;
 		} else if (pointed != runData.pointed_old) {
@@ -3680,14 +3682,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			client->setCrack(-1, v3s16(0, 0, 0));
 			runData.dig_time = 0.0;
 		}
-	} else if (runData.dig_instantly && getLeftReleased()) {
-		// Remove e.g. torches faster when clicking instead of holding LMB
+	} else if (runData.dig_instantly && !isKeyDown(KeyType::DIG)) {
+		// Remove e.g. torches faster when clicking instead of holding place button
 		runData.nodig_delay_timer = 0;
 		runData.dig_instantly = false;
 	}
 
-	if (!runData.digging && runData.ldown_for_dig && !isLeftPressed()) {
-		runData.ldown_for_dig = false;
+	if (!runData.digging && runData.btn_down_for_dig && !isKeyDown(KeyType::DIG)) {
+		runData.btn_down_for_dig = false;
 	}
 
 	runData.left_punch = false;
@@ -3695,13 +3697,13 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 	soundmaker->m_player_leftpunch_sound.name = "";
 
 	// Prepare for repeating, unless we're not supposed to
-	if (isRightPressed() && !g_settings->getBool("safe_dig_and_place"))
-		runData.repeat_rightclick_timer += dtime;
+	if (isKeyDown(KeyType::PLACE) && !g_settings->getBool("safe_dig_and_place"))
+		runData.repeat_place_timer += dtime;
 	else
-		runData.repeat_rightclick_timer = 0;
+		runData.repeat_place_timer = 0;
 
-	if (playeritem_def.usable && isLeftPressed()) {
-		if (getLeftClicked() && (!client->moddingEnabled()
+	if (playeritem_def.usable && isKeyDown(KeyType::DIG)) {
+		if (isKeyDown(KeyType::DIG) && (!client->moddingEnabled()
 				|| !client->getScript()->on_item_use(playeritem, pointed)))
 			client->interact(4, pointed);
 	} else if (pointed.type == POINTEDTHING_NODE) {
@@ -3719,17 +3721,17 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 			playeritem_toolcap, dtime);
 	} else if (pointed.type == POINTEDTHING_OBJECT) {
 		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
-	} else if (isLeftPressed()) {
+	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
 		runData.left_punch = true;
-	} else if (getRightClicked()) {
+	} else if (wasKeyDown(KeyType::PLACE)) {
 		handlePointingAtNothing(playeritem);
 	}
 
 	runData.pointed_old = pointed;
 
-	if (runData.left_punch || getLeftClicked())
-		camera->setDigging(0); // left click animation
+	if (runData.left_punch || isKeyDown(KeyType::DIG))
+		camera->setDigging(0); // dig animation
 
 	input->resetLeftClicked();
 	input->resetRightClicked();
@@ -3838,7 +3840,7 @@ PointedThing Game::updatePointedThing(
 
 void Game::handlePointingAtNothing(const ItemStack &playerItem)
 {
-	infostream << "Right Clicked in Air" << std::endl;
+	infostream << "Attemped block place action while pointing at nothing" << std::endl;
 	PointedThing fauxPointed;
 	fauxPointed.type = POINTEDTHING_NOTHING;
 	client->interact(5, fauxPointed);
@@ -3858,7 +3860,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 	ClientMap &map = client->getEnv().getClientMap();
 
-	if (runData.nodig_delay_timer <= 0.0 && isLeftPressed()
+	if (runData.nodig_delay_timer <= 0.0 && isKeyDown(KeyType::DIG)
 			&& !runData.digging_blocked
 			&& client->checkPrivilege("interact")) {
 		handleDigging(pointed, nodepos, playeritem_toolcap, dtime);
@@ -3878,15 +3880,15 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		}
 	}
 
-	if ((getRightClicked() ||
-			runData.repeat_rightclick_timer >= m_repeat_right_click_time) &&
+	if ((wasKeyDown(KeyType::PLACE) ||
+			runData.repeat_place_timer >= m_repeat_place_time) &&
 			client->checkPrivilege("interact")) {
-		runData.repeat_rightclick_timer = 0;
-		infostream << "Ground right-clicked" << std::endl;
+		runData.repeat_place_timer = 0;
+		infostream << "Place button pressed while looking at ground" << std::endl;
 
 		if (meta && !meta->getString("formspec").empty() && !random_input
 				&& !isKeyDown(KeyType::SNEAK)) {
-			// Report right click to server
+			// Report place action to server
 			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
 				client->interact(3, pointed);
 			}
@@ -3906,9 +3908,9 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 
 			current_formspec->setFormSpec(meta->getString("formspec"), inventoryloc);
 		} else {
-			// Report right click to server
+			// Report place action to server
 
-			camera->setDigging(1);  // right click animation (always shown for feedback)
+			camera->setDigging(1);  // dig animation (always shown for feedback)
 
 			// If the wielded item has node placement prediction,
 			// make that happen
@@ -3955,7 +3957,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 		infotext += utf8_to_wide(runData.selected_object->debugInfoText());
 	}
 
-	if (isLeftPressed()) {
+	if (isKeyDown(KeyType::DIG)) {
 		bool do_punch = false;
 		bool do_punch_damage = false;
 
@@ -3965,11 +3967,11 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			runData.object_hit_delay_timer = object_hit_delay;
 		}
 
-		if (getLeftClicked())
+		if (isKeyDown(KeyType::DIG))
 			do_punch = true;
 
 		if (do_punch) {
-			infostream << "Left-clicked object" << std::endl;
+			infostream << "Dug object" << std::endl;
 			runData.left_punch = true;
 		}
 
@@ -3992,8 +3994,8 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			if (!disable_send)
 				client->interact(0, pointed);
 		}
-	} else if (getRightClicked()) {
-		infostream << "Right-clicked object" << std::endl;
+	} else if (wasKeyDown(KeyType::PLACE)) {
+		infostream << "Dug object" << std::endl;
 		client->interact(3, pointed);  // place
 	}
 }
@@ -4043,7 +4045,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			return;
 		client->interact(0, pointed);
 		runData.digging = true;
-		runData.ldown_for_dig = true;
+		runData.btn_down_for_dig = true;
 	}
 
 	if (!runData.dig_instantly) {
@@ -4138,7 +4140,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 		client->setCrack(-1, nodepos);
 	}
 
-	camera->setDigging(0);  // left click animation
+	camera->setDigging(0);  // Dig animation
 }
 
 
@@ -4621,7 +4623,7 @@ void Game::readSettings()
 	m_cache_enable_fog                   = g_settings->getBool("enable_fog");
 	m_cache_mouse_sensitivity            = g_settings->getFloat("mouse_sensitivity");
 	m_cache_joystick_frustum_sensitivity = g_settings->getFloat("joystick_frustum_sensitivity");
-	m_repeat_right_click_time            = g_settings->getFloat("repeat_rightclick_time");
+	m_repeat_place_time                  = g_settings->getFloat("repeat_place_time");
 
 	m_cache_enable_noclip                = g_settings->getBool("noclip");
 	m_cache_enable_free_move             = g_settings->getBool("free_move");

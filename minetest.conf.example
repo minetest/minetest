@@ -69,9 +69,9 @@
 #    type: bool
 # always_fly_fast = true
 
-#    The time in seconds it takes between repeated right clicks when holding the right mouse button.
+#    The time in seconds it takes between repeated block placements when holding the place block button.
 #    type: float
-# repeat_rightclick_time = 0.25
+# repeat_place_time = 0.25
 
 #    Prevent digging and placing from repeating when holding the mouse buttons.
 #    Enable this when you dig or place too often by accident.
