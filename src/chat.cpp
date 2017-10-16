@@ -369,7 +369,8 @@ s32 ChatBuffer::getBottomScrollPos() const
 	return formatted_count - rows;
 }
 
-void ChatBuffer::resize(u32 scrollback) {
+void ChatBuffer::resize(u32 scrollback)
+{
 	m_scrollback = scrollback;
 	if (m_unformatted.size() > m_scrollback)
 	{
@@ -739,8 +740,9 @@ void ChatBackend::clearRecentChat()
 }
 
 
-void ChatBackend::applySettings() {
-	m_recent_buffer.resize(g_settings->getU32("recent_chat_size"));
+void ChatBackend::applySettings()
+{
+	m_recent_buffer.resize(g_settings->getU32("recent_chat_lines"));
 }
 
 void ChatBackend::step(float dtime)

@@ -749,7 +749,7 @@
 
 #    Maximum number of recent chat items to show
 #    type: int min: 2 max: 20
-# recent_chat_size = 6
+# recent_chat_lines = 6
 
 #    Whether node texture animations should be desynchronized per mapblock.
 #    type: bool
