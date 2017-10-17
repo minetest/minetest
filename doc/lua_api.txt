@@ -3911,12 +3911,16 @@ It can be created via `Settings(filename)`.
 #### Methods
 * `get(key)`: returns a value
 * `get_bool(key)`: returns a boolean
+* `get_np_group(key)`: returns a NoiseParams table
 * `set(key, value)`
     * Setting names can't contain whitespace or any of `="{}#`.
     * Setting values can't contain the sequence `\n"""`.
     * Setting names starting with "secure." can't be set on the main settings object (`minetest.settings`).
 * `set_bool(key, value)`
     * See documentation for set() above.
+* `set_np_group(key, value)`
+	* `value` is a NoiseParams table.
+	* Also, see documentation for set() above.
 * `remove(key)`: returns a boolean (`true` for success)
 * `get_names()`: returns `{key1,...}`
 * `write()`: returns a boolean (`true` for success)
