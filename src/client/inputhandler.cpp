@@ -81,6 +81,10 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 				keyWasDown.set("KEY_LBUTTON");
 				leftclicked = true;
 			}
+			if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
+				keyIsDown.set("KEY_MBUTTON");
+				keyWasDown.set("KEY_MBUTTON");
+			}
 			if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
 				keyIsDown.set("KEY_RBUTTON");
 				keyWasDown.set("KEY_RBUTTON");
@@ -89,6 +93,9 @@ bool MyEventReceiver::OnEvent(const SEvent &event)
 			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) {
 				keyIsDown.unset("KEY_LBUTTON");
 				leftreleased = true;
+			}
+			if (event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP) {
+				keyIsDown.unset("KEY_MBUTTON");
 			}
 			if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP) {
 				keyIsDown.unset("KEY_RBUTTON");

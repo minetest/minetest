@@ -274,13 +274,19 @@ bool GUIKeyChangeMenu::resetMenu()
 	}
 	return true;
 }
+
+bool isMouseDownEvent(const SEvent &event)
+{
+	return event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
+		(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ||
+		event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN ||
+		event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN);
+}
+
 bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
-	if (activeKey >= 0 &&
-			((event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown) ||
-			(event.EventType == irr::EET_MOUSE_INPUT_EVENT &&
-			(event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN ||
-			event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)))) {
+	if (activeKey >= 0 && (isMouseDownEvent(event) ||
+			(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown))) {
 
 		// If the desired key comes from the keyboard, the event's
 		// KeyInput can be used. However, if the desired key is a mouse
@@ -291,6 +297,8 @@ bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 				s.Key = KEY_LBUTTON;
 			} else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
 				s.Key = KEY_RBUTTON;
+			} else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
+				s.Key = KEY_MBUTTON;
 			}
 			s.Char = 0;
 		} else {
