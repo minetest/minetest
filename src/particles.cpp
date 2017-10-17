@@ -1,3 +1,22 @@
+/*
+Minetest
+Copyright (C) 2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
+
 #include "client.h"
 #include "collision.h"
 #include "client/clientevent.h"
@@ -14,16 +33,16 @@
 
 static v3f random_v3f(v3f min, v3f max)
 {
-	return v3f(rand()/(float)RAND_MAX*(max.X-min.X)+min.X,
-		rand()/(float)RAND_MAX*(max.Y-min.Y)+min.Y,
-		rand()/(float)RAND_MAX*(max.Z-min.Z)+min.Z);
+	return v3f(rand() / (float) RAND_MAX * (max.X - min.X) + min.X,
+		rand() / (float) RAND_MAX * (max.Y - min.Y) + min.Y,
+		rand() / (float) RAND_MAX * (max.Z - min.Z) + min.Z);
 }
 
 static irr::core::matrix4 bottomUpTextureMatrix(float scale_x, float scale_y,
 	float coord_x, float coord_y)
 {
 	// Transposed 3x3 2D-transformation matrix padded to 4x4
-	irr::core::matrix4 texture_matrix (irr::core::matrix4::EM4CONST_IDENTITY);
+	irr::core::matrix4 texture_matrix(irr::core::matrix4::EM4CONST_IDENTITY);
 	// Rotation and scaling
 	texture_matrix[0] = -scale_x;
 	texture_matrix[5] = -scale_y;
@@ -50,10 +69,10 @@ public:
 		old_camera_offset = camera_offset;
 	}
 
-        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
 	{
-                return irr::scene::EPAT_NONE;
-        }
+		return irr::scene::EPAT_NONE;
+	}
 private:
 	const ClientEnvironment &env;
 	irr::scene::IParticleSystemSceneNode *const ps;
@@ -109,10 +128,10 @@ public:
 		}
 	}
 
-        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
 	{
-                return irr::scene::EPAT_NONE;
-        }
+		return irr::scene::EPAT_NONE;
+	}
 private:
 	ClientEnvironment *env;
 	IGameDef *gamedef;
@@ -156,10 +175,10 @@ public:
 		texture_matrix = bottomUpTextureMatrix(framesize_ratio.X, framesize_ratio.Y, texcoord.X, texcoord.Y);
 	}
 
-        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
 	{
-                return irr::scene::EPAT_NONE;
-        }
+		return irr::scene::EPAT_NONE;
+	}
 private:
 	const struct TileAnimationParams anim;
 	float animation_time = 0.f;
@@ -211,10 +230,10 @@ public:
 		}
 	}
 
-        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
 	{
-                return irr::scene::EPAT_NONE;
-        }
+		return irr::scene::EPAT_NONE;
+	}
 private:
 	ClientEnvironment *env;
 	irr::scene::IParticleSystemSceneNode *const ps;
@@ -250,10 +269,10 @@ public:
 		}
 	}
 
-        virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
+	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
 	{
-                return irr::scene::EPAT_NONE;
-        }
+		return irr::scene::EPAT_NONE;
+	}
 private:
 	v3f acc;
 	bool disabled;
@@ -263,33 +282,33 @@ class CustomEmitter : public irr::scene::IParticleEmitter
 {
 public:
 	// unused pure virtual methods
-        virtual void setDirection( const core::vector3df& newDirection ) {  }
-        virtual void setMinParticlesPerSecond( u32 minPPS ) {  }
-        virtual void setMaxParticlesPerSecond( u32 maxPPS ) {  }
-        virtual void setMinStartColor( const video::SColor& color ) {  }
-        virtual void setMaxStartColor( const video::SColor& color ) {  }
-        virtual void setMaxLifeTime( const u32 t ) {  }
-        virtual void setMinLifeTime( const u32 t ) { }
-        virtual u32 getMaxLifeTime() const { return 1; }
-        virtual u32 getMinLifeTime() const { return 1; }
-        virtual void setMaxAngleDegrees(const s32 t ) {  }
-        virtual s32 getMaxAngleDegrees() const { return 0; }
-        virtual void setMaxStartSize( const core::dimension2df& size ) { }
-        virtual void setMinStartSize( const core::dimension2df& size ) {  }
-        virtual void setCenter( const core::vector3df& center ) {  }
-        virtual void setRadius( f32 radius ) {  }
-        virtual const core::vector3df& getDirection() const { return direction; }
-        virtual u32 getMinParticlesPerSecond() const { return 1; }
-        virtual u32 getMaxParticlesPerSecond() const { return 1; }
-        virtual const video::SColor& getMinStartColor() const { return minStartColor; }
-        virtual const video::SColor& getMaxStartColor() const { return maxStartColor; }
-        virtual const core::dimension2df& getMaxStartSize() const { return max_size; }
-        virtual const core::dimension2df& getMinStartSize() const { return min_size; }
-        virtual const core::vector3df& getCenter() const { return center; }
-        virtual f32 getRadius() const { return 1.; }
-        virtual irr::scene::E_PARTICLE_EMITTER_TYPE getType() const
+	virtual void setDirection(const core::vector3df& newDirection) {}
+	virtual void setMinParticlesPerSecond(u32 minPPS) {}
+	virtual void setMaxParticlesPerSecond(u32 maxPPS) {}
+	virtual void setMinStartColor(const video::SColor& color) {}
+	virtual void setMaxStartColor(const video::SColor& color) {}
+	virtual void setMaxLifeTime(const u32 t) {}
+	virtual void setMinLifeTime(const u32 t) {}
+	virtual u32 getMaxLifeTime() const {return 1;}
+	virtual u32 getMinLifeTime() const {return 1;}
+	virtual void setMaxAngleDegrees(const s32 t) {}
+	virtual s32 getMaxAngleDegrees() const {return 0;}
+	virtual void setMaxStartSize(const core::dimension2df& size) {}
+	virtual void setMinStartSize(const core::dimension2df& size) {}
+	virtual void setCenter(const core::vector3df& center) {}
+	virtual void setRadius(f32 radius) {}
+	virtual const core::vector3df& getDirection() const {return direction;}
+	virtual u32 getMinParticlesPerSecond() const {return 1;}
+	virtual u32 getMaxParticlesPerSecond() const {return 1;}
+	virtual const video::SColor& getMinStartColor() const {return minStartColor;}
+	virtual const video::SColor& getMaxStartColor() const {return maxStartColor;}
+	virtual const core::dimension2df& getMaxStartSize() const {return max_size;}
+	virtual const core::dimension2df& getMinStartSize() const {return min_size;}
+	virtual const core::vector3df& getCenter() const {return center;}
+	virtual f32 getRadius() const {return 1.f;}
+	virtual irr::scene::E_PARTICLE_EMITTER_TYPE getType() const
 	{
-                return irr::scene::EPET_COUNT;
+		return irr::scene::EPET_COUNT;
 	}
 protected:
 	core::dimension2df min_size, max_size;
@@ -306,8 +325,8 @@ public:
 	SingleEmitter(irr::scene::ISceneManager *smgr,
 		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color, u32 number,
 		f32 expirationtime):
-		smgr(smgr), ps(ps), number(number), deletion_time (0),
-		expirationtime(expirationtime), random_properties (true)
+		smgr(smgr), ps(ps), number(number), deletion_time(0),
+		expirationtime(expirationtime), random_properties(true)
 	{
 		particles.reserve(number);
 	}
@@ -315,7 +334,7 @@ public:
 	SingleEmitter(irr::scene::ISceneManager *smgr,
 		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color,
 		f32 expirationtime, f32 size, const v3f &pos, const v3f &vel):
-		smgr(smgr), ps(ps), number(1), deletion_time (0),
+		smgr(smgr), ps(ps), number(1), deletion_time(0),
 		expirationtime(expirationtime), size(size), pos(pos), vel(vel),
 		random_properties(false)
 	{
