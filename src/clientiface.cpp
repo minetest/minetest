@@ -204,13 +204,15 @@ void RemoteClient::GetNextBlocks (
 	// limit max fov effect to 50%, 60% at 20n/s fly speed
 	camera_fov = camera_fov / (1 + dot / 300.0f);
 
-	const s16 full_d_max = std::min(m_max_send_distance, wanted_range);
-	const s16 d_opt = std::min(m_block_optimize_distance, wanted_range);
+	// 1.775 ~= 72 * PI / 180 * 1.4;
+	s16 magnify_adjust = round(sqrt(1.775f / camera_fov));
+	const s16 full_d_max = std::min((s16)(m_max_send_distance * magnify_adjust), wanted_range);
+	const s16 d_opt = std::min((s16)(m_block_optimize_distance * magnify_adjust), wanted_range);
 	const s16 d_blocks_in_sight = full_d_max * BS * MAP_BLOCKSIZE;
 	//infostream << "Fov from client " << camera_fov << " full_d_max " << full_d_max << std::endl;
 
 	s16 d_max = full_d_max;
-	s16 d_max_gen = std::min(m_max_gen_distance, wanted_range);
+	s16 d_max_gen = std::min((s16)(m_max_gen_distance * magnify_adjust), wanted_range);
 
 	// Don't loop very much at a time
 	s16 max_d_increment_at_time = 2;
