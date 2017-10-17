@@ -411,7 +411,7 @@ protected:
 	u64 m_hovered_time = 0;
 	s32 m_old_tooltip_id = -1;
 
-	bool m_rmouse_auto_place = false;
+	bool m_auto_place = false;
 
 	bool m_allowclose = true;
 	bool m_lock = false;

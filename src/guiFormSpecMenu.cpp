@@ -3449,7 +3449,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						// no shift: select item
 						m_selected_amount = count;
 						m_selected_dragging = true;
-						m_rmouse_auto_place = false;
+						m_auto_place = false;
 					} else {
 						// shift pressed: move item
 						if (button != 1)
@@ -3507,11 +3507,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			}
 
 			m_selected_dragging = false;
-			// Keep count of how many times right mouse button has been
-			// clicked. One click is drag without dropping. Click + release
-			// + click changes to drop one item when moved mode
-			if (button == 1 && m_selected_item != NULL)
-				m_rmouse_auto_place = !m_rmouse_auto_place;
+			// Keep track of whether the mouse button be released
+			// One click is drag without dropping. Click + release
+			// + click changes to drop item when moved mode
+			if (m_selected_item)
+				m_auto_place = true;
 		} else if (updown == -1) {
 			// Mouse has been moved and rmb is down and mouse pointer just
 			// entered a new inventory field (checked in the entry-if, this
@@ -3519,7 +3519,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			if (m_selected_item != NULL && s.isValid()) {
 				// Move 1 item
 				// TODO: middle mouse to move 10 items might be handy
-				if (m_rmouse_auto_place) {
+				if (m_auto_place) {
 					// Only move an item if the destination slot is empty
 					// or contains the same item type as what is going to be
 					// moved
