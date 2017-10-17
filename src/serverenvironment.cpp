@@ -1156,7 +1156,10 @@ void ServerEnvironment::step(float dtime)
 				continue;
 
 			// Move
-			player->move(dtime, this, 100 * BS);
+			//player->move(dtime, this, 100 * BS);
+			// TODO: apply physics and such, but prepare to be
+			// overruled?
+			// Or: apply control log here?
 		}
 	}
 
