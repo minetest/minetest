@@ -499,7 +499,6 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		if (node)
 			m_smgr->addToDeletionQueue(node);
 
-
 		scene::IParticleSystemSceneNode *ps =
 			m_smgr->addParticleSystemSceneNode(false,
 				RenderingEngine::get_scene_manager()->getRootSceneNode(),
@@ -510,6 +509,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		v3f minpos = *event->add_particlespawner.minpos * BS;
 		v3f maxpos = *event->add_particlespawner.maxpos * BS;
 		v3f meanpos = (minpos + maxpos) / 2.f;
+		ps->setPosition(meanpos);
 
 		scene::IParticlePointEmitter *continous_emitter =
 			new ContinuousEmitter(m_smgr, m_env, ps,
