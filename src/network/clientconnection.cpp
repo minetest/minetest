@@ -90,8 +90,15 @@ bool ClientConnection::connect(const std::string &addr, u16 port)
 
 void ClientConnection::disconnect()
 {
-	m_socket.close();
-	m_udp_socket.close();
+	try {
+		m_socket.shutdown(m_socket.shutdown_both);
+		m_socket.close();
+	} catch (std::exception &e) {}
+
+	try {
+		m_udp_socket.shutdown(m_socket.shutdown_both);
+		m_udp_socket.close();
+	} catch (std::exception &e) {}
 	m_state = STATE_DISCONNECTED;
 	m_last_error = "Connection lost.";
 }
@@ -342,7 +349,7 @@ void ClientConnectionThread::stop()
 void *ClientConnectionThread::run()
 {
 	while (!stopRequested()) {
-		m_io_service.run();
+		m_io_service.run_one();
 	}
 	return nullptr;
 }

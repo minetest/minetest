@@ -346,8 +346,9 @@ void *ServerConnectionThread::run()
 {
 	m_server_connection->start();
 	while (!stopRequested()) {
-		m_io_service.run();
+		m_io_service.run_one();
 	}
+
 	return nullptr;
 }
 
