@@ -786,7 +786,7 @@ bool nodePlacementPrediction(Client &client, const ItemDefinition &playeritem_de
 	if (!is_valid_position)
 		return false;
 
-	if (!prediction.empty() && !nodedef->get(node).rightclickable) {
+	if (!prediction.empty() && !nodedef->get(node).can_place_onto) {
 		verbosestream << "Node placement prediction for "
 			      << playeritem_def.name << " is "
 			      << prediction << std::endl;
@@ -1147,7 +1147,7 @@ struct GameRunData {
 	bool btn_down_for_dig;
 	bool dig_instantly;
 	bool digging_blocked;
-	bool left_punch;
+	bool punch;
 	bool update_wielded_item_trigger;
 	bool reset_jump_timer;
 	float nodig_delay_timer;
@@ -3692,7 +3692,7 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		runData.btn_down_for_dig = false;
 	}
 
-	runData.left_punch = false;
+	runData.punch = false;
 
 	soundmaker->m_player_leftpunch_sound.name = "";
 
@@ -3723,14 +3723,14 @@ void Game::processPlayerInteraction(f32 dtime, bool show_hud, bool show_debug)
 		handlePointingAtObject(pointed, playeritem, player_position, show_debug);
 	} else if (isKeyDown(KeyType::DIG)) {
 		// When button is held down in air, show continuous animation
-		runData.left_punch = true;
+		runData.punch = true;
 	} else if (wasKeyDown(KeyType::PLACE)) {
 		handlePointingAtNothing(playeritem);
 	}
 
 	runData.pointed_old = pointed;
 
-	if (runData.left_punch || isKeyDown(KeyType::DIG))
+	if (runData.punch || isKeyDown(KeyType::DIG))
 		camera->setDigging(0); // dig animation
 
 	input->resetLeftClicked();
@@ -3889,7 +3889,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 		if (meta && !meta->getString("formspec").empty() && !random_input
 				&& !isKeyDown(KeyType::SNEAK)) {
 			// Report place action to server
-			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+			if (nodedef_manager->get(map.getNodeNoEx(nodepos)).can_place_onto) {
 				client->interact(3, pointed);
 			}
 
@@ -3932,7 +3932,7 @@ void Game::handlePointingAtNode(const PointedThing &pointed,
 						SimpleSoundSpec();
 
 				if (playeritem_def.node_placement_prediction.empty() ||
-						nodedef_manager->get(map.getNodeNoEx(nodepos)).rightclickable) {
+						nodedef_manager->get(map.getNodeNoEx(nodepos)).can_place_onto) {
 					client->interact(3, pointed); // Report to server
 				} else {
 					soundmaker->m_player_rightpunch_sound =
@@ -3971,8 +3971,8 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 			do_punch = true;
 
 		if (do_punch) {
-			infostream << "Dug object" << std::endl;
-			runData.left_punch = true;
+			infostream << "Punched object" << std::endl;
+			runData.punch = true;
 		}
 
 		if (do_punch_damage) {
@@ -3995,7 +3995,7 @@ void Game::handlePointingAtObject(const PointedThing &pointed, const ItemStack &
 				client->interact(0, pointed);
 		}
 	} else if (wasKeyDown(KeyType::PLACE)) {
-		infostream << "Dug object" << std::endl;
+		infostream << "Pressed place button while looking at object" << std::endl;
 		client->interact(3, pointed);  // place
 	}
 }

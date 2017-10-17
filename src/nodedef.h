@@ -343,7 +343,7 @@ struct ContentFeatures
 	// Player can build on these
 	bool buildable_to;
 	// Player cannot build to these (placement prediction disabled)
-	bool rightclickable;
+	bool can_place_onto;
 	u32 damage_per_second;
 	// client dig prediction
 	std::string node_dig_prediction;

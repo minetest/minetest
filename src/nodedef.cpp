@@ -362,7 +362,7 @@ void ContentFeatures::reset()
 	climbable = false;
 	buildable_to = false;
 	floodable = false;
-	rightclickable = true;
+	can_place_onto = true;
 	leveled = 0;
 	liquid_type = LIQUID_NONE;
 	liquid_alternative_flowing = "";
@@ -450,7 +450,7 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	writeU8(os, diggable);
 	writeU8(os, climbable);
 	writeU8(os, buildable_to);
-	writeU8(os, rightclickable);
+	writeU8(os, can_place_onto);
 	writeU32(os, damage_per_second);
 
 	// liquid
@@ -560,7 +560,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	diggable = readU8(is);
 	climbable = readU8(is);
 	buildable_to = readU8(is);
-	rightclickable = readU8(is);
+	can_place_onto = readU8(is);
 	damage_per_second = readU32(is);
 
 	// liquid

@@ -477,7 +477,7 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "on_rightclick");
-	f.rightclickable = lua_isfunction(L, -1);
+	f.can_place_onto = lua_isfunction(L, -1);
 	lua_pop(L, 1);
 
 	/* Name */
@@ -849,8 +849,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "climbable");
 	lua_pushboolean(L, c.buildable_to);
 	lua_setfield(L, -2, "buildable_to");
-	lua_pushboolean(L, c.rightclickable);
-	lua_setfield(L, -2, "rightclickable");
+	lua_pushboolean(L, c.can_place_onto);
+	lua_setfield(L, -2, "can_place_onto");
 	lua_pushnumber(L, c.damage_per_second);
 	lua_setfield(L, -2, "damage_per_second");
 	if (c.isLiquid()) {
