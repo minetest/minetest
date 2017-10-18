@@ -243,8 +243,7 @@ public:
 	AccelerationAffector(const v3f &minacc, const v3f &maxacc)
 		: last_time(0)
 	{
-		disabled = minacc.X == 0 && minacc.Y == 0 && minacc.Z == 0 &&
-		maxacc.X == 0 && maxacc.Y == 0 && maxacc.Z == 0;
+		disabled = minacc.getLengthSQ() <= 1e-6 && maxacc.getLengthSQ() <= 1e-6;
 		acc = random_v3f(minacc,maxacc);
 	}
 	AccelerationAffector(const v3f &acc)
@@ -400,7 +399,7 @@ public:
 		u16 amount, f32 spawntime, const v3f &minrelpos, const v3f &maxrelpos,
 		const v3f &minvel, const v3f &maxvel, f32 minexptime,
 		f32 maxexptime, f32 minsize, f32 maxsize, u16 attached_id)
-		: smgr(smgr), env(env), ps(ps), amount(amount),
+		: smgr(smgr), env(env), ps(ps), amount(amount), remaining_amount(amount),
 		spawntime(spawntime), minrelpos(minrelpos), maxrelpos(maxrelpos),
 		minvel(minvel), maxvel(maxvel), minexptime(minexptime),
 		maxexptime(maxexptime), minsize(minsize), maxsize(maxsize),
@@ -416,6 +415,10 @@ public:
 			expired_time += timeSinceLastCall;
 			if (expired_time / 1000.f >= maxexptime + spawntime)
 				smgr->addToDeletionQueue(ps);
+
+			// Don't delete yet because of the existing particles
+			if (remaining_amount == 0)
+				return 0;
 		}
 
 		emitting_time += timeSinceLastCall / 1000.f;
@@ -447,6 +450,8 @@ public:
 				(float) rand() / (float) RAND_MAX *
 				(maxexptime - minexptime)) * 1000.f);
 
+			if (remaining_amount > 0)
+				--remaining_amount;
 			outArray = &p;
 			return 1;
 		}
@@ -457,6 +462,7 @@ private:
 	ClientEnvironment *env;
 	irr::scene::IParticleSystemSceneNode *ps;
 	const u16 amount;
+	u16 remaining_amount;
 	f32 spawntime;
 	const v3f minrelpos, maxrelpos, minvel, maxvel;
 	const f32 minexptime, maxexptime;
