@@ -56,17 +56,15 @@ class CameraOffsetAffector : public irr::scene::IParticleAffector
 {
 public:
 	CameraOffsetAffector(const ClientEnvironment &env,
-		irr::scene::IParticleSystemSceneNode *ps, const LocalPlayer &player)
-		: env(env), ps(ps), player(player)
+		irr::scene::IParticleSystemSceneNode *ps, const v3f &position) :
+		env(env), ps(ps), position(position)
 	{
 	}
 
 	virtual void affect(u32 now, irr::scene::SParticle *particlearray, u32 count)
 	{
 		v3s16 camera_offset = env.getCameraOffset();
-		v3f ps_offset = intToFloat(old_camera_offset - camera_offset, BS);
-		ps->setPosition(ps->getPosition() + ps_offset);
-		old_camera_offset = camera_offset;
+		ps->setPosition(position - intToFloat(camera_offset, BS));
 	}
 
 	virtual irr::scene::E_PARTICLE_AFFECTOR_TYPE getType() const
@@ -76,9 +74,7 @@ public:
 private:
 	const ClientEnvironment &env;
 	irr::scene::IParticleSystemSceneNode *const ps;
-	v3s16 old_camera_offset;
 	bool vertical;
-	const LocalPlayer &player;
 	v3f position;
 };
 
@@ -323,19 +319,18 @@ class SingleEmitter : public CustomEmitter
 {
 public:
 	SingleEmitter(irr::scene::ISceneManager *smgr,
-		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color, u32 number,
-		f32 expirationtime):
-		smgr(smgr), ps(ps), number(number), deletion_time(0),
-		expirationtime(expirationtime), random_properties(true)
+		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color, u32 number) :
+		smgr(smgr), ps(ps), number(number), deletion_time(0), color(color),
+		random_properties(true)
 	{
 		particles.reserve(number);
 	}
 
 	SingleEmitter(irr::scene::ISceneManager *smgr,
 		irr::scene::IParticleSystemSceneNode *ps, const video::SColor &color,
-		f32 expirationtime, f32 size, const v3f &pos, const v3f &vel):
-		smgr(smgr), ps(ps), number(1), deletion_time(0),
-		expirationtime(expirationtime), size(size), pos(pos), vel(vel),
+		f32 expirationtime, f32 size, const v3f &vel):
+		smgr(smgr), ps(ps), number(1), deletion_time(0), color(color),
+		expirationtime((u32) expirationtime * 1000.f), size(size), pos(0), vel(vel),
 		random_properties(false)
 	{
 		particles.reserve(number);
@@ -348,8 +343,10 @@ public:
 				smgr->addToDeletionQueue(ps);
 			return 0;
 		}
-
-		deletion_time = now + 1000;
+		if (random_properties)
+			deletion_time = now + 1000;
+		else
+			deletion_time = now + expirationtime;
 
 		irr::scene::SParticle p;
 		p.color = color;
@@ -368,7 +365,10 @@ public:
 			p.startVector = p.vector = vel * 0.01;
 
 			p.startTime = now;
-			p.endTime = now + (u32) (rand() % 100 * 10.f);
+			if (random_properties)
+				p.endTime = now + (u32) (rand() % 100 * 10.f);
+			else
+				p.endTime = now + (u32) (expirationtime * 1000.f);
 
 			p.startSize = core::dimension2df(size,size);
 			p.size = p.startSize;
@@ -384,8 +384,8 @@ private:
 	u32 number;
 	std::vector<irr::scene::SParticle> particles;
 	u32 deletion_time;
-	f32 expirationtime;
 	video::SColor color;
+	u32 expirationtime;
 
 	f32 size;
 	v3f pos, vel;
@@ -530,7 +530,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 		ps->setAutomaticCulling(scene::EAC_FRUSTUM_BOX);
 
 		scene::IParticleAffector *camera_offset_affector =
-			new CameraOffsetAffector(*m_env, ps,*player);
+			new CameraOffsetAffector(*m_env, ps,meanpos);
 		ps->addAffector(camera_offset_affector);
 		camera_offset_affector->drop();
 
@@ -585,29 +585,33 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 	}
 	case CE_SPAWN_PARTICLE: {
 		scene::IParticleSystemSceneNode *ps =
-			m_smgr->addParticleSystemSceneNode(false);
+			m_smgr->addParticleSystemSceneNode(false,
+				RenderingEngine::get_scene_manager()->getRootSceneNode());
 
 		ps->getMaterial(0).getTextureMatrix(0) = bottomUpTextureMatrix(1.f,1.f,0.f,0.f);
 
-		v3f pos = *event->spawn_particle.pos;
 		v3s16 camera_offset = m_env->getCameraOffset();
-		v3f particle_pos = pos * BS - intToFloat(camera_offset, BS);
+		v3f particle_pos = *event->spawn_particle.pos * BS - intToFloat(camera_offset, BS);
 		ps->setPosition(particle_pos);
+
+		scene::IParticleAffector *camera_offset_affector =
+			new CameraOffsetAffector(*m_env, ps, particle_pos);
+		ps->addAffector(camera_offset_affector);
+		camera_offset_affector->drop();
 
 		// Deletes ps after the particles have vanished
 		scene::IParticleEmitter *em = new SingleEmitter(m_smgr, ps,
 			event->spawn_particle.glow,
 			event->spawn_particle.expirationtime,
 			event->spawn_particle.size,
-			*event->spawn_particle.pos * BS,
-			*event->spawn_particle.vel * BS);
+			*event->spawn_particle.vel);
 		ps->setEmitter(em);
 		em->drop();
 
-		scene::IParticleAffector *gravity_affector =
-			ps->createGravityAffector(*event->spawn_particle.acc * BS, 0);
-		ps->addAffector(gravity_affector);
-		gravity_affector->drop();
+		scene::IParticleAffector *acceleration_affector =
+			new AccelerationAffector(*event->spawn_particle.acc);
+		ps->addAffector(acceleration_affector);
+		acceleration_affector->drop();
 
 		if (event->spawn_particle.collisiondetection){
 			scene::IParticleAffector *collision_affector =
@@ -685,7 +689,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3
 
 
 	// Deletes ps after the particles have vanished
-	scene::IParticleEmitter *em = new SingleEmitter(m_smgr,ps,color,number, 1.f);
+	scene::IParticleEmitter *em = new SingleEmitter(m_smgr,ps,color,number);
 
 	ps->setEmitter(em);
 	em->drop();
