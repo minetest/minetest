@@ -30,7 +30,7 @@ class ClientEnvironment;
 struct MapNode;
 struct ContentFeatures;
 /**
- * Class doing particle as well as their spawners handling
+ * Class doing handling of single particles and particle spawners
  */
 class ParticleManager
 {
@@ -50,17 +50,10 @@ public:
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f, u32 number = 1);
 
-protected:
+	u32 getSingleParticleNumber();
+	u32 getParticleSpawnerNumber();
 
 private:
-
-//	void stepParticles (float dtime);
-//	void stepSpawners (float dtime);
-
-//void clearAll ();
-
 	ClientEnvironment* m_env;
 	irr::scene::ISceneManager *m_smgr;
-	//std::mutex m_particle_list_lock;
-	//std::mutex m_spawner_list_lock;
 };

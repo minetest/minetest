@@ -31,6 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "settings.h"
 #include <array>
 
+static std::atomic_uint32_t single_particles_count(0);
+static std::atomic_uint32_t particle_spawners_count(0);
+
 static v3f random_v3f(v3f min, v3f max)
 {
 	return v3f(rand() / (float) RAND_MAX * (max.X - min.X) + min.X,
@@ -323,6 +326,7 @@ public:
 		random_properties(true)
 	{
 		particles.reserve(number);
+		++single_particles_count;
 	}
 
 	SingleEmitter(irr::scene::ISceneManager *smgr,
@@ -332,7 +336,12 @@ public:
 		expirationtime((u32) expirationtime * 1000.f), size(size), pos(0), vel(vel),
 		random_properties(false)
 	{
-		particles.reserve(number);
+		++single_particles_count;
+	}
+
+	~SingleEmitter()
+	{
+		--single_particles_count;
 	}
 
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
@@ -407,6 +416,12 @@ public:
 	{
 		time_for_particle = spawntime == 0 ? 1.f / (float) amount :
 			spawntime / (float) amount;
+		++particle_spawners_count;
+	}
+
+	~ContinuousEmitter()
+	{
+		--particle_spawners_count;
 	}
 
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, irr::scene::SParticle *&outArray)
@@ -732,4 +747,14 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3
 
 	ps->getMaterial(0).getTextureMatrix(0) = bottomUpTextureMatrix(scale_factor, scale_factor,
 			texpos.X, texpos.Y);
+}
+
+u32 ParticleManager::getSingleParticleNumber()
+{
+	return single_particles_count.load();
+}
+
+u32 ParticleManager::getParticleSpawnerNumber()
+{
+	return particle_spawners_count.load();
 }

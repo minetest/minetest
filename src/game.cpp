@@ -4433,7 +4433,9 @@ void Game::updateGui(const RunStats &stats, f32 dtime, const CameraOrientation &
 		   << std::setprecision(1)
 		   << ", view_range = " << draw_control->wanted_range
 		   << std::setprecision(3)
-		   << ", RTT = " << client->getRTT() << " s";
+		   << ", RTT = " << client->getRTT() << " s"
+		   << ", single particles = " << client->getParticleManager()->getSingleParticleNumber()
+		   << ", particle spawners = " << client->getParticleManager()->getParticleSpawnerNumber();
 		setStaticText(guitext, utf8_to_wide(os.str()).c_str());
 		guitext->setVisible(true);
 	} else {
