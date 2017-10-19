@@ -396,6 +396,8 @@ protected:
 	u32 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 
+	int m_button = 0;
+
 	// WARNING: BLACK MAGIC
 	// Used to guess and keep up with some special things the server can do.
 	// If name is "", no guess exists.

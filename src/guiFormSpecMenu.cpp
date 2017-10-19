@@ -3389,20 +3389,19 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 		// buttons: 0 = left, 1 = right, 2 = middle
 		// up/down: 0 = down (press), 1 = up (release), 2 = unknown event, -1 movement
-		int button = 0;
 		int updown = 2;
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-			{ button = 0; updown = 0; }
+			{ m_button = 0; updown = 0; }
 		else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN)
-			{ button = 1; updown = 0; }
+			{ m_button = 1; updown = 0; }
 		else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN)
-			{ button = 2; updown = 0; }
+			{ m_button = 2; updown = 0; }
 		else if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-			{ button = 0; updown = 1; }
+			{ m_button = 0; updown = 1; }
 		else if (event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP)
-			{ button = 1; updown = 1; }
+			{ m_button = 1; updown = 1; }
 		else if (event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP)
-			{ button = 2; updown = 1; }
+			{ m_button = 2; updown = 1; }
 		else if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
 			{ updown = -1;}
 
@@ -3424,23 +3423,23 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		if (updown == 0) {
 			// Some mouse button has been pressed
 
-			//infostream<<"Mouse button "<<button<<" pressed at p=("
+			//infostream<<"Mouse button "<<m_button<<" pressed at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
 			m_selected_dragging = false;
 
 			if (s.isValid() && s.listname == "craftpreview") {
 				// Craft preview has been clicked: craft
-				craft_amount = (button == 2 ? 10 : 1);
+				craft_amount = (m_button == 2 ? 10 : 1);
 			} else if (m_selected_item == NULL) {
 				if (s_count != 0) {
 					// Non-empty stack has been clicked: select or shift-move it
 					m_selected_item = new ItemSpec(s);
 
 					u32 count;
-					if (button == 1)  // right
+					if (m_button == 1)  // right
 						count = (s_count + 1) / 2;
-					else if (button == 2)  // middle
+					else if (m_button == 2)  // middle
 						count = MYMIN(s_count, 10);
 					else  // left
 						count = s_count;
@@ -3452,7 +3451,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						m_auto_place = false;
 					} else {
 						// shift pressed: move item
-						if (button != 1)
+						if (m_button != 1)
 							shift_move_amount = count;
 						else // count of 1 at left click like after drag & drop
 							shift_move_amount = 1;
@@ -3463,9 +3462,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (s.isValid()) {
 					// Clicked a slot: move
-					if (button == 1)  // right
+					if (m_button == 1)  // right
 						move_amount = 1;
-					else if (button == 2)  // middle
+					else if (m_button == 2)  // middle
 						move_amount = MYMIN(m_selected_amount, 10);
 					else  // left
 						move_amount = m_selected_amount;
@@ -3480,9 +3479,9 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 				}
 				else if (!getAbsoluteClippingRect().isPointInside(m_pointer)) {
 					// Clicked outside of the window: drop
-					if (button == 1)  // right
+					if (m_button == 1)  // right
 						drop_amount = 1;
-					else if (button == 2)  // middle
+					else if (m_button == 2)  // middle
 						drop_amount = MYMIN(m_selected_amount, 10);
 					else  // left
 						drop_amount = m_selected_amount;
@@ -3492,7 +3491,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		else if (updown == 1) {
 			// Some mouse button has been released
 
-			//infostream<<"Mouse button "<<button<<" released at p=("
+			//infostream<<"Mouse button "<<m_button<<" released at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
 			if (m_selected_item != NULL && m_selected_dragging && s.isValid()) {
