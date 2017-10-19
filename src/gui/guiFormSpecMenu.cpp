@@ -3255,31 +3255,30 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 			(m_selected_item->listname == s.listname) &&
 			(m_selected_item->i == s.i);
 
-		ButtonEventType button = BET_LEFT;
 		ButtonEventType updown = BET_OTHER;
 		switch (event.MouseInput.Event) {
 		case EMIE_LMOUSE_PRESSED_DOWN:
-			button = BET_LEFT; updown = BET_DOWN;
+			m_button = BET_LEFT; updown = BET_DOWN;
 			break;
 		case EMIE_RMOUSE_PRESSED_DOWN:
-			button = BET_RIGHT; updown = BET_DOWN;
+			m_button = BET_RIGHT; updown = BET_DOWN;
 			break;
 		case EMIE_MMOUSE_PRESSED_DOWN:
-			button = BET_MIDDLE; updown = BET_DOWN;
+			m_button = BET_MIDDLE; updown = BET_DOWN;
 			break;
 		case EMIE_MOUSE_WHEEL:
-			button = (event.MouseInput.Wheel > 0) ?
+			m_button = (event.MouseInput.Wheel > 0) ?
 				BET_WHEEL_UP : BET_WHEEL_DOWN;
 			updown = BET_DOWN;
 			break;
 		case EMIE_LMOUSE_LEFT_UP:
-			button = BET_LEFT; updown = BET_UP;
+			m_button = BET_LEFT; updown = BET_UP;
 			break;
 		case EMIE_RMOUSE_LEFT_UP:
-			button = BET_RIGHT; updown = BET_UP;
+			m_button = BET_RIGHT; updown = BET_UP;
 			break;
 		case EMIE_MMOUSE_LEFT_UP:
-			button = BET_MIDDLE; updown = BET_UP;
+			m_button = BET_MIDDLE; updown = BET_UP;
 			break;
 		case EMIE_MOUSE_MOVED:
 			updown = BET_MOVE;
@@ -3307,25 +3306,25 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_DOWN:
 			// Some mouse button has been pressed
 
-			//infostream<<"Mouse button "<<button<<" pressed at p=("
+			//infostream<<"Mouse button "<<m_button<<" pressed at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
 			m_selected_dragging = false;
 
 			if (s.isValid() && s.listname == "craftpreview") {
 				// Craft preview has been clicked: craft
-				craft_amount = (button == BET_MIDDLE ? 10 : 1);
+				craft_amount = (m_button == BET_MIDDLE ? 10 : 1);
 			} else if (!m_selected_item) {
-				if (s_count && button != BET_WHEEL_UP) {
+				if (s_count && m_button != BET_WHEEL_UP) {
 					// Non-empty stack has been clicked: select or shift-move it
 					m_selected_item = new ItemSpec(s);
 
 					u32 count;
-					if (button == BET_RIGHT)
+					if (m_button == BET_RIGHT)
 						count = (s_count + 1) / 2;
-					else if (button == BET_MIDDLE)
+					else if (m_button == BET_MIDDLE)
 						count = MYMIN(s_count, 10);
-					else if (button == BET_WHEEL_DOWN)
+					else if (m_button == BET_WHEEL_DOWN)
 						count = 1;
 					else  // left
 						count = s_count;
@@ -3333,11 +3332,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 					if (!event.MouseInput.Shift) {
 						// no shift: select item
 						m_selected_amount = count;
-						m_selected_dragging = button != BET_WHEEL_DOWN;
+						m_selected_dragging = m_button != BET_WHEEL_DOWN;
 						m_auto_place = false;
 					} else {
 						// shift pressed: move item, right click moves 1
-						shift_move_amount = button == BET_RIGHT ? 1 : count;
+						shift_move_amount = m_button == BET_RIGHT ? 1 : count;
 					}
 				}
 			} else { // m_selected_item != NULL
@@ -3345,16 +3344,16 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 
 				if (s.isValid()) {
 					// Clicked a slot: move
-					if (button == BET_RIGHT || button == BET_WHEEL_UP)
+					if (m_button == BET_RIGHT || m_button == BET_WHEEL_UP)
 						move_amount = 1;
-					else if (button == BET_MIDDLE)
+					else if (m_button == BET_MIDDLE)
 						move_amount = MYMIN(m_selected_amount, 10);
-					else if (button == BET_LEFT)
+					else if (m_button == BET_LEFT)
 						move_amount = m_selected_amount;
 					// else wheeldown
 
 					if (identical) {
-						if (button == BET_WHEEL_DOWN) {
+						if (m_button == BET_WHEEL_DOWN) {
 							if (m_selected_amount < s_count)
 								++m_selected_amount;
 						} else {
@@ -3366,11 +3365,11 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 						}
 					}
 				} else if (!getAbsoluteClippingRect().isPointInside(m_pointer)
-						&& button != BET_WHEEL_DOWN) {
+						&& m_button != BET_WHEEL_DOWN) {
 					// Clicked outside of the window: drop
-					if (button == BET_RIGHT || button == BET_WHEEL_UP)
+					if (m_button == BET_RIGHT || m_button == BET_WHEEL_UP)
 						drop_amount = 1;
-					else if (button == BET_MIDDLE)
+					else if (m_button == BET_MIDDLE)
 						drop_amount = MYMIN(m_selected_amount, 10);
 					else  // left
 						drop_amount = m_selected_amount;
@@ -3380,7 +3379,7 @@ bool GUIFormSpecMenu::OnEvent(const SEvent& event)
 		case BET_UP:
 			// Some mouse button has been released
 
-			//infostream<<"Mouse button "<<button<<" released at p=("
+			//infostream<<"Mouse button "<<m_button<<" released at p=("
 			//	<<p.X<<","<<p.Y<<")"<<std::endl;
 
 			if (m_selected_dragging && m_selected_item) {

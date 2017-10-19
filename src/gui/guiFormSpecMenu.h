@@ -413,6 +413,8 @@ protected:
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
 
+	int m_button = 0;
+
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
 	u64 m_tooltip_show_delay;
