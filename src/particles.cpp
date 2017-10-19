@@ -30,9 +30,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "client.h"
 #include "settings.h"
 #include <array>
+#include <atomic>
 
-static std::atomic_uint32_t single_particles_count(0);
-static std::atomic_uint32_t particle_spawners_count(0);
+static std::atomic<u32> single_particles_count(0);
+static std::atomic<u32> particle_spawners_count(0);
 
 static v3f random_v3f(v3f min, v3f max)
 {
@@ -77,7 +78,6 @@ public:
 private:
 	const ClientEnvironment &env;
 	irr::scene::IParticleSystemSceneNode *const ps;
-	bool vertical;
 	v3f position;
 };
 
@@ -192,9 +192,8 @@ private:
 class CollisionAffector : public irr::scene::IParticleAffector
 {
 public:
-	CollisionAffector(ClientEnvironment *env,
-		irr::scene::IParticleSystemSceneNode *ps, bool collision_removal)
-		: env(env), ps(ps), last_time(0), collision_removal(collision_removal)
+	CollisionAffector(ClientEnvironment *env, bool collision_removal)
+		: env(env), last_time(0), collision_removal(collision_removal)
 	{
 	}
 
@@ -235,7 +234,6 @@ public:
 	}
 private:
 	ClientEnvironment *env;
-	irr::scene::IParticleSystemSceneNode *const ps;
 	u32 last_time;
 	const bool collision_removal;
 };
@@ -408,7 +406,7 @@ public:
 		u16 amount, f32 spawntime, const v3f &minrelpos, const v3f &maxrelpos,
 		const v3f &minvel, const v3f &maxvel, f32 minexptime,
 		f32 maxexptime, f32 minsize, f32 maxsize, u16 attached_id)
-		: smgr(smgr), env(env), ps(ps), amount(amount), remaining_amount(amount),
+		: smgr(smgr), env(env), ps(ps), remaining_amount(amount),
 		spawntime(spawntime), minrelpos(minrelpos), maxrelpos(maxrelpos),
 		minvel(minvel), maxvel(maxvel), minexptime(minexptime),
 		maxexptime(maxexptime), minsize(minsize), maxsize(maxsize),
@@ -476,7 +474,6 @@ private:
 	irr::scene::ISceneManager *smgr;
 	ClientEnvironment *env;
 	irr::scene::IParticleSystemSceneNode *ps;
-	const u16 amount;
 	u16 remaining_amount;
 	f32 spawntime;
 	const v3f minrelpos, maxrelpos, minvel, maxvel;
@@ -581,7 +578,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 
 		if (event->add_particlespawner.collisiondetection) {
 			scene::IParticleAffector *collision_affector =
-				new CollisionAffector(m_env, ps,
+				new CollisionAffector(m_env,
 					event->add_particlespawner.collision_removal);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
@@ -636,7 +633,7 @@ void ParticleManager::handleParticleEvent(ClientEvent *event, Client *client, Lo
 
 		if (event->spawn_particle.collisiondetection){
 			scene::IParticleAffector *collision_affector =
-				new CollisionAffector(m_env, ps,
+				new CollisionAffector(m_env,
 				event->spawn_particle.collision_removal);
 			ps->addAffector(collision_affector);
 			collision_affector->drop();
@@ -721,7 +718,7 @@ void ParticleManager::addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3
 	acceleration_affector->drop();
 
 	scene::IParticleAffector *collision_affector =
-		new CollisionAffector(m_env, ps, false);
+		new CollisionAffector(m_env, false);
 	ps->addAffector(collision_affector);
 	collision_affector->drop();
 
