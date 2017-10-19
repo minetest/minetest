@@ -205,7 +205,7 @@ void RemoteClient::GetNextBlocks (
 	s16 d_max_gen = std::min(m_max_gen_distance, wanted_range);
 
 	// Don't loop very much at a time
-	s16 max_d_increment_at_time = 1;
+	s16 max_d_increment_at_time = 2;
 	if (d_max > d_start + max_d_increment_at_time)
 		d_max = d_start + max_d_increment_at_time;
 
