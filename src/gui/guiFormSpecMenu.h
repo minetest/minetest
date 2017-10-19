@@ -409,11 +409,16 @@ protected:
 	std::vector<std::pair<FieldSpec, std::vector<std::string> > > m_dropdowns;
 
 	ItemSpec *m_selected_item = nullptr;
+	ItemSpec *m_left_drag_item = nullptr;
+	ItemStack m_left_drag_stack;
 	u16 m_selected_amount = 0;
 	bool m_selected_dragging = false;
 	ItemStack m_selected_swap;
 
 	int m_button = 0;
+	bool m_left_dragging = false;
+	u32 m_selected_amount_left_drag_copy;
+	std::set<ItemSpec*> m_left_drag_to_stack;
 
 	gui::IGUIStaticText *m_tooltip_element = nullptr;
 
