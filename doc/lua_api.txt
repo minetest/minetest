@@ -2205,7 +2205,7 @@ Helper functions
                 max_jitter = 0.5,          -- maximum packet time jitter
                 avg_jitter = 0.03,         -- average packet time jitter
                 connection_uptime = 200,   -- seconds since client connected
-                prot_vers = 31,            -- protocol version used by client
+                protocol_version = 32,     -- protocol version used by client
                 -- following information is available on debug build only!!!
                 -- DO NOT USE IN MODS
                 --ser_vers = 26,             -- serialization version used by client
