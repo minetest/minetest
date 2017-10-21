@@ -115,7 +115,7 @@ int LuaSettings::l_get_np_group(lua_State *L)
 	std::string key = std::string(luaL_checkstring(L, 2));
 	if (o->m_settings->exists(key)) {
 		NoiseParams np;
-		o->m_settings->getNoiseParamsFromGroup(key, np);
+		o->m_settings->getNoiseParams(key, np);
 		push_noiseparams(L, &np);
 	} else {
 		lua_pushnil(L);
