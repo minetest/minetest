@@ -133,8 +133,7 @@ void GUIKeyChangeMenu::regenerateGui(v2u32 screensize)
 		rect += topleft + v2s32(25, 3);
 		//gui::IGUIStaticText *t =
 		const wchar_t *text = wgettext("Keybindings. (If this menu screws up, remove stuff from minetest.conf)");
-		Environment->addStaticText(text,
-								   rect, false, true, this, -1);
+		Environment->addStaticText(text, rect, false, true, this, -1);
 		delete[] text;
 		//t->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_UPPERLEFT);
 	}
@@ -283,82 +282,112 @@ bool isMouseDownEvent(const SEvent &event)
 		event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN);
 }
 
+bool GUIKeyChangeMenu::setBinding(const SEvent &event) {
+	// If the desired key comes from the keyboard, the event's
+	// KeyInput can be used. However, if the desired key is a mouse
+	// button then a KeyInput has to be created artificially.
+	irr::SEvent::SKeyInput s;
+	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
+			s.Key = KEY_LBUTTON;
+		} else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
+			s.Key = KEY_RBUTTON;
+		} else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
+			s.Key = KEY_MBUTTON;
+		}
+		s.Char = 0;
+	} else {
+		s = event.KeyInput;
+	}
+
+	bool prefer_character = shift_down;
+	KeyPress kp(s, prefer_character);
+
+	bool shift_went_down = false;
+	if(!shift_down &&
+			(event.KeyInput.Key == irr::KEY_SHIFT ||
+			event.KeyInput.Key == irr::KEY_LSHIFT ||
+			event.KeyInput.Key == irr::KEY_RSHIFT))
+		shift_went_down = true;
+
+	// Remove Key already in use message
+	if(this->key_used_text)
+	{
+		this->key_used_text->remove();
+		this->key_used_text = NULL;
+	}
+	// Display Key already in use message
+	if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
+	{
+		core::rect < s32 > rect(0, 0, 600, 40);
+		rect += v2s32(0, 0) + v2s32(25, 30);
+		const wchar_t *text = wgettext("Key already in use");
+		this->key_used_text = Environment->addStaticText(text,
+				rect, false, true, this, -1);
+		delete[] text;
+		//infostream << "Key already in use" << std::endl;
+	}
+
+	// But go on
+	{
+		key_setting *k = NULL;
+		for (key_setting *ks : key_settings) {
+			if (ks->id == activeKey) {
+				k = ks;
+				break;
+			}
+		}
+		FATAL_ERROR_IF(k == NULL, "Key setting not found");
+		k->key = kp;
+		const wchar_t *text = wgettext(k->key.name());
+		k->button->setText(text);
+		delete[] text;
+
+		this->key_used.push_back(kp);
+
+		// Allow characters made with shift
+		if(shift_went_down){
+			shift_down = true;
+			return false;
+		}
+
+		activeKey = -1;
+		return true;
+	}
+}
+
 bool GUIKeyChangeMenu::OnEvent(const SEvent& event)
 {
+	// If an action is waiting for a keybind ("press key") and if that
+	// action's button is left-clicked then set the binding to LMB. This
+	// check has to be performed because a left-click on a GUI element is
+	// considered a GUI event and not a generic mouse input event like for
+	// MMB and RMB.
+	if ((activeKey >= 0) && (event.EventType == EET_GUI_EVENT) &&
+	    (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED)) {
+
+		switch (event.GUIEvent.Caller->getID()) {
+			case GUI_ID_BACK_BUTTON:
+				break;
+			case GUI_ID_ABORT_BUTTON:
+				break;
+			default:
+				// For every other key or mouse button, this is
+				// the type of event that would be generated. It
+				// has to be artifically created for LMB because
+				// LMB clicks on GUI elements have a different
+				// event type.
+				SEvent newEvent = event;
+				newEvent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+				newEvent.MouseInput.Event = EMIE_LMOUSE_PRESSED_DOWN;
+				setBinding(newEvent);
+				return true;
+		}
+	}
+
 	if (activeKey >= 0 && (isMouseDownEvent(event) ||
 			(event.EventType == EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown))) {
-
-		// If the desired key comes from the keyboard, the event's
-		// KeyInput can be used. However, if the desired key is a mouse
-		// button then a KeyInput has to be created artificially.
-		irr::SEvent::SKeyInput s;
-		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
-			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN) {
-				s.Key = KEY_LBUTTON;
-			} else if (event.MouseInput.Event == EMIE_RMOUSE_PRESSED_DOWN) {
-				s.Key = KEY_RBUTTON;
-			} else if (event.MouseInput.Event == EMIE_MMOUSE_PRESSED_DOWN) {
-				s.Key = KEY_MBUTTON;
-			}
-			s.Char = 0;
-		} else {
-			s = event.KeyInput;
-		}
-
-		bool prefer_character = shift_down;
-		KeyPress kp(s, prefer_character);
-
-		bool shift_went_down = false;
-		if(!shift_down &&
-				(event.KeyInput.Key == irr::KEY_SHIFT ||
-				event.KeyInput.Key == irr::KEY_LSHIFT ||
-				event.KeyInput.Key == irr::KEY_RSHIFT))
-			shift_went_down = true;
-
-		// Remove Key already in use message
-		if(this->key_used_text)
-		{
-			this->key_used_text->remove();
-			this->key_used_text = NULL;
-		}
-		// Display Key already in use message
-		if (std::find(this->key_used.begin(), this->key_used.end(), kp) != this->key_used.end())
-		{
-			core::rect < s32 > rect(0, 0, 600, 40);
-			rect += v2s32(0, 0) + v2s32(25, 30);
-			const wchar_t *text = wgettext("Key already in use");
-			this->key_used_text = Environment->addStaticText(text,
-					rect, false, true, this, -1);
-			delete[] text;
-			//infostream << "Key already in use" << std::endl;
-		}
-
-		// But go on
-		{
-			key_setting *k = NULL;
-			for (key_setting *ks : key_settings) {
-				if (ks->id == activeKey) {
-					k = ks;
-					break;
-				}
-			}
-			FATAL_ERROR_IF(k == NULL, "Key setting not found");
-			k->key = kp;
-			const wchar_t *text = wgettext(k->key.name());
-			k->button->setText(text);
-			delete[] text;
-
-			this->key_used.push_back(kp);
-
-			// Allow characters made with shift
-			if(shift_went_down){
-				shift_down = true;
-				return false;
-			}
-
-			activeKey = -1;
-			return true;
-		}
+		setBinding(event);
 	} else if (event.EventType == EET_KEY_INPUT_EVENT && activeKey < 0
 			&& event.KeyInput.PressedDown
 			&& event.KeyInput.Key == irr::KEY_ESCAPE) {

@@ -65,6 +65,8 @@ private:
 
 	void add_key(int id, const wchar_t *button_name, const std::string &setting_name);
 
+	bool setBinding(const SEvent &event);
+
 	bool shift_down = false;
 	s32 activeKey = -1;
 
