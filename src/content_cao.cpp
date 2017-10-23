@@ -705,6 +705,9 @@ void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 	if (!m_enable_shaders)
 		artificial_light_ratio = 255;
 
+	// The 17 comes from the nearest multiplier for 256 / 15, where 15 is the max light level
+	artificial_light_ratio = core::clamp(artificial_light_ratio + (m_glow * 17), 0, 255);
+
 	u8 li = decode_light(light_at_pos + m_glow);
 	if (li != m_last_light || artificial_light_ratio != m_last_artificial_light_ratio) {
 		m_last_light = li;
