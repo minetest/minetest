@@ -83,8 +83,8 @@ private:
 	bool m_initial_tx_basepos_set = false;
 	bool m_tx_select_horiz_by_yawpitch = false;
 	v2s32 m_animation_range;
-	int m_animation_speed = 15;
-	int m_animation_blend = 0;
+	float m_animation_speed = 15.0f;
+	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	// stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
@@ -111,6 +111,8 @@ private:
 	video::E_MATERIAL_TYPE m_material_type;
 	// Settings
 	bool m_enable_shaders = false;
+
+	s8 m_glow;
 
 	std::vector<u16> m_children;
 
@@ -201,6 +203,8 @@ public:
 	void updateTextures(std::string mod);
 
 	void updateAnimation();
+
+	void updateAnimationSpeed();
 
 	void updateBonePosition();
 

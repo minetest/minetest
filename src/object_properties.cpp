@@ -33,36 +33,40 @@ ObjectProperties::ObjectProperties()
 std::string ObjectProperties::dump()
 {
 	std::ostringstream os(std::ios::binary);
-	os<<"hp_max="<<hp_max;
-	os<<", physical="<<physical;
-	os<<", collideWithObjects="<<collideWithObjects;
-	os<<", weight="<<weight;
-	os<<", collisionbox="<<PP(collisionbox.MinEdge)<<","<<PP(collisionbox.MaxEdge);
-	os<<", visual="<<visual;
-	os<<", mesh="<<mesh;
-	os<<", visual_size="<<PP2(visual_size);
-	os<<", textures=[";
+	os << "hp_max=" << hp_max;
+	os << ", breath_max=" << breath_max;
+	os << ", physical=" << physical;
+	os << ", collideWithObjects=" << collideWithObjects;
+	os << ", weight=" << weight;
+	os << ", collisionbox=" << PP(collisionbox.MinEdge) << "," << PP(collisionbox.MaxEdge);
+	os << ", visual=" << visual;
+	os << ", mesh=" << mesh;
+	os << ", visual_size=" << PP2(visual_size);
+	os << ", textures=[";
 	for (const std::string &texture : textures) {
-		os<<"\""<< texture <<"\" ";
+		os << "\"" << texture << "\" ";
 	}
-	os<<"]";
-	os<<", colors=[";
+	os << "]";
+	os << ", colors=[";
 	for (const video::SColor &color : colors) {
 		os << "\"" << color.getAlpha() << "," << color.getRed() << ","
 			<< color.getGreen() << "," << color.getBlue() << "\" ";
 	}
-	os<<"]";
-	os<<", spritediv="<<PP2(spritediv);
-	os<<", initial_sprite_basepos="<<PP2(initial_sprite_basepos);
-	os<<", is_visible="<<is_visible;
-	os<<", makes_footstep_sound="<<makes_footstep_sound;
-	os<<", automatic_rotate="<<automatic_rotate;
-	os<<", backface_culling="<<backface_culling;
+	os << "]";
+	os << ", spritediv=" << PP2(spritediv);
+	os << ", initial_sprite_basepos=" << PP2(initial_sprite_basepos);
+	os << ", is_visible=" << is_visible;
+	os << ", makes_footstep_sound=" << makes_footstep_sound;
+	os << ", automatic_rotate="<< automatic_rotate;
+	os << ", backface_culling="<< backface_culling;
+	os << ", glow=" << glow;
 	os << ", nametag=" << nametag;
 	os << ", nametag_color=" << "\"" << nametag_color.getAlpha() << "," << nametag_color.getRed()
 			<< "," << nametag_color.getGreen() << "," << nametag_color.getBlue() << "\" ";
 	os << ", selectionbox=" << PP(selectionbox.MinEdge) << "," << PP(selectionbox.MaxEdge);
 	os << ", pointable=" << pointable;
+	os << ", can_zoom=" << can_zoom;
+	os << ", static_save=" << static_save;
 	return os.str();
 }
 
@@ -104,6 +108,9 @@ void ObjectProperties::serialize(std::ostream &os) const
 	writeF1000(os, automatic_face_movement_max_rotation_per_sec);
 	os << serializeString(infotext);
 	os << serializeString(wield_item);
+	writeU8(os, can_zoom);
+	writeS8(os, glow);
+	writeU16(os, breath_max);
 
 	// Add stuff only at the bottom.
 	// Never remove anything, because we don't want new versions of this
@@ -150,4 +157,10 @@ void ObjectProperties::deSerialize(std::istream &is)
 	automatic_face_movement_max_rotation_per_sec = readF1000(is);
 	infotext = deSerializeString(is);
 	wield_item = deSerializeString(is);
+	can_zoom = readU8(is);
+
+	try {
+		glow = readS8(is);
+		breath_max = readU16(is);
+	} catch (SerializationError &e) {}
 }

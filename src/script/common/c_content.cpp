@@ -193,22 +193,25 @@ void read_object_properties(lua_State *L, int index,
 	if (getintfield(L, -1, "hp_max", hp_max))
 		prop->hp_max = (s16)rangelim(hp_max, 0, S16_MAX);
 
+	getintfield(L, -1, "breath_max", prop->breath_max);
 	getboolfield(L, -1, "physical", prop->physical);
 	getboolfield(L, -1, "collide_with_objects", prop->collideWithObjects);
 
 	getfloatfield(L, -1, "weight", prop->weight);
 
 	lua_getfield(L, -1, "collisionbox");
-	if(lua_istable(L, -1))
+	bool collisionbox_defined = lua_istable(L, -1);
+	if (collisionbox_defined)
 		prop->collisionbox = read_aabb3f(L, -1, 1.0);
 	lua_pop(L, 1);
 
 	lua_getfield(L, -1, "selectionbox");
 	if (lua_istable(L, -1))
 		prop->selectionbox = read_aabb3f(L, -1, 1.0);
-	else
+	else if (collisionbox_defined)
 		prop->selectionbox = prop->collisionbox;
 	lua_pop(L, 1);
+
 	getboolfield(L, -1, "pointable", prop->pointable);
 	getstringfield(L, -1, "visual", prop->visual);
 
@@ -260,9 +263,11 @@ void read_object_properties(lua_State *L, int index,
 
 	getboolfield(L, -1, "is_visible", prop->is_visible);
 	getboolfield(L, -1, "makes_footstep_sound", prop->makes_footstep_sound);
-	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	if (getfloatfield(L, -1, "stepheight", prop->stepheight))
 		prop->stepheight *= BS;
+	getboolfield(L, -1, "can_zoom", prop->can_zoom);
+
+	getfloatfield(L, -1, "automatic_rotate", prop->automatic_rotate);
 	lua_getfield(L, -1, "automatic_face_movement_dir");
 	if (lua_isnumber(L, -1)) {
 		prop->automatic_face_movement_dir = true;
@@ -273,6 +278,7 @@ void read_object_properties(lua_State *L, int index,
 	}
 	lua_pop(L, 1);
 	getboolfield(L, -1, "backface_culling", prop->backface_culling);
+	getintfield(L, -1, "glow", prop->glow);
 
 	getstringfield(L, -1, "nametag", prop->nametag);
 	lua_getfield(L, -1, "nametag_color");
@@ -288,7 +294,10 @@ void read_object_properties(lua_State *L, int index,
 		prop->automatic_face_movement_max_rotation_per_sec = luaL_checknumber(L, -1);
 	}
 	lua_pop(L, 1);
+
 	getstringfield(L, -1, "infotext", prop->infotext);
+	getboolfield(L, -1, "static_save", prop->static_save);
+
 	lua_getfield(L, -1, "wield_item");
 	if (!lua_isnil(L, -1))
 		prop->wield_item = read_item(L, -1, idef).getItemString();
@@ -301,6 +310,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_newtable(L);
 	lua_pushnumber(L, prop->hp_max);
 	lua_setfield(L, -2, "hp_max");
+	lua_pushnumber(L, prop->breath_max);
+	lua_setfield(L, -2, "breath_max");
 	lua_pushboolean(L, prop->physical);
 	lua_setfield(L, -2, "physical");
 	lua_pushboolean(L, prop->collideWithObjects);
@@ -344,10 +355,13 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "is_visible");
 	lua_pushboolean(L, prop->makes_footstep_sound);
 	lua_setfield(L, -2, "makes_footstep_sound");
-	lua_pushnumber(L, prop->automatic_rotate);
-	lua_setfield(L, -2, "automatic_rotate");
 	lua_pushnumber(L, prop->stepheight / BS);
 	lua_setfield(L, -2, "stepheight");
+	lua_pushboolean(L, prop->can_zoom);
+	lua_setfield(L, -2, "can_zoom");
+
+	lua_pushnumber(L, prop->automatic_rotate);
+	lua_setfield(L, -2, "automatic_rotate");
 	if (prop->automatic_face_movement_dir)
 		lua_pushnumber(L, prop->automatic_face_movement_dir_offset);
 	else
@@ -355,6 +369,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_dir");
 	lua_pushboolean(L, prop->backface_culling);
 	lua_setfield(L, -2, "backface_culling");
+	lua_pushnumber(L, prop->glow);
+	lua_setfield(L, -2, "glow");
 	lua_pushlstring(L, prop->nametag.c_str(), prop->nametag.size());
 	lua_setfield(L, -2, "nametag");
 	push_ARGB8(L, prop->nametag_color);
@@ -363,6 +379,8 @@ void push_object_properties(lua_State *L, ObjectProperties *prop)
 	lua_setfield(L, -2, "automatic_face_movement_max_rotation_per_sec");
 	lua_pushlstring(L, prop->infotext.c_str(), prop->infotext.size());
 	lua_setfield(L, -2, "infotext");
+	lua_pushboolean(L, prop->static_save);
+	lua_setfield(L, -2, "static_save");
 	lua_pushlstring(L, prop->wield_item.c_str(), prop->wield_item.size());
 	lua_setfield(L, -2, "wield_item");
 }
@@ -413,6 +431,16 @@ TileDef read_tiledef(lua_State *L, int index, u8 drawtype)
 			L, index, "tileable_horizontal", default_tiling);
 		tiledef.tileable_vertical = getboolfield_default(
 			L, index, "tileable_vertical", default_tiling);
+		std::string align_style;
+		if (getstringfield(L, index, "align_style", align_style)) {
+			if (align_style == "user")
+				tiledef.align_style = ALIGN_STYLE_USER_DEFINED;
+			else if (align_style == "world")
+				tiledef.align_style = ALIGN_STYLE_WORLD;
+			else
+				tiledef.align_style = ALIGN_STYLE_NODE;
+		}
+		tiledef.scale = getintfield_default(L, index, "scale", 0);
 		// color = ...
 		lua_getfield(L, index, "color");
 		tiledef.has_color = read_color(L, -1, &tiledef.color);
@@ -731,6 +759,10 @@ ContentFeatures read_content_features(lua_State *L, int index)
 	}
 	lua_pop(L, 1);
 
+	// Node immediately placed by client when node is dug
+	getstringfield(L, index, "node_dig_prediction",
+		f.node_dig_prediction);
+
 	return f;
 }
 
@@ -855,6 +887,8 @@ void push_content_features(lua_State *L, const ContentFeatures &c)
 	lua_setfield(L, -2, "legacy_facedir_simple");
 	lua_pushboolean(L, c.legacy_wallmounted);
 	lua_setfield(L, -2, "legacy_wallmounted");
+	lua_pushstring(L, c.node_dig_prediction.c_str());
+	lua_setfield(L, -2, "node_dig_prediction");
 }
 
 /******************************************************************************/
@@ -1553,13 +1587,13 @@ bool read_noiseparams(lua_State *L, int index, NoiseParams *np)
 void push_noiseparams(lua_State *L, NoiseParams *np)
 {
 	lua_newtable(L);
-	lua_pushnumber(L, np->offset);
+	push_float_string(L, np->offset);
 	lua_setfield(L, -2, "offset");
-	lua_pushnumber(L, np->scale);
+	push_float_string(L, np->scale);
 	lua_setfield(L, -2, "scale");
-	lua_pushnumber(L, np->persist);
+	push_float_string(L, np->persist);
 	lua_setfield(L, -2, "persistence");
-	lua_pushnumber(L, np->lacunarity);
+	push_float_string(L, np->lacunarity);
 	lua_setfield(L, -2, "lacunarity");
 	lua_pushnumber(L, np->seed);
 	lua_setfield(L, -2, "seed");
@@ -1570,7 +1604,7 @@ void push_noiseparams(lua_State *L, NoiseParams *np)
 		np->flags);
 	lua_setfield(L, -2, "flags");
 
-	push_v3f(L, np->spread);
+	push_v3_float_string(L, np->spread);
 	lua_setfield(L, -2, "spread");
 }
 

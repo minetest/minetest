@@ -52,6 +52,7 @@ class IWritableNodeDefManager;
 //class IWritableCraftDefManager;
 class ClientMediaDownloader;
 struct MapDrawControl;
+class ModChannelMgr;
 class MtEventManager;
 struct PointedThing;
 class MapDatabase;
@@ -184,7 +185,6 @@ public:
 	void handleCommand_AuthAccept(NetworkPacket* pkt);
 	void handleCommand_AcceptSudoMode(NetworkPacket* pkt);
 	void handleCommand_DenySudoMode(NetworkPacket* pkt);
-	void handleCommand_InitLegacy(NetworkPacket* pkt);
 	void handleCommand_AccessDenied(NetworkPacket* pkt);
 	void handleCommand_RemoveNode(NetworkPacket* pkt);
 	void handleCommand_AddNode(NetworkPacket* pkt);
@@ -225,6 +225,8 @@ public:
 	void handleCommand_LocalPlayerAnimations(NetworkPacket* pkt);
 	void handleCommand_EyeOffset(NetworkPacket* pkt);
 	void handleCommand_UpdatePlayerList(NetworkPacket* pkt);
+	void handleCommand_ModChannelMsg(NetworkPacket *pkt);
+	void handleCommand_ModChannelSignal(NetworkPacket *pkt);
 	void handleCommand_SrpBytesSandB(NetworkPacket* pkt);
 	void handleCommand_CSMFlavourLimits(NetworkPacket *pkt);
 
@@ -244,7 +246,6 @@ public:
 	void sendChangePassword(const std::string &oldpassword,
 		const std::string &newpassword);
 	void sendDamage(u8 damage);
-	void sendBreath(u16 breath);
 	void sendRespawn();
 	void sendReady();
 
@@ -426,6 +427,11 @@ public:
 		return m_csm_noderange_limit;
 	}
 
+	bool joinModChannel(const std::string &channel);
+	bool leaveModChannel(const std::string &channel);
+	bool sendModChannelMessage(const std::string &channel, const std::string &message);
+	ModChannel *getModChannel(const std::string &channel);
+
 private:
 
 	// Virtual methods from con::PeerHandler
@@ -447,7 +453,6 @@ private:
 	// helper method shared with clientpackethandler
 	static AuthMechanism choseAuthMech(const u32 mechs);
 
-	void sendLegacyInit(const char* playerName, const char* playerPassword);
 	void sendInit(const std::string &playerName);
 	void startAuth(AuthMechanism chosen_auth_mechanism);
 	void sendDeletedBlocks(std::vector<v3s16> &blocks);
@@ -583,4 +588,6 @@ private:
 	// CSM flavour limits byteflag
 	u64 m_csm_flavour_limits = CSMFlavourLimit::CSM_FL_NONE;
 	u32 m_csm_noderange_limit = 8;
+
+	std::unique_ptr<ModChannelMgr> m_modchannel_mgr;
 };

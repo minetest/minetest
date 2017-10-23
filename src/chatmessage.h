@@ -36,8 +36,9 @@ struct ChatMessage
 	ChatMessage(const std::wstring &m = L"") : message(m) {}
 
 	ChatMessage(ChatMessageType t, const std::wstring &m, const std::wstring &s = L"",
-			std::time_t ts = std::time(0))
-	    : type(t), message(m), sender(s), timestamp(ts)
+			std::time_t ts = std::time(0)) :
+			type(t),
+			message(m), sender(s), timestamp(ts)
 	{
 	}
 

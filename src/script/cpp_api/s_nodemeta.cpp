@@ -45,7 +45,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowMove(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_move"))
+	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_move", &p))
 		return count;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
@@ -83,7 +83,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowPut(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_put"))
+	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_put", &p))
 		return stack.count;
 
 	// Call function(pos, listname, index, stack, player)
@@ -119,7 +119,7 @@ int ScriptApiNodemeta::nodemeta_inventory_AllowTake(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_take"))
+	if (!getItemCallback(nodename.c_str(), "allow_metadata_inventory_take", &p))
 		return stack.count;
 
 	// Call function(pos, listname, index, count, player)
@@ -156,7 +156,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnMove(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_move"))
+	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_move", &p))
 		return;
 
 	// function(pos, from_list, from_index, to_list, to_index, count, player)
@@ -189,7 +189,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnPut(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_put"))
+	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_put", &p))
 		return;
 
 	// Call function(pos, listname, index, stack, player)
@@ -220,7 +220,7 @@ void ScriptApiNodemeta::nodemeta_inventory_OnTake(v3s16 p,
 
 	// Push callback function on stack
 	std::string nodename = ndef->get(node).name;
-	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_take"))
+	if (!getItemCallback(nodename.c_str(), "on_metadata_inventory_take", &p))
 		return;
 
 	// Call function(pos, listname, index, stack, player)

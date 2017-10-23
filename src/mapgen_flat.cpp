@@ -81,12 +81,12 @@ MapgenFlat::~MapgenFlat()
 }
 
 
-MapgenFlatParams::MapgenFlatParams()
+MapgenFlatParams::MapgenFlatParams():
+	np_terrain      (0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0),
+	np_filler_depth (0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0),
+	np_cave1        (0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0),
+	np_cave2        (0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0)
 {
-	np_terrain      = NoiseParams(0, 1,   v3f(600, 600, 600), 7244,  5, 0.6, 2.0);
-	np_filler_depth = NoiseParams(0, 1.2, v3f(150, 150, 150), 261,   3, 0.7, 2.0);
-	np_cave1        = NoiseParams(0, 12,  v3f(61,  61,  61),  52534, 3, 0.5, 2.0);
-	np_cave2        = NoiseParams(0, 12,  v3f(67,  67,  67),  10325, 3, 0.5, 2.0);
 }
 
 
@@ -193,7 +193,7 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	MgStoneType mgstone_type;
 	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	if (flags & MG_CAVES)
 		generateCaves(stone_surface_max_y, large_cave_depth);
@@ -203,12 +203,10 @@ void MapgenFlat::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed,
-			node_min, node_max, water_level - 1);
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed,
-		node_min, node_max, water_level - 1);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

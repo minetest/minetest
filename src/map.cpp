@@ -2313,6 +2313,7 @@ void MMVManip::blitBackAll(std::map<v3s16, MapBlock*> *modified_blocks,
 			continue;
 
 		block->copyFrom(*this);
+		block->raiseModified(MOD_STATE_WRITE_NEEDED, MOD_REASON_VMANIP);
 
 		if(modified_blocks)
 			(*modified_blocks)[p] = block;

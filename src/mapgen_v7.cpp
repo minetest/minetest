@@ -44,7 +44,6 @@ FlagDesc flagdesc_mapgen_v7[] = {
 	{"ridges",      MGV7_RIDGES},
 	{"floatlands",  MGV7_FLOATLANDS},
 	{"caverns",     MGV7_CAVERNS},
-	{"biomerepeat", MGV7_BIOMEREPEAT},
 	{NULL,          0}
 };
 
@@ -128,22 +127,22 @@ MapgenV7::~MapgenV7()
 }
 
 
-MapgenV7Params::MapgenV7Params()
+MapgenV7Params::MapgenV7Params():
+	np_terrain_base      (4,    70,   v3f(600,  600,  600),  82341, 5, 0.6,  2.0),
+	np_terrain_alt       (4,    25,   v3f(600,  600,  600),  5934,  5, 0.6,  2.0),
+	np_terrain_persist   (0.6,  0.1,  v3f(2000, 2000, 2000), 539,   3, 0.6,  2.0),
+	np_height_select     (-8,   16,   v3f(500,  500,  500),  4213,  6, 0.7,  2.0),
+	np_filler_depth      (0,    1.2,  v3f(150,  150,  150),  261,   3, 0.7,  2.0),
+	np_mount_height      (256,  112,  v3f(1000, 1000, 1000), 72449, 3, 0.6,  2.0),
+	np_ridge_uwater      (0,    1,    v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0),
+	np_floatland_base    (-0.6, 1.5,  v3f(600,  600,  600),  114,   5, 0.6,  2.0),
+	np_float_base_height (48,   24,   v3f(300,  300,  300),  907,   4, 0.7,  2.0),
+	np_mountain          (-0.6, 1,    v3f(250,  350,  250),  5333,  5, 0.63, 2.0),
+	np_ridge             (0,    1,    v3f(100,  100,  100),  6467,  4, 0.75, 2.0),
+	np_cavern            (0,    1,    v3f(384,  128,  384),  723,   5, 0.63, 2.0),
+	np_cave1             (0,    12,   v3f(61,   61,   61),   52534, 3, 0.5,  2.0),
+	np_cave2             (0,    12,   v3f(67,   67,   67),   10325, 3, 0.5,  2.0)
 {
-	np_terrain_base      = NoiseParams(4,    70,   v3f(600,  600,  600),  82341, 5, 0.6,  2.0);
-	np_terrain_alt       = NoiseParams(4,    25,   v3f(600,  600,  600),  5934,  5, 0.6,  2.0);
-	np_terrain_persist   = NoiseParams(0.6,  0.1,  v3f(2000, 2000, 2000), 539,   3, 0.6,  2.0);
-	np_height_select     = NoiseParams(-8,   16,   v3f(500,  500,  500),  4213,  6, 0.7,  2.0);
-	np_filler_depth      = NoiseParams(0,    1.2,  v3f(150,  150,  150),  261,   3, 0.7,  2.0);
-	np_mount_height      = NoiseParams(256,  112,  v3f(1000, 1000, 1000), 72449, 3, 0.6,  2.0);
-	np_ridge_uwater      = NoiseParams(0,    1,    v3f(1000, 1000, 1000), 85039, 5, 0.6,  2.0);
-	np_floatland_base    = NoiseParams(-0.6, 1.5,  v3f(600,  600,  600),  114,   5, 0.6,  2.0);
-	np_float_base_height = NoiseParams(48,   24,   v3f(300,  300,  300),  907,   4, 0.7,  2.0);
-	np_mountain          = NoiseParams(-0.6, 1,    v3f(250,  350,  250),  5333,  5, 0.63, 2.0);
-	np_ridge             = NoiseParams(0,    1,    v3f(100,  100,  100),  6467,  4, 0.75, 2.0);
-	np_cavern            = NoiseParams(0,    1,    v3f(384,  128,  384),  723,   5, 0.63, 2.0);
-	np_cave1             = NoiseParams(0,    12,   v3f(61,   61,   61),   52534, 3, 0.5,  2.0);
-	np_cave2             = NoiseParams(0,    12,   v3f(67,   67,   67),   10325, 3, 0.5,  2.0);
 }
 
 
@@ -290,12 +289,6 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	blockseed = getBlockSeed2(full_node_min, seed);
 
-	// Get zero level for biomes and decorations
-	// Optionally repeat surface biomes in floatlands
-	s16 biome_zero_level = ((spflags & MGV7_FLOATLANDS) &&
-		(spflags & MGV7_BIOMEREPEAT) && node_max.Y >= shadow_limit) ?
-		floatland_level - 1 : water_level - 1;
-
 	// Generate base and mountain terrain
 	// An initial heightmap is no longer created here for use in generateRidgeTerrain()
 	s16 stone_surface_max_y = generateTerrain();
@@ -312,7 +305,7 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	MgStoneType mgstone_type;
 	content_t biome_stone;
-	generateBiomes(&mgstone_type, &biome_stone, water_level - 1);
+	generateBiomes(&mgstone_type, &biome_stone);
 
 	// Generate caverns, tunnels and classic caves
 	if (flags & MG_CAVES) {
@@ -336,12 +329,10 @@ void MapgenV7::makeChunk(BlockMakeData *data)
 
 	// Generate the registered decorations
 	if (flags & MG_DECORATIONS)
-		m_emerge->decomgr->placeAllDecos(this, blockseed,
-			node_min, node_max, biome_zero_level);
+		m_emerge->decomgr->placeAllDecos(this, blockseed, node_min, node_max);
 
 	// Generate the registered ores
-	m_emerge->oremgr->placeAllOres(this, blockseed,
-		node_min, node_max, water_level - 1);
+	m_emerge->oremgr->placeAllOres(this, blockseed, node_min, node_max);
 
 	// Sprinkle some dust on top after everything else was generated
 	dustTopNodes();

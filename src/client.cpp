@@ -39,6 +39,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "mapblock_mesh.h"
 #include "mapblock.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "mods.h"
 #include "profiler.h"
 #include "shader.h"
@@ -94,7 +95,8 @@ Client::Client(
 	m_chosen_auth_mech(AUTH_MECHANISM_NONE),
 	m_media_downloader(new ClientMediaDownloader()),
 	m_state(LC_Created),
-	m_game_ui_flags(game_ui_flags)
+	m_game_ui_flags(game_ui_flags),
+	m_modchannel_mgr(new ModChannelMgr())
 {
 	// Add local player
 	m_env.setLocalPlayer(new LocalPlayer(this, playername));
@@ -309,31 +311,7 @@ void Client::step(float dtime)
 			LocalPlayer *myplayer = m_env.getLocalPlayer();
 			FATAL_ERROR_IF(myplayer == NULL, "Local player not found in environment.");
 
-			u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
-				CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
-
-			if (proto_version_min < 25) {
-				// Send TOSERVER_INIT_LEGACY
-				// [0] u16 TOSERVER_INIT_LEGACY
-				// [2] u8 SER_FMT_VER_HIGHEST_READ
-				// [3] u8[20] player_name
-				// [23] u8[28] password (new in some version)
-				// [51] u16 minimum supported network protocol version (added sometime)
-				// [53] u16 maximum supported network protocol version (added later than the previous one)
-
-				char pName[PLAYERNAME_SIZE];
-				char pPassword[PASSWORD_SIZE];
-				memset(pName, 0, PLAYERNAME_SIZE * sizeof(char));
-				memset(pPassword, 0, PASSWORD_SIZE * sizeof(char));
-
-				std::string hashed_password = translate_password(myplayer->getName(), m_password);
-				snprintf(pName, PLAYERNAME_SIZE, "%s", myplayer->getName());
-				snprintf(pPassword, PASSWORD_SIZE, "%s", hashed_password.c_str());
-
-				sendLegacyInit(pName, pPassword);
-			}
-			if (CLIENT_PROTOCOL_VERSION_MAX >= 25)
-				sendInit(myplayer->getName());
+			sendInit(myplayer->getName());
 		}
 
 		// Not connected, return
@@ -427,11 +405,6 @@ void Client::step(float dtime)
 				event->player_damage.amount = damage;
 				m_client_event_queue.push(event);
 			}
-		}
-		// Protocol v29 or greater obsoleted this event
-		else if (envEvent.type == CEE_PLAYER_BREATH && m_proto_ver < 29) {
-			u16 breath = envEvent.player_breath.amount;
-			sendBreath(breath);
 		}
 	}
 
@@ -974,22 +947,6 @@ AuthMechanism Client::choseAuthMech(const u32 mechs)
 	return AUTH_MECHANISM_NONE;
 }
 
-void Client::sendLegacyInit(const char* playerName, const char* playerPassword)
-{
-	NetworkPacket pkt(TOSERVER_INIT_LEGACY,
-			1 + PLAYERNAME_SIZE + PASSWORD_SIZE + 2 + 2);
-
-	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
-		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
-
-	pkt << (u8) SER_FMT_VER_HIGHEST_READ;
-	pkt.putRawString(playerName,PLAYERNAME_SIZE);
-	pkt.putRawString(playerPassword, PASSWORD_SIZE);
-	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
-
-	Send(&pkt);
-}
-
 void Client::sendInit(const std::string &playerName)
 {
 	NetworkPacket pkt(TOSERVER_INIT, 1 + 2 + 2 + (1 + playerName.size()));
@@ -997,11 +954,8 @@ void Client::sendInit(const std::string &playerName)
 	// we don't support network compression yet
 	u16 supp_comp_modes = NETPROTO_COMPRESSION_NONE;
 
-	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
-		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
-
 	pkt << (u8) SER_FMT_VER_HIGHEST_READ << (u16) supp_comp_modes;
-	pkt << (u16) proto_version_min << (u16) CLIENT_PROTOCOL_VERSION_MAX;
+	pkt << (u16) CLIENT_PROTOCOL_VERSION_MIN << (u16) CLIENT_PROTOCOL_VERSION_MAX;
 	pkt << playerName;
 
 	Send(&pkt);
@@ -1201,27 +1155,10 @@ void Client::sendChangePassword(const std::string &oldpassword,
 	if (player == NULL)
 		return;
 
-	std::string playername = player->getName();
-	if (m_proto_ver >= 25) {
-		// get into sudo mode and then send new password to server
-		m_password = oldpassword;
-		m_new_password = newpassword;
-		startAuth(choseAuthMech(m_sudo_auth_methods));
-	} else {
-		std::string oldpwd = translate_password(playername, oldpassword);
-		std::string newpwd = translate_password(playername, newpassword);
-
-		NetworkPacket pkt(TOSERVER_PASSWORD_LEGACY, 2 * PASSWORD_SIZE);
-
-		for (u8 i = 0; i < PASSWORD_SIZE; i++) {
-			pkt << (u8) (i < oldpwd.length() ? oldpwd[i] : 0);
-		}
-
-		for (u8 i = 0; i < PASSWORD_SIZE; i++) {
-			pkt << (u8) (i < newpwd.length() ? newpwd[i] : 0);
-		}
-		Send(&pkt);
-	}
+	// get into sudo mode and then send new password to server
+	m_password = oldpassword;
+	m_new_password = newpassword;
+	startAuth(choseAuthMech(m_sudo_auth_methods));
 }
 
 
@@ -1229,17 +1166,6 @@ void Client::sendDamage(u8 damage)
 {
 	NetworkPacket pkt(TOSERVER_DAMAGE, sizeof(u8));
 	pkt << damage;
-	Send(&pkt);
-}
-
-void Client::sendBreath(u16 breath)
-{
-	// Protocol v29 make this obsolete
-	if (m_proto_ver >= 29)
-		return;
-
-	NetworkPacket pkt(TOSERVER_BREATH, sizeof(u16));
-	pkt << breath;
 	Send(&pkt);
 }
 
@@ -1264,7 +1190,7 @@ void Client::sendReady()
 void Client::sendPlayerPos()
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
 
 	ClientMap &map = m_env.getClientMap();
@@ -1290,20 +1216,6 @@ void Client::sendPlayerPos()
 	myplayer->last_camera_fov   = camera_fov;
 	myplayer->last_wanted_range = wanted_range;
 
-	//infostream << "Sending Player Position information" << std::endl;
-
-	u16 our_peer_id;
-	{
-		//MutexAutoLock lock(m_con_mutex); //bulk comment-out
-		our_peer_id = m_con->GetPeerID();
-	}
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-
-	assert(myplayer->peer_id == our_peer_id);
-
 	NetworkPacket pkt(TOSERVER_PLAYERPOS, 12 + 12 + 4 + 4 + 4 + 1 + 1);
 
 	writePlayerPos(myplayer, &map, &pkt);
@@ -1314,15 +1226,8 @@ void Client::sendPlayerPos()
 void Client::sendPlayerItem(u16 item)
 {
 	LocalPlayer *myplayer = m_env.getLocalPlayer();
-	if(myplayer == NULL)
+	if (!myplayer)
 		return;
-
-	u16 our_peer_id = m_con->GetPeerID();
-
-	// Set peer id if not set already
-	if(myplayer->peer_id == PEER_ID_INEXISTENT)
-		myplayer->peer_id = our_peer_id;
-	assert(myplayer->peer_id == our_peer_id);
 
 	NetworkPacket pkt(TOSERVER_PLAYERITEM, 2);
 
@@ -1994,4 +1899,58 @@ void Client::unregisterModStorage(const std::string &name)
 std::string Client::getModStoragePath() const
 {
 	return porting::path_user + DIR_DELIM + "client" + DIR_DELIM + "mod_storage";
+}
+
+/*
+ * Mod channels
+ */
+
+bool Client::joinModChannel(const std::string &channel)
+{
+	if (m_modchannel_mgr->channelRegistered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_JOIN, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	m_modchannel_mgr->joinChannel(channel, 0);
+	return true;
+}
+
+bool Client::leaveModChannel(const std::string &channel)
+{
+	if (!m_modchannel_mgr->channelRegistered(channel))
+		return false;
+
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_LEAVE, 2 + channel.size());
+	pkt << channel;
+	Send(&pkt);
+
+	m_modchannel_mgr->leaveChannel(channel, 0);
+	return true;
+}
+
+bool Client::sendModChannelMessage(const std::string &channel, const std::string &message)
+{
+	if (!m_modchannel_mgr->canWriteOnChannel(channel))
+		return false;
+
+	if (message.size() > STRING_MAX_LEN) {
+		warningstream << "ModChannel message too long, dropping before sending "
+				<< " (" << message.size() << " > " << STRING_MAX_LEN << ", channel: "
+				<< channel << ")" << std::endl;
+		return false;
+	}
+
+	// @TODO: do some client rate limiting
+	NetworkPacket pkt(TOSERVER_MODCHANNEL_MSG, 2 + channel.size() + 2 + message.size());
+	pkt << channel << message;
+	Send(&pkt);
+	return true;
+}
+
+ModChannel* Client::getModChannel(const std::string &channel)
+{
+	return m_modchannel_mgr->getModChannel(channel);
 }

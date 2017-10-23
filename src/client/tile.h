@@ -209,7 +209,8 @@ struct TileLayer
 			texture_id == other.texture_id &&
 			material_type == other.material_type &&
 			material_flags == other.material_flags &&
-			color == other.color;
+			color == other.color &&
+			scale == other.scale;
 	}
 
 	/*!
@@ -298,6 +299,8 @@ struct TileLayer
 	 * a color then the color of the node owning this tile.
 	 */
 	video::SColor color;
+
+	u8 scale;
 };
 
 /*!
@@ -325,6 +328,9 @@ struct TileSpec
 			&& emissive_light == other.emissive_light;
 	}
 
+	//! If true, the tile rotation is ignored.
+	bool world_aligned = false;
+	//! Tile rotation.
 	u8 rotation = 0;
 	//! This much light does the tile emit.
 	u8 emissive_light = 0;

@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cpp_api/s_internal.h"
 #include "common/c_converter.h"
 #include "common/c_content.h"
+#include "debug.h"
 #include "util/string.h"
 
 void ScriptApiPlayer::on_newplayer(ServerActiveObject *player)
@@ -121,6 +122,20 @@ bool ScriptApiPlayer::on_prejoinplayer(
 		return true;
 	}
 	return false;
+}
+
+bool ScriptApiPlayer::can_bypass_userlimit(const std::string &name, const std::string &ip)
+{
+	SCRIPTAPI_PRECHECKHEADER
+
+	// Get core.registered_on_prejoinplayers
+	lua_getglobal(L, "core");
+	lua_getfield(L, -1, "registered_can_bypass_userlimit");
+	lua_pushstring(L, name.c_str());
+	lua_pushstring(L, ip.c_str());
+	runCallbacks(2, RUN_CALLBACKS_MODE_OR);
+	FATAL_ERROR_IF(!lua_isboolean(L, -1), "on_user_limitcheck must return a boolean");
+	return lua_toboolean(L, -1);
 }
 
 void ScriptApiPlayer::on_joinplayer(ServerActiveObject *player)

@@ -61,8 +61,8 @@ local function get_formspec(tabview, name, tabdata)
 				fgettext("Del. Favorite") .. "]"
 		end
 		if fav_selected.description then
-			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;" ..
-				core.formspec_escape((gamedata.serverdescription or ""), true) .. ";]"
+			retval = retval .. "textarea[8.1,2.3;4.23,2.9;;;" ..
+				core.formspec_escape((gamedata.serverdescription or ""), true) .. "]"
 		end
 	end
 

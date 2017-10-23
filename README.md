@@ -72,7 +72,6 @@ Some can be changes in the key config dialog in the settings tab.
 | Shift + F9                    | Change minimap orientation                                     |
 | F10                           | Show/hide console                                              |
 | F12                           | Take screenshot                                                |
-| P                             | Write stack traces into debug.txt                              |
 
 Paths
 -----

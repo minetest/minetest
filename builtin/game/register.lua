@@ -436,8 +436,9 @@ function core.run_callbacks(callbacks, mode, ...)
 end
 
 function core.run_priv_callbacks(name, priv, caller, method)
-	if not core.registered_privileges[priv]["on_" .. method] or
-			not core.registered_privileges[priv]["on_" .. method](name, caller) then
+	local def = core.registered_privileges[priv]
+	if not def or not def["on_" .. method] or
+			not def[priv]["on_" .. method](name, caller) then
 		for _, func in ipairs(core["registered_on_priv_" .. method]) do
 			if not func(name, caller, priv) then
 				break
@@ -581,6 +582,8 @@ core.registered_on_item_eats, core.register_on_item_eat = make_registration()
 core.registered_on_punchplayers, core.register_on_punchplayer = make_registration()
 core.registered_on_priv_grant, core.register_on_priv_grant = make_registration()
 core.registered_on_priv_revoke, core.register_on_priv_revoke = make_registration()
+core.registered_can_bypass_userlimit, core.register_can_bypass_userlimit = make_registration()
+core.registered_on_modchannel_message, core.register_on_modchannel_message = make_registration()
 
 --
 -- Compatibility for on_mapgen_init()

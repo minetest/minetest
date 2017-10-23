@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <json/json.h>
 #include "cpp_api/s_security.h"
 #include "porting.h"
+#include "convert_json.h"
 #include "debug.h"
 #include "log.h"
 #include "tool.h"
@@ -95,12 +96,14 @@ int ModApiUtil::l_parse_json(lua_State *L)
 	Json::Value root;
 
 	{
-		Json::Reader reader;
 		std::istringstream stream(jsonstr);
 
-		if (!reader.parse(stream, root)) {
-			errorstream << "Failed to parse json data "
-				<< reader.getFormattedErrorMessages();
+		Json::CharReaderBuilder builder;
+		builder.settings_["collectComments"] = false;
+		std::string errs;
+
+		if (!Json::parseFromStream(builder, stream, &root, &errs)) {
+			errorstream << "Failed to parse json data " << errs << std::endl;
 			size_t jlen = strlen(jsonstr);
 			if (jlen > 100) {
 				errorstream << "Data (" << jlen
@@ -145,11 +148,9 @@ int ModApiUtil::l_write_json(lua_State *L)
 
 	std::string out;
 	if (styled) {
-		Json::StyledWriter writer;
-		out = writer.write(root);
+		out = root.toStyledString();
 	} else {
-		Json::FastWriter writer;
-		out = writer.write(root);
+		out = fastWriteJson(root);
 	}
 	lua_pushlstring(L, out.c_str(), out.size());
 	return 1;

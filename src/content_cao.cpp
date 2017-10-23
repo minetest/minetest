@@ -699,10 +699,13 @@ void GenericCAO::updateLight(u8 light_at_pos, u8 artificial_light_ratio)
 
 void GenericCAO::updateLightNoCheck(u8 light_at_pos, u8 artificial_light_ratio)
 {
+	if (m_glow < 0)
+		return;
+
 	if (!m_enable_shaders)
 		artificial_light_ratio = 255;
 
-	u8 li = decode_light(light_at_pos);
+	u8 li = decode_light(light_at_pos + m_glow);
 	if (li != m_last_light || artificial_light_ratio != m_last_artificial_light_ratio) {
 		m_last_light = li;
 		m_last_artificial_light_ratio = artificial_light_ratio;
@@ -903,16 +906,17 @@ void GenericCAO::step(float dtime, ClientEnvironment *env)
 
 		float moved = lastpos.getDistanceFrom(pos_translator.vect_show);
 		m_step_distance_counter += moved;
-		if(m_step_distance_counter > 1.5*BS)
-		{
-			m_step_distance_counter = 0;
-			if(!m_is_local_player && m_prop.makes_footstep_sound)
-			{
+		if (m_step_distance_counter > 1.5f * BS) {
+			m_step_distance_counter = 0.0f;
+			if (!m_is_local_player && m_prop.makes_footstep_sound) {
 				INodeDefManager *ndef = m_client->ndef();
-				v3s16 p = floatToInt(getPosition() + v3f(0,
-						(m_prop.collisionbox.MinEdge.Y-0.5)*BS, 0), BS);
+				v3s16 p = floatToInt(getPosition() +
+					v3f(0.0f, (m_prop.collisionbox.MinEdge.Y - 0.5f) * BS, 0.0f), BS);
 				MapNode n = m_env->getMap().getNodeNoEx(p);
 				SimpleSoundSpec spec = ndef->get(n).sound_footstep;
+				// Reduce footstep gain, as non-local-player footsteps are
+				// somehow louder.
+				spec.gain *= 0.6f;
 				m_client->sound()->playSoundAt(spec, false, getPosition());
 			}
 		}
@@ -1022,6 +1026,7 @@ void GenericCAO::updateTextures(std::string mod)
 
 	m_previous_texture_modifier = m_current_texture_modifier;
 	m_current_texture_modifier = mod;
+	m_glow = m_prop.glow;
 
 	if (m_spritenode) {
 		if (m_prop.visual == "sprite") {
@@ -1194,9 +1199,17 @@ void GenericCAO::updateAnimation()
 #endif
 }
 
+void GenericCAO::updateAnimationSpeed()
+{
+	if (!m_animated_meshnode)
+		return;
+
+	m_animated_meshnode->setAnimationSpeed(m_animation_speed);
+}
+
 void GenericCAO::updateBonePosition()
 {
-	if(m_bone_position.empty() || !m_animated_meshnode)
+	if (m_bone_position.empty() || !m_animated_meshnode)
 		return;
 
 	m_animated_meshnode->setJointMode(irr::scene::EJUOR_CONTROL); // To write positions to the mesh on render
@@ -1283,6 +1296,7 @@ void GenericCAO::processMessage(const std::string &data)
 			collision_box.MinEdge *= BS;
 			collision_box.MaxEdge *= BS;
 			player->setCollisionbox(collision_box);
+			player->setCanZoom(m_prop.can_zoom);
 		}
 
 		if ((m_is_player && !m_is_local_player) && m_prop.nametag.empty())
@@ -1394,6 +1408,9 @@ void GenericCAO::processMessage(const std::string &data)
 					updateAnimation();
 			}
 		}
+	} else if (cmd == GENERIC_CMD_SET_ANIMATION_SPEED) {
+		m_animation_speed = readF1000(is);
+		updateAnimationSpeed();
 	} else if (cmd == GENERIC_CMD_SET_BONE_POSITION) {
 		std::string bone = deSerializeString(is);
 		v3f position = readV3F1000(is);

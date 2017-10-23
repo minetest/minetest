@@ -63,7 +63,8 @@ class VoxelManipulator;
 #define MOD_REASON_STATIC_DATA_REMOVED       (1 << 16)
 #define MOD_REASON_STATIC_DATA_CHANGED       (1 << 17)
 #define MOD_REASON_EXPIRE_DAYNIGHTDIFF       (1 << 18)
-#define MOD_REASON_UNKNOWN                   (1 << 19)
+#define MOD_REASON_VMANIP                    (1 << 19)
+#define MOD_REASON_UNKNOWN                   (1 << 20)
 
 ////
 //// MapBlock itself

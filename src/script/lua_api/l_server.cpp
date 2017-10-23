@@ -124,7 +124,7 @@ int ModApiServer::l_get_player_ip(lua_State *L)
 	}
 	try
 	{
-		Address addr = getServer(L)->getPeerAddress(player->peer_id);
+		Address addr = getServer(L)->getPeerAddress(player->getPeerId());
 		std::string ip_str = addr.serializeString();
 		lua_pushstring(L, ip_str.c_str());
 		return 1;
@@ -150,7 +150,7 @@ int ModApiServer::l_get_player_information(lua_State *L)
 	Address addr;
 	try
 	{
-		addr = getServer(L)->getPeerAddress(player->peer_id);
+		addr = getServer(L)->getPeerAddress(player->getPeerId());
 	} catch(const con::PeerNotFoundException &) {
 		dstream << FUNCTION_NAME << ": peer was not found" << std::endl;
 		lua_pushnil(L); // error
@@ -171,16 +171,18 @@ int ModApiServer::l_get_player_information(lua_State *L)
 		return 1;                                                              \
 	}
 
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MIN_RTT,&min_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MAX_RTT,&max_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::AVG_RTT,&avg_rtt))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MIN_JITTER,&min_jitter))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::MAX_JITTER,&max_jitter))
-	ERET(getServer(L)->getClientConInfo(player->peer_id,con::AVG_JITTER,&avg_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_RTT, &min_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_RTT, &max_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_RTT, &avg_rtt))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MIN_JITTER,
+		&min_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::MAX_JITTER,
+		&max_jitter))
+	ERET(getServer(L)->getClientConInfo(player->getPeerId(), con::AVG_JITTER,
+		&avg_jitter))
 
-	ERET(getServer(L)->getClientInfo(player->peer_id,
-										&state, &uptime, &ser_vers, &prot_vers,
-										&major, &minor, &patch, &vers_string))
+	ERET(getServer(L)->getClientInfo(player->getPeerId(), &state, &uptime, &ser_vers,
+		&prot_vers, &major, &minor, &patch, &vers_string))
 
 	lua_newtable(L);
 	int table = lua_gettop(L);
@@ -291,7 +293,7 @@ int ModApiServer::l_ban_player(lua_State *L)
 	try
 	{
 		Address addr = getServer(L)->getPeerAddress(
-			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->peer_id);
+			dynamic_cast<ServerEnvironment *>(getEnv(L))->getPlayer(name)->getPeerId());
 		std::string ip_str = addr.serializeString();
 		getServer(L)->setIpBanned(ip_str, name);
 	} catch(const con::PeerNotFoundException &) {
@@ -323,7 +325,7 @@ int ModApiServer::l_kick_player(lua_State *L)
 		lua_pushboolean(L, false); // No such player
 		return 1;
 	}
-	getServer(L)->DenyAccess_Legacy(player->peer_id, utf8_to_wide(message));
+	getServer(L)->DenyAccess_Legacy(player->getPeerId(), utf8_to_wide(message));
 	lua_pushboolean(L, true);
 	return 1;
 }

@@ -61,32 +61,32 @@ matrix:
           sources: &sources
             - llvm-toolchain-trusty-3.6
 
-    - env: PLATFORM=Unix COMPILER=clang-4.0
+    - env: PLATFORM=Unix COMPILER=clang-5.0
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-4.0', 'clang++-4.0']
+          packages: ['clang-5.0', 'clang++-5.0']
           sources: &sources
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-trusty-5.0
 
-    - env: PLATFORM=Unix COMPILER=clang-4.0 VALGRIND=1
+    - env: PLATFORM=Unix COMPILER=clang-5.0 VALGRIND=1
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['valgrind', 'clang-4.0', 'clang++-4.0']
+          packages: ['valgrind', 'clang-5.0', 'clang++-5.0']
           sources: &sources
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-trusty-5.0
 
     - env: LINT=1
       compiler: clang
       os: linux
       addons:
         apt:
-          packages: ['clang-format-4.0']
+          packages: ['clang-format-5.0']
           sources: &sources
-            - llvm-toolchain-trusty-4.0
+            - llvm-toolchain-trusty-5.0
 
 
 

@@ -48,7 +48,7 @@ DecorationManager::DecorationManager(IGameDef *gamedef) :
 
 
 size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, s16 deco_zero_level)
+	v3s16 nmin, v3s16 nmax)
 {
 	size_t nplaced = 0;
 
@@ -57,7 +57,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 		if (!deco)
 			continue;
 
-		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax, deco_zero_level);
+		nplaced += deco->placeDeco(mg, blockseed, nmin, nmax);
 		blockseed++;
 	}
 
@@ -66,6 +66,7 @@ size_t DecorationManager::placeAllDecos(Mapgen *mg, u32 blockseed,
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
 void Decoration::resolveNodeNames()
 {
@@ -123,18 +124,8 @@ bool Decoration::canPlaceDecoration(MMVManip *vm, v3s16 p)
 }
 
 
-size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
-	v3s16 nmin, v3s16 nmax, s16 deco_zero_level)
+size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
 {
-	// Decoration y_min / y_max is displaced by deco_zero_level or remains
-	// unchanged. Any decoration with a limit at +-MAX_MAP_GENERATION_LIMIT is
-	// considered to have that limit at +-infinity, so we do not alter that limit.
-	s32 y_min_disp = (y_min <= -MAX_MAP_GENERATION_LIMIT) ?
-		-MAX_MAP_GENERATION_LIMIT : y_min + deco_zero_level;
-
-	s32 y_max_disp = (y_max >= MAX_MAP_GENERATION_LIMIT) ?
-		MAX_MAP_GENERATION_LIMIT : y_max + deco_zero_level;
-
 	PcgRandom ps(blockseed + 53);
 	int carea_size = nmax.X - nmin.X + 1;
 
@@ -189,18 +180,11 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
 			else
 				y = mg->findGroundLevel(v2s16(x, z), nmin.Y, nmax.Y);
 
-			if (y < y_min_disp || y > y_max_disp || y < nmin.Y || y > nmax.Y)
+			if (y < y_min || y > y_max || y < nmin.Y || y > nmax.Y)
 				continue;
 
-			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y) {
+			if (y + getHeight() > mg->vm->m_area.MaxEdge.Y)
 				continue;
-#if 0
-				printf("Decoration at (%d %d %d) cut off\n", x, y, z);
-				//add to queue
-				MutexAutoLock cutofflock(cutoff_mutex);
-				cutoffs.push_back(CutoffData(x, y, z, height));
-#endif
-			}
 
 			if (mg->biomemap && !biomes.empty()) {
 				std::unordered_set<u8>::const_iterator iter =
@@ -219,60 +203,6 @@ size_t Decoration::placeDeco(Mapgen *mg, u32 blockseed,
 }
 
 
-#if 0
-void Decoration::placeCutoffs(Mapgen *mg, u32 blockseed, v3s16 nmin, v3s16 nmax)
-{
-	PcgRandom pr(blockseed + 53);
-	std::vector<CutoffData> handled_cutoffs;
-
-	// Copy over the cutoffs we're interested in so we don't needlessly hold a lock
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-			CutoffData cutoff = *i;
-			v3s16 p    = cutoff.p;
-			s16 height = cutoff.height;
-			if (p.X < nmin.X || p.X > nmax.X ||
-				p.Z < nmin.Z || p.Z > nmax.Z)
-				continue;
-			if (p.Y + height < nmin.Y || p.Y > nmax.Y)
-				continue;
-
-			handled_cutoffs.push_back(cutoff);
-		}
-	}
-
-	// Generate the cutoffs
-	for (size_t i = 0; i != handled_cutoffs.size(); i++) {
-		v3s16 p    = handled_cutoffs[i].p;
-		s16 height = handled_cutoffs[i].height;
-
-		if (p.Y + height > nmax.Y) {
-			//printf("Decoration at (%d %d %d) cut off again!\n", p.X, p.Y, p.Z);
-			cuttoffs.push_back(v3s16(p.X, p.Y, p.Z));
-		}
-
-		generate(mg, &pr, nmax.Y, nmin.Y - p.Y, v3s16(p.X, nmin.Y, p.Z));
-	}
-
-	// Remove cutoffs that were handled from the cutoff list
-	{
-		MutexAutoLock cutofflock(cutoff_mutex);
-		for (std::list<CutoffData>::iterator i = cutoffs.begin();
-			i != cutoffs.end(); ++i) {
-
-			for (size_t j = 0; j != handled_cutoffs.size(); j++) {
-				CutoffData coff = *i;
-				if (coff.p == handled_cutoffs[j].p)
-					i = cutoffs.erase(i);
-			}
-		}
-	}
-}
-#endif
-
-
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -289,6 +219,10 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	if (c_decos.empty())
 		return 0;
 
+	// Check for a negative place_offset_y causing placement below the voxelmanip
+	if (p.Y + 1 + place_offset_y < vm->m_area.MinEdge.Y)
+		return 0;
+
 	if (!canPlaceDecoration(vm, p))
 		return 0;
 
@@ -297,19 +231,23 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 	s16 height = (deco_height_max > 0) ?
 		pr->range(deco_height, deco_height_max) : deco_height;
 
+	u8 param2 = (deco_param2_max > 0) ?
+		pr->range(deco_param2, deco_param2_max) : deco_param2;
+
 	bool force_placement = (flags & DECO_FORCE_PLACEMENT);
 
 	const v3s16 &em = vm->m_area.getExtent();
 	u32 vi = vm->m_area.index(p);
+	vm->m_area.add_y(em, vi, place_offset_y);
+
 	for (int i = 0; i < height; i++) {
 		vm->m_area.add_y(em, vi, 1);
-
 		content_t c = vm->m_data[vi].getContent();
 		if (c != CONTENT_AIR && c != CONTENT_IGNORE &&
 				!force_placement)
 			break;
 
-		vm->m_data[vi] = MapNode(c_place, 0, deco_param2);
+		vm->m_data[vi] = MapNode(c_place, 0, param2);
 	}
 
 	return 1;
@@ -318,11 +256,13 @@ size_t DecoSimple::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 int DecoSimple::getHeight()
 {
-	return (deco_height_max > 0) ? deco_height_max : deco_height;
+	return ((deco_height_max > 0) ? deco_height_max : deco_height)
+		+ place_offset_y;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
 size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 {
@@ -336,10 +276,16 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 
 	if (flags & DECO_PLACE_CENTER_X)
 		p.X -= (schematic->size.X - 1) / 2;
-	if (flags & DECO_PLACE_CENTER_Y)
-		p.Y -= (schematic->size.Y - 1) / 2;
 	if (flags & DECO_PLACE_CENTER_Z)
 		p.Z -= (schematic->size.Z - 1) / 2;
+
+	if (flags & DECO_PLACE_CENTER_Y)
+		p.Y -= (schematic->size.Y - 1) / 2;
+	else
+		p.Y += place_offset_y;
+	// Check shifted schematic base is in voxelmanip
+	if (p.Y < vm->m_area.MinEdge.Y)
+		return 0;
 
 	Rotation rot = (rotation == ROTATE_RAND) ?
 		(Rotation)pr->range(ROTATE_0, ROTATE_270) : rotation;
@@ -355,8 +301,8 @@ size_t DecoSchematic::generate(MMVManip *vm, PcgRandom *pr, v3s16 p)
 int DecoSchematic::getHeight()
 {
 	// Account for a schematic being sunk into the ground by flag.
-	// When placed normally account for how a schematic is placed
-	// sunk 1 node into the ground.
+	// When placed normally account for how a schematic is by default placed
+	// sunk 1 node into the ground or is vertically shifted by 'y_offset'.
 	return (flags & DECO_PLACE_CENTER_Y) ?
-		(schematic->size.Y - 1) / 2 : schematic->size.Y - 1;
+		(schematic->size.Y - 1) / 2 : schematic->size.Y - 1 + place_offset_y;
 }

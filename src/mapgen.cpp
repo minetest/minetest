@@ -613,7 +613,7 @@ MapgenBasic::~MapgenBasic()
 
 
 void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
-	content_t *biome_stone, s16 biome_zero_level)
+	content_t *biome_stone)
 {
 	// can't generate biomes without a biome generator!
 	assert(biomegen);
@@ -633,6 +633,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 		u16 base_filler = 0;
 		u16 depth_water_top = 0;
 		u16 depth_riverbed = 0;
+		s16 biome_y_min = -MAX_MAP_GENERATION_LIMIT;
 		u32 vi = vm->m_area.index(x, node_max.Y, z);
 
 		// Check node at base of mapchunk above, either a node of a previously
@@ -650,26 +651,21 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 
 		for (s16 y = node_max.Y; y >= node_min.Y; y--) {
 			content_t c = vm->m_data[vi].getContent();
-
-			// Biome is recalculated each time an upper surface is detected while
-			// working down a column. The selected biome then remains in effect for
-			// all nodes below until the next surface and biome recalculation.
-			// Biome is recalculated:
+			// Biome is (re)calculated:
 			// 1. At the surface of stone below air or water.
 			// 2. At the surface of water below air.
 			// 3. When stone or water is detected but biome has not yet been calculated.
+			// 4. When stone or water is detected just below a biome's lower limit.
 			bool is_stone_surface = (c == c_stone) &&
-				(air_above || water_above || !biome);
+				(air_above || water_above || !biome || y < biome_y_min); // 1, 3, 4
 
 			bool is_water_surface =
 				(c == c_water_source || c == c_river_water_source) &&
-				(air_above || !biome);
+				(air_above || !biome || y < biome_y_min); // 2, 3, 4
 
 			if (is_stone_surface || is_water_surface) {
-				// Limit to +-MAX MAP GENERATION LIMIT to work with biome y_min / y_max.
-				s32 relative_y = rangelim(y - biome_zero_level,
-					-MAX_MAP_GENERATION_LIMIT, MAX_MAP_GENERATION_LIMIT);
-				biome = biomegen->getBiomeAtIndex(index, relative_y);
+				// (Re)calculate biome
+				biome = biomegen->getBiomeAtIndex(index, y);
 
 				if (biomemap[index] == BIOME_NONE && is_stone_surface)
 					biomemap[index] = biome->index;
@@ -677,9 +673,10 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 				depth_top = biome->depth_top;
 				base_filler = MYMAX(depth_top +
 					biome->depth_filler +
-					noise_filler_depth->result[index], 0.f);
+					noise_filler_depth->result[index], 0.0f);
 				depth_water_top = biome->depth_water_top;
 				depth_riverbed = biome->depth_riverbed;
+				biome_y_min = biome->y_min;
 
 				// Detect stone type for dungeons during every biome calculation.
 				// If none detected the last selected biome stone is chosen.
@@ -721,6 +718,7 @@ void MapgenBasic::generateBiomes(MgStoneType *mgstone_type,
 					nplaced++;
 				} else {
 					vm->m_data[vi] = MapNode(biome->c_stone);
+					nplaced = U16_MAX;  // Disable top/filler placement
 				}
 
 				air_above = false;

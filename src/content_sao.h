@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #pragma once
 
-#include <util/numeric.h>
+#include "network/networkprotocol.h"
+#include "util/numeric.h"
 #include "serverobject.h"
 #include "itemgroup.h"
 #include "object_properties.h"
@@ -46,6 +47,7 @@ public:
 	const ItemGroupList &getArmorGroups();
 	void setAnimation(v2f frame_range, float frame_speed, float frame_blend, bool frame_loop);
 	void getAnimation(v2f *frame_range, float *frame_speed, float *frame_blend, bool *frame_loop);
+	void setAnimationSpeed(float frame_speed);
 	void setBonePosition(const std::string &bone, v3f position, v3f rotation);
 	void getBonePosition(const std::string &bone, v3f *position, v3f *rotation);
 	void setAttachment(int parent_id, const std::string &bone, v3f position, v3f rotation);
@@ -70,6 +72,7 @@ protected:
 	float m_animation_blend = 0.0f;
 	bool m_animation_loop = true;
 	bool m_animation_sent = false;
+        bool m_animation_speed_sent = false;
 
 	// Stores position and rotation for each bone name
 	std::unordered_map<std::string, core::vector2d<v3f>> m_bone_position;
@@ -102,6 +105,8 @@ public:
 			const std::string &data);
 	void step(float dtime, bool send_recommended);
 	std::string getClientInitializationData(u16 protocol_version);
+	bool isStaticAllowed() const
+	{ return m_prop.static_save; }
 	void getStaticData(std::string *result) const;
 	int punch(v3f dir,
 			const ToolCapabilities *toolcap=NULL,
@@ -194,7 +199,8 @@ class RemotePlayer;
 class PlayerSAO : public UnitSAO
 {
 public:
-	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_, bool is_singleplayer);
+	PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
+			bool is_singleplayer);
 	~PlayerSAO();
 	ActiveObjectType getType() const
 	{ return ACTIVEOBJECT_TYPE_PLAYER; }
@@ -309,7 +315,7 @@ public:
 	void disconnected();
 
 	RemotePlayer *getPlayer() { return m_player; }
-	u16 getPeerID() const { return m_peer_id; }
+	session_t getPeerID() const { return m_peer_id; }
 
 	// Cheat prevention
 
@@ -370,7 +376,7 @@ private:
 	void unlinkPlayerSessionAndSave();
 
 	RemotePlayer *m_player = nullptr;
-	u16 m_peer_id = 0;
+	session_t m_peer_id = 0;
 	Inventory *m_inventory = nullptr;
 	s16 m_damage = 0;
 
@@ -395,7 +401,7 @@ private:
 	std::set<std::string> m_privs;
 	bool m_is_singleplayer;
 
-	u16 m_breath = PLAYER_MAX_BREATH;
+	u16 m_breath = PLAYER_MAX_BREATH_DEFAULT;
 	f32 m_pitch = 0.0f;
 	f32 m_fov = 0.0f;
 	s16 m_wanted_range = 0.0f;

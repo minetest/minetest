@@ -57,6 +57,7 @@ xgettext --package-name=minetest \
 	--keyword=fgettext_ne \
 	--keyword=strgettext \
 	--keyword=wstrgettext \
+	--keyword=showStatusTextSimple \
 	--output $potfile \
 	--from-code=utf-8 \
 	`find src/ -name '*.cpp' -o -name '*.h'` \

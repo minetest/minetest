@@ -102,8 +102,8 @@ enum Rotation {
 
 #define LIQUID_INFINITY_MASK 0x80 //0b10000000
 
-// mask for param2, now as for liquid
-#define LEVELED_MASK 0x3F
+// mask for leveled nodebox param2
+#define LEVELED_MASK 0x7F
 #define LEVELED_MAX LEVELED_MASK
 
 
@@ -240,7 +240,7 @@ struct MapNode
 		return blend_light(daylight_factor, lightday, lightnight);
 	}
 
-	u8 getFaceDir(INodeDefManager *nodemgr) const;
+	u8 getFaceDir(INodeDefManager *nodemgr, bool allow_wallmounted = false) const;
 	u8 getWallMounted(INodeDefManager *nodemgr) const;
 	v3s16 getWallMountedDir(INodeDefManager *nodemgr) const;
 

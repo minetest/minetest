@@ -1391,6 +1391,7 @@ protected:
 
 	void showOverlayMessage(const char *msg, float dtime, int percent,
 			bool draw_clouds = true);
+	void showStatusTextSimple(const char *msg);
 
 	static void settingChangedCallback(const std::string &setting_name, void *data);
 	void readSettings();
@@ -1957,10 +1958,8 @@ bool Game::createSingleplayerServer(const std::string &map_dir,
 		return false;
 	}
 
-	server = new Server(map_dir, gamespec, simple_singleplayer_mode,
-			    bind_addr.isIPv6(), false);
-
-	server->start(bind_addr);
+	server = new Server(map_dir, gamespec, simple_singleplayer_mode, bind_addr, false);
+	server->start();
 
 	return true;
 }
@@ -2126,6 +2125,9 @@ bool Game::initGui()
 	// Remove stale "recent" chat messages from previous connections
 	chat_backend->clearRecentChat();
 
+	// Make sure the size of the recent messages buffer is right
+	chat_backend->applySettings();
+    
 	// Chat backend and console
 	gui_chat_console = new GUIChatConsole(guienv, guienv->getRootGUIElement(),
 			-1, chat_backend, client, &g_menumgr);
@@ -2258,27 +2260,8 @@ bool Game::connectToServer(const std::string &playername,
 
 			wait_time += dtime;
 			// Only time out if we aren't waiting for the server we started
-			if ((!address->empty()) && (wait_time > 10)) {
-				bool sent_old_init = g_settings->getFlag("send_pre_v25_init");
-				// If no pre v25 init was sent, and no answer was received,
-				// but the low level connection could be established
-				// (meaning that we have a peer id), then we probably wanted
-				// to connect to a legacy server. In this case, tell the user
-				// to enable the option to be able to connect.
-				if (!sent_old_init &&
-						(client->getProtoVersion() == 0) &&
-						client->connectedToServer()) {
-					*error_message = "Connection failure: init packet not "
-					"recognized by server.\n"
-					"Most likely the server uses an old protocol version (<v25).\n"
-					"Please ask the server owner to update to 0.4.13 or later.\n"
-					"To still connect to the server in the meantime,\n"
-					"you can enable the 'send_pre_v25_init' setting by editing minetest.conf,\n"
-					"or by enabling the 'Client -> Network -> Support older Servers'\n"
-					"entry in the advanced settings menu.";
-				} else {
-					*error_message = "Connection timed out.";
-				}
+			if (!address->empty() && wait_time > 10) {
+				*error_message = "Connection timed out.";
 				errorstream << *error_message << std::endl;
 				break;
 			}
@@ -2626,28 +2609,30 @@ void Game::processKeyInput()
 	} else if (wasKeyDown(KeyType::NOCLIP)) {
 		toggleNoClip();
 	} else if (wasKeyDown(KeyType::MUTE)) {
-		float volume = g_settings->getFloat("sound_volume");
-		if (volume < 0.001f) {
-			g_settings->setFloat("sound_volume", 1.0f);
-			m_statustext = narrow_to_wide(gettext("Volume changed to 100%"));
-		} else {
-			g_settings->setFloat("sound_volume", 0.0f);
-			m_statustext = narrow_to_wide(gettext("Volume changed to 0%"));
-		}
+		bool new_mute_sound = !g_settings->getBool("mute_sound");
+		g_settings->setBool("mute_sound", new_mute_sound);
+		if (new_mute_sound)
+			showStatusTextSimple("Sound muted");
+		else
+			showStatusTextSimple("Sound unmuted");
 		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::INC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") + 0.1f, 0.0f, 1.0f);
-		char buf[100];
+		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
-		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
-		m_statustext = narrow_to_wide(buf);
+		const wchar_t *str = wgettext("Volume changed to %d%%");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+		delete[] str;
+		m_statustext = buf;
 		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::DEC_VOLUME)) {
 		float new_volume = rangelim(g_settings->getFloat("sound_volume") - 0.1f, 0.0f, 1.0f);
-		char buf[100];
+		wchar_t buf[100];
 		g_settings->setFloat("sound_volume", new_volume);
-		snprintf(buf, sizeof(buf), gettext("Volume changed to %d%%"), myround(new_volume * 100));
-		m_statustext = narrow_to_wide(buf);
+		const wchar_t *str = wgettext("Volume changed to %d%%");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, myround(new_volume * 100));
+		delete[] str;
+		m_statustext = buf;
 		runData.statustext_time = 0;
 	} else if (wasKeyDown(KeyType::CINEMATIC)) {
 		toggleCinematic();
@@ -2763,14 +2748,17 @@ void Game::openInventory()
 	infostream << "the_game: " << "Launching inventory" << std::endl;
 
 	PlayerInventoryFormSource *fs_src = new PlayerInventoryFormSource(client);
-	TextDest *txt_dst = new TextDestPlayerInventory(client);
-
-	create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
-	cur_formname = "";
 
 	InventoryLocation inventoryloc;
 	inventoryloc.setCurrentPlayer();
-	current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+
+	if (!client->moddingEnabled()
+			|| !client->getScript()->on_inventory_open(fs_src->m_client->getInventory(inventoryloc))) {
+		TextDest *txt_dst = new TextDestPlayerInventory(client);
+		create_formspec_menu(&current_formspec, client, &input->joystick, fs_src, txt_dst);
+		cur_formname = "";
+		current_formspec->setFormSpec(fs_src->getForm(), inventoryloc);
+	}
 }
 
 
@@ -2805,15 +2793,20 @@ void Game::handleAndroidChatInput()
 
 void Game::toggleFreeMove()
 {
-	static const wchar_t *msg[] = { L"free_move disabled", L"free_move enabled" };
-
 	bool free_move = !g_settings->getBool("free_move");
 	g_settings->set("free_move", bool_to_cstr(free_move));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[free_move];
-	if (free_move && !client->checkPrivilege("fly"))
-		m_statustext += L" (note: no 'fly' privilege)";
+
+	if (free_move) {
+		if (client->checkPrivilege("fly")) {
+			showStatusTextSimple("Fly mode enabled");
+		} else {
+			showStatusTextSimple("Fly mode enabled (note: no 'fly' privilege)");
+		}
+	} else {
+		showStatusTextSimple("Fly mode disabled");
+	}
 }
 
 
@@ -2828,17 +2821,20 @@ void Game::toggleFreeMoveAlt()
 
 void Game::toggleFast()
 {
-	static const wchar_t *msg[] = { L"fast_move disabled", L"fast_move enabled" };
 	bool fast_move = !g_settings->getBool("fast_move");
 	g_settings->set("fast_move", bool_to_cstr(fast_move));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[fast_move];
 
-	bool has_fast_privs = client->checkPrivilege("fast");
-
-	if (fast_move && !has_fast_privs)
-		m_statustext += L" (note: no 'fast' privilege)";
+	if (fast_move) {
+		if (client->checkPrivilege("fast")) {
+			showStatusTextSimple("Fast mode enabled");
+		} else {
+			showStatusTextSimple("Fast mode enabled (note: no 'fast' privilege)");
+		}
+	} else {
+		showStatusTextSimple("Fast mode disabled");
+	}
 
 #ifdef __ANDROID__
 	m_cache_hold_aux1 = fast_move && has_fast_privs;
@@ -2848,55 +2844,65 @@ void Game::toggleFast()
 
 void Game::toggleNoClip()
 {
-	static const wchar_t *msg[] = { L"noclip disabled", L"noclip enabled" };
 	bool noclip = !g_settings->getBool("noclip");
 	g_settings->set("noclip", bool_to_cstr(noclip));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[noclip];
-
-	if (noclip && !client->checkPrivilege("noclip"))
-		m_statustext += L" (note: no 'noclip' privilege)";
+	if (noclip) {
+		if (client->checkPrivilege("noclip")) {
+			showStatusTextSimple("Noclip mode enabled");
+		} else {
+			showStatusTextSimple("Noclip mode enabled (note: no 'noclip' privilege)");
+		}
+	} else {
+		showStatusTextSimple("Noclip mode disabled");
+	}
 }
 
 void Game::toggleCinematic()
 {
-	static const wchar_t *msg[] = { L"cinematic disabled", L"cinematic enabled" };
 	bool cinematic = !g_settings->getBool("cinematic");
 	g_settings->set("cinematic", bool_to_cstr(cinematic));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[cinematic];
+	if (cinematic)
+		showStatusTextSimple("Cinematic mode enabled");
+	else
+		showStatusTextSimple("Cinematic mode disabled");
 }
 
 // Autoforward by toggling continuous forward.
 void Game::toggleAutoforward()
 {
-	static const wchar_t *msg[] = { L"autoforward disabled", L"autoforward enabled" };
-	bool autoforward_enabled = !g_settings->getBool("continuous_forward");
-	g_settings->set("continuous_forward", bool_to_cstr(autoforward_enabled));
+	bool autorun_enabled = !g_settings->getBool("continuous_forward");
+	g_settings->set("continuous_forward", bool_to_cstr(autorun_enabled));
 
 	runData.statustext_time = 0;
-	m_statustext = msg[autoforward_enabled ? 1 : 0];
+	if (autorun_enabled)
+		showStatusTextSimple("Automatic forwards enabled");
+	else
+		showStatusTextSimple("Automatic forwards disabled");
 }
 
 void Game::toggleChat()
 {
-	static const wchar_t *msg[] = { L"Chat hidden", L"Chat shown" };
-
 	flags.show_chat = !flags.show_chat;
 	runData.statustext_time = 0;
-	m_statustext = msg[flags.show_chat];
+	if (flags.show_chat)
+		showStatusTextSimple("Chat shown");
+	else
+		showStatusTextSimple("Chat hidden");
 }
 
 
 void Game::toggleHud()
 {
-	static const wchar_t *msg[] = { L"HUD hidden", L"HUD shown" };
-
 	flags.show_hud = !flags.show_hud;
 	runData.statustext_time = 0;
-	m_statustext = msg[flags.show_hud];
+	if (flags.show_hud)
+		showStatusTextSimple("HUD shown");
+	else
+		showStatusTextSimple("HUD hidden");
 }
 
 void Game::toggleMinimap(bool shift_pressed)
@@ -2923,28 +2929,30 @@ void Game::toggleMinimap(bool shift_pressed)
 	flags.show_minimap = true;
 	switch (mode) {
 		case MINIMAP_MODE_SURFACEx1:
-			m_statustext = L"Minimap in surface mode, Zoom x1";
+			showStatusTextSimple("Minimap in surface mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_SURFACEx2:
-			m_statustext = L"Minimap in surface mode, Zoom x2";
+			showStatusTextSimple("Minimap in surface mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_SURFACEx4:
-			m_statustext = L"Minimap in surface mode, Zoom x4";
+			showStatusTextSimple("Minimap in surface mode, Zoom x4");
 			break;
 		case MINIMAP_MODE_RADARx1:
-			m_statustext = L"Minimap in radar mode, Zoom x1";
+			showStatusTextSimple("Minimap in radar mode, Zoom x1");
 			break;
 		case MINIMAP_MODE_RADARx2:
-			m_statustext = L"Minimap in radar mode, Zoom x2";
+			showStatusTextSimple("Minimap in radar mode, Zoom x2");
 			break;
 		case MINIMAP_MODE_RADARx4:
-			m_statustext = L"Minimap in radar mode, Zoom x4";
+			showStatusTextSimple("Minimap in radar mode, Zoom x4");
 			break;
 		default:
 			mode = MINIMAP_MODE_OFF;
 			flags.show_minimap = false;
-			m_statustext = (hud_flags & HUD_FLAG_MINIMAP_VISIBLE) ?
-				L"Minimap hidden" : L"Minimap disabled by server";
+			if (hud_flags & HUD_FLAG_MINIMAP_VISIBLE)
+				showStatusTextSimple("Minimap hidden");
+			else
+				showStatusTextSimple("Minimap disabled by server");
 	}
 
 	runData.statustext_time = 0;
@@ -2953,11 +2961,12 @@ void Game::toggleMinimap(bool shift_pressed)
 
 void Game::toggleFog()
 {
-	static const wchar_t *msg[] = { L"Fog enabled", L"Fog disabled" };
-
 	flags.force_fog_off = !flags.force_fog_off;
 	runData.statustext_time = 0;
-	m_statustext = msg[flags.force_fog_off];
+        if (flags.force_fog_off)
+                showStatusTextSimple("Fog disabled");
+        else
+                showStatusTextSimple("Fog enabled");
 }
 
 
@@ -2971,22 +2980,22 @@ void Game::toggleDebug()
 		flags.show_debug = true;
 		flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
-		m_statustext = L"Debug info shown";
+		showStatusTextSimple("Debug info shown");
 	} else if (!flags.show_profiler_graph && !draw_control->show_wireframe) {
 		flags.show_profiler_graph = true;
-		m_statustext = L"Profiler graph shown";
+		showStatusTextSimple("Profiler graph shown");
 	} else if (!draw_control->show_wireframe && client->checkPrivilege("debug")) {
 		flags.show_profiler_graph = false;
 		draw_control->show_wireframe = true;
-		m_statustext = L"Wireframe shown";
+		showStatusTextSimple("Wireframe shown");
 	} else {
 		flags.show_debug = false;
 		flags.show_profiler_graph = false;
 		draw_control->show_wireframe = false;
 		if (client->checkPrivilege("debug")) {
-			m_statustext = L"Debug info, profiler graph, and wireframe hidden";
+			showStatusTextSimple("Debug info, profiler graph, and wireframe hidden");
 		} else {
-			m_statustext = L"Debug info and profiler graph hidden";
+			showStatusTextSimple("Debug info and profiler graph hidden");
 		}
 	}
 	runData.statustext_time = 0;
@@ -2995,14 +3004,12 @@ void Game::toggleDebug()
 
 void Game::toggleUpdateCamera()
 {
-	static const wchar_t *msg[] = {
-		L"Camera update enabled",
-		L"Camera update disabled"
-	};
-
 	flags.disable_camera_update = !flags.disable_camera_update;
 	runData.statustext_time = 0;
-	m_statustext = msg[flags.disable_camera_update];
+	if (flags.disable_camera_update)
+		showStatusTextSimple("Camera update disabled");
+	else
+		showStatusTextSimple("Camera update enabled");
 }
 
 
@@ -3016,12 +3023,15 @@ void Game::toggleProfiler()
 		runData.profiler_max_page, driver->getScreenSize().Height);
 
 	if (runData.profiler_current_page != 0) {
-		std::wstringstream sstr;
-		sstr << "Profiler shown (page " << runData.profiler_current_page
-		     << " of " << runData.profiler_max_page << ")";
-		m_statustext = sstr.str();
+		wchar_t buf[255];
+		const wchar_t* str = wgettext("Profiler shown (page %d of %d)");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str,
+				runData.profiler_current_page,
+				runData.profiler_max_page);
+		delete[] str;
+		m_statustext = buf;
 	} else {
-		m_statustext = L"Profiler hidden";
+		showStatusTextSimple("Profiler hidden");
 	}
 	runData.statustext_time = 0;
 }
@@ -3032,13 +3042,20 @@ void Game::increaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range + 10;
 
+	wchar_t buf[255];
+	const wchar_t *str;
 	if (range_new > 4000) {
 		range_new = 4000;
-		m_statustext = utf8_to_wide("Viewing range is at maximum: "
-				+ itos(range_new));
+		str = wgettext("Viewing range is at maximum: %d");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
+		delete[] str;
+		m_statustext = buf;
+
 	} else {
-		m_statustext = utf8_to_wide("Viewing range changed to "
-				+ itos(range_new));
+		str = wgettext("Viewing range changed to %d");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
+		delete[] str;
+		m_statustext = buf;
 	}
 	g_settings->set("viewing_range", itos(range_new));
 	runData.statustext_time = 0;
@@ -3050,13 +3067,19 @@ void Game::decreaseViewRange()
 	s16 range = g_settings->getS16("viewing_range");
 	s16 range_new = range - 10;
 
+	wchar_t buf[255];
+	const wchar_t *str;
 	if (range_new < 20) {
 		range_new = 20;
-		m_statustext = utf8_to_wide("Viewing range is at minimum: "
-				+ itos(range_new));
+		str = wgettext("Viewing range is at minimum: %d");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
+		delete[] str;
+		m_statustext = buf;
 	} else {
-		m_statustext = utf8_to_wide("Viewing range changed to "
-				+ itos(range_new));
+		str = wgettext("Viewing range changed to %d");
+		swprintf(buf, sizeof(buf) / sizeof(wchar_t), str, range_new);
+		delete[] str;
+		m_statustext = buf;
 	}
 	g_settings->set("viewing_range", itos(range_new));
 	runData.statustext_time = 0;
@@ -3065,15 +3088,12 @@ void Game::decreaseViewRange()
 
 void Game::toggleFullViewRange()
 {
-	static const wchar_t *msg[] = {
-		L"Normal view range",
-		L"Infinite view range"
-	};
-
 	draw_control->range_all = !draw_control->range_all;
-	infostream << msg[draw_control->range_all] << std::endl;
-	m_statustext = msg[draw_control->range_all];
 	runData.statustext_time = 0;
+	if (draw_control->range_all)
+		showStatusTextSimple("Enabled unlimited viewing range");
+	else
+		showStatusTextSimple("Disabled unlimited viewing range");
 }
 
 
@@ -3595,13 +3615,18 @@ void Game::updateSound(f32 dtime)
 			      camera->getDirection(),
 			      camera->getCameraNode()->getUpVector());
 
-	// Check if volume is in the proper range, else fix it.
-	float old_volume = g_settings->getFloat("sound_volume");
-	float new_volume = rangelim(old_volume, 0.0f, 1.0f);
-	sound->setListenerGain(new_volume);
+	bool mute_sound = g_settings->getBool("mute_sound");
+	if (mute_sound) {
+		sound->setListenerGain(0.0f);
+	} else {
+		// Check if volume is in the proper range, else fix it.
+		float old_volume = g_settings->getFloat("sound_volume");
+		float new_volume = rangelim(old_volume, 0.0f, 1.0f);
+		sound->setListenerGain(new_volume);
 
-	if (old_volume != new_volume) {
-		g_settings->setFloat("sound_volume", new_volume);
+		if (old_volume != new_volume) {
+			g_settings->setFloat("sound_volume", new_volume);
+		}
 	}
 
 	LocalPlayer *player = client->getEnv().getLocalPlayer();
@@ -4069,7 +4094,7 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 
 		if (m_cache_enable_particles) {
 			const ContentFeatures &features = client->getNodeDefManager()->get(n);
-			client->getParticleManager()->addPunchingParticles(client,
+			client->getParticleManager()->addNodeParticle(client,
 					player, nodepos, n, features);
 		}
 	}
@@ -4141,7 +4166,17 @@ void Game::handleDigging(const PointedThing &pointed, const v3s16 &nodepos,
 			    		client->getScript()->on_dignode(nodepos, wasnode)) {
 				return;
 			}
-			client->removeNode(nodepos);
+
+			const ContentFeatures &f = client->ndef()->get(wasnode);
+			if (f.node_dig_prediction == "air") {
+				client->removeNode(nodepos);
+			} else if (!f.node_dig_prediction.empty()) {
+				content_t id;
+				bool found = client->ndef()->getId(f.node_dig_prediction, id);
+				if (found)
+					client->addNode(nodepos, id, true);
+			}
+			// implicit else: no prediction
 		}
 
 		client->interact(2, pointed);
@@ -4629,6 +4664,13 @@ void Game::showOverlayMessage(const char *msg, float dtime, int percent, bool dr
 	const wchar_t *wmsg = wgettext(msg);
 	RenderingEngine::draw_load_screen(wmsg, guienv, texture_src, dtime, percent,
 		draw_clouds);
+	delete[] wmsg;
+}
+
+void Game::showStatusTextSimple(const char *msg)
+{
+	const wchar_t *wmsg = wgettext(msg);
+	m_statustext = wmsg;
 	delete[] wmsg;
 }
 

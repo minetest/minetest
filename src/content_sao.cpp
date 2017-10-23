@@ -59,7 +59,7 @@ public:
 		m_age += dtime;
 		if(m_age > 10)
 		{
-			m_removed = true;
+			m_pending_removal = true;
 			return;
 		}
 
@@ -153,6 +153,12 @@ void UnitSAO::getAnimation(v2f *frame_range, float *frame_speed, float *frame_bl
 	*frame_speed = m_animation_speed;
 	*frame_blend = m_animation_blend;
 	*frame_loop = m_animation_loop;
+}
+
+void UnitSAO::setAnimationSpeed(float frame_speed)
+{
+	m_animation_speed = frame_speed;
+	m_animation_speed_sent = false;
 }
 
 void UnitSAO::setBonePosition(const std::string &bone, v3f position, v3f rotation)
@@ -391,12 +397,11 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 	{
 		ServerMap *map = dynamic_cast<ServerMap *>(&m_env->getMap());
 		assert(map);
-		if (!m_pending_deactivation &&
+		if (!m_pending_removal &&
 				map->saoPositionOverLimit(m_base_position)) {
-			infostream << "Remove SAO " << m_id << "(" << m_init_name
+			infostream << "Removing SAO " << m_id << "(" << m_init_name
 				<< "), outside of limits" << std::endl;
-			m_pending_deactivation = true;
-			m_removed = true;
+			m_pending_removal = true;
 			return;
 		}
 	}
@@ -435,6 +440,14 @@ void LuaEntitySAO::step(float dtime, bool send_recommended)
 		m_animation_sent = true;
 		std::string str = gob_cmd_update_animation(
 			m_animation_range, m_animation_speed, m_animation_blend, m_animation_loop);
+		// create message and add to list
+		ActiveObjectMessage aom(getId(), true, str);
+		m_messages_out.push(aom);
+	}
+
+	if (!m_animation_speed_sent) {
+		m_animation_speed_sent = true;
+		std::string str = gob_cmd_update_animation_speed(m_animation_speed);
 		// create message and add to list
 		ActiveObjectMessage aom(getId(), true, str);
 		m_messages_out.push(aom);
@@ -536,9 +549,9 @@ int LuaEntitySAO::punch(v3f dir,
 		ServerActiveObject *puncher,
 		float time_from_last_punch)
 {
-	if (!m_registered){
+	if (!m_registered) {
 		// Delete unknown LuaEntities when punched
-		m_removed = true;
+		m_pending_removal = true;
 		return 0;
 	}
 
@@ -582,11 +595,9 @@ int LuaEntitySAO::punch(v3f dir,
 	}
 
 	if (getHP() == 0) {
-		m_removed = true;
+		m_pending_removal = true;
 		m_env->getScriptIface()->luaentity_on_death(m_id, puncher);
 	}
-
-
 
 	return result.wear;
 }
@@ -773,7 +784,7 @@ bool LuaEntitySAO::collideWithObjects() const
 
 // No prototype, PlayerSAO does not need to be deserialized
 
-PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id_,
+PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, session_t peer_id_,
 		bool is_singleplayer):
 	UnitSAO(env_, v3f(0,0,0)),
 	m_player(player_),
@@ -783,6 +794,7 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	assert(m_peer_id != 0);	// pre-condition
 
 	m_prop.hp_max = PLAYER_MAX_HP_DEFAULT;
+	m_prop.breath_max = PLAYER_MAX_BREATH_DEFAULT;
 	m_prop.physical = false;
 	m_prop.weight = 75;
 	m_prop.collisionbox = aabb3f(-0.3f, 0.0f, -0.3f, 0.3f, 1.77f, 0.3f);
@@ -801,7 +813,9 @@ PlayerSAO::PlayerSAO(ServerEnvironment *env_, RemotePlayer *player_, u16 peer_id
 	m_prop.is_visible = true;
 	m_prop.makes_footstep_sound = true;
 	m_prop.stepheight = PLAYER_DEFAULT_STEPHEIGHT * BS;
+	m_prop.can_zoom = true;
 	m_hp = m_prop.hp_max;
+	m_breath = m_prop.breath_max;
 }
 
 PlayerSAO::~PlayerSAO()
@@ -834,7 +848,7 @@ void PlayerSAO::addedToEnvironment(u32 dtime_s)
 	ServerActiveObject::addedToEnvironment(dtime_s);
 	ServerActiveObject::setBasePosition(m_base_position);
 	m_player->setPlayerSAO(this);
-	m_player->peer_id = m_peer_id;
+	m_player->setPeerId(m_peer_id);
 	m_last_good_position = m_base_position;
 }
 
@@ -928,7 +942,7 @@ void PlayerSAO::step(float dtime, bool send_recommended)
 		MapNode n = m_env->getMap().getNodeNoEx(p);
 		const ContentFeatures &c = m_env->getGameDef()->ndef()->get(n);
 		// If player is alive & no drowning, breath
-		if (m_hp > 0 && m_breath < PLAYER_MAX_BREATH && c.drowning == 0)
+		if (m_hp > 0 && m_breath < m_prop.breath_max && c.drowning == 0)
 			setBreath(m_breath + 1);
 	}
 
@@ -1259,7 +1273,7 @@ void PlayerSAO::setBreath(const u16 breath, bool send)
 	if (m_player && breath != m_breath)
 		m_player->setDirty(true);
 
-	m_breath = MYMIN(breath, PLAYER_MAX_BREATH);
+	m_breath = MYMIN(breath, m_prop.breath_max);
 
 	if (send)
 		m_env->getGameDef()->SendPlayerBreath(this);
@@ -1336,17 +1350,16 @@ void PlayerSAO::setWieldIndex(int i)
 	}
 }
 
-// Erase the peer id and make the object for removal
 void PlayerSAO::disconnected()
 {
 	m_peer_id = 0;
-	m_removed = true;
+	m_pending_removal = true;
 }
 
 void PlayerSAO::unlinkPlayerSessionAndSave()
 {
 	assert(m_player->getPlayerSAO() == this);
-	m_player->peer_id = 0;
+	m_player->setPeerId(PEER_ID_INEXISTENT);
 	m_env->savePlayer(m_player);
 	m_player->setPlayerSAO(NULL);
 	m_env->removePlayer(m_player);

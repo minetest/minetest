@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "map.h"
 #include "mapsector.h"
 #include "minimap.h"
+#include "modchannels.h"
 #include "nodedef.h"
 #include "serialization.h"
 #include "server.h"
@@ -86,8 +87,8 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 		// we recieved a TOCLIENT_HELLO while auth was already going on
 		errorstream << "Client: TOCLIENT_HELLO while auth was already going on"
 			<< "(chosen_mech=" << m_chosen_auth_mech << ")." << std::endl;
-		if ((m_chosen_auth_mech == AUTH_MECHANISM_SRP)
-				|| (m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD)) {
+		if (m_chosen_auth_mech == AUTH_MECHANISM_SRP ||
+				m_chosen_auth_mech == AUTH_MECHANISM_LEGACY_PASSWORD) {
 			srp_user_delete((SRPUser *) m_auth_data);
 			m_auth_data = 0;
 		}
@@ -157,60 +158,6 @@ void Client::handleCommand_DenySudoMode(NetworkPacket* pkt)
 	// reset everything and be sad
 	deleteAuthData();
 }
-void Client::handleCommand_InitLegacy(NetworkPacket* pkt)
-{
-	if (pkt->getSize() < 1)
-		return;
-
-	u8 server_ser_ver;
-	*pkt >> server_ser_ver;
-
-	infostream << "Client: TOCLIENT_INIT_LEGACY received with "
-		"server_ser_ver=" << ((int)server_ser_ver & 0xff) << std::endl;
-
-	if (!ser_ver_supported(server_ser_ver)) {
-		infostream << "Client: TOCLIENT_INIT_LEGACY: Server sent "
-				<< "unsupported ser_fmt_ver"<< std::endl;
-		return;
-	}
-
-	m_server_ser_ver = server_ser_ver;
-
-	// We can be totally wrong with this guess
-	// but we only need some value < 25.
-	m_proto_ver = 24;
-
-	// Get player position
-	v3s16 playerpos_s16(0, BS * 2 + BS * 20, 0);
-	if (pkt->getSize() >= 1 + 6) {
-		*pkt >> playerpos_s16;
-	}
-	v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS / 2, 0);
-
-
-	// Set player position
-	LocalPlayer *player = m_env.getLocalPlayer();
-	assert(player != NULL);
-	player->setPosition(playerpos_f);
-
-	if (pkt->getSize() >= 1 + 6 + 8) {
-		// Get map seed
-		*pkt >> m_map_seed;
-		infostream << "Client: received map seed: " << m_map_seed << std::endl;
-	}
-
-	if (pkt->getSize() >= 1 + 6 + 8 + 4) {
-		*pkt >> m_recommended_send_interval;
-		infostream << "Client: received recommended send interval "
-				<< m_recommended_send_interval<<std::endl;
-	}
-
-	// Reply to server
-	NetworkPacket resp_pkt(TOSERVER_INIT2, 0);
-	Send(&resp_pkt);
-
-	m_state = LC_Init;
-}
 
 void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 {
@@ -220,43 +167,43 @@ void Client::handleCommand_AccessDenied(NetworkPacket* pkt)
 	m_access_denied = true;
 	m_access_denied_reason = "Unknown";
 
-	if (pkt->getCommand() == TOCLIENT_ACCESS_DENIED) {
-		if (pkt->getSize() < 1)
-			return;
-
-		u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
-		*pkt >> denyCode;
-		if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
-				denyCode == SERVER_ACCESSDENIED_CRASH) {
-			*pkt >> m_access_denied_reason;
-			if (m_access_denied_reason.empty()) {
-				m_access_denied_reason = accessDeniedStrings[denyCode];
-			}
-			u8 reconnect;
-			*pkt >> reconnect;
-			m_access_denied_reconnect = reconnect & 1;
-		} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
-			*pkt >> m_access_denied_reason;
-		} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
-			m_access_denied_reason = accessDeniedStrings[denyCode];
-		} else {
-			// Allow us to add new error messages to the
-			// protocol without raising the protocol version, if we want to.
-			// Until then (which may be never), this is outside
-			// of the defined protocol.
-			*pkt >> m_access_denied_reason;
-			if (m_access_denied_reason.empty()) {
-				m_access_denied_reason = "Unknown";
-			}
-		}
-	}
-	// 13/03/15 Legacy code from 0.4.12 and lesser. must stay 1 year
-	// for compat with old clients
-	else {
+	if (pkt->getCommand() != TOCLIENT_ACCESS_DENIED) {
+		// 13/03/15 Legacy code from 0.4.12 and lesser but is still used
+		// in some places of the server code
 		if (pkt->getSize() >= 2) {
 			std::wstring wide_reason;
 			*pkt >> wide_reason;
 			m_access_denied_reason = wide_to_utf8(wide_reason);
+		}
+		return;
+	}
+
+	if (pkt->getSize() < 1)
+		return;
+
+	u8 denyCode = SERVER_ACCESSDENIED_UNEXPECTED_DATA;
+	*pkt >> denyCode;
+	if (denyCode == SERVER_ACCESSDENIED_SHUTDOWN ||
+			denyCode == SERVER_ACCESSDENIED_CRASH) {
+		*pkt >> m_access_denied_reason;
+		if (m_access_denied_reason.empty()) {
+			m_access_denied_reason = accessDeniedStrings[denyCode];
+		}
+		u8 reconnect;
+		*pkt >> reconnect;
+		m_access_denied_reconnect = reconnect & 1;
+	} else if (denyCode == SERVER_ACCESSDENIED_CUSTOM_STRING) {
+		*pkt >> m_access_denied_reason;
+	} else if (denyCode < SERVER_ACCESSDENIED_MAX) {
+		m_access_denied_reason = accessDeniedStrings[denyCode];
+	} else {
+		// Allow us to add new error messages to the
+		// protocol without raising the protocol version, if we want to.
+		// Until then (which may be never), this is outside
+		// of the defined protocol.
+		*pkt >> m_access_denied_reason;
+		if (m_access_denied_reason.empty()) {
+			m_access_denied_reason = "Unknown";
 		}
 	}
 }
@@ -1065,23 +1012,12 @@ void Client::handleCommand_AddParticleSpawner(NetworkPacket* pkt)
 
 void Client::handleCommand_DeleteParticleSpawner(NetworkPacket* pkt)
 {
-	u16 legacy_id;
 	u32 id;
-
-	// Modification set 13/03/15, 1 year of compat for protocol v24
-	if (pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY) {
-		*pkt >> legacy_id;
-	}
-	else {
-		*pkt >> id;
-	}
-
+	*pkt >> id;
 
 	ClientEvent *event = new ClientEvent();
 	event->type = CE_DELETE_PARTICLESPAWNER;
-	event->delete_particlespawner.id =
-			(pkt->getCommand() == TOCLIENT_DELETE_PARTICLESPAWNER_LEGACY ?
-				(u32) legacy_id : id);
+	event->delete_particlespawner.id = id;
 
 	m_client_event_queue.push(event);
 }
@@ -1360,9 +1296,9 @@ void Client::handleCommand_UpdatePlayerList(NetworkPacket* pkt)
 
 void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 {
-	if ((m_chosen_auth_mech != AUTH_MECHANISM_LEGACY_PASSWORD)
-			&& (m_chosen_auth_mech != AUTH_MECHANISM_SRP)) {
-		errorstream << "Client: Recieved SRP S_B login message,"
+	if (m_chosen_auth_mech != AUTH_MECHANISM_SRP &&
+			m_chosen_auth_mech != AUTH_MECHANISM_LEGACY_PASSWORD) {
+		errorstream << "Client: Received SRP S_B login message,"
 			<< " but wasn't supposed to (chosen_mech="
 			<< m_chosen_auth_mech << ")." << std::endl;
 		return;
@@ -1375,7 +1311,7 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 	std::string B;
 	*pkt >> s >> B;
 
-	infostream << "Client: Recieved TOCLIENT_SRP_BYTES_S_B." << std::endl;
+	infostream << "Client: Received TOCLIENT_SRP_BYTES_S_B." << std::endl;
 
 	srp_user_process_challenge(usr, (const unsigned char *) s.c_str(), s.size(),
 		(const unsigned char *) B.c_str(), B.size(),
@@ -1394,4 +1330,96 @@ void Client::handleCommand_SrpBytesSandB(NetworkPacket* pkt)
 void Client::handleCommand_CSMFlavourLimits(NetworkPacket *pkt)
 {
 	*pkt >> m_csm_flavour_limits >> m_csm_noderange_limit;
+}
+
+/*
+ * Mod channels
+ */
+
+void Client::handleCommand_ModChannelMsg(NetworkPacket *pkt)
+{
+	std::string channel_name, sender, channel_msg;
+	*pkt >> channel_name >> sender >> channel_msg;
+
+	verbosestream << "Mod channel message received from server " << pkt->getPeerId()
+		<< " on channel " << channel_name << ". sender: `" << sender << "`, message: "
+		<< channel_msg << std::endl;
+
+	if (!m_modchannel_mgr->channelRegistered(channel_name)) {
+		verbosestream << "Server sent us messages on unregistered channel "
+			<< channel_name << ", ignoring." << std::endl;
+		return;
+	}
+
+	m_script->on_modchannel_message(channel_name, sender, channel_msg);
+}
+
+void Client::handleCommand_ModChannelSignal(NetworkPacket *pkt)
+{
+	u8 signal_tmp;
+	ModChannelSignal signal;
+	std::string channel;
+
+	*pkt >> signal_tmp >> channel;
+
+	signal = (ModChannelSignal)signal_tmp;
+
+	bool valid_signal = true;
+	// @TODO: send Signal to Lua API
+	switch (signal) {
+		case MODCHANNEL_SIGNAL_JOIN_OK:
+			m_modchannel_mgr->setChannelState(channel, MODCHANNEL_STATE_READ_WRITE);
+			infostream << "Server ack our mod channel join on channel `" << channel
+				<< "`, joining." << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_JOIN_FAILURE:
+			// Unable to join, remove channel
+			m_modchannel_mgr->leaveChannel(channel, 0);
+			infostream << "Server refused our mod channel join on channel `" << channel
+				<< "`" << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_OK:
+#ifndef NDEBUG
+			infostream << "Server ack our mod channel leave on channel " << channel
+				<< "`, leaving." << std::endl;
+#endif
+			break;
+		case MODCHANNEL_SIGNAL_LEAVE_FAILURE:
+			infostream << "Server refused our mod channel leave on channel `" << channel
+				<< "`" << std::endl;
+			break;
+		case MODCHANNEL_SIGNAL_CHANNEL_NOT_REGISTERED:
+#ifndef NDEBUG
+			// Generally unused, but ensure we don't do an implementation error
+			infostream << "Server tells us we sent a message on channel `" << channel
+				<< "` but we are not registered. Message was dropped." << std::endl;
+#endif
+			break;
+		case MODCHANNEL_SIGNAL_SET_STATE: {
+			u8 state;
+			*pkt >> state;
+
+			if (state == MODCHANNEL_STATE_INIT || state >= MODCHANNEL_STATE_MAX) {
+				infostream << "Received wrong channel state " << state
+						<< ", ignoring." << std::endl;
+				return;
+			}
+
+			m_modchannel_mgr->setChannelState(channel, (ModChannelState) state);
+			infostream << "Server sets mod channel `" << channel
+					<< "` in read-only mode." << std::endl;
+			break;
+		}
+		default:
+#ifndef NDEBUG
+			warningstream << "Received unhandled mod channel signal ID "
+				<< signal << ", ignoring." << std::endl;
+#endif
+			valid_signal = false;
+			break;
+	}
+
+	// If signal is valid, forward it to client side mods
+	if (valid_signal)
+		m_script->on_modchannel_signal(channel, signal);
 }

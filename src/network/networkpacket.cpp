@@ -21,8 +21,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <sstream>
 #include "networkexceptions.h"
 #include "util/serialize.h"
+#include "networkprotocol.h"
 
-NetworkPacket::NetworkPacket(u16 command, u32 datasize, u16 peer_id):
+NetworkPacket::NetworkPacket(u16 command, u32 datasize, session_t peer_id):
 m_datasize(datasize), m_command(command), m_peer_id(peer_id)
 {
 	m_data.resize(m_datasize);
@@ -49,7 +50,7 @@ void NetworkPacket::checkReadOffset(u32 from_offset, u32 field_size)
 	}
 }
 
-void NetworkPacket::putRawPacket(u8 *data, u32 datasize, u16 peer_id)
+void NetworkPacket::putRawPacket(u8 *data, u32 datasize, session_t peer_id)
 {
 	// If a m_command is already set, we are rewriting on same packet
 	// This is not permitted
@@ -58,9 +59,11 @@ void NetworkPacket::putRawPacket(u8 *data, u32 datasize, u16 peer_id)
 	m_datasize = datasize - 2;
 	m_peer_id = peer_id;
 
+	m_data.resize(m_datasize);
+
 	// split command and datas
 	m_command = readU16(&data[0]);
-	m_data = std::vector<u8>(&data[2], &data[2 + m_datasize]);
+	memcpy(&m_data[0], &data[2], m_datasize);
 }
 
 const char* NetworkPacket::getString(u32 from_offset)

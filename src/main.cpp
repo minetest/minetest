@@ -18,7 +18,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "irrlicht.h" // createDevice
-#include "mainmenumanager.h"
 #include "irrlichttypes_extrabloated.h"
 #include "chat_interface.h"
 #include "debug.h"
@@ -26,14 +25,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "server.h"
 #include "filesys.h"
 #include "version.h"
-#include "guiMainMenu.h"
 #include "game.h"
 #include "defaultsettings.h"
 #include "gettext.h"
 #include "log.h"
 #include "quicktune.h"
 #include "httpfetch.h"
-#include "guiEngine.h"
 #include "gameparams.h"
 #include "database.h"
 #include "config.h"
@@ -44,7 +41,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	#include "terminal_chat_console.h"
 #endif
 #ifndef SERVER
+#include "guiMainMenu.h"
 #include "client/clientlauncher.h"
+#include "guiEngine.h"
+#include "mainmenumanager.h"
 #endif
 
 #ifdef HAVE_TOUCHSCREENGUI
@@ -322,11 +322,11 @@ static void print_allowed_options(const OptionList &allowed_options)
 static void print_version()
 {
 	std::cout << PROJECT_NAME_C " " << g_version_hash
-	          << " (" << porting::getPlatformName() << ")" << std::endl;
+		<< " (" << porting::getPlatformName() << ")" << std::endl;
 #ifndef SERVER
-	std::cout << "Using Irrlicht " << IRRLICHT_SDK_VERSION << std::endl;
+	std::cout << "Using Irrlicht " IRRLICHT_SDK_VERSION << std::endl;
 #endif
-	std::cout << "Build info: " << g_build_info << std::endl;
+	std::cout << g_build_info << std::endl;
 }
 
 static void list_game_ids()
@@ -838,13 +838,13 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec,
-					false, bind_addr.isIPv6(), true, &iface);
+					false, bind_addr, true, &iface);
 
 			g_term_console.setup(&iface, &kill, admin_nick);
 
 			g_term_console.start();
 
-			server.start(bind_addr);
+			server.start();
 			// Run server
 			dedicated_server_loop(server, kill);
 		} catch (const ModError &e) {
@@ -872,8 +872,8 @@ static bool run_dedicated_server(const GameParams &game_params, const Settings &
 		try {
 			// Create server
 			Server server(game_params.world_path, game_params.game_spec, false,
-				bind_addr.isIPv6(), true);
-			server.start(bind_addr);
+				bind_addr, true);
+			server.start();
 
 			// Run server
 			bool &kill = *porting::signal_handler_killstatus();

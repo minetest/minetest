@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include <map>
 #include <mutex>
+#include "network/networkprotocol.h"
 #include "irr_v3d.h"
 #include "util/container.h"
 #include "mapgen.h" // for MapgenParams
@@ -123,14 +124,14 @@ public:
 	bool isRunning();
 
 	bool enqueueBlockEmerge(
-		u16 peer_id,
+		session_t peer_id,
 		v3s16 blockpos,
 		bool allow_generate,
 		bool ignore_queue_limits=false);
 
 	bool enqueueBlockEmergeEx(
 		v3s16 blockpos,
-		u16 peer_id,
+		session_t peer_id,
 		u16 flags,
 		EmergeCompletionCallback callback,
 		void *callback_param);

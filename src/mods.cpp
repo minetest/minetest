@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "subgame.h"
 #include "settings.h"
 #include "porting.h"
+#include "convert_json.h"
 
 static bool parseDependsLine(std::istream &is,
 		std::string &dep, std::set<char> &symbols)
@@ -202,7 +203,7 @@ void ModConfiguration::addMods(const std::vector<ModSpec> &new_mods)
 	}
 }
 
-void ModConfiguration::addModsFormConfig(const std::string &settings_path, const std::set<std::string> &mods)
+void ModConfiguration::addModsFromConfig(const std::string &settings_path, const std::set<std::string> &mods)
 {
 	Settings conf;
 	std::set<std::string> load_mod_names;
@@ -325,7 +326,7 @@ ServerModConfiguration::ServerModConfiguration(const std::string &worldpath):
 
 	// Load normal mods
 	std::string worldmt = worldpath + DIR_DELIM + "world.mt";
-	addModsFormConfig(worldmt, gamespec.addon_mods_paths);
+	addModsFromConfig(worldmt, gamespec.addon_mods_paths);
 }
 
 #ifndef SERVER
@@ -338,7 +339,7 @@ ClientModConfiguration::ClientModConfiguration(const std::string &path):
 	paths.insert(path_user);
 
 	std::string settings_path = path_user + DIR_DELIM + "mods.conf";
-	addModsFormConfig(settings_path, paths);
+	addModsFromConfig(settings_path, paths);
 }
 #endif
 
@@ -374,7 +375,7 @@ bool ModMetadata::save(const std::string &root_path)
 	}
 
 	bool w_ok = fs::safeWriteToFile(root_path + DIR_DELIM + m_mod_name,
-		Json::FastWriter().write(json));
+			fastWriteJson(json));
 
 	if (w_ok) {
 		m_modified = false;
@@ -393,11 +394,14 @@ bool ModMetadata::load(const std::string &root_path)
 		return false;
 	}
 
-	Json::Reader reader;
 	Json::Value root;
-	if (!reader.parse(is, root)) {
+	Json::CharReaderBuilder builder;
+	builder.settings_["collectComments"] = false;
+	std::string errs;
+
+	if (!Json::parseFromStream(builder, is, &root, &errs)) {
 		errorstream << "ModMetadata[" << m_mod_name << "]: failed read data "
-			"(Json decoding failure)." << std::endl;
+			"(Json decoding failure). Message: " << errs << std::endl;
 		return false;
 	}
 

@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <string>
 #include <iostream>
 #include <map>
-#include <list>
 #include "mapnode.h"
 #ifndef SERVER
 #include "client/tile.h"
@@ -41,8 +40,6 @@ class ITextureSource;
 class IShaderSource;
 class IGameDef;
 class NodeResolver;
-
-typedef std::list<std::pair<content_t, int> > GroupItems;
 
 enum ContentParamType
 {
@@ -128,9 +125,25 @@ enum LeavesStyle {
 	LEAVES_OPAQUE,
 };
 
+enum AutoScale : u8 {
+	AUTOSCALE_DISABLE,
+	AUTOSCALE_ENABLE,
+	AUTOSCALE_FORCE,
+};
+
+enum WorldAlignMode : u8 {
+	WORLDALIGN_DISABLE,
+	WORLDALIGN_ENABLE,
+	WORLDALIGN_FORCE,
+	WORLDALIGN_FORCE_NODEBOX,
+};
+
 class TextureSettings {
 public:
 	LeavesStyle leaves_style;
+	WorldAlignMode world_aligned_mode;
+	AutoScale autoscale_mode;
+	int node_texture_size;
 	bool opaque_water;
 	bool connected_glass;
 	bool use_normal_texture;
@@ -201,6 +214,12 @@ enum PlantlikeStyle {
 	PLANT_STYLE_HASH2,
 };
 
+enum AlignStyle : u8 {
+	ALIGN_STYLE_NODE,
+	ALIGN_STYLE_WORLD,
+	ALIGN_STYLE_USER_DEFINED,
+};
+
 /*
 	Stand-alone definition of a TileSpec (basically a server-side TileSpec)
 */
@@ -215,6 +234,8 @@ struct TileDef
 	bool has_color = false;
 	//! The color of the tile.
 	video::SColor color = video::SColor(0xFFFFFFFF);
+	AlignStyle align_style = ALIGN_STYLE_NODE;
+	u8 scale = 0;
 
 	struct TileAnimationParams animation;
 
@@ -290,7 +311,7 @@ struct ContentFeatures
 	// for NDT_CONNECTED pairing
 	u8 connect_sides;
 	std::vector<std::string> connects_to;
-	std::set<content_t> connects_to_ids;
+	std::vector<content_t> connects_to_ids;
 	// Post effect color, drawn when the camera is inside the node.
 	video::SColor post_effect_color;
 	// Flowing liquid or snow, value = default level
@@ -324,6 +345,8 @@ struct ContentFeatures
 	// Player cannot build to these (placement prediction disabled)
 	bool rightclickable;
 	u32 damage_per_second;
+	// client dig prediction
+	std::string node_dig_prediction;
 
 	// --- LIQUID PROPERTIES ---
 
@@ -402,9 +425,6 @@ struct ContentFeatures
 	}
 
 #ifndef SERVER
-	void fillTileAttribs(ITextureSource *tsrc, TileLayer *tile, TileDef *tiledef,
-		u32 shader_id, bool use_normal_texture, bool backface_culling,
-		u8 material_type);
 	void updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 		scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings);
 #endif
@@ -422,7 +442,7 @@ public:
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
 	// returns false if node name not found, true otherwise
-	virtual bool getIds(const std::string &name, std::set<content_t> &result)
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 			const=0;
 	virtual const ContentFeatures &get(const std::string &name) const=0;
 
@@ -450,7 +470,7 @@ public:
 	// If not found, returns CONTENT_IGNORE
 	virtual content_t getId(const std::string &name) const=0;
 	// Allows "group:name" in addition to regular node names
-	virtual bool getIds(const std::string &name, std::set<content_t> &result)
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result)
 		const=0;
 	// If not found, returns the features of CONTENT_UNKNOWN
 	virtual const ContentFeatures &get(const std::string &name) const=0;

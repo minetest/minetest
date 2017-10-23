@@ -140,15 +140,14 @@ int ObjectRef::l_remove(lua_State *L)
 		return 0;
 
 	const std::unordered_set<int> &child_ids = co->getAttachmentChildIds();
-	std::unordered_set<int>::const_iterator it;
-	for (it = child_ids.begin(); it != child_ids.end(); ++it) {
+	for (int child_id : child_ids) {
 		// Child can be NULL if it was deleted earlier
-		if (ServerActiveObject *child = env->getActiveObject(*it))
+		if (ServerActiveObject *child = env->getActiveObject(child_id))
 			child->setAttachment(0, "", v3f(0, 0, 0), v3f(0, 0, 0));
 	}
 
-	verbosestream<<"ObjectRef::l_remove(): id="<<co->getId()<<std::endl;
-	co->m_removed = true;
+	verbosestream << "ObjectRef::l_remove(): id=" << co->getId() << std::endl;
+	co->m_pending_removal = true;
 	return 0;
 }
 
@@ -604,6 +603,26 @@ int ObjectRef::l_get_eye_offset(lua_State *L)
 	return 2;
 }
 
+// set_animation_frame_speed(self, frame_speed)
+int ObjectRef::l_set_animation_frame_speed(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+	ObjectRef *ref = checkobject(L, 1);
+	ServerActiveObject *co = getobject(ref);
+	if (co == NULL)
+		return 0;
+
+	// Do it
+	if (!lua_isnil(L, 2)) {
+		float frame_speed = lua_tonumber(L, 2);
+		co->setAnimationSpeed(frame_speed);
+		lua_pushboolean(L, true);
+	} else {
+		lua_pushboolean(L, false);
+	}
+	return 1;
+}
+
 // set_bone_position(self, std::string bone, v3f position, v3f rotation)
 int ObjectRef::l_set_bone_position(lua_State *L)
 {
@@ -1004,7 +1023,7 @@ int ObjectRef::l_is_player_connected(lua_State *L)
 	NO_MAP_LOCK_REQUIRED;
 	ObjectRef *ref = checkobject(L, 1);
 	RemotePlayer *player = getplayer(ref);
-	lua_pushboolean(L, (player != NULL && player->peer_id != 0));
+	lua_pushboolean(L, (player != NULL && player->getPeerId() != PEER_ID_INEXISTENT));
 	return 1;
 }
 
@@ -1937,6 +1956,7 @@ const luaL_Reg ObjectRef::methods[] = {
 	luamethod(ObjectRef, get_armor_groups),
 	luamethod(ObjectRef, set_animation),
 	luamethod(ObjectRef, get_animation),
+	luamethod(ObjectRef, set_animation_frame_speed),
 	luamethod(ObjectRef, set_bone_position),
 	luamethod(ObjectRef, get_bone_position),
 	luamethod(ObjectRef, set_attach),

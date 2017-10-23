@@ -114,7 +114,7 @@ private:
 
 class ParticleSpawner
 {
-	public:
+public:
 	ParticleSpawner(IGameDef* gamedef,
 		LocalPlayer *player,
 		u16 amount,
@@ -140,8 +140,12 @@ class ParticleSpawner
 	bool get_expired ()
 	{ return (m_amount <= 0) && m_spawntime != 0; }
 
-	private:
-	ParticleManager* m_particlemanager;
+private:
+	void spawnParticle(ClientEnvironment *env, float radius,
+			bool is_attached, const v3f &attached_pos,
+			float attached_yaw);
+
+	ParticleManager *m_particlemanager;
 	float m_time;
 	IGameDef *m_gamedef;
 	LocalPlayer *m_player;
@@ -183,9 +187,6 @@ public:
 			LocalPlayer *player);
 
 	void addDiggingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
-		const MapNode &n, const ContentFeatures &f);
-
-	void addPunchingParticles(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,
 		const MapNode &n, const ContentFeatures &f);
 
 	void addNodeParticle(IGameDef *gamedef, LocalPlayer *player, v3s16 pos,

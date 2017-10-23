@@ -37,32 +37,35 @@ core.register_entity(":__builtin:item", {
 	slippery_state = false,
 	age = 0,
 
-	set_item = function(self, itemstring)
-		local stack = ItemStack(itemstring or self.itemstring)
+	set_item = function(self, item)
+		local stack = ItemStack(item or self.itemstring)
 		self.itemstring = stack:to_string()
+		if self.itemstring == "" then
+			-- item not yet known
+			return
+		end
 
 		-- Backwards compatibility: old clients use the texture
 		-- to get the type of the item
-		local itemname = stack:get_name()
+		local itemname = stack:is_known() and stack:get_name() or "unknown"
 
 		local max_count = stack:get_stack_max()
 		local count = math.min(stack:get_count(), max_count)
-		local size = 0.2 + 0.1 * (count / max_count)
-
-		if not stack:is_known() then
-			itemname = "unknown"
-		end
+		local size = 0.2 + 0.1 * (count / max_count) ^ (1 / 3)
+		local coll_height = size * 0.75
 
 		self.object:set_properties({
 			is_visible = true,
 			visual = "wielditem",
 			textures = {itemname},
 			visual_size = {x = size, y = size},
-			collisionbox = {-size, -size, -size, size, size, size},
-			automatic_rotate = math.pi * 0.5,
+			collisionbox = {-size, -coll_height, -size,
+				size, coll_height, size},
+			selectionbox = {-size, -size, -size, size, size, size},
+			automatic_rotate = math.pi * 0.5 * 0.2 / size,
 			wield_item = self.itemstring,
 		})
-		
+
 	end,
 
 	get_staticdata = function(self)
@@ -154,7 +157,7 @@ core.register_entity(":__builtin:item", {
 			is_slippery = slippery ~= 0
 			if is_slippery then
 				is_physical = true
-	
+
 				-- Horizontal deceleration
 				local slip_factor = 4.0 / (slippery + 4)
 				self.object:set_acceleration({

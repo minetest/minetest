@@ -37,6 +37,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("address", "");
 	settings->setDefault("enable_sound", "true");
 	settings->setDefault("sound_volume", "0.8");
+	settings->setDefault("mute_sound", "false");
 	settings->setDefault("enable_mesh_cache", "false");
 	settings->setDefault("mesh_generation_interval", "0");
 	settings->setDefault("meshgen_block_cache_size", "20");
@@ -49,8 +50,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("screenshot_quality", "0");
 	settings->setDefault("client_unload_unused_data_timeout", "600");
 	settings->setDefault("client_mapblock_limit", "5000");
-	settings->setDefault("enable_build_where_you_stand", "false" );
-	settings->setDefault("send_pre_v25_init", "false");
+	settings->setDefault("enable_build_where_you_stand", "false");
 	settings->setDefault("curl_timeout", "5000");
 	settings->setDefault("curl_parallel_limit", "8");
 	settings->setDefault("curl_file_download_timeout", "300000");
@@ -124,18 +124,8 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("keymap_slot21", "");
 	settings->setDefault("keymap_slot22", "");
 	settings->setDefault("keymap_slot23", "");
-	settings->setDefault("enable_build_where_you_stand", "false" );
-	settings->setDefault("3d_mode", "none");
-	settings->setDefault("3d_paralax_strength", "0.025");
-	settings->setDefault("aux1_descends", "false");
-	settings->setDefault("doubletap_jump", "false");
-	settings->setDefault("always_fly_fast", "true");
-	settings->setDefault("directional_colored_fog", "true");
-	settings->setDefault("tooltip_show_delay", "400");
-	settings->setDefault("zoom_fov", "15");
 
 	// Some (temporary) keys for debugging
-	settings->setDefault("keymap_print_debug_stacks", "KEY_KEY_P");
 	settings->setDefault("keymap_quicktune_prev", "KEY_HOME");
 	settings->setDefault("keymap_quicktune_next", "KEY_END");
 	settings->setDefault("keymap_quicktune_dec", "KEY_NEXT");
@@ -149,15 +139,19 @@ void set_default_settings(Settings *settings)
 #endif
 	settings->setDefault("fsaa", "0");
 	settings->setDefault("undersampling", "0");
+	settings->setDefault("world_aligned_mode", "enable");
+	settings->setDefault("autoscale_mode", "disable");
 	settings->setDefault("enable_fog", "true");
 	settings->setDefault("fog_start", "0.4");
 	settings->setDefault("3d_mode", "none");
 	settings->setDefault("3d_paralax_strength", "0.025");
 	settings->setDefault("tooltip_show_delay", "400");
+	settings->setDefault("tooltip_append_itemname", "false");
 	settings->setDefault("zoom_fov", "15");
 	settings->setDefault("fps_max", "60");
 	settings->setDefault("pause_fps_max", "20");
 	settings->setDefault("viewing_range", "100");
+	settings->setDefault("near_plane", "0.1");
 	settings->setDefault("screen_w", "1024");
 	settings->setDefault("screen_h", "600");
 	settings->setDefault("autosave_screensize", "true");
@@ -196,6 +190,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("node_highlighting", "box");
 	settings->setDefault("crosshair_color", "(255,255,255)");
 	settings->setDefault("crosshair_alpha", "255");
+	settings->setDefault("recent_chat_messages", "6");
 	settings->setDefault("hud_scaling", "1.0");
 	settings->setDefault("gui_scaling", "1.0");
 	settings->setDefault("gui_scaling_filter", "false");
@@ -301,7 +296,6 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("strict_protocol_version_checking", "false");
 	settings->setDefault("player_transfer_distance", "0");
 	settings->setDefault("max_simultaneous_block_sends_per_client", "10");
-	settings->setDefault("max_simultaneous_block_sends_server_total", "40");
 	settings->setDefault("time_send_interval", "5");
 
 	settings->setDefault("default_game", "minetest");
@@ -313,6 +307,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("default_password", "");
 	settings->setDefault("default_privs", "interact, shout");
 	settings->setDefault("enable_pvp", "true");
+	settings->setDefault("enable_mod_channels", "false");
 	settings->setDefault("disallow_empty_password", "false");
 	settings->setDefault("disable_anticheat", "false");
 	settings->setDefault("enable_rollback_recording", "false");
@@ -338,6 +333,7 @@ void set_default_settings(Settings *settings)
 	settings->setDefault("csm_flavour_noderange_limit", "8");
 	settings->setDefault("max_clearobjects_extra_loaded_blocks", "4096");
 	settings->setDefault("time_speed", "72");
+	settings->setDefault("world_start_time", "5250");
 	settings->setDefault("server_unload_unused_data_timeout", "29");
 	settings->setDefault("max_objects_per_block", "64");
 	settings->setDefault("server_map_save_interval", "5.3");

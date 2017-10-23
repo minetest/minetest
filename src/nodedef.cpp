@@ -38,6 +38,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "gamedef.h"
 #include "mapnode.h"
 #include <fstream> // Used in applyTextureOverrides()
+#include <algorithm>
 
 /*
 	NodeBox
@@ -168,40 +169,72 @@ void NodeBox::deSerialize(std::istream &is)
 	TileDef
 */
 
+#define TILE_FLAG_BACKFACE_CULLING	(1 << 0)
+#define TILE_FLAG_TILEABLE_HORIZONTAL	(1 << 1)
+#define TILE_FLAG_TILEABLE_VERTICAL	(1 << 2)
+#define TILE_FLAG_HAS_COLOR	(1 << 3)
+#define TILE_FLAG_HAS_SCALE	(1 << 4)
+#define TILE_FLAG_HAS_ALIGN_STYLE	(1 << 5)
+
 void TileDef::serialize(std::ostream &os, u16 protocol_version) const
 {
 	// protocol_version >= 36
-	u8 version = 5;
+	u8 version = 6;
 	writeU8(os, version);
 
 	os << serializeString(name);
 	animation.serialize(os, version);
-	writeU8(os, backface_culling);
-	writeU8(os, tileable_horizontal);
-	writeU8(os, tileable_vertical);
-	writeU8(os, has_color);
+	bool has_scale = scale > 0;
+	u16 flags = 0;
+	if (backface_culling)
+		flags |= TILE_FLAG_BACKFACE_CULLING;
+	if (tileable_horizontal)
+		flags |= TILE_FLAG_TILEABLE_HORIZONTAL;
+	if (tileable_vertical)
+		flags |= TILE_FLAG_TILEABLE_VERTICAL;
+	if (has_color)
+		flags |= TILE_FLAG_HAS_COLOR;
+	if (has_scale)
+		flags |= TILE_FLAG_HAS_SCALE;
+	if (align_style != ALIGN_STYLE_NODE)
+		flags |= TILE_FLAG_HAS_ALIGN_STYLE;
+	writeU16(os, flags);
 	if (has_color) {
 		writeU8(os, color.getRed());
 		writeU8(os, color.getGreen());
 		writeU8(os, color.getBlue());
 	}
+	if (has_scale)
+		writeU8(os, scale);
+	if (align_style != ALIGN_STYLE_NODE)
+		writeU8(os, align_style);
 }
 
 void TileDef::deSerialize(std::istream &is, u8 contentfeatures_version,
 	NodeDrawType drawtype)
 {
 	int version = readU8(is);
+	if (version < 6)
+		throw SerializationError("unsupported TileDef version");
 	name = deSerializeString(is);
 	animation.deSerialize(is, version);
-	backface_culling = readU8(is);
-	tileable_horizontal = readU8(is);
-	tileable_vertical = readU8(is);
-	has_color = readU8(is);
+	u16 flags = readU16(is);
+	backface_culling = flags & TILE_FLAG_BACKFACE_CULLING;
+	tileable_horizontal = flags & TILE_FLAG_TILEABLE_HORIZONTAL;
+	tileable_vertical = flags & TILE_FLAG_TILEABLE_VERTICAL;
+	has_color = flags & TILE_FLAG_HAS_COLOR;
+	bool has_scale = flags & TILE_FLAG_HAS_SCALE;
+	bool has_align_style = flags & TILE_FLAG_HAS_ALIGN_STYLE;
 	if (has_color) {
 		color.setRed(readU8(is));
 		color.setGreen(readU8(is));
 		color.setBlue(readU8(is));
 	}
+	scale = has_scale ? readU8(is) : 0;
+	if (has_align_style)
+		align_style = static_cast<AlignStyle>(readU8(is));
+	else
+		align_style = ALIGN_STYLE_NODE;
 }
 
 
@@ -234,7 +267,10 @@ void TextureSettings::readSettings()
 	bool smooth_lighting           = g_settings->getBool("smooth_lighting");
 	enable_mesh_cache              = g_settings->getBool("enable_mesh_cache");
 	enable_minimap                 = g_settings->getBool("enable_minimap");
+	node_texture_size              = g_settings->getU16("texture_min_size");
 	std::string leaves_style_str   = g_settings->get("leaves_style");
+	std::string world_aligned_mode_str = g_settings->get("world_aligned_mode");
+	std::string autoscale_mode_str = g_settings->get("autoscale_mode");
 
 	// Mesh cache is not supported in combination with smooth lighting
 	if (smooth_lighting)
@@ -249,6 +285,22 @@ void TextureSettings::readSettings()
 	} else {
 		leaves_style = LEAVES_OPAQUE;
 	}
+
+	if (world_aligned_mode_str == "enable")
+		world_aligned_mode = WORLDALIGN_ENABLE;
+	else if (world_aligned_mode_str == "force_solid")
+		world_aligned_mode = WORLDALIGN_FORCE;
+	else if (world_aligned_mode_str == "force_nodebox")
+		world_aligned_mode = WORLDALIGN_FORCE_NODEBOX;
+	else
+		world_aligned_mode = WORLDALIGN_DISABLE;
+
+	if (autoscale_mode_str == "enable")
+		autoscale_mode = AUTOSCALE_ENABLE;
+	else if (autoscale_mode_str == "force")
+		autoscale_mode = AUTOSCALE_FORCE;
+	else
+		autoscale_mode = AUTOSCALE_DISABLE;
 }
 
 /*
@@ -335,6 +387,7 @@ void ContentFeatures::reset()
 	color = video::SColor(0xFFFFFFFF);
 	palette_name = "";
 	palette = NULL;
+	node_dig_prediction = "air";
 }
 
 void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
@@ -422,6 +475,8 @@ void ContentFeatures::serialize(std::ostream &os, u16 protocol_version) const
 	// legacy
 	writeU8(os, legacy_facedir_simple);
 	writeU8(os, legacy_wallmounted);
+
+	os << serializeString(node_dig_prediction);
 }
 
 void ContentFeatures::correctAlpha(TileDef *tiles, int length)
@@ -482,7 +537,7 @@ void ContentFeatures::deSerialize(std::istream &is)
 	u16 connects_to_size = readU16(is);
 	connects_to_ids.clear();
 	for (u16 i = 0; i < connects_to_size; i++)
-		connects_to_ids.insert(readU16(is));
+		connects_to_ids.push_back(readU16(is));
 	post_effect_color.setAlpha(readU8(is));
 	post_effect_color.setRed(readU8(is));
 	post_effect_color.setGreen(readU8(is));
@@ -530,80 +585,115 @@ void ContentFeatures::deSerialize(std::istream &is)
 	// read legacy properties
 	legacy_facedir_simple = readU8(is);
 	legacy_wallmounted = readU8(is);
+
+	try {
+		node_dig_prediction = deSerializeString(is);
+	} catch(SerializationError &e) {};
 }
 
 #ifndef SERVER
-void ContentFeatures::fillTileAttribs(ITextureSource *tsrc, TileLayer *tile,
-		TileDef *tiledef, u32 shader_id, bool use_normal_texture,
-		bool backface_culling, u8 material_type)
+static void fillTileAttribs(ITextureSource *tsrc, TileLayer *layer,
+		const TileSpec &tile, const TileDef &tiledef, video::SColor color,
+		u8 material_type, u32 shader_id, bool backface_culling,
+		const TextureSettings &tsettings)
 {
-	tile->shader_id     = shader_id;
-	tile->texture       = tsrc->getTextureForMesh(tiledef->name, &tile->texture_id);
-	tile->material_type = material_type;
+	layer->shader_id     = shader_id;
+	layer->texture       = tsrc->getTextureForMesh(tiledef.name, &layer->texture_id);
+	layer->material_type = material_type;
+
+	bool has_scale = tiledef.scale > 0;
+	if (((tsettings.autoscale_mode == AUTOSCALE_ENABLE) && !has_scale) ||
+			(tsettings.autoscale_mode == AUTOSCALE_FORCE)) {
+		auto texture_size = layer->texture->getOriginalSize();
+		float base_size = tsettings.node_texture_size;
+		float size = std::fmin(texture_size.Width, texture_size.Height);
+		layer->scale = std::fmax(base_size, size) / base_size;
+	} else if (has_scale) {
+		layer->scale = tiledef.scale;
+	} else {
+		layer->scale = 1;
+	}
+	if (!tile.world_aligned)
+		layer->scale = 1;
 
 	// Normal texture and shader flags texture
-	if (use_normal_texture) {
-		tile->normal_texture = tsrc->getNormalTexture(tiledef->name);
+	if (tsettings.use_normal_texture) {
+		layer->normal_texture = tsrc->getNormalTexture(tiledef.name);
 	}
-	tile->flags_texture = tsrc->getShaderFlagsTexture(tile->normal_texture ? true : false);
+	layer->flags_texture = tsrc->getShaderFlagsTexture(layer->normal_texture ? true : false);
 
 	// Material flags
-	tile->material_flags = 0;
+	layer->material_flags = 0;
 	if (backface_culling)
-		tile->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
-	if (tiledef->animation.type != TAT_NONE)
-		tile->material_flags |= MATERIAL_FLAG_ANIMATION;
-	if (tiledef->tileable_horizontal)
-		tile->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
-	if (tiledef->tileable_vertical)
-		tile->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
+		layer->material_flags |= MATERIAL_FLAG_BACKFACE_CULLING;
+	if (tiledef.animation.type != TAT_NONE)
+		layer->material_flags |= MATERIAL_FLAG_ANIMATION;
+	if (tiledef.tileable_horizontal)
+		layer->material_flags |= MATERIAL_FLAG_TILEABLE_HORIZONTAL;
+	if (tiledef.tileable_vertical)
+		layer->material_flags |= MATERIAL_FLAG_TILEABLE_VERTICAL;
 
 	// Color
-	tile->has_color = tiledef->has_color;
-	if (tiledef->has_color)
-		tile->color = tiledef->color;
+	layer->has_color = tiledef.has_color;
+	if (tiledef.has_color)
+		layer->color = tiledef.color;
 	else
-		tile->color = color;
+		layer->color = color;
 
 	// Animation parameters
 	int frame_count = 1;
-	if (tile->material_flags & MATERIAL_FLAG_ANIMATION) {
+	if (layer->material_flags & MATERIAL_FLAG_ANIMATION) {
 		int frame_length_ms;
-		tiledef->animation.determineParams(tile->texture->getOriginalSize(),
+		tiledef.animation.determineParams(layer->texture->getOriginalSize(),
 				&frame_count, &frame_length_ms, NULL);
-		tile->animation_frame_count = frame_count;
-		tile->animation_frame_length_ms = frame_length_ms;
+		layer->animation_frame_count = frame_count;
+		layer->animation_frame_length_ms = frame_length_ms;
 	}
 
 	if (frame_count == 1) {
-		tile->material_flags &= ~MATERIAL_FLAG_ANIMATION;
+		layer->material_flags &= ~MATERIAL_FLAG_ANIMATION;
 	} else {
 		std::ostringstream os(std::ios::binary);
-		if (!tile->frames) {
-			tile->frames = std::make_shared<std::vector<FrameSpec>>();
+		if (!layer->frames) {
+			layer->frames = std::make_shared<std::vector<FrameSpec>>();
 		}
-		tile->frames->resize(frame_count);
+		layer->frames->resize(frame_count);
 
 		for (int i = 0; i < frame_count; i++) {
 
 			FrameSpec frame;
 
 			os.str("");
-			os << tiledef->name;
-			tiledef->animation.getTextureModifer(os,
-					tile->texture->getOriginalSize(), i);
+			os << tiledef.name;
+			tiledef.animation.getTextureModifer(os,
+					layer->texture->getOriginalSize(), i);
 
 			frame.texture = tsrc->getTextureForMesh(os.str(), &frame.texture_id);
-			if (tile->normal_texture)
+			if (layer->normal_texture)
 				frame.normal_texture = tsrc->getNormalTexture(os.str());
-			frame.flags_texture = tile->flags_texture;
-			(*tile->frames)[i] = frame;
+			frame.flags_texture = layer->flags_texture;
+			(*layer->frames)[i] = frame;
 		}
 	}
 }
 #endif
 
 #ifndef SERVER
+bool isWorldAligned(AlignStyle style, WorldAlignMode mode, NodeDrawType drawtype)
+{
+	if (style == ALIGN_STYLE_WORLD)
+		return true;
+	if (mode == WORLDALIGN_DISABLE)
+		return false;
+	if (style == ALIGN_STYLE_USER_DEFINED)
+		return true;
+	if (drawtype == NDT_NORMAL)
+		return mode >= WORLDALIGN_FORCE;
+	if (drawtype == NDT_NODEBOX)
+		return mode >= WORLDALIGN_FORCE_NODEBOX;
+	return false;
+}
+
 void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc,
 	scene::IMeshManipulator *meshmanip, Client *client, const TextureSettings &tsettings)
 {
@@ -743,13 +833,15 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 
 	// Tiles (fill in f->tiles[])
 	for (u16 j = 0; j < 6; j++) {
-		fillTileAttribs(tsrc, &tiles[j].layers[0], &tdef[j], tile_shader,
-			tsettings.use_normal_texture,
-			tdef[j].backface_culling, material_type);
+		tiles[j].world_aligned = isWorldAligned(tdef[j].align_style,
+				tsettings.world_aligned_mode, drawtype);
+		fillTileAttribs(tsrc, &tiles[j].layers[0], tiles[j], tdef[j],
+				color, material_type, tile_shader,
+				tdef[j].backface_culling, tsettings);
 		if (!tdef_overlay[j].name.empty())
-			fillTileAttribs(tsrc, &tiles[j].layers[1], &tdef_overlay[j],
-				overlay_shader, tsettings.use_normal_texture,
-				tdef[j].backface_culling, overlay_material);
+			fillTileAttribs(tsrc, &tiles[j].layers[1], tiles[j], tdef_overlay[j],
+					color, overlay_material, overlay_shader,
+					tdef[j].backface_culling, tsettings);
 	}
 
 	u8 special_material = material_type;
@@ -762,11 +854,10 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 	u32 special_shader = shdsrc->getShader("nodes_shader", special_material, drawtype);
 
 	// Special tiles (fill in f->special_tiles[])
-	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++) {
-		fillTileAttribs(tsrc, &special_tiles[j].layers[0], &tdef_spec[j],
-			special_shader, tsettings.use_normal_texture,
-			tdef_spec[j].backface_culling, special_material);
-	}
+	for (u16 j = 0; j < CF_SPECIAL_COUNT; j++)
+		fillTileAttribs(tsrc, &special_tiles[j].layers[0], special_tiles[j], tdef_spec[j],
+				color, special_material, special_shader,
+				tdef_spec[j].backface_culling, tsettings);
 
 	if (param_type_2 == CPT2_COLOR ||
 			param_type_2 == CPT2_COLORED_FACEDIR ||
@@ -783,18 +874,6 @@ void ContentFeatures::updateTextures(ITextureSource *tsrc, IShaderSource *shdsrc
 			recalculateBoundingBox(mesh_ptr[0]);
 			meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 		}
-	} else if ((drawtype == NDT_NODEBOX) &&
-			((node_box.type == NODEBOX_REGULAR) ||
-			(node_box.type == NODEBOX_FIXED)) &&
-			(!node_box.fixed.empty())) {
-		//Convert regular nodebox nodes to meshnodes
-		//Change the drawtype and apply scale
-		drawtype = NDT_MESH;
-		mesh_ptr[0] = convertNodeboxesToMesh(node_box.fixed);
-		v3f scale = v3f(1.0, 1.0, 1.0) * visual_scale;
-		scaleMesh(mesh_ptr[0], scale);
-		recalculateBoundingBox(mesh_ptr[0]);
-		meshmanip->recalculateNormals(mesh_ptr[0], true, false);
 	}
 
 	//Cache 6dfacedir and wallmounted rotated clones of meshes
@@ -838,7 +917,7 @@ public:
 	inline virtual const ContentFeatures& get(const MapNode &n) const;
 	virtual bool getId(const std::string &name, content_t &result) const;
 	virtual content_t getId(const std::string &name) const;
-	virtual bool getIds(const std::string &name, std::set<content_t> &result) const;
+	virtual bool getIds(const std::string &name, std::vector<content_t> &result) const;
 	virtual const ContentFeatures& get(const std::string &name) const;
 	content_t allocateId();
 	virtual content_t set(const std::string &name, const ContentFeatures &def);
@@ -885,10 +964,10 @@ private:
 
 	std::unordered_map<std::string, content_t> m_name_id_mapping_with_aliases;
 
-	// A mapping from groups to a list of content_ts (and their levels)
-	// that belong to it.  Necessary for a direct lookup in getIds().
+	// A mapping from groups to a vector of content_ts that belong to it.
+	// Necessary for a direct lookup in getIds().
 	// Note: Not serialized.
-	std::unordered_map<std::string, GroupItems> m_group_to_items;
+	std::unordered_map<std::string, std::vector<content_t>> m_group_to_items;
 
 	// Next possibly free id
 	content_t m_next_id;
@@ -1030,28 +1109,25 @@ content_t CNodeDefManager::getId(const std::string &name) const
 
 
 bool CNodeDefManager::getIds(const std::string &name,
-		std::set<content_t> &result) const
+		std::vector<content_t> &result) const
 {
 	//TimeTaker t("getIds", NULL, PRECISION_MICRO);
 	if (name.substr(0,6) != "group:") {
 		content_t id = CONTENT_IGNORE;
 		bool exists = getId(name, id);
 		if (exists)
-			result.insert(id);
+			result.push_back(id);
 		return exists;
 	}
 	std::string group = name.substr(6);
 
-	std::unordered_map<std::string, GroupItems>::const_iterator
+	std::unordered_map<std::string, std::vector<content_t>>::const_iterator
 		i = m_group_to_items.find(group);
 	if (i == m_group_to_items.end())
 		return true;
 
-	const GroupItems &items = i->second;
-	for (const auto &item : items) {
-		if (item.second != 0)
-			result.insert(item.first);
-	}
+	const std::vector<content_t> &items = i->second;
+	result.insert(result.end(), items.begin(), items.end());
 	//printf("getIds: %dus\n", t.stop());
 	return true;
 }
@@ -1240,15 +1316,7 @@ content_t CNodeDefManager::set(const std::string &name, const ContentFeatures &d
 	// belongs to when a node is re-registered
 	for (const auto &group : def.groups) {
 		const std::string &group_name = group.first;
-
-		std::unordered_map<std::string, GroupItems>::iterator
-			j = m_group_to_items.find(group_name);
-		if (j == m_group_to_items.end()) {
-			m_group_to_items[group_name].emplace_back(id, group.second);
-		} else {
-			GroupItems &items = j->second;
-			items.emplace_back(id, group.second);
-		}
+		m_group_to_items[group_name].push_back(id);
 	}
 	return id;
 }
@@ -1276,16 +1344,10 @@ void CNodeDefManager::removeNode(const std::string &name)
 	}
 
 	// Erase node content from all groups it belongs to
-	for (std::unordered_map<std::string, GroupItems>::iterator iter_groups =
+	for (std::unordered_map<std::string, std::vector<content_t>>::iterator iter_groups =
 			m_group_to_items.begin(); iter_groups != m_group_to_items.end();) {
-		GroupItems &items = iter_groups->second;
-		for (GroupItems::iterator iter_groupitems = items.begin();
-				iter_groupitems != items.end();) {
-			if (iter_groupitems->first == id)
-				items.erase(iter_groupitems++);
-			else
-				++iter_groupitems;
-		}
+		std::vector<content_t> &items = iter_groups->second;
+		items.erase(std::remove(items.begin(), items.end(), id), items.end());
 
 		// Check if group is empty
 		if (items.empty())
@@ -1538,9 +1600,8 @@ void CNodeDefManager::mapNodeboxConnections()
 		if (f.drawtype != NDT_NODEBOX || f.node_box.type != NODEBOX_CONNECTED)
 			continue;
 
-		for (std::vector<std::string>::const_iterator it = f.connects_to.begin();
-				it != f.connects_to.end(); ++it) {
-			getIds(*it, f.connects_to_ids);
+		for (const std::string &name : f.connects_to) {
+			getIds(name, f.connects_to_ids);
 		}
 	}
 }
@@ -1553,14 +1614,14 @@ bool CNodeDefManager::nodeboxConnects(MapNode from, MapNode to, u8 connect_face)
 		return false;
 
 	// lookup target in connected set
-	if (f1.connects_to_ids.find(to.param0) == f1.connects_to_ids.end())
+	if (!CONTAINS(f1.connects_to_ids, to.param0))
 		return false;
 
 	const ContentFeatures &f2 = get(to);
 
 	if ((f2.drawtype == NDT_NODEBOX) && (f2.node_box.type == NODEBOX_CONNECTED))
 		// ignores actually looking if back connection exists
-		return (f2.connects_to_ids.find(from.param0) != f2.connects_to_ids.end());
+		return CONTAINS(f2.connects_to_ids, from.param0);
 
 	// does to node declare usable faces?
 	if (f2.connect_sides > 0) {
@@ -1679,11 +1740,7 @@ bool NodeResolver::getIdsFromNrBacklog(std::vector<content_t> *result_out,
 				success = false;
 			}
 		} else {
-			std::set<content_t> cids;
-			std::set<content_t>::iterator it;
-			m_ndef->getIds(name, cids);
-			for (it = cids.begin(); it != cids.end(); ++it)
-				result_out->push_back(*it);
+			m_ndef->getIds(name, *result_out);
 		}
 	}
 

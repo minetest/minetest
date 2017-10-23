@@ -135,6 +135,10 @@ public:
 
 	u16 protocol_version = 0;
 
+	session_t getPeerId() const { return m_peer_id; }
+
+	void setPeerId(session_t peer_id) { m_peer_id = peer_id; }
+
 private:
 	/*
 		serialize() writes a bunch of text that can contain
@@ -166,4 +170,6 @@ private:
 	bool m_sky_clouds;
 
 	CloudParams m_cloud_params;
+
+	session_t m_peer_id = PEER_ID_INEXISTENT;
 };

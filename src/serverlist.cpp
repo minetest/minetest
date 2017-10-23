@@ -70,8 +70,7 @@ std::vector<ServerListSpec> getOnline()
 {
 	std::ostringstream geturl;
 
-	u16 proto_version_min = g_settings->getFlag("send_pre_v25_init") ?
-		CLIENT_PROTOCOL_VERSION_MIN_LEGACY : CLIENT_PROTOCOL_VERSION_MIN;
+	u16 proto_version_min = CLIENT_PROTOCOL_VERSION_MIN;
 
 	geturl << g_settings->get("serverlist_url") <<
 		"/list?proto_version_min=" << proto_version_min <<
@@ -186,8 +185,8 @@ const std::string serializeJson(const std::vector<ServerListSpec> &serverlist)
 		list.append(it);
 	}
 	root["list"] = list;
-	Json::FastWriter writer;
-	return writer.write(root);
+
+	return fastWriteJson(root);
 }
 
 
@@ -250,10 +249,9 @@ void sendAnnounce(AnnounceAction action,
 			server["lag"] = lag;
 	}
 
-	Json::FastWriter writer;
 	HTTPFetchRequest fetch_request;
 	fetch_request.url = g_settings->get("serverlist_url") + std::string("/announce");
-	fetch_request.post_fields["json"] = writer.write(server);
+	fetch_request.post_fields["json"] = fastWriteJson(server);
 	fetch_request.multipart = true;
 	httpfetch_async(fetch_request);
 }

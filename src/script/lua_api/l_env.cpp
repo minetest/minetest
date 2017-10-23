@@ -396,9 +396,8 @@ int ModApiEnvMod::l_place_node(lua_State *L)
 	pointed.type = POINTEDTHING_NODE;
 	pointed.node_abovesurface = pos;
 	pointed.node_undersurface = pos + v3s16(0,-1,0);
-	// Place it with a NULL placer (appears in Lua as a non-functional
-	// ObjectRef)
-	bool success = scriptIfaceItem->item_OnPlace(item, NULL, pointed);
+	// Place it with a NULL placer (appears in Lua as nil)
+	bool success = scriptIfaceItem->item_OnPlace(item, nullptr, pointed);
 	lua_pushboolean(L, success);
 	return 1;
 }
@@ -642,7 +641,7 @@ int ModApiEnvMod::l_get_objects_inside_radius(lua_State *L)
 	std::vector<u16>::const_iterator iter = ids.begin();
 	for(u32 i = 0; iter != ids.end(); ++iter) {
 		ServerActiveObject *obj = env->getActiveObject(*iter);
-		if (!obj->m_removed) {
+		if (!obj->isGone()) {
 			// Insert object reference into table
 			script->objectrefGetOrCreate(L, obj);
 			lua_rawseti(L, -2, ++i);
@@ -719,7 +718,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 	INodeDefManager *ndef = getGameDef(L)->ndef();
 	v3s16 pos = read_v3s16(L, 1);
 	int radius = luaL_checkinteger(L, 2);
-	std::set<content_t> filter;
+	std::vector<content_t> filter;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3) != 0) {
@@ -748,7 +747,7 @@ int ModApiEnvMod::l_find_node_near(lua_State *L)
 		for (const v3s16 &i : list) {
 			v3s16 p = pos + i;
 			content_t c = env->getMap().getNodeNoEx(p).getContent();
-			if (filter.count(c) != 0) {
+			if (CONTAINS(filter, c)) {
 				push_v3s16(L, p);
 				return 1;
 			}
@@ -780,7 +779,7 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		return 0;
 	}
 
-	std::set<content_t> filter;
+	std::vector<content_t> filter;
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
 		while (lua_next(L, 3) != 0) {
@@ -794,7 +793,8 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 		ndef->getIds(lua_tostring(L, 3), filter);
 	}
 
-	std::unordered_map<content_t, u32> individual_count;
+	std::vector<u32> individual_count;
+	individual_count.resize(filter.size());
 
 	lua_newtable(L);
 	u64 i = 0;
@@ -803,16 +803,20 @@ int ModApiEnvMod::l_find_nodes_in_area(lua_State *L)
 	for (s16 z = minp.Z; z <= maxp.Z; z++) {
 		v3s16 p(x, y, z);
 		content_t c = env->getMap().getNodeNoEx(p).getContent();
-		if (filter.count(c) != 0) {
+
+		std::vector<content_t>::iterator it = std::find(filter.begin(), filter.end(), c);
+		if (it != filter.end()) {
 			push_v3s16(L, p);
 			lua_rawseti(L, -2, ++i);
-			individual_count[c]++;
+
+			u32 filt_index = it - filter.begin();
+			individual_count[filt_index]++;
 		}
 	}
 	lua_newtable(L);
-	for (content_t it : filter) {
-		lua_pushnumber(L, individual_count[it]);
-		lua_setfield(L, -2, ndef->get(it).name.c_str());
+	for (u32 i = 0; i < filter.size(); i++) {
+		lua_pushnumber(L, individual_count[i]);
+		lua_setfield(L, -2, ndef->get(filter[i]).name.c_str());
 	}
 	return 2;
 }
@@ -847,7 +851,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 		return 0;
 	}
 
-	std::set<content_t> filter;
+	std::vector<content_t> filter;
 
 	if (lua_istable(L, 3)) {
 		lua_pushnil(L);
@@ -873,7 +877,7 @@ int ModApiEnvMod::l_find_nodes_in_area_under_air(lua_State *L)
 			v3s16 psurf(x, y + 1, z);
 			content_t csurf = env->getMap().getNodeNoEx(psurf).getContent();
 			if (c != CONTENT_AIR && csurf == CONTENT_AIR &&
-					filter.count(c) != 0) {
+					CONTAINS(filter, c)) {
 				push_v3s16(L, v3s16(x, y, z));
 				lua_rawseti(L, -2, ++i);
 			}

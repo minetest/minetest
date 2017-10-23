@@ -23,3 +23,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 Json::Value fetchJsonValue(const std::string &url,
 		std::vector<std::string> *extra_headers);
+
+std::string fastWriteJson(const Json::Value &value);

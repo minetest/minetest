@@ -35,6 +35,7 @@ class PlayerDatabase;
 class PlayerSAO;
 class ServerEnvironment;
 class ActiveBlockModifier;
+struct StaticObject;
 class ServerActiveObject;
 class Server;
 class ServerScripting;
@@ -53,10 +54,10 @@ public:
 	virtual ~ActiveBlockModifier() = default;
 
 	// Set of contents to trigger on
-	virtual const std::set<std::string> &getTriggerContents() const = 0;
+	virtual const std::vector<std::string> &getTriggerContents() const = 0;
 	// Set of required neighbors (trigger doesn't happen if none are found)
 	// Empty = do not check neighbors
-	virtual const std::set<std::string> &getRequiredNeighbors() const = 0;
+	virtual const std::vector<std::string> &getRequiredNeighbors() const = 0;
 	// Trigger interval in seconds
 	virtual float getTriggerInterval() = 0;
 	// Random chance of (1 / return value), 0 is disallowed
@@ -218,7 +219,7 @@ public:
 	// Save players
 	void saveLoadedPlayers();
 	void savePlayer(RemotePlayer *player);
-	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, u16 peer_id,
+	PlayerSAO *loadPlayer(RemotePlayer *player, bool *new_player, session_t peer_id,
 		bool is_singleplayer);
 	void addPlayer(RemotePlayer *player);
 	void removePlayer(RemotePlayer *player);
@@ -340,8 +341,9 @@ public:
 	void setStaticForActiveObjectsInBlock(v3s16 blockpos,
 		bool static_exists, v3s16 static_block=v3s16(0,0,0));
 
-	RemotePlayer *getPlayer(const u16 peer_id);
+	RemotePlayer *getPlayer(const session_t peer_id);
 	RemotePlayer *getPlayer(const char* name);
+	u32 getPlayerCount() const { return m_players.size(); }
 
 	static bool migratePlayersDatabase(const GameParams &game_params,
 			const Settings &cmd_args);
@@ -367,7 +369,7 @@ private:
 	u16 addActiveObjectRaw(ServerActiveObject *object, bool set_changed, u32 dtime_s);
 
 	/*
-		Remove all objects that satisfy (m_removed && m_known_by_count==0)
+		Remove all objects that satisfy (isGone() && m_known_by_count==0)
 	*/
 	void removeRemovedObjects();
 
@@ -386,6 +388,14 @@ private:
 		shall only be set so in the destructor of the environment.
 	*/
 	void deactivateFarObjects(bool force_delete);
+
+	/*
+		A few helpers used by the three above methods
+	*/
+	void deleteStaticFromBlock(
+			ServerActiveObject *obj, u16 id, u32 mod_reason, bool no_emerge);
+	bool saveStaticToBlock(v3s16 blockpos, u16 store_id,
+			ServerActiveObject *obj, const StaticObject &s_obj, u32 mod_reason);
 
 	/*
 		Member variables
