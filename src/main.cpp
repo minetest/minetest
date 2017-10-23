@@ -74,11 +74,11 @@ static void print_help(const OptionList &allowed_options);
 static void print_allowed_options(const OptionList &allowed_options);
 static void print_version();
 static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
-							 std::ostream &os);
+	std::ostream &os, bool print_name = true, bool print_path = true);
 static void print_modified_quicktune_values();
 
 static void list_game_ids();
-static void list_worlds();
+static void list_worlds(bool print_name, bool print_path);
 static void setup_log_params(const Settings &cmd_args);
 static bool create_userdata_path();
 static bool init_common(const Settings &cmd_args, int argc, char *argv[]);
@@ -162,7 +162,13 @@ int main(int argc, char *argv[])
 
 	// List worlds if requested
 	if (cmd_args.exists("world") && cmd_args.get("world") == "list") {
-		list_worlds();
+		list_worlds(true, true);
+		return 0;
+	}
+
+	// List worldnames if requested
+	if (cmd_args.exists("worldname") && cmd_args.get("worldname") == "list") {
+		list_worlds(true, false);
 		return 0;
 	}
 
@@ -254,7 +260,7 @@ static void set_allowed_options(OptionList *allowed_options)
 	allowed_options->insert(std::make_pair("world", ValueSpec(VALUETYPE_STRING,
 			_("Set world path (implies local game) ('list' lists all)"))));
 	allowed_options->insert(std::make_pair("worldname", ValueSpec(VALUETYPE_STRING,
-			_("Set world by name (implies local game)"))));
+			_("Set world by name (implies local game) ('list' lists all)"))));
 	allowed_options->insert(std::make_pair("quiet", ValueSpec(VALUETYPE_FLAG,
 			_("Print to console errors only"))));
 	allowed_options->insert(std::make_pair("info", ValueSpec(VALUETYPE_FLAG,
@@ -336,15 +342,15 @@ static void list_game_ids()
 		std::cout << gameid <<std::endl;
 }
 
-static void list_worlds()
+static void list_worlds(bool print_name, bool print_path)
 {
 	std::cout << _("Available worlds:") << std::endl;
 	std::vector<WorldSpec> worldspecs = getAvailableWorlds();
-	print_worldspecs(worldspecs, std::cout);
+	print_worldspecs(worldspecs, std::cout, print_name, print_path);
 }
 
 static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
-							 std::ostream &os)
+	std::ostream &os, bool print_name, bool print_path)
 {
 	for (const WorldSpec &worldspec : worldspecs) {
 		std::string name = worldspec.name;
@@ -352,8 +358,14 @@ static void print_worldspecs(const std::vector<WorldSpec> &worldspecs,
 		if (name.find(' ') != std::string::npos)
 			name = std::string("'").append(name).append("'");
 		path = std::string("'").append(path).append("'");
-		name = padStringRight(name, 14);
-		os << "  " << name << " " << path << std::endl;
+		if (print_name && print_path) {
+			name = padStringRight(name, 14);
+			os << "  " << name << " " << path << std::endl;
+		} else if (print_name) {
+			os << "  " << name << std::endl;
+		} else if (print_path) {
+			os << "  " << path << std::endl;
+		}
 	}
 }
 
